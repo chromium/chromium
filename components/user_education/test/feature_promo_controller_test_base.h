@@ -18,6 +18,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_impl.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/common/product_messaging_controller.h"
 #include "components/user_education/common/tutorial/tutorial_registry.h"
@@ -81,7 +82,7 @@ class FeaturePromoControllerTestBase : public testing::Test {
   // Wrapper for a promo controller that implements all the application-specific
   // methods.
   template <class T>
-    requires std::derived_from<T, FeaturePromoControllerCommon>
+    requires std::derived_from<T, FeaturePromoControllerImpl>
   class TestPromoController : public T, public TestPromoControllerBase {
    public:
     using T::T;
@@ -133,16 +134,14 @@ class FeaturePromoControllerTestBase : public testing::Test {
   ProductMessagingController& messaging_controller() {
     return messaging_controller_;
   }
-  FeaturePromoControllerCommon& promo_controller() {
-    return *promo_controller_;
-  }
+  FeaturePromoControllerImpl& promo_controller() { return *promo_controller_; }
   const scoped_refptr<MockUserEducationContext>& promo_context() {
     return test_promo_context_;
   }
   ui::test::TestElement& anchor_element() { return anchor_element_; }
 
   // Implemented by derived classes to create the controller.
-  virtual std::unique_ptr<FeaturePromoControllerCommon> CreateController() = 0;
+  virtual std::unique_ptr<FeaturePromoControllerImpl> CreateController() = 0;
 
  private:
   class TestTutorialService : public TutorialService {
@@ -180,7 +179,7 @@ class FeaturePromoControllerTestBase : public testing::Test {
   ProductMessagingController messaging_controller_;
 
   MockFeaturePromoSessionPolicy session_policy_;
-  std::unique_ptr<FeaturePromoControllerCommon> promo_controller_;
+  std::unique_ptr<FeaturePromoControllerImpl> promo_controller_;
   scoped_refptr<MockUserEducationContext> test_promo_context_;
   std::vector<feature_engagement::Tracker::OnInitializedCallback>
       on_initialized_callbacks_;

@@ -50,8 +50,8 @@ class BatterySaverHelpPromoTest
         button, ui::test::InteractionTestUtil::InputType::kMouse);
   }
 
-  user_education::FeaturePromoControllerCommon* GetFeaturePromoController() {
-    return static_cast<user_education::FeaturePromoControllerCommon*>(
+  user_education::FeaturePromoControllerImpl* GetFeaturePromoController() {
+    return static_cast<user_education::FeaturePromoControllerImpl*>(
         UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
             ->GetFeaturePromoControllerForTesting());
   }

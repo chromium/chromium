@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_data.h"
@@ -37,6 +38,10 @@ class MockFeaturePromoController : public FeaturePromoController {
   MOCK_METHOD(void,
               MaybeShowPromoForDemoPage,
               (FeaturePromoParams, UserEducationContextPtr),
+              (override));
+  MOCK_METHOD(bool,
+              DismissNonCriticalBubbleInRegion,
+              (const gfx::Rect&),
               (override));
   MOCK_METHOD(FeaturePromoStatus,
               GetPromoStatus,

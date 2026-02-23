@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_IMPL_BROWSER_FEATURE_PROMO_CONTROLLER_25_H_
 
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller.h"
-#include "components/user_education/common/feature_promo/impl/feature_promo_controller_25.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_impl.h"
 #include "components/user_education/common/feature_promo/impl/precondition_list_provider.h"
 #include "ui/base/interaction/element_identifier.h"
 
@@ -18,7 +18,7 @@
 // views-specific implementation.
 class BrowserFeaturePromoController25
     : public BrowserFeaturePromoController<
-          user_education::FeaturePromoController25> {
+          user_education::FeaturePromoControllerImpl> {
  public:
   // Create the instance for the given |browser_view|. Prefer to call
   // `MaybeCreateForBrowserView()` instead.
@@ -26,7 +26,7 @@ class BrowserFeaturePromoController25
   ~BrowserFeaturePromoController25() override;
 
  protected:
-  // FeaturePromoController25:
+  // FeaturePromoControllerImpl:
   void AddDemoPreconditionProviders(
       user_education::ComposingPreconditionListProvider& to_add_to,
       bool required) override;

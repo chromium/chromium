@@ -7,19 +7,19 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
-#include "components/user_education/common/feature_promo/impl/feature_promo_controller_25.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_impl.h"
 #include "components/user_education/common/user_education_context.h"
 
 class UserEducationService;
 class ProfilePickerView;
 
-// Profile Picker implementation of `FeaturePromoControllerCommon`. There is a
+// Profile Picker implementation of `FeaturePromoControllerImpl`. There is a
 // single instance owned by the Profile Picker, with the keyed services attached
 // the OTR System Profile.
 // The class allows the management of IPH that are displayed in the Profile
 // Picker.
 class ProfilePickerFeaturePromoController
-    : public user_education::FeaturePromoController25 {
+    : public user_education::FeaturePromoControllerImpl {
  public:
   ProfilePickerFeaturePromoController(
       feature_engagement::Tracker* tracker_service,
@@ -28,13 +28,13 @@ class ProfilePickerFeaturePromoController
   ~ProfilePickerFeaturePromoController() override;
 
  private:
-  // FeaturePromoController25:
+  // FeaturePromoControllerImpl:
   void AddPreconditionProviders(
       user_education::ComposingPreconditionListProvider& to_add_to,
       Priority priority,
       bool required) override;
 
-  // user_education::FeaturePromoControllerCommon:
+  // user_education::FeaturePromoControllerImpl:
   std::u16string GetBodyIconAltText() const override;
   const base::Feature* GetScreenReaderPromptPromoFeature() const override;
   const char* GetScreenReaderPromptPromoEventName() const override;

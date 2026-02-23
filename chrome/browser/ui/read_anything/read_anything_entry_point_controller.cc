@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_filter.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"

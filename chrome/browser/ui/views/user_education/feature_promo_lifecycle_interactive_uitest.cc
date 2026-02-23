@@ -34,6 +34,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_impl.h"
 #include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_storage_service.h"
@@ -250,9 +251,9 @@ class FeaturePromoLifecycleUiTest : public TestBase {
             base::StringPrintf("CheckHistogram( %s )", name.c_str()));
   }
 
-  static user_education::FeaturePromoControllerCommon* GetPromoController(
+  static user_education::FeaturePromoControllerImpl* GetPromoController(
       Browser* browser) {
-    return static_cast<user_education::FeaturePromoControllerCommon*>(
+    return static_cast<user_education::FeaturePromoControllerImpl*>(
         UserEducationServiceFactory::GetForBrowserContext(browser->profile())
             ->GetFeaturePromoControllerForTesting());
   }

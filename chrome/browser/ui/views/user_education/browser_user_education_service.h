@@ -8,7 +8,7 @@
 #include <memory>
 
 namespace user_education {
-class FeaturePromoControllerCommon;
+class FeaturePromoControllerImpl;
 class FeaturePromoRegistry;
 class HelpBubbleDelegate;
 class HelpBubbleFactoryRegistry;
@@ -34,7 +34,7 @@ void MaybeRegisterChromeTutorials(user_education::TutorialRegistry& registry);
 // headless, kiosk, guest, incognito, and other off-the-record browsers do
 // _not_ show IPH. Initializes all other User Education data associated with the
 // browser as well.
-std::unique_ptr<user_education::FeaturePromoControllerCommon>
+std::unique_ptr<user_education::FeaturePromoControllerImpl>
 CreateUserEducationResources(UserEducationService& user_education_service);
 
 // Adds (or doesn't add) high priority notices (usually legal and privacy

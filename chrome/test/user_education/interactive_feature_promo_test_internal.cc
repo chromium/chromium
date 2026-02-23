@@ -74,7 +74,7 @@ InteractiveFeaturePromoTestPrivate::InteractiveFeaturePromoTestPrivate(
           ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
               &InteractiveFeaturePromoTestPrivate::CreateServicesCallback,
               base::Unretained(this)));
-  activation_lock_ = user_education::FeaturePromoControllerCommon::
+  activation_lock_ = user_education::FeaturePromoControllerImpl::
       BlockActiveWindowCheckForTesting();
 
   // Keep additional context detailing all of the promos that were attempted to

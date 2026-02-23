@@ -32,6 +32,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_impl.h"
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
@@ -202,8 +203,7 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
     auto* const controller =
         UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
             ->GetFeaturePromoControllerForTesting();
-    return static_cast<user_education::FeaturePromoControllerCommon*>(
-               controller)
+    return static_cast<user_education::FeaturePromoControllerImpl*>(controller)
         ->bubble_factory_registry();
   }
 

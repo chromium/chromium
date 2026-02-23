@@ -28,6 +28,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/impl/common_preconditions.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_impl.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/views/view_subregion_anchor.h"
 #include "components/user_education/webui/help_bubble_handler.h"
@@ -58,7 +59,7 @@ WindowActivePrecondition::~WindowActivePrecondition() = default;
 
 user_education::FeaturePromoResult WindowActivePrecondition::CheckPrecondition(
     ui::UnownedTypedDataCollection& data) const {
-  if (user_education::FeaturePromoControllerCommon::
+  if (user_education::FeaturePromoControllerImpl::
           active_window_check_blocked()) {
     return user_education::FeaturePromoResult::Success();
   }

@@ -19,6 +19,7 @@
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/image_fetcher/core/mock_image_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"

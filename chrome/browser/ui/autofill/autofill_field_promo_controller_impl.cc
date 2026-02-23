@@ -13,6 +13,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/geometry/rect_f.h"

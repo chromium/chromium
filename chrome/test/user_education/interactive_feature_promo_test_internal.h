@@ -24,6 +24,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_impl.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/test/user_education_session_test_util.h"
 #include "content/public/browser/browser_context.h"
@@ -114,7 +115,7 @@ class InteractiveFeaturePromoTestPrivate
   std::optional<base::Time> test_time_;
   std::map<Profile*, ProfileData> profile_data_;
   feature_engagement::test::ScopedIphFeatureList feature_list_;
-  user_education::FeaturePromoControllerCommon::TestLock activation_lock_;
+  user_education::FeaturePromoControllerImpl::TestLock activation_lock_;
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observations_{this};
   base::CallbackListSubscription create_services_subscription_;

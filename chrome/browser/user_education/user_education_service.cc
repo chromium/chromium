@@ -17,6 +17,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
 #include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_impl.h"
 #include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/common/new_badge/new_badge_policy.h"
 #include "components/user_education/common/user_education_features.h"

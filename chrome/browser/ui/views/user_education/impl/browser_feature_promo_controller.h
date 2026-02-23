@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_impl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
@@ -30,14 +31,14 @@ class BrowserFeaturePromoControllerBase {
 };
 
 // Wrapper for classes which implement some descendant of
-// `FeaturePromoControllerCommon`. Provides overrides of methods common to all
+// `FeaturePromoControllerImpl`. Provides overrides of methods common to all
 // browser feature promo controllers. Derive your controller from this instead
 // of writing it from scratch.
 //
 // (See `BrowserFeaturePromoController20` and `BrowserFeaturePromoController25`
 // for examples.)
 template <typename T>
-  requires std::derived_from<T, user_education::FeaturePromoControllerCommon>
+  requires std::derived_from<T, user_education::FeaturePromoControllerImpl>
 class BrowserFeaturePromoController : public T,
                                       public BrowserFeaturePromoControllerBase {
  public:

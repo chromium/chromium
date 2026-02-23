@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/user_education/common/feature_promo/impl/feature_promo_controller_25.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_impl.h"
 
 #include <memory>
 
@@ -56,10 +56,10 @@ using PromoWeight = FeaturePromoPriorityProvider::PromoWeight;
 
 // Implementation of V2.5 controller that cleans itself up properly.
 // Normally this would be done by a derived class.
-class TestFeaturePromoController25 : public FeaturePromoController25 {
+class TestFeaturePromoControllerImpl : public FeaturePromoControllerImpl {
  public:
-  using FeaturePromoController25::FeaturePromoController25;
-  ~TestFeaturePromoController25() override { OnDestroying(); }
+  using FeaturePromoControllerImpl::FeaturePromoControllerImpl;
+  ~TestFeaturePromoControllerImpl() override { OnDestroying(); }
 };
 
 }  // namespace
@@ -107,9 +107,9 @@ class FeaturePromoControllerQueueTest
 
  protected:
   // FeaturePromoControllerTestBase:
-  std::unique_ptr<FeaturePromoControllerCommon> CreateController() override {
+  std::unique_ptr<FeaturePromoControllerImpl> CreateController() override {
     auto result =
-        std::make_unique<TestPromoController<TestFeaturePromoController25>>(
+        std::make_unique<TestPromoController<TestFeaturePromoControllerImpl>>(
             &tracker(), &promo_registry(), &help_bubble_factory_registry(),
             &storage_service(), &session_policy(), &tutorial_service(),
             &messaging_controller());

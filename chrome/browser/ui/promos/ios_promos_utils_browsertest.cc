@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

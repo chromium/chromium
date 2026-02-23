@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/tabs/public/mock_tab_interface.h"

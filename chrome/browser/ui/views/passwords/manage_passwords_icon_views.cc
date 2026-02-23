@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"

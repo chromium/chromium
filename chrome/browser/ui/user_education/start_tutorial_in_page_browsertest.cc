@@ -18,6 +18,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_impl.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/common/tutorial/tutorial_registry.h"
 #include "content/public/test/browser_test.h"
@@ -84,7 +85,7 @@ class StartTutorialInPageBrowserTest : public InteractiveBrowserTest {
   }
 
   user_education::TutorialService* GetTutorialService() {
-    return static_cast<user_education::FeaturePromoControllerCommon*>(
+    return static_cast<user_education::FeaturePromoControllerImpl*>(
                UserEducationServiceFactory::GetForBrowserContext(
                    browser()->profile())
                    ->GetFeaturePromoControllerForTesting())

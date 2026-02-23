@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -165,9 +164,8 @@ void SidePanelCoordinator::Show(
     }
     if (entry->type() == SidePanelEntry::PanelType::kContent) {
       // Record usage for side panel promo.
-      feature_engagement::TrackerFactory::GetForBrowserContext(
-          browser_view_->GetProfile())
-          ->NotifyEvent("side_panel_shown");
+      BrowserUserEducationInterface::From(browser_view_->browser())
+          ->NotifyAdditionalConditionEvent("side_panel_shown");
 
       // Close IPH for side panel if shown.
       ClosePromoAndMaybeNotifyUsed(

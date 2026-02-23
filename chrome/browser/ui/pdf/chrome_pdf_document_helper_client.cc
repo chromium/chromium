@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/content_restriction.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"

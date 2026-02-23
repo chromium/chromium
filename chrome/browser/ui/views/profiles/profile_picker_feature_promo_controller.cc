@@ -44,7 +44,7 @@ ProfilePickerFeaturePromoController::ProfilePickerFeaturePromoController(
     feature_engagement::Tracker* tracker_service,
     UserEducationService* user_education_service,
     ProfilePickerView* profile_picker_view)
-    : user_education::FeaturePromoController25(
+    : user_education::FeaturePromoControllerImpl(
           tracker_service,
           &user_education_service->feature_promo_registry(),
           &user_education_service->help_bubble_factory_registry(),
@@ -67,8 +67,8 @@ void ProfilePickerFeaturePromoController::AddPreconditionProviders(
     user_education::ComposingPreconditionListProvider& to_add_to,
     Priority priority,
     bool required) {
-  FeaturePromoController25::AddPreconditionProviders(to_add_to, priority,
-                                                     required);
+  FeaturePromoControllerImpl::AddPreconditionProviders(to_add_to, priority,
+                                                       required);
 
   if (required) {
     to_add_to.AddProvider(base::BindRepeating(

@@ -172,7 +172,7 @@ void BrowserHelpBubble::MaybeCloseOverlappingHelpBubbles(
 
   if (auto* const controller = service->GetFeaturePromoController(
           base::PassKey<BrowserHelpBubble>())) {
-    static_cast<user_education::FeaturePromoControllerCommon*>(controller)
+    static_cast<user_education::FeaturePromoControllerImpl*>(controller)
         ->DismissNonCriticalBubbleInRegion(bounds);
   }
 

@@ -27,7 +27,7 @@ BrowserFeaturePromoController25::~BrowserFeaturePromoController25() {
 void BrowserFeaturePromoController25::AddDemoPreconditionProviders(
     user_education::ComposingPreconditionListProvider& to_add_to,
     bool required) {
-  FeaturePromoController25::AddDemoPreconditionProviders(to_add_to, required);
+  FeaturePromoControllerImpl::AddDemoPreconditionProviders(to_add_to, required);
   if (required) {
     to_add_to.AddProvider(base::BindRepeating(
         [](const user_education::FeaturePromoSpecification&,
@@ -47,8 +47,8 @@ void BrowserFeaturePromoController25::AddPreconditionProviders(
     user_education::ComposingPreconditionListProvider& to_add_to,
     Priority priority,
     bool required) {
-  FeaturePromoController25::AddPreconditionProviders(to_add_to, priority,
-                                                     required);
+  FeaturePromoControllerImpl::AddPreconditionProviders(to_add_to, priority,
+                                                       required);
 
   if (required) {
     to_add_to.AddProvider(base::BindRepeating(

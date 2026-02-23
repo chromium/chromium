@@ -2128,7 +2128,7 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
                                "to be a vertical tab strip")));
 }
 
-std::unique_ptr<user_education::FeaturePromoControllerCommon>
+std::unique_ptr<user_education::FeaturePromoControllerImpl>
 CreateUserEducationResources(UserEducationService& user_education_service) {
   Profile* const profile = &user_education_service.profile();
   CHECK(UserEducationServiceFactory::ProfileAllowsUserEducation(profile));

@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/common/pref_names.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension_features.h"

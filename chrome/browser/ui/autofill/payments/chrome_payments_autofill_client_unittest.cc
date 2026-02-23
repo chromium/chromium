@@ -45,6 +45,7 @@
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "ui/android/window_android.h"
 #else  // !BUILDFLAG(IS_ANDROID)

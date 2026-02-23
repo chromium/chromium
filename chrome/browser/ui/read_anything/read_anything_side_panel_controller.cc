@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/accessibility/reading/distillable_pages.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
