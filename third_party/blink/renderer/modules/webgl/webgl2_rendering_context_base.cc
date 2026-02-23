@@ -151,14 +151,14 @@ bool ValidateSubSourceAndGetData(DOMArrayBufferView* view,
 class PointableStringArray {
  public:
   PointableStringArray(const Vector<String>& strings)
-      : data_(std::make_unique<std::string[]>(strings.size())),
+      : data_(base::HeapArray<std::string>::WithSize(strings.size())),
         pointers_(strings.size()) {
     DCHECK(strings.size() < std::numeric_limits<GLsizei>::max());
     for (wtf_size_t i = 0; i < strings.size(); ++i) {
       // Strings must never move once they are stored in data_...
-      UNSAFE_TODO(data_[i]) = strings[i].Ascii();
+      data_[i] = strings[i].Ascii();
       // ... so that the c_str() remains valid.
-      pointers_[i] = UNSAFE_TODO(data_[i]).c_str();
+      pointers_[i] = data_[i].c_str();
     }
   }
 
@@ -166,7 +166,7 @@ class PointableStringArray {
   char const* const* data() const { return pointers_.data(); }
 
  private:
-  std::unique_ptr<std::string[]> data_;
+  base::HeapArray<std::string> data_;
   Vector<const char*> pointers_;
 };
 
