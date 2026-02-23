@@ -448,6 +448,18 @@ double GetGeminiCopresenceResponseReadyInterval() {
       kGeminiCopresence, kGeminiCopresenceResponseReadyInterval,
       kGeminiCopresenceResponseReadyIntervalDefault);
 }
+
+const char kGeminiCopresenceZeroStateWithChatHistory[] =
+    "GeminiCopresenceZeroStateWithChatHistory";
+
+bool IsGeminiCopresenceZeroStateWithChatHistoryEnabled() {
+  if (!IsGeminiCopresenceEnabled()) {
+    return false;
+  }
+
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kGeminiCopresence, kGeminiCopresenceZeroStateWithChatHistory, false);
+}
 BASE_FEATURE(kGeminiResponseViewDynamicResizing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

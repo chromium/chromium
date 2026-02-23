@@ -284,6 +284,10 @@ bool IsGeminiCopresenceEnabled();
 extern const char kGeminiCopresenceResponseReadyInterval[];
 double GetGeminiCopresenceResponseReadyInterval();
 
+// Returns true if the zero state with chat history is enabled.
+bool IsGeminiCopresenceZeroStateWithChatHistoryEnabled();
+extern const char kGeminiCopresenceZeroStateWithChatHistory[];
+
 // Feature flag for Gemini Dynamic Resizing.
 BASE_DECLARE_FEATURE(kGeminiResponseViewDynamicResizing);
 

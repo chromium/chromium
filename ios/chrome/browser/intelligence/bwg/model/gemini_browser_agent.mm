@@ -865,6 +865,8 @@ void GeminiBrowserAgent::PresentFloatyWithState(
   config.responseReadyInterval = GetGeminiCopresenceResponseReadyInterval();
   config.responseViewDynamicSizeEnabled =
       IsGeminiResponseViewDynamicResizingEnabled();
+  config.geminiCopresenceZeroStateWithChatHistoryEnabled =
+      IsGeminiCopresenceZeroStateWithChatHistoryEnabled();
 
   // Set the location permission state.
   // TODO(crbug.com/426207968): Populate with actual value.

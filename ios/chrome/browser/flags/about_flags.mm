@@ -1258,10 +1258,15 @@ const FeatureEntry::FeatureVariation kZeroStateSuggestionsVariations[] = {
 
 const FeatureEntry::FeatureParam kGeminiCopresenceResponseReadyIntervalParam[] =
     {{kGeminiCopresenceResponseReadyInterval, "7.0"}};
+const FeatureEntry::FeatureParam
+    kGeminiCopresenceZeroStateWithChatHistoryParam[] = {
+        {kGeminiCopresenceZeroStateWithChatHistory, "true"}};
 
 const FeatureEntry::FeatureVariation kGeminiCopresenceVariations[] = {
     {"Response Ready Interval", kGeminiCopresenceResponseReadyIntervalParam,
      nullptr},
+    {"Zero State with Chat History",
+     kGeminiCopresenceZeroStateWithChatHistoryParam, nullptr},
 };
 
 const char kFRESignInHeaderTextUpdateParamName[] =

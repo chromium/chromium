@@ -105,6 +105,10 @@ class PageContext;
 // Whether to use the dynamic size for the response view in the floaty.
 @property(nonatomic, assign) BOOL responseViewDynamicSizeEnabled;
 
+// Whether to show the zero state with chat history in the floaty.
+@property(nonatomic, assign)
+    BOOL geminiCopresenceZeroStateWithChatHistoryEnabled;
+
 // The initial bottom offset of the floaty.
 @property(nonatomic, assign) CGFloat initialBottomOffset;
 
