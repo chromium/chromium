@@ -1,0 +1,14 @@
+AXWebArea
+++AXGroup
+++++AXStaticText AXValue='Choose your animal sidekick'
+++AXList AXTitle='Choose your animal sidekick'
+++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Land'
+++++++AXStaticText AXValue='%E2%80%A2 '
+++++++AXStaticText AXValue='Land'
+++++++AXMenuItem AXValue='Cat'
+++++++AXMenuItem AXValue='Dog'
+++++AXGroup AXSubrole=AXApplicationGroup AXDescription='Water'
+++++++AXStaticText AXValue='%E2%80%A2 '
+++++++AXStaticText AXValue='Water'
+++++++AXMenuItem AXValue='Dolphin'
+++++++AXMenuItem AXValue='Flounder'

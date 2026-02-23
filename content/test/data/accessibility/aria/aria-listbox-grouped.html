@@ -1,0 +1,51 @@
+<!--
+`@DENY:name='*%E2%80%A2*'`
+@ANDROID-DENY:row_span
+@ANDROID-DENY:column_span
+-->
+<!DOCTYPE HTML>
+<html>
+  <body>
+    <!-- HTML snippet from https://www.w3.org/WAI/ARIA/apg/patterns/listbox/examples/listbox-grouped/ -->
+    <!-- For readability, few options are removed from the original snippet. -->
+    <div class="listbox-area">
+      <div>
+        <span id="ss_elem" class="listbox-label">
+          Choose your animal sidekick
+        </span>
+        <div id="ss_elem_list"
+            tabindex="0"
+            role="listbox"
+            aria-labelledby="ss_elem">
+          <ul role="group" aria-labelledby="cat1">
+            <li role="presentation" id="cat1">
+              Land
+            </li>
+            <li id="ss_elem_1" role="option">
+              <span class="checkmark" aria-hidden="true"></span>
+              Cat
+            </li>
+            <li id="ss_elem_2" role="option">
+              <span class="checkmark" aria-hidden="true"></span>
+              Dog
+            </li>
+          </ul>
+          <ul role="group" aria-labelledby="cat2">
+            <li role="presentation" id="cat2">
+              <span class="checkmark" aria-hidden="true"></span>
+              Water
+            </li>
+            <li id="ss_elem_6" role="option">
+              <span class="checkmark" aria-hidden="true"></span>
+              Dolphin
+            </li>
+            <li id="ss_elem_7" role="option">
+              <span class="checkmark" aria-hidden="true"></span>
+              Flounder
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

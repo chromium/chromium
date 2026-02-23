@@ -1349,6 +1349,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaListBox) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaListboxGrouped) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-listbox-grouped.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaListBoxDisabled) {
   RunAriaTest(FILE_PATH_LITERAL("aria-listbox-disabled.html"));
 }

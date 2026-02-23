@@ -1,0 +1,14 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='Choose your animal sidekick'
+++ROLE_SYSTEM_LIST name='Choose your animal sidekick' FOCUSABLE
+++++ROLE_SYSTEM_GROUPING name='Land'
+++++++ROLE_SYSTEM_STATICTEXT name='%E2%80%A2 '
+++++++ROLE_SYSTEM_STATICTEXT name='Land'
+++++++ROLE_SYSTEM_LISTITEM name='Cat'
+++++++ROLE_SYSTEM_LISTITEM name='Dog'
+++++ROLE_SYSTEM_GROUPING name='Water'
+++++++ROLE_SYSTEM_STATICTEXT name='%E2%80%A2 '
+++++++ROLE_SYSTEM_STATICTEXT name='Water'
+++++++ROLE_SYSTEM_LISTITEM name='Dolphin'
+++++++ROLE_SYSTEM_LISTITEM name='Flounder'

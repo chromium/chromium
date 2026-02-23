@@ -1,0 +1,48 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++genericContainer
+++++++++++++staticText name='Choose your animal sidekick'
+++++++++++++++inlineTextBox name='Choose your animal sidekick'
+++++++++++listBox name='Choose your animal sidekick'
+++++++++++++group name='Land'
+++++++++++++++none ignored
+++++++++++++++++none ignored
+++++++++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++++++++staticText name='Land'
+++++++++++++++++++inlineTextBox name='Land'
+++++++++++++++listBoxOption name='Cat' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++++++++staticText name='Cat'
+++++++++++++++++++inlineTextBox name='Cat'
+++++++++++++++listBoxOption name='Dog' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++++++++staticText name='Dog'
+++++++++++++++++++inlineTextBox name='Dog'
+++++++++++++group name='Water'
+++++++++++++++none ignored
+++++++++++++++++none ignored
+++++++++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++staticText name='Water'
+++++++++++++++++++inlineTextBox name='Water'
+++++++++++++++listBoxOption name='Dolphin' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++++++++staticText name='Dolphin'
+++++++++++++++++++inlineTextBox name='Dolphin'
+++++++++++++++listBoxOption name='Flounder' selected=false
+++++++++++++++++none ignored
+++++++++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++++++++staticText name='Flounder'
+++++++++++++++++++inlineTextBox name='Flounder'
