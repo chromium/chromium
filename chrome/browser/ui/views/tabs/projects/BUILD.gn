@@ -71,13 +71,16 @@ source_set("unit_tests") {
     "projects_panel_tab_groups_item_view_unittest.cc",
     "projects_panel_tab_groups_view_unittest.cc",
     "projects_panel_thread_item_view_unittest.cc",
+    "projects_panel_view_unittest.cc",
   ]
   deps = [
     ":projects",
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//chrome/app/vector_icons",
+    "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/ui:test_support",
+    "//chrome/test:test_support",
     "//components/contextual_tasks/public",
     "//components/saved_tab_groups/public",
     "//components/saved_tab_groups/test_support",

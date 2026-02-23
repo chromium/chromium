@@ -36,7 +36,8 @@ class ProjectsPanelTabGroupsView : public views::View {
       ProjectsPanelTabGroupsItemView::TabGroupPressedCallback
           tab_group_button_callback = base::DoNothing(),
       ProjectsPanelTabGroupsItemView::MoreButtonPressedCallback
-          more_button_callback = base::DoNothing());
+          more_button_callback = base::DoNothing(),
+      base::RepeatingClosure create_new_tab_group_callback = base::DoNothing());
   ProjectsPanelTabGroupsView(const ProjectsPanelTabGroupsView&) = delete;
   ProjectsPanelTabGroupsView& operator=(const ProjectsPanelTabGroupsView&) =
       delete;
@@ -47,6 +48,10 @@ class ProjectsPanelTabGroupsView : public views::View {
 
   ProjectsPanelNoTabGroupsView* no_tab_groups_view_for_testing() {
     return no_tab_groups_view_;
+  }
+
+  views::LabelButton* create_new_tab_group_button_for_testing() {
+    return create_new_tab_group_button_;
   }
 
  private:

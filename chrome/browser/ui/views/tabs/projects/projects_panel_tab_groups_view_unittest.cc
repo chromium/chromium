@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/test/mock_callback.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_no_tab_groups_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
@@ -16,7 +17,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
 #include "ui/views/actions/action_view_controller.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace {
@@ -47,12 +50,16 @@ class ProjectsPanelTabGroupsViewTest : public views::ViewsTestBase {
     action_view_controller_ = std::make_unique<views::ActionViewController>();
 
     tab_groups_view_ = std::make_unique<ProjectsPanelTabGroupsView>(
-        root_action_item_.get(), action_view_controller_.get());
+        root_action_item_.get(), action_view_controller_.get(),
+        /*tab_group_button_callback=*/base::DoNothing(),
+        /*more_button_callback=*/base::DoNothing(),
+        create_new_tab_group_callback_.Get());
   }
 
  protected:
   testing::NiceMock<tab_groups::MockTabGroupSyncService>
       mock_tab_group_sync_service_;
+  base::MockCallback<base::RepeatingClosure> create_new_tab_group_callback_;
   std::unique_ptr<actions::ActionItem> root_action_item_;
   std::unique_ptr<views::ActionViewController> action_view_controller_;
   std::unique_ptr<ProjectsPanelTabGroupsView> tab_groups_view_;
@@ -99,4 +106,14 @@ TEST_F(ProjectsPanelTabGroupsViewTest, PopulatesTabGroups) {
   for (size_t i = 0; i < groups.size(); ++i) {
     EXPECT_THAT(tab_groups_view_->children()[i + 1], IsForTabGroup(groups[i]));
   }
+}
+
+TEST_F(ProjectsPanelTabGroupsViewTest, CreateNewTabGroupButtonPressed) {
+  auto* create_match_button =
+      tab_groups_view_->create_new_tab_group_button_for_testing();
+
+  EXPECT_CALL(create_new_tab_group_callback_, Run());
+  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                       base::TimeTicks::Now(), 0, 0);
+  views::test::ButtonTestApi(create_match_button).NotifyClick(event);
 }

@@ -9,15 +9,20 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_no_tab_groups_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
@@ -26,6 +31,7 @@
 namespace {
 constexpr gfx::Insets kNoTabsInteriorMargins = gfx::Insets::VH(0, 8);
 constexpr int kSpacingBetweenChildren = 2;
+constexpr float kHighlightOpacity = 1.0f;
 
 class ProjectsPanelNewTabGroupButton : public views::LabelButton {
   METADATA_HEADER(ProjectsPanelNewTabGroupButton, views::LabelButton)
@@ -39,6 +45,19 @@ class ProjectsPanelNewTabGroupButton : public views::LabelButton {
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(kCreateNewTabGroupIcon, ui::kColorIcon));
     SetHorizontalAlignment(gfx::ALIGN_LEFT);
+
+    auto* ink_drop = views::InkDrop::Get(this);
+    ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
+    ink_drop->SetLayerRegion(views::LayerRegion::kBelow);
+    ink_drop->SetBaseColor(ui::kColorSysStateHoverOnSubtle);
+    ink_drop->SetHighlightOpacity(kHighlightOpacity);
+    views::HighlightPathGenerator::Install(
+        this, projects_panel::GetListItemHighlightPathGenerator());
+
+    views::FocusRing::Get(this)->SetPathGenerator(
+        projects_panel::GetListItemHighlightPathGenerator());
+    views::FocusRing::Get(this)->SetHaloInset(
+        projects_panel::kListItemFocusRingHaloInset);
   }
   ProjectsPanelNewTabGroupButton(const ProjectsPanelNewTabGroupButton&) =
       delete;
@@ -58,16 +77,17 @@ ProjectsPanelTabGroupsView::ProjectsPanelTabGroupsView(
     ProjectsPanelTabGroupsItemView::TabGroupPressedCallback
         tab_group_button_callback,
     ProjectsPanelTabGroupsItemView::MoreButtonPressedCallback
-        more_button_callback)
+        more_button_callback,
+    base::RepeatingClosure create_new_tab_group_callback)
     : tab_group_button_callback_(std::move(tab_group_button_callback)),
       more_button_callback_(std::move(more_button_callback)) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
   layout->set_between_child_spacing(kSpacingBetweenChildren);
 
-  // TODO(crbug.com/481410391): Wire up button to create a new tab group.
-  create_new_tab_group_button_ = AddChildView(
-      std::make_unique<ProjectsPanelNewTabGroupButton>(base::DoNothing()));
+  create_new_tab_group_button_ =
+      AddChildView(std::make_unique<ProjectsPanelNewTabGroupButton>(
+          std::move(create_new_tab_group_callback)));
   create_new_tab_group_button_->SetProperty(
       views::kElementIdentifierKey, kProjectsPanelNewTabGroupButtonElementId);
 

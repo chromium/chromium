@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
@@ -78,6 +80,12 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
 
   static void disable_animations_for_testing();
 
+  void set_on_close_animation_ended_callback_for_testing(
+      base::OnceClosure on_close_animation_ended_callback) {
+    on_close_animation_ended_callback_ =
+        std::move(on_close_animation_ended_callback);
+  }
+
  private:
   // Detects if mouse presses occur outside of the panel.
   class MouseEventHandler : public ui::EventObserver {
@@ -98,14 +106,14 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
   void OnTabGroupButtonPressed(const base::Uuid& group_guid);
   void OnTabGroupMoreButtonPressed(const base::Uuid& group_guid,
                                    views::MenuButton& button);
+  void OnCreateNewTabGroupButtonPressed();
 
   const raw_ptr<BrowserWindowInterface> browser_;
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   raw_ptr<views::View> content_container_ = nullptr;
   raw_ptr<ProjectsPanelControlsView> controls_view_ = nullptr;
   raw_ptr<ProjectsPanelTabGroupsView> tab_groups_view_ = nullptr;
-  raw_ptr<views::ScrollView> tab_groups_scroll_view_ = nullptr;
-  raw_ptr<views::ScrollView> threads_scroll_view_ = nullptr;
+
   std::unique_ptr<views::ViewShadow> content_shadow_;
 
   // TODO(crbug.com/475300882): Remove once we fetch thread data from the
@@ -117,6 +125,7 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
 
   // Animation when opening and closing the panel.
   gfx::SlideAnimation resize_animation_;
+  base::OnceClosure on_close_animation_ended_callback_;
 
   // Handle mouse presses outside the panel.
   MouseEventHandler mouse_event_handler_{this};
@@ -133,6 +142,8 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
   // The default appearance of the panel is elevated, but this must be false
   // for the SetIsElevated call in the constructor to be effective.
   bool elevated_ = false;
+
+  base::WeakPtrFactory<ProjectsPanelView> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_PROJECTS_PANEL_VIEW_H_
