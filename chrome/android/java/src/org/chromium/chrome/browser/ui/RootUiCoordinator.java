@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ui.activity_recreation.ActivityRecreationController.IS_TAB_SWITCHER_SHOWN;
 import static org.chromium.chrome.browser.ui.activity_recreation.ActivityRecreationController.URL_BAR_EDIT_TEXT;
@@ -48,6 +49,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
@@ -363,7 +365,7 @@ public class RootUiCoordinator
     protected final FullscreenManager mFullscreenManager;
     protected final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     protected StatusBarColorController mStatusBarColorController;
-    protected final Supplier<SnackbarManager> mSnackbarManagerSupplier;
+    protected final MonotonicObservableSupplier<SnackbarManager> mSnackbarManagerSupplier;
     protected final SettableMonotonicObservableSupplier<EdgeToEdgeController>
             mEdgeToEdgeControllerSupplier;
     protected Destroyable mEdgeToEdgeBottomChin;
@@ -489,7 +491,7 @@ public class RootUiCoordinator
             @NonNull FullscreenManager fullscreenManager,
             @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
-            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
+            @NonNull MonotonicObservableSupplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull
                     SettableMonotonicObservableSupplier<EdgeToEdgeController>
                             edgeToEdgeControllerSupplier,
@@ -1738,7 +1740,7 @@ public class RootUiCoordinator
                     mActivityLifecycleDispatcher,
                     mTabModelSelectorSupplier,
                     getBottomSheetController(),
-                    mSnackbarManagerSupplier,
+                    SupplierUtils.asNonNull(mSnackbarManagerSupplier),
                     mTabBookmarkerSupplier,
                     mProfileSupplier,
                     mBookmarkModelSupplier,
@@ -1796,7 +1798,7 @@ public class RootUiCoordinator
                                                 new QuickDeleteDelegateImpl(
                                                         mProfileSupplier, mTabSwitcherSupplier),
                                                 mModalDialogManagerSupplier.get(),
-                                                mSnackbarManagerSupplier.get(),
+                                                assertNonNull(mSnackbarManagerSupplier.get()),
                                                 mLayoutManager,
                                                 mTabModelSelectorSupplier.get(),
                                                 tabModelSelector);
@@ -1860,7 +1862,7 @@ public class RootUiCoordinator
                             mTopInsetProvider,
                             mXrSpaceModeObservableSupplier,
                             mPageZoomManager,
-                            mSnackbarManagerSupplier.get(),
+                            assertNonNull(mSnackbarManagerSupplier.get()),
                             mOmniboxChipManager);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
@@ -2371,8 +2373,9 @@ public class RootUiCoordinator
     /** Initialize logic for hiding page zoom slider when snackbar is showing */
     private void initSnackbarObserver() {
         // On show snackbar, hide page zoom dialog
-        mSnackbarManagerSupplier
-                .get()
+        SnackbarManager snackbarManager = mSnackbarManagerSupplier.get();
+        assumeNonNull(snackbarManager);
+        snackbarManager
                 .isShowingSupplier()
                 .addSyncObserverAndPostIfNonNull(
                         (Boolean isShowing) -> {

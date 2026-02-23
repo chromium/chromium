@@ -388,7 +388,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     // The FullscreenVideoPictureInPictureController is initialized lazily https://crbug.com/729738.
     private FullscreenVideoPictureInPictureController mFullscreenVideoPictureInPictureController;
 
-    private SnackbarManager mSnackbarManager;
+    private final SettableMonotonicObservableSupplier<SnackbarManager> mSnackbarManagerSupplier =
+            ObservableSuppliers.createMonotonic();
 
     // Timestamp in ms when initial layout inflation begins
     private long mInflateInitialLayoutBeginMs;
@@ -514,7 +515,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public boolean onIntentCallbackNotFoundError(String error) {
-        createWindowErrorSnackbar(error, mSnackbarManager);
+        createWindowErrorSnackbar(error, mSnackbarManagerSupplier.get());
         return true;
     }
 
@@ -654,15 +655,16 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
             mBottomContainer = findViewById(R.id.bottom_container);
 
-            mSnackbarManager =
+            SnackbarManager snackbarManager =
                     new SnackbarManager(
                             this,
                             mBottomContainer,
                             getWindowAndroid(),
                             getEdgeToEdgeSupplier(),
                             getModalDialogManager());
-            getInsetObserver().addObserver(mSnackbarManager);
-            SnackbarManagerProvider.attach(getWindowAndroid(), mSnackbarManager);
+            mSnackbarManagerSupplier.set(snackbarManager);
+            getInsetObserver().addObserver(snackbarManager);
+            SnackbarManagerProvider.attach(getWindowAndroid(), snackbarManager);
             // TODO (crbug.com/365110749): Remove wiring the InsetObserver when the dialog window
             // returns expected system insets.
             getModalDialogManager().setInsetObserver(getInsetObserver());
@@ -1777,8 +1779,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     @SuppressLint("NewApi")
     @Override
     protected final void onDestroy() {
-        if (mSnackbarManager != null) {
-            SnackbarManagerProvider.detach(mSnackbarManager);
+        SnackbarManager snackbarManager = mSnackbarManagerSupplier.get();
+        if (snackbarManager != null) {
+            SnackbarManagerProvider.detach(snackbarManager);
         }
 
         if (mBackPressManager != null) {
@@ -1882,7 +1885,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
             InsetObserver insetObserver = getInsetObserver();
             if (insetObserver != null) {
-                insetObserver.removeObserver(mSnackbarManager);
+                insetObserver.removeObserver(mSnackbarManagerSupplier.get());
             }
         }
 
@@ -1940,7 +1943,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 && !controller.isSheetHiding()) {
             return mRootUiCoordinator.getBottomSheetSnackbarManager();
         }
-        return mSnackbarManager;
+        return mSnackbarManagerSupplier.get();
     }
 
     @Override
@@ -2407,6 +2410,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         return mCompositorViewHolderSupplier;
     }
 
+    /** Returns the supplier of the {@link SnackbarManager}. */
+    public MonotonicObservableSupplier<SnackbarManager> getSnackbarManagerSupplier() {
+        return mSnackbarManagerSupplier;
+    }
+
     /**
      * @return If no higher priority back actions occur, whether pressing the back button would
      *     result in closing the tab. A true return value does not guarantee that a subsequent call
@@ -2745,7 +2753,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             PowerBookmarkUtils.setPriceTrackingEnabledWithSnackbars(
                     mBookmarkModelSupplier.get().getUserBookmarkIdForTab(currentTab),
                     /* enabled= */ false,
-                    mSnackbarManager,
+                    mSnackbarManagerSupplier.get(),
                     getResources(),
                     currentTab.getProfile(),
                     CallbackUtils.emptyCallback(),
