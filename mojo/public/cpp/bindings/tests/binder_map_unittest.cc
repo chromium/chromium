@@ -76,6 +76,30 @@ class TestInterface2Impl : public mojom::TestInterface2 {
   mojo::Receiver<mojom::TestInterface2> receiver_{this};
 };
 
+class SequenceCheckingContext {
+ public:
+  SequenceCheckingContext()
+      : creation_sequence_(base::SequencedTaskRunner::GetCurrentDefault()) {}
+
+  ~SequenceCheckingContext() {
+    EXPECT_TRUE(creation_sequence_->RunsTasksInCurrentSequence());
+  }
+
+  SequenceCheckingContext(SequenceCheckingContext&& other)
+      : creation_sequence_(other.creation_sequence_) {
+    EXPECT_TRUE(creation_sequence_->RunsTasksInCurrentSequence());
+  }
+
+  SequenceCheckingContext& operator=(SequenceCheckingContext&& other) {
+    EXPECT_TRUE(other.creation_sequence_->RunsTasksInCurrentSequence());
+    creation_sequence_ = other.creation_sequence_;
+    return *this;
+  }
+
+ private:
+  scoped_refptr<base::SequencedTaskRunner> creation_sequence_;
+};
+
 namespace {
 // Used by binder functors to set a callback which is run on binder destruction.
 // This is to allow tests to wait for a binder to be destroyed. We can't use
@@ -167,6 +191,26 @@ TEST_F(BinderMapTest, FunctorWithContext) {
   BinderMapWithContext<int> map;
   map.Add<mojom::TestInterface1>(&Interface1Functor42);
   EXPECT_TRUE(map.TryBind(42, &receiver));
+  remote.FlushForTesting();
+  EXPECT_TRUE(remote.is_connected());
+
+  // Allow the self-owned receiver to be destroyed.
+  remote.reset();
+  loop.Run();
+}
+
+TEST_F(BinderMapTest, ContextDroppedOnCallingSequence) {
+  Remote<mojom::TestInterface1> remote;
+  GenericPendingReceiver receiver(remote.BindNewPipeAndPassReceiver());
+
+  auto loop = base::RunLoop();
+  g_destruction_closure_for_testing = loop.QuitClosure();
+  BinderMapWithContext<SequenceCheckingContext> map;
+  map.Add<mojom::TestInterface1>(
+      &Interface1Functor, base::ThreadPool::CreateSequencedTaskRunner({}));
+  // If SequenceCheckingContext is moved to or dropped on any sequence other
+  // than this one then it will fail the test.
+  EXPECT_TRUE(map.TryBind(SequenceCheckingContext(), &receiver));
   remote.FlushForTesting();
   EXPECT_TRUE(remote.is_connected());
 
