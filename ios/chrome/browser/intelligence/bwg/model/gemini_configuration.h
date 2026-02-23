@@ -14,6 +14,10 @@ class AuthenticationService;
 @class GeminiPageContext;
 @protocol SingleSignOnService;
 
+namespace gemini {
+enum class EntryPoint;
+}  // namespace gemini
+
 namespace ios::provider {
 enum class GeminiLocationPermissionState;
 enum class BWGPageContextState;
@@ -115,6 +119,9 @@ class PageContext;
 // The window scene in which the Gemini view window is initialized and
 // presented.
 @property(nonatomic, strong) UIWindowScene* hostWindowScene;
+
+// The entry point where the floaty was triggered from.
+@property(nonatomic, assign) gemini::EntryPoint entryPoint;
 
 @end
 

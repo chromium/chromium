@@ -860,6 +860,7 @@ void GeminiBrowserAgent::PresentFloatyWithState(
   config.shouldShowSuggestionChips =
       gemini_tab_helper->ShouldShowSuggestionChips();
   config.contextualCueChipLabel = gemini_tab_helper->GetContextualCueLabel();
+  config.entryPoint = entry_point;
   config.imageRemixIPHShouldShow =
       entry_point == gemini::EntryPoint::ImageRemixIPH;
   config.responseReadyInterval = GetGeminiCopresenceResponseReadyInterval();
