@@ -125,6 +125,10 @@ class ConnectionCoordinator::ConnectionRequest {
   Status status() const { return saved_status_; }
 
  protected:
+  mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> TakeFactoryClient() {
+    return std::move(factory_client_);
+  }
+
   void ContinueAfterAcquiringLocks(base::OnceClosure next_step) {
     if (!lock_receiver_.locks.empty()) {
       std::move(next_step).Run();
@@ -253,8 +257,8 @@ class ConnectionCoordinator::OpenRequest
             absl::StrFormat("Internal error opening database with version %i",
                             pending_->version));
       }
-      std::move(factory_client_)
-          ->Error(blink::mojom::IDBException::kUnknownError, message);
+      TakeFactoryClient()->Error(blink::mojom::IDBException::kUnknownError,
+                                 message);
       state_ = RequestState::kError;
       tasks_available_callback_.Run();
       return;
@@ -296,12 +300,11 @@ class ConnectionCoordinator::OpenRequest
     } else if (new_version < old_version) {
       // Requested version is lower than current version - fail the request.
       CHECK(!is_new_database);
-      std::move(factory_client_)
-          ->Error(blink::mojom::IDBException::kVersionError,
-                  base::ASCIIToUTF16(
-                      absl::StrFormat("The requested version (%i) is less than "
-                                      "the existing version (%i).",
-                                      pending_->version, db_->version())));
+      TakeFactoryClient()->Error(blink::mojom::IDBException::kVersionError,
+                                 base::ASCIIToUTF16(absl::StrFormat(
+                                     "The requested version (%i) is less than "
+                                     "the existing version (%i).",
+                                     pending_->version, db_->version())));
       state_ = RequestState::kDone;
       return;
     }
@@ -330,9 +333,8 @@ class ConnectionCoordinator::OpenRequest
   void OnConnectionClosedDuringUpgrade() {
     // This connection closed prematurely; signal an error and complete.
     if (factory_client_) {
-      std::move(factory_client_)
-          ->Error(blink::mojom::IDBException::kAbortError,
-                  u"The connection was closed.");
+      TakeFactoryClient()->Error(blink::mojom::IDBException::kAbortError,
+                                 u"The connection was closed.");
     }
     state_ = RequestState::kDone;
     tasks_available_callback_.Run();
@@ -362,8 +364,8 @@ class ConnectionCoordinator::OpenRequest
       pending_remote =
           Connection::MakeSelfOwnedReceiverAndBindRemote(std::move(connection));
     }
-    std::move(factory_client_)
-        ->OpenSuccess(std::move(pending_remote), GenerateDbMetadata());
+    TakeFactoryClient()->OpenSuccess(std::move(pending_remote),
+                                     GenerateDbMetadata());
   }
 
   // Initiate the upgrade. The bulk of the work actually happens in
@@ -440,10 +442,10 @@ class ConnectionCoordinator::OpenRequest
       OnOpenSuccess(nullptr);
     } else {
       CHECK_NE(pending_->version, db_->version());
-      std::move(factory_client_)
-          ->Error(blink::mojom::IDBException::kAbortError,
-                  u"Version change transaction was aborted in upgradeneeded "
-                  u"event handler.");
+      TakeFactoryClient()->Error(
+          blink::mojom::IDBException::kAbortError,
+          u"Version change transaction was aborted in upgradeneeded "
+          u"event handler.");
     }
     state_ = RequestState::kDone;
     tasks_available_callback_.Run();
@@ -451,16 +453,15 @@ class ConnectionCoordinator::OpenRequest
 
   void OnForceClose(const std::string& message) && override {
     if (factory_client_) {
-      std::move(factory_client_)
-          ->Error(blink::mojom::IDBException::kAbortError,
-                  u"The connection was closed.");
+      TakeFactoryClient()->Error(blink::mojom::IDBException::kAbortError,
+                                 u"The connection was closed.");
     }
     if (upgrade_connection_) {
       // CloseAndReportForceClose calls OnForcedClose on the database callbacks,
       // so we don't need to.
-      std::move(upgrade_connection_)->CloseAndReportForceClose(message);
+      upgrade_connection_->CloseAndReportForceClose(message);
     } else if (pending_->database_callbacks) {
-      std::move(pending_->database_callbacks)->OnForcedClose();
+      pending_->database_callbacks->OnForcedClose();
     }
     // else: `database_callbacks` has been passed to `upgrade_connection_`, in
     // which case the Database will have called `CloseAndReportForceClose()`.
@@ -515,9 +516,8 @@ class ConnectionCoordinator::DeleteRequest
     if (!exists.has_value()) {
       std::string error_message =
           "Internal error opening backing store for indexedDB.deleteDatabase.";
-      std::move(factory_client_)
-          ->Error(blink::mojom::IDBException::kUnknownError,
-                  base::ASCIIToUTF16(error_message));
+      TakeFactoryClient()->Error(blink::mojom::IDBException::kUnknownError,
+                                 base::ASCIIToUTF16(error_message));
       state_ = RequestState::kError;
       if (exists.error().IsCorruption()) {
         bucket_context_handle_->HandleBackingStoreCorruption(error_message);
@@ -527,7 +527,7 @@ class ConnectionCoordinator::DeleteRequest
     if (!*exists) {
       // The spec requires oldVersion to be 0 if the database does not exist:
       // https://w3c.github.io/IndexedDB/#delete-a-database.
-      std::move(factory_client_)->DeleteSuccess(/*old_version=*/0);
+      TakeFactoryClient()->DeleteSuccess(/*old_version=*/0);
       state_ = RequestState::kDone;
       return;
     }
@@ -546,10 +546,9 @@ class ConnectionCoordinator::DeleteRequest
     base::ScopedClosureRunner scoped_tasks_available(tasks_available_callback_);
     saved_status_ = db_->OpenInternal();
     if (!saved_status_.ok()) {
-      std::move(factory_client_)
-          ->Error(blink::mojom::IDBException::kUnknownError,
-                  u"Internal error creating database backend "
-                  u"for indexedDB.deleteDatabase.");
+      TakeFactoryClient()->Error(blink::mojom::IDBException::kUnknownError,
+                                 u"Internal error creating database backend "
+                                 u"for indexedDB.deleteDatabase.");
       state_ = RequestState::kError;
       return;
     }
@@ -589,7 +588,7 @@ class ConnectionCoordinator::DeleteRequest
     base::ScopedClosureRunner scoped_tasks_available(tasks_available_callback_);
     if (old_version.has_value()) {
       saved_status_ = Status::OK();
-      std::move(factory_client_)->DeleteSuccess(old_version.value());
+      TakeFactoryClient()->DeleteSuccess(old_version.value());
       state_ = RequestState::kDone;
       LogDuration(synchronous_duration_ += timer.Elapsed(),
                   "IndexedDB.BackendDuration.DeleteDatabase",
@@ -598,9 +597,8 @@ class ConnectionCoordinator::DeleteRequest
       // TODO(jsbell): Consider including sanitized leveldb status
       // message.
       saved_status_ = old_version.error();
-      std::move(factory_client_)
-          ->Error(blink::mojom::IDBException::kUnknownError,
-                  u"Internal error deleting database.");
+      TakeFactoryClient()->Error(blink::mojom::IDBException::kUnknownError,
+                                 u"Internal error deleting database.");
       state_ = RequestState::kError;
     }
   }
@@ -613,9 +611,8 @@ class ConnectionCoordinator::DeleteRequest
 
   void OnForceClose(const std::string& message) && override {
     if (factory_client_) {
-      std::move(factory_client_)
-          ->Error(blink::mojom::IDBException::kAbortError,
-                  u"The connection was closed.");
+      TakeFactoryClient()->Error(blink::mojom::IDBException::kAbortError,
+                                 u"The connection was closed.");
     }
   }
 
