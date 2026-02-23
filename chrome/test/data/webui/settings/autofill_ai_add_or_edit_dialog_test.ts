@@ -416,7 +416,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
   });
 
   test('AsyncSave_ShowsSpinnerAndDisablesButton', async function() {
-    loadTimeData.overrideValues({autofillAiWalletPrivatePasses: true});
+    loadTimeData.overrideValues({enableAutofillAiWalletPrivatePasses: true});
 
     // Disable auto-resolve to test the pending state
     entityDataManager.setAutoResolveSave(false);

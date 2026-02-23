@@ -397,7 +397,7 @@ export class SettingsAutofillAiEntriesListElement extends
     e.stopPropagation();
     // TODO(crbug.com/477845712): Remove this method once
     // `kAutofillAiWalletPrivatePasses` gets launched.
-    if (!loadTimeData.getBoolean('autofillAiWalletPrivatePasses')) {
+    if (!loadTimeData.getBoolean('enableAutofillAiWalletPrivatePasses')) {
       void this.entityDataManager_.addOrUpdateEntityInstance(e.detail);
     }
   }

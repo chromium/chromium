@@ -198,7 +198,8 @@ export class SettingsAutofillAiAddOrEditDialogElement extends
 
       enableSavePrivatePassesToWallet_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('autofillAiWalletPrivatePasses'),
+        value: () =>
+            loadTimeData.getBoolean('enableAutofillAiWalletPrivatePasses'),
       },
 
       /**
