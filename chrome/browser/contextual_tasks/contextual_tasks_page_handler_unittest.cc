@@ -735,11 +735,13 @@ TEST_F(ContextualTasksPageHandlerTest, OnTaskUpdated) {
                                ContextualTasksService::TriggerSource::kLocal);
 }
 
-TEST_F(ContextualTasksPageHandlerTest, OnContextUpdated_TabsImagesAndFiles) {
+TEST_F(ContextualTasksPageHandlerTest,
+       OnContextUpdated_TabsImagesAndFiles_WithFiltering) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   contextual_tasks_ui_->SetTaskId(task_id);
 
   ContextualTask task(task_id);
+  // Valid items
   UrlResource tab_resource(GURL(kQueryUrl), ResourceType::kWebpage);
   tab_resource.title = "Example Tab";
   tab_resource.tab_id = SessionID::NewUnique();
@@ -753,6 +755,19 @@ TEST_F(ContextualTasksPageHandlerTest, OnContextUpdated_TabsImagesAndFiles) {
   pdf_resource.title = "Example PDF";
   task.AddUrlResource(pdf_resource);
 
+  // Invalid items to be filtered
+  UrlResource invalid_url_resource(GURL(), ResourceType::kWebpage);
+  invalid_url_resource.title = "Invalid URL";
+  task.AddUrlResource(invalid_url_resource);
+
+  UrlResource empty_url_resource(GURL(""), ResourceType::kWebpage);
+  empty_url_resource.title = "Empty URL";
+  task.AddUrlResource(empty_url_resource);
+
+  UrlResource empty_title_resource(GURL(kExampleUrl), ResourceType::kWebpage);
+  empty_title_resource.title = "";
+  task.AddUrlResource(empty_title_resource);
+
   EXPECT_CALL(*mock_contextual_tasks_service_,
               GetContextForTask(task_id, _, _, _))
       .WillOnce(
@@ -761,13 +776,16 @@ TEST_F(ContextualTasksPageHandlerTest, OnContextUpdated_TabsImagesAndFiles) {
               base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
                   callback) {
             std::move(callback).Run(
+
                 std::make_unique<ContextualTaskContext>(task));
           });
 
   base::RunLoop run_loop;
   EXPECT_CALL(page_, OnContextUpdated(_))
       .WillOnce([&](std::vector<mojom::ContextInfoPtr> context) {
-        EXPECT_EQ(context.size(), 3u);
+        // Only the first 3 valid items should be present.
+        ASSERT_EQ(context.size(), 3u);
+
         EXPECT_TRUE(context[0]->is_tab());
         EXPECT_EQ(context[0]->get_tab()->title, tab_resource.title);
         EXPECT_EQ(context[0]->get_tab()->url, GURL(kQueryUrl));
