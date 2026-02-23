@@ -52,6 +52,8 @@
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "sql/database.h"
+#include "sql/sqlite_result_code.h"
+#include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -294,12 +296,15 @@ void BindAddStatement(const PasswordForm& form,
 }
 
 // Output parameter is the first one because of binding order.
-void AddCallback(int* output_err, int err, sql::Statement* /*stmt*/) {
+void AddCallback(sql::SqliteResultCode* output_err,
+                 int err,
+                 sql::Statement* /*stmt*/) {
   DCHECK(output_err);
-  *output_err = err;
-  if (err == 19 /*SQLITE_CONSTRAINT*/) {
-    DLOG(WARNING) << "LoginDatabase::AddLogin updated an existing form";
-  }
+  // Only consider primary result codes (the low-order eight bits of an extended
+  // result code).
+  *output_err = sql::ToSqliteResultCode(err & 0xFF);
+  DLOG_IF(WARNING, *output_err == sql::SqliteResultCode::kConstraint)
+      << "LoginDatabase::AddLogin updated an existing form";
 }
 
 class ScopedDbErrorHandler {
@@ -314,12 +319,12 @@ class ScopedDbErrorHandler {
   ~ScopedDbErrorHandler() { db_->reset_error_callback(); }
 
   // Error codes are defined in the sql::SqliteResultCode enum.
-  void reset_error_code() { sqlite_error_code_ = 0; }
-  int get_error_code() const { return sqlite_error_code_; }
+  void reset_error_code() { sqlite_error_code_ = sql::SqliteResultCode::kOk; }
+  sql::SqliteResultCode get_error_code() const { return sqlite_error_code_; }
 
  private:
   raw_ptr<sql::Database> db_;
-  int sqlite_error_code_{0};
+  sql::SqliteResultCode sqlite_error_code_{sql::SqliteResultCode::kOk};
 };
 
 bool DoesMatchConstraints(const PasswordForm& form) {
@@ -1449,7 +1454,8 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     list.emplace_back(PasswordStoreChange::ADD, std::move(form_to_add),
                       password_changed, insecure_changed);
   } else if (error) {
-    if (db_error_handler.get_error_code() == 19 /*SQLITE_CONSTRAINT*/) {
+    if (db_error_handler.get_error_code() ==
+        sql::SqliteResultCode::kConstraint) {
       *error = AddCredentialError::kConstraintViolation;
     } else {
       *error = AddCredentialError::kDbError;
