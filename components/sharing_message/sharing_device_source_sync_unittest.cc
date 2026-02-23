@@ -100,13 +100,9 @@ TEST_F(SharingDeviceSourceSyncTest, RunsReadyCallback) {
 
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/false);
 
-  base::RunLoop run_loop;
   bool did_run_callback = false;
-  device_source->AddReadyCallback(
-      base::BindLambdaForTesting([&did_run_callback, &run_loop]() {
-        did_run_callback = true;
-        run_loop.Quit();
-      }));
+  device_source->AddReadyCallback(base::BindLambdaForTesting(
+      [&did_run_callback]() { did_run_callback = true; }));
   EXPECT_FALSE(did_run_callback);
 
   // Make DeviceInfoTracker ready.
@@ -115,10 +111,6 @@ TEST_F(SharingDeviceSourceSyncTest, RunsReadyCallback) {
 
   // Set LocalDeviceInfoProvider ready.
   fake_local_device_info_provider_.SetReady(true);
-  EXPECT_FALSE(did_run_callback);
-
-  // Wait until local device name is ready.
-  run_loop.Run();
   EXPECT_TRUE(did_run_callback);
 }
 
@@ -158,6 +150,7 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Ready) {
 }
 
 TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_NotReady) {
+  fake_local_device_info_provider_.SetReady(false);
   auto device_source = CreateDeviceSource(/*wait_until_ready=*/false);
   auto device_info = CreateDeviceInfo(
       "client_name", sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
@@ -202,14 +195,6 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Deduplicated) {
                        local_device_info_->manufacturer_name(),
                        local_device_info_->model_name());
   fake_device_info_tracker_.Add(device_info_5.get());
-
-  // Add a device with the local personalizable device name as client_name to
-  // simulate old versions without hardware info.
-  task_environment_.FastForwardBy(base::Seconds(10));
-  auto device_info_6 =
-      CreateDeviceInfo(syncer::GetPersonalizableDeviceNameBlocking(),
-                       sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
-  fake_device_info_tracker_.Add(device_info_6.get());
 
   auto devices = device_source->GetDeviceCandidates(
       sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);

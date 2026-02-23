@@ -68,10 +68,6 @@ class SharingDeviceSourceSync : public SharingDeviceSource,
   raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_;
   base::CallbackListSubscription local_device_info_ready_subscription_;
 
-  // The personalized name is stored for deduplicating devices running older
-  // clients.
-  std::optional<std::string> personalizable_local_device_name_;
-
   base::WeakPtrFactory<SharingDeviceSourceSync> weak_ptr_factory_{this};
 };
 

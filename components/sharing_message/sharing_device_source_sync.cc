@@ -58,14 +58,6 @@ SharingDeviceSourceSync::SharingDeviceSourceSync(
     : sync_service_(sync_service),
       local_device_info_provider_(local_device_info_provider),
       device_info_tracker_(device_info_tracker) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(syncer::GetPersonalizableDeviceNameBlocking),
-      base::BindOnce(
-          &SharingDeviceSourceSync::InitPersonalizableLocalDeviceName,
-          weak_ptr_factory_.GetWeakPtr()));
-
   if (!device_info_tracker_->IsSyncing()) {
     device_info_tracker_->AddObserver(this);
   }
@@ -111,8 +103,7 @@ SharingDeviceSourceSync::GetDeviceCandidates(
 
 bool SharingDeviceSourceSync::IsReady() {
   return IsSyncDisabledForSharing(sync_service_) ||
-         (personalizable_local_device_name_ &&
-          device_info_tracker_->IsSyncing() &&
+         (device_info_tracker_->IsSyncing() &&
           local_device_info_provider_->GetLocalDeviceInfo());
 }
 
@@ -131,13 +122,6 @@ void SharingDeviceSourceSync::SetDeviceInfoTrackerForTesting(
   if (!device_info_tracker_->IsSyncing()) {
     device_info_tracker_->AddObserver(this);
   }
-  MaybeRunReadyCallbacks();
-}
-
-void SharingDeviceSourceSync::InitPersonalizableLocalDeviceName(
-    std::string personalizable_local_device_name) {
-  personalizable_local_device_name_ =
-      std::move(personalizable_local_device_name);
   MaybeRunReadyCallbacks();
 }
 
@@ -206,8 +190,6 @@ SharingDeviceSourceSync::ConvertAndDeduplicateDevices(
   full_names.insert(send_tab_to_self::GetSharingDeviceNames(
                         local_device_info_provider_->GetLocalDeviceInfo())
                         .full_name);
-  // To prevent M78- instances of Chrome with same device model from showing up.
-  full_names.insert(*personalizable_local_device_name_);
 
   for (const syncer::DeviceInfo* device : devices) {
     send_tab_to_self::SharingDeviceNames device_names =
