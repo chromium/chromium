@@ -162,9 +162,7 @@ public class EducationalTipModuleMediator {
 
         if (!SetupListModuleUtils.isModuleAwaitingCompletionAnimation(mModuleType)) return;
 
-        mHandler.postDelayed(
-                () -> mModel.set(EducationalTipModuleProperties.MARK_COMPLETED, true),
-                SetupListManager.STRIKETHROUGH_DURATION_MS);
+        mModel.set(EducationalTipModuleProperties.MARK_COMPLETED, true);
         if (mEducationalTipCardProvider instanceof SetupListCompletable completable) {
             mModel.set(
                     EducationalTipModuleProperties.MODULE_CONTENT_COMPLETED_IMAGE,

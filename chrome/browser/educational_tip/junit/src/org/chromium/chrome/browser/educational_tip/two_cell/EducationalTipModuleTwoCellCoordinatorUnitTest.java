@@ -237,16 +237,12 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
                 R.drawable.setup_list_completed_background_wavy_circle,
                 model.get(EducationalTipModuleTwoCellProperties.ITEM_1_COMPLETED_ICON).intValue());
 
-        // Strikethrough should NOT be applied yet.
-        assertEquals(false, model.get(EducationalTipModuleTwoCellProperties.ITEM_1_MARK_COMPLETED));
-
-        // Advance to apply strikethrough.
-        mFakeTime.advanceMillis(SetupListManager.STRIKETHROUGH_DURATION_MS);
-        ShadowLooper.runMainLooperOneTask();
+        // Strikethrough should be applied immediately.
         assertEquals(true, model.get(EducationalTipModuleTwoCellProperties.ITEM_1_MARK_COMPLETED));
 
         // Advance to re-query ranking.
-        mFakeTime.advanceMillis(SetupListManager.HIDE_DURATION_MS);
+        mFakeTime.advanceMillis(
+                SetupListManager.STRIKETHROUGH_DURATION_MS + SetupListManager.HIDE_DURATION_MS);
         ShadowLooper.runMainLooperOneTask();
 
         verify(mSetupListManager)

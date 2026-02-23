@@ -129,8 +129,6 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
                         mActionDelegate, mEducationalTipCardProviderSupplier);
         mModel.set(SEE_MORE_CLICK_HANDLER, educationalTipBottomSheetCoordinator::showBottomSheet);
 
-        Runnable removeModuleCallback = () -> mModuleDelegate.removeModule(getModuleType());
-
         // Destroy previous providers if they exist.
         if (mItem1Provider != null) mItem1Provider.destroy();
         if (mItem2Provider != null) mItem2Provider.destroy();
@@ -145,7 +143,7 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
                         },
                         mCallbackController,
                         mActionDelegate,
-                        removeModuleCallback);
+                        this::updateModule);
         if (mItem1Provider != null) {
             mModel.set(ITEM_1_TITLE, mItem1Provider.getCardTitle());
             mModel.set(ITEM_1_DESCRIPTION, mItem1Provider.getCardDescription());
@@ -173,7 +171,7 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
                         },
                         mCallbackController,
                         mActionDelegate,
-                        removeModuleCallback);
+                        this::updateModule);
         if (mItem2Provider != null) {
             mModel.set(ITEM_2_TITLE, mItem2Provider.getCardTitle());
             mModel.set(ITEM_2_DESCRIPTION, mItem2Provider.getCardDescription());
@@ -234,17 +232,13 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
 
         // 1. Immediately trigger the visual "completed" state for affected slots.
         if (item1NeedsAnimation) {
-            mHandler.postDelayed(
-                    () -> mModel.set(ITEM_1_MARK_COMPLETED, true),
-                    SetupListManager.STRIKETHROUGH_DURATION_MS);
+            mModel.set(ITEM_1_MARK_COMPLETED, true);
             if (mItem1Provider instanceof SetupListCompletable completable) {
                 mModel.set(ITEM_1_COMPLETED_ICON, completable.getCardImageCompletedResId());
             }
         }
         if (item2NeedsAnimation) {
-            mHandler.postDelayed(
-                    () -> mModel.set(ITEM_2_MARK_COMPLETED, true),
-                    SetupListManager.STRIKETHROUGH_DURATION_MS);
+            mModel.set(ITEM_2_MARK_COMPLETED, true);
             if (mItem2Provider instanceof SetupListCompletable completable) {
                 mModel.set(ITEM_2_COMPLETED_ICON, completable.getCardImageCompletedResId());
             }
@@ -286,7 +280,7 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
                             },
                             mCallbackController,
                             mActionDelegate,
-                            /* removeModuleCallback= */ () -> {}));
+                            this::updateModule));
         }
     }
 }

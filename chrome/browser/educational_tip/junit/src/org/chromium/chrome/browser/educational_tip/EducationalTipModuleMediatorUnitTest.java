@@ -307,9 +307,7 @@ public class EducationalTipModuleMediatorUnitTest {
                 .thenReturn(true);
         mEducationalTipModuleMediator.updateModule();
 
-        // Now the animation sequence should run.
-        mFakeTime.advanceMillis(SetupListManager.STRIKETHROUGH_DURATION_MS);
-        ShadowLooper.runMainLooperOneTask();
+        // Now the animation sequence should run. Strikethrough should be applied immediately.
         assertEquals(true, mModel.get(EducationalTipModuleProperties.MARK_COMPLETED));
     }
 
@@ -333,19 +331,15 @@ public class EducationalTipModuleMediatorUnitTest {
                 R.drawable.setup_list_completed_background_wavy_circle,
                 mModel.get(EducationalTipModuleProperties.MODULE_CONTENT_COMPLETED_IMAGE));
 
-        // Strikethrough should NOT be applied yet.
-        assertEquals(false, mModel.get(EducationalTipModuleProperties.MARK_COMPLETED));
-
-        // Advance to apply strikethrough.
-        mFakeTime.advanceMillis(SetupListManager.STRIKETHROUGH_DURATION_MS);
-        ShadowLooper.runMainLooperOneTask();
+        // Strikethrough should be applied immediately.
         assertEquals(true, mModel.get(EducationalTipModuleProperties.MARK_COMPLETED));
 
         // Verify reordering has NOT happened yet.
         verify(mModuleDelegate, never()).updateModuleRanking(anyInt());
 
         // 1. Advance to the combined duration.
-        mFakeTime.advanceMillis(SetupListManager.HIDE_DURATION_MS);
+        mFakeTime.advanceMillis(
+                SetupListManager.STRIKETHROUGH_DURATION_MS + SetupListManager.HIDE_DURATION_MS);
         ShadowLooper.runMainLooperOneTask();
 
         // Final verification of completion signal and reordering trigger.
