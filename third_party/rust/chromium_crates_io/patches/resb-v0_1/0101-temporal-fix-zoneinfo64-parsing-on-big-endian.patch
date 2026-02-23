@@ -1,0 +1,90 @@
+From d0039d5c3f186da26ba1e8b9fabe5362d22d6035 Mon Sep 17 00:00:00 2001
+From: Milad Fa <mfarazma@ibm.com>
+Date: Tue, 17 Feb 2026 21:27:42 +0000
+Subject: [PATCH] [temporal] Fix zoneinfo64 parsing on big endian platforms
+
+---
+ .../chromium_crates_io/vendor/resb-v0_1/src/binary.rs |  2 +-
+ .../vendor/resb-v0_1/src/binary/deserializer.rs       | 11 ++++++++---
+ .../vendor/resb-v0_1/src/binary/header.rs             |  7 ++-----
+ 3 files changed, 11 insertions(+), 9 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/resb-v0_1/src/binary.rs b/third_party/rust/chromium_crates_io/vendor/resb-v0_1/src/binary.rs
+index 5269bbd28c980..fd9081fbe065f 100644
+--- a/third_party/rust/chromium_crates_io/vendor/resb-v0_1/src/binary.rs
++++ b/third_party/rust/chromium_crates_io/vendor/resb-v0_1/src/binary.rs
+@@ -473,7 +473,7 @@ fn read_u16(input: &[u8]) -> Result<(u16, &[u8]), BinaryDeserializerError> {
+     let bytes = get_subslice(input, ..core::mem::size_of::<u16>())?
+         .try_into()
+         .unwrap();
+-    let value = u16::from_le_bytes(bytes);
++    let value = u16::from_ne_bytes(bytes);
+ 
+     let rest = get_subslice(input, core::mem::size_of::<u16>()..)?;
+     Ok((value, rest))
+diff --git a/third_party/rust/chromium_crates_io/vendor/resb-v0_1/src/binary/deserializer.rs b/third_party/rust/chromium_crates_io/vendor/resb-v0_1/src/binary/deserializer.rs
+index d52f568146013..c533e67d509c4 100644
+--- a/third_party/rust/chromium_crates_io/vendor/resb-v0_1/src/binary/deserializer.rs
++++ b/third_party/rust/chromium_crates_io/vendor/resb-v0_1/src/binary/deserializer.rs
+@@ -23,6 +23,11 @@ const SYSTEM_CHARSET_FAMILY: CharsetFamily = CharsetFamily::Ascii;
+ 
+ /// Deserializes an instance of type `T` from bytes representing a binary ICU
+ /// resource bundle.
++///
++/// The input data must be in the platform's native endianness. ICU4C resource
++/// bundles such as `zoneinfo64.res` are generated in both little endian and
++/// big endian formats; callers must ensure the appropriate format is provided
++/// for the target platform.
+ pub fn from_words<'a, T>(input: &'a [u32]) -> Result<T, BinaryDeserializerError>
+ where
+     T: Deserialize<'a>,
+@@ -142,7 +147,7 @@ impl<'de> ResourceTreeDeserializer<'de> {
+                 ))
+             }
+         };
+-        let descriptor = u32::from_le_bytes(descriptor);
++        let descriptor = u32::from_ne_bytes(descriptor);
+ 
+         ResDescriptor::try_from(descriptor)
+     }
+@@ -887,7 +892,7 @@ impl<'de> Resource16BitDeserializer<'de> {
+             // exactly 2 bytes.
+             #[expect(clippy::unwrap_used)]
+             let bytes = <[u8; 2]>::try_from(bytes).unwrap();
+-            u16::from_le_bytes(bytes)
++            u16::from_ne_bytes(bytes)
+         });
+ 
+         char::decode_utf16(units)
+@@ -1255,7 +1260,7 @@ fn read_u32(input: &[u8]) -> Result<(u32, &[u8]), BinaryDeserializerError> {
+         ))?
+         .try_into()
+         .unwrap();
+-    let value = u32::from_le_bytes(bytes);
++    let value = u32::from_ne_bytes(bytes);
+ 
+     let rest =
+         input
+diff --git a/third_party/rust/chromium_crates_io/vendor/resb-v0_1/src/binary/header.rs b/third_party/rust/chromium_crates_io/vendor/resb-v0_1/src/binary/header.rs
+index be776f404ea86..41535a4cf6f48 100644
+--- a/third_party/rust/chromium_crates_io/vendor/resb-v0_1/src/binary/header.rs
++++ b/third_party/rust/chromium_crates_io/vendor/resb-v0_1/src/binary/header.rs
+@@ -113,13 +113,10 @@ impl TryFrom<&[u8]> for BinReprInfo {
+         let (size, value) = read_u16(value)?;
+         let (reserved_word, value) = read_u16(value)?;
+ 
+-        // While the consumer is responsible for verifying acceptability of most
+-        // contents of the repr info, we explicitly depend on little endian data
+-        // in order to ensure compatibility with `zerovec`.
+         let (endianness, value) = (Endianness::try_from(value[0])?, &value[1..]);
+-        if endianness != Endianness::Little {
++        if (endianness == Endianness::Little) != cfg!(target_endian = "little") {
+             return Err(BinaryDeserializerError::unsupported_format(
+-                "big-endian bundles are not supported",
++                "bundle endianness does not match platform endianness",
+             ));
+         }
+ 
+-- 
+2.47.0
+
