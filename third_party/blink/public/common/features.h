@@ -51,11 +51,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 // Avoids copying ResourceRequest::TrustedParams when possible.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAvoidTrustedParamsCopies);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThrottleAsyncTouchMoves);
+// Whether async touch moves are sent unthrottled to javascript handlers.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUnthrottleAsyncTouchMoves);
 
 enum class AsyncTouchMoveThrottlingPolicy {
-  kThrottledAfterAnyGsuConsumed,
-  kUnthrottledWhenGsuUnconsumed
+  kUnthrottledWhenGsuUnconsumed,
+  kUnthrottledAlways
 };
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     AsyncTouchMoveThrottlingPolicy,

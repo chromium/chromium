@@ -10650,6 +10650,7 @@ from previous Chrome versions.
   <int value="-1298273481" label="http2-grease-settings"/>
   <int value="-1298067767" label="CalendarModelDebugMode:disabled"/>
   <int value="-1297664593" label="SafetyHubMagicStack:enabled"/>
+  <int value="-1297627303" label="UnthrottleAsyncTouchMoves:disabled"/>
   <int value="-1297079591" label="EnableRemovingAllThirdPartyCookies:disabled"/>
   <int value="-1295310553"
       label="OmniboxRemoveSuggestionHeaderChevron:enabled"/>
@@ -12644,7 +12645,6 @@ from previous Chrome versions.
   <int value="-613596048" label="new-canvas-2d-api"/>
   <int value="-613595118" label="StarterPackIPH:enabled"/>
   <int value="-613433517" label="OmniboxZpsSuggestionLimit:disabled"/>
-  <int value="-613336486" label="ThrottleAsyncTouchMoves:disabled"/>
   <int value="-613072171" label="ElementCapture:enabled"/>
   <int value="-612860466" label="Projector:disabled"/>
   <int value="-612633819" label="NotificationScrollBar:disabled"/>
@@ -17321,6 +17321,7 @@ from previous Chrome versions.
   <int value="994317727"
       label="AutofillSaveCreditCardUsesStrikeSystem:disabled"/>
   <int value="995112715" label="AutoDisableAccessibility:disabled"/>
+  <int value="995196653" label="UnthrottleAsyncTouchMoves:enabled"/>
   <int value="995285843" label="AppProvisioningStatic:disabled"/>
   <int value="996637686" label="NativeFileSystemAPI:enabled"/>
   <int value="996643125" label="EnableAppShortcutSearch:disabled"/>
@@ -18062,7 +18063,6 @@ from previous Chrome versions.
   <int value="1242632259" label="ContentSuggestionsCategoryOrder:disabled"/>
   <int value="1243017558" label="QuickDeleteAndroidAnimation:disabled"/>
   <int value="1243036309" label="IgnoreHoverEventAnr:disabled"/>
-  <int value="1243055300" label="ThrottleAsyncTouchMoves:enabled"/>
   <int value="1243180545" label="HarfBuzzPDFSubsetter:enabled"/>
   <int value="1243704644" label="ArcFixupWindowFeature:enabled"/>
   <int value="1243890754" label="ForbidSyncXHRInPageDismissal:disabled"/>

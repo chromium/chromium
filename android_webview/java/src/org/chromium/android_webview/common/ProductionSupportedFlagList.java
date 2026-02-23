@@ -1304,6 +1304,10 @@ public final class ProductionSupportedFlagList {
                 PaymentFeatureList.PAYMENT_REQUEST_USE_RENDERER_URL_LOADER,
                 "When enabled, the PaymentRequest will use the URL loader from the renderer instead"
                         + " of the browser process."),
+        Flag.baseFeature(
+                BlinkFeatures.UNTHROTTLE_ASYNC_TOUCH_MOVES,
+                "When enabled, touch move events to javascript handlers are unthrottled if "
+                        + "they are sent as async to Renderer."),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.

@@ -1077,21 +1077,24 @@ MainThreadEventQueue::GetCompositorThreadOnly() {
 
 bool MainThreadEventQueue::ShouldThrottleAsyncTouchMoves() {
   shared_state_lock_.AssertAcquired();
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kThrottleAsyncTouchMoves)) {
-    return false;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kUnthrottleAsyncTouchMoves)) {
+    auto param = blink::features::kAsyncTouchMoveThrottlingPolicyParam.Get();
+    if (param ==
+        blink::features::AsyncTouchMoveThrottlingPolicy::kUnthrottledAlways) {
+      return false;
+    }
+    if (param == blink::features::AsyncTouchMoveThrottlingPolicy::
+                     kUnthrottledWhenGsuUnconsumed &&
+        shared_state_.last_gsu_acked_as_consumed_.has_value()) {
+      return *shared_state_.last_gsu_acked_as_consumed_;
+    }
+    return true;
   }
-  if (blink::features::kAsyncTouchMoveThrottlingPolicyParam.Get() ==
-          blink::features::AsyncTouchMoveThrottlingPolicy::
-              kThrottledAfterAnyGsuConsumed &&
-      shared_state_.any_gsu_acked_as_consumed_.has_value()) {
+
+  // kUnthrottleAsyncTouchMoves is disabled.
+  if (shared_state_.any_gsu_acked_as_consumed_.has_value()) {
     return *shared_state_.any_gsu_acked_as_consumed_;
-  }
-  if (blink::features::kAsyncTouchMoveThrottlingPolicyParam.Get() ==
-          blink::features::AsyncTouchMoveThrottlingPolicy::
-              kUnthrottledWhenGsuUnconsumed &&
-      shared_state_.last_gsu_acked_as_consumed_.has_value()) {
-    return *shared_state_.last_gsu_acked_as_consumed_;
   }
   return true;
 }

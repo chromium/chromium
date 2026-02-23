@@ -431,17 +431,17 @@ const FeatureEntry::FeatureVariation kLocalNetworkAccessChecksVariations[] = {
     {"(Blocking)", kLocalNetworkAccessChecksBlock, nullptr}};
 
 const FeatureEntry::FeatureParam
-    kThrottleAsyncTouchMoves_ThrottledAfterAnyGsuConsumed[] = {
-        {"policy", "throttled_after_any_gsu_consumed"}};
-const FeatureEntry::FeatureParam
-    kThrottleAsyncTouchMoves_UnthrottledWhenGsuUnconsumed[] = {
+    kUnthrottleAsyncTouchMoves_UnthrottledWhenGsuUnconsumed[] = {
         {"policy", "unthrottled_when_gsu_unconsumed"}};
+const FeatureEntry::FeatureParam
+    kUnthrottleAsyncTouchMoves_UnthrottledAlways[] = {
+        {"policy", "unthrottled_always"}};
 
-const FeatureEntry::FeatureVariation kThrottleAsyncTouchMovesVariations[] = {
-    {"throttled after any GSU consumed",
-     kThrottleAsyncTouchMoves_ThrottledAfterAnyGsuConsumed, nullptr},
+const FeatureEntry::FeatureVariation kUnthrottleAsyncTouchMovesVariations[] = {
     {"unthrottled when GSU unconsumed",
-     kThrottleAsyncTouchMoves_UnthrottledWhenGsuUnconsumed, nullptr}};
+     kUnthrottleAsyncTouchMoves_UnthrottledWhenGsuUnconsumed, nullptr},
+    {"unthrottled always", kUnthrottleAsyncTouchMoves_UnthrottledAlways,
+     nullptr}};
 
 const FeatureEntry::Choice kEnableBenchmarkingChoices[] = {
     {flag_descriptions::kEnableBenchmarkingChoiceDisabled, "", ""},
@@ -11008,13 +11008,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kThrottleMainTo60HzDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kThrottleMainFrameTo60Hz)},
 
-    {"throttle-async-touch-moves",
-     flag_descriptions::kThrottleAsyncTouchMovesName,
-     flag_descriptions::kThrottleAsyncTouchMovesDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kThrottleAsyncTouchMoves,
-                                    kThrottleAsyncTouchMovesVariations,
-                                    "ThrottleAsyncTouchMoves")},
-
 #if BUILDFLAG(IS_ANDROID)
     {"client-side-detection-send-intelligent-scan-info-android",
      flag_descriptions::kClientSideDetectionSendIntelligentScanInfoAndroidName,
@@ -12955,6 +12948,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDevToolsEnableDurableMessagesName,
      flag_descriptions::kDevToolsEnableDurableMessagesDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kDevToolsEnableDurableMessages)},
+
+    {"unthrottle-async-touch-moves",
+     flag_descriptions::kUnthrottleAsyncTouchMovesName,
+     flag_descriptions::kUnthrottleAsyncTouchMovesDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(blink::features::kUnthrottleAsyncTouchMoves,
+                                    kUnthrottleAsyncTouchMovesVariations,
+                                    "UnthrottleAsyncTouchMoves")},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
