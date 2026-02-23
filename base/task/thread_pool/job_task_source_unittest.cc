@@ -276,7 +276,7 @@ TEST_F(ThreadPoolJobTaskSourceTest, RunTaskWorkerCount) {
   size_t max_concurrency = 1;
   scoped_refptr<JobTaskSource> task_source =
       base::MakeRefCounted<JobTaskSource>(
-          FROM_HERE, TaskTraits(),
+          FROM_HERE, TaskTraits(), ThreadType::kDefault,
           BindLambdaForTesting(
               [&](JobDelegate* delegate) { --max_concurrency; }),
           BindLambdaForTesting([&](size_t worker_count) -> size_t {
@@ -303,7 +303,7 @@ TEST_F(ThreadPoolJobTaskSourceTest, RunJoinTaskWorkerCount) {
   size_t max_concurrency = 1;
   scoped_refptr<JobTaskSource> task_source =
       base::MakeRefCounted<JobTaskSource>(
-          FROM_HERE, TaskTraits(),
+          FROM_HERE, TaskTraits(), ThreadType::kDefault,
           BindLambdaForTesting(
               [&](JobDelegate* delegate) { --max_concurrency; }),
           BindLambdaForTesting([&](size_t worker_count) -> size_t {
@@ -438,7 +438,8 @@ TEST_F(ThreadPoolJobTaskSourceTest, ShouldYield) {
 TEST_F(ThreadPoolJobTaskSourceTest, MaxConcurrencyStagnateIfShouldYield) {
   scoped_refptr<JobTaskSource> task_source =
       base::MakeRefCounted<JobTaskSource>(
-          FROM_HERE, TaskTraits(), BindRepeating([](JobDelegate* delegate) {
+          FROM_HERE, TaskTraits(), ThreadType::kDefault,
+          BindRepeating([](JobDelegate* delegate) {
             // As set up below, the mock will return true once.
             ASSERT_TRUE(delegate->ShouldYield());
           }),
@@ -522,7 +523,8 @@ TEST_F(ThreadPoolJobTaskSourceTest, AcquireTaskId) {
 // Verifies that task id is released after worker_task returns.
 TEST_F(ThreadPoolJobTaskSourceTest, GetTaskId) {
   auto task_source = MakeRefCounted<JobTaskSource>(
-      FROM_HERE, TaskTraits{}, BindRepeating([](JobDelegate* delegate) {
+      FROM_HERE, TaskTraits{}, ThreadType::kDefault,
+      BindRepeating([](JobDelegate* delegate) {
         // Confirm that task id 0 is reused on the second run.
         EXPECT_EQ(0U, delegate->GetTaskId());
 
@@ -547,6 +549,16 @@ TEST_F(ThreadPoolJobTaskSourceTest, GetTaskId) {
   auto task2 = registered_task_source.TakeTask();
   std::move(task2.task).Run();
   registered_task_source.DidProcessTask();
+}
+
+TEST_F(ThreadPoolJobTaskSourceTest, InheritThreadType) {
+  scoped_refptr<JobTaskSource> task_source =
+      base::MakeRefCounted<JobTaskSource>(
+          FROM_HERE, TaskTraits(InheritThreadType()), ThreadType::kPresentation,
+          BindLambdaForTesting([](JobDelegate* delegate) {}),
+          BindLambdaForTesting([](size_t worker_count) -> size_t { return 0; }),
+          &pooled_task_runner_delegate_);
+  EXPECT_EQ(ThreadType::kPresentation, task_source->thread_type_racy());
 }
 
 }  // namespace base::internal

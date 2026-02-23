@@ -24,8 +24,8 @@ scoped_refptr<internal::JobTaskSource> CreateJobTaskSource(
          "base::test::TaskEnvironment member in your fixture.\n";
 
   return base::MakeRefCounted<internal::JobTaskSource>(
-      from_here, traits, std::move(worker_task),
-      std::move(max_concurrency_callback),
+      from_here, traits, internal::GetCurrentTaskImportance(),
+      std::move(worker_task), std::move(max_concurrency_callback),
       static_cast<internal::ThreadPoolImpl*>(ThreadPoolInstance::Get()));
 }
 

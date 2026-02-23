@@ -16,8 +16,8 @@ PooledSequencedTaskRunner::PooledSequencedTaskRunner(
     : pooled_task_runner_delegate_(pooled_task_runner_delegate),
       sequence_(MakeRefCounted<Sequence>(traits,
                                          this,
-                                         TaskSourceExecutionMode::kSequenced)) {
-}
+                                         TaskSourceExecutionMode::kSequenced,
+                                         GetCurrentTaskImportance())) {}
 
 PooledSequencedTaskRunner::~PooledSequencedTaskRunner() = default;
 

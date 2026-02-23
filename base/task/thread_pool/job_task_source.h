@@ -40,6 +40,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
 
   JobTaskSource(const Location& from_here,
                 const TaskTraits& traits,
+                ThreadType originating_thread_type,
                 RepeatingCallback<void(JobDelegate*)> worker_task,
                 MaxConcurrencyCallback max_concurrency_callback,
                 PooledTaskRunnerDelegate* delegate);

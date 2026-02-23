@@ -123,7 +123,9 @@ class BASE_EXPORT PooledSingleThreadTaskRunnerManager final {
       ThreadType thread_type_hint) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   template <typename DelegateType>
-  WorkerThread*& GetSharedWorkerThreadForTraits(const TaskTraits& traits);
+  WorkerThread*& GetSharedWorkerThreadForTraits(
+      const TaskTraits& traits,
+      ThreadType originating_thread_type);
 
   void UnregisterWorkerThread(WorkerThread* worker);
 

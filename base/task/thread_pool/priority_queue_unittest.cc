@@ -38,7 +38,8 @@ class PriorityQueueWithSequencesTest : public testing::Test {
     // defined.
     task_environment.FastForwardBy(Microseconds(1));
     scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(
-        traits, nullptr, TaskSourceExecutionMode::kParallel);
+        traits, nullptr, TaskSourceExecutionMode::kParallel,
+        ThreadType::kDefault);
     auto transaction = sequence->BeginTransaction();
     transaction.WillPushImmediateTask();
     transaction.PushImmediateTask(

@@ -48,4 +48,26 @@ std::ostream& operator<<(std::ostream& os,
   return os;
 }
 
+namespace internal {
+
+ThreadType TaskPriorityToThreadType(TaskPriority priority) {
+  switch (priority) {
+    case TaskPriority::BEST_EFFORT:
+      return ThreadType::kBackground;
+    case TaskPriority::USER_VISIBLE:
+      return ThreadType::kUtility;
+    case TaskPriority::USER_BLOCKING:
+      return ThreadType::kDefault;
+  }
+}
+
+ThreadType EffectiveThreadType(const TaskTraits& traits,
+                               ThreadType originating_thread_type) {
+  if (traits.inherit_thread_type()) {
+    return std::min(traits.max_thread_type(), originating_thread_type);
+  }
+  return TaskPriorityToThreadType(traits.priority());
+}
+
+}  // namespace internal
 }  // namespace base

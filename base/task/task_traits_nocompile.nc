@@ -16,9 +16,10 @@ constexpr TaskTraits traits = {MayBlock(), MayBlock()};  // expected-error {{con
 constexpr TaskTraits traits2 = {WithBaseSyncPrimitives(),   // expected-error {{constexpr variable 'traits2' must be initialized by a constant expression}}
                                 WithBaseSyncPrimitives()};  // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
 
-constexpr TaskTraits traits3 = {TaskPriority::BEST_EFFORT,     // expected-error {{constexpr variable 'traits3' must be initialized by a constant expression}}
+constexpr TaskTraits traits3 = {TaskPriority::BEST_EFFORT,     // expected-error@*:* {{no matching constructor for initialization}}
                                 TaskPriority::USER_BLOCKING};  // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
                                                                // expected-error@*:* {{type occurs more than once in type list}}
+                                                               // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
 
 // Note: the three repetitions of "The traits bag contains multiple traits of
 // the same type." is *not* an error. Writing this really does cause three
@@ -34,5 +35,12 @@ constexpr TaskTraits traits5 = {TaskShutdownBehavior::BLOCK_SHUTDOWN,         //
                                 TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};  // expected-error@*:* {{type occurs more than once in type list}}
 
 constexpr TaskTraits traits6 = {TaskShutdownBehavior::BLOCK_SHUTDOWN, true};  // expected-error@*:* {{no matching constructor for initialization}}
+
+constexpr TaskTraits traits7 = {MaxThreadType(ThreadType::kDefault)};  // expected-error@*:* {{no matching constructor for initialization}}
+                                                                       // expected-error@*:* {{no matching constructor for initialization}}
+
+constexpr TaskTraits traits8 = {InheritThreadType(), TaskPriority::USER_BLOCKING};  // expected-error@*:* {{no matching constructor for initialization}}
+                                                                                    // expected-error@*:* {{no matching constructor for initialization}}
+                                                                                    // expected-error@*:* {{no matching constructor for initialization}}
 
 }  // namespace base

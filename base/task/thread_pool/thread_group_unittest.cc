@@ -809,7 +809,7 @@ TEST_F(ThreadGroupTest, JoinJobTaskSourceStaleConcurrency) {
   TestWaitableEvent thread_running;
   std::atomic_size_t max_concurrency(1);
   auto task_source = MakeRefCounted<JobTaskSource>(
-      FROM_HERE, TaskTraits{},
+      FROM_HERE, TaskTraits{}, ThreadType::kDefault,
       BindLambdaForTesting([&](JobDelegate*) { thread_running.Signal(); }),
       BindLambdaForTesting(
           [&](size_t /*worker_count*/) -> size_t { return max_concurrency; }),
@@ -834,7 +834,7 @@ TEST_F(ThreadGroupTest, CancelJobTaskSourceWithStaleConcurrency) {
 
   TestWaitableEvent thread_running;
   auto task_source = MakeRefCounted<JobTaskSource>(
-      FROM_HERE, TaskTraits{},
+      FROM_HERE, TaskTraits{}, ThreadType::kDefault,
       BindLambdaForTesting([&](JobDelegate*) { thread_running.Signal(); }),
       BindRepeating([](size_t /*worker_count*/) -> size_t { return 1; }),
       &mock_pooled_task_runner_delegate_);

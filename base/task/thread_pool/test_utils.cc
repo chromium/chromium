@@ -109,8 +109,8 @@ scoped_refptr<Sequence> CreateSequenceWithTask(
     const TaskTraits& traits,
     scoped_refptr<SequencedTaskRunner> task_runner,
     TaskSourceExecutionMode execution_mode) {
-  scoped_refptr<Sequence> sequence =
-      MakeRefCounted<Sequence>(traits, task_runner.get(), execution_mode);
+  scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(
+      traits, task_runner.get(), execution_mode, ThreadType::kDefault);
   auto transaction = sequence->BeginTransaction();
   transaction.WillPushImmediateTask();
   transaction.PushImmediateTask(std::move(task));
@@ -316,7 +316,8 @@ scoped_refptr<JobTaskSource> MockJobTask::GetJobTaskSource(
     const TaskTraits& traits,
     PooledTaskRunnerDelegate* delegate) {
   return MakeRefCounted<JobTaskSource>(
-      from_here, traits, base::BindRepeating(&test::MockJobTask::Run, this),
+      from_here, traits, ThreadType::kDefault,
+      base::BindRepeating(&test::MockJobTask::Run, this),
       base::BindRepeating(&test::MockJobTask::GetMaxConcurrency, this),
       delegate);
 }

@@ -13,20 +13,6 @@
 #include "base/task/thread_pool/task_tracker.h"
 
 namespace base::internal {
-namespace {
-
-ThreadType TaskPriorityToThreadType(TaskPriority priority) {
-  switch (priority) {
-    case TaskPriority::BEST_EFFORT:
-      return ThreadType::kBackground;
-    case TaskPriority::USER_VISIBLE:
-      return ThreadType::kUtility;
-    case TaskPriority::USER_BLOCKING:
-      return ThreadType::kDefault;
-  }
-}
-
-}  // namespace
 
 ExecutionEnvironment::~ExecutionEnvironment() = default;
 
@@ -47,13 +33,15 @@ TaskSource::Transaction::~Transaction() {
 }
 
 void TaskSource::Transaction::UpdatePriority(TaskPriority priority) {
+  DCHECK(!task_source_->traits_.inherit_thread_type());
   task_source_->traits_.UpdatePriority(priority);
   task_source_->thread_type_racy_.store(TaskPriorityToThreadType(priority),
                                         std::memory_order_relaxed);
 }
 
 ThreadType TaskSource::Transaction::thread_type() const {
-  return TaskPriorityToThreadType(task_source_->traits_.priority());
+  return EffectiveThreadType(task_source_->traits_,
+                             task_source_->originating_thread_type_);
 }
 
 void TaskSource::Transaction::Release() NO_THREAD_SAFETY_ANALYSIS {
@@ -80,9 +68,11 @@ void TaskSource::ClearDelayedHeapHandle() {
 }
 
 TaskSource::TaskSource(const TaskTraits& traits,
-                       TaskSourceExecutionMode execution_mode)
+                       TaskSourceExecutionMode execution_mode,
+                       ThreadType originating_thread_type)
     : traits_(traits),
-      thread_type_racy_(TaskPriorityToThreadType(traits.priority())),
+      thread_type_racy_(EffectiveThreadType(traits, originating_thread_type)),
+      originating_thread_type_(originating_thread_type),
       execution_mode_(execution_mode) {}
 
 TaskSource::~TaskSource() {

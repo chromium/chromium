@@ -343,8 +343,10 @@ void Sequence::ReleaseTaskRunner() {
 
 Sequence::Sequence(const TaskTraits& traits,
                    SequencedTaskRunner* task_runner,
-                   TaskSourceExecutionMode execution_mode)
-    : TaskSource(traits, execution_mode), task_runner_(task_runner) {}
+                   TaskSourceExecutionMode execution_mode,
+                   ThreadType originating_thread_type)
+    : TaskSource(traits, execution_mode, originating_thread_type),
+      task_runner_(task_runner) {}
 
 Sequence::~Sequence() = default;
 

@@ -161,7 +161,9 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
   };
 
   // |traits| is metadata that applies to all Tasks in the TaskSource.
-  TaskSource(const TaskTraits& traits, TaskSourceExecutionMode execution_mode);
+  TaskSource(const TaskTraits& traits,
+             TaskSourceExecutionMode execution_mode,
+             ThreadType originating_thread_type);
   TaskSource(const TaskSource&) = delete;
   TaskSource& operator=(const TaskSource&) = delete;
 
@@ -205,21 +207,24 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
 
   HeapHandle delayed_heap_handle() const { return delayed_pq_heap_handle_; }
 
-  // Returns the shutdown behavior of all Tasks in the TaskSource. Can be
-  // accessed without a Transaction because it is never mutated.
-  TaskShutdownBehavior shutdown_behavior() const {
-    return traits_.shutdown_behavior();
-  }
   // Returns a racy thread_type of the TaskSource. Can be accessed without a
   // Transaction but may return an outdated result.
   ThreadType thread_type_racy() const {
     return thread_type_racy_.load(std::memory_order_relaxed);
   }
-  // Returns the thread policy of the TaskSource. Can be accessed without a
-  // Transaction because it is never mutated.
-  ThreadPolicy thread_policy() const { return traits_.thread_policy(); }
 
+  // The following traits can be accessed without a Transaction because
+  // they are never mutated.
+  TaskShutdownBehavior shutdown_behavior() const {
+    return traits_.shutdown_behavior();
+  }
+  ThreadPolicy thread_policy() const { return traits_.thread_policy(); }
   TaskSourceExecutionMode execution_mode() const { return execution_mode_; }
+  bool inherit_thread_type() const { return traits_.inherit_thread_type(); }
+  ThreadType max_thread_type() const {
+    DCHECK(inherit_thread_type());
+    return traits_.max_thread_type();
+  }
 
   void ClearForTesting();
 
@@ -248,6 +253,8 @@ class BASE_EXPORT TaskSource : public RefCountedThreadSafe<TaskSource> {
 
   // The cached thread_type for atomic access.
   std::atomic<ThreadType> thread_type_racy_;
+
+  const ThreadType originating_thread_type_;
 
   // Synchronizes access to all members.
   mutable CheckedLock lock_{UniversalPredecessor()};

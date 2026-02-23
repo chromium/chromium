@@ -260,7 +260,8 @@ bool ThreadPoolImpl::PostDelayedTask(const Location& from_here,
       Task(from_here, std::move(task), TimeTicks::Now(), delay,
            MessagePump::GetLeewayIgnoringThreadOverride()),
       MakeRefCounted<Sequence>(traits, nullptr,
-                               TaskSourceExecutionMode::kParallel));
+                               TaskSourceExecutionMode::kParallel,
+                               GetCurrentTaskImportance()));
 }
 
 scoped_refptr<TaskRunner> ThreadPoolImpl::CreateTaskRunner(
@@ -501,6 +502,13 @@ bool ThreadPoolImpl::PostTaskWithSequence(Task task,
     ANNOTATE_LEAKING_OBJECT_PTR(leak.get());
     leak.release();
     return false;
+  }
+
+  if (sequence->inherit_thread_type()) {
+    // When inheriting task importance, it's forbidden to post from a context
+    // that would make the sequence higher priority than when it was created.
+    DCHECK_LE(std::min(sequence->max_thread_type(), GetCurrentTaskImportance()),
+              sequence->thread_type_racy());
   }
 
   if (task.delayed_run_time.is_null()) {

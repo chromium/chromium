@@ -1013,7 +1013,8 @@ void ExpectSequenceToken(SequenceToken sequence_token) {
 // when a Task runs.
 TEST_F(ThreadPoolTaskTrackerTest, CurrentSequenceToken) {
   scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(
-      TaskTraits(), nullptr, TaskSourceExecutionMode::kParallel);
+      TaskTraits(), nullptr, TaskSourceExecutionMode::kParallel,
+      ThreadType::kDefault);
 
   const SequenceToken sequence_token = sequence->token();
   Task task(FROM_HERE, BindOnce(&ExpectSequenceToken, sequence_token),
@@ -1041,7 +1042,7 @@ TEST_F(ThreadPoolTaskTrackerTest, LoadWillPostAndRunBeforeShutdown) {
         &tracker_,
         MakeRefCounted<Sequence>(
             TaskTraits{TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}, nullptr,
-            TaskSourceExecutionMode::kParallel),
+            TaskSourceExecutionMode::kParallel, ThreadType::kDefault),
         ThreadPostingAndRunningTask::Action::WILL_POST_AND_RUN, true,
         CreateTask()));
     threads.back()->Start();
@@ -1050,7 +1051,7 @@ TEST_F(ThreadPoolTaskTrackerTest, LoadWillPostAndRunBeforeShutdown) {
         &tracker_,
         MakeRefCounted<Sequence>(
             TaskTraits{TaskShutdownBehavior::SKIP_ON_SHUTDOWN}, nullptr,
-            TaskSourceExecutionMode::kParallel),
+            TaskSourceExecutionMode::kParallel, ThreadType::kDefault),
         ThreadPostingAndRunningTask::Action::WILL_POST_AND_RUN, true,
         CreateTask()));
     threads.back()->Start();
@@ -1059,7 +1060,7 @@ TEST_F(ThreadPoolTaskTrackerTest, LoadWillPostAndRunBeforeShutdown) {
         &tracker_,
         MakeRefCounted<Sequence>(
             TaskTraits{TaskShutdownBehavior::BLOCK_SHUTDOWN}, nullptr,
-            TaskSourceExecutionMode::kParallel),
+            TaskSourceExecutionMode::kParallel, ThreadType::kDefault),
         ThreadPostingAndRunningTask::Action::WILL_POST_AND_RUN, true,
         CreateTask()));
     threads.back()->Start();
@@ -1092,14 +1093,15 @@ TEST_F(ThreadPoolTaskTrackerTest,
     std::vector<scoped_refptr<Sequence>> sequences_skip_on_shutdown;
     std::vector<scoped_refptr<Sequence>> sequences_block_shutdown;
     for (size_t i = 0; i < kLoadTestNumIterations; ++i) {
-      sequences_continue_on_shutdown.push_back(
-          MakeRefCounted<Sequence>(traits_continue_on_shutdown, nullptr,
-                                   TaskSourceExecutionMode::kParallel));
-      sequences_skip_on_shutdown.push_back(
-          MakeRefCounted<Sequence>(traits_skip_on_shutdown, nullptr,
-                                   TaskSourceExecutionMode::kParallel));
+      sequences_continue_on_shutdown.push_back(MakeRefCounted<Sequence>(
+          traits_continue_on_shutdown, nullptr,
+          TaskSourceExecutionMode::kParallel, ThreadType::kDefault));
+      sequences_skip_on_shutdown.push_back(MakeRefCounted<Sequence>(
+          traits_skip_on_shutdown, nullptr, TaskSourceExecutionMode::kParallel,
+          ThreadType::kDefault));
       sequences_block_shutdown.push_back(MakeRefCounted<Sequence>(
-          traits_block_shutdown, nullptr, TaskSourceExecutionMode::kParallel));
+          traits_block_shutdown, nullptr, TaskSourceExecutionMode::kParallel,
+          ThreadType::kDefault));
     }
 
     for (size_t i = 0; i < kLoadTestNumIterations; ++i) {
@@ -1173,7 +1175,7 @@ TEST_F(ThreadPoolTaskTrackerTest, LoadWillPostAndRunDuringShutdown) {
         &tracker_,
         MakeRefCounted<Sequence>(
             TaskTraits{TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}, nullptr,
-            TaskSourceExecutionMode::kParallel),
+            TaskSourceExecutionMode::kParallel, ThreadType::kDefault),
         ThreadPostingAndRunningTask::Action::WILL_POST_AND_RUN, false,
         CreateTask()));
     threads.back()->Start();
@@ -1182,7 +1184,7 @@ TEST_F(ThreadPoolTaskTrackerTest, LoadWillPostAndRunDuringShutdown) {
         &tracker_,
         MakeRefCounted<Sequence>(
             TaskTraits{TaskShutdownBehavior::SKIP_ON_SHUTDOWN}, nullptr,
-            TaskSourceExecutionMode::kParallel),
+            TaskSourceExecutionMode::kParallel, ThreadType::kDefault),
         ThreadPostingAndRunningTask::Action::WILL_POST_AND_RUN, false,
         CreateTask()));
     threads.back()->Start();
@@ -1191,7 +1193,7 @@ TEST_F(ThreadPoolTaskTrackerTest, LoadWillPostAndRunDuringShutdown) {
         &tracker_,
         MakeRefCounted<Sequence>(
             TaskTraits{TaskShutdownBehavior::BLOCK_SHUTDOWN}, nullptr,
-            TaskSourceExecutionMode::kParallel),
+            TaskSourceExecutionMode::kParallel, ThreadType::kDefault),
         ThreadPostingAndRunningTask::Action::WILL_POST_AND_RUN, true,
         CreateTask()));
     threads.back()->Start();

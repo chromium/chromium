@@ -22,6 +22,37 @@ TEST(TaskTraitsTest, Default) {
 TEST(TaskTraitsTest, TaskPriority) {
   constexpr TaskTraits traits = {TaskPriority::BEST_EFFORT};
   EXPECT_EQ(TaskPriority::BEST_EFFORT, traits.priority());
+  EXPECT_TRUE(traits.priority_set_explicitly());
+  EXPECT_FALSE(traits.inherit_thread_type());
+  EXPECT_FALSE(traits.shutdown_behavior_set_explicitly());
+  EXPECT_EQ(TaskShutdownBehavior::SKIP_ON_SHUTDOWN, traits.shutdown_behavior());
+  EXPECT_FALSE(traits.thread_policy_set_explicitly());
+  EXPECT_EQ(ThreadPolicy::PREFER_BACKGROUND, traits.thread_policy());
+  EXPECT_FALSE(traits.may_block());
+  EXPECT_FALSE(traits.with_base_sync_primitives());
+}
+
+TEST(TaskTraitsTest, InheritThreadType) {
+  constexpr TaskTraits traits = {InheritThreadType()};
+  EXPECT_FALSE(traits.priority_set_explicitly());
+  EXPECT_TRUE(traits.inherit_thread_type());
+  EXPECT_EQ(ThreadType::kMaxValue, traits.max_thread_type());
+  EXPECT_EQ(TaskPriority::BEST_EFFORT, traits.priority());
+  EXPECT_FALSE(traits.shutdown_behavior_set_explicitly());
+  EXPECT_EQ(TaskShutdownBehavior::SKIP_ON_SHUTDOWN, traits.shutdown_behavior());
+  EXPECT_FALSE(traits.thread_policy_set_explicitly());
+  EXPECT_EQ(ThreadPolicy::PREFER_BACKGROUND, traits.thread_policy());
+  EXPECT_FALSE(traits.may_block());
+  EXPECT_FALSE(traits.with_base_sync_primitives());
+}
+
+TEST(TaskTraitsTest, InheritThreadTypeWithMax) {
+  constexpr TaskTraits traits = {InheritThreadType(),
+                                 MaxThreadType(ThreadType::kUtility)};
+  EXPECT_FALSE(traits.priority_set_explicitly());
+  EXPECT_TRUE(traits.inherit_thread_type());
+  EXPECT_EQ(ThreadType::kUtility, traits.max_thread_type());
+  EXPECT_EQ(TaskPriority::BEST_EFFORT, traits.priority());
   EXPECT_FALSE(traits.shutdown_behavior_set_explicitly());
   EXPECT_EQ(TaskShutdownBehavior::SKIP_ON_SHUTDOWN, traits.shutdown_behavior());
   EXPECT_FALSE(traits.thread_policy_set_explicitly());

@@ -14,6 +14,7 @@
 #include "base/base_export.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/task/thread_type.h"
 #include "base/traits_bag.h"
 #include "build/build_config.h"
 
@@ -191,6 +192,30 @@ struct MayBlock {};
 // In doubt, consult with //base/task/OWNERS.
 struct WithBaseSyncPrimitives {};
 
+// Tasks with this trait will inherit the ThreadType returned by
+// internal::GetCurrentTaskImportance(). For tasks posted individually or
+// through ThreadPool::CreateTaskRunner(), this inherits the context where it
+// was posted. For tasks posted through ThreadPool::CreateSequencedTaskRunner or
+// CreateSingleThreadTaskRunner, this inherits the context where the task runner
+// was created, in which case it is forbidden to use this task runner in a
+// context where it would yield a higher priority.
+struct InheritThreadType {};
+
+// This can be specified along with InheritThreadType. When provided,
+// `max_thread_Type` is the maximum ThreadType that can be inherited from the
+// context.
+struct MaxThreadType {
+  constexpr explicit MaxThreadType(ThreadType max_thread_type)
+      : value(max_thread_type) {}
+  constexpr MaxThreadType() : value(ThreadType::kMaxValue) {}
+
+  constexpr operator ThreadType() const { return value; }
+
+  using ValueType = ThreadType;
+
+  ThreadType value;
+};
+
 // Describes metadata for a single task or a group of tasks.
 class BASE_EXPORT TaskTraits {
  public:
@@ -201,6 +226,14 @@ class BASE_EXPORT TaskTraits {
     ValidTrait(ThreadPolicy);
     ValidTrait(MayBlock);
     ValidTrait(WithBaseSyncPrimitives);
+  };
+
+  struct ValidTraitInheritThreadType {
+    ValidTraitInheritThreadType(TaskShutdownBehavior);
+    ValidTraitInheritThreadType(MayBlock);
+    ValidTraitInheritThreadType(WithBaseSyncPrimitives);
+    ValidTraitInheritThreadType(InheritThreadType);
+    ValidTraitInheritThreadType(MaxThreadType);
   };
 
   // Invoking this constructor without arguments produces default TaskTraits
@@ -236,8 +269,12 @@ class BASE_EXPORT TaskTraits {
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr TaskTraits(ArgTypes... args)
       : priority_(
-            trait_helpers::GetEnum<TaskPriority, TaskPriority::USER_BLOCKING>(
-                args...)),
+            static_cast<uint8_t>(
+                trait_helpers::GetEnum<TaskPriority,
+                                       TaskPriority::USER_BLOCKING>(args...)) |
+            (trait_helpers::HasTrait<TaskPriority, ArgTypes...>()
+                 ? kIsExplicitFlag
+                 : 0)),
         shutdown_behavior_(
             static_cast<uint8_t>(
                 trait_helpers::GetEnum<TaskShutdownBehavior,
@@ -258,16 +295,56 @@ class BASE_EXPORT TaskTraits {
         with_base_sync_primitives_(
             trait_helpers::HasTrait<WithBaseSyncPrimitives, ArgTypes...>()) {}
 
+  template <class... ArgTypes>
+    requires(trait_helpers::AreValidTraits<ValidTraitInheritThreadType,
+                                           ArgTypes...> &&
+             trait_helpers::HasTrait<InheritThreadType, ArgTypes...>::value)
+  // TaskTraits are intended to be implicitly-constructable (eg {}).
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr TaskTraits(ArgTypes... args)
+      : thread_type_(
+            static_cast<uint8_t>(
+                trait_helpers::GetTraitFromArgList<MaxThreadType>(args...)) |
+            kIsExplicitFlag),
+        shutdown_behavior_(
+            static_cast<uint8_t>(
+                trait_helpers::GetEnum<TaskShutdownBehavior,
+                                       TaskShutdownBehavior::SKIP_ON_SHUTDOWN>(
+                    args...)) |
+            (trait_helpers::HasTrait<TaskShutdownBehavior, ArgTypes...>()
+                 ? kIsExplicitFlag
+                 : 0)),
+        thread_policy_(static_cast<uint8_t>(ThreadPolicy::PREFER_BACKGROUND)),
+        may_block_(trait_helpers::HasTrait<MayBlock, ArgTypes...>()),
+        with_base_sync_primitives_(
+            trait_helpers::HasTrait<WithBaseSyncPrimitives, ArgTypes...>()) {}
+
   constexpr TaskTraits(const TaskTraits& other) = default;
   TaskTraits& operator=(const TaskTraits& other) = default;
 
   friend bool operator==(const TaskTraits&, const TaskTraits&) = default;
 
   // Sets the priority of tasks with these traits to |priority|.
-  void UpdatePriority(TaskPriority priority) { priority_ = priority; }
+  void UpdatePriority(TaskPriority priority) {
+    priority_ = static_cast<uint8_t>(priority) | kIsExplicitFlag;
+  }
 
   // Returns the priority of tasks with these traits.
-  constexpr TaskPriority priority() const { return priority_; }
+  constexpr TaskPriority priority() const {
+    return static_cast<TaskPriority>(priority_ & ~kIsExplicitFlag);
+  }
+
+  constexpr bool priority_set_explicitly() const {
+    return priority_ & kIsExplicitFlag;
+  }
+
+  constexpr ThreadType max_thread_type() const {
+    return static_cast<ThreadType>(thread_type_ & ~kIsExplicitFlag);
+  }
+
+  constexpr bool inherit_thread_type() const {
+    return thread_type_ & kIsExplicitFlag;
+  }
 
   // Returns true if the shutdown behavior was set explicitly.
   constexpr bool shutdown_behavior_set_explicitly() const {
@@ -304,7 +381,10 @@ class BASE_EXPORT TaskTraits {
   static constexpr uint8_t kIsExplicitFlag = 0x80;
 
   // Ordered for packing.
-  TaskPriority priority_;
+  uint8_t priority_{0};
+  // kIsExplicitFlag on this indicates inherit_thread_type(), in which case the
+  // value indicates max_thread_type().
+  uint8_t thread_type_{0};
   uint8_t shutdown_behavior_;
   uint8_t thread_policy_;
   bool may_block_;
@@ -324,6 +404,17 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& os,
 BASE_EXPORT std::ostream& operator<<(
     std::ostream& os,
     const TaskShutdownBehavior& shutdown_behavior);
+
+namespace internal {
+
+// Maps `priority` to an equivalent ThreadType.
+ThreadType TaskPriorityToThreadType(TaskPriority priority);
+
+// Returns the ThreadType used for prioritization of `traits`.
+ThreadType EffectiveThreadType(const TaskTraits& traits,
+                               ThreadType originating_thread_type);
+
+}  // namespace internal
 
 }  // namespace base
 

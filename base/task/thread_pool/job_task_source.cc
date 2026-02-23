@@ -97,10 +97,13 @@ void JobTaskSource::InitializeFeatures() {
 
 JobTaskSource::JobTaskSource(const Location& from_here,
                              const TaskTraits& traits,
+                             ThreadType originating_thread_type,
                              RepeatingCallback<void(JobDelegate*)> worker_task,
                              MaxConcurrencyCallback max_concurrency_callback,
                              PooledTaskRunnerDelegate* delegate)
-    : TaskSource(traits, TaskSourceExecutionMode::kJob),
+    : TaskSource(traits,
+                 TaskSourceExecutionMode::kJob,
+                 originating_thread_type),
       max_concurrency_callback_(std::move(max_concurrency_callback)),
       worker_task_(std::move(worker_task)),
       primary_task_(base::BindRepeating(

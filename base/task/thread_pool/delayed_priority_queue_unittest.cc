@@ -29,7 +29,8 @@ class DelayedPriorityQueueWithSequencesTest : public testing::Test {
     // defined.
     task_environment.FastForwardBy(Microseconds(1));
     scoped_refptr<Sequence> sequence = MakeRefCounted<Sequence>(
-        TaskTraits(), nullptr, TaskSourceExecutionMode::kParallel);
+        TaskTraits(), nullptr, TaskSourceExecutionMode::kParallel,
+        ThreadType::kDefault);
     sequence->BeginTransaction().PushDelayedTask(
         Task(FROM_HERE, DoNothing(), TimeTicks::Now(), delayed_run_time));
     return sequence;
