@@ -768,31 +768,35 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(null, removeButton);
   });
 
-  test('image upload button clicks file input', async () => {
+  test('image upload button clicks file input', () => {
     loadTimeData.overrideValues({
       'composeboxShowContextMenu': false,
     });
     createComposeboxElement();
-    const imageUploadEventPromise = eventToPromise(
-        'click', composeboxElement.$.context.$.imageInput);
+    let clickCalled = false;
+    composeboxElement.$.context.$.imageInput.click = () => {
+      clickCalled = true;
+    };
     composeboxElement.$.context.$.imageUploadButton.click();
 
     // Assert.
-    await imageUploadEventPromise;
+    assertTrue(clickCalled);
   });
 
-  test('file upload button clicks file input', async () => {
+  test('file upload button clicks file input', () => {
     loadTimeData.overrideValues({
       'composeboxShowPdfUpload': true,
       'composeboxShowContextMenu': false,
     });
     createComposeboxElement();
-    const fileUploadClickEventPromise = eventToPromise(
-        'click', composeboxElement.$.context.$.fileInput);
+    let clickCalled = false;
+    composeboxElement.$.context.$.fileInput.click = () => {
+      clickCalled = true;
+    };
     composeboxElement.$.context.$.fileUploadButton.click();
 
     // Assert.
-    await fileUploadClickEventPromise;
+    assertTrue(clickCalled);
   });
 
   test('disabling file upload does not show fileUploadButton', async () => {
