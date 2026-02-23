@@ -63,8 +63,6 @@ TEST_F(UpsertPrivatePassRequestTest, GetRequestContent) {
   passport->set_owner_name("owner");
   passport->set_passport_number("number");
   passport->set_country_code("US");
-  passport->set_issue_date_unix_epoch_micros(123456789);
-  passport->set_expiration_date_unix_epoch_micros(987654321);
 
   UpsertPrivatePassCallback callback;
   UpsertPrivatePassRequest request(pass, callback.GetCallback());
@@ -78,13 +76,6 @@ TEST_F(UpsertPrivatePassRequestTest, GetRequestContent) {
   EXPECT_EQ(request_proto.private_pass().passport().passport_number(),
             "number");
   EXPECT_EQ(request_proto.private_pass().passport().country_code(), "US");
-  EXPECT_EQ(
-      request_proto.private_pass().passport().issue_date_unix_epoch_micros(),
-      123456789);
-  EXPECT_EQ(request_proto.private_pass()
-                .passport()
-                .expiration_date_unix_epoch_micros(),
-            987654321);
   EXPECT_EQ(request_proto.client_info().chrome_client_info().version(),
             version_info::GetVersionNumber());
 }

@@ -64,12 +64,12 @@ class AttributeSetter {
                 base::UTF16ToUTF8(attribute->GetCompleteRawInfo()));
   }
 
-  void SetDate(AttributeTypeName attribute_name,
-               void (Pass::*setter)(int64_t)) {
+  std::optional<PrivatePass::NaiveDate> AttributeToDate(
+      AttributeTypeName attribute_name) {
     base::optional_ref<const AttributeInstance> attribute =
         entity_->attribute(AttributeType(attribute_name));
     if (!attribute.has_value()) {
-      return;
+      return std::nullopt;
     }
     // Note that for retrieving date components the app locale doesn't matter.
     FieldType date_type = attribute->type().field_type();
@@ -79,36 +79,36 @@ class AttributeSetter {
         date_type, "", AutofillFormatString(u"M", FormatString_Type_DATE));
     std::u16string year = attribute->GetInfo(
         date_type, "", AutofillFormatString(u"YYYY", FormatString_Type_DATE));
-    std::optional<base::Time> date = ParseDate(day, month, year);
-    if (!date) {
-      return;
-    }
-    std::invoke(setter, pass_,
-                (*date - base::Time::UnixEpoch()).InMicroseconds());
+    return ParseDate(day, month, year);
   }
 
  private:
-  std::optional<base::Time> ParseDate(const std::u16string& day_str,
-                                      const std::u16string& month_str,
-                                      const std::u16string& year_str) {
+  std::optional<PrivatePass::NaiveDate> ParseDate(
+      const std::u16string& day_str,
+      const std::u16string& month_str,
+      const std::u16string& year_str) {
     int day, month, year;
-    if (!base::StringToInt(day_str, &day) ||
-        !base::StringToInt(month_str, &month) ||
-        !base::StringToInt(year_str, &year)) {
+    if (day_str.empty() || !base::StringToInt(day_str, &day) ||
+        month_str.empty() || !base::StringToInt(month_str, &month) ||
+        year_str.empty() || !base::StringToInt(year_str, &year)) {
       return std::nullopt;
     }
-    base::Time::Exploded exploded = {
-        .year = year, .month = month, .day_of_month = day};
-    base::Time parsed_date;
-    if (!base::Time::FromUTCExploded(exploded, &parsed_date)) {
-      return std::nullopt;
-    }
-    return parsed_date;
+    PrivatePass::NaiveDate proto;
+    proto.set_day(day);
+    proto.set_month(month);
+    proto.set_year(year);
+    return proto;
   }
 
   const raw_ref<const EntityInstance> entity_;
   raw_ref<Pass> pass_;
 };
+
+#define MAYBE_SET_DATE(setter, attribute_name, proto_field) \
+  if (std::optional<PrivatePass::NaiveDate> maybe_date =    \
+          setter.AttributeToDate(attribute_name)) {         \
+    *proto_field = std::move(*maybe_date);                  \
+  }
 
 Passport EntityInstanceToPassport(const EntityInstance& entity) {
   CHECK_EQ(entity.type().name(), EntityTypeName::kPassport);
@@ -117,10 +117,9 @@ Passport EntityInstanceToPassport(const EntityInstance& entity) {
   setter.SetString(kPassportName, &Passport::set_owner_name);
   setter.SetString(kPassportNumber, &Passport::set_passport_number);
   setter.SetString(kPassportCountry, &Passport::set_country_code);
-  setter.SetDate(kPassportIssueDate,
-                 &Passport::set_issue_date_unix_epoch_micros);
-  setter.SetDate(kPassportExpirationDate,
-                 &Passport::set_expiration_date_unix_epoch_micros);
+  MAYBE_SET_DATE(setter, kPassportIssueDate, pass.mutable_issue_date());
+  MAYBE_SET_DATE(setter, kPassportExpirationDate,
+                 pass.mutable_expiration_date());
   return pass;
 }
 
@@ -132,10 +131,9 @@ DriverLicense EntityInstanceToDriverLicense(const EntityInstance& entity) {
   setter.SetString(kDriversLicenseNumber,
                    &DriverLicense::set_driver_license_number);
   setter.SetString(kDriversLicenseState, &DriverLicense::set_region);
-  setter.SetDate(kDriversLicenseIssueDate,
-                 &DriverLicense::set_issue_date_unix_epoch_micros);
-  setter.SetDate(kDriversLicenseExpirationDate,
-                 &DriverLicense::set_expiration_date_unix_epoch_micros);
+  MAYBE_SET_DATE(setter, kDriversLicenseIssueDate, pass.mutable_issue_date());
+  MAYBE_SET_DATE(setter, kDriversLicenseExpirationDate,
+                 pass.mutable_expiration_date());
   return pass;
 }
 
@@ -146,10 +144,9 @@ IdCard EntityInstanceToIdCard(const EntityInstance& entity) {
   setter.SetString(kNationalIdCardName, &IdCard::set_owner_name);
   setter.SetString(kNationalIdCardNumber, &IdCard::set_id_number);
   setter.SetString(kNationalIdCardCountry, &IdCard::set_country_code);
-  setter.SetDate(kNationalIdCardIssueDate,
-                 &IdCard::set_issue_date_unix_epoch_micros);
-  setter.SetDate(kNationalIdCardExpirationDate,
-                 &IdCard::set_expiration_date_unix_epoch_micros);
+  MAYBE_SET_DATE(setter, kNationalIdCardIssueDate, pass.mutable_issue_date());
+  MAYBE_SET_DATE(setter, kNationalIdCardExpirationDate,
+                 pass.mutable_expiration_date());
   return pass;
 }
 
@@ -162,8 +159,8 @@ KnownTravelerNumber EntityInstanceToKnownTravelerNumber(
                    &KnownTravelerNumber::set_owner_name);
   setter.SetString(kKnownTravelerNumberNumber,
                    &KnownTravelerNumber::set_known_traveler_number);
-  setter.SetDate(kKnownTravelerNumberExpirationDate,
-                 &KnownTravelerNumber::set_expiration_date_unix_epoch_micros);
+  MAYBE_SET_DATE(setter, kKnownTravelerNumberExpirationDate,
+                 pass.mutable_expiration_date());
   return pass;
 }
 
@@ -175,6 +172,8 @@ RedressNumber EntityInstanceToRedressNumber(const EntityInstance& entity) {
   setter.SetString(kRedressNumberNumber, &RedressNumber::set_redress_number);
   return pass;
 }
+
+#undef MAYBE_SET_DATE
 
 }  // namespace
 

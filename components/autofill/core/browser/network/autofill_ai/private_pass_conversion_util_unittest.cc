@@ -25,12 +25,9 @@ using Passport = ::wallet::PrivatePass::Passport;
 using RedressNumber = ::wallet::PrivatePass::RedressNumber;
 using wallet::PrivatePass;
 
-int64_t MicrosSinceUnixEpoch(int year, int month, int day) {
-  base::Time::Exploded exploded = {
-      .year = year, .month = month, .day_of_month = day};
-  base::Time date;
-  EXPECT_TRUE(base::Time::FromUTCExploded(exploded, &date));
-  return (date - base::Time::UnixEpoch()).InMicroseconds();
+// Matches a `wallet::PrivatePass::NaiveDate` against the provided date.
+MATCHER_P3(EqualsDate, year, month, day, "") {
+  return arg.year() == year && arg.month() == month && arg.day() == day;
 }
 
 TEST(PrivatePassConversionUtil, Passport) {
@@ -48,10 +45,8 @@ TEST(PrivatePassConversionUtil, Passport) {
   EXPECT_EQ(pass.owner_name(), "Name");
   EXPECT_EQ(pass.passport_number(), "12345678");
   EXPECT_EQ(pass.country_code(), "AT");
-  EXPECT_EQ(pass.expiration_date_unix_epoch_micros(),
-            MicrosSinceUnixEpoch(2019, 8, 30));
-  EXPECT_EQ(pass.issue_date_unix_epoch_micros(),
-            MicrosSinceUnixEpoch(2010, 9, 1));
+  EXPECT_THAT(pass.expiration_date(), EqualsDate(2019, 8, 30));
+  EXPECT_THAT(pass.issue_date(), EqualsDate(2010, 9, 1));
 }
 
 TEST(PrivatePassConversionUtil, DriverLicense) {
@@ -69,10 +64,8 @@ TEST(PrivatePassConversionUtil, DriverLicense) {
   EXPECT_EQ(pass.owner_name(), "Name");
   EXPECT_EQ(pass.driver_license_number(), "12345678");
   EXPECT_EQ(pass.region(), "California");
-  EXPECT_EQ(pass.expiration_date_unix_epoch_micros(),
-            MicrosSinceUnixEpoch(2019, 8, 30));
-  EXPECT_EQ(pass.issue_date_unix_epoch_micros(),
-            MicrosSinceUnixEpoch(2010, 9, 1));
+  EXPECT_THAT(pass.expiration_date(), EqualsDate(2019, 8, 30));
+  EXPECT_THAT(pass.issue_date(), EqualsDate(2010, 9, 1));
 }
 
 TEST(PrivatePassConversionUtil, NationalIdCard) {
@@ -90,10 +83,8 @@ TEST(PrivatePassConversionUtil, NationalIdCard) {
   EXPECT_EQ(pass.owner_name(), "Name");
   EXPECT_EQ(pass.id_number(), "12345678");
   EXPECT_EQ(pass.country_code(), "DE");
-  EXPECT_EQ(pass.issue_date_unix_epoch_micros(),
-            MicrosSinceUnixEpoch(2010, 9, 1));
-  EXPECT_EQ(pass.expiration_date_unix_epoch_micros(),
-            MicrosSinceUnixEpoch(2019, 8, 30));
+  EXPECT_THAT(pass.issue_date(), EqualsDate(2010, 9, 1));
+  EXPECT_THAT(pass.expiration_date(), EqualsDate(2019, 8, 30));
 }
 
 TEST(PrivatePassConversionUtil, KnownTravelerNumber) {
@@ -108,8 +99,7 @@ TEST(PrivatePassConversionUtil, KnownTravelerNumber) {
   const KnownTravelerNumber& pass = private_pass.known_traveler_number();
   EXPECT_EQ(pass.owner_name(), "Name");
   EXPECT_EQ(pass.known_traveler_number(), "12345678");
-  EXPECT_EQ(pass.expiration_date_unix_epoch_micros(),
-            MicrosSinceUnixEpoch(2019, 8, 30));
+  EXPECT_THAT(pass.expiration_date(), EqualsDate(2019, 8, 30));
 }
 
 TEST(PrivatePassConversionUtil, RedressNumber) {
@@ -143,8 +133,8 @@ TEST(PrivatePassConversionUtil, PartialEntities) {
   EXPECT_EQ(pass.passport_number(), "12345678");
   EXPECT_FALSE(pass.has_owner_name());
   EXPECT_FALSE(pass.has_country_code());
-  EXPECT_FALSE(pass.has_expiration_date_unix_epoch_micros());
-  EXPECT_FALSE(pass.has_issue_date_unix_epoch_micros());
+  EXPECT_FALSE(pass.has_expiration_date());
+  EXPECT_FALSE(pass.has_issue_date());
 }
 
 // Tests that invalid and partial dates are dropped during conversion.
@@ -166,8 +156,8 @@ TEST(PrivatePassConversionUtil, Dates) {
   ASSERT_TRUE(private_pass.has_passport());
   const Passport& pass = private_pass.passport();
   EXPECT_EQ(pass.passport_number(), "12345678");
-  EXPECT_FALSE(pass.has_expiration_date_unix_epoch_micros());
-  EXPECT_FALSE(pass.has_issue_date_unix_epoch_micros());
+  EXPECT_FALSE(pass.has_expiration_date());
+  EXPECT_FALSE(pass.has_issue_date());
 }
 
 }  // namespace

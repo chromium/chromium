@@ -16,6 +16,14 @@ message PrivatePass {
   // The unique identifier of the private pass.
   optional string pass_id = 1;
 
+  // Represents a date without a time zone. This is useful for issue and expiry
+  // dates on private passes.
+  message NaiveDate {
+    optional int32 day = 1;
+    optional int32 month = 2;
+    optional int32 year = 3;
+  }
+
   // Driver license data.
   // Next ID: 7
   message DriverLicense {
@@ -27,12 +35,14 @@ message PrivatePass {
     optional string country_code = 3;
     // The value of the region of the driver license.
     optional string region = 4;
-    // The value of the issue date of the driver license. This is a timestamp in
-    // microseconds.
-    optional int64 issue_date_unix_epoch_micros = 5;
-    // The value of the expiration date of the driver license. This is a
-    // timestamp in microseconds.
-    optional int64 expiration_date_unix_epoch_micros = 6;
+    reserved 5;
+    reserved "issue_date_unix_epoch_micros";
+    reserved 6;
+    reserved "expiration_date_unix_epoch_micros";
+    // The value of the issue date of the driver license.
+    optional NaiveDate issue_date = 7;
+    // The value of the expiration date of the driver license.
+    optional NaiveDate expiration_date = 8;
   }
 
   // Passport data.
@@ -44,12 +54,14 @@ message PrivatePass {
     optional string passport_number = 2;
     // The value of the country code of the passport. ISO 3166-1 alpha-2.
     optional string country_code = 3;
-    // The value of the issue date of the passport. This is a timestamp in
-    // microseconds.
-    optional int64 issue_date_unix_epoch_micros = 4;
-    // The value of the expiration date of the passport. This is a timestamp in
-    // microseconds.
-    optional int64 expiration_date_unix_epoch_micros = 5;
+    reserved 4;
+    reserved "issue_date_unix_epoch_micros";
+    reserved 5;
+    reserved "expiration_date_unix_epoch_micros";
+    // The value of the issue date of the passport.
+    optional NaiveDate issue_date = 6;
+    // The value of the expiration date of the passport.
+    optional NaiveDate expiration_date = 7;
   }
 
   // ID card data.
@@ -63,12 +75,14 @@ message PrivatePass {
     optional string country_code = 3;
     // The value of the region of the national ID.
     optional string region = 4;
-    // The value of the issue date of the national ID. This is a timestamp in
-    // microseconds.
-    optional int64 issue_date_unix_epoch_micros = 5;
-    // The value of the expiration date of the national ID. This is a timestamp
-    // in microseconds.
-    optional int64 expiration_date_unix_epoch_micros = 6;
+    reserved 5;
+    reserved "issue_date_unix_epoch_micros";
+    reserved 6;
+    reserved "expiration_date_unix_epoch_micros";
+    // The value of the issue date of the national ID.
+    optional NaiveDate issue_date = 7;
+    // The value of the expiration date of the national ID.
+    optional NaiveDate expiration_date = 8;
   }
 
   // Redress number data.
@@ -87,9 +101,10 @@ message PrivatePass {
     optional string owner_name = 1;
     // The value of the known traveler number.
     optional string known_traveler_number = 2;
-    // The value of the expiration date of the known traveler number. This is a
-    // timestamp in microseconds.
-    optional int64 expiration_date_unix_epoch_micros = 3;
+    reserved 3;
+    reserved "expiration_date_unix_epoch_micros";
+    // The value of the expiration date of the known traveler number.
+    optional NaiveDate expiration_date = 4;
   }
 
   // The private pass data to be created or updated.
