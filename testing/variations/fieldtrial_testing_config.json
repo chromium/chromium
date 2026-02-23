@@ -13501,6 +13501,21 @@
             ]
         }
     ],
+    "HeliosDynamicSettings": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiDynamicSettings"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeliosFullChatHistory": [
         {
             "platforms": [
