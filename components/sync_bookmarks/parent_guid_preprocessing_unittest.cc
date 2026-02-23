@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
@@ -226,6 +227,104 @@ TEST(ParentGuidPreprocessingTest,
 
   EXPECT_THAT(updates[0].entity.specifics.bookmark().parent_guid(),
               Eq(kInvalidParentUuid));
+}
+
+TEST(ParentGuidPreprocessingTest, ShouldLogHistogramForSpecifics) {
+  syncer::UpdateResponseDataList updates;
+  updates.emplace_back();
+  updates.back().entity.specifics.mutable_bookmark()->set_guid("guid1");
+  updates.back().entity.specifics.mutable_bookmark()->set_parent_guid("pguid1");
+
+  base::HistogramTester histogram_tester;
+  PopulateParentGuidInSpecifics(/*tracker=*/nullptr, &updates);
+
+  histogram_tester.ExpectUniqueSample("Sync.BookmarkParentGuidSource",
+                                      ParentGuidSource::kFoundInSpecifics, 1);
+  histogram_tester.ExpectUniqueSample("Sync.BookmarkParentGuidFromSpecifics",
+                                      true, 1);
+}
+
+TEST(ParentGuidPreprocessingTest, ShouldLogHistogramForUpdates) {
+  const std::string kBookmarkBarId = "bookmark_bar_id";
+
+  syncer::UpdateResponseDataList updates;
+  updates.emplace_back();
+  updates.back().entity.id = kBookmarkBarId;
+  updates.back().entity.server_defined_unique_tag = "bookmark_bar";
+  updates.emplace_back();
+  updates.back().entity.legacy_parent_id = kBookmarkBarId;
+  updates.back().entity.specifics.mutable_bookmark()->set_guid("guid2");
+
+  base::HistogramTester histogram_tester;
+  PopulateParentGuidInSpecifics(/*tracker=*/nullptr, &updates);
+
+  histogram_tester.ExpectUniqueSample("Sync.BookmarkParentGuidSource",
+                                      ParentGuidSource::kFallbackFoundInUpdates,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Sync.BookmarkParentGuidFromSpecifics",
+                                      false, 1);
+}
+
+TEST(ParentGuidPreprocessingTest, ShouldLogHistogramForTracker) {
+  std::unique_ptr<SyncedBookmarkTracker> tracker =
+      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
+  sync_pb::EntitySpecifics fake_specifics;
+  fake_specifics.mutable_bookmark()->mutable_unique_position();
+  TestBookmarkModelView bookmark_model;
+  tracker->Add(bookmark_model.bookmark_bar_node(), /*sync_id=*/"tracker_pb_id",
+               /*server_version=*/0, /*creation_time=*/base::Time::Now(),
+               /*specifics=*/fake_specifics);
+  tracker->Add(bookmark_model.other_node(), /*sync_id=*/"other_node_id",
+               /*server_version=*/0, /*creation_time=*/base::Time::Now(),
+               /*specifics=*/fake_specifics);
+  tracker->Add(bookmark_model.mobile_node(), /*sync_id=*/"mobile_node_id",
+               /*server_version=*/0, /*creation_time=*/base::Time::Now(),
+               /*specifics=*/fake_specifics);
+
+  syncer::UpdateResponseDataList updates;
+  updates.emplace_back();
+  updates.back().entity.legacy_parent_id = "tracker_pb_id";
+  updates.back().entity.specifics.mutable_bookmark()->set_guid("guid3");
+
+  base::HistogramTester histogram_tester;
+  PopulateParentGuidInSpecifics(tracker.get(), &updates);
+
+  histogram_tester.ExpectUniqueSample("Sync.BookmarkParentGuidSource",
+                                      ParentGuidSource::kFallbackFoundInTracker,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Sync.BookmarkParentGuidFromSpecifics",
+                                      false, 1);
+}
+
+TEST(ParentGuidPreprocessingTest, ShouldLogHistogramForUnresolvableParentId) {
+  syncer::UpdateResponseDataList updates;
+  updates.emplace_back();
+  updates.back().entity.legacy_parent_id = "unknown_id";
+  updates.back().entity.specifics.mutable_bookmark()->set_guid("guid4");
+
+  base::HistogramTester histogram_tester;
+  PopulateParentGuidInSpecifics(/*tracker=*/nullptr, &updates);
+
+  histogram_tester.ExpectUniqueSample("Sync.BookmarkParentGuidSource",
+                                      ParentGuidSource::kFallbackUnresolvable,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Sync.BookmarkParentGuidFromSpecifics",
+                                      false, 1);
+}
+
+TEST(ParentGuidPreprocessingTest, ShouldLogHistogramForParentIdMissing) {
+  syncer::UpdateResponseDataList updates;
+  updates.emplace_back();
+  updates.back().entity.legacy_parent_id = "";
+  updates.back().entity.specifics.mutable_bookmark()->set_guid("guid5");
+
+  base::HistogramTester histogram_tester;
+  PopulateParentGuidInSpecifics(/*tracker=*/nullptr, &updates);
+
+  histogram_tester.ExpectUniqueSample("Sync.BookmarkParentGuidSource",
+                                      ParentGuidSource::kMissing, 1);
+  histogram_tester.ExpectUniqueSample("Sync.BookmarkParentGuidFromSpecifics",
+                                      false, 1);
 }
 
 }  // namespace

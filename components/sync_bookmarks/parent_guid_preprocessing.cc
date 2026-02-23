@@ -7,6 +7,7 @@
 #include <memory>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -134,7 +135,7 @@ class LazySyncIdToGuidMapInUpdates {
   std::unordered_map<std::string_view, std::string_view> sync_id_to_guid_map_;
 };
 
-base::Uuid GetParentGuidForUpdate(
+std::pair<base::Uuid, ParentGuidSource> GetParentGuidForUpdate(
     const syncer::UpdateResponseData& update,
     const SyncedBookmarkTracker* tracker,
     LazySyncIdToGuidMapInUpdates* sync_id_to_guid_map_in_updates) {
@@ -144,14 +145,14 @@ base::Uuid GetParentGuidForUpdate(
   if (update.entity.legacy_parent_id.empty()) {
     // Without the |SyncEntity.parent_id| field set, there is no information
     // available to determine the parent and/or its GUID.
-    return base::Uuid();
+    return {base::Uuid(), ParentGuidSource::kMissing};
   }
 
   // If a tracker is available, i.e. initial sync already done, it may know
   // parent's GUID already.
   base::Uuid uuid = TryGetParentGuidFromTracker(tracker, update);
   if (uuid.is_valid()) {
-    return uuid;
+    return {uuid, ParentGuidSource::kFallbackFoundInTracker};
   }
 
   // Otherwise, fall back to checking if the parent is included in the full list
@@ -163,7 +164,7 @@ base::Uuid GetParentGuidForUpdate(
       sync_id_to_guid_map_in_updates->GetGuidForSyncId(
           update.entity.legacy_parent_id));
   if (uuid.is_valid()) {
-    return uuid;
+    return {uuid, ParentGuidSource::kFallbackFoundInUpdates};
   }
 
   // At this point the parent's GUID couldn't be determined, but actually
@@ -174,12 +175,13 @@ base::Uuid GetParentGuidForUpdate(
   uuid = base::Uuid::ParseLowercase(kInvalidParentGuid);
   DCHECK(uuid.is_valid());
   DCHECK(!tracker->GetEntityForUuid(uuid));
-  return uuid;
+  return {uuid, ParentGuidSource::kFallbackUnresolvable};
 }
 
-void LogParentGuidSource(bool from_specifics) {
+void LogParentGuidSource(ParentGuidSource source) {
+  base::UmaHistogramEnumeration("Sync.BookmarkParentGuidSource", source);
   base::UmaHistogramBoolean("Sync.BookmarkParentGuidFromSpecifics",
-                            from_specifics);
+                            source == ParentGuidSource::kFoundInSpecifics);
 }
 
 // Same as PopulateParentGuidInSpecifics(), but |tracker| must not be null.
@@ -196,7 +198,7 @@ void PopulateParentGuidInSpecificsWithTracker(
     // and permanent folders are excluded from this metric, since they are not
     // expected to have a parent GUID in specifics.
     if (update.entity.specifics.bookmark().has_parent_guid()) {
-      LogParentGuidSource(/*from_specifics=*/true);
+      LogParentGuidSource(ParentGuidSource::kFoundInSpecifics);
     }
 
     // Only legacy data, without the parent GUID in specifics populated,
@@ -206,9 +208,9 @@ void PopulateParentGuidInSpecificsWithTracker(
       continue;
     }
 
-    LogParentGuidSource(/*from_specifics=*/false);
-    const base::Uuid uuid =
+    auto [uuid, source] =
         GetParentGuidForUpdate(update, tracker, &sync_id_to_guid_map);
+    LogParentGuidSource(source);
     if (uuid.is_valid()) {
       update.entity.specifics.mutable_bookmark()->set_parent_guid(
           uuid.AsLowercaseString());

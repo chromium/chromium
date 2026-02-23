@@ -871,6 +871,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync_bookmarks/synced_bookmark_tracker.h:SyncBookmarkModelMetadataCorruptionReason) -->
 
+<!-- LINT.IfChange(SyncBookmarkParentGuidSource) -->
+
+<enum name="SyncBookmarkParentGuidSource">
+  <int value="0" label="Missing"/>
+  <int value="1" label="Fallback: Unresolvable"/>
+  <int value="2" label="Found in specifics"/>
+  <int value="3" label="Fallback: Found in tracker"/>
+  <int value="4" label="Fallback: Found in updates"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync_bookmarks/parent_guid_preprocessing.h:SyncBookmarkParentGuidSource) -->
+
 <!-- LINT.IfChange(SyncClientToServerMessageContents) -->
 
 <enum name="SyncClientToServerMessageContents">

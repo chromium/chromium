@@ -476,6 +476,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.BookmarkParentGuidSource"
+    enum="SyncBookmarkParentGuidSource" expires_after="2026-12-08">
+  <owner>mtatarski@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the source of the parent GUID for a bookmark when processing remote
+    updates. Recorded for each non-deletion update.
+  </summary>
+</histogram>
+
 <histogram name="Sync.BookmarksCountAtLimitExceeded.{Type}" units="bookmarks"
     expires_after="2027-02-02">
   <owner>mtatarski@google.com</owner>
