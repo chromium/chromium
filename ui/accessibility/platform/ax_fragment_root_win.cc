@@ -145,18 +145,6 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
                 ? VARIANT_TRUE
                 : VARIANT_FALSE;
         break;
-
-      case UIA_AutomationIdPropertyId:
-        // Use the fragment root's AXUniqueId for a deterministic
-        // (process-lifetime) identifier that doesn't depend on Windows' proxy
-        // heuristics. GetUniqueId() returns AXPlatformNodeId; for
-        // AXFragmentRootWin it's an AXUniqueId, which is convertible to an
-        // integer type.
-        result->vt = VT_BSTR;
-        result->bstrVal = ::SysAllocString(
-            std::to_wstring(static_cast<int32_t>(GetDelegate()->GetUniqueId()))
-                .c_str());
-        break;
     }
 
     return S_OK;
