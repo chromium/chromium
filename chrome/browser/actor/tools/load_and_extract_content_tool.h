@@ -64,7 +64,7 @@ class LoadAndExtractContentTool : public Tool {
   void OnGotAIPageContent(
       UrlIndex index,
       optimization_guide::AIPageContentResultOrError result_or_error);
-  void OnAllUrlsCompleted(std::vector<mojom::ActionResultPtr> results);
+  void OnAllUrlsCompleted();
 
   ToolCallback invoke_callback_;
 
@@ -78,11 +78,8 @@ class LoadAndExtractContentTool : public Tool {
   std::optional<ObservationDelayController::PageStabilityConfig>
       page_stability_config_;
 
-  // This should be called once for each URL after completion. The result should
-  // be ok if all tools succeeded, otherwise it should be the first error
-  // encountered.
-  base::RepeatingCallback<void(mojom::ActionResultPtr)>
-      per_url_completion_callback_;
+  // This should be called once for each URL after completion.
+  base::RepeatingClosure per_url_completion_closure_;
 
   base::WeakPtrFactory<LoadAndExtractContentTool> weak_ptr_factory_{this};
 };
