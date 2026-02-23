@@ -11,6 +11,8 @@
 #include "base/containers/extend.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
+#include "base/i18n/time_formatting.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
@@ -58,7 +60,13 @@ void RecordReplayManager::StartRecording() {
   }
 
   ReportToUser("Starting recording");
-  recorder_.emplace(client_->GetPrimaryMainFrameUrl(), base::Time::Now());
+  base::Time now = base::Time::Now();
+  GURL url = client_->GetPrimaryMainFrameUrl();
+  recorder_.emplace(url, now);
+  recorder_->SetName(std::string(url.host()) + " - " +
+                     base::UTF16ToUTF8(base::LocalizedTimeFormatWithPattern(
+                         now, "yyyy-MM-dd")));
+
   client_->GetDriverFactory().SetRecordForFutureDrivers(true);
   client_->GetDriverFactory().ForEachDriver(
       [](RecordReplayDriver& driver) { driver.StartRecording(); });

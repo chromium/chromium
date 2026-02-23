@@ -70,4 +70,8 @@ void Recorder::AddAutofill(Selector element_selector,
   UpdateDelta(action);
 }
 
+void Recorder::SetName(std::string name) {
+  recording_.set_name(std::move(name));
+}
+
 }  // namespace record_replay

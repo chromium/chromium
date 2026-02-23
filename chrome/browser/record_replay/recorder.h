@@ -33,6 +33,8 @@ class Recorder {
                    Recording::Action::AutofillSpecifics::Type type,
                    std::string guid);
 
+  void SetName(std::string name);
+
   const Recording& recording() const { return recording_; }
 
  private:

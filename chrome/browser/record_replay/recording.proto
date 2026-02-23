@@ -59,4 +59,7 @@ message Recording {
 
   // The executed actions in sequential order.
   repeated Action actions = 3;
+
+  // A user-readable name for the recording.
+  string name = 4;
 }
