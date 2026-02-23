@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 anys = "==0.3.0"
-flask = "==3.1.1"
+flask = "==3.1.3"
 mypy = "==1.6.0"
 pillow = "==12.1.1"
 pytest = "==7.4.2"
