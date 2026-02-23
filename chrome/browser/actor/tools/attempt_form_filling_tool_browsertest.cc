@@ -18,7 +18,7 @@
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
-#include "chrome/browser/autofill/glic/mock_actor_form_filling_service.h"
+#include "chrome/browser/autofill/actor/mock_actor_form_filling_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_features.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/glic/actor_form_section_splitter.h"
+#include "chrome/browser/autofill/actor/actor_form_section_splitter.h"
 
 #include <memory>
 #include <vector>

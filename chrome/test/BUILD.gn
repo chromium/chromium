@@ -8574,7 +8574,7 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/actor",
       "//chrome/browser/actor/ui/task_list_bubble:unit_tests",
-      "//chrome/browser/autofill/glic:unit_tests",
+      "//chrome/browser/autofill/actor:unit_tests",
       "//chrome/browser/bluetooth",
       "//chrome/browser/contextual_cueing:unit_tests",
       "//chrome/browser/contextual_search",

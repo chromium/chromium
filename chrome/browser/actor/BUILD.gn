@@ -218,7 +218,7 @@ source_set("impl") {
 
   if (enable_glic) {
     deps += [
-      "//chrome/browser/autofill/glic",
+      "//chrome/browser/autofill/actor",
       "//chrome/browser/glic",
       "//components/autofill/core/browser",
     ]
@@ -483,7 +483,7 @@ source_set("browser_tests") {
       "tools/window_management_tool_browsertest.cc",
     ]
     deps += [
-      "//chrome/browser/autofill/glic:test_support",
+      "//chrome/browser/autofill/actor:test_support",
       "//chrome/browser/ui/views:file_system_access_test_support",
       "//components/autofill/core/browser:test_support",
     ]

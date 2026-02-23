@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/glic/actor_filling_observer.h"
+#include "chrome/browser/autofill/actor/actor_filling_observer.h"
 
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"

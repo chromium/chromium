@@ -15,7 +15,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/page_target_util.h"
-#include "chrome/browser/autofill/glic/actor_form_filling_service.h"
+#include "chrome/browser/autofill/actor/actor_form_filling_service.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_logging.h"

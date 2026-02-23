@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_GLIC_ACTOR_FORM_FILLING_SERVICE_IMPL_H_
-#define CHROME_BROWSER_AUTOFILL_GLIC_ACTOR_FORM_FILLING_SERVICE_IMPL_H_
+#ifndef CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_FILLING_SERVICE_IMPL_H_
+#define CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_FILLING_SERVICE_IMPL_H_
 
 #include <cstdint>
 #include <variant>
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "chrome/browser/autofill/glic/actor_form_filling_service.h"
-#include "chrome/browser/autofill/glic/actor_form_section_splitter.h"
+#include "chrome/browser/autofill/actor/actor_form_filling_service.h"
+#include "chrome/browser/autofill/actor/actor_form_section_splitter.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 
@@ -91,4 +91,4 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_GLIC_ACTOR_FORM_FILLING_SERVICE_IMPL_H_
+#endif  // CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_FILLING_SERVICE_IMPL_H_

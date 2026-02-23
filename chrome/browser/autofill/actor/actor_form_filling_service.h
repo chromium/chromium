@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_GLIC_ACTOR_FORM_FILLING_SERVICE_H_
-#define CHROME_BROWSER_AUTOFILL_GLIC_ACTOR_FORM_FILLING_SERVICE_H_
+#ifndef CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_FILLING_SERVICE_H_
+#define CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_FILLING_SERVICE_H_
 
 #include <vector>
 
@@ -75,4 +75,4 @@ class ActorFormFillingService {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_GLIC_ACTOR_FORM_FILLING_SERVICE_H_
+#endif  // CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_FILLING_SERVICE_H_

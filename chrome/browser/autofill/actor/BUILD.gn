@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("glic") {
+static_library("actor") {
   sources = [
     "actor_filling_observer.cc",
     "actor_filling_observer.h",
@@ -38,7 +38,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
-    ":glic",
+    ":actor",
     ":test_support",
     "//base/test:test_support",
     "//chrome/browser/actor",
@@ -60,7 +60,7 @@ static_library("test_support") {
   ]
   deps = [ "//testing/gmock" ]
   public_deps = [
-    ":glic",
+    ":actor",
     "//base",
   ]
 }

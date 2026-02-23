@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/glic/actor_form_filling_service.h"
+#include "chrome/browser/autofill/actor/actor_form_filling_service.h"
 
 #include <vector>
 
@@ -12,8 +12,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
-#include "chrome/browser/autofill/glic/actor_filling_observer.h"
-#include "chrome/browser/autofill/glic/actor_form_filling_service_impl.h"
+#include "chrome/browser/autofill/actor/actor_filling_observer.h"
+#include "chrome/browser/autofill/actor/actor_form_filling_service_impl.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
