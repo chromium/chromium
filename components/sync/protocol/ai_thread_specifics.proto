@@ -34,5 +34,8 @@ message AiThreadSpecifics {
 
   // Title of the thread.
   optional string title = 4;
+
+  // Tracks the time the most recent turn in the thread was created.
+  optional int64 last_turn_time_unix_epoch_millis = 5;
 }
 // LINT.ThenChange(//components/contextual_tasks/internal/ai_thread_sync_bridge.cc:TrimAllSupportedFieldsFromRemoteSpecifics)

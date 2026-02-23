@@ -174,6 +174,7 @@ AiThreadSyncBridge::TrimAllSupportedFieldsFromRemoteSpecifics(
   trimmed_specifics.clear_server_id();
   trimmed_specifics.clear_conversation_turn_id();
   trimmed_specifics.clear_title();
+  trimmed_specifics.clear_last_turn_time_unix_epoch_millis();
   // LINT.ThenChange(//components/sync/protocol/ai_thread_specifics.proto:AiThreadSpecifics)
 
   sync_pb::EntitySpecifics trimmed_entity_specifics;

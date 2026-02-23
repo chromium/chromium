@@ -2277,6 +2277,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AiThreadSpecifics& proto) {
   VISIT(server_id);
   VISIT(conversation_turn_id);
   VISIT(title);
+  VISIT(last_turn_time_unix_epoch_millis);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ContextualTask& proto) {
