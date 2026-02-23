@@ -95,9 +95,7 @@ void ContextImplTflite::CreateGraphImpl(
   } else {
     CreateWeightsFile(base::BindOnce(
         &ContextImplTflite::DidCreateWeightsFile,
-        // Unretained is safe here because a reference is held by the
-        // `WebNNContextProviderImpl`
-        base::Unretained(this), std::move(receiver), std::move(graph_info),
+        weak_factory_.GetWeakPtr(), std::move(receiver), std::move(graph_info),
         std::move(compute_resource_info), std::move(constant_operands),
         std::move(constant_tensor_operands), std::move(callback)));
   }
