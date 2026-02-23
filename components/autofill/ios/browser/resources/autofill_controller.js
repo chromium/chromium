@@ -5,7 +5,7 @@
 import * as fill_constants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {fieldWasEditedByUser, unownedFormElementsAndFieldSetsToFormData, webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
+import {fieldWasEditedByUser, unownedFormElementsAndFieldSetsToFormData, wasEditedByUser, webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {getFormControlElements, getFormElementFromIdentifier, getFormElementFromRendererId, getIframeElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {getElementByUniqueID} from '//components/autofill/ios/form_util/resources/renderer_id.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
@@ -74,6 +74,13 @@ const FORM_FILLED_COMMAND = 'formFilled';
  */
 const autofillFormFeaturesApi =
     gCrWeb.getRegisteredApi('autofill_form_features');
+
+/**
+ * Returns true if the undo autofill feature is enabled.
+ */
+function isAutofillUndoEnabled() {
+  return window.gCrWebPlaceholderAutofillUndo;
+}
 
 /**
  * Determines whether the form is interesting enough to send to the browser for
@@ -569,7 +576,9 @@ function fillFormField(data, field) {
 
     filled = fillUtil.setInputElementValue(sanitizedValue, field);
     // If kAutofillUndoIos is enabled, avoid showing the Clear/Undo button.
-    if (!window.gCrWebPlaceholderAutofillUndo) {
+    if (isAutofillUndoEnabled()) {
+      wasEditedByUser.set(field, true);
+    } else {
       field.isAutofilled = true;
     }
   } else if (inferenceUtil.isSelectElement(field)) {
