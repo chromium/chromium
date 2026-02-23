@@ -1409,6 +1409,7 @@ group("dependencies") {
     "//chrome/browser",
     "//chrome/browser:buildflags",
     "//chrome/browser:shell_integration",
+    "//chrome/browser/diagnostics",
     "//chrome/browser/policy:path_parser",
     "//chrome/child",
     "//chrome/common",

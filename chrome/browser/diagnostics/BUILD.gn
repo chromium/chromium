@@ -1,0 +1,70 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+source_set("diagnostics") {
+  sources = [
+    "diagnostics_controller.h",
+    "diagnostics_model.h",
+    "diagnostics_test.h",
+    "diagnostics_writer.h",
+    "recon_diagnostics.h",
+    "sqlite_diagnostics.h",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
+source_set("impl") {
+  sources = [
+    "diagnostics_controller.cc",
+    "diagnostics_model.cc",
+    "diagnostics_test.cc",
+    "diagnostics_writer.cc",
+    "recon_diagnostics.cc",
+    "sqlite_diagnostics.cc",
+  ]
+
+  deps = [
+    ":diagnostics",
+    "//base",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//chrome/common:channel_info",
+    "//chrome/common:constants",
+    "//components/bookmarks/common",
+    "//components/history/core/browser",
+    "//components/version_info",
+    "//components/webdata/common",
+    "//content/public/common",
+    "//sql",
+    "//ui/base",
+  ]
+
+  if (is_win) {
+    deps += [ "//chrome/installer/util:with_no_strings" ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//ash/constants" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "diagnostics_controller_unittest.cc",
+    "diagnostics_model_unittest.cc",
+  ]
+
+  deps = [
+    ":diagnostics",
+    ":impl",
+    "//base",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+}
