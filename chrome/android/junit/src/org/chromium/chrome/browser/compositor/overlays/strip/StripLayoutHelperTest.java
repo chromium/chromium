@@ -184,6 +184,7 @@ import java.util.stream.IntStream;
 @DisableFeatures({
     ChromeFeatureList.DATA_SHARING,
     ChromeFeatureList.TAB_STRIP_CLOSE_REFACTOR_ANDROID,
+    ChromeFeatureList.TAB_STRIP_EMPTY_SPACE_CONTEXT_MENU_ANDROID,
     ChromeFeatureList.GLIC
 })
 @EnableFeatures(ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)
@@ -2672,6 +2673,30 @@ public class StripLayoutHelperTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void testOnLongPress_OnGlicButton() {
+        // Initialize.
+        mToolbarContainerView = new View(mActivity);
+        initializeTest(/* tabIndex= */ 0);
+
+        // Mock Glic button.
+        when(mGlicBtn.isVisible()).thenReturn(true);
+        when(mGlicBtn.click(anyFloat(), anyFloat(), anyInt())).thenReturn(true);
+        when(mGlicBtn.getType()).thenReturn(ButtonType.GLIC);
+
+        // Long press on Glic button.
+        mStripLayoutHelper.onLongPress(150f, 0f);
+
+        // Verify the Glic button menu is showing.
+        assertFalse(
+                "Should not be in reorder mode after long press on Glic button.",
+                mStripLayoutHelper.getInReorderModeForTesting());
+        assertTrue(
+                "Glic button menu should be showing",
+                mStripLayoutHelper.isGlicButtonMenuShowingForTesting());
+    }
+
+    @Test
     public void testOnLongPress_OffTab() {
         setupDragDropState();
         onLongPress_OffTab();
@@ -2713,6 +2738,9 @@ public class StripLayoutHelperTest {
         assertFalse(
                 "Should not show after long press on empty space on tab strip.",
                 mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
+        assertFalse(
+                "Should not show after long press on empty space on tab strip.",
+                mStripLayoutHelper.isGlicButtonMenuShowingForTesting());
 
         // Verify that we show the strip context menu.
         var rectProviderCaptor = ArgumentCaptor.forClass(RectProvider.class);
@@ -5363,6 +5391,59 @@ public class StripLayoutHelperTest {
         assertTrue(
                 "Should show tab menu after secondary click on tab close.",
                 mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    // TODO(crbug.com/483475735): Combine into testSecondaryClick after launch
+    public void testSecondaryClick_OnGlicButton() {
+        // Initialize.
+        mToolbarContainerView = new View(mActivity);
+        initializeTest(/* tabIndex= */ 0);
+
+        // Mock Glic button.
+        when(mGlicBtn.isVisible()).thenReturn(true);
+        when(mGlicBtn.click(anyFloat(), anyFloat(), anyInt())).thenReturn(true);
+        when(mGlicBtn.getType()).thenReturn(ButtonType.GLIC);
+
+        // Long press on Glic button.
+        mStripLayoutHelper.click(TIMESTAMP, 150f, 0f, MotionEvent.BUTTON_SECONDARY, 0);
+
+        // Verify the Glic button menu is showing.
+        assertTrue(
+                "Glic button menu should be showing",
+                mStripLayoutHelper.isGlicButtonMenuShowingForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void testGlicButtonMenu() {
+        // Initialize.
+        mToolbarContainerView = new View(mActivity);
+        initializeTest(/* tabIndex= */ 0);
+
+        // Mock Glic button.
+        when(mGlicBtn.isVisible()).thenReturn(true);
+        when(mGlicBtn.click(anyFloat(), anyFloat(), anyInt())).thenReturn(true);
+        when(mGlicBtn.getType()).thenReturn(ButtonType.GLIC);
+
+        // Long press on Glic button.
+        mStripLayoutHelper.onLongPress(150f, 0f);
+
+        // Verify the Glic button menu is showing.
+        assertTrue(
+                "Glic button menu should be showing",
+                mStripLayoutHelper.isGlicButtonMenuShowingForTesting());
+
+        // Click "Unpin".
+        mStripLayoutHelper.clickGlicButtonMenuItemForTesting(0);
+
+        // Verify the Glic button menu is dismissed.
+        assertFalse(
+                "Glic button menu should be dismissed after clicking an item.",
+                mStripLayoutHelper.isGlicButtonMenuShowingForTesting());
+
+        // TODO(crbug.com/480741391): Test actual unpinning functionality
     }
 
     @Test

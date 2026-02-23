@@ -185,7 +185,7 @@ public class StripLayoutHelperManager
 
     // Shared button constants (Model selector and Glic).
     private static final float BUTTON_BACKGROUND_WIDTH_DP = 32.f;
-    private static final float BUTTON_BACKGROUND_HEIGHT_DP = 32.f;
+    static final float BUTTON_BACKGROUND_HEIGHT_DP = 32.f;
     private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE =
             StripLayoutUtils.shouldApplyMoreDensity() ? BUTTON_BACKGROUND_WIDTH_DP : 48.f;
     private static final float BUTTON_CLICK_SLOP_DP =
@@ -372,9 +372,6 @@ public class StripLayoutHelperManager
         @Override
         public void onLongPress(float x, float y) {
             if (DragDropGlobalState.hasValue()) {
-                return;
-            }
-            if (mGlicButton != null && mGlicButton.click(x, y, 0)) {
                 return;
             }
             if (mModelSelectorButton != null && mModelSelectorButton.click(x, y, 0)) {

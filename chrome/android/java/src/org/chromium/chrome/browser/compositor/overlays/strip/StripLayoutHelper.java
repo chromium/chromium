@@ -535,6 +535,7 @@ public class StripLayoutHelper
     // Layout Constants
     private final float mNewTabButtonWidth;
     private final ListPopupWindow mCloseButtonMenu;
+    private @Nullable ListPopupWindow mGlicButtonMenu;
 
     // All views are overlapped by TAB_OVERLAP_WIDTH_DP. Group titles do not need to be overlapped
     // by this much, so we offset the drawX.
@@ -885,8 +886,7 @@ public class StripLayoutHelper
         mCloseButtonMenu = new ListPopupWindow(mContext);
 
         mCloseButtonMenu.setBackgroundDrawable(
-                AppCompatResources.getDrawable(
-                        mContext, R.drawable.tablet_tab_strip_close_all_tabs_context_menu));
+                AppCompatResources.getDrawable(mContext, R.drawable.tablet_tab_strip_context_menu));
 
         mCloseButtonMenu.setAdapter(
                 new ArrayAdapter<>(
@@ -921,8 +921,9 @@ public class StripLayoutHelper
                     }
                 });
 
-        int menuWidth = mContext.getResources().getDimensionPixelSize(R.dimen.menu_width);
-        mCloseButtonMenu.setWidth(menuWidth);
+        int closeButtonMenuWidth =
+                mContext.getResources().getDimensionPixelSize(R.dimen.menu_width);
+        mCloseButtonMenu.setWidth(closeButtonMenuWidth);
         mCloseButtonMenu.setModal(true);
 
         mActionConfirmationManager = actionConfirmationManager;
@@ -936,6 +937,30 @@ public class StripLayoutHelper
                     // confirmation dialog, and then the closure is confirmed.
                     if (!mCloseAnimationsRequested) rebuildStripViews();
                 });
+
+        // Create Glic unpin menu
+        if (mGlicButton != null) {
+            mGlicButtonMenu = new ListPopupWindow(mContext);
+            mGlicButtonMenu.setBackgroundDrawable(
+                    AppCompatResources.getDrawable(
+                            mContext, R.drawable.tablet_tab_strip_context_menu));
+            mGlicButtonMenu.setAdapter(
+                    new ArrayAdapter<>(
+                            mContext,
+                            R.layout.one_line_list_item,
+                            new String[] {mContext.getString(R.string.menu_unpin_glic_button)}));
+            mGlicButtonMenu.setOnItemClickListener(
+                    (parent, view, position, id) -> {
+                        if (mGlicButtonMenu != null) {
+                            mGlicButtonMenu.dismiss();
+                            // TODO(crbug.com/480741391): Unpin Glic button
+                        }
+                    });
+            int glicButtonMenuWidth =
+                    mContext.getResources().getDimensionPixelSize(R.dimen.glic_button_menu_width);
+            mGlicButtonMenu.setWidth(glicButtonMenuWidth);
+            mGlicButtonMenu.setModal(true);
+        }
 
         mIsFirstLayoutPass = true;
 
@@ -982,6 +1007,9 @@ public class StripLayoutHelper
         if (mModel != null) {
             mModel.removeObserver(mTabModelObserver);
             mModel = null;
+        }
+        if (mGlicButtonMenu != null) {
+            mGlicButtonMenu = null;
         }
     }
 
@@ -1303,6 +1331,7 @@ public class StripLayoutHelper
 
         // Dismiss tab menu, similar to how the app menu is dismissed on orientation change
         mCloseButtonMenu.dismiss();
+        if (mGlicButtonMenu != null) mGlicButtonMenu.dismiss();
 
         // Dismiss iph on orientation change, as its position might become incorrect.
         dismissTabStripSyncIph();
@@ -2405,7 +2434,8 @@ public class StripLayoutHelper
                         && mTabContextMenuCoordinator.isMenuShowing())
                 || (mTabStripContextMenuCoordinator != null
                         && mTabStripContextMenuCoordinator.isMenuShowing())
-                || (mCloseButtonMenu != null && mCloseButtonMenu.isShowing());
+                || (mCloseButtonMenu != null && mCloseButtonMenu.isShowing())
+                || (mGlicButtonMenu != null && mGlicButtonMenu.isShowing());
     }
 
     @VisibleForTesting
@@ -2414,6 +2444,7 @@ public class StripLayoutHelper
         if (mTabContextMenuCoordinator != null) mTabContextMenuCoordinator.dismiss();
         if (mTabStripContextMenuCoordinator != null) mTabStripContextMenuCoordinator.dismiss();
         if (mCloseButtonMenu != null) mCloseButtonMenu.dismiss();
+        if (mGlicButtonMenu != null) mGlicButtonMenu.dismiss();
     }
 
     /**
@@ -3215,6 +3246,10 @@ public class StripLayoutHelper
             }
             showCloseButtonMenu(assumeNonNull((StripLayoutTab) button.getParentView()));
             return true;
+        } else if (clickedView instanceof CompositorButton button
+                && button.getType() == ButtonType.GLIC) {
+            showGlicButtonMenu(clickedView);
+            return true;
         } else if (clickedView instanceof StripLayoutGroupTitle groupTitle) {
             if (mModel != null) {
                 mModel.clearMultiSelection(/* notifyObservers= */ true);
@@ -3719,6 +3754,9 @@ public class StripLayoutHelper
 
     private @Nullable StripLayoutView determineClickedView(float x, float y, int buttons) {
         if (mNewTabButton.click(x, y, buttons)) return mNewTabButton;
+        if (mGlicButton != null && mGlicButton.isVisible() && mGlicButton.click(x, y, buttons)) {
+            return mGlicButton;
+        }
         StripLayoutView view = getViewAtPositionX(x, true);
         if (view instanceof StripLayoutTab clickedTab) {
             if (clickedTab.checkCloseHitTest(x, y) || MotionEventUtils.isTertiaryButton(buttons)) {
@@ -5442,45 +5480,79 @@ public class StripLayoutHelper
     @VisibleForTesting
     void showCloseButtonMenu(StripLayoutTab anchorTab) {
         // TODO(crbug.com/482242527): When this is removed, also update the virtual view to no
-        //  no longer be marked as having a long-press action.
+        // longer be marked as having a long-press action.
         if (mModel == null) return;
 
-        // 1. Bring the anchor tab to the foreground.
+        // Bring the anchor tab to the foreground.
         int tabIndex = TabModelUtils.getTabIndexById(mModel, anchorTab.getTabId());
         TabModelUtils.setIndex(mModel, tabIndex);
 
-        // 2. Anchor the popupMenu to the view associated with the tab
+        // Anchor the popupMenu to the view associated with the tab
         @Nullable Tab tab = TabModelUtils.getCurrentTab(mModel);
         if (tab == null) return;
-        View tabView = tab.getView();
-        mCloseButtonMenu.setAnchorView(tabView);
-        // 3. Set the vertical offset to align the close button menu with bottom of the tab strip
+
+        // We anchor to the content view (tab.getView), which starts below the top controls.
+        // We shift up by the height of the rest of the top controls (Total Height - Strip Height)
+        // to align the menu with the bottom of the tab strip.
         int tabHeight = mManagerHost.getHeight();
         int verticalOffset =
                 -(tabHeight - (int) mContext.getResources().getDimension(R.dimen.tab_strip_height));
-        mCloseButtonMenu.setVerticalOffset(verticalOffset);
 
-        // 4. Set the horizontal offset to align the close button menu with the right side of the
-        // tab
+        showMenuBelowStripView(
+                mCloseButtonMenu, anchorTab, assumeNonNull(tab.getView()), verticalOffset);
+    }
+
+    /**
+     * Displays the unpin menu below the Glic button.
+     *
+     * @param anchorView The Glic button the menu will be anchored to
+     */
+    private void showGlicButtonMenu(StripLayoutView anchorView) {
+        if (mGlicButtonMenu == null) return;
+        // We anchor to the toolbar container view
+        // We shift up by the combined height of the tab strip and the Glic button to align the menu
+        // with the bottom of the tab strip.
+        int verticalOffset =
+                (int)
+                        -(mContext.getResources().getDimension(R.dimen.tab_strip_height)
+                                + StripLayoutHelperManager.BUTTON_BACKGROUND_HEIGHT_DP);
+        showMenuBelowStripView(mGlicButtonMenu, anchorView, mToolbarContainerView, verticalOffset);
+    }
+
+    /**
+     * Helper method to show a menu anchored to a specific StripLayoutView.
+     *
+     * @param menu The ListPopupWindow to show.
+     * @param anchorStripView The virtual view to align the menu with horizontally.
+     * @param anchorView The actual Android View to anchor the popup to.
+     * @param verticalOffset The vertical offset to apply to the menu relative to the anchor.
+     */
+    private void showMenuBelowStripView(
+            ListPopupWindow menu,
+            StripLayoutView anchorStripView,
+            View anchorView,
+            int verticalOffset) {
+        menu.setAnchorView(anchorView);
+        menu.setVerticalOffset(verticalOffset);
+
+        // Set the horizontal offset to align the menu with the right side of the strip view
+        float density = mContext.getResources().getDisplayMetrics().density;
         int horizontalOffset =
-                Math.round(
-                                (anchorTab.getDrawX() + anchorTab.getWidth())
-                                        * mContext.getResources().getDisplayMetrics().density)
-                        - mCloseButtonMenu.getWidth();
-        // Cap the horizontal offset so that the close button menu doesn't get drawn off screen.
-        horizontalOffset = Math.max(horizontalOffset, 0);
-        mCloseButtonMenu.setHorizontalOffset(horizontalOffset);
+                Math.round((anchorStripView.getDrawX() + anchorStripView.getWidth()) * density)
+                        - menu.getWidth();
 
-        mCloseButtonMenu.show();
+        // Cap the horizontal offset so that the menu doesn't get drawn off screen.
+        menu.setHorizontalOffset(Math.max(horizontalOffset, 0));
 
-        // Set clipToOutline to true to contain the mouse hover effect inside thepopup's outline.
-        // Also set the background of the list view to tablet_tab_strip_close_all_tabs_context_menu
-        // to make its shape the same as the popup.
-        assumeNonNull(mCloseButtonMenu.getListView());
-        mCloseButtonMenu
-                .getListView()
-                .setBackgroundResource(R.drawable.tablet_tab_strip_close_all_tabs_context_menu);
-        mCloseButtonMenu.getListView().setClipToOutline(true);
+        menu.show();
+
+        // Set clipToOutline to true to contain the mouse hover effect inside the popup's outline.
+        // Also set the background of the list view to tablet_tab_strip_context_menu to make its
+        // shape the same as the popup.
+        // TODO(crbug.com/482242527): Fix popup border clipped on long press
+        assumeNonNull(menu.getListView());
+        menu.getListView().setBackgroundResource(R.drawable.tablet_tab_strip_context_menu);
+        menu.getListView().setClipToOutline(true);
     }
 
     /**
@@ -5590,6 +5662,18 @@ public class StripLayoutHelper
      */
     public void clickCloseButtonMenuItemForTesting(int menuItemId) {
         mCloseButtonMenu.performItemClick(menuItemId);
+    }
+
+    /** Returns true if the Glic button menu is showing */
+    public boolean isGlicButtonMenuShowingForTesting() {
+        return mGlicButtonMenu != null && mGlicButtonMenu.isShowing();
+    }
+
+    /**
+     * @param menuItemId The id of the menu item to click
+     */
+    public void clickGlicButtonMenuItemForTesting(int menuItemId) {
+        if (mGlicButtonMenu != null) mGlicButtonMenu.performItemClick(menuItemId);
     }
 
     /** Returns The width of the tab strip. */

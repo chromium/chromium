@@ -4492,6 +4492,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_BOOKMARK_ALL_TABS" desc="Menu item for bookmarking all tabs.">
         Bookmark all tabs
       </message>
+      <message name="IDS_MENU_UNPIN_GLIC_BUTTON" desc="Menu item for unpinning the tab strip Glic button.">
+        Unpin
+      </message>
       <message name="IDS_MENU_PIN_GLIC" desc="Menu item for pinning the Gemini button on the tab strip.">
         Pin Gemini
       </message>
