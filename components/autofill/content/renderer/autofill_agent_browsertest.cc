@@ -1842,6 +1842,82 @@ TEST_F(AutofillAgentTestWithFeatures, RequestRefillTimesOut) {
   std::move(run_loop).Run();
 }
 
+class AutofillAgentAtMemoryTest : public AutofillAgentTest {
+ public:
+  AutofillAgentAtMemoryTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kAutofillAtMemory);
+  }
+
+  void SimulateTyping(const std::string& value) {
+    for (char c : value) {
+      SimulateUserTypingASCIICharacter(c, true);
+      task_environment_.FastForwardBy(base::Milliseconds(200));
+    }
+    task_environment_.RunUntilIdle();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AutofillAgentAtMemoryTest, AtMemorySearchTrigger) {
+  EXPECT_CALL(mock_form_tracker(), ElementDisappeared(_))
+      .Times(testing::AnyNumber());
+
+  LoadHTML(R"(<input id="f">)");
+  WaitForFormsSeen();
+  Focus("f");
+
+  testing::MockFunction<void(int)> check_point;
+  {
+    testing::InSequence s;
+    // 1. "a" -> No @memory trigger.
+    EXPECT_CALL(autofill_driver(),
+                AskForValuesToFill(
+                    _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+        .Times(0);
+    EXPECT_CALL(check_point, Call(1));
+
+    // 2. "a@" -> No @memory trigger.
+    EXPECT_CALL(autofill_driver(),
+                AskForValuesToFill(
+                    _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+        .Times(0);
+    EXPECT_CALL(check_point, Call(2));
+
+    // 3. "a@@" -> @memory has triggered.
+    EXPECT_CALL(autofill_driver(),
+                AskForValuesToFill(
+                    _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+        .Times(1);
+    EXPECT_CALL(check_point, Call(3));
+
+    // 4. "a@@b" -> No @memory trigger.
+    EXPECT_CALL(autofill_driver(),
+                AskForValuesToFill(
+                    _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+        .Times(0);
+    EXPECT_CALL(check_point, Call(4));
+  }
+
+  // Ignore standard Autofill calls for this test.
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, testing::Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+      .Times(testing::AnyNumber());
+
+  // Typing sequence: "a", "a@", "a@@", "a@@b"
+  SimulateTyping("a");
+  check_point.Call(1);
+  SimulateTyping("@");
+  check_point.Call(2);
+  SimulateTyping("@");
+  check_point.Call(3);
+  SimulateTyping("b");
+  check_point.Call(4);
+}
+
 }  // namespace
 
 }  // namespace autofill

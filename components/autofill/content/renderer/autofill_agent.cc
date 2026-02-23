@@ -340,6 +340,16 @@ AutofillAgent::Config CreateConfig(bool uses_platform_autofill) {
   };
 }
 
+bool ShouldTriggerAtMemorySearch(const blink::WebFormControlElement& element) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
+    return false;
+  }
+  const unsigned int sel_start = element.SelectionStart();
+  const unsigned int sel_end = element.SelectionEnd();
+  return sel_start == sel_end && sel_start >= 2 &&
+         element.EditingValue().Substring(sel_start - 2, 2).Equals("@@");
+}
+
 }  // namespace
 
 // During prerendering, we do not want the renderer to send messages to the
@@ -913,6 +923,12 @@ void AutofillAgent::OnTextFieldValueChanged(
   // the preview in that case should be cleared since new suggestions will be
   // showing up.
   ClearPreviewedForm();
+
+  if (ShouldTriggerAtMemorySearch(element)) {
+    ShowSuggestions(element, AutofillSuggestionTriggerSource::kAtMemory,
+                    form_cache, std::nullopt);
+    return;
+  }
 
   const auto input_element = element.DynamicTo<WebInputElement>();
   if (input_element && input_element.IsTextField()) {
