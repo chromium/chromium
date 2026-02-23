@@ -4,6 +4,7 @@
 
 package org.chromium.components.embedder_support.contextmenu;
 
+import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.IntDef;
@@ -55,6 +56,20 @@ public interface ContextMenuItemDelegate {
     }
 
     /**
+     * @return Whether the current profile enables printing.
+     */
+    default boolean isPrintSupported() {
+        return false;
+    }
+
+    /**
+     * @return Whether the "Open in other window" context menu item should be shown.
+     */
+    default boolean isOpenInOtherWindowSupported() {
+        return false;
+    }
+
+    /**
      * @return Whether the embedder can get itself into multi-window mode.
      */
     default boolean canEnterMultiWindowMode() {
@@ -71,6 +86,16 @@ public interface ContextMenuItemDelegate {
     default boolean startDownload(GURL url, boolean isLink) {
         return false;
     }
+
+    /**
+     * Called when the context menu is trying to start a download of the current page.
+     *
+     * @param context The context to use for the download.
+     */
+    default void startDownloadPage(Context context) {}
+
+    /** Initiates the printing process of the current page. */
+    default void startPrint() {}
 
     /**
      * Called when the {@code text} should be saved to the clipboard.

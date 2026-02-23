@@ -7,6 +7,7 @@ package org.chromium.components.embedder_support.contextmenu;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Factory interface for creating {@link ContextMenuPopulator}s. */
 @NullMarked
@@ -21,6 +22,13 @@ public interface ContextMenuPopulatorFactory {
      */
     ContextMenuPopulator createContextMenuPopulator(
             Context context, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate);
+
+    /**
+     * Sets the {@link ContextMenuItemDelegate} for the context menu.
+     *
+     * @param itemDelegate The {@link ContextMenuItemDelegate} to set.
+     */
+    default void setItemDelegate(@Nullable ContextMenuItemDelegate itemDelegate) {}
 
     /**
      * Whether the factory is enabled. Can be overridden to conditionally disable context menu on

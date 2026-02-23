@@ -73,6 +73,8 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
+import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
+import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager.ContextualSearchTabPromotionDelegate;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerSupplier;
@@ -213,6 +215,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.DismissReason;
@@ -244,6 +247,7 @@ import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
+import java.util.Collections;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -1140,6 +1144,12 @@ public class RootUiCoordinator
                                     .get()
                                     .getTabCreator(
                                             mTabModelSelectorSupplier.get().isIncognitoSelected());
+            ContextMenuPopulatorFactory contextMenuPopulatorFactory =
+                    new ChromeContextMenuPopulatorFactory(
+                            /* itemDelegate= */ null,
+                            mShareDelegateSupplier,
+                            ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW,
+                            /* customContentActions= */ Collections.emptyList());
             mEphemeralTabCoordinatorSupplier.set(
                     new EphemeralTabCoordinator(
                             mActivity,
@@ -1147,7 +1157,8 @@ public class RootUiCoordinator
                             mActivity.getWindow().getDecorView(),
                             mActivityTabProvider,
                             tabCreator,
-                            getBottomSheetController()));
+                            getBottomSheetController(),
+                            contextMenuPopulatorFactory));
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();

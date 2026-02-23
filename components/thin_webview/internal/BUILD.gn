@@ -34,6 +34,7 @@ android_library("internal_java") {
   sources = [
     "java/src/org/chromium/components/thinwebview/internal/CompositorViewImpl.java",
     "java/src/org/chromium/components/thinwebview/internal/ThinWebViewActionModeCallback.java",
+    "java/src/org/chromium/components/thinwebview/internal/ThinWebViewContextMenuItemDelegate.java",
     "java/src/org/chromium/components/thinwebview/internal/ThinWebViewImpl.java",
   ]
 
@@ -47,6 +48,7 @@ android_library("internal_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
+    "//url:url_java",
   ]
 }
 

@@ -42,6 +42,7 @@ android_library("java") {
     "//components/security_state/core:security_state_enums_java",
     "//components/thin_webview:factory_java",
     "//components/thin_webview:java",
+    "//components/thin_webview/internal:internal_java",
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

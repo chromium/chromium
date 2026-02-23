@@ -31,11 +31,13 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
 import org.chromium.components.browser_ui.widget.FadingShadow;
 import org.chromium.components.browser_ui.widget.FadingShadowView;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
+import org.chromium.components.thinwebview.internal.ThinWebViewContextMenuItemDelegate;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.RenderCoordinates;
@@ -65,6 +67,7 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
     private final Runnable mCloseButtonCallback;
     private final SettableMonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier =
             ObservableSuppliers.createMonotonic();
+    private final @Nullable ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
     private final Callback<ViewGroup> mOnToolbarCreatedCallback;
 
     private ViewGroup mToolbarView;
@@ -79,6 +82,7 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
 
     /**
      * Constructor.
+     *
      * @param context An Android context.
      * @param openNewTabCallback Callback invoked to open a new tab.
      * @param toolbarClickCallback Callback invoked when user clicks on the toolbar.
@@ -86,6 +90,7 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
      * @param maxViewHeight The height of the sheet in full height position.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      * @param onToolbarCreatedCallback Callback invoked to notify observers on toolbar creation.
+     * @param contextMenuPopulatorFactory The factory used to create the context menu populator.
      */
     public EphemeralTabSheetContent(
             Context context,
@@ -94,12 +99,14 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
             Runnable closeButtonCallback,
             int maxViewHeight,
             IntentRequestTracker intentRequestTracker,
-            Callback<ViewGroup> onToolbarCreatedCallback) {
+            Callback<ViewGroup> onToolbarCreatedCallback,
+            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory) {
         mContext = context;
         mOpenNewTabCallback = openNewTabCallback;
         mToolbarClickCallback = toolbarClickCallback;
         mCloseButtonCallback = closeButtonCallback;
         mOnToolbarCreatedCallback = onToolbarCreatedCallback;
+        mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
 
         createThinWebView(getMaxSheetHeight(maxViewHeight), intentRequestTracker);
         createToolbarView(maxViewHeight);
@@ -118,7 +125,13 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
         if (mWebContentView.getParent() != null) {
             ((ViewGroup) mWebContentView.getParent()).removeView(mWebContentView);
         }
-        mThinWebView.attachWebContents(mWebContents, mWebContentView, delegate);
+        if (mContextMenuPopulatorFactory != null) {
+            ThinWebViewContextMenuItemDelegate itemDelegate =
+                    new ThinWebViewContextMenuItemDelegate(webContents);
+            mContextMenuPopulatorFactory.setItemDelegate(itemDelegate);
+        }
+        mThinWebView.attachWebContents(
+                mWebContents, mWebContentView, delegate, mContextMenuPopulatorFactory);
 
         // Initialize the supplier of {@link ShareDelegate} for the WindowAndroid used by
         // ThinWebView.  The {@link ShareDelegate} itself is not set by design in order to leave

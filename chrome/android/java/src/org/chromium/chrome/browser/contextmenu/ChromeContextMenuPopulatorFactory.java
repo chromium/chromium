@@ -15,7 +15,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator;
@@ -28,13 +28,13 @@ import java.util.function.Supplier;
 @NullMarked
 public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFactory {
     private static @Nullable ShareDelegate sShareDelegateForTesting;
-    private final TabContextMenuItemDelegate mItemDelegate;
     private final Supplier<@Nullable ShareDelegate> mShareDelegateSupplier;
     private final @ContextMenuMode int mContextMenuMode;
     private final List<CustomContentAction> mCustomContentActions;
+    private @Nullable ContextMenuItemDelegate mItemDelegate;
 
     public ChromeContextMenuPopulatorFactory(
-            TabContextMenuItemDelegate itemDelegate,
+            @Nullable ContextMenuItemDelegate itemDelegate,
             Supplier<@Nullable ShareDelegate> shareDelegate,
             @ContextMenuMode int contextMenuMode,
             List<CustomContentAction> customContentActions) {
@@ -50,7 +50,14 @@ public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFa
 
     @Override
     public void onDestroy() {
-        mItemDelegate.onDestroy();
+        if (mItemDelegate != null) {
+            mItemDelegate.onDestroy();
+        }
+    }
+
+    @Override
+    public void setItemDelegate(@Nullable ContextMenuItemDelegate itemDelegate) {
+        mItemDelegate = itemDelegate;
     }
 
     public static void setShareDelegateForTesting(ShareDelegate shareDelegate) {
@@ -61,6 +68,7 @@ public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFa
     @Override
     public ContextMenuPopulator createContextMenuPopulator(
             Context context, ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate) {
+        assert mItemDelegate != null : "mItemDelegate should not be null";
         return new ChromeContextMenuPopulator(
                 mItemDelegate,
                 sShareDelegateForTesting != null

@@ -32,6 +32,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -59,6 +60,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private final Supplier<TabCreator> mTabCreator;
     private final BottomSheetController mBottomSheetController;
     private final EphemeralTabMediator mMediator;
+    private final ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
     private boolean mCanPromoteToNewTab;
 
     private @Nullable WebContents mWebContents;
@@ -81,6 +83,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
      * @param tabProvider Provider of the current activity tab.
      * @param tabCreator Supplier for {@link TabCreator} handling a new tab creation.
      * @param bottomSheetController {@link BottomSheetController} as the container of the tab.
+     * @param contextMenuPopulatorFactory The factory used to create the context menu populator.
      */
     public EphemeralTabCoordinator(
             Context context,
@@ -88,13 +91,15 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             View layoutView,
             Supplier<Tab> tabProvider,
             Supplier<TabCreator> tabCreator,
-            BottomSheetController bottomSheetController) {
+            BottomSheetController bottomSheetController,
+            ContextMenuPopulatorFactory contextMenuPopulatorFactory) {
         mContext = context;
         mWindow = window;
         mLayoutView = layoutView;
         mTabProvider = tabProvider;
         mTabCreator = tabCreator;
         mBottomSheetController = bottomSheetController;
+        mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
 
         float topControlsHeight =
                 mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
@@ -139,13 +144,15 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
      * @param title The title to be shown.
      * @param profile Profile associated with the ephemeral tab.
      * @param canPromoteToNewTab Whether the tab can be promoted to a normal tab.
+     * @param shouldHaveContextMenu Whether the tab should have a context menu.
      */
     public void requestOpenSheet(
             GURL url,
             @Nullable GURL fullPageUrl,
             String title,
             Profile profile,
-            boolean canPromoteToNewTab) {
+            boolean canPromoteToNewTab,
+            boolean shouldHaveContextMenu) {
         assert !isOpened() : "Avoid making new requests when an ephemeral tab is showing.";
         mUrl = url;
         mFullPageUrl = fullPageUrl;
@@ -199,7 +206,8 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                             this::close,
                             getMaxViewHeight(),
                             intentRequestTracker,
-                            (toolbarView) -> mMediator.onToolbarCreated(toolbarView));
+                            (toolbarView) -> mMediator.onToolbarCreated(toolbarView),
+                            shouldHaveContextMenu ? mContextMenuPopulatorFactory : null);
             mMediator.init(mWebContents, mContentView, mSheetContent, profile);
             mLayoutView.addOnLayoutChangeListener(this);
         }

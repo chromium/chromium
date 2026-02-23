@@ -57,7 +57,12 @@ class PaymentsWindowCoordinator implements EphemeralTabObserver {
         Profile profile = Profile.fromWebContents(merchantWebContents);
         assert profile != null;
         mEphemeralTabCoordinator.requestOpenSheet(
-                url, /* fullPageUrl= */ null, title, profile, /* canPromoteToNewTab= */ false);
+                url,
+                /* fullPageUrl= */ null,
+                title,
+                profile,
+                /* canPromoteToNewTab= */ false,
+                /* shouldHaveContextMenu= */ false);
     }
 
     /** Attempts to close an ephemeral tab. */
