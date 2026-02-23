@@ -220,14 +220,22 @@ void MediaControlTimelineElement::RenderTimelineTimerFired(TimerBase*) {
 }
 
 void MediaControlTimelineElement::MaybeUpdateTimelineInterval() {
-  if (!is_live_ || !MediaElement().seekable()->length() || !live_anchor_time_)
+  if (!is_live_ || !live_anchor_time_) {
     return;
+  }
 
-  int last_seekable = MediaElement().seekable()->length() - 1;
+  TimeRanges* seekable_ranges = MediaElement().seekable();
+  DCHECK(seekable_ranges != nullptr);
+
+  if (seekable_ranges->length() == 0u) {
+    return;
+  }
+
+  int last_seekable = seekable_ranges->length() - 1;
   double seekable_start =
-      MediaElement().seekable()->start(last_seekable, ASSERT_NO_EXCEPTION);
+      seekable_ranges->start(last_seekable, ASSERT_NO_EXCEPTION);
   double seekable_end =
-      MediaElement().seekable()->end(last_seekable, ASSERT_NO_EXCEPTION);
+      seekable_ranges->end(last_seekable, ASSERT_NO_EXCEPTION);
   double expected_media_time_now =
       live_anchor_time_->media_time_ +
       (base::TimeTicks::Now() - live_anchor_time_->clock_time_).InSecondsF();
