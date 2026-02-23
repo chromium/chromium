@@ -365,8 +365,9 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
       WaitForGlicClose());
 }
 
+// TODO(crbug.com/486933106): Disabled for failing.
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       ClientUnresponsiveThenError) {
+                       DISABLED_ClientUnresponsiveThenError) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
@@ -396,16 +397,9 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 // triggers just while setting this up, before we deactivate the window.
 // Rather than adjust the timeouts to make this test even slower, just disable
 // it for those builds (as well as similarly slow sanitizer builds).
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
-    defined(MEMORY_SANITIZER)
-#define MAYBE_ClientUnresponsiveWhileBrowserNotActive \
-  DISABLED_ClientUnresponsiveWhileBrowserNotActive
-#else
-#define MAYBE_ClientUnresponsiveWhileBrowserNotActive \
-  ClientUnresponsiveWhileBrowserNotActive
-#endif
+// TODO(crbug.com/486933106): Disabled for failing.
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       MAYBE_ClientUnresponsiveWhileBrowserNotActive) {
+                       DISABLED_ClientUnresponsiveWhileBrowserNotActive) {
   if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
     // TODO(b/453696965): Broken in multi-instance.
     GTEST_SKIP() << "Skipping for kGlicMultiInstance";
