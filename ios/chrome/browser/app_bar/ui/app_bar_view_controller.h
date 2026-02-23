@@ -26,6 +26,9 @@
 // Tab Grid handler.
 @property(nonatomic, weak) id<TabGridCommands> tabGridHandler;
 
+// Updates the App Bar's subviews for a given rotation angle.
+- (void)updateForAngle:(CGFloat)angle;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_VIEW_CONTROLLER_H_

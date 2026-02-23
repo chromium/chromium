@@ -5,6 +5,11 @@
 source_set("ui") {
   sources = [
     "app_bar_consumer.h",
+    "app_bar_container_view.h",
+    "app_bar_container_view.mm",
+    "app_bar_container_view_controller.h",
+    "app_bar_container_view_controller.mm",
+    "app_bar_container_view_delegate.h",
     "app_bar_mutator.h",
     "app_bar_view_controller.h",
     "app_bar_view_controller.mm",

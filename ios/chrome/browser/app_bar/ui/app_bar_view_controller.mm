@@ -75,9 +75,19 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   BOOL _isTabGridVisible;
 }
 
+- (void)updateForAngle:(CGFloat)angle {
+  [self loadViewIfNeeded];
+
+  CGAffineTransform transform = CGAffineTransformMakeRotation(angle);
+  _assistantButton.transform = transform;
+  _openNewTabButton.transform = transform;
+  _tabGridButton.transform = transform;
+}
+
 - (void)viewDidLoad {
   [super viewDidLoad];
 
+  // TODO(crbug.com/483998773): Use a real design.
   self.view.backgroundColor = [UIColor.purpleColor colorWithAlphaComponent:0.5];
 
   _assistantButton = [self createAssistantButton];

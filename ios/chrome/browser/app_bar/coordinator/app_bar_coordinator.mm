@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_coordinator.h"
 
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_mediator.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 
 @implementation AppBarCoordinator {
+  AppBarContainerViewController* _containerViewController;
   AppBarViewController* _viewController;
   AppBarMediator* _mediator;
   raw_ptr<Browser> _incognitoBrowser;
@@ -49,6 +51,9 @@
   _viewController.tabGridHandler = tabGridHandler;
   _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
 
+  _containerViewController = [[AppBarContainerViewController alloc] init];
+  [_containerViewController setAppBar:_viewController];
+
   SceneState* sceneState = _regularBrowser->GetSceneState();
 
   _mediator = [[AppBarMediator alloc]
@@ -79,7 +84,7 @@
 #pragma mark - Properties
 
 - (UIViewController*)viewController {
-  return _viewController;
+  return _containerViewController;
 }
 
 - (void)setIncognitoBrowser:(Browser*)incognitoBrowser {

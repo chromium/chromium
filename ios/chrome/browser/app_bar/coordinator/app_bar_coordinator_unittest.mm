@@ -6,7 +6,7 @@
 
 #import <memory>
 
-#import "ios/chrome/browser/app_bar/ui/app_bar_view_controller.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -60,6 +60,6 @@ class AppBarCoordinatorTest : public PlatformTest {
 TEST_F(AppBarCoordinatorTest, TestStart) {
   [coordinator_ start];
   EXPECT_TRUE(coordinator_.viewController);
-  EXPECT_TRUE(
-      [coordinator_.viewController isKindOfClass:[AppBarViewController class]]);
+  EXPECT_TRUE([coordinator_.viewController
+      isKindOfClass:[AppBarContainerViewController class]]);
 }

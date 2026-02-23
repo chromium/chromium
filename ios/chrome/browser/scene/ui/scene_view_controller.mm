@@ -44,14 +44,7 @@
   [self addChildViewController:appBar];
   [appBarContainer addSubview:appBarView];
 
-  [NSLayoutConstraint activateConstraints:@[
-    [appBarContainer.leadingAnchor
-        constraintEqualToAnchor:appBarView.leadingAnchor],
-    [appBarContainer.trailingAnchor
-        constraintEqualToAnchor:appBarView.trailingAnchor],
-    [appBarContainer.bottomAnchor
-        constraintEqualToAnchor:appBarView.bottomAnchor],
-  ]];
+  AddSameCenterConstraints(appBarContainer, appBarView);
 
   [appBar didMoveToParentViewController:self];
 }
