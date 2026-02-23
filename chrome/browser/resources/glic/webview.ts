@@ -185,7 +185,7 @@ export class WebviewController {
 
     this.oneMinuteTimer.start(() => {
       if (this.host) {
-        chrome.metricsPrivate.recordEnumerationValue(
+        chrome.histograms.recordEnumerationValue(
             'Glic.Host.WebClientState.AtOneMinute',
             this.host.getDetailedWebClientState(),
             DetailedWebClientState.MAX_VALUE + 1);
@@ -204,7 +204,7 @@ export class WebviewController {
     }
     this.oneMinuteTimer.reset();
     if (this.host) {
-      chrome.metricsPrivate.recordEnumerationValue(
+      chrome.histograms.recordEnumerationValue(
           'Glic.Host.WebClientState.OnDestroy',
           this.host.getDetailedWebClientState(),
           DetailedWebClientState.MAX_VALUE + 1);
@@ -241,7 +241,7 @@ export class WebviewController {
 
   onLoadTimeOut(): void {
     if (this.host) {
-      chrome.metricsPrivate.recordEnumerationValue(
+      chrome.histograms.recordEnumerationValue(
           'Glic.Host.WebClientState.OnLoadTimeOut',
           this.host.getDetailedWebClientState(),
           DetailedWebClientState.MAX_VALUE + 1);
@@ -310,13 +310,13 @@ export class WebviewController {
   }
 
   private onExit(event: chrome.webviewTag.ExitEvent): void {
-    chrome.metricsPrivate.recordEnumerationValue(
+    chrome.histograms.recordEnumerationValue(
         'Glic.Session.WebClientCrash.ExitReason',
         webviewExitReasonStringToEnum(event.reason),
         Object.keys(WEBVIEW_EXIT_REASON_MAP).length);
     if (event.reason !== 'normal') {
       this.destroyHost(WebClientState.ERROR);
-      chrome.metricsPrivate.recordUserAction('GlicSessionWebClientCrash');
+      chrome.histograms.recordUserAction('GlicSessionWebClientCrash');
       console.warn(`webview exit. processId: ${event.processId}, reason: ${
           event.reason}`);
     }
@@ -335,7 +335,7 @@ export class WebviewController {
     }
 
     if (this.host) {
-      chrome.metricsPrivate.recordEnumerationValue(
+      chrome.histograms.recordEnumerationValue(
           'Glic.Host.WebClientState.OnCommit',
           this.host.getDetailedWebClientState(),
           DetailedWebClientState.MAX_VALUE + 1);

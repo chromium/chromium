@@ -215,7 +215,7 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       if (this.enteredUnresponsiveTimestampMs !== undefined) {
         const unresponsiveDuration =
             Date.now() - this.enteredUnresponsiveTimestampMs;
-        chrome.metricsPrivate.recordMediumTime(
+        chrome.histograms.recordMediumTime(
             'Glic.Host.WebClientUnresponsiveState.Duration',
             unresponsiveDuration);
         this.enteredUnresponsiveTimestampMs = undefined;
@@ -226,7 +226,7 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     }
 
     // Record unresponsive state detections and transitions.
-    chrome.metricsPrivate.recordEnumerationValue(
+    chrome.histograms.recordEnumerationValue(
         'Glic.Host.WebClientUnresponsiveState', newState,
         WebClientUnresponsiveState.MAX_VALUE + 1);
   }
@@ -424,7 +424,7 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       return;
     }
 
-    chrome.metricsPrivate.recordMediumTime(
+    chrome.histograms.recordMediumTime(
         'Glic.Host.LoadingStageDuration.' +
             LoadingStage[this.getLoadingStage()],
         Math.floor(performance.now() - this.loadingStageStartTimestampMs!));
@@ -539,7 +539,7 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       }
 
       if (this.state !== WebUiState.kReady) {
-        chrome.metricsPrivate.recordEnumerationValue(
+        chrome.histograms.recordEnumerationValue(
             'Glic.Host.LoadingTimedOut', this.getLoadingStage(),
             LoadingStage.MAX_VALUE + 1);
         this.webview?.onLoadTimeOut();

@@ -44,7 +44,10 @@ bool GlicFreUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
       Profile::FromBrowserContext(browser_context));
 }
 
-GlicFreUI::GlicFreUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
+GlicFreUI::GlicFreUI(content::WebUI* web_ui)
+    : ui::MojoWebUIController(web_ui,
+                              /*enable_chrome_send=*/false,
+                              /*enable_chrome_histograms=*/true) {
   static constexpr webui::LocalizedString kStrings[] = {
       {"closeButtonLabel", IDS_GLIC_NOTICE_CLOSE_BUTTON_LABEL},
       {"disabledByAdminNoticeCloseButton",

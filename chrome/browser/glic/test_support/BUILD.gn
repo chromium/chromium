@@ -10,6 +10,7 @@ source_set("test_support") {
   testonly = true
   sources = [
     "glic_browser_test.h",
+    "glic_histogram_tester.h",
     "glic_test_environment.cc",
     "glic_test_environment.h",
     "glic_test_util.cc",

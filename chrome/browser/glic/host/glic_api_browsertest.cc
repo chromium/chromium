@@ -62,6 +62,7 @@
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
+#include "chrome/browser/glic/test_support/glic_histogram_tester.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
@@ -266,7 +267,7 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
   void SetUpOnMainThread() override {
     NonInteractiveGlicApiTest::SetUpOnMainThread();
 
-    histogram_tester = std::make_unique<base::HistogramTester>();
+    histogram_tester = std::make_unique<GlicHistogramTester>();
     user_action_tester = std::make_unique<base::UserActionTester>();
   }
 
@@ -311,7 +312,7 @@ class GlicApiTest : public NonInteractiveGlicApiTest, public WithTestParams {
     return instance;
   }
 
-  std::unique_ptr<base::HistogramTester> histogram_tester;
+  std::unique_ptr<GlicHistogramTester> histogram_tester;
   std::unique_ptr<base::UserActionTester> user_action_tester;
 
  protected:
@@ -470,7 +471,7 @@ class GlicApiTestWithOneTabAndPreloading : public GlicApiTestWithOneTab {
     // duplicate everything else it does and call
     // GlicApiTest::SetUpOnMainThread directly.
     GlicApiTest::SetUpOnMainThread();
-    histogram_tester = std::make_unique<base::HistogramTester>();
+    histogram_tester = std::make_unique<GlicHistogramTester>();
     RunTestSequence(InstrumentTab(kFirstTab),
                     NavigateWebContents(kFirstTab, page_url()));
 
@@ -842,7 +843,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testLoadWhileWindowClosed) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsWindowClosed) {
-  base::HistogramTester histogram_tester;
+  GlicHistogramTester histogram_tester;
   // Immediately close the window to check behavior while window is closed.
   // Fail client initialization, should see error page.
   RunTestSequence(OpenGlic(GlicInstrumentMode::kNone),
@@ -1027,7 +1028,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNoClientCreated) {
 #if defined(SLOW_BINARY)
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
-  base::HistogramTester histogram_tester;
+  GlicHistogramTester histogram_tester;
   RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
   ExecuteJsTest();
@@ -1048,7 +1049,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNoBootstrap) {
 #if defined(SLOW_BINARY)
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
-  base::HistogramTester histogram_tester;
+  GlicHistogramTester histogram_tester;
   RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
   ExecuteJsTest();
@@ -1064,7 +1065,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testInitializeTimesOut) {
 #if defined(SLOW_BINARY)
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
-  base::HistogramTester histogram_tester;
+  GlicHistogramTester histogram_tester;
   RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
   WebUIStateListener listener(GetHost());
   ExecuteJsTest({
@@ -2695,7 +2696,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestSystemSettingsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testNavigateToDifferentClientPage) {
-  base::HistogramTester histogram_tester;
+  GlicHistogramTester histogram_tester;
   RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
   WebUIStateListener listener(GetHost());
   listener.WaitForWebUiState(mojom::WebUiState::kReady);
@@ -2752,7 +2753,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCallingApiWhileHiddenRecordsMetrics) {
   ExecuteJsTest();
   RunTestSequence(CloseGlic());
 
-  base::HistogramTester histogram_tester;
+  GlicHistogramTester histogram_tester;
   ContinueJsTest();
   histogram_tester.ExpectBucketCount("Glic.Api.RequestCounts.CreateTab",
                                      GlicRequestEvent::kRequestReceived, 1);
@@ -3838,7 +3839,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateOnMemoryUsage,
                   RegisterConversation("test_id"));
   GlicInstanceImpl* instance = GetGlicInstanceImpl();
 
-  base::HistogramTester histogram_tester;
+  GlicHistogramTester histogram_tester;
   // Close Glic (make it inactive).
   RunTestSequence(CloseGlic());
 

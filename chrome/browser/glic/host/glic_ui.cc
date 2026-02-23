@@ -125,7 +125,10 @@ bool GlicUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
 }
 
 GlicUI::GlicUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui), preload_factory_receiver_{this} {
+    : ui::MojoWebUIController(web_ui,
+                              /*enable_chrome_send=*/false,
+                              /*enable_chrome_histograms=*/true),
+      preload_factory_receiver_{this} {
   static constexpr webui::LocalizedString kStrings[] = {
       {"closeButtonLabel", IDS_GLIC_NOTICE_CLOSE_BUTTON_LABEL},
       {"errorNotice", IDS_GLIC_ERROR_NOTICE},
