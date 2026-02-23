@@ -479,18 +479,14 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 - (void)stopSettingsAnimated:(BOOL)animated
                   completion:(ProceduralBlock)completion {
   if (self.settingsNavigationController) {
-    // Dismiss the view controller if it is presented.
+    // Clean-up and then dismiss the view controller if it is presented.
+    [_settingsNavigationController cleanUpSettings];
     UIViewController* presentingViewController =
         self.settingsNavigationController.presentingViewController;
 
     __weak __typeof(self) weakSelf = self;
     ProceduralBlock cleanup = ^{
-      // Cleanup settings.
-      [weakSelf.settingsNavigationController cleanUpSettings];
-      weakSelf.settingsNavigationController = nil;
-      if (completion) {
-        completion();
-      }
+      [weakSelf stopSettingsCallbackWithCompletion:completion];
     };
 
     if (presentingViewController) {
@@ -1308,6 +1304,15 @@ void RecordIfNeededSigninFullscreenPromoEvent(
 }
 
 #pragma mark - Private
+
+// Callbacks for `stopSettingsAnimated:completion:`. It releases the navigation
+// controller and call the completion if it is non nil.
+- (void)stopSettingsCallbackWithCompletion:(ProceduralBlock)completion {
+  _settingsNavigationController = nil;
+  if (completion) {
+    completion();
+  }
+}
 
 // Returns YES if incognito mode is disabled.
 - (BOOL)isIncognitoModeDisabled {
