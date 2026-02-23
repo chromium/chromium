@@ -37,11 +37,11 @@ const base::FeatureParam<std::string> kLegionTokenServerGetTokensPath{
 
 const base::FeatureParam<int> kLegionAuthTokenCacheBatchSize{
     &kLegion, /*name=*/"LegionAuthTokenCacheBatchSize",
-    /*default_value=*/64};
+    /*default_value=*/5};
 
 const base::FeatureParam<int> kLegionAuthTokenCacheLowWaterMark{
     &kLegion, /*name=*/"LegionAuthTokenCacheLowWaterMark",
-    /*default_value=*/16};
+    /*default_value=*/1};
 
 const base::FeatureParam<base::TimeDelta>
     kLegionTryGetAuthTokensNotEligibleBackoff{

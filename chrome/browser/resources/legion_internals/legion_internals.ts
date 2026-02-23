@@ -147,6 +147,6 @@ window.onload = function() {
       document.getElementById('use-token-attestation-checkbox') as
       HTMLInputElement;
   useTokenAttestationCheckbox.checked =
-      loadTimeData.getBoolean('defaultUseTokenAttestation');
+      loadTimeData.getBoolean('default_use_token_attestation');
   useTokenAttestationCheckbox.dispatchEvent(new Event('change'));
 };
