@@ -73,11 +73,14 @@ PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
 
 // Variant of the above that explicitly separates whether an accelerated draw or
 // software draw is being requested via exactly one of `snapshot_provider` and
-// `sw_draw_info` being valid.
+// `sw_draw_info` being valid. The client may optionally provide a cached
+// SkSurface for the software draw to occur into; if not provided, the software
+// draw will create a new SkSurface to draw into.
 PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     CanvasNon2DResourceProviderSharedImage* snapshot_provider,
     std::optional<CanvasSnapshotProvider::Info> sw_draw_info,
+    sk_sp<SkSurface> cached_sw_draw_surface,
     media::PaintCanvasVideoRenderer* video_renderer,
     bool prefer_tagged_orientation,
     bool reinterpret_video_as_srgb);
