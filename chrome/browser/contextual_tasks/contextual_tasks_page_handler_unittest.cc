@@ -755,13 +755,13 @@ TEST_F(ContextualTasksPageHandlerTest,
   pdf_resource.title = "Example PDF";
   task.AddUrlResource(pdf_resource);
 
-  // Invalid items to be filtered
-  UrlResource invalid_url_resource(GURL(), ResourceType::kWebpage);
-  invalid_url_resource.title = "Invalid URL";
-  task.AddUrlResource(invalid_url_resource);
+  // Invalid items to be filtered.
+  UrlResource empty_pdf_url_resource(GURL(), ResourceType::kPdf);
+  empty_pdf_url_resource.title = "Valid PDF with empty URL";
+  task.AddUrlResource(empty_pdf_url_resource);
 
   UrlResource empty_url_resource(GURL(""), ResourceType::kWebpage);
-  empty_url_resource.title = "Empty URL";
+  empty_url_resource.title = "Tab with empty URL";
   task.AddUrlResource(empty_url_resource);
 
   UrlResource empty_title_resource(GURL(kExampleUrl), ResourceType::kWebpage);
@@ -784,7 +784,7 @@ TEST_F(ContextualTasksPageHandlerTest,
   EXPECT_CALL(page_, OnContextUpdated(_))
       .WillOnce([&](std::vector<mojom::ContextInfoPtr> context) {
         // Only the first 3 valid items should be present.
-        ASSERT_EQ(context.size(), 3u);
+        ASSERT_EQ(context.size(), 4u);
 
         EXPECT_TRUE(context[0]->is_tab());
         EXPECT_EQ(context[0]->get_tab()->title, tab_resource.title);
@@ -798,6 +798,10 @@ TEST_F(ContextualTasksPageHandlerTest,
         EXPECT_TRUE(context[2]->is_file());
         EXPECT_EQ(context[2]->get_file()->title, pdf_resource.title);
         EXPECT_EQ(context[2]->get_file()->url, GURL(kExamplePdfUrl));
+
+        EXPECT_TRUE(context[3]->is_file());
+        EXPECT_EQ(context[3]->get_file()->title, empty_pdf_url_resource.title);
+        EXPECT_EQ(context[3]->get_file()->url, GURL());
 
         run_loop.Quit();
       });
