@@ -380,6 +380,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.Android.MediaState" enum="AndroidTabMediaState"
+    expires_after="2027-02-20">
+  <owner>polardz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    [Android] Records the media state of the tab when it changes. If multiple
+    states apply, the priority is Sharing &gt; Recording &gt; Audible/Muted &gt;
+    None.
+  </summary>
+</histogram>
+
 <histogram name="Tab.AndroidCrashUpload{AndroidCrashUploadTypes}"
     enum="BooleanSuccess" expires_after="M85">
   <owner>wnwen@chromium.org</owner>
