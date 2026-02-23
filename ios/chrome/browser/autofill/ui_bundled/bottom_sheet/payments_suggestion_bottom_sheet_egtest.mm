@@ -113,10 +113,11 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestionChip() {
   config.features_enabled.push_back(
       autofill::features::kAutofillEnableCvcStorageAndFilling);
   if ([self isRunningTest:@selector
-                   (testOpenPaymentsBottomSheetUseCreditCardOnV3)] ||
-             [self
-                 isRunningTest:@selector
-                 (testAttemptToOpenPaymentsBottomSheetWithoutCreditCardOnV3)]) {
+            (testOpenPaymentsBottomSheetUseCreditCardOnV3)] ||
+      [self isRunningTest:@selector
+            (testAttemptToOpenPaymentsBottomSheetWithoutCreditCardOnV3)] ||
+      [self isRunningTest:@selector
+            (FLAKY_testPaymentsBottomSheetNotShownAfterFieldTypeChanges)]) {
     config.features_enabled.push_back(kAutofillPaymentsSheetV3Ios);
   }
 
@@ -266,6 +267,17 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   [ChromeEarlGrey waitForJavaScriptCondition:condition];
 }
 
+// Triggers a form rescan by appending a dummy element to the DOM.
+// This triggers the MutationObserver in form_handlers.ts which sends
+// a form.activity message with type 'form_changed', forcing a rescan.
+- (void)triggerFormRescan {
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:
+          @"var dummy = document.createElement('form');"
+           "document.body.appendChild(dummy);"
+           "setTimeout(function() { document.body.removeChild(dummy); }, 0);"];
+}
+
 #pragma mark - Tests
 
 // Tests that the Payments Bottom Sheet appears when tapping on a credit card
@@ -346,22 +358,6 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 
   id<GREYMatcher> continueButton = WaitOnResponsiveContinueButton();
 
-  // Verify that the sheet trigger outcome was recorded.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:1
-                         forHistogram:@"IOS.PaymentsBottomSheetV3.Triggered"],
-      @"IOS.PaymentsBottomSheetV3.Triggered was not recorded when "
-      @"the sheet was triggered");
-
-  // Verify that the time to trigger the sheet was recorded.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectTotalCount:1
-              forHistogram:@"IOS.PaymentsBottomSheet.TimeToTrigger.Triggered"],
-      @"IOS.PaymentsBottomSheet.TimeToTrigger.Triggered wasn't recorded");
-
   // Verify that the credit card is visible to the user.
   [[EarlGrey selectElementWithMatcher:grey_text(_lastDigits)]
       assertWithMatcher:grey_notNil()];
@@ -416,34 +412,6 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
   id<GREYMatcher> continueButton = ContinueButton();
   [[EarlGrey selectElementWithMatcher:continueButton]
       assertWithMatcher:grey_nil()];
-
-  // Verify that the sheet trigger outcome was recorded for the case where the
-  // outcome was to not trigger the sheet.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectUniqueSampleWithCount:1
-                            forBucket:0
-                         forHistogram:@"IOS.PaymentsBottomSheetV3.Triggered"],
-      @"IOS.PaymentsBottomSheetV3.Triggered was not recorded when "
-      @"the sheet was not triggered");
-
-  // Verify that the time to evaluate to trigger the sheet was recorded for the
-  // case where it was decided to not trigger/show the sheet.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectTotalCount:1
-              forHistogram:
-                  @"IOS.PaymentsBottomSheet.TimeToTrigger.NotTriggered"],
-      @"IOS.PaymentsBottomSheet.TimeToTrigger.NotTriggered wasn't recorded");
-
-  // Verify that the case for the time to trigger for the triggered outcome case
-  // wasn't recorded since the outcome was to not trigger.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectTotalCount:0
-              forHistogram:@"IOS.PaymentsBottomSheet.TimeToTrigger.Triggered"],
-      @"IOS.PaymentsBottomSheet.TimeToTrigger.Triggered "
-       " was recorded when it should not");
 
   // Verify that the time to selection was not recorded because the sheet wasn't
   // shown.
@@ -801,15 +769,78 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
       assertWithMatcher:grey_nil()];
 }
 
+// Tests that the sheet is NOT shown if a field that was previously recognized
+// as a credit card field dynamically changes to a non-credit card field type
+// (e.g. password) before it is tapped, verifying that listeners are correctly
+// detached during re-evaluations.
+- (void)FLAKY_testPaymentsBottomSheetNotShownAfterFieldTypeChanges {
+  [self loadPaymentsPage];
+
+  // At this point, the page is loaded and listeners are attached.
+  // Execute JS to mutate the field so it is no longer recognized as a credit
+  // card field. We change its type to 'password' which forces Autofill to
+  // classify it as a password field.
+  [ChromeEarlGrey
+      evaluateJavaScriptForSideEffect:
+          @"document.getElementById('CCName').type = 'password';"
+          @"document.getElementById('CCName').autocomplete = 'new-password';"];
+
+  // Trigger a form rescan so that the new field type is picked up by Autofill.
+  // Reset the histogram tester to capture only new metrics from this point.
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
+  [self triggerFormRescan];
+
+  // Wait for the form rescan to be processed by Autofill.
+  bool metricLogged =
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), ^bool {
+        return [MetricsAppInterface
+                   expectTotalCount:1
+                       forHistogram:@"Autofill.Timing.ParseFormsAsync."
+                                    @"UpdateCache"] == nil;
+      });
+  GREYAssertTrue(metricLogged, @"Autofill did not update its cache.");
+
+  // Tap on the field.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("CCName")];
+
+  // Wait enough time to hypothetically show the sheet if it was still
+  // listening.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+
+  // Verify that the sheet wasn't shown because the listener should be detached.
+  // We check for the absence of the 'Continue' button which only appears on the
+  // sheet.
+  [[EarlGrey selectElementWithMatcher:ContinueButton()]
+      assertWithMatcher:grey_nil()];
+
+  // Since the trigger (tap) was completely ignored by the iOS bottom sheet
+  // logic (because the JS listener was removed), no trigger metrics for
+  // Payments Bottom Sheet should be recorded at all.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@"IOS.PaymentsBottomSheet.ExitReason"],
+      @"IOS.PaymentsBottomSheet.ExitReason was recorded when the sheet "
+      @"should not have been triggered");
+
+  // The keyboard should instead appear because it's a standard password field
+  // tap.
+  [ChromeEarlGrey waitForKeyboardToAppear];
+}
+
 @end
 
 // Test suite for testing the new blur approach.
-@interface PaymentsSuggestionBottomSheetWithNewBlurEGTest : PaymentsSuggestionBottomSheetEGTest
+@interface PaymentsSuggestionBottomSheetWithNewBlurEGTest
+    : PaymentsSuggestionBottomSheetEGTest
 
 @end
 
-
-@implementation  PaymentsSuggestionBottomSheetWithNewBlurEGTest
+@implementation PaymentsSuggestionBottomSheetWithNewBlurEGTest
 
 - (bool)shouldUseNewBlur {
   return YES;

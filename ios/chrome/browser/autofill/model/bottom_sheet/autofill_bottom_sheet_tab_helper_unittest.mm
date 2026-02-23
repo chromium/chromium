@@ -4,31 +4,41 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#import "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
+#import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/OCMock/OCMockMacros.h"
 #import "third_party/ocmock/gtest_support.h"
-
-namespace {
 
 // Test fixture to test AutofillBottomSheetTabHelper class.
 class AutofillBottomSheetTabHelperTest : public PlatformTest {
@@ -60,7 +70,18 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
  protected:
   AutofillBottomSheetTabHelperTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
-    profile_ = TestProfileIOS::Builder().Build();
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactories({TestProfileIOS::TestingFactory{
+        (ProfileKeyedServiceFactoryIOS*)
+            autofill::PersonalDataManagerFactory::GetInstance(),
+        base::BindOnce(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              std::unique_ptr<autofill::TestPersonalDataManager> service =
+                  std::make_unique<autofill::TestPersonalDataManager>();
+              service->SetPrefService(profile->GetPrefs());
+              return std::unique_ptr<KeyedService>(service.release());
+            })}});
+    profile_ = std::move(builder).Build();
 
     web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
@@ -95,8 +116,8 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
       {.disable_server_communication = true}};
   web::ScopedTestingWebClient web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
-  std::unique_ptr<autofill::AutofillClient> autofill_client_;
   std::unique_ptr<web::WebState> web_state_;
+  std::unique_ptr<autofill::AutofillClient> autofill_client_;
   raw_ptr<AutofillBottomSheetTabHelper> helper_;
   AutofillAgent* autofill_agent_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -109,8 +130,8 @@ TEST_F(AutofillBottomSheetTabHelperTest,
   scoped_feature_list_.InitAndEnableFeature(
       password_manager::features::kIOSProactivePasswordGenerationBottomSheet);
 
-  // Using LoadHtml to set up the JavaScript features needed by the
-  // AttachListeners function.
+  // Using LoadHtml to fake a real page load. This instantiates the main
+  // web::WebFrame and sets up the JS features needed by AttachListeners.
   web::test::LoadHtml(@"<html><body></body></html>", web_state_.get());
 
   autofill::FieldRendererId new_password_rendererID(0);
@@ -151,4 +172,155 @@ TEST_F(AutofillBottomSheetTabHelperTest,
   EXPECT_OCMOCK_VERIFY(generation_provider_mock);
 }
 
-}  // namespace
+// Tests that we detach the listeners when Payment Sheet V3 is enabled and the
+// form is not a CC form.
+TEST_F(AutofillBottomSheetTabHelperTest,
+       UpdateListenersForPaymentsForm_V3_DetachWhenNotCreditCard) {
+  scoped_feature_list_.InitAndEnableFeature(kAutofillPaymentsSheetV3Ios);
+
+  // Using LoadHtml to fake a real page load. This instantiates the main
+  // web::WebFrame and sets up the JS features needed by AttachListeners.
+  web::test::LoadHtml(@"<html><body></body></html>", web_state_.get());
+  web::WebFrame* frame = AutofillBottomSheetJavaScriptFeature::GetInstance()
+                             ->GetWebFramesManager(web_state_.get())
+                             ->GetMainWebFrame();
+  ASSERT_NE(frame, nullptr);
+  autofill::LocalFrameToken frame_token =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state_.get(),
+                                                           frame)
+          ->GetFrameToken();
+  std::string frame_id = frame->GetFrameId();
+
+  autofill::AutofillManager& manager =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state_.get(),
+                                                           frame)
+          ->GetAutofillManager();
+
+  // Add a credit card to the personal data manager.
+  autofill::CreditCard card = autofill::test::GetCreditCard();
+  card.SetExpirationYear(2099);
+  // Add via autofill_client_ directly to ensure we use the test client's PDM.
+  autofill_client_->GetPersonalDataManager()
+      .payments_data_manager()
+      .AddCreditCard(card);
+
+  // Inject a spy script to verify api calls to detach the listeners.
+  // The script wraps the `detachListeners` function to increment a
+  // counter. This must be done in the isolated world used by the feature.
+  web::WebFrame* main_frame =
+      AutofillBottomSheetJavaScriptFeature::GetInstance()
+          ->GetWebFramesManager(web_state_.get())
+          ->GetMainWebFrame();
+  ASSERT_TRUE(main_frame);
+
+  NSString* apiCallListenerScript =
+      @"window.detachListenersCallCount = 0;"
+      @"const originalDetach = "
+      @"__gCrWeb.registeredApis.bottomSheet.functions.detachListeners;"
+      @"__gCrWeb.registeredApis.bottomSheet.functions.detachListeners = "
+      @"function(...args) { "
+      @"    ++window.detachListenersCallCount;"
+      @"    return originalDetach.apply(this, args);};";
+  web::test::ExecuteJavaScriptForFeature(
+      web_state_.get(), apiCallListenerScript,
+      AutofillBottomSheetJavaScriptFeature::GetInstance());
+
+  // Set up the form and its fields.
+  autofill::FormData form;
+  form.set_url(GURL("https://myform.com"));
+  form.set_action(GURL("https://myform.com/submit"));
+
+  autofill::FormFieldData field;
+  field.set_form_control_type(autofill::FormControlType::kInputText);
+  field.set_id_attribute(u"id1");
+  field.set_name(u"name1");
+  field.set_name_attribute(field.name());
+  field.set_renderer_id(autofill::FieldRendererId(1));
+  field.set_host_frame(frame_token);
+
+  // Add a credit card to make it a credit card form initially.
+  // We need a number and an expiration date for IsCompleteCreditCardForm.
+  autofill::FormFieldData cc_field;
+  cc_field.set_form_control_type(autofill::FormControlType::kInputText);
+  cc_field.set_id_attribute(u"cc_number");
+  cc_field.set_name(u"cc_number");
+  cc_field.set_name_attribute(cc_field.name());
+  cc_field.set_renderer_id(autofill::FieldRendererId(2));
+  cc_field.set_host_frame(frame_token);
+
+  autofill::FormFieldData exp_field;
+  exp_field.set_form_control_type(autofill::FormControlType::kInputText);
+  exp_field.set_id_attribute(u"cc_exp");
+  exp_field.set_name(u"cc_exp");
+  exp_field.set_name_attribute(exp_field.name());
+  exp_field.set_label(u"Expiration Date");
+  exp_field.set_renderer_id(autofill::FieldRendererId(3));
+  exp_field.set_host_frame(frame_token);
+
+  form.set_fields({field, cc_field, exp_field});
+
+  autofill::TestAutofillManagerWaiter waiter(
+      manager, {autofill::AutofillManagerEvent::kFormsSeen});
+  manager.OnFormsSeen({form}, {});
+  ASSERT_TRUE(waiter.Wait(1));
+
+  // Manually set field types to ensure the form is recognized as a credit card
+  // form.
+  autofill::FormStructure* form_structure =
+      const_cast<autofill::FormStructure*>(
+          manager.FindCachedFormById(form.global_id()));
+  ASSERT_NE(nullptr, form_structure);
+  ASSERT_EQ(form_structure->field_count(), 3u);
+  // Indices: 0->text, 1->cc_number, 2->cc_exp
+  form_structure->field(1)->SetTypeTo(
+      autofill::AutofillType(autofill::CREDIT_CARD_NUMBER),
+      autofill::AutofillPredictionSource::kHeuristics);
+  form_structure->field(2)->SetTypeTo(
+      autofill::AutofillType(autofill::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR),
+      autofill::AutofillPredictionSource::kHeuristics);
+
+  ASSERT_TRUE(form_structure->IsCompleteCreditCardForm(
+      autofill::FormStructure::CreditCardFormCompleteness::
+          kCompleteCreditCardForm));
+  ASSERT_FALSE(
+      autofill::GetCreditCardsToSuggest(
+          manager.client().GetPersonalDataManager().payments_data_manager())
+          .empty());
+
+  // Register the listeners (should attach because it is a CC form).
+  helper_->UpdateListenersForPaymentsForm(manager, form.global_id(),
+                                          /*only_new=*/false);
+
+  // Now change the form to modify the CC fields, making it non-CC.
+  // We keep the fields but change their attributes so they are not recognized
+  // as CC fields.
+  cc_field.set_name(u"other_field");
+  cc_field.set_name_attribute(cc_field.name());
+  cc_field.set_label(u"Other Field");
+
+  exp_field.set_name(u"other_field_2");
+  exp_field.set_name_attribute(exp_field.name());
+  exp_field.set_label(u"Other Field 2");
+
+  form.set_fields({field, cc_field, exp_field});
+  manager.OnFormsSeen({form}, {});
+  ASSERT_TRUE(waiter.Wait(1));
+
+  // Update the listeners again which should detach the listeners this time
+  // because the CC fields are no more recognized as such.
+  helper_->UpdateListenersForPaymentsForm(manager, form.global_id(),
+                                          /*only_new=*/false);
+
+  // Wait on the api call to detach the listeners. Verifies that there is an
+  // api call to detach the listeners.
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::Seconds(1), true, ^bool(void) {
+        id result = web::test::ExecuteJavaScriptForFeatureAndReturnResult(
+            web_state_.get(), @"window.detachListenersCallCount",
+            AutofillBottomSheetJavaScriptFeature::GetInstance());
+        if ([result isKindOfClass:[NSNumber class]] && [result intValue] == 1) {
+          return true;
+        }
+        return false;
+      }));
+}
