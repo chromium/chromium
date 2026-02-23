@@ -58,6 +58,8 @@ source_set("model") {
 
   public_deps = [ "//base" ]
   deps = [
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/tabs/model:dependency_installer",
@@ -88,8 +90,12 @@ source_set("unit_tests") {
   deps = [
     ":model",
     "//base/test:test_support",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/profile:test_utils",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
