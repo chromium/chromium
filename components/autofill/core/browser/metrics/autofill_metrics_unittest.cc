@@ -3131,6 +3131,8 @@ TEST_F(AutofillMetricsSeamlessnessTest, CreditCardFormRecordOnIFrames) {
   // Create a form with the credit card number and CVC code fields in an
   // iframe with a different origin.
   SeeForm(form_);
+  FormStructure& form_structure =
+      *test_api(autofill_manager()).FindCachedFormById(form_.global_id());
 
   // Triggering autofill from the credit card name field cannot fill the credit
   // card number and CVC code fields, which are in an unsafe iframe.
@@ -3138,14 +3140,15 @@ TEST_F(AutofillMetricsSeamlessnessTest, CreditCardFormRecordOnIFrames) {
   SetFormValues({CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
                 /*is_autofilled_according_to_renderer=*/true,
                 /*is_user_typed=*/false);
+  test_api(form_structure).UpdateFormData(form_);
 
   // Triggering autofill from the credit card number field can fill all the
-  // credit card fields with values.
+  // remaining credit card fields with values.
   FillForm(form_.fields()[1]);
-  SetFormValues({CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
-                 CREDIT_CARD_VERIFICATION_CODE},
+  SetFormValues({CREDIT_CARD_NUMBER, CREDIT_CARD_VERIFICATION_CODE},
                 /*is_autofilled_according_to_renderer=*/true,
                 /*is_user_typed=*/false);
+  test_api(form_structure).UpdateFormData(form_);
 
   // Record Autofill2.FieldInfo UKM event at autofill manager reset.
   SubmitForm(form_);

@@ -253,6 +253,7 @@ class FormFiller {
       const std::map<FieldGlobalId, ValueAndType>& forced_fill_values,
       FormFieldData& field_data,
       mojom::ActionPersistence action_persistence,
+      AutofillTriggerSource trigger_source,
       bool allow_suggestion_swapping,
       std::string* failure_to_fill);
 

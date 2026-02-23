@@ -1499,17 +1499,18 @@ TEST_F(FieldFillingPaymentsUtilTest,
 // the credit card number field is present but it's autofilled.
 TEST_F(FieldFillingPaymentsUtilTest,
        WillFillCreditCardNumberOrCvc_CCNumberFieldIsAutofilled) {
-  FormData form_data = test::GetFormData(
-      {.fields = {
-           {.role = CREDIT_CARD_NAME_FULL, .label = u"First Name on Card"},
-           {.role = CREDIT_CARD_NUMBER,
-            .label = u"Card Number",
-            .is_autofilled_according_to_renderer = true,
-            .properties_mask = kUserTyped}}});
+  FormData form_data =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FULL,
+                                     .label = u"First Name on Card"},
+                                    {.role = CREDIT_CARD_NUMBER,
+                                     .label = u"Card Number",
+                                     .value = u"4111111111111111",
+                                     .properties_mask = kUserTyped}}});
 
   FormStructure form_structure(form_data);
   test_api(form_structure)
       .SetFieldTypes({CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NUMBER});
+  form_structure.field(1)->AddFieldModifier(FieldModifier::kAutofill);
 
   EXPECT_FALSE(WillFillCreditCardNumberOrCvc(
       form_data.fields(), form_structure.fields(), *form_structure.fields()[0],

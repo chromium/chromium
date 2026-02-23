@@ -2146,18 +2146,19 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_MatchCharacter) {
        CreateManageAddressesSuggestion()});
 }
 
-// Tests that we return address profile suggestions values when the section
-// is already autofilled, and that we merge identical values.
+// Tests that we return address profile suggestions values even when some fields
+// are already autofilled, and that suggestions ignore the autofilled fields and
+// deduplicate accordingly.
 TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_AlreadyAutofilledMergeValues) {
   personal_data().test_address_data_manager().ClearProfiles();
-  // Set up our form data.
   FormData form = CreateTestAddressFormData();
+  test_api(form).field(0).set_value(u"John");
   FormsSeen({form});
-
-  // First name is already autofilled which will make the section appear as
-  // "already autofilled".
-  test_api(form).field(0).set_is_autofilled_according_to_renderer(true);
+  test_api(autofill_manager())
+      .FindCachedFormById(form.global_id())
+      ->field(0)
+      ->AddFieldModifier(FieldModifier::kAutofill);
 
   // Two profiles have the same last name, and the third shares the same first
   // letter for last name.
