@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -47,6 +49,16 @@ ContextualTasksEphemeralButtonController::
       SidePanelRegistry::From(browser_window_interface_)
           ->GetEntryForKey(
               SidePanelEntryKey(SidePanelEntryId::kContextualTasks)));
+
+  aim_eligibility_service_ =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  if (aim_eligibility_service_) {
+    aim_eligibility_service_subscription_ =
+        aim_eligibility_service_->RegisterEligibilityChangedCallback(
+            base::BindRepeating(&ContextualTasksEphemeralButtonController::
+                                    OnAimEligibilityResponseChanged,
+                                base::Unretained(this)));
+  }
 }
 
 ContextualTasksEphemeralButtonController::
@@ -98,6 +110,11 @@ void ContextualTasksEphemeralButtonController::OnTaskDisassociatedFromTab(
   MaybeNotifyVisibilityShouldChange();
 }
 
+void ContextualTasksEphemeralButtonController::
+    OnAimEligibilityResponseChanged() {
+  MaybeNotifyVisibilityShouldChange();
+}
+
 void ContextualTasksEphemeralButtonController::OnEntryWillHide(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
@@ -135,6 +152,11 @@ bool ContextualTasksEphemeralButtonController::ShouldShowEphemeralButton() {
   std::optional<contextual_tasks::ContextualTask> current_task =
       GetContextualTasksService()->GetContextualTaskForTab(
           GetCurrentTabSessionId().value());
+
+  if (aim_eligibility_service_ &&
+      !aim_eligibility_service_->IsCobrowseEligible()) {
+    return false;
+  }
 
   // The ephemeral toolbar button should show if the contextual task side panel
   // was closed.
