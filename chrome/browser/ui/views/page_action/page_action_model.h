@@ -254,7 +254,7 @@ class PageActionModel : public PageActionModelInterface {
   // The text to be shown on anchored messages.
   std::u16string anchored_message_text_;
   // Whether the anchored message should have a close icon.
-  bool anchored_message_show_close_icon_;
+  bool anchored_message_show_close_icon_ = false;
 
   // When set, it will always take precedence over `text_` because by default
   // `text_` will be used.
