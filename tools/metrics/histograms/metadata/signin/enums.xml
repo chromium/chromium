@@ -748,7 +748,7 @@ chromium-metrics-reviews@google.com.
   <int value="84" label="Ash Scanner Keyed Service"/>
   <int value="85" label="Autotest Private Api"/>
   <int value="86" label="Sync Device Statistics Metrics"/>
-  <int value="87" label="Legion Service"/>
+  <int value="87" label="Private AI Service"/>
   <int value="88" label="Wallet Passes Service"/>
 </enum>
 

@@ -295,8 +295,8 @@ const char kMantaOAuth2Scope[] = "https://www.googleapis.com/auth/mdi.aratea";
 const char kWebHistoryOAuth2Scope[] =
     "https://www.googleapis.com/auth/webhistory";
 
-// OAuth2 scope for Legion.
-const char kLegionAuthScope[] = "https://www.googleapis.com/auth/paic";
+// OAuth2 scope for Private AI.
+const char kPrivateAiAuthScope[] = "https://www.googleapis.com/auth/paic";
 
 // OAuth2 scope for access to wallet passes.
 const char kWalletPassesOAuth2Scope[] =

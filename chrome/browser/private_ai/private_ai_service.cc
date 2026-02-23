@@ -109,7 +109,7 @@ void PrivateAiService::RequestOAuthToken(RequestOAuthTokenCallback callback) {
 
   auto oauth_token_fetcher =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          signin::OAuthConsumerId::kLegionService, identity_manager_,
+          signin::OAuthConsumerId::kPrivateAiService, identity_manager_,
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
           signin::ConsentLevel::kSignin);
 
