@@ -20,9 +20,10 @@ BatchUploadServiceFactory::BatchUploadServiceFactory()
 BatchUploadServiceFactory::~BatchUploadServiceFactory() = default;
 
 // static
-BatchUploadService* BatchUploadServiceFactory::GetForProfile(Profile* profile) {
+BatchUploadService* BatchUploadServiceFactory::GetForProfile(Profile* profile,
+                                                             bool create) {
   return static_cast<BatchUploadService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+      GetInstance()->GetServiceForBrowserContext(profile, create));
 }
 
 // static

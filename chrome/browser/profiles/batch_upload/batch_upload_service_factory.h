@@ -13,7 +13,8 @@ class BatchUploadService;
 // Singleton that manages the `BatchUploadService` per `Profile`.
 class BatchUploadServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static BatchUploadService* GetForProfile(Profile* profile);
+  static BatchUploadService* GetForProfile(Profile* profile,
+                                           bool create = true);
 
   // Returns an instance of the BatchUploadServiceFactory singleton.
   static BatchUploadServiceFactory* GetInstance();
