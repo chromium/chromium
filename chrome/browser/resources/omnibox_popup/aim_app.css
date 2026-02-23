@@ -36,7 +36,7 @@ cr-composebox {
   --color-composebox-cancel-button-light: var(--color-omnibox-text-dimmed);
   --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-action-icon-hover);
   --color-composebox-context-entrypoint-text: var(--color-omnibox-context-entrypoint-text);
-  --color-composebox-context-entrypoint-text-disabled: var(--color-omnibox-composebox-foreground-disabled);
+  --color-composebox-context-entrypoint-text-disabled: var(--color-omnibox-foreground-disabled);
   --color-composebox-file-carousel-remove-button: var(--color-omnibox-results-button-ink-drop-row-hovered);
   --color-composebox-file-chip-spinner: var(--color-omnibox-composebox-primary-action);
 
@@ -63,13 +63,13 @@ cr-composebox {
   --color-composebox-submit-button-icon: var(--color-omnibox-composebox-submit-button-icon);
   --color-composebox-submit-button-hover: var(--color-omnibox-action-icon-hover);
   --color-composebox-suggestion-activity: unset; /* No activity suggestion disclaimer. */
-  --color-composebox-type-ahead: var(--color-omnibox-composebox-foreground-disabled);
-  --color-composebox-type-ahead-chip: var(--color-omnibox-composebox-foreground-disabled);
+  --color-composebox-type-ahead: var(--color-omnibox-foreground-disabled);
+  --color-composebox-type-ahead-chip: var(--color-omnibox-foreground-disabled);
   --color-composebox-upload-button: var(--omnibox-results-chip-background);
-  --color-composebox-upload-button-disabled: var(--color-omnibox-composebox-foreground-disabled);
+  --color-composebox-upload-button-disabled: var(--color-omnibox-foreground-disabled);
   --color-composebox-voice-search-font: var(--color-omnibox-text);
   --cr-composebox-background-color: var(--color-omnibox-results-background);
-  --cr-composebox-input-placeholder-color: var(--color-omnibox-text-dimmed);
+  --cr-composebox-input-placeholder-color: var(--color-omnibox-foreground-disabled);
   --cr-composebox-outline-hcm: none;
   --cr-composebox-submit-button-margin-inline-start: auto;
   --cr-composebox-suggestion-activity-bottom: 0;
