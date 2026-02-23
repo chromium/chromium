@@ -108,6 +108,11 @@ bool WillCreateAcceleratedImagesFromVideoFrame() {
   return ShouldCreateAcceleratedImages(GetRasterContextProvider().get());
 }
 
+// Killswitch guarding VideoFrameImage not caching the SkSurface used for
+// VideoFrame->StaticBitmapImage software draws.
+BASE_FEATURE(kVideoFrameImageUtilCacheSkSurface,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     CanvasSnapshotProvider* snapshot_provider,
@@ -127,7 +132,9 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     auto* bitmap_provider =
         static_cast<CanvasNon2DSnapshotProviderBitmap*>(snapshot_provider);
     sw_draw_info = bitmap_provider->Info();
-    sw_draw_surface = bitmap_provider->GetCachedSurface();
+    if (base::FeatureList::IsEnabled(kVideoFrameImageUtilCacheSkSurface)) {
+      sw_draw_surface = bitmap_provider->GetCachedSurface();
+    }
   } else {
     si_provider =
         static_cast<CanvasNon2DResourceProviderSharedImage*>(snapshot_provider);
