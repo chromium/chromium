@@ -763,7 +763,6 @@ struct WebSocketStreamCreationCallbackArgumentSaver {
       const GURL& new_socket_url,
       const std::vector<std::string>& requested_subprotocols,
       const url::Origin& new_origin,
-      const SiteForCookies& new_site_for_cookies,
       StorageAccessApiStatus new_storage_access_api_status,
       const IsolationInfo& new_isolation_info,
       const HttpRequestHeaders& additional_headers,
@@ -773,7 +772,6 @@ struct WebSocketStreamCreationCallbackArgumentSaver {
       std::unique_ptr<WebSocketStream::ConnectDelegate> new_connect_delegate) {
     socket_url = new_socket_url;
     origin = new_origin;
-    site_for_cookies = new_site_for_cookies;
     storage_access_api_status = new_storage_access_api_status;
     isolation_info = new_isolation_info;
     url_request_context = new_url_request_context;
@@ -783,7 +781,6 @@ struct WebSocketStreamCreationCallbackArgumentSaver {
 
   GURL socket_url;
   url::Origin origin;
-  SiteForCookies site_for_cookies;
   StorageAccessApiStatus storage_access_api_status;
   IsolationInfo isolation_info;
   raw_ptr<URLRequestContext> url_request_context;
@@ -828,9 +825,9 @@ class WebSocketChannelTest : public TestWithTaskEnvironment {
         CreateEventInterface(), connect_data_.url_request_context.get());
     channel_->SendAddChannelRequestForTesting(
         connect_data_.socket_url, connect_data_.requested_subprotocols,
-        connect_data_.origin, connect_data_.site_for_cookies,
-        net::StorageAccessApiStatus::kNone, connect_data_.isolation_info,
-        HttpRequestHeaders(), TRAFFIC_ANNOTATION_FOR_TESTS,
+        connect_data_.origin, net::StorageAccessApiStatus::kNone,
+        connect_data_.isolation_info, HttpRequestHeaders(),
+        TRAFFIC_ANNOTATION_FOR_TESTS,
         base::BindOnce(&WebSocketStreamCreationCallbackArgumentSaver::Create,
                        base::Unretained(&connect_data_.argument_saver)));
   }
@@ -866,8 +863,7 @@ class WebSocketChannelTest : public TestWithTaskEnvironment {
     ConnectData()
         : url_request_context(CreateTestURLRequestContextBuilder()->Build()),
           socket_url("ws://ws/"),
-          origin(url::Origin::Create(GURL("http://ws"))),
-          site_for_cookies(SiteForCookies::FromUrl(GURL("http://ws/"))) {
+          origin(url::Origin::Create(GURL("http://ws"))) {
       this->isolation_info =
           IsolationInfo::Create(IsolationInfo::RequestType::kOther, origin,
                                 origin, SiteForCookies::FromOrigin(origin));
@@ -882,8 +878,6 @@ class WebSocketChannelTest : public TestWithTaskEnvironment {
     std::vector<std::string> requested_subprotocols;
     // Origin of the request
     url::Origin origin;
-    // First party for cookies for the request.
-    net::SiteForCookies site_for_cookies;
     // Whether the calling context has opted into the Storage Access API.
     StorageAccessApiStatus storage_access_api_status =
         StorageAccessApiStatus::kNone;
@@ -1008,8 +1002,6 @@ class WebSocketChannelReceiveUtf8Test : public WebSocketChannelStreamTest {
 TEST_F(WebSocketChannelTest, EverythingIsPassedToTheCreatorFunction) {
   connect_data_.socket_url = GURL("ws://example.com/test");
   connect_data_.origin = url::Origin::Create(GURL("http://example.com"));
-  connect_data_.site_for_cookies =
-      SiteForCookies::FromUrl(GURL("http://example.com/"));
   connect_data_.isolation_info = net::IsolationInfo::Create(
       IsolationInfo::RequestType::kOther, connect_data_.origin,
       connect_data_.origin, SiteForCookies::FromOrigin(connect_data_.origin));
@@ -1025,8 +1017,6 @@ TEST_F(WebSocketChannelTest, EverythingIsPassedToTheCreatorFunction) {
 
   EXPECT_EQ(connect_data_.socket_url, actual.socket_url);
   EXPECT_EQ(connect_data_.origin.Serialize(), actual.origin.Serialize());
-  EXPECT_TRUE(
-      connect_data_.site_for_cookies.IsEquivalent(actual.site_for_cookies));
   EXPECT_EQ(connect_data_.storage_access_api_status,
             actual.storage_access_api_status);
   EXPECT_TRUE(

@@ -57,7 +57,6 @@ class TestNetworkContext : public network::TestNetworkContext {
   void CreateWebSocket(
       const GURL& url,
       const std::vector<std::string>& requested_protocols,
-      const net::SiteForCookies& site_for_cookies,
       net::StorageAccessApiStatus storage_access_api_status,
       const net::IsolationInfo& isolation_info,
       std::vector<network::mojom::HttpHeaderPtr> additional_headers,
@@ -668,7 +667,7 @@ class LateLinkingDevice : public authenticator::Transaction {
         kTunnelServer, tunnel_id_);
 
     network_context_factory_.Run()->CreateWebSocket(
-        target, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
+        target, {device::kCableWebSocketProtocol},
         net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
         /*additional_headers=*/{}, network::OriginatingProcessId::browser(),
         url::Origin::Create(target), network::mojom::ClientSecurityState::New(),
@@ -888,7 +887,7 @@ class HandshakeErrorDevice : public authenticator::Transaction {
         kTunnelServer, tunnel_id_);
 
     network_context_factory_.Run()->CreateWebSocket(
-        target, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
+        target, {device::kCableWebSocketProtocol},
         net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
         /*additional_headers=*/{}, network::OriginatingProcessId::browser(),
         url::Origin::Create(target), network::mojom::ClientSecurityState::New(),

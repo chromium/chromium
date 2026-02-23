@@ -83,9 +83,9 @@ class WebSocketFactoryTest : public testing::Test {
     // WebSocket objects are owned by the factory and will be deleted
     // asynchronously.
     factory_->CreateWebSocket(
-        url, requested_protocols, net::SiteForCookies(),
-        net::StorageAccessApiStatus::kNone, net::IsolationInfo(), {},
-        network::OriginatingProcessId::browser(), url::Origin::Create(url),
+        url, requested_protocols, net::StorageAccessApiStatus::kNone,
+        net::IsolationInfo(), {}, network::OriginatingProcessId::browser(),
+        url::Origin::Create(url),
         /*client_security_state=*/nullptr, /*options=*/0,
         TRAFFIC_ANNOTATION_FOR_TESTS, std::move(handshake_client),
         mojo::NullRemote(), mojo::NullRemote(), mojo::NullRemote(),

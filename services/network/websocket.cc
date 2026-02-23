@@ -502,7 +502,6 @@ WebSocket::WebSocket(
     WebSocketFactory* factory,
     const GURL& url,
     const std::vector<std::string>& requested_protocols,
-    const net::SiteForCookies& site_for_cookies,
     net::StorageAccessApiStatus storage_access_api_status,
     const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers,
@@ -531,7 +530,6 @@ WebSocket::WebSocket(
       traffic_annotation_(traffic_annotation),
       origin_(std::move(origin)),
       client_security_state_(std::move(client_security_state)),
-      site_for_cookies_(site_for_cookies),
       isolation_info_(isolation_info),
       has_raw_headers_access_(has_raw_headers_access),
       writable_watcher_(FROM_HERE,
@@ -563,15 +561,13 @@ WebSocket::WebSocket(
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&WebSocket::AddChannel, weak_ptr_factory_.GetWeakPtr(),
-                       url, requested_protocols, site_for_cookies,
-                       storage_access_api_status, isolation_info,
-                       std::move(additional_headers)),
+                       url, requested_protocols, storage_access_api_status,
+                       isolation_info, std::move(additional_headers)),
         delay_);
     return;
   }
-  AddChannel(url, requested_protocols, site_for_cookies,
-             storage_access_api_status, isolation_info,
-             std::move(additional_headers));
+  AddChannel(url, requested_protocols, storage_access_api_status,
+             isolation_info, std::move(additional_headers));
 }
 
 WebSocket::~WebSocket() {
@@ -645,7 +641,7 @@ bool WebSocket::AllowCookies(const GURL& url) const {
     return true;
   }
   return net::StaticCookiePolicy(policy).CanAccessCookies(
-             url, site_for_cookies_) == net::OK;
+             url, isolation_info_.site_for_cookies()) == net::OK;
 }
 
 bool WebSocket::RevokeIfNonceMatches(const base::UnguessableToken& nonce) {
@@ -718,15 +714,13 @@ void WebSocket::OnConnectionError(const base::Location& set_from) {
 void WebSocket::AddChannel(
     const GURL& socket_url,
     const std::vector<std::string>& requested_protocols,
-    const net::SiteForCookies& site_for_cookies,
     net::StorageAccessApiStatus storage_access_api_status,
     const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers) {
   DVLOG(3) << "WebSocket::AddChannel @" << reinterpret_cast<void*>(this)
            << " socket_url=\"" << socket_url << "\" requested_protocols=\""
            << base::JoinString(requested_protocols, ", ") << "\" origin=\""
-           << origin_ << "\" site_for_cookies=\""
-           << site_for_cookies.ToDebugString()
+           << origin_ << "\" isolation_info=\"" << isolation_info.DebugString()
            << "\" storage_access_api_status="
            << static_cast<int>(storage_access_api_status);
 
@@ -751,9 +745,8 @@ void WebSocket::AddChannel(
     }
   }
   channel_->SendAddChannelRequest(socket_url, requested_protocols, origin_,
-                                  site_for_cookies, storage_access_api_status,
-                                  isolation_info, headers_to_pass,
-                                  traffic_annotation_);
+                                  storage_access_api_status, isolation_info,
+                                  headers_to_pass, traffic_annotation_);
 }
 
 void WebSocket::OnWritable(MojoResult result,

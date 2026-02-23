@@ -44,7 +44,6 @@ class IPEndPoint;
 class IsolationInfo;
 class NetLogWithSource;
 class SSLInfo;
-class SiteForCookies;
 class URLRequest;
 class URLRequestContext;
 class WebSocketBasicHandshakeStream;
@@ -169,7 +168,6 @@ class NET_EXPORT_PRIVATE WebSocketStream {
       const GURL& socket_url,
       const std::vector<std::string>& requested_subprotocols,
       const url::Origin& origin,
-      const SiteForCookies& site_for_cookies,
       StorageAccessApiStatus storage_access_api_status,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
@@ -187,7 +185,6 @@ class NET_EXPORT_PRIVATE WebSocketStream {
       const GURL& socket_url,
       const std::vector<std::string>& requested_subprotocols,
       const url::Origin& origin,
-      const SiteForCookies& site_for_cookies,
       StorageAccessApiStatus storage_access_api_status,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,

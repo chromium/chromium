@@ -76,7 +76,6 @@ WebSocketFactory::~WebSocketFactory() {
 void WebSocketFactory::CreateWebSocket(
     const GURL& url,
     const std::vector<std::string>& requested_protocols,
-    const net::SiteForCookies& site_for_cookies,
     net::StorageAccessApiStatus storage_access_api_status,
     const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers,
@@ -136,12 +135,11 @@ void WebSocketFactory::CreateWebSocket(
       context_->network_service()->HasRawHeadersAccess(
           process_id, net::ChangeWebSocketSchemeToHttpScheme(url)));
   connections_.insert(std::make_unique<WebSocket>(
-      this, url, requested_protocols, site_for_cookies,
-      storage_access_api_status, isolation_info, std::move(additional_headers),
-      origin, std::move(client_security_state), options, traffic_annotation,
-      has_raw_headers_access, std::move(handshake_client),
-      std::move(url_loader_network_observer), std::move(auth_handler),
-      std::move(header_client),
+      this, url, requested_protocols, storage_access_api_status, isolation_info,
+      std::move(additional_headers), origin, std::move(client_security_state),
+      options, traffic_annotation, has_raw_headers_access,
+      std::move(handshake_client), std::move(url_loader_network_observer),
+      std::move(auth_handler), std::move(header_client),
       throttler_.IssuePendingConnectionTracker(process_id),
       throttler_.CalculateDelay(process_id), throttling_profile_id));
 }

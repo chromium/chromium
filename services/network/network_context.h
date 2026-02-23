@@ -379,7 +379,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void CreateWebSocket(
       const GURL& url,
       const std::vector<std::string>& requested_protocols,
-      const net::SiteForCookies& site_for_cookies,
       net::StorageAccessApiStatus storage_access_api_status,
       const net::IsolationInfo& isolation_info,
       std::vector<mojom::HttpHeaderPtr> additional_headers,

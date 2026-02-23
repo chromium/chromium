@@ -76,7 +76,6 @@ WebSocketConnectorImpl::~WebSocketConnectorImpl() = default;
 void WebSocketConnectorImpl::Connect(
     const GURL& url,
     const std::vector<std::string>& requested_protocols,
-    const net::SiteForCookies& site_for_cookies,
     const std::optional<std::string>& user_agent,
     net::StorageAccessApiStatus storage_access_api_status,
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
@@ -96,11 +95,11 @@ void WebSocketConnectorImpl::Connect(
     GetContentClient()->browser()->CreateWebSocket(
         frame,
         base::BindOnce(ConnectCalledByContentBrowserClient, requested_protocols,
-                       site_for_cookies, storage_access_api_status,
-                       isolation_info_, frame_id_, origin_,
-                       client_security_state_->Clone(), options,
+                       storage_access_api_status, isolation_info_, frame_id_,
+                       origin_, client_security_state_->Clone(), options,
                        std::move(throttling_profile_id)),
-        url, site_for_cookies, user_agent, std::move(handshake_client));
+        url, isolation_info_.site_for_cookies(), user_agent,
+        std::move(handshake_client));
     return;
   }
   std::vector<network::mojom::HttpHeaderPtr> headers;
@@ -121,9 +120,8 @@ void WebSocketConnectorImpl::Connect(
                     frame_id_);
 
   storage_partition->GetNetworkContext()->CreateWebSocket(
-      url, requested_protocols, site_for_cookies, storage_access_api_status,
-      isolation_info_, std::move(headers),
-      ToOriginatingProcessId(frame_id_.child_id), origin_,
+      url, requested_protocols, storage_access_api_status, isolation_info_,
+      std::move(headers), ToOriginatingProcessId(frame_id_.child_id), origin_,
       client_security_state_->Clone(), options,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_client),
@@ -133,7 +131,6 @@ void WebSocketConnectorImpl::Connect(
 
 void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
     const std::vector<std::string>& requested_protocols,
-    const net::SiteForCookies& site_for_cookies,
     net::StorageAccessApiStatus storage_access_api_status,
     const net::IsolationInfo& isolation_info,
     const content::GlobalRenderFrameHostId& frame_id,
@@ -155,10 +152,9 @@ void WebSocketConnectorImpl::ConnectCalledByContentBrowserClient(
     return;
   }
   process->GetStoragePartition()->GetNetworkContext()->CreateWebSocket(
-      url, requested_protocols, site_for_cookies, storage_access_api_status,
-      isolation_info, std::move(additional_headers),
-      ToOriginatingProcessId(frame_id.child_id), origin,
-      std::move(client_security_state), options,
+      url, requested_protocols, storage_access_api_status, isolation_info,
+      std::move(additional_headers), ToOriginatingProcessId(frame_id.child_id),
+      origin, std::move(client_security_state), options,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(handshake_client),
       process->GetStoragePartition()->CreateURLLoaderNetworkObserverForFrame(

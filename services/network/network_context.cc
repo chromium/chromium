@@ -1924,7 +1924,6 @@ void NetworkContext::ClearBadProxiesCache(
 void NetworkContext::CreateWebSocket(
     const GURL& url,
     const std::vector<std::string>& requested_protocols,
-    const net::SiteForCookies& site_for_cookies,
     net::StorageAccessApiStatus storage_access_api_status,
     const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers,
@@ -1947,8 +1946,8 @@ void NetworkContext::CreateWebSocket(
   DCHECK(process_id);
 
   websocket_factory_->CreateWebSocket(
-      url, requested_protocols, site_for_cookies, storage_access_api_status,
-      isolation_info, std::move(additional_headers), process_id, origin,
+      url, requested_protocols, storage_access_api_status, isolation_info,
+      std::move(additional_headers), process_id, origin,
       std::move(client_security_state), options,
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
       std::move(handshake_client), std::move(url_loader_network_observer),

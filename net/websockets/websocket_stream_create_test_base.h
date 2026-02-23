@@ -39,7 +39,6 @@ namespace net {
 class HttpRequestHeaders;
 class HttpResponseHeaders;
 class IsolationInfo;
-class SiteForCookies;
 class URLRequest;
 class WebSocketStream;
 class WebSocketStreamRequest;
@@ -63,7 +62,6 @@ class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
   void CreateAndConnectStream(const GURL& socket_url,
                               const std::vector<std::string>& sub_protocols,
                               const url::Origin& origin,
-                              const SiteForCookies& site_for_cookies,
                               StorageAccessApiStatus storage_access_api_status,
                               const IsolationInfo& isolation_info,
                               const HttpRequestHeaders& additional_headers,

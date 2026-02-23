@@ -264,15 +264,13 @@ void WebSocketChannel::SendAddChannelRequest(
     const GURL& socket_url,
     const std::vector<std::string>& requested_subprotocols,
     const url::Origin& origin,
-    const SiteForCookies& site_for_cookies,
     StorageAccessApiStatus storage_access_api_status,
     const IsolationInfo& isolation_info,
     const HttpRequestHeaders& additional_headers,
     NetworkTrafficAnnotationTag traffic_annotation) {
   SendAddChannelRequestWithSuppliedCallback(
-      socket_url, requested_subprotocols, origin, site_for_cookies,
-      storage_access_api_status, isolation_info, additional_headers,
-      traffic_annotation,
+      socket_url, requested_subprotocols, origin, storage_access_api_status,
+      isolation_info, additional_headers, traffic_annotation,
       base::BindOnce(&WebSocketStream::CreateAndConnectStream));
 }
 
@@ -395,16 +393,15 @@ void WebSocketChannel::SendAddChannelRequestForTesting(
     const GURL& socket_url,
     const std::vector<std::string>& requested_subprotocols,
     const url::Origin& origin,
-    const SiteForCookies& site_for_cookies,
     StorageAccessApiStatus storage_access_api_status,
     const IsolationInfo& isolation_info,
     const HttpRequestHeaders& additional_headers,
     NetworkTrafficAnnotationTag traffic_annotation,
     WebSocketStreamRequestCreationCallback callback) {
   SendAddChannelRequestWithSuppliedCallback(
-      socket_url, requested_subprotocols, origin, site_for_cookies,
-      storage_access_api_status, isolation_info, additional_headers,
-      traffic_annotation, std::move(callback));
+      socket_url, requested_subprotocols, origin, storage_access_api_status,
+      isolation_info, additional_headers, traffic_annotation,
+      std::move(callback));
 }
 
 void WebSocketChannel::SetClosingHandshakeTimeoutForTesting(
@@ -421,7 +418,6 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
     const GURL& socket_url,
     const std::vector<std::string>& requested_subprotocols,
     const url::Origin& origin,
-    const SiteForCookies& site_for_cookies,
     StorageAccessApiStatus storage_access_api_status,
     const IsolationInfo& isolation_info,
     const HttpRequestHeaders& additional_headers,
@@ -433,10 +429,9 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
   socket_url_ = socket_url;
   auto connect_delegate = std::make_unique<ConnectDelegate>(this);
   stream_request_ = std::move(callback).Run(
-      socket_url_, requested_subprotocols, origin, site_for_cookies,
-      storage_access_api_status, isolation_info, additional_headers,
-      url_request_context_.get(), NetLogWithSource(), traffic_annotation,
-      std::move(connect_delegate));
+      socket_url_, requested_subprotocols, origin, storage_access_api_status,
+      isolation_info, additional_headers, url_request_context_.get(),
+      NetLogWithSource(), traffic_annotation, std::move(connect_delegate));
   SetState(CONNECTING);
 }
 

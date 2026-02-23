@@ -159,8 +159,7 @@ void WebSocketClient::Connect() {
       "X-WebChannel-Content-Type", "application/x-protobuf"));
 
   network_context_->CreateWebSocket(
-      service_url_, requested_protocols, net::SiteForCookies(),
-      net::StorageAccessApiStatus::kNone,
+      service_url_, requested_protocols, net::StorageAccessApiStatus::kNone,
       net::IsolationInfo::CreateForInternalRequest(
           url::Origin::Create(service_url_)),
       std::move(additional_headers), network::OriginatingProcessId::browser(),

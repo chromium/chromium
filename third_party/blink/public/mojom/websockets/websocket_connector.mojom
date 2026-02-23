@@ -22,7 +22,6 @@ interface WebSocketConnector {
   // is established. See network_context.mojom for details.
   Connect(url.mojom.Url url,
           array<string> requested_protocols,
-          network.mojom.SiteForCookies site_for_cookies,
           string? user_agent,
           network.mojom.StorageAccessApiStatus storage_access_api_status,
           pending_remote<network.mojom.WebSocketHandshakeClient> handshake_client,

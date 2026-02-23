@@ -419,8 +419,6 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
       InitialiseContext();
     }
     url::Origin origin = url::Origin::Create(GURL("http://localhost"));
-    net::SiteForCookies site_for_cookies =
-        net::SiteForCookies::FromOrigin(origin);
     IsolationInfo isolation_info =
         IsolationInfo::Create(IsolationInfo::RequestType::kOther, origin,
                               origin, SiteForCookies::FromOrigin(origin));
@@ -428,9 +426,8 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
     channel_ = std::make_unique<WebSocketChannel>(std::move(event_interface),
                                                   context_.get());
     channel_->SendAddChannelRequest(
-        GURL(socket_url), sub_protocols_, origin, site_for_cookies,
-        StorageAccessApiStatus::kNone, isolation_info, HttpRequestHeaders(),
-        TRAFFIC_ANNOTATION_FOR_TESTS);
+        GURL(socket_url), sub_protocols_, origin, StorageAccessApiStatus::kNone,
+        isolation_info, HttpRequestHeaders(), TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
   // Send the connect request to |socket_url| and wait for a response. Returns

@@ -43,7 +43,6 @@ class IPEndPoint;
 class IsolationInfo;
 class NetLogWithSource;
 class SSLInfo;
-class SiteForCookies;
 class URLRequest;
 class URLRequestContext;
 struct NetworkTrafficAnnotationTag;
@@ -63,7 +62,6 @@ class NET_EXPORT WebSocketChannel {
       const GURL&,
       const std::vector<std::string>&,
       const url::Origin&,
-      const SiteForCookies&,
       StorageAccessApiStatus,
       const IsolationInfo&,
       const HttpRequestHeaders&,
@@ -94,7 +92,6 @@ class NET_EXPORT WebSocketChannel {
       const GURL& socket_url,
       const std::vector<std::string>& requested_protocols,
       const url::Origin& origin,
-      const SiteForCookies& site_for_cookies,
       StorageAccessApiStatus storage_access_api_status,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
@@ -139,7 +136,6 @@ class NET_EXPORT WebSocketChannel {
       const GURL& socket_url,
       const std::vector<std::string>& requested_protocols,
       const url::Origin& origin,
-      const SiteForCookies& site_for_cookies,
       StorageAccessApiStatus storage_access_api_status,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
@@ -193,7 +189,6 @@ class NET_EXPORT WebSocketChannel {
       const GURL& socket_url,
       const std::vector<std::string>& requested_protocols,
       const url::Origin& origin,
-      const SiteForCookies& site_for_cookies,
       StorageAccessApiStatus storage_access_api_status,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,

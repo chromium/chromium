@@ -54,7 +54,6 @@ class TestBase : public WebSocketStreamCreateTestBase {
  public:
   void CreateAndConnect(const GURL& url,
                         const url::Origin& origin,
-                        const SiteForCookies& site_for_cookies,
                         const IsolationInfo& isolation_info,
                         const WebSocketExtraHeaders& cookie_header,
                         const std::string& response_body) {
@@ -63,7 +62,7 @@ class TestBase : public WebSocketStreamCreateTestBase {
             url.GetPath(), url.GetHost(), origin, cookie_header,
             /*send_additional_request_headers=*/{}, /*extra_headers=*/{}),
         response_body);
-    CreateAndConnectStream(url, NoSubProtocols(), origin, site_for_cookies,
+    CreateAndConnectStream(url, NoSubProtocols(), origin,
                            StorageAccessApiStatus::kNone, isolation_info,
                            HttpRequestHeaders(), nullptr);
   }
@@ -148,7 +147,6 @@ TEST_P(WebSocketStreamClientUseCookieTest, ClientUseCookie) {
   const GURL url(GetParam().url);
   const GURL cookie_url(GetParam().cookie_url);
   const url::Origin origin = url::Origin::Create(GURL(GetParam().url));
-  const SiteForCookies site_for_cookies = SiteForCookies::FromOrigin(origin);
   const IsolationInfo isolation_info =
       IsolationInfo::Create(IsolationInfo::RequestType::kOther, origin, origin,
                             SiteForCookies::FromOrigin(origin));
@@ -171,8 +169,8 @@ TEST_P(WebSocketStreamClientUseCookieTest, ClientUseCookie) {
   ASSERT_TRUE(is_called);
   ASSERT_TRUE(set_cookie_result);
 
-  CreateAndConnect(url, origin, site_for_cookies, isolation_info,
-                   GetParam().cookie_header, WebSocketStandardResponse(""));
+  CreateAndConnect(url, origin, isolation_info, GetParam().cookie_header,
+                   WebSocketStandardResponse(""));
   WaitUntilConnectDone();
   EXPECT_FALSE(has_failed());
 }
@@ -185,7 +183,6 @@ TEST_P(WebSocketStreamServerSetCookieTest, ServerSetCookie) {
   const GURL url(GetParam().url);
   const GURL cookie_url(GetParam().cookie_url);
   const url::Origin origin = url::Origin::Create(GURL(GetParam().url));
-  const SiteForCookies site_for_cookies = SiteForCookies::FromOrigin(origin);
   const IsolationInfo isolation_info =
       IsolationInfo::Create(IsolationInfo::RequestType::kOther, origin, origin,
                             SiteForCookies::FromOrigin(origin));
@@ -203,8 +200,7 @@ TEST_P(WebSocketStreamServerSetCookieTest, ServerSetCookie) {
   CookieStore* store =
       url_request_context_host_.GetURLRequestContext()->cookie_store();
 
-  CreateAndConnect(url, origin, site_for_cookies, isolation_info,
-                   /*cookie_header=*/{}, response);
+  CreateAndConnect(url, origin, isolation_info, /*cookie_header=*/{}, response);
   WaitUntilConnectDone();
   EXPECT_FALSE(has_failed()) << failure_message();
 
