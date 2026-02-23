@@ -58,6 +58,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -75,11 +76,17 @@ namespace {
 // Plus Address Section header height.
 const CGFloat kPlusAddressSectionHeaderHeight = 24;
 
+// TODO(crbug.com/480934103): Update this URL.
+constexpr std::string_view kWalletUrlString =
+    "https://wallet.google.com/wallet/settings/managepassesdata";
+
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSwitches = kSectionIdentifierEnumZero,
   SectionIdentifierProfiles,
   SectionIdentifierPlusAddress,
-  SectionIdentifierEnhancedAutofill
+  SectionIdentifierEnhancedAutofill,
+  SectionIdentifierVerificationSwitch,
+  SectionIdentifierWalletPromo
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -90,7 +97,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeFooter,
   ItemTypePlusAddress,
   ItemTypePlusAddressFooter,
-  ItemTypeEnhancedAutofill
+  ItemTypeEnhancedAutofill,
+  ItemTypeVerificationSwitch,
+  ItemTypeVerificationFooter,
+  ItemTypeWalletPromoInfo,
+  ItemTypeWalletPromoButton
 };
 
 // Returns the fallback detail text for a local profile when its detail text is
@@ -173,6 +184,9 @@ NSString* GetFallbackDetailTextForLocalProfile(
   // PrefChangeRegistrar.
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
+
+  // A reference to the Wallet promo button item for quick access.
+  TableViewTextItem* _walletPromoButtonItem;
 }
 
 @property(nonatomic, getter=isAutofillProfileEnabled)
@@ -260,6 +274,8 @@ NSString* GetFallbackDetailTextForLocalProfile(
     [model addSectionWithIdentifier:SectionIdentifierEnhancedAutofill];
     [model addItem:[self enhancedAutofillItem]
         toSectionWithIdentifier:SectionIdentifierEnhancedAutofill];
+
+    [self populateVerificationAndWalletSections];
   }
 
   [self populateProfileSection];
@@ -443,6 +459,78 @@ NSString* GetFallbackDetailTextForLocalProfile(
                                         .empty();
 }
 
+#pragma mark - LoadModel Helpers for Enhanced Autofill
+
+// Populates the Verification and Wallet related section.
+- (void)populateVerificationAndWalletSections {
+  TableViewModel* model = self.tableViewModel;
+
+  [model addSectionWithIdentifier:SectionIdentifierVerificationSwitch];
+  [model addItem:[self verificationSwitchItem]
+      toSectionWithIdentifier:SectionIdentifierVerificationSwitch];
+  [model setFooter:[self verificationFooter]
+      forSectionWithIdentifier:SectionIdentifierVerificationSwitch];
+
+  if ([self shouldShowWalletPromo]) {
+    [model addSectionWithIdentifier:SectionIdentifierWalletPromo];
+    [model addItem:[self walletPromoInfoItem]
+        toSectionWithIdentifier:SectionIdentifierWalletPromo];
+    [model addItem:[self walletPromoButtonItem]
+        toSectionWithIdentifier:SectionIdentifierWalletPromo];
+  }
+}
+
+// Returns YES if the Google Wallet promotion should be shown.
+- (BOOL)shouldShowWalletPromo {
+  return autofill::CanPerformAutofillAiAction(
+      _browser->GetProfile(),
+      autofill::AutofillAiAction::kWalletDataSharingPromotion);
+}
+
+// Returns the verification (reauthentication) switch item.
+- (TableViewItem*)verificationSwitchItem {
+  TableViewSwitchItem* switchItem =
+      [[TableViewSwitchItem alloc] initWithType:ItemTypeVerificationSwitch];
+  switchItem.text =
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_VERIFICATION_INFO_LABEL);
+  switchItem.on = YES;
+  switchItem.target = self;
+  switchItem.selector = @selector(verificationSwitchChanged:);
+  return switchItem;
+}
+
+// Returns the verification footer item.
+- (TableViewHeaderFooterItem*)verificationFooter {
+  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
+      initWithType:ItemTypeVerificationFooter];
+  footer.text =
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_VERIFICATION_INFO_FOOTER);
+  return footer;
+}
+
+// Returns the Google Wallet promo info item.
+- (TableViewItem*)walletPromoInfoItem {
+  TableViewDetailTextItem* item =
+      [[TableViewDetailTextItem alloc] initWithType:ItemTypeWalletPromoInfo];
+  item.text = l10n_util::GetNSString(IDS_IOS_AUTOFILL_WALLET_PROMO_TITLE);
+  item.detailText =
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_WALLET_PROMO_DETAIL_TEXT);
+  item.allowMultilineDetailText = YES;
+  return item;
+}
+
+// Returns the Google Wallet promo button item.
+- (TableViewItem*)walletPromoButtonItem {
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:ItemTypeWalletPromoButton];
+  _walletPromoButtonItem = item;
+  item.text = l10n_util::GetNSString(IDS_IOS_AUTOFILL_WALLET_PROMO_LINK_TEXT);
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits |= UIAccessibilityTraitButton;
+  item.titleNumberOfLines = 0;
+  return item;
+}
+
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {
@@ -507,6 +595,7 @@ NSString* GetFallbackDetailTextForLocalProfile(
   [super updateUIForEditState];
   [self setSwitchItemEnabled:!self.tableView.editing
                     itemType:ItemTypeAutofillAddressSwitch];
+  [self setWalletPromoButtonItemEnabled:!self.tableView.editing];
   [self updatedToolbarForEditState];
 }
 
@@ -523,6 +612,23 @@ NSString* GetFallbackDetailTextForLocalProfile(
   }
 
   return self.addButtonInToolbar;
+}
+
+#pragma mark - Helper methods
+
+- (void)setWalletPromoButtonItemEnabled:(BOOL)enabled {
+  if (!_walletPromoButtonItem) {
+    return;
+  }
+
+  // Update the model.
+  _walletPromoButtonItem.enabled = enabled;
+  _walletPromoButtonItem.textColor =
+      enabled ? [UIColor colorNamed:kBlueColor]
+              : [UIColor colorNamed:kTextSecondaryColor];
+
+  // Update the table view.
+  [self reconfigureCellsForItems:@[ _walletPromoButtonItem ]];
 }
 
 #pragma mark - UITableViewDelegate
@@ -605,6 +711,13 @@ NSString* GetFallbackDetailTextForLocalProfile(
       break;
   }
 
+  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
+      ItemTypeWalletPromoButton) {
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [self openGoogleWallet];
+    return;
+  }
+
   if (![self isItemTypeForIndexPathAddress:indexPath]) {
     return;
   }
@@ -654,6 +767,13 @@ NSString* GetFallbackDetailTextForLocalProfile(
       buttonView.bounds;
   bubbleViewController.popoverPresentationController.permittedArrowDirections =
       UIPopoverArrowDirectionAny;
+}
+
+// Opens a URL to Google Wallet for users to manage their passes data.
+- (void)openGoogleWallet {
+  OpenNewTabCommand* command =
+      [OpenNewTabCommand commandWithURLFromChrome:GURL(kWalletUrlString)];
+  [self.sceneHandler closePresentedViewsAndOpenURL:command];
 }
 
 #pragma mark - UITableViewDataSource
@@ -716,33 +836,57 @@ NSString* GetFallbackDetailTextForLocalProfile(
   _addButtonInToolbar.enabled = switchOn;
 }
 
+- (void)verificationSwitchChanged:(UISwitch*)switchView {
+  BOOL switchOn = [switchView isOn];
+  [self setSwitchItemOn:switchOn itemType:ItemTypeVerificationSwitch];
+  // TODO(crbug.com/480934103): Update the verification status.
+}
+
 #pragma mark - Switch Helpers
 
-// Sets switchItem's state to `on`. It is important that there is only one item
-// of `switchItemType` in SectionIdentifierSwitches.
+// Sets switchItem's state to `on`.
 - (void)setSwitchItemOn:(BOOL)on itemType:(ItemType)switchItemType {
-  NSIndexPath* switchPath =
-      [self.tableViewModel indexPathForItemType:switchItemType
-                              sectionIdentifier:SectionIdentifierSwitches];
+  TableViewModel* model = self.tableViewModel;
+  NSIndexPath* switchPath = nil;
+
+  if ([model hasItemForItemType:switchItemType
+              sectionIdentifier:SectionIdentifierSwitches]) {
+    switchPath = [model indexPathForItemType:switchItemType
+                           sectionIdentifier:SectionIdentifierSwitches];
+  } else if ([model hasItemForItemType:switchItemType
+                     sectionIdentifier:SectionIdentifierVerificationSwitch]) {
+    switchPath =
+        [model indexPathForItemType:switchItemType
+                  sectionIdentifier:SectionIdentifierVerificationSwitch];
+  } else {
+    return;
+  }
+
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(
-          [self.tableViewModel itemAtIndexPath:switchPath]);
+          [model itemAtIndexPath:switchPath]);
   switchItem.on = on;
 }
 
 // Sets switchItem's enabled status to `enabled` and reconfigures the
-// corresponding cell. It is important that there is no more than one item of
-// `switchItemType` in SectionIdentifierSwitches.
+// corresponding cell.
 - (void)setSwitchItemEnabled:(BOOL)enabled itemType:(ItemType)switchItemType {
   TableViewModel* model = self.tableViewModel;
+  NSIndexPath* switchPath = nil;
 
-  if (![model hasItemForItemType:switchItemType
-               sectionIdentifier:SectionIdentifierSwitches]) {
+  if ([model hasItemForItemType:switchItemType
+              sectionIdentifier:SectionIdentifierSwitches]) {
+    switchPath = [model indexPathForItemType:switchItemType
+                           sectionIdentifier:SectionIdentifierSwitches];
+  } else if ([model hasItemForItemType:switchItemType
+                     sectionIdentifier:SectionIdentifierVerificationSwitch]) {
+    switchPath =
+        [model indexPathForItemType:switchItemType
+                  sectionIdentifier:SectionIdentifierVerificationSwitch];
+  } else {
     return;
   }
-  NSIndexPath* switchPath =
-      [model indexPathForItemType:switchItemType
-                sectionIdentifier:SectionIdentifierSwitches];
+
   TableViewSwitchItem* switchItem =
       base::apple::ObjCCastStrict<TableViewSwitchItem>(
           [model itemAtIndexPath:switchPath]);

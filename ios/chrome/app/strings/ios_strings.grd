@@ -688,6 +688,21 @@
       <message name="IDS_IOS_AUTOFILL_SUGGESTION_INDEX_VALUE" desc="The accessibility value of a suggestion shown in the Autofill keyboard acessory to indicate the position of the focused suggestion in the list of suggestions. [Length: unlimited] [iOS only]">
         <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="NUM_SUGGESTIONS">$2<ex>5</ex></ph>
       </message>
+      <message name="IDS_IOS_AUTOFILL_VERIFICATION_INFO_FOOTER" desc="The footer text explaining the verify sensitive info setting. [iOS only]">
+        If you share this device, use your screen lock to verify it's you when using sensitive info like passports
+      </message>
+      <message name="IDS_IOS_AUTOFILL_VERIFICATION_INFO_LABEL" desc="The label for the toggle to verify identity when filling sensitive info. [iOS only]">
+        Verify it's you when filling sensitive info
+      </message>
+      <message name="IDS_IOS_AUTOFILL_WALLET_PROMO_DETAIL_TEXT" desc="Text explaining that the user needs to enable 'Use passes across Google' in Wallet settings to use autofill. [iOS only]">
+        To autofill your info, turn on “Use passes across Google” in Wallet settings
+      </message>
+      <message name="IDS_IOS_AUTOFILL_WALLET_PROMO_LINK_TEXT" desc="Link text to open the Google Wallet app. [iOS only]">
+        Open Google Wallet
+      </message>
+      <message name="IDS_IOS_AUTOFILL_WALLET_PROMO_TITLE" desc="Title of the wallet promo in autofill settings. [iOS only]">
+        Allow Wallet to share data
+      </message>
       <message name="IDS_IOS_AUTOFILL_WALLET_SERVER_NAME" desc="The name of the data source for non-local card and address info. Title case. 'Google Pay' should not be translated as it is the product name. [Length: 15em] [iOS only]">
         Google Pay
       </message>
