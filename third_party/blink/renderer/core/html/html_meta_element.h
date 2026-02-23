@@ -96,10 +96,10 @@ class CORE_EXPORT HTMLMetaElement final : public HTMLElement {
                                    const StringView& value,
                                    bool* ok = nullptr);
 
-  static Length ParseViewportValueAsLength(Document*,
-                                           bool report_warnings,
-                                           const StringView& key,
-                                           const StringView& value);
+  static ViewportLength ParseViewportValueAsLength(Document*,
+                                                   bool report_warnings,
+                                                   const StringView& key,
+                                                   const StringView& value);
   static float ParseViewportValueAsZoom(
       Document*,
       bool report_warnings,

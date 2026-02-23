@@ -1757,7 +1757,7 @@ String Internals::viewportAsText(Document* document,
 
   ViewportDescription description = page->GetViewportDescription();
   PageScaleConstraints constraints =
-      description.Resolve(gfx::SizeF(initial_viewport_size), Length());
+      description.Resolve(gfx::SizeF(initial_viewport_size), ViewportLength());
 
   constraints.FitToContentsWidth(constraints.layout_size.width(),
                                  available_width);

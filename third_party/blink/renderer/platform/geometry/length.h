@@ -124,9 +124,6 @@ class PLATFORM_EXPORT Length {
     kFitContent,
     kCalculated,
     kFlex,
-    kExtendToZoom,
-    kDeviceWidth,
-    kDeviceHeight,
     kNone,    // only valid for max-width, max-height, or contain-intrinsic-size
     kContent  // only valid for flex-basis
   };
@@ -201,10 +198,6 @@ class PLATFORM_EXPORT Length {
   static Length Content() { return Length(kContent); }
   static Length Fixed() { return Length(kFixed); }
   static Length None() { return Length(kNone); }
-
-  static Length ExtendToZoom() { return Length(kExtendToZoom); }
-  static Length DeviceWidth() { return Length(kDeviceWidth); }
-  static Length DeviceHeight() { return Length(kDeviceHeight); }
 
   template <typename NUMBER_TYPE>
   static Length Fixed(NUMBER_TYPE number) {
@@ -339,9 +332,6 @@ class PLATFORM_EXPORT Length {
     return GetType() == kPercent || GetType() == kCalculated;
   }
   bool IsFlex() const { return GetType() == kFlex; }
-  bool IsExtendToZoom() const { return GetType() == kExtendToZoom; }
-  bool IsDeviceWidth() const { return GetType() == kDeviceWidth; }
-  bool IsDeviceHeight() const { return GetType() == kDeviceHeight; }
 
   Length Blend(const Length& from, double progress, ValueRange range) const {
     DCHECK(CanConvertToCalculation());

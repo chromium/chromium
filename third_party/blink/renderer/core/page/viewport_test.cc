@@ -115,7 +115,7 @@ static PageScaleConstraints RunViewportTest(Page* page,
       ->SetFrameRect(gfx::Rect(gfx::Point(), initial_viewport_size));
   ViewportDescription description = page->GetViewportDescription();
   PageScaleConstraints constraints = description.Resolve(
-      gfx::SizeF(initial_viewport_size), Length::Fixed(980));
+      gfx::SizeF(initial_viewport_size), ViewportLength::Fixed(980));
 
   constraints.FitToContentsWidth(constraints.layout_size.width(),
                                  initial_width);

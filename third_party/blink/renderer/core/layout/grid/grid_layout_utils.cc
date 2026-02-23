@@ -616,9 +616,6 @@ LayoutUnit CalculateIntrinsicMinimumContribution(
     }
     case Length::kMinIntrinsic:
     case Length::kFlex:
-    case Length::kExtendToZoom:
-    case Length::kDeviceWidth:
-    case Length::kDeviceHeight:
     case Length::kNone:
     case Length::kContent:
       NOTREACHED();

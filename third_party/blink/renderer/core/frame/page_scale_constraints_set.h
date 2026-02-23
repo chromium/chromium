@@ -62,8 +62,9 @@ class CORE_EXPORT PageScaleConstraintsSet
   const PageScaleConstraints& PageDefinedConstraints() const {
     return page_defined_constraints_;
   }
-  void UpdatePageDefinedConstraints(const ViewportDescription&,
-                                    const Length& legacy_fallback_width);
+  void UpdatePageDefinedConstraints(
+      const ViewportDescription&,
+      const ViewportLength& legacy_fallback_width);
   void AdjustForAndroidWebViewQuirks(const ViewportDescription&,
                                      int layout_fallback_width,
                                      bool support_target_density_dpi,

@@ -154,10 +154,6 @@ LayoutUnit ResolveInlineLengthInternal(
       return kIndefiniteSize;
     case Length::kFlex:
       NOTREACHED() << "Should only be used for grid.";
-    case Length::kDeviceWidth:
-    case Length::kDeviceHeight:
-    case Length::kExtendToZoom:
-      NOTREACHED() << "Should only be used for viewport definitions.";
   }
 }
 
@@ -275,10 +271,6 @@ LayoutUnit ResolveBlockLengthInternal(
       return kIndefiniteSize;
     case Length::kFlex:
       NOTREACHED() << "Should only be used for grid.";
-    case Length::kDeviceWidth:
-    case Length::kDeviceHeight:
-    case Length::kExtendToZoom:
-      NOTREACHED() << "Should only be used for viewport definitions.";
   }
 }
 

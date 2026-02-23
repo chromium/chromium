@@ -34,7 +34,6 @@
 #include "third_party/blink/public/mojom/page/display_cutout.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints.h"
-#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -42,6 +41,52 @@
 namespace blink {
 
 class LocalFrame;
+
+// Representation of a viewport dimension.
+class ViewportLength {
+ public:
+  enum class Type {
+    kAuto,
+    kFixed,
+    kDeviceWidth,
+    kDeviceHeight,
+    kExtendToZoom,
+  };
+
+  ViewportLength() = default;
+
+  static ViewportLength Fixed(float value) { return {Type::kFixed, value}; }
+  static ViewportLength DeviceWidth() {
+    return ViewportLength(Type::kDeviceWidth);
+  }
+  static ViewportLength DeviceHeight() {
+    return ViewportLength(Type::kDeviceHeight);
+  }
+  static ViewportLength ExtendToZoom() {
+    return ViewportLength(Type::kExtendToZoom);
+  }
+
+  bool IsAuto() const { return type_ == Type::kAuto; }
+  bool IsFixed() const { return type_ == Type::kFixed; }
+  bool IsDeviceWidth() const { return type_ == Type::kDeviceWidth; }
+  bool IsDeviceHeight() const { return type_ == Type::kDeviceHeight; }
+  bool IsExtendToZoom() const { return type_ == Type::kExtendToZoom; }
+
+  float Pixels() const {
+    DCHECK_EQ(type_, Type::kFixed);
+    return value_;
+  }
+
+  friend bool operator==(const ViewportLength&,
+                         const ViewportLength&) = default;
+
+ private:
+  ViewportLength(Type type, float value) : type_(type), value_(value) {}
+  explicit ViewportLength(Type type) : ViewportLength(type, 0) {}
+
+  Type type_ = Type::kAuto;
+  float value_ = 0;
+};
 
 struct CORE_EXPORT ViewportDescription {
   DISALLOW_NEW();
@@ -97,16 +142,17 @@ struct CORE_EXPORT ViewportDescription {
         user_zoom_is_explicit(false) {}
 
   // All arguments are in CSS units.
-  PageScaleConstraints Resolve(const gfx::SizeF& initial_viewport_size,
-                               const Length& legacy_fallback_width) const;
+  PageScaleConstraints Resolve(
+      const gfx::SizeF& initial_viewport_size,
+      const ViewportLength& legacy_fallback_width) const;
 
-  // If the type is kFixed, these Length values (i.e., |min_width|,
+  // If the type is kFixed, these ViewportLength values (i.e., |min_width|,
   // |max_width|, |min_height|, and |max_height|) must be in physical pixel
   // scale.
-  Length min_width;
-  Length max_width;
-  Length min_height;
-  Length max_height;
+  ViewportLength min_width;
+  ViewportLength max_width;
+  ViewportLength min_height;
+  ViewportLength max_height;
   float zoom;
   float min_zoom;
   float max_zoom;
@@ -157,7 +203,7 @@ struct CORE_EXPORT ViewportDescription {
 
  private:
   enum class Direction { kHorizontal, kVertical };
-  static float ResolveViewportLength(const Length&,
+  static float ResolveViewportLength(const ViewportLength&,
                                      const gfx::SizeF& initial_viewport_size,
                                      Direction);
 

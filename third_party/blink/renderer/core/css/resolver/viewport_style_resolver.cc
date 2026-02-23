@@ -74,18 +74,18 @@ ViewportDescription ViewportStyleResolver::ResolveViewportDescription(
       // width to device-width in case Android based browsers want to simulate
       // desktop behavior where the default layout width comes from the window
       // size.
-      description.min_width = Length::DeviceWidth();
+      description.min_width = ViewportLength::DeviceWidth();
       return description;
     }
     // We only want to use the device scale portion of the zoom factor, because
     // the page layout size should remain fixed relative to page zoom in order
     // to reflow into it.
     case mojom::blink::ViewportStyle::kMobile: {
-      description.min_width = Length::Fixed(980.0 * DeviceScaleZoom());
+      description.min_width = ViewportLength::Fixed(980 * DeviceScaleZoom());
       return description;
     }
     case mojom::blink::ViewportStyle::kTelevision: {
-      description.min_width = Length::Fixed(1280 * DeviceScaleZoom());
+      description.min_width = ViewportLength::Fixed(1280 * DeviceScaleZoom());
       return description;
     }
   }

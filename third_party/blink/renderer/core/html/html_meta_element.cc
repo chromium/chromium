@@ -184,7 +184,7 @@ float HTMLMetaElement::ParsePositiveNumber(Document* document,
   return value;
 }
 
-Length HTMLMetaElement::ParseViewportValueAsLength(
+ViewportLength HTMLMetaElement::ParseViewportValueAsLength(
     Document* document,
     bool report_warnings,
     const StringView& key_string,
@@ -195,9 +195,9 @@ Length HTMLMetaElement::ParseViewportValueAsLength(
   // 4) Other keywords and unknown values translate to auto.
 
   if (EqualIgnoringASCIICase(value_string, "device-width"))
-    return Length::DeviceWidth();
+    return ViewportLength::DeviceWidth();
   if (EqualIgnoringASCIICase(value_string, "device-height"))
-    return Length::DeviceHeight();
+    return ViewportLength::DeviceHeight();
 
   bool ok;
 
@@ -205,17 +205,17 @@ Length HTMLMetaElement::ParseViewportValueAsLength(
                                     value_string, &ok);
 
   if (!ok)
-    return Length();  // auto
+    return ViewportLength();  // auto
 
   if (value < 0)
-    return Length();  // auto
+    return ViewportLength();  // auto
 
   value = ClampLengthValue(value);
   if (document && document->GetPage()) {
     value = document->GetPage()->GetChromeClient().WindowToViewportScalar(
         document->GetFrame(), value);
   }
-  return Length::Fixed(value);
+  return ViewportLength::Fixed(value);
 }
 
 float HTMLMetaElement::ParseViewportValueAsZoom(
@@ -351,17 +351,17 @@ void HTMLMetaElement::ProcessViewportKeyValuePair(
     bool viewport_meta_zero_values_quirk,
     ViewportDescription& description) {
   if (key_string == "width") {
-    const Length& width = ParseViewportValueAsLength(document, report_warnings,
-                                                     key_string, value_string);
+    const ViewportLength& width = ParseViewportValueAsLength(
+        document, report_warnings, key_string, value_string);
     if (!width.IsAuto()) {
-      description.min_width = Length::ExtendToZoom();
+      description.min_width = ViewportLength::ExtendToZoom();
       description.max_width = width;
     }
   } else if (key_string == "height") {
-    const Length& height = ParseViewportValueAsLength(document, report_warnings,
-                                                      key_string, value_string);
+    const ViewportLength& height = ParseViewportValueAsLength(
+        document, report_warnings, key_string, value_string);
     if (!height.IsAuto()) {
-      description.min_height = Length::ExtendToZoom();
+      description.min_height = ViewportLength::ExtendToZoom();
       description.max_height = height;
     }
   } else if (key_string == "initial-scale") {

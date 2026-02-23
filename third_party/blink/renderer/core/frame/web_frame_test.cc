@@ -1813,8 +1813,8 @@ TEST_F(WebFrameTest, ChangeInFixedLayoutResetsTextAutosizingMultipliers) {
       document->GetViewportData().GetViewportDescription();
   // Choose a width that's not going match the viewport width of the loaded
   // document.
-  description.min_width = Length::Fixed(100);
-  description.max_width = Length::Fixed(100);
+  description.min_width = ViewportLength::Fixed(100);
+  description.max_width = ViewportLength::Fixed(100);
   web_view_helper.GetWebView()->UpdatePageDefinedViewportConstraints(
       description);
 

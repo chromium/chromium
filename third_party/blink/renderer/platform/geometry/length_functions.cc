@@ -54,9 +54,6 @@ float FloatValueForLength(const Length& length,
     case Length::kFitContent:
     case Length::kContent:
     case Length::kFlex:
-    case Length::kExtendToZoom:
-    case Length::kDeviceWidth:
-    case Length::kDeviceHeight:
     case Length::kNone:
       NOTREACHED();
   }
@@ -84,9 +81,6 @@ LayoutUnit MinimumValueForLengthInternal(const Length& length,
     case Length::kFitContent:
     case Length::kContent:
     case Length::kFlex:
-    case Length::kExtendToZoom:
-    case Length::kDeviceWidth:
-    case Length::kDeviceHeight:
     case Length::kNone:
       NOTREACHED();
   }
@@ -110,9 +104,6 @@ LayoutUnit ValueForLength(const Length& length,
     case Length::kFitContent:
     case Length::kContent:
     case Length::kFlex:
-    case Length::kExtendToZoom:
-    case Length::kDeviceWidth:
-    case Length::kDeviceHeight:
     case Length::kNone:
       NOTREACHED();
   }

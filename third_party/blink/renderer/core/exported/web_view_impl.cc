@@ -3003,10 +3003,10 @@ void WebViewImpl::UpdatePageDefinedViewportConstraints(
 
   Document* document = GetPage()->DeprecatedLocalMainFrame()->GetDocument();
 
-  Length default_min_width =
+  ViewportLength default_min_width =
       document->GetViewportData().ViewportDefaultMinWidth();
   if (default_min_width.IsAuto())
-    default_min_width = Length::ExtendToZoom();
+    default_min_width = ViewportLength::ExtendToZoom();
 
   float old_initial_scale =
       GetPageScaleConstraintsSet().PageDefinedConstraints().initial_scale;
@@ -3016,11 +3016,12 @@ void WebViewImpl::UpdatePageDefinedViewportConstraints(
   if (SettingsImpl()->ClobberUserAgentInitialScaleQuirk() &&
       GetPageScaleConstraintsSet().UserAgentConstraints().initial_scale != -1 &&
       GetPageScaleConstraintsSet().UserAgentConstraints().initial_scale <= 1) {
-    if (description.max_width == Length::DeviceWidth() ||
+    if (description.max_width.IsDeviceWidth() ||
         (description.max_width.IsAuto() &&
          GetPageScaleConstraintsSet().PageDefinedConstraints().initial_scale ==
-             1.0f))
+             1.0f)) {
       SetInitialPageScaleOverride(-1);
+    }
   }
 
   Settings& page_settings = GetPage()->GetSettings();

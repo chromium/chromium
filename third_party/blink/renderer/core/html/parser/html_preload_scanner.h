@@ -91,7 +91,7 @@ struct CORE_EXPORT CachedDocumentParameters {
       std::optional<features::LcppPreloadLazyLoadImageType> type);
 
   bool do_html_preload_scanning;
-  Length default_viewport_min_width;
+  ViewportLength default_viewport_min_width;
   bool viewport_meta_zero_values_quirk;
   bool viewport_meta_enabled;
   network::mojom::ReferrerPolicy referrer_policy;

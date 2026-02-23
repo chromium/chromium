@@ -60,7 +60,7 @@ static void RecordViewportTypeMetric(
 }
 
 float ViewportDescription::ResolveViewportLength(
-    const Length& length,
+    const ViewportLength& length,
     const gfx::SizeF& initial_viewport_size,
     Direction direction) {
   if (length.IsAuto())
@@ -71,12 +71,6 @@ float ViewportDescription::ResolveViewportLength(
 
   if (length.IsExtendToZoom())
     return ViewportDescription::kValueExtendToZoom;
-
-  if (length.IsPercent() && direction == Direction::kHorizontal)
-    return initial_viewport_size.width() * length.Percent() / 100.0f;
-
-  if (length.IsPercent() && direction == Direction::kVertical)
-    return initial_viewport_size.height() * length.Percent() / 100.0f;
 
   if (length.IsDeviceWidth())
     return initial_viewport_size.width();
@@ -89,22 +83,22 @@ float ViewportDescription::ResolveViewportLength(
 
 PageScaleConstraints ViewportDescription::Resolve(
     const gfx::SizeF& initial_viewport_size,
-    const Length& legacy_fallback_width) const {
+    const ViewportLength& legacy_fallback_width) const {
   float result_width = kValueAuto;
 
-  Length copy_max_width = max_width;
-  Length copy_min_width = min_width;
+  ViewportLength copy_max_width = max_width;
+  ViewportLength copy_min_width = min_width;
   // In case the width (used for min- and max-width) is undefined.
   if (IsLegacyViewportType() && max_width.IsAuto()) {
     // The width viewport META property is translated into 'width' descriptors,
     // setting the 'min' value to 'extend-to-zoom' and the 'max' value to the
     // intended length.  In case the UA-defines a min-width, use that as length.
     if (zoom == ViewportDescription::kValueAuto) {
-      copy_min_width = Length::ExtendToZoom();
+      copy_min_width = ViewportLength::ExtendToZoom();
       copy_max_width = legacy_fallback_width;
     } else if (max_height.IsAuto()) {
-      copy_min_width = Length::ExtendToZoom();
-      copy_max_width = Length::ExtendToZoom();
+      copy_min_width = ViewportLength::ExtendToZoom();
+      copy_max_width = ViewportLength::ExtendToZoom();
     }
   }
 

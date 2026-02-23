@@ -19,7 +19,8 @@ class Document;
 
 class ViewportData final : public GarbageCollected<ViewportData> {
  public:
-  ViewportData(Document& document);
+  explicit ViewportData(Document& document);
+
   void Trace(Visitor* visitor) const;
   void Shutdown();
 
@@ -27,7 +28,9 @@ class ViewportData final : public GarbageCollected<ViewportData> {
   bool ShouldOverrideLegacyDescription(ViewportDescription::Type) const;
   CORE_EXPORT void SetViewportDescription(const ViewportDescription&);
   CORE_EXPORT ViewportDescription GetViewportDescription() const;
-  Length ViewportDefaultMinWidth() const { return viewport_default_min_width_; }
+  const ViewportLength& ViewportDefaultMinWidth() const {
+    return viewport_default_min_width_;
+  }
 
   void UpdateViewportDescription();
 
@@ -53,7 +56,7 @@ class ViewportData final : public GarbageCollected<ViewportData> {
 
   ViewportDescription viewport_description_;
   ViewportDescription legacy_viewport_description_;
-  Length viewport_default_min_width_;
+  ViewportLength viewport_default_min_width_;
 
   // Whether overlays content was set via the virtualKeyboard API.
   bool virtual_keyboard_overlays_content_ = false;
