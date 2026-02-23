@@ -342,5 +342,25 @@ TEST(HeadlessScreenInfoTest, Rotation) {
               "Invalid rotation: 42");
 }
 
+TEST(HeadlessScreenInfoTest, DefaultSecondaryScreenOrigin) {
+  // Default secondary screen origin is to the right of the previous screen.
+  EXPECT_EQ(HeadlessScreenInfo::FromString("{}{}").value()[1],
+            HeadlessScreenInfo({.bounds = gfx::Rect(800, 0, 800, 600)}));
+
+  // Default secondary screen origin should consider previous screen scale
+  // factor.
+  EXPECT_EQ(HeadlessScreenInfo::FromString("{devicePixelRatio=2}{}").value()[1],
+            HeadlessScreenInfo({.bounds = gfx::Rect(400, 0, 800, 600)}));
+
+  EXPECT_EQ(
+      HeadlessScreenInfo::FromString("{devicePixelRatio=2}{}{}").value()[2],
+      HeadlessScreenInfo({.bounds = gfx::Rect(1200, 0, 800, 600)}));
+
+  EXPECT_EQ(HeadlessScreenInfo::FromString(
+                "{devicePixelRatio=2}{devicePixelRatio=2}{}")
+                .value()[2],
+            HeadlessScreenInfo({.bounds = gfx::Rect(800, 0, 800, 600)}));
+}
+
 }  // namespace
 }  // namespace headless

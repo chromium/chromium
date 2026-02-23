@@ -11,6 +11,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
 
 using re2::RE2;
 
@@ -193,10 +196,17 @@ std::string ParseOneScreenInfo(std::string_view screen_info,
     new_screen_info.bounds.set_origin({x, y});
   } else if (!result.empty()) {
     // If no origin is given for a secondary screen shift it to the
-    // right of the previous screen so that they don't overlap.
+    // right of the previous screen accounting for its scale factor.
     const HeadlessScreenInfo& prev_screen = result.back();
+    gfx::Size prev_screen_scaled_size(prev_screen.bounds.size());
+    if (prev_screen.device_pixel_ratio != 1.0f) {
+      gfx::SizeF size(prev_screen.bounds.size());
+      size.InvScale(prev_screen.device_pixel_ratio);
+      prev_screen_scaled_size = gfx::ToCeiledSize(size);
+    }
     new_screen_info.bounds.set_origin(
-        {prev_screen.bounds.right(), prev_screen.bounds.y()});
+        {prev_screen.bounds.x() + prev_screen_scaled_size.width(),
+         prev_screen.bounds.y()});
   }
 
   // Scan in the screen size if any, matching any leading white space followed

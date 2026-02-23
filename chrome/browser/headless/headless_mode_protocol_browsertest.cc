@@ -329,6 +329,10 @@ HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsMultipleScreens,
 HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsMultipleScreensScaled,
                             "shared/screen-details-multiple-screens-scaled.js")
 
+HEADLESS_MODE_PROTOCOL_TEST(
+    ScreenDetailsMultipleScreensPrimaryScaled,
+    "shared/screen-details-multiple-screens-primary-scaled.js")
+
 HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsRotationAngle,
                             "shared/screen-details-rotation-angle.js")
 
