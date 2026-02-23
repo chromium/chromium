@@ -230,13 +230,6 @@ bool IsGeminiLoadingStateRedesignEnabled();
 BASE_DECLARE_FEATURE(kGeminiLatencyImprovement);
 bool IsGeminiLatencyImprovementEnabled();
 
-// Feature flag for showing the Gemini floaty immediately.
-//
-// This feature exists so the overlay can open without having to wait for the
-// page to finish loading.
-BASE_DECLARE_FEATURE(kGeminiImmediateOverlay);
-bool IsGeminiImmediateOverlayEnabled();
-
 // Feature flag to use the new refactored version of the page context extractor.
 // Acts as a killswitch where the feature is enabled by default.
 BASE_DECLARE_FEATURE(kPageContextExtractorRefactored);

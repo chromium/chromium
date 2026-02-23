@@ -143,12 +143,7 @@ const CGFloat kFeatureRowIconSize = 20;
     return NO;
   }
 
-  if (IsGeminiImmediateOverlayEnabled()) {
-    return _BWGService->IsBwgAvailableForWebState(_webState);
-  } else {
-    return !_webState->IsLoading() &&
-           _BWGService->IsBwgAvailableForWebState(_webState);
-  }
+  return _BWGService->IsBwgAvailableForWebState(_webState);
 }
 
 - (BOOL)isReaderModeAvailable {

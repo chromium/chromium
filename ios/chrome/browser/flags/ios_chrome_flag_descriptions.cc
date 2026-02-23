@@ -664,10 +664,6 @@ const char kGeminiImageRemixToolName[] = "Gemini Image Remix Tool";
 const char kGeminiImageRemixToolDescription[] =
     "Enables the image remix tool in the Gemini floaty.";
 
-const char kGeminiImmediateOverlayName[] = "GeminiImmediateOverlay";
-const char kGeminiImmediateOverlayDescription[] =
-    "Enables immediate access to Gemini in the page tools menu.";
-
 const char kGeminiLatencyImprovementName[] = "GeminiLatencyImprovement";
 const char kGeminiLatencyImprovementDescription[] =
     "Enables the latency improvements for Gemini.";

@@ -1604,10 +1604,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.readerModeAction.enabled = [self isReaderModeEnabled];
   }
 
-  if ([self isGeminiAvailable]) {
-    self.askBWGAction.enabled =
-        IsGeminiImmediateOverlayEnabled() || !_webState->IsLoading();
-  }
+  self.askBWGAction.enabled = [self isGeminiAvailable];
 
   if (base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu)) {
     self.hideToolbarsAction.enabled = YES;

@@ -408,9 +408,6 @@ extern const char kGeminiFullChatHistoryDescription[];
 extern const char kGeminiImageRemixToolName[];
 extern const char kGeminiImageRemixToolDescription[];
 
-extern const char kGeminiImmediateOverlayName[];
-extern const char kGeminiImmediateOverlayDescription[];
-
 extern const char kGeminiLatencyImprovementName[];
 extern const char kGeminiLatencyImprovementDescription[];
 

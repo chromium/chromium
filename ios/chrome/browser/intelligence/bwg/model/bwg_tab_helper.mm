@@ -131,9 +131,7 @@ void BwgTabHelper::SetupPageContextGeneration(
 
   // If the page is still loading, wait for it to finish before extracting the
   // page context.
-  bool should_update_context_after_page_load =
-      IsGeminiImmediateOverlayEnabled() && web_state_->IsLoading();
-  if (should_update_context_after_page_load) {
+  if (web_state_->IsLoading()) {
     // TODO(crbug.com/466107255): Move waiting for page loading responsibility
     // to GeminiBrowserAgent.
     base::RepeatingCallback<void()> pageContextPopulateCallback =

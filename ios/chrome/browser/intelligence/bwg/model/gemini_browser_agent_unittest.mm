@@ -257,27 +257,6 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
   ASSERT_FALSE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
 }
 
-// Tests the presentation of the floaty and state of tab helper side
-// effects.
-TEST_F(GeminiBrowserAgentTest,
-       TestGeminiBrowserAgentPresentFloatyWithPageContext) {
-  UIViewController* base_view_controller = [[UIViewController alloc] init];
-  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
-      std::make_unique<optimization_guide::proto::PageContext>();
-  PageContextWrapperCallbackResponse response =
-      base::ok(std::move(page_context));
-
-  // Set the BWG tab helper as backgrounded and assert.
-  bwg_tab_helper_->PrepareBwgFreBackgrounding();
-  ASSERT_TRUE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
-
-  gemini_browser_agent_->PresentFloatyWithPageContext(
-      base_view_controller, std::move(response), gemini::EntryPoint::Promo);
-
-  // Assert the BWG tab helper was set as foregrounded.
-  ASSERT_FALSE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
-}
-
 TEST_F(GeminiBrowserAgentTest,
        TestGeminiBrowserAgentPresentFloatyWithPendingContext) {
   UIViewController* base_view_controller = [[UIViewController alloc] init];
@@ -383,7 +362,6 @@ TEST_F(GeminiBrowserAgentTest, TestOnGeminiViewStateExpanded) {
 
 TEST_F(GeminiBrowserAgentTest, TestPageContextGenerationTimeout) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kGeminiImmediateOverlay);
   // Simulate FRE completion.
   profile_->GetPrefs()->SetBoolean(prefs::kIOSBwgConsent, true);
 

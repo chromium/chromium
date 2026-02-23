@@ -388,67 +388,39 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
         }));
   }
 
-  // Configure the callback to be executed once the page context is ready.
   base::WeakPtr<GeminiBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
+
+  // Present the overlay immediately without page context.
+  PresentFloatyWithPendingContext(base_view_controller, entry_point,
+                                  image_attachment);
+
+  // Configure the callback to be executed once the page context is ready.
   base::RepeatingCallback<void(PageContextWrapperCallbackResponse)>
-      page_context_completion_callback;
+      page_context_completion_callback = base::BindRepeating(
+          [](base::WeakPtr<GeminiBrowserAgent> weak_ptr,
+             PageContextWrapperCallbackResponse response) {
+            if (weak_ptr) {
+              // Cancel the timeout timer since the page context is ready.
+              weak_ptr->page_context_timeout_timer_.Stop();
+              weak_ptr->UpdateFloatyPageContext(std::move(response));
+            }
+          },
+          weak_ptr);
 
-  if (IsGeminiImmediateOverlayEnabled()) {
-    // Present the overlay immediately without page context.
-    PresentFloatyWithPendingContext(base_view_controller, entry_point,
-                                    image_attachment);
+  base::UmaHistogramLongTimes(first_run_shown ? kStartupTimeWithFREHistogram
+                                              : kStartupTimeNoFREHistogram,
+                              base::TimeTicks::Now() - start_time);
 
-    page_context_completion_callback = base::BindRepeating(
-        [](base::WeakPtr<GeminiBrowserAgent> weak_ptr,
-           PageContextWrapperCallbackResponse response) {
-          if (weak_ptr) {
-            // Cancel the timeout timer since the page context is ready.
-            weak_ptr->page_context_timeout_timer_.Stop();
-            weak_ptr->UpdateFloatyPageContext(std::move(response));
-          }
-        },
-        weak_ptr);
-
-    base::UmaHistogramLongTimes(first_run_shown ? kStartupTimeWithFREHistogram
-                                                : kStartupTimeNoFREHistogram,
-                                base::TimeTicks::Now() - start_time);
-
-    // Start the timeout timer to force page context generation if page load
-    // takes too long.
-    page_context_timeout_timer_.Start(
-        FROM_HERE, kFullPageContextTimeout,
-        base::BindOnce(
-            &GeminiBrowserAgent::TriggerBestEffortPageContextGeneration,
-            weak_factory_.GetWeakPtr()));
-  } else {
-    page_context_completion_callback = base::BindRepeating(
-        &GeminiBrowserAgent::OnPageContextReady, weak_factory_.GetWeakPtr(),
-        base_view_controller, image_attachment, start_time, first_run_shown,
-        entry_point);
-  }
+  // Start the timeout timer to force page context generation if page load
+  // takes too long.
+  page_context_timeout_timer_.Start(
+      FROM_HERE, kFullPageContextTimeout,
+      base::BindOnce(
+          &GeminiBrowserAgent::TriggerBestEffortPageContextGeneration,
+          weak_factory_.GetWeakPtr()));
 
   gemini_tab_helper->SetupPageContextGeneration(
       std::move(page_context_completion_callback));
-}
-
-void GeminiBrowserAgent::PresentFloatyWithPageContext(
-    UIViewController* base_view_controller,
-    base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
-                   PageContextWrapperError> expected_page_context,
-    gemini::EntryPoint entry_point) {
-  if (expected_page_context.has_value()) {
-    PresentFloatyWithState(
-        base_view_controller, std::move(expected_page_context.value()),
-        ios::provider::GeminiPageContextComputationState::kSuccess,
-        entry_point);
-  } else {
-    PresentFloatyWithState(
-        base_view_controller,
-        /*page_context_proto=*/nullptr,
-        GeminiPageContextComputationStateFromPageContextWrapperError(
-            expected_page_context.error()),
-        entry_point);
-  }
 }
 
 void GeminiBrowserAgent::PresentFloatyWithPendingContext(
@@ -939,34 +911,6 @@ void GeminiBrowserAgent::ApplyUserPrefsToPageContext(
     gemini_page_context.BWGPageContextAttachmentState =
         ios::provider::BWGPageContextAttachmentState::kAttached;
   }
-}
-
-void GeminiBrowserAgent::OnPageContextReady(
-    UIViewController* base_view_controller,
-    UIImage* image_attachment,
-    base::TimeTicks start_time,
-    bool first_run_shown,
-    gemini::EntryPoint entry_point,
-    PageContextWrapperCallbackResponse response) {
-  // Cancel the timeout timer since the page context is ready.
-  page_context_timeout_timer_.Stop();
-
-  if (response.has_value()) {
-    PresentFloatyWithState(
-        base_view_controller, std::move(response.value()),
-        ios::provider::GeminiPageContextComputationState::kSuccess, entry_point,
-        image_attachment);
-  } else {
-    PresentFloatyWithState(
-        base_view_controller, nullptr,
-        GeminiPageContextComputationStateFromPageContextWrapperError(
-            response.error()),
-        entry_point, image_attachment);
-  }
-
-  base::UmaHistogramLongTimes(first_run_shown ? kStartupTimeWithFREHistogram
-                                              : kStartupTimeNoFREHistogram,
-                              base::TimeTicks::Now() - start_time);
 }
 
 void GeminiBrowserAgent::TriggerBestEffortPageContextGeneration() {

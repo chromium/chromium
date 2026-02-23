@@ -74,16 +74,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
                        UIImage* image_attachment,
                        gemini::EntryPoint entry_point);
 
-  // Presents the floaty on a given view controller with a given expected
-  // PageContext.
-  // TODO(crbug.com/465535924): Deprecated, new callers should use
-  // `StartGeminiFlow` instead.
-  void PresentFloatyWithPageContext(
-      UIViewController* base_view_controller,
-      base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
-                     PageContextWrapperError> expected_page_context,
-      gemini::EntryPoint entry_point);
-
   // Presents the floaty on a given view controller in a pending state
   // with a partial PageContext.
   // TODO(crbug.com/465535924): Deprecated, new callers should use

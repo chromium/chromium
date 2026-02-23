@@ -161,23 +161,16 @@
   // Configure the callback to be executed once the page context is ready.
   __weak __typeof(self) weakSelf = self;
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
-  base::RepeatingCallback<void(PageContextWrapperCallbackResponse)>
-      page_context_completion_callback;
-  if (IsGeminiImmediateOverlayEnabled()) {
-    // Present the overlay immediately without page context.
-    [self openPendingBWGOverlay];
 
-    page_context_completion_callback =
-        base::BindRepeating(^void(PageContextWrapperCallbackResponse response) {
-          [weakSelf updateBWGOverlayForWebState:activeWebState
-                     pageContextWrapperResponse:std::move(response)];
-        });
-  } else {
-    page_context_completion_callback =
-        base::BindRepeating(^void(PageContextWrapperCallbackResponse response) {
-          [weakSelf openBWGOverlayForPage:std::move(response)];
-        });
-  }
+  // Present the overlay immediately without page context.
+  [self openPendingBWGOverlay];
+
+  base::RepeatingCallback<void(PageContextWrapperCallbackResponse)>
+      page_context_completion_callback = base::BindRepeating(
+          ^void(PageContextWrapperCallbackResponse response) {
+            [weakSelf updateBWGOverlayForWebState:activeWebState
+                       pageContextWrapperResponse:std::move(response)];
+          });
 
   BwgTabHelper* BWGTabHelper = [self activeWebStateBWGTabHelper];
   if (!BWGTabHelper) {
@@ -186,29 +179,6 @@
 
   BWGTabHelper->SetupPageContextGeneration(
       std::move(page_context_completion_callback));
-}
-
-// Opens the BWG overlay with a given PageContextWrapperCallbackResponse.
-- (void)openBWGOverlayForPage:
-    (PageContextWrapperCallbackResponse)pageContextWrapperResponse {
-
-  web::WebState* activeWebState = _webStateList->GetActiveWebState();
-
-  // The active web state may no longer be eligible for Gemini by the time this
-  // is called. If this is the case, the overlay should not be presented.
-  if (!activeWebState ||
-      !_BWGService->IsBwgAvailableForWebState(activeWebState)) {
-    return;
-  }
-
-  _geminiBrowserAgent->PresentFloatyWithPageContext(
-      self.baseViewController, std::move(pageContextWrapperResponse),
-      _entryPoint);
-
-  base::UmaHistogramLongTimes100(
-      _didPresentBWGFRE ? kStartupTimeWithFREHistogram
-                        : kStartupTimeNoFREHistogram,
-      base::TimeTicks::Now() - _BWGOverlayPreparationStartTime);
 }
 
 // Opens the BWG overlay in a pending state, since full page context is not yet

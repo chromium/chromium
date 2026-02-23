@@ -662,7 +662,6 @@ TEST_F(BwgTabHelperTest, TestGeneratePageContext) {
 }
 
 TEST_F(BwgTabHelperTest, TestGeneratePageContext_WaitsForLoad) {
-  feature_list_.InitAndEnableFeature(kGeminiImmediateOverlay);
   web_state_->SetLoading(true);
 
   id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
@@ -725,7 +724,6 @@ TEST_F(BwgTabHelperTest,
 }
 
 TEST_F(BwgTabHelperTest, TestForcePageContextGeneration) {
-  feature_list_.InitAndEnableFeature(kGeminiImmediateOverlay);
   web_state_->SetLoading(true);
 
   id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
