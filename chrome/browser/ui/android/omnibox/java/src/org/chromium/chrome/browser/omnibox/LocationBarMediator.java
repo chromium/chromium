@@ -831,7 +831,7 @@ class LocationBarMediator
 
     /* package */ boolean didFocusUrlFromFakebox() {
         // Retrieve state for the tab in case we are in the process of activating the input session.
-        var state = FuseboxSessionState.from(mLocationBarDataProvider, mProfileSupplier.get());
+        var state = FuseboxSessionState.from(mLocationBarDataProvider);
         if (state == null) return false;
 
         return switch (state.getAutocompleteInput().getFocusReason()) {
@@ -1043,7 +1043,7 @@ class LocationBarMediator
     boolean beginOrResumeInput(boolean activateNewSession) {
         if (mAutocompleteCoordinator == null) return false;
         // Do not instantiate a new ephemeral session unless we're activating it as well.
-        var session = FuseboxSessionState.from(mLocationBarDataProvider, mProfileSupplier.get());
+        var session = FuseboxSessionState.from(mLocationBarDataProvider);
 
         // Target session must be either active, or activated.
         if (session == null || !(session.isSessionActive() || activateNewSession)) {
@@ -1096,7 +1096,7 @@ class LocationBarMediator
         mAutocompleteCoordinator.endInput();
         mFuseboxCoordinator.endInput();
         mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
-        var state = FuseboxSessionState.from(mLocationBarDataProvider, mProfileSupplier.get());
+        var state = FuseboxSessionState.from(mLocationBarDataProvider);
         if (state != null) state.setSessionActive(false);
         mCurrentInput = null;
     }
@@ -1895,7 +1895,7 @@ class LocationBarMediator
         }
 
         // Restore the saved tab state.
-        var state = FuseboxSessionState.from(mLocationBarDataProvider, mProfileSupplier.get());
+        var state = FuseboxSessionState.from(mLocationBarDataProvider);
         if (state != null && state.isSessionActive()) {
             state.getAutocompleteInput()
                     .setFocusReason(OmniboxFocusReason.LOCATION_BAR_STATE_RESTORATION);
@@ -1911,8 +1911,7 @@ class LocationBarMediator
     @Override
     public void onUrlChanged(boolean isTabChanging) {
         if (isTabChanging) {
-            var currentSession =
-                    FuseboxSessionState.from(mLocationBarDataProvider, mProfileSupplier.get());
+            var currentSession = FuseboxSessionState.from(mLocationBarDataProvider);
             if (currentSession == null || !currentSession.isSessionActive()) {
                 updateUrl();
 
@@ -1959,7 +1958,8 @@ class LocationBarMediator
      */
     @Override
     public void beginInput(AutocompleteInput input) {
-        if (!mNativeInitialized) {
+        boolean isSearchQuery = input.getFocusReason() == OmniboxFocusReason.SEARCH_QUERY;
+        if (isSearchQuery && !mNativeInitialized) {
             mDeferredNativeRunnables.add(() -> beginInput(input));
             return;
         }
@@ -1967,7 +1967,7 @@ class LocationBarMediator
         input.setPageUrl(mLocationBarDataProvider.getCurrentGurl());
         input.setPageTitle(mLocationBarDataProvider.getTitle());
 
-        var state = FuseboxSessionState.from(mLocationBarDataProvider, mProfileSupplier.get());
+        var state = FuseboxSessionState.from(mLocationBarDataProvider);
         // Conditions to show omnibox and suggestions are not met - avoid showing detached
         // suggest and bail.
         if (state == null) return;
@@ -1989,7 +1989,7 @@ class LocationBarMediator
         // Wait for the Url focus change before refreshing autocomplete.
         beginOrResumeInput(/* activateNewSession= */ true);
 
-        if (input.getFocusReason() == OmniboxFocusReason.SEARCH_QUERY) {
+        if (isSearchQuery) {
             mUrlCoordinator.setKeyboardVisibility(true, false);
         }
     }

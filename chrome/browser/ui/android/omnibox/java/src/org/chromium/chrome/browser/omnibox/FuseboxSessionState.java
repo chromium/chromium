@@ -10,14 +10,13 @@ import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFeatures;
 
 /**
  * Fusebox / Omnibox session state object. Captures controllers and state details needed to fulfill
- * or reconstruct the user input. This object is associated with a specific {@link Profile}.
+ * or reconstruct the user input.
  *
  * <p>Unlike the AutocompleteInput - this class is permitted to hold external controllers required
  * to fulfill navigation request.
@@ -30,8 +29,6 @@ public class FuseboxSessionState implements UserData {
      */
     private AutocompleteInput mAutocompleteInput = new AutocompleteInput();
 
-    private final Profile mProfile;
-
     private boolean mIsActive;
 
     /**
@@ -39,17 +36,13 @@ public class FuseboxSessionState implements UserData {
      * exists.
      *
      * @param dataProvider The {@link LocationBarDataProvider} to retrieve the current tab from.
-     * @param profile The {@link Profile} to associate with the session.
-     * @return FuseboxSessionState appropriate for the supplied LocationBarDataProvider, or `null`
-     *     if the profile is `null`.
+     * @return FuseboxSessionState appropriate for the supplied LocationBarDataProvider.
      */
-    public static @Nullable FuseboxSessionState from(
-            LocationBarDataProvider dataProvider, @Nullable Profile profile) {
-        if (profile == null) return null;
+    public static @Nullable FuseboxSessionState from(LocationBarDataProvider dataProvider) {
         var userDataHost = dataProvider.getUserDataHost();
         if (userDataHost == null) return null;
 
-        var state = getSessionForTab(userDataHost, profile);
+        var state = getSessionForTab(userDataHost);
         // Re-apply page metadata in case of ephemeral session, background reload etc.
         state.mAutocompleteInput.setPageClassification(dataProvider.getPageClassification(false));
         state.mAutocompleteInput.setPageUrl(dataProvider.getCurrentGurl());
@@ -63,21 +56,13 @@ public class FuseboxSessionState implements UserData {
      * @param tab The tab to retrieve the session state for.
      * @return FuseboxSessionState for the supplied UserDataHost.
      */
-    private static FuseboxSessionState getSessionForTab(
-            UserDataHost userDataHost, Profile profile) {
+    private static FuseboxSessionState getSessionForTab(UserDataHost userDataHost) {
         FuseboxSessionState state = userDataHost.getUserData(FuseboxSessionState.class);
         if (state == null) {
-            state = new FuseboxSessionState(profile);
+            state = new FuseboxSessionState();
             userDataHost.setUserData(FuseboxSessionState.class, state);
         }
         return state;
-    }
-
-    /**
-     * @return The current {@link Profile} for this session.
-     */
-    public Profile getProfile() {
-        return mProfile;
     }
 
     /**
@@ -127,17 +112,13 @@ public class FuseboxSessionState implements UserData {
     /**
      * Constructs a new FuseboxSessionState with a provided AutocompleteInput.
      *
-     * @param profile The {@link Profile} to associate with the session.
      * @param input The initial AutocompleteInput for this session.
      */
     @VisibleForTesting
-    public FuseboxSessionState(Profile profile, AutocompleteInput input) {
-        mProfile = profile;
+    public FuseboxSessionState(AutocompleteInput input) {
         mAutocompleteInput = input;
     }
 
     /** Constructs a new, empty FuseboxSessionState. */
-    private FuseboxSessionState(Profile profile) {
-        mProfile = profile;
-    }
+    FuseboxSessionState() {}
 }
