@@ -88,6 +88,8 @@ class VerticalTabDragHandler {
   virtual base::TimeTicks GetDragStartTime() const = 0;
 
   // Returns the DropIndex for a given node and position hint.
+  // For tab nodes, a nullopt position hint indicates that the drop is over the
+  // middle of the tab and should be interpreted as a "replace" operation.
   virtual std::optional<BrowserRootView::DropIndex> GetLinkDropIndexForNode(
       const TabCollectionNode& node,
       std::optional<DragPositionHint> position_hint) const = 0;

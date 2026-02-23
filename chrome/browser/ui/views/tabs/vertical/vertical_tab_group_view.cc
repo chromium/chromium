@@ -415,14 +415,21 @@ VerticalTabGroupView::GetLinkDropIndex(const gfx::Point& loc_in_group) {
       continue;
     }
 
-    gfx::Point loc_in_child = loc_in_group;
-    views::View::ConvertPointToTarget(this, view, &loc_in_child);
-    // Determine whether the drop is on the leading (top) or trailing
-    // (bottom) half of the view.
-    const bool is_leading = loc_in_child.y() < view->height() / 2;
-    return GetDragHandler().GetLinkDropIndexForNode(
-        *child_node,
-        is_leading ? DragPositionHint::kTop : DragPositionHint::kBottom);
+    gfx::Point loc_in_child =
+        views::View::ConvertPointToTarget(this, view, loc_in_group);
+
+    // If the drag is over the margins from the edges of the tab, then
+    // consider this drag as a before/after rather than over.
+    constexpr double kDragOverMargins = 0.2;
+    std::optional<DragPositionHint> hint;
+    if (loc_in_child.y() < view->height() * kDragOverMargins) {
+      hint = DragPositionHint::kTop;
+    } else if (loc_in_child.y() > view->height() * (1 - kDragOverMargins)) {
+      hint = DragPositionHint::kBottom;
+    } else {
+      hint = std::nullopt;
+    }
+    return GetDragHandler().GetLinkDropIndexForNode(*child_node, hint);
   }
 
   // Fallback to the end of the group.

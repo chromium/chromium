@@ -59,6 +59,14 @@ VerticalTabLinkDropHandler::GetDropIndexForTab(
   const auto* tab = std::get<const tabs::TabInterface*>(node.GetNodeData());
   CHECK(tab);
   int index = tab_strip_model_->GetIndexOfTab(tab);
+
+  if (!position_hint.has_value()) {
+    return BrowserRootView::DropIndex{
+        .index = index,
+        .relative_to_index =
+            BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex};
+  }
+
   BrowserRootView::DropIndex::GroupInclusion group_inclusion =
       BrowserRootView::DropIndex::GroupInclusion::kDontIncludeInGroup;
 

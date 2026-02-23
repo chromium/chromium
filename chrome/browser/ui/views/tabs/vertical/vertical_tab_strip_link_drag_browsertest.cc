@@ -140,6 +140,31 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest, DropBeforeAndAfterTabs) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest, DropInMiddleToReplace) {
+  EnsureTabCount(3);
+  auto tab_views = WaitForTabs(3);
+
+  // Drop in the middle of the first tab.
+  {
+    gfx::Point location(tab_views[0]->width() / 2, tab_views[0]->height() / 2);
+    auto drop_index = GetDropIndexAt(tab_views[0], location);
+    ASSERT_TRUE(drop_index.has_value());
+    EXPECT_EQ(drop_index->index, 0);
+    EXPECT_EQ(drop_index->relative_to_index,
+              BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex);
+  }
+
+  // Drop in the middle of the second tab.
+  {
+    gfx::Point location(tab_views[1]->width() / 2, tab_views[1]->height() / 2);
+    auto drop_index = GetDropIndexAt(tab_views[1], location);
+    ASSERT_TRUE(drop_index.has_value());
+    EXPECT_EQ(drop_index->index, 1);
+    EXPECT_EQ(drop_index->relative_to_index,
+              BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex);
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest, DropInSplitTabs) {
   AppendSplitTab();
   while (tab_strip_model()->count() > 2) {
