@@ -649,38 +649,6 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(event.defaultPrevented);
   });
 
-  test('onRequestFileUpload calls handler for image', async () => {
-    createComposeboxElement();
-
-    composeboxElement.$.context.dispatchEvent(
-        new CustomEvent('open-file-dialog', {
-          detail: {isImage: true},
-          bubbles: true,
-          composed: true,
-        }));
-
-    await handler.whenCalled('handleFileUpload');
-    assertEquals(1, handler.getCallCount('handleFileUpload'));
-    const [isImage] = handler.getArgs('handleFileUpload');
-    assertTrue(isImage);
-  });
-
-  test('onRequestFileUpload calls handler for file', async () => {
-    createComposeboxElement();
-
-    composeboxElement.$.context.dispatchEvent(
-        new CustomEvent('open-file-dialog', {
-          detail: {isImage: false},
-          bubbles: true,
-          composed: true,
-        }));
-
-    await handler.whenCalled('handleFileUpload');
-    assertEquals(1, handler.getCallCount('handleFileUpload'));
-    const [isImage] = handler.getArgs('handleFileUpload');
-    assertFalse(isImage);
-  });
-
   test('set and delete visual selection thumbnail', async () => {
     createComposeboxElement();
     await microtasksFinished();
@@ -766,14 +734,15 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('image upload button clicks file input', () => {
     loadTimeData.overrideValues({
-      'composeboxShowContextMenu': false,
+      'composeboxShowContextMenu': true,
     });
     createComposeboxElement();
     let clickCalled = false;
     composeboxElement.$.context.$.imageInput.click = () => {
       clickCalled = true;
     };
-    composeboxElement.$.context.$.imageUploadButton.click();
+    composeboxElement.$.context.$.contextEntrypoint.dispatchEvent(
+        new CustomEvent('open-image-upload'));
 
     // Assert.
     assertTrue(clickCalled);
@@ -781,15 +750,15 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('file upload button clicks file input', () => {
     loadTimeData.overrideValues({
-      'composeboxShowPdfUpload': true,
-      'composeboxShowContextMenu': false,
+      'composeboxShowContextMenu': true,
     });
     createComposeboxElement();
     let clickCalled = false;
     composeboxElement.$.context.$.fileInput.click = () => {
       clickCalled = true;
     };
-    composeboxElement.$.context.$.fileUploadButton.click();
+    composeboxElement.$.context.$.contextEntrypoint.dispatchEvent(
+        new CustomEvent('open-file-upload'));
 
     // Assert.
     assertTrue(clickCalled);

@@ -14,6 +14,7 @@ import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -141,6 +142,7 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
       loadTimeData.getBoolean('showOnboardingTooltip');
   protected accessor activeToolMode_: ToolMode = ToolMode.kUnspecified;
   private eventTracker_: EventTracker = new EventTracker();
+  private pageHandler_: PageHandlerRemote;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private searchboxListenerIds_: number[] = [];
   private onboardingTooltipIsVisible_: boolean = false;
@@ -157,6 +159,7 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
 
   constructor() {
     super();
+    this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;
     this.searchboxCallbackRouter_ =
         ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
   }
@@ -380,6 +383,14 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
     const composebox = this.$.composebox;
     composebox.animationState = GlowAnimationState.NONE;
     composebox.animationState = GlowAnimationState.EXPANDING;
+  }
+
+  protected handleImageUpload_() {
+    this.pageHandler_.handleFileUpload(true);
+  }
+
+  protected handleFileUpload_() {
+    this.pageHandler_.handleFileUpload(false);
   }
 
   private startObservingResize_(target: Element|null) {

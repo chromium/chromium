@@ -95,7 +95,6 @@ export function getHtml(this: ComposeboxElement) {
           @set-tool-mode="${this.onSetToolMode_}"
           @model-click="${this.onModelClick_}"
           @get-tab-preview="${this.getTabPreview_}"
-          @open-file-dialog="${this.onOpenFileDialog_}"
           @query-autocomplete="${this.onQueryAutocomplete_}"
           @clear-autocomplete-matches="${this.clearAutocompleteMatches}"
           @context-menu-container-click="${this.searchboxLayoutMode === 'Compact' ?  nothing : this.focusInput}"

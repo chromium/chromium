@@ -48,7 +48,9 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .isInCoBrowsingZeroState="${this.isZeroState}"
           .lensButtonTriggersOverlay="${true}"
           .enableCarouselScrolling="${true}"
-          @result-changed="${this.onSuggestionsResultReceived_}">
+          @result-changed="${this.onSuggestionsResultReceived_}"
+          @open-image-upload="${this.handleImageUpload_}"
+          @open-file-upload="${this.handleFileUpload_}">
       </cr-composebox>
     </div>
     ${!this.isSidePanel && this.enableNativeZeroStateSuggestions ? html`

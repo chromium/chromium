@@ -34,13 +34,13 @@ suite('NewTabPageContextualEntrypointAndCarouselTest', () => {
         assertTrue(!!contextEntrypoint);
 
         const entrypointButton =
-            contextEntrypoint.shadowRoot.querySelector<HTMLElement>(
-                '#entrypoint');
+            contextEntrypoint.$.entrypointMenu.shadowRoot
+                .querySelector<HTMLElement>('#entrypoint');
         assertTrue(isVisible(entrypointButton));
         entrypointButton!.click();
         await microtasksFinished();
 
-        const menu = contextEntrypoint.$.menu;
+        const menu = contextEntrypoint.$.entrypointMenu.$.menu;
         assertTrue(menu.open);
 
         const fileUploadButton = menu.querySelector('#fileUpload');
@@ -65,9 +65,9 @@ suite('NewTabPageContextualEntrypointAndCarouselTest', () => {
     await whenOpenVoiceSearch;
   });
 
-  test('image upload button clicks file input or fires event', async () => {
+  test('image upload clicks file input', async () => {
     loadTimeData.overrideValues({
-      'composeboxShowContextMenu': false,
+      'composeboxShowContextMenu': true,
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = new ContextualEntrypointAndCarouselElement();
@@ -76,21 +76,14 @@ suite('NewTabPageContextualEntrypointAndCarouselTest', () => {
 
     const imageUploadClickEventPromise =
         eventToPromise('click', element.$.imageInput);
-    element.$.imageUploadButton.click();
+    element.$.contextEntrypoint.dispatchEvent(
+        new CustomEvent('open-image-upload'));
     await imageUploadClickEventPromise;
-
-    element.entrypointName = 'ContextualTasks';
-    await microtasksFinished();
-    const openFileDialogPromise = eventToPromise('open-file-dialog', element);
-    element.$.imageUploadButton.click();
-    const event = await openFileDialogPromise;
-    assertTrue(event.detail.isImage);
   });
 
-  test('file upload button clicks file input or fires event', async () => {
+  test('file upload clicks file input', async () => {
     loadTimeData.overrideValues({
-      'composeboxShowPdfUpload': true,
-      'composeboxShowContextMenu': false,
+      'composeboxShowContextMenu': true,
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     element = new ContextualEntrypointAndCarouselElement();
@@ -99,15 +92,9 @@ suite('NewTabPageContextualEntrypointAndCarouselTest', () => {
 
     const fileUploadClickEventPromise =
         eventToPromise('click', element.$.fileInput);
-    element.$.fileUploadButton.click();
+    element.$.contextEntrypoint.dispatchEvent(
+        new CustomEvent('open-file-upload'));
     await fileUploadClickEventPromise;
-
-    element.entrypointName = 'ContextualTasks';
-    await microtasksFinished();
-    const openFileDialogPromise = eventToPromise('open-file-dialog', element);
-    element.$.fileUploadButton.click();
-    const event = await openFileDialogPromise;
-    assertFalse(event.detail.isImage);
   });
 
   test('Recent Tab chip respects allowed input types', async () => {

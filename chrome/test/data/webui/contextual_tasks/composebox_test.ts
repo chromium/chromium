@@ -1754,13 +1754,13 @@ suite('ContextualTasksComposeboxTest', () => {
 
   test('Composebox upload disabled when uploading files', async () => {
     composebox.$.context.searchboxLayoutMode = '';
-    composebox.$.context.contextMenuEnabled_ = false;
+    composebox.$.context.contextMenuEnabled_ = true;
     await composebox.updateComplete;
     await composebox.$.context.updateComplete;
     await microtasksFinished();
 
     assertFalse(
-        !!composebox.$.context.$.imageUploadButton.disabled,
+        composebox.$.context.$.contextEntrypoint.uploadButtonDisabled,
         'Upload button should be enabled');
 
     await uploadFileAndVerify(
@@ -1783,7 +1783,7 @@ suite('ContextualTasksComposeboxTest', () => {
         composebox.fileUploadsComplete,
         'Files should not be finished uploading');
     assertTrue(
-        !!composebox.$.context.$.imageUploadButton.disabled,
+        composebox.$.context.$.contextEntrypoint.uploadButtonDisabled,
         'Upload button should be disabled while uploading');
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
@@ -1802,7 +1802,7 @@ suite('ContextualTasksComposeboxTest', () => {
     assertTrue(
         composebox.fileUploadsComplete, 'Files should be finished uploading');
     assertFalse(
-        !!composebox.$.context.$.imageUploadButton.disabled,
+        composebox.$.context.$.contextEntrypoint.uploadButtonDisabled,
         'Upload button should be re-enabled after upload');
   });
 
@@ -1856,6 +1856,34 @@ suite('ContextualTasksComposeboxTest', () => {
 
         assertFalse(!!button.disabled);
       });
+
+  test('image upload calls handler for image', async () => {
+    composebox.$.context.dispatchEvent(
+        new CustomEvent('open-image-upload', {
+          detail: {isImage: true},
+          bubbles: true,
+          composed: true,
+        }));
+
+    await mockComposeboxPageHandler.whenCalled('handleFileUpload');
+    assertEquals(1, mockComposeboxPageHandler.getCallCount('handleFileUpload'));
+    const [isImage] = mockComposeboxPageHandler.getArgs('handleFileUpload');
+    assertTrue(isImage);
+  });
+
+  test('file upload calls handler for file', async () => {
+    composebox.$.context.dispatchEvent(
+        new CustomEvent('open-file-upload', {
+          detail: {isImage: false},
+          bubbles: true,
+          composed: true,
+        }));
+
+    await mockComposeboxPageHandler.whenCalled('handleFileUpload');
+    assertEquals(1, mockComposeboxPageHandler.getCallCount('handleFileUpload'));
+    const [isImage] = mockComposeboxPageHandler.getArgs('handleFileUpload');
+    assertFalse(isImage);
+  });
 
   test('queries autocomplete on load when isZeroState is true', async () => {
     // Clear the body and reset the mock to test a fresh instance.

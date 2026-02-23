@@ -37,11 +37,9 @@ import type {RecentTabChipElement} from './recent_tab_chip.js';
 export interface ContextualEntrypointAndCarouselElement {
   $: {
     fileInput: HTMLInputElement,
-    fileUploadButton: CrIconButtonElement,
     contextEntrypoint: ContextualEntrypointAndMenuElement,
     carousel: ComposeboxFileCarouselElement,
     imageInput: HTMLInputElement,
-    imageUploadButton: CrIconButtonElement,
     recentTabChip: RecentTabChipElement,
     voiceSearchButton: CrIconButtonElement,
   };
@@ -138,10 +136,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       files_: {type: Object},
       addedTabsIds_: {type: Object},
       imageFileTypes_: {type: Array},
-      composeboxShowPdfUpload_: {
-        reflect: true,
-        type: Boolean,
-      },
       showContextMenuDescription_: {type: Boolean},
       showFileCarousel_: {
         reflect: true,
@@ -189,8 +183,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor imageFileTypes_: string[] =
       loadTimeData.getString('composeboxImageFileTypes').split(',');
   protected accessor uploadButtonDisabled_: boolean = false;
-  protected accessor composeboxShowPdfUpload_: boolean =
-      loadTimeData.getBoolean('composeboxShowPdfUpload');
   protected contextMenuDescriptionEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
   protected accessor showContextMenuDescription_: boolean =
@@ -946,22 +938,19 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   protected openImageUpload_() {
-    if (this.entrypointName === 'ContextualTasks') {
+    if (this.entrypointName !== 'ContextualTasks') {
       // Open file dialog using top level primary window
       // in contextual tasks composebox.
-      this.fire('open-file-dialog', {isImage: true});
-    } else {
       assert(this.$.imageInput);
       this.$.imageInput.click();
     }
   }
 
   protected openFileUpload_() {
-    if (this.entrypointName === 'ContextualTasks') {
+    if (this.entrypointName !== 'ContextualTasks') {
       // Open file dialog using top level primary window
       // in contextual tasks composebox.
-      this.fire('open-file-dialog', {isImage: false});
-    } else if (this.$.fileInput) {
+      assert(this.$.fileInput);
       this.$.fileInput.click();
     }
   }
