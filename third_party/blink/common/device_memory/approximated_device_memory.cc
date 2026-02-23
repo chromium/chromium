@@ -64,10 +64,10 @@ void ApproximatedDeviceMemory::CalculateAndSetApproximatedDeviceMemory() {
           blink::features::kUpdatedDeviceMemoryLimitsFor2026)) {
 #if BUILDFLAG(IS_ANDROID)
     // Allow smaller lower limits on Android where lower RAM is still common.
-    // Note: As of Jan-2026 some Google Search tests in out test suite
+    // Note: As of Jan-2026 some Google Search tests in our test suite
     // (GoogleAmpSXGStory2019 and BackgroundGoogleStory2019) serve different
-    // content to 1G and lower. So when increasing this lower limit you will
-    // see memory regressions.
+    // content to 1GB and lower. So when increasing this lower limit you will
+    // likely see memory regressions.
     kMinMemory = 1.0f;
 #else
     // Increased limits on other platforms where higher RAM is more common.
