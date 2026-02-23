@@ -680,42 +680,6 @@
         "name": "blink_perf.dom/deep-tree-clonenode.html"
     },
     {
-        "duration": "16.0",
-        "name": "blink_perf.dom/dom-parts-api-flat-append.html"
-    },
-    {
-        "duration": "16.0",
-        "name": "blink_perf.dom/dom-parts-api-flat-clone.html"
-    },
-    {
-        "duration": "16.0",
-        "name": "blink_perf.dom/dom-parts-api-flat-parts.html"
-    },
-    {
-        "duration": "17.0",
-        "name": "blink_perf.dom/dom-parts-api-manual-append.html"
-    },
-    {
-        "duration": "17.0",
-        "name": "blink_perf.dom/dom-parts-api-manual-clone.html"
-    },
-    {
-        "duration": "17.0",
-        "name": "blink_perf.dom/dom-parts-api-manual-parts.html"
-    },
-    {
-        "duration": "16.0",
-        "name": "blink_perf.dom/dom-parts-api-nested-append.html"
-    },
-    {
-        "duration": "16.0",
-        "name": "blink_perf.dom/dom-parts-api-nested-clone.html"
-    },
-    {
-        "duration": "16.0",
-        "name": "blink_perf.dom/dom-parts-api-nested-parts.html"
-    },
-    {
         "duration": "17.0",
         "name": "blink_perf.dom/insert-text-with-dir-auto.html"
     },

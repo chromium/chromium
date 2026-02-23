@@ -508,14 +508,6 @@
         "name": "blink_perf.dom/deep-tree-clonenode.html"
     },
     {
-        "duration": "30.0",
-        "name": "blink_perf.dom/dom-parts-api-flat-append.html"
-    },
-    {
-        "duration": "30.0",
-        "name": "blink_perf.dom/dom-parts-api-flat-clone.html"
-    },
-    {
         "duration": "15.0",
         "name": "blink_perf.dom/select-multiple-add.html"
     },
