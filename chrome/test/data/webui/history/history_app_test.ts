@@ -567,7 +567,7 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
 });
 // </if>
 
-suite('FilterChips', function() {
+suite('HistoryFilterChipsVisibility', function() {
   let element: HistoryAppElement;
 
   setup(() => {
