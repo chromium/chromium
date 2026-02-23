@@ -254,9 +254,9 @@ gcm::GCMDriver& PushMessagingServiceImpl::GetGCMDriver() {
 
     gcm_driver_ = gcm::CreateGCMDriverDesktop(
         std::make_unique<gcm::GCMClientFactory>(), /*prefs=*/nullptr,
-        // TODO(crbug.com/424479300): should prefer persistened data path in
-        // WebEngine workflow.
-        base::FilePath("/tmp"),
+        parent_context_.IsOffTheRecord()
+            ? base::FilePath("/tmp")
+            : parent_context_.GetPath().Append(gcm_driver::kGCMStoreDirname),
         base::BindRepeating(
             &PushMessagingServiceImpl::RequestProxyResolvingSocketFactory,
             weak_ptr_factory_.GetWeakPtr()),
