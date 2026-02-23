@@ -562,6 +562,26 @@ suite('ContentController', () => {
           assertEquals(buttonText, newDiv.textContent);
         });
 
+    test(
+        'builds a mark tag as a <div> tag when Readability enabled',
+        async () => {
+          chrome.readingMode.isReadabilityEnabled = true;
+          chrome.readingMode.activeDistillationMethod =
+              chrome.readingMode.distillationTypeReadability;
+          const markText = 'When everything is important, nothing is';
+          contentController.configureTrustedTypes();
+          readingMode.htmlContent = `<mark>${markText}</mark>`;
+
+          const root = contentController.updateContent();
+          await microtasksFinished();
+
+          assertTrue(!!root);
+          assertFalse(!!(root as DocumentFragment).querySelector('mark'));
+          const newSpan = (root as DocumentFragment).querySelector('div > div');
+          assertTrue(!!newSpan);
+          assertEquals(markText, newSpan.textContent);
+        });
+
     test('sets text direction', () => {
       const childId = 70;
       readingMode.getHtmlTag = (id) => {

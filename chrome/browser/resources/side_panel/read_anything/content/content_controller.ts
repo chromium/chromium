@@ -54,6 +54,7 @@ const SCREEN2X_TAG_TO_RM_TAG: Map<string, string> = new Map([
 const READABILITY_TAG_TO_RM_TAG: Map<string, string> = new Map([
   ['button', 'div'],
   ['details', 'div'],
+  ['mark', 'div'],
 ]);
 
 export interface ContentListener {
