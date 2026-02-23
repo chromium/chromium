@@ -108,7 +108,6 @@
     "onoffline",
     "ononline",
     "onorientationchange",
-    "onoverscroll",
     "onpagehide",
     "onpageshow",
     "onpaste",

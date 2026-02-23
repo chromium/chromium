@@ -79,7 +79,6 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onmouseover;
   attribute EventHandler onmouseup;
   attribute EventHandler onmousewheel;
-  [RuntimeEnabled=OverscrollCustomization] attribute EventHandler onoverscroll;
   attribute EventHandler onpause;
   attribute EventHandler onplay;
   attribute EventHandler onplaying;

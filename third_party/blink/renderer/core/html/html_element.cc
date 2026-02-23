@@ -583,8 +583,6 @@ const AttributeTriggers* HTMLElement::TriggersForAttributeName(
        nullptr},
       {html_names::kOnmousewheelAttr, kNoWebFeature,
        event_type_names::kMousewheel, nullptr},
-      {html_names::kOnoverscrollAttr, kNoWebFeature,
-       event_type_names::kOverscroll, nullptr},
       {html_names::kOnpasteAttr, kNoWebFeature, event_type_names::kPaste,
        nullptr},
       {html_names::kOnpauseAttr, kNoWebFeature, event_type_names::kPause,

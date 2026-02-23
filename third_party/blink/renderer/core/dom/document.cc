@@ -201,7 +201,6 @@
 #include "third_party/blink/renderer/core/events/event_factory.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/events/hash_change_event.h"
-#include "third_party/blink/renderer/core/events/overscroll_event.h"
 #include "third_party/blink/renderer/core/events/page_transition_event.h"
 #include "third_party/blink/renderer/core/events/visual_viewport_resize_event.h"
 #include "third_party/blink/renderer/core/events/visual_viewport_scroll_event.h"
@@ -6542,20 +6541,6 @@ void Document::EnqueueScrollEndEventForNode(Node* target) {
           : Event::Create(event_type_names::kScrollend);
   scroll_end_event->SetTarget(target);
   scripted_animation_controller_->EnqueuePerFrameEvent(scroll_end_event);
-}
-
-void Document::EnqueueOverscrollEventForNode(Node* target,
-                                             double delta_x,
-                                             double delta_y) {
-  // Mimic bubbling behavior of scroll event for consistency.
-  overscroll_accumulated_delta_x_ += delta_x;
-  overscroll_accumulated_delta_y_ += delta_y;
-  bool bubbles = target->IsDocumentNode();
-  Event* overscroll_event = OverscrollEvent::Create(
-      event_type_names::kOverscroll, bubbles, overscroll_accumulated_delta_x_,
-      overscroll_accumulated_delta_y_);
-  overscroll_event->SetTarget(target);
-  scripted_animation_controller_->EnqueuePerFrameEvent(overscroll_event);
 }
 
 void Document::EnqueueScrollSnapChangeEvent(Node* target,

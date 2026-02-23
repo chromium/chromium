@@ -250,7 +250,6 @@ namespace http://www.w3.org/1999/xhtml
     property onmouseover
     property onmouseup
     property onmousewheel
-    property onoverscroll
     property onpaste
     property onpause
     property onplay
@@ -1568,7 +1567,6 @@ namespace http://www.w3.org/2000/svg
     property onmouseover
     property onmouseup
     property onmousewheel
-    property onoverscroll
     property onpaste
     property onpause
     property onplay

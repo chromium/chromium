@@ -4004,10 +4004,6 @@
       status: "stable",
     },
     {
-      name: "OverscrollCustomization",
-      status: "experimental",
-    },
-    {
       // https://chromestatus.com/feature/5261280285949952
       name: "OverscrollGestures",
       status: "test",

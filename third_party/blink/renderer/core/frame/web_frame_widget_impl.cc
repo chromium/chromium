@@ -1402,20 +1402,6 @@ void WebFrameWidgetImpl::DragTargetDragEnterOrOver(
   }
 }
 
-void WebFrameWidgetImpl::SendOverscrollEventFromImplSide(
-    const gfx::Vector2dF& overscroll_delta,
-    cc::ElementId scroll_latched_element_id) {
-  if (!RuntimeEnabledFeatures::OverscrollCustomizationEnabled())
-    return;
-
-  Node* target_node = View()->FindNodeFromScrollableCompositorElementId(
-      scroll_latched_element_id);
-  if (target_node) {
-    target_node->GetDocument().EnqueueOverscrollEventForNode(
-        target_node, overscroll_delta.x(), overscroll_delta.y());
-  }
-}
-
 void WebFrameWidgetImpl::SendEndOfScrollEvents(
     const cc::CompositorCommitData& commit_data) {
   HeapHashSet<Member<AnchorElementViewportPositionTracker>> handled_trackers;
@@ -1494,10 +1480,6 @@ void WebFrameWidgetImpl::UpdateCompositorScrollState(
   if (commit_data.scroll_latched_element_id != cc::ElementId()) {
     if (commit_data.snap_strategy) {
       SendScrollSnapChangingEventIfNeeded(commit_data);
-    }
-    if (!commit_data.overscroll_delta.IsZero()) {
-      SendOverscrollEventFromImplSide(commit_data.overscroll_delta,
-                                      commit_data.scroll_latched_element_id);
     }
     NotifyLatchedScrollMarkerGroup(commit_data);
   }
