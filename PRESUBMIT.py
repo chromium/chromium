@@ -6748,6 +6748,36 @@ def CheckSyslogUseWarningOnUpload(input_api, output_api, src_file_filter=None):
     return []
 
 
+def CheckNoMainLayoutSwitcher(input_api, output_api):
+    """
+    Prevents MainLayoutSwitcher.java (a temporary and deprecated file)
+    from appearing in CLs.
+    """
+
+    # Skip this check if there are no diffs, such as running presubmit with "--all --no_diffs".
+    # Otherwise AffectedFiles() will include MainLayoutSwitcher.java even if it's not changed.
+    if input_api.no_diffs:
+        return []
+
+    git_footers = input_api.change.GitFootersFromDescription()
+    if 'true' in [footer.lower() for footer in git_footers.get(
+            u'Allow-MainLayoutSwitcher-Changes', [])]:
+        return []
+
+    results = []
+    for f in input_api.AffectedFiles(include_deletes=False):
+        if f.UnixLocalPath() == 'chrome/android/java/src/org/chromium/chrome/browser/app/MainLayoutSwitcher.java':
+            results.append(output_api.PresubmitError(
+                'MainLayoutSwitcher.java is a temporary class to support the forked main layout '
+                '(main_forked_with_secondary_ui_container.xml) during Android side panel '
+                'development.\n'
+                'Generally we should not need to change this file except deleting it, but if you '
+                'must, add "Allow-MainLayoutSwitcher-Changes: true" to your commit message '
+                'footers and send the CL to the file owners.',
+                [f]))
+    return results
+
+
 def CheckChangeOnUpload(input_api, output_api):
     if input_api.version < [2, 0, 0]:
         return [
@@ -6759,6 +6789,7 @@ def CheckChangeOnUpload(input_api, output_api):
     results = []
     results.extend(
         input_api.canned_checks.CheckPatchFormatted(input_api, output_api))
+    results.extend(CheckNoMainLayoutSwitcher(input_api, output_api))
     return results
 
 
@@ -6786,6 +6817,7 @@ def CheckChangeOnCommit(input_api, output_api):
     results.extend(
         input_api.canned_checks.CheckChangeHasNoUnwantedTags(
             input_api, output_api))
+    results.extend(CheckNoMainLayoutSwitcher(input_api, output_api))
     return results
 
 
