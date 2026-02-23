@@ -889,15 +889,38 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
 }
 
 TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
-       ShouldRecordHistogramOnPrefChange) {
+       ShouldRecordHistogramOnPrefChangeBeforeTypeActive) {
+  base::HistogramTester histogram_tester;
+
+  pref_service_->SetString(kStringPrefName, "new value");
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PrefModelAssociator.OnPrefValueChanged.PREFERENCE",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectTotalCount("Sync.SyncablePrefValueChanged", 0);
+  histogram_tester.ExpectTotalCount("Sync.SyncablePrefValueChanged.PREFERENCE",
+                                    0);
+}
+
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+       ShouldRecordHistogramOnPrefChangeAfterTypeActive) {
   base::HistogramTester histogram_tester;
   MergeDataAndStartSyncing(syncer::SyncDataList());
 
   pref_service_->SetString(kStringPrefName, "new value");
 
-  histogram_tester.ExpectTotalCount("Sync.SyncablePrefValueChanged", 1);
-  histogram_tester.ExpectTotalCount("Sync.SyncablePrefValueChanged.PREFERENCE",
-                                    1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.PrefModelAssociator.OnPrefValueChanged.PREFERENCE",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("Sync.SyncablePrefValueChanged",
+                                      /*sample=*/0,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.SyncablePrefValueChanged.PREFERENCE",
+      /*sample=*/0,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,

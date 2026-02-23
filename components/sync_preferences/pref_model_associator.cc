@@ -471,16 +471,27 @@ void PrefModelAssociator::OnPrefValueChanged(std::string_view name) {
     return;  // These are changes originating from us, ignore.
   }
 
-  // We only process changes if we've already associated models.
-  // This also filters out local changes during the initial merge.
-  if (!models_associated_) {
-    return;
-  }
-
   if (!IsPrefRegistered(name)) {
     // We are not syncing this preference -- this also filters out synced
     // preferences of the wrong type (e.g. priority preference are handled by a
     // separate associator).
+    return;
+  }
+
+  if (client_) {
+    std::optional<SyncablePrefMetadata> pref_metadata =
+        client_->GetSyncablePrefsDatabase().GetSyncablePrefMetadata(name);
+    int id = pref_metadata->syncable_pref_id();
+    // TODO(crbug.com/418991364): Determine if this histogram should replace the
+    // one below. If not, remove this histogram.
+    base::UmaHistogramSparse(
+        base::StrCat({"Sync.PrefModelAssociator.OnPrefValueChanged.",
+                      syncer::DataTypeToHistogramSuffix(type_)}), id);
+  }
+
+  // We only process changes if we've already associated models.
+  // This also filters out local changes during the initial merge.
+  if (!models_associated_) {
     return;
   }
 
