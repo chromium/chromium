@@ -46,7 +46,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerImpl;
-import org.chromium.chrome.browser.TabModelAndTimestamp;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
@@ -1064,10 +1063,6 @@ public class RecentlyClosedEntriesManagerUnitTest {
         createRecentlyClosedWindows(/* numOfWindows= */ 1);
         mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
 
-        // Get the timestamp for the closed window entry.
-        RecentlyClosedEntry entry = mRecentlyClosedEntriesManager.getRecentlyClosedEntries().get(0);
-        long timestamp = entry.getDate().getTime();
-
         // Mock out our dependencies. Always return mTabModelSelector.
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
                 new TabModelSelectorFactory() {
@@ -1096,19 +1091,14 @@ public class RecentlyClosedEntriesManagerUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(anyInt())).thenReturn(mTabModelSelector);
 
         // Invoke the getRecentlyClosed() method with a callback.
-        JniOnceCallback<TabModelAndTimestamp> callback = mock();
+        JniOnceCallback<TabModel> callback = mock();
         mRecentlyClosedEntriesManager.getRecentlyClosedWindowInternal(callback);
-
-        // Set up the expected callback result.
-        TabModelAndTimestamp result = new TabModelAndTimestamp();
-        result.tabModel = mTabModel;
-        result.timestamp = timestamp;
 
         // The callback is invoked via task with the appropriate tab model.
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    verify(callback).onResult(result);
+                    verify(callback).onResult(mTabModel);
                 });
     }
 

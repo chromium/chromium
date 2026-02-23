@@ -129,11 +129,6 @@ class BrowserCloseWaiter : public BrowserCollectionObserver {
   base::RunLoop run_loop_;
 };
 
-// Helps with line wrapping.
-int NowSeconds() {
-  return base::Time::Now().ToTimeT();
-}
-
 void BuildSessionSpecifics(const std::string& tag,
                            sync_pb::SessionSpecifics* meta) {
   meta->set_session_tag(tag);
@@ -765,107 +760,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
     ASSERT_TRUE(result);
     ASSERT_TRUE(result->is_list());
     EXPECT_EQ(2u, result->GetList().size());
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest,
-                       GetRecentlyClosedMaxResultsWithWindow) {
-  // Start with an empty tab restore service.
-  sessions::TabRestoreService* service =
-      TabRestoreServiceFactory::GetForProfile(GetProfile());
-  ASSERT_TRUE(service);
-  ASSERT_EQ(0u, service->entries().size());
-
-  // The main browser starts the test with 1 tab.
-  ASSERT_EQ(1, GetTabCount());
-  // Open one more tab.
-  NavigateToURLInNewTab(GURL("about:blank"));
-
-  // Prepare to close the tab we just opened (at index 1).
-  const int tab_index = 1;
-  content::WebContents* tab = GetWebContentsAt(tab_index);
-
-  // On Android, historical tabs are automatically created when a tab is
-  // closed via the HistoricalTabSaver; there is no need to manually create
-  // them like on desktop.
-#if !BUILDFLAG(IS_ANDROID)
-  // Our cross-platform utility function to close a tab doesn't allow
-  // requesting the creation of a historical tab, so do it manually.
-  service->CreateHistoricalTab(
-      sessions::ContentLiveTab::GetOrCreateForWebContents(tab), tab_index);
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-  // Close the tab (and wait for its destruction internally).
-  CloseTabForWebContents(tab);
-
-  // Open a second window.
-  BrowserWindowInterface* browser2 =
-      CreateBrowserWindowWithType(BrowserWindowInterface::TYPE_NORMAL);
-
-  // Ensure 1 tab exists.
-  auto* tab_list2 = TabListInterface::From(browser2);
-  ASSERT_TRUE(tab_list2);
-
-  // Platforms like Win/Mac/Linux create browsers with no tabs, whereas Android
-  // creates browsers with a single tab.
-  if (tab_list2->GetTabCount() == 0) {
-    tab_list2->OpenTab(GURL("about:blank"), /*index=*/-1);
-  }
-  ASSERT_EQ(1, tab_list2->GetTabCount());
-
-  // Navigate the tab, otherwise window close does not persist it in the tab
-  // restore service.
-  content::WebContents* contents0 = tab_list2->GetTab(0)->GetContents();
-  ASSERT_TRUE(NavigateToURL(contents0, GURL("chrome://version/")));
-
-  // Close the second window and wait for it to close.
-  BrowserCloseWaiter close_waiter(browser2);
-  browser2->GetWindow()->Close();
-  close_waiter.Wait();
-
-  {
-    // Querying for all recently closed entries should return 2 results, a
-    // window and a tab. Ensure the window is recorded as being closed most
-    // recently, as the timestamps under the hood only have second-level
-    // precision, so the test can be flaky if time runs unmodified.
-    auto function = CreateFunction<SessionsGetRecentlyClosedFunction>(true);
-    function->set_window_last_modified_for_test(NowSeconds() + 10);
-    std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
-        function.get(), "[]", GetProfile());
-    ASSERT_TRUE(result);
-    ASSERT_TRUE(result->is_list());
-    EXPECT_EQ(2u, result->GetList().size());
-
-    const base::DictValue session0 = utils::ToDict(result->GetList()[0]);
-    const base::DictValue window = api_test_utils::GetDict(session0, "window");
-    EXPECT_FALSE(window.empty());
-    const base::DictValue session1 = utils::ToDict(result->GetList()[1]);
-    const base::DictValue tab_value = api_test_utils::GetDict(session1, "tab");
-    EXPECT_FALSE(tab_value.empty());
-  }
-  {
-    // Querying with a maxResults limit of 0 should return 0 results.
-    std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
-        CreateFunction<SessionsGetRecentlyClosedFunction>(true).get(),
-        "[{\"maxResults\": 0}]", GetProfile());
-    ASSERT_TRUE(result);
-    ASSERT_TRUE(result->is_list());
-    EXPECT_EQ(0u, result->GetList().size());
-  }
-  {
-    // Querying with a maxResults limit of 1 should return 1 window and not the
-    // tab. Historically there was a regression with this behavior on Android.
-    auto function = CreateFunction<SessionsGetRecentlyClosedFunction>(true);
-    function->set_window_last_modified_for_test(NowSeconds() + 10);
-    std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
-        function.get(), "[{\"maxResults\": 1}]", GetProfile());
-    ASSERT_TRUE(result);
-    ASSERT_TRUE(result->is_list());
-    EXPECT_EQ(1u, result->GetList().size());
-
-    const base::DictValue session0 = utils::ToDict(result->GetList()[0]);
-    const base::DictValue window = api_test_utils::GetDict(session0, "window");
-    EXPECT_FALSE(window.empty());
   }
 }
 
