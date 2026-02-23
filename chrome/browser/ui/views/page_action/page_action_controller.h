@@ -120,6 +120,14 @@ class PageActionController {
   virtual void ShowSuggestionChip(actions::ActionId action_id) = 0;
   virtual void HideSuggestionChip(actions::ActionId action_id) = 0;
 
+  // Request that the page action's anchored message state shown or hidden. Note
+  // that a request to show the anchored message does not guarantee that it will
+  // be shown. The framework currently supports a page action showing an
+  // anchored message or a suggestion chip, not both. A later successful show
+  // request will override an earlier one.
+  virtual void ShowAnchoredMessage(actions::ActionId action_id) = 0;
+  virtual void HideAnchoredMessage(actions::ActionId action_id) = 0;
+
   // By default, in suggestion chip mode, the ActionItem text will be used as
   // the control label. However, features can provide a custom text to use
   // as the label. In that case, the custom text will take precedence over
@@ -155,6 +163,13 @@ class PageActionController {
   virtual void OverrideTooltip(actions::ActionId action_id,
                                const std::u16string& override_tooltip) = 0;
   virtual void ClearOverrideTooltip(actions::ActionId action_id) = 0;
+
+  // Functions to set configs for anchored messages.
+  virtual void SetAnchoredMessageText(
+      actions::ActionId action_id,
+      const std::u16string& anchored_message_text) = 0;
+  virtual void ShouldShowAnchoredMessageCloseIcon(actions::ActionId action_id,
+                                                  bool show) = 0;
 
   // Adds a scope of activity for the given action. Returns a scoped object
   // that manages the activity counter. The action is considered active as
@@ -233,6 +248,8 @@ class PageActionControllerImpl : public PageActionController,
   void ShowSuggestionChip(actions::ActionId action_id,
                           const SuggestionChipConfig& config) override;
   void HideSuggestionChip(actions::ActionId action_id) override;
+  void ShowAnchoredMessage(actions::ActionId action_id) override;
+  void HideAnchoredMessage(actions::ActionId action_id) override;
   void OverrideText(actions::ActionId action_id,
                     const std::u16string& override_text) override;
   void ClearOverrideText(actions::ActionId action_id) override;
@@ -249,6 +266,11 @@ class PageActionControllerImpl : public PageActionController,
   void OverrideTooltip(actions::ActionId action_id,
                        const std::u16string& override_tooltip) override;
   void ClearOverrideTooltip(actions::ActionId action_id) override;
+  void SetAnchoredMessageText(
+      actions::ActionId action_id,
+      const std::u16string& anchored_message_text) override;
+  void ShouldShowAnchoredMessageCloseIcon(actions::ActionId action_id,
+                                          bool show) override;
   ScopedPageActionActivity AddActivity(actions::ActionId action_id) override;
   void AddObserver(
       actions::ActionId action_id,
@@ -330,6 +352,8 @@ class PageActionControllerImpl : public PageActionController,
   void DoShowSuggestionChip(actions::ActionId action_id,
                             const SuggestionChipConfig& config);
   void DoHideSuggestionChip(actions::ActionId action_id);
+  void DoShowAnchoredMessage(actions::ActionId action_id);
+  void DoHideAnchoredMessage(actions::ActionId action_id);
 
   const raw_ptr<PageActionModelFactory> page_action_model_factory_ = nullptr;
   const raw_ptr<PageActionMetricsRecorderFactory>

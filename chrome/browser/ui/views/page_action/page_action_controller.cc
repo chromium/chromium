@@ -98,6 +98,10 @@ void PageActionControllerImpl::Initialize(
       base::BindRepeating(&PageActionControllerImpl::DoShowSuggestionChip,
                           base::Unretained(this)),
       base::BindRepeating(&PageActionControllerImpl::DoHideSuggestionChip,
+                          base::Unretained(this)),
+      base::BindRepeating(&PageActionControllerImpl::DoShowAnchoredMessage,
+                          base::Unretained(this)),
+      base::BindRepeating(&PageActionControllerImpl::DoHideAnchoredMessage,
                           base::Unretained(this)));
 
   page_metrics_recorder_ = CreatePageMetricsRecorder(
@@ -182,6 +186,28 @@ void PageActionControllerImpl::DoHideSuggestionChip(
     actions::ActionId action_id) {
   FindPageActionModel(action_id).SetShouldShowSuggestionChip(PassKey(),
                                                              /*show=*/false);
+}
+
+void PageActionControllerImpl::ShowAnchoredMessage(
+    actions::ActionId action_id) {
+  chip_selector_->RequestAnchoredMessageShow(action_id);
+}
+
+void PageActionControllerImpl::DoShowAnchoredMessage(
+    actions::ActionId action_id) {
+  FindPageActionModel(action_id).SetShouldShowAnchoredMessage(PassKey(),
+                                                              /*show=*/true);
+}
+
+void PageActionControllerImpl::HideAnchoredMessage(
+    actions::ActionId action_id) {
+  chip_selector_->RequestAnchoredMessageHide(action_id);
+}
+
+void PageActionControllerImpl::DoHideAnchoredMessage(
+    actions::ActionId action_id) {
+  FindPageActionModel(action_id).SetShouldShowAnchoredMessage(PassKey(),
+                                                              /*show=*/false);
 }
 
 ScopedPageActionActivity PageActionControllerImpl::AddActivity(
@@ -278,6 +304,19 @@ void PageActionControllerImpl::ClearOverrideTooltip(
     actions::ActionId action_id) {
   FindPageActionModel(action_id).SetOverrideTooltip(
       PassKey(), /*override_tooltip=*/std::nullopt);
+}
+
+void PageActionControllerImpl::SetAnchoredMessageText(
+    actions::ActionId action_id,
+    const std::u16string& anchored_message_text) {
+  FindPageActionModel(action_id).SetAnchoredMessageText(PassKey(),
+                                                        anchored_message_text);
+}
+
+void PageActionControllerImpl::ShouldShowAnchoredMessageCloseIcon(
+    actions::ActionId action_id,
+    bool show) {
+  FindPageActionModel(action_id).SetAnchoredMessageCloseIcon(PassKey(), show);
 }
 
 void PageActionControllerImpl::AddObserver(

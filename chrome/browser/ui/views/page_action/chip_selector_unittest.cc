@@ -33,17 +33,31 @@ class DefaultChipSelectorTest : public testing::Test {
         base::BindRepeating(&DefaultChipSelectorTest::ShowChipCallback,
                             base::Unretained(this)),
         base::BindRepeating(&DefaultChipSelectorTest::HideChipCallback,
-                            base::Unretained(this)));
+                            base::Unretained(this)),
+        base::BindRepeating(
+            &DefaultChipSelectorTest::ShowAnchoredMessageCallback,
+            base::Unretained(this)),
+        base::BindRepeating(
+            &DefaultChipSelectorTest::HideAnchoredMessageCallback,
+            base::Unretained(this)));
   }
 
  private:
   void ShowChipCallback(actions::ActionId page_action_id,
                         const SuggestionChipConfig& config) {
-    calls.emplace_back("show", page_action_id);
+    calls.emplace_back("show_chip", page_action_id);
   }
 
   void HideChipCallback(actions::ActionId page_action_id) {
-    calls.emplace_back("hide", page_action_id);
+    calls.emplace_back("hide_chip", page_action_id);
+  }
+
+  void ShowAnchoredMessageCallback(actions::ActionId page_action_id) {
+    calls.emplace_back("show_anchored_message", page_action_id);
+  }
+
+  void HideAnchoredMessageCallback(actions::ActionId page_action_id) {
+    calls.emplace_back("hide_anchored_message", page_action_id);
   }
 
  public:
@@ -53,46 +67,84 @@ class DefaultChipSelectorTest : public testing::Test {
 
 TEST_F(DefaultChipSelectorTest, ShowSingleChip) {
   base::HistogramTester histogram_tester;
-  selector->RequestChipShow(1, SuggestionChipConfig{});
-  EXPECT_THAT(calls, ElementsAre(Pair("show", 1)));
+  selector->RequestChipShow(0, SuggestionChipConfig{});
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0)));
   EXPECT_EQ(histogram_tester.GetBucketCount(kActiveChipsHistogram, 1), 1);
 }
 
 TEST_F(DefaultChipSelectorTest, ShowChipTwice) {
   base::HistogramTester histogram_tester;
-  selector->RequestChipShow(2, SuggestionChipConfig{});
-  selector->RequestChipShow(2, SuggestionChipConfig{});
-  EXPECT_THAT(calls, ElementsAre(Pair("show", 2), Pair("show", 2)));
+  selector->RequestChipShow(0, SuggestionChipConfig{});
+  selector->RequestChipShow(0, SuggestionChipConfig{});
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("show_chip", 0)));
   EXPECT_EQ(histogram_tester.GetBucketCount(kActiveChipsHistogram, 1), 1);
 }
 
 TEST_F(DefaultChipSelectorTest, ShowTwoChips) {
   base::HistogramTester histogram_tester;
-  selector->RequestChipShow(3, SuggestionChipConfig{});
-  selector->RequestChipShow(4, SuggestionChipConfig{});
-  EXPECT_THAT(calls, ElementsAre(Pair("show", 3), Pair("show", 4)));
+  selector->RequestChipShow(0, SuggestionChipConfig{});
+  selector->RequestChipShow(1, SuggestionChipConfig{});
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("show_chip", 1)));
   EXPECT_EQ(histogram_tester.GetBucketCount(kActiveChipsHistogram, 1), 1);
   EXPECT_EQ(histogram_tester.GetBucketCount(kActiveChipsHistogram, 2), 1);
 }
 
 TEST_F(DefaultChipSelectorTest, HideUnshownChip) {
-  selector->RequestChipHide(10);
-  EXPECT_THAT(calls, ElementsAre(Pair("hide", 10)));
+  selector->RequestChipHide(0);
+  EXPECT_THAT(calls, ElementsAre(Pair("hide_chip", 0)));
 }
 
 TEST_F(DefaultChipSelectorTest, HideShownChip) {
-  selector->RequestChipShow(11, SuggestionChipConfig{});
-  selector->RequestChipHide(11);
-  EXPECT_THAT(calls, ElementsAre(Pair("show", 11), Pair("hide", 11)));
+  selector->RequestChipShow(0, SuggestionChipConfig{});
+  selector->RequestChipHide(0);
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("hide_chip", 0)));
 }
 
 TEST_F(DefaultChipSelectorTest, HistogramShowHideShow) {
   base::HistogramTester histogram_tester;
-  selector->RequestChipShow(20, SuggestionChipConfig{});
-  selector->RequestChipHide(20);
-  selector->RequestChipShow(20, SuggestionChipConfig{});
+  selector->RequestChipShow(0, SuggestionChipConfig{});
+  selector->RequestChipHide(0);
+  selector->RequestChipShow(0, SuggestionChipConfig{});
   EXPECT_EQ(histogram_tester.GetBucketCount(kActiveChipsHistogram, 1), 2);
   EXPECT_EQ(histogram_tester.GetBucketCount(kActiveChipsHistogram, 2), 0);
+}
+
+TEST_F(DefaultChipSelectorTest, AnchoredMessageHidesChip) {
+  selector->RequestChipShow(0, SuggestionChipConfig{});
+  selector->RequestAnchoredMessageShow(0);
+  EXPECT_THAT(
+      calls, ElementsAre(Pair("show_chip", 0), Pair("show_anchored_message", 0),
+                         Pair("hide_chip", 0)));
+}
+
+TEST_F(DefaultChipSelectorTest, ChipHidesAnchoredMessage) {
+  selector->RequestAnchoredMessageShow(0);
+  selector->RequestChipShow(0, SuggestionChipConfig{});
+  EXPECT_THAT(
+      calls, ElementsAre(Pair("show_anchored_message", 0), Pair("show_chip", 0),
+                         Pair("hide_anchored_message", 0)));
+}
+
+TEST_F(DefaultChipSelectorTest, OnlyFirstAnchoredMessageShows) {
+  selector->RequestAnchoredMessageShow(0);
+  selector->RequestAnchoredMessageShow(1);
+  EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
+}
+
+TEST_F(DefaultChipSelectorTest, AnchoredMessageQueue) {
+  selector->RequestAnchoredMessageShow(0);
+  selector->RequestAnchoredMessageShow(1);
+  selector->RequestAnchoredMessageShow(2);
+  selector->RequestAnchoredMessageHide(1);
+  selector->RequestAnchoredMessageHide(0);
+  EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0),
+                                 Pair("hide_anchored_message", 0),
+                                 Pair("show_anchored_message", 2)));
+}
+
+TEST_F(DefaultChipSelectorTest, HideUnshownAnchoredMessage) {
+  selector->RequestAnchoredMessageHide(0);
+  EXPECT_THAT(calls, IsEmpty());
 }
 
 }  // namespace
