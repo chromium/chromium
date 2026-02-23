@@ -6,6 +6,17 @@ source_set("analysis") {
   sources = [
     "analysis_service_settings.h",
     "analysis_service_settings.mm",
+    "content_analysis_info.h",
+    "content_analysis_info.mm",
   ]
-  deps = [ "//components/enterprise/connectors/core" ]
+  deps = [
+    "//components/enterprise/connectors/core",
+    "//components/enterprise/connectors/core:cloud_content_scanning",
+    "//components/safe_browsing/core/common/proto:csd_proto_gen",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+    "//ios/web/public",
+    "//ios/web/public/download",
+  ]
 }
