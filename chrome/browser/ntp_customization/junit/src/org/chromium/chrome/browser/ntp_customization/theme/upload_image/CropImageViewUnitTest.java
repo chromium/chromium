@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
@@ -47,6 +48,7 @@ public class CropImageViewUnitTest {
     private Context mContext;
     private CropImageView mView;
     private ConstraintLayout mParent;
+    private Point mCurrentTestDimensions;
 
     @Mock private ScaleGestureDetector mScaleDetector;
     @Mock private MotionEvent mMotionEvent1;
@@ -56,7 +58,15 @@ public class CropImageViewUnitTest {
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         mParent = new ConstraintLayout(mContext);
-        mView = new CropImageView(mContext, null);
+        mView =
+                new CropImageView(mContext, null) {
+                    @Override
+                    Point getCurrentWindowDimension() {
+                        // In tests, return the explicitly set dimensions for the current view.
+                        return mCurrentTestDimensions;
+                    }
+                };
+
         ConstraintLayout.LayoutParams params =
                 new ConstraintLayout.LayoutParams(
                         ConstraintLayout.LayoutParams.MATCH_PARENT,
@@ -449,12 +459,14 @@ public class CropImageViewUnitTest {
         Matrix onTheFlyMatrix;
         Matrix alreadyInitializedMatrix;
         if (targetOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mCurrentTestDimensions = new Point(LANDSCAPE_VIEW_WIDTH, LANDSCAPE_VIEW_HEIGHT);
             // At this point, landscape is uninitialized.
             // Calling getLandscapeMatrix() should trigger an on-the-fly calculation.
             onTheFlyMatrix = mView.getLandscapeMatrix();
             alreadyInitializedMatrix = mView.getPortraitMatrix();
         } else {
-            // At this point, landscape is uninitialized.
+            mCurrentTestDimensions = new Point(PORTRAIT_VIEW_WIDTH, PORTRAIT_VIEW_HEIGHT);
+            // At this point, portrait is uninitialized.
             // Calling getPortraitMatrix() should trigger an on-the-fly calculation.
             onTheFlyMatrix = mView.getPortraitMatrix();
             alreadyInitializedMatrix = mView.getLandscapeMatrix();
@@ -488,6 +500,7 @@ public class CropImageViewUnitTest {
      * @param height The exact height to assign to the parent view.
      */
     private void simulateLayoutPass(int width, int height) {
+        mCurrentTestDimensions = new Point(width, height);
         mParent.measure(
                 View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY));
@@ -525,6 +538,10 @@ public class CropImageViewUnitTest {
 
     @Test
     public void testOnScale() {
+        // Ensures the test runs in a known orientation state, matching setUp.
+        setOrientation(Configuration.ORIENTATION_PORTRAIT);
+        simulateLayoutPass(PORTRAIT_VIEW_WIDTH, PORTRAIT_VIEW_HEIGHT);
+
         assertFalse(mView.getIsScaled());
         CropImageView.ScaleListener scaleListener = mView.new ScaleListener();
         scaleListener.onScale(mScaleDetector);
@@ -533,6 +550,10 @@ public class CropImageViewUnitTest {
 
     @Test
     public void testOnScroll() {
+        // Ensures the test runs in a known orientation state, matching setUp.
+        setOrientation(Configuration.ORIENTATION_PORTRAIT);
+        simulateLayoutPass(PORTRAIT_VIEW_WIDTH, PORTRAIT_VIEW_HEIGHT);
+
         assertFalse(mView.getIsScrolled());
         CropImageView.GestureListener gestureListener = mView.new GestureListener();
         gestureListener.onScroll(mMotionEvent1, mMotionEvent2, 0, 0);
@@ -548,7 +569,8 @@ public class CropImageViewUnitTest {
                 PORTRAIT_VIEW_HEIGHT);
         assertFalse(mView.getIsScreenRotated());
         setOrientation(Configuration.ORIENTATION_LANDSCAPE);
-        mView.configureMatrixForCurrentOrientation();
+        mView.configureMatrixForCurrentOrientation(
+                new Point(PORTRAIT_VIEW_WIDTH, PORTRAIT_VIEW_HEIGHT));
         assertTrue(mView.getIsScreenRotated());
     }
 }
