@@ -448,7 +448,7 @@ suite('cr-dialog', function() {
     crDialog.noCancel = false;
     await microtasksFinished();
     assertFalse(crDialog.noCancel);
-    assertEquals('any', nativeDialog.getAttribute('closedby'));
+    assertFalse(nativeDialog.hasAttribute('closedby'));
   });
 
   test('dialog close button shown when showCloseButton is true', function() {

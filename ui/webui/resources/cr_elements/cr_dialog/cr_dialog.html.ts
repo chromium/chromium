@@ -13,7 +13,7 @@ export function getHtml(this: CrDialogElement) {
     @cancel="${this.onNativeDialogCancel_}" part="dialog"
     aria-labelledby="title"
     aria-description="${this.ariaDescriptionText || nothing}"
-    closedby="${this.noCancel ? 'none' : 'any'}">
+    closedby="${this.noCancel ? 'none' : nothing}">
 <!-- This wrapper is necessary, such that the "pulse" animation is not
     erroneously played when the user clicks on the outer-most scrollbar. -->
   <div id="content-wrapper" part="wrapper">
