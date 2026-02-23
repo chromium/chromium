@@ -2164,4 +2164,39 @@ TEST_F(TabsApiUnitTest, TabsUngroupBothTabsFromSplitView) {
   EXPECT_TRUE(GetTabStripModel()->GetSplitForTab(1).has_value());
 }
 
+TEST_F(TabsApiUnitTest, TabsGroupSingleTabInSplitView) {
+  ASSERT_TRUE(GetTabStripModel()->SupportsTabGroups());
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("TabsGroupSingleTabInSplitView").Build();
+
+  // Add a couple of web contents to the browser and mark them as split.
+  std::vector<content::WebContents*> wc = CreateAndGetWebContents(2);
+  GetTabStripModel()->ActivateTabAt(0);
+  GetTabStripModel()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                                    split_tabs::SplitTabCreatedSource());
+
+  // Verify that tabs are in a split view.
+  EXPECT_TRUE(GetTabStripModel()->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(GetTabStripModel()->GetSplitForTab(1).has_value());
+
+  // Use the TabsGroupFunction to group tab 0.
+  auto function = base::MakeRefCounted<TabsGroupFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([{"tabIds": [%d]}])";
+  const std::string args = base::StringPrintf(
+      kFormatArgs, sessions::SessionTabHelper::IdForTab(wc[0]).id());
+  ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
+                                          api_test_utils::FunctionMode::kNone));
+
+  // Expect both tabs to be in the same group and still in a split view.
+  TabStripModel* tab_strip_model = GetTabStripModel();
+  std::optional<tab_groups::TabGroupId> group =
+      tab_strip_model->GetTabGroupForTab(0);
+  EXPECT_TRUE(group.has_value());
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(1));
+  EXPECT_TRUE(GetTabStripModel()->GetSplitForTab(0).has_value());
+  EXPECT_TRUE(GetTabStripModel()->GetSplitForTab(1).has_value());
+}
+
 }  // namespace extensions

@@ -2948,6 +2948,10 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
   // after all tabs are moved so that any callbacks are resolved. The set will
   // dedupe any duplicate tabs.
   std::set<::tabs::TabHandle> tab_handles;
+  // TODO(https://crbug.com/447211263): Support on desktop android.
+#if !BUILDFLAG(IS_ANDROID)
+  TabStripModel* tab_strip = target_window->GetBrowser()->tab_strip_model();
+#endif
   for (int tab_id : tab_ids) {
     ::tabs::TabHandle tab_handle;
     if (!GetTabHandleById(tab_id, *browser_context(),
@@ -2955,7 +2959,28 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
                           &error)) {
       return RespondNow(Error(std::move(error)));
     }
+
+#if !BUILDFLAG(IS_ANDROID)
+    if (tab_handles.count(tab_handle)) {
+      continue;
+    }
+
+    ::tabs::TabInterface* tab = tab_handle.Get();
+    CHECK(tab);
+
+    const std::optional<split_tabs::SplitTabId> split_id = tab->GetSplit();
+    if (split_id.has_value()) {
+      const std::vector<::tabs::TabInterface*> split_tabs =
+          tab_strip->GetSplitData(split_id.value())->ListTabs();
+      for (::tabs::TabInterface* split_tab : split_tabs) {
+        tab_handles.insert(split_tab->GetHandle());
+      }
+    } else {
+      tab_handles.insert(tab_handle);
+    }
+#else
     tab_handles.insert(tab_handle);
+#endif
   }
 
   // Get the remaining group metadata and add the tabs to the group.
