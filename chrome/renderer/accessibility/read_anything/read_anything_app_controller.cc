@@ -586,6 +586,16 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     const std::vector<ui::AXTreeUpdate>& updates,
     const std::vector<ui::AXEvent>& events) {
   model_.PrepareForAXTreeUpdates(tree_id);
+  if (IsReadabilityWithLinksEnabled() &&
+      model_.should_extract_anchors_from_tree_for_readability()) {
+    model_.ApplyAccessibilityUpdates(
+        tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates),
+        const_cast<std::vector<ui::AXEvent>&>(events));
+    // If the tree is not ready, ProcessAXTreeAnchors will do an early return
+    // and wait for the next update until it is able to process the tree.
+    model_.ProcessAXTreeAnchors();
+    return;
+  }
 
   // Remove the const-ness of the data here so that subsequent methods can move
   // the data.
@@ -691,8 +701,17 @@ void ReadAnythingAppController::SetDistillationState(
   if (model_.distillation_state() == state) {
     return;
   }
+
   page_handler_->OnDistillationStateChanged(state);
   model_.set_distillation_state(state);
+  // Ensure that we always clear the AXTree anchors when a new
+  // distillation occurs.
+  if (IsReadabilityWithLinksEnabled() &&
+      state == read_anything::mojom::ReadAnythingDistillationState::
+                   kDistillationInProgress) {
+    model_.set_should_extract_anchors_from_tree_for_readability(false);
+    model_.ResetAXTreeAnchors();
+  }
 }
 
 void ReadAnythingAppController::OnActiveAXTreeIDChanged(
@@ -2787,6 +2806,11 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
   model_.set_current_content_distillation_method(
       ReadAnythingAppModel::DistillationMethod::kReadability);
   ExecuteJavaScript("chrome.readingMode.updateContent();");
+
+  if (IsReadabilityWithLinksEnabled()) {
+    model_.set_should_extract_anchors_from_tree_for_readability(true);
+    model_.ProcessAXTreeAnchors();
+  }
 }
 
 void ReadAnythingAppController::OnReadabilityDistillationStateChanged(

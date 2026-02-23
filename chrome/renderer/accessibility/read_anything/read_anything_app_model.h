@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -19,6 +20,7 @@
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -97,6 +99,37 @@ class ReadAnythingAppModel {
     // particular AXTree, namely is_pdf. Right now, this is set every time the
     // active ax tree id changes; instead, it should be set once when a new tree
     // is added.
+  };
+
+  // Stores the necessary information to determine if one link is different
+  // from another when interacting with a link from Readability distilled
+  // content.
+  struct AnchorData {
+    AnchorData();
+    ~AnchorData();
+    AnchorData(const AnchorData& other);
+    AnchorData& operator=(const AnchorData& other);
+
+    // The value of the HTML 'id' attribute (e.g., <a id="my-link">).
+    std::string html_id;
+
+    // The accessible name or visible text of the link, used by screen readers.
+    std::string name;
+
+    // The HTML 'target' attribute, indicating where to open the link (e.g.,
+    // "_blank").
+    std::string target;
+
+    // The text content of the node immediately following this link.
+    std::string text_after;
+
+    // The text content of the node immediately preceding this link.
+    std::string text_before;
+
+    // The HTML 'title' attribute, typically shown as a hover tooltip.
+    std::string title;
+
+    ui::AXNodeID id;
   };
 
   // Represents a grouping of AXTreeUpdates received in the same accessibility
@@ -280,6 +313,33 @@ class ReadAnythingAppModel {
   bool distillation_in_progress() const { return distillation_in_progress_; }
   void set_distillation_in_progress(bool distillation_in_progress) {
     distillation_in_progress_ = distillation_in_progress;
+  }
+
+  bool should_extract_anchors_from_tree_for_readability() const {
+    bool is_readability_with_links_enabled =
+        features::IsReadAnythingWithReadabilityAllowLinksEnabled();
+    DUMP_WILL_BE_CHECK(is_readability_with_links_enabled);
+
+    return is_readability_with_links_enabled
+               ? should_extract_anchors_from_tree_for_readability_
+               : false;
+  }
+  void set_should_extract_anchors_from_tree_for_readability(
+      bool should_extract_anchors_from_tree_for_readability) {
+    bool is_readability_with_links_enabled =
+        features::IsReadAnythingWithReadabilityAllowLinksEnabled();
+    DUMP_WILL_BE_CHECK(is_readability_with_links_enabled);
+    should_extract_anchors_from_tree_for_readability_ =
+        is_readability_with_links_enabled
+            ? should_extract_anchors_from_tree_for_readability
+            : false;
+  }
+
+  void ProcessAXTreeAnchors();
+  void ResetAXTreeAnchors();
+  const std::map<std::string, std::vector<AnchorData>>& ax_tree_anchors()
+      const {
+    return ax_tree_anchors_;
   }
 
   // The following methods are used for the screen2x data collection pipeline.
@@ -514,6 +574,8 @@ class ReadAnythingAppModel {
 
   void SetFontSize(double font_size, int increment = 0);
   void SetUkmSourceId(ukm::SourceId ukm_source_id);
+  std::map<std::string, std::vector<AnchorData>> CollectAnchorsFromAXTree(
+      ui::AXSerializableTree* tree);
 
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<AXTreeInfo>> tree_infos_;
@@ -636,6 +698,12 @@ class ReadAnythingAppModel {
   bool requires_tree_lang_ = false;
 
   bool will_hide_ = false;
+
+  // Whether we should traverse the tree to find all the anchors on it.
+  bool should_extract_anchors_from_tree_for_readability_;
+  // Holds a map of an URL string with all the AX Tree Nodes that are related
+  // to that specific URL.
+  std::map<std::string, std::vector<AnchorData>> ax_tree_anchors_;
 
   // The distillation method that will be used for the next content update.
   DistillationMethod next_distillation_method_;
