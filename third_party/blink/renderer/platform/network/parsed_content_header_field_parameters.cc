@@ -72,7 +72,7 @@ String ParsedContentHeaderFieldParameters::ParameterValueForName(
     return String();
 
   for (const NameValue& param : base::Reversed(*this)) {
-    if (EqualIgnoringASCIICase(param.name, name)) {
+    if (EqualIgnoringAsciiCase(param.name, name)) {
       return param.value;
     }
   }

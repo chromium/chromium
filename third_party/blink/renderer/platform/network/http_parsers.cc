@@ -539,7 +539,7 @@ bool ParseHTTPRefresh(const String& refresh,
   //   "Refresh: 0; url.html"
   //
   // in which case we let the URL be the entire string.
-  if (EqualIgnoringASCIICase(refresh_url.substr(0, 3), "url")) {
+  if (EqualIgnoringAsciiCase(refresh_url.substr(0, 3), "url")) {
     const wtf_size_t prefix_start = pos;
     pos += 3;
     SkipWhiteSpace(refresh, pos, matcher);
@@ -681,7 +681,7 @@ ContentTypeOptionsDisposition ParseContentTypeOptionsHeader(
         results[0].StripWhiteSpace(IsHTTPTabOrSpace);
   }
 
-  if (EqualIgnoringASCIICase(decoded_and_split_header_value, "nosniff")) {
+  if (EqualIgnoringAsciiCase(decoded_and_split_header_value, "nosniff")) {
     return kContentTypeOptionsNosniff;
   }
   return kContentTypeOptionsNone;
@@ -882,16 +882,16 @@ CacheControlHeader ParseCacheControlDirectives(
     for (wtf_size_t i = 0; i < directives_size; ++i) {
       // RFC2616 14.9.1: A no-cache directive with a value is only meaningful
       // for proxy caches.  It should be ignored by a browser level cache.
-      if (EqualIgnoringASCIICase(directives[i].first, kNoCacheDirective) &&
+      if (EqualIgnoringAsciiCase(directives[i].first, kNoCacheDirective) &&
           directives[i].second.empty()) {
         cache_control_header.contains_no_cache = true;
-      } else if (EqualIgnoringASCIICase(directives[i].first,
+      } else if (EqualIgnoringAsciiCase(directives[i].first,
                                         kNoStoreDirective)) {
         cache_control_header.contains_no_store = true;
-      } else if (EqualIgnoringASCIICase(directives[i].first,
+      } else if (EqualIgnoringAsciiCase(directives[i].first,
                                         kMustRevalidateDirective)) {
         cache_control_header.contains_must_revalidate = true;
-      } else if (EqualIgnoringASCIICase(directives[i].first,
+      } else if (EqualIgnoringAsciiCase(directives[i].first,
                                         kMaxAgeDirective)) {
         if (cache_control_header.max_age) {
           // First max-age directive wins if there are multiple ones.
@@ -901,7 +901,7 @@ CacheControlHeader ParseCacheControlDirectives(
         if (max_age) {
           cache_control_header.max_age = base::Seconds(*max_age);
         }
-      } else if (EqualIgnoringASCIICase(directives[i].first,
+      } else if (EqualIgnoringAsciiCase(directives[i].first,
                                         kStaleWhileRevalidateDirective)) {
         if (cache_control_header.stale_while_revalidate) {
           // First stale-while-revalidate directive wins if there are multiple

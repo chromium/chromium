@@ -199,7 +199,7 @@ WebString WebURLRequest::HttpHeaderField(const WebString& name) const {
 
 void WebURLRequest::SetHttpHeaderField(const WebString& name,
                                        const WebString& value) {
-  CHECK(!EqualIgnoringASCIICase(name, "referer"));
+  CHECK(!EqualIgnoringAsciiCase(name, "referer"));
   resource_request_->SetHttpHeaderField(name, value);
 }
 

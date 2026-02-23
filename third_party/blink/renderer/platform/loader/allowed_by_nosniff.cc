@@ -125,8 +125,8 @@ static bool AllowMimeTypeAsScript(
   // we still wish to accept them (or log them using UseCounter, or add a
   // deprecation warning to the console).
 
-  if (EqualIgnoringASCIICase(mime_type, "text/javascript1.6") ||
-      EqualIgnoringASCIICase(mime_type, "text/javascript1.7")) {
+  if (EqualIgnoringAsciiCase(mime_type, "text/javascript1.6") ||
+      EqualIgnoringAsciiCase(mime_type, "text/javascript1.7")) {
     // We've been excluding these legacy values from UseCounter stats since
     // before.
     return true;

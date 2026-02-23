@@ -227,16 +227,16 @@ const AtomicString& ResourceResponse::HttpHeaderField(
 }
 
 void ResourceResponse::UpdateHeaderParsedState(const AtomicString& name) {
-  if (EqualIgnoringASCIICase(name, http_names::kLowerAge)) {
+  if (EqualIgnoringAsciiCase(name, http_names::kLowerAge)) {
     have_parsed_age_header_ = false;
-  } else if (EqualIgnoringASCIICase(name, http_names::kLowerCacheControl) ||
-             EqualIgnoringASCIICase(name, http_names::kLowerPragma)) {
+  } else if (EqualIgnoringAsciiCase(name, http_names::kLowerCacheControl) ||
+             EqualIgnoringAsciiCase(name, http_names::kLowerPragma)) {
     cache_control_header_ = CacheControlHeader();
-  } else if (EqualIgnoringASCIICase(name, http_names::kLowerDate)) {
+  } else if (EqualIgnoringAsciiCase(name, http_names::kLowerDate)) {
     have_parsed_date_header_ = false;
-  } else if (EqualIgnoringASCIICase(name, http_names::kLowerExpires)) {
+  } else if (EqualIgnoringAsciiCase(name, http_names::kLowerExpires)) {
     have_parsed_expires_header_ = false;
-  } else if (EqualIgnoringASCIICase(name, http_names::kLowerLastModified)) {
+  } else if (EqualIgnoringAsciiCase(name, http_names::kLowerLastModified)) {
     have_parsed_last_modified_header_ = false;
   }
 }
@@ -436,7 +436,7 @@ bool ResourceResponse::IsAttachment() const {
   if (loc != kNotFound)
     value = value.Left(loc);
   value = value.StripWhiteSpace();
-  return EqualIgnoringASCIICase(value, kAttachmentString);
+  return EqualIgnoringAsciiCase(value, kAttachmentString);
 }
 
 AtomicString ResourceResponse::HttpContentType() const {

@@ -234,21 +234,21 @@ String SniffMimeTypeInternal(scoped_refptr<SegmentReader> reader) {
 // size will be restricted via the 'lossy-images-max-bpp' document
 // policy. (JPEG)
 bool IsLossyImageMIMEType(const String& mime_type) {
-  return EqualIgnoringASCIICase(mime_type, "image/jpeg") ||
-         EqualIgnoringASCIICase(mime_type, "image/jpg") ||
-         EqualIgnoringASCIICase(mime_type, "image/pjpeg");
+  return EqualIgnoringAsciiCase(mime_type, "image/jpeg") ||
+         EqualIgnoringAsciiCase(mime_type, "image/jpg") ||
+         EqualIgnoringAsciiCase(mime_type, "image/pjpeg");
 }
 
 // Checks to see if a mime type is an image type with lossless (or no)
 // compression, whose size may be restricted via the
 // 'lossless-images-max-bpp' document policy. (BMP, GIF, PNG, WEBP)
 bool IsLosslessImageMIMEType(const String& mime_type) {
-  return EqualIgnoringASCIICase(mime_type, "image/bmp") ||
-         EqualIgnoringASCIICase(mime_type, "image/gif") ||
-         EqualIgnoringASCIICase(mime_type, "image/png") ||
-         EqualIgnoringASCIICase(mime_type, "image/webp") ||
-         EqualIgnoringASCIICase(mime_type, "image/x-xbitmap") ||
-         EqualIgnoringASCIICase(mime_type, "image/x-png");
+  return EqualIgnoringAsciiCase(mime_type, "image/bmp") ||
+         EqualIgnoringAsciiCase(mime_type, "image/gif") ||
+         EqualIgnoringAsciiCase(mime_type, "image/png") ||
+         EqualIgnoringAsciiCase(mime_type, "image/webp") ||
+         EqualIgnoringAsciiCase(mime_type, "image/x-xbitmap") ||
+         EqualIgnoringAsciiCase(mime_type, "image/x-png");
 }
 
 }  // namespace
@@ -418,7 +418,7 @@ ImageDecoder::CompressionFormat ImageDecoder::GetCompressionFormat(
   // compression algorithm. Note: Will return kWebPAnimationFormat in the case
   // of an animated WebP image.
   size_t available_data = image_data ? image_data->size() : 0;
-  if (EqualIgnoringASCIICase(mime_type, "image/webp") && available_data >= 16) {
+  if (EqualIgnoringAsciiCase(mime_type, "image/webp") && available_data >= 16) {
     // Attempt to sniff only 8 bytes (the second half of the first 16). This
     // will be sufficient to determine lossy vs. lossless in most WebP images
     // (all but the extended format).
@@ -465,7 +465,7 @@ ImageDecoder::CompressionFormat ImageDecoder::GetCompressionFormat(
   // compression algorithm.
   // TODO(wtc): Implement this. Figure out whether to return kUndefinedFormat or
   // a new kAVIFAnimationFormat in the case of an animated AVIF image.
-  if (EqualIgnoringASCIICase(mime_type, "image/avif")) {
+  if (EqualIgnoringAsciiCase(mime_type, "image/avif")) {
     return kLossyFormat;
   }
 #endif

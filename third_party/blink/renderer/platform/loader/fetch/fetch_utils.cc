@@ -56,8 +56,8 @@ bool FetchUtils::IsForbiddenResponseHeaderName(const String& name) {
   // "A forbidden response header name is a header name that is one of:
   // `Set-Cookie`, `Set-Cookie2`"
 
-  return EqualIgnoringASCIICase(name, "set-cookie") ||
-         EqualIgnoringASCIICase(name, "set-cookie2");
+  return EqualIgnoringAsciiCase(name, "set-cookie") ||
+         EqualIgnoringAsciiCase(name, "set-cookie2");
 }
 
 AtomicString FetchUtils::NormalizeMethod(const AtomicString& method) {
@@ -71,7 +71,7 @@ AtomicString FetchUtils::NormalizeMethod(const AtomicString& method) {
   };
 
   for (auto* const known : kMethods) {
-    if (EqualIgnoringASCIICase(method, *known)) {
+    if (EqualIgnoringAsciiCase(method, *known)) {
       // Don't bother allocating a new string if it's already all
       // uppercase.
       return method == *known ? method : *known;

@@ -154,8 +154,9 @@ UScriptCode ScriptNameToCode(const StringView& script_name) {
       {"zxxx", USCRIPT_UNWRITTEN_LANGUAGES},
       {"zzzz", USCRIPT_UNKNOWN}};
   for (const auto& kv : kScriptNameCodeList) {
-    if (EqualIgnoringASCIICase(script_name, kv.subtag))
+    if (EqualIgnoringAsciiCase(script_name, kv.subtag)) {
       return kv.script;
+    }
   }
   return USCRIPT_INVALID_CODE;
 }
@@ -447,7 +448,7 @@ UScriptCode LocaleToScriptCodeForFontSelection(const String& locale) {
   StringView tag(canonical_locale);
   while (!tag.empty()) {
     for (const auto& kv : kLocaleScriptList) {
-      if (EqualIgnoringASCIICase(tag, kv.subtag)) {
+      if (EqualIgnoringAsciiCase(tag, kv.subtag)) {
         return kv.script;
       }
     }
@@ -473,8 +474,9 @@ static UScriptCode ScriptCodeForHanFromRegion(const StringView& region) {
       {"tw", USCRIPT_TRADITIONAL_HAN},
   };
   for (const auto& kv : kRegionScriptList) {
-    if (EqualIgnoringASCIICase(region, kv.subtag))
+    if (EqualIgnoringAsciiCase(region, kv.subtag)) {
       return kv.script;
+    }
   }
   return USCRIPT_COMMON;
 }

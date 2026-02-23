@@ -223,44 +223,44 @@ bool SecurityPolicy::ReferrerPolicyFromString(
   bool support_legacy_keywords =
       (legacy_keywords_support == kSupportReferrerPolicyLegacyKeywords);
 
-  if (EqualIgnoringASCIICase(policy, "no-referrer") ||
-      (support_legacy_keywords && (EqualIgnoringASCIICase(policy, "never") ||
-                                   EqualIgnoringASCIICase(policy, "none")))) {
+  if (EqualIgnoringAsciiCase(policy, "no-referrer") ||
+      (support_legacy_keywords && (EqualIgnoringAsciiCase(policy, "never") ||
+                                   EqualIgnoringAsciiCase(policy, "none")))) {
     *result = network::mojom::ReferrerPolicy::kNever;
     return true;
   }
-  if (EqualIgnoringASCIICase(policy, "unsafe-url") ||
-      (support_legacy_keywords && EqualIgnoringASCIICase(policy, "always"))) {
+  if (EqualIgnoringAsciiCase(policy, "unsafe-url") ||
+      (support_legacy_keywords && EqualIgnoringAsciiCase(policy, "always"))) {
     *result = network::mojom::ReferrerPolicy::kAlways;
     return true;
   }
-  if (EqualIgnoringASCIICase(policy, "origin")) {
+  if (EqualIgnoringAsciiCase(policy, "origin")) {
     *result = network::mojom::ReferrerPolicy::kOrigin;
     return true;
   }
-  if (EqualIgnoringASCIICase(policy, "origin-when-cross-origin") ||
+  if (EqualIgnoringAsciiCase(policy, "origin-when-cross-origin") ||
       (support_legacy_keywords &&
-       EqualIgnoringASCIICase(policy, "origin-when-crossorigin"))) {
+       EqualIgnoringAsciiCase(policy, "origin-when-crossorigin"))) {
     *result = network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin;
     return true;
   }
-  if (EqualIgnoringASCIICase(policy, "same-origin")) {
+  if (EqualIgnoringAsciiCase(policy, "same-origin")) {
     *result = network::mojom::ReferrerPolicy::kSameOrigin;
     return true;
   }
-  if (EqualIgnoringASCIICase(policy, "strict-origin")) {
+  if (EqualIgnoringAsciiCase(policy, "strict-origin")) {
     *result = network::mojom::ReferrerPolicy::kStrictOrigin;
     return true;
   }
-  if (EqualIgnoringASCIICase(policy, "strict-origin-when-cross-origin")) {
+  if (EqualIgnoringAsciiCase(policy, "strict-origin-when-cross-origin")) {
     *result = network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin;
     return true;
   }
-  if (EqualIgnoringASCIICase(policy, "no-referrer-when-downgrade")) {
+  if (EqualIgnoringAsciiCase(policy, "no-referrer-when-downgrade")) {
     *result = network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade;
     return true;
   }
-  if (support_legacy_keywords && EqualIgnoringASCIICase(policy, "default")) {
+  if (support_legacy_keywords && EqualIgnoringAsciiCase(policy, "default")) {
     *result = ReferrerUtils::NetToMojoReferrerPolicy(
         ReferrerUtils::GetDefaultNetReferrerPolicy());
     return true;

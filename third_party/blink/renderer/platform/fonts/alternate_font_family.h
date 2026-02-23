@@ -48,20 +48,23 @@ inline const AtomicString& AdjustFamilyNameToAvoidUnsupportedFonts(
   // 'Courier' is a bitmap font. On Mac on the other hand 'Courier' is
   // a truetype font. Thus pages asking for Courier are better of
   // using 'Courier New' on windows.
-  if (EqualIgnoringASCIICase(family_name, font_family_names::kCourier))
+  if (EqualIgnoringAsciiCase(family_name, font_family_names::kCourier)) {
     return font_family_names::kCourierNew;
+  }
 
   // Alias 'MS Sans Serif' (bitmap font) -> 'Microsoft Sans Serif'
   // (truetype font).
-  if (EqualIgnoringASCIICase(family_name, font_family_names::kMSSansSerif))
+  if (EqualIgnoringAsciiCase(family_name, font_family_names::kMSSansSerif)) {
     return font_family_names::kMicrosoftSansSerif;
+  }
 
   // Alias 'MS Serif' (bitmap) -> 'Times New Roman' (truetype font).
   // Alias 'Times' -> 'Times New Roman' (truetype font).
   // There's no 'Microsoft Sans Serif-equivalent' for Serif.
-  if (EqualIgnoringASCIICase(family_name, font_family_names::kMSSerif) ||
-      EqualIgnoringASCIICase(family_name, font_family_names::kTimes))
+  if (EqualIgnoringAsciiCase(family_name, font_family_names::kMSSerif) ||
+      EqualIgnoringAsciiCase(family_name, font_family_names::kTimes)) {
     return font_family_names::kTimesNewRoman;
+  }
 #endif
 
   return family_name;
@@ -70,27 +73,33 @@ inline const AtomicString& AdjustFamilyNameToAvoidUnsupportedFonts(
 inline const AtomicString& AlternateFamilyName(
     const AtomicString& family_name) {
   // Alias Courier <-> Courier New
-  if (EqualIgnoringASCIICase(family_name, font_family_names::kCourier))
+  if (EqualIgnoringAsciiCase(family_name, font_family_names::kCourier)) {
     return font_family_names::kCourierNew;
+  }
 #if !BUILDFLAG(IS_WIN)
   // On Windows, Courier New (truetype font) is always present and
   // Courier is a bitmap font. So, we don't want to map Courier New to
   // Courier.
-  if (EqualIgnoringASCIICase(family_name, font_family_names::kCourierNew))
+  if (EqualIgnoringAsciiCase(family_name, font_family_names::kCourierNew)) {
     return font_family_names::kCourier;
+  }
 #endif
 
   // Alias Times and Times New Roman.
-  if (EqualIgnoringASCIICase(family_name, font_family_names::kTimes))
+  if (EqualIgnoringAsciiCase(family_name, font_family_names::kTimes)) {
     return font_family_names::kTimesNewRoman;
-  if (EqualIgnoringASCIICase(family_name, font_family_names::kTimesNewRoman))
+  }
+  if (EqualIgnoringAsciiCase(family_name, font_family_names::kTimesNewRoman)) {
     return font_family_names::kTimes;
+  }
 
   // Alias Arial and Helvetica
-  if (EqualIgnoringASCIICase(family_name, font_family_names::kArial))
+  if (EqualIgnoringAsciiCase(family_name, font_family_names::kArial)) {
     return font_family_names::kHelvetica;
-  if (EqualIgnoringASCIICase(family_name, font_family_names::kHelvetica))
+  }
+  if (EqualIgnoringAsciiCase(family_name, font_family_names::kHelvetica)) {
     return font_family_names::kArial;
+  }
 
   return g_empty_atom;
 }

@@ -110,9 +110,9 @@ bool MIMETypeRegistry::IsSupportedImagePrefixedMIMEType(
 
 bool MIMETypeRegistry::IsSupportedImageMIMETypeForEncoding(
     const String& mime_type) {
-  return (EqualIgnoringASCIICase(mime_type, "image/jpeg") ||
-          EqualIgnoringASCIICase(mime_type, "image/png") ||
-          EqualIgnoringASCIICase(mime_type, "image/webp"));
+  return (EqualIgnoringAsciiCase(mime_type, "image/jpeg") ||
+          EqualIgnoringAsciiCase(mime_type, "image/png") ||
+          EqualIgnoringAsciiCase(mime_type, "image/webp"));
 }
 
 bool MIMETypeRegistry::IsSupportedJavaScriptMIMEType(const String& mime_type) {
@@ -169,7 +169,7 @@ bool MIMETypeRegistry::IsJavaAppletMIMEType(const String& mime_type) {
 }
 
 bool MIMETypeRegistry::IsSupportedStyleSheetMIMEType(const String& mime_type) {
-  return EqualIgnoringASCIICase(mime_type, "text/css");
+  return EqualIgnoringAsciiCase(mime_type, "text/css");
 }
 
 bool MIMETypeRegistry::IsSupportedFontMIMEType(const String& mime_type) {
@@ -183,12 +183,12 @@ bool MIMETypeRegistry::IsSupportedFontMIMEType(const String& mime_type) {
 }
 
 bool MIMETypeRegistry::IsSupportedTextTrackMIMEType(const String& mime_type) {
-  return EqualIgnoringASCIICase(mime_type, "text/vtt");
+  return EqualIgnoringAsciiCase(mime_type, "text/vtt");
 }
 
 bool MIMETypeRegistry::IsXMLMIMEType(const String& mime_type) {
-  if (EqualIgnoringASCIICase(mime_type, "text/xml") ||
-      EqualIgnoringASCIICase(mime_type, "application/xml")) {
+  if (EqualIgnoringAsciiCase(mime_type, "text/xml") ||
+      EqualIgnoringAsciiCase(mime_type, "application/xml")) {
     return true;
   }
 
@@ -246,16 +246,16 @@ bool MIMETypeRegistry::IsXMLMIMEType(const String& mime_type) {
 }
 
 bool MIMETypeRegistry::IsXMLExternalEntityMIMEType(const String& mime_type) {
-  return EqualIgnoringASCIICase(mime_type,
+  return EqualIgnoringAsciiCase(mime_type,
                                 "application/xml-external-parsed-entity") ||
-         EqualIgnoringASCIICase(mime_type, "text/xml-external-parsed-entity");
+         EqualIgnoringAsciiCase(mime_type, "text/xml-external-parsed-entity");
 }
 
 bool MIMETypeRegistry::IsPlainTextMIMEType(const String& mime_type) {
   return mime_type.StartsWithIgnoringAsciiCase("text/") &&
-         !(EqualIgnoringASCIICase(mime_type, "text/html") ||
-           EqualIgnoringASCIICase(mime_type, "text/xml") ||
-           EqualIgnoringASCIICase(mime_type, "text/xsl"));
+         !(EqualIgnoringAsciiCase(mime_type, "text/html") ||
+           EqualIgnoringAsciiCase(mime_type, "text/xml") ||
+           EqualIgnoringAsciiCase(mime_type, "text/xsl"));
 }
 
 }  // namespace blink

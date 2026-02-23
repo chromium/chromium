@@ -50,8 +50,9 @@ class HeaderFlattener : public WebHTTPHeaderVisitor {
 
     // Skip over referrer headers found in the header map because we already
     // pulled it out as a separate parameter.
-    if (EqualIgnoringASCIICase(wtf_name, "referer"))
+    if (EqualIgnoringAsciiCase(wtf_name, "referer")) {
       return;
+    }
 
     if (!buffer_.empty())
       buffer_.Append("\r\n");

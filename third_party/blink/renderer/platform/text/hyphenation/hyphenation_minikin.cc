@@ -286,8 +286,9 @@ AtomicString HyphenationMinikin::MapLocale(const AtomicString& locale) {
 scoped_refptr<Hyphenation> Hyphenation::PlatformGetHyphenation(
     const AtomicString& locale) {
   const AtomicString mapped_locale = HyphenationMinikin::MapLocale(locale);
-  if (!EqualIgnoringASCIICase(mapped_locale, locale))
+  if (!EqualIgnoringAsciiCase(mapped_locale, locale)) {
     return LayoutLocale::Get(mapped_locale)->GetHyphenation();
+  }
 
   scoped_refptr<HyphenationMinikin> hyphenation(
       base::AdoptRef(new HyphenationMinikin));

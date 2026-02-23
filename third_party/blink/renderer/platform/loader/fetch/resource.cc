@@ -121,7 +121,7 @@ const auto kHeaderPrefixesToIgnoreAfterRevalidation =
 
 inline bool ShouldUpdateHeaderAfterRevalidation(const AtomicString& header) {
   for (const auto* header_to_ignore : kHeadersToIgnoreAfterRevalidation) {
-    if (EqualIgnoringASCIICase(header, header_to_ignore)) {
+    if (EqualIgnoringAsciiCase(header, header_to_ignore)) {
       return false;
     }
   }

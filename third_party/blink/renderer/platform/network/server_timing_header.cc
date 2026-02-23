@@ -9,12 +9,12 @@
 namespace blink {
 
 void ServerTimingHeader::SetParameter(StringView name, String value) {
-  if (EqualIgnoringASCIICase(name, "dur")) {
+  if (EqualIgnoringAsciiCase(name, "dur")) {
     if (!duration_set_) {
       duration_ = StringToDouble(value).value_or(0);
       duration_set_ = true;
     }
-  } else if (EqualIgnoringASCIICase(name, "desc")) {
+  } else if (EqualIgnoringAsciiCase(name, "desc")) {
     if (!description_set_) {
       description_ = value;
       description_set_ = true;

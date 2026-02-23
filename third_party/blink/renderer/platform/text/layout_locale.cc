@@ -128,7 +128,7 @@ scoped_refptr<QuotesData> GetQuotesDataForLanguage(const StringView& lang) {
     if (U_FAILURE(status)) {
       return nullptr;
     }
-    if (EqualIgnoringASCIICase(loc, lang)) {
+    if (EqualIgnoringAsciiCase(loc, lang)) {
       return GetQuotesDataForIcuLocale(loc);
     }
   }

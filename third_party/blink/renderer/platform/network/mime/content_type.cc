@@ -46,7 +46,7 @@ String ContentType::Parameter(StringView parameter_name) const {
     if (separator_pos != kNotFound) {
       StringView attribute =
           StringView(stripped_parameter, 0, separator_pos).StripWhiteSpace();
-      if (EqualIgnoringASCIICase(attribute, parameter_name)) {
+      if (EqualIgnoringAsciiCase(attribute, parameter_name)) {
         return StringView(stripped_parameter, separator_pos + 1)
             .StripWhiteSpace()
             .ToString()
