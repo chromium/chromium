@@ -88,6 +88,11 @@ class WPTServe(server_base.ServerBase):
             self._port_obj.python3_command(),
             '-u',
             wpt_script,
+            # Chromium uses vpython3 instead of vanilla virtualenv, but a
+            # scratch directory is still required.
+            '--skip-venv-setup',
+            '--venv',
+            fs.join(self._runtime_path, 'deps'),
             'serve',
             '--config',
             self._config_file,
