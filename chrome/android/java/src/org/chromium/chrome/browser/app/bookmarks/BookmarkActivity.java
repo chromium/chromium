@@ -165,6 +165,11 @@ public class BookmarkActivity extends SnackbarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (mWindowAndroid != null) {
+            assumeNonNull(mWindowAndroid.getIntentRequestTracker())
+                    .onActivityResult(requestCode, resultCode, data);
+        }
+
         if (requestCode == EDIT_BOOKMARK_REQUEST_CODE && resultCode == RESULT_OK) {
             assumeNonNull(data);
             BookmarkId bookmarkId =

@@ -45,6 +45,15 @@ public class HistoryActivity extends SnackbarActivity {
     private @Nullable ActivityWindowAndroid mWindowAndroid;
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (mWindowAndroid != null) {
+            assumeNonNull(mWindowAndroid.getIntentRequestTracker())
+                    .onActivityResult(requestCode, resultCode, intent);
+        }
+    }
+
+    @Override
     protected void onProfileAvailable(Profile profile) {
         super.onProfileAvailable(profile);
 
