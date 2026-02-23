@@ -49,6 +49,8 @@
     }
 
     unsigned int chromeOpenedCount = 0;
+    unsigned int chromeOpenedFromIconCount = 0;
+
     std::vector<std::pair<feature_engagement::EventConfig, int>> events =
         tracker->ListEvents(
             feature_engagement::kIPHiOSDockingPromoEligibilityFeature);
@@ -56,17 +58,19 @@
     for (const auto& event : events) {
       if (event.first.name == feature_engagement::events::kChromeOpened) {
         chromeOpenedCount++;
+      } else if (event.first.name ==
+                 feature_engagement::events::kIOSChromeOpenedFromIcon) {
+        chromeOpenedFromIconCount++;
       }
     }
 
     //  Low engaged users (L7 days active <=1)
     BOOL isLowEngagementUser = chromeOpenedCount <= 1;
 
-    // TODO(crbug.com/479220063): use a new kChromeOpenedFromIcon event and
-    // use it to check if no app icon launches in last 7 days.
-    BOOL hasNoRecentIconLaunches = false;
+    // App icon launches in last 7 days.
+    BOOL hasRecentIconLaunches = chromeOpenedFromIconCount > 0;
 
-    if (isLowEngagementUser || hasNoRecentIconLaunches) {
+    if (isLowEngagementUser || !hasRecentIconLaunches) {
       _promosManager->RegisterPromoForContinuousDisplay(
           promos_manager::Promo::DockingPromo);
     } else {
