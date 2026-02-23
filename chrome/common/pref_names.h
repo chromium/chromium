@@ -1429,6 +1429,16 @@ inline constexpr char kDefaultBrowserInfobarLastDeclinedTime[] =
 inline constexpr char kDefaultBrowserInfobarDeclinedCount[] =
     "browser.default_browser_infobar_declined_count";
 
+// base::Time containing the time at which the user last dismissed the default
+// browser experiment surface.
+inline constexpr char kDefaultBrowserLastDeclinedTime[] =
+    "browser.default_browser_last_declined_time";
+
+// Int representing the number of times the user has dismissed the default
+// browser experiment surface.
+inline constexpr char kDefaultBrowserDeclinedCount[] =
+    "browser.default_browser_declined_count";
+
 // base::Time containing first time the default browser app menu chip was shown.
 inline constexpr char kDefaultBrowserFirstShownTime[] =
     "browser.default_browser_app_menu_first_shown_time";

@@ -99,6 +99,7 @@ source_set("unit_tests") {
     ":default_browser_prompt",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/default_browser",
     "//chrome/browser/ui:browser_list",
     "//chrome/common:constants",
     "//chrome/test:test_support",

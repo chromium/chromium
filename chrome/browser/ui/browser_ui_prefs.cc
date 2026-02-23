@@ -77,6 +77,9 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kDefaultBrowserInfobarLastDeclinedTime,
                              base::Time());
   registry->RegisterIntegerPref(prefs::kDefaultBrowserInfobarDeclinedCount, 0);
+  registry->RegisterTimePref(prefs::kDefaultBrowserLastDeclinedTime,
+                             base::Time());
+  registry->RegisterIntegerPref(prefs::kDefaultBrowserDeclinedCount, 0);
   registry->RegisterTimePref(prefs::kDefaultBrowserFirstShownTime,
                              base::Time());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
