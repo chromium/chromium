@@ -748,7 +748,10 @@ void Compositor::RemoveAnimationObserver(
   if (!animation_observer_list_.HasObserver(observer))
     return;
 
-  animation_observer_list_.Notify(&CompositorAnimationObserver::Check);
+  // This may be called when an animation ends while processing OnAnimationStep,
+  // and `Check()` is a concrete method that can be called reentrantly.
+  animation_observer_list_.NotifyAllowReentrancy(
+      &CompositorAnimationObserver::Check);
 
   animation_observer_list_.RemoveObserver(observer);
   if (animation_observer_list_.empty()) {

@@ -156,6 +156,7 @@ class ObserverList {
       internal::UncheckedObserverAdapter<RawPtrTraits::kEmpty, true>>;
 
   // An iterator class that can be used to access the list of observers.
+  template <bool check_reentrancy = true>
   class Iter {
    public:
     using iterator_category = std::forward_iterator_tag;
@@ -176,6 +177,7 @@ class ObserverList {
       // TODO(crbug.com/40063488): Turn into CHECK once very prevalent failures
       // are weeded out.
       DUMP_WILL_BE_CHECK(
+          !check_reentrancy ||
           reentrancy != ObserverListReentrancyPolicy::kDisallowReentrancy ||
           list_.IsOnlyRemainingNode());
       // Bind to this sequence when creating the first iterator.
@@ -281,8 +283,8 @@ class ObserverList {
     size_t max_index_;
   };
 
-  using iterator = Iter;
-  using const_iterator = Iter;
+  using iterator = Iter<>;
+  using const_iterator = Iter<>;
   using value_type = ObserverType;
 
   const_iterator begin() const {
@@ -414,6 +416,20 @@ class ObserverList {
   void Notify(Method method, const Args&... args) {
     for (auto& observer : *this) {
       std::invoke(method, observer, args...);
+    }
+  }
+
+  // Same as `Notify` but doesn't check reentrancy. Use this if it's safe to
+  // call the method reentrantly even if the observer list itself should be
+  // non-reentrant. The observer should be non reentrant.
+  // TODO(40562847): Add static_assert to ensure the reentrancy is
+  // kDisallowReentrancy.
+  template <typename Method, typename... Args>
+    requires std::invocable<Method, ObserverType*, const Args&...>
+  void NotifyAllowReentrancy(Method method, const Args&... args) {
+    for (auto iter = Iter</*check_reentrancy=*/false>(this);
+         iter != Iter</*check_reentrancy=*/false>(); iter++) {
+      std::invoke(method, *iter, args...);
     }
   }
 
