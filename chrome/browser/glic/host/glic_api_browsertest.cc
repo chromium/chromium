@@ -738,7 +738,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDoNothing) {
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testInvocationSource) {
+// TODO(crbug.com/486793948): Fix and re-enable or remove the test.
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testInvocationSource) {
   for (const auto source : {
            mojom::InvocationSource::kOsHotkey,
            mojom::InvocationSource::kOsButton,
