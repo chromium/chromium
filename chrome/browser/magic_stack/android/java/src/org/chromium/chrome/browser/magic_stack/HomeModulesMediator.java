@@ -142,9 +142,6 @@ public class HomeModulesMediator {
      */
     @VisibleForTesting
     List<Integer> getSortedManuallyRankedModules(Set<Integer> enabledModuleSet) {
-        if (mModuleDelegateHost.getTrackingTab() != null) {
-            return new ArrayList<>(); // No manual ranking when a tab is tracked
-        }
         Map<Integer, Integer> rankMap = new HashMap<>();
         for (@ModuleType int moduleType : enabledModuleSet) {
             ModuleProviderBuilder builder = mModuleRegistry.getModuleProviderBuilder(moduleType);
@@ -724,9 +721,17 @@ public class HomeModulesMediator {
             List<Integer> manuallyRankedModules,
             Set<Integer> enabledModuleSet) {
         List<Integer> combinedList = new ArrayList<>(manuallyRankedModules);
+        // Deduplicate to prevent internal errors caused by multiple instances of the same module
+        // type if it's returned by both manual and segmentation ranking.
+        Set<Integer> manuallyRankedModulesSet = new HashSet<>(manuallyRankedModules);
+
         List<Integer> filteredEnabledModules =
                 filterEnabledModuleList(orderedLabels, enabledModuleSet);
-        combinedList.addAll(filteredEnabledModules);
+        for (Integer moduleType : filteredEnabledModules) {
+            if (!manuallyRankedModulesSet.contains(moduleType)) {
+                combinedList.add(moduleType);
+            }
+        }
         return combinedList;
     }
 

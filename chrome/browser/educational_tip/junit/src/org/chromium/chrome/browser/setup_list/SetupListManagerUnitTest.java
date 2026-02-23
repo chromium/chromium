@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.setup_list;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -332,15 +333,15 @@ public class SetupListManagerUnitTest {
 
         // The item should STILL be at its initial position because it's awaiting animation.
         assertEquals(firstModuleType, (int) manager.getRankedModuleTypes().get(0));
-        assertEquals(0, (int) manager.getManualRank(firstModuleType));
+        assertEquals(1, (int) manager.getManualRank(firstModuleType));
         assertTrue(manager.isModuleAwaitingCompletionAnimation(firstModuleType));
 
         manager.onCompletionAnimationFinished(firstModuleType);
 
         // Now the item should be at the end of the list and its rank updated.
         rankedModules = manager.getRankedModuleTypes();
-        int expectedRank = rankedModules.size() - 1;
-        assertEquals(firstModuleType, (int) rankedModules.get(expectedRank));
+        int expectedRank = rankedModules.size(); // index + 1
+        assertEquals(firstModuleType, (int) rankedModules.get(expectedRank - 1));
         assertEquals(expectedRank, (int) manager.getManualRank(firstModuleType));
         assertFalse(manager.isModuleAwaitingCompletionAnimation(firstModuleType));
     }
@@ -367,6 +368,28 @@ public class SetupListManagerUnitTest {
         assertFalse(
                 "Completed Sign In should be pushed out",
                 rankedModules.contains(ModuleType.SIGN_IN_PROMO));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetManualRank_WithOffset() {
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        SetupListManager manager = SetupListManager.getInstance();
+        manager.maybePrimeCompletionStatus(mProfile);
+
+        List<Integer> rankedModules = manager.getRankedModuleTypes();
+        int firstModule = rankedModules.get(0);
+
+        // Verify that the rank of the first item is equal to the offset.
+        assertEquals(
+                SetupListManager.SETUP_LIST_RANK_OFFSET, (int) manager.getManualRank(firstModule));
+
+        // Verify that it returns null when inactive.
+        mSharedPreferencesManager.writeLong(
+                ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP,
+                TimeUtils.currentTimeMillis() - SetupListManager.SETUP_LIST_ACTIVE_WINDOW_MILLIS);
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        assertNull(SetupListManager.getInstance().getManualRank(firstModule));
     }
 
     @Test

@@ -228,6 +228,7 @@ import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification
 import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.settings.SettingsCustomTabLauncherImpl;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
@@ -3221,7 +3222,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         HomeModulesConfigManager.getInstance(), getLifecycleDispatcher());
         SingleTabModuleBuilder singleTabModuleBuilder =
                 new SingleTabModuleBuilder(
-                        this, getTabModelSelectorSupplier(), getTabContentManagerSupplier());
+                        this,
+                        getTabModelSelectorSupplier(),
+                        getTabContentManagerSupplier(),
+                        SetupListModuleUtils::isSetupListActive);
         moduleRegistry.registerModule(ModuleType.SINGLE_TAB, singleTabModuleBuilder);
 
         if (ChromeFeatureList.sPriceChangeModule.isEnabled()) {

@@ -63,6 +63,12 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
     /** Maximum number of items to show in the setup list. */
     public static final int MAX_SETUP_LIST_ITEMS = 5;
 
+    /**
+     * The rank offset for setup list items to ensure they are displayed below the single tab
+     * resumption module (which takes rank 0) when the Setup List is active.
+     */
+    public static final int SETUP_LIST_RANK_OFFSET = 1;
+
     // Order of modules in the setup list.
     public static final List<Integer> BASE_SETUP_LIST_ORDER =
             Arrays.asList(
@@ -252,10 +258,11 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
         }
 
         if (shouldShowTwoCellLayout() && moduleType == TWO_CELL_CONTAINER_MODULE_TYPE) {
-            return 0;
+            return SETUP_LIST_RANK_OFFSET;
         }
 
-        return mModuleRankMap.get(moduleType);
+        Integer rank = mModuleRankMap.get(moduleType);
+        return rank != null ? rank + SETUP_LIST_RANK_OFFSET : null;
     }
 
     /**

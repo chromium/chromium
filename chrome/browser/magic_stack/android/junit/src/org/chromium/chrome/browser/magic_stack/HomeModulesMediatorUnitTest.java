@@ -769,11 +769,30 @@ public class HomeModulesMediatorUnitTest {
         assertEquals(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO, (int) manuallyRankedModules.get(2));
         assertFalse(manuallyRankedModules.contains(ModuleType.SINGLE_TAB));
 
-        // Case 2: Tracking a tab, manual ranking should be skipped (returns empty list).
+        // Case 2: Tracking a tab, manual ranking should NO LONGER be skipped.
         Tab tab = mock(Tab.class);
         when(mModuleDelegateHost.getTrackingTab()).thenReturn(tab);
+
+        // Give single tab a rank of 0.
+        when(singleTabBuilder.getManualRank()).thenReturn(0);
+        // Shift other manual ranks.
+        when(twoCellBuilder.getManualRank()).thenReturn(1);
+        when(esbBuilder.getManualRank()).thenReturn(2);
+        when(addressBarBuilder.getManualRank()).thenReturn(3);
+
+        enabledSet =
+                Set.of(
+                        ModuleType.SINGLE_TAB,
+                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                        ModuleType.SETUP_LIST_TWO_CELL_CONTAINER,
+                        ModuleType.ADDRESS_BAR_PLACEMENT_PROMO);
+
         manuallyRankedModules = mMediator.getSortedManuallyRankedModules(enabledSet);
-        assertEquals(0, manuallyRankedModules.size());
+        assertEquals(4, manuallyRankedModules.size());
+        assertEquals(ModuleType.SINGLE_TAB, (int) manuallyRankedModules.get(0));
+        assertEquals(ModuleType.SETUP_LIST_TWO_CELL_CONTAINER, (int) manuallyRankedModules.get(1));
+        assertEquals(ModuleType.ENHANCED_SAFE_BROWSING_PROMO, (int) manuallyRankedModules.get(2));
+        assertEquals(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO, (int) manuallyRankedModules.get(3));
 
         // Case 3: Filtering. If ESB is not in the enabled set, it should be excluded.
         when(mModuleDelegateHost.getTrackingTab()).thenReturn(null);
@@ -996,6 +1015,30 @@ public class HomeModulesMediatorUnitTest {
         assertEquals(manual2, mModel.get(0).type);
         assertEquals(segmentation1, mModel.get(1).type);
         assertEquals(manual1, mModel.get(2).type);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetCombinedRankedModules_FiltersDuplicates() {
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+
+        // Define enabled set
+        Set<Integer> enabledSet = Set.of(ModuleType.SINGLE_TAB, ModuleType.PRICE_CHANGE);
+
+        // SINGLE_TAB is manually ranked (e.g. Rank 0).
+        List<Integer> manuallyRankedModules = List.of(ModuleType.SINGLE_TAB);
+
+        // Segmentation also (redundantly) returns SINGLE_TAB and PRICE_CHANGE.
+        List<String> orderedLabels = List.of("SingleTab", "PriceChange");
+
+        List<Integer> result =
+                mMediator.getCombinedRankedModules(
+                        orderedLabels, manuallyRankedModules, enabledSet);
+
+        // Assertions: SINGLE_TAB should only appear ONCE, and it should be at the start.
+        assertEquals(2, result.size());
+        assertEquals(ModuleType.SINGLE_TAB, (int) result.get(0));
+        assertEquals(ModuleType.PRICE_CHANGE, (int) result.get(1));
     }
 
     @Test

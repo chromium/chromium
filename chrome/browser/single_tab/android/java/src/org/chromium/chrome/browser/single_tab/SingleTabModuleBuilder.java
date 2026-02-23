@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -28,25 +29,31 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.function.BooleanSupplier;
+
 /** The {@link ModuleProviderBuilder} to build the single tab module on the magic stack. */
 @NullMarked
 public class SingleTabModuleBuilder implements ModuleProviderBuilder {
     private final Activity mActivity;
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier;
+    private final BooleanSupplier mUseManualRankSupplier;
 
     /**
      * @param activity The instance of {@link Activity}.
-     * @param tabModelSelectorSupplier The supplier of the {@lin TabModelSelector}.
+     * @param tabModelSelectorSupplier The supplier of the {@link TabModelSelector}.
      * @param tabContentManagerSupplier The supplier of the {@link TabContentManager}.
+     * @param useManualRankSupplier The supplier of whether to use a manual rank.
      */
     public SingleTabModuleBuilder(
             Activity activity,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier) {
+            MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            BooleanSupplier useManualRankSupplier) {
         mActivity = activity;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mTabContentManagerSupplier = tabContentManagerSupplier;
+        mUseManualRankSupplier = useManualRankSupplier;
     }
 
     // ModuleProviderBuilder implementation.
@@ -108,5 +115,13 @@ public class SingleTabModuleBuilder implements ModuleProviderBuilder {
     @Override
     public boolean isEligible() {
         return true;
+    }
+
+    @Override
+    public @Nullable Integer getManualRank() {
+        if (mUseManualRankSupplier.getAsBoolean()) {
+            return 0;
+        }
+        return null;
     }
 }
