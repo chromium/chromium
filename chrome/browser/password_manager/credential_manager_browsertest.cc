@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -1065,6 +1066,10 @@ class CredentialManagerAvatarTest : public PasswordManagerBrowserTestBase {
   // Add a Credential Management API password with an icon to the store.
   void AddPasswordForURL(const GURL& url);
 
+  // Add a Credential Management API federated credential with an icon to the
+  // store.
+  void AddFederatedCredentialForURL(const GURL& url);
+
   // A counter for requests made to fetch the avatar.
   size_t avatar_request_counter() const { return avatar_request_counter_; }
 
@@ -1094,6 +1099,23 @@ void CredentialManagerAvatarTest::AddPasswordForURL(const GURL& url) {
   form.password_value = u"12345";
   form.type = password_manager::PasswordForm::Type::kApi;
   form.skip_zero_click = true;
+  form.icon_url = https_test_server().GetURL(kAvatarOrigin, kAvatarPath);
+
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+      GetDefaultPasswordStore(browser()->profile());
+  password_store->AddLogin(form);
+}
+
+void CredentialManagerAvatarTest::AddFederatedCredentialForURL(
+    const GURL& url) {
+  password_manager::PasswordForm form;
+  form.url = url;
+  form.signon_realm = form.url.GetWithEmptyPath().spec();
+  form.username_value = u"User";
+  form.password_value = u"12345";
+  form.type = password_manager::PasswordForm::Type::kApi;
+  form.federation_origin = url::SchemeHostPort(GURL("https://google.com"));
+  form.match_type = password_manager::PasswordForm::MatchType::kExact;
   form.icon_url = https_test_server().GetURL(kAvatarOrigin, kAvatarPath);
 
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =
@@ -1142,10 +1164,59 @@ void CredentialManagerAvatarTest::OnIncrementAvatarCounter() {
   }
 }
 
+// Test that fetches federated credentials avatar in the context of the main
+// frame. Thus, it should not be cached by one origin for another origin.
+IN_PROC_BROWSER_TEST_F(CredentialManagerAvatarTest,
+                       FederatedCredentialsAvatarFetchIsolatedPerOrigin) {
+  const GURL a_url = https_test_server().GetURL("a.com", kLoginPath);
+  const GURL b_url = https_test_server().GetURL("b.com", kLoginPath);
+  const std::string request =
+      "navigator.credentials.get({federated: {providers: "
+      "['https://google.com']}})";
+
+  AddFederatedCredentialForURL(a_url);
+  AddFederatedCredentialForURL(b_url);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
+  ASSERT_TRUE(content::ExecJs(WebContents(), request,
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // The account chooser UI requested the avatar.
+  BubbleObserver(WebContents()).WaitForAccountChooser();
+  WaitForAvatarCounter(1u);
+
+  // Navigate to the second site, the icon is requested again.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
+  ASSERT_TRUE(content::ExecJs(WebContents(), request,
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  BubbleObserver(WebContents()).WaitForAccountChooser();
+  WaitForAvatarCounter(2u);
+
+  // Navigate back to the first site, the icon is already cached.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
+  ASSERT_TRUE(content::ExecJs(WebContents(), request,
+                              content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  BubbleObserver(WebContents()).WaitForAccountChooser();
+  EXPECT_EQ(avatar_request_counter(), 2u);
+}
+
+class CredentialManagerAvatarWithUnifiedUiDisabledTest
+    : public CredentialManagerAvatarTest {
+ public:
+  CredentialManagerAvatarWithUnifiedUiDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        password_manager::features::kCredentialManagementUnifiedUi);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Test that the avatar is requested in the context of the main frame. Thus,
 // it should not be cached by one origin for another origin.
-IN_PROC_BROWSER_TEST_F(CredentialManagerAvatarTest,
+IN_PROC_BROWSER_TEST_F(CredentialManagerAvatarWithUnifiedUiDisabledTest,
                        AvatarFetchIsolatedPerOrigin) {
+  // The avatar is not requested for the unified UI.
   const GURL a_url = https_test_server().GetURL("a.com", kLoginPath);
   const GURL b_url = https_test_server().GetURL("b.com", kLoginPath);
 
