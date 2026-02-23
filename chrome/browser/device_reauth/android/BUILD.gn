@@ -24,8 +24,8 @@ android_library("java") {
   ]
 
   sources = [
-    "java/src/org/chromium/chrome/browser/device_reauth/AndroidxDeviceAuthenticatorControllerImpl.java",
     "java/src/org/chromium/chrome/browser/device_reauth/DeviceAuthenticatorBridge.java",
+    "java/src/org/chromium/chrome/browser/device_reauth/DeviceAuthenticatorController.java",
     "java/src/org/chromium/chrome/browser/device_reauth/ReauthenticatorBridge.java",
   ]
 

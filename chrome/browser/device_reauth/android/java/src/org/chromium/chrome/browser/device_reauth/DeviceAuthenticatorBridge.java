@@ -14,15 +14,15 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 @NullMarked
-class DeviceAuthenticatorBridge implements AndroidxDeviceAuthenticatorControllerImpl.Delegate {
+class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegate {
     private long mNativeDeviceAuthenticator;
-    private @Nullable AndroidxDeviceAuthenticatorControllerImpl mController;
+    private @Nullable DeviceAuthenticatorController mController;
 
     private DeviceAuthenticatorBridge(
             long nativeDeviceAuthenticator, @Nullable FragmentActivity activity) {
         mNativeDeviceAuthenticator = nativeDeviceAuthenticator;
         if (activity == null) return;
-        mController = new AndroidxDeviceAuthenticatorControllerImpl(activity, this);
+        mController = new DeviceAuthenticatorController(activity, this);
     }
 
     @CalledByNative

@@ -24,7 +24,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 @NullMarked
-class AndroidxDeviceAuthenticatorControllerImpl {
+class DeviceAuthenticatorController {
     FragmentActivity mActivity;
     Delegate mDelegate;
     private @Nullable BiometricPrompt mBiometricPrompt;
@@ -40,7 +40,7 @@ class AndroidxDeviceAuthenticatorControllerImpl {
         void onAuthenticationCompleted(@DeviceAuthUIResult int result);
     }
 
-    public AndroidxDeviceAuthenticatorControllerImpl(FragmentActivity activity, Delegate delegate) {
+    public DeviceAuthenticatorController(FragmentActivity activity, Delegate delegate) {
         mActivity = activity;
         mDelegate = delegate;
     }
