@@ -53,7 +53,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/ui_bundled/banners/test",
-    "//ios/chrome/browser/infobars/ui_bundled/test",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/overlays/model/public/default",

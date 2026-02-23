@@ -77,7 +77,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/infobars/model/overlays:test_support",
     "//ios/chrome/browser/infobars/model/test",
     "//ios/chrome/browser/infobars/ui_bundled:test_support",
-    "//ios/chrome/browser/infobars/ui_bundled/test",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",

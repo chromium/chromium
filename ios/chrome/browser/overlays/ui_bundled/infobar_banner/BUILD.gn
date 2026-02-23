@@ -82,7 +82,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/overlays/model/test",
-    "//ios/chrome/browser/overlays/ui_bundled/test",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
