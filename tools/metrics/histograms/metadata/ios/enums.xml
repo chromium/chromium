@@ -1759,6 +1759,49 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Voice Over Swipe"/>
 </enum>
 
+<!-- LINT.IfChange(IOSThemeSyncInitialState) -->
+
+<enum name="IOSThemeSyncInitialState">
+  <summary>
+    Records the state of the Sync server during the initial setup flow for iOS
+    themes.
+  </summary>
+  <int value="0" label="EmptyServer"/>
+  <int value="1" label="HasRemoteData"/>
+  <int value="2" label="TooManySpecificsError"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/home_customization/model/theme_syncable_service_ios_constants.h:IOSThemeSyncInitialState) -->
+
+<!-- LINT.IfChange(IOSThemeSyncRemoteAction) -->
+
+<enum name="IOSThemeSyncRemoteAction">
+  <summary>
+    Records the outcome of evaluating an incoming remote iOS theme from the Sync
+    server.
+  </summary>
+  <int value="0" label="Applied"/>
+  <int value="1" label="Ignored: Managed by policy"/>
+  <int value="2" label="Ignored: Already matches"/>
+  <int value="3" label="Error: Missing specifics"/>
+  <int value="4" label="Error: Too many changes"/>
+  <int value="5" label="Error: Invalid change type"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/home_customization/model/theme_syncable_service_ios_constants.h:IOSThemeSyncRemoteAction) -->
+
+<!-- LINT.IfChange(IOSThemeSyncStopAction) -->
+
+<enum name="IOSThemeSyncStopAction">
+  <summary>
+    Records the action taken by the client when the iOS Theme Sync service is
+    stopped, disabled, or cleared.
+  </summary>
+  <int value="0" label="RestoredLocalTheme"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/home_customization/model/theme_syncable_service_ios_constants.h:IOSThemeSyncStopAction) -->
+
 <!-- LINT.IfChange(IOSTipsNotificationType) -->
 
 <enum name="IOSTipsNotificationType">

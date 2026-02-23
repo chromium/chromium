@@ -8,8 +8,10 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/location.h"
+#import "base/metrics/histogram_functions.h"
 #import "components/sync/model/model_error.h"
 #import "components/sync/protocol/entity_specifics.pb.h"
+#import "ios/chrome/browser/home_customization/model/theme_syncable_service_ios_constants.h"
 #import "ios/chrome/browser/home_customization/utils/theme_ios_specifics_utils.h"
 
 namespace {
@@ -64,6 +66,9 @@ std::optional<ModelError> ThemeSyncableServiceIOS::MergeDataAndStartSyncing(
   sync_processor_ = std::move(sync_processor);
 
   if (initial_sync_data.size() > 1) {
+    base::UmaHistogramEnumeration(
+        kThemeSyncInitialState,
+        IOSThemeSyncInitialState::kTooManySpecificsError);
     return ModelError(FROM_HERE, ModelError::Type::kThemeTooManySpecifics);
   }
 
@@ -71,9 +76,13 @@ std::optional<ModelError> ThemeSyncableServiceIOS::MergeDataAndStartSyncing(
   // the local theme to the server. The server remains empty until an explicit
   // manual change is made.
   if (initial_sync_data.empty()) {
+    base::UmaHistogramEnumeration(kThemeSyncInitialState,
+                                  IOSThemeSyncInitialState::kEmptyServer);
     return std::nullopt;
   }
 
+  base::UmaHistogramEnumeration(kThemeSyncInitialState,
+                                IOSThemeSyncInitialState::kHasRemoteData);
   return ValidateAndApplyRemoteTheme(initial_sync_data[0]);
 }
 
@@ -113,6 +122,8 @@ std::optional<ModelError> ThemeSyncableServiceIOS::ProcessSyncChanges(
   // The iOS Theme is a single entity, so there should never be multiple
   // changes.
   if (change_list.size() != 1) {
+    base::UmaHistogramEnumeration(
+        kThemeSyncRemoteAction, IOSThemeSyncRemoteAction::kTooManyChangesError);
     return ModelError(FROM_HERE, ModelError::Type::kThemeTooManyChanges);
   }
 
@@ -122,6 +133,9 @@ std::optional<ModelError> ThemeSyncableServiceIOS::ProcessSyncChanges(
   // ever added or updated.
   if (change.change_type() != SyncChange::ACTION_ADD &&
       change.change_type() != SyncChange::ACTION_UPDATE) {
+    base::UmaHistogramEnumeration(
+        kThemeSyncRemoteAction,
+        IOSThemeSyncRemoteAction::kInvalidChangeTypeError);
     return ModelError(FROM_HERE, ModelError::Type::kThemeInvalidChangeType);
   }
 
@@ -163,17 +177,31 @@ void ThemeSyncableServiceIOS::OnThemeChanged() {
 std::optional<ModelError> ThemeSyncableServiceIOS::ValidateAndApplyRemoteTheme(
     const SyncData& sync_data) {
   if (!sync_data.GetSpecifics().has_theme_ios()) {
+    base::UmaHistogramEnumeration(kThemeSyncRemoteAction,
+                                  IOSThemeSyncRemoteAction::kMissingSpecifics);
     return ModelError(FROM_HERE, ModelError::Type::kThemeMissingSpecifics);
   }
 
   const sync_pb::ThemeIosSpecifics& remote_theme =
       sync_data.GetSpecifics().theme_ios();
 
-  if (delegate_->IsCurrentThemeManagedByPolicy() ||
-      home_customization::AreThemeIosSpecificsEquivalent(
-          delegate_->GetCurrentTheme(), remote_theme)) {
+  if (delegate_->IsCurrentThemeManagedByPolicy()) {
+    base::UmaHistogramEnumeration(
+        kThemeSyncRemoteAction,
+        IOSThemeSyncRemoteAction::kIgnoredManagedByPolicy);
     return std::nullopt;
   }
+
+  if (home_customization::AreThemeIosSpecificsEquivalent(
+          delegate_->GetCurrentTheme(), remote_theme)) {
+    base::UmaHistogramEnumeration(
+        kThemeSyncRemoteAction,
+        IOSThemeSyncRemoteAction::kIgnoredAlreadyMatches);
+    return std::nullopt;
+  }
+
+  base::UmaHistogramEnumeration(kThemeSyncRemoteAction,
+                                IOSThemeSyncRemoteAction::kApplied);
 
   base::AutoReset<bool> processing_changes(&processing_syncer_changes_, true);
 
@@ -183,9 +211,16 @@ std::optional<ModelError> ThemeSyncableServiceIOS::ValidateAndApplyRemoteTheme(
 }
 
 void ThemeSyncableServiceIOS::StopSyncingAndRevertToLocalTheme() {
+  if (!sync_processor_) {
+    return;
+  }
+
   sync_processor_.reset();
 
   delegate_->RestoreCachedTheme();
+
+  base::UmaHistogramEnumeration(kThemeSyncStopAction,
+                                IOSThemeSyncStopAction::kRestoredLocalTheme);
 }
 
 base::WeakPtr<syncer::SyncableService> ThemeSyncableServiceIOS::AsWeakPtr() {

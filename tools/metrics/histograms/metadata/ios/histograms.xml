@@ -7422,6 +7422,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ThemeSync.InitialSyncState"
+    enum="IOSThemeSyncInitialState" expires_after="2026-05-20">
+  <owner>bwwilliams@google.com</owner>
+  <owner>adamta@google.com</owner>
+  <summary>
+    Records the state of the Sync server during the initial Theme Sync flow.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ThemeSync.RemoteThemeAction"
+    enum="IOSThemeSyncRemoteAction" expires_after="2026-08-20">
+  <owner>bwwilliams@google.com</owner>
+  <owner>adamta@google.com</owner>
+  <summary>
+    Records the action taken by the Sync client when evaluating an incoming
+    remote theme.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ThemeSync.StopAction" enum="IOSThemeSyncStopAction"
+    expires_after="2026-05-20">
+  <owner>bwwilliams@google.com</owner>
+  <owner>adamta@google.com</owner>
+  <summary>
+    Records that the local pre-sync theme was successfully restored when sync
+    was stopped, disabled, or cleared.
+  </summary>
+</histogram>
+
 <histogram name="IOS.TipsMagicStack.Module.DisplayedType" enum="TipIdentifier"
     expires_after="2026-05-03">
   <owner>bmcclure@google.com</owner>

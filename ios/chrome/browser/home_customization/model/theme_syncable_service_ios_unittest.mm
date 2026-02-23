@@ -10,6 +10,7 @@
 
 #import "base/functional/bind.h"
 #import "base/run_loop.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/protobuf_matchers.h"
 #import "base/test/task_environment.h"
 #import "components/sync/base/client_tag_hash.h"
@@ -22,6 +23,7 @@
 #import "components/sync/protocol/entity_specifics.pb.h"
 #import "components/sync/protocol/theme_ios_specifics.pb.h"
 #import "components/sync/test/fake_sync_change_processor.h"
+#import "ios/chrome/browser/home_customization/model/theme_syncable_service_ios_constants.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -100,6 +102,7 @@ class ThemeSyncableServiceIOSTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
+  base::HistogramTester histogram_tester_;
   NiceMock<MockThemeSyncDelegate> delegate_;
   std::unique_ptr<ThemeSyncableServiceIOS> service_;
 };
@@ -140,6 +143,10 @@ TEST_F(ThemeSyncableServiceIOSTest, MergeDataWithNoDataSucceeds) {
 
   EXPECT_FALSE(error.has_value());
   EXPECT_TRUE(processor_ptr->changes().empty());
+
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncInitialState, IOSThemeSyncInitialState::kEmptyServer, 1);
+  histogram_tester_.ExpectTotalCount(kThemeSyncRemoteAction, 0);
 }
 
 // Verifies syncing starts successfully with a single initial theme item.
@@ -148,6 +155,11 @@ TEST_F(ThemeSyncableServiceIOSTest, MergeDataWithOneItemSucceeds) {
       StartSyncing({CreateSyncData(111)});
 
   EXPECT_TRUE(processor->changes().empty());
+
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncInitialState, IOSThemeSyncInitialState::kHasRemoteData, 1);
+  histogram_tester_.ExpectUniqueSample(kThemeSyncRemoteAction,
+                                       IOSThemeSyncRemoteAction::kApplied, 1);
 }
 
 // Ensures an error is returned if multiple theme specifics are provided during
@@ -162,6 +174,11 @@ TEST_F(ThemeSyncableServiceIOSTest, MergeDataFailsWithTooManyItems) {
 
   ASSERT_TRUE(error.has_value());
   EXPECT_EQ(syncer::ModelError::Type::kThemeTooManySpecifics, error->type());
+
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncInitialState, IOSThemeSyncInitialState::kTooManySpecificsError,
+      1);
+  histogram_tester_.ExpectTotalCount(kThemeSyncRemoteAction, 0);
 }
 
 // Ensures an error is returned if the sync data is missing iOS theme specifics.
@@ -178,6 +195,11 @@ TEST_F(ThemeSyncableServiceIOSTest, MergeDataFailsWithMissingSpecifics) {
 
   ASSERT_TRUE(error.has_value());
   EXPECT_EQ(syncer::ModelError::Type::kThemeMissingSpecifics, error->type());
+
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncInitialState, IOSThemeSyncInitialState::kHasRemoteData, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncRemoteAction, IOSThemeSyncRemoteAction::kMissingSpecifics, 1);
 }
 
 // Checks that remote data is not applied if the current theme is managed by
@@ -191,6 +213,10 @@ TEST_F(ThemeSyncableServiceIOSTest, MergeDataDoesNotApplyIfManagedByPolicy) {
       StartSyncing({CreateSyncData(123)});
 
   EXPECT_TRUE(processor->changes().empty());
+
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncRemoteAction, IOSThemeSyncRemoteAction::kIgnoredManagedByPolicy,
+      1);
 }
 
 // Verifies that a remote theme is applied locally even if the current local
@@ -212,6 +238,9 @@ TEST_F(ThemeSyncableServiceIOSTest,
       std::make_unique<syncer::FakeSyncChangeProcessor>());
 
   EXPECT_FALSE(error.has_value());
+
+  histogram_tester_.ExpectUniqueSample(kThemeSyncRemoteAction,
+                                       IOSThemeSyncRemoteAction::kApplied, 1);
 }
 
 // Checks that the theme is not re-applied if the remote theme matches the local
@@ -225,6 +254,10 @@ TEST_F(ThemeSyncableServiceIOSTest, MergeDataDoesNotApplyIfSameTheme) {
       StartSyncing({CreateSyncData(123)});
 
   EXPECT_TRUE(processor->changes().empty());
+
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncRemoteAction, IOSThemeSyncRemoteAction::kIgnoredAlreadyMatches,
+      1);
 }
 
 // Verifies that a remote theme is applied locally if it differs from the
@@ -239,6 +272,9 @@ TEST_F(ThemeSyncableServiceIOSTest, MergeDataAppliesLocallyIfDifferentTheme) {
       StartSyncing({CreateSyncData(222)});
 
   EXPECT_TRUE(processor->changes().empty());
+
+  histogram_tester_.ExpectUniqueSample(kThemeSyncRemoteAction,
+                                       IOSThemeSyncRemoteAction::kApplied, 1);
 }
 
 #pragma mark - ProcessSyncChanges Tests
@@ -269,6 +305,10 @@ TEST_F(ThemeSyncableServiceIOSTest, ProcessChangesFailsWithMultipleChanges) {
 
   // Ensure nothing was committed during the failure.
   EXPECT_TRUE(processor->changes().empty());
+
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncRemoteAction, IOSThemeSyncRemoteAction::kTooManyChangesError,
+      1);
 }
 
 // Verifies that processing a delete action results in an error.
@@ -285,6 +325,10 @@ TEST_F(ThemeSyncableServiceIOSTest, ProcessChangesFailsOnDeleteAction) {
 
   // Ensure nothing was committed during the failure.
   EXPECT_TRUE(processor->changes().empty());
+
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncRemoteAction, IOSThemeSyncRemoteAction::kInvalidChangeTypeError,
+      1);
 }
 
 // Ensures an error is returned if an updated sync change lacks iOS theme
@@ -306,6 +350,9 @@ TEST_F(ThemeSyncableServiceIOSTest, ProcessChangesFailsWithMissingSpecifics) {
 
   // Ensure nothing was committed during the failure.
   EXPECT_TRUE(processor->changes().empty());
+
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncRemoteAction, IOSThemeSyncRemoteAction::kMissingSpecifics, 1);
 }
 
 // Checks that remote updates are ignored if the theme is managed by policy.
@@ -320,6 +367,10 @@ TEST_F(ThemeSyncableServiceIOSTest, ProcessChangesIgnoredIfManagedByPolicy) {
 
   EXPECT_FALSE(error.has_value());
   EXPECT_TRUE(processor->changes().empty());
+
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncRemoteAction, IOSThemeSyncRemoteAction::kIgnoredManagedByPolicy,
+      1);
 }
 
 // Checks that remote updates are applied locally even if the current local
@@ -344,6 +395,9 @@ TEST_F(ThemeSyncableServiceIOSTest,
 
   EXPECT_FALSE(error.has_value());
   EXPECT_TRUE(processor->changes().empty());
+
+  histogram_tester_.ExpectUniqueSample(kThemeSyncRemoteAction,
+                                       IOSThemeSyncRemoteAction::kApplied, 1);
 }
 
 // Checks that remote updates are ignored if the incoming theme is identical to
@@ -359,6 +413,10 @@ TEST_F(ThemeSyncableServiceIOSTest, ProcessChangesIgnoredIfSameTheme) {
 
   EXPECT_FALSE(error.has_value());
   EXPECT_TRUE(processor->changes().empty());
+
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncRemoteAction, IOSThemeSyncRemoteAction::kIgnoredAlreadyMatches,
+      1);
 }
 
 // Verifies remote updates apply locally without echoing the change back to the
@@ -382,12 +440,15 @@ TEST_F(ThemeSyncableServiceIOSTest,
   // The change from the server should not have bounced back into the outgoing
   // queue.
   EXPECT_TRUE(processor->changes().empty());
+
+  histogram_tester_.ExpectUniqueSample(kThemeSyncRemoteAction,
+                                       IOSThemeSyncRemoteAction::kApplied, 1);
 }
 
 #pragma mark - OnThemeChanged (Local UI Changes) Tests
 
-// Ensures local theme changes are safely ignored before sync starts.
 TEST_F(ThemeSyncableServiceIOSTest, OnThemeChangedIgnoredBeforeSyncStarted) {
+  EXPECT_CALL(delegate_, IsCurrentThemeSyncable()).Times(0);
   service_->OnThemeChanged();
 }
 
@@ -428,6 +489,9 @@ TEST_F(ThemeSyncableServiceIOSTest, StopSyncingRestoresCachedTheme) {
   EXPECT_CALL(delegate_, RestoreCachedTheme()).Times(1);
 
   service_->StopSyncing(syncer::THEMES_IOS);
+
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncStopAction, IOSThemeSyncStopAction::kRestoredLocalTheme, 1);
 }
 
 // Checks that the IsSyncing state accurately reflects the service's current
@@ -452,6 +516,9 @@ TEST_F(ThemeSyncableServiceIOSTest,
   EXPECT_CALL(delegate_, RestoreCachedTheme()).Times(1);
 
   service_->StayStoppedAndMaybeClearData(syncer::THEMES_IOS);
+
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncStopAction, IOSThemeSyncStopAction::kRestoredLocalTheme, 1);
 }
 
 // Ensures the cached theme is not restored during a normal browser shutdown.
@@ -461,6 +528,38 @@ TEST_F(ThemeSyncableServiceIOSTest,
   EXPECT_CALL(delegate_, RestoreCachedTheme()).Times(0);
 
   service_->OnBrowserShutdown(syncer::THEMES_IOS);
+
+  // We should NOT log a stop action during browser shutdown.
+  histogram_tester_.ExpectTotalCount(kThemeSyncStopAction, 0);
+}
+
+// Verifies that calling multiple teardown methods sequentially does not double
+// count the stop metric or redundantly restore the cached theme.
+TEST_F(ThemeSyncableServiceIOSTest, SequentialTeardownDoesNotDoubleCount) {
+  StartSyncing();
+
+  // The delegate should only be called once, during the first teardown method.
+  EXPECT_CALL(delegate_, RestoreCachedTheme()).Times(1);
+
+  // Simulate a scenario where sync is stopped, and then data is cleared
+  // sequentially (e.g., during sign-out).
+  service_->StopSyncing(syncer::THEMES_IOS);
+  service_->StayStoppedAndMaybeClearData(syncer::THEMES_IOS);
+
+  histogram_tester_.ExpectUniqueSample(
+      kThemeSyncStopAction, IOSThemeSyncStopAction::kRestoredLocalTheme, 1);
+}
+
+// Ensures stopping sync before it has fully started does not log metrics
+// or attempt to restore a theme.
+TEST_F(ThemeSyncableServiceIOSTest, StopSyncingIgnoredBeforeSyncStarts) {
+  // The delegate should not be called because sync never started.
+  EXPECT_CALL(delegate_, RestoreCachedTheme()).Times(0);
+
+  service_->StopSyncing(syncer::THEMES_IOS);
+
+  // Verify no metrics were accidentally recorded.
+  histogram_tester_.ExpectTotalCount(kThemeSyncStopAction, 0);
 }
 
 }  // namespace
