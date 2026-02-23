@@ -1604,8 +1604,10 @@ void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout) {
     object->MarkSelfPaintingLayerForVisualOverflowRecalc();
 
     last = object;
-    if (schedule_relayout && ObjectIsRelayoutBoundary(last))
+    if (schedule_relayout && ObjectIsRelayoutBoundary(last) &&
+        last->IsRooted()) {
       break;
+    }
     object = container;
   }
 
