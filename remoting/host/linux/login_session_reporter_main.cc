@@ -33,7 +33,7 @@ namespace remoting {
 
 namespace {
 
-std::string GetSessionId() {
+std::string GetSessionId(bool is_user_session) {
   // The `XDG_SESSION_ID` environment variable isn't available when the process
   // is autostarted. This seems to have something to do with the XDG autostart
   // process now being managed by systemd. So we have to use systemd's API to
@@ -41,6 +41,15 @@ std::string GetSessionId() {
   char* session_id = nullptr;
   // Get session ID for the current process (PID 0 means self)
   int ret = sd_pid_get_session(0, &session_id);
+  if (ret < 0 && is_user_session) {
+    // For user sessions, the process is executed by the per-user systemd
+    // instance and is not associated with a specific login session. For modern
+    // GDM, each user can only one graphical session, so it should be safe to
+    // fallback to the user's primary graphical session.
+    HOST_LOG << "Failed to get session ID for the current process. Falling back"
+             << " to the user's primary graphical session instead.";
+    ret = sd_uid_get_display(getuid(), &session_id);
+  }
   if (ret < 0) {
     // Handle error (e.g., not running in a systemd session)
     LOG(ERROR) << "Failed to get session ID: " << strerror(-ret);
@@ -57,6 +66,7 @@ std::string GetSessionId() {
 int LoginSessionReporterMain(int argc, char** argv) {
   base::AtExitManager exit_manager;
   base::CommandLine::Init(argc, argv);
+  InitHostLogging();
 
   base::SingleThreadTaskExecutor task_executor(base::MessagePumpType::IO);
   mojo::core::Init();
@@ -88,7 +98,9 @@ int LoginSessionReporterMain(int argc, char** argv) {
 
   auto environment = base::Environment::Create();
   mojom::LoginSessionInfoPtr session_info{std::in_place};
-  session_info->session_id = GetSessionId();
+  bool is_user_session =
+      environment->GetVar("XDG_SESSION_CLASS").value_or({}) == "user";
+  session_info->session_id = GetSessionId(is_user_session);
   session_info->xdg_current_desktop =
       environment->GetVar("XDG_CURRENT_DESKTOP").value_or({});
   session_info->dbus_session_bus_address =

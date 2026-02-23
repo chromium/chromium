@@ -240,11 +240,20 @@ void RemoteDisplaySessionManager::OnRemoteDisplayCreated(
             << display.remote_id.value();
     return;
   }
-  HOST_LOG << "Remote display created: " << display.remote_id.value();
-  DCHECK(!remote_displays_.contains(display_name));
+  if (remote_displays_.contains(display_name)) {
+    // When a remote display's session change, GDM re-creates the remote display
+    // object instead of just changing the session ID.
+    HOST_LOG << "Replacing existing remote display: "
+             << display.remote_id.value();
+  } else {
+    HOST_LOG << "Remote display created: " << display.remote_id.value();
+  }
   remote_displays_[display_name] = RemoteDisplayInfo();
 
   if (!display.session_id.empty()) {
+    HOST_LOG << "Querying session info for remote display: "
+             << display.remote_id.value()
+             << ", session id: " << display.session_id;
     QuerySessionInfo(display_name, display.session_id);
   }
 }
