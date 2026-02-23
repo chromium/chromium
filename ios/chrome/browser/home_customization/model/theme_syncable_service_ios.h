@@ -45,6 +45,9 @@ class ThemeSyncableServiceIOS : public syncer::SyncableService {
       const syncer::EntityData& entity_data) const override;
   base::WeakPtr<syncer::SyncableService> AsWeakPtr() override;
 
+  // Returns true if actively syncing.
+  bool IsSyncing() const { return sync_processor_ != nullptr; }
+
  private:
   // Sync's handler for outgoing changes. Non-null between
   // `MergeDataAndStartSyncing()` and `StopSyncing()`.

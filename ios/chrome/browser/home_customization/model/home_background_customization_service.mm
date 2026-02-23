@@ -100,15 +100,16 @@ void SetOrClearStringPref(PrefService* pref_service,
   }
 }
 
-// Saves the encoded theme to the appropriate pref based on
-// `syncer::kSyncThemesIos`.
+// Saves the encoded theme to the appropriate pref based on sync state.
 void SaveThemeSpecifics(PrefService* profile_pref_service,
-                        const std::string& encoded_theme) {
-  // Always update the legacy pref, which ensures that if
-  // `syncer::kSyncThemesIos` is turned off, the user's most recent theme is
-  // still preserved in the legacy pref.
-  SetOrClearStringPref(profile_pref_service, prefs::kIosSavedThemeSpecificsIos,
-                       encoded_theme);
+                        const std::string& encoded_theme,
+                        bool is_syncing) {
+  // Only write to the legacy pref if the user is NOT actively syncing. (This
+  // gracefully freezes the user's pre-sign-in state while sync is running.)
+  if (!is_syncing) {
+    SetOrClearStringPref(profile_pref_service,
+                         prefs::kIosSavedThemeSpecificsIos, encoded_theme);
+  }
 
   if (!base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
     return;
@@ -153,6 +154,10 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
                              callback);
 
   LoadCurrentTheme();
+
+  if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
+    theme_syncable_service_ = std::make_unique<ThemeSyncableServiceIOS>();
+  }
 
   const base::ListValue& recently_used_backgrounds_list =
       pref_service_->GetList(prefs::kIosRecentlyUsedBackgrounds);
@@ -203,10 +208,6 @@ HomeBackgroundCustomizationService::HomeBackgroundCustomizationService(
 
   // Clean up any images that failed to be deleted for any reason.
   user_image_manager_->DeleteUnusedImages(image_paths_in_use);
-
-  if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos)) {
-    theme_syncable_service_ = std::make_unique<ThemeSyncableServiceIOS>();
-  }
 }
 
 HomeBackgroundCustomizationService::~HomeBackgroundCustomizationService() {}
@@ -391,7 +392,7 @@ void HomeBackgroundCustomizationService::StoreCurrentTheme() {
     return;
   }
 
-  // Recently used backgrounds list if not updated if an entreprise policy for
+  // Recently used backgrounds list if not updated if an enterprise policy for
   // ntp customization is enabled.
   if (IsCustomizationDisabledOrColorManagedByPolicy()) {
     return;
@@ -406,7 +407,9 @@ void HomeBackgroundCustomizationService::StoreCurrentTheme() {
   }
 
   std::string encoded_theme = EncodeThemeIosSpecifics(current_theme_);
-  SaveThemeSpecifics(pref_service_, encoded_theme);
+  bool is_syncing =
+      theme_syncable_service_ && theme_syncable_service_->IsSyncing();
+  SaveThemeSpecifics(pref_service_, encoded_theme, is_syncing);
 
   if (current_user_uploaded_background_) {
     pref_service_->SetDict(prefs::kIosUserUploadedBackground,

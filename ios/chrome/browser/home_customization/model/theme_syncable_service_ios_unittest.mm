@@ -98,3 +98,18 @@ TEST_F(ThemeSyncableServiceIOSTest, ShouldStopSyncing) {
 
   service_->StopSyncing(syncer::THEMES_IOS);
 }
+
+// Tests that `IsSyncing()` correctly reflects the sync state.
+TEST_F(ThemeSyncableServiceIOSTest, IsSyncingUpdatesCorrectly) {
+  EXPECT_FALSE(service_->IsSyncing());
+
+  service_->MergeDataAndStartSyncing(
+      syncer::THEMES_IOS, syncer::SyncDataList(),
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+
+  EXPECT_TRUE(service_->IsSyncing());
+
+  service_->StopSyncing(syncer::THEMES_IOS);
+
+  EXPECT_FALSE(service_->IsSyncing());
+}
