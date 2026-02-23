@@ -525,8 +525,8 @@ void MaybeForceInstallForRemigration(
   }
 
   // Record Calculator remigration metrics.
-  bool calculator_web_app_installed =
-      registrar.IsInstalledByDefaultManagement(ash::kCalculatorAppId);
+  bool calculator_web_app_installed = registrar.AppMatches(
+      ash::kCalculatorAppId, WebAppFilter::InstalledByDefaultManagement());
   bool calculator_chrome_app_installed = extensions::IsExtensionInstalled(
       profile, extension_misc::kCalculatorAppId);
   base::UmaHistogramBoolean(

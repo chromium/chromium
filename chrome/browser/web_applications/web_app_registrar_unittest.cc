@@ -1235,13 +1235,16 @@ TEST_F(WebAppRegistrarTest, TestIsDefaultManagementInstalled) {
   RegisterAppUnsafe(std::move(web_app2));
 
   // Currently default installed.
-  EXPECT_TRUE(registrar().IsInstalledByDefaultManagement(app_id1));
+  EXPECT_TRUE(registrar().AppMatches(
+      app_id1, WebAppFilter::InstalledByDefaultManagement()));
   // Currently installed by source other than installed.
-  EXPECT_FALSE(registrar().IsInstalledByDefaultManagement(app_id2));
+  EXPECT_FALSE(registrar().AppMatches(
+      app_id2, WebAppFilter::InstalledByDefaultManagement()));
 
   // Uninstalling the previously default installed app.
   Uninstall(app_id1);
-  EXPECT_FALSE(registrar().IsInstalledByDefaultManagement(app_id1));
+  EXPECT_FALSE(registrar().AppMatches(
+      app_id1, WebAppFilter::InstalledByDefaultManagement()));
 }
 
 // This test uses SetLinkCapturingUserPreference, which is not appropriate for

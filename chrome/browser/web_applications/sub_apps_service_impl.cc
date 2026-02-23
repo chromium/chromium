@@ -163,9 +163,9 @@ bool IsInstalledNonChildApp(content::RenderFrameHost& render_frame_host) {
     return false;
   }
 
-  auto* provider = GetWebAppProvider(render_frame_host);
-  auto* web_app = provider->registrar_unsafe().GetAppById(*app_id);
-  return (web_app && !web_app->IsSubAppInstalledApp());
+  return GetWebAppProvider(render_frame_host)
+      ->registrar_unsafe()
+      .AppMatches(*app_id, !WebAppFilter::IsIsolatedSubApp());
 }
 
 // Verify that the calling app has the SubApps permissions policy set and that
@@ -319,8 +319,9 @@ void SubAppsServiceImpl::CollectInstallData(
     }
 
     // Check if app is already installed as a sub app
-    if (provider->registrar_unsafe().WasInstalledBySubApp(
-            GenerateAppIdFromManifestId(manifest_id))) {
+    if (provider->registrar_unsafe().AppMatches(
+            GenerateAppIdFromManifestId(manifest_id),
+            WebAppFilter::IsIsolatedSubApp())) {
       CHECK_DEREF(base::FindOrNull(add_call_info_, add_call_id))
           .results.emplace_back(SubAppsServiceAddResult::New(
               ConvertUrlToPath(manifest_id),

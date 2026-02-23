@@ -496,8 +496,8 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, DISABLED_DefaultApp) {
 
   std::optional<webapps::AppId> app_id = FindAppWithUrlInScope(example_url);
   ASSERT_TRUE(app_id);
-  EXPECT_TRUE(provider().registrar_unsafe().IsInstalledByDefaultManagement(
-      app_id.value()));
+  EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id.value(), WebAppFilter::InstalledByDefaultManagement()));
 
   Browser* browser = LaunchWebAppBrowserAndWait(*app_id);
   NavigateViaLinkClickToURLAndWait(browser, example_url);

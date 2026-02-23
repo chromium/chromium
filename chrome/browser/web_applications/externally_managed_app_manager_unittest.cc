@@ -962,8 +962,12 @@ TEST_F(ExternallyAppManagerTest, PolicyAppOverridesUserInstalledApp) {
 
     ASSERT_TRUE(user_app_id.has_value());
     ASSERT_EQ(user_app_id.value(), app_id);
-    ASSERT_TRUE(app_registrar().WasInstalledByUser(app_id));
-    ASSERT_FALSE(app_registrar().HasExternalApp(app_id));
+    ASSERT_TRUE(
+        app_registrar().AppMatches(app_id, WebAppFilter::InstalledByUser()));
+    ASSERT_TRUE(app_registrar()
+                    .GetAppById(app_id)
+                    ->management_to_external_config_map()
+                    .empty());
     ASSERT_EQ("Test user app", app_registrar().GetAppShortName(app_id));
   }
   {

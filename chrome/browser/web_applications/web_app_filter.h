@@ -24,6 +24,10 @@ class WebAppFilter {
   // Only consider web apps whose effective display mode is a dedicated window
   // (essentially any display mode other than a browser tab).
   static WebAppFilter OpensInDedicatedWindow();
+  // Only consider web apps that were installed by the user.
+  static WebAppFilter InstalledByUser();
+  // Only consider web apps that were preinstalled by the device.
+  static WebAppFilter InstalledByDefaultManagement();
   // Only consider isolated web apps, that are not scheduled for uninstallation,
   // like stub ones. To also consider stub apps, use
   // `IsIsolatedWebAppIncludingUninstalling()` instead.

@@ -233,23 +233,9 @@ class WebAppRegistrar {
   network::ParsedPermissionsPolicy GetPermissionsPolicy(
       const webapps::AppId& app_id) const;
 
-  // Returns true if there exists a currently installed app that has been
-  // installed by PreinstalledWebAppManager.
-  bool IsInstalledByDefaultManagement(const webapps::AppId& app_id) const;
-
   // Returns true if an installed app was installed via policy, regardless of
   // other install sources.
   bool IsInstalledByPolicy(const webapps::AppId& app_id) const;
-
-  // Returns true if the app was installed by user, false if default installed.
-  bool WasInstalledByUser(const webapps::AppId& app_id) const;
-
-  // Returns true if the app was installed by the device OEM. Always false on
-  // on non-Chrome OS.
-  bool WasInstalledByOem(const webapps::AppId& app_id) const;
-
-  // Returns true if the app was installed by the SubApp API.
-  bool WasInstalledBySubApp(const webapps::AppId& app_id) const;
 
   // Returns true if the app exists and is allowed to be uninstalled by the user
   // e.g. it is not policy installed.
@@ -266,13 +252,9 @@ class WebAppRegistrar {
   // Returns the app id for |install_url| if the WebAppRegistrar is aware of an
   // externally installed app for it. Note that the |install_url| is the URL
   // that the app was installed from, which may not necessarily match the app's
-  // current start URL.
+  // app's current start URL.
   std::optional<webapps::AppId> LookupExternalAppId(
       const GURL& install_url) const;
-
-  // Returns whether the WebAppRegistrar has an externally installed app with
-  // |app_id| from any |install_source|.
-  bool HasExternalApp(const webapps::AppId& app_id) const;
 
   // Returns whether the WebAppRegistrar has an externally installed app with
   // |app_id| from |install_source|.
@@ -559,8 +541,6 @@ class WebAppRegistrar {
   base::flat_map<webapps::AppId, std::string> GetAllAppsControllingUrl(
       const GURL& url,
       WebAppScopeScoreOptions scope_score_options = {}) const;
-
-  bool IsDiyApp(const webapps::AppId& app_id) const;
 
   std::vector<blink::Manifest::RelatedApplication> GetRelatedApplications(
       const webapps::AppId& app_id) const;

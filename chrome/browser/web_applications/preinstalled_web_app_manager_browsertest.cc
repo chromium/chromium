@@ -1017,7 +1017,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
 
   webapps::AppId app_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, GetAppUrl());
-  EXPECT_TRUE(registrar().IsInstalledByDefaultManagement(app_id));
+  EXPECT_TRUE(registrar().AppMatches(
+      app_id, WebAppFilter::InstalledByDefaultManagement()));
 
   // Simulate the effects of https://crbug.com/1359205 by adding an installed
   // preinstalled web app to the "has been uninstalled by the user" pref even
@@ -1029,7 +1030,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
   // just because the prefs say it's uninstalled.
   EXPECT_EQ(SyncPreinstalledAppConfig(GetAppUrl(), app_config),
             webapps::InstallResultCode::kSuccessAlreadyInstalled);
-  EXPECT_TRUE(registrar().IsInstalledByDefaultManagement(app_id));
+  EXPECT_TRUE(registrar().AppMatches(
+      app_id, WebAppFilter::InstalledByDefaultManagement()));
 }
 
 // The offline manifest JSON config functionality is only available on Chrome
@@ -1323,7 +1325,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest, OemInstalled) {
 
   webapps::AppId app_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, GetAppUrl());
-  EXPECT_TRUE(registrar().WasInstalledByOem(app_id));
+  EXPECT_TRUE(registrar().GetAppById(app_id)->chromeos_data()->oem_installed);
 
   // Wait for app service to see the newly installed app.
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());

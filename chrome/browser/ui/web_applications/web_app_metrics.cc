@@ -131,11 +131,12 @@ void WebAppMetrics::OnEngagementEvent(
   const bool in_window = !!browser->app_controller();
   WebAppRegistrar& registrar =
       WebAppProvider::GetForLocalAppsUnchecked(profile_)->registrar_unsafe();
-  const bool user_installed = registrar.WasInstalledByUser(*app_id);
+  const bool user_installed =
+      registrar.AppMatches(*app_id, WebAppFilter::InstalledByUser());
   const bool is_crafted_app =
       registrar.AppMatches(*app_id, WebAppFilter::IsCraftedApp());
-  const bool is_default_installed =
-      registrar.IsInstalledByDefaultManagement(*app_id);
+  const bool is_default_installed = registrar.AppMatches(
+      *app_id, WebAppFilter::InstalledByDefaultManagement());
 
   // Record all web apps:
   RecordTabOrWindowHistogram("WebApp.Engagement", in_window, engagement_type);

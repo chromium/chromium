@@ -681,8 +681,12 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
     install_info->title = u"Test user app";
     app_id = test::InstallWebApp(profile(), std::move(install_info));
     ASSERT_TRUE(app_id.has_value());
-    ASSERT_TRUE(registrar().WasInstalledByUser(app_id.value()));
-    ASSERT_FALSE(registrar().HasExternalApp(app_id.value()));
+    ASSERT_TRUE(registrar().AppMatches(app_id.value(),
+                                       WebAppFilter::InstalledByUser()));
+    ASSERT_TRUE(registrar()
+                    .GetAppById(app_id.value())
+                    ->management_to_external_config_map()
+                    .empty());
     ASSERT_EQ("Test user app", registrar().GetAppShortName(app_id.value()));
   }
   {
@@ -929,8 +933,11 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   install_info->title = u"Test user app";
   webapps::AppId app_id =
       test::InstallWebApp(profile(), std::move(install_info));
-  ASSERT_TRUE(registrar().WasInstalledByUser(app_id));
-  ASSERT_FALSE(registrar().HasExternalApp(app_id));
+  ASSERT_TRUE(registrar().AppMatches(app_id, WebAppFilter::InstalledByUser()));
+  ASSERT_TRUE(registrar()
+                  .GetAppById(app_id)
+                  ->management_to_external_config_map()
+                  .empty());
 
   // Install policy app
   std::optional<webapps::AppId> policy_app_id =

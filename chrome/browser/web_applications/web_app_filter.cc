@@ -24,6 +24,16 @@ WebAppFilter WebAppFilter::OpensInDedicatedWindow() {
 }
 
 // static
+WebAppFilter WebAppFilter::InstalledByUser() {
+  return IsTrue(SimpleCondition::kWasInstalledByUser);
+}
+
+// static
+WebAppFilter WebAppFilter::InstalledByDefaultManagement() {
+  return HasSource(WebAppManagement::kDefault);
+}
+
+// static
 WebAppFilter WebAppFilter::IsIsolatedApp() {
   return IsTrue(SimpleCondition::kIsolatedApp);
 }
@@ -96,8 +106,7 @@ WebAppFilter WebAppFilter::IsDiyWithOsShortcut() {
 
 // static
 WebAppFilter WebAppFilter::LaunchableFromInstallApi() {
-  return IsTrue(SimpleCondition::kWasInstalledByUser) |
-         OpensInDedicatedWindow();
+  return InstalledByUser() | OpensInDedicatedWindow();
 }
 
 // static

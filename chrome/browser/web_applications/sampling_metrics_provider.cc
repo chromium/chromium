@@ -233,7 +233,8 @@ void SamplingMetricsProvider::EmitMetrics() {
 
           std::optional<mojom::UserDisplayMode> user_display_mode =
               registrar.GetAppUserDisplayMode(*app_id);
-          bool installed_by_user = registrar.WasInstalledByUser(*app_id);
+          bool installed_by_user =
+              registrar.AppMatches(*app_id, WebAppFilter::InstalledByUser());
           if (user_display_mode == mojom::UserDisplayMode::kBrowser) {
             ++tabbed_pwas_user_display_mode_browser_count;
             if (installed_by_user) {

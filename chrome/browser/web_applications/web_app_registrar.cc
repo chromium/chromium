@@ -505,21 +505,6 @@ std::optional<webapps::AppId> WebAppRegistrar::LookupExternalAppId(
   return std::nullopt;
 }
 
-bool WebAppRegistrar::HasExternalApp(const webapps::AppId& app_id) const {
-  if (!IsInstallState(app_id,
-                      {proto::InstallState::SUGGESTED_FROM_MIGRATION,
-                       proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
-    return false;
-  }
-
-  const WebApp* web_app = GetAppById(app_id);
-  // If the external config map is filled, then the app was
-  // externally installed.
-  return web_app && web_app->management_to_external_config_map().size() > 0;
-}
-
 bool WebAppRegistrar::HasExternalAppWithInstallSource(
     const webapps::AppId& app_id,
     ExternalInstallSource install_source) const {
@@ -1154,21 +1139,6 @@ bool WebAppRegistrar::IsUninstalling(const webapps::AppId& app_id) const {
   return web_app && web_app->is_uninstalling();
 }
 
-bool WebAppRegistrar::IsInstalledByDefaultManagement(
-    const webapps::AppId& app_id) const {
-  if (!IsInstallState(
-          app_id, {proto::InstallState::SUGGESTED_FROM_MIGRATION,
-                   proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION})) {
-    return false;
-  }
-
-  const WebApp* web_app = GetAppById(app_id);
-  DCHECK(web_app);
-  return web_app->GetSources().Has(WebAppManagement::kDefault);
-}
-
 bool WebAppRegistrar::IsInstalledByPolicy(const webapps::AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   if (!web_app) {
@@ -1180,22 +1150,6 @@ bool WebAppRegistrar::IsInstalledByPolicy(const webapps::AppId& app_id) const {
     return sources.Has(WebAppManagement::Type::kIwaPolicy);
   }
   return sources.Has(WebAppManagement::Type::kPolicy);
-}
-
-bool WebAppRegistrar::WasInstalledByUser(const webapps::AppId& app_id) const {
-  const WebApp* web_app = GetAppById(app_id);
-  return web_app && web_app->WasInstalledByUser();
-}
-
-bool WebAppRegistrar::WasInstalledByOem(const webapps::AppId& app_id) const {
-  const WebApp* web_app = GetAppById(app_id);
-  return web_app && web_app->chromeos_data().has_value() &&
-         web_app->chromeos_data()->oem_installed;
-}
-
-bool WebAppRegistrar::WasInstalledBySubApp(const webapps::AppId& app_id) const {
-  const WebApp* web_app = GetAppById(app_id);
-  return web_app && web_app->IsSubAppInstalledApp();
 }
 
 bool WebAppRegistrar::CanUserUninstallWebApp(
@@ -1574,18 +1528,6 @@ WebAppRegistrar::GetAllAppsControllingUrl(
     }
   }
   return all_controlling_apps;
-}
-
-bool WebAppRegistrar::IsDiyApp(const webapps::AppId& app_id) const {
-  if (!IsInstallState(app_id,
-                      {proto::InstallState::SUGGESTED_FROM_MIGRATION,
-                       proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
-                       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                       proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
-    return false;
-  }
-  const WebApp* web_app = GetAppById(app_id);
-  return web_app && web_app->is_diy_app();
 }
 
 std::vector<blink::Manifest::RelatedApplication>
