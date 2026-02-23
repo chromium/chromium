@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill {
 
@@ -112,6 +113,10 @@ class PaymentsFormDataImporter {
   ExtractCreditCardFromFormResult ExtractCreditCardFromForm(
       const FormStructure& form);
 
+  // Returns true if the extracted credit card should be processed, false
+  // otherwise.
+  bool ShouldProcessExtractedCreditCard();
+
  private:
   friend class PaymentsFormDataImporterTestApi;
   // TODO(crbug.com/481379161): Remove `FormDataImporter` and
@@ -141,6 +146,16 @@ class PaymentsFormDataImporter {
   //   - LOCAL_CARD if a local and no server card matches;
   //   - NEW_CARD otherwise.
   std::optional<CreditCard> ExtractCreditCard(const FormStructure& form);
+
+  // Tries to initiate the saving of the `extracted_credit_card` if applicable.
+  // `submitted_form` is the form from which the card was
+  // imported. `is_credit_card_upstream_enabled` indicates if server card
+  // storage is enabled. Returns true if a save is initiated.
+  bool ProcessExtractedCreditCard(
+      const FormStructure& submitted_form,
+      const std::optional<CreditCard>& extracted_credit_card,
+      bool is_credit_card_upstream_enabled,
+      ukm::SourceId ukm_source_id);
 
   // If the mandatory re-auth opt-in bubble can be shown for a credit card, this
   // function will start the flow and return true. Otherwise, it will return

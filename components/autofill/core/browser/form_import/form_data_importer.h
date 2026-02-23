@@ -116,16 +116,6 @@ class FormDataImporter : public history::HistoryServiceObserver {
   std::optional<CreditCard> TryMatchingExistingServerCard(
       const CreditCard& candidate);
 
-  // Tries to initiate the saving of the `extracted_credit_card` if applicable.
-  // `submitted_form` is the form from which the card was
-  // imported. `is_credit_card_upstream_enabled` indicates if server card
-  // storage is enabled. Returns true if a save is initiated.
-  bool ProcessExtractedCreditCard(
-      const FormStructure& submitted_form,
-      const std::optional<CreditCard>& extracted_credit_card,
-      bool is_credit_card_upstream_enabled,
-      ukm::SourceId ukm_source_id);
-
   // Helper function which extracts the IBAN from the form structure.
   Iban ExtractIbanFromForm(const FormStructure& form);
 

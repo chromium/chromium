@@ -15,8 +15,11 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill::payments {
 
@@ -186,6 +189,25 @@ PaymentsFormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
   return result;
 }
 
+bool PaymentsFormDataImporter::ShouldProcessExtractedCreditCard() {
+  // Processing should not occur if the current window is a tab modal pop-up, as
+  // no credit card save or feature enrollment should happen in this case.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSkipSaveCardForTabModalPopup) &&
+      client_->GetPaymentsAutofillClient()->IsTabModalPopupDeprecated()) {
+    return false;
+  }
+
+  // If there is no `credit_card_import_type_` from form extraction, the
+  // extracted card is not a viable candidate for processing.
+  if (client_->GetFormDataImporter()->credit_card_import_type_ ==
+      PaymentsFormDataImporter::CreditCardImportType::kNoCard) {
+    return false;
+  }
+
+  return true;
+}
+
 void PaymentsFormDataImporter::
     SetPaymentMethodTypeIfNonInteractiveAuthenticationFlowCompleted(
         std::optional<NonInteractivePaymentMethodType>
@@ -270,6 +292,73 @@ std::optional<CreditCard> PaymentsFormDataImporter::ExtractCreditCard(
   // a valid card.
   return client_->GetFormDataImporter()->TryMatchingExistingServerCard(
       candidate);
+}
+
+bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
+    const FormStructure& submitted_form,
+    const std::optional<CreditCard>& extracted_credit_card,
+    bool is_credit_card_upstream_enabled,
+    ukm::SourceId ukm_source_id) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillPrioritizeSaveCardOverMandatoryReauth) &&
+      ProceedWithCardMandatoryReauthOptInIfApplicable()) {
+    return true;
+  }
+
+  // All of following processing requires the extracted credit card to exist.
+  if (!extracted_credit_card.has_value()) {
+    return false;
+  }
+
+  // If a virtual card was extracted from the form, we do not do anything with
+  // virtual cards beyond this point. If
+  // `kAutofillPrioritizeSaveCardOverMandatoryReauth` is enabled, try to offer
+  // mandatory re-auth before returning.
+  if (client_->GetFormDataImporter()->credit_card_import_type_ ==
+      PaymentsFormDataImporter::CreditCardImportType::kVirtualCard) {
+    return base::FeatureList::IsEnabled(
+               features::kAutofillPrioritizeSaveCardOverMandatoryReauth) &&
+           ProceedWithCardMandatoryReauthOptInIfApplicable();
+  }
+
+  // Do not offer upload save for google domain.
+  if (net::HasGoogleHost(submitted_form.main_frame_origin().GetURL()) &&
+      is_credit_card_upstream_enabled) {
+    return false;
+  }
+
+  auto* virtual_card_enrollment_manager =
+      client_->GetPaymentsAutofillClient()->GetVirtualCardEnrollmentManager();
+  auto& context = fetched_payments_data_context();
+  if (virtual_card_enrollment_manager &&
+      virtual_card_enrollment_manager->ShouldOfferVirtualCardEnrollment(
+          *extracted_credit_card, context.fetched_card_instrument_id,
+          context.card_was_fetched_from_cache)) {
+    virtual_card_enrollment_manager->InitVirtualCardEnroll(
+        *extracted_credit_card, VirtualCardEnrollmentSource::kDownstream,
+        base::BindOnce(
+            &VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble,
+            base::Unretained(virtual_card_enrollment_manager)));
+    return true;
+  }
+
+  // Proceed with card or CVC saving if applicable.
+  if (client_->GetFormDataImporter()
+          ->credit_card_save_manager_->ProceedWithSavingIfApplicable(
+              submitted_form, *extracted_credit_card,
+              client_->GetFormDataImporter()->credit_card_import_type_,
+              is_credit_card_upstream_enabled, ukm_source_id)) {
+    return true;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillPrioritizeSaveCardOverMandatoryReauth) &&
+      ProceedWithCardMandatoryReauthOptInIfApplicable()) {
+    // Try to offer mandatory re-auth as the last step.
+    return true;
+  }
+
+  return false;
 }
 
 bool PaymentsFormDataImporter::

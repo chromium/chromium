@@ -3694,7 +3694,7 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_EmptyCreditCard) {
           payments::PaymentsFormDataImporter::CreditCardImportType::kLocalCard);
 
   EXPECT_FALSE(
-      test_api(form_data_importer())
+      test_api(form_data_importer().GetPaymentsFormDataImporter())
           .ProcessExtractedCreditCard(*form_structure, extracted_credit_card,
                                       /*is_credit_card_upstream_enabled=*/true,
                                       ukm_source_id()));
@@ -3725,7 +3725,7 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
       .Times(0);
 
   EXPECT_FALSE(
-      test_api(form_data_importer())
+      test_api(form_data_importer().GetPaymentsFormDataImporter())
           .ProcessExtractedCreditCard(*form_structure, extracted_credit_card,
                                       /*is_credit_card_upstream_enabled=*/true,
                                       ukm_source_id()));
@@ -3739,7 +3739,7 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
                                     _, _, _, _));
 
   EXPECT_TRUE(
-      test_api(form_data_importer())
+      test_api(form_data_importer().GetPaymentsFormDataImporter())
           .ProcessExtractedCreditCard(*form_structure, extracted_credit_card,
                                       /*is_credit_card_upstream_enabled=*/true,
                                       ukm_source_id()));
@@ -3767,7 +3767,7 @@ TEST_F(FormDataImporterTest,
   EXPECT_CALL(reauth_manager(), ShouldOfferOptin).WillOnce(Return(false));
   EXPECT_CALL(reauth_manager(), StartOptInFlow).Times(0);
 
-  test_api(form_data_importer())
+  test_api(form_data_importer().GetPaymentsFormDataImporter())
       .ProcessExtractedCreditCard(*form_structure, extracted_credit_card,
                                   /*is_credit_card_upstream_enabled=*/true,
                                   ukm_source_id());
@@ -3791,7 +3791,7 @@ TEST_F(FormDataImporterTest,
   EXPECT_CALL(reauth_manager(), ShouldOfferOptin).Times(0);
   EXPECT_CALL(reauth_manager(), StartOptInFlow).Times(0);
 
-  test_api(form_data_importer())
+  test_api(form_data_importer().GetPaymentsFormDataImporter())
       .ProcessExtractedCreditCard(*form_structure, test::GetCreditCard2(),
                                   /*is_credit_card_upstream_enabled=*/true,
                                   ukm_source_id());
@@ -3823,7 +3823,7 @@ TEST_F(FormDataImporterTest,
   EXPECT_CALL(reauth_manager(), StartOptInFlow);
 
   EXPECT_TRUE(
-      test_api(form_data_importer())
+      test_api(form_data_importer().GetPaymentsFormDataImporter())
           .ProcessExtractedCreditCard(*form_structure, extracted_credit_card,
                                       /*is_credit_card_upstream_enabled=*/true,
                                       ukm_source_id()));
@@ -3861,7 +3861,7 @@ TEST_F(
   EXPECT_CALL(reauth_manager(), ShouldOfferOptin).Times(0);
   EXPECT_CALL(reauth_manager(), StartOptInFlow).Times(0);
 
-  test_api(form_data_importer())
+  test_api(form_data_importer().GetPaymentsFormDataImporter())
       .ProcessExtractedCreditCard(*form_structure, card,
                                   /*is_credit_card_upstream_enabled=*/false,
                                   ukm_source_id());
@@ -3893,7 +3893,7 @@ TEST_F(
   EXPECT_CALL(reauth_manager(), ShouldOfferOptin).WillOnce(Return(true));
   EXPECT_CALL(reauth_manager(), StartOptInFlow).Times(1);
 
-  test_api(form_data_importer())
+  test_api(form_data_importer().GetPaymentsFormDataImporter())
       .ProcessExtractedCreditCard(*form_structure, card,
                                   /*is_credit_card_upstream_enabled=*/false,
                                   ukm_source_id());
@@ -3956,7 +3956,7 @@ TEST_F(FormDataImporterTest,
                                        CreditCardImportType::kServerCard);
 
   EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable);
-  test_api(form_data_importer())
+  test_api(form_data_importer().GetPaymentsFormDataImporter())
       .ProcessExtractedCreditCard(*form_structure, card,
                                   /*is_credit_card_upstream_enabled=*/false,
                                   ukm_source_id());
@@ -3974,7 +3974,7 @@ TEST_F(FormDataImporterTest,
           payments::PaymentsFormDataImporter::CreditCardImportType::kLocalCard);
 
   EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable);
-  test_api(form_data_importer())
+  test_api(form_data_importer().GetPaymentsFormDataImporter())
       .ProcessExtractedCreditCard(*form_structure, card,
                                   /*is_credit_card_upstream_enabled=*/false,
                                   ukm_source_id());
