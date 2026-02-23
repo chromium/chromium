@@ -1669,6 +1669,34 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
       std::move(on_suggestions_returned));
 }
 
+std::optional<Suggestion>
+BrowserAutofillManager::CreatePasskeySuggestionForMerge(
+    const FormFieldData& field) {
+  if (!ShouldShowWebauthnHybridEntryPoint(field)) {
+    return std::nullopt;
+  }
+  PasswordManagerDelegate* password_delegate =
+      client().GetPasswordManagerDelegate(field.global_id());
+  if (!password_delegate) {
+    return std::nullopt;
+  }
+
+  // If any field **on the page** allows starting the hybrid passkey flow,
+  // this suggestion becomes available.
+  std::optional<Suggestion> passkey_suggestion =
+      password_delegate->GetWebauthnSignInWithAnotherDeviceSuggestion();
+  if (!passkey_suggestion) {
+    return std::nullopt;
+  }
+  return {passkey_suggestion.value()};
+}
+
+void BrowserAutofillManager::MergePasskeysAndExistingSuggestions(
+    std::vector<Suggestion>& suggestions,
+    Suggestion passkey_suggestion) {
+  suggestions.push_back(passkey_suggestion);
+}
+
 void BrowserAutofillManager::GenerateFooter(
     const FormData& form,
     const FormFieldData& field,
@@ -1677,18 +1705,11 @@ void BrowserAutofillManager::GenerateFooter(
     base::TimeTicks suggestion_generation_start_time,
     bool show_suggestions,
     std::vector<Suggestion> suggestions) {
-  if (ShouldShowWebauthnHybridEntryPoint(field)) {
-    if (PasswordManagerDelegate* password_delegate =
-            client().GetPasswordManagerDelegate(field.global_id())) {
-      // If any field **on the page** allows starting the hybrid passkey flow,
-      // this suggestion becomes available.
-      if (std::optional<Suggestion> passkey_suggestion =
-              password_delegate
-                  ->GetWebauthnSignInWithAnotherDeviceSuggestion()) {
-        suggestions.push_back(*std::move(passkey_suggestion));
-        show_suggestions = true;
-      }
-    }
+  std::optional<Suggestion> passkey_suggestion =
+      CreatePasskeySuggestionForMerge(field);
+  if (passkey_suggestion.has_value()) {
+    MergePasskeysAndExistingSuggestions(suggestions,
+                                        std::move(passkey_suggestion.value()));
   }
 
   OnGenerateSuggestionsComplete(form.global_id(), field.global_id(),
