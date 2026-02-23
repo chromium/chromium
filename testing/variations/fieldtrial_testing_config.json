@@ -11997,6 +11997,11 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "magic-cursor-max-duration-ms": "300",
+                        "magic-cursor-min-duration-ms": "50",
+                        "magic-cursor-speed-px-per-ms": "1.5"
+                    },
                     "enable_features": [
                         "GlicActorUiOverlayMagicCursor"
                     ]
