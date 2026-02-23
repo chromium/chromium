@@ -149,9 +149,6 @@ void ExtensionTelemetryUploader::SendRequest(const std::string& access_token) {
   resource_request->method = "POST";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;
   if (!access_token.empty()) {
-    LogAuthenticatedCookieResets(
-        *resource_request,
-        SafeBrowsingAuthenticatedEndpoint::kExtensionTelemetry);
     SetAccessToken(resource_request.get(), access_token);
   } else {
     resource_request->credentials_mode =
@@ -171,8 +168,9 @@ void ExtensionTelemetryUploader::SendRequest(const std::string& access_token) {
 void ExtensionTelemetryUploader::OnURLLoaderComplete(
     std::optional<std::string> response_body) {
   int response_code = 0;
-  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     response_code = url_loader_->ResponseInfo()->headers->response_code();
+  }
 
   RetryOrFinish(url_loader_->NetError(), response_code, response_body);
 }

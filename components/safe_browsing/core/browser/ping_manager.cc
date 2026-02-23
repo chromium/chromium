@@ -496,8 +496,6 @@ void PingManager::ReportThreatDetailsOnGotAccessToken(
   resource_request->site_for_cookies = net::SiteForCookies::FromUrl(report_url);
 
   if (!access_token.empty()) {
-    LogAuthenticatedCookieResets(
-        *resource_request, SafeBrowsingAuthenticatedEndpoint::kThreatDetails);
     SetAccessToken(resource_request.get(), access_token);
   }
   base::UmaHistogramBoolean(

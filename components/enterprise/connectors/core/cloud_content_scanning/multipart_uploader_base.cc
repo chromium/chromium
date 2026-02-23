@@ -36,7 +36,6 @@ namespace enterprise_connectors {
 namespace {
 
 using ::safe_browsing::RecordHttpResponseOrErrorCode;
-using ::safe_browsing::SafeBrowsingAuthenticatedEndpoint;
 using ::safe_browsing::SetAccessToken;
 
 // Constants associated with exponential backoff. On each failure, we will
@@ -175,8 +174,6 @@ void MultipartUploadRequestBase::SetRequestHeaders(
                              base::NumberToString(data_size));
 
   if (!access_token_.empty()) {
-    LogAuthenticatedCookieResets(
-        *request, SafeBrowsingAuthenticatedEndpoint::kDeepScanning);
     SetAccessToken(request, access_token_);
   }
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;

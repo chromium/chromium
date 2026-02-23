@@ -32,7 +32,6 @@ namespace enterprise_connectors {
 namespace {
 
 using ::safe_browsing::RecordHttpResponseOrErrorCode;
-using ::safe_browsing::SafeBrowsingAuthenticatedEndpoint;
 using ::safe_browsing::SetAccessToken;
 
 // HTTP headers for resumable upload requests
@@ -201,8 +200,6 @@ void ResumableUploadRequestBase::SetMetadataRequestHeaders(
       kUploadHeaderContentTypeHeader,
       data_source_ == IMAGE ? kImageContentType : kUploadContentType);
   if (!access_token_.empty()) {
-    LogAuthenticatedCookieResets(
-        *request, SafeBrowsingAuthenticatedEndpoint::kDeepScanning);
     SetAccessToken(request, access_token_);
   }
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;

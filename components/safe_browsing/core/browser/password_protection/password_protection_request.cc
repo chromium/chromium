@@ -271,8 +271,9 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
         for (const auto& domain : matching_domains_) {
           reuse_event->add_domains_matching_password(domain);
           if (reuse_event->domains_matching_password_size() >=
-              kMaxReusedDomains)
+              kMaxReusedDomains) {
             break;
+          }
         }
       }
       ReusedPasswordAccountType password_account_type_to_add =
@@ -371,9 +372,6 @@ void PasswordProtectionRequest::SendRequestWithToken(
   bool has_access_token = !access_token.empty();
   LogPasswordProtectionRequestTokenHistogram(trigger_type_, has_access_token);
   if (has_access_token) {
-    LogAuthenticatedCookieResets(
-        *resource_request,
-        SafeBrowsingAuthenticatedEndpoint::kPasswordProtection);
     SetAccessToken(resource_request.get(), access_token);
   }
   resource_request->url =
@@ -410,8 +408,9 @@ void PasswordProtectionRequest::OnURLLoaderComplete(
     std::optional<std::string> response_body) {
   DCHECK(ui_task_runner()->RunsTasksInCurrentSequence());
   int response_code = 0;
-  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
+  if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     response_code = url_loader_->ResponseInfo()->headers->response_code();
+  }
 
   const bool is_success = url_loader_->NetError() == net::OK;
 

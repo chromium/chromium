@@ -175,12 +175,14 @@ bool CheckClientDownloadRequestBase::ShouldSampleUnsupportedFile(
 // archive matches the blocklist flag, return true.
 bool CheckClientDownloadRequestBase::IsDownloadManuallyBlocklisted(
     const ClientDownloadRequest& request) {
-  if (service_->IsHashManuallyBlocklisted(request.digests().sha256()))
+  if (service_->IsHashManuallyBlocklisted(request.digests().sha256())) {
     return true;
+  }
 
   for (const auto& bin_itr : request.archived_binary()) {
-    if (service_->IsHashManuallyBlocklisted(bin_itr.digests().sha256()))
+    if (service_->IsHashManuallyBlocklisted(bin_itr.digests().sha256())) {
       return true;
+    }
   }
   return false;
 }
@@ -239,8 +241,9 @@ void CheckClientDownloadRequestBase::OnUrlAllowlistCheckDone(
 }
 
 void CheckClientDownloadRequestBase::SanitizeRequest() {
-  if (!sampled_unsupported_file_)
+  if (!sampled_unsupported_file_) {
     return;
+  }
 
   client_download_request_->set_download_type(
       ClientDownloadRequest::SAMPLED_UNSUPPORTED_FILE);
@@ -505,9 +508,6 @@ void CheckClientDownloadRequestBase::SendRequest() {
   // TODO(chlily): Factor this out into
   // DownloadProtectionDelegate::FinalizeResourceRequest.
   if (!access_token_.empty()) {
-    LogAuthenticatedCookieResets(
-        *resource_request,
-        SafeBrowsingAuthenticatedEndpoint::kDownloadProtection);
     SetAccessToken(resource_request.get(), access_token_);
   }
 #endif
@@ -548,8 +548,9 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   bool success = loader_->NetError() == net::OK;
   int response_code = 0;
-  if (loader_->ResponseInfo() && loader_->ResponseInfo()->headers)
+  if (loader_->ResponseInfo() && loader_->ResponseInfo()->headers) {
     response_code = loader_->ResponseInfo()->headers->response_code();
+  }
   DVLOG(2) << "Received a response for URL: " << source_url_
            << ": success=" << success << " response_code=" << response_code;
   RecordHttpResponseOrErrorCode("SBClientDownload.DownloadRequestNetworkResult",

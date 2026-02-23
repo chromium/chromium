@@ -797,9 +797,6 @@ void RealTimeUrlLookupServiceBase::OnRequestProtoFilled(
 
   auto resource_request = GetResourceRequest();
   if (!access_token_string.empty()) {
-    LogAuthenticatedCookieResets(
-        *resource_request,
-        SafeBrowsingAuthenticatedEndpoint::kRealtimeUrlLookup);
     SetAccessToken(resource_request.get(), access_token_string);
   }
   RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.HasTokenInRequest",

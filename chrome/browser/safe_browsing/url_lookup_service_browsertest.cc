@@ -4,7 +4,6 @@
 
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/url_lookup_service_factory.h"
@@ -134,7 +133,6 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest, LookupWithToken) {
       RealTimeUrlLookupServiceFactory::GetForProfile(browser()->profile());
 
   base::RunLoop run_loop;
-  base::HistogramTester histogram_tester;
   url_lookup_service->StartLookup(
       secure_embedded_test_server()->GetURL("/"),
       base::IgnoreArgs<bool, bool, std::unique_ptr<RTLookupResponse>>(
@@ -145,10 +143,6 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest, LookupWithToken) {
 
   EXPECT_TRUE(last_realtime_request().headers.contains(
       net::HttpRequestHeaders::kAuthorization));
-
-  histogram_tester.ExpectUniqueSample(
-      "SafeBrowsing.AuthenticatedCookieResetEndpoint",
-      SafeBrowsingAuthenticatedEndpoint::kRealtimeUrlLookup, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest, LookupWithoutToken) {
@@ -162,7 +156,6 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest, LookupWithoutToken) {
       RealTimeUrlLookupServiceFactory::GetForProfile(browser()->profile());
 
   base::RunLoop run_loop;
-  base::HistogramTester histogram_tester;
   url_lookup_service->StartLookup(
       secure_embedded_test_server()->GetURL("/"),
       base::IgnoreArgs<bool, bool, std::unique_ptr<RTLookupResponse>>(
@@ -173,10 +166,6 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingUrlLookupServiceTest, LookupWithoutToken) {
 
   EXPECT_FALSE(last_realtime_request().headers.contains(
       net::HttpRequestHeaders::kAuthorization));
-
-  histogram_tester.ExpectUniqueSample(
-      "SafeBrowsing.AuthenticatedCookieResetEndpoint",
-      SafeBrowsingAuthenticatedEndpoint::kRealtimeUrlLookup, 0);
 }
 
 }  // namespace
