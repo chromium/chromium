@@ -25,6 +25,7 @@
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/enterprise/platform_auth/platform_auth_features.h"
 #include "components/policy/policy_constants.h"
@@ -151,12 +152,14 @@ class PlatformAuthProxyingURLLoaderFactoryTest : public testing::Test {
     return resulting_factory.get() != terminal_factory.get();
   }
 
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+
+ protected:
   mojo::Receiver<network::mojom::URLLoaderFactory> test_factory_receiver_;
   network::TestURLLoaderFactory test_factory_;
   network::ResourceRequest test_request_;
-
- private:
-  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile testing_profile_;
 };
 
 TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
@@ -165,7 +168,6 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
   mojo::Remote<network::mojom::URLLoaderFactory> client(
       SetupFactoryChain(base::BindOnce(proxy_destroyed_future.GetCallback()),
                         {}, test_request_.request_initiator.value()));
-
   // Check that the factory works.
   CheckClient(client);
 
@@ -233,7 +235,7 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
   ProxyingURLLoaderFactory::MaybeProxyRequest(
       url::Origin::Create(GURL("https://foobar.example.com/")),
       ChromeContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-      factory_builder);
+      &testing_profile_, factory_builder);
 
   scoped_refptr<network::SharedURLLoaderFactory> resulting_factory =
       std::move(factory_builder).Finish(terminal_shared_factory);
@@ -252,7 +254,7 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest, MaybeProxyRequest_NoHTTPS) {
   ProxyingURLLoaderFactory::MaybeProxyRequest(
       url::Origin::Create(GURL("file://foobar.example.com/")),
       ChromeContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-      factory_builder);
+      &testing_profile_, factory_builder);
 
   scoped_refptr<network::SharedURLLoaderFactory> resulting_factory =
       std::move(factory_builder).Finish(terminal_shared_factory);
@@ -272,7 +274,7 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
   ProxyingURLLoaderFactory::MaybeProxyRequest(
       url::Origin::Create(GURL("https://foobar.example.com/")),
       ChromeContentBrowserClient::URLLoaderFactoryType::kNavigation,
-      factory_builder);
+      &testing_profile_, factory_builder);
 
   scoped_refptr<network::SharedURLLoaderFactory> resulting_factory =
       std::move(factory_builder).Finish(terminal_shared_factory);
@@ -294,7 +296,7 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
   ProxyingURLLoaderFactory::MaybeProxyRequest(
       url::Origin::Create(GURL("https://foobar.example.com/")),
       ChromeContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-      factory_builder);
+      &testing_profile_, factory_builder);
 
   scoped_refptr<network::SharedURLLoaderFactory> resulting_factory =
       std::move(factory_builder).Finish(terminal_shared_factory);
@@ -318,7 +320,7 @@ TEST_F(PlatformAuthProxyingURLLoaderFactoryTest,
   ProxyingURLLoaderFactory::MaybeProxyRequest(
       url::Origin::Create(GURL("https://foobar.example.com/")),
       ChromeContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
-      factory_builder);
+      &testing_profile_, factory_builder);
 
   scoped_refptr<network::SharedURLLoaderFactory> resulting_factory =
       std::move(factory_builder).Finish(terminal_shared_factory);

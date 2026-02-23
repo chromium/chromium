@@ -180,14 +180,19 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
   }
 
   void CheckSSORequest(bool expect_response,
-                       std::string_view hostname = kLoginWebsiteDomain) {
-    const GURL test_url = https_server_.GetURL(hostname, "/login");
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+                       std::string_view hostname = kLoginWebsiteDomain,
+                       Browser* target_browser = nullptr) {
+    if (!target_browser) {
+      target_browser = browser();
+    }
 
-    const auto result =
-        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                        content::JsReplace(
-                            R"(
+    const GURL test_url = https_server_.GetURL(hostname, "/login");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(target_browser, test_url));
+
+    const auto result = content::EvalJs(
+        target_browser->tab_strip_model()->GetActiveWebContents(),
+        content::JsReplace(
+            R"(
             fetch($1, {
               method: 'POST',
               body: JSON.stringify({data: 'data'})
@@ -200,7 +205,7 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
             })
             .catch(error => "NETWORK_ERROR: " + error.message);
         )",
-                            CreateSsoRequest(hostname)));
+            CreateSsoRequest(hostname)));
 
     if (expect_response) {
       EXPECT_EQ(URLSessionURLLoader::kTestServerResponseBody, result);
@@ -235,6 +240,28 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest, Successful) {
   // By default the test setup should make the SSO work.
   CheckSSORequest(true);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
+                       DoesNotProxyInIncognito) {
+  // Create an Incognito browser window linked to the main profile.
+  Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
+  ASSERT_TRUE(incognito_browser);
+
+  // The SSO proxying should not occur in an Incognito window.
+  CheckSSORequest(/*expect_response=*/false, kLoginWebsiteDomain,
+                  incognito_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
+                       DoesNotProxyInGuestMode) {
+  // Create a Guest browser window.
+  Browser* guest_browser = CreateGuestBrowser();
+  ASSERT_TRUE(guest_browser);
+
+  // The SSO proxying should not occur in a Guest window.
+  CheckSSORequest(/*expect_response=*/false, kLoginWebsiteDomain,
+                  guest_browser);
 }
 
 }  // namespace enterprise_auth
