@@ -17,18 +17,18 @@
 .dropdown-item {
   display: flex;
   align-items: center;
-  padding: 5px var(--mwb-list-item-horizontal-margin);
+  padding: 0 0;
   width: 320px;
 }
 
 cr-action-menu {
   --cr-menu-border-radius: 16px;
-  --cr-action-menu-padding: 25px 0px;
+  --cr-action-menu-padding: 16px 0;
 }
 
 .header {
   color: var(--cr-primary-text-color);
-  padding: 8px var(--mwb-list-item-horizontal-margin);
+  padding: 0 0 8px 16px;
 }
 
 /* Top padding for the main header, "Shared tabs and files" */
