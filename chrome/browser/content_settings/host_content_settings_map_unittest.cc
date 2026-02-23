@@ -2954,3 +2954,29 @@ TEST_F(HostContentSettingsMapTest, ExtensionContentSetting) {
                                    ContentSettingsType::SOUND));
 }
 #endif
+
+TEST_F(HostContentSettingsMapTest, RecordDefaultSensorsSetting) {
+  TestingProfile profile;
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(&profile);
+
+  constexpr ContentSetting kDefaultSettingsToTest[] = {CONTENT_SETTING_ALLOW,
+                                                       CONTENT_SETTING_BLOCK};
+
+  for (ContentSetting setting : kDefaultSettingsToTest) {
+    base::HistogramTester histogram_tester;
+    host_content_settings_map->SetDefaultContentSetting(
+        ContentSettingsType::SENSORS, setting);
+    auto map = base::MakeRefCounted<HostContentSettingsMap>(
+        profile.GetPrefs(),
+        /*is_off_the_record=*/false,
+        /*store_last_modified=*/false,
+        /*restore_session=*/false,
+        /*should_record_metrics=*/true);
+
+    histogram_tester.ExpectUniqueSample(
+        "ContentSettings.RegularProfile.DefaultSensorsSetting", setting, 1);
+
+    map->ShutdownOnUIThread();
+  }
+}

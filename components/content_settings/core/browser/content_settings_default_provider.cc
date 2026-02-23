@@ -608,6 +608,11 @@ void DefaultProvider::RecordHistogramMetrics() {
       IntToContentSetting(prefs_->GetInteger(
           GetPrefName(ContentSettingsType::JAVASCRIPT_OPTIMIZER))),
       CONTENT_SETTING_NUM_SETTINGS);
+  base::UmaHistogramEnumeration(
+      "ContentSettings.RegularProfile.DefaultSensorsSetting",
+      IntToContentSetting(
+          prefs_->GetInteger(GetPrefName(ContentSettingsType::SENSORS))),
+      CONTENT_SETTING_NUM_SETTINGS);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
