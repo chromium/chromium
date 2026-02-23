@@ -5,6 +5,8 @@
 import("../../../build_webui_tests.gni")
 
 build_webui_tests("build_webui_tests") {
+  cc_test_files = [ "sea_pen_browsertest.cc" ]
+
   files = [
     "sea_pen_constants_test.ts",
     "sea_pen_utils_test.ts",

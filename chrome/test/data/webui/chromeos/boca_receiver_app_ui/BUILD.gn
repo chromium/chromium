@@ -5,6 +5,8 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [ "boca_receiver_untrusted_ui_browsertest.cc" ]
+
   files = [ "boca_receiver_app_test.ts" ]
 
   is_chrome_untrusted = true

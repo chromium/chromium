@@ -5,6 +5,8 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build_webui_tests") {
+  cc_test_files = [ "shimless_rma_browsertest.cc" ]
+
   ts_path_mappings = [
     "chrome://shimless-rma/*|" +
         rebase_path("$root_gen_dir/ash/webui/shimless_rma/resources/tsc/*",

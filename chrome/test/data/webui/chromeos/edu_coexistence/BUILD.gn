@@ -5,6 +5,8 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [ "edu_coexistence_browsertest.cc" ]
+
   files = [
     "edu_coexistence_app_test.ts",
     "edu_coexistence_controller_test.ts",

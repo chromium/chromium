@@ -5,6 +5,11 @@
 import("../../../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [
+    "ash_common_cr_elements_browsertest.cc",
+    "ash_common_cr_elements_focus_test.cc",
+  ]
+
   files = [
     "cr_a11y_announcer_test.ts",
     "cr_action_menu_test.ts",

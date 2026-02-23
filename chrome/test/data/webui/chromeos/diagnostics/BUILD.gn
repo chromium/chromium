@@ -5,6 +5,8 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build_webui_tests") {
+  cc_test_files = [ "diagnostics_browsertest.cc" ]
+
   ts_path_mappings = [
     "chrome://diagnostics/strings.m.js|" +
         rebase_path("//tools/typescript/definitions/strings.d.ts",

@@ -5,6 +5,8 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build_webui_tests") {
+  cc_test_files = [ "boca_app_browsertest.cc" ]
+
   is_chrome_untrusted = true
   ts_path_mappings = [
     "chrome-untrusted://boca-app/*|" +

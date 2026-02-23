@@ -5,6 +5,8 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build_webui_tests") {
+  cc_test_files = [ "print_management_browsertest.cc" ]
+
   files = [
     "fake_print_management_handler.ts",
     "print_management_test.ts",

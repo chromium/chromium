@@ -5,6 +5,8 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build_webui_tests") {
+  cc_test_files = [ "firmware_update_browsertest.cc" ]
+
   ts_path_mappings = [
     "chrome://accessory-update/*|" +
         rebase_path(

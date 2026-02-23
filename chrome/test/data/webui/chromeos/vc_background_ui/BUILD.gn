@@ -7,6 +7,8 @@ import("//chrome/test/data/webui/build_webui_tests.gni")
 assert(is_chromeos)
 
 build_webui_tests("build") {
+  cc_test_files = [ "vc_background_ui_browsertest.cc" ]
+
   ts_path_mappings =
       [ "chrome://vc-background/*|" +
         rebase_path("$root_gen_dir/ash/webui/vc_background_ui/resources/tsc/*",

@@ -5,6 +5,8 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [ "parent_access_browsertest.cc" ]
+
   files = [
     "extension_approvals_test.ts",
     "parent_access_after_test.ts",

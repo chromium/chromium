@@ -6,6 +6,11 @@ import("../../build_webui_tests.gni")
 assert(is_chromeos, "ChromeOS Print Preview tests are ChromeOS-only")
 
 build_webui_tests("build") {
+  cc_test_files = [
+    "print_preview_browsertest.cc",
+    "print_preview_focus_test.cc",
+  ]
+
   files = [
     "advanced_dialog_test.ts",
     "advanced_item_test.ts",

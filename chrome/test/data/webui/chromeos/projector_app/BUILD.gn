@@ -5,6 +5,8 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [ "untrusted_projector_browser_proxy_browsertest.cc" ]
+
   files = [ "untrusted_projector_browser_proxy_test.ts" ]
 
   is_chrome_untrusted = true

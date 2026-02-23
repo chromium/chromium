@@ -5,6 +5,8 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build_webui_tests") {
+  cc_test_files = [ "healthd_internals_browsertest.cc" ]
+
   ts_path_mappings = [
     "chrome://healthd-internals/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/chromeos/healthd_internals/tsc/*",
