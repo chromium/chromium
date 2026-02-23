@@ -81,6 +81,12 @@ void CreateAndAddProjectorHTMLSource(content::WebUI* web_ui,
       "trusted-types polymer_resin lit-html goog#html polymer-html-literal "
       "polymer-template-event-attribute-policy;");
 
+  // For testing
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome-untrusted://resources chrome-untrusted://webui-test "
+      "'self';");
+
   delegate->PopulateLoadTimeData(source);
   source->UseStringsJs();
 

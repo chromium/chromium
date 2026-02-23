@@ -180,6 +180,7 @@ source_set("browser_tests") {
       sources += [
         "chromeos/boca_receiver_app_ui/boca_receiver_untrusted_ui_browsertest.cc",
         "chromeos/boca_ui/boca_app_browsertest.cc",
+        "chromeos/projector_app/untrusted_projector_browser_proxy_browsertest.cc",
       ]
     }
   } else if (!is_android) {
@@ -281,6 +282,7 @@ source_set("browser_tests") {
     deps += [
       "//ash/webui/boca_receiver_app_ui",
       "//ash/webui/boca_ui:constants",
+      "//ash/webui/projector_app",
       "//ash/webui/sanitize_ui",
       "//ash/webui/shimless_rma",
       "//ash/webui/vc_background_ui",
@@ -775,6 +777,7 @@ generate_grd("build_grd") {
       "chromeos/print_management:build_grdp",
       "chromeos/print_preview:build_grdp",
       "chromeos/print_preview_cros:build_grdp",
+      "chromeos/projector_app:build_grdp",
       "chromeos/sanitize_ui:build_grdp",
       "chromeos/scanning:build_grdp",
       "chromeos/settings:build_grdp",
@@ -791,6 +794,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/ash_common/sea_pen/resources.grdp",
       "$target_gen_dir/chromeos/boca_ui/resources.grdp",
       "$target_gen_dir/chromeos/boca_receiver_app_ui/resources.grdp",
+      "$target_gen_dir/chromeos/projector_app/resources.grdp",
       "$target_gen_dir/chromeos/borealis_installer/resources.grdp",
       "$target_gen_dir/chromeos/cloud_upload/resources.grdp",
       "$target_gen_dir/chromeos/diagnostics/resources.grdp",

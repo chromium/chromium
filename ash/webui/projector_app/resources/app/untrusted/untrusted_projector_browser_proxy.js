@@ -180,7 +180,7 @@ export class UntrustedProjectorBrowserProxyImpl {
 
     const requestMethod = requestMaps.get(method);
     const {response} = await this.pageHandlerRemote.sendXhr(
-        {url}, requestMethod, requestBody, useCredentials, useApiKey, headers,
+        url, requestMethod, requestBody, useCredentials, useApiKey, headers,
         accountEmail);
 
     // TODO(b/237337607): Remove the success field and just pass response
