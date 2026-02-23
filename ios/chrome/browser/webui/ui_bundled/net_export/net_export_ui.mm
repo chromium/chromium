@@ -189,8 +189,7 @@ void NetExportMessageHandler::SendEmail(const base::FilePath& file_to_send) {
   context.textFileToAttach = file_to_send;
 
   web::WebState* web_state = web_ui()->GetWebState();
-  NetExportTabHelper::GetOrCreateForWebState(web_state)->ShowMailComposer(
-      context);
+  NetExportTabHelper::FromWebState(web_state)->ShowMailComposer(context);
 }
 
 void NetExportMessageHandler::NotifyUIWithState(

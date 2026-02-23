@@ -5,14 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_WEBUI_MODEL_NET_EXPORT_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_WEBUI_MODEL_NET_EXPORT_TAB_HELPER_H_
 
-#import "ios/web/public/lazy_web_state_user_data.h"
+#import "ios/web/public/web_state_user_data.h"
 
 @protocol NetExportTabHelperDelegate;
 @class ShowMailComposerContext;
 
 // A tab helper for the Net Export WebUI page.
-class NetExportTabHelper
-    : public web::LazyWebStateUserData<NetExportTabHelper> {
+class NetExportTabHelper : public web::WebStateUserData<NetExportTabHelper> {
  public:
   NetExportTabHelper(const NetExportTabHelper&) = delete;
   NetExportTabHelper& operator=(const NetExportTabHelper&) = delete;
@@ -27,7 +26,7 @@ class NetExportTabHelper
   void SetDelegate(id<NetExportTabHelperDelegate> delegate);
 
  private:
-  friend class web::LazyWebStateUserData<NetExportTabHelper>;
+  friend class web::WebStateUserData<NetExportTabHelper>;
 
   explicit NetExportTabHelper(web::WebState* web_state);
   __weak id<NetExportTabHelperDelegate> delegate_;

@@ -176,8 +176,7 @@
       static_cast<id<SnackbarCommands>>(_commandDispatcher));
 
   DCHECK(_tabHelperDelegate);
-  NetExportTabHelper::GetOrCreateForWebState(webState)->SetDelegate(
-      _tabHelperDelegate);
+  NetExportTabHelper::FromWebState(webState)->SetDelegate(_tabHelperDelegate);
 
   id<WebContentCommands> webContentsHandler =
       HandlerForProtocol(_commandDispatcher, WebContentCommands);
@@ -343,7 +342,7 @@
   DownloadManagerTabHelper::FromWebState(webState)->SetDelegate(nil);
   DownloadManagerTabHelper::FromWebState(webState)->SetSnackbarHandler(nil);
 
-  NetExportTabHelper::GetOrCreateForWebState(webState)->SetDelegate(nil);
+  NetExportTabHelper::FromWebState(webState)->SetDelegate(nil);
 
   AutofillTabHelper* autofillTabHelper =
       AutofillTabHelper::FromWebState(webState);
