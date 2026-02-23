@@ -176,8 +176,7 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
 
     if (_webState) {
-      InfobarBadgeTabHelper::GetOrCreateForWebState(_webState)->SetDelegate(
-          self);
+      InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(self);
       if (ReaderModeTabHelper* readerModeTabHelper =
               ReaderModeTabHelper::FromWebState(_webState)) {
         readerModeTabHelper->AddObserver(_readerModeObserver.get());
@@ -337,7 +336,7 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
     return;
   }
   if (_webState) {
-    InfobarBadgeTabHelper::GetOrCreateForWebState(_webState)->SetDelegate(nil);
+    InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(nil);
     if (ReaderModeTabHelper* readerModeTabHelper =
             ReaderModeTabHelper::FromWebState(_webState)) {
       readerModeTabHelper->RemoveObserver(_readerModeObserver.get());
@@ -346,7 +345,7 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
   }
   _webState = webState;
   if (_webState) {
-    InfobarBadgeTabHelper::GetOrCreateForWebState(_webState)->SetDelegate(self);
+    InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(self);
     if (ReaderModeTabHelper* readerModeTabHelper =
             ReaderModeTabHelper::FromWebState(_webState)) {
       readerModeTabHelper->AddObserver(_readerModeObserver.get());
@@ -359,9 +358,8 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
 }
 
 - (InfobarBadgeTabHelper*)badgeTabHelper {
-  return self.webState
-             ? InfobarBadgeTabHelper::GetOrCreateForWebState(self.webState)
-             : nullptr;
+  return self.webState ? InfobarBadgeTabHelper::FromWebState(self.webState)
+                       : nullptr;
 }
 
 - (BadgeType)permissionsBadgeType {

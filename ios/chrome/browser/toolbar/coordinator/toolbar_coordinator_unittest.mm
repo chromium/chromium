@@ -9,6 +9,7 @@
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent_observer.h"
@@ -232,6 +233,7 @@ TEST_F(ToolbarCoordinatorTest, SideSwipeSnapshotForToolbarNotInHierarchy) {
   InfoBarManagerImpl::CreateForWebState(web_state);
   OfflinePageTabHelper::CreateForWebState(
       web_state, ReadingListModelFactory::GetForProfile(profile_.get()));
+  InfobarBadgeTabHelper::CreateForWebState(web_state);
 
   browser_->GetWebStateList()->InsertWebState(
       std::move(test_web_state),

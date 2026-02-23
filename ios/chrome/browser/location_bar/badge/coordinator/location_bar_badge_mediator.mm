@@ -118,7 +118,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 
       if (_activeWebState) {
         _infobarBadgeObservation->Observe(
-            InfobarBadgeTabHelper::GetOrCreateForWebState(_activeWebState));
+            InfobarBadgeTabHelper::FromWebState(_activeWebState));
       }
 
       // Set up active ContextualPanelTabHelper observation.
@@ -220,8 +220,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   if (!active_web_state || active_web_state->IsBeingDestroyed()) {
     return;
   }
-  if (tabHelper !=
-      InfobarBadgeTabHelper::GetOrCreateForWebState(active_web_state)) {
+  if (tabHelper != InfobarBadgeTabHelper::FromWebState(active_web_state)) {
     return;
   }
 
@@ -503,7 +502,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 
   // Register observer bridge for the new WebState's InfobarBadgeTabHelper.
   _infobarBadgeObservation->Observe(
-      InfobarBadgeTabHelper::GetOrCreateForWebState(_activeWebState));
+      InfobarBadgeTabHelper::FromWebState(_activeWebState));
 
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(_activeWebState);

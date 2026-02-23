@@ -197,7 +197,7 @@ class ContextualPanelEntrypointMediatorTest : public PlatformTest {
         models;
     FakeContextualPanelTabHelper::CreateForWebState(web_state.get(), models);
     InfoBarManagerImpl::CreateForWebState(web_state.get());
-    InfobarBadgeTabHelper::GetOrCreateForWebState(web_state.get());
+    InfobarBadgeTabHelper::CreateForWebState(web_state.get());
     web_state_list_.InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate(true));
@@ -517,7 +517,7 @@ TEST_F(ContextualPanelEntrypointMediatorTest, TestWebStateListChanged) {
       models;
   FakeContextualPanelTabHelper::CreateForWebState(web_state.get(), models);
   InfoBarManagerImpl::CreateForWebState(web_state.get());
-  InfobarBadgeTabHelper::GetOrCreateForWebState(web_state.get());
+  InfobarBadgeTabHelper::CreateForWebState(web_state.get());
 
   web_state_list_.InsertWebState(
       std::move(web_state),

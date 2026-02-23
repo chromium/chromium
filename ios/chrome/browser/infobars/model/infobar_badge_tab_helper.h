@@ -7,15 +7,15 @@
 
 #include <map>
 
-#import "base/memory/raw_ptr.h"
-#import "base/observer_list.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "ios/chrome/browser/infobars/model/badge_state.h"
 #include "ios/chrome/browser/infobars/model/infobar_ios.h"
-#import "ios/chrome/browser/infobars/model/infobar_type.h"
-#import "ios/web/public/lazy_web_state_user_data.h"
+#include "ios/chrome/browser/infobars/model/infobar_type.h"
+#include "ios/web/public/web_state_user_data.h"
 
 class InfobarBadgeTabHelperObserver;
 
@@ -29,7 +29,7 @@ class WebState;
 // TabHelper that observes InfoBarManager. It updates an InfobarBadge delegate
 // for relevant Infobar changes.
 class InfobarBadgeTabHelper
-    : public web::LazyWebStateUserData<InfobarBadgeTabHelper> {
+    : public web::WebStateUserData<InfobarBadgeTabHelper> {
  public:
   InfobarBadgeTabHelper(const InfobarBadgeTabHelper&) = delete;
   InfobarBadgeTabHelper& operator=(const InfobarBadgeTabHelper&) = delete;
@@ -67,7 +67,7 @@ class InfobarBadgeTabHelper
   size_t GetInfobarBadgesCount();
 
  private:
-  friend class web::LazyWebStateUserData<InfobarBadgeTabHelper>;
+  friend class web::WebStateUserData<InfobarBadgeTabHelper>;
   explicit InfobarBadgeTabHelper(web::WebState* web_state);
 
   // Registers/unregisters the infobar to the tab helper for observation of its

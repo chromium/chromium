@@ -67,6 +67,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/fullscreen/ui_bundled/test",
     "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:badge",
     "//ios/chrome/browser/omnibox/model/omnibox_position",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/saved_tab_groups/model",

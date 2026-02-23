@@ -120,9 +120,8 @@
         _infobarBadgeObserverBridge.get());
 
     if (_webStateList->GetActiveWebState()) {
-      _infobarBadgeObservation->Observe(
-          InfobarBadgeTabHelper::GetOrCreateForWebState(
-              _webStateList->GetActiveWebState()));
+      _infobarBadgeObservation->Observe(InfobarBadgeTabHelper::FromWebState(
+          _webStateList->GetActiveWebState()));
     }
   }
   return self;
@@ -270,8 +269,7 @@
 
   // Register observer bridge for the new WebState's InfobarBadgeTabHelper.
   _infobarBadgeObservation->Observe(
-      InfobarBadgeTabHelper::GetOrCreateForWebState(
-          status.new_active_web_state));
+      InfobarBadgeTabHelper::FromWebState(status.new_active_web_state));
 
   ContextualPanelTabHelper* contextualPanelTabHelper =
       ContextualPanelTabHelper::FromWebState(status.new_active_web_state);
@@ -295,8 +293,7 @@
   if (!active_web_state || active_web_state->IsBeingDestroyed()) {
     return;
   }
-  if (tabHelper !=
-      InfobarBadgeTabHelper::GetOrCreateForWebState(active_web_state)) {
+  if (tabHelper != InfobarBadgeTabHelper::FromWebState(active_web_state)) {
     return;
   }
 
