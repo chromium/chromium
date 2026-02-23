@@ -96,6 +96,7 @@ public class TipsNotificationsOptInPromoTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/486122313
     public void testOptInBottomSheetClose() {
         var tripResult = showOptInBottomSheet();
         TipsOptInBottomSheetFacility bottomSheet = tripResult.first;
