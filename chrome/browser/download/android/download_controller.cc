@@ -421,7 +421,7 @@ void DownloadController::OnDownloadUpdated(DownloadItem* item) {
           .StartEnableVerifyApps(base::BindOnce(
               &DownloadController::EnableVerifyAppsDone,
               // base::Unretained is safe because `this` is a singleton.
-              base::Unretained(this), item));
+              base::Unretained(this)));
     } else if (app_verification_prompt_download_ != item) {
       OnDownloadComplete(item);
     }
@@ -497,9 +497,9 @@ void DownloadController::OnSensitiveDownload(download::DownloadItem* item) {
 }
 
 void DownloadController::EnableVerifyAppsDone(
-    download::DownloadItem* item,
     safe_browsing::VerifyAppsEnabledResult result) {
   if (app_verification_prompt_download_ != nullptr) {
+    DownloadItem* item = app_verification_prompt_download_;
     app_verification_prompt_download_ = nullptr;
     OnDownloadComplete(item);
   }

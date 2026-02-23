@@ -107,8 +107,7 @@ class DownloadController : public DownloadControllerBase {
   ProfileKey* GetProfileKey(download::DownloadItem* download_item);
 
   // Callback after we prompt the user to enable app verification.
-  void EnableVerifyAppsDone(download::DownloadItem* item,
-                            safe_browsing::VerifyAppsEnabledResult result);
+  void EnableVerifyAppsDone(safe_browsing::VerifyAppsEnabledResult result);
 
   // Notify Java that download is complete, so the user can be informed.
   void OnDownloadComplete(download::DownloadItem* item);
