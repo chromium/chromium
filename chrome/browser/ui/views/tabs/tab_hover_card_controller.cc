@@ -728,7 +728,7 @@ bool TabHoverCardController::TargetTabIsValid() const {
   // including no longer belonging to the same tabstrip, being dragged or
   // detached, or just not being visible. We need to be vigilant about invalid
   // tabs due to e.g. crbug.com/1295601.
-  return target_tab_->IsValid();
+  return target_tab_ && target_tab_->IsValid();
 }
 
 void TabHoverCardController::OnCardFullyVisible() {
