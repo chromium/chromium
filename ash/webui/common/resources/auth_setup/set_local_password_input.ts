@@ -178,9 +178,7 @@ export class SetLocalPasswordInputElement extends
     }
 
     const value = this.$.firstInput.value;
-    const {complexity} =
-        await PasswordFactorEditor.getRemote().checkLocalPasswordComplexity(
-            value);
+    const complexity = await this.checkLocalPasswordComplexity(value);
 
     // Abort validation if the user has changed the input value while we were
     // waiting for the async function call above to return.
@@ -392,6 +390,28 @@ export class SetLocalPasswordInputElement extends
     } catch (e) {
       console.error('Error calling fetchLocalAuthFactorsComplexity:', e);
       this.localAuthFactorsComplexity_ = LocalAuthFactorsComplexity.kUnset;
+    }
+  }
+
+  private async checkLocalPasswordComplexity(value: string):
+      Promise<PasswordComplexity|null> {
+    let authToken = '';
+    if (!this.authToken) {
+      console.warn(
+          'Invalid authToken while calling checkLocalPasswordComplexity:',
+          this.authToken);
+    } else {
+      authToken = this.authToken;
+    }
+
+    try {
+      return await PasswordFactorEditor.getRemote()
+          .checkLocalPasswordComplexity(authToken, value);
+    } catch (e) {
+      console.error(
+          'Expired authToken while calling checkLocalPasswordComplexity: ',
+          authToken);
+      return null;
     }
   }
 }

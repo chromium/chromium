@@ -47,8 +47,9 @@ class PasswordFactorEditor : public mojom::PasswordFactorEditor {
       base::OnceCallback<void(mojom::ConfigureResult)> callback) override;
 
   void CheckLocalPasswordComplexity(
+      const std::string& auth_token,
       const std::string& password,
-      base::OnceCallback<void(mojom::PasswordComplexity)> callback) override;
+      CheckLocalPasswordComplexityCallback callback) override;
 
   void RemovePassword(
       const std::string& auth_token,
@@ -65,10 +66,22 @@ class PasswordFactorEditor : public mojom::PasswordFactorEditor {
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       std::unique_ptr<UserContext> user_context);
 
+  void SetLocalPasswordWithContext(
+      const std::string& auth_token,
+      const std::string& new_password,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      std::unique_ptr<UserContext> user_context);
+
   void SetPasswordWithContext(
       const std::string& auth_token,
       const std::string& new_password,
       const cryptohome::KeyLabel& label,
+      base::OnceCallback<void(mojom::ConfigureResult)> callback,
+      std::unique_ptr<UserContext> user_context);
+
+  void UpdateOrSetLocalPasswordWithContext(
+      const std::string& auth_token,
+      const std::string& new_password,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
       std::unique_ptr<UserContext> user_context);
 
