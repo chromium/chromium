@@ -17,7 +17,7 @@
 namespace autofill {
 
 FieldTypeSet AttributeType::storable_field_types(
-    base::PassKey<EntityTable> pass_key) const {
+    EntityTablePassKey pass_key) const {
   if (data_type() == DataType::kName) {
     return NameInfo::kDatabaseStoredTypes;
   }

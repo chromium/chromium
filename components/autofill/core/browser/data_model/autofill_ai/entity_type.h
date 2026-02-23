@@ -13,7 +13,6 @@
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/types/optional_ref.h"
-#include "base/types/pass_key.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -54,6 +53,12 @@ class AttributeType final {
     kMaxValue = kString,
   };
 
+  class EntityTablePassKey {
+    friend class EntityTable;
+    friend class AttributeTypeTestApi;
+    EntityTablePassKey() = default;
+  };
+
   // Comparator that ranks types by their priority for disambiguating different
   // instances of the same entity type, as specified in the schema.
   // `DisambiguationOrder(x, y) == true` means `x` has higher priority than `y`.
@@ -86,10 +91,11 @@ class AttributeType final {
   //   Except for name types, `field_subtypes() == {field_type}`.
   //   For name types, `field_subtypes()` includes `NAME_FIRST` etc.
   // - `storable_field_types()` are the ones that may be physically stored in
-  //   the database.
+  //   the database. It is a subset of `field_subtypes()`.
+  //   Except for name types, `storable_field_types() == {field_type}`.
   constexpr FieldType field_type() const;
   constexpr FieldTypeSet field_subtypes() const;
-  FieldTypeSet storable_field_types(base::PassKey<EntityTable> pass_key) const;
+  FieldTypeSet storable_field_types(EntityTablePassKey pass_key) const;
 
   // Returns whether the attribute should be obfuscated in preview and
   // suggestion labels.
@@ -122,6 +128,8 @@ class AttributeType final {
   }
 
  private:
+  friend class AttributeTypeTestApi;
+
   AttributeTypeName name_{};
 };
 

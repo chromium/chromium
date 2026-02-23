@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,10 +16,50 @@
 namespace autofill {
 namespace {
 
+using ::testing::AnyOf;
+using ::testing::Contains;
+using ::testing::Each;
 using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::IsSubsetOf;
+using ::testing::ResultOf;
 using ::testing::UnorderedElementsAre;
+using ::testing::ValuesIn;
 
-TEST(AutofillAttributeTypeTest, Relationships) {
+class AutofillAttributeTypeTest_FieldTypeRelations
+    : public testing::TestWithParam<AttributeType> {};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         AutofillAttributeTypeTest_FieldTypeRelations,
+                         ValuesIn(DenseSet<AttributeType>::all()));
+
+// Tests the co-domain of AttributeType::field_type().
+TEST_P(AutofillAttributeTypeTest_FieldTypeRelations, FieldType) {
+  AttributeType at = GetParam();
+  EXPECT_THAT(at.field_type(), AnyOf(ResultOf(&GroupTypeOfFieldType,
+                                              FieldTypeGroup::kAutofillAi),
+                                     Eq(NAME_FULL)));
+}
+
+// Tests the co-domain of AttributeType::field_subtypes().
+TEST_P(AutofillAttributeTypeTest_FieldTypeRelations, FieldSubtypes) {
+  AttributeType at = GetParam();
+  EXPECT_THAT(
+      at.field_subtypes(),
+      AnyOf(Each(ResultOf(&GroupTypeOfFieldType, FieldTypeGroup::kAutofillAi)),
+            Each(ResultOf(&GroupTypeOfFieldType, FieldTypeGroup::kName))));
+  EXPECT_THAT(at.field_subtypes(), Contains(at.field_type()));
+}
+
+// Tests the co-domain of AttributeType::storable_field_types().
+TEST_P(AutofillAttributeTypeTest_FieldTypeRelations, StorableFieldTypes) {
+  AttributeType at = GetParam();
+  EXPECT_THAT(test_api(at).storable_field_types(),
+              IsSubsetOf(at.field_subtypes()));
+  EXPECT_THAT(test_api(at).storable_field_types(), Contains(at.field_type()));
+}
+
+TEST(AutofillAttributeTypeTest, Relationships_PassportName) {
   AttributeType a = AttributeType(AttributeTypeName::kPassportName);
   EXPECT_EQ(a.entity_type(), EntityType(EntityTypeName::kPassport));
   EXPECT_THAT(a.field_subtypes(),

@@ -37,6 +37,7 @@ using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::Truly;
 using ::testing::UnorderedElementsAre;
+using ::testing::ValuesIn;
 
 constexpr auto kVehicle = EntityType(EntityTypeName::kVehicle);
 constexpr auto kDriversLicense = EntityType(EntityTypeName::kDriversLicense);
@@ -505,6 +506,30 @@ TEST_F(DetermineAttributeTypesTest, OverloadEquivalence) {
                   Pair(section1, ElementsAre(Pair(kVehicle, vehicle_matcher))),
                   Pair(section2, ElementsAre(Pair(kDriversLicense,
                                                   drivers_license_matcher)))));
+}
+
+class DetermineAttributeTypesTest_FieldTypeUniqueness
+    : public testing::TestWithParam<EntityType> {};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         DetermineAttributeTypesTest_FieldTypeUniqueness,
+                         ValuesIn(DenseSet<EntityType>::all()));
+
+// Tests that no two attributes of an entity share the same FieldTypes.
+// This is necessary for GetAttributeType(), an internal function of
+// determine_attribute_types.cc, to work as expected.
+TEST_P(DetermineAttributeTypesTest_FieldTypeUniqueness, FieldSubtypes) {
+  EntityType et = GetParam();
+  for (AttributeType at1 : et.attributes()) {
+    for (AttributeType at2 : et.attributes()) {
+      SCOPED_TRACE(testing::Message() << at1 << " and " << at2 << " of " << et);
+      if (at1 == at2) {
+        continue;
+      }
+      EXPECT_THAT(Intersection(at1.field_subtypes(), at2.field_subtypes()),
+                  IsEmpty());
+    }
+  }
 }
 
 }  // namespace autofill
