@@ -18,6 +18,7 @@ interface AxTreeAnchorMetadata {
   textBefore?: string;
   textAfter?: string;
 }
+
 declare namespace chrome {
   export namespace readingMode {
     /////////////////////////////////////////////////////////////////////

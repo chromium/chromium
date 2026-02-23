@@ -586,7 +586,7 @@ void ReadAnythingAppController::AccessibilityEventReceived(
     const std::vector<ui::AXTreeUpdate>& updates,
     const std::vector<ui::AXEvent>& events) {
   model_.PrepareForAXTreeUpdates(tree_id);
-  if (IsReadabilityWithLinksEnabled() &&
+  if (IsReadabilityEnabled() && IsReadabilityWithLinksEnabled() &&
       model_.should_extract_anchors_from_tree_for_readability()) {
     model_.ApplyAccessibilityUpdates(
         tree_id, const_cast<std::vector<ui::AXTreeUpdate>&>(updates),
