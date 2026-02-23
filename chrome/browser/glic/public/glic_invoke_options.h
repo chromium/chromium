@@ -39,6 +39,8 @@ enum class GlicInvokeError {
   kUnknown,
   // The invocation timed out before completion.
   kTimeout,
+  // The provided conversation ID was invalid (e.g. empty).
+  kInvalidConversationId,
 };
 
 // Configuration options for invoking Glic.
