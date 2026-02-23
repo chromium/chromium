@@ -20,7 +20,7 @@ found in the LICENSE file.
     android:orientation="vertical"
     android:paddingBottom="12dp">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginLeft="20dp"
@@ -30,30 +30,34 @@ found in the LICENSE file.
 
       <TextView
         android:id="@+id/signin_promo_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:gravity="center_horizontal"
         android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
         android:includeFontPadding="false"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:text="@string/signin_promo_title" />
 
       <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/signin_promo_dismiss_button"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_gravity="top|end"
-        android:layout_toEndOf="@id/signin_promo_dismiss_button"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"
         android:contentDescription="@string/close"
         android:scaleType="center"
         android:src="@drawable/btn_close"
         app:tint="@macro/default_icon_color"
         android:background="?attr/selectableItemBackground"
-        android:accessibilityTraversalBefore="@id/account_image" />
+        android:accessibilityTraversalBefore="@id/account_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
       android:id="@+id/image_description_container"
