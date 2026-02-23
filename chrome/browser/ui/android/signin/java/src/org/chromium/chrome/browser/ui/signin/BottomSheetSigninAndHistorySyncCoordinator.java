@@ -50,6 +50,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -554,6 +555,16 @@ public class BottomSheetSigninAndHistorySyncCoordinator extends SigninAndHistory
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             maybeShowHistoryOptInDialog();
             return;
+        }
+
+        if (mConfig.withAccountSigninMode == WithAccountSigninMode.SEAMLESS_SIGNIN) {
+            CoreAccountId accountId = assertNonNull(mConfig.selectedCoreAccountId);
+            if (identityManager.findExtendedAccountInfoByAccountId(accountId) == null) {
+                // Account disappeared between the trigger of the sign-in promo and the start of the
+                // sign-in bottom sheet.
+                onFlowComplete(SigninAndHistorySyncCoordinator.Result.aborted());
+                return;
+            }
         }
 
         if (!accounts.isEmpty()) {

@@ -1250,6 +1250,20 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testSeamlessSigninWithAccountNotOnDevice() {
+        launchSigninFlow(
+                WithAccountSigninMode.SEAMLESS_SIGNIN,
+                HistorySyncConfig.OptInMode.NONE,
+                TestAccounts.ACCOUNT1.getId());
+
+        verify(mDelegate, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                .onFlowComplete(eq(Result.aborted()));
+        assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testIncognitoProfileCannotStartSigninFlow() {
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
