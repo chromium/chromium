@@ -195,6 +195,16 @@ std::optional<Thread> AiThreadSyncBridge::GetThread(
                 specifics.conversation_turn_id());
 }
 
+std::vector<Thread> AiThreadSyncBridge::GetThreads() const {
+  std::vector<Thread> threads;
+  for (const auto& [server_id, thread_entity] : ai_thread_entities_) {
+    threads.emplace_back(ThreadType::kAiMode, server_id,
+                         thread_entity.specifics().title(),
+                         thread_entity.specifics().conversation_turn_id());
+  }
+  return threads;
+}
+
 void AiThreadSyncBridge::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

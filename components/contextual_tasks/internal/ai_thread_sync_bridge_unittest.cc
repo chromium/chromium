@@ -183,6 +183,44 @@ TEST_F(AiThreadSyncBridgeTest, GetThread) {
   EXPECT_FALSE(not_found_thread.has_value());
 }
 
+TEST_F(AiThreadSyncBridgeTest, GetThreads) {
+  syncer::EntityChangeList entity_change_list;
+  sync_pb::AiThreadSpecifics specifics;
+  specifics.set_server_id("server_id_1");
+  specifics.set_title("Title 1");
+  specifics.set_conversation_turn_id("turn_id_1");
+  syncer::EntityData entity_data;
+  *entity_data.specifics.mutable_ai_thread() = specifics;
+  entity_change_list.push_back(
+      syncer::EntityChange::CreateAdd("server_id_1", std::move(entity_data)));
+
+  sync_pb::AiThreadSpecifics specifics_2;
+  specifics_2.set_server_id("server_id_2");
+  specifics_2.set_title("Title 2");
+  specifics_2.set_conversation_turn_id("turn_id_2");
+  syncer::EntityData entity_data_2;
+  *entity_data_2.specifics.mutable_ai_thread() = specifics_2;
+  entity_change_list.push_back(
+      syncer::EntityChange::CreateAdd("server_id_2", std::move(entity_data_2)));
+
+  bridge_->MergeFullSyncData(bridge_->CreateMetadataChangeList(),
+                             std::move(entity_change_list));
+
+  std::vector<Thread> threads = bridge_->GetThreads();
+  EXPECT_EQ(2u, threads.size());
+
+  size_t thread_1_index = threads[0].server_id == "server_id_1" ? 0 : 1;
+  size_t thread_2_index = thread_1_index == 1 ? 0 : 1;
+
+  EXPECT_EQ(threads[thread_1_index].server_id, "server_id_1");
+  EXPECT_EQ(threads[thread_1_index].title, "Title 1");
+  EXPECT_EQ(threads[thread_1_index].conversation_turn_id, "turn_id_1");
+
+  EXPECT_EQ(threads[thread_2_index].server_id, "server_id_2");
+  EXPECT_EQ(threads[thread_2_index].title, "Title 2");
+  EXPECT_EQ(threads[thread_2_index].conversation_turn_id, "turn_id_2");
+}
+
 }  // namespace
 
 }  // namespace contextual_tasks
