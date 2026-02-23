@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 
+enum class ApplicationMode;
 class Browser;
 @protocol BrowserProviderInterface;
 class GURL;
@@ -24,6 +25,7 @@ enum class SafariDataImportEntryPoint;
 @class OpenNewTabCommand;
 @class SceneCoordinator;
 class SceneUrlLoadingService;
+@protocol SceneURLLoadingServiceDelegate;
 @class SettingsNavigationController;
 @class ShowSigninCommand;
 @class SigninCoordinator;
@@ -36,6 +38,12 @@ enum class PasswordCheckReferrer;
 enum class WarningType;
 }  // namespace password_manager
 
+@protocol SceneCoordinatorDelegate
+// Sets the current interface to `ApplicationMode::INCOGNITO` or
+// `ApplicationMode::NORMAL`.
+- (void)setCurrentInterfaceForMode:(ApplicationMode)mode;
+@end
+
 // Coordinator for the scene, managing the top-level UI.
 @interface SceneCoordinator
     : RootCoordinator <SettingsCommands, SettingsNavigationControllerDelegate>
@@ -47,7 +55,11 @@ enum class WarningType;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-@property(nonatomic, weak) id<TabGridCoordinatorDelegate> delegate;
+// A delegate for this coordinator.
+@property(nonatomic, weak) id<SceneCoordinatorDelegate> delegate;
+
+// A delegate for the Tab Grid coordinator.
+@property(nonatomic, weak) id<TabGridCoordinatorDelegate> tabGridDelegate;
 
 // Proxy properties for TabGridCoordinator.
 @property(nonatomic, readonly, strong) UIViewController* activeViewController;
@@ -239,6 +251,12 @@ enum class WarningType;
 
 // Open a new window with `userActivity`
 - (void)openNewWindowWithActivity:(NSUserActivity*)userActivity;
+
+// Shows the TabGrid, in the chosen `mode`.
+- (void)displayTabGridInMode:(TabGridOpeningMode)mode;
+
+// Stops voice search on all browsers (regular and incognito) in the scene.
+- (void)stopAllVoiceSearch;
 
 @end
 

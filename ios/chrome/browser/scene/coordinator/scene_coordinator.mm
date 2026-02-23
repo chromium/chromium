@@ -225,7 +225,7 @@ void OnListFamilyMembersResponse(
                      regularBrowser:_regularBrowser.get()
                     inactiveBrowser:_inactiveBrowser.get()
                    incognitoBrowser:_incognitoBrowser];
-  _tabGridCoordinator.delegate = self.delegate;
+  _tabGridCoordinator.delegate = self.tabGridDelegate;
   [_tabGridCoordinator start];
   if (IsUseSceneViewControllerEnabled()) {
     _viewController = [[SceneViewController alloc] init];
@@ -265,6 +265,7 @@ void OnListFamilyMembersResponse(
   [_tabGridCoordinator stop];
   [_appBarCoordinator stop];
   self.delegate = nil;
+  self.tabGridDelegate = nil;
   self.sceneURLLoadingService = nullptr;
 }
 
@@ -998,6 +999,33 @@ void OnListFamilyMembersResponse(
                        errorHandler:nil];
 }
 
+- (void)displayTabGridInMode:(TabGridOpeningMode)mode {
+  if (self.isTabGridActive) {
+    return;
+  }
+
+  BOOL incognito = self.currentBrowser->type() == Browser::Type::kIncognito;
+  if (mode == TabGridOpeningMode::kRegular && incognito) {
+    [self.delegate setCurrentInterfaceForMode:ApplicationMode::NORMAL];
+  } else if (mode == TabGridOpeningMode::kIncognito && !incognito) {
+    [self.delegate setCurrentInterfaceForMode:ApplicationMode::INCOGNITO];
+  }
+
+  [self showTabSwitcher];
+}
+
+- (void)stopAllVoiceSearch {
+  // Stop voice search on the regular browser.
+  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+      _regularBrowser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [handler stopVoiceSearch];
+
+  // Stop voice search on the incognito browser.
+  handler = HandlerForProtocol(_incognitoBrowser->GetCommandDispatcher(),
+                               BrowserCoordinatorCommands);
+  [handler stopVoiceSearch];
+}
+
 #pragma mark - SettingsCommands
 
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
@@ -1338,8 +1366,8 @@ void OnListFamilyMembersResponse(
 
 #pragma mark - Properties
 
-- (void)setDelegate:(id<TabGridCoordinatorDelegate>)delegate {
-  _delegate = delegate;
+- (void)setTabGridDelegate:(id<TabGridCoordinatorDelegate>)delegate {
+  _tabGridDelegate = delegate;
   _tabGridCoordinator.delegate = delegate;
 }
 
@@ -1835,6 +1863,16 @@ void OnListFamilyMembersResponse(
 
   data.productSpecificData = specificProductData;
   return data;
+}
+
+// Shows the tab switcher UI.
+- (void)showTabSwitcher {
+  [self setActiveMode:TabGridMode::kNormal];
+  TabGridPage page = (self.currentBrowser->type() == Browser::Type::kIncognito)
+                         ? TabGridPageIncognitoTabs
+                         : TabGridPageRegularTabs;
+
+  [self showTabGridPage:page];
 }
 
 @end

@@ -52,8 +52,4 @@
   return self.profile->IsOffTheRecord();
 }
 
-- (BOOL)playingTTS {
-  return self.coordinator.playingTTS;
-}
-
 @end

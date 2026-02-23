@@ -456,7 +456,7 @@ using base::UserMetricsAction;
   [LayoutGuideCenterForBrowser(_browser.get())
       referenceView:nil
           underName:kVoiceSearchButtonGuide];
-  [_sceneHandler startVoiceSearch];
+  [_browserCoordinatorHandler startVoiceSearch];
 }
 
 - (void)keyCommand_showSettings {

@@ -40,8 +40,6 @@ class ProfileIOS;
 @property(nonatomic, readonly) ProfileIOS* profile;
 // YES if this interface is incognito.
 @property(nonatomic, readonly) BOOL incognito;
-// YES if TTS audio is playing.
-@property(nonatomic, readonly) BOOL playingTTS;
 
 @end
 

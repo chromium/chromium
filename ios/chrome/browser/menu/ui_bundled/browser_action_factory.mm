@@ -289,8 +289,8 @@
 }
 
 - (UIAction*)actionToStartVoiceSearch {
-  id<SceneCommands> handler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
   return [self
       actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VOICE_SEARCH)
                 image:DefaultSymbolWithPointSize(kMicrophoneSymbol,

@@ -45,7 +45,7 @@
     DCHECK(view);
     [self.layoutGuideCenter referenceView:view
                                 underName:kVoiceSearchButtonGuide];
-    [self.sceneHandler startVoiceSearch];
+    [self.browserCoordinatorCommandsHandler startVoiceSearch];
   }
 }
 

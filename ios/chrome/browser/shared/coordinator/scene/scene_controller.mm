@@ -168,13 +168,6 @@ namespace {
 // existing NTP. See http://crbug.com/1363375 for details.
 BASE_FEATURE(kForceNewTabForIntentSearch, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// A rough estimate of the expected duration of a view controller transition
-// animation. It's used to temporarily disable mutally exclusive chrome
-// commands that trigger a view controller presentation.
-// TODO(crbug.com/429351167): Find a better way to do this without the time
-// constant.
-const int64_t kExpectedTransitionDurationInNanoSeconds = 0.2 * NSEC_PER_SEC;
-
 // Used to update the current BVC mode if a new tab is added while the tab
 // switcher view is being dismissed.  This is different than ApplicationMode in
 // that it can be set to `NONE` when not in use.
@@ -214,6 +207,7 @@ bool IsSigninForcedByPolicy() {
 
 @interface SceneController () <AuthenticationServiceObserving,
                                ProfileStateObserver,
+                               SceneCoordinatorDelegate,
                                SceneUIProvider,
                                SceneURLLoadingServiceDelegate,
                                TabGridCoordinatorDelegate> {
@@ -248,18 +242,6 @@ bool IsSigninForcedByPolicy() {
 
 // Coordinates the creation of PDF screenshots with the window's content.
 @property(nonatomic, strong) ScreenshotDelegate* screenshotDelegate;
-
-// The tab switcher command and the voice search commands can be sent by views
-// that reside in a different UIWindow leading to the fact that the exclusive
-// touch property will be ineffective and a command for processing both
-// commands may be sent in the same run of the runloop leading to
-// inconsistencies. Those two boolean indicate if one of those commands have
-// been processed in the last 200ms in order to only allow processing one at
-// a time.
-// TODO(crbug.com/40445992):  Provide a general solution for handling mutually
-// exclusive chrome commands sent at nearly the same time.
-@property(nonatomic, assign) BOOL isProcessingTabSwitcherCommand;
-@property(nonatomic, assign) BOOL isProcessingVoiceSearchCommand;
 
 // If not NONE, the current BVC should be switched to this BVC on completion
 // of tab switcher dismissal.
@@ -976,6 +958,7 @@ bool IsSigninForcedByPolicy() {
       [[SceneCoordinator alloc] initWithSceneCommandsEndpoint:self
                                                     tabOpener:self];
   _mainCoordinator.delegate = self;
+  _mainCoordinator.tabGridDelegate = self;
   _mainCoordinator.sceneURLLoadingService = _sceneURLLoadingService.get();
 
   self.browserLifecycleManager =
@@ -1550,28 +1533,7 @@ bool IsSigninForcedByPolicy() {
 }
 
 - (void)displayTabGridInMode:(TabGridOpeningMode)mode {
-  if (self.mainCoordinator.isTabGridActive) {
-    return;
-  }
-
-  if (!self.isProcessingVoiceSearchCommand) {
-    BOOL incognito = self.currentInterface.incognito;
-    if (mode == TabGridOpeningMode::kRegular && incognito) {
-      [self setCurrentInterfaceForMode:ApplicationMode::NORMAL];
-    } else if (mode == TabGridOpeningMode::kIncognito && !incognito) {
-      [self setCurrentInterfaceForMode:ApplicationMode::INCOGNITO];
-    }
-
-    [self showTabSwitcher];
-    self.isProcessingTabSwitcherCommand = YES;
-    // TODO(crbug.com/429351167): Find a better way to do this without the time
-    // constant.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                 kExpectedTransitionDurationInNanoSeconds),
-                   dispatch_get_main_queue(), ^{
-                     self.isProcessingTabSwitcherCommand = NO;
-                   });
-  }
+  [self.mainCoordinator displayTabGridInMode:mode];
 }
 
 - (void)showPrivacySettingsFromViewController:
@@ -1632,18 +1594,8 @@ bool IsSigninForcedByPolicy() {
       incognitoContentVisible;
 }
 
-- (void)startVoiceSearch {
-  if (!self.isProcessingTabSwitcherCommand) {
-    [self startVoiceSearchInCurrentBVC];
-    self.isProcessingVoiceSearchCommand = YES;
-    // TODO(crbug.com/429351167): Find a better way to do this without the time
-    // constant.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
-                                 kExpectedTransitionDurationInNanoSeconds),
-                   dispatch_get_main_queue(), ^{
-                     self.isProcessingVoiceSearchCommand = NO;
-                   });
-  }
+- (void)stopAllVoiceSearch {
+  [self.mainCoordinator stopAllVoiceSearch];
 }
 
 - (void)maybeShowSettingsFromViewController {
@@ -1799,10 +1751,14 @@ bool IsSigninForcedByPolicy() {
     (TabOpeningPostOpeningAction)action {
   __weak __typeof(self) weakSelf = self;
   switch (action) {
-    case START_VOICE_SEARCH:
+    case START_VOICE_SEARCH: {
+      __weak id<BrowserCoordinatorCommands> weakHandler = HandlerForProtocol(
+          self.currentInterface.browser->GetCommandDispatcher(),
+          BrowserCoordinatorCommands);
       return ^{
-        [weakSelf startVoiceSearchInCurrentBVC];
+        [weakHandler startVoiceSearch];
       };
+    }
     case START_QR_CODE_SCANNER:
       return ^{
         [weakSelf startQRCodeScanner];
@@ -1960,20 +1916,6 @@ bool IsSigninForcedByPolicy() {
          // TODO(crbug.com/403235333): Add Lens entry point for Share extension.
          entryPoint:LensEntrypoint::ContextMenu];
   [lensHandler searchImageWithLens:command];
-}
-
-// Starts a voice search on the current BVC.
-- (void)startVoiceSearchInCurrentBVC {
-  // If the background (non-current) BVC is playing TTS audio, call
-  // -startVoiceSearch on it to stop the TTS.
-  WrangledBrowser* interface = self.mainInterface == self.currentInterface
-                                   ? self.incognitoInterface
-                                   : self.mainInterface;
-  if (interface.playingTTS) {
-    [interface.bvc startVoiceSearch];
-  } else {
-    [self.currentInterface.bvc startVoiceSearch];
-  }
 }
 
 - (void)startQRCodeScanner {

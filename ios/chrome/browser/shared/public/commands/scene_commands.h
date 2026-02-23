@@ -83,8 +83,8 @@ enum class TabGridOpeningMode {
 - (void)showSafeBrowsingSettingsFromViewController:
     (UIViewController*)baseViewController;
 
-// Starts a voice search on the current BVC.
-- (void)startVoiceSearch;
+// Stops voice search on all browsers (regular and incognito) in the scene.
+- (void)stopAllVoiceSearch;
 
 // Shows the History UI.
 - (void)showHistory;

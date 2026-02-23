@@ -21,9 +21,6 @@
 @property(nonatomic, strong, readonly)
     BrowserLayoutViewController* browserLayoutViewController;
 
-// Returns whether or not text to speech is playing.
-@property(nonatomic, assign, readonly, getter=isPlayingTTS) BOOL playingTTS;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_VIEW_UI_BUNDLED_BROWSER_COORDINATOR_H_

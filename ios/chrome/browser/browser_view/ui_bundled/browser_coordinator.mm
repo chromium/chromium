@@ -915,10 +915,6 @@ const char kChromeAppStoreUrl[] =
 
 #pragma mark - Public
 
-- (BOOL)isPlayingTTS {
-  return _voiceSearchController.audioPlaying;
-}
-
 - (BrowserLayoutViewController*)browserLayoutViewController {
   return _browserLayoutCoordinator.viewController;
 }
@@ -2563,6 +2559,22 @@ const char kChromeAppStoreUrl[] =
   // Preload VoiceSearchController and views and view controllers needed
   // for voice search.
   [_voiceSearchController prepareToAppear];
+}
+
+- (void)startVoiceSearch {
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler stopAllVoiceSearch];
+  [_viewController startVoiceSearch];
+}
+
+- (void)stopVoiceSearch {
+  if (!_voiceSearchController.audioPlaying) {
+    return;
+  }
+
+  // Calling showVoiceSearch stops TTS audio if it is playing.
+  [_viewController startVoiceSearch];
 }
 
 - (void)dismissPasswordSuggestions {
