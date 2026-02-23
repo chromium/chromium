@@ -1,0 +1,27 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Commands like grep, ls -R, and find are banned for taking forever inside a
+# Chromium checkout.
+# Commands like apt and brew are banned as Chromium is expected to gather its
+# own tooling, and should never need anything installed. Note: gemini-cli seems
+# to be getting better preventing itself from running these types of commands,
+# so this may be doing nothing.
+[[rule]]
+toolName = "run_shell_command"
+commandRegex = "grep -(R|r)"
+decision = "deny"
+priority = 500
+
+[[rule]]
+toolName = "run_shell_command"
+commandRegex = "apt(-get)? "
+decision = "deny"
+priority = 500
+
+[[rule]]
+toolName = "run_shell_command"
+commandPrefix = ["ls -R", "find .", "brew"]
+decision = "deny"
+priority = 500

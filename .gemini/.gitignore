@@ -1,0 +1,11 @@
+/*
+!.gitignore
+!commands/
+!OWNERS
+!.style.mdformat
+
+# We want to ignore all other policies, to allow users to make their own.
+!policies/
+/policies/*
+!/policies/README.md
+!/policies/blocklist.toml

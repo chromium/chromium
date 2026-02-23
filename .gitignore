@@ -49,11 +49,6 @@
 .emulator_sdk
 .gdb_history
 .gdbinit
-!/.gemini/
-/.gemini/*
-!/.gemini/commands/
-!/.gemini/OWNERS
-!/.gemini/.style.mdformat
 .landmines
 .metadata
 .project

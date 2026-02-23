@@ -1,8 +1,7 @@
 # Landmines Extension
 
-Aims to disable commands that tend to crash or stall gemini. Hopefully we can
-remove most of these in the future when agents are smart enough to not try them
-in the first place.
+Aims to disable commands that users almost never want. This extension has
+become partially obsolete with policies - see `//.gemini/policies`.
 
 Also contains a note about using `fdfind` as default. This is available on
 Debian via:
@@ -12,17 +11,6 @@ sudo apt-get install fd-find
 ```
 
 ## Disabled Commands
-
-The following are disabled because they are too slow on chrome's large source
-tree:
-
-- `glob`
-- `find  .`
-- `ls -R`
-- `grep -r`
-- `grep -R`
-
-Other disables:
 
 - `git grep`
   - This runs plenty fast, but skips submodules by default. Better to just use
