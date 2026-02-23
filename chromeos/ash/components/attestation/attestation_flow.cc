@@ -46,6 +46,15 @@ std::optional<::attestation::CertificateProfile> ProfileToAttestationProtoEnum(
       return ::attestation::CertificateProfile::DEVICE_SETUP_CERTIFICATE;
     case PROFILE_DEVICE_TRUST_USER_CERTIFICATE:
       return ::attestation::CertificateProfile::DEVICE_TRUST_USER_CERTIFICATE;
+    case PROFILE_BEAM_DEVICE_CERTIFICATE:
+      // Hardcoding integer value for BEAM_DEVICE_CERTIFICATE (17).
+      // The BEAM_DEVICE_CERTIFICATE enum is not defined in the version of
+      // cros_system_api used by this mini-branch (7204_185).
+      // This cast assumes the receiving ChromeOS attestation service
+      // on the corresponding stabilize branch (Stabilize-starline-16294.B)
+      // has been updated to understand value 17 (e.g., via crrev/c/7545919).
+      // See b/481063305 and go/beam_certificate_service_copy.
+      return static_cast<::attestation::CertificateProfile>(17);
   }
   return {};
 }
@@ -78,6 +87,7 @@ AttestationKeyType AttestationFlow::GetKeyTypeForProfile(
     case PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE:
     case PROFILE_DEVICE_SETUP_CERTIFICATE:
     case PROFILE_DEVICE_TRUST_USER_CERTIFICATE:
+    case PROFILE_BEAM_DEVICE_CERTIFICATE:
       return KEY_DEVICE;
     case PROFILE_ENTERPRISE_USER_CERTIFICATE:
     case PROFILE_CONTENT_PROTECTION_CERTIFICATE:
