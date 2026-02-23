@@ -19,7 +19,7 @@ namespace autofill {
 // server, which is itself backward-compatible. The list must be kept up to
 // date with the Autofill server list.
 //
-// NOTE: When deprecating field types, also update IsValidFieldType().
+// NOTE: When deprecating field types, also update ToSafeFieldType().
 //
 // This enum represents the list of all field types natively understood by the
 // Autofill server. A subset of these types is used to store Autofill data in
