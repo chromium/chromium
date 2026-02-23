@@ -73,6 +73,11 @@ class GlicActorTaskIcon : public TabStripNudgeButton {
 
   void NotifyClick(const ui::Event& event) override;
 
+  // Whether or not to use the same background as the alt icon, which may be
+  // enabled as part of GlicEntrypointVariations. Should be kept in sync with
+  // TapStripGlicButton::ShouldUseAltIcon.
+  bool ShouldUseGlicButtonAltIconBackgroundColor();
+
   AnimationMode animation_mode_ = AnimationMode::kEntry;
   base::CallbackListSubscription window_did_become_active_subscription_;
   base::CallbackListSubscription window_did_become_inactive_subscription_;
