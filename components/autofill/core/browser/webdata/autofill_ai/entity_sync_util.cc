@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
@@ -48,13 +49,10 @@ using sync_pb::AutofillValuableSpecifics;
     (specifics).clear_##proto_field_name();                                 \
   }
 
-// Sets a date field in a protocol buffer message based on a date attribute
-// from an EntityInstance by determining the microseconds since the unix epoch.
-template <typename Proto, typename Setter>
+// Sets a date proto field based on a date attribute from an EntityInstance.
 void SetDateInSpecifics(const EntityInstance& entity,
                         AttributeTypeName attribute_name,
-                        Proto& message,
-                        Setter setter) {
+                        sync_pb::NaiveDate* message) {
   base::optional_ref<const AttributeInstance> attribute =
       entity.attribute(AttributeType(attribute_name));
   if (!attribute.has_value()) {
@@ -73,22 +71,18 @@ void SetDateInSpecifics(const EntityInstance& entity,
     }
     return std::nullopt;
   };
-
   std::optional<int> day = get_component(u"D");
   std::optional<int> month = get_component(u"M");
   std::optional<int> year = get_component(u"YYYY");
-
   if (!day || !month || !year) {
     return;
   }
 
-  base::Time::Exploded exploded = {
-      .year = *year, .month = *month, .day_of_month = *day};
-  base::Time date;
-
-  if (base::Time::FromUTCExploded(exploded, &date)) {
-    (message.*setter)((date - base::Time::UnixEpoch()).InMicroseconds());
-  }
+  sync_pb::NaiveDate proto;
+  proto.set_day(*day);
+  proto.set_month(*month);
+  proto.set_year(*year);
+  *message = std::move(proto);
 }
 
 // Wraps a message `m` into an `Any`-typed message, essentially dropping the
@@ -178,19 +172,15 @@ void AddAttribute(
   AddAttribute(type, value, std::nullopt, attributes);
 }
 
-// Helper to add a date attribute from microseconds since the unix epoch.
+// Helper to add a date attribute from a `sync_pb::NaiveDate` proto.
 void AddDateAttribute(
     AttributeTypeName type,
-    int64_t micros_since_epoch,
+    const sync_pb::NaiveDate& date,
     base::flat_set<AttributeInstance, AttributeInstance::CompareByType>&
         attributes) {
-  // TODO(crbug.com/481650251): Verify with server-side that the timestamp is
-  // indeed UTC.
-  base::Time date =
-      base::Time::FromMillisecondsSinceUnixEpoch(micros_since_epoch / 1000);
   AddAttribute(type,
-               base::UnlocalizedTimeFormatWithPattern(date, "yyyy-MM-dd",
-                                                      icu::TimeZone::getGMT()),
+               base::StringPrintf("%04d-%02d-%02d", date.year(), date.month(),
+                                  date.day()),
                attributes);
 }
 
@@ -352,10 +342,9 @@ GetPassportAttributesFromSpecifics(
   AddAttribute(kPassportName, passport.owner_name(), attributes);
   AddAttribute(kPassportNumber, passport.masked_number(), passkey, attributes);
   AddAttribute(kPassportCountry, passport.country_code(), attributes);
-  AddDateAttribute(kPassportIssueDate, passport.issue_date_unix_epoch_micros(),
+  AddDateAttribute(kPassportIssueDate, passport.issue_date(), attributes);
+  AddDateAttribute(kPassportExpirationDate, passport.expiration_date(),
                    attributes);
-  AddDateAttribute(kPassportExpirationDate,
-                   passport.expiration_date_unix_epoch_micros(), attributes);
 
   FinalizeEntityAttributes(EntityType(EntityTypeName::kPassport),
                            serialized_metadata, attributes);
@@ -378,10 +367,9 @@ sync_pb::AutofillValuableSpecifics GetPassportSpecifics(
   SET_OR_CLEAR_STRING_FIELD(entity, kPassportNumber, masked_number, passport);
   SET_OR_CLEAR_STRING_FIELD(entity, kPassportName, owner_name, passport);
   SET_OR_CLEAR_STRING_FIELD(entity, kPassportCountry, country_code, passport);
-  SetDateInSpecifics(entity, kPassportIssueDate, passport,
-                     &sync_pb::Passport::set_issue_date_unix_epoch_micros);
-  SetDateInSpecifics(entity, kPassportExpirationDate, passport,
-                     &sync_pb::Passport::set_expiration_date_unix_epoch_micros);
+  SetDateInSpecifics(entity, kPassportIssueDate, passport.mutable_issue_date());
+  SetDateInSpecifics(entity, kPassportExpirationDate,
+                     passport.mutable_expiration_date());
 
   *specifics.mutable_serialized_chrome_valuables_metadata() =
       AnyWrapProto(SerializeChromeValuablesMetadata(entity));
@@ -403,10 +391,9 @@ GetDriversLicenseAttributesFromSpecifics(
                attributes);
   AddAttribute(kDriversLicenseState, license.region(), attributes);
   // Chrome does not have an attribute for the driver license country.
-  AddDateAttribute(kDriversLicenseIssueDate,
-                   license.issue_date_unix_epoch_micros(), attributes);
-  AddDateAttribute(kDriversLicenseExpirationDate,
-                   license.expiration_date_unix_epoch_micros(), attributes);
+  AddDateAttribute(kDriversLicenseIssueDate, license.issue_date(), attributes);
+  AddDateAttribute(kDriversLicenseExpirationDate, license.expiration_date(),
+                   attributes);
 
   FinalizeEntityAttributes(EntityType(EntityTypeName::kDriversLicense),
                            serialized_metadata, attributes);
@@ -430,11 +417,10 @@ sync_pb::AutofillValuableSpecifics GetDriversLicenseSpecifics(
                             license);
   SET_OR_CLEAR_STRING_FIELD(entity, kDriversLicenseName, owner_name, license);
   SET_OR_CLEAR_STRING_FIELD(entity, kDriversLicenseState, region, license);
-  SetDateInSpecifics(entity, kDriversLicenseIssueDate, license,
-                     &sync_pb::DriverLicense::set_issue_date_unix_epoch_micros);
-  SetDateInSpecifics(
-      entity, kDriversLicenseExpirationDate, license,
-      &sync_pb::DriverLicense::set_expiration_date_unix_epoch_micros);
+  SetDateInSpecifics(entity, kDriversLicenseIssueDate,
+                     license.mutable_issue_date());
+  SetDateInSpecifics(entity, kDriversLicenseExpirationDate,
+                     license.mutable_expiration_date());
 
   *specifics.mutable_serialized_chrome_valuables_metadata() =
       AnyWrapProto(SerializeChromeValuablesMetadata(entity));
@@ -455,10 +441,9 @@ GetNationalIdCardAttributesFromSpecifics(
   AddAttribute(kNationalIdCardNumber, card.masked_number(), passkey,
                attributes);
   AddAttribute(kNationalIdCardCountry, card.country_code(), attributes);
-  AddDateAttribute(kNationalIdCardIssueDate,
-                   card.issue_date_unix_epoch_micros(), attributes);
-  AddDateAttribute(kNationalIdCardExpirationDate,
-                   card.expiry_date_unix_epoch_micros(), attributes);
+  AddDateAttribute(kNationalIdCardIssueDate, card.issue_date(), attributes);
+  AddDateAttribute(kNationalIdCardExpirationDate, card.expiration_date(),
+                   attributes);
 
   FinalizeEntityAttributes(EntityType(EntityTypeName::kNationalIdCard),
                            serialized_metadata, attributes);
@@ -481,12 +466,10 @@ sync_pb::AutofillValuableSpecifics GetNationalIdCardSpecifics(
   SET_OR_CLEAR_STRING_FIELD(entity, kNationalIdCardNumber, masked_number, card);
   SET_OR_CLEAR_STRING_FIELD(entity, kNationalIdCardName, owner_name, card);
   SET_OR_CLEAR_STRING_FIELD(entity, kNationalIdCardCountry, country_code, card);
-  SetDateInSpecifics(
-      entity, kNationalIdCardIssueDate, card,
-      &sync_pb::NationalIdCard::set_issue_date_unix_epoch_micros);
-  SetDateInSpecifics(
-      entity, kNationalIdCardExpirationDate, card,
-      &sync_pb::NationalIdCard::set_expiry_date_unix_epoch_micros);
+  SetDateInSpecifics(entity, kNationalIdCardIssueDate,
+                     card.mutable_issue_date());
+  SetDateInSpecifics(entity, kNationalIdCardExpirationDate,
+                     card.mutable_expiration_date());
 
   *specifics.mutable_serialized_chrome_valuables_metadata() =
       AnyWrapProto(SerializeChromeValuablesMetadata(entity));
@@ -547,8 +530,8 @@ GetKnownTravelerNumberAttributesFromSpecifics(
   AddAttribute(kKnownTravelerNumberName, ktn.owner_name(), attributes);
   AddAttribute(kKnownTravelerNumberNumber, ktn.masked_number(), passkey,
                attributes);
-  AddDateAttribute(kKnownTravelerNumberExpirationDate,
-                   ktn.expiry_date_unix_epoch_micros(), attributes);
+  AddDateAttribute(kKnownTravelerNumberExpirationDate, ktn.expiration_date(),
+                   attributes);
 
   FinalizeEntityAttributes(EntityType(EntityTypeName::kKnownTravelerNumber),
                            serialized_metadata, attributes);
@@ -572,9 +555,8 @@ sync_pb::AutofillValuableSpecifics GetKnownTravelerNumberSpecifics(
   SET_OR_CLEAR_STRING_FIELD(entity, kKnownTravelerNumberNumber, masked_number,
                             ktn);
   SET_OR_CLEAR_STRING_FIELD(entity, kKnownTravelerNumberName, owner_name, ktn);
-  SetDateInSpecifics(
-      entity, kKnownTravelerNumberExpirationDate, ktn,
-      &sync_pb::KnownTravelerNumber::set_expiry_date_unix_epoch_micros);
+  SetDateInSpecifics(entity, kKnownTravelerNumberExpirationDate,
+                     ktn.mutable_expiration_date());
 
   *specifics.mutable_serialized_chrome_valuables_metadata() =
       AnyWrapProto(SerializeChromeValuablesMetadata(entity));

@@ -6,6 +6,8 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -28,6 +30,16 @@ std::string GetStringValue(const EntityInstance& entity,
                            AttributeTypeName attribute_type_name) {
   return base::UTF16ToUTF8(entity.attribute(AttributeType(attribute_type_name))
                                ->GetCompleteRawInfo());
+}
+
+std::string GetDateValue(const EntityInstance& entity,
+                         AttributeTypeName attribute_type_name,
+                         const std::u16string& format) {
+  AttributeType attribute_type(attribute_type_name);
+  return base::UTF16ToUTF8(
+      entity.attribute(attribute_type)
+          ->GetInfo(attribute_type.field_type(), "en_US",
+                    AutofillFormatString(format, FormatString_Type_DATE)));
 }
 
 // Returns a `sync_pb::AutofillValuableSpecifics` message with
@@ -93,11 +105,22 @@ sync_pb::AutofillValuableSpecifics TestVehicleSpecifics() {
   return specifics;
 }
 
-// Converts date string to micros.
-int64_t ParseDateStrToMicros(std::u16string_view date_str) {
-  base::Time date;
-  CHECK(base::Time::FromUTCString(base::UTF16ToUTF8(date_str).c_str(), &date));
-  return date.InMillisecondsSinceUnixEpoch() * 1000;
+// `date_str` is expected to have the form "dd/mm/yyyy".
+sync_pb::NaiveDate StringToProtoDate(std::u16string_view date_str) {
+  int day = 0, month = 0, year = 0;
+  EXPECT_TRUE(base::StringToInt(date_str.substr(0, 2), &day));
+  EXPECT_TRUE(base::StringToInt(date_str.substr(3, 2), &month));
+  EXPECT_TRUE(base::StringToInt(date_str.substr(6, 4), &year));
+  sync_pb::NaiveDate proto;
+  proto.set_day(day);
+  proto.set_month(month);
+  proto.set_year(year);
+  return proto;
+}
+
+std::u16string ProtoDateToString(const sync_pb::NaiveDate& proto) {
+  return base::UTF8ToUTF16(base::StringPrintf("%02d/%02d/%04d", proto.day(),
+                                              proto.month(), proto.year()));
 }
 
 // Returns a `sync_pb::AutofillValuableSpecifics` message with the passport
@@ -110,10 +133,8 @@ sync_pb::AutofillValuableSpecifics TestPassportSpecifics(
   passport->set_masked_number(base::UTF16ToUTF8(options.number));
   passport->set_owner_name(base::UTF16ToUTF8(options.name));
   passport->set_country_code(base::UTF16ToUTF8(options.country));
-  passport->set_issue_date_unix_epoch_micros(
-      ParseDateStrToMicros(options.issue_date));
-  passport->set_expiration_date_unix_epoch_micros(
-      ParseDateStrToMicros(options.expiry_date));
+  *passport->mutable_issue_date() = StringToProtoDate(options.issue_date);
+  *passport->mutable_expiration_date() = StringToProtoDate(options.expiry_date);
 
   return specifics;
 }
@@ -128,10 +149,9 @@ sync_pb::AutofillValuableSpecifics TestDriversLicenseSpecifics(
   license->set_masked_number(base::UTF16ToUTF8(options.number));
   license->set_owner_name(base::UTF16ToUTF8(options.name));
   license->set_region(base::UTF16ToUTF8(options.region));
-  license->set_issue_date_unix_epoch_micros(
-      ParseDateStrToMicros(options.issue_date));
-  license->set_expiration_date_unix_epoch_micros(
-      ParseDateStrToMicros(options.expiration_date));
+  *license->mutable_issue_date() = StringToProtoDate(options.issue_date);
+  *license->mutable_expiration_date() =
+      StringToProtoDate(options.expiration_date);
 
   return specifics;
 }
@@ -146,10 +166,8 @@ sync_pb::AutofillValuableSpecifics TestNationalIdCardSpecifics(
   card->set_masked_number(base::UTF16ToUTF8(options.number));
   card->set_owner_name(base::UTF16ToUTF8(options.name));
   card->set_country_code(base::UTF16ToUTF8(options.country));
-  card->set_issue_date_unix_epoch_micros(
-      ParseDateStrToMicros(options.issue_date));
-  card->set_expiry_date_unix_epoch_micros(
-      ParseDateStrToMicros(options.expiry_date));
+  *card->mutable_issue_date() = StringToProtoDate(options.issue_date);
+  *card->mutable_expiration_date() = StringToProtoDate(options.expiry_date);
 
   return specifics;
 }
@@ -176,18 +194,9 @@ sync_pb::AutofillValuableSpecifics TestKnownTravelerNumberSpecifics(
   sync_pb::KnownTravelerNumber* ktn = specifics.mutable_known_traveler_number();
   ktn->set_masked_number(base::UTF16ToUTF8(options.number));
   ktn->set_owner_name(base::UTF16ToUTF8(options.name));
-  ktn->set_expiry_date_unix_epoch_micros(
-      ParseDateStrToMicros(options.expiration_date));
+  *ktn->mutable_expiration_date() = StringToProtoDate(options.expiration_date);
 
   return specifics;
-}
-
-void ExpectTimestampEquals(int64_t actual_micros,
-                           const std::string& expected_date_str) {
-  base::Time expected_date;
-  ASSERT_TRUE(
-      base::Time::FromUTCString(expected_date_str.c_str(), &expected_date));
-  EXPECT_EQ(actual_micros, expected_date.InMillisecondsSinceUnixEpoch() * 1000);
 }
 
 TEST(EntitySyncUtilTest, CreateEntityDataFromEntityInstance) {
@@ -757,7 +766,9 @@ TEST(EntitySyncUtilTest, EntityTypeToPassType) {
 // the passport entity from its proto representation.
 TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_Passport) {
   // The specifics require country code.
-  test::PassportEntityOptions options{.country = u"DE"};
+  test::PassportEntityOptions options{.country = u"DE",
+                                      .expiry_date = u"30/08/2019",
+                                      .issue_date = u"01/09/2010"};
   sync_pb::AutofillValuableSpecifics specifics = TestPassportSpecifics(options);
   std::optional<EntityInstance> passport =
       CreateEntityInstanceFromSpecifics(specifics);
@@ -773,12 +784,12 @@ TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_Passport) {
             specifics.passport().owner_name());
   EXPECT_EQ(GetStringValue(*passport, AttributeTypeName::kPassportCountry),
             specifics.passport().country_code());
-  EXPECT_EQ(ParseDateStrToMicros(base::UTF8ToUTF16(GetStringValue(
-                *passport, AttributeTypeName::kPassportIssueDate))),
-            ParseDateStrToMicros(options.issue_date));
-  EXPECT_EQ(ParseDateStrToMicros(base::UTF8ToUTF16(GetStringValue(
-                *passport, AttributeTypeName::kPassportExpirationDate))),
-            ParseDateStrToMicros(options.expiry_date));
+  EXPECT_EQ(GetDateValue(*passport, AttributeTypeName::kPassportIssueDate,
+                         u"DD/MM/YYYY"),
+            base::UTF16ToUTF8(options.issue_date));
+  EXPECT_EQ(GetDateValue(*passport, AttributeTypeName::kPassportExpirationDate,
+                         u"DD/MM/YYYY"),
+            base::UTF16ToUTF8(options.expiry_date));
   EXPECT_EQ(passport->record_type(), EntityInstance::RecordType::kServerWallet);
 }
 
@@ -786,7 +797,9 @@ TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_Passport) {
 // fields.
 TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_Passport) {
   // The specifics require country code.
-  test::PassportEntityOptions options{.country = u"DE"};
+  test::PassportEntityOptions options{.country = u"DE",
+                                      .expiry_date = u"30/08/2019",
+                                      .issue_date = u"01/09/2010"};
   std::optional<EntityInstance> maybe_passport =
       CreateEntityInstanceFromSpecifics(TestPassportSpecifics(options));
   ASSERT_TRUE(maybe_passport.has_value());
@@ -802,12 +815,10 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_Passport) {
             specifics.passport().owner_name());
   EXPECT_EQ(GetStringValue(passport, AttributeTypeName::kPassportCountry),
             specifics.passport().country_code());
-
-  ExpectTimestampEquals(specifics.passport().issue_date_unix_epoch_micros(),
-                        base::UTF16ToUTF8(options.issue_date));
-  ExpectTimestampEquals(
-      specifics.passport().expiration_date_unix_epoch_micros(),
-      base::UTF16ToUTF8(options.expiry_date));
+  EXPECT_EQ(ProtoDateToString(specifics.passport().issue_date()),
+            options.issue_date);
+  EXPECT_EQ(ProtoDateToString(specifics.passport().expiration_date()),
+            options.expiry_date);
 }
 
 // Tests that `CreateEntityInstanceFromSpecifics` correctly deserializes
@@ -831,12 +842,13 @@ TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_DriverLicense) {
             base::UTF16ToUTF8(options.name));
   EXPECT_EQ(GetStringValue(*license, AttributeTypeName::kDriversLicenseState),
             base::UTF16ToUTF8(options.region));
-  EXPECT_EQ(ParseDateStrToMicros(base::UTF8ToUTF16(GetStringValue(
-                *license, AttributeTypeName::kDriversLicenseIssueDate))),
-            ParseDateStrToMicros(options.issue_date));
-  EXPECT_EQ(ParseDateStrToMicros(base::UTF8ToUTF16(GetStringValue(
-                *license, AttributeTypeName::kDriversLicenseExpirationDate))),
-            ParseDateStrToMicros(options.expiration_date));
+  EXPECT_EQ(GetDateValue(*license, AttributeTypeName::kDriversLicenseIssueDate,
+                         u"DD/MM/YYYY"),
+            base::UTF16ToUTF8(options.issue_date));
+  EXPECT_EQ(
+      GetDateValue(*license, AttributeTypeName::kDriversLicenseExpirationDate,
+                   u"DD/MM/YYYY"),
+      base::UTF16ToUTF8(options.expiration_date));
   EXPECT_EQ(license->record_type(), EntityInstance::RecordType::kServerWallet);
 }
 
@@ -859,13 +871,10 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_DriverLicense) {
             specifics.driver_license().owner_name());
   EXPECT_EQ(GetStringValue(license, AttributeTypeName::kDriversLicenseState),
             specifics.driver_license().region());
-
-  ExpectTimestampEquals(
-      specifics.driver_license().issue_date_unix_epoch_micros(),
-      base::UTF16ToUTF8(options.issue_date));
-  ExpectTimestampEquals(
-      specifics.driver_license().expiration_date_unix_epoch_micros(),
-      base::UTF16ToUTF8(options.expiration_date));
+  EXPECT_EQ(ProtoDateToString(specifics.driver_license().issue_date()),
+            options.issue_date);
+  EXPECT_EQ(ProtoDateToString(specifics.driver_license().expiration_date()),
+            options.expiration_date);
 }
 
 // Tests that `CreateEntityInstanceFromSpecifics` correctly deserializes
@@ -889,12 +898,13 @@ TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_NationalIdCard) {
             base::UTF16ToUTF8(options.name));
   EXPECT_EQ(GetStringValue(*card, AttributeTypeName::kNationalIdCardCountry),
             base::UTF16ToUTF8(options.country));
-  EXPECT_EQ(ParseDateStrToMicros(base::UTF8ToUTF16(GetStringValue(
-                *card, AttributeTypeName::kNationalIdCardIssueDate))),
-            ParseDateStrToMicros(options.issue_date));
-  EXPECT_EQ(ParseDateStrToMicros(base::UTF8ToUTF16(GetStringValue(
-                *card, AttributeTypeName::kNationalIdCardExpirationDate))),
-            ParseDateStrToMicros(options.expiry_date));
+  EXPECT_EQ(GetDateValue(*card, AttributeTypeName::kNationalIdCardIssueDate,
+                         u"DD/MM/YYYY"),
+            base::UTF16ToUTF8(options.issue_date));
+  EXPECT_EQ(
+      GetDateValue(*card, AttributeTypeName::kNationalIdCardExpirationDate,
+                   u"DD/MM/YYYY"),
+      base::UTF16ToUTF8(options.expiry_date));
   EXPECT_EQ(card->record_type(), EntityInstance::RecordType::kServerWallet);
 }
 
@@ -918,13 +928,10 @@ TEST(EntitySyncUtilTest, CreateSpecificsFromEntityInstance_NationalIdCard) {
             specifics.national_id_card().owner_name());
   EXPECT_EQ(GetStringValue(card, AttributeTypeName::kNationalIdCardCountry),
             specifics.national_id_card().country_code());
-
-  ExpectTimestampEquals(
-      specifics.national_id_card().issue_date_unix_epoch_micros(),
-      base::UTF16ToUTF8(options.issue_date));
-  ExpectTimestampEquals(
-      specifics.national_id_card().expiry_date_unix_epoch_micros(),
-      base::UTF16ToUTF8(options.expiry_date));
+  EXPECT_EQ(ProtoDateToString(specifics.national_id_card().issue_date()),
+            options.issue_date);
+  EXPECT_EQ(ProtoDateToString(specifics.national_id_card().expiration_date()),
+            options.expiry_date);
 }
 
 // Tests that `CreateEntityInstanceFromSpecifics` correctly deserializes
@@ -986,9 +993,10 @@ TEST(EntitySyncUtilTest,
                   ->masked());
   EXPECT_EQ(GetStringValue(*ktn, AttributeTypeName::kKnownTravelerNumberName),
             base::UTF16ToUTF8(options.name));
-  EXPECT_EQ(ParseDateStrToMicros(base::UTF8ToUTF16(GetStringValue(
-                *ktn, AttributeTypeName::kKnownTravelerNumberExpirationDate))),
-            ParseDateStrToMicros(options.expiration_date));
+  EXPECT_EQ(
+      GetDateValue(*ktn, AttributeTypeName::kKnownTravelerNumberExpirationDate,
+                   u"DD/MM/YYYY"),
+      base::UTF16ToUTF8(options.expiration_date));
   EXPECT_EQ(ktn->record_type(), EntityInstance::RecordType::kServerWallet);
 }
 
@@ -1010,10 +1018,9 @@ TEST(EntitySyncUtilTest,
             specifics.known_traveler_number().masked_number());
   EXPECT_EQ(GetStringValue(ktn, AttributeTypeName::kKnownTravelerNumberName),
             specifics.known_traveler_number().owner_name());
-
-  ExpectTimestampEquals(
-      specifics.known_traveler_number().expiry_date_unix_epoch_micros(),
-      base::UTF16ToUTF8(options.expiration_date));
+  EXPECT_EQ(
+      ProtoDateToString(specifics.known_traveler_number().expiration_date()),
+      options.expiration_date);
 }
 
 }  // namespace

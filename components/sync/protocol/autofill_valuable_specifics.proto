@@ -25,6 +25,14 @@ message Any {
   optional bytes value = 2;
 }
 
+// Represents a date without a time zone. This is useful for dates on physical
+// documents, like an issue date of a passport.
+message NaiveDate {
+  optional int32 day = 1;
+  optional int32 month = 2;
+  optional int32 year = 3;
+}
+
 // Represents a loyalty card from Google Wallet.
 message LoyaltyCard {
   // The merchant name e.g. "Deutsche Bahn".
@@ -128,11 +136,16 @@ message Passport {
   // The country that issued the passport, normalized to ISO 3166-1 alpha-2.
   optional string country_code = 3;
 
+  reserved 4;
+  reserved "issue_date_unix_epoch_micros";
+  reserved 5;
+  reserved "expiration_date_unix_epoch_micros";
+
   // The issue date of the passport.
-  optional int64 issue_date_unix_epoch_micros = 4;
+  optional NaiveDate issue_date = 6;
 
   // The expiration date of the passport.
-  optional int64 expiration_date_unix_epoch_micros = 5;
+  optional NaiveDate expiration_date = 7;
 }
 
 // Represents a driver's license from Google Wallet.
@@ -151,11 +164,16 @@ message DriverLicense {
   // The region that issued the driver's license.
   optional string region = 4;
 
+  reserved 5;
+  reserved "issue_date_unix_epoch_micros";
+  reserved 6;
+  reserved "expiration_date_unix_epoch_micros";
+
   // The issue date of the driver's license.
-  optional int64 issue_date_unix_epoch_micros = 5;
+  optional NaiveDate issue_date = 7;
 
   // The expiration date of the driver's license.
-  optional int64 expiration_date_unix_epoch_micros = 6;
+  optional NaiveDate expiration_date = 8;
 }
 
 // Represents a national ID card from Google Wallet.
@@ -171,11 +189,16 @@ message NationalIdCard {
   // alpha-2.
   optional string country_code = 3;
 
+  reserved 4;
+  reserved "issue_date_unix_epoch_micros";
+  reserved 5;
+  reserved "expiry_date_unix_epoch_micros";
+
   // The issue date of the national ID card.
-  optional int64 issue_date_unix_epoch_micros = 4;
+  optional NaiveDate issue_date = 6;
 
   // The expiration date of the national ID card.
-  optional int64 expiry_date_unix_epoch_micros = 5;
+  optional NaiveDate expiration_date = 7;
 }
 
 // Represents a redress number from Google Wallet.
@@ -196,8 +219,11 @@ message KnownTravelerNumber {
   // The owner of the known traveler number.
   optional string owner_name = 2;
 
+  reserved 3;
+  reserved "expiry_date_unix_epoch_micros";
+
   // The expiration date of the known traveler number.
-  optional int64 expiry_date_unix_epoch_micros = 3;
+  optional NaiveDate expiration_date = 4;
 }
 
 // Valuables coming from Google Wallet.

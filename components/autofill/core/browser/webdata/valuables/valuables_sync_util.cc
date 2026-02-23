@@ -54,24 +54,24 @@ void TrimPassport(sync_pb::Passport& pass) {
   pass.clear_owner_name();
   pass.clear_masked_number();
   pass.clear_country_code();
-  pass.clear_issue_date_unix_epoch_micros();
-  pass.clear_expiration_date_unix_epoch_micros();
+  pass.clear_issue_date();
+  pass.clear_expiration_date();
 }
 
 void TrimDriverLicense(sync_pb::DriverLicense& pass) {
   pass.clear_owner_name();
   pass.clear_masked_number();
   pass.clear_region();
-  pass.clear_issue_date_unix_epoch_micros();
-  pass.clear_expiration_date_unix_epoch_micros();
+  pass.clear_issue_date();
+  pass.clear_expiration_date();
 }
 
 void TrimNationalIdCard(sync_pb::NationalIdCard& pass) {
   pass.clear_owner_name();
   pass.clear_masked_number();
   pass.clear_country_code();
-  pass.clear_issue_date_unix_epoch_micros();
-  pass.clear_expiry_date_unix_epoch_micros();
+  pass.clear_issue_date();
+  pass.clear_expiration_date();
 }
 
 void TrimRedressNumber(sync_pb::RedressNumber& pass) {
@@ -82,7 +82,7 @@ void TrimRedressNumber(sync_pb::RedressNumber& pass) {
 void TrimKnownTravelerNumber(sync_pb::KnownTravelerNumber& pass) {
   pass.clear_owner_name();
   pass.clear_masked_number();
-  pass.clear_expiry_date_unix_epoch_micros();
+  pass.clear_expiration_date();
 }
 
 }  // namespace

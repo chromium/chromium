@@ -2093,6 +2093,12 @@ VISIT_PROTO_FIELDS(const sync_pb::Any& proto) {
   VISIT_BYTES(value);
 }
 
+VISIT_PROTO_FIELDS(const sync_pb::NaiveDate& proto) {
+  VISIT(day);
+  VISIT(month);
+  VISIT(year);
+}
+
 VISIT_PROTO_FIELDS(const sync_pb::LoyaltyCard& proto) {
   VISIT(merchant_name);
   VISIT(program_name);
@@ -2132,8 +2138,8 @@ VISIT_PROTO_FIELDS(const sync_pb::Passport& proto) {
   VISIT(masked_number);
   VISIT(owner_name);
   VISIT(country_code);
-  VISIT(issue_date_unix_epoch_micros);
-  VISIT(expiration_date_unix_epoch_micros);
+  VISIT(issue_date);
+  VISIT(expiration_date);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::DriverLicense& proto) {
@@ -2141,16 +2147,16 @@ VISIT_PROTO_FIELDS(const sync_pb::DriverLicense& proto) {
   VISIT(owner_name);
   VISIT(country_code);
   VISIT(region);
-  VISIT(issue_date_unix_epoch_micros);
-  VISIT(expiration_date_unix_epoch_micros);
+  VISIT(issue_date);
+  VISIT(expiration_date);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::NationalIdCard& proto) {
   VISIT(masked_number);
   VISIT(owner_name);
   VISIT(country_code);
-  VISIT(issue_date_unix_epoch_micros);
-  VISIT(expiry_date_unix_epoch_micros);
+  VISIT(issue_date);
+  VISIT(expiration_date);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::RedressNumber& proto) {
@@ -2161,7 +2167,7 @@ VISIT_PROTO_FIELDS(const sync_pb::RedressNumber& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::KnownTravelerNumber& proto) {
   VISIT(masked_number);
   VISIT(owner_name);
-  VISIT(expiry_date_unix_epoch_micros);
+  VISIT(expiration_date);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableMetadataSpecifics& proto) {
