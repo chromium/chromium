@@ -290,6 +290,10 @@ export class AppElement extends AppElementBase implements SpeechListener,
       this.speechController_.onLockScreen();
     };
 
+    chrome.readingMode.onAnchorsReadyForReadability = () => {
+      this.onReadabilityAnchorsReady_();
+    };
+
     chrome.readingMode.readingModeWillClose = () => {
       this.speechController_.onReadingModeWillClose();
     };
@@ -566,6 +570,13 @@ export class AppElement extends AppElementBase implements SpeechListener,
     event.preventDefault();
     event.stopPropagation();
     this.voiceLanguageController_.onLanguageToggle(event.detail.language);
+  }
+
+  protected onReadabilityAnchorsReady_() {
+    if (chrome.readingMode.isReadabilityEnabled &&
+        chrome.readingMode.isReadabilityWithLinksEnabled) {
+      this.contentController_.updateAnchorsForReadability(this.shadowRoot);
+    }
   }
 
   protected onSpeechRateChange_() {

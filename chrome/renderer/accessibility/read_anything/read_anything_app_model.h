@@ -335,7 +335,10 @@ class ReadAnythingAppModel {
             : false;
   }
 
-  void ProcessAXTreeAnchors();
+  // Processes the tree anchors.
+  // Returns true indicating that the tree was successfully processed and we can
+  // notify the frontend that anchors are ready.
+  bool ProcessAXTreeAnchors();
   void ResetAXTreeAnchors();
   const std::map<std::string, std::vector<AnchorData>>& ax_tree_anchors()
       const {
