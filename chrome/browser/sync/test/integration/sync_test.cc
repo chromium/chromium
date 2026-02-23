@@ -864,10 +864,10 @@ void SyncTest::TearDownOnMainThread() {
     fake_server_.reset();
   }
 
-  for (size_t index = 0; index < profiles_.size(); ++index) {
+  for (Profile* profile : profiles_) {
     // Profile could be removed earlier.
-    if (profiles_[index]) {
-      profiles_[index]->RemoveObserver(this);
+    if (profile) {
+      profile->RemoveObserver(this);
 
 #if BUILDFLAG(IS_ANDROID)
       // In Android browser tests, the Profile and thus the SyncService does not
@@ -876,7 +876,7 @@ void SyncTest::TearDownOnMainThread() {
       // in the engine being shut down. (Note that auth errors are not
       // persisted, so this does not interfere with PRE_ tests.)
       signin::IdentityManager* identity_manager =
-          IdentityManagerFactory::GetForProfile(profiles_[index]);
+          IdentityManagerFactory::GetForProfile(profile);
       CoreAccountId primary_account =
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
       if (!primary_account.empty()) {
