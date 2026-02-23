@@ -115,7 +115,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   if (csp.size() > 0) {
     network::mojom::ContentSecurityPolicyPtr converted_csp =
-        BuildContentSecurityPolicy(ToWebContentSecurityPolicy(csp[0]->Clone()));
+        BuildContentSecurityPolicy(ToWebContentSecurityPolicy(csp[0]));
     CHECK(converted_csp->Equals(*csp[0]));
   }
 

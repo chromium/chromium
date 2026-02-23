@@ -27,12 +27,12 @@ network::mojom::ContentSecurityPolicyPtr BuildContentSecurityPolicy(
 // in blink.
 CONTENT_EXPORT
 blink::WebContentSecurityPolicy ToWebContentSecurityPolicy(
-    network::mojom::ContentSecurityPolicyPtr);
+    const network::mojom::ContentSecurityPolicyPtr&);
 
 // Helper function to perform ToWebContentSecurityPolicy on an array.
 CONTENT_EXPORT
 std::vector<blink::WebContentSecurityPolicy> ToWebContentSecurityPolicies(
-    std::vector<network::mojom::ContentSecurityPolicyPtr>);
+    const std::vector<network::mojom::ContentSecurityPolicyPtr>&);
 
 }  // namespace content
 

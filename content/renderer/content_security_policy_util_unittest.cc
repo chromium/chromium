@@ -85,8 +85,7 @@ TEST(ContentSecurityPolicyUtilTest, BackAndForthConversion) {
   for (const auto& modify_csp : test_cases) {
     auto test_csp = basic_csp.Clone();
     (*modify_csp)(*test_csp);
-    EXPECT_EQ(BuildContentSecurityPolicy(
-                  ToWebContentSecurityPolicy(test_csp.Clone())),
+    EXPECT_EQ(BuildContentSecurityPolicy(ToWebContentSecurityPolicy(test_csp)),
               test_csp);
   }
 }
@@ -166,8 +165,7 @@ TEST(ContentSecurityPolicyUtilTest, BackAndForthConversionForCSPSourceList) {
     auto test_csp = basic_csp.Clone();
     test_csp->directives[CSPDirectiveName::ScriptSrc] = CSPSourceList::New();
     (*modify_csp)(*test_csp->directives[CSPDirectiveName::ScriptSrc]);
-    EXPECT_EQ(BuildContentSecurityPolicy(
-                  ToWebContentSecurityPolicy(test_csp.Clone())),
+    EXPECT_EQ(BuildContentSecurityPolicy(ToWebContentSecurityPolicy(test_csp)),
               test_csp);
   }
 }

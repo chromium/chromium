@@ -21,8 +21,7 @@ std::unique_ptr<blink::WebPolicyContainer> ToWebPolicyContainer(
           in->policies->integrity_policy,
           in->policies->integrity_policy_report_only,
           in->policies->referrer_policy,
-          ToWebContentSecurityPolicies(
-              std::move(in->policies->content_security_policies)),
+          ToWebContentSecurityPolicies(in->policies->content_security_policies),
           in->policies->is_credentialless,
           in->policies->sandbox_flags,
           in->policies->ip_address_space,
