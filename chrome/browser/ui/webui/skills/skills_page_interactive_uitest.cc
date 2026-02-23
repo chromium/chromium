@@ -124,13 +124,7 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, ErrorStatePage) {
                              /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
-// TODO(crbug.com/485746377): Reenable this test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ZeroStatePage DISABLED_ZeroStatePage
-#else
-#define MAYBE_ZeroStatePage ZeroStatePage
-#endif
-IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, MAYBE_ZeroStatePage) {
+IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, ZeroStatePage) {
 #if BUILDFLAG(ENABLE_GLIC)
   std::string screenshot_name =
       IsDarkMode() ? "zero_state_dark" : "zero_state_light";
@@ -148,13 +142,7 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, MAYBE_ZeroStatePage) {
 #endif
 }
 
-// TODO(crbug.com/485746377): Reenable this test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_NarrowPage DISABLED_NarrowPage
-#else
-#define MAYBE_NarrowPage NarrowPage
-#endif
-IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, MAYBE_NarrowPage) {
+IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, NarrowPage) {
   const InteractiveBrowserWindowTestApi::DeepQuery kHamburgerMenuQuery{
       "skills-app", "cr-toolbar#toolbar", "#menuButton"};
 
