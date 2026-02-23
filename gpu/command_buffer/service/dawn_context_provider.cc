@@ -172,6 +172,7 @@ std::vector<const char*> GetEnabledToggles(
 
   enabled_toggles.push_back("disable_robustness");
   enabled_toggles.push_back("disable_lazy_clear_for_mapped_at_creation_buffer");
+  enabled_toggles.push_back("dump_shaders_on_failure");
 
 #if BUILDFLAG(IS_WIN)
   if (backend_type == wgpu::BackendType::D3D11) {
