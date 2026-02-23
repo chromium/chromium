@@ -48,7 +48,7 @@
    * detector, and get rid of this inner cr-icon-button hover setting,
    * which only hovers if you hover over the button. */
   --color-partial-file-chip-remove-button-hover-background:
-      rgba(2581, 82, 87, 0.95);
+      rgba(0, 0, 0, 0.6);
   --color-search-animated-glow-dragging-opaque-frost:
       rgba(240, 242, 245);
   --color-searchbox-results-background-hovered: rgba(31, 31, 31, 0.06);
