@@ -161,7 +161,7 @@ export class PasswordsExporterElement extends PasswordsExporterElementBase {
     this.$.exportSuccessToast.hide();
   }
 
-  private getAriaLabel_(): string {
+  private getAriaDescription_(): string {
     return [
       this.i18n('exportPasswords'),
       this.i18n('exportPasswordsDescription'),

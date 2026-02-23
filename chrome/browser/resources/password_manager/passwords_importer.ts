@@ -288,6 +288,13 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     return this.i18n('importPasswordsDescriptionDevice');
   }
 
+  private getAriaDescription_(bannerDescription: string): string {
+    return [
+      this.i18n('importPasswords'),
+      bannerDescription,
+    ].join('. ');
+  }
+
   private onBannerClick_() {
     if (this.isAccountStoreUser && this.isState_(DialogState.NO_DIALOG)) {
       recordPasswordsImportInteraction(

@@ -524,11 +524,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     return this.localPasswordCount_ > 0;
   }
 
-  private getAriaLabelMovePasswordsButton_(): string {
+  private getAriaDescriptionMovePasswordsButton_(movePasswordsLabel: string):
+      string {
     return [
-      this.movePasswordsLabel_,
+      movePasswordsLabel,
       this.i18n('movePasswordsInSettingsSubLabel'),
-      this.i18n('moveSinglePasswordButton'),
     ].join('. ');
   }
 
@@ -580,7 +580,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     this.$.toast.show();
   }
 
-  private getAriaLabelForCloudAuthenticatorButton_(): string {
+  private getAriaDescriptionForCloudAuthenticatorButton_(): string {
     return [
       this.i18n('disconnectCloudAuthenticatorTitle'),
       this.i18n('disconnectCloudAuthenticatorDescription'),

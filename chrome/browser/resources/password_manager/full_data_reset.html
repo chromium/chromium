@@ -49,9 +49,10 @@
 
 <cr-link-row class="cr-row" non-clickable hide-icon
     label="$i18n{fullResetTitle}"
-    sub-label="$i18n{fullResetRowDescription}">
+    sub-label="$i18n{fullResetRowDescription}"
+    aria-show-label aria-show-sublabel>
     <cr-button id="deleteAllButton" class="cr-row-action-button"
-        on-click="onDeleteAllClick_" aria-label="[[getAriaLabel_()]]">
+        on-click="onDeleteAllClick_" aria-description="[[getAriaDescription_()]]">
       $i18n{fullResetDeleteAll}
     </cr-button>
 </cr-link-row>

@@ -177,7 +177,7 @@ export class FullDataResetElement extends FullDataResetElementBase {
     return this.i18n('fullResetConfirmationTitleLocal');
   }
 
-  private getAriaLabel_(): string {
+  private getAriaDescription_(): string {
     return [
       this.i18n('fullResetTitle'),
       this.i18n('fullResetRowDescription'),
