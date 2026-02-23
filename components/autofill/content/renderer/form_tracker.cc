@@ -468,7 +468,7 @@ void FormTracker::DidStartNavigation(
     case blink::kWebNavigationTypeFormResubmittedBackForward:
     case blink::kWebNavigationTypeFormResubmittedReload:
     case blink::kWebNavigationTypeRestore:
-      if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
+      if (base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
         return;
       }
       break;
@@ -477,7 +477,7 @@ void FormTracker::DidStartNavigation(
     // `FormTracker::WillSubmitForm()` or `FormTracker::WilSendSubmitEvent()`,
     // so submission is not fired here in order to avoid duplicate signals.
     case blink::kWebNavigationTypeFormSubmitted:
-      if (!base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
+      if (base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
         return;
       }
       break;

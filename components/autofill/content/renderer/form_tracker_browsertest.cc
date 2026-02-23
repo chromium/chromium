@@ -6,9 +6,11 @@
 
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/renderer/autofill_agent_test_api.h"
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
+#include "components/autofill/content/renderer/form_tracker_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -16,6 +18,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_navigation_type.h"
 
 namespace autofill {
 namespace {
@@ -83,7 +86,7 @@ INSTANTIATE_TEST_SUITE_P(AutofillSubmissionTest,
 // 2) Page does an XHR.
 // 3) Page hides all of the inputs.
 TEST_P(FormTrackerTest, FormlessXHRThenHide) {
-  LoadHTML("<!DOCTYPE HTML><input id='input1'><input id='input2'/>");
+  LoadHTML("<!DOCTYPE HTML><input id='input1'/><input id='input2'/>");
 
   blink::WebFormControlElement input1 = GetFormControlById("input1");
 
@@ -114,7 +117,7 @@ TEST_P(FormTrackerTest, FormlessXHRThenHide) {
 // 2) Page hides all of the inputs.
 // 3) Page does an XHR.
 TEST_P(FormTrackerTest, FormlessHideThenXhr) {
-  LoadHTML("<!DOCTYPE HTML><input id='input1'><input id='input2'/>");
+  LoadHTML("<!DOCTYPE HTML><input id='input1'/><input id='input2'/>");
 
   blink::WebFormControlElement input1 = GetFormControlById("input1");
 
@@ -165,6 +168,64 @@ TEST_P(FormTrackerTest, IgnoreSelectChangeInOldDocument) {
   ExecuteJavaScriptForTests("document.getElementById('select').value = '3';");
   LoadHTML(R"(<!DOCTYPE HTML><input>)");  // Turns the event into a no-op.
   task_environment_.RunUntilIdle();
+}
+
+// Tests that a submission is fired upon starting a navigation resulting from
+// `kWebNavigationTypeOther`.
+TEST_P(FormTrackerTest, ProbablyFormSubmitted) {
+  LoadHTML("<!DOCTYPE HTML><input id='input1'/>");
+  GetMainFrame()->NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest);
+
+  ExecuteJavaScriptForTests("document.getElementById('input1').focus();");
+  ExecuteJavaScriptForTests("document.getElementById('input1').value = '1';");
+  blink::WebFormControlElement input1 = GetFormControlById("input1");
+  form_tracker().TextFieldValueChanged(input1);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(form_tracker(),
+              FireFormSubmission(
+                  mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED, _, _))
+      .Times(1);
+
+  test_api(form_tracker())
+      .DidStartNavigation(blink::WebNavigationType::kWebNavigationTypeOther);
+}
+
+// Tests that a submission is not fired upon starting a navigation resulting
+// from an uninteresting `WebNavigationType`.
+TEST_P(FormTrackerTest, ProbablyFormSubmitted_IgnoreUninterestingNavigations) {
+  using enum blink::WebNavigationType;
+  constexpr auto kUninterestingNavigationTypes = std::to_array({
+      kWebNavigationTypeLinkClicked,
+      kWebNavigationTypeFormSubmitted,
+      kWebNavigationTypeBackForward,
+      kWebNavigationTypeReload,
+      kWebNavigationTypeFormResubmittedBackForward,
+      kWebNavigationTypeFormResubmittedReload,
+      kWebNavigationTypeRestore,
+  });
+
+  LoadHTML("<!DOCTYPE HTML><input id='input1'/>");
+  GetMainFrame()->NotifyUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest);
+
+  ExecuteJavaScriptForTests("document.getElementById('input1').focus();");
+  ExecuteJavaScriptForTests("document.getElementById('input1').value = '1';");
+  blink::WebFormControlElement input1 = GetFormControlById("input1");
+  form_tracker().TextFieldValueChanged(input1);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_CALL(form_tracker(), FireFormSubmission).Times(0);
+
+  if (base::FeatureList::IsEnabled(features::kAutofillFixFormTracking)) {
+    for (const blink::WebNavigationType navigation_type :
+         kUninterestingNavigationTypes) {
+      test_api(form_tracker()).DidStartNavigation(navigation_type);
+    }
+  } else {
+    test_api(form_tracker()).DidStartNavigation(kWebNavigationTypeLinkClicked);
+  }
 }
 
 }  // namespace

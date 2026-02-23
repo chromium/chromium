@@ -36,6 +36,7 @@
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_navigation_type.h"
 
 using blink::WebDocument;
 using blink::WebElement;
@@ -956,7 +957,7 @@ TEST_P(FormAutocompleteSubmissionTest, FormSubmittedByProbablyFormSubmitted) {
 
   // Simulate navigation.
   test_api(test_api(*autofill_agent_).form_tracker())
-      .FireProbablyFormSubmitted();
+      .DidStartNavigation(blink::kWebNavigationTypeOther);
 
   base::RunLoop().RunUntilIdle();
 

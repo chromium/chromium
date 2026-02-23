@@ -48,6 +48,7 @@
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
+#include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_view.h"
 
 namespace autofill {
@@ -1232,7 +1233,8 @@ TEST_P(AutofillAgentSubmissionTest,
   // Remove element that the user did not interact with last.
   ExecuteJavaScriptForTests(R"(document.getElementById('name').remove();)");
   // Simulate page navigation.
-  test_api(form_tracker()).FireProbablyFormSubmitted();
+  test_api(form_tracker())
+      .DidStartNavigation(blink::WebNavigationType::kWebNavigationTypeOther);
 }
 
 // Test that in the scenario that:
