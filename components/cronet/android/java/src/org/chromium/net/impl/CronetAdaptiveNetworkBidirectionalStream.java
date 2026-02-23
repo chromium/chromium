@@ -216,10 +216,11 @@ final class CronetAdaptiveNetworkBidirectionalStream extends ExperimentalBidirec
 
     @Override
     public boolean isDone() {
-        if (mActiveStream.get() == null) {
-            return false;
+        if (mActiveStream.get() != null) {
+            return mActiveStream.get().isDone();
         }
-        return mActiveStream.get().isDone();
+        boolean fallbackIsDone = mFallbackStream == null ? true : mFallbackStream.isDone();
+        return mPrimaryStream.isDone() && fallbackIsDone;
     }
 
     BidirectionalStream.Callback getCallback() {

@@ -5,7 +5,9 @@
 package org.chromium.net.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -262,8 +264,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         CronetException error = mock(CronetException.class);
 
         mAdaptiveStream.getCallback().onFailed(mPrimaryStream, info, error);
+        when(mPrimaryStream.isDone()).thenReturn(true);
 
         verify(mMockCallback).onFailed(mAdaptiveStream, info, error);
+        assertTrue(mAdaptiveStream.isDone());
     }
 
     @Test
@@ -293,8 +297,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         UrlResponseInfo info = mock(UrlResponseInfo.class);
 
         mAdaptiveStream.getCallback().onCanceled(mPrimaryStream, info);
+        when(mPrimaryStream.isDone()).thenReturn(true);
 
         verify(mMockCallback).onCanceled(mAdaptiveStream, info);
+        assertTrue(mAdaptiveStream.isDone());
     }
 
     @Test
@@ -307,8 +313,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         UrlResponseInfo info = mock(UrlResponseInfo.class);
 
         mAdaptiveStream.getCallback().onCanceled(mPrimaryStream, info);
+        when(mPrimaryStream.isDone()).thenReturn(true);
 
         verify(mMockCallback, never()).onCanceled(any(), any());
+        assertFalse(mAdaptiveStream.isDone());
     }
 
     @Test
@@ -321,9 +329,12 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         UrlResponseInfo info = mock(UrlResponseInfo.class);
 
         mAdaptiveStream.getCallback().onCanceled(mFallbackStream, info);
+        when(mFallbackStream.isDone()).thenReturn(true);
         mAdaptiveStream.getCallback().onCanceled(mPrimaryStream, info);
+        when(mPrimaryStream.isDone()).thenReturn(true);
 
         verify(mMockCallback).onCanceled(mAdaptiveStream, info);
+        assertTrue(mAdaptiveStream.isDone());
     }
 
     @Test
@@ -337,8 +348,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         UrlResponseInfo info = mock(UrlResponseInfo.class);
 
         mAdaptiveStream.getCallback().onCanceled(mFallbackStream, info);
+        when(mFallbackStream.isDone()).thenReturn(true);
 
         verify(mMockCallback, never()).onCanceled(any(), any());
+        assertFalse(mAdaptiveStream.isDone());
     }
 
     @Test
@@ -385,7 +398,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         mAdaptiveStream.setFallbackStream(mFallbackStream);
         mAdaptiveStream.cancel();
         verify(mPrimaryStream).cancel();
+        when(mPrimaryStream.isDone()).thenReturn(true);
         verify(mFallbackStream).cancel();
+        when(mFallbackStream.isDone()).thenReturn(true);
+        assertTrue(mAdaptiveStream.isDone());
     }
 
     @Test
@@ -419,8 +435,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         UrlResponseInfo info = mock(UrlResponseInfo.class);
         CronetException error = mock(CronetException.class);
         mAdaptiveStream.getCallback().onFailed(mPrimaryStream, info, error);
+        when(mPrimaryStream.isDone()).thenReturn(true);
         // This is a final failure.
         verify(mMockCallback).onFailed(mAdaptiveStream, info, error);
+        assertTrue(mAdaptiveStream.isDone());
     }
 
     @Test
@@ -450,10 +468,13 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         UrlResponseInfo info = mock(UrlResponseInfo.class);
         CronetException error = mock(CronetException.class);
         mAdaptiveStream.getCallback().onFailed(mPrimaryStream, info, error);
+        when(mPrimaryStream.isDone()).thenReturn(true);
         mAdaptiveStream.getCallback().onFailed(mFallbackStream, info, error);
+        when(mFallbackStream.isDone()).thenReturn(true);
 
         // Both failed, so now we give up.
         verify(mMockCallback).onFailed(mAdaptiveStream, info, error);
+        assertTrue(mAdaptiveStream.isDone());
     }
 
     @Test
@@ -468,8 +489,10 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         UrlResponseInfo info = mock(UrlResponseInfo.class);
         CronetException error = mock(CronetException.class);
         mAdaptiveStream.getCallback().onFailed(mFallbackStream, info, error);
+        when(mFallbackStream.isDone()).thenReturn(true);
 
         // Active stream failed, so we give up.
         verify(mMockCallback).onFailed(mAdaptiveStream, info, error);
+        assertTrue(mAdaptiveStream.isDone());
     }
 }

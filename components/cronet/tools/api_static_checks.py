@@ -78,6 +78,7 @@ ALLOWED_EXCEPTIONS = [
     'org.chromium.net.impl.CronetAdaptiveNetworkBidirectionalStream/cancel -> org/chromium/net/ExperimentalBidirectionalStream/cancel:()V',
     'org.chromium.net.impl.CronetAdaptiveNetworkBidirectionalStream/cancel -> org/chromium/net/ExperimentalBidirectionalStream/cancel:()V',
     'org.chromium.net.impl.CronetAdaptiveNetworkBidirectionalStream/isDone -> org/chromium/net/BidirectionalStream/isDone:()Z',
+    'org.chromium.net.impl.CronetAdaptiveNetworkBidirectionalStream/isDone -> org/chromium/net/ExperimentalBidirectionalStream/isDone:()Z',
     'org.chromium.net.impl.CronetAdaptiveNetworkBidirectionalStream$1/onStreamReady -> org/chromium/net/BidirectionalStream/cancel:()V',
     'org.chromium.net.impl.CronetAdaptiveNetworkBidirectionalStream$1/onStreamReady -> org/chromium/net/BidirectionalStream$Callback/onStreamReady:(Lorg/chromium/net/BidirectionalStream;)V',
     'org.chromium.net.impl.CronetAdaptiveNetworkBidirectionalStream$1/onStreamReady -> org/chromium/net/ExperimentalBidirectionalStream/cancel:()V',
