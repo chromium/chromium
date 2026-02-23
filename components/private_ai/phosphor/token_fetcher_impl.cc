@@ -209,19 +209,19 @@ std::optional<base::TimeDelta> TokenFetcherImpl::CalculateBackoff(
     case kFailedBSA403:
       // Eligibility, whether determined locally or on the server, is unlikely
       // to change quickly.
-      backoff = kLegionTryGetAuthTokensNotEligibleBackoff.Get();
+      backoff = kPrivateAiTryGetAuthTokensNotEligibleBackoff.Get();
       break;
     case kFailedOAuthTokenTransient:
     case kFailedBSAOther:
       // Transient failure to fetch an OAuth token, or some other error from
       // BSA that is probably transient.
-      backoff = kLegionTryGetAuthTokensTransientBackoff.Get();
+      backoff = kPrivateAiTryGetAuthTokensTransientBackoff.Get();
       exponential = true;
       break;
     case kFailedBSA400:
     case kFailedBSA401:
       // Both 400 and 401 suggest a bug, so do not retry aggressively.
-      backoff = kLegionTryGetAuthTokensBugBackoff.Get();
+      backoff = kPrivateAiTryGetAuthTokensBugBackoff.Get();
       exponential = true;
       break;
     case kFailedOAuthTokenDeprecated:
@@ -245,7 +245,7 @@ std::optional<base::TimeDelta> TokenFetcherImpl::CalculateBackoff(
 
   if (backoff && backoff != base::TimeDelta::Max()) {
     return base::RandomizeByPercentage(*backoff,
-                                       kLegionBackoffJitter.Get() * 100);
+                                       kPrivateAiBackoffJitter.Get() * 100);
   }
   return backoff;
 }

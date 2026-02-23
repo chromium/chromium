@@ -77,17 +77,17 @@ ConfigHttp::~ConfigHttp() = default;
 
 // static
 GURL ConfigHttp::GetServerUrl() {
-  return GURL(kLegionTokenServerUrl.Get());
+  return GURL(kPrivateAiTokenServerUrl.Get());
 }
 
 // static
 std::string ConfigHttp::GetInitialDataPath() {
-  return kLegionTokenServerGetInitialDataPath.Get();
+  return kPrivateAiTokenServerGetInitialDataPath.Get();
 }
 
 // static
 std::string ConfigHttp::GetTokensPath() {
-  return kLegionTokenServerGetTokensPath.Get();
+  return kPrivateAiTokenServerGetTokensPath.Get();
 }
 
 network::SharedURLLoaderFactory* ConfigHttp::GetOrCreateURLLoaderFactory() {

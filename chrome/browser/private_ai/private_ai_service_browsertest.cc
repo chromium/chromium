@@ -31,7 +31,7 @@ class PrivateAiServiceBrowserTest : public InProcessBrowserTest {
  public:
   PrivateAiServiceBrowserTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        kLegion, {{kLegionApiKey.name, "test-api-key"}});
+        kPrivateAi, {{kPrivateAiApiKey.name, "test-api-key"}});
   }
 
   void SetUpBrowserContextKeyedServices(

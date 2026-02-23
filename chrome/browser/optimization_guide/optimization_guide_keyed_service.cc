@@ -376,7 +376,7 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
   std::unique_ptr<ModelExecutionManager::Delegate> delegate;
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(private_ai::kLegion)) {
+  if (base::FeatureList::IsEnabled(private_ai::kPrivateAi)) {
     delegate = std::make_unique<FetcherDelegate>(browser_context_);
   }
 #endif

@@ -27,7 +27,7 @@ enum class ModelExecutionServiceType {
   // Use the Private AI compute backend. Currently only supported for ZSS.
   // Please reach out to chrome-browser-privacy-team@ if you'd like to use this
   // backend.
-  kLegion = 1,
+  kPrivateAi = 1,
 };
 
 // The result type of model execution.

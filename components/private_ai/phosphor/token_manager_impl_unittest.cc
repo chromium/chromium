@@ -126,7 +126,7 @@ class TokenManagerImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  int expected_batch_size_ = kLegionAuthTokenCacheBatchSize.Get();
+  int expected_batch_size_ = kPrivateAiAuthTokenCacheBatchSize.Get();
 
   // Expiration times with respect to the TaskEnvironment's mock time.
   const base::Time kFutureExpiration = base::Time::Now() + base::Hours(1);

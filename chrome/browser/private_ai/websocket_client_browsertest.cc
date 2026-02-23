@@ -23,9 +23,9 @@ namespace private_ai {
 namespace {
 
 const base::FeatureParam<std::string> kTestFeatureName{
-    &kLegion, "test-feature-name", "FEATURE_NAME_UNSPECIFIED"};
+    &kPrivateAi, "test-feature-name", "FEATURE_NAME_UNSPECIFIED"};
 const base::FeatureParam<std::string> kTestQueryText{
-    &kLegion, "test-query-text", "Hello Legion!"};
+    &kPrivateAi, "test-query-text", "Hello Legion!"};
 
 // This class allows manual testing of the Legion Service.
 class LegionWebSocketClientBrowserTest : public InProcessBrowserTest {

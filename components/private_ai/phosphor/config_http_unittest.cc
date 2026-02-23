@@ -143,10 +143,10 @@ TEST_F(ConfigHttpTest, DoRequestFailsToConnectReturnsFailureStatus) {
 
 TEST_F(ConfigHttpTest, DoRequestInvalidFinchParametersFailsGracefully) {
   std::map<std::string, std::string> parameters;
-  parameters["LegionTokenServerUrl"] = "<(^_^)>";
-  parameters["LegionTokenServerGetInitialDataPath"] = "(>_<)";
+  parameters["token-server-url"] = "<(^_^)>";
+  parameters["token-server-get-initial-data-path"] = "(>_<)";
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(kLegion,
+  scoped_feature_list.InitAndEnableFeatureWithParameters(kPrivateAi,
                                                          std::move(parameters));
 
   // Create a new ConfigHttp for this test so that the new

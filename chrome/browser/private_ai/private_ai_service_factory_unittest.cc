@@ -22,9 +22,9 @@ class PrivateAiServiceFactoryTest : public testing::Test {
   explicit PrivateAiServiceFactoryTest(bool feature_enabled = true) {
     if (feature_enabled) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          kLegion, {{kLegionApiKey.name, "test-api-key"}});
+          kPrivateAi, {{kPrivateAiApiKey.name, "test-api-key"}});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(kLegion);
+      scoped_feature_list_.InitAndDisableFeature(kPrivateAi);
     }
     // ProfileSelections must be created after the feature is initialized.
     profile_selections_.emplace(

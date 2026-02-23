@@ -18,8 +18,8 @@
 namespace private_ai::phosphor {
 
 TokenManagerImpl::TokenManagerImpl(std::unique_ptr<TokenFetcher> fetcher)
-    : batch_size_(kLegionAuthTokenCacheBatchSize.Get()),
-      cache_low_water_mark_(kLegionAuthTokenCacheLowWaterMark.Get()),
+    : batch_size_(kPrivateAiAuthTokenCacheBatchSize.Get()),
+      cache_low_water_mark_(kPrivateAiAuthTokenCacheLowWaterMark.Get()),
       fetcher_(std::move(fetcher)) {
   terminal_token_manager_ = std::make_unique<internal::FeatureTokenManager>(
       fetcher_.get(), quiche::ProxyLayer::kTerminalLayer, batch_size_,

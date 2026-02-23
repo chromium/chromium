@@ -74,13 +74,13 @@ std::optional<BlindSignedAuthToken> CreateMockBlindSignedAuthTokenForTesting(
 }  // namespace
 
 // A Gmock matcher for a `base::TimeDelta` within the jitter range defined by
-// `net::features::kLegionBackoffJitter`.
+// `net::features::kPrivateAiBackoffJitter`.
 MATCHER_P(IsNearWithJitter, expected, "") {
   if (arg == base::TimeDelta::Max() && (expected) == base::TimeDelta::Max()) {
     return true;
   }
 
-  const auto jitter = kLegionBackoffJitter.Get();
+  const auto jitter = kPrivateAiBackoffJitter.Get();
   const auto lower_bound = (expected) * (1.0 - jitter);
   const auto upper_bound = (expected) * (1.0 + jitter);
   if (arg >= lower_bound && arg <= upper_bound) {
@@ -112,12 +112,12 @@ class TokenFetcherImplTest : public testing::Test {
   TokenFetcherImplTest()
       : expiration_time_(base::Time::Now() + base::Hours(1)),
         default_transient_backoff_(
-            kLegionTryGetAuthTokensTransientBackoff.Get()),
-        default_bug_backoff_(kLegionTryGetAuthTokensBugBackoff.Get()),
+            kPrivateAiTryGetAuthTokensTransientBackoff.Get()),
+        default_bug_backoff_(kPrivateAiTryGetAuthTokensBugBackoff.Get()),
         default_not_eligible_backoff_(
-            kLegionTryGetAuthTokensNotEligibleBackoff.Get()) {
+            kPrivateAiTryGetAuthTokensNotEligibleBackoff.Get()) {
     feature_list_.InitAndEnableFeatureWithParameters(
-        kLegion, {{"LegionBackoffJitter", "0.25"}});
+        kPrivateAi, {{"backoff-jitter", "0.25"}});
     auto bsa = std::make_unique<MockBlindSignAuth>();
     bsa_ = bsa.get();
     fetcher_ = std::make_unique<TokenFetcherImpl>(&oauth_token_provider_,
@@ -444,8 +444,8 @@ TEST_F(TokenFetcherImplTest, CalculateBackoff) {
 TEST_F(TokenFetcherImplTest, CalculateBackoffNoJitter) {
   // Disable jitter.
   feature_list_.Reset();
-  feature_list_.InitAndEnableFeatureWithParameters(
-      kLegion, {{"LegionBackoffJitter", "0.0"}});
+  feature_list_.InitAndEnableFeatureWithParameters(kPrivateAi,
+                                                   {{"backoff-jitter", "0.0"}});
 
   using enum GetAuthnTokensResult;
 
@@ -538,8 +538,9 @@ TEST_F(ProdBlindSignAuthTokenFetcherImplTest, FetchFails) {
   ASSERT_TRUE(tokens_future.Wait());
   auto& result = tokens_future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_THAT(result.error() - base::Time::Now(),
-              IsNearWithJitter(kLegionTryGetAuthTokensTransientBackoff.Get()));
+  EXPECT_THAT(
+      result.error() - base::Time::Now(),
+      IsNearWithJitter(kPrivateAiTryGetAuthTokensTransientBackoff.Get()));
 }
 
 }  // namespace private_ai::phosphor

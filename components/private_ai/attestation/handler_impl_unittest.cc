@@ -47,7 +47,7 @@ TEST_F(VerifyAttestationResponseTest, Success) {
   base::FieldTrialParams params;
   params["url"] = "staging-legion.corp.google.com";
   feature_list_.InitWithFeaturesAndParameters(
-      {{kLegion, params}, {kLegionSeverAttestation, {}}}, {});
+      {{kPrivateAi, params}, {kPrivateAiSeverAttestation, {}}}, {});
 
   AttestationHandlerImpl attestation_handler;
 
@@ -66,7 +66,7 @@ TEST_F(VerifyAttestationResponseTest, Success) {
 }
 
 TEST_F(VerifyAttestationResponseTest, ServerAttestationDisabled) {
-  feature_list_.InitAndDisableFeature(kLegionSeverAttestation);
+  feature_list_.InitAndDisableFeature(kPrivateAiSeverAttestation);
 
   AttestationHandlerImpl attestation_handler;
 
@@ -77,7 +77,7 @@ TEST_F(VerifyAttestationResponseTest, ServerAttestationDisabled) {
 }
 
 TEST_F(VerifyAttestationResponseTest, EmptyEvidence) {
-  feature_list_.InitAndEnableFeature(kLegionSeverAttestation);
+  feature_list_.InitAndEnableFeature(kPrivateAiSeverAttestation);
   AttestationHandlerImpl attestation_handler(
       LoadVerificationKeys(GetStagingKeysForTesting()));
 
@@ -86,7 +86,7 @@ TEST_F(VerifyAttestationResponseTest, EmptyEvidence) {
 }
 
 TEST_F(VerifyAttestationResponseTest, EmptyEndorsements) {
-  feature_list_.InitAndEnableFeature(kLegionSeverAttestation);
+  feature_list_.InitAndEnableFeature(kPrivateAiSeverAttestation);
   AttestationHandlerImpl attestation_handler(
       LoadVerificationKeys(GetStagingKeysForTesting()));
 
@@ -96,7 +96,7 @@ TEST_F(VerifyAttestationResponseTest, EmptyEndorsements) {
 }
 
 TEST_F(VerifyAttestationResponseTest, MalformedSignature) {
-  feature_list_.InitAndEnableFeature(kLegionSeverAttestation);
+  feature_list_.InitAndEnableFeature(kPrivateAiSeverAttestation);
   AttestationHandlerImpl attestation_handler(
       LoadVerificationKeys(GetStagingKeysForTesting()));
 
@@ -115,7 +115,7 @@ TEST_F(VerifyAttestationResponseTest, MalformedSignature) {
 }
 
 TEST_F(VerifyAttestationResponseTest, VerificationKeysEmpty) {
-  feature_list_.InitAndEnableFeature(kLegionSeverAttestation);
+  feature_list_.InitAndEnableFeature(kPrivateAiSeverAttestation);
   // Pass in an empty vector of keys.
   std::map<uint32_t, VerificationKey> empty_keys;
   AttestationHandlerImpl attestation_handler(std::move(empty_keys));
@@ -137,7 +137,7 @@ TEST_F(VerifyAttestationResponseTest, VerificationKeysEmpty) {
 }
 
 TEST_F(VerifyAttestationResponseTest, KeyNotFound) {
-  feature_list_.InitAndEnableFeature(kLegionSeverAttestation);
+  feature_list_.InitAndEnableFeature(kPrivateAiSeverAttestation);
   AttestationHandlerImpl attestation_handler(
       LoadVerificationKeys(GetStagingKeysForTesting()));
 
@@ -160,7 +160,7 @@ TEST_F(VerifyAttestationResponseTest, WrongSignature) {
   base::FieldTrialParams params;
   params["url"] = "staging-legion.corp.google.com";
   feature_list_.InitWithFeaturesAndParameters(
-      {{kLegion, params}, {kLegionSeverAttestation, {}}}, {});
+      {{kPrivateAi, params}, {kPrivateAiSeverAttestation, {}}}, {});
 
   AttestationHandlerImpl attestation_handler;
 
@@ -182,7 +182,7 @@ TEST_F(VerifyAttestationResponseTest, WrongSignature) {
 
 // Test to cover the VerifyInit failure.
 TEST_F(VerifyAttestationResponseTest, VerifyInitFails) {
-  feature_list_.InitAndEnableFeature(kLegionSeverAttestation);
+  feature_list_.InitAndEnableFeature(kPrivateAiSeverAttestation);
   std::map<uint32_t, VerificationKey> keys =
       LoadVerificationKeys(GetStagingKeysForTesting());
   ASSERT_FALSE(keys.empty());
@@ -222,7 +222,7 @@ TEST_F(VerifyAttestationResponseTest, VerifyInitFails) {
 
 // Test to ensure the non-LEGACY key type path is taken in VerifyUpdate.
 TEST_F(VerifyAttestationResponseTest, ForcedNonLegacyKeyType) {
-  feature_list_.InitAndEnableFeature(kLegionSeverAttestation);
+  feature_list_.InitAndEnableFeature(kPrivateAiSeverAttestation);
   base::span<const ProcessedKey> original_keys = GetStagingKeysForTesting();
   ASSERT_FALSE(original_keys.empty());
 

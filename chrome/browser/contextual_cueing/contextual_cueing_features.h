@@ -12,7 +12,7 @@ namespace contextual_cueing {
 
 BASE_DECLARE_FEATURE(kContextualCueing);
 BASE_DECLARE_FEATURE(kGlicZeroStateSuggestions);
-BASE_DECLARE_FEATURE(kZeroStateSuggestionsUseLegion);
+BASE_DECLARE_FEATURE(kZeroStateSuggestionsUsePrivateAi);
 BASE_DECLARE_FEATURE(kEnableAutoOpenGlicSidePanel);
 
 // Whether contextual cueing is enabled.

@@ -96,7 +96,7 @@ void FeatureTokenManager::OnGotAuthTokens(
                "Treating as a transient error.";
     // TODO(b:457425177): Record a UMA metric for this case.
     try_get_auth_tokens_after_ =
-        base::Time::Now() + kLegionTryGetAuthTokensTransientBackoff.Get();
+        base::Time::Now() + kPrivateAiTryGetAuthTokensTransientBackoff.Get();
     FailPendingCallbacks();
     ScheduleMaybeRefillCache();
     return;

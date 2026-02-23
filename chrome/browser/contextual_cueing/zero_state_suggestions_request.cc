@@ -160,8 +160,8 @@ void ZeroStateSuggestionsRequest::OnAllPageContextExtracted(
       "suggestions. Is-mulitab request: %s",
       pending_base_request_.has_page_context_list() ? "true" : "false"));
   optimization_guide::ModelExecutionServiceType service_type =
-      base::FeatureList::IsEnabled(kZeroStateSuggestionsUseLegion)
-          ? optimization_guide::ModelExecutionServiceType::kLegion
+      base::FeatureList::IsEnabled(kZeroStateSuggestionsUsePrivateAi)
+          ? optimization_guide::ModelExecutionServiceType::kPrivateAi
           : optimization_guide::ModelExecutionServiceType::kDefault;
 
   optimization_guide_keyed_service_->ExecuteModel(

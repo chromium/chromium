@@ -27,7 +27,7 @@ namespace private_ai {
 
 // static
 bool PrivateAiService::CanLegionBeEnabled() {
-  return base::FeatureList::IsEnabled(kLegion);
+  return base::FeatureList::IsEnabled(kPrivateAi);
 }
 
 PrivateAiService::PrivateAiService(
@@ -54,8 +54,9 @@ PrivateAiService::PrivateAiService(
       std::make_unique<phosphor::TokenManagerImpl>(std::move(token_fetcher));
 
   client_ = Client::Create(
-      kLegionUrl.Get(), kLegionApiKey.Get(), kLegionProxyServerUrl.Get(),
-      base::FeatureList::IsEnabled(kLegionUseTokenAttestation),
+      kPrivateAiUrl.Get(), kPrivateAiApiKey.Get(),
+      kPrivateAiProxyServerUrl.Get(),
+      base::FeatureList::IsEnabled(kPrivateAiUseTokenAttestation),
       profile_->GetDefaultStoragePartition()->GetNetworkContext(),
       token_manager_.get(), content::GetNetworkService(), std::move(logger));
 }

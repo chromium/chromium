@@ -20,7 +20,7 @@ class ServerVerificationKeyTest : public ::testing::Test {
 TEST_F(ServerVerificationKeyTest, GetAutopushKeys) {
   base::FieldTrialParams params;
   params["url"] = "autopush-legion.corp.google.com";
-  feature_list_.InitAndEnableFeatureWithParameters(kLegion, params);
+  feature_list_.InitAndEnableFeatureWithParameters(kPrivateAi, params);
 
   auto keys = GetServerVerificationKey();
   EXPECT_FALSE(keys.empty());
@@ -32,7 +32,7 @@ TEST_F(ServerVerificationKeyTest, GetAutopushKeys) {
 TEST_F(ServerVerificationKeyTest, GetDevKeys) {
   base::FieldTrialParams params;
   params["url"] = "dev-legion.corp.google.com";
-  feature_list_.InitAndEnableFeatureWithParameters(kLegion, params);
+  feature_list_.InitAndEnableFeatureWithParameters(kPrivateAi, params);
 
   auto keys = GetServerVerificationKey();
   EXPECT_FALSE(keys.empty());
@@ -44,7 +44,7 @@ TEST_F(ServerVerificationKeyTest, GetDevKeys) {
 TEST_F(ServerVerificationKeyTest, GetStagingKeys) {
   base::FieldTrialParams params;
   params["url"] = "staging-legion.corp.google.com";
-  feature_list_.InitAndEnableFeatureWithParameters(kLegion, params);
+  feature_list_.InitAndEnableFeatureWithParameters(kPrivateAi, params);
 
   auto keys = GetServerVerificationKey();
   EXPECT_FALSE(keys.empty());

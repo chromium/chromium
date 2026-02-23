@@ -31,7 +31,7 @@ class ConnectionFactoryImplBrowserTest : public InProcessBrowserTest {
  public:
   ConnectionFactoryImplBrowserTest() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        kLegion, {{kLegionApiKey.name, "test-api-key"}});
+        kPrivateAi, {{kPrivateAiApiKey.name, "test-api-key"}});
   }
   ~ConnectionFactoryImplBrowserTest() override = default;
 

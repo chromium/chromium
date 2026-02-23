@@ -314,7 +314,7 @@ TEST_F(ModelExecutionManagerDelegateTest, UsesDelegateToCreateFetcher) {
   model_execution_manager()->ExecuteModel(
       ModelBasedCapabilityKey::kZeroStateSuggestions, TestMessage(),
       /*timeout=*/std::nullopt,
-      /*log_ai_data_request=*/nullptr, ModelExecutionServiceType::kLegion,
+      /*log_ai_data_request=*/nullptr, ModelExecutionServiceType::kPrivateAi,
       response_holder.GetCallback());
 }
 

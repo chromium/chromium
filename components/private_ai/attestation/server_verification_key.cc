@@ -30,7 +30,7 @@ bool ProcessedKey::operator==(const ProcessedKey& other) const {
 }
 
 base::span<const ProcessedKey> GetServerVerificationKey() {
-  const std::string url = kLegionUrl.Get();
+  const std::string url = kPrivateAiUrl.Get();
   if (base::StartsWith(url, "dev")) {
     return kDevServerVerificationKeys;
   }

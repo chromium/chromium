@@ -11,58 +11,58 @@
 
 namespace private_ai {
 
-// The feature for Legion.
-BASE_DECLARE_FEATURE(kLegion);
+// The feature for Private AI.
+BASE_DECLARE_FEATURE(kPrivateAi);
 
 // Feature flag to enable server attestation.
-BASE_DECLARE_FEATURE(kLegionSeverAttestation);
+BASE_DECLARE_FEATURE(kPrivateAiSeverAttestation);
 
 // Feature flag to enable token attestation.
-BASE_DECLARE_FEATURE(kLegionUseTokenAttestation);
+BASE_DECLARE_FEATURE(kPrivateAiUseTokenAttestation);
 
-// The API key for Legion.
-extern const base::FeatureParam<std::string> kLegionApiKey;
+// The API key for Private AI.
+extern const base::FeatureParam<std::string> kPrivateAiApiKey;
 
-// Endpoint for Legion
-extern const base::FeatureParam<std::string> kLegionUrl;
+// Endpoint for Private AI
+extern const base::FeatureParam<std::string> kPrivateAiUrl;
 
-// Endpoint for the Legion Proxy Server.
-extern const base::FeatureParam<std::string> kLegionProxyServerUrl;
+// Endpoint for the Private AI Proxy Server.
+extern const base::FeatureParam<std::string> kPrivateAiProxyServerUrl;
 
-// Sets the name of the Legion auth token server.
-extern const base::FeatureParam<std::string> kLegionTokenServerUrl;
+// Sets the name of the Private AI auth token server.
+extern const base::FeatureParam<std::string> kPrivateAiTokenServerUrl;
 
-// Sets the path component of the Legion auth token server URL used for
+// Sets the path component of the Private AI auth token server URL used for
 // getting initial token signing data.
 extern const base::FeatureParam<std::string>
-    kLegionTokenServerGetInitialDataPath;
+    kPrivateAiTokenServerGetInitialDataPath;
 
-// Sets the path component of the Legion auth token server URL used for
+// Sets the path component of the Private AI auth token server URL used for
 // getting blind-signed tokens.
-extern const base::FeatureParam<std::string> kLegionTokenServerGetTokensPath;
+extern const base::FeatureParam<std::string> kPrivateAiTokenServerGetTokensPath;
 
 // The number of auth tokens to request in each batch.
-extern const base::FeatureParam<int> kLegionAuthTokenCacheBatchSize;
+extern const base::FeatureParam<int> kPrivateAiAuthTokenCacheBatchSize;
 
 // The number of available auth tokens below which a new batch of tokens will be
 // requested.
-extern const base::FeatureParam<int> kLegionAuthTokenCacheLowWaterMark;
+extern const base::FeatureParam<int> kPrivateAiAuthTokenCacheLowWaterMark;
 
 // The backoff duration for fetching auth tokens if the user is not eligible.
 extern const base::FeatureParam<base::TimeDelta>
-    kLegionTryGetAuthTokensNotEligibleBackoff;
+    kPrivateAiTryGetAuthTokensNotEligibleBackoff;
 
 // The initial backoff for fetching auth tokens after a transient error.
 extern const base::FeatureParam<base::TimeDelta>
-    kLegionTryGetAuthTokensTransientBackoff;
+    kPrivateAiTryGetAuthTokensTransientBackoff;
 
 // The initial backoff for fetching auth tokens after an error that suggests a
 // bug.
 extern const base::FeatureParam<base::TimeDelta>
-    kLegionTryGetAuthTokensBugBackoff;
+    kPrivateAiTryGetAuthTokensBugBackoff;
 
 // The jitter factor to apply to backoff durations.
-extern const base::FeatureParam<double> kLegionBackoffJitter;
+extern const base::FeatureParam<double> kPrivateAiBackoffJitter;
 
 }  // namespace private_ai
 

@@ -20,7 +20,8 @@ BASE_FEATURE(kContextualCueing, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicZeroStateSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kZeroStateSuggestionsUseLegion, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kZeroStateSuggestionsUsePrivateAi,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableAutoOpenGlicSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 

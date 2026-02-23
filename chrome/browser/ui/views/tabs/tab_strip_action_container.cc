@@ -87,9 +87,9 @@ void EstablishLegionConnection(Profile* profile) {
   if (!profile) {
     return;
   }
-  if (base::FeatureList::IsEnabled(private_ai::kLegion) &&
+  if (base::FeatureList::IsEnabled(private_ai::kPrivateAi) &&
       base::FeatureList::IsEnabled(
-          contextual_cueing::kZeroStateSuggestionsUseLegion)) {
+          contextual_cueing::kZeroStateSuggestionsUsePrivateAi)) {
     private_ai::PrivateAiService* private_ai_service =
         private_ai::PrivateAiServiceFactory::GetForProfile(profile);
     if (private_ai_service) {
