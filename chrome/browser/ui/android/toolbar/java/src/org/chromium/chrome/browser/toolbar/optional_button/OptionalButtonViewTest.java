@@ -52,7 +52,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -519,9 +518,6 @@ public class OptionalButtonViewTest {
         assertEquals(actionChipLabel, mActionChipLabel.getText());
     }
 
-    // TODO(crbug.com/481750542): Fix failure on SDK 30+ due to animation/transition callback
-    // verification failures.
-    @Config(sdk = 29)
     @Test
     public void testSetIconDrawableWithAnimation_expandAndCollapseActionChipFromHidden() {
         ButtonData actionChipButtonData = getDataForReaderModeActionChip();
@@ -535,7 +531,7 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.onTransitionEnd(null);
 
         // Advance looper to begin collapse transition.
-        mShadowLooper.runOneTask();
+        mShadowLooper.runToEndOfTasks();
 
         // Normally called by TransitionManager.
         mOptionalButtonView.onTransitionStart(null);
@@ -584,9 +580,6 @@ public class OptionalButtonViewTest {
         assertEquals(View.VISIBLE, mActionChipLabel.getVisibility());
     }
 
-    // TODO(crbug.com/481750542): Fix failure on SDK 30+ due to animation/transition callback
-    // verification failures.
-    @Config(sdk = 29)
     @Test
     public void testUpdateButtonWithAnimation_actionChipWithAlternativeColor() {
         ButtonData actionChipButtonData = getDataForReaderModeActionChip();
@@ -606,7 +599,7 @@ public class OptionalButtonViewTest {
         ColorFilter filterAfterExpansion = mButtonBackground.getColorFilter();
 
         // Advance looper to begin collapse transition.
-        mShadowLooper.runOneTask();
+        mShadowLooper.runToEndOfTasks();
         // Normally called by TransitionManager.
         mOptionalButtonView.onTransitionStart(null);
         mOptionalButtonView.onTransitionEnd(null);
@@ -645,9 +638,6 @@ public class OptionalButtonViewTest {
         assertEquals(View.GONE, mActionChipLabel.getVisibility());
     }
 
-    // TODO(crbug.com/481750542): Fix failure on SDK 30+ due to animation/transition callback
-    // verification failures.
-    @Config(sdk = 29)
     @Test
     public void testTransitionCallbacks() {
         ButtonData firstButton = getDataForStaticNewTabIconButton();
@@ -696,7 +686,7 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.onTransitionEnd(null);
 
         // Advance looper to begin collapse transition.
-        mShadowLooper.runOneTask();
+        mShadowLooper.runToEndOfTasks();
         // Run callbacks for collapse transition.
         mOptionalButtonView.onTransitionStart(null);
         mOptionalButtonView.onTransitionEnd(null);
@@ -944,7 +934,7 @@ public class OptionalButtonViewTest {
         mOptionalButtonView.updateButtonWithAnimation(buttonData);
 
         // Get past the delay to show the text bubble.
-        mShadowLooper.runOneTask();
+        mShadowLooper.runToEndOfTasks();
 
         // Icon is visible without animation.
         assertEquals(View.VISIBLE, mOptionalButtonView.getVisibility());
