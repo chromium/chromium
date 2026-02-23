@@ -17,7 +17,7 @@ pkg.depend(
     name = "@chromium-targets",
     source = pkg.source.googlesource(
         host = "chromium",
-        repo = "src",
+        repo = "chromium/src",
         ref = "refs/heads/main",
         path = "infra/config/targets",
         revision = <current chromium/src revision>,
