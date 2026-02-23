@@ -398,9 +398,6 @@ views::View* VerticalTabStripRegionView::GetViewForDrop() {
 
 std::optional<BrowserRootView::DropIndex>
 VerticalTabStripRegionView::GetDropIndex(const ui::DropTargetEvent& event) {
-  gfx::Point loc_in_tab_strip = event.location();
-  views::View::ConvertPointToTarget(this, tab_strip_view_, &loc_in_tab_strip);
-
   // Check unpinned tabs.
   VerticalUnpinnedTabContainerView* unpinned_container =
       GetUnpinnedTabsContainer();

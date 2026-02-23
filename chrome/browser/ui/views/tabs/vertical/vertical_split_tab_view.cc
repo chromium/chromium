@@ -165,6 +165,39 @@ views::ProposedLayout VerticalSplitTabView::CalculateProposedLayout(
   return layouts;
 }
 
+std::optional<BrowserRootView::DropIndex>
+VerticalSplitTabView::GetLinkDropIndex(const gfx::Point& loc_in_view) {
+  if (!collection_node_ || !collection_node_->GetController()) {
+    return std::nullopt;
+  }
+
+  VerticalTabDragHandler& drag_handler =
+      collection_node_->GetController()->GetDragHandler();
+
+  for (const auto& node : collection_node_->children()) {
+    auto* view = node->view();
+    gfx::Point loc_in_child =
+        views::View::ConvertPointToTarget(this, view, loc_in_view);
+
+    // If the drag lands on any individual tab (using the horizontal position
+    // to determine if it's near the center), then replace the contents of
+    // that tab.
+    constexpr double kDragOverMargins = 0.2;
+    if (view->HitTestPoint(loc_in_child) &&
+        loc_in_child.x() > view->width() * kDragOverMargins &&
+        loc_in_child.x() < view->width() * (1.0 - kDragOverMargins)) {
+      return drag_handler.GetLinkDropIndexForNode(*node, std::nullopt);
+    }
+  }
+
+  // Fallback: If the drag appears in between the two tabs use the vertical
+  // drag position to place the new tab before/after the split.
+  return drag_handler.GetLinkDropIndexForNode(*collection_node_,
+                                              loc_in_view.y() < height() / 2
+                                                  ? DragPositionHint::kTop
+                                                  : DragPositionHint::kBottom);
+}
+
 double VerticalSplitTabView::GetHoverAnimationValue() const {
   if (!hover_controller_) {
     return hovered_ ? 1.0 : 0.0;

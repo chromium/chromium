@@ -179,10 +179,10 @@ VerticalUnpinnedTabContainerView::GetLinkDropIndex(
     }
 
     if (child_node->type() == TabCollectionNode::Type::GROUP) {
-      auto* group_view = views::AsViewClass<VerticalTabGroupView>(view);
+      auto* group_view = static_cast<VerticalTabGroupView*>(view);
       if (group_view->IsCollapsed()) {
-        gfx::Point loc_in_group = loc_in_container;
-        views::View::ConvertPointToTarget(this, group_view, &loc_in_group);
+        gfx::Point loc_in_group = views::View::ConvertPointToTarget(
+            this, group_view, loc_in_container);
         const bool is_leading =
             loc_in_group.y() <
             group_view->group_header()->bounds().CenterPoint().y();
@@ -207,6 +207,13 @@ VerticalUnpinnedTabContainerView::GetLinkDropIndex(
       hint = DragPositionHint::kTop;
     } else if (loc_in_child.y() > view->height() * (1 - kDragOverMargins)) {
       hint = DragPositionHint::kBottom;
+    } else if (child_node->type() == TabCollectionNode::Type::SPLIT) {
+      // If landing in the middle of the split, let the split view decide which
+      // tab to replace.
+      auto* split_view = static_cast<VerticalSplitTabView*>(view);
+      gfx::Point loc_in_split =
+          views::View::ConvertPointToTarget(this, split_view, loc_in_container);
+      return split_view->GetLinkDropIndex(loc_in_split);
     } else {
       hint = std::nullopt;
     }

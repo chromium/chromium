@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
@@ -42,6 +43,9 @@ class VerticalSplitTabView : public views::View, public views::LayoutDelegate {
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
+
+  std::optional<BrowserRootView::DropIndex> GetLinkDropIndex(
+      const gfx::Point& loc_in_view);
 
   // Used by children to sync their animation values with the parent.
   double GetHoverAnimationValue() const;

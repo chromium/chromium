@@ -409,7 +409,7 @@ VerticalTabGroupView::GetLinkDropIndex(const gfx::Point& loc_in_group) {
   }
 
   for (const auto& child_node : collection_node_->children()) {
-    const auto* view = child_node->view();
+    auto* view = child_node->view();
     CHECK(view);
     if (loc_in_group.y() > view->bounds().bottom()) {
       continue;
@@ -426,6 +426,13 @@ VerticalTabGroupView::GetLinkDropIndex(const gfx::Point& loc_in_group) {
       hint = DragPositionHint::kTop;
     } else if (loc_in_child.y() > view->height() * (1 - kDragOverMargins)) {
       hint = DragPositionHint::kBottom;
+    } else if (child_node->type() == TabCollectionNode::Type::SPLIT) {
+      // If landing in the middle of the split, let the split view decide which
+      // tab to replace.
+      auto* split_view = static_cast<VerticalSplitTabView*>(view);
+      gfx::Point loc_in_split =
+          views::View::ConvertPointToTarget(this, split_view, loc_in_group);
+      return split_view->GetLinkDropIndex(loc_in_split);
     } else {
       hint = std::nullopt;
     }

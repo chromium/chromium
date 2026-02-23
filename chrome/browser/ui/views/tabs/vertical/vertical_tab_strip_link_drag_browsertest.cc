@@ -175,20 +175,63 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest, DropInSplitTabs) {
 
   auto* split_view = WaitForSplitView();
 
-  // Drop at the top of the split tab.
+  // Drop at the top of the split tab -> before split.
   {
     gfx::Point location(split_view->width() / 2, 2);
     auto drop_index = GetDropIndexAt(split_view, location);
     ASSERT_TRUE(drop_index.has_value());
     EXPECT_EQ(drop_index->index, 0);
+    EXPECT_EQ(drop_index->relative_to_index,
+              BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex);
   }
 
-  // Drop at the bottom of the split tab.
+  // Drop at the bottom of the split tab -> after split.
   {
     gfx::Point location(split_view->width() / 2, split_view->height() - 2);
     auto drop_index = GetDropIndexAt(split_view, location);
     ASSERT_TRUE(drop_index.has_value());
     EXPECT_EQ(drop_index->index, 2);
+    EXPECT_EQ(drop_index->relative_to_index,
+              BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex);
+  }
+
+  // Drop in the middle of the first tab in the split -> replace tab 0.
+  {
+    gfx::Point location(split_view->width() / 4, split_view->height() / 2);
+    auto drop_index = GetDropIndexAt(split_view, location);
+    ASSERT_TRUE(drop_index.has_value());
+    EXPECT_EQ(drop_index->index, 0);
+    EXPECT_EQ(drop_index->relative_to_index,
+              BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex);
+  }
+
+  // Drop in the middle of the second tab in the split -> replace tab 1.
+  {
+    gfx::Point location(3 * split_view->width() / 4, split_view->height() / 2);
+    auto drop_index = GetDropIndexAt(split_view, location);
+    ASSERT_TRUE(drop_index.has_value());
+    EXPECT_EQ(drop_index->index, 1);
+    EXPECT_EQ(drop_index->relative_to_index,
+              BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex);
+  }
+
+  // Drop in the middle of the split view, but between tabs -> before/after
+  // split depending on vertical position.
+  {
+    // Middle vertically, but very left edge of the first tab.
+    gfx::Point location(2, split_view->height() / 2 - 1);
+    auto drop_index = GetDropIndexAt(split_view, location);
+    ASSERT_TRUE(drop_index.has_value());
+    EXPECT_EQ(drop_index->index, 0);
+    EXPECT_EQ(drop_index->relative_to_index,
+              BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex);
+
+    location.set_y(split_view->height() / 2 + 1);
+    drop_index = GetDropIndexAt(split_view, location);
+    ASSERT_TRUE(drop_index.has_value());
+    EXPECT_EQ(drop_index->index, 2);
+    EXPECT_EQ(drop_index->relative_to_index,
+              BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex);
   }
 }
 
