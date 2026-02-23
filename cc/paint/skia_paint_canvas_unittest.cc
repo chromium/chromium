@@ -28,7 +28,7 @@ TEST(SkiaPaintCanvasTest, ContextFlushesDirect) {
   int expected_pending[11] = {1, 2, 3, 4, 0, 1, 2, 3, 4, 0, 1};
   for (int i : expected_pending) {
     paint_canvas.drawRect(rect, flags);
-    EXPECT_EQ(paint_canvas.pendingOps(), i);
+    EXPECT_EQ(paint_canvas.pendingOpsForTesting(), i);
   }
 }
 
@@ -50,7 +50,7 @@ TEST(SkiaPaintCanvasTest, ContextFlushesRecording) {
   SkiaPaintCanvas paint_canvas(&mock_canvas, nullptr, context_flushes);
   paint_canvas.drawPicture(record);
   // There should be 3 leftover ops (11 % 4) and we should have flushed twice.
-  EXPECT_EQ(paint_canvas.pendingOps(), 3);
+  EXPECT_EQ(paint_canvas.pendingOpsForTesting(), 3);
 }
 
 TEST(SkiaPaintCanvasTest, ContextFlushesDisabled) {

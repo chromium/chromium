@@ -27,7 +27,6 @@ class SkCanvas;
 class SkM44;
 class SkPath;
 class SkRRect;
-class SkSurfaceProps;
 enum class SkClipOp;
 struct SkImageInfo;
 struct SkIPoint;
@@ -56,7 +55,6 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
                            ContextFlushes context_flushes = ContextFlushes());
   explicit SkiaPaintCanvas(const SkBitmap& bitmap,
                            ImageProvider* image_provider = nullptr);
-  explicit SkiaPaintCanvas(const SkBitmap& bitmap, const SkSurfaceProps& props);
 
   SkiaPaintCanvas(const SkiaPaintCanvas&) = delete;
   ~SkiaPaintCanvas() override;
@@ -185,7 +183,7 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
       PlaybackCallbacks::CustomDataRasterCallback custom_raster_callback,
       bool local_ctm = true);
 
-  int pendingOps() const { return num_of_ops_; }
+  int pendingOpsForTesting() const { return num_of_ops_; }
 
  private:
   void FlushAfterDrawIfNeeded();

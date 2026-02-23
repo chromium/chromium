@@ -52,10 +52,6 @@ SkiaPaintCanvas::SkiaPaintCanvas(const SkBitmap& bitmap,
       owned_(canvas_),
       image_provider_(image_provider) {}
 
-SkiaPaintCanvas::SkiaPaintCanvas(const SkBitmap& bitmap,
-                                 const SkSurfaceProps& props)
-    : canvas_(new SkCanvas(bitmap, props)), bitmap_(bitmap), owned_(canvas_) {}
-
 SkiaPaintCanvas::~SkiaPaintCanvas() {
   canvas_ = nullptr;
   image_provider_ = nullptr;
