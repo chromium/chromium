@@ -64,8 +64,7 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has('file')) {
-      this.isUploading_ = this.file.status === FileUploadStatus.kNotUploaded ||
-          this.file.status === FileUploadStatus.kProcessing ||
+      this.isUploading_ = this.file.status === FileUploadStatus.kProcessing ||
           this.file.status ===
               FileUploadStatus.kProcessingSuggestSignalsReady ||
           this.file.status === FileUploadStatus.kUploadStarted;
