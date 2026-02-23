@@ -516,7 +516,8 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
       performAction:grey_tap()];
   // Verify that an error message is displayed for invalid input.
   NSString* secondTitle = @"Second Site";
-  NSString* secondUrl = @"https://second_url.com";
+  NSString* secondUrl = @"chrome://second_url";
+  NSString* invalidUrl = @"in://valid.url";
   id<GREYMatcher> saveButton = grey_allOf(
       grey_ancestor(grey_kindOfClass([UINavigationBar class])),
       ButtonWithAccessibilityLabel(l10n_util::GetNSString(IDS_ADD)),
@@ -524,10 +525,9 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
   GREYAssertFalse([self addPinnedSiteWithTitle:secondTitle URL:firstUrl],
                   @"Add pinned site form should not be dismissed when URL is "
                   @"already pinned.");
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_text(l10n_util::GetNSString(
-              IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL_VALIDATION_FAILED))]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL_EXISTS))]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:saveButton] assertWithMatcher:grey_nil()];
   // Verify that the message disappears and the "Add" button is interactable
@@ -536,21 +536,33 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
       selectElementWithMatcher:grey_allOf(grey_accessibilityValue(firstUrl),
                                           grey_kindOfClassName(@"UITextField"),
                                           nil)]
-      performAction:grey_replaceText(secondUrl)];
+      performAction:grey_replaceText(invalidUrl)];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL_EXISTS))]
+      assertWithMatcher:grey_nil()];
+  // Verify that invalid URL could not be saved.
+  [[[EarlGrey selectElementWithMatcher:saveButton]
+      assertWithMatcher:grey_sufficientlyVisible()] performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:
           grey_text(l10n_util::GetNSString(
               IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_URL_VALIDATION_FAILED))]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:saveButton]
       assertWithMatcher:grey_sufficientlyVisible()];
-  // Verify that the "title" field is optional, and the URL will be used as
-  // title.
+  [[EarlGrey selectElementWithMatcher:saveButton] assertWithMatcher:grey_nil()];
+  // Save a valid URL. Verify that the "title" field is optional, and the URL
+  // will be used as title.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityValue(invalidUrl),
+                                          grey_kindOfClassName(@"UITextField"),
+                                          nil)]
+      performAction:grey_replaceText(secondUrl)];
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityValue(secondTitle),
                                           grey_kindOfClassName(@"UITextField"),
                                           nil)] performAction:grey_clearText()];
-  [[EarlGrey selectElementWithMatcher:saveButton] performAction:grey_tap()];
+  [[[EarlGrey selectElementWithMatcher:saveButton]
+      assertWithMatcher:grey_sufficientlyVisible()] performAction:grey_tap()];
   pinnedLabel = l10n_util::GetNSStringF(
       IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ACCESSIBILITY_LABEL,
       base::SysNSStringToUTF16(secondUrl));

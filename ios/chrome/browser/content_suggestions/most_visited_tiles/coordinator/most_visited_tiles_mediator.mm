@@ -85,6 +85,16 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
   return (base::Time::Now() - earliest_visit_time) < base::Days(7);
 }
 
+// Fix up and validate the `url`. If the url is invalid, return an empty URL.
+GURL GetValidUrl(NSString* urlString) {
+  GURL fixedUpURL = url_formatter::FixupURL(base::SysNSStringToUTF8(urlString),
+                                            std::string());
+  if (fixedUpURL.IsStandard() || fixedUpURL.SchemeIs("chrome")) {
+    return fixedUpURL;
+  }
+  return GURL();
+}
+
 }  // namespace
 
 @interface MostVisitedTilesMediator () <ContentSuggestionsMenuElementsProvider,
@@ -436,12 +446,15 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
 
 #pragma mark - MostVisitedTilesPinnedSiteMutator
 
-- (BOOL)addPinnedSiteWithTitle:(NSString*)title URL:(NSString*)URL {
-  GURL fixedUpURL =
-      url_formatter::FixupURL(base::SysNSStringToUTF8(URL), std::string());
+- (PinnedSiteMutationResult)addPinnedSiteWithTitle:(NSString*)title
+                                               URL:(NSString*)URL {
+  GURL fixedUpURL = GetValidUrl(URL);
+  if (fixedUpURL.is_empty()) {
+    return PinnedSiteMutationResult::kURLInvalid;
+  }
   if (!_mostVisitedSites->AddCustomLink(fixedUpURL,
                                         base::SysNSStringToUTF16(title))) {
-    return NO;
+    return PinnedSiteMutationResult::kURLExisted;
   }
   _engagementTracker->NotifyEvent(
       feature_engagement::events::kIOSPinMVTSiteUsed);
@@ -453,22 +466,24 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
                        [weakSelf undoLastPinAction];
                        RecordSnackbarUndoUserAction(/*undo_pin=*/YES);
                      }];
-  return YES;
+  return PinnedSiteMutationResult::kSuccess;
 }
 
-- (BOOL)editPinnedSiteForURL:(NSString*)oldURL
-                   withTitle:(NSString*)title
-                         URL:(NSString*)newURL {
+- (PinnedSiteMutationResult)editPinnedSiteForURL:(NSString*)oldURL
+                                       withTitle:(NSString*)title
+                                             URL:(NSString*)newURL {
+  GURL newKeyURL = GetValidUrl(newURL);
+  if (newKeyURL.is_empty()) {
+    return PinnedSiteMutationResult::kURLInvalid;
+  }
   GURL oldKeyURL = GURL(base::SysNSStringToUTF8(oldURL));
-  GURL newKeyURL =
-      url_formatter::FixupURL(base::SysNSStringToUTF8(newURL), std::string());
   if (oldKeyURL == newKeyURL) {
     // Do not provide the new URL if only the title is changing.
     newKeyURL = GURL();
   }
   if (!_mostVisitedSites->UpdateCustomLink(oldKeyURL, newKeyURL,
                                            base::SysNSStringToUTF16(title))) {
-    return NO;
+    return PinnedSiteMutationResult::kURLExisted;
   }
   __weak MostVisitedTilesMediator* weakSelf = self;
   [self showSnackbarWithMessage:
@@ -477,7 +492,7 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
                      undoAction:^{
                        [weakSelf undoLastPinAction];
                      }];
-  return YES;
+  return PinnedSiteMutationResult::kSuccess;
 }
 
 #pragma mark - Private

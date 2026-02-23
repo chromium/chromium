@@ -5,18 +5,29 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_MOST_VISITED_TILES_UI_MOST_VISITED_TILES_PINNED_SITE_MUTATOR_H_
 #define IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_MOST_VISITED_TILES_UI_MOST_VISITED_TILES_PINNED_SITE_MUTATOR_H_
 
+/// Whether the pinned site is successfully mutated.
+enum class PinnedSiteMutationResult {
+  /// Pinned site added or edited.
+  kSuccess,
+  /// The URL input has an invalid scheme.
+  kURLInvalid,
+  /// The URL is already pinned.
+  kURLExisted,
+};
+
 /// Mutator object to handle creating and editing pinned sites in the most
 /// visited tiles.
 @protocol MostVisitedTilesPinnedSiteMutator
 
 /// Adds a new pinned site with `URL` and `title`.
-- (BOOL)addPinnedSiteWithTitle:(NSString*)title URL:(NSString*)URL;
+- (PinnedSiteMutationResult)addPinnedSiteWithTitle:(NSString*)title
+                                               URL:(NSString*)URL;
 
 /// Update the existing pinned site for `oldURL`  with  an updated `newURL` and
 /// `title`.
-- (BOOL)editPinnedSiteForURL:(NSString*)oldURL
-                   withTitle:(NSString*)title
-                         URL:(NSString*)newURL;
+- (PinnedSiteMutationResult)editPinnedSiteForURL:(NSString*)oldURL
+                                       withTitle:(NSString*)title
+                                             URL:(NSString*)newURL;
 
 @end
 
