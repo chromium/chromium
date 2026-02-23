@@ -4,6 +4,10 @@
 
 #import "ios/chrome/browser/overlays/model/overlay_presenter_impl.h"
 
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_test_utils.h"
 #import "ios/chrome/browser/overlays/model/overlay_request_queue_impl.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_modality.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer.h"
@@ -11,6 +15,7 @@
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_request_cancel_handler.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_user_data.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -49,17 +54,27 @@ class OverlayPresenterImplTest : public PlatformTest {
  public:
   OverlayPresenterImplTest() {
     profile_ = TestProfileIOS::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    app_state_ = [[AppState alloc] initWithStartupInformation:nil];
+    profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
+    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state_
+                                                    profile:profile_.get()];
+    scene_state_.profileState = profile_state_;
+    profile_state_.profile = profile_.get();
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     OverlayPresenterImpl::Container::CreateForUserData(browser_.get(),
                                                        browser_.get());
     presenter().AddObserver(&observer_);
   }
   ~OverlayPresenterImplTest() override {
+    [scene_state_ shutdown];
+    scene_state_ = nil;
+
     if (browser_) {
       presenter().RemoveObserver(&observer_);
       presenter().SetPresentationContext(nullptr);
     }
   }
+  ProfileState* profile_state() { return profile_state_; }
   WebStateList* web_state_list() { return browser_->GetWebStateList(); }
   web::WebState* active_web_state() {
     return web_state_list()->GetActiveWebState();
@@ -112,14 +127,18 @@ class OverlayPresenterImplTest : public PlatformTest {
  private:
   web::WebTaskEnvironment task_environment_;
   MockOverlayPresenterObserver observer_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  AppState* app_state_;
   std::unique_ptr<Browser> browser_;
+  FakeSceneState* scene_state_;
+  ProfileState* profile_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   FakeOverlayPresentationContext presentation_context_;
 };
 
 // Tests that setting the presentation context will present overlays requested
 // before the delegate is provided.
 TEST_F(OverlayPresenterImplTest, PresentAfterSettingPresentationContext) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Add a WebState to the list and add a request to that WebState's queue.
   web_state_list()->InsertWebState(
       std::make_unique<web::FakeWebState>(),
@@ -135,9 +154,35 @@ TEST_F(OverlayPresenterImplTest, PresentAfterSettingPresentationContext) {
   EXPECT_TRUE(presenter().IsShowingOverlayUI());
 }
 
+// Tests that the overlays will only present when the profile init stage is
+// normal, queueing the request until then.
+TEST_F(OverlayPresenterImplTest, PresentAfterProfileInitStageNormal) {
+  // Add a WebState to the list and add a request to that WebState's queue.
+  web_state_list()->InsertWebState(
+      std::make_unique<web::FakeWebState>(),
+      WebStateList::InsertionParams::Automatic().Activate());
+  OverlayRequest* request = AddRequest(active_web_state());
+  ASSERT_EQ(FakeOverlayPresentationContext::PresentationState::kNotPresented,
+            presentation_context().GetPresentationState(request));
+
+  // Set the UI delegate and verify that the request has been presented.
+  presenter().SetPresentationContext(&presentation_context());
+
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kStart);
+  EXPECT_EQ(FakeOverlayPresentationContext::PresentationState::kNotPresented,
+            presentation_context().GetPresentationState(request));
+  EXPECT_FALSE(presenter().IsShowingOverlayUI());
+
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
+  EXPECT_EQ(FakeOverlayPresentationContext::PresentationState::kPresented,
+            presentation_context().GetPresentationState(request));
+  EXPECT_TRUE(presenter().IsShowingOverlayUI());
+}
+
 // Tests that requested overlays are presented when added to the active queue
 // after the presentation context has been provided.
 TEST_F(OverlayPresenterImplTest, PresentAfterRequestAddedToActiveQueue) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
   web_state_list()->InsertWebState(
@@ -154,6 +199,7 @@ TEST_F(OverlayPresenterImplTest, PresentAfterRequestAddedToActiveQueue) {
 // the active queue while already presenting overlay UI for its front request.
 TEST_F(OverlayPresenterImplTest,
        PresentAfterRequestInsertedToFrontOfActiveQueue) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
   web_state_list()->InsertWebState(
@@ -191,6 +237,7 @@ TEST_F(OverlayPresenterImplTest,
 // Tests that requested overlays are presented when the presentation context is
 // activated.
 TEST_F(OverlayPresenterImplTest, PresentAfterContextActivation) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Add a WebState to the list and add a request to that WebState's queue.
   presentation_context().SetPresentationCapabilities(
       OverlayPresentationContext::UIPresentationCapabilities::kNone);
@@ -213,6 +260,7 @@ TEST_F(OverlayPresenterImplTest, PresentAfterContextActivation) {
 // Tests that presented overlay UI is hidden when the presentation context is
 // deactivated.
 TEST_F(OverlayPresenterImplTest, HideAfterContextDeactivation) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
   web_state_list()->InsertWebState(
@@ -234,6 +282,7 @@ TEST_F(OverlayPresenterImplTest, HideAfterContextDeactivation) {
 // Tests resetting the presentation context.  The UI should be cancelled in the
 // previous context and presented in the new context.
 TEST_F(OverlayPresenterImplTest, ResetPresentationContext) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
   web_state_list()->InsertWebState(
@@ -274,6 +323,7 @@ TEST_F(OverlayPresenterImplTest, ResetPresentationContext) {
 // Tests changing the active WebState while no overlays are presented over the
 // current active WebState.
 TEST_F(OverlayPresenterImplTest, ChangeActiveWebStateWhileNotPresenting) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Add a WebState to the list and activate it.
   presenter().SetPresentationContext(&presentation_context());
   web_state_list()->InsertWebState(
@@ -297,6 +347,7 @@ TEST_F(OverlayPresenterImplTest, ChangeActiveWebStateWhileNotPresenting) {
 
 // Tests changing the active WebState while is it presenting an overlay.
 TEST_F(OverlayPresenterImplTest, ChangeActiveWebStateWhilePresenting) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
   web_state_list()->InsertWebState(
@@ -341,6 +392,7 @@ TEST_F(OverlayPresenterImplTest, ChangeActiveWebStateWhilePresenting) {
 
 // Tests replacing the active WebState while it is presenting an overlay.
 TEST_F(OverlayPresenterImplTest, ReplaceActiveWebState) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
   web_state_list()->InsertWebState(
@@ -370,6 +422,7 @@ TEST_F(OverlayPresenterImplTest, ReplaceActiveWebState) {
 
 // Tests removing the active WebState while it is presenting an overlay.
 TEST_F(OverlayPresenterImplTest, RemoveActiveWebState) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
   web_state_list()->InsertWebState(
@@ -392,6 +445,7 @@ TEST_F(OverlayPresenterImplTest, RemoveActiveWebState) {
 // Tests detaching the active WebState while it is presenting an overlay and
 // removing the presenter as the queue's delegate.
 TEST_F(OverlayPresenterImplTest, DetachWebStateRemoveDelegate) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
   web_state_list()->InsertWebState(
@@ -419,6 +473,7 @@ TEST_F(OverlayPresenterImplTest, DetachWebStateRemoveDelegate) {
 // overlay executes.
 TEST_F(OverlayPresenterImplTest,
        DetachWebStateCancelRequestBeforeDismissalCallback) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
   web_state_list()->InsertWebState(
@@ -443,6 +498,7 @@ TEST_F(OverlayPresenterImplTest,
 // executing the dismissal callback after detachment.
 TEST_F(OverlayPresenterImplTest,
        DetachWebStateDismissalCallbackCallsDidHideOverlay) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Add a WebState to the list and add a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
   web_state_list()->InsertWebState(
@@ -464,6 +520,7 @@ TEST_F(OverlayPresenterImplTest,
 
 // Tests dismissing an overlay for user interaction.
 TEST_F(OverlayPresenterImplTest, DismissForUserInteraction) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Add a WebState to the list and add two request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
   web_state_list()->InsertWebState(
@@ -497,6 +554,7 @@ TEST_F(OverlayPresenterImplTest, DismissForUserInteraction) {
 
 // Tests cancelling the requests.
 TEST_F(OverlayPresenterImplTest, CancelRequests) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Add a WebState to the list and a request to that WebState's queue.
   presenter().SetPresentationContext(&presentation_context());
   web_state_list()->InsertWebState(
@@ -525,6 +583,7 @@ TEST_F(OverlayPresenterImplTest, CancelRequests) {
 // is owned by an inactive WebState.
 TEST_F(OverlayPresenterImplTest,
        ChangePresentationCapabilitiesDuringDismissalForInactiveWebState) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Insert an activated WebState to the list and add a request.
   presenter().SetPresentationContext(&presentation_context());
   web_state_list()->InsertWebState(
@@ -557,6 +616,7 @@ TEST_F(OverlayPresenterImplTest,
 // that was cancelled.
 TEST_F(OverlayPresenterImplTest,
        ChangePresentationCapabilitiesDuringDismissalForCancelledRequest) {
+  SetProfileStateInitStage(profile_state(), ProfileInitStage::kNormalUI);
   // Insert an activated WebState to the list.
   presenter().SetPresentationContext(&presentation_context());
   web_state_list()->InsertWebState(

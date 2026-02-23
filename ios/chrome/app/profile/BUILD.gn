@@ -13,6 +13,8 @@ source_set("profile") {
     "profile_state.mm",
     "profile_state_agent.h",
     "profile_state_observer.h",
+    "profile_state_observer_bridge.h",
+    "profile_state_observer_bridge.mm",
     "scene_observing_profile_agent.h",
     "scene_observing_profile_agent.mm",
   ]
