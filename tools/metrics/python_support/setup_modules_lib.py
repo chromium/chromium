@@ -40,6 +40,7 @@ def setup_chromium_src_module(chromium_src_path: str):
   module.__path__ = [chromium_root_path]
   sys.modules[_SRC_MODULE_NAME] = module
 
+
 def setup_modules(chromium_src_path: str):
   """Sets up modules required by tools/metrics"""
 

@@ -60,7 +60,8 @@ else:
 
 # Add src/tools/metrics to path temporarily to import the setup_modules_lib.
 chromium_src_path = base_path.joinpath(_CHROMIUM_SRC_RELATIVE_PATH).resolve()
-setup_modules_path = chromium_src_path.joinpath('tools', 'metrics').resolve()
+setup_modules_path = chromium_src_path.joinpath('tools', 'metrics',
+                                                'python_support').resolve()
 
 sys.path.append(str(setup_modules_path))
 import setup_modules_lib
@@ -107,4 +108,4 @@ def _generate_helpers(tools_metrics_path_str: str):
 
 
 if __name__ == "__main__":
-  _generate_helpers(os.path.dirname(os.path.abspath(__file__)))
+  _generate_helpers(tools_metrics_path_str=str(Path(__file__).parent.parent))

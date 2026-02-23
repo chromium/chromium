@@ -36,7 +36,8 @@ else:
 
 # Add src/tools/metrics to path temporarily to import the setup_modules_lib.
 chromium_src_path = base_path.joinpath(_CHROMIUM_SRC_RELATIVE_PATH).resolve()
-setup_modules_path = chromium_src_path.joinpath('tools', 'metrics').resolve()
+setup_modules_path = chromium_src_path.joinpath('tools', 'metrics',
+                                                'python_support').resolve()
 
 sys.path.append(str(setup_modules_path))
 import setup_modules_lib

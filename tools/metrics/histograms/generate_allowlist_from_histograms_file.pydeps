@@ -4,4 +4,4 @@
 ../../../tools/metrics/histograms/extract_histograms.py
 ../../../tools/metrics/histograms/generate_allowlist_from_histograms_file.py
 ../../../tools/metrics/histograms/setup_modules.py
-../../../tools/metrics/setup_modules_lib.py
+../../../tools/metrics/python_support/setup_modules_lib.py
