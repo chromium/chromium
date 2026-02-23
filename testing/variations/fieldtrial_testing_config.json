@@ -12111,6 +12111,27 @@
             ]
         }
     ],
+    "GlicConfirmNavigationToNewOrigins": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithConfirmParam",
+                    "params": {
+                        "confirm_navigation_to_new_origins": "true"
+                    },
+                    "enable_features": [
+                        "GlicCrossOriginNavigationGating"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicDogfood": [
         {
             "platforms": [
