@@ -24,17 +24,17 @@ const unsigned kMaxFFTPow2Size = 20;
 const unsigned kMinFFTPow2Size = 5;
 
 FFTFrame::FFTSetup::FFTSetup(unsigned fft_size) {
-  DCHECK_LE(fft_size, 1U << kMaxFFTPow2Size);
-  DCHECK_GE(fft_size, 1U << kMinFFTPow2Size);
+  CHECK_LE(fft_size, 1U << kMaxFFTPow2Size);
+  CHECK_GE(fft_size, 1U << kMinFFTPow2Size);
 
   // All FFTs we need are FFTs of real signals, and the inverse FFTs produce
   // real signals.  Hence |PFFFT_REAL|.
   setup_ = pffft_new_setup(fft_size, PFFFT_REAL);
-  DCHECK(setup_);
+  CHECK(setup_);
 }
 
 FFTFrame::FFTSetup::~FFTSetup() {
-  DCHECK(setup_);
+  CHECK(setup_);
 
   pffft_destroy_setup(setup_);
 }
@@ -56,14 +56,14 @@ HashMap<unsigned, std::unique_ptr<FFTFrame::FFTSetup>>& FFTFrame::FFTSetups() {
 
     // Make sure we construct the fft_setups vector below on the main thread.
     // Once constructed, we can access it from any thread.
-    DCHECK(IsMainThread());
+    CHECK(IsMainThread());
     first_call = false;
 
     base::AutoLock locker(setup_lock);
 
     // Initialize the hash map with all the possible keys (FFT sizes), with a
     // value of nullptr because we want to initialize the setup data lazily. The
-    // set of valid FFT sizes for PFFFT are of the form 2^k*3^m*5*n where k >=
+    // set of valid FFT sizes for PFFFT are of the form 2^k*3^m*5^n where k >=
     // 5, m >= 0, n >= 0.  We only go up to a max size of 32768, because we need
     // at least an FFT size of 32768 for the convolver node.
 
@@ -82,7 +82,7 @@ HashMap<unsigned, std::unique_ptr<FFTFrame::FFTSetup>>& FFTFrame::FFTSetups() {
     }
 
     // There should be 87 entries when we're done.
-    DCHECK_EQ(fft_setups.size(), 87u);
+    CHECK_EQ(fft_setups.size(), 87u);
   }
 
   return fft_setups;
@@ -91,7 +91,7 @@ HashMap<unsigned, std::unique_ptr<FFTFrame::FFTSetup>>& FFTFrame::FFTSetups() {
 void FFTFrame::InitializeFFTSetupForSize(wtf_size_t fft_size) {
   auto& setup = FFTSetups();
 
-  DCHECK(setup.Contains(fft_size));
+  CHECK(setup.Contains(fft_size));
 
   if (setup.find(fft_size)->value == nullptr) {
     DEFINE_STATIC_LOCAL(base::Lock, setup_lock, ());
@@ -99,7 +99,7 @@ void FFTFrame::InitializeFFTSetupForSize(wtf_size_t fft_size) {
     // Make sure allocation of a new setup only occurs on the main thread so we
     // don't have a race condition with multiple threads trying to write to the
     // same element of the vector.
-    DCHECK(IsMainThread());
+    CHECK(IsMainThread());
 
     auto fft_data = std::make_unique<FFTSetup>(fft_size);
     base::AutoLock locker(setup_lock);
@@ -110,8 +110,8 @@ void FFTFrame::InitializeFFTSetupForSize(wtf_size_t fft_size) {
 PFFFT_Setup* FFTFrame::FFTSetupForSize(wtf_size_t fft_size) {
   auto& setup = FFTSetups();
 
-  DCHECK(setup.Contains(fft_size));
-  DCHECK(setup.find(fft_size)->value);
+  CHECK(setup.Contains(fft_size));
+  CHECK(setup.find(fft_size)->value);
 
   return setup.find(fft_size)->value->GetSetup();
 }
@@ -123,6 +123,8 @@ FFTFrame::FFTFrame(unsigned fft_size)
       imag_data_(fft_size / 2),
       complex_data_(fft_size),
       pffft_work_(fft_size) {
+  CHECK_GE(fft_size, MinFFTSize());
+  CHECK_LE(fft_size, MaxFFTSize());
 
   // Initialize the PFFFT_Setup object here so that it will be ready when we
   // compute FFTs.
@@ -172,8 +174,8 @@ void FFTFrame::Initialize(float sample_rate) {
   unsigned hrtf_fft_size =
       static_cast<unsigned>(HRTFPanner::FftSizeForSampleRate(sample_rate));
 
-  DCHECK_GT(hrtf_fft_size, 1U << kMinFFTPow2Size);
-  DCHECK_LE(hrtf_fft_size, 1U << kMaxFFTPow2Size);
+  CHECK_GT(hrtf_fft_size, 1U << kMinFFTPow2Size);
+  CHECK_LE(hrtf_fft_size, 1U << kMaxFFTPow2Size);
 
   InitializeFFTSetupForSize(hrtf_fft_size);
   InitializeFFTSetupForSize(hrtf_fft_size / 2);
