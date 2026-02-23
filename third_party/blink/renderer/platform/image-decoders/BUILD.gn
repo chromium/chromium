@@ -18,7 +18,6 @@ component("image_decoders") {
   sources = [
     "bmp/bmp_decoder_factory.cc",
     "bmp/bmp_decoder_factory.h",
-    "bmp/bmp_features.cc",
     "bmp/bmp_features.h",
     "bmp/bmp_image_decoder.cc",
     "bmp/bmp_image_decoder.h",

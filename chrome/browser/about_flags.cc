@@ -4896,6 +4896,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kJxlImageFormatDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kJXLImageFormat)},
 #endif  // BUILDFLAG(ENABLE_JXL_DECODER)
+    {"enable-rusty-bmp", flag_descriptions::kRustyBmpName,
+     flag_descriptions::kRustyBmpDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kRustyBmpFeature)},
     {"soft-navigation-heuristics",
      flag_descriptions::kSoftNavigationHeuristicsName,
      flag_descriptions::kSoftNavigationHeuristicsDescription, kOsAll,

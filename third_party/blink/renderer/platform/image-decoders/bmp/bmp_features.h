@@ -5,12 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_BMP_BMP_FEATURES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_BMP_BMP_FEATURES_H_
 
-#include "base/feature_list.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace blink {
 
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kRustyBmpFeature);
+using ::blink::features::kRustyBmpFeature;
 
 inline bool IsRustyBmpEnabled() {
   return base::FeatureList::IsEnabled(kRustyBmpFeature);

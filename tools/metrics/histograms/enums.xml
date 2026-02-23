@@ -13882,6 +13882,7 @@ from previous Chrome versions.
   <int value="-180658998" label="ReadLater:disabled"/>
   <int value="-180481252" label="CompositorThreadedScrollbarScrolling:enabled"/>
   <int value="-180292536" label="PerformanceInterventionDemoMode:enabled"/>
+  <int value="-180278057" label="RustyBmpFeature:enabled"/>
   <int value="-180056644" label="HomeButtonWithText:disabled"/>
   <int value="-179580377" label="CrossOriginOpenerPolicy:enabled"/>
   <int value="-179541740" label="bookmarks-tree-view:disabled"/>
@@ -19068,6 +19069,7 @@ from previous Chrome versions.
   <int value="1579084737" label="TemporaryUnexpireFlagsM80:disabled"/>
   <int value="1579461102" label="MemoryCoordinator:disabled"/>
   <int value="1579627455" label="BoardingPassDetector:enabled"/>
+  <int value="1580185572" label="RustyBmpFeature:disabled"/>
   <int value="1580248383" label="UseScreen2xV2:enabled"/>
   <int value="1580340993" label="EnableTabMuting:enabled"/>
   <int value="1580365114" label="ThirdPartyProfileManagement:disabled"/>
