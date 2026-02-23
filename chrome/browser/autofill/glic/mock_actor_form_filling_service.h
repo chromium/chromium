@@ -35,6 +35,20 @@ class MockActorFormFillingService : public ActorFormFillingService {
        base::span<const ActorFormFillingSelection> chosen_suggestions,
        base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>),
       (override));
+
+  MOCK_METHOD(void, ScrollToForm, (const tabs::TabInterface&, int), (override));
+  MOCK_METHOD(void,
+              PreviewForm,
+              (const tabs::TabInterface&, int, ActorSuggestionId),
+              (override));
+  MOCK_METHOD(void,
+              ClearFormPreview,
+              (const tabs::TabInterface&, int),
+              (override));
+  MOCK_METHOD(void,
+              FillForm,
+              (const tabs::TabInterface&, int, ActorFormFillingSelection),
+              (override));
 };
 
 }  // namespace autofill

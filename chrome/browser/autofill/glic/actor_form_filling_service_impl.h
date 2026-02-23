@@ -47,6 +47,14 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
       base::span<const ActorFormFillingSelection> chosen_suggestions,
       base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>
           callback) override;
+  void ScrollToForm(const tabs::TabInterface& tab, int form_index) override;
+  void PreviewForm(const tabs::TabInterface& tab,
+                   int form_index,
+                   ActorSuggestionId suggestion_id) override;
+  void ClearFormPreview(const tabs::TabInterface& tab, int form_index) override;
+  void FillForm(const tabs::TabInterface& tab,
+                int form_index,
+                ActorFormFillingSelection selection) override;
 
   // A record to keep track of the data that is backing an `ActorSuggestion`.
   struct FillData final {

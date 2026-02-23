@@ -17,6 +17,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -731,6 +732,34 @@ void ActorFormFillingServiceImpl::FillSuggestions(
                                          AutofillTriggerSource::kGlic);
     }
   }
+}
+
+void ActorFormFillingServiceImpl::ScrollToForm(const tabs::TabInterface& tab,
+                                               int form_index) {
+  // TODO(crbug.com/481379667): Implement scrolling to a form.
+  NOTIMPLEMENTED();
+}
+
+void ActorFormFillingServiceImpl::PreviewForm(const tabs::TabInterface& tab,
+                                              int form_index,
+                                              ActorSuggestionId suggestion_id) {
+  // TODO(crbug.com/481379523): Implement previewing a form.
+  NOTIMPLEMENTED();
+}
+
+void ActorFormFillingServiceImpl::ClearFormPreview(
+    const tabs::TabInterface& tab,
+    int form_index) {
+  // TODO(crbug.com/481381308): Implement clearing a previewed form.
+  NOTIMPLEMENTED();
+}
+
+void ActorFormFillingServiceImpl::FillForm(
+    const tabs::TabInterface& tab,
+    int form_index,
+    ActorFormFillingSelection selection) {
+  // TODO(crbug.com/482010699): Implement filling a single form.
+  NOTIMPLEMENTED();
 }
 
 }  // namespace autofill

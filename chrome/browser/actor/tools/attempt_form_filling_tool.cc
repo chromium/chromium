@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/actor/actor_switches.h"
@@ -316,7 +315,7 @@ void AttemptFormFillingTool::OnSuggestionsSelected(
     selection.selected_suggestion_id = autofill::ActorSuggestionId(id);
     selection_response.push_back(std::move(selection));
   }
-  auto* tab = GetTargetTab().Get();
+  tabs::TabInterface* tab = GetTargetTab().Get();
   if (!tab) {
     std::move(invoke_callback)
         .Run(MakeResult(mojom::ActionResultCode::kTabWentAway));
@@ -333,21 +332,47 @@ void AttemptFormFillingTool::OnSuggestionsSelected(
 
 void AttemptFormFillingTool::OnFormPresented(
     webui::mojom::AutofillSuggestionDialogOnFormPresentedParamsPtr params) {
-  // TODO(crbug.com/483405648): Implement.
-  NOTIMPLEMENTED();
+  tabs::TabInterface* tab = GetTargetTab().Get();
+  if (!tab) {
+    return;
+  }
+  tool_delegate().GetActorFormFillingService().ScrollToForm(
+      *tab, params->form_filling_request_index);
 }
 
 void AttemptFormFillingTool::OnFormPreviewChanged(
     webui::mojom::AutofillSuggestionDialogOnFormPreviewChangedParamsPtr
         params) {
-  // TODO(crbug.com/483405648): Implement.
-  NOTIMPLEMENTED();
+  tabs::TabInterface* tab = GetTargetTab().Get();
+  if (!tab) {
+    return;
+  }
+  if (params->response) {
+    uint32_t id = 0;
+    if (base::StringToUint(params->response->selected_suggestion_id, &id)) {
+      tool_delegate().GetActorFormFillingService().PreviewForm(
+          *tab, params->form_filling_request_index,
+          autofill::ActorSuggestionId(id));
+    }
+  } else {
+    tool_delegate().GetActorFormFillingService().ClearFormPreview(
+        *tab, params->form_filling_request_index);
+  }
 }
 
 void AttemptFormFillingTool::OnFormConfirmed(
     webui::mojom::AutofillSuggestionDialogOnFormConfirmedParamsPtr params) {
-  // TODO(crbug.com/483405648): Implement.
-  NOTIMPLEMENTED();
+  tabs::TabInterface* tab = GetTargetTab().Get();
+  if (!tab) {
+    return;
+  }
+  uint32_t id = 0;
+  if (base::StringToUint(params->response->selected_suggestion_id, &id)) {
+    autofill::ActorFormFillingSelection selection;
+    selection.selected_suggestion_id = autofill::ActorSuggestionId(id);
+    tool_delegate().GetActorFormFillingService().FillForm(
+        *tab, params->form_filling_request_index, std::move(selection));
+  }
 }
 
 }  // namespace actor

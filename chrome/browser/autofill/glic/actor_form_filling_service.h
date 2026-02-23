@@ -46,6 +46,31 @@ class ActorFormFillingService {
       base::span<const ActorFormFillingSelection> chosen_suggestions,
       base::OnceCallback<void(base::expected<void, ActorFormFillingError>)>
           callback) = 0;
+
+  // Scrolls the form into view.
+  // `form_index` corresponds to the vector of ActorFormFillingRequests
+  // retrieved by GetSuggestions().
+  virtual void ScrollToForm(const tabs::TabInterface& tab, int form_index) = 0;
+
+  // Previews the form with the suggestion whose ID is `suggestion_id`.
+  // `form_index` corresponds to the vector of ActorFormFillingRequests
+  // retrieved by GetSuggestions().
+  virtual void PreviewForm(const tabs::TabInterface& tab,
+                           int form_index,
+                           ActorSuggestionId suggestion_id) = 0;
+
+  // Clears the preview for the form.
+  // `form_index` corresponds to the vector of ActorFormFillingRequests
+  // retrieved by GetSuggestions().
+  virtual void ClearFormPreview(const tabs::TabInterface& tab,
+                                int form_index) = 0;
+
+  // Fills the with the given `selection` .
+  // `form_index` corresponds to the vector of ActorFormFillingRequests
+  // retrieved by GetSuggestions().
+  virtual void FillForm(const tabs::TabInterface& tab,
+                        int form_index,
+                        ActorFormFillingSelection selection) = 0;
 };
 
 }  // namespace autofill
