@@ -33,14 +33,32 @@ const char kBestFeaturesScreenInFirstRunParam[] =
 
 const char kUpdatedFirstRunSequenceParam[] = "updated-first-run-sequence-param";
 
+BASE_FEATURE_PARAM(int,
+                   kBestFeaturesScreenInFirstRunParamFeature,
+                   &kBestFeaturesScreenInFirstRun,
+                   kBestFeaturesScreenInFirstRunParam,
+                   1);
+
+BASE_FEATURE_PARAM(int,
+                   kUpdatedFirstRunSequenceParamFeature,
+                   &kUpdatedFirstRunSequence,
+                   kUpdatedFirstRunSequenceParam,
+                   1);
+
+BASE_FEATURE_PARAM(
+    int,
+    kAnimatedDefaultBrowserPromoInFREExperimentTypeFeature,
+    &kAnimatedDefaultBrowserPromoInFRE,
+    kAnimatedDefaultBrowserPromoInFREExperimentType,
+    static_cast<int>(AnimatedDefaultBrowserPromoInFREExperimentType::
+                         kAnimationWithActionButtons));
+
 BestFeaturesScreenVariationType GetBestFeaturesScreenVariationType() {
   if (!base::FeatureList::IsEnabled(kBestFeaturesScreenInFirstRun)) {
     return BestFeaturesScreenVariationType::kDisabled;
   }
   return static_cast<BestFeaturesScreenVariationType>(
-      base::GetFieldTrialParamByFeatureAsInt(kBestFeaturesScreenInFirstRun,
-                                             kBestFeaturesScreenInFirstRunParam,
-                                             1));
+      kBestFeaturesScreenInFirstRunParamFeature.Get());
 }
 
 UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation(
@@ -52,8 +70,7 @@ UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation(
     return UpdatedFRESequenceVariationType::kDisabled;
   }
   return static_cast<UpdatedFRESequenceVariationType>(
-      base::GetFieldTrialParamByFeatureAsInt(kUpdatedFirstRunSequence,
-                                             kUpdatedFirstRunSequenceParam, 1));
+      kUpdatedFirstRunSequenceParamFeature.Get());
 }
 
 bool IsAnimatedDefaultBrowserPromoInFREEnabled() {
@@ -64,11 +81,7 @@ bool IsAnimatedDefaultBrowserPromoInFREEnabled() {
 AnimatedDefaultBrowserPromoInFREExperimentType
 AnimatedDefaultBrowserPromoInFREExperimentTypeEnabled() {
   return static_cast<AnimatedDefaultBrowserPromoInFREExperimentType>(
-      base::GetFieldTrialParamByFeatureAsInt(
-          kAnimatedDefaultBrowserPromoInFRE,
-          kAnimatedDefaultBrowserPromoInFREExperimentType, /*default_value=*/
-          static_cast<int>(AnimatedDefaultBrowserPromoInFREExperimentType::
-                               kAnimationWithActionButtons)));
+      kAnimatedDefaultBrowserPromoInFREExperimentTypeFeature.Get());
 }
 
 }  // namespace first_run

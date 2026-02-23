@@ -95,6 +95,12 @@ enum class PushNotificationLifecycleEvent {
   kMaxValue = kNotificationInteraction
 };
 
+BASE_FEATURE_PARAM(int,
+                   kDeliveredNAUMaxPerSessionFeature,
+                   &kContentNotificationDeliveredNAU,
+                   kDeliveredNAUMaxPerSession,
+                   kDeliveredNAUMaxSendsPerSession);
+
 // Extract the notification information from `attr`, and store them into
 // `mapping`. Will also copy the notification permission from the profile's
 // pref into the `attr` if the profile is loaded.
@@ -949,9 +955,7 @@ void ProcessIncomingNotification(
   if (IsContentNotificationEnabled(profile)) {
     ContentNotificationService* contentNotificationService =
         ContentNotificationServiceFactory::GetForProfile(profile);
-    int maxNauSentPerSession = base::GetFieldTrialParamByFeatureAsInt(
-        kContentNotificationDeliveredNAU, kDeliveredNAUMaxPerSession,
-        kDeliveredNAUMaxSendsPerSession);
+    int maxNauSentPerSession = kDeliveredNAUMaxPerSessionFeature.Get();
     // Check if there are notifications received in the background to send the
     // respective NAUs.
     NSUserDefaults* defaults = app_group::GetGroupUserDefaults();

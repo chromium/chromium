@@ -35,8 +35,6 @@ const char kNAUHistogramName[] =
 const char kContentNotificationActionHistogramName[] =
     "ContentNotifications.Notification.Action";
 
-const int kDeliveredNAUMaxSendsPerSession = 30;
-
 NSString* const kDesktopToMobilePromoTypeKey = @"DesktopToMobilePromoType";
 
 NSString* const kPushNotificationClientIdKey = @"push_notification_client_id";
