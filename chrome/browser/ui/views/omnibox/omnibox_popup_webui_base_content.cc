@@ -108,6 +108,10 @@ void OmniboxPopupWebUIBaseContent::ShowUI() {
   }
   SetWebContents(contents_wrapper_->web_contents());
 
+  // The View may have changed, so this reinstates auto-resizing to prevent
+  // the omnibox from staying collapsed until a resize is observed.
+  OnViewBoundsChanged(location_bar_view_);
+
   is_shown_ = true;
 }
 
