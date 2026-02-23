@@ -437,6 +437,10 @@ void EmbeddedPermissionPrompt::CloseViewAndScrim() {
 void EmbeddedPermissionPrompt::FinalizePrompt() {
   CloseViewAndScrim();
 
+  if (web_contents()) {
+    web_contents()->Focus();
+  }
+
   // If by this point we've not sent an action to the delegate, send a dismiss
   // action.
   if (!prompt_model_->HasDelegateActionSet()) {
