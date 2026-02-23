@@ -371,6 +371,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetDevicesListEmpty) {
   EXPECT_TRUE(devices.empty());
 }
 
+// TODO(crbug.com/486849736): This test is currently disabled by filter file on
+// some Android bots. See the bug for details.
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreMostRecentlyClosedWindow) {
   // Open a second window.
   BrowserWindowInterface* browser2 =
@@ -608,6 +610,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreNonEditableTabstrip) {
 // verifies one window with two tabs was recently closed.
 // TODO(crbug.com/482432028): This test is currently disabled by filter file on
 // some Android hardware bots. See bug for details.
+// TODO(crbug.com/486849736): This test is currently disabled by filter file on
+// some Android bots. See the bug for details.
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedWindow) {
   // Open a second window.
   BrowserWindowInterface* browser2 =
