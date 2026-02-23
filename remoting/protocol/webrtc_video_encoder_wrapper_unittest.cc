@@ -147,6 +147,7 @@ class MockEncodedImageCallback : public EncodedImageCallback {
               (const EncodedImage& encoded_image,
                const CodecSpecificInfo* codec_specific_info),
               (override));
+  MOCK_METHOD(void, OnFrameDropped, (uint32_t, int, bool), (override));
 };
 
 class MockVideoEncoder : public WebrtcVideoEncoder {

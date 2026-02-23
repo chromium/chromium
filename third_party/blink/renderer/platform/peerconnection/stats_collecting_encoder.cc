@@ -224,4 +224,12 @@ void StatsCollectingEncoder::OnDroppedFrame(DropReason reason) {
   encoded_callback_->OnDroppedFrame(reason);
 }
 
+void StatsCollectingEncoder::OnFrameDropped(uint32_t rtp_timestamp,
+                                            int spatial_id,
+                                            bool is_end_of_temporal_unit) {
+  DCHECK(encoded_callback_);
+  encoded_callback_->OnFrameDropped(rtp_timestamp, spatial_id,
+                                    is_end_of_temporal_unit);
+}
+
 }  // namespace blink

@@ -84,6 +84,9 @@ class PLATFORM_EXPORT StatsCollectingEncoder
       const webrtc::EncodedImage& encoded_image,
       const webrtc::CodecSpecificInfo* codec_specific_info) override;
   void OnDroppedFrame(DropReason reason) override;
+  void OnFrameDropped(uint32_t rtp_timestamp,
+                      int spatial_id,
+                      bool is_end_of_temporal_unit) override;
 
   // Lock for variables that are accessed in both Encode() and Encoded(). This
   // is needed because Encode() and Encoded() may be called simultaneously on

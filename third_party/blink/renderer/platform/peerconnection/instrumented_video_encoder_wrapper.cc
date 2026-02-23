@@ -147,4 +147,14 @@ void InstrumentedVideoEncoderWrapper::OnDroppedFrame(
     callback_->OnDroppedFrame(reason);
   }
 }
+
+void InstrumentedVideoEncoderWrapper::OnFrameDropped(
+    uint32_t rtp_timestamp,
+    int spatial_id,
+    bool is_end_of_temporal_unit) {
+  if (callback_) {
+    callback_->OnFrameDropped(rtp_timestamp, spatial_id,
+                              is_end_of_temporal_unit);
+  }
+}
 }  // namespace blink
