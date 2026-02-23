@@ -51,6 +51,7 @@ public class TabStateStore implements TabPersistentStore {
     private final TabModelSelector mTabModelSelector;
     private final String mWindowTag;
     private final TabCountTracker mTabCountTracker;
+    private final ModelTrackingOrchestrator.Factory mOrchestratorFactory;
     private final TabPersistencePolicy mTabPersistencePolicy;
     private final @Nullable CipherFactory mCipherFactory;
     private final boolean mIsAuthoritative;
@@ -145,9 +146,12 @@ public class TabStateStore implements TabPersistentStore {
      * @param tabCreatorManager Used to create new tabs on initial load. This may return real
      *     creators, or faked out creators if in non-authoritative mode.
      * @param tabPersistencePolicy The {@link TabPersistencePolicy} to use for the window.
+     * @param migrationManager The migration manager for the window.
      * @param cipherFactory The {@link CipherFactory} to use for encryption. If null, it will not be
      *     possible to load/save off the record nodes.
      * @param isAuthoritative Whether this store is the authoritative store for the window.
+     * @param orchestratorFactory The factory to create {@link ModelTrackingOrchestrator} instances.
+     * @param isAuthoritative Whether the store is authoritative for the window.
      */
     public TabStateStore(
             TabModelSelector tabModelSelector,
@@ -156,6 +160,8 @@ public class TabStateStore implements TabPersistentStore {
             TabPersistencePolicy tabPersistencePolicy,
             PersistentStoreMigrationManager migrationManager,
             @Nullable CipherFactory cipherFactory,
+            TabCountTracker tabCountTracker,
+            ModelTrackingOrchestrator.Factory orchestratorFactory,
             boolean isAuthoritative) {
         mTabModelSelector = tabModelSelector;
         mWindowTag = windowTag;
@@ -164,8 +170,8 @@ public class TabStateStore implements TabPersistentStore {
         mMigrationManager = migrationManager;
         mCipherFactory = cipherFactory;
         mIsAuthoritative = isAuthoritative;
-
-        mTabCountTracker = new TabCountTracker(windowTag);
+        mOrchestratorFactory = orchestratorFactory;
+        mTabCountTracker = tabCountTracker;
     }
 
     @Initializer
@@ -193,7 +199,7 @@ public class TabStateStore implements TabPersistentStore {
             mHasCipherFactory = false;
         }
         mModelTrackingManager =
-                new ModelTrackingOrchestrator(
+                mOrchestratorFactory.build(
                         mWindowTag, mMigrationManager, mTabModelSelector, mHasCipherFactory);
 
         mTabModelSelector.getModel(false).addObserver(mTabModelObserver);

@@ -48,6 +48,22 @@ import java.util.Map;
  */
 @NullMarked
 public class ModelTrackingOrchestrator {
+    /** Factory for creating a {@link ModelTrackingOrchestrator}. */
+    @FunctionalInterface
+    public interface Factory {
+        /**
+         * @param windowTag The window tag to use for the window.
+         * @param migrationManager The migration manager for the window.
+         * @param tabModelSelector The {@link TabModelSelector} to observe changes for.
+         * @param hasCipherFactory Whether a cipher factory was provided for OTR data.
+         */
+        ModelTrackingOrchestrator build(
+                String windowTag,
+                PersistentStoreMigrationManager migrationManager,
+                TabModelSelector tabModelSelector,
+                boolean hasCipherFactory);
+    }
+
     /** The state of the synchronization lifecycle for a specific model. */
     @IntDef({
         SynchronizerState.START,

@@ -118,6 +118,8 @@ public class TabPersistentStoreFactory {
                     tabPersistencePolicy,
                     migrationManager,
                     cipherFactory,
+                    new TabCountTracker(windowTag),
+                    ModelTrackingOrchestrator::new,
                     /* isAuthoritative= */ true);
         }
         throw new IllegalStateException();
@@ -245,6 +247,8 @@ public class TabPersistentStoreFactory {
                         tabPersistencePolicy,
                         migrationManager,
                         cipherFactory,
+                        new TabCountTracker(windowTag),
+                        ModelTrackingOrchestrator::new,
                         /* isAuthoritative= */ false);
 
         new ShadowTabStoreValidator(
