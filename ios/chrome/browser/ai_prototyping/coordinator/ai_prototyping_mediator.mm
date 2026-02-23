@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/browser/ai_prototyping/utils/json_action_parser.h"
 #import "ios/chrome/browser/ai_prototyping/utils/page_context_util.h"
+#import "ios/chrome/browser/intelligence/actuation/model/actuation_error.h"
 #import "ios/chrome/browser/intelligence/actuation/model/actuation_service.h"
 #import "ios/chrome/browser/intelligence/actuation/model/actuation_service_factory.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_service_impl.h"
@@ -574,8 +575,7 @@
 
   __weak __typeof(self) weakSelf = self;
   actuationService->ExecuteAction(
-      action, base::BindOnce(^(
-                  base::expected<void, ActuationTool::ActuationError> result) {
+      action, base::BindOnce(^(ActuationTool::ActuationResult result) {
         NSLog(@"[AIPrototypingMediator] Actuation callback executed.");
         if (result.has_value()) {
           [weakSelf.consumer

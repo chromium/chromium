@@ -5,15 +5,13 @@
 #import "ios/chrome/browser/intelligence/actuation/model/actuation_tool_factory.h"
 
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actuation/model/actuation_error.h"
 #import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_tool.h"
 #import "ios/chrome/browser/intelligence/actuation/model/tools/navigate_tool.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/web/public/web_state.h"
-
-using ActuationError = ActuationTool::ActuationError;
-using ActuationErrorCode = ActuationTool::ActuationErrorCode;
 
 ActuationToolFactory::ActuationToolFactory() = default;
 ActuationToolFactory::~ActuationToolFactory() = default;

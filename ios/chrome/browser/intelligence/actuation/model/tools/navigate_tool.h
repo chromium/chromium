@@ -11,6 +11,8 @@
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_tool.h"
 
+struct ActuationError;
+
 class ProfileIOS;
 class UrlLoadingBrowserAgent;
 class WebStateList;

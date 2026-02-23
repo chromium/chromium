@@ -7,14 +7,13 @@
 #import "base/functional/callback.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actuation/model/actuation_error.h"
 #import "ios/chrome/browser/intelligence/actuation/model/actuation_tool_factory.h"
 #import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_tool.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 using ActuationCallback = ActuationTool::ActuationCallback;
-using ActuationError = ActuationTool::ActuationError;
-using ActuationErrorCode = ActuationTool::ActuationErrorCode;
 
 ActuationService::ActuationService(ProfileIOS* profile)
     : profile_(profile),

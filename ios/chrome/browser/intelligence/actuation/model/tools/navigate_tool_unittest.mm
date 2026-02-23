@@ -8,6 +8,7 @@
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actuation/model/actuation_error.h"
 #import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_tool.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -24,7 +25,6 @@
 #import "ui/base/page_transition_types.h"
 
 using ActuationResult = ActuationTool::ActuationResult;
-using ActuationErrorCode = ActuationTool::ActuationErrorCode;
 
 namespace {
 
@@ -74,8 +74,8 @@ TEST_F(NavigateToolTest, Create_MissingProtoFields) {
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url("https://example.com");
 
-  base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
-      result = NavigateTool::Create(action.navigate(), profile_.get());
+  base::expected<std::unique_ptr<NavigateTool>, ActuationError> result =
+      NavigateTool::Create(action.navigate(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(ActuationErrorCode::kToolCreationFailed, result.error().code);
@@ -94,8 +94,8 @@ TEST_F(NavigateToolTest, Create_NoWebStateForTabId) {
   // Intentionally don't add a WebState to the browser for the target tab id.
   action.mutable_navigate()->set_tab_id(1);
 
-  base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
-      result = NavigateTool::Create(action.navigate(), profile_.get());
+  base::expected<std::unique_ptr<NavigateTool>, ActuationError> result =
+      NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(ActuationErrorCode::kToolCreationFailed, result.error().code);
 }
@@ -112,8 +112,8 @@ TEST_F(NavigateToolTest, Execute_TabRemovedBeforeExecution) {
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
-  base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
-      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+  base::expected<std::unique_ptr<NavigateTool>, ActuationError> maybe_tool =
+      NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -137,8 +137,8 @@ TEST_F(NavigateToolTest, Execute_InvalidUrl) {
   action.mutable_navigate()->set_url("");
   action.mutable_navigate()->set_tab_id(tab_id);
 
-  base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
-      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+  base::expected<std::unique_ptr<NavigateTool>, ActuationError> maybe_tool =
+      NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -164,8 +164,8 @@ TEST_F(NavigateToolTest, Execute_Success) {
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
-  base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
-      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+  base::expected<std::unique_ptr<NavigateTool>, ActuationError> maybe_tool =
+      NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -201,9 +201,8 @@ TEST_F(NavigateToolTest,
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
-
-  base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
-      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+  base::expected<std::unique_ptr<NavigateTool>, ActuationError> maybe_tool =
+      NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -236,8 +235,8 @@ TEST_F(NavigateToolTest, Execute_TabMoved_Success) {
   optimization_guide::proto::Action action;
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
-  base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
-      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+  base::expected<std::unique_ptr<NavigateTool>, ActuationError> maybe_tool =
+      NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 
@@ -277,8 +276,8 @@ TEST_F(NavigateToolTest, Execute_TargetTabUnrealized) {
   action.mutable_navigate()->set_url(kUrl);
   action.mutable_navigate()->set_tab_id(tab_id);
 
-  base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
-      maybe_tool = NavigateTool::Create(action.navigate(), profile_.get());
+  base::expected<std::unique_ptr<NavigateTool>, ActuationError> maybe_tool =
+      NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_TRUE(maybe_tool.has_value());
   std::unique_ptr<NavigateTool> tool = std::move(maybe_tool.value());
 

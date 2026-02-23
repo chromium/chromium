@@ -7,6 +7,7 @@
 #import "base/functional/callback.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actuation/model/actuation_error.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -20,7 +21,7 @@
 NavigateTool::~NavigateTool() = default;
 
 // static
-base::expected<std::unique_ptr<NavigateTool>, ActuationTool::ActuationError>
+base::expected<std::unique_ptr<NavigateTool>, ActuationError>
 NavigateTool::Create(const optimization_guide::proto::NavigateAction& action,
                      ProfileIOS* profile) {
   if (!action.has_tab_id() || !action.has_url()) {

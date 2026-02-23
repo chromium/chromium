@@ -8,6 +8,7 @@
 #import "base/test/task_environment.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actuation/model/actuation_error.h"
 #import "ios/chrome/browser/intelligence/actuation/model/actuation_service_factory.h"
 #import "ios/chrome/browser/intelligence/actuation/model/tools/actuation_tool.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -15,9 +16,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
-using ActuationError = ActuationTool::ActuationError;
 using ActuationResult = ActuationTool::ActuationResult;
-using ActuationErrorCode = ActuationTool::ActuationErrorCode;
 
 class ActuationServiceTest : public PlatformTest {
  public:
