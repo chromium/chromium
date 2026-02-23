@@ -63,7 +63,6 @@ D3D11Status DefaultTexture2DWrapper::BeginSharedImageAccess() {
 }
 
 D3D11Status DefaultTexture2DWrapper::ProcessTexture(
-    const gfx::ColorSpace& input_color_space,
     scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) {
   // If we've received an error, then return it to our caller.  This is probably
   // from some previous operation.
@@ -74,11 +73,6 @@ D3D11Status DefaultTexture2DWrapper::ProcessTexture(
   }
 
   shared_image_dest = shared_image_;
-
-  // TODO(hitawala): Possibly optimize this method as input and stored color
-  // spaces should be same.
-  CHECK_EQ(input_color_space, output_color_space_);
-
   return D3D11Status::Codes::kOk;
 }
 

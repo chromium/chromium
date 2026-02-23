@@ -68,7 +68,6 @@ class MEDIA_GPU_EXPORT Texture2DWrapper {
   // Import |texture|, |array_slice| and return the shared image that can be
   // used to refer to it.
   virtual D3D11Status ProcessTexture(
-      const gfx::ColorSpace& input_color_space,
       scoped_refptr<gpu::ClientSharedImage>& shared_image_dest_out) = 0;
 };
 
@@ -107,7 +106,6 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   D3D11Status BeginSharedImageAccess() override;
 
   D3D11Status ProcessTexture(
-      const gfx::ColorSpace& input_color_space,
       scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) override;
 
   void OnGPUResourceInitDone(

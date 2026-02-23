@@ -27,7 +27,8 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
   // |output_wrapper| must wrap a Texture2D which is a single-entry Texture,
   // while |input_texture| may have multiple entries.
   CopyingTexture2DWrapper(const gfx::Size& size,
-                          const gfx::ColorSpace& color_space,
+                          const gfx::ColorSpace& input_color_space,
+                          const gfx::ColorSpace& output_color_space,
                           std::unique_ptr<Texture2DWrapper> output_wrapper,
                           scoped_refptr<VideoProcessorProxy> processor,
                           ComD3D11Texture2D output_texture);
@@ -36,7 +37,6 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
   D3D11Status BeginSharedImageAccess() override;
 
   D3D11Status ProcessTexture(
-      const gfx::ColorSpace& input_color_space,
       scoped_refptr<gpu::ClientSharedImage>& shared_image_dest) override;
 
   D3D11Status Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
@@ -49,14 +49,11 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
 
  private:
   const gfx::Size size_;
+  const gfx::ColorSpace input_color_space_;
   const gfx::ColorSpace output_color_space_;
   scoped_refptr<VideoProcessorProxy> video_processor_;
   std::unique_ptr<Texture2DWrapper> output_texture_wrapper_;
   ComD3D11Texture2D output_texture_;
-
-  // If set, this is the color space that we last saw in ProcessTexture.
-  std::optional<gfx::ColorSpace> previous_input_color_space_;
-
   ComD3D11Texture2D texture_;
   size_t array_slice_ = 0;
 };

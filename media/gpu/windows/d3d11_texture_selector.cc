@@ -249,7 +249,7 @@ CopyTextureSelector::~CopyTextureSelector() = default;
 
 std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
     ComD3D11Device device,
-    gfx::ColorSpace color_space,
+    gfx::ColorSpace input_color_space,
     gfx::Size size) {
   D3D11_TEXTURE2D_DESC texture_desc = {};
   texture_desc.MipLevels = 1;
@@ -276,10 +276,10 @@ std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
     return nullptr;
 
   gfx::ColorSpace output_color_space =
-      GetOutputColorSpace(color_space, IsRGB(pixel_format_));
+      GetOutputColorSpace(input_color_space, IsRGB(pixel_format_));
 
   return std::make_unique<CopyingTexture2DWrapper>(
-      size, output_color_space,
+      size, input_color_space, output_color_space,
       std::make_unique<DefaultTexture2DWrapper>(
           size, output_color_space, OutputSharedImageFormat(), device),
       video_processor_proxy_, out_texture);

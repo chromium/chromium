@@ -897,24 +897,17 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
     visible_rect = config_.visible_rect();
 
   gfx::Size natural_size = config_.aspect_ratio().GetNaturalSize(visible_rect);
-
   base::TimeDelta timestamp = picture_buffer->timestamp_;
 
-  // Prefer the frame color space over what's in the config.
-  auto picture_color_space = picture->get_colorspace().ToGfxColorSpace();
-  if (!picture_color_space.IsValid()) {
-    picture_color_space = config_.color_space_info().ToGfxColorSpace();
-  }
-
   scoped_refptr<gpu::ClientSharedImage> shared_image;
-  result = picture_buffer->ProcessTexture(picture_color_space, shared_image);
+  result = picture_buffer->ProcessTexture(shared_image);
   if (!result.is_ok()) {
     NotifyError(std::move(result).AddHere());
     return false;
   }
   // If the output texture is in RGB pixel format, then the color space needs to
   // be updated using the color space of the output texture.
-  picture_color_space = shared_image->color_space();
+  auto picture_color_space = shared_image->color_space();
 
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       texture_selector_->PixelFormat(), shared_image,
