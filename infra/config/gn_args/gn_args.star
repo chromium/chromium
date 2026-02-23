@@ -843,15 +843,6 @@ gn_args.config(
     configs = ["ios"],
 )
 
-# TODO(crbug.com/485883645): Remove once issue on iOS 26.4 is fixed.
-gn_args.config(
-    name = "ios_no_pa_malloc",
-    args = {
-        "use_partition_alloc_as_malloc": False,
-        "enable_backup_ref_ptr_support": False,
-    },
-)
-
 gn_args.config(
     name = "tvos_platform",
     args = {"target_platform": "tvos"},

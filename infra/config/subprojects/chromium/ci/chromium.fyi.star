@@ -1918,7 +1918,6 @@ fyi_ios_builder(
             "arm64",
             "xctest",
             "enable_swift_cxx_interop",
-            "ios_no_pa_malloc",
         ],
     ),
     targets = targets.bundle(
@@ -2035,7 +2034,6 @@ fyi_ios_builder(
             "arm64",
             "xctest",
             "enable_swift_cxx_interop",
-            "ios_no_pa_malloc",
         ],
     ),
     targets = targets.bundle(
