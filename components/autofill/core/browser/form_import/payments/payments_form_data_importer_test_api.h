@@ -31,6 +31,10 @@ class PaymentsFormDataImporterTestApi {
     return payments_fdi_->iban_save_manager_.get();
   }
 
+  std::optional<CreditCard> ExtractCreditCard(const FormStructure& form) {
+    return payments_fdi_->ExtractCreditCard(form);
+  }
+
  private:
   const raw_ref<PaymentsFormDataImporter> payments_fdi_;
 };

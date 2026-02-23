@@ -108,6 +108,10 @@ class PaymentsFormDataImporter {
       std::optional<NonInteractivePaymentMethodType>
           payment_method_type_if_non_interactive_authentication_flow_completed);
 
+  // Extracts credit card from the form structure.
+  ExtractCreditCardFromFormResult ExtractCreditCardFromForm(
+      const FormStructure& form);
+
  private:
   friend class PaymentsFormDataImporterTestApi;
   // TODO(crbug.com/481379161): Remove `FormDataImporter` and
@@ -117,6 +121,26 @@ class PaymentsFormDataImporter {
   //    second, which probably carries slightly higher risk.
   friend class autofill::FormDataImporter;
   friend class autofill::FormDataImporterTestApi;
+
+  // Returns the extracted card if one was found in the form.
+  //
+  // The returned card is, unless nullopt,
+  // - a matching server card, if any match is found, or
+  // - the candidate input card, augmented with a matching local card's nickname
+  //   if such any match is found.
+  // It is nullopt under the following conditions:
+  // - if the card number is invalid;
+  // - if the card is a known virtual card;
+  // - if a card matches but the extracted card has no expiration date.
+  //
+  // The function has two side-effects:
+  // - all matching local cards are updated to include the information from the
+  //   extracted card;
+  // - `credit_card_import_type_` is set to
+  //   - SERVER_CARD if a server card matches;
+  //   - LOCAL_CARD if a local and no server card matches;
+  //   - NEW_CARD otherwise.
+  std::optional<CreditCard> ExtractCreditCard(const FormStructure& form);
 
   // If the mandatory re-auth opt-in bubble can be shown for a credit card, this
   // function will start the flow and return true. Otherwise, it will return

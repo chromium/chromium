@@ -43,10 +43,6 @@ class FormDataImporterTestApi {
     fdi_->credit_card_import_type_ = credit_card_import_type;
   }
 
-  std::optional<CreditCard> ExtractCreditCard(const FormStructure& form) {
-    return fdi_->ExtractCreditCard(form);
-  }
-
   ExtractedFormData ExtractFormData(const FormStructure& form,
                                     bool profile_autofill_enabled,
                                     bool payment_methods_autofill_enabled) {

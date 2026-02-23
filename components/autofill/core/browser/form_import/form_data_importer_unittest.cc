@@ -715,7 +715,8 @@ class FormDataImporterTest : public testing::Test {
   }
 
   std::optional<CreditCard> ExtractCreditCard(const FormStructure& form) {
-    return test_api(form_data_importer()).ExtractCreditCard(form);
+    return test_api(form_data_importer().GetPaymentsFormDataImporter())
+        .ExtractCreditCard(form);
   }
 
   void SubmitFormAndExpectImportedCardWithData(const FormData& form,
@@ -4239,7 +4240,9 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
             Mode::kAutofilled);
   PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"01/2021",
             Mode::kUserEdited);
-  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  auto r = form_data_importer()
+               .GetPaymentsFormDataImporter()
+               .ExtractCreditCardFromForm(form_);
   EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NAME_FULL, kLocale),
             u"Donald Trump");
   EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale),
@@ -4264,7 +4267,9 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm, MergeDerivedValues) {
             Mode::kUserEdited);
   PushField(FieldType::CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, u"12/20",
             Mode::kUserEdited);
-  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  auto r = form_data_importer()
+               .GetPaymentsFormDataImporter()
+               .ExtractCreditCardFromForm(form_);
   EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NAME_FULL, kLocale),
             u"Donald Trump");
   EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale),
@@ -4286,7 +4291,9 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
             Mode::kUserEdited);
   PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"12/2020",
             Mode::kUserEdited);
-  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  auto r = form_data_importer()
+               .GetPaymentsFormDataImporter()
+               .ExtractCreditCardFromForm(form_);
   ASSERT_TRUE(r.has_duplicate_credit_card_field_type);
 }
 
@@ -4300,7 +4307,9 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm, PartialFirstLastNames) {
             Mode::kUserEdited);
   PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"12/2020",
             Mode::kUserEdited);
-  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  auto r = form_data_importer()
+               .GetPaymentsFormDataImporter()
+               .ExtractCreditCardFromForm(form_);
   EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NAME_FULL, kLocale),
             u"Audrey Hepburn");
   EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale),
@@ -4322,7 +4331,9 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
   PushField(FieldType::CREDIT_CARD_NUMBER, u"1111", Mode::kUserEdited, 12);
   PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"01/2021",
             Mode::kUserEdited);
-  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  auto r = form_data_importer()
+               .GetPaymentsFormDataImporter()
+               .ExtractCreditCardFromForm(form_);
   EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NAME_FULL, kLocale),
             u"Joe Biden");
   EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale),
@@ -4346,7 +4357,9 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
             Mode::kUserEdited, 0);
   PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"01/2021",
             Mode::kUserEdited);
-  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  auto r = form_data_importer()
+               .GetPaymentsFormDataImporter()
+               .ExtractCreditCardFromForm(form_);
   EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale),
             u"4444333322221111");
   EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
@@ -4366,7 +4379,9 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
             Mode::kUserEdited, 0);
   PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"01/2021",
             Mode::kUserEdited);
-  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  auto r = form_data_importer()
+               .GetPaymentsFormDataImporter()
+               .ExtractCreditCardFromForm(form_);
   EXPECT_TRUE(r.has_duplicate_credit_card_field_type);
 }
 
@@ -4380,7 +4395,9 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
   PushField(FieldType::CREDIT_CARD_NUMBER, u"1", Mode::kUserEdited, 12);
   PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"01/2021",
             Mode::kUserEdited);
-  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  auto r = form_data_importer()
+               .GetPaymentsFormDataImporter()
+               .ExtractCreditCardFromForm(form_);
   EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale), u"1");
   EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
 }
@@ -4397,7 +4414,9 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
   PushField(FieldType::CREDIT_CARD_NUMBER, u"1111", Mode::kUserEdited, 12);
   PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"01/2021",
             Mode::kUserEdited);
-  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  auto r = form_data_importer()
+               .GetPaymentsFormDataImporter()
+               .ExtractCreditCardFromForm(form_);
   EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale),
             u"4444333322221111");
   EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
@@ -4412,7 +4431,9 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
   PushField(FieldType::CREDIT_CARD_NUMBER, u"2222", Mode::kAutofilled, 8);
   PushField(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, u"01/2021",
             Mode::kUserEdited);
-  auto r = form_data_importer().ExtractCreditCardFromForm(form_);
+  auto r = form_data_importer()
+               .GetPaymentsFormDataImporter()
+               .ExtractCreditCardFromForm(form_);
   EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NAME_FULL, kLocale),
             u"Joe Biden");
   EXPECT_EQ(r.card.GetInfo(FieldType::CREDIT_CARD_NUMBER, kLocale),
