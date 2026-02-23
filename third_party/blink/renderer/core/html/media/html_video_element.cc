@@ -673,6 +673,11 @@ bool HTMLVideoElement::IsDefaultPosterImageURL() const {
   return ImageSourceURL() == default_poster_url_;
 }
 
+// Killswitch guarding HTMLVideoElement not caching the SkSurface used for
+// VideoFrame->StaticBitmapImage software draws.
+BASE_FEATURE(kHTMLVideoElementCacheSkSurface,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     bool allow_accelerated_images,
     std::optional<gfx::Size> size,
@@ -716,7 +721,7 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
       if (!snapshot_provider_) {
         return nullptr;
       }
-    } else {
+    } else if (base::FeatureList::IsEnabled(kHTMLVideoElementCacheSkSurface)) {
       sw_draw_surface_ = CanvasNon2DSnapshotProviderBitmap::CreateSurface(
           cached_draw_info_.value());
       if (!sw_draw_surface_) {
