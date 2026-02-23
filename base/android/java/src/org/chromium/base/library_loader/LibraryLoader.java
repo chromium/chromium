@@ -668,11 +668,13 @@ public class LibraryLoader {
     protected void loadMainDexAlreadyLocked(ApplicationInfo appInfo, boolean inZygote) {
         try (TraceEvent te = TraceEvent.scoped("LibraryLoader.loadMainDexAlreadyLocked")) {
             if (mLoadState >= LoadState.MAIN_DEX_LOADED) {
-                if (sEnableStateForTesting && mLoadStateForTesting == LoadState.NOT_LOADED) {
+                if (sEnableStateForTesting) {
                     if (sOverrideNativeLibraryCannotBeLoadedForTesting) {
                         throw new UnsatisfiedLinkError();
                     }
-                    mLoadStateForTesting = LoadState.MAIN_DEX_LOADED;
+                    if (mLoadStateForTesting == LoadState.NOT_LOADED) {
+                        mLoadStateForTesting = LoadState.MAIN_DEX_LOADED;
+                    }
                 }
                 return;
             }
