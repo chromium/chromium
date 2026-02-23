@@ -134,9 +134,11 @@ void OnShutdownStarting(ShutdownType type) {
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO_PROFILING)
   // Wait for all the child processes to dump their profiling data without
   // blocking the main thread.
-  base::RunLoop nested_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  content::AskAllChildrenToDumpProfilingData(nested_run_loop.QuitClosure());
-  nested_run_loop.Run();
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    base::RunLoop nested_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    content::AskAllChildrenToDumpProfilingData(nested_run_loop.QuitClosure());
+    nested_run_loop.Run();
+  }
 #endif
 
   // Call FastShutdown on all of the RenderProcessHosts.  This will be
