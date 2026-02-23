@@ -9862,7 +9862,6 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="7697109152153663933">Kliknite na "Lozinke i automatsko popunjavanje"</translation>
 <translation id="769824636077131955">Ovaj dokument je prevelik za sigurnosnu provjeru. Možete štampati dokumente do 50 MB.</translation>
 <translation id="7698507637739331665">Neke stavke su blokirane</translation>
-<translation id="7700176975240938448">Lako otvarajte putem prečice <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Štampači i skeneri</translation>
 <translation id="7700873336634517379">Ne, nastavi koristiti za školu na ovom profilu</translation>
 <translation id="7701040980221191251">Nema</translation>
@@ -11495,6 +11494,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8781834595282316166">Nova kartica u grupi</translation>
 <translation id="8781980678064919987">Isključi kada se poklopac zatvori</translation>
 <translation id="8782565991310229362">Pokretanje aplikacije za kiosk je otkazano.</translation>
+<translation id="8783171585655659524">Dodaj snimak ekrana</translation>
 <translation id="8783834180813871000">Upišite kôd za uparivanje putem Bluetootha, a zatim pritisnite Return ili Enter.</translation>
 <translation id="8784626084144195648">Zbirni prosjek</translation>
 <translation id="8785622406424941542">Digitalna olovka</translation>

@@ -1231,6 +1231,7 @@
 <translation id="6202812185118613467">സമന്വയിപ്പിക്കൽ തുടങ്ങുന്നതിന് തിരികെ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="6204781143409202534"><ph name="DOMAIN" /> എന്നതിൽ നിന്നുള്ള, സ്‌പാം ആകാനിടയുള്ള അറിയിപ്പ് Chrome കണ്ടെത്തി.</translation>
 <translation id="6205314730813004066">പരസ്യവുമായി ബന്ധപ്പെട്ട സ്വകാര്യത</translation>
+<translation id="6210282067670792090">വിലാസ ബാറിൽ, തിരയൽ യന്ത്രങ്ങൾക്കും സൈറ്റ് തിരയലിനുമുള്ള കുറുക്കുവഴികൾക്കൊപ്പം ഈ കീബോർഡ് കുറുക്കുവഴികൾ ഉപയോഗിക്കുക</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> അല്ലേ?</translation>
 <translation id="6211386937064921208">ഈ പേജ് പ്രിവ്യു ചെയ്യുന്നു</translation>
 <translation id="6212567362666004597">ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക</translation>
@@ -1354,6 +1355,7 @@
 <translation id="6647441008198474441">നിങ്ങൾ അടുത്തതായി ഏതൊക്കെ സൈറ്റുകളായിരിക്കും സന്ദർശിക്കുകയെന്ന് പ്രവചിക്കാൻ, നിങ്ങൾ സന്ദർശിക്കുന്ന URL-കൾ Google-ലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> പേയ്‌മെന്റ് രീതികളും}other{<ph name="CONTACT_PREVIEW" />\u2026 എന്നതും ‌മറ്റ് <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> പേയ്‌മെന്റ് രീതികളും}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />പുതിയ<ph name="END_NEW" /> ചിത്രം പ്രിവ്യൂ ചെയ്യുക</translation>
+<translation id="6659594942844771486">ടാബ്</translation>
 <translation id="6661521899577697780">Chrome Finds ഓപ്റ്റ് ഇൻ പകുതി ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />-ൽ തുറക്കുക</translation>
 <translation id="6669390930482049506">എന്നെ അറിയിക്കുക</translation>
@@ -1517,6 +1519,7 @@
 <translation id="7196215469483532480">സ്വകാര്യതാ ഗൈഡിന്റെ വിശദീകരണം മുഴുവൻ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="7196455519852483601">നിങ്ങളുടെ ചരിത്രം, കുക്കികൾ, സൈറ്റ് ഡാറ്റ എന്നിവയും മറ്റും പൂർണ്ണമായോ ഭാഗികമായോ നിങ്ങൾക്ക് ഇല്ലാതാക്കാൻ കഴിയും</translation>
 <translation id="7197682514647286393">ബ്രൗസിംഗ് ഡാറ്റ വേഗം ഇല്ലാതാക്കൂ</translation>
+<translation id="719791532916917144">കീബോഡ് കുറുക്കുവഴികൾ</translation>
 <translation id="7207760545532569765">പുതിയ പശ്ചാത്തല ടാബുകളായി <ph name="TAB_COUNT" /> ടാബുകൾ പുനഃസ്ഥാപിക്കുക.</translation>
 <translation id="7217781228893594884">നിങ്ങൾ Chrome-ൽ നിന്ന് പുറത്തുകടക്കുമ്പോൾ അദൃശ്യ ടാബുകൾ ലോക്ക് ചെയ്യും</translation>
 <translation id="7221869452894271364">ഈ പേജ് വീണ്ടും ലോഡ് ചെയ്യുക</translation>
@@ -1715,6 +1718,7 @@
 <translation id="7998918019931843664">അടച്ച ടാബ് വീണ്ടും തുറക്കുക</translation>
 <translation id="8001245658307297681">ലോക്കൽ ഫയൽ ആണ് നിങ്ങൾ കാണുന്നത്</translation>
 <translation id="8004582292198964060">ബ്രൗസര്‍</translation>
+<translation id="8006630792898017994">Space അല്ലെങ്കിൽ Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, മൾട്ടിസെലക്റ്റ് ചെയ്ത, പിൻ ചെയ്ത, ഉള്ളടക്കം പങ്കിടുന്ന അദൃശ്യ ടാബ്</translation>
 <translation id="8025972204417227828">പുതിയത് ചേർക്കുക</translation>
 <translation id="8027863900915310177">ഡൗൺലോഡ് എവിടെ സംരക്ഷിക്കണമെന്ന് തിരഞ്ഞെടുക്കുക</translation>

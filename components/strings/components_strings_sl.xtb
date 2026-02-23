@@ -428,6 +428,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1664389769577564606">Flexo Photopolymer</translation>
 <translation id="1667730174533834274">želi preveriti, ali ste to vi, preden spremenite nastavitve</translation>
 <translation id="1668071460721346172">Prejem e-poštnega sporočila</translation>
+<translation id="1670861525135254448">Shranite vozilo</translation>
 <translation id="1674504678466460478">Iz jezika <ph name="SOURCE_LANGUAGE" /> v jezik <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Najprej kratki rob</translation>
 <translation id="168693727862418163">Preverjanje vrednosti tega pravilnika v skladu z njegovo shemo ni uspelo in bo prezrta.</translation>
@@ -470,6 +471,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1734878702283171397">Poskusite se obrniti na skrbnika sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, poteče <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Računalnik</translation>
+<translation id="1739364174357629566">Posodobite številko rednega potnika</translation>
 <translation id="1740404923954980840">Če želite zapreti celozaslonski način, povlecite z vrha in se dotaknite gumba za nazaj</translation>
 <translation id="1741474054575634405">Upravljanje kartic zvestobe …</translation>
 <translation id="1741613555002899862">Mora biti navedeno in veljaven niz, ko je način pravilnika DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -1318,6 +1320,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3115363211799416195">{0,plural, =1{Želite prenesti zaupno datoteko?}one{Želite prenesti zaupne datoteke?}two{Želite prenesti zaupne datoteke?}few{Želite prenesti zaupne datoteke?}other{Želite prenesti zaupne datoteke?}}</translation>
 <translation id="3115874930288085374">Domena <ph name="ENROLLMENT_DOMAIN" /> zahteva, da varnostno kopirate podatke in vrnete to napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Laminiranje</translation>
+<translation id="3116695032231023709">Shranite osebno izkaznico</translation>
 <translation id="3119689199889622589">Biološko pridelana in naravna hrana</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Poskušajte zagnati orodje Diagnostika povezljivosti<ph name="END_LINK" /></translation>
@@ -1325,6 +1328,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3121994479408824897">Odpri <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Prikaz rezultatov za zadnjih 30 dni</translation>
 <translation id="3126023634486644099">Labels (Permanent)</translation>
+<translation id="3132345256151444894">Shranite kontrolno številko</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> je zdaj vaš privzeti iskalnik</translation>
 <translation id="3134859781443140237">Lokalno omrežje</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Iskanje tu: <ph name="KEYWORD_SHORT_NAME" /></translation>
@@ -2042,6 +2046,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4233220688695460165">Chrome v 30 dneh samodejno izbriše teme in spletna mesta, ki predlagajo oglase. Lahko tudi blokirate določene teme in spletna mesta, ki vam niso všeč.</translation>
 <translation id="4235360514405112390">Veljavno</translation>
 <translation id="4239799716689808527">Labels</translation>
+<translation id="424063167283213501">Shranite številko rednega potnika</translation>
 <translation id="4241830393007970744">Napadalci vas lahko na spletnem mestu, ki ste ga poskušali obiskati, zavedejo, da namestite programsko opremo ali razkrijete stvari, kot so gesla, telefonske številke ali številke kreditnih kartic.</translation>
 <translation id="4242380780309416996">Envelope (Heavyweight)</translation>
 <translation id="4242981939686657948">Če želite zmogljivejši način iskanja po zgodovini brskanja, vklopite to:</translation>
@@ -2304,6 +2309,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4691093235373904540">Krovstvo</translation>
 <translation id="4692623383562244444">Iskalniki</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> – Vprašajte: <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4698308118265482293">Posodobite potni list</translation>
 <translation id="4698692901173737941">Borilni športi</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Stran</translation>
@@ -3270,6 +3276,8 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6236290670123303279">Upravljanje nastavitev</translation>
 <translation id="623825323736974198">Upravljanje spletnih mest, ki bodo ves čas aktivna in se zaradi njih ne bo sprostil pomnilnik</translation>
 <translation id="6240447795304464094">Logotip Googla Pay</translation>
+<translation id="6240553182907836376">Posodobite osebno izkaznico</translation>
+<translation id="6240601837375010619">Shranite potni list</translation>
 <translation id="6240964651812394252">Če želite z operacijskim sistemom uporabljati Googlovega upravitelja gesel, znova zaženite Chrome in omogočite dostop do upravitelja gesel v računalniku. Zavihki se bodo po vnovičnem zagonu znova odprli.</translation>
 <translation id="6241121617266208201">Skrij predloge</translation>
 <translation id="624499991300733384">Storitev sestavljalnika tiskanja</translation>
@@ -3634,6 +3642,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="681021252041861472">Obvezno polje</translation>
 <translation id="6810899417690483278">ID za prilagajanje</translation>
 <translation id="6816109178681043245">Športna oprema</translation>
+<translation id="681631578600400068">Shranite vozniško dovoljenje</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">serijska vrata</translation>
 <translation id="6820686453637990663">CVC</translation>
@@ -3845,6 +3854,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7143668445748322952">datoteke fotoaparata, prenosi in posnetki zaslona</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
+<translation id="7145337554745942724">Posodobite vozniško dovoljenje</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
 <translation id="7152230779180489711">Nazadnje obiskano</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}two{<ph name="PAYMENT_METHOD_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -4038,6 +4048,7 @@ Dodatne podrobnosti:
 <translation id="7444176988908839653">{COUNT,plural, =0{Piškotki bodo danes znova blokirani}=1{Piškotki bodo znova blokirani jutri}one{Še # dan in piškotki bodo znova blokirani}two{Še # dneva in piškotki bodo znova blokirani}few{Še # dni in piškotki bodo znova blokirani}other{Še # dni in piškotki bodo znova blokirani}}</translation>
 <translation id="7447234474237738389">Storitve za oblačila</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
+<translation id="7450486349221991286">Posodobite vozilo</translation>
 <translation id="7450577240311017924">Gumb za upravljanje sinhronizacije, aktivirajte, če želite upravljati, kateri podatki se sinhronizirajo v Chromovih nastavitvah</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Preberite več<ph name="END_LINK" /> o tej težavi.</translation>
 <translation id="745208957946308667">Igra z dinozavrom, za igranje pritisnite preslednico</translation>
@@ -4885,6 +4896,7 @@ Dodatne podrobnosti:
 <translation id="8811725516933141693">Vnesite @gemini, če želite klepetati z Geminijem</translation>
 <translation id="8813277370772331957">Opomni me pozneje</translation>
 <translation id="8814707942599948500">Kuverta C8</translation>
+<translation id="881559332211266856">Posodobite kontrolno številko</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite posodobiti Chrome v Chromovih nastavitvah</translation>
 <translation id="8819855907485254989">Shranjevanje vozovnice v Denarnico</translation>
 <translation id="8820817407110198400">Zaznamki</translation>

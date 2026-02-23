@@ -1231,6 +1231,7 @@
 <translation id="6202812185118613467">সিঙ্ক শুরু করার জন্য আবার সাইন-ইন করুন</translation>
 <translation id="6204781143409202534">Chrome <ph name="DOMAIN" />-এর থেকে সম্ভাব্য স্প্যাম শনাক্ত করেছে।</translation>
 <translation id="6205314730813004066">বিজ্ঞাপন সংক্রান্ত গোপনীয়তা</translation>
+<translation id="6210282067670792090">সার্চ ইঞ্জিন এবং সাইট সার্চের জন্য অ্যাড্রেস বারে শর্টকাটের মাধ্যমে এই কীবোর্ড শর্টকাট ব্যবহার করুন</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> না?</translation>
 <translation id="6211386937064921208">এই পৃষ্ঠা প্রিভিউ করছেন</translation>
 <translation id="6212567362666004597">গ্রুপে ট্যাব যোগ করুন</translation>
@@ -1354,6 +1355,7 @@
 <translation id="6647441008198474441">আপনি পরে কোন কোন সাইট ভিজিট করতে পারেন তা অনুমান করার জন্য আপনি যেসব URL দেখেন তা Google-এ পাঠানো হয়</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> আরও অনেক}one{<ph name="CONTACT_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> আরও অনেক}other{<ph name="CONTACT_PREVIEW" />\u2026 এবং <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> আরও অনেক}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> ছবির প্রিভিউ দেখুন</translation>
+<translation id="6659594942844771486">ট্যাব</translation>
 <translation id="6661521899577697780">Chrome Finds অপ্ট-ইন অর্ধেক স্ক্রিন জুড়ে খোলা হয়েছে</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> এ খুলুন</translation>
 <translation id="6669390930482049506">আমাকে জানান</translation>
@@ -1517,6 +1519,7 @@
 <translation id="7196215469483532480">গোপনীয়তা সম্পর্কিত গাইডের ব্যাখ্যা সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="7196455519852483601">আপনি কিছু বা সব ইতিহাস, কুকি ও সাইট ডেটা এবং আরও অনেক কিছু মুছে ফেলতে পারবেন</translation>
 <translation id="7197682514647286393">দ্রুত আপনার ব্রাউজ করা ডেটা মুছুন</translation>
+<translation id="719791532916917144">কীবোর্ড শর্টকাট</translation>
 <translation id="7207760545532569765">নতুন ব্যাকগ্রাউন্ড ট্যাব হিসেবে <ph name="TAB_COUNT" />টি ট্যাব ফিরিয়ে আনুন।</translation>
 <translation id="7217781228893594884">আপনি Chrome থেকে বেরিয়ে আসলে ছদ্মবেশী ট্যাব লক হয়ে যাবে</translation>
 <translation id="7221869452894271364">এই পৃষ্ঠাটি রিলোড করুন</translation>
@@ -1715,6 +1718,7 @@
 <translation id="7998918019931843664">বন্ধ হওয়া ট্যাব আবার খুলুন</translation>
 <translation id="8001245658307297681">আপনি কোনও একটি স্থানীয় ফাইল দেখছেন</translation>
 <translation id="8004582292198964060">ব্রাউজার</translation>
+<translation id="8006630792898017994">স্পেস বা ট্যাব</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, একাধিক বেছে নেওয়া পিন করা শেয়ারিং ছদ্মবেশী ট্যাব</translation>
 <translation id="8025972204417227828">নতুন কাস্টম লিঙ্ক এডিট শর্টকাট যোগ করুন</translation>
 <translation id="8027863900915310177">ডাউনলোড করা ফাইল কোথায় সেভ করে রাখবেন, তা ঠিক করে নিন</translation>

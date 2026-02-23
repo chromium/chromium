@@ -1232,6 +1232,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="6202812185118613467">Prisijunkite vėl ir pradėkite sinchronizuoti</translation>
 <translation id="6204781143409202534">„Chrome“ aptiko galimą šlamštą iš <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Su skelbimais susijęs privatumas</translation>
+<translation id="6210282067670792090">Adreso juostoje naudokite šį spartųjį klavišą su paieškos variklių ir svetainių paieškos šaukiniais</translation>
 <translation id="6210748933810148297">Ne <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Peržiūrimas šis puslapis</translation>
 <translation id="6212567362666004597">Pridėti skirtuką prie grupės</translation>
@@ -1355,6 +1356,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6647441008198474441">URL, kuriais lankotės, siunčiami „Google“, kad numatytų, kokiose svetainėse galite vėliau apsilankyti</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 ir dar <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Peržiūrėti vaizdą <ph name="BEGIN_NEW" />Naujas<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Skirtukas</translation>
 <translation id="6661521899577697780">„Chrome“ radinių pasirinkimo langas atidarytas iki pusės ekrano aukščio</translation>
 <translation id="666731172850799929">Atidaryti naudojant „<ph name="APP_NAME" />“</translation>
 <translation id="6669390930482049506">Pranešti man</translation>
@@ -1519,6 +1521,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7196215469483532480">Privatumo vadovo paaiškinimas atidarytas per visą ekrano aukštį</translation>
 <translation id="7196455519852483601">Galite ištrinti visą istoriją ar jos dalį, slapukus, svetainės duomenis ir kt.</translation>
 <translation id="7197682514647286393">Sparčiai ištrinkite naršymo duomenis</translation>
+<translation id="719791532916917144">Spartieji klavišai</translation>
 <translation id="7207760545532569765">Atkurkite tiek skirtukų <ph name="TAB_COUNT" /> kaip naujus foninius skirtukus.</translation>
 <translation id="7217781228893594884">Inkognito skirtukai bus užrakinti, kai išeisite iš „Chrome“</translation>
 <translation id="7221869452894271364">Įkelti iš naujo šį puslapį</translation>
@@ -1717,6 +1720,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7998918019931843664">Iš naujo atidarykite uždarytą skirtuko lapą</translation>
 <translation id="8001245658307297681">Peržiūrite vietinį failą</translation>
 <translation id="8004582292198964060">Naršyklė</translation>
+<translation id="8006630792898017994">Tarpo klavišas arba tabuliavimo klavišas</translation>
 <translation id="8023190977980579548">„<ph name="TAB_TITLE" />“, kelis kartus pasirinktas prisegtas bendrinantis inkognito skirtukas</translation>
 <translation id="8025972204417227828">Pridėti naują</translation>
 <translation id="8027863900915310177">Pasirinkite, kur atsisiųsti</translation>

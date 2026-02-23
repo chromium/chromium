@@ -1232,6 +1232,7 @@
 <translation id="6202812185118613467">Чтобы начать синхронизацию, войдите снова.</translation>
 <translation id="6204781143409202534">Браузер Chrome обнаружил возможный спам от домена <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Конфиденциальность в рекламе</translation>
+<translation id="6210282067670792090">Используйте это сочетание клавиш с быстрыми командами в поисковых системах и для поиска по определенным сайтам.</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> не ваш аккаунт?</translation>
 <translation id="6211386937064921208">Включен режим предпросмотра.</translation>
 <translation id="6212567362666004597">Добавить вкладку в группу</translation>
@@ -1355,6 +1356,7 @@
 <translation id="6647441008198474441">Для прогнозирования ваших дальнейших запросов URL посещенных вами страниц отправляются в Google.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактное лицо}one{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактное лицо}few{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактных лица}many{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактных лиц}other{<ph name="CONTACT_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> контактного лица}}</translation>
 <translation id="6649642165559792194">Просмотреть изображение <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6661521899577697780">Нижний экран с предложением разрешить Chrome продолжить поиск открыт наполовину</translation>
 <translation id="666731172850799929">Открыть в <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Включить</translation>
@@ -1519,6 +1521,7 @@
 <translation id="7196215469483532480">Пояснение для руководства по конфиденциальности открыто на весь экран</translation>
 <translation id="7196455519852483601">Вы можете полностью или частично удалить историю, данные сайтов, файлы cookie и не только.</translation>
 <translation id="7197682514647286393">Данные о работе в браузере</translation>
+<translation id="719791532916917144">Сочетания клавиш</translation>
 <translation id="7207760545532569765">Восстановить вкладки (<ph name="TAB_COUNT" />) и открыть их в фоновом режиме.</translation>
 <translation id="7217781228893594884">Вкладки инкогнито будут блокироваться при закрытии Chrome.</translation>
 <translation id="7221869452894271364">Обновить эту страницу</translation>
@@ -1717,6 +1720,7 @@
 <translation id="7998918019931843664">Открыть закрытую вкладку</translation>
 <translation id="8001245658307297681">Вы просматриваете локальный файл.</translation>
 <translation id="8004582292198964060">Браузер</translation>
+<translation id="8006630792898017994">Пробел или Tab</translation>
 <translation id="8023190977980579548">Выбранная вместе с несколькими другими и закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />" с доступом к экрану</translation>
 <translation id="8025972204417227828">Добавить</translation>
 <translation id="8027863900915310177">Куда скачать?</translation>

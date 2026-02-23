@@ -1201,6 +1201,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="610630277578876674">Rychle otevírejte odkazy ve zprávách a podobně</translation>
 <translation id="6108923351542677676">Probíhá nastavování…</translation>
 <translation id="6112702117600201073">Obnovování stránky</translation>
+<translation id="612221930823678863">Adresa URL se zástupným symbolem <ph name="QUERY" /> místo dotazu</translation>
 <translation id="6122831415929794347">Vypnout Bezpečné prohlížení?</translation>
 <translation id="6124936178263837501">Nahlásit, že se nejedná o spam</translation>
 <translation id="6125202119952209826">Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /></translation>
@@ -1232,6 +1233,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="6202812185118613467">Přihlásit se a zahájit synchronizaci</translation>
 <translation id="6204781143409202534">Chrome zjistil možný spam z domény <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Ochrana soukromí v reklamách</translation>
+<translation id="6210282067670792090">Tuto klávesovou zkratku používejte v adresním řádku se zkratkami pro vyhledávače a vyhledávání na webech</translation>
 <translation id="6210748933810148297">Nejste <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Zobrazování náhledu této stránky</translation>
 <translation id="6212567362666004597">Přidat kartu do skupiny</translation>
@@ -1355,6 +1357,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6647441008198474441">Navštívené adresy URL se odesílají do Googlu, aby mohl předvídat, které weby byste mohli navštívit jako další</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}few{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> další}many{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalšího}other{<ph name="CONTACT_PREVIEW" /> a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> dalších}}</translation>
 <translation id="6649642165559792194">Zobrazit náhled obrázku <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tabulátor</translation>
 <translation id="6661521899577697780">Přihlášení k funkci Chrome Finds je otevřené na polovinu výšky</translation>
 <translation id="666731172850799929">Otevřít v aplikaci <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Chci dostávat oznámení</translation>
@@ -1519,6 +1522,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7196215469483532480">Vysvětlení průvodce ochranou soukromí otevřené na plnou výšku</translation>
 <translation id="7196455519852483601">Můžete smazat část nebo celou svou historii, soubory cookie, data webů a další položky</translation>
 <translation id="7197682514647286393">Rychlé vymazání údajů o prohlížení</translation>
+<translation id="719791532916917144">Klávesová zkratka</translation>
 <translation id="7207760545532569765">Obnovit <ph name="TAB_COUNT" /> karet jako nové karty na pozadí.</translation>
 <translation id="7217781228893594884">Když Chrome opustíte, anonymní karty se uzamknou</translation>
 <translation id="7221869452894271364">Načíst tuto stránku znovu</translation>
@@ -1717,6 +1721,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7998918019931843664">Znovu otevřít zavřenou kartu</translation>
 <translation id="8001245658307297681">Prohlížíte si místní soubor</translation>
 <translation id="8004582292198964060">Prohlížeč</translation>
+<translation id="8006630792898017994">Mezerník nebo tabulátor</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, jedna z několika vybraných připnutých sdílejících anonymních karet</translation>
 <translation id="8025972204417227828">Přidat novou</translation>
 <translation id="8027863900915310177">Vyberte cíl stahování</translation>

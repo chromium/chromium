@@ -1232,6 +1232,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6202812185118613467">Log weer in om de synchronisatie te starten</translation>
 <translation id="6204781143409202534">Chrome heeft mogelijk spam van <ph name="DOMAIN" /> gevonden.</translation>
 <translation id="6205314730813004066">Advertentieprivacy</translation>
+<translation id="6210282067670792090">Je kunt in de adresbalk deze sneltoetsen met snelkoppelingen voor zoekmachines en het doorzoeken van sites gebruiken.</translation>
 <translation id="6210748933810148297">Niet <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Voorbeeld van deze pagina bekijken</translation>
 <translation id="6212567362666004597">Tabblad toevoegen aan groep</translation>
@@ -1355,6 +1356,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6647441008198474441">URL's die je bezoekt, worden naar Google gestuurd om te voorspellen naar welke sites je misschien daarna gaat</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> andere}other{<ph name="CONTACT_PREVIEW" />\u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> andere}}</translation>
 <translation id="6649642165559792194">Afbeelding bekijken <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6661521899577697780">Aanmelding voor Chrome Finds is op halve hoogte geopend</translation>
 <translation id="666731172850799929">Openen in <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Melding sturen</translation>
@@ -1519,6 +1521,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7196215469483532480">Uitleg over privacygids is op volledige hoogte geopend</translation>
 <translation id="7196455519852483601">Je kunt onder meer je geschiedenis, cookies en sitegegevens geheel of gedeeltelijk verwijderen</translation>
 <translation id="7197682514647286393">Snel je browsegegevens verwijderen</translation>
+<translation id="719791532916917144">Sneltoets</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> tabbladen herstellen als nieuwe tabbladen op de achtergrond.</translation>
 <translation id="7217781228893594884">Incognitotabbladen worden vergrendeld als je Chrome verlaat</translation>
 <translation id="7221869452894271364">Deze pagina opnieuw laden</translation>
@@ -1717,6 +1720,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7998918019931843664">Gesloten tabblad opnieuw openen</translation>
 <translation id="8001245658307297681">Je bekijkt een lokaal bestand</translation>
 <translation id="8004582292198964060">Browser</translation>
+<translation id="8006630792898017994">Spatiebalk of Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, meervoudig geselecteerd vastgezet incognitotabblad voor content delen</translation>
 <translation id="8025972204417227828">Nieuwe toevoegen</translation>
 <translation id="8027863900915310177">Kies waar je wilt downloaden</translation>

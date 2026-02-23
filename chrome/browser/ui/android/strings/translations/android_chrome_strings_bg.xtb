@@ -1232,6 +1232,7 @@
 <translation id="6202812185118613467">Влезте отново в профила си, за да стартирате синхронизирането</translation>
 <translation id="6204781143409202534">Chrome откри възможен спам от <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Поверителност при рекламите</translation>
+<translation id="6210282067670792090">В адресната лента използвайте тази клавишна комбинация заедно с преки пътища за търсещи машини и търсене в сайтове</translation>
 <translation id="6210748933810148297">Не сте <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Страницата се визуализира</translation>
 <translation id="6212567362666004597">Добавяне на раздела към група</translation>
@@ -1355,6 +1356,7 @@
 <translation id="6647441008198474441">Посещаваните от вас URL адреси се изпращат до Google с цел предвиждане на следващите страници, които е възможно да посетите</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 и още <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Визуализация <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6661521899577697780">Включването в Chrome Finds е отворено на половината височина</translation>
 <translation id="666731172850799929">Отваряне в <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Искам да получавам известия</translation>
@@ -1519,6 +1521,7 @@
 <translation id="7196215469483532480">Обяснението на ръководството за поверителност е отворено на пълната височина</translation>
 <translation id="7196455519852483601">Можете да изтриете всички или част от записите си в историята, „бисквитките“, данните за сайтовете и др.</translation>
 <translation id="7197682514647286393">Бързо изтрив. на данните за сърф.</translation>
+<translation id="719791532916917144">Клавишна комбинация</translation>
 <translation id="7207760545532569765">Възстановяване на <ph name="TAB_COUNT" /> раздела като нови на заден план.</translation>
 <translation id="7217781228893594884">Разделите в режим „инкогнито“ ще бъдат заключени, когато излезете от Chrome</translation>
 <translation id="7221869452894271364">Зарежда повторно тази страница</translation>
@@ -1717,6 +1720,7 @@
 <translation id="7998918019931843664">Повторно отваряне на затворения раздел</translation>
 <translation id="8001245658307297681">Преглеждате локален файл</translation>
 <translation id="8004582292198964060">Браузър</translation>
+<translation id="8006630792898017994">Интервал или Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" /> – фиксиран раздел в режим „инкогнито“, който споделя и е избран заедно с други</translation>
 <translation id="8025972204417227828">Добавяне на нова</translation>
 <translation id="8027863900915310177">Изберете място за изтеглянето</translation>

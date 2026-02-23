@@ -1232,6 +1232,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6202812185118613467">Sinxronizasiyanı başlatmaq üçün yenidən daxil olun</translation>
 <translation id="6204781143409202534">Chrome <ph name="DOMAIN" /> domenindən mümkün spam aşkarladı.</translation>
 <translation id="6205314730813004066">Reklam məxfiliyi</translation>
+<translation id="6210282067670792090">Ünvan panelində axtarış sistemləri və sayt axtarışı üçün qısayollarla bu klaviatura qısayolundan istifadə edin</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> deyil?</translation>
 <translation id="6211386937064921208">Bu səhifə önizlənir</translation>
 <translation id="6212567362666004597">Qrupa tab əlavə edin</translation>
@@ -1353,6 +1354,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6647441008198474441">Ziyarət etdiyiniz keçidlər növbəti dəfə hansı saytlara daxil ola biləcəyinizi proqnozlaşdırmaq üçün Google'a göndərilir</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> digəri}other{<ph name="CONTACT_PREVIEW" />\u2026 və <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> digəri}}</translation>
 <translation id="6649642165559792194">Önizləmə şəkli <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6661521899577697780">Chrome Finds seçimi üzrə pəncərə yarım hündürlükdə açıldı</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> tətbiqində açın</translation>
 <translation id="6669390930482049506">Mənə bildirin</translation>
@@ -1517,6 +1519,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7196215469483532480">Məxfilik bələdçisi izahı tam hündürlükdə açılıb</translation>
 <translation id="7196455519852483601">Tarixçə, kukilər, sayt datası və digərlərinin bir qismini və ya hamısını silə bilərsiniz</translation>
 <translation id="7197682514647286393">Axtarış datasını sürətlə silin</translation>
+<translation id="719791532916917144">Klaviatura qısayolu</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> tabı yeni arxa fon tabları olaraq bərpa edin.</translation>
 <translation id="7217781228893594884">Chrome'dan çıxdığınız zaman anonim tablar kilidlənəcək</translation>
 <translation id="7221869452894271364">Bu səhifəni yenidən yükləyin</translation>
@@ -1715,6 +1718,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7998918019931843664">Qapalı nişanı yenidən</translation>
 <translation id="8001245658307297681">Lokal fayla baxırsınız</translation>
 <translation id="8004582292198964060">Brauzer</translation>
+<translation id="8006630792898017994">Boşluq və ya Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, Çoxseçimli, bərkidilmiş, paylaşım anonim tabı</translation>
 <translation id="8025972204417227828">Yenisini əlavə edin</translation>
 <translation id="8027863900915310177">Endiriləcək yeri seçin</translation>

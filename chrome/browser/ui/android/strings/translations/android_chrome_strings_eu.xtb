@@ -1231,6 +1231,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="6202812185118613467">Sinkronizatzen hasteko, hasi saioa berriro</translation>
 <translation id="6204781143409202534">Chrome-k <ph name="DOMAIN" /> domeinuaren spam posiblea hauteman du.</translation>
 <translation id="6205314730813004066">Iragarkien pribatutasuna</translation>
+<translation id="6210282067670792090">Helbide-barran, erabili lasterbide hau bilatzaileetara edo webguneetan bilaketak egitera joateko</translation>
 <translation id="6210748933810148297">Ez al zara <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Orria aurreikusten</translation>
 <translation id="6212567362666004597">Gehitu fitxa taldean</translation>
@@ -1354,6 +1355,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6647441008198474441">Bisitatzen dituzun URLak Google-ri bidaltzen zaizkio etorkizunean zein webgune bisitatuko dituzun aurreikusteko</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> eta beste <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Aurreikusi irudia <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Fitxa</translation>
 <translation id="6661521899577697780">Chrome Finds erabiltzea aukeratzeko orria altuera erdian irekita dago</translation>
 <translation id="666731172850799929">Ireki <ph name="APP_NAME" /> aplikazioan</translation>
 <translation id="6669390930482049506">Jaso jakinarazpenak</translation>
@@ -1517,6 +1519,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7196215469483532480">Pribatutasun-gidaren azalpena altuera osoan irekita dago</translation>
 <translation id="7196455519852483601">Historia, cookieak, webguneetako datuak eta beste datu batzuk ezaba ditzakezu, guztiak edo batzuk bakarrik</translation>
 <translation id="7197682514647286393">Ezabatu bizkor arakatze-datuak</translation>
+<translation id="719791532916917144">Lasterbidea</translation>
 <translation id="7207760545532569765">Leheneratu <ph name="TAB_COUNT" /> fitxa atzeko planoko fitxa gisa.</translation>
 <translation id="7217781228893594884">Ezkutuko moduko fitxak blokeatu egingo dira Chrome-tik irteten zarenean</translation>
 <translation id="7221869452894271364">Kargatu berriro orri hau</translation>
@@ -1715,6 +1718,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7998918019931843664">Ireki berriro itxitako fitxa</translation>
 <translation id="8001245658307297681">Gailuko fitxategi bat ari zara ikusten</translation>
 <translation id="8004582292198964060">Arakatzailea</translation>
+<translation id="8006630792898017994">Zuriune-barra edo tabuladorea</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" /> fitxa, beste batzuekin batera hautatuta, ezkutuko modukoa, ainguratuta, partekatzen</translation>
 <translation id="8025972204417227828">Gehitu beste bat</translation>
 <translation id="8027863900915310177">Aukeratu nora deskargatu nahi duzun</translation>

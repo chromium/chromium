@@ -9857,7 +9857,6 @@
 <translation id="7697109152153663933">Выберите "Пароли и автозаполнение"</translation>
 <translation id="769824636077131955">Этот документ слишком большой для проверки безопасности. Вы можете печатать документы размером не более 50 МБ.</translation>
 <translation id="7698507637739331665">Некоторые объекты заблокированы</translation>
-<translation id="7700176975240938448">Чтобы открыть, нажмите <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Принтеры и сканеры</translation>
 <translation id="7700873336634517379">Нет, использовать для учебы существующий профиль</translation>
 <translation id="7701040980221191251">Нет</translation>
@@ -11491,6 +11490,7 @@
 <translation id="8781834595282316166">Добавить вкладку в группу</translation>
 <translation id="8781980678064919987">Завершать работу при закрытии крышки</translation>
 <translation id="8782565991310229362">Запуск киоск-приложения был отменен.</translation>
+<translation id="8783171585655659524">Отправлять скриншот</translation>
 <translation id="8783834180813871000">Введите код Bluetooth-подключения и нажмите Ввод.</translation>
 <translation id="8784626084144195648">Среднее по группам</translation>
 <translation id="8785622406424941542">Стилус</translation>

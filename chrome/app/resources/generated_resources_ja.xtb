@@ -9833,7 +9833,6 @@
 <translation id="7697109152153663933">[パスワードと自動入力] をクリックします</translation>
 <translation id="769824636077131955">このドキュメントはセキュリティ チェックには大きすぎます。印刷できるドキュメントは 50 MB までです。</translation>
 <translation id="7698507637739331665">一部のアイテムはブロックされています</translation>
-<translation id="7700176975240938448"><ph name="FOCUS_TOGGLE_HOTKEY" /> で簡単に起動できます</translation>
 <translation id="7700516433658473670">プリンタとスキャナ</translation>
 <translation id="7700873336634517379">いいえ、このプロフィールを学校用にも使用します</translation>
 <translation id="7701040980221191251">なし</translation>
@@ -11463,6 +11462,7 @@
 <translation id="8781834595282316166">グループにタブを追加</translation>
 <translation id="8781980678064919987">ディスプレイを閉じたときにシャットダウンする</translation>
 <translation id="8782565991310229362">キオスク アプリケーションの起動がキャンセルされました。</translation>
+<translation id="8783171585655659524">スクリーンショットを含める</translation>
 <translation id="8783834180813871000">Bluetooth のペア設定コードを入力してから、Return キーまたは Enter キーを押してください。</translation>
 <translation id="8784626084144195648">ビニング平均</translation>
 <translation id="8785622406424941542">タッチペン</translation>

@@ -1231,6 +1231,7 @@
 <translation id="6202812185118613467">ஒத்திசைவைத் தொடங்க மீண்டும் உள்நுழையவும்</translation>
 <translation id="6204781143409202534"><ph name="DOMAIN" /> இல் இருந்து வந்த அறிவிப்பு ஸ்பேமாக இருக்கலாம் என்று Chrome கண்டறிந்துள்ளது.</translation>
 <translation id="6205314730813004066">விளம்பரத் தனியுரிமை</translation>
+<translation id="6210282067670792090">தேடல் இன்ஜின்கள் &amp; தளத் தேடல்களுக்கான ஷார்ட்கட்களுடன் முகவரிப்பட்டியில் இந்தக் கீபோர்டு ஷார்ட்கட்டைப் பயன்படுத்தவும்</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> இல்லையா?</translation>
 <translation id="6211386937064921208">இந்தப் பக்கத்தின் மாதிரிக்காட்சி</translation>
 <translation id="6212567362666004597">குழுவில் பக்கத்தைச் சேர்</translation>
@@ -1354,6 +1355,7 @@
 <translation id="6647441008198474441">நீங்கள் அடுத்து பார்வையிடக்கூடிய தளங்களைக் கணிப்பதற்காக, நீங்கள் பார்வையிடும் URLகள் Googleளுக்கு அனுப்பப்படும்</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> தொடர்பு}other{<ph name="CONTACT_PREVIEW" />\u2026 மற்றும் <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> தொடர்புகள்}}</translation>
 <translation id="6649642165559792194">மாதிரிக்காட்சி <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6661521899577697780">Chrome Findsஸிற்கு ஒப்புதல் அளிப்பதற்கான திரை பாதி உயரத்திற்குத் திறக்கப்பட்டுள்ளது</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> இல் திற</translation>
 <translation id="6669390930482049506">எனக்குத் தெரிவி</translation>
@@ -1517,6 +1519,7 @@
 <translation id="7196215469483532480">தனியுரிமை வழிகாட்டியின் விளக்கம் முழுத் திரையில் காட்டப்பட்டுள்ளது</translation>
 <translation id="7196455519852483601">பதிவுகள், குக்கீகள், தளத் தரவு மற்றும் பலவற்றில் இருந்து சிலவற்றையோ எல்லாவற்றையுமோ நீக்கலாம்</translation>
 <translation id="7197682514647286393">பிரவுசிங் தரவை விரைவாக நீக்குதல்</translation>
+<translation id="719791532916917144">கீபோர்டு ஷார்ட்கட்</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> பக்கங்களைப் புதிய பின்னணிப் பக்கங்களாக மீட்டெடுக்கும்.</translation>
 <translation id="7217781228893594884">Chromeமை விட்டு வெளியேறும்போது மறைநிலைப் பக்கங்கள் பூட்டப்படும்</translation>
 <translation id="7221869452894271364">இந்தப் பக்கத்தை மீண்டும் ஏற்று</translation>
@@ -1715,6 +1718,7 @@
 <translation id="7998918019931843664">மூடப்பட்ட தாவலை மீண்டும் திற</translation>
 <translation id="8001245658307297681">சாதனத்தில் உள்ள ஃபைலைப் பார்க்கிறீர்கள்</translation>
 <translation id="8004582292198964060">உலாவி</translation>
+<translation id="8006630792898017994">Space அல்லது Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, தேர்ந்தெடுத்தவற்றில் பின் செய்யப்பட்ட பகிரப்படுகின்ற மறைநிலைப் பக்கம்</translation>
 <translation id="8025972204417227828">புதியதைச் சேர்</translation>
 <translation id="8027863900915310177">எங்கே பதிவிறக்குவது என்பதைத் தேர்வுசெய்யவும்</translation>

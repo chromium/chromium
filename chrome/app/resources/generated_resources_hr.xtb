@@ -9847,7 +9847,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="7697109152153663933">Kliknite Zaporke i automatsko popunjavanje</translation>
 <translation id="769824636077131955">Dokument je prevelik za sigurnosnu provjeru. Možete ispisivati dokumente do 50 MB.</translation>
 <translation id="7698507637739331665">Neke su stavke blokirane</translation>
-<translation id="7700176975240938448">Jednostavno otvorite pomoću prečaca <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Pisači i skeneri</translation>
 <translation id="7700873336634517379">Ne, nastavi upotrebljavati za školu na ovom profilu</translation>
 <translation id="7701040980221191251">Nema ih</translation>
@@ -11480,6 +11479,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8781834595282316166">Nova kartica u grupi</translation>
 <translation id="8781980678064919987">Isključi računalo kada se zatvori poklopac</translation>
 <translation id="8782565991310229362">Pokretanje aplikacije kioska otkazano je.</translation>
+<translation id="8783171585655659524">Uključi snimku zaslona</translation>
 <translation id="8783834180813871000">Unesite kôd za uparivanje pa pritisnite Return ili Enter.</translation>
 <translation id="8784626084144195648">Kvantizacijski prosjek</translation>
 <translation id="8785622406424941542">Olovka</translation>

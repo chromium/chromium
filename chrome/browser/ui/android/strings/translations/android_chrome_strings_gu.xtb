@@ -1232,6 +1232,7 @@
 <translation id="6202812185118613467">સિંક શરૂ કરવા ફરી સાઇન ઇન કરો</translation>
 <translation id="6204781143409202534">Chromeને <ph name="DOMAIN" /> પાસેથી મળેલા સંભવિત સ્પામની ભાળ મળી છે.</translation>
 <translation id="6205314730813004066">જાહેરાત સંબંધી પ્રાઇવસી</translation>
+<translation id="6210282067670792090">શોધ એન્જિન અને સાઇટમાં શોધવા માટે, ઍડ્રેસ બારમાં આ કીબોર્ડ શૉર્ટકટ સાથે શૉર્ટકટનો ઉપયોગ કરો</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> નથી?</translation>
 <translation id="6211386937064921208">આ પેજનો પ્રીવ્યૂ કરી રહ્યાં છીએ</translation>
 <translation id="6212567362666004597">ગ્રૂપમાં ટૅબ ઉમેરો</translation>
@@ -1355,6 +1356,7 @@
 <translation id="6647441008198474441">હવે તમે આના પછી કઈ સાઇટની મુલાકાત લેશો તેનું પૂર્વાનુમાન લગાવવા માટે, તમે જેની મુલાકાત લો છો તે URLs Googleને મોકલવામાં આવે છે</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 અને વધુ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">છબીને પ્રીવ્યૂ કરો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">ટૅબ</translation>
 <translation id="6661521899577697780">Chrome Finds સુવિધા પસંદ કરવાનો વિકલ્પ અડધી ઊંચાઈએ ખોલ્યો</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> માં ખોલો</translation>
 <translation id="6669390930482049506">મને સૂચિત કરો</translation>
@@ -1519,6 +1521,7 @@
 <translation id="7196215469483532480">પ્રાઇવસી સંબંધિત માર્ગદર્શિકાની સમજૂતી પૂરી ઊંચાઈ સુધી ખોલી છે</translation>
 <translation id="7196455519852483601">તમે તમારો અમુક અથવા તમામ ઇતિહાસ, કુકી, સાઇટનો ડેટા અને બીજું ઘણું ડિલીટ કરી શકો છો</translation>
 <translation id="7197682514647286393">તમારો બ્રાઉઝિંગ ડેટા ઝડપથી ડિલીટ કરો</translation>
+<translation id="719791532916917144">કીબોર્ડ શૉર્ટકટ</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> ટૅબને નવી બૅકગ્રાઉન્ડ ટૅબ તરીકે રિસ્ટોર કરો.</translation>
 <translation id="7217781228893594884">જ્યારે તમે Chrome છોડશો, ત્યારે છૂપી ટૅબ લૉક થઈ જશે</translation>
 <translation id="7221869452894271364">આ પેજને ફરીથી લોડ કરો</translation>
@@ -1717,6 +1720,7 @@
 <translation id="7998918019931843664">બંધ કરેલ ટેબ ફરીથી ખોલો</translation>
 <translation id="8001245658307297681">તમે કોઈ સ્થાનિક ફાઇલ જોઈ રહ્યાં છો</translation>
 <translation id="8004582292198964060">બ્રાઉઝર</translation>
+<translation id="8006630792898017994">Space કી અથવા Tab કી</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલું પિન કરેલું શેર કરતું છૂપું ટૅબ</translation>
 <translation id="8025972204417227828">નવું ઉમેરો</translation>
 <translation id="8027863900915310177">ડાઉનલોડ કરવાની જગ્યા પસંદ કરો</translation>

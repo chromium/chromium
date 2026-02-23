@@ -9853,7 +9853,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="7697109152153663933">Klikk på «Passord og autofyll»</translation>
 <translation id="769824636077131955">Dette dokumentet er for stort til at en sikkerhetssjekk kan utføres. Du kan skrive ut dokumenter på opptil 50 MB.</translation>
 <translation id="7698507637739331665">Noen elementer er blokkert</translation>
-<translation id="7700176975240938448">Åpne enkelt med <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Skrivere og skannere</translation>
 <translation id="7700873336634517379">Nei, fortsett med denne profilen for skolerelatert bruk</translation>
 <translation id="7701040980221191251">Ingen</translation>
@@ -11484,6 +11483,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8781834595282316166">Ny fane i gruppen</translation>
 <translation id="8781980678064919987">Slå av maskinen når den lukkes</translation>
 <translation id="8782565991310229362">Oppstart av kiosk-appen er avbrutt.</translation>
+<translation id="8783171585655659524">Inkluder skjermbilde</translation>
 <translation id="8783834180813871000">Skriv inn Bluetooth-sammenkoblingskoden, og trykk på Retur eller Enter.</translation>
 <translation id="8784626084144195648">Gjennomsnitt av grupperte data</translation>
 <translation id="8785622406424941542">Pekepenn</translation>

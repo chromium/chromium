@@ -1232,6 +1232,7 @@
 <translation id="6202812185118613467">ስምረትን ለማስጀመር መልሰው በመለያ ይግቡ</translation>
 <translation id="6204781143409202534">Chrome ከ<ph name="DOMAIN" /> ሊሆን የሚችል አይፈለጌ መልዕክትን ለይቷል።</translation>
 <translation id="6205314730813004066">የማስታወቂያ ግላዊነት</translation>
+<translation id="6210282067670792090">በአድራሻ አሞሌው ውስጥ ይህን የቁልፍ ሰሌዳ አቋራጭ ከአቋራጮች ጋር ለፍለጋ ፕሮግራሞች እና ለጣቢያ ፍለጋ ይጠቀሙ</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> አይደለም?</translation>
 <translation id="6211386937064921208">ይህን ገፅ በቅድመ-ዕይታ በማሳየት ላይ</translation>
 <translation id="6212567362666004597">ትርን ወደ ቡድን ያክሉ</translation>
@@ -1355,6 +1356,7 @@
 <translation id="6647441008198474441">እርስዎ የሚጎበኟቸው ዩአርኤሎች ቀጥሎ የትኞቹን ጣቢያዎች ሊጎበኙ እንደሚችሉ ለመተንበይ ወደ Google ይላካሉ</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ተጨማሪ}one{<ph name="CONTACT_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ተጨማሪ}other{<ph name="CONTACT_PREVIEW" />\u2026 እና <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ተጨማሪ}}</translation>
 <translation id="6649642165559792194">ምስል <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" />ን ቅድሚያ ይመልከቱ</translation>
+<translation id="6659594942844771486">ትር</translation>
 <translation id="6661521899577697780">የChrome Finds መርጦ መግባት በግማሽ ቁመት ተከፍቷል</translation>
 <translation id="666731172850799929">በ<ph name="APP_NAME" /> ውስጥ ክፈት</translation>
 <translation id="6669390930482049506">አሳውቀኝ</translation>
@@ -1519,6 +1521,7 @@
 <translation id="7196215469483532480">የግላዊነት መመሪያ ማብራሪያ በሙሉ ቁመት ላይ ተከፍቷል</translation>
 <translation id="7196455519852483601">የእርስዎን አንዳንድ ወይም ሁሉንም ታሪክ፣ ኩኪዎች፣ የጣቢያ ውሂቦች እና ሌሎችም መሰረዝ ይችላሉ</translation>
 <translation id="7197682514647286393">የአሰሳ ውሂብዎን በፍጥነት ይሰርዙ</translation>
+<translation id="719791532916917144">የቁልፍ ሰሌዳ አቋራጭ</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> ትሮችን እንደ አዲስ የዳራ ትሮች ወደነበሩበት መልስ።</translation>
 <translation id="7217781228893594884">ከChrome ለቀው ሲወጡ ማንነት የማያሳውቁ ትሮች ይቆለፋሉ</translation>
 <translation id="7221869452894271364">ይህን ገፅ ዳግም ጫን</translation>
@@ -1717,6 +1720,7 @@
 <translation id="7998918019931843664">የተዘጋውን ትር ዳግም ይክፈቱ</translation>
 <translation id="8001245658307297681">አካባቢያዊ ፋይል እየተመለከቱ ነው</translation>
 <translation id="8004582292198964060">አሳሽ</translation>
+<translation id="8006630792898017994">ክፍተት ወይም ትር</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />፣ ብዙ የተመረጠ ፒን የተደረገ እያጋራ ያለ ማንነት የማያሳውቅ ትር</translation>
 <translation id="8025972204417227828">አዲስ አክል</translation>
 <translation id="8027863900915310177">የት እንደሚያወርዱ ይምረጡ</translation>

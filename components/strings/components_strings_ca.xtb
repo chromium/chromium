@@ -1398,6 +1398,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="323585066388831737">Vermell clar</translation>
 <translation id="3235902901585019063">Els fitxers locals se suprimiran el dia <ph name="DATE_TIME" />. Assegura't que totes les dades empresarials o personals essencials s'emmagatzemin externament.</translation>
 <translation id="3236212803136366317">Avantatges de les targetes</translation>
+<translation id="3237427677128462778">No s'ha pogut desar a Google Wallet</translation>
 <translation id="3238395604961564389">Obre l'enllaç en una finestra d'incògnit</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per personalitzar l'aspecte del teu navegador</translation>
 <translation id="3240791268468473923">S'ha obert el full de credencials no coincidents de credencials de pagament segur</translation>
@@ -2535,6 +2536,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5045550434625856497">Contrasenya incorrecta</translation>
 <translation id="5048293684454354469">Els temes d'anunci només són un dels molts elements que un lloc web pot utilitzar per personalitzar anuncis. Encara que no hi hagi temes d'anunci, els llocs web podran continuar mostrant-te anuncis, però pot ser que estiguin menys personalitzats. Obtén més informació sobre com pots <ph name="BEGIN_LINK" />gestionar la privadesa d'anuncis<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />. Prem el tabulador per veure més dreceres de cerca disponibles després d'aquest suggeriment de cerca.</translation>
+<translation id="5052488928733955073">Hi ha hagut un problema en emplenar la teva informació. Comprova la connexió.</translation>
 <translation id="5052517576853118371">Temes actius</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Per enviar aquest fitxer amb Compartició Nearby, allibera espai (<ph name="DISK_SPACE_SIZE" />) al dispositiu}other{Per enviar aquests fitxers amb Compartició Nearby, allibera espai (<ph name="DISK_SPACE_SIZE" />) al dispositiu}}</translation>
 <translation id="5056587122125565772">Crea una imatge</translation>
@@ -2833,6 +2835,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5521782189689806907">Ebenisteria</translation>
 <translation id="5523118979700054094">Nom de la política</translation>
 <translation id="5523588073846127669">El comerciant no accepta aquesta targeta virtual</translation>
+<translation id="5524476634211040742">Més informació sobre la IA i la privadesa</translation>
 <translation id="5525755241743357906">El fitxer s'ha copiat o mogut</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per personalitzar les eines d'accessibilitat a la configuració de Chrome OS</translation>
 <translation id="55293785478302737">Cosit de la vora</translation>
@@ -3653,6 +3656,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6850286078059909152">Color del text</translation>
 <translation id="6852204201400771460">Vols tornar a carregar l'aplicació?</translation>
 <translation id="6854691830678097752">Per pagar ràpidament, desa aquest CVC al teu compte, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="6855951327659224749">Esborra el formulari a fi d'utilitzar l'opció per pagar més tard</translation>
 <translation id="6857776781123259569">Gestiona les contrasenyes...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Pot demanar permís per entrar al mode d'imatge sobre imatge</translation>

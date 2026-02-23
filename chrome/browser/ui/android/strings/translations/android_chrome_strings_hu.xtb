@@ -1231,6 +1231,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6202812185118613467">A szinkronizálás megkezdéséhez jelentkezzen be újra.</translation>
 <translation id="6204781143409202534">A Chrome lehetséges spamet észlelt innen: <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Hirdetésekhez kapcsolódó adatvédelem</translation>
+<translation id="6210282067670792090">Használja a címsávban ezt a billentyűparancsot a keresőmotorokhoz és webhelykereséshez tartozó gyorsparancsokkal.</translation>
 <translation id="6210748933810148297">Nem <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Az oldal előnézete</translation>
 <translation id="6212567362666004597">Lap hozzáadása csoporthoz</translation>
@@ -1354,6 +1355,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6647441008198474441">Az Ön által felkeresett URL-ek el lesznek küldve a Google-nak, hogy előrejelezzük, mely webhelyeket fogja esetleg legközelebb felkeresni.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 és további <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Kép előnézete <ph name="BEGIN_NEW" />Új<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Lap</translation>
 <translation id="6661521899577697780">A Chrome Keresés funkciójára való feliratkozás félmagasságban megnyitva</translation>
 <translation id="666731172850799929">Megnyitás itt: <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Értesítést kérek</translation>
@@ -1517,6 +1519,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7196215469483532480">Az adatvédelmi útmutató magyarázata teljes magasságban van megnyitva</translation>
 <translation id="7196455519852483601">Törölheti az előzmények, a cookie-k, a webhelyadatok és egyebek egy részét vagy egészét.</translation>
 <translation id="7197682514647286393">Böngészési adatok gyors törlése</translation>
+<translation id="719791532916917144">Billentyűparancsok</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> lap visszaállítása új háttérbeli lapokként.</translation>
 <translation id="7217781228893594884">Az inkognitó lapok a Chrome elhagyásakor zárolódnak</translation>
 <translation id="7221869452894271364">Az oldal újratöltése</translation>
@@ -1715,6 +1718,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7998918019931843664">Bezárt lap megnyitása</translation>
 <translation id="8001245658307297681">Jelenleg egy helyi fájlt tekint meg</translation>
 <translation id="8004582292198964060">Böngésző</translation>
+<translation id="8006630792898017994">Szóköz vagy Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, több kiválasztott rögzített, tartalmat megosztó inkognitó lap</translation>
 <translation id="8025972204417227828">Új hozzáadása</translation>
 <translation id="8027863900915310177">Letöltés helyének kiválasztása</translation>

@@ -1232,6 +1232,7 @@
 <translation id="6202812185118613467">سجِّل الدخول مرة أخرى لبدء المزامنة.</translation>
 <translation id="6204781143409202534">‏رصدَ متصفِّح Chrome إشعارًا يُحتمل أن يكون غير مرغوب فيه من <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">الخصوصية في عرض الإعلانات</translation>
+<translation id="6210282067670792090">في شريط العناوين، استخدِم اختصار لوحة المفاتيح هذا مع الاختصارات المخصّصة لمحركات البحث وميزة البحث في الموقع الإلكتروني.</translation>
 <translation id="6210748933810148297">ليس <ph name="EMAIL" />؟</translation>
 <translation id="6211386937064921208">جارٍ معاينة هذه الصفحة</translation>
 <translation id="6212567362666004597">إضافة علامة التبويب إلى مجموعة</translation>
@@ -1355,6 +1356,7 @@
 <translation id="6647441008198474441">‏يتم إرسال عناوين URL التي تزورها إلى Google لتوقّع المواقع الإلكترونية التي ستزورها بعد ذلك.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />\u2026 وجهة اتصال إضافية واحدة <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}zero{‏<ph name="CONTACT_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهة اتصال إضافية}two{‏<ph name="CONTACT_PREVIEW" />\u2026 وجهتا اتصال إضافيتان (<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />)}few{‏<ph name="CONTACT_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهات اتصال إضافية}many{‏<ph name="CONTACT_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهة اتصال إضافية}other{‏<ph name="CONTACT_PREVIEW" />\u2026 و<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> جهة اتصال إضافية}}</translation>
 <translation id="6649642165559792194">معاينة صورة <ph name="BEGIN_NEW" />ميزة جديدة<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">‏مفتاح Tab</translation>
 <translation id="6661521899577697780">‏تم فتح البطاقة السفلية لتفعيل ميزة "البحث على Chrome" في نصف الشاشة</translation>
 <translation id="666731172850799929">الفتح في <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">تفعيل الإشعارات</translation>
@@ -1519,6 +1521,7 @@
 <translation id="7196215469483532480">تم فتح شرح دليل الخصوصية بطول الشاشة.</translation>
 <translation id="7196455519852483601">يمكنك حذف كل أو بعض بيانات السجلّ وملفات تعريف الارتباط وبيانات المواقع الإلكترونية وغير ذلك</translation>
 <translation id="7197682514647286393">حذف بيانات التصفّح بسرعة</translation>
+<translation id="719791532916917144">اختصار لوحة المفاتيح</translation>
 <translation id="7207760545532569765">استعادة <ph name="TAB_COUNT" /> علامة تبويب كعلامات تبويب جديدة في الخلفية</translation>
 <translation id="7217781228893594884">‏سيتم قفل علامات التبويب في وضع التصفّح المتخفي عند إغلاق Chrome</translation>
 <translation id="7221869452894271364">إعادة تحميل هذه الصفحة</translation>
@@ -1718,6 +1721,7 @@
 <translation id="7998918019931843664">إعادة فتح علامة التبويب المغلقة</translation>
 <translation id="8001245658307297681">يتم الآن عرض ملف على الجهاز</translation>
 <translation id="8004582292198964060">المتصفّح</translation>
+<translation id="8006630792898017994">‏مفتاح المسافة أو مفتاح التبويب (Tab)</translation>
 <translation id="8023190977980579548">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة وتم اختيارها مع علامات تبويب أخرى في "وضع التصفّح المتخفي" وتشارك محتواها</translation>
 <translation id="8025972204417227828">إضافة اختصار جديد</translation>
 <translation id="8027863900915310177">اختيار مكان التنزيل</translation>

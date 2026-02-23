@@ -1233,6 +1233,7 @@
 <translation id="6202812185118613467">სინქრონიზაციის დასაწყებად ხელახლა შედით სისტემაში</translation>
 <translation id="6204781143409202534">Chrome-მა აღმოაჩინა სავარაუდო სპამი <ph name="DOMAIN" />-დან.</translation>
 <translation id="6205314730813004066">სარეკლამო კონფიდენციალურობა</translation>
+<translation id="6210282067670792090">მისამართთა ზოლში გამოიყენეთ კლავიატურის ეს მალსახმობი საძიებო სისტემებისა თუ საიტებში ძიების მალსახმობებთან ერთად</translation>
 <translation id="6210748933810148297">არ ხართ <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">მიმდინარეობს ამ გვერდის გადახედვა</translation>
 <translation id="6212567362666004597">ჩანართის დამატება ჯგუფში</translation>
@@ -1356,6 +1357,7 @@
 <translation id="6647441008198474441">თქვენ მიერ მონახულებული URL-ები ეგზავნება Google-ს იმის პროგნოზირებისთვის, თუ რომელი საიტების მონახულებას მოისურვებთ შემდგომში</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> სხვა}other{<ph name="CONTACT_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> სხვა}}</translation>
 <translation id="6649642165559792194">სურათის გადახედვა <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">ჩანართი</translation>
 <translation id="6661521899577697780">Chrome Finds-ზე ცალსახა თანხმობის გვერდი გაიხსნა ნახევარ სიმაღლეზე</translation>
 <translation id="666731172850799929">გახსნა <ph name="APP_NAME" />-ში</translation>
 <translation id="6669390930482049506">შემატყობინეთ</translation>
@@ -1520,6 +1522,7 @@
 <translation id="7196215469483532480">კონფიდენციალურობის სახელმძღვანელოს განმარტება გახსნილია სრულ სიმაღლეზე</translation>
 <translation id="7196455519852483601">შეგიძლიათ, მთლიანად ან ნაწილობრივ წაშალოთ ისტორია, ქუქი-ჩანაწერები, საიტების და სხვა მონაცემები</translation>
 <translation id="7197682514647286393">სწრაფად წაშალეთ დათვალიერების მონაცემები</translation>
+<translation id="719791532916917144">კლავიატურის მალსახმობი</translation>
 <translation id="7207760545532569765">ჩანართების (<ph name="TAB_COUNT" />), როგორც ფონური რეჟიმის ჩანართების ახალი ჯგუფის აღდგენა.</translation>
 <translation id="7217781228893594884">ინკოგნიტო ჩანართები ჩაიკეტება, როცა Chrome-იდან გახვალთ</translation>
 <translation id="7221869452894271364">ამ გვერდის ხელახლა ჩატვირთვა</translation>
@@ -1718,6 +1721,7 @@
 <translation id="7998918019931843664">დახურული ჩანართის ხელახლა გახსნა</translation>
 <translation id="8001245658307297681">თქვენ ათვალიერებთ ადგილობრივ ფაილს</translation>
 <translation id="8004582292198964060">ბრაუზერი</translation>
+<translation id="8006630792898017994">შორისი ან Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, არჩეულია რამდენიმე ჩამაგრებული ინკოგნიტო ჩანართი, რომლებიც აზიარებს კონტენტს</translation>
 <translation id="8025972204417227828">ახლის დამატება</translation>
 <translation id="8027863900915310177">აირჩიეთ, სად გსურთ ჩამოტვირთვა</translation>

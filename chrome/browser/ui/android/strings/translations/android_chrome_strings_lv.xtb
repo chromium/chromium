@@ -1231,6 +1231,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="6202812185118613467">Lai sāktu sinhronizēšanu, pierakstieties vēlreiz.</translation>
 <translation id="6204781143409202534">Chrome noteica iespējami nevēlamu saturu no domēna <ph name="DOMAIN" /></translation>
 <translation id="6205314730813004066">Reklāmu konfidencialitāte</translation>
+<translation id="6210282067670792090">Izmantojiet šo īsinājumtaustiņu kopā ar adreses joslā ievadītām meklētājprogrammas saīsnēm vai saīsnēm, kas ir paredzētas meklēšanai konkrētā vietnē</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> nav mana e-pasta adrese</translation>
 <translation id="6211386937064921208">Notiek šīs lapas priekšskatīšana</translation>
 <translation id="6212567362666004597">Pievienot cilni grupai</translation>
@@ -1354,6 +1355,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6647441008198474441">Uzņēmumam Google tiek sūtīti jūsu apmeklētie vietrāži URL, lai prognozētu, kuras vietnes jūs varētu apmeklēt turpmāk.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}zero{<ph name="CONTACT_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />… un vēl <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Priekšskatīt attēlu <ph name="BEGIN_NEW" />Jauns<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Cilne</translation>
 <translation id="6661521899577697780">Funkcijas “Chrome Finds” izvēles ekrāna apakšdaļas lapa ir atvērta pusekrāna augstumā</translation>
 <translation id="666731172850799929">Atvērt lietotnē <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Paziņot man</translation>
@@ -1517,6 +1519,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7196215469483532480">Paskaidrojums par konfidencialitātes ceļvedi ir atvērts pilna ekrāna augstumā</translation>
 <translation id="7196455519852483601">Varat dzēst daļu vēstures, sīkfailu, vietņu datu vai visus šos datus un citus datus</translation>
 <translation id="7197682514647286393">Ātra pārlūkošanas datu dzēšana</translation>
+<translation id="719791532916917144">Īsinājumtaustiņi</translation>
 <translation id="7207760545532569765">Atjaunot cilnes kā jaunas fona cilnes. Ciļņu skaits ir <ph name="TAB_COUNT" />.</translation>
 <translation id="7217781228893594884">Aizverot pārlūku Chrome, inkognito režīma cilnes tiks bloķētas.</translation>
 <translation id="7221869452894271364">Pārlādēt šo lapu</translation>
@@ -1715,6 +1718,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7998918019931843664">Vēlreiz atvērt aizvērto cilni</translation>
 <translation id="8001245658307297681">Jūs skatāt lokālu failu.</translation>
 <translation id="8004582292198964060">Pārlūkprogramma</translation>
+<translation id="8006630792898017994">Atstarpe vai tabulēšanas taustiņš</translation>
 <translation id="8023190977980579548">Piespraustā inkognito cilne <ph name="TAB_TITLE" /> ir viena no vairākām atlasītām cilnēm; tās saturs tiek kopīgots</translation>
 <translation id="8025972204417227828">Pievienot jaunu</translation>
 <translation id="8027863900915310177">Izvēlieties lejupielādes vietu</translation>

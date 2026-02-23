@@ -1231,6 +1231,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="6202812185118613467">Accedi di nuovo per avviare la sincronizzazione</translation>
 <translation id="6204781143409202534">Chrome ha rilevato possibile spam da <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Privacy per gli annunci</translation>
+<translation id="6210282067670792090">Nella barra degli indirizzi, utilizza questa scorciatoia da tastiera con le scorciatoie per motori di ricerca e ricerca su sito</translation>
 <translation id="6210748933810148297">Non sei <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Visualizzazione dell'anteprima della pagina</translation>
 <translation id="6212567362666004597">Aggiungi scheda a gruppo</translation>
@@ -1354,6 +1355,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6647441008198474441">Gli URL che visiti vengono inviati a Google per prevedere quali siti potresti visitare in futuro</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 e altri <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Anteprima immagine <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Scheda</translation>
 <translation id="6661521899577697780">Attivazione di Chrome Finds aperta nella parte inferiore dello schermo</translation>
 <translation id="666731172850799929">Apri in <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Avvisami</translation>
@@ -1517,6 +1519,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7196215469483532480">Spiegazione della Guida alla privacy aperta a schermo intero</translation>
 <translation id="7196455519852483601">Puoi eliminare in parte o tutti i dati della cronologia, cookie, dati dei siti e altro ancora</translation>
 <translation id="7197682514647286393">Elimina rapidamente i dati di navigazione</translation>
+<translation id="719791532916917144">Scorciatoia da tastiera</translation>
 <translation id="7207760545532569765">Ripristina <ph name="TAB_COUNT" /> schede come nuove schede in background.</translation>
 <translation id="7217781228893594884">Le schede di navigazione in incognito verranno bloccate quando uscirai da Chrome</translation>
 <translation id="7221869452894271364">Ricarica questa pagina</translation>
@@ -1715,6 +1718,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7998918019931843664">Riapri la scheda chiusa</translation>
 <translation id="8001245658307297681">Stai visualizzando un file locale</translation>
 <translation id="8004582292198964060">Browser</translation>
+<translation id="8006630792898017994">Spazio o Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, schede Incognito condivise bloccate selezionate</translation>
 <translation id="8025972204417227828">Aggiungi nuova</translation>
 <translation id="8027863900915310177">Scegli dove effettuare il download</translation>

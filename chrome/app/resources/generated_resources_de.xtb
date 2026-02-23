@@ -9841,7 +9841,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="7697109152153663933">Auf „Passwörter und &amp;Autofill“ klicken</translation>
 <translation id="769824636077131955">Dieses Dokument ist zu groß für eine Sicherheitsprüfung. Du kannst Dokumente bis zu einer Größe von 50 MB ausdrucken.</translation>
 <translation id="7698507637739331665">Einige Elemente sind blockiert</translation>
-<translation id="7700176975240938448">Einfach mit <ph name="FOCUS_TOGGLE_HOTKEY" /> öffnen</translation>
 <translation id="7700516433658473670">Drucker und Scanner</translation>
 <translation id="7700873336634517379">Nein, dieses Profil für die Bildungseinrichtung verwenden</translation>
 <translation id="7701040980221191251">Keine</translation>
@@ -11472,6 +11471,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8781834595282316166">Neuer Tab in Gruppe</translation>
 <translation id="8781980678064919987">Beim Zuklappen herunterfahren</translation>
 <translation id="8782565991310229362">Start der Kiosk-App abgebrochen</translation>
+<translation id="8783171585655659524">Screenshot hinzufügen</translation>
 <translation id="8783834180813871000">Gib den Kopplungscode ein und tippe dann auf die Eingabetaste.</translation>
 <translation id="8784626084144195648">Gruppendurchschnitt</translation>
 <translation id="8785622406424941542">Eingabestift</translation>

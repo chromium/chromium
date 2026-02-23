@@ -1231,6 +1231,7 @@
 <translation id="6202812185118613467">עליך להיכנס שוב כדי להתחיל את הסנכרון</translation>
 <translation id="6204781143409202534">‏‫Chrome זיהה משהו שנראה כמו ספאם מהכתובת <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">פרטיות בפרסום</translation>
+<translation id="6210282067670792090">בסרגל הכתובות, צריך להשתמש במקש הקיצור הזה בשילוב עם קיצורי דרך למנועי חיפוש ולחיפוש באתרים.</translation>
 <translation id="6210748933810148297">אינך <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">מוצגת תצוגה מקדימה של הדף</translation>
 <translation id="6212567362666004597">הוספת הכרטיסייה לקבוצה</translation>
@@ -1354,6 +1355,7 @@
 <translation id="6647441008198474441">‏כתובות URL שבהן ביקרת יישלחו אל Google כדי לחזות את האתרים הבאים שאליהם תתבצע כניסה על ידך</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוסף}one{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוספים}two{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוספים}other{‏<ph name="CONTACT_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> נוספים}}</translation>
 <translation id="6649642165559792194">הצגת התמונה בתצוגה מקדימה <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6661521899577697780">‏ההצעה להצטרפות ל-Chrome Finds נפתחה בחצי גובה</translation>
 <translation id="666731172850799929">פתיחה ב-<ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">אני רוצה לקבל התראות</translation>
@@ -1517,6 +1519,7 @@
 <translation id="7196215469483532480">ההסבר על המדריך בנושא פרטיות נפתח בגובה מלא</translation>
 <translation id="7196455519852483601">‏אפשר למחוק חלק מההיסטוריה, קובצי ה-Cookie, נתוני האתרים ונתונים נוספים. אפשר גם לבחור למחוק את הכול</translation>
 <translation id="7197682514647286393">מחיקה מהירה של נתוני הגלישה</translation>
+<translation id="719791532916917144">מקש קיצור</translation>
 <translation id="7207760545532569765">שחזור של <ph name="TAB_COUNT" /> כרטיסיות ככרטיסיות חדשות ברקע.</translation>
 <translation id="7217781228893594884">‏כרטיסיות פרטיות ננעלות כשסוגרים את Chrome</translation>
 <translation id="7221869452894271364">רענון הדף</translation>
@@ -1715,6 +1718,7 @@
 <translation id="7998918019931843664">פתיחה מחדש של כרטיסייה שנסגרה</translation>
 <translation id="8001245658307297681">מוצג לך קובץ מקומי</translation>
 <translation id="8004582292198964060">דפדפן</translation>
+<translation id="8006630792898017994">‏מקש הרווח או Tab</translation>
 <translation id="8023190977980579548">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מוצמדת מתוך סדרת כרטיסיות שנבחרו והתוכן בה משותף</translation>
 <translation id="8025972204417227828">הוספת מקש קיצור חדש</translation>
 <translation id="8027863900915310177">בחירת המיקום להורדה</translation>

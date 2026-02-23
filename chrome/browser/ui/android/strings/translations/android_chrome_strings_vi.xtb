@@ -1231,6 +1231,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6202812185118613467">Đăng nhập lại để bắt đầu đồng bộ hoá</translation>
 <translation id="6204781143409202534">Chrome phát hiện thấy thông báo có thể là thông báo rác từ <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Quyền riêng tư trong quảng cáo</translation>
+<translation id="6210282067670792090">Trong thanh địa chỉ, hãy dùng phím tắt này với các lối tắt để tìm kiếm bằng công cụ tìm kiếm và tìm kiếm trên trang web</translation>
 <translation id="6210748933810148297">Không phải là <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Đang xem trước trang này</translation>
 <translation id="6212567362666004597">Thêm thẻ vào nhóm</translation>
@@ -1354,6 +1355,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6647441008198474441">Các URL bạn truy cập sẽ được gửi cho Google nhằm dự đoán những trang web có thể sắp tới bạn sẽ truy cập</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> tùy chọn khác}other{<ph name="CONTACT_PREVIEW" />\u2026 và <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> tùy chọn khác}}</translation>
 <translation id="6649642165559792194">Xem trước hình ảnh <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Thẻ</translation>
 <translation id="6661521899577697780">Đã mở bảng chọn tham gia Chrome Finds trên một nửa màn hình</translation>
 <translation id="666731172850799929">Mở trong <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Thông báo cho tôi</translation>
@@ -1517,6 +1519,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7196215469483532480">Đã mở nội dung giải thích hướng dẫn về quyền riêng tư trên toàn màn hình</translation>
 <translation id="7196455519852483601">Bạn có thể xoá một số hoặc toàn bộ nhật ký, cookie, dữ liệu trang web và các dữ liệu khác</translation>
 <translation id="7197682514647286393">Xoá nhanh dữ liệu duyệt web</translation>
+<translation id="719791532916917144">Phím tắt</translation>
 <translation id="7207760545532569765">Khôi phục <ph name="TAB_COUNT" /> thẻ dưới dạng các thẻ nền mới.</translation>
 <translation id="7217781228893594884">Các thẻ ẩn danh sẽ bị khoá khi bạn rời khỏi Chrome</translation>
 <translation id="7221869452894271364">Tải lại trang này</translation>
@@ -1715,6 +1718,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7998918019931843664">Mở lại thẻ đã đóng</translation>
 <translation id="8001245658307297681">Bạn đang xem một tệp trên máy</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>
+<translation id="8006630792898017994">Phím cách hoặc phím Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, Thẻ ẩn danh đang chia sẻ được ghim và được chọn cùng với nhiều thẻ khác</translation>
 <translation id="8025972204417227828">Thêm mới</translation>
 <translation id="8027863900915310177">Chọn vị trí lưu tệp tải xuống</translation>

@@ -9868,7 +9868,6 @@
 <translation id="7697109152153663933">Натисніть "Автозаповнення й паролі"</translation>
 <translation id="769824636077131955">Не вдається перевірити безпеку цього документа, оскільки він завеликий. Ви можете друкувати документи розміром не більш як 50 МБ.</translation>
 <translation id="7698507637739331665">Деякі елементи заблоковано</translation>
-<translation id="7700176975240938448">Користуйтеся комбінацією клавіш <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Принтери й сканери</translation>
 <translation id="7700873336634517379">Ні, використовувати цей профіль для закладу освіти</translation>
 <translation id="7701040980221191251">Немає</translation>
@@ -11502,6 +11501,7 @@
 <translation id="8781834595282316166">Нова вкладка в групі</translation>
 <translation id="8781980678064919987">Завершувати роботу, коли кришка закрита</translation>
 <translation id="8782565991310229362">Скасовано запуск програми для терміналів.</translation>
+<translation id="8783171585655659524">Включити знімок екрана</translation>
 <translation id="8783834180813871000">Введіть код підключення через Bluetooth і натисніть Return або Enter.</translation>
 <translation id="8784626084144195648">Сукупне середнє значення</translation>
 <translation id="8785622406424941542">Стилус</translation>

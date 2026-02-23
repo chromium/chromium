@@ -1232,6 +1232,7 @@
 <translation id="6202812185118613467">برای شروع همگام‌سازی دوباره به سیستم وارد شوید</translation>
 <translation id="6204781143409202534">‏‫Chrome هرزنامه احتمالی از <ph name="DOMAIN" /> شناسایی کرده است.</translation>
 <translation id="6205314730813004066">حریم خصوصی آگهی</translation>
+<translation id="6210282067670792090">در نوار نشانی، از این میان‌بر صفحه‌کلید با میان‌برهای موتورهای جستجو و جستجوی سایت استفاده کنید</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ایمیل شما نیست؟</translation>
 <translation id="6211386937064921208">درحال پیش‌نمایش این صفحه</translation>
 <translation id="6212567362666004597">افزودن زبانه به گروه</translation>
@@ -1355,6 +1356,7 @@
 <translation id="6647441008198474441">‏نشانی‌های وبی که بازدید می‌کنید به Google ارسال می‌شود تا پیش‌بینی شود ممکن است بعداً از چه سایت‌هایی بازدید کنید</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> گزینه تماس دیگر}one{‏<ph name="CONTACT_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> گزینه تماس دیگر}other{‏<ph name="CONTACT_PREVIEW" />\u2026 و <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> گزینه تماس دیگر}}</translation>
 <translation id="6649642165559792194">پیش‌نمایش تصویر <ph name="BEGIN_NEW" />جدید<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">برگه</translation>
 <translation id="6661521899577697780">‏موافقت کردن با «یافته‌های Chrome» به‌صورت نیمه باز شده است</translation>
 <translation id="666731172850799929">باز کردن در <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">مطلع شوم</translation>
@@ -1519,6 +1521,7 @@
 <translation id="7196215469483532480">شرح «راهنمای حریم خصوصی» به‌صورت کامل باز شده است</translation>
 <translation id="7196455519852483601">می‌توانید همه یا بخشی‌از سابقه، کوکی‌ها، داده‌های سایت، و موارد دیگر را حذف کنید</translation>
 <translation id="7197682514647286393">داده‌های مرور کردن را سریعاً حذف کنید</translation>
+<translation id="719791532916917144">میان‌بر صفحه‌کلید</translation>
 <translation id="7207760545532569765">بازیابی <ph name="TAB_COUNT" /> برگه به‌عنوان برگه‌های جدید پس‌زمینه.</translation>
 <translation id="7217781228893594884">‏پس‌از خروج از Chrome، برگه‌های ناشناس قفل خواهد شد</translation>
 <translation id="7221869452894271364">بار کردن مجدد این صفحه</translation>
@@ -1717,6 +1720,7 @@
 <translation id="7998918019931843664">بازکردن مجدد برگه‌های بسته شده</translation>
 <translation id="8001245658307297681">درحال مشاهده فایل محلی هستید</translation>
 <translation id="8004582292198964060">مرورگر</translation>
+<translation id="8006630792898017994">فضا یا زبانه</translation>
 <translation id="8023190977980579548">‫<ph name="TAB_TITLE" />، زبانه ناشناس هم‌رسانی سنجاق‌شده چندانتخابی</translation>
 <translation id="8025972204417227828">افزودن مورد جدید</translation>
 <translation id="8027863900915310177">انتخاب مکان بارگیری</translation>

@@ -1231,6 +1231,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="6202812185118613467">Inicia sesión de novo para comezar coa sincronización</translation>
 <translation id="6204781143409202534">Chrome detectou posible spam de <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Privacidade nos anuncios</translation>
+<translation id="6210282067670792090">Na barra de enderezos, utiliza esta combinación de teclas con atallos para motores de busca e a busca de sitios</translation>
 <translation id="6210748933810148297">Non es <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Mostrando unha vista previa desta páxina</translation>
 <translation id="6212567362666004597">Engadir pestana ao grupo</translation>
@@ -1354,6 +1355,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6647441008198474441">Os URL que visitas envíanse a Google para predicir os sitios que probablemente visites a continuación</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> máis}other{<ph name="CONTACT_PREVIEW" />\u2026 e <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> máis}}</translation>
 <translation id="6649642165559792194">Vista previa: imaxe <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Pestana</translation>
 <translation id="6661521899577697780">Opción de activar a función Chrome Finds está aberta a media altura</translation>
 <translation id="666731172850799929">Abrir en <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Recibir notificación</translation>
@@ -1517,6 +1519,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7196215469483532480">A explicación sobre a Guía de privacidade está aberta a pantalla completa</translation>
 <translation id="7196455519852483601">Podes eliminar, parcial ou totalmente, o teu historial, as cookies, os datos dos sitios e moito máis</translation>
 <translation id="7197682514647286393">Elimina rapidamente os datos de navegación</translation>
+<translation id="719791532916917144">Atallo de teclado</translation>
 <translation id="7207760545532569765">Restablecer <ph name="TAB_COUNT" /> pestanas como novas pestanas en segundo plano.</translation>
 <translation id="7217781228893594884">As pestanas do modo de incógnito bloquearanse cando saias de Chrome</translation>
 <translation id="7221869452894271364">Volver cargar esta páxina</translation>
@@ -1715,6 +1718,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7998918019931843664">Abre de novo a pestana pechada</translation>
 <translation id="8001245658307297681">Estás vendo un ficheiro local</translation>
 <translation id="8004582292198964060">Navegador</translation>
+<translation id="8006630792898017994">Espazo ou Tabulador</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, pestana do modo de incógnito de uso compartido fixada e multiseleccionada</translation>
 <translation id="8025972204417227828">Engadir atallo novo</translation>
 <translation id="8027863900915310177">Escolle onde queres gardar o ficheiro</translation>

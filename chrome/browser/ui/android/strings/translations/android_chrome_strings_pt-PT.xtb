@@ -1231,6 +1231,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="6202812185118613467">Inicie sessão novamente para iniciar a sincronização</translation>
 <translation id="6204781143409202534">O Chrome detetou um possível spam de <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Privacidade dos anúncios</translation>
+<translation id="6210282067670792090">Na barra de endereço, utilize este atalho de teclado com atalhos para motores de pesquisa e pesquisa no site</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> não é o seu email?</translation>
 <translation id="6211386937064921208">A pré-visualizar esta página…</translation>
 <translation id="6212567362666004597">Adicionar separador a grupo</translation>
@@ -1354,6 +1355,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6647441008198474441">Os URLs que visitar são enviados para a Google para prever os sites que pode visitar a seguir</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Pré-visualizar imagem <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Separador</translation>
 <translation id="6661521899577697780">Ativação do Chrome Finds aberta a meia altura</translation>
 <translation id="666731172850799929">Abrir no <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Notificar-me</translation>
@@ -1517,6 +1519,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7196215469483532480">Explicação do guia de privacidade aberta à altura total</translation>
 <translation id="7196455519852483601">Pode eliminar parte ou todo o seu histórico, cookies, dados de sites e muito mais</translation>
 <translation id="7197682514647286393">Elimine os dados de navegação</translation>
+<translation id="719791532916917144">Atalho de teclado</translation>
 <translation id="7207760545532569765">Restaure <ph name="TAB_COUNT" /> separadores como novos separadores em segundo plano.</translation>
 <translation id="7217781228893594884">Os separadores de navegação anónima serão bloqueados quando sair do Chrome</translation>
 <translation id="7221869452894271364">Recarregar esta página</translation>
@@ -1715,6 +1718,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7998918019931843664">Reabrir separador fechado</translation>
 <translation id="8001245658307297681">Está a ver um ficheiro local</translation>
 <translation id="8004582292198964060">Navegador</translation>
+<translation id="8006630792898017994">Espaço ou separador</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, separador de navegação anónima a partilhar fixado multisselecionado</translation>
 <translation id="8025972204417227828">Adicionar novo</translation>
 <translation id="8027863900915310177">Escolha a localização da transferência</translation>

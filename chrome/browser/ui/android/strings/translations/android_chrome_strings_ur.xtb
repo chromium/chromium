@@ -1231,6 +1231,7 @@
 <translation id="6202812185118613467">مطابقت پذیری شروع کرنے کے لیے دوبارہ سائن ان کریں</translation>
 <translation id="6204781143409202534">‏‫Chrome کو <ph name="DOMAIN" /> سے ممکنہ اسپام کا پتہ چلا۔</translation>
 <translation id="6205314730813004066">اشتہارات کی رازداری</translation>
+<translation id="6210282067670792090">ایڈریس بار میں، اس کی بورڈ شارٹ کٹ کو سرچ انجن اور سائٹ کی تلاش کے لیے شارٹ کٹ کے ساتھ استعمال کریں</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> نہیں؟</translation>
 <translation id="6211386937064921208">اس صفحہ کا پیش منظر دکھایا جا رہا ہے</translation>
 <translation id="6212567362666004597">گروپ میں ٹیب شامل کریں</translation>
@@ -1354,6 +1355,7 @@
 <translation id="6647441008198474441">‏آپ کے ملاحظہ کردہ URLs اس بات کی پیشنگوئی کرنے کے لیے Google کو بھیجے جاتے ہیں کہ آپ اگلی بار کون سی سائٹس ملاحظہ کر سکتے ہیں</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{‏<ph name="CONTACT_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}other{‏<ph name="CONTACT_PREVIEW" />\u2026 اور <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> مزید}}</translation>
 <translation id="6649642165559792194">تصویر کا پیش منظر دیکھیں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">ٹیب</translation>
 <translation id="6661521899577697780">‏‫Chrome Finds آپٹ ان آدھی اونچائی پر کھلا ہے</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> میں کھولیں</translation>
 <translation id="6669390930482049506">مجھے مطلع کریں</translation>
@@ -1517,6 +1519,7 @@
 <translation id="7196215469483532480">رازداری کی گائیڈ کی وضاحت سے متعلق معلومات مکمل اونچائی پر کھلی ہوئی ہے</translation>
 <translation id="7196455519852483601">آپ اپنی بعض یا سبھی سرگزشت، کوکیز، سائٹ ڈیٹا اور مزید کو حذف کر سکتے ہیں</translation>
 <translation id="7197682514647286393">اپنا براؤزنگ ڈیٹا جلدی سے حذف کریں</translation>
+<translation id="719791532916917144">کی بورڈ شارٹ کٹ</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> ٹیبز کو پس منظر کے نئے ٹیبز کے بطور بحال کریں۔</translation>
 <translation id="7217781228893594884">‏آپ کے Chrome چھوڑنے پر پوشیدگی ٹیبز مقفل ہو جائیں گی</translation>
 <translation id="7221869452894271364">یہ صفحہ دوبارہ لوڈ کریں</translation>
@@ -1715,6 +1718,7 @@
 <translation id="7998918019931843664">بند ٹیب دوبارہ کھولیں</translation>
 <translation id="8001245658307297681">آپ ایک مقامی فائل دیکھ رہے ہیں</translation>
 <translation id="8004582292198964060">براؤزر</translation>
+<translation id="8006630792898017994">اسپیس یا ٹیب</translation>
 <translation id="8023190977980579548">‫<ph name="TAB_TITLE" />، متعدد منتخب پن کردہ اشتراک کا پوشیدگی ٹیب</translation>
 <translation id="8025972204417227828">نیا شامل کریں</translation>
 <translation id="8027863900915310177">منتخب کریں کہ کہاں پر ڈاؤن لوڈ کرنا ہے</translation>

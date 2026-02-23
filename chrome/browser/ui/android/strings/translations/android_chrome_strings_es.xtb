@@ -1231,6 +1231,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="6202812185118613467">Vuelve a iniciar sesión para iniciar la sincronización</translation>
 <translation id="6204781143409202534">Chrome ha detectado posible spam de <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Privacidad en la publicidad</translation>
+<translation id="6210282067670792090">En la barra de direcciones, usa este atajo de teclado con atajos para buscadores y búsquedas en sitios</translation>
 <translation id="6210748933810148297">¿No eres <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Mostrando vista previa de esta página</translation>
 <translation id="6212567362666004597">Añadir pestaña al grupo</translation>
@@ -1354,6 +1355,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6647441008198474441">Las URLs que visitas se envian a Google para predecir qué sitios podrías visitar después</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}other{<ph name="CONTACT_PREVIEW" />\u2026 y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}}</translation>
 <translation id="6649642165559792194">Revisar imagen <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tabulador</translation>
 <translation id="6661521899577697780">Aceptación de Chrome Finds abierta a media altura</translation>
 <translation id="666731172850799929">Abrir en <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Notificarme</translation>
@@ -1517,6 +1519,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7196215469483532480">Explicación de la guía de privacidad abierta a altura completa</translation>
 <translation id="7196455519852483601">Puedes eliminar parte o la totalidad de tu historial, las cookies, los datos de sitios y más</translation>
 <translation id="7197682514647286393">Elimina tus datos de navegación</translation>
+<translation id="719791532916917144">Acceso directo</translation>
 <translation id="7207760545532569765">Restaurar <ph name="TAB_COUNT" /> pestañas como nuevas pestañas en segundo plano.</translation>
 <translation id="7217781228893594884">Las pestañas de incógnito se bloquearán cuando salgas de Chrome</translation>
 <translation id="7221869452894271364">Cargar página de nuevo</translation>
@@ -1715,6 +1718,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7998918019931843664">Volver a abrir pestaña cerrada</translation>
 <translation id="8001245658307297681">Estás viendo un archivo local</translation>
 <translation id="8004582292198964060">Navegador</translation>
+<translation id="8006630792898017994">Espacio o Tabulador</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, pestaña de Incógnito que comparte contenido en selección múltiple fijada</translation>
 <translation id="8025972204417227828">Añadir nueva</translation>
 <translation id="8027863900915310177">Elige dónde descargarlo</translation>

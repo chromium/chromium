@@ -2174,6 +2174,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="244231003699905658">Ógilt vistfang. Athugaðu vistfangið og reyndu aftur.</translation>
 <translation id="2442916515643169563">Skuggi texta</translation>
 <translation id="2443487764245141020">Vefsvæði þurfa hugsanlega að staðfesta tækið þitt með auðkenni</translation>
+<translation id="2444091518615234627">Sendir minni gögn til Google (til dæmis hluta vefslóða)</translation>
 <translation id="244475495405467108">Loka flipum vinstra megin</translation>
 <translation id="2444874983932528148">Haltu auðveldlega áfram þaðan sem frá var horfið</translation>
 <translation id="2445081178310039857">Rótarmöppu viðbóta er krafist.</translation>
@@ -6694,6 +6695,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5510775624736435856">Fá lýsingar á myndum frá Google</translation>
 <translation id="5511379779384092781">Mjög lág</translation>
 <translation id="5511823366942919280">Ertu viss um að þú viljir setja upp þetta tæki sem „Shark“?</translation>
+<translation id="5512511240775436189">Sendir fleiri gögn til Google (til dæmis vefslóðir, innihald síðna og fleira)</translation>
 <translation id="5512739112435045339">Losaðu um pláss í tækinu. Reyndu svo að sækja aftur</translation>
 <translation id="5513807280330619196">Reiknivél</translation>
 <translation id="5514315914873062345">Tab</translation>
@@ -6720,6 +6722,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> vill</translation>
 <translation id="5533343601674003130">PDF-þjónusta</translation>
 <translation id="5535769176698670170">Víxla við efra yfirlit</translation>
+<translation id="5537395135310061418">Verndar þig á vefnum með bestu öryggisráðstöfunum Google</translation>
 <translation id="5537725057119320332">Senda út</translation>
 <translation id="5539070192556911367">Ekki næst í Google</translation>
 <translation id="5541091577812545428">Aðgangsorði var ekki breytt</translation>
@@ -6879,6 +6882,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5639549361331209298">Endurhlaða þessa síðu, haltu inni til að sjá fleiri valkosti</translation>
 <translation id="5640133431808313291">Stjórna öryggislyklum</translation>
 <translation id="5640159004008030285">Þetta aðgangsorð er aðeins vistað í þessu tæki. Til að nota það í öðrum tækjum skaltu <ph name="BEGIN_LINK" />vista það á Google-reikningnum þínum<ph name="END_LINK" />.</translation>
+<translation id="5640322514952298438">Setur hraða vefsvæðis í forgang</translation>
 <translation id="5641608986289282154">Byrja að nota <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Myndvinnsla skjámynda</translation>
 <translation id="5641715878999557094">„<ph name="EXTENSION_NAME" />“ hefur breytt því hvaða síða birtist þegar þú smellir á heimahnappinn.</translation>
@@ -8089,6 +8093,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6494483173119160146">Óleiðréttanleg villa kom upp í tæki. Endurstilltu tækið (öllum notendagögnum verður eytt) og reyndu aftur.</translation>
 <translation id="6495266441917713704">Get ekki flutt Wi-Fi</translation>
 <translation id="6495453178162183932">Þema uppfært í sjálfgefið Chrome</translation>
+<translation id="6496542321576111907">Veitir sterkt öryggi. Þú getur valið að kveikja á viðbótareiginleikum.</translation>
 <translation id="6496641546298525838">Tækið þitt</translation>
 <translation id="6497784818439587832">Breyta skjástærð til að minnka eða stækka atriði á skjánum</translation>
 <translation id="6497789971060331894">Öfug fletting músar</translation>
@@ -9862,7 +9867,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7697109152153663933">Smelltu á „Aðgangsorð og sjálfvirk útfylling“</translation>
 <translation id="769824636077131955">Þetta skjal er of stórt fyrir öryggisathugun. Hægt er að prenta skjöl sem eru allt að 50 MB.</translation>
 <translation id="7698507637739331665">Sum atriði eru á bannlista</translation>
-<translation id="7700176975240938448">Opnaðu á auðveldan hátt með <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Prentarar og skannar</translation>
 <translation id="7700873336634517379">Nei, halda áfram að nota þennan prófíl fyrir skólann</translation>
 <translation id="7701040980221191251">Ekkert</translation>
@@ -11493,6 +11497,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8781834595282316166">Nýr flipi í hópi</translation>
 <translation id="8781980678064919987">Slökkva þegar lokið er sett niður</translation>
 <translation id="8782565991310229362">Hætt við að ræsa sjálfsalaforrit.</translation>
+<translation id="8783171585655659524">Hafa skjámynd með</translation>
 <translation id="8783834180813871000">Sláðu inn Bluetooth-pörunarkóðann og ýttu svo á Return eða Enter.</translation>
 <translation id="8784626084144195648">Uppsafnað meðaltal</translation>
 <translation id="8785622406424941542">Penni</translation>
@@ -11527,6 +11532,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8808686172382650546">Köttur</translation>
 <translation id="8809147117840417135">Ljósgrænblár</translation>
 <translation id="8811862054141704416">Aðgangur að hljóðnema í Crostini</translation>
+<translation id="8811881249098640048">Hægir á sumum ókunnugum vefsvæðum</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{Eitt aðgangsorð er aðeins vistað í þessu tæki. Vistaðu það á Google-reikningnum þínum til að nálgast það í hinum tækjunum þínum. Afritum verður einnig eytt í kjölfarið.}one{{PASSWORD_COUNT} aðgangsorð er aðeins vistað í þessu tæki. Vistaðu þau á Google-reikningnum þínum til að nálgast þau í hinum tækjunum þínum. Afritum verður einnig eytt í kjölfarið.}other{{PASSWORD_COUNT} aðgangsorð eru aðeins vistuð í þessu tæki. Vistaðu þau á Google-reikningnum þínum til að nálgast þau í hinum tækjunum þínum. Afritum verður einnig eytt í kjölfarið.}}</translation>
 <translation id="8813199641941291474">Lokað á stjórnun og endurforritun á MIDI-tækjum</translation>
 <translation id="8813698869395535039">Ekki hægt að skrá inn á <ph name="USERNAME" /></translation>

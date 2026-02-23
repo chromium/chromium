@@ -1231,6 +1231,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6202812185118613467">Senkronizasyonu başlatmak için tekrar oturum açın</translation>
 <translation id="6204781143409202534">Chrome, <ph name="DOMAIN" /> adresinden gelen olası bir spam mesajını algıladı.</translation>
 <translation id="6205314730813004066">Reklam gizliliği</translation>
+<translation id="6210282067670792090">Adres çubuğunda arama motorlarına ve site aramaya yönelik kısayolların olduğu bu klavye kısayolunu kullanın</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> değil misiniz?</translation>
 <translation id="6211386937064921208">Sayfanın önizlemesi gösteriliyor</translation>
 <translation id="6212567362666004597">Sekmeyi gruba ekle</translation>
@@ -1354,6 +1355,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="6647441008198474441">Ziyaret ettiğiniz URL'ler, daha sonra hangi siteleri ziyaret edebileceğinizi tahmin etmek için Google'a gönderilir</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> kişi daha}other{<ph name="CONTACT_PREVIEW" />\u2026 ve <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> kişi daha}}</translation>
 <translation id="6649642165559792194">Resmin önizlemesini aç <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Sekme</translation>
 <translation id="6661521899577697780">Chrome Finds etkinleştirme sayfası ekranın yarısına kadar açıldı</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> uygulamasında aç</translation>
 <translation id="6669390930482049506">Bana haber ver</translation>
@@ -1517,6 +1519,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7196215469483532480">Gizlilik kılavuzu açıklaması tam ekranda açıldı</translation>
 <translation id="7196455519852483601">Geçmişiniz, çerezleriniz, site verileriniz ve diğer öğelerinizin bir kısmını veya tamamını silebilirsiniz</translation>
 <translation id="7197682514647286393">Tarama verilerini hızlıca silin</translation>
+<translation id="719791532916917144">Klavye kısayolu</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> sekmeyi, yeni arka plan sekmeleri olarak geri yükleyin.</translation>
 <translation id="7217781228893594884">Chrome'dan ayrıldığınızda gizli sekmeler kilitlenir</translation>
 <translation id="7221869452894271364">Bu sayfayı yeniden yükle</translation>
@@ -1715,6 +1718,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7998918019931843664">Kapatılan sekmeyi yeniden aç</translation>
 <translation id="8001245658307297681">Yerel bir dosyayı görüntülüyorsunuz</translation>
 <translation id="8004582292198964060">Tarayıcı</translation>
+<translation id="8006630792898017994">Boşluk veya Sekme tuşu</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, Paylaşım Yapan Birden Çok Seçili Sabit Gizli Sekme</translation>
 <translation id="8025972204417227828">Yeni ekle</translation>
 <translation id="8027863900915310177">Nereye indirileceğini seçin</translation>

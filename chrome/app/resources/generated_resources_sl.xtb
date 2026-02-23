@@ -9874,7 +9874,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="7697109152153663933">Kliknite »Gesla in samodejno izpolnjevanje«</translation>
 <translation id="769824636077131955">Ta dokument je prevelik za varnostno preverjanje. Natisnete lahko dokumente velikosti do 50 MB.</translation>
 <translation id="7698507637739331665">Nekateri elementi so blokirani</translation>
-<translation id="7700176975240938448">Preprosto odprite s tem: <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Tiskalniki in optični bralniki</translation>
 <translation id="7700873336634517379">Ne, še naprej uporabljaj za šolo v tem profilu</translation>
 <translation id="7701040980221191251">Nič</translation>
@@ -11508,6 +11507,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="8781834595282316166">Novi zavihek v skupini</translation>
 <translation id="8781980678064919987">Zaustavitev, ko je pokrov zaprt</translation>
 <translation id="8782565991310229362">Zagon aplikacije Kiosk je preklican.</translation>
+<translation id="8783171585655659524">Vključi posnetek zaslona</translation>
 <translation id="8783834180813871000">Vnesite kodo za seznanjanje za Bluetooth in nato pritisnite Return ali Enter.</translation>
 <translation id="8784626084144195648">Kvantizacijsko povprečje</translation>
 <translation id="8785622406424941542">Pisalo</translation>

@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">ເກັບກຸ່ມໄວ້</translation>
 <translation id="1853692000353488670">ແຖບບໍ່ເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="1854463785401910334">ຊອກຫາແຖບທີ່ເປີດຢູ່</translation>
+<translation id="1860609647735325606">ອະທິບາຍດ້ວຍ Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{ລະຫັດຜ່ານ {position} ຈາກທັງໝົດ {count} ລາຍການ}other{ລະຫັດຜ່ານ {position} ຈາກທັງໝົດ {count} ລາຍການ}}</translation>
 <translation id="1861262398884155592">ໂຟນເດີນີ້ຫວ່າງເປົ່າ</translation>
 <translation id="1864266050569350424">ຢູ່ເວັບໄຊທີ່ທ່ານບັນທຶກລະຫັດຜ່ານໄວ້, ໃຫ້ແຕະຊ່ອງຂໍ້ມູນລະຫັດຜ່ານສຳລັບເຂົ້າສູ່ລະບົບ.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">ເປີດທັງຫມົດ</translation>
 <translation id="2536991091671391962">ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຢູ່ອຸປະກອນໃດກໍໄດ້. ພວກມັນຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google ສຳລັບ <ph name="EMAIL" /> ແລ້ວ.</translation>
 <translation id="2538103551183528357">ລະຫັດຜ່ານແບບເຊື່ອງ</translation>
+<translation id="2538705697765638552">ບັນທຶກຂໍ້ມູນຂອງທ່ານ ແລະ ເຮັດສິ່ງຕ່າງໆໃຫ້ສຳເລັດໄວຂຶ້ນ ເຊັ່ນ: ການຕື່ມຂໍ້ມູນໃສ່ແບບຟອມໃນຜະລິດຕະພັນຕ່າງໆຂອງ Google. ທ່ານສາມາດຈັດການຂໍ້ມູນຂອງທ່ານໃນ Google Wallet ສຳລັບ <ph name="USER_EMAIL" /> ໄດ້.</translation>
 <translation id="2539748786028143624">ເປີດການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນ…</translation>
 <translation id="2540111494300686866">ລະງັບກ່ອງໂຕ້ຕອບ</translation>
 <translation id="2542268842667970959">ເຊື່ອງ "ການກວດສອບຄວາມປອດໄພ"</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, {EMAIL}}other{ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, {EMAIL}}}</translation>
 <translation id="2791174088547598693">ເພີ່ມລະຫັດຜ່ານ…</translation>
 <translation id="2793703503584038325">ເລືອກລະຫັດຜ່ານແລ້ວແຕະໄອຄອນ "ແບ່ງປັນ"</translation>
+<translation id="2793804887899597849">ບັນທຶກຂໍ້ມູນໃສ່ໃນອຸປະກອນເທົ່ານັ້ນ</translation>
 <translation id="2797029671965852011">ສະແດງປະຫວັດ</translation>
 <translation id="2797302972324086597">ລະຫັດປະເທດ</translation>
 <translation id="2798263827270599246">ຮູບແບບສີສັນເລີ່ມຕົ້ນ</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">ຊອກຫາດ້ວຍ Lens</translation>
 <translation id="3575426792457739946">ລາຍຊື່ມີໂປຣໄຟລ໌ທີ່ໂຫຼດທັງໝົດ.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, ເຊິ່ງຈັດການໂດຍອົງກອນຂອງທ່ານ.</translation>
+<translation id="3580448612293054698">ອັບເດດ <ph name="ENTITY_TYPE" /> ບໍ?</translation>
 <translation id="3581564640715911333">ໃຫ້ການແປໜ້າຕ່າງໆເປັນພາສາອື່ນ</translation>
 <translation id="3587482841069643663">ທັງໝົດ</translation>
 <translation id="3587885837929752825">ອົງກອນຂອງທ່ານຈຳກັດສິ່ງທີ່ທ່ານສາມາດບັນທຶກໃນບັນຊີ Google ຂອງທ່ານ.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">ນຳເຂົ້າ</translation>
 <translation id="3857113360369572832">ເປີດ <ph name="BEGIN_BOLD" />ການຕັ້ງຄ່າ Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">ຊື່</translation>
+<translation id="386224966259596343">ທ່ານຈະມີໂອກາດບັນທຶກຂໍ້ມູນນີ້ໃສ່ໃນ Wallet ເມື່ອທ່ານຕື່ມຂໍ້ມູນໃສ່ແບບຟອມທີ່ກ່ຽວຂ້ອງໃນເທື່ອຕໍ່ໄປ.</translation>
 <translation id="3868495844258915202">ສະແດງ URL ແບບເຕັມ</translation>
 <translation id="3875783148670536197">ສະແດງວິທີໃຫ້ຂ້ອຍເບິ່ງ</translation>
 <translation id="3878657761594430423">ຕົວຈັບຊີດ</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">ສະແດງຂໍ້ມູນຊ່ວຍເຫຼືອ</translation>
 <translation id="4095483462103784441">ສ້າງກຸ່ມແຖບໃໝ່</translation>
 <translation id="4099756562043439968">ຕັ້ງຄ່າການແຈ້ງເຕືອນ</translation>
+<translation id="4101867642407836771">ໃນ Google Wallet ສຳລັບ <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">ກວດຫາ ແລະ ເຕືອນທ່ານກ່ຽວກັບເຫດການອັນຕະລາຍເມື່ອພວກມັນເກີດຂຶ້ນ.</translation>
 <translation id="4111985840824673503">ໝາຍທັງໝົດວ່າອ່ານແລ້ວ</translation>
 <translation id="411254640334432676">ດາວ​ໂຫລດ​ບໍ່​ສໍາ​ເລັດ​.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">ປ່ຽນລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="4120936477286528673">ເວັບໄຊກຳລັງພະຍາຍາມເປີດແອັບພລິເຄຊັນອື່ນຊໍ້າໄປມາຫຼາຍເທື່ອ.</translation>
 <translation id="4121993058175073134">ເພື່ອສົ່ງຂໍ້ມູນສົ່ງອອກເຄືອຂ່າຍ, ກະລຸນາປັບຕັ້ງຄ່າບັນຊີອີເມວຂອງທ່ານຢູ່ໃນແອັບການຕັ້ງຄ່າ.</translation>
+<translation id="4129768137228347731">ບັນທຶກ <ph name="ENTITY_TYPE" /> ບໍ?</translation>
 <translation id="4133139945030148655">ທ່ານພ້ອມແລ້ວ</translation>
 <translation id="4133265950310064865">ການປົກປ້ອງຂັ້ນສູງ</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -911,6 +918,7 @@
 <translation id="4405320213589929829">ໃຊ້ທີ່ຢູ່ຢູ່ໜ້າເວັບເພື່ອໂດຂໍ້ມູນ ແລະ ເສັ້ນທາງ.</translation>
 <translation id="441218095371040430">ໃຊ້ແປ້ນພິມ</translation>
 <translation id="4415276339145661267">ຈັດການບັນຊີ Google ຂອງທ່ານ</translation>
+<translation id="4416582610654027550">ພິມ URL ທີ່ຖືກຕ້ອງ</translation>
 <translation id="4420409367264901497">ແກ້ໄຂບຸກມາກ</translation>
 <translation id="4425365312778464779">ບັນຊີນີ້ມີການຈັດການ</translation>
 <translation id="4430277756566635951"><ph name="EMAIL" /> ເລືອກຢູ່ຕອນນີ້. ເລືອກບັນຊີ.</translation>
@@ -1236,6 +1244,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5559567453458728487">ການວັດແທກການປ່ຽນຄ່າໜ່ວຍຖືກພົບຢູ່ເວັບ</translation>
 <translation id="556042886152191864">ປຸ່ມ</translation>
 <translation id="5565871407246142825">ບັດ​ເຄຣ​ດິດ</translation>
+<translation id="5566623128829375608">ບັນທຶກໃສ່ໃນອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="5567439033041178034">ຮຽນ​ຮູ້​ເພີ່ມ​ເຕີມ​</translation>
 <translation id="5578795271662203820">ຄົ້ນ​ຫາ <ph name="SEARCH_ENGINE" /> ​ຮູບ​ນີ້</translation>
 <translation id="5579012242779565775">ເຊື່ອງ ລາຍຊື່ການອ່ານ</translation>
@@ -2178,6 +2187,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8829809207373502270">ກະແຈຜ່ານນີ້ບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ. ເນື່ອງຈາກຖືກລຶບຈາກ <ph name="WEBSITE" /> ແລະ ຈະຖືກລຶບຈາກບ່ອນນີ້ໃນໄວໆນີ້. <ph name="BEGIN_LINK" />ກ່ຽວກັບກະແຈຜ່ານ<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">ປິດແຖບທີ່ບໍ່ມີການນຳໃຊ້ທັງໝົດ</translation>
 <translation id="8837654851594567190">ຈັດຮຽງຕາມຜູ້ເຜີຍແຜ່</translation>
+<translation id="884351711508006491">ລະບົບຈະບັນທຶກຂໍ້ມູນຂອງທ່ານໃສ່ໃນອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="8844136307393039959">ລາຄາຫຼຸດລົງສຳລັບສິນຄ້າທີ່ທ່ານຕິດຕາມ</translation>
 <translation id="8848286253339013170">ກຳລັງບັນທຶກຮູບໃນ Google ຮູບພາບສຳລັບ <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">ເຊື່ອງໄວ້</translation>

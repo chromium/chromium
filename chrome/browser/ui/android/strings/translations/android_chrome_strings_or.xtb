@@ -1231,6 +1231,7 @@
 <translation id="6202812185118613467">ସିଙ୍କ ଆରମ୍ଭ କରିବା ପାଇଁ ପୁଣି ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="6204781143409202534">Chrome <ph name="DOMAIN" />ରୁ ସମ୍ଭାବ୍ୟ ସ୍ପାମର ଚିହ୍ନଟ କରିଛି।</translation>
 <translation id="6205314730813004066">ବିଜ୍ଞାପନ ଗୋପନୀୟତା</translation>
+<translation id="6210282067670792090">ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ଏବଂ ସାଇଟ ସର୍ଚ୍ଚ ପାଇଁ ଠିକଣା ବାରରେ ସର୍ଟକଟଗୁଡ଼ିକ ସହ ଏହି କୀବୋର୍ଡ ସର୍ଟକଟ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ନୁହେଁ?</translation>
 <translation id="6211386937064921208">ଏହି ପୃଷ୍ଠା ପ୍ରିଭ୍ୟୁ କରାଯାଉଛି</translation>
 <translation id="6212567362666004597">ଗୋଷ୍ଠୀରେ ଟାବ ଯୋଗ କରନ୍ତୁ</translation>
@@ -1353,6 +1354,7 @@
 <translation id="6647441008198474441">ପରବର୍ତ୍ତୀ ସମୟରେ ଆପଣ କେଉଁ ସାଇଟଗୁଡ଼ିକୁ ଭିଜିଟ କରିପାରନ୍ତି ତାହାର ପୂର୍ବାନୁମାନ କରିବା ପାଇଁ ଆପଣ ଭିଜିଟ କରିଥିବା URLଗୁଡ଼ିକ Googleକୁ ପଠାଯାଏ</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ଏବଂ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ଅଧିକ}other{<ph name="CONTACT_PREVIEW" />\u2026 ଏବଂ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ଅଧିକ}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />ନୂଆ<ph name="END_NEW" /> ଛବିର ପୂର୍ବାବଲୋକନ କରନ୍ତୁ</translation>
+<translation id="6659594942844771486">ଟାବ୍</translation>
 <translation id="6661521899577697780">Chrome Finds ଅପ୍ଟ-ଇନକୁ ଅଧା ଖୋଲାଯାଇଛି</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />ରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="6669390930482049506">ମୋତେ ସୂଚିତ କରନ୍ତୁ</translation>
@@ -1516,6 +1518,7 @@
 <translation id="7196215469483532480">ଗୋପନୀୟତା ଗାଇଡର ବ୍ୟାଖ୍ୟା ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲିଛି</translation>
 <translation id="7196455519852483601">ଆପଣ ଆପଣଙ୍କର କିଛି କିମ୍ବା ସମସ୍ତ ଇତିହାସ, କୁକୀ, ସାଇଟ ଡାଟା ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ଡିଲିଟ କରିପାରିବେ</translation>
 <translation id="7197682514647286393">ବ୍ରାଉଜିଂ ଡାଟା ଶୀଘ୍ର ଡିଲିଟ କରନ୍ତୁ</translation>
+<translation id="719791532916917144">କୀବୋର୍ଡ ସର୍ଟକଟ୍</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" />ଟି ଟାବକୁ ନୂଆ ପୃଷ୍ଠପଟ ଟାବଗୁଡ଼ିକ ଭାବେ ରିଷ୍ଟୋର କରନ୍ତୁ।</translation>
 <translation id="7217781228893594884">ଆପଣ Chromeରୁ ବାହାରି ଯିବା ସମୟରେ ଇନକଗ୍ନିଟୋ ଟାବଗୁଡ଼ିକ ଲକ ହୋଇଯିବ</translation>
 <translation id="7221869452894271364">ଏହି ପୃଷ୍ଠାଟି ପୁନଃଲୋଡ୍ କରନ୍ତୁ</translation>
@@ -1714,6 +1717,7 @@
 <translation id="7998918019931843664">ବନ୍ଦ ହୋଇଥିବା ଟାବ୍ ପୁଣି ଖୋଲନ୍ତୁ</translation>
 <translation id="8001245658307297681">ଆପଣ ଏକ ସ୍ଥାନୀୟ ଫାଇଲକୁ ଭ୍ୟୁ କରୁଛନ୍ତି</translation>
 <translation id="8004582292198964060">ବ୍ରାଉଜର</translation>
+<translation id="8006630792898017994">ସ୍ପେସ୍ କିମ୍ବା ଟାବ୍</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, ମଲ୍ଟିସିଲେକ୍ଟେଡ ପିନ ହୋଇଥିବା ସେୟାର କରୁଥିବା ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="8025972204417227828">ନୂଆ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8027863900915310177">କେଉଁଠାରେ ଡାଉନଲୋଡ୍ କରିବେ ତାହା ବାଛନ୍ତୁ</translation>

@@ -9855,7 +9855,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="7697109152153663933">Valitse Salasanat ja automaattinen täyttö</translation>
 <translation id="769824636077131955">Dokumentti on liian iso turvatarkistukseen. Voit tulostaa korkeintaan 50 Mt:n kokoisia dokumentteja.</translation>
 <translation id="7698507637739331665">Osa kohteista on estetty</translation>
-<translation id="7700176975240938448">Avaa helposti painamalla <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Tulostimet ja skannerit</translation>
 <translation id="7700873336634517379">Ei, jatka tämän profiilin käyttöä oppilaitoksen profiilina</translation>
 <translation id="7701040980221191251">Ei mitään</translation>
@@ -11486,6 +11485,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="8781834595282316166">Uusi välilehti ryhmässä</translation>
 <translation id="8781980678064919987">Sammuta, kun kansi suljetaan</translation>
 <translation id="8782565991310229362">Kioskisovelluksen käynnistäminen peruutettiin.</translation>
+<translation id="8783171585655659524">Lisää mukaan kuvakaappaus</translation>
 <translation id="8783834180813871000">Kirjoita Bluetooth-yhdistämiskoodi ja paina sitten Return tai Enter.</translation>
 <translation id="8784626084144195648">Rajoitetun joukon keskiarvo</translation>
 <translation id="8785622406424941542">Näyttökynä</translation>

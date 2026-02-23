@@ -1231,6 +1231,7 @@
 <translation id="6202812185118613467">重新登入即可開始同步</translation>
 <translation id="6204781143409202534">Chrome 偵測到來自 <ph name="DOMAIN" /> 的疑似垃圾內容。</translation>
 <translation id="6205314730813004066">廣告隱私權設定</translation>
+<translation id="6210282067670792090">請在網址列中輸入相應的鍵盤快速鍵和搜尋捷徑，以使用搜尋引擎和網站搜尋</translation>
 <translation id="6210748933810148297">不是 <ph name="EMAIL" /> 嗎？</translation>
 <translation id="6211386937064921208">正在預覽這個網頁</translation>
 <translation id="6212567362666004597">將分頁加入群組</translation>
@@ -1354,6 +1355,7 @@
 <translation id="6647441008198474441">系統會將你造訪的網址傳送給 Google，預測你接下來可能會前往的網站</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}other{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}}</translation>
 <translation id="6649642165559792194">預覽圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">分頁</translation>
 <translation id="6661521899577697780">Chrome Finds 啟用底部功能表顯示在畫面下半部</translation>
 <translation id="666731172850799929">在「<ph name="APP_NAME" />」中開啟</translation>
 <translation id="6669390930482049506">通知我</translation>
@@ -1517,6 +1519,7 @@
 <translation id="7196215469483532480">隱私權指南說明已開啟，顯示於整個畫面</translation>
 <translation id="7196455519852483601">你可以刪除部分或全部的歷史記錄、Cookie、網站資料等等</translation>
 <translation id="7197682514647286393">快速刪除瀏覽資料</translation>
+<translation id="719791532916917144">鍵盤快速鍵</translation>
 <translation id="7207760545532569765">將 <ph name="TAB_COUNT" /> 個分頁還原為新的背景分頁。</translation>
 <translation id="7217781228893594884">系統會在你離開 Chrome 後鎖定無痕分頁</translation>
 <translation id="7221869452894271364">重新載入此頁</translation>
@@ -1715,6 +1718,7 @@
 <translation id="7998918019931843664">重新開啟先前關閉的分頁</translation>
 <translation id="8001245658307297681">目前查看的是本機檔案</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
+<translation id="8006630792898017994">空格鍵或 Tab 鍵</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />，多選的固定無痕分頁，正在分享內容</translation>
 <translation id="8025972204417227828">新增</translation>
 <translation id="8027863900915310177">選擇下載位置</translation>

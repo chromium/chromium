@@ -1232,6 +1232,7 @@
 <translation id="6202812185118613467">Συνδεθείτε ξανά για να ξεκινήσετε τον συγχρονισμό</translation>
 <translation id="6204781143409202534">Το Chrome εντόπισε πιθανό ανεπιθύμητο περιεχόμενο από τον τομέα <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Απόρρητο διαφημίσεων</translation>
+<translation id="6210282067670792090">Στη γραμμή διευθύνσεων, χρησιμοποιήστε αυτήν τη συντόμευση πληκτρολογίου με συντομεύσεις για μηχανές αναζήτησης και αναζήτηση ιστοτόπου</translation>
 <translation id="6210748933810148297">Δεν είστε ο χρήστης <ph name="EMAIL" />;</translation>
 <translation id="6211386937064921208">Πραγματοποιείται προεπισκόπηση αυτής της σελίδας</translation>
 <translation id="6212567362666004597">Προσθήκη καρτέλας σε ομάδα</translation>
@@ -1355,6 +1356,7 @@
 <translation id="6647441008198474441">Τα URL που επισκέπτεστε αποστέλλονται στο Google για την πρόβλεψη των ιστοτόπων που ενδέχεται να επισκεφτείτε στη συνέχεια.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ακόμη}other{<ph name="CONTACT_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ακόμη}}</translation>
 <translation id="6649642165559792194">Προεπισκόπηση εικόνας <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Καρτέλα</translation>
 <translation id="6661521899577697780">Το φύλλο δήλωσης συμμετοχής στο Chrome Finds άνοιξε στο μισό ύψος</translation>
 <translation id="666731172850799929">Άνοιγμα σε <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Να λαμβάνω ειδοποιήσεις</translation>
@@ -1519,6 +1521,7 @@
 <translation id="7196215469483532480">Η επεξήγηση Οδηγού απορρήτου άνοιξε σε πλήρες ύψος.</translation>
 <translation id="7196455519852483601">Μπορείτε να διαγράψετε ορισμένα ή όλα τα στοιχεία του ιστορικού, τα cookie, τα δεδομένα ιστοτόπου και άλλα</translation>
 <translation id="7197682514647286393">Γρήγορη διαγραφή δεδ. περιήγησης</translation>
+<translation id="719791532916917144">Συντόμευση πληκτρολογίου</translation>
 <translation id="7207760545532569765">Επαναφέρετε <ph name="TAB_COUNT" /> καρτέλες ως νέες καρτέλες στο παρασκήνιο.</translation>
 <translation id="7217781228893594884">Οι καρτέλες ανώνυμης περιήγησης θα κλειδώνουν όταν αποχωρείτε από το Chrome</translation>
 <translation id="7221869452894271364">Επαναφόρτωση αυτής της σελίδας</translation>
@@ -1717,6 +1720,7 @@
 <translation id="7998918019931843664">Εκ νέου άνοιγμα κλειστής καρτέλας</translation>
 <translation id="8001245658307297681">Βλέπετε ένα τοπικό αρχείο</translation>
 <translation id="8004582292198964060">Πρόγραμμα περιήγησης</translation>
+<translation id="8006630792898017994">Πλήκτρο διαστήματος ή Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, Καρφιτσωμένη καρτέλα ανώνυμης περιήγησης από πολλαπλή επιλογή που κοινοποιεί περιεχόμενο</translation>
 <translation id="8025972204417227828">Προσθήκη νέας</translation>
 <translation id="8027863900915310177">Επιλέξτε πού θα γίνει λήψη</translation>

@@ -1232,6 +1232,7 @@
 <translation id="6202812185118613467">ลงชื่อเข้าใช้อีกครั้งเพื่อเริ่มซิงค์</translation>
 <translation id="6204781143409202534">Chrome ตรวจพบสิ่งที่อาจเป็นสแปมจาก <ph name="DOMAIN" /></translation>
 <translation id="6205314730813004066">ความเป็นส่วนตัวเกี่ยวกับโฆษณา</translation>
+<translation id="6210282067670792090">ในแถบที่อยู่ ให้ใช้แป้นพิมพ์ลัดนี้พร้อมด้วยทางลัดสำหรับเครื่องมือค้นหาและ Site Search</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ไม่ใช่บัญชีที่ฉันจะใช้</translation>
 <translation id="6211386937064921208">แสดงตัวอย่างหน้าเว็บนี้</translation>
 <translation id="6212567362666004597">เพิ่มแท็บไปยังกลุ่ม</translation>
@@ -1355,6 +1356,7 @@
 <translation id="6647441008198474441">ระบบจะส่ง URL ที่คุณเข้าชมไปยัง Google เพื่อคาดคะเนเว็บไซต์ต่อไปที่คุณอาจเข้าชม</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> รายการ}other{<ph name="CONTACT_PREVIEW" />\u2026 และอีก <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> รายการ}}</translation>
 <translation id="6649642165559792194">พรีวิวรูปภาพ <ph name="BEGIN_NEW" />ใหม่<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">แท็บ</translation>
 <translation id="6661521899577697780">การเลือกรับ Chrome Finds เปิดอยู่ที่ระดับความสูงครึ่งหนึ่งของหน้าจอ</translation>
 <translation id="666731172850799929">เปิดใน <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">แจ้งเตือนฉัน</translation>
@@ -1519,6 +1521,7 @@
 <translation id="7196215469483532480">คำอธิบายคู่มือความเป็นส่วนตัวเปิดแบบเต็มหน้า</translation>
 <translation id="7196455519852483601">คุณสามารถลบประวัติการเข้าชม คุกกี้ ข้อมูลเว็บไซต์ และอื่นๆ บางส่วนหรือทั้งหมดได้</translation>
 <translation id="7197682514647286393">ลบข้อมูลการท่องเว็บอย่างรวดเร็ว</translation>
+<translation id="719791532916917144">แป้นพิมพ์ลัด</translation>
 <translation id="7207760545532569765">คืนค่า <ph name="TAB_COUNT" /> แท็บเป็นแท็บใหม่ในเบื้องหลัง</translation>
 <translation id="7217781228893594884">แท็บที่ไม่ระบุตัวตนจะล็อกเมื่อคุณออกจาก Chrome</translation>
 <translation id="7221869452894271364">โหลดหน้านี้ใหม่</translation>
@@ -1717,6 +1720,7 @@
 <translation id="7998918019931843664">เปิดแท็บที่ปิดไปแล้วขึ้นใหม่</translation>
 <translation id="8001245658307297681">คุณกำลังดูไฟล์ในเครื่อง</translation>
 <translation id="8004582292198964060">เบราว์เซอร์</translation>
+<translation id="8006630792898017994">Space หรือ Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, แท็บการแชร์ที่ไม่ระบุตัวตนที่ปักหมุดซึ่งเลือกไว้หลายแท็บ</translation>
 <translation id="8025972204417227828">เพิ่มใหม่</translation>
 <translation id="8027863900915310177">เลือกตำแหน่งที่จะดาวน์โหลด</translation>

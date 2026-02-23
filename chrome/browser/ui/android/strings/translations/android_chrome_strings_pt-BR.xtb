@@ -1233,6 +1233,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6202812185118613467">Faça login novamente para iniciar a sincronização</translation>
 <translation id="6204781143409202534">O Chrome detectou um possível spam de <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Privacidade de anúncios</translation>
+<translation id="6210282067670792090">Na barra de endereço, use essa tecla com atalhos de mecanismos de pesquisa e da pesquisa em sites</translation>
 <translation id="6210748933810148297">Não é <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Visualizando esta página</translation>
 <translation id="6212567362666004597">Adicionar guia ao grupo</translation>
@@ -1356,6 +1357,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6647441008198474441">Os URLs que você acessa são enviados ao Google para prever quais sites podem ser do seu interesse</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Visualizar imagem <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6661521899577697780">A opção de ativar o Chrome Finds foi aberta na metade do tamanho</translation>
 <translation id="666731172850799929">Abrir no <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Receber notificações</translation>
@@ -1520,6 +1522,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7196215469483532480">Explicação sobre o Guia de privacidade aberta no tamanho máximo</translation>
 <translation id="7196455519852483601">Você pode excluir alguns ou todos os dados do seu histórico, cookies, sites e muito mais</translation>
 <translation id="7197682514647286393">Exclua rapidamente seus dados de navegação</translation>
+<translation id="719791532916917144">Atalho do teclado</translation>
 <translation id="7207760545532569765">Restaurar <ph name="TAB_COUNT" /> guias como novas guias em segundo plano.</translation>
 <translation id="7217781228893594884">As guias anônimas vão ser bloqueadas quando você sair do Chrome</translation>
 <translation id="7221869452894271364">Recarregar esta página</translation>
@@ -1718,6 +1721,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7998918019931843664">Reabrir guia fechada</translation>
 <translation id="8001245658307297681">Você está visualizando um arquivo local</translation>
 <translation id="8004582292198964060">Navegador</translation>
+<translation id="8006630792898017994">Espaço ou Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, guia anônima de compartilhamento fixada e de seleção múltipla</translation>
 <translation id="8025972204417227828">Novo atalho</translation>
 <translation id="8027863900915310177">Escolha um local para fazer o download</translation>

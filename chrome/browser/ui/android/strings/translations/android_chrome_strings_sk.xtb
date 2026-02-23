@@ -1231,6 +1231,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6202812185118613467">Ak chcete spustiť synchronizáciu, znova sa prihláste</translation>
 <translation id="6204781143409202534">Chrome zistil možný spam z webu <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Ochrana súkromia pri reklamách</translation>
+<translation id="6210282067670792090">Túto klávesovú skratku používajte v paneli s adresou spolu so skratkami pre vyhľadávače a vyhľadávanie na weboch</translation>
 <translation id="6210748933810148297">Nie som <ph name="EMAIL" /></translation>
 <translation id="6211386937064921208">Je zobrazená ukážka tejto stránky</translation>
 <translation id="6212567362666004597">Pridať kartu do skupiny</translation>
@@ -1354,6 +1355,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6647441008198474441">Webové adresy, ktoré navštevujete, sa odosielajú Googlu, aby mohol vytvárať predpokladané dopyty webov, ktoré pravdepodobne navštívite</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalší}few{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalšie}many{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalšieho}other{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ďalších}}</translation>
 <translation id="6649642165559792194">Zobraziť ukážku obrázka <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Karta</translation>
 <translation id="6661521899577697780">Prihlásenie na používanie funkcie Chrome Finds je otvorené na polovičnú výšku</translation>
 <translation id="666731172850799929">Otvoriť v aplikácii <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Upozorňovať</translation>
@@ -1517,6 +1519,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7196215469483532480">Vysvetlenie sprievodcu ochranou súkromia je otvorené na celú výšku</translation>
 <translation id="7196455519852483601">Môžete odstrániť celú históriu alebo jej časť, súbory cookie, dáta webov a ďalšie položky</translation>
 <translation id="7197682514647286393">Rýchlo odstráňte dáta prehliadania</translation>
+<translation id="719791532916917144">Klávesová skratka</translation>
 <translation id="7207760545532569765">Obnovte karty (<ph name="TAB_COUNT" />) ako nové karty na pozadí.</translation>
 <translation id="7217781228893594884">Keď opustíte Chrome, karty inkognito budú uzamknuté</translation>
 <translation id="7221869452894271364">Obnoviť túto stránku</translation>
@@ -1715,6 +1718,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7998918019931843664">Znova otvoriť zavretú kartu</translation>
 <translation id="8001245658307297681">Prezeráte si miestny súbor</translation>
 <translation id="8004582292198964060">Prehliadač</translation>
+<translation id="8006630792898017994">Medzerník alebo Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, viackrát vybraná pripnutá karta inkognito na zdieľanie</translation>
 <translation id="8025972204417227828">Pridať nový</translation>
 <translation id="8027863900915310177">Vyberte, kam sa má súbor stiahnuť</translation>

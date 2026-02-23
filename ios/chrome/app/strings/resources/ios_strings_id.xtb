@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Simpan Grup</translation>
 <translation id="1853692000353488670">Tab samaran baru</translation>
 <translation id="1854463785401910334">Telusuri tab yang terbuka</translation>
+<translation id="1860609647735325606">Jelaskan dengan Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} dari {count} sandi}other{{position} dari {count} sandi}}</translation>
 <translation id="1861262398884155592">Folder ini kosong</translation>
 <translation id="1864266050569350424">Di situs tempat Anda menyimpan sandi, ketuk kolom sandi login.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Buka Semua</translation>
 <translation id="2536991091671391962">Anda dapat menggunakan sandi tersimpan di semua perangkat. Sandi disimpan ke Pengelola Sandi Google untuk <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Sandi tersembunyi</translation>
+<translation id="2538705697765638552">Simpan info Anda dan selesaikan berbagai hal lebih cepat, seperti mengisi formulir di seluruh produk Google. Anda dapat mengelola info Anda di Google Wallet untuk <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Aktifkan Perlindungan yang Ditingkatkan…</translation>
 <translation id="2540111494300686866">Sembunyikan dialog</translation>
 <translation id="2542268842667970959">Sembunyikan "Pemeriksaan Keamanan"</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Sandi disimpan di Akun Google Anda, {EMAIL}}other{Sandi disimpan di Akun Google Anda, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Tambahkan sandi…</translation>
 <translation id="2793703503584038325">Pilih sandi, lalu ketuk ikon "bagikan"</translation>
+<translation id="2793804887899597849">Info hanya disimpan ke perangkat</translation>
 <translation id="2797029671965852011">Tampilkan Histori</translation>
 <translation id="2797302972324086597">Kode negara</translation>
 <translation id="2798263827270599246">Tema default</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Telusuri dengan Lens</translation>
 <translation id="3575426792457739946">Daftar ini berisi semua profil yang dimuat.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, dikelola oleh organisasi Anda.</translation>
+<translation id="3580448612293054698">Update <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Tawarkan penerjemahan halaman ke dalam bahasa lain</translation>
 <translation id="3587482841069643663">Semua</translation>
 <translation id="3587885837929752825">Organisasi membatasi apa saja yang dapat Anda simpan di Akun Google Anda.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Impor</translation>
 <translation id="3857113360369572832">Buka <ph name="BEGIN_BOLD" />Setelan Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nama</translation>
+<translation id="386224966259596343">Anda akan memiliki kesempatan untuk menyimpan info ini ke Wallet saat Anda mengisi formulir terkait lagi.</translation>
 <translation id="3868495844258915202">Tampilkan URL lengkap</translation>
 <translation id="3875783148670536197">Lihat Caranya</translation>
 <translation id="3878657761594430423">Pengambil sheet</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Tampilkan Bantuan</translation>
 <translation id="4095483462103784441">Buat grup tab baru</translation>
 <translation id="4099756562043439968">Setel Pengingat</translation>
+<translation id="4101867642407836771">Di Google Wallet untuk <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Mendeteksi dan memberikan peringatan terkait peristiwa berbahaya ketika terjadi.</translation>
 <translation id="4111985840824673503">Tandai semua telah dibaca</translation>
 <translation id="411254640334432676">Download gagal.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Ubah Sandi Anda</translation>
 <translation id="4120936477286528673">Situs ini berulang kali mencoba membuka aplikasi lain.</translation>
 <translation id="4121993058175073134">Konfigurasi akun email Anda di aplikasi Setelan untuk mengirim data net-ekspor.</translation>
+<translation id="4129768137228347731">Simpan <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Sudah siap digunakan</translation>
 <translation id="4133265950310064865">Perlindungan yang Disempurnakan</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -911,6 +918,7 @@
 <translation id="4405320213589929829">Gunakan alamat di halaman web untuk mendapatkan info lokal dan rute.</translation>
 <translation id="441218095371040430">Gunakan keyboard</translation>
 <translation id="4415276339145661267">Kelola Akun Google Anda</translation>
+<translation id="4416582610654027550">Ketik URL yang valid</translation>
 <translation id="4420409367264901497">Edit Bookmark</translation>
 <translation id="4425365312778464779">Akun ini dikelola</translation>
 <translation id="4430277756566635951">Saat ini <ph name="EMAIL" /> dipilih. Pilih akun.</translation>
@@ -1236,6 +1244,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5559567453458728487">Mengonversi unit pengukuran yang ditemukan di web</translation>
 <translation id="556042886152191864">Tombol</translation>
 <translation id="5565871407246142825">Kartu kredit</translation>
+<translation id="5566623128829375608">Disimpan ke perangkat Anda.</translation>
 <translation id="5567439033041178034">PELAJARI LEBIH LANJUT</translation>
 <translation id="5578795271662203820">Telusuri <ph name="SEARCH_ENGINE" /> untuk gambar ini</translation>
 <translation id="5579012242779565775">Sembunyikan Daftar bacaan</translation>
@@ -2178,6 +2187,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8829809207373502270">Kunci sandi ini tidak berfungsi lagi. Kunci sandi ini telah dihapus dari <ph name="WEBSITE" /> dan akan segera dihapus dari sini. <ph name="BEGIN_LINK" />Tentang kunci sandi<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Tutup semua tab tidak aktif</translation>
 <translation id="8837654851594567190">Urutkan menurut penayang</translation>
+<translation id="884351711508006491">Info Anda disimpan ke perangkat Anda.</translation>
 <translation id="8844136307393039959">Penurunan harga produk yang Anda pantau</translation>
 <translation id="8848286253339013170">Menyimpan gambar di Google Foto untuk <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Tersembunyi</translation>

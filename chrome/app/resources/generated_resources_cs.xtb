@@ -3350,6 +3350,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3248902735035392926">Bezpečnost je důležitá. Věnujte chvíli <ph name="BEGIN_LINK" />kontrole svých rozšíření<ph name="END_LINK" />.</translation>
 <translation id="3251119461199395237">Synchronizace souborů</translation>
 <translation id="3251759466064201842">&lt;Není součástí certifikátu&gt;</translation>
+<translation id="3252169590975855820">Je k dispozici přes Správce hesel Google</translation>
 <translation id="325238099842880997">Nastavit pravidla pro pohyb v digitálním světě, která vašemu dítěti pomohou při učení, hraní a objevování nových věcí</translation>
 <translation id="3253225298092156258">Nedostupné</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Pokud tyto soubory chcete zkopírovat, uvolněte v úložišti <ph name="CLOUD_PROVIDER" /> místo}few{Pokud tyto soubory chcete zkopírovat, uvolněte v úložišti <ph name="CLOUD_PROVIDER" /> místo}many{Pokud tyto soubory chcete zkopírovat, uvolněte v úložišti <ph name="CLOUD_PROVIDER" /> místo}other{Pokud tyto soubory chcete zkopírovat, uvolněte v úložišti <ph name="CLOUD_PROVIDER" /> místo}}</translation>
@@ -9848,7 +9849,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="7697109152153663933">Klikněte na Hesla a automatické vyplňování</translation>
 <translation id="769824636077131955">Tento dokument je na bezpečnostní kontrolu příliš velký. Můžete vytisknout dokumenty až do velikosti 50 MB.</translation>
 <translation id="7698507637739331665">Některé položky jsou blokovány</translation>
-<translation id="7700176975240938448">Snadno otevřete pomocí <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Tiskárny a skenery</translation>
 <translation id="7700873336634517379">Ne, dál používat pro školu v tomhle profilu</translation>
 <translation id="7701040980221191251">Žádné</translation>
@@ -11480,6 +11480,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="8781834595282316166">Nová karta ve skupině</translation>
 <translation id="8781980678064919987">Při zavření víka vypnout</translation>
 <translation id="8782565991310229362">Spouštění aplikací pro režim veřejného terminálu bylo zrušeno.</translation>
+<translation id="8783171585655659524">Připojit snímek obrazovky</translation>
 <translation id="8783834180813871000">Zadejte párovací kód Bluetooth a poté stiskněte Return nebo Enter.</translation>
 <translation id="8784626084144195648">Vyhlazený průměr</translation>
 <translation id="8785622406424941542">Dotykové pero</translation>
@@ -11656,6 +11657,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{Organizace <ph name="MANAGER" /> vyžaduje, abyste si zálohovali data a ještě dnes toto zařízení <ph name="DEVICE_TYPE" /> vrátili.}few{Organizace <ph name="MANAGER" /> vyžaduje, abyste si zálohovali data a do stanoveného termínu toto zařízení <ph name="DEVICE_TYPE" /> vrátili.}many{Organizace <ph name="MANAGER" /> vyžaduje, abyste si zálohovali data a do stanoveného termínu toto zařízení <ph name="DEVICE_TYPE" /> vrátili.}other{Organizace <ph name="MANAGER" /> vyžaduje, abyste si zálohovali data a do stanoveného termínu toto zařízení <ph name="DEVICE_TYPE" /> vrátili.}}</translation>
 <translation id="8902667442496790482">Otevřít nastavení poslechu vybraného textu</translation>
 <translation id="8903733144777177139">Přístup k mikrofonu je blokován</translation>
+<translation id="8904787158537906492">Odkaz byl zkopírován do schránky</translation>
 <translation id="890518297681039136">Operace z neznámého důvodu selhala.</translation>
 <translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" /> vytvořil pro tento web silné heslo</translation>
 <translation id="890616557918890486">Změnit zdroj</translation>

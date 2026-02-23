@@ -1232,6 +1232,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="6202812185118613467">Zaloguj się z powrotem, aby rozpocząć synchronizację</translation>
 <translation id="6204781143409202534">Przeglądarka Chrome wykryła możliwy spam z adresu <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Prywatność w reklamach</translation>
+<translation id="6210282067670792090">Użyj tego skrótu na pasku adresu razem ze skrótami wyszukiwania w wyszukiwarkach lub witrynach.</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> to nie Ty?</translation>
 <translation id="6211386937064921208">Wyświetlam podgląd tej strony</translation>
 <translation id="6212567362666004597">Dodaj kartę do grupy</translation>
@@ -1355,6 +1356,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6647441008198474441">Odwiedzane adresy URL są wysyłane do Google w celu prognozowania, jakie kolejne witryny możesz odwiedzić</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 i jeszcze <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Wyświetl podgląd obrazu <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Karta</translation>
 <translation id="6661521899577697780">Opcja wyrażenia zgody na funkcję Chrome Finds otwarta do połowy wysokości</translation>
 <translation id="666731172850799929">Otwórz w <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Powiadom mnie</translation>
@@ -1519,6 +1521,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7196215469483532480">Wyjaśnienie dotyczące Przewodnika po prywatności jest otwarte na całą wysokość</translation>
 <translation id="7196455519852483601">Możesz w całości lub częściowo usunąć m.in. historię, pliki cookie i dane witryn</translation>
 <translation id="7197682514647286393">Szybko usuwaj dane przeglądania</translation>
+<translation id="719791532916917144">Skrót klawiszowy</translation>
 <translation id="7207760545532569765">Przywróć karty (<ph name="TAB_COUNT" />) jako nowe karty w tle.</translation>
 <translation id="7217781228893594884">Gdy opuścisz Chrome, karty incognito zostaną zablokowane</translation>
 <translation id="7221869452894271364">Odśwież stronę</translation>
@@ -1717,6 +1720,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7998918019931843664">Otwórz ponownie zamkniętą kartę</translation>
 <translation id="8001245658307297681">Wyświetlasz plik lokalny</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>
+<translation id="8006630792898017994">Spacja lub Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, jedna z kilku wybranych przypiętych kart incognito udostępniania</translation>
 <translation id="8025972204417227828">Dodaj nowy</translation>
 <translation id="8027863900915310177">Wybierz lokalizację, do której chcesz pobrać plik</translation>

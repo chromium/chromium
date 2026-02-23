@@ -9859,7 +9859,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="7697109152153663933">Klicka på Lösenord och Autofyll.</translation>
 <translation id="769824636077131955">Det här dokumentet är så stort att det inte går genom säkerhetskontrollen. Du kan skriva ut dokument som är upp till 50 MB stora.</translation>
 <translation id="7698507637739331665">Vissa objekt har blockerats</translation>
-<translation id="7700176975240938448">Öppna enkelt med <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Skrivare och skannrar</translation>
 <translation id="7700873336634517379">Nej, fortsätt att använda för skolan i den här profilen</translation>
 <translation id="7701040980221191251">Inga</translation>
@@ -11490,6 +11489,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8781834595282316166">Ny flik i grupp</translation>
 <translation id="8781980678064919987">Stäng av när locket stängs</translation>
 <translation id="8782565991310229362">Starten av kioskappen avbröts.</translation>
+<translation id="8783171585655659524">Inkludera skärmbild</translation>
 <translation id="8783834180813871000">Ange kopplingskoden för Bluetooth och tryck på Retur.</translation>
 <translation id="8784626084144195648">Fackmedelvärde</translation>
 <translation id="8785622406424941542">E-penna</translation>

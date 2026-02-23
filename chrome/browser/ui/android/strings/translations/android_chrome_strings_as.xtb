@@ -1232,6 +1232,7 @@
 <translation id="6202812185118613467">ছিংক কৰাটো আৰম্ভ কৰিবলৈ পুনৰ ছাইন ইন কৰক</translation>
 <translation id="6204781143409202534">Chromeএ <ph name="DOMAIN" />ৰ পৰা সম্ভাব্য স্পাম চিনাক্ত কৰিছে।</translation>
 <translation id="6205314730813004066">বিজ্ঞাপনৰ গোপনীয়তা</translation>
+<translation id="6210282067670792090">ঠিকনাৰ বাৰডালত সন্ধান ইঞ্জিন আৰু ছাইটৰ সন্ধানৰ শ্বৰ্টকাটৰ সৈতে কীব’ৰ্ডৰ এই শ্বৰ্টকাটটো ব্যৱহাৰ কৰক</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> নহয় নেকি?</translation>
 <translation id="6211386937064921208">এই পৃষ্ঠাখনৰ পূৰ্বদৰ্শন কৰি আছে</translation>
 <translation id="6212567362666004597">গোটত টেব যোগ দিয়ক</translation>
@@ -1355,6 +1356,7 @@
 <translation id="6647441008198474441">আপুনি ইয়াৰ পাছত কি ছাইট চাব সেয়া অনুমান কৰিবলৈ আপুনি চোৱা URLসমূহ Googleলৈ পঠিওৱা হয়</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টা}one{<ph name="CONTACT_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টা}other{<ph name="CONTACT_PREVIEW" />\u2026 আৰু অন্য <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />টা}}</translation>
 <translation id="6649642165559792194">প্ৰতিচ্ছবি পূৰ্বদৰ্শন কৰক <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">টেবত টিপক</translation>
 <translation id="6661521899577697780">Chrome Findsৰ অপ্ট-ইন অৰ্ধ উচ্চতাত খোলা হৈছে</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />ত খোলক</translation>
 <translation id="6669390930482049506">মোক জাননী দিয়ক</translation>
@@ -1519,6 +1521,7 @@
 <translation id="7196215469483532480">পূৰ্ণ উচ্চতাত খোলা গোপনীয়তা সম্পৰ্কীয় নিৰ্দেশনাৰ ব্যাখ্যা</translation>
 <translation id="7196455519852483601">আপুনি আপোনাৰ ইতিহাস, কুকি, ছাইটৰ ডেটা আৰু অধিক কিছু পৰিমাণে বা সম্পূৰ্ণৰূপে মচিব পাৰে</translation>
 <translation id="7197682514647286393">আপোনাৰ ব্ৰাউজিঙৰ ডেটা দ্ৰুতভাৱে মচক</translation>
+<translation id="719791532916917144">কীব’ৰ্ডৰ শ্বৰ্টকাট</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> টা টেবক নতুন নেপথ্যৰ টেব হিচাপে পুনৰুদ্ধাৰ কৰক।</translation>
 <translation id="7217781228893594884">আপুনি Chromeৰ পৰা বাহিৰ ওলালে ইনক’গ্নিট’ টেবসমূহ লক কৰা হ’ব</translation>
 <translation id="7221869452894271364">এই পৃষ্ঠাটো পুনৰ ল'ড কৰক</translation>
@@ -1717,6 +1720,7 @@
 <translation id="7998918019931843664">বন্ধ কৰা টেব পুনৰ খোলক</translation>
 <translation id="8001245658307297681">আপুনি এটা স্থানীয় ফাইল চাই আছে</translation>
 <translation id="8004582292198964060">ব্ৰাউজাৰ</translation>
+<translation id="8006630792898017994">স্পেচ অথবা টেব</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, একাধিক বাছনিযুক্ত পিন কৰি থোৱা শ্বেয়াৰ কৰা ইনক’গ্নিট’ টেব</translation>
 <translation id="8025972204417227828">নতুন যোগ দিয়ক</translation>
 <translation id="8027863900915310177">ডাউনল’ড কৰি ক’ত ছেভ কৰিব লাগে বাছনি কৰক</translation>

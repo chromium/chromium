@@ -1232,6 +1232,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="6202812185118613467">Logg på igjen for å starte synkroniseringen</translation>
 <translation id="6204781143409202534">Chrome har oppdaget mulig nettsøppel fra <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Annonsepersonvern</translation>
+<translation id="6210282067670792090">Bruk denne hurtigtasten sammen med snarveier til søkemotorer og nettstedsøk i adressefeltet</translation>
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Forhåndsviser denne siden</translation>
 <translation id="6212567362666004597">Legg fanen til i en gruppe</translation>
@@ -1355,6 +1356,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6647441008198474441">Nettadresser du besøker, sendes til Google for å forutsi hvilke nettsteder du kanskje kommer til å besøke etterpå</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> til}other{<ph name="CONTACT_PREVIEW" /> og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> til}}</translation>
 <translation id="6649642165559792194">Forhåndsvis bildet <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Fane</translation>
 <translation id="6661521899577697780">Samtykket for Chrome Finds er åpnet i halv høyde</translation>
 <translation id="666731172850799929">Åpne i <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Varsle meg</translation>
@@ -1519,6 +1521,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7196215469483532480">Forklaringen til personvernveiledningen er åpnet i full høyde</translation>
 <translation id="7196455519852483601">Du kan slette deler av eller hele loggen din, informasjonskapsler, nettstedsdata med mer</translation>
 <translation id="7197682514647286393">Slett nettlesingsdata raskt</translation>
+<translation id="719791532916917144">Hurtigtast</translation>
 <translation id="7207760545532569765">Gjenopprett <ph name="TAB_COUNT" /> faner som nye bakgrunnsfaner.</translation>
 <translation id="7217781228893594884">Inkognitofaner blir låst når du forlater Chrome</translation>
 <translation id="7221869452894271364">Last inn denne siden på nytt</translation>
@@ -1717,6 +1720,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7998918019931843664">Åpne lukkede faner igjen</translation>
 <translation id="8001245658307297681">Du ser på en lokal fil</translation>
 <translation id="8004582292198964060">Nettleser</translation>
+<translation id="8006630792898017994">Mellomrom eller Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, flere valgte festede inkognitofaner for deling</translation>
 <translation id="8025972204417227828">Legg til ny</translation>
 <translation id="8027863900915310177">Velg hvor du vil laste ned til</translation>

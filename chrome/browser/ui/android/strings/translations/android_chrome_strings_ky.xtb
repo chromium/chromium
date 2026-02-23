@@ -1232,6 +1232,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6202812185118613467">Шайкештирип баштоо үчүн кайра кириңиз</translation>
 <translation id="6204781143409202534">Chrome <ph name="DOMAIN" /> доменинен шектүү билдирмени аныктады.</translation>
 <translation id="6205314730813004066">Жарнаманын купуялыгы</translation>
+<translation id="6210282067670792090">Дарек тилкесинде бул ыкчам баскычты издөө каражаттары жана сайттан издөө ыкчам баскычтары менен колдонуңуз</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> эмеспи?</translation>
 <translation id="6211386937064921208">Барак алдын ала көрсөтүлүүдө</translation>
 <translation id="6212567362666004597">Өтмөктү топко кошуу</translation>
@@ -1355,6 +1356,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6647441008198474441">Кийин кайсы сайттарга кирериңизди болжолдоо үчүн сиз баш баккан URL даректери Google'га жөнөтүлүп турат</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 жана дагы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Сүрөттү алдын ала көрүү <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Өтмөк</translation>
 <translation id="6661521899577697780">Chrome Finds'ка кошулуу экраны жарым-жартылай ачылды</translation>
 <translation id="666731172850799929">Төмөнкүдө ачуу <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Мага кабарлансын</translation>
@@ -1519,6 +1521,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7196215469483532480">Купуялык жетектемесинин түшүндүрмөсү толугу менен ачылды</translation>
 <translation id="7196455519852483601">Таржымалыңыздын, cookie файлдарыңыздын, сайттагы маалыматыңыздын айрымдарын же баарын өчүрө аласыз</translation>
 <translation id="7197682514647286393">Серептөө дайындарын тез өчүрүңүз</translation>
+<translation id="719791532916917144">Ыкчам баскыч</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> өтмөктү фондогу жаңы өтмөктөр катары калыбына келтирүү.</translation>
 <translation id="7217781228893594884">Chrome'дон чыкканыңызда жашыруун өтмөктөр кулпуланат</translation>
 <translation id="7221869452894271364">Бул бетти кайра жүктөө</translation>
@@ -1717,6 +1720,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7998918019931843664">Жабылган кыстырманы кайра ачуу</translation>
 <translation id="8001245658307297681">Жергиликтүү файлды көрүп жатасыз</translation>
 <translation id="8004582292198964060">Серепчи</translation>
+<translation id="8006630792898017994">Боштук же Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, көп жолу тандалган жана кадалган жашыруун өтмөктө контент бөлүшүлүүдө</translation>
 <translation id="8025972204417227828">Жаңысын кошуу</translation>
 <translation id="8027863900915310177">Кайда жүктөлүп алынарын тандаңыз</translation>

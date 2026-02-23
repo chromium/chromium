@@ -1231,6 +1231,7 @@
 <translation id="6202812185118613467">重新登录即可开始同步</translation>
 <translation id="6204781143409202534">Chrome 检测到 <ph name="DOMAIN" /> 可能发送了垃圾内容。</translation>
 <translation id="6205314730813004066">广告隐私权设置</translation>
+<translation id="6210282067670792090">在地址栏中，将此键盘快捷键与用于搜索引擎和网站搜索的快捷字词结合使用</translation>
 <translation id="6210748933810148297">不是 <ph name="EMAIL" />？</translation>
 <translation id="6211386937064921208">正在预览此页</translation>
 <translation id="6212567362666004597">向分组添加标签页</translation>
@@ -1354,6 +1355,7 @@
 <translation id="6647441008198474441">系统会将您访问过的网址发送给 Google，以预测您接下来可能会访问的网站</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 个联系人}other{<ph name="CONTACT_PREVIEW" />\u2026以及另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 个联系人}}</translation>
 <translation id="6649642165559792194">预览图片<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tab 键</translation>
 <translation id="6661521899577697780">已半屏打开 Chrome 查找功能选择启用底部动作条</translation>
 <translation id="666731172850799929">在 <ph name="APP_NAME" />中打开</translation>
 <translation id="6669390930482049506">通知我</translation>
@@ -1515,6 +1517,7 @@
 <translation id="7196215469483532480">隐私保护指南说明已全屏打开</translation>
 <translation id="7196455519852483601">您可以删除部分或全部历史记录、Cookie、网站数据等</translation>
 <translation id="7197682514647286393">快速删除浏览数据</translation>
+<translation id="719791532916917144">键盘快捷键</translation>
 <translation id="7207760545532569765">将 <ph name="TAB_COUNT" /> 个标签页恢复为新的背景标签页。</translation>
 <translation id="7217781228893594884">当您退出 Chrome 时，无痕式标签页将被锁定</translation>
 <translation id="7221869452894271364">重新加载此页</translation>
@@ -1713,6 +1716,7 @@
 <translation id="7998918019931843664">重新打开关闭的标签页</translation>
 <translation id="8001245658307297681">您正在查看本地文件</translation>
 <translation id="8004582292198964060">浏览器</translation>
+<translation id="8006630792898017994">空格键或 Tab 键</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />，已选择的多个固定无痕式标签页之一，正在共享内容</translation>
 <translation id="8025972204417227828">新增</translation>
 <translation id="8027863900915310177">选择要下载到何处</translation>

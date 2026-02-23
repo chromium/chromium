@@ -2161,6 +2161,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="244231003699905658">Adresa nu este validă. Verifică adresa și încearcă din nou.</translation>
 <translation id="2442916515643169563">Umbrirea textului</translation>
 <translation id="2443487764245141020">Ar putea fi necesar și ca site-urile să recunoască dispozitivul folosind un identificator</translation>
+<translation id="2444091518615234627">Trimite mai puține date la Google (de exemplu, părți din adresele URL)</translation>
 <translation id="244475495405467108">Închide filele din stânga</translation>
 <translation id="2444874983932528148">Reia cu ușurință de unde ai rămas</translation>
 <translation id="2445081178310039857">Este necesar directorul rădăcină pentru extensie.</translation>
@@ -6677,6 +6678,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5510775624736435856">Descarcă descrierile imaginii de la Google</translation>
 <translation id="5511379779384092781">Foarte mică</translation>
 <translation id="5511823366942919280">Sigur dorești să configurezi acest dispozitiv drept „Rechin”?</translation>
+<translation id="5512511240775436189">Trimite mai multe date la Google (de exemplu, adrese URL, conținutul paginilor și multe altele)</translation>
 <translation id="5512739112435045339">Eliberează spațiu pe dispozitiv. Apoi încearcă din nou să descarci</translation>
 <translation id="5513807280330619196">Calculator</translation>
 <translation id="5514315914873062345">Tab</translation>
@@ -6703,6 +6705,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> dorește să</translation>
 <translation id="5533343601674003130">Serviciu PDF</translation>
 <translation id="5535769176698670170">Schimbă cu afișarea de sus</translation>
+<translation id="5537395135310061418">Te protejează pe web cu cea mai eficientă securitate de la Google</translation>
 <translation id="5537725057119320332">Proiectează</translation>
 <translation id="5539070192556911367">Nu se poate accesa Google</translation>
 <translation id="5541091577812545428">Parola nu s-a schimbat</translation>
@@ -6862,6 +6865,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5639549361331209298">Reîncărcați această pagină. Țineți apăsat pentru a vedea mai multe opțiuni</translation>
 <translation id="5640133431808313291">Gestionează cheile de securitate</translation>
 <translation id="5640159004008030285">Parola se salvează numai pe acest dispozitiv. Pentru a o folosi pe celelalte dispozitive, <ph name="BEGIN_LINK" />salveaz-o în Contul tău Google<ph name="END_LINK" />.</translation>
+<translation id="5640322514952298438">Acordă prioritate vitezei site-ului</translation>
 <translation id="5641608986289282154">Începe să utilizezi <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">Editor de capturi de ecran</translation>
 <translation id="5641715878999557094"><ph name="EXTENSION_NAME" /> a modificat pagina afișată când dai clic pe butonul Ecran de pornire.</translation>
@@ -8072,6 +8076,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6494483173119160146">Dispozitivul a întâmpinat o eroare ireversibilă. Resetează dispozitivul (toate datele utilizatorului se vor șterge) și încearcă din nou.</translation>
 <translation id="6495266441917713704">Nu se poate transfera conexiunea Wi-Fi</translation>
 <translation id="6495453178162183932">Tema a fost actualizată la Tema Chrome prestabilită</translation>
+<translation id="6496542321576111907">Oferă securitate puternică. Poți alege să activezi funcții suplimentare.</translation>
 <translation id="6496641546298525838">Dispozitivul tău</translation>
 <translation id="6497784818439587832">Modifică dimensiunea de afișare pentru a micșora sau a mări elementele de pe ecran</translation>
 <translation id="6497789971060331894">Derularea inversă cu mouse-ul</translation>
@@ -9846,7 +9851,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="7697109152153663933">Dă clic pe Parole și completare automată</translation>
 <translation id="769824636077131955">Acest document este prea mare pentru verificarea de securitate. Poți să printezi documente de până la 50 MB.</translation>
 <translation id="7698507637739331665">Unele elemente sunt blocate</translation>
-<translation id="7700176975240938448">Deschide cu ușurință cu <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Imprimante și scanere</translation>
 <translation id="7700873336634517379">Nu, continuă să folosești pentru școală în acest profil</translation>
 <translation id="7701040980221191251">Niciuna</translation>
@@ -11478,6 +11482,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="8781834595282316166">Filă nouă în grup</translation>
 <translation id="8781980678064919987">Când capacul este închis: oprire</translation>
 <translation id="8782565991310229362">Lansarea aplicațiilor de tip chioșc a fost anulată.</translation>
+<translation id="8783171585655659524">Include o captură de ecran</translation>
 <translation id="8783834180813871000">Introdu codul de asociere prin Bluetooth, apoi apasă pe Return sau pe Enter.</translation>
 <translation id="8784626084144195648">Medie limitată</translation>
 <translation id="8785622406424941542">Creion</translation>
@@ -11512,6 +11517,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="8808686172382650546">Pisică</translation>
 <translation id="8809147117840417135">Turcoaz deschis</translation>
 <translation id="8811862054141704416">Accesul la microfon în Crostini</translation>
+<translation id="8811881249098640048">Încetinește unele site-uri necunoscute</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{O parolă se salvează numai pe acest dispozitiv. Pentru a o folosi pe celelalte dispozitive, salveaz-o în Contul Google. Astfel, vor fi eliminate și dublurile.}few{{PASSWORD_COUNT} parole se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google. Astfel, vor fi eliminate și dublurile.}other{{PASSWORD_COUNT} de parole se salvează numai pe acest dispozitiv. Pentru a le folosi pe celelalte dispozitive, salvează-le în Contul Google. Astfel, vor fi eliminate și dublurile.}}</translation>
 <translation id="8813199641941291474">Controlul și reprogramarea dispozitivelor MIDI au fost blocate</translation>
 <translation id="8813698869395535039">Nu te poți conecta folosind <ph name="USERNAME" /></translation>

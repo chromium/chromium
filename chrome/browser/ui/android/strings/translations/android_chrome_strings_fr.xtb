@@ -1231,6 +1231,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="6202812185118613467">Reconnectez-vous pour lancer la synchronisation</translation>
 <translation id="6204781143409202534">Chrome a détecté un spam potentiel de <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Confidentialité des annonces</translation>
+<translation id="6210282067670792090">Dans la barre d'adresse, utilisez ce raccourci clavier avec les raccourcis des moteurs de recherche et de la recherche sur les sites</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> n'est pas votre adresse e-mail ?</translation>
 <translation id="6211386937064921208">Aperçu de cette page</translation>
 <translation id="6212567362666004597">Ajouter l'onglet à un groupe</translation>
@@ -1354,6 +1355,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6647441008198474441">Les URL que vous consultez sont envoyées à Google pour prédire les sites que vous êtes susceptible de visiter plus tard</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> de plus}one{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> de plus}other{<ph name="CONTACT_PREVIEW" />\u2026 et <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> de plus}}</translation>
 <translation id="6649642165559792194">Prévisualiser l'image <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tabulation</translation>
 <translation id="6661521899577697780">Activation de Chrome Finds ouverte à mi-hauteur</translation>
 <translation id="666731172850799929">Ouvrir dans <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">M'avertir</translation>
@@ -1517,6 +1519,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7196215469483532480">Explications du Guide sur la confidentialité ouvertes à pleine hauteur</translation>
 <translation id="7196455519852483601">Supprimez tout ou partie de votre historique, des cookies, des données de site, etc.</translation>
 <translation id="7197682514647286393">Effacez rapidement vos données</translation>
+<translation id="719791532916917144">Raccourci clavier</translation>
 <translation id="7207760545532569765">Restaurer <ph name="TAB_COUNT" /> onglets en tant que nouveaux onglet en arrière-plan.</translation>
 <translation id="7217781228893594884">Les onglets de navigation privée seront verrouillés lorsque vous quitterez Chrome</translation>
 <translation id="7221869452894271364">Actualiser cette page</translation>
@@ -1715,6 +1718,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7998918019931843664">Rouvrir un onglet fermé</translation>
 <translation id="8001245658307297681">Vous consultez un fichier local</translation>
 <translation id="8004582292198964060">Navigateur</translation>
+<translation id="8006630792898017994">Espace ou Tabulation</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, onglet de navigation privée épinglé multisélectionné avec partage en cours</translation>
 <translation id="8025972204417227828">Ajouter</translation>
 <translation id="8027863900915310177">Choisir l'emplacement du téléchargement</translation>

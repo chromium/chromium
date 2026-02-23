@@ -1201,6 +1201,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="610630277578876674">Buka pautan dengan pantas dalam mesej dan pelbagai lagi</translation>
 <translation id="6108923351542677676">Persediaan sedang berjalan...</translation>
 <translation id="6112702117600201073">Memuat semula halaman</translation>
+<translation id="612221930823678863">URL dengan <ph name="QUERY" /> sebagai ganti pertanyaan</translation>
 <translation id="6122831415929794347">Matikan Penyemakan Imbas Selamat?</translation>
 <translation id="6124936178263837501">Laporkan sebagai bukan spam</translation>
 <translation id="6125202119952209826">Sertai kumpulan tab dengan <ph name="OWNER_FIRST_NAME" /></translation>
@@ -1232,6 +1233,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="6202812185118613467">Log masuk semula untuk memulakan penyegerakan</translation>
 <translation id="6204781143409202534">Chrome mengesan kemungkinan spam daripada <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Privasi iklan</translation>
+<translation id="6210282067670792090">Dalam bar alamat, gunakan pintasan papan kekunci ini dengan pintasan untuk enjin carian dan carian laman</translation>
 <translation id="6210748933810148297">Bukan <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Memaparkan pratonton halaman ini</translation>
 <translation id="6212567362666004597">Tambahkan tab pada kumpulan</translation>
@@ -1355,6 +1357,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="6647441008198474441">URL yang anda lawati dihantar kepada Google untuk meramal laman yang mungkin anda lawati seterusnya</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lagi}other{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lagi}}</translation>
 <translation id="6649642165559792194">Pratonton imej <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6661521899577697780">Ikut serta Chrome Finds dibuka pada ketinggian separuh</translation>
 <translation id="666731172850799929">Buka dalam <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Beritahu saya</translation>
@@ -1519,6 +1522,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7196215469483532480">Penjelasan panduan privasi dibuka pada ketinggian penuh</translation>
 <translation id="7196455519852483601">Anda boleh padamkan beberapa atau semua sejarah, kuki dan data laman anda serta pelbagai lagi</translation>
 <translation id="7197682514647286393">Padamkan data semakan imbas</translation>
+<translation id="719791532916917144">Pintasan papan kekunci</translation>
 <translation id="7207760545532569765">Pulihkan <ph name="TAB_COUNT" /> tab sebagai tab latar baharu.</translation>
 <translation id="7217781228893594884">Tab inkognito akan dikunci apabila anda meninggalkan Chrome</translation>
 <translation id="7221869452894271364">Muatkan semula halaman ini</translation>
@@ -1717,6 +1721,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7998918019931843664">Buka semula tab yang ditutup</translation>
 <translation id="8001245658307297681">Anda sedang melihat fail setempat</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>
+<translation id="8006630792898017994">Ruang atau Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, Tab Inkognito Perkongsian Yang Tersemat Dengan Berbilang Pilihan</translation>
 <translation id="8025972204417227828">Tambahkan pintasan baharu</translation>
 <translation id="8027863900915310177">Pilih lokasi untuk memuat turun</translation>

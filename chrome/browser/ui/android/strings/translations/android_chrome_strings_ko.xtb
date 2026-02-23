@@ -1231,6 +1231,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6202812185118613467">동기화를 시작하려면 다시 로그인하세요.</translation>
 <translation id="6204781143409202534">Chrome에서 <ph name="DOMAIN" />의 스팸 가능성이 감지되었습니다.</translation>
 <translation id="6205314730813004066">광고 개인 정보 보호</translation>
+<translation id="6210282067670792090">주소 표시줄에 검색엔진 및 사이트 검색의 바로가기를 입력하고 단축키를 누르세요.</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" />이(가) 아닌가요?</translation>
 <translation id="6211386937064921208">페이지 미리보기입니다.</translation>
 <translation id="6212567362666004597">그룹에 탭 추가</translation>
@@ -1354,6 +1355,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6647441008198474441">다음에 방문할 사이트를 예측하기 위해 내가 방문한 URL이 Google에 전송됩니다.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}other{<ph name="CONTACT_PREVIEW" /> 외 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />개}}</translation>
 <translation id="6649642165559792194">이미지 미리보기 표시 <ph name="BEGIN_NEW" />새로운 기능<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">탭</translation>
 <translation id="6661521899577697780">Chrome Finds 선택이 절반 높이로 열림</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />에서 열기</translation>
 <translation id="6669390930482049506">알림 받기</translation>
@@ -1517,6 +1519,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7196215469483532480">개인 정보 보호 가이드 설명이 전체 높이로 열림</translation>
 <translation id="7196455519852483601">방문 기록, 쿠키, 사이트 데이터 등을 일부 또는 모두 삭제할 수 있습니다</translation>
 <translation id="7197682514647286393">인터넷 사용 기록을 빠르게 삭제</translation>
+<translation id="719791532916917144">단축키</translation>
 <translation id="7207760545532569765">탭 <ph name="TAB_COUNT" />개를 새 백그라운드 탭으로 복원합니다.</translation>
 <translation id="7217781228893594884">Chrome을 종료하면 시크릿 탭이 잠깁니다.</translation>
 <translation id="7221869452894271364">페이지 새로고침</translation>
@@ -1715,6 +1718,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7998918019931843664">닫은 탭 다시 열기</translation>
 <translation id="8001245658307297681">로컬 파일을 보는 중</translation>
 <translation id="8004582292198964060">브라우저</translation>
+<translation id="8006630792898017994">스페이스바 또는 Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, 여러 개 선택되고 고정되고 공유 중인 시크릿 탭</translation>
 <translation id="8025972204417227828">새로 추가</translation>
 <translation id="8027863900915310177">다운로드 위치 선택</translation>

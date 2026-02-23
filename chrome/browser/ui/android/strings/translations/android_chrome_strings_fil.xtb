@@ -1232,6 +1232,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="6202812185118613467">Mag-sign in ulit para simulan ang pag-sync</translation>
 <translation id="6204781143409202534">Naka-detect ang Chrome ng posibleng spam mula sa <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Privacy sa mga ad</translation>
+<translation id="6210282067670792090">Sa address bar, gamitin ang keyboard shortcut na ito kasama ng mga shortcut para sa mga search engine at paghahanap sa site</translation>
 <translation id="6210748933810148297">Hindi si <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Pini-preview ang page na ito</translation>
 <translation id="6212567362666004597">Magdagdag ng tab sa grupo</translation>
@@ -1355,6 +1356,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6647441008198474441">Ipinapadala sa Google ang mga URL na binibisita mo para mahulaan kung anong mga site ang posibleng susunod mong bibisitahin</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> iba pa}one{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> iba pa}other{<ph name="CONTACT_PREVIEW" />\u2026 at <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> na iba pa}}</translation>
 <translation id="6649642165559792194">I-preview ang larawang <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6661521899577697780">Binuksan nang kalahati ang pag-opt in sa Chrome Finds</translation>
 <translation id="666731172850799929">Buksan sa <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Abisuhan ako</translation>
@@ -1519,6 +1521,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7196215469483532480">Nakabukas nang buo ang paliwanag sa gabay sa privacy</translation>
 <translation id="7196455519852483601">Puwede mong i-delete ang ilan sa o lahat ng iyong history, cookies, data ng site, at higit pa</translation>
 <translation id="7197682514647286393">Agad na i-delete, browsing data</translation>
+<translation id="719791532916917144">Keyboard shortcut</translation>
 <translation id="7207760545532569765">I-restore ang <ph name="TAB_COUNT" /> (na) tab bilang mga bagong background na tab.</translation>
 <translation id="7217781228893594884">Ila-lock ang mga tab na incognito kapag umalis ka sa Chrome</translation>
 <translation id="7221869452894271364">I-reload ang page na ito</translation>
@@ -1717,6 +1720,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7998918019931843664">Muling buksan ang isinarang tab</translation>
 <translation id="8001245658307297681">Tumitingin ka ng lokal na file</translation>
 <translation id="8004582292198964060">Browser</translation>
+<translation id="8006630792898017994">Space o Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, Naka-multiselect na Naka-pin at Nagshe-share na Tab na Incognito</translation>
 <translation id="8025972204417227828">Magdagdag ng bago</translation>
 <translation id="8027863900915310177">Piliin kung saan ida-download</translation>

@@ -1231,6 +1231,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="6202812185118613467">Log ind igen for at synkronisere</translation>
 <translation id="6204781143409202534">Chrome har registreret muligt spam fra <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Privatliv vedrørende annoncering</translation>
+<translation id="6210282067670792090">I adresselinjen kan du bruge denne tastaturgenvej til genveje til søgemaskiner og websitesøgning</translation>
 <translation id="6210748933810148297">Ikke <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Forhåndsvisning af denne side</translation>
 <translation id="6212567362666004597">Føj fane til gruppe</translation>
@@ -1354,6 +1355,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6647441008198474441">De websites, du besøger, sendes til Google for at forudsige, hvilke websites du kunne have lyst til at besøge som det næste</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> mere}one{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> mere}other{<ph name="CONTACT_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> mere}}</translation>
 <translation id="6649642165559792194">Se forhåndsvisning af <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Fane</translation>
 <translation id="6661521899577697780">Tilvalg af Chrome Finds er åbnet i halv højde</translation>
 <translation id="666731172850799929">Åbn i <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Send mig notifikationer</translation>
@@ -1517,6 +1519,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7196215469483532480">Beskrivelsen af Privatlivsguide er åbnet i fuld højde</translation>
 <translation id="7196455519852483601">Du kan slette dele af eller hele din historik og dele af eller alle cookies, websitedata og meget mere</translation>
 <translation id="7197682514647286393">Slet hurtigt dine browserdata</translation>
+<translation id="719791532916917144">Tastaturgenvej</translation>
 <translation id="7207760545532569765">Gendan <ph name="TAB_COUNT" /> faner som nye baggrundsfaner.</translation>
 <translation id="7217781228893594884">Inkognitofaner låses, når du lukker Chrome</translation>
 <translation id="7221869452894271364">Genindlæs denne side</translation>
@@ -1715,6 +1718,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7998918019931843664">Åbn lukket fane igen</translation>
 <translation id="8001245658307297681">Du får vist en lokal fil</translation>
 <translation id="8004582292198964060">Browser</translation>
+<translation id="8006630792898017994">Mellemrumstasten eller Tab-tasten</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, fastgjort inkognitofane med multivalg, der deler indhold</translation>
 <translation id="8025972204417227828">Tilføj ny</translation>
 <translation id="8027863900915310177">Vælg, hvor downloadfilen skal gemmes</translation>

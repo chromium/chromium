@@ -1231,6 +1231,7 @@
 <translation id="6202812185118613467">Најавете се повторно за да започнете со синхронизација</translation>
 <translation id="6204781143409202534">Chrome откри можен спам од <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Приватност за реклами</translation>
+<translation id="6210282067670792090">Во лентата за адреси, користете ја кратенката од тастатура со кратенките за пребарувачи и пребарување сајт</translation>
 <translation id="6210748933810148297">Не сте <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Преглед на страницава</translation>
 <translation id="6212567362666004597">Додајте картичка во групата</translation>
@@ -1354,6 +1355,7 @@
 <translation id="6647441008198474441">URL-адресите што ги посетувате се испраќаат во Google за да се предвидат сајтовите што можеби ќе ги посетите следно</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />… и уште <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Прегледајте ја сликата <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Картичка</translation>
 <translation id="6661521899577697780">Листот за прифаќање на „Наоди на Chrome“ е отворен на половина екран</translation>
 <translation id="666731172850799929">Отвори во <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Известувај ме</translation>
@@ -1517,6 +1519,7 @@
 <translation id="7196215469483532480">Објаснувањето за водичот за приватност е отворено на цел екран</translation>
 <translation id="7196455519852483601">Може да избришете дел или сета ваша историја, колачиња, податоци од сајтовите и друго</translation>
 <translation id="7197682514647286393">Брзо избришете ги податоците од прелистување</translation>
+<translation id="719791532916917144">Кратенка од тастатурата</translation>
 <translation id="7207760545532569765">Врати <ph name="TAB_COUNT" /> картички како нова заднинска група картички.</translation>
 <translation id="7217781228893594884">Картичките „Инкогнито“ ќе се заклучат кога ќе излезете од Chrome</translation>
 <translation id="7221869452894271364">Пак вчитај страница</translation>
@@ -1715,6 +1718,7 @@
 <translation id="7998918019931843664">Повторно отвори ја затворената картичка</translation>
 <translation id="8001245658307297681">Прегледувате локална датотека</translation>
 <translation id="8004582292198964060">Прелистувач</translation>
+<translation id="8006630792898017994">Празно место или Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, повеќекратно избрана прикачена картичка „Инкогнито“ за споделување</translation>
 <translation id="8025972204417227828">Додајте нова</translation>
 <translation id="8027863900915310177">Изберете каде да се преземе</translation>

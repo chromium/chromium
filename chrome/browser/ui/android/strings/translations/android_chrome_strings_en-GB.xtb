@@ -1231,6 +1231,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6202812185118613467">Sign back in to start sync</translation>
 <translation id="6204781143409202534">Chrome detected possible spam from <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Ads privacy</translation>
+<translation id="6210282067670792090">In the address bar, use this keyboard shortcut with shortcuts for search engines and site search</translation>
 <translation id="6210748933810148297">Not <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Previewing this page</translation>
 <translation id="6212567362666004597">Add tab to group</translation>
@@ -1354,6 +1355,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6647441008198474441">URLs that you visit are sent to Google to predict what sites you might visit next</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}other{<ph name="CONTACT_PREVIEW" />\u2026 and <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> more}}</translation>
 <translation id="6649642165559792194">Preview image <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6661521899577697780">Chrome Finds opt-in opened at half height</translation>
 <translation id="666731172850799929">Open in <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Notify me</translation>
@@ -1517,6 +1519,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7196215469483532480">Privacy guide explanation opened at full height</translation>
 <translation id="7196455519852483601">You can delete some or all of your history, cookies, site data and more</translation>
 <translation id="7197682514647286393">Quickly delete your browsing data</translation>
+<translation id="719791532916917144">Keyboard shortcut</translation>
 <translation id="7207760545532569765">Restore <ph name="TAB_COUNT" /> tabs as new background tabs.</translation>
 <translation id="7217781228893594884">Incognito tabs will be locked when you leave Chrome</translation>
 <translation id="7221869452894271364">Reload this page</translation>
@@ -1715,6 +1718,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7998918019931843664">Re-open closed tab</translation>
 <translation id="8001245658307297681">You're viewing a local file</translation>
 <translation id="8004582292198964060">Browser</translation>
+<translation id="8006630792898017994">Space or tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, multi-selected pinned sharing Incognito tab</translation>
 <translation id="8025972204417227828">Add new</translation>
 <translation id="8027863900915310177">Choose where to download</translation>

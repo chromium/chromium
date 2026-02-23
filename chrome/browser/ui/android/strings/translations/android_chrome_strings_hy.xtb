@@ -1231,6 +1231,7 @@
 <translation id="6202812185118613467">Նորից մուտք գործեք՝ համաժամացումը սկսելու համար</translation>
 <translation id="6204781143409202534">Chrome-ը հնարավոր սպամ է հայտնաբերել <ph name="DOMAIN" /> տիրույթից։</translation>
 <translation id="6205314730813004066">Գովազդի գաղտնիություն</translation>
+<translation id="6210282067670792090">Հասցեագոտում օգտագործեք այս ստեղնային դյուրանցումը և որոնողական համակարգերի ու կայքերում որոնման համար դյուրանցումները։</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> հաշիվը ձե՞րը չէ</translation>
 <translation id="6211386937064921208">Էջի նախադիտում</translation>
 <translation id="6212567362666004597">Ավելացնել ներդիր խմբում</translation>
@@ -1354,6 +1355,7 @@
 <translation id="6647441008198474441">Ձեր այցելած էջերի URL-ներն ուղարկվում են Google-ին՝ կանխատեսելու, թե հաջորդիվ ինչ կայքեր կարող եք այցելել։</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}one{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}other{<ph name="CONTACT_PREVIEW" />\u2026 ու ևս <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> կոնտակտ}}</translation>
 <translation id="6649642165559792194">Նախադիտել պատկերը <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Ներդիր</translation>
 <translation id="6661521899577697780">Chrome Finds-ը միացնելու առաջարկով ներքևի էկրանը բացված է կիսով չափ</translation>
 <translation id="666731172850799929">Բացել <ph name="APP_NAME" /> հավելվածում</translation>
 <translation id="6669390930482049506">Ծանուցել ինձ</translation>
@@ -1517,6 +1519,7 @@
 <translation id="7196215469483532480">Տվյալների պաշտպանության ուղեցույցի մասին տեղեկությունները բացված են ամբողջությամբ</translation>
 <translation id="7196455519852483601">Դուք կարող եք ամբողջությամբ կամ մասամբ ջնջել պատմությունը, քուքիները, կայքերի տվյալները և այլն</translation>
 <translation id="7197682514647286393">Արագ ջնջեք այցելությունները</translation>
+<translation id="719791532916917144">Ստեղնային դյուրանցում</translation>
 <translation id="7207760545532569765">Վերականգնել <ph name="TAB_COUNT" /> ներդիրները որպես նոր ֆոնային ներդիրներ։</translation>
 <translation id="7217781228893594884">Ինկոգնիտո ներդիրները կկողպվեն, երբ դուք փակեք Chrome-ը</translation>
 <translation id="7221869452894271364">Վերաբեռնել այս էջը</translation>
@@ -1715,6 +1718,7 @@
 <translation id="7998918019931843664">Նորից բացել փակված ներդիրը</translation>
 <translation id="8001245658307297681">Դուք լոկալ ֆայլ եք դիտում</translation>
 <translation id="8004582292198964060">Դիտարկիչ</translation>
+<translation id="8006630792898017994">Բացատ կամ TAB</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, ընտրված մի քանի ինկոգնիտո ներդիրներից մեկը, որն ամրացված է և հասանելի է այլ օգտատերերի</translation>
 <translation id="8025972204417227828">Ավելացնել նորը</translation>
 <translation id="8027863900915310177">Ընտրեք, թե որտեղ է պետք ներբեռնել</translation>

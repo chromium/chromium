@@ -3363,6 +3363,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3248902735035392926">Keselamatan adalah perkara penting. Luangkan masa dan <ph name="BEGIN_LINK" />semak sambungan anda<ph name="END_LINK" /></translation>
 <translation id="3251119461199395237">Penyegerakan fail</translation>
 <translation id="3251759466064201842">&lt;Bukan Sebahagian Daripada Sijil&gt;</translation>
+<translation id="3252169590975855820">Anda boleh mengakses kata laluan pada Google Password Manager</translation>
 <translation id="325238099842880997">Tetapkan peraturan asas digital untuk membantu kanak-kanak bermain, meneroka sesuatu dan membuat kerja sekolah di rumah</translation>
 <translation id="3253225298092156258">Tidak tersedia</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Kosongkan ruang dalam <ph name="CLOUD_PROVIDER" /> untuk menyalin fail ini}other{Kosongkan ruang dalam <ph name="CLOUD_PROVIDER" /> untuk menyalin fail ini}}</translation>
@@ -9864,7 +9865,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="7697109152153663933">Klik “Kata laluan dan Autolengkap”</translation>
 <translation id="769824636077131955">Dokumen ini terlalu besar untuk semakan keselamatan. Anda boleh mencetak dokumen hingga 50 MB.</translation>
 <translation id="7698507637739331665">Sesetengah item disekat</translation>
-<translation id="7700176975240938448">Buka dengan mudah menggunakan <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Pencetak dan pengimbas</translation>
 <translation id="7700873336634517379">Tidak, terus gunakan untuk sekolah dalam profil ini</translation>
 <translation id="7701040980221191251">Tiada</translation>
@@ -11496,6 +11496,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8781834595282316166">Tab Baharu dalam Kumpulan</translation>
 <translation id="8781980678064919987">Matikan apabila penutup ditutup</translation>
 <translation id="8782565991310229362">Pelancaran aplikasi kios dibatalkan.</translation>
+<translation id="8783171585655659524">Sertakan tangkapan skrin</translation>
 <translation id="8783834180813871000">Taip kod gandingan Bluetooth, kemudian tekan Return atau Enter.</translation>
 <translation id="8784626084144195648">Purata Bin</translation>
 <translation id="8785622406424941542">Stilus</translation>
@@ -11672,6 +11673,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> menghendaki anda menyandarkan data anda dan memulangkan <ph name="DEVICE_TYPE" /> ini hari ini.}other{<ph name="MANAGER" /> menghendaki anda menyandarkan data anda dan memulangkan <ph name="DEVICE_TYPE" /> ini sebelum tarikh akhir.}}</translation>
 <translation id="8902667442496790482">Buka tetapan pilih untuk bercakap</translation>
 <translation id="8903733144777177139">Akses mikrofon telah disekat</translation>
+<translation id="8904787158537906492">Pautan disalin kepada papan keratan</translation>
 <translation id="890518297681039136">Operasi gagal atas sebab yang tidak diketahui.</translation>
 <translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" /> membuat kata laluan kukuh untuk laman web ini</translation>
 <translation id="890616557918890486">Tukar sumber</translation>

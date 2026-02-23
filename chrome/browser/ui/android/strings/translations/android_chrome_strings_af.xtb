@@ -1231,6 +1231,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="6202812185118613467">Meld weer aan om sinkronisering te begin</translation>
 <translation id="6204781143409202534">Chrome het moontlike strooipos van <ph name="DOMAIN" /> af bespeur.</translation>
 <translation id="6205314730813004066">Advertensieprivaatheid</translation>
+<translation id="6210282067670792090">Gebruik in die adresbalk hierdie kortpadsleutel met kortpaaie vir soekenjins en werfsoektogte</translation>
 <translation id="6210748933810148297">Nie <ph name="EMAIL" /> nie?</translation>
 <translation id="6211386937064921208">Voorbeskou tans hierdie bladsy</translation>
 <translation id="6212567362666004597">Voeg oortjie by groep</translation>
@@ -1354,6 +1355,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6647441008198474441">URL'e wat jy besoek, word na Google toe gestuur om te voorspel watter werwe jy dalk volgende sal besoek</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" /> \u2026 en nog <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Voorbeskou prent <ph name="BEGIN_NEW" />Nuwe<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Oortjie</translation>
 <translation id="6661521899577697780">Chrome Finds-intekening is teen halwe hoogte oopgemaak</translation>
 <translation id="666731172850799929">Maak oop in <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Stel my in kennis</translation>
@@ -1517,6 +1519,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7196215469483532480">Privaatheidgidsverduideliking is teen volle hoogte oopgemaak</translation>
 <translation id="7196455519852483601">Jy kan sommige of al jou geskiedenis, webkoekies, werfdata en meer uitvee</translation>
 <translation id="7197682514647286393">Vee jou blaaierdata vinnig uit</translation>
+<translation id="719791532916917144">Sleutelbordkortpad</translation>
 <translation id="7207760545532569765">Stel <ph name="TAB_COUNT" /> oortjies as nuwe agtergrondoortjies terug.</translation>
 <translation id="7217781228893594884">Incognito-oortjies sal gesluit word wanneer jy Chrome verlaat</translation>
 <translation id="7221869452894271364">Herlaai hierdie bladsy</translation>
@@ -1715,6 +1718,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7998918019931843664">Heropen toegemaakte oortjie</translation>
 <translation id="8001245658307297681">Jy bekyk ’n plaaslike lêer</translation>
 <translation id="8004582292198964060">Blaaier</translation>
+<translation id="8006630792898017994">Spasie of Tab-spasie</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, multigekose vasgespelde Incognito-oortjie wat gedeel word</translation>
 <translation id="8025972204417227828">Voeg nuwe een by</translation>
 <translation id="8027863900915310177">Kies waarheen om af te laai</translation>

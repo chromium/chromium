@@ -1231,6 +1231,7 @@
 <translation id="6202812185118613467">စတင်စင့်ခ်လုပ်ရန် ပြန်လည်လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="6204781143409202534">Chrome သည် <ph name="DOMAIN" /> မှ စပမ်းဖြစ်နိုင်သည်ကို တွေ့ရှိသည်။</translation>
 <translation id="6205314730813004066">ကြော်ငြာဆိုင်ရာ အချက်အလက်လုံခြုံမှု</translation>
+<translation id="6210282067670792090">ရှာဖွေရေး အင်ဂျင်များနှင့် Site Search အတွက် ဖြတ်လမ်းလင့်ခ်များ ပါဝင်သော ဤလက်ကွက်ဖြတ်လမ်းကို လိပ်စာ ဘားတွင် အသုံးပြုပါ</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> မဟုတ်ဘူးလား။</translation>
 <translation id="6211386937064921208">ဤစာမျက်နှာကို အစမ်းကြည့်ရှုနေသည်</translation>
 <translation id="6212567362666004597">အုပ်စုသို့ တဘ်ထည့်ရန်</translation>
@@ -1353,6 +1354,7 @@
 <translation id="6647441008198474441">နောက်တစ်ကြိမ် သင်ဝင်ကြည့်မည့် ဝဘ်ဆိုက်များကို ခန့်မှန်းရန် သင်ကြည့်ထားသော URL များကို Google သို့ ပို့သည်</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ခု}other{<ph name="CONTACT_PREVIEW" />\u2026 နှင့် နောက်ထပ် <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> ခု}}</translation>
 <translation id="6649642165559792194">ပုံအစမ်းကြည့်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">တဘ်</translation>
 <translation id="6661521899577697780">‘Chrome တွေ့ရှိမှုများ’ ရယူခြင်း မြင်ကွင်းတစ်ဝက် ဖွင့်ထားသည်</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> တွင်ဖွင့်မည်</translation>
 <translation id="6669390930482049506">ကျွန်ုပ်ကို အကြောင်းကြားရန်</translation>
@@ -1516,6 +1518,7 @@
 <translation id="7196215469483532480">ကိုယ်ရေးအချက်အလက်လုံခြုံမှုလမ်းညွှန် ရှင်းလင်းချက်ကို မြင်ကွင်းအပြည့်ဖွင့်ပြီးပြီ</translation>
 <translation id="7196455519852483601">သင့်မှတ်တမ်း၊ ကွတ်ကီးများ၊ ဝဘ်ဆိုက်ဒေတာစသည်တို့၏ အချို့ (သို့) အားလုံးကို ဖျက်နိုင်သည်</translation>
 <translation id="7197682514647286393">ကြည့်ထားသောဒေတာ အမြန်ဖျက်ခြင်း</translation>
+<translation id="719791532916917144">လက်ကွက်ဖြတ်လမ်းများ</translation>
 <translation id="7207760545532569765">နောက်ခံတဘ်အသစ်များအဖြစ် တဘ် <ph name="TAB_COUNT" /> ခုကို ပြန်ယူနိုင်ပါသည်။</translation>
 <translation id="7217781228893594884">Chrome မှ ထွက်သောအခါ ‘ရုပ်ဖျက်တဘ်များ’ ကို လော့ခ်ချပါမည်</translation>
 <translation id="7221869452894271364">ဤစာမျက်နှာအား ပြန်ဖွင်</translation>
@@ -1714,6 +1717,7 @@
 <translation id="7998918019931843664">ပိတ်ထားသည့် တဲဘ်ကို ပြန်ဖွင့်ရန်</translation>
 <translation id="8001245658307297681">သင်သည် စက်အတွင်းရှိဖိုင်ကို ကြည့်နေပါသည်</translation>
 <translation id="8004582292198964060">ဘရောင်ဇာ</translation>
+<translation id="8006630792898017994">Space (သို့) တဘ်</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />၊ တစ်ခုထက်ပိုရွေးထားပြီး ပင်ထိုးထားသည့် မျှဝေနေသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="8025972204417227828">အသစ်ထည့်ရန်</translation>
 <translation id="8027863900915310177">ဒေါင်းလုဒ်လုပ်ရန်နေရာ ရွေးခြင်း</translation>

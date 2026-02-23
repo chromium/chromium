@@ -3347,6 +3347,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3248902735035392926">La seguretat és important. Dedica ara un moment a <ph name="BEGIN_LINK" />consultar les extensions<ph name="END_LINK" />.</translation>
 <translation id="3251119461199395237">Sincronització de fitxers</translation>
 <translation id="3251759466064201842">&lt;No forma part del certificat&gt;</translation>
+<translation id="3252169590975855820">Pots accedir-hi des del gestor de contrasenyes de Google</translation>
 <translation id="325238099842880997">Defineix regles digitals bàsiques per ajudar els nens a jugar, explorar i fer el treball escolar a casa</translation>
 <translation id="3253225298092156258">No disponible</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Allibera espai a <ph name="CLOUD_PROVIDER" /> per copiar aquest fitxer}other{Allibera espai a <ph name="CLOUD_PROVIDER" /> per copiar aquests fitxers}}</translation>
@@ -9840,7 +9841,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="7697109152153663933">Fes clic a Contrasenyes i emplenament automàtic</translation>
 <translation id="769824636077131955">Aquest document és massa gran per fer-hi una comprovació de seguretat. Pots imprimir documents de fins a 50 MB.</translation>
 <translation id="7698507637739331665">Alguns elements estan bloquejats</translation>
-<translation id="7700176975240938448">Obre fàcilment prement <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Impressores i escàners</translation>
 <translation id="7700873336634517379">No, continua utilitzant-lo per al centre educatiu en aquest perfil</translation>
 <translation id="7701040980221191251">Cap</translation>
@@ -11471,6 +11471,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8781834595282316166">Pestanya nova al grup</translation>
 <translation id="8781980678064919987">Apaga quan es tanqui la tapa</translation>
 <translation id="8782565991310229362">S'ha cancel·lat l'inici de l'aplicació de quiosc.</translation>
+<translation id="8783171585655659524">Inclou una captura de pantalla</translation>
 <translation id="8783834180813871000">Escriu el codi de vinculació per Bluetooth i, a continuació, prem Retorn.</translation>
 <translation id="8784626084144195648">Mitjana descartada</translation>
 <translation id="8785622406424941542">Llapis òptic</translation>
@@ -11646,6 +11647,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requereix que creïs una còpia de seguretat de les teves dades i que tornis aquest dispositiu <ph name="DEVICE_TYPE" /> avui.}other{<ph name="MANAGER" /> requereix que creïs una còpia de seguretat de les teves dades i que tornis aquest dispositiu <ph name="DEVICE_TYPE" /> abans del termini establert.}}</translation>
 <translation id="8902667442496790482">Obre la configuració d'Escolta la selecció</translation>
 <translation id="8903733144777177139">L'accés al micròfon està bloquejat</translation>
+<translation id="8904787158537906492">Enllaç copiat al porta-retalls</translation>
 <translation id="890518297681039136">Ha fallat l'operació a causa d'un motiu desconegut.</translation>
 <translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" /> ha creat una contrasenya segura per a aquest lloc web</translation>
 <translation id="890616557918890486">Canvia la font</translation>

@@ -1231,6 +1231,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="6202812185118613467">Sünkroonimise alustamiseks logige uuesti sisse</translation>
 <translation id="6204781143409202534">Chrome tuvastas võimaliku rämpsposti domeenilt <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Reklaamide privaatsus</translation>
+<translation id="6210282067670792090">Kasutage aadressiribal seda klaviatuuriotseteed koos otsingumootorite ja saidi otsingu otseteedega</translation>
 <translation id="6210748933810148297">Kas pole <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Selle lehe eelvaade</translation>
 <translation id="6212567362666004597">Lisa vaheleht gruppi</translation>
@@ -1354,6 +1355,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6647441008198474441">Teie külastatavad URL-id saadetakse Google'ile, et prognoosida, milliseid saite võiksite järgmisena külastada</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 ja veel <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Kujutise eelvaade <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tabulaator</translation>
 <translation id="6661521899577697780">Chrome Findsi lubamine on avatud poolel kõrgusel</translation>
 <translation id="666731172850799929">Ava rakenduses <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Teavita mind</translation>
@@ -1517,6 +1519,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7196215469483532480">Privaatsusjuhendi selgitus on avatud täiskõrgusel</translation>
 <translation id="7196455519852483601">Saate kustutada osa või kogu oma ajaloo, küpsisefailid, saidiandmed ja palju muud</translation>
 <translation id="7197682514647286393">Kustutage sirvimisandmed kiirelt</translation>
+<translation id="719791532916917144">Klaviatuuri otsetee</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> vahelehe taastamine uute taustal olevate vahelehtedena.</translation>
 <translation id="7217781228893594884">Chrome'ist lahkumisel lukustatakse inkognito vahelehed</translation>
 <translation id="7221869452894271364">Laadi see lehekülg uuesti</translation>
@@ -1715,6 +1718,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7998918019931843664">Suletud vahelehe uuesti avamine</translation>
 <translation id="8001245658307297681">Vaatate kohalikku faili</translation>
 <translation id="8004582292198964060">Brauser</translation>
+<translation id="8006630792898017994">Tühik või tabulaator</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, mitmikvalikuga kinnitatud jagav inkognito vaheleht</translation>
 <translation id="8025972204417227828">Uue lisamine</translation>
 <translation id="8027863900915310177">Valige, kuhu alla laadida</translation>

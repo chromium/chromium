@@ -3350,6 +3350,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3248902735035392926">Xavfsizlik muhim ahamiyatga ega. Vaqt ajrating va hoziroq <ph name="BEGIN_LINK" />kengaytmalaringizni tekshiring<ph name="END_LINK" /></translation>
 <translation id="3251119461199395237">Fayllar sinxronlanishi</translation>
 <translation id="3251759466064201842">&lt;Sertifikat qismi hisoblanmaydi&gt;</translation>
+<translation id="3252169590975855820">Unga Google Parollar menejerida kirish mumkin</translation>
 <translation id="325238099842880997">Farzandning oʻynashi, saytlarni ochishi va uy vazifasini bajarishi uchun raqamli qoidalarni belgilash</translation>
 <translation id="3253225298092156258">Mavjud emas</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Bu fayldan nusxa koʻchirish uchun <ph name="CLOUD_PROVIDER" /> xizmatida boʻsh joy oching}other{Bu fayllardan nusxa koʻchirish uchun <ph name="CLOUD_PROVIDER" /> xizmatida boʻsh joy oching}}</translation>
@@ -9849,7 +9850,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="7697109152153663933">“Parol va avtomatik kiritish” ustiga bosish</translation>
 <translation id="769824636077131955">Bu hujjat juda katta hajmdaligi uchun uni tekshirish imkonsiz. 50 MBdan katta hajmdagi hujjatlar chop etilmaydi.</translation>
 <translation id="7698507637739331665">Ayrim fayllar bloklandi</translation>
-<translation id="7700176975240938448"><ph name="FOCUS_TOGGLE_HOTKEY" /> bilan oson oching</translation>
 <translation id="7700516433658473670">Printerlar va skanerlar</translation>
 <translation id="7700873336634517379">Yoʻq, maktabda shu profildan foydalanishda davom etish</translation>
 <translation id="7701040980221191251">Hech qanday</translation>
@@ -11479,6 +11479,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="8781834595282316166">Joriy guruhda yangi varaq ochish</translation>
 <translation id="8781980678064919987">Qurilma yopilganda ishni yakunlash</translation>
 <translation id="8782565991310229362">Kiosk ilovasi ishga tushirilishi bekor qilindi.</translation>
+<translation id="8783171585655659524">Skrinshot yuborilsin</translation>
 <translation id="8783834180813871000">Bluetooth ulanish kodini kiriting va keyin Return yoki Enter tugmasini bosing.</translation>
 <translation id="8784626084144195648">Guruhlar bo‘yicha o‘rtachasi</translation>
 <translation id="8785622406424941542">Stilus</translation>
@@ -11655,6 +11656,7 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> maʼlumotlaringizni zaxiralash va bu <ph name="DEVICE_TYPE" /> qurilmasini bugunoq qaytarishingizni talab qilmoqda.}other{<ph name="MANAGER" /> maʼlumotlaringizni zaxiralash va bu <ph name="DEVICE_TYPE" /> qurilmasini bugunoq qaytarishingizni talab qilmoqda.}}</translation>
 <translation id="8902667442496790482">Teginib tinglash sozlamalarini ochish</translation>
 <translation id="8903733144777177139">Mikrofonga ruxsat bloklandi</translation>
+<translation id="8904787158537906492">Havoladan nusxa olindi</translation>
 <translation id="890518297681039136">Amal noaniq sabab tufayli bajarilmadi.</translation>
 <translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" /> bu sayt uchun kuchli parol yaratgan</translation>
 <translation id="890616557918890486">Manbani almashtirish</translation>

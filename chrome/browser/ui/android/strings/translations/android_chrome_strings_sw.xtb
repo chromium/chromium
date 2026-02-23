@@ -1231,6 +1231,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="6202812185118613467">Ingia tena katika akaunti ili uanze kusawazisha</translation>
 <translation id="6204781143409202534">Chrome imetambua uwezekano wa taka kutoka kwa <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Faragha ya matangazo</translation>
+<translation id="6210282067670792090">Katika sehemu ya anwani, tumia mikato hii ya kibodi pamoja na njia za mkato za mitambo ya kutafuta na utafutaji wa tovuti</translation>
 <translation id="6210748933810148297">Wewe si <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Unaangalia onyesho la kukagua ukurasa huu</translation>
 <translation id="6212567362666004597">Weka kichupo kwenye kikundi</translation>
@@ -1354,6 +1355,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6647441008198474441">URL unazotembelea hutumwa kwa Google ili kutabiri tovuti ambazo huenda ukazitembelea baadaye</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 na <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> zaidi}other{<ph name="CONTACT_PREVIEW" />\u2026 na <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> zaidi}}</translation>
 <translation id="6649642165559792194">Kagua picha kwanza <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Kichupo</translation>
 <translation id="6661521899577697780">Umefungua dirisha la kuchagua kupokea arifa za Chrome Finds katika hali ya skrini nusu</translation>
 <translation id="666731172850799929">Fungua katika <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Niarifu</translation>
@@ -1517,6 +1519,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7196215469483532480">Maelezo kuhusu mwongozo wa faragha yamefunguliwa kwenye skrini nzima</translation>
 <translation id="7196455519852483601">Unaweza kufuta vyote au baadhi ya historia, vidakuzi, data yako ya tovuti na zaidi</translation>
 <translation id="7197682514647286393">Futa data ya kuvinjari kwa haraka</translation>
+<translation id="719791532916917144">Mikato ya kibodi</translation>
 <translation id="7207760545532569765">Rejesha vichupo <ph name="TAB_COUNT" /> viwe vichupo vipya vinavyofanya kazi chinichini.</translation>
 <translation id="7217781228893594884">Vichupo fiche vitafungwa utakapoondoka kwenye Chrome</translation>
 <translation id="7221869452894271364">Pakia ukurasa huu upya</translation>
@@ -1715,6 +1718,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7998918019931843664">Fungua tena kichupo kilichofungwa</translation>
 <translation id="8001245658307297681">Unaangalia faili iliyo kwenye kifaa</translation>
 <translation id="8004582292198964060">Kivinjari</translation>
+<translation id="8006630792898017994">Kitufe cha Nafasi au Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, Umechagua Mara Nyingi Kichupo cha Faragha Kinachowasilisha ambacho Ulibandika</translation>
 <translation id="8025972204417227828">Weka kipya</translation>
 <translation id="8027863900915310177">Chagua ambako utahifadhi faili ya kupakuliwa</translation>

@@ -1230,6 +1230,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6202812185118613467">सिंक गर्न थाल्न फेरि साइन इन गर्नुहोस्</translation>
 <translation id="6204781143409202534">Chrome ले <ph name="DOMAIN" /> ले पठाएको नोटिफिकेसनमा स्प्याम हुन सक्ने कुरा पत्ता लगाएको छ।</translation>
 <translation id="6205314730813004066">विज्ञापनको गोपनीयता</translation>
+<translation id="6210282067670792090">एड्रेस बारमा सर्च इन्जिन र साइटमा खोज्ने विभिन्न सर्टकट समावेश भएको यो किबोर्ड सर्टकट प्रयोग गर्नुहोस्</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> होइन?</translation>
 <translation id="6211386937064921208">यो पृष्ठको प्रिभ्यु हेरिँदै छ</translation>
 <translation id="6212567362666004597">यो ट्याब समूहमा हाल्नुहोस्</translation>
@@ -1353,6 +1354,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6647441008198474441">तपाईंले यसपछि खोल्न सक्ने साइट पूर्वानुमान गर्ने प्रयोजनका लागि तपाईंले खोल्ने URL हरू Google मा पठाइन्छन्</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}other{<ph name="CONTACT_PREVIEW" />\u2026 र <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> थप}}</translation>
 <translation id="6649642165559792194"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> छविको पूर्वावलोकन गर्नुहोस्</translation>
+<translation id="6659594942844771486">ट्याब</translation>
 <translation id="6661521899577697780">Chrome Finds अन गर्ने विकल्प आधा स्क्रिनमा खोलिएको छ</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> मा खोल्नुहोस्</translation>
 <translation id="6669390930482049506">मलाई नोटिफिकेसन पठाउनुहोस्</translation>
@@ -1516,6 +1518,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7196215469483532480">गोपनीयतासम्बन्धी मार्गदर्शनको वर्णन स्क्रिनको पूरा भाग ओगट्ने गरी खोलिएको छ</translation>
 <translation id="7196455519852483601">तपाईं आफ्ना केही वा सबै हिस्ट्री, कुकी, साइट डेटा र अन्य कुरा मेटाउन सक्नुहुन्छ</translation>
 <translation id="7197682514647286393">आफ्नो ब्राउजिङ डेटा तुरुन्तै मेटाउनुहोस्</translation>
+<translation id="719791532916917144">किबोर्डको सर्टकट</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> वटा ट्याब रिस्टोर गरी नयाँ ब्याकग्राउन्ड ट्याब समूह बनाउनुहोस्।</translation>
 <translation id="7217781228893594884">तपाईं Chrome बाट बाहिरिँदा इन्कोग्निटो ट्याबहरू लक गरिने छन्</translation>
 <translation id="7221869452894271364">यस पृष्ठलाई रिलोड गर्नुहोस्</translation>
@@ -1714,6 +1717,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7998918019931843664">बन्द ट्याब पुन: खोल्नुहोस्</translation>
 <translation id="8001245658307297681">तपाईं डिभाइसमा भएको फाइल हेर्दै हुनुहुन्छ</translation>
 <translation id="8004582292198964060">ब्राउजर</translation>
+<translation id="8006630792898017994">स्पेस वा ट्याब की</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, एकभन्दा बढी विकल्प चयन गरिएको पिन गरिएको सेयरिङ इन्कोग्निटो ट्याब</translation>
 <translation id="8025972204417227828">नयाँ सर्टकट हाल्नुहोस्</translation>
 <translation id="8027863900915310177">कहाँ डाउनलोड गर्ने भन्ने कुरा छनौट गर्नुहोस्</translation>

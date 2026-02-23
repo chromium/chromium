@@ -1233,6 +1233,7 @@
 <translation id="6202812185118613467">Увійдіть знову, щоб почати синхронізацію</translation>
 <translation id="6204781143409202534">Вебпереглядач Chrome виявив можливий спам із домену <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Конфіденційність у рекламі</translation>
+<translation id="6210282067670792090">Використайте в адресному рядку цю комбінацію клавіш і команду для пошукових систем та пошуку на сайтах</translation>
 <translation id="6210748933810148297">Не <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Попередній перегляд цієї сторінки</translation>
 <translation id="6212567362666004597">Додати вкладку в групу</translation>
@@ -1356,6 +1357,7 @@
 <translation id="6647441008198474441">URL-адреси сторінок, які ви відвідуєте, надсилаються в Google, щоб ми могли передбачити, які сайти ви можете відвідати наступними</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}many{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 і ще <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Переглянути зображення <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Вкладка</translation>
 <translation id="6661521899577697780">Екран "Увімкнути Chrome Finds" відкрито на половину висоти</translation>
 <translation id="666731172850799929">Відкрити в програмі <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Сповіщати мене</translation>
@@ -1520,6 +1522,7 @@
 <translation id="7196215469483532480">Пояснення про посібник щодо конфіденційності відкрито на всю висоту</translation>
 <translation id="7196455519852483601">Ви можете частково або повністю видалити історію, файли cookie, дані сайтів тощо</translation>
 <translation id="7197682514647286393">Швидко видаляйте дані перегляду</translation>
+<translation id="719791532916917144">Комбінація клавіш</translation>
 <translation id="7207760545532569765">Відновити вкладки (<ph name="TAB_COUNT" />) як нові фонові вкладки.</translation>
 <translation id="7217781228893594884">Анонімні вкладки блокуватимуться після закриття Chrome</translation>
 <translation id="7221869452894271364">Перезавантажити цю сторінку</translation>
@@ -1718,6 +1721,7 @@
 <translation id="7998918019931843664">Знову відкрити закриту вкладку</translation>
 <translation id="8001245658307297681">Ви переглядаєте локальний файл</translation>
 <translation id="8004582292198964060">Переглядач</translation>
+<translation id="8006630792898017994">Пробіл або Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" /> (одна з вибраних анонімних вкладок, яку закріплено й до якої надано доступ іншим користувачам)</translation>
 <translation id="8025972204417227828">Додати</translation>
 <translation id="8027863900915310177">Виберіть, куди завантажити файл</translation>

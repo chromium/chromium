@@ -1232,6 +1232,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="6202812185118613467">Melde dich wieder an, um die Synchronisierung zu starten</translation>
 <translation id="6204781143409202534">Chrome hat möglicherweise Spam von <ph name="DOMAIN" /> erkannt.</translation>
 <translation id="6205314730813004066">Datenschutz bei Anzeigen</translation>
+<translation id="6210282067670792090">Verwende in der Adressleiste diese Tastenkombination zusammen mit den Kürzeln für Suchmaschinen und die Websitesuche</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ist nicht deine E-Mail-Adresse?</translation>
 <translation id="6211386937064921208">Vorschau für diese Seite</translation>
 <translation id="6212567362666004597">Tab zu Gruppe hinzufügen</translation>
@@ -1355,6 +1356,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6647441008198474441">URLs von Websites, die du besuchst, werden an Google gesendet, um Prognosen zu erstellen, welche Websites du voraussichtlich als Nächstes besuchen wirst</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weitere}other{<ph name="CONTACT_PREVIEW" />\u2026 und <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> weitere}}</translation>
 <translation id="6649642165559792194">Bildvorschau <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6661521899577697780">Ansicht zur Aktivierung von „Chrome Finds“ am unteren Rand halb geöffnet</translation>
 <translation id="666731172850799929">In <ph name="APP_NAME" /> öffnen</translation>
 <translation id="6669390930482049506">Benachrichtigen</translation>
@@ -1519,6 +1521,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7196215469483532480">Erläuterungen zum Datenschutz-Leitfaden sind vollständig geöffnet</translation>
 <translation id="7196455519852483601">Du kannst deinen Verlauf, deine Cookies, deine Websitedaten und mehr teilweise oder vollständig löschen</translation>
 <translation id="7197682514647286393">Browserdaten schnell löschen</translation>
+<translation id="719791532916917144">Tastenkürzel</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> Tabs als neue Tabs im Hintergrund wiederherstellen.</translation>
 <translation id="7217781228893594884">Inkognitotabs werden gesperrt, wenn du Chrome schließt</translation>
 <translation id="7221869452894271364">Diese Seite neu laden</translation>
@@ -1717,6 +1720,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7998918019931843664">Geschlossenen Tab wieder öffnen</translation>
 <translation id="8001245658307297681">Du siehst gerade eine lokale Datei</translation>
 <translation id="8004582292198964060">Browser</translation>
+<translation id="8006630792898017994">Leertaste oder Tabulatortaste</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, mehrfach ausgewählter, angepinnter Inkognitotab für die Freigabe</translation>
 <translation id="8025972204417227828">Neue hinzufügen</translation>
 <translation id="8027863900915310177">Speicherort auswählen</translation>

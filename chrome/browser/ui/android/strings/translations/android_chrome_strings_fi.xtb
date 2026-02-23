@@ -1231,6 +1231,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="6202812185118613467">Kirjaudu takaisin sisään, jotta voit aloittaa synkronoinnin</translation>
 <translation id="6204781143409202534">Chrome havaitsi mahdollisen roskapostin osoitteesta <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Mainosyksityisyys</translation>
+<translation id="6210282067670792090">Käytä tätä pikanäppäintä osoitepalkissa hakukoneiden ja sivustohaun pikakomentojen kanssa</translation>
 <translation id="6210748933810148297">Etkö ole <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Tätä sivua esikatsellaan</translation>
 <translation id="6212567362666004597">Lisää välilehti ryhmään</translation>
@@ -1354,6 +1355,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6647441008198474441">Avaamasi URL-osoitteet lähetetään Googlelle, jotta seuraavaksi mahdollisesti avaamasi sivustot voidaan ennakoida</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> muu}other{<ph name="CONTACT_PREVIEW" />\u2026 ja <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> muuta}}</translation>
 <translation id="6649642165559792194">Esikatsele kuva <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Sarkain</translation>
 <translation id="6661521899577697780">Chrome Finds ‑käyttöönotto avattu puoliksi</translation>
 <translation id="666731172850799929">Avaa sovelluksessa <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Ilmoita minulle</translation>
@@ -1517,6 +1519,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7196215469483532480">Yksityisyysoppaan selitys kokonaan avattuna</translation>
 <translation id="7196455519852483601">Voit poistaa mm. historian, evästeet ja sivustodatan osittain tai kokonaan</translation>
 <translation id="7197682514647286393">Poista selausdata nopeasti</translation>
+<translation id="719791532916917144">Pikanäppäin</translation>
 <translation id="7207760545532569765">Palauta <ph name="TAB_COUNT" /> välilehteä uusina taustavälilehtinä.</translation>
 <translation id="7217781228893594884">Incognito-välilehdet lukitaan, kun poistut Chromesta</translation>
 <translation id="7221869452894271364">Lataa tämä sivu uudelleen</translation>
@@ -1715,6 +1718,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7998918019931843664">Avaa suljettu välilehti uudelleen</translation>
 <translation id="8001245658307297681">Katselet paikallista tiedostoa</translation>
 <translation id="8004582292198964060">Selain</translation>
+<translation id="8006630792898017994">Välilyönti tai sarkain</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, monivalittu kiinnitetty incognito-välilehti, jonka sisältöä jaetaan</translation>
 <translation id="8025972204417227828">Lisää uusi</translation>
 <translation id="8027863900915310177">Valitse latauspaikka</translation>

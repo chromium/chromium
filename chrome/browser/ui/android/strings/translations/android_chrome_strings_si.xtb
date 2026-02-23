@@ -1231,6 +1231,7 @@
 <translation id="6202812185118613467">සමමුහුර්ත කිරීම ආරම්භ කිරීමට නැවත පුරන්න</translation>
 <translation id="6204781143409202534"><ph name="DOMAIN" /> වෙතින් අයාචිත වීමට හැකි දේ Chrome විසින් අනාවරණය කර ගන්නා ලදි.</translation>
 <translation id="6205314730813004066">දැන්වීම් පෞද්ගලිකත්වය</translation>
+<translation id="6210282067670792090">ලිපින තීරුව තුළ, සෙවීම් යන්ත්‍ර සහ අඩවි සෙවීම සඳහා කෙටි මං සහිත මෙම යතුරු පුවරු කෙටි මඟ භාවිත කරන්න</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> නොවේද?</translation>
 <translation id="6211386937064921208">මෙම පිටුව පෙරදසුන් කරමින්</translation>
 <translation id="6212567362666004597">සමූහයට පටිත්ත එක් කරන්න</translation>
@@ -1354,6 +1355,7 @@
 <translation id="6647441008198474441">ඔබ පිවිසෙන URL ඔබ මීළඟට පිවිසිය හැකි අඩවි මොනවාදැයි පුරෝකථනය කිරීමට Google වෙත යවනු ලැබේ</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />... සහ තවත් <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">රූපය පෙරදකින්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">පටිත්ත</translation>
 <translation id="6661521899577697780">Chrome සොයා ගැනීම් තෝරා ගැනීම අඩ උසින් විවෘත විය</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> තුළ විවෘත කරන්න</translation>
 <translation id="6669390930482049506">මට දන්වන්න</translation>
@@ -1517,6 +1519,7 @@
 <translation id="7196215469483532480">පෞද්ගලිකත්ව මාර්ගෝපදේශ පැහැදිලි කිරීම පූර්ණ උසකින් විවෘත වේ</translation>
 <translation id="7196455519852483601">ඔබට ඔබේ ඉතිහාසය, කුකී, අඩවි දත්ත, සහ තවත් දේ හෝ සියල්ල මකා දැමිය හැක</translation>
 <translation id="7197682514647286393">ඔබේ බ්‍රවුස් කිරීමේ දත්ත ඉක්මනින් මකන්න</translation>
+<translation id="719791532916917144">යතුරු පුවරු කෙටි මඟ</translation>
 <translation id="7207760545532569765">නව පසුබිම් ටැබ සමූහයක් ලෙස ටැබ <ph name="TAB_COUNT" />ක් ප්‍රතිසාධනය කරන්න.</translation>
 <translation id="7217781228893594884">ඔබ Chrome වෙතින් පිටවන විට අප්‍රකට පටිති අගුළු දමනු ඇත</translation>
 <translation id="7221869452894271364">මෙම පිටුව නැවත ලබාගන්න</translation>
@@ -1715,6 +1718,7 @@
 <translation id="7998918019931843664">වැසූ ටැබය යළි විවෘත කරන්න</translation>
 <translation id="8001245658307297681">ඔබ දේශීය ගොනුවක් බලමින් සිටී</translation>
 <translation id="8004582292198964060">බ්‍රවුසරය</translation>
+<translation id="8006630792898017994">ඉඩ හෝ ටැබ</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, බහු-තේරූ ඇමිණූ බෙදා ගැනීමේ අප්‍රකට පටිත්ත</translation>
 <translation id="8025972204417227828">අලුත් එකක් එක් කරන්න</translation>
 <translation id="8027863900915310177">බාගන්නා ස්ථානය තෝරා ගන්න</translation>

@@ -1232,6 +1232,7 @@
 <translation id="6202812185118613467">सिंक सुरू करण्यासाठी पुन्हा साइन इन करा</translation>
 <translation id="6204781143409202534">Chrome ने <ph name="DOMAIN" /> कडील संभाव्य स्पॅम डिटेक्ट केले आहे.</translation>
 <translation id="6205314730813004066">जाहिरातींशी संबंधित गोपनीयता</translation>
+<translation id="6210282067670792090">अ‍ॅड्रेस बारमध्ये, शोध इंजिन आणि साइट शोधासाठी शॉर्टकटसह हा कीबोर्ड शॉर्टकट वापरा</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> नाही?</translation>
 <translation id="6211386937064921208">या पेजचे पूर्वावलोकन करत आहे</translation>
 <translation id="6212567362666004597">गटामध्ये टॅब जोडा</translation>
@@ -1355,6 +1356,7 @@
 <translation id="6647441008198474441">तुम्ही भेट देता त्या URLs तुम्ही पुढे कोणत्या साइटला भेट देऊ शकता याचा अंदाज घेण्यासाठी Google ला पाठवल्या जातात</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अधिक}other{<ph name="CONTACT_PREVIEW" />\u2026 आणि <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> अधिक}}</translation>
 <translation id="6649642165559792194">इमेज <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /> चे पूर्वावलोकन करा</translation>
+<translation id="6659594942844771486">टॅब</translation>
 <translation id="6661521899577697780">Chrome Finds ची निवड अर्ध्या उंचीवर उघडली आहे</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> मध्ये उघडा</translation>
 <translation id="6669390930482049506">मला सूचित करा</translation>
@@ -1519,6 +1521,7 @@
 <translation id="7196215469483532480">गोपनीयता मार्गदर्शक स्पष्टीकरण पूर्ण उंचीवर उघडले आहे</translation>
 <translation id="7196455519852483601">तुम्ही तुमचा काही किंवा सर्व इतिहास, कुकी, साइट डेटा आणि आणखी बऱ्याच गोष्टी हटवू शकता</translation>
 <translation id="7197682514647286393">तुमचा ब्राउझिंग डेटा झटपट हटवा</translation>
+<translation id="719791532916917144">कीबोर्ड शॉर्टकट</translation>
 <translation id="7207760545532569765">नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TAB_COUNT" /> टॅब रिस्टोअर करा.</translation>
 <translation id="7217781228893594884">तुम्ही Chrome मधून बाहेर पडता, तेव्हा गुप्त टॅब लॉक केले जातील</translation>
 <translation id="7221869452894271364">हे पेज रीलोड करा</translation>
@@ -1717,6 +1720,7 @@
 <translation id="7998918019931843664">बंद केलेले टॅब पुन्हा उघडा</translation>
 <translation id="8001245658307297681">तुम्ही स्थानिक फाइल पाहत आहात</translation>
 <translation id="8004582292198964060">ब्राउझर</translation>
+<translation id="8006630792898017994">स्पेस किंवा टॅब</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला पिन केलेला शेअर करत असलेला गुप्त टॅब</translation>
 <translation id="8025972204417227828">नवीन जोडा</translation>
 <translation id="8027863900915310177">कुठे डाउनलोड करायची आहे ते निवडा</translation>

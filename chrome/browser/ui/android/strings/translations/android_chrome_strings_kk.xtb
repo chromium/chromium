@@ -1231,6 +1231,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6202812185118613467">Синхрондауды бастау үшін қайтадан кіріңіз.</translation>
 <translation id="6204781143409202534">Chrome браузері <ph name="DOMAIN" /> доменінен спам болуы мүмкін хабарландыруды анықтады.</translation>
 <translation id="6205314730813004066">Жарнамадағы құпиялық</translation>
+<translation id="6210282067670792090">Мекенжай жолағында іздеу жүйелері мен сайтта іздеуге арналған жылдам пәрмендер мен перне тіркесімдерін пайдаланыңыз.</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> емес пе?</translation>
 <translation id="6211386937064921208">Осы беттің алдын ала көрінісі</translation>
 <translation id="6212567362666004597">Топқа қойынды қосу</translation>
@@ -1354,6 +1355,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6647441008198474441">Сіз кірген URL мекенжайлары Google-ға жіберіледі. Осылайша Google келесіде қандай сайтқа кіруіңіз мүмкін екендігін болжай алады.</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 және тағы <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Кескінді алдын ала көру <ph name="BEGIN_NEW" />Жаңа<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Қойынды</translation>
 <translation id="6661521899577697780">Chrome Finds мүмкіндігін қосу терезесі жартылай ашылды.</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> арқылы ашу</translation>
 <translation id="6669390930482049506">Хабарландыру алу</translation>
@@ -1517,6 +1519,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7196215469483532480">Құпиялық нұсқаулығы туралы түсіндірме толық ашылды.</translation>
 <translation id="7196455519852483601">Тарих деректерінің, cookie файлдарының, сайт деректерінің және басқа деректердің кейбірін немесе барлығын жоюға болады.</translation>
 <translation id="7197682514647286393">Шолу деректерін жылдам жойыңыз</translation>
+<translation id="719791532916917144">Пернелер тіркесімі</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> қойындыны жаңа фондық қойындылар ретінде қалпына келтіру.</translation>
 <translation id="7217781228893594884">Инкогнито қойындылары Chrome-нан шыққан кезде құлыпталады.</translation>
 <translation id="7221869452894271364">Бұл бетті қайта жүктеу</translation>
@@ -1715,6 +1718,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7998918019931843664">Жабық қойындыны қайта ашу</translation>
 <translation id="8001245658307297681">Жергілікті файлды көріп жатырсыз.</translation>
 <translation id="8004582292198964060">Браузер</translation>
+<translation id="8006630792898017994">Бос орын немесе Tab пернесі</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, бөлісудің көп рет таңдалған, бекітілген инкогнито қойындысы</translation>
 <translation id="8025972204417227828">Жаңасын қосу</translation>
 <translation id="8027863900915310177">Жүктеп алу орнын таңдаңыз</translation>

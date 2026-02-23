@@ -727,6 +727,7 @@
 <translation id="4137746084635924146">Төхөөрөмжийн одоогийн хэл</translation>
 <translation id="414128724510021958">Өгөгдмөлөөр хүссэн компьютерын сайтууд</translation>
 <translation id="4162867837470729563">Бүтэн хэмжээтэйгээр хуваалцах сонголтын жагсаалт.</translation>
+<translation id="4165077084524712774">Бусад хэрэгсэл</translation>
 <translation id="4170011742729630528">Энэ үйлчилгээг авах боломжгүй байна; Та дараа дахин оролдоно уу.</translation>
 <translation id="4170577491341606575">Таны юмнуудыг авч байна\u2026</translation>
 <translation id="4177222230309051052">Бүх хавчуургаа аваарай</translation>
@@ -1232,6 +1233,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6202812185118613467">Синк хийж эхлэхийн тулд буцаж нэвтэрнэ үү</translation>
 <translation id="6204781143409202534">Chrome <ph name="DOMAIN" />-с болзошгүй спам илрүүллээ.</translation>
 <translation id="6205314730813004066">Зарын нууцлал</translation>
+<translation id="6210282067670792090">Хаяг оруулах хэсэгт хайлтын систем болон сайтын хайлтын товчлолтой хамт энэ товчлуурын шууд холбоосыг ашиглана уу</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> биш үү?</translation>
 <translation id="6211386937064921208">Энэ хуудсыг урьдчилан үзэж байна</translation>
 <translation id="6212567362666004597">Табыг бүлэгт нэмэх</translation>
@@ -1355,6 +1357,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6647441008198474441">Таны зочилсон URL-г Google рүү илгээж, дараа нь ямар сайтад зочилж болохыг таамаглах болно</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 болон бусад <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Зургийг урьдчилан үзэх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Таб</translation>
 <translation id="6661521899577697780">Chrome Finds-д нэгдэх сонголтыг тал өндрөөр нээсэн</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> дотор нээ</translation>
 <translation id="6669390930482049506">Надад мэдэгд</translation>
@@ -1463,6 +1466,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> цэсийг тодруулсан.</translation>
 <translation id="6983306615164277634">Та мөн байрлалыг өөрчлөхийн тулд хаяг оруулах хэсэгт хүрээд удаан дарах боломжтой.</translation>
 <translation id="6987047470128880212">Нууцлалтай таб энэ төхөөрөмж дээр боломжгүй</translation>
+<translation id="6989358895283601928">Хадгалаад, хэвлэх</translation>
 <translation id="6996145122199359148">Энэ хуудсыг татах</translation>
 <translation id="7013762323294215682">Энэ нэвтрэх түлхүүрийг таны нууц үгний менежерт хадгална. Үүнд хандах эрхтэй дурын хүн энэ нэвтрэх түлхүүрийг ашиглах боломжтой болно.</translation>
 <translation id="7020741890149022655">Унших жагсаалтад нэмэх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
@@ -1518,6 +1522,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7196215469483532480">Нууцлалын хөтчийн тайлбарыг бүтэн хэмжээгээр нээсэн</translation>
 <translation id="7196455519852483601">Та зарим эсвэл бүх түүх, күүки, сайтын өгөгдөл болон бусад зүйлээ устгах боломжтой</translation>
 <translation id="7197682514647286393">Интернэтээр үзсэн өгөгдлөө устга</translation>
+<translation id="719791532916917144">Товчлуурын шууд холбоос</translation>
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> табыг шинэ дэвсгэр табаар сэргээнэ үү.</translation>
 <translation id="7217781228893594884">Таныг Chrome-с гарах үед нууцлалтай табуудыг түгжинэ</translation>
 <translation id="7221869452894271364">Энэ хуудсыг дахин ачаалла</translation>
@@ -1716,6 +1721,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7998918019931843664">Хаагдсан цонхыг дахин нээх</translation>
 <translation id="8001245658307297681">Та дотоод файл үзэж байна</translation>
 <translation id="8004582292198964060">Хөтөч</translation>
+<translation id="8006630792898017994">Зай авах товч эсвэл Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, Олноороо сонгогдож, бэхлэгдсэн хуваалцаж буй нууцлалтай таб</translation>
 <translation id="8025972204417227828">Шинийг нэмэх</translation>
 <translation id="8027863900915310177">Хаана татаж авахыг сонгох</translation>

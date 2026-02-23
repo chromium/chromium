@@ -1233,6 +1233,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="6202812185118613467">Mewngofnodwch eto i ddechrau cysoni</translation>
 <translation id="6204781143409202534">Canfu Chrome sothach posib o <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Preifatrwydd hysbyseb</translation>
+<translation id="6210282067670792090">Yn y bar cyfeiriad, defnyddiwch y llwybr byr bysellfwrdd hwn gyda llwybrau byr ar gyfer peiriannau chwilio a chwilio gwefan</translation>
 <translation id="6210748933810148297">Nid <ph name="EMAIL" /> ydych chi?</translation>
 <translation id="6211386937064921208">Wrthi'n dangos rhagolwg o'r dudalen hon</translation>
 <translation id="6212567362666004597">Ychwanegu tab at grŵp</translation>
@@ -1356,6 +1357,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6647441008198474441">Anfonir cyfeiriadau URL rydych yn ymweld â nhw at Google i ragfynegi pa wefannau y mae'n bosib y byddwch yn ymweld â nhw nesaf</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ac <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> arall}zero{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> arall}two{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> arall}few{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> arall}many{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> arall}other{<ph name="CONTACT_PREVIEW" />\u2026 a <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> arall}}</translation>
 <translation id="6649642165559792194">Rhagweld y ddelwedd <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6661521899577697780">Mae dalen waelod optio mewn Chrome Finds wedi'i agor ar hanner uchder</translation>
 <translation id="666731172850799929">Agor yn <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Rhoi gwybod i mi</translation>
@@ -1520,6 +1522,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7196215469483532480">Esboniad canllaw preifatrwydd sydd wedi'i agor ar uchder llawn</translation>
 <translation id="7196455519852483601">Gallwch ddileu rhywfaint neu'r cyfan o'ch hanes, cwcis, data gwefan, a rhagor</translation>
 <translation id="7197682514647286393">Dileu eich data pori yn gyflym</translation>
+<translation id="719791532916917144">Llwybr byr bysellfwrdd</translation>
 <translation id="7207760545532569765">Adfer <ph name="TAB_COUNT" /> o dabiau fel tabiau cefndirol newydd.</translation>
 <translation id="7217781228893594884">Bydd tabiau anhysbys yn cael eu cloi pan fyddwch yn gadael Chrome</translation>
 <translation id="7221869452894271364">Ail-lwytho'r dudalen hon</translation>
@@ -1718,6 +1721,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7998918019931843664">Ailagor tab sydd wedi'i gau</translation>
 <translation id="8001245658307297681">Rydych yn edrych ar ffeil leol</translation>
 <translation id="8004582292198964060">Porwr</translation>
+<translation id="8006630792898017994">Space neu Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, Tab Anhysbys Rhannu wedi'i Binio a Aml-ddewisir</translation>
 <translation id="8025972204417227828">Ychwanegu newydd</translation>
 <translation id="8027863900915310177">Dewiswch ble i lawrlwytho</translation>

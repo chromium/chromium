@@ -1231,6 +1231,7 @@
 <translation id="6202812185118613467">ಸಿಂಕ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು ಮರಳಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6204781143409202534"><ph name="DOMAIN" /> ನಲ್ಲಿ ಸಂಭವನೀಯ ಸ್ಪ್ಯಾಮ್ ಅನ್ನು Chrome ಪತ್ತೆಹಚ್ಚಿದೆ.</translation>
 <translation id="6205314730813004066">ಜಾಹೀರಾತು ಗೌಪ್ಯತೆ</translation>
+<translation id="6210282067670792090">ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ, ಹುಡುಕಾಟ ಎಂಜಿನ್‌ಗಳು ಮತ್ತು ಸೈಟ್ ಹುಡುಕಾಟಕ್ಕಾಗಿ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳ ಜೊತೆಗೆ ಈ ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="6210748933810148297"><ph name="EMAIL" /> ಅಲ್ಲವೇ?</translation>
 <translation id="6211386937064921208">ಈ ಪುಟವನ್ನು ಪೂರ್ವವೀಕ್ಷಣೆ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6212567362666004597">ಗುಂಪಿಗೆ ಟ್ಯಾಬ್‌ ಸೇರಿಸಿ</translation>
@@ -1354,6 +1355,7 @@
 <translation id="6647441008198474441">ನೀವು ಮುಂದೆ ಯಾವ ಸೈಟ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಬಹುದು ಎಂಬುದನ್ನು ಊಹಿಸಲು ನೀವು ಭೇಟಿ ನೀಡುವ URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 ಮತ್ತು ಇನ್ನೂ <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">ಚಿತ್ರವನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಿ <ph name="BEGIN_NEW" />ಹೊಸದು<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">ಟ್ಯಾಬ್</translation>
 <translation id="6661521899577697780">Chrome Finds ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆಯನ್ನು ಅರ್ಧ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> ರಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="6669390930482049506">ನನಗೆ ತಿಳಿಸಿ</translation>
@@ -1518,6 +1520,7 @@
 <translation id="7196215469483532480">ಗೌಪ್ಯತೆ ಮಾರ್ಗಸೂಚಿಗಳು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="7196455519852483601">ನಿಮ್ಮ ಡೇಟಾದ ಒಂದಷ್ಟು ಭಾಗ ಅಥವಾ ಎಲ್ಲಾ ಇತಿಹಾಸ, ಕುಕೀಗಳು, ಸೈಟ್ ಡೇಟಾ ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ನೀವು ಅಳಿಸಬಹುದು</translation>
 <translation id="7197682514647286393">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾ ತ್ವರಿತವಾಗಿ ಅಳಿಸಿ</translation>
+<translation id="719791532916917144">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್</translation>
 <translation id="7207760545532569765">ಹೊಸ ಹಿನ್ನೆಲೆ ಟ್ಯಾಬ್‌ಗಳ ರೀತಿ <ph name="TAB_COUNT" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ.</translation>
 <translation id="7217781228893594884">ನೀವು Chrome ನಿಂದ ನಿರ್ಗಮಿಸಿದಾಗ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಲಾಕ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="7221869452894271364">ಈ ಪುಟವನ್ನು ರೀಲೋಡ್ ಮಾಡಿ</translation>
@@ -1716,6 +1719,7 @@
 <translation id="7998918019931843664">ಮುಚ್ಚಿದ ಟ್ಯಾಬ್ ಮತ್ತೆ ತೆರೆಯಿರಿ</translation>
 <translation id="8001245658307297681">ನೀವು ಸ್ಥಳೀಯ ಫೈಲ್ ಅನ್ನು ವೀಕ್ಷಿಸುತ್ತಿದ್ದೀರಿ</translation>
 <translation id="8004582292198964060">ಬ್ರೌಸರ್</translation>
+<translation id="8006630792898017994">ಸ್ಪೇಸ್ ಅಥವಾ ಟ್ಯಾಬ್</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, ಬಹು ಆಯ್ಕೆ ಮಾಡಿದ ಪಿನ್ ಮಾಡಿದ ಹಂಚಿಕೊಳ್ಳುವಿಕೆ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="8025972204417227828">ಹೊಸದನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="8027863900915310177">ಎಲ್ಲಿಗೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡಬೇಕೆಂದು ಆಯ್ಕೆಮಾಡಿ</translation>

@@ -727,6 +727,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="4137746084635924146">Bahasa perangkat saat ini</translation>
 <translation id="414128724510021958">Situs desktop diminta secara default</translation>
 <translation id="4162867837470729563">Daftar opsi berbagi terbuka sepenuhnya.</translation>
+<translation id="4165077084524712774">Alat lainnya</translation>
 <translation id="4170011742729630528">Layanan tidak tersedia; coba lagi nanti.</translation>
 <translation id="4170577491341606575">Mengambil data Anda\u2026</translation>
 <translation id="4177222230309051052">Dapatkan semua bookmark Anda</translation>
@@ -1231,6 +1232,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="6202812185118613467">Login kembali untuk memulai sinkronisasi</translation>
 <translation id="6204781143409202534">Chrome mendeteksi kemungkinan spam dari <ph name="DOMAIN" />.</translation>
 <translation id="6205314730813004066">Privasi iklan</translation>
+<translation id="6210282067670792090">Di kolom URL, gunakan pintasan keyboard ini dengan pintasan untuk mesin telusur dan penelusuran situs</translation>
 <translation id="6210748933810148297">Bukan <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">Melihat pratinjau halaman ini</translation>
 <translation id="6212567362666004597">Tambahkan tab ke grup</translation>
@@ -1354,6 +1356,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6647441008198474441">URL yang Anda buka akan dikirim ke Google untuk memprediksi situs yang mungkin Anda buka berikutnya</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lainnya}other{<ph name="CONTACT_PREVIEW" />\u2026 dan <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> lainnya}}</translation>
 <translation id="6649642165559792194">Lihat pratinjau gambar <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6661521899577697780">Pilihan untuk mengaktifkan Temuan Chrome terbuka setengah</translation>
 <translation id="666731172850799929">Buka di <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Beri tahu saya</translation>
@@ -1462,6 +1465,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6980258170429555165">Menu <ph name="MENU_NAME" /> ditandai.</translation>
 <translation id="6983306615164277634">Anda juga dapat menyentuh lama kolom URL untuk mengubah posisi.</translation>
 <translation id="6987047470128880212">Samaran tidak tersedia di perangkat ini</translation>
+<translation id="6989358895283601928">Simpan dan cetak</translation>
 <translation id="6996145122199359148">Download halaman ini</translation>
 <translation id="7013762323294215682">Kunci sandi ini akan disimpan ke pengelola sandi Anda. Siapa pun yang memiliki akses ke pengelola sandi akan dapat menggunakan kunci sandi ini.</translation>
 <translation id="7020741890149022655">Tambah ke daftar bacaan <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
@@ -1517,6 +1521,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7196215469483532480">Penjelasan panduan privasi terbuka sepenuhnya</translation>
 <translation id="7196455519852483601">Anda dapat menghapus sebagian atau semua histori, cookie, data situs, dan lainnya</translation>
 <translation id="7197682514647286393">Hapus data penjelajahan dengan cepat</translation>
+<translation id="719791532916917144">Pintasan keyboard</translation>
 <translation id="7207760545532569765">Pulihkan <ph name="TAB_COUNT" /> tab sebagai grup tab latar belakang baru.</translation>
 <translation id="7217781228893594884">Tab Samaran akan dikunci saat Anda menutup Chrome</translation>
 <translation id="7221869452894271364">Muat ulang halaman ini</translation>
@@ -1715,6 +1720,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7998918019931843664">Buka kembali tab yang ditutup</translation>
 <translation id="8001245658307297681">Anda sedang melihat file lokal</translation>
 <translation id="8004582292198964060">Browser</translation>
+<translation id="8006630792898017994">Spasi atau Tab</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, Beberapa Tab Samaran yang Sedang Berbagi, Disematkan, dan Dipilih</translation>
 <translation id="8025972204417227828">Tambahkan baru</translation>
 <translation id="8027863900915310177">Pilih lokasi untuk mendownload</translation>
