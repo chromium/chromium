@@ -127,6 +127,11 @@ export class SkillsAppElement extends CrLitElement {
     if (this.isDrawerOpen_ && !this.narrow_) {
       this.$.drawer.close();
     }
+    if (this.narrow_) {
+      this.style.setProperty('--sidebar-width', '0px');
+    } else {
+      this.style.removeProperty('--sidebar-width');
+    }
   }
 
   protected onDrawerClose_() {

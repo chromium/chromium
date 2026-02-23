@@ -17,6 +17,11 @@
   padding-top: 14px;
 }
 
+/* Remove default focus ring in non-tabbing navigation */
+.cr-nav-menu-item:focus:not(:focus-visible) {
+  outline: none;
+}
+
 /* Light Mode - Soft pastel background, colored text */
 .cr-nav-menu-item[selected] {
   background-color: var(--color-sys-primary-container);
