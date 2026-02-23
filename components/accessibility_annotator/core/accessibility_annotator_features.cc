@@ -16,5 +16,13 @@ const base::FeatureParam<std::string>
         ""};
 const base::FeatureParam<std::string> kContentAnnotatorClassifierUrlMatchRules{
     &kContentAnnotator, "content_annotator_classifier_url_match_rules", ""};
+const base::FeatureParam<std::string>
+    kContentAnnotatorClassifierRelevanceValues{
+        &kContentAnnotator, "content_annotator_classifier_relevance_values",
+        ""};
+const base::FeatureParam<double> kContentAnnotatorSensitivityThreshold{
+    &kContentAnnotator, "content_annotator_sensitivity_threshold", 0.5};
+const base::FeatureParam<std::string> kContentAnnotatorSupportedLanguages{
+    &kContentAnnotator, "content_annotator_supported_languages", "en,en-US"};
 
 }  // namespace accessibility_annotator

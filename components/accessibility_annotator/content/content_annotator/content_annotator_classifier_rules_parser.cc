@@ -12,6 +12,18 @@
 
 namespace accessibility_annotator {
 
+namespace {
+std::optional<ContentClassifierRelevance> IntToContentClassifierRelevance(
+    int relevance_int) {
+  return ((relevance_int < 0) ||
+          (relevance_int >
+           static_cast<int>(ContentClassifierRelevance::kMaxValue)))
+             ? std::nullopt
+             : std::make_optional(
+                   static_cast<ContentClassifierRelevance>(relevance_int));
+}
+}  // namespace
+
 base::flat_map<std::string, std::vector<std::string>> ParseRulesFromJson(
     std::string_view rules_json) {
   std::optional<base::Value> value =
@@ -53,6 +65,37 @@ base::flat_map<std::string, std::vector<std::string>> ParseRulesFromJson(
   }
 
   return std::move(rule_pairs);
+}
+
+base::flat_map<std::string, ContentClassifierRelevance>
+ParseRelevanceValuesFromJson(std::string_view relevance_values_json) {
+  std::optional<base::Value> value = base::JSONReader::Read(
+      relevance_values_json, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!value || !value->is_dict()) {
+    return {};
+  }
+
+  const base::DictValue& dict = value->GetDict();
+  if (dict.size() > kMaxRuleCategories) {
+    return {};
+  }
+
+  std::vector<std::pair<std::string, ContentClassifierRelevance>>
+      relevance_pairs;
+  for (const auto item : dict) {
+    if (!item.second.is_int()) {
+      return {};
+    }
+    int relevance_int = item.second.GetInt();
+    std::optional<ContentClassifierRelevance> relevance =
+        IntToContentClassifierRelevance(relevance_int);
+    if (relevance.value_or(ContentClassifierRelevance::kUnknown) ==
+        ContentClassifierRelevance::kUnknown) {
+      return {};
+    }
+    relevance_pairs.emplace_back(item.first, relevance.value());
+  }
+  return std::move(relevance_pairs);
 }
 
 }  // namespace accessibility_annotator

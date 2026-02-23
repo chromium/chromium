@@ -17,6 +17,11 @@ extern const base::FeatureParam<std::string>
     kContentAnnotatorClassifierTitleKeywordRules;
 extern const base::FeatureParam<std::string>
     kContentAnnotatorClassifierUrlMatchRules;
+extern const base::FeatureParam<std::string>
+    kContentAnnotatorClassifierRelevanceValues;
+extern const base::FeatureParam<double> kContentAnnotatorSensitivityThreshold;
+extern const base::FeatureParam<std::string>
+    kContentAnnotatorSupportedLanguages;
 
 }  // namespace accessibility_annotator
 

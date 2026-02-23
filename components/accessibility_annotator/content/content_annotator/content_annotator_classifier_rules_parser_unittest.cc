@@ -95,4 +95,53 @@ TEST(ContentAnnotatorClassifierRulesParserTest,
   EXPECT_THAT(ParseRulesFromJson(rules_json), IsEmpty());
 }
 
+TEST(ContentAnnotatorClassifierRulesParserTest,
+     ParseRelevanceValuesFromJson_EmptyJson) {
+  EXPECT_THAT(ParseRelevanceValuesFromJson(R"Json({})Json"), IsEmpty());
+}
+
+TEST(ContentAnnotatorClassifierRulesParserTest,
+     ParseRelevanceValuesFromJson_InvalidJson) {
+  EXPECT_THAT(ParseRelevanceValuesFromJson("invalid json"), IsEmpty());
+}
+
+TEST(ContentAnnotatorClassifierRulesParserTest,
+     ParseRelevanceValuesFromJson_ValidJson) {
+  std::string json = R"Json({
+    "category1": 1,
+    "category2": 2,
+    "category3": 3
+  })Json";
+  base::flat_map<std::string, ContentClassifierRelevance> relevance_values =
+      ParseRelevanceValuesFromJson(json);
+  ASSERT_EQ(3u, relevance_values.size());
+  EXPECT_EQ(ContentClassifierRelevance::kLowContentRelevance,
+            relevance_values["category1"]);
+  EXPECT_EQ(ContentClassifierRelevance::kMediumContentRelevance,
+            relevance_values["category2"]);
+  EXPECT_EQ(ContentClassifierRelevance::kHighContentRelevance,
+            relevance_values["category3"]);
+}
+
+TEST(ContentAnnotatorClassifierRulesParserTest,
+     ParseRelevanceValuesFromJson_InvalidValues) {
+  std::string json = R"Json({
+    "category1": 3,
+    "category2": "not an int"
+  })Json";
+  base::flat_map<std::string, ContentClassifierRelevance> relevance_values =
+      ParseRelevanceValuesFromJson(json);
+  EXPECT_THAT(relevance_values, IsEmpty());
+}
+
+TEST(ContentAnnotatorClassifierRulesParserTest,
+     ParseRelevanceValuesFromJson_OutOfRangeValue) {
+  std::string json = R"Json({
+    "category1": 50,
+  })Json";
+  base::flat_map<std::string, ContentClassifierRelevance> relevance_values =
+      ParseRelevanceValuesFromJson(json);
+  EXPECT_THAT(relevance_values, IsEmpty());
+}
+
 }  // namespace accessibility_annotator
