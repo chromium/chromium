@@ -262,6 +262,23 @@ ReparentIfPossibleOrInitiateIsolatedWebAppLaunch(
   }
 }
 
+void LaunchIsolatedWebAppInNewWindow(web_app::WebAppProvider* provider,
+                                     const webapps::AppId& app_id,
+                                     const GURL& target_url) {
+  apps::AppLaunchParams app_launch_params =
+      web_app::WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
+          app_id, *base::CommandLine::ForCurrentProcess(),
+          /*current_directory=*/base::FilePath(),
+          /*protocol_handler_launch_url=*/std::nullopt,
+          /*file_launch_url=*/std::nullopt, /*launch_files=*/{});
+  app_launch_params.override_url = target_url;
+  app_launch_params.disposition = WindowOpenDisposition::NEW_WINDOW;
+  app_launch_params.container = apps::LaunchContainer::kLaunchContainerWindow;
+
+  provider->scheduler().LaunchAppWithCustomParams(std::move(app_launch_params),
+                                                  base::DoNothing());
+}
+
 }  // namespace
 
 NavigationCapturingOverride::~NavigationCapturingOverride() = default;
@@ -671,8 +688,7 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
             Browser::CreateParams(&*profile_, params.user_gesture));
       } else {
         if (is_target_iwa_with_https_url) {
-          provider->scheduler().LaunchApp(app_id, params.url,
-                                          base::DoNothing());
+          LaunchIsolatedWebAppInNewWindow(provider, app_id, params.url);
           return ForcedNewIwaAppContextWithScopeExtendedUrl(app_display_mode);
         }
         app_host_window =
@@ -710,8 +726,7 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
                                     &*profile_, params.user_gesture));
       } else {
         if (is_target_iwa_with_https_url) {
-          provider->scheduler().LaunchApp(app_id, params.url,
-                                          base::DoNothing());
+          LaunchIsolatedWebAppInNewWindow(provider, app_id, params.url);
           return ForcedNewIwaAppContextWithScopeExtendedUrl(app_display_mode);
         }
 
@@ -765,7 +780,7 @@ NavigationCapturingProcess::GetInitialNavigationParamsOverride(
   CHECK(client_mode == LaunchHandler::ClientMode::kNavigateNew);
 
   if (is_target_iwa_with_https_url) {
-    provider->scheduler().LaunchApp(app_id, params.url, base::DoNothing());
+    LaunchIsolatedWebAppInNewWindow(provider, app_id, params.url);
     return CapturedNewIwaClientWithScopeExtendedUrl(app_display_mode);
   }
 

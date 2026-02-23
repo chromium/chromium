@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_navigation_capturing_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/web_package/test_support/signed_web_bundles/signing_keys.h"
 #include "components/webapps/common/web_app_id.h"
@@ -28,6 +29,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -67,6 +69,18 @@ std::string OriginAssociationFileFromAppIdentity(std::string iwa_bundle_id) {
                             "/web_apps/intent_picker_nav_capture/index.html")));
 }
 
+std::string ClientModeToString(ManifestLaunchHandler_ClientMode mode) {
+  switch (mode) {
+    case ManifestLaunchHandler_ClientMode::kFocusExisting:
+      return "FocusExisting";
+    case ManifestLaunchHandler_ClientMode::kNavigateExisting:
+      return "NavigateExisting";
+    case ManifestLaunchHandler_ClientMode::kAuto:
+    case ManifestLaunchHandler_ClientMode::kNavigateNew:
+      return "NavigateNew";
+  }
+}
+
 enum class IwaInitialState { kClosed, kOpen };
 
 enum class OpenScriptWay { kLinkClickTargetBlank, kServerRedirect };
@@ -75,19 +89,7 @@ std::string GenerateTestName(
     const testing::TestParamInfo<std::tuple<ManifestLaunchHandler_ClientMode,
                                             IwaInitialState,
                                             OpenScriptWay>>& info) {
-  std::string mode_str;
-  switch (std::get<0>(info.param)) {
-    case ManifestLaunchHandler_ClientMode::kFocusExisting:
-      mode_str = "FocusExisting";
-      break;
-    case ManifestLaunchHandler_ClientMode::kNavigateExisting:
-      mode_str = "NavigateExisting";
-      break;
-    case ManifestLaunchHandler_ClientMode::kAuto:
-    case ManifestLaunchHandler_ClientMode::kNavigateNew:
-      mode_str = "NavigateNew";
-      break;
-  }
+  std::string mode_str = ClientModeToString(std::get<0>(info.param));
 
   std::string open_str;
   switch (std::get<1>(info.param)) {
@@ -112,16 +114,17 @@ std::string GenerateTestName(
   return mode_str + "_" + open_str + "_" + script_str;
 }
 
+std::string GenerateAppWindowTestName(
+    const testing::TestParamInfo<ManifestLaunchHandler_ClientMode>& info) {
+  return ClientModeToString(info.param);
+}
+
 }  // namespace
 
-class IsolatedWebAppLinkCapturingParametrizedBrowserTest
-    : public WebAppNavigationCapturingBrowserTestBase,
-      public testing::WithParamInterface<
-          std::tuple<ManifestLaunchHandler_ClientMode,
-                     IwaInitialState,
-                     OpenScriptWay>> {
+class IsolatedWebAppLinkCapturingBrowserTestBase
+    : public WebAppNavigationCapturingBrowserTestBase {
  public:
-  IsolatedWebAppLinkCapturingParametrizedBrowserTest() {
+  IsolatedWebAppLinkCapturingBrowserTestBase() {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kWebAppEnableScopeExtensionsForIsolatedWebApps
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -134,20 +137,9 @@ class IsolatedWebAppLinkCapturingParametrizedBrowserTest
 
   void SetUpOnMainThread() override {
     WebAppNavigationCapturingBrowserTestBase::SetUpOnMainThread();
-    InstallIsolatedWebApp();
   }
 
  protected:
-  ManifestLaunchHandler_ClientMode GetClientMode() const {
-    return std::get<0>(GetParam());
-  }
-
-  bool IsIwaInitiallyOpened() const {
-    return std::get<1>(GetParam()) == IwaInitialState::kOpen;
-  }
-
-  OpenScriptWay GetOpenScriptWay() const { return std::get<2>(GetParam()); }
-
   GURL GetCapturableUrlWithQuery() {
     return https_server()->GetURL(
         "/web_apps/intent_picker_nav_capture/"
@@ -168,7 +160,7 @@ class IsolatedWebAppLinkCapturingParametrizedBrowserTest
         std::move(origin_association_fetcher));
   }
 
-  void InstallIsolatedWebApp() {
+  void InstallIsolatedWebApp(ManifestLaunchHandler_ClientMode client_mode) {
     const auto bundle_id = web_package::SignedWebBundleId::CreateForPublicKey(
         web_package::test::GetDefaultEd25519KeyPair().public_key);
 
@@ -179,7 +171,7 @@ class IsolatedWebAppLinkCapturingParametrizedBrowserTest
     IsolatedWebAppUrlInfo url_info =
         IsolatedWebAppBuilder(
             ManifestBuilder()
-                .SetLaunchHandlerClientMode(GetClientMode())
+                .SetLaunchHandlerClientMode(client_mode)
                 .AddScopeExtension(scope_extended_origin,
                                    /*has_origin_wildcard=*/false))
             .AddHtml("/", kIwaHtmlContent)
@@ -190,6 +182,30 @@ class IsolatedWebAppLinkCapturingParametrizedBrowserTest
 
     app_id_ = url_info.app_id();
     app_start_url_ = url_info.origin().GetURL();
+  }
+
+  // Simulates a click on a specific element ID in the given web contents.
+  // Supports modifiers (shift, ctrl, etc) and mouse buttons (middle, left).
+  void SimulateClickOnElement(content::WebContents* contents,
+                              std::string element_id,
+                              blink::WebInputEvent::Modifiers modifiers,
+                              blink::WebMouseEvent::Button button) {
+    // Get the center coordinates of the element.
+    std::string script = base::StringPrintf(
+        R"(
+          const rect = document.getElementById('%s').getBoundingClientRect();
+          [rect.x + rect.width / 2, rect.y + rect.height / 2];
+        )",
+        element_id.c_str());
+
+    content::EvalJsResult eval_js_result = content::EvalJs(contents, script);
+    const base::ListValue& result = eval_js_result.ExtractList();
+    double x = result[0].GetDouble();
+    double y = result[1].GetDouble();
+
+    // Simulate the click at those coordinates.
+    content::SimulateMouseClickAt(contents, modifiers, button,
+                                  gfx::Point(x, y));
   }
 
   const webapps::AppId& app_id() const { return app_id_; }
@@ -205,7 +221,32 @@ class IsolatedWebAppLinkCapturingParametrizedBrowserTest
   GURL app_start_url_;
 };
 
-IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingParametrizedBrowserTest,
+// Capturing from a standard browser window.
+class IsolatedWebAppLinkCapturingFromBrowserWindowBrowserTest
+    : public IsolatedWebAppLinkCapturingBrowserTestBase,
+      public testing::WithParamInterface<
+          std::tuple<ManifestLaunchHandler_ClientMode,
+                     IwaInitialState,
+                     OpenScriptWay>> {
+ public:
+  void SetUpOnMainThread() override {
+    IsolatedWebAppLinkCapturingBrowserTestBase::SetUpOnMainThread();
+    InstallIsolatedWebApp(GetClientMode());
+  }
+
+ protected:
+  ManifestLaunchHandler_ClientMode GetClientMode() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool IsIwaInitiallyOpened() const {
+    return std::get<1>(GetParam()) == IwaInitialState::kOpen;
+  }
+
+  OpenScriptWay GetOpenScriptWay() const { return std::get<2>(GetParam()); }
+};
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromBrowserWindowBrowserTest,
                        NavigationCapture) {
   // Open IWA if required.
   Browser* existing_app_browser = nullptr;
@@ -217,7 +258,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingParametrizedBrowserTest,
     existing_app_browser = chrome::FindBrowserWithTab(existing_app_contents);
 
     // Verify initial state launch params.
-    WaitForLaunchParams(existing_app_contents, 1);
+    WaitForLaunchParams(existing_app_contents,
+                        /*min_launch_params_to_wait_for=*/1);
     EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
                     existing_app_contents, "launchParamsTargetUrls"),
                 testing::ElementsAre(app_start_url()));
@@ -288,7 +330,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingParametrizedBrowserTest,
     EXPECT_TRUE(content::WaitForLoadStop(new_contents));
 
     // Verify Launch Params in new window.
-    WaitForLaunchParams(new_contents, 1);
+    WaitForLaunchParams(new_contents, /*min_launch_params_to_wait_for=*/1);
     EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
                     new_contents, "launchParamsTargetUrls"),
                 testing::ElementsAre(destination_url));
@@ -303,7 +345,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingParametrizedBrowserTest,
     ASSERT_TRUE(existing_app_contents);
 
     // Verify params increased in existing window.
-    WaitForLaunchParams(existing_app_contents, 2);
+    WaitForLaunchParams(existing_app_contents,
+                        /*min_launch_params_to_wait_for=*/2);
     EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
                     existing_app_contents, "launchParamsTargetUrls"),
                 testing::ElementsAre(app_start_url(), destination_url));
@@ -312,7 +355,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingParametrizedBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    IsolatedWebAppLinkCapturingParametrizedBrowserTest,
+    IsolatedWebAppLinkCapturingFromBrowserWindowBrowserTest,
     testing::Combine(
         testing::Values(ManifestLaunchHandler_ClientMode::kFocusExisting,
                         ManifestLaunchHandler_ClientMode::kNavigateExisting,
@@ -321,5 +364,211 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(OpenScriptWay::kLinkClickTargetBlank,
                         OpenScriptWay::kServerRedirect)),
     GenerateTestName);
+
+// Capturing from inside the App Window
+class IsolatedWebAppLinkCapturingFromAppWindowBrowserTest
+    : public IsolatedWebAppLinkCapturingBrowserTestBase,
+      public testing::WithParamInterface<ManifestLaunchHandler_ClientMode> {
+ public:
+  void SetUpOnMainThread() override {
+    IsolatedWebAppLinkCapturingBrowserTestBase::SetUpOnMainThread();
+    InstallIsolatedWebApp(GetClientMode());
+  }
+
+ protected:
+  ManifestLaunchHandler_ClientMode GetClientMode() const { return GetParam(); }
+
+  void CreateLinkInTab(content::WebContents* web_content,
+                       const GURL& url,
+                       const std::string& id,
+                       const std::string& target = "") {
+    std::string script = base::StringPrintf(
+        R"(
+          const link = document.createElement('a');
+          link.id = '%s';
+          link.href = '%s';
+          link.textContent = 'Capturable Link';
+          if ('%s') {
+            link.target = '%s';
+          }
+          document.body.append(link);
+        )",
+        id.c_str(), url.spec().c_str(), target.c_str(), target.c_str());
+    ASSERT_TRUE(content::ExecJs(web_content, script));
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
+                       MiddleClickOpensNewBrowserTab) {
+  // Open IWA initially (Window 1).
+  content::RenderFrameHost* frame = OpenIsolatedWebApp(profile(), app_id());
+  content::WebContents* existing_app_contents =
+      content::WebContents::FromRenderFrameHost(frame);
+
+  WaitForLaunchParams(existing_app_contents,
+                      /*min_launch_params_to_wait_for=*/1);
+  ASSERT_TRUE(
+      apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id())
+          .has_value());
+
+  int initial_browser_tabs_count = browser()->tab_strip_model()->count();
+
+  // Middle Click the link.
+  GURL destination_url = GetCapturableUrlWithQuery();
+  CreateLinkInTab(existing_app_contents, destination_url, "capture-link");
+
+  apps::test::NavigationCommittedForUrlObserver load_observer(destination_url);
+  SimulateClickOnElement(existing_app_contents, "capture-link",
+                         blink::WebInputEvent::kNoModifiers,
+                         blink::WebMouseEvent::Button::kMiddle);
+
+  // Verify browser tab is opened.
+  load_observer.Wait();
+  content::WebContents* new_tab = load_observer.web_contents();
+
+  ASSERT_EQ(initial_browser_tabs_count + 1,
+            browser()->tab_strip_model()->count());
+  ASSERT_FALSE(
+      web_app::WebAppTabHelper::FromWebContents(new_tab)->is_in_app_window());
+}
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
+                       ShiftClickOpensNewAppWindow) {
+  // Open IWA initially (Window 1).
+  content::RenderFrameHost* frame = OpenIsolatedWebApp(profile(), app_id());
+  content::WebContents* existing_app_contents =
+      content::WebContents::FromRenderFrameHost(frame);
+  Browser* existing_app_browser =
+      chrome::FindBrowserWithTab(existing_app_contents);
+
+  WaitForLaunchParams(existing_app_contents,
+                      /*min_launch_params_to_wait_for=*/1);
+  ASSERT_TRUE(
+      apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id())
+          .has_value());
+
+  // Shift + Left Click the link.
+  GURL destination_url = GetCapturableUrlWithQuery();
+  CreateLinkInTab(existing_app_contents, destination_url, "capture-link");
+
+  ui_test_utils::BrowserCreatedObserver browser_observer;
+  SimulateClickOnElement(existing_app_contents, "capture-link",
+                         blink::WebInputEvent::kShiftKey,
+                         blink::WebMouseEvent::Button::kLeft);
+
+  // Verify NEW window opened regardless of ClientMode.
+  Browser* new_browser = browser_observer.Wait();
+  ASSERT_TRUE(new_browser);
+  EXPECT_NE(new_browser, browser());
+  EXPECT_NE(new_browser, existing_app_browser);
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(new_browser, app_id()));
+
+  content::WebContents* new_contents =
+      new_browser->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::WaitForLoadStop(new_contents));
+
+  WaitForLaunchParams(new_contents, /*min_launch_params_to_wait_for=*/1);
+  EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                  new_contents, "launchParamsTargetUrls"),
+              testing::ElementsAre(destination_url));
+}
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
+                       NormalClickRespondsToClientMode) {
+  // Open IWA initially (Window 1).
+  content::RenderFrameHost* frame = OpenIsolatedWebApp(profile(), app_id());
+  content::WebContents* existing_app_contents =
+      content::WebContents::FromRenderFrameHost(frame);
+  Browser* existing_app_browser =
+      chrome::FindBrowserWithTab(existing_app_contents);
+
+  WaitForLaunchParams(existing_app_contents,
+                      /*min_launch_params_to_wait_for=*/1);
+  ASSERT_TRUE(
+      apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id())
+          .has_value());
+
+  // Usual click on the link.
+  GURL destination_url = GetCapturableUrlWithQuery();
+  CreateLinkInTab(existing_app_contents, destination_url, "capture-link");
+
+  bool expect_new_window =
+      GetClientMode() == ManifestLaunchHandler_ClientMode::kNavigateNew;
+
+  ui_test_utils::BrowserCreatedObserver browser_observer;
+  SimulateClickOnElement(existing_app_contents, "capture-link",
+                         blink::WebInputEvent::kNoModifiers,
+                         blink::WebMouseEvent::Button::kLeft);
+
+  if (expect_new_window) {
+    Browser* new_browser = browser_observer.Wait();
+    ASSERT_TRUE(new_browser);
+    EXPECT_NE(new_browser, existing_app_browser);
+    EXPECT_TRUE(AppBrowserController::IsForWebApp(new_browser, app_id()));
+
+    content::WebContents* new_contents =
+        new_browser->tab_strip_model()->GetActiveWebContents();
+    EXPECT_TRUE(content::WaitForLoadStop(new_contents));
+
+    WaitForLaunchParams(new_contents, /*min_launch_params_to_wait_for=*/1);
+    EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                    new_contents, "launchParamsTargetUrls"),
+                testing::ElementsAre(destination_url));
+  } else {
+    WaitForLaunchParams(existing_app_contents,
+                        /*min_launch_params_to_wait_for=*/2);
+    EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                    existing_app_contents, "launchParamsTargetUrls"),
+                testing::ElementsAre(app_start_url(), destination_url));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
+                       TargetBlankClickOpensAppWindow) {
+  // Open IWA initially (Window 1).
+  content::RenderFrameHost* frame = OpenIsolatedWebApp(profile(), app_id());
+  content::WebContents* existing_app_contents =
+      content::WebContents::FromRenderFrameHost(frame);
+  Browser* existing_app_browser =
+      chrome::FindBrowserWithTab(existing_app_contents);
+
+  WaitForLaunchParams(existing_app_contents,
+                      /*min_launch_params_to_wait_for=*/1);
+  ASSERT_TRUE(
+      apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id())
+          .has_value());
+
+  // Create link with target="_blank".
+  GURL destination_url = GetCapturableUrlWithQuery();
+  CreateLinkInTab(existing_app_contents, destination_url, "capture-link",
+                  /*target=*/"_blank");
+
+  ui_test_utils::BrowserCreatedObserver browser_observer;
+  SimulateClickOnElement(existing_app_contents, "capture-link",
+                         blink::WebInputEvent::kNoModifiers,
+                         blink::WebMouseEvent::Button::kLeft);
+
+  Browser* new_browser = browser_observer.Wait();
+  ASSERT_TRUE(new_browser);
+  EXPECT_NE(new_browser, existing_app_browser);
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(new_browser, app_id()));
+
+  content::WebContents* new_contents =
+      new_browser->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::WaitForLoadStop(new_contents));
+
+  WaitForLaunchParams(new_contents, /*min_launch_params_to_wait_for=*/1);
+  EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                  new_contents, "launchParamsTargetUrls"),
+              testing::ElementsAre(destination_url));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
+    testing::Values(ManifestLaunchHandler_ClientMode::kFocusExisting,
+                    ManifestLaunchHandler_ClientMode::kNavigateExisting,
+                    ManifestLaunchHandler_ClientMode::kNavigateNew),
+    GenerateAppWindowTestName);
 
 }  // namespace web_app
