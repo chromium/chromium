@@ -623,7 +623,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessor
     if constexpr (requires { func_wrapper(
         env,
         std::move(zint_converted),
-        std::move(ints_converted),
+        ints_converted,
         zlong,
         longs_ref,
         zshort,
@@ -641,7 +641,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessor
       return func_wrapper(
           env,
           std::move(zint_converted),
-          std::move(ints_converted),
+          ints_converted,
           zlong,
           longs_ref,
           zshort,
@@ -658,7 +658,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessor
           bools_ref);
     } else if constexpr (requires { func_wrapper(
         std::move(zint_converted),
-        std::move(ints_converted),
+        ints_converted,
         zlong,
         longs_ref,
         zshort,
@@ -675,7 +675,7 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleForAnnotationProcessor
         bools_ref); }) {
       return func_wrapper(
           std::move(zint_converted),
-          std::move(ints_converted),
+          ints_converted,
           zlong,
           longs_ref,
           zshort,
@@ -790,10 +790,10 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni
         throwables_ref,
         string_ref,
         strings_ref,
-        std::move(convertedString_converted),
-        std::move(convertedStrings_converted),
-        std::move(optionalString_converted),
-        std::move(funcType_converted),
+        convertedString_converted,
+        convertedStrings_converted,
+        optionalString_converted,
+        funcType_converted,
         tStruct_ref,
         structs_ref,
         obj_ref,
@@ -802,7 +802,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni
         nestedInterface_ref,
         view_ref,
         context_ref,
-        std::move(convertedObjects_converted)); }) {
+        convertedObjects_converted); }) {
       return func_wrapper(
           env,
           clazz_ref,
@@ -811,10 +811,10 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni
           throwables_ref,
           string_ref,
           strings_ref,
-          std::move(convertedString_converted),
-          std::move(convertedStrings_converted),
-          std::move(optionalString_converted),
-          std::move(funcType_converted),
+          convertedString_converted,
+          convertedStrings_converted,
+          optionalString_converted,
+          funcType_converted,
           tStruct_ref,
           structs_ref,
           obj_ref,
@@ -823,7 +823,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni
           nestedInterface_ref,
           view_ref,
           context_ref,
-          std::move(convertedObjects_converted));
+          convertedObjects_converted);
     } else if constexpr (requires { func_wrapper(
         clazz_ref,
         classes_ref,
@@ -831,10 +831,10 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni
         throwables_ref,
         string_ref,
         strings_ref,
-        std::move(convertedString_converted),
-        std::move(convertedStrings_converted),
-        std::move(optionalString_converted),
-        std::move(funcType_converted),
+        convertedString_converted,
+        convertedStrings_converted,
+        optionalString_converted,
+        funcType_converted,
         tStruct_ref,
         structs_ref,
         obj_ref,
@@ -843,7 +843,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni
         nestedInterface_ref,
         view_ref,
         context_ref,
-        std::move(convertedObjects_converted)); }) {
+        convertedObjects_converted); }) {
       return func_wrapper(
           clazz_ref,
           classes_ref,
@@ -851,10 +851,10 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni
           throwables_ref,
           string_ref,
           strings_ref,
-          std::move(convertedString_converted),
-          std::move(convertedStrings_converted),
-          std::move(optionalString_converted),
-          std::move(funcType_converted),
+          convertedString_converted,
+          convertedStrings_converted,
+          optionalString_converted,
+          funcType_converted,
           tStruct_ref,
           structs_ref,
           obj_ref,
@@ -863,7 +863,7 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleForAnnotationProcessorJni
           nestedInterface_ref,
           view_ref,
           context_ref,
-          std::move(convertedObjects_converted));
+          convertedObjects_converted);
     } else {
       static_assert(false, "JNI_SampleForAnnotationProcessor_TestSpecialTypes() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jclass>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jthrowable>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jstring>&, const jni_zero::JavaRef<jobjectArray>&, std::string, std::vector<std::string>, std::optional<std::string>, std::optional<void(*)(const std::vector<bool>&)>, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jobject>&, jni_zero::tests::CPPClass, const jni_zero::JavaRef<jobjectArray>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jobject>&, std::vector<jni_zero::tests::CPPClass>)\nSee SampleForAnnotationProcessor_jni.h for an example.");
     }

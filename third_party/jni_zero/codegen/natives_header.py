@@ -81,7 +81,11 @@ def _prep_param(sb, param, native):
     with sb.statement():
       sb(f'{java_type.converted_type} {ret} = ')
       convert_type.from_jni_expression(sb, orig_name, java_type)
-    return f'std::move({ret})'
+    # TODO(crbug.com/469809169): Remove these exceptions.
+    if not java_type.converted_type.startswith(
+        'std::') and java_type.converted_type not in ('GURL', 'url::Origin'):
+      ret = f'std::move({ret})'
+    return ret
 
   if java_type.is_primitive():
     return orig_name

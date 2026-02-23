@@ -99,10 +99,10 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sampl
     decltype(_ptr->Foo(std::forward<decltype(args)>(args)...)) {
       return _ptr->Foo(std::forward<decltype(args)>(args)...);
     };
-    if constexpr (requires { func_wrapper(env, std::move(arg_converted)); }) {
-      return func_wrapper(env, std::move(arg_converted));
-    } else if constexpr (requires { func_wrapper(std::move(arg_converted)); }) {
-      return func_wrapper(std::move(arg_converted));
+    if constexpr (requires { func_wrapper(env, arg_converted); }) {
+      return func_wrapper(env, arg_converted);
+    } else if constexpr (requires { func_wrapper(arg_converted); }) {
+      return func_wrapper(arg_converted);
     } else {
       static_assert(false, "FooAndroid::BarDelegate::Foo() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (std::string)\nSee SampleUniqueAnnotations_jni.h for an example.");
     }

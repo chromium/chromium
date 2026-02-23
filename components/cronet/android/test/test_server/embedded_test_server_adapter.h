@@ -103,8 +103,7 @@ class EmbeddedTestServerAdapter {
   // See net::test_server::EmbeddedTestServer::RegisterRequestHandler()
   void RegisterRequestHandler(
       JNIEnv* env,
-      std::unique_ptr<cronet::NativeTestServerHandleRequestCallback>&&
-          callback);
+      std::unique_ptr<cronet::NativeTestServerHandleRequestCallback>& callback);
 
  private:
   net::test_server::EmbeddedTestServer test_server;

@@ -129,10 +129,10 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
     decltype(_ptr->Destroy(std::forward<decltype(args)>(args)...)) {
       return _ptr->Destroy(std::forward<decltype(args)>(args)...);
     };
-    if constexpr (requires { func_wrapper(env, caller_ref, std::move(bytes_converted)); }) {
-      return func_wrapper(env, caller_ref, std::move(bytes_converted));
-    } else if constexpr (requires { func_wrapper(caller_ref, std::move(bytes_converted)); }) {
-      return func_wrapper(caller_ref, std::move(bytes_converted));
+    if constexpr (requires { func_wrapper(env, caller_ref, bytes_converted); }) {
+      return func_wrapper(env, caller_ref, bytes_converted);
+    } else if constexpr (requires { func_wrapper(caller_ref, bytes_converted); }) {
+      return func_wrapper(caller_ref, bytes_converted);
     } else {
       static_assert(false, "CPPClass::Destroy() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&, std::vector<uint8_t>)\nSee SampleForTests_jni.h for an example.");
     }
@@ -322,26 +322,26 @@ JNI_ZERO_BOUNDARY_EXPORT jlong Java_this_is_a_package_prefix_org_jni_1zero_GEN_1
         param_ref,
         std::move(bytes_converted),
         std::move(convertedType_converted),
-        std::move(nonConvertedArray_converted)); }) {
+        nonConvertedArray_converted); }) {
       return func_wrapper(
           env,
           caller_ref,
           param_ref,
           std::move(bytes_converted),
           std::move(convertedType_converted),
-          std::move(nonConvertedArray_converted));
+          nonConvertedArray_converted);
     } else if constexpr (requires { func_wrapper(
         caller_ref,
         param_ref,
         std::move(bytes_converted),
         std::move(convertedType_converted),
-        std::move(nonConvertedArray_converted)); }) {
+        nonConvertedArray_converted); }) {
       return func_wrapper(
           caller_ref,
           param_ref,
           std::move(bytes_converted),
           std::move(convertedType_converted),
-          std::move(nonConvertedArray_converted));
+          nonConvertedArray_converted);
     } else {
       static_assert(false, "JNI_SampleForTests_Init() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jstring>&, jni_zero::ByteArrayView, jni_zero::tests::CPPClass*, std::vector<jni_zero::ScopedJavaLocalRef<jobject>>)\nSee SampleForTests_jni.h for an example.");
     }
@@ -394,10 +394,10 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     decltype(JNI_SampleForTests_ListTest2(std::forward<decltype(args)>(args)...)) {
       return JNI_SampleForTests_ListTest2(std::forward<decltype(args)>(args)...);
     };
-    if constexpr (requires { func_wrapper(env, std::move(items_converted)); }) {
-      return func_wrapper(env, std::move(items_converted));
-    } else if constexpr (requires { func_wrapper(std::move(items_converted)); }) {
-      return func_wrapper(std::move(items_converted));
+    if constexpr (requires { func_wrapper(env, items_converted); }) {
+      return func_wrapper(env, items_converted);
+    } else if constexpr (requires { func_wrapper(items_converted); }) {
+      return func_wrapper(items_converted);
     } else {
       static_assert(false, "JNI_SampleForTests_ListTest2() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (std::vector<std::string>)\nSee SampleForTests_jni.h for an example.");
     }
@@ -426,10 +426,10 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     decltype(JNI_SampleForTests_MapTest2(std::forward<decltype(args)>(args)...)) {
       return JNI_SampleForTests_MapTest2(std::forward<decltype(args)>(args)...);
     };
-    if constexpr (requires { func_wrapper(env, std::move(arg0_converted)); }) {
-      return func_wrapper(env, std::move(arg0_converted));
-    } else if constexpr (requires { func_wrapper(std::move(arg0_converted)); }) {
-      return func_wrapper(std::move(arg0_converted));
+    if constexpr (requires { func_wrapper(env, arg0_converted); }) {
+      return func_wrapper(env, arg0_converted);
+    } else if constexpr (requires { func_wrapper(arg0_converted); }) {
+      return func_wrapper(arg0_converted);
     } else {
       static_assert(false, "JNI_SampleForTests_MapTest2() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (std::map<std::string, std::string>)\nSee SampleForTests_jni.h for an example.");
     }
@@ -457,10 +457,10 @@ JNI_ZERO_BOUNDARY_EXPORT jint Java_this_is_a_package_prefix_org_jni_1zero_GEN_1J
     decltype(_ptr->Method(std::forward<decltype(args)>(args)...)) {
       return _ptr->Method(std::forward<decltype(args)>(args)...);
     };
-    if constexpr (requires { func_wrapper(env, caller_ref, std::move(strings_converted)); }) {
-      return func_wrapper(env, caller_ref, std::move(strings_converted));
-    } else if constexpr (requires { func_wrapper(caller_ref, std::move(strings_converted)); }) {
-      return func_wrapper(caller_ref, std::move(strings_converted));
+    if constexpr (requires { func_wrapper(env, caller_ref, strings_converted); }) {
+      return func_wrapper(env, caller_ref, strings_converted);
+    } else if constexpr (requires { func_wrapper(caller_ref, strings_converted); }) {
+      return func_wrapper(caller_ref, strings_converted);
     } else {
       static_assert(false, "CPPClass::Method() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&, std::vector<std::string>)\nSee SampleForTests_jni.h for an example.");
     }
@@ -546,38 +546,38 @@ JNI_ZERO_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_org_jni_1zero_GEN
     };
     if constexpr (requires { func_wrapper(
         env,
-        std::move(b_converted),
-        std::move(c_converted),
-        std::move(s_converted),
-        std::move(i_converted),
-        std::move(l_converted),
-        std::move(f_converted),
-        std::move(d_converted)); }) {
+        b_converted,
+        c_converted,
+        s_converted,
+        i_converted,
+        l_converted,
+        f_converted,
+        d_converted); }) {
       return func_wrapper(
           env,
-          std::move(b_converted),
-          std::move(c_converted),
-          std::move(s_converted),
-          std::move(i_converted),
-          std::move(l_converted),
-          std::move(f_converted),
-          std::move(d_converted));
+          b_converted,
+          c_converted,
+          s_converted,
+          i_converted,
+          l_converted,
+          f_converted,
+          d_converted);
     } else if constexpr (requires { func_wrapper(
-        std::move(b_converted),
-        std::move(c_converted),
-        std::move(s_converted),
-        std::move(i_converted),
-        std::move(l_converted),
-        std::move(f_converted),
-        std::move(d_converted)); }) {
+        b_converted,
+        c_converted,
+        s_converted,
+        i_converted,
+        l_converted,
+        f_converted,
+        d_converted); }) {
       return func_wrapper(
-          std::move(b_converted),
-          std::move(c_converted),
-          std::move(s_converted),
-          std::move(i_converted),
-          std::move(l_converted),
-          std::move(f_converted),
-          std::move(d_converted));
+          b_converted,
+          c_converted,
+          s_converted,
+          i_converted,
+          l_converted,
+          f_converted,
+          d_converted);
     } else {
       static_assert(false, "JNI_SampleForTests_PrimitiveArrays() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (std::vector<uint8_t>, std::vector<uint16_t>, std::vector<int16_t>, std::vector<int32_t>, std::vector<int64_t>, std::vector<float>, std::vector<double>)\nSee SampleForTests_jni.h for an example.");
     }
