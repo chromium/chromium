@@ -1,6 +1,9 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// TODO(jophba): remove these helpers once the abstract Sender interface lands
+// and pure virtual sender interfaces can be easily constructed.
 
 #ifndef MEDIA_CAST_TEST_OPENSCREEN_TEST_HELPERS_H_
 #define MEDIA_CAST_TEST_OPENSCREEN_TEST_HELPERS_H_
@@ -10,6 +13,7 @@
 #include "components/openscreen_platform/task_runner.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/test/mock_openscreen_environment.h"
+#include "third_party/openscreen/src/cast/streaming/impl/rtp_defines.h"  // nogncheck
 #include "third_party/openscreen/src/cast/streaming/public/environment.h"
 #include "third_party/openscreen/src/cast/streaming/public/sender.h"
 #include "third_party/openscreen/src/cast/streaming/sender_packet_router.h"
