@@ -73,6 +73,7 @@ export function getHtml(this: HistoryAppElement) {
             </div>` : ''}
           ${this.showFilterChips_() ? html`
             <history-filter-chips
+                id="historyFilterChips"
                 .userVisits="${this.includeUserVisits_}"
                 .actorVisits="${this.includeActorVisits_}"
                 @filter-changed="${this.onFilterChipsChanged_}">

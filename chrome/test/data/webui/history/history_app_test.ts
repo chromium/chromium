@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
 import 'chrome://history/history.js';
 
 import type {HistoryAppElement} from 'chrome://history/history.js';
@@ -9,15 +10,15 @@ import {BrowserServiceImpl, CrRouter, HistoryEmbeddingsBrowserProxyImpl, History
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
-
+import {eventToPromise, isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 // <if expr="not is_chromeos">
-import { isChildVisible } from 'chrome://webui-test/test_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {HistorySignInState, SyncState} from 'chrome://history/history.js';
+
 // </if>
 
 import {TestBrowserService} from './test_browser_service.js';
+// clang-format on
 
 suite('HistoryAppTest', function() {
   let element: HistoryAppElement;
@@ -565,3 +566,54 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
   });
 });
 // </if>
+
+suite('FilterChips', function() {
+  let element: HistoryAppElement;
+
+  setup(() => {
+    const browserService = new TestBrowserService();
+    BrowserServiceImpl.setInstance(browserService);
+
+    // Some of the tests below assume the query state is fully reset to empty
+    // between tests.
+    window.history.replaceState({}, '', '/');
+    CrRouter.resetForTesting();
+  });
+
+  function createPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    element = document.createElement('history-app');
+    document.body.appendChild(element);
+    return microtasksFinished();
+  }
+
+  test('FilterChipsVisible', async () => {
+    loadTimeData.overrideValues({
+      isBrowsingHistoryActorIntegrationM3Enabled: true,
+      isGlicWebActuationAvailable: true,
+    });
+    // Re-create the element to pick up the new loadTimeData.
+    await createPage();
+    assertTrue(isChildVisible(element, '#historyFilterChips'));
+  });
+
+  test('FilterChipsNotVisible_M3Off', async () => {
+    loadTimeData.overrideValues({
+      isBrowsingHistoryActorIntegrationM3Enabled: false,
+      isGlicWebActuationAvailable: true,
+    });
+    // Re-create the element to pick up the new loadTimeData.
+    await createPage();
+    assertFalse(isChildVisible(element, '#historyFilterChips'));
+  });
+
+  test('FilterChipsNotVisibile_GlicActuationOff', async () => {
+    loadTimeData.overrideValues({
+      isBrowsingHistoryActorIntegrationM3Enabled: true,
+      isGlicWebActuationAvailable: false,
+    });
+    // Re-create the element to pick up the new loadTimeData.
+    await createPage();
+    assertFalse(isChildVisible(element, '#historyFilterChips'));
+  });
+});
