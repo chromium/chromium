@@ -155,8 +155,6 @@ public class StandardNotificationBuilderTest {
                 notification.extras.getString(Notification.EXTRA_TEMPLATE));
     }
 
-    // TODO(crbug.com/481748850): Fix failure on SDK 30+ due to icon bitmap comparison differences.
-    @Config(sdk = 29)
     @Test
     @Feature({"Browser", "Notifications"})
     public void testSetSmallIcon() {
@@ -179,6 +177,15 @@ public class StandardNotificationBuilderTest {
         // Check the white overlay was applied.
         Bitmap expected = bitmap.copy(bitmap.getConfig(), true);
         NotificationBuilderBase.applyWhiteOverlayToBitmap(expected);
+        // On Android 11+ (SDK 30+), the framework implicitly resizes the source bitmap when
+        // converting it into an Icon object to match standard status bar icon dimensions.
+        // We scale the expected bitmap to match the resulting dimensions before comparison.
+        if (expected.getWidth() != result.getWidth()
+                || expected.getHeight() != result.getHeight()) {
+            expected =
+                    Bitmap.createScaledBitmap(
+                            expected, result.getWidth(), result.getHeight(), true);
+        }
         Assert.assertTrue(expected.sameAs(result));
 
         // Check using the same bitmap on another builder gives the same result.
