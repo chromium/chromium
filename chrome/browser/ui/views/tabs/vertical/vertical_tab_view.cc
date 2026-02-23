@@ -584,27 +584,36 @@ void VerticalTabView::OnThemeChanged() {
 gfx::Rect VerticalTabView::GetChildBounds(const gfx::Rect& container,
                                           const TabChildConfig& config,
                                           const bool center) const {
-  const gfx::Size preferred_size = config.view->GetPreferredSize();
+  int preferred_width;
+  int preferred_height;
+  if (config.expand) {
+    preferred_width = container.width() - config.padding;
+    // The only expandable view is the views::Label. Just get the line height to
+    // make calculating bounds cheaper.
+    CHECK(views::IsViewClass<views::Label>(config.view));
+    preferred_height = static_cast<views::Label*>(config.view)->GetLineHeight();
+  } else {
+    const gfx::Size preferred_size = config.view->GetPreferredSize();
+    preferred_width = preferred_size.width();
+    preferred_height = preferred_size.height();
+  }
 
   // Some icons have larger sizes to account for decoration. Make a distinction
   // between the design width and the actual width.
   const int design_width =
       config.expand ? container.width() - config.padding : config.min_width;
-  const int actual_width = config.expand ? container.width() - config.padding
-                                         : preferred_size.width();
 
   int x = container.x();
   if (center) {
-    x += 0.5 * (container.width() - actual_width);
+    x += 0.5 * (container.width() - preferred_width);
   } else if (config.align_leading) {
-    x += 0.5 * (design_width - actual_width);
+    x += 0.5 * (design_width - preferred_width);
   } else {
-    x += container.width() - 0.5 * (design_width + actual_width);
+    x += container.width() - 0.5 * (design_width + preferred_width);
   }
-  const int y =
-      container.y() + 0.5 * (container.height() - preferred_size.height());
+  const int y = container.y() + 0.5 * (container.height() - preferred_height);
 
-  return gfx::Rect(x, y, actual_width, preferred_size.height());
+  return gfx::Rect(x, y, preferred_width, preferred_height);
 }
 
 absl::flat_hash_map<views::View*, bool>
