@@ -32,6 +32,10 @@ public class BottomSheetListContainerView extends LinearLayout implements ListCo
      */
     @Override
     public void renderAllListItems(ListContainerViewDelegate delegate) {
+        if (getChildCount() > 0) {
+            removeAllViews();
+        }
+
         List<Integer> types = delegate.getListItems();
         for (int i = 0; i < types.size(); i++) {
             Integer type = types.get(i);

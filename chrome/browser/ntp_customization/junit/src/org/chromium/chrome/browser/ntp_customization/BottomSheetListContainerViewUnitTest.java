@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,7 +17,6 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -42,20 +41,20 @@ public class BottomSheetListContainerViewUnitTest {
     @Mock private ListContainerViewDelegate mDelegate;
     @Mock private BottomSheetListItemView mListItemView;
     private BottomSheetListContainerView mContainerView;
+    private Context mContext;
 
     private List<Integer> mListContent;
 
     @Before
     public void setUp() {
-        Context context = ApplicationProvider.getApplicationContext();
-        View view =
-                LayoutInflater.from(context)
-                        .inflate(R.layout.ntp_customization_main_bottom_sheet, null, false);
-        mContainerView = spy(view.findViewById(R.id.ntp_customization_options_container));
-
-        // Spies on the containerView to avoid the inflating the MaterialSwitchWithText which
-        // requires complicated setting of themes.
-        doReturn(mListItemView).when(mContainerView).createListItemView();
+        mContext = ApplicationProvider.getApplicationContext();
+        mContainerView =
+                new BottomSheetListContainerView(mContext, null) {
+                    @Override
+                    public BottomSheetListItemView createListItemView() {
+                        return mListItemView;
+                    }
+                };
 
         mListContent = List.of(NTP_CARDS, FEED);
         when(mDelegate.getListItems()).thenReturn(mListContent);
@@ -96,5 +95,41 @@ public class BottomSheetListContainerViewUnitTest {
 
         // Verifies that if the listener is not null, it is set on the listItemView.
         verify(mListItemView, times(itemListSize)).setOnClickListener(eq(listener));
+    }
+
+    @Test
+    public void testRenderAllListItems_ClearsExistingViews() {
+        View staleView1 = new View(mContext);
+        View staleView2 = new View(mContext);
+        mContainerView.addView(staleView1);
+        mContainerView.addView(staleView2);
+        assertEquals(
+                "Container should have 2 stale views initially", 2, mContainerView.getChildCount());
+
+        List<Integer> items = List.of(NTP_CARDS);
+        when(mDelegate.getListItems()).thenReturn(items);
+
+        mContainerView.renderAllListItems(mDelegate);
+
+        assertEquals(
+                "Container should have exactly 1 view after re-rendering",
+                1,
+                mContainerView.getChildCount());
+
+        View currentChild = mContainerView.getChildAt(0);
+        assertNotSame("The stale view should have been removed", staleView1, currentChild);
+        assertNotSame("The stale view should have been removed", staleView2, currentChild);
+    }
+
+    @Test
+    public void testRenderAllListItems_EmptyView() {
+        assertEquals(0, mContainerView.getChildCount());
+
+        List<Integer> items = List.of(NTP_CARDS, FEED);
+        when(mDelegate.getListItems()).thenReturn(items);
+
+        mContainerView.renderAllListItems(mDelegate);
+
+        assertEquals("Container should have 2 views", 2, mContainerView.getChildCount());
     }
 }

@@ -47,6 +47,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -67,10 +69,13 @@ import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -95,6 +100,8 @@ public class NtpCustomizationMediatorUnitTest {
     @Mock private NtpCustomizationConfigManager mConfigManager;
     @Mock private NtpCustomizationPolicyManager mNtpCustomizationPolicyManager;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Captor private ArgumentCaptor<TemplateUrlServiceObserver> mTemplateUrlObserverCaptor;
 
     private NtpCustomizationMediator mMediator;
     private Map<Integer, Integer> mViewFlipperMap;
@@ -111,6 +118,7 @@ public class NtpCustomizationMediatorUnitTest {
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         FeedFeatures.setFakePrefsForTest(mPrefService);
         NtpCustomizationConfigManager.setInstanceForTesting(mConfigManager);
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mNtpCustomizationPolicyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
         NtpCustomizationPolicyManager.setInstanceForTesting(mNtpCustomizationPolicyManager);
 
@@ -591,5 +599,139 @@ public class NtpCustomizationMediatorUnitTest {
         assertEquals(
                 NtpThemeColorInfo.COLOR_NOT_SET,
                 NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+    }
+
+    @Test
+    public void testTemplateUrlServiceObserverRegistration() {
+        verify(mTemplateUrlService).addObserver(mMediator);
+    }
+
+    @Test
+    public void
+            testOnTemplateURLServiceChanged_OnMainBottomSheet_RemovesFeedWhenChangingDseFromGoogleToNonGoogle() {
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
+
+        mMediator =
+                new NtpCustomizationMediator(
+                        mContext,
+                        mBottomSheetController,
+                        mBottomSheetContent,
+                        mViewFlipperPropertyModel,
+                        mContainerPropertyModel,
+                        mProfileSupplier,
+                        mWindowAndroid);
+        mListDelegate = mMediator.createListDelegate();
+        mMediator.setCurrentBottomSheetForTesting(MAIN);
+
+        assertTrue(mListDelegate.getListItems().contains(FEED));
+
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(false);
+        clearInvocations(mContainerPropertyModel);
+
+        mMediator.onTemplateURLServiceChanged();
+
+        assertFalse(mListDelegate.getListItems().contains(FEED));
+        verify(mContainerPropertyModel)
+                .set(eq(LIST_CONTAINER_VIEW_DELEGATE), any(ListContainerViewDelegate.class));
+    }
+
+    @Test
+    public void
+            testOnTemplateURLServiceChanged_OnMainBottomSheet_AddsFeedWhenChangingDseFromNonGoogleToGoogle() {
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(false);
+        when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
+
+        mMediator =
+                new NtpCustomizationMediator(
+                        mContext,
+                        mBottomSheetController,
+                        mBottomSheetContent,
+                        mViewFlipperPropertyModel,
+                        mContainerPropertyModel,
+                        mProfileSupplier,
+                        mWindowAndroid);
+        mListDelegate = mMediator.createListDelegate();
+        mMediator.setCurrentBottomSheetForTesting(MAIN);
+
+        assertFalse(mListDelegate.getListItems().contains(FEED));
+
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        clearInvocations(mContainerPropertyModel);
+
+        mMediator.onTemplateURLServiceChanged();
+
+        assertTrue(mListDelegate.getListItems().contains(FEED));
+        verify(mContainerPropertyModel)
+                .set(eq(LIST_CONTAINER_VIEW_DELEGATE), any(ListContainerViewDelegate.class));
+    }
+
+    @Test
+    public void
+            testOnTemplateURLServiceChanged_OnMainBottomSheet_DoesNotNotifyWhenChangingDseFromNonGoogleToAnotherNonGoogle() {
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
+
+        mMediator =
+                new NtpCustomizationMediator(
+                        mContext,
+                        mBottomSheetController,
+                        mBottomSheetContent,
+                        mViewFlipperPropertyModel,
+                        mContainerPropertyModel,
+                        mProfileSupplier,
+                        mWindowAndroid);
+        mListDelegate = mMediator.createListDelegate();
+        mMediator.setCurrentBottomSheetForTesting(MAIN);
+
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        clearInvocations(mContainerPropertyModel);
+
+        mMediator.onTemplateURLServiceChanged();
+
+        verify(mContainerPropertyModel, never()).set(eq(LIST_CONTAINER_VIEW_DELEGATE), any());
+    }
+
+    @Test
+    public void testOnTemplateURLServiceChanged_OnFeedBottomSheet_DismissesSheet() {
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
+
+        mMediator =
+                new NtpCustomizationMediator(
+                        mContext,
+                        mBottomSheetController,
+                        mBottomSheetContent,
+                        mViewFlipperPropertyModel,
+                        mContainerPropertyModel,
+                        mProfileSupplier,
+                        mWindowAndroid);
+        mMediator.setCurrentBottomSheetForTesting(FEED);
+
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+
+        clearInvocations(mBottomSheetController);
+        mMediator.onTemplateURLServiceChanged();
+
+        verify(mBottomSheetController).hideContent(eq(mBottomSheetContent), eq(true));
+        assertNull(
+                "Current bottom sheet type should be reset", mMediator.getCurrentBottomSheetType());
+    }
+
+    @Test
+    public void testOnTemplateURLServiceChanged_NoChange_DoesNotNotify() {
+        clearInvocations(mContainerPropertyModel);
+        mMediator.onTemplateURLServiceChanged();
+        verify(mContainerPropertyModel, never()).set(eq(LIST_CONTAINER_VIEW_DELEGATE), any());
+    }
+
+    @Test
+    public void testTemplateUrlServiceObserverRemoval() {
+        mMediator.destroy();
+        verify(mTemplateUrlService).removeObserver(mMediator);
     }
 }
