@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/image-decoders/avif/avif_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
+#include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_rust_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
@@ -62,6 +63,10 @@ std::unique_ptr<ImageDecoder> CreateImageDecoder(DecoderType decoder_type,
   switch (decoder_type) {
     case DecoderType::kBmpDecoder:
       return std::make_unique<BMPImageDecoder>(
+          GetAlphaOption(fdp), GetColorBehavior(fdp),
+          /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>());
+    case DecoderType::kBmpRustDecoder:
+      return std::make_unique<BmpRustImageDecoder>(
           GetAlphaOption(fdp), GetColorBehavior(fdp),
           /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>());
     case DecoderType::kJpegDecoder: {

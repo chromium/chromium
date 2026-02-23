@@ -14,6 +14,7 @@ namespace blink {
 
 enum class DecoderType {
   kBmpDecoder,
+  kBmpRustDecoder,
   kJpegDecoder,
   kPngDecoder,
   kAvifDecoder,
