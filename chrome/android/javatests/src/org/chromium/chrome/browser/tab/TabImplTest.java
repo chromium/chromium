@@ -35,7 +35,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.TestViewStructure;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.common.ContentFeatures;
 
 /** Tests for the {@link TabImpl} class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -161,10 +160,6 @@ public class TabImplTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
-    @EnableFeatures({
-        ChromeFeatureList.TAB_FREEZING_USES_DISCARD,
-        ContentFeatures.WEB_CONTENTS_DISCARD
-    })
     public void testFreeze_withDiscard() {
         final TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
 
@@ -192,41 +187,6 @@ public class TabImplTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
-    @DisableFeatures({
-        ChromeFeatureList.TAB_FREEZING_USES_DISCARD,
-        ContentFeatures.WEB_CONTENTS_DISCARD
-    })
-    public void testFreeze_withoutDiscard() {
-        final TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
-
-        // Open a new tab to hide the initial tab. The new tab becomes active.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule
-                            .getActivity()
-                            .getTabModelSelector()
-                            .openNewTab(
-                                    new LoadUrlParams("about:blank"),
-                                    TabLaunchType.FROM_CHROME_UI,
-                                    tab,
-                                    tab.isIncognito());
-                });
-
-        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.isHidden(), Matchers.is(true)));
-
-        ThreadUtils.runOnUiThreadBlocking(tab::freeze);
-
-        assertTrue("Tab should be frozen", tab.isFrozen());
-        assertNull("WebContents should be null after freezeInternal", tab.getWebContents());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Tab"})
-    @EnableFeatures({
-        ChromeFeatureList.TAB_FREEZING_USES_DISCARD,
-        ContentFeatures.WEB_CONTENTS_DISCARD
-    })
     public void testFreezeAndAppendPendingNavigation_withDiscard() {
         final TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
 
@@ -263,51 +223,6 @@ public class TabImplTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
-    @DisableFeatures({
-        ChromeFeatureList.TAB_FREEZING_USES_DISCARD,
-        ContentFeatures.WEB_CONTENTS_DISCARD
-    })
-    public void testFreezeAndAppendPendingNavigation_withoutDiscard() {
-        final TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
-
-        // Open a new tab to hide the initial tab. The new tab becomes active.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule
-                            .getActivity()
-                            .getTabModelSelector()
-                            .openNewTab(
-                                    new LoadUrlParams("about:blank"),
-                                    TabLaunchType.FROM_CHROME_UI,
-                                    tab,
-                                    tab.isIncognito());
-                });
-
-        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.isHidden(), Matchers.is(true)));
-
-        String url = mActivityTestRule.getTestServer().getURL(TEST_PATH);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> tab.freezeAndAppendPendingNavigation(new LoadUrlParams(url), "title"));
-
-        assertTrue("Tab should be frozen", tab.isFrozen());
-        assertNull("WebContents should be null", tab.getWebContents());
-        assertNotNull("WebContentsState should not be null", tab.getWebContentsState());
-        assertNull("Pending load params should be null", tab.getPendingLoadParams());
-        assertEquals(
-                "WebContentsState should have the new URL",
-                url,
-                tab.getWebContentsState().getVirtualUrlFromState());
-        assertEquals("URL should be updated", url, tab.getUrl().getSpec());
-        assertEquals("Title should be updated", "title", tab.getTitle());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Tab"})
-    @EnableFeatures({
-        ChromeFeatureList.TAB_FREEZING_USES_DISCARD,
-        ContentFeatures.WEB_CONTENTS_DISCARD
-    })
     public void testFreezeAndAppendPendingNavigation_withDiscard_loadUrlDiscardsPendingLoad() {
         final TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
 
@@ -347,54 +262,4 @@ public class TabImplTest {
         // Title will be updated asynchronously.
     }
 
-    @Test
-    @SmallTest
-    @Feature({"Tab"})
-    @DisableFeatures({
-        ChromeFeatureList.TAB_FREEZING_USES_DISCARD,
-        ContentFeatures.WEB_CONTENTS_DISCARD
-    })
-    public void testFreezeAndAppendPendingNavigation_withoutDiscard_loadUrlDiscardsPendingLoad() {
-        final TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
-
-        // Open a new tab to hide the initial tab. The new tab becomes active.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule
-                            .getActivity()
-                            .getTabModelSelector()
-                            .openNewTab(
-                                    new LoadUrlParams("about:blank"),
-                                    TabLaunchType.FROM_CHROME_UI,
-                                    tab,
-                                    tab.isIncognito());
-                });
-
-        CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.isHidden(), Matchers.is(true)));
-
-        String url1 = mActivityTestRule.getTestServer().getURL(TEST_PATH);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> tab.freezeAndAppendPendingNavigation(new LoadUrlParams(url1), "title1"));
-
-        assertNotNull("WebContentsState should not be null", tab.getWebContentsState());
-        assertNull("Pending load params should be null", tab.getPendingLoadParams());
-        assertEquals(
-                "WebContentsState should have the new URL",
-                url1,
-                tab.getWebContentsState().getVirtualUrlFromState());
-        assertEquals("URL should be updated", url1, tab.getUrl().getSpec());
-        assertEquals("Title should be updated", "title1", tab.getTitle());
-
-        String url2 =
-                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/simple.html");
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    tab.loadIfNeeded(TabLoadIfNeededCaller.OTHER);
-                    tab.loadUrl(new LoadUrlParams(url2));
-                });
-
-        assertNull("Pending load params should be null", tab.getPendingLoadParams());
-        assertEquals("URL should be updated", url2, tab.getUrl().getSpec());
-        // Title will be updated asynchronously.
-    }
 }

@@ -15,11 +15,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tabmodel.TabModelOrderControllerImpl.willOpenInForeground;
 import static org.chromium.chrome.test.util.ChromeTabUtils.getIndexOnUiThread;
@@ -53,8 +51,6 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
-import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroidJni;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.InterceptNavigationDelegateClientImpl;
@@ -103,9 +99,6 @@ public class TabModelImplTest {
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock
-    private MediaCaptureDevicesDispatcherAndroid.Natives mMediaCaptureDevicesDispatcherAndroidJni;
 
     @Mock private TabModelObserver mTabModelObserver;
 
@@ -1050,32 +1043,6 @@ public class TabModelImplTest {
                         assertEquals(tabs.get(i), tab);
                         i++;
                     }
-                });
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.TAB_FREEZING_USES_DISCARD)
-    public void testFreezeTabOnCloseIfCapturingForMedia() {
-        MediaCaptureDevicesDispatcherAndroidJni.setInstanceForTesting(
-                mMediaCaptureDevicesDispatcherAndroidJni);
-        when(mMediaCaptureDevicesDispatcherAndroidJni.isCapturingAudio(any())).thenReturn(true);
-
-        mPage = Journeys.createRegularTabsWithWebPages(mPage, List.of(mTestUrl));
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    TabModel tabModel =
-                            mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
-                    assertEquals(2, tabModel.getCount());
-                    Tab tab = tabModel.getTabAt(1);
-                    assertFalse(tab.isFrozen());
-                    tabModel.getTabRemover()
-                            .closeTabs(
-                                    TabClosureParams.closeTab(tab).build(),
-                                    /* allowDialog= */ false);
-
-                    // Tab should be frozen as a result.
-                    assertTrue(tab.isFrozen());
                 });
     }
 

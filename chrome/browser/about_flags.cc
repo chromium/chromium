@@ -5833,11 +5833,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHomeModulePrefRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kHomeModulePrefRefactor)},
 
-    {"tab-freezing-uses-discard",
-     flag_descriptions::kTabFreezingUsesDiscardName,
-     flag_descriptions::kTabFreezingUsesDiscardDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabFreezingUsesDiscard)},
-
     {"toolbar-phone-animation-refactor",
      flag_descriptions::kToolbarPhoneAnimationRefactorName,
      flag_descriptions::kToolbarPhoneAnimationRefactorDescription, kOsAndroid,

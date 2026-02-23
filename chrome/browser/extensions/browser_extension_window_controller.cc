@@ -239,23 +239,22 @@ base::ListValue BrowserExtensionWindowController::CreateTabList(
 
 #if BUILDFLAG(IS_ANDROID)
     // TODO(http://crbug.com/453008083): Remove feature flags
-    // kLoadAllTabsAtStartup, kTabFreezingUsesDiscard, and kWebContentsDiscard,
-    // when all of them are enabled by default.
+    // kLoadAllTabsAtStartup, and kWebContentsDiscard when both of them are
+    // enabled by default.
     //
     // On Android, it was possible for tabs to have null WebContents, so we
     // implemented a temporary workaround that ignored such tabs to avoid
     // crashes. The workaround introduced a bug: tabs with null WebContents were
     // visible on the tab strip, but they couldn't be seen by extensions.
     //
-    // When feature flags kLoadAllTabsAtStartup, kTabFreezingUsesDiscard, and
-    // kWebContentsDiscard are all enabled, all tabs will create a WebContents
-    // without a renderer during initialization, which will properly fix the
-    // issue above. As of Oct 22, 2025, the feature flags weren't enabled by
-    // default, so we needed to keep the workaround.
+    // When feature flags kLoadAllTabsAtStartup, and kWebContentsDiscard are
+    // enabled, all tabs will create a WebContents without a renderer during
+    // initialization, which will properly fix the issue above. As of Feb 2026,
+    // the kLoadAllTabsAtStartup is not enabled by default on non-desktop
+    // Android. WebContentsDiscard is enabled by default on all Android, but the
+    // flag still remains available on other platforms.
     bool is_non_null_web_contents_guaranteed =
         base::FeatureList::IsEnabled(chrome::android::kLoadAllTabsAtStartup) &&
-        base::FeatureList::IsEnabled(
-            chrome::android::kTabFreezingUsesDiscard) &&
         base::FeatureList::IsEnabled(features::kWebContentsDiscard);
 
     if (!is_non_null_web_contents_guaranteed && web_contents == nullptr) {

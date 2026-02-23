@@ -233,7 +233,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // Android devices.
   feature_overrides.EnableFeature(features::kWebContentsDiscard);
   feature_overrides.EnableFeature(features::kLazyBrowserInterfaceBroker);
-  feature_overrides.EnableFeature(chrome::android::kTabFreezingUsesDiscard);
   feature_overrides.EnableFeature(chrome::android::kLoadAllTabsAtStartup);
 
   // Enable the ability for extensions to override chrome pages.
