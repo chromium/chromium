@@ -600,7 +600,7 @@ bool FileIOTest::IsResult(const TestStep& test_step) {
 
 bool FileIOTest::MatchesResult(const TestStep& a, const TestStep& b) {
   CHECK(IsResult(a) && IsResult(b));
-  CHECK(!b.data2);
+  CHECK(b.data2.empty());
 
   if (a.type != b.type || a.status != b.status)
     return false;
@@ -610,11 +610,11 @@ bool FileIOTest::MatchesResult(const TestStep& a, const TestStep& b) {
 
   // If |a| specifies a data2, compare it first. If the size matches, compare
   // the contents.
-  if (a.data2 && b.data_size == a.data2_size)
-    return std::equal(a.data2, UNSAFE_TODO(a.data2 + a.data2_size), b.data);
+  if (!a.data2.empty() && b.data.size() == a.data2.size()) {
+    return a.data2 == b.data;
+  }
 
-  return (a.data_size == b.data_size &&
-          std::equal(a.data, UNSAFE_TODO(a.data + a.data_size), b.data));
+  return a.data == b.data;
 }
 
 void FileIOTest::RunNextStep() {
@@ -648,7 +648,7 @@ void FileIOTest::RunNextStep() {
         file_io->Read();
         break;
       case ACTION_WRITE:
-        file_io->Write(test_step.data, test_step.data_size);
+        file_io->Write(test_step.data.data(), test_step.data.size_bytes());
         break;
       case ACTION_CLOSE:
         file_io->Close();
@@ -666,16 +666,15 @@ void FileIOTest::OnResult(const TestStep& result) {
   CHECK(IsResult(result));
   if (!CheckResult(result)) {
     LOG(WARNING) << test_name_ << " got unexpected result. type=" << result.type
-                 << ", status=" << (uint32_t)result.status
-                 << ", data_size=" << result.data_size << ", received data="
-                 << (result.data
-                         ? base::HexEncode(result.data, result.data_size)
-                         : "<null>");
+                 << ", status=" << static_cast<uint32_t>(result.status)
+                 << ", data_size=" << result.data.size() << ", received data="
+                 << (!result.data.empty() ? base::HexEncode(result.data)
+                                          : "<null>");
     for (const auto& step : test_steps_) {
       if (IsResult(step)) {
         LOG(WARNING) << test_name_ << " expected type=" << step.type
-                     << ", status=" << (uint32_t)step.status
-                     << ", data_size=" << step.data_size;
+                     << ", status=" << static_cast<uint32_t>(step.status)
+                     << ", data_size=" << step.data.size();
       }
     }
     OnTestComplete(false);

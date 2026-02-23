@@ -11,6 +11,7 @@
 #include "base/not_fatal_until.h"
 #include "media/base/video_frame.h"
 #include "media/cdm/cdm_helpers.h"
+#include "media/cdm/cdm_type_conversion.h"
 #include "media/cdm/simple_cdm_buffer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -33,10 +34,7 @@ class SimpleCdmVideoFrame final : public VideoFrameImpl {
       gfx::Size natural_size) override {
     CHECK(FrameBuffer());
 
-    cdm::Buffer* buffer = FrameBuffer();
-    // SAFETY: cdm::Buffer is like `span` from CDM stable interface.
-    auto buffer_span =
-        UNSAFE_BUFFERS(base::span(buffer->Data(), buffer->Size()));
+    auto buffer_span = AsSpan(FrameBuffer());
     gfx::Size frame_size(Size().width, Size().height);
     scoped_refptr<media::VideoFrame> frame =
         media::VideoFrame::WrapExternalYuvData(
@@ -58,7 +56,7 @@ class SimpleCdmVideoFrame final : public VideoFrameImpl {
 
     // The FrameBuffer needs to remain around until |frame| is destroyed.
     frame->AddDestructionObserver(
-        base::BindOnce(&cdm::Buffer::Destroy, base::Unretained(buffer)));
+        base::BindOnce(&cdm::Buffer::Destroy, base::Unretained(FrameBuffer())));
 
     // Clear FrameBuffer so that SimpleCdmVideoFrame no longer has a reference
     // to it.

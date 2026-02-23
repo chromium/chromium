@@ -114,7 +114,7 @@ std::string GetHexKeyId(const cdm::InputBuffer_2& buffer) {
   if (buffer.key_id_size == 0)
     return "N/A";
 
-  return base::HexEncode(buffer.key_id, buffer.key_id_size);
+  return base::HexEncode(KeyIdFrom(&buffer));
 }
 
 std::string GetHexMask(uint32_t mask) {
@@ -505,10 +505,8 @@ void CdmAdapter::Decrypt(StreamType stream_type,
     return;
   }
 
-  scoped_refptr<DecoderBuffer> decrypted_buffer(DecoderBuffer::CopyFrom(
-      // SAFETY: `Data()` must return a buffer of `Size()` bytes.
-      UNSAFE_BUFFERS(base::span(decrypted_block->DecryptedBuffer()->Data(),
-                                decrypted_block->DecryptedBuffer()->Size()))));
+  scoped_refptr<DecoderBuffer> decrypted_buffer(
+      DecoderBuffer::CopyFrom(AsSpan(decrypted_block->DecryptedBuffer())));
   decrypted_buffer->set_timestamp(
       base::Microseconds(decrypted_block->Timestamp()));
   std::move(decrypt_cb).Run(Decryptor::kSuccess, std::move(decrypted_buffer));

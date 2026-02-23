@@ -109,6 +109,18 @@ MEDIA_EXPORT void ToCdmInputBuffer(const DecoderBuffer& encrypted_buffer,
                                    std::vector<cdm::SubsampleEntry>* subsamples,
                                    cdm::InputBuffer_2* input_buffer);
 
+// Utility functions for converting various structures to spans.
+MEDIA_EXPORT base::span<uint8_t> AsSpan(cdm::Buffer* buffer);
+
+MEDIA_EXPORT base::span<const uint8_t> AsSpan(
+    const cdm::InputBuffer_2* input_buffer);
+
+MEDIA_EXPORT base::span<const cdm::SubsampleEntry> SubsamplesFrom(
+    const cdm::InputBuffer_2* input_buffer);
+
+MEDIA_EXPORT base::span<const uint8_t> KeyIdFrom(
+    const cdm::InputBuffer_2* input_buffer);
+
 }  // namespace media
 
 #endif  // MEDIA_CDM_CDM_TYPE_CONVERSION_H_

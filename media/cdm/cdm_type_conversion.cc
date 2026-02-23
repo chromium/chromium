@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
@@ -634,6 +635,37 @@ void ToCdmInputBuffer(const DecoderBuffer& encrypted_buffer,
         decrypt_config->encryption_pattern()->crypt_byte_block(),
         decrypt_config->encryption_pattern()->skip_byte_block()};
   }
+}
+
+base::span<uint8_t> AsSpan(cdm::Buffer* buffer) {
+  CHECK(buffer);
+  // SAFETY: |buffer->Data()| must return a buffer of |buffer->Size()| bytes.
+  return UNSAFE_BUFFERS(base::span(buffer->Data(), buffer->Size()));
+}
+
+base::span<const uint8_t> AsSpan(const cdm::InputBuffer_2* input_buffer) {
+  CHECK(input_buffer);
+  // SAFETY: |input_buffer| is defined in the cdm interface submodule:
+  // https://chromium.googlesource.com/chromium/cdm
+  return UNSAFE_BUFFERS(
+      base::span(input_buffer->data, input_buffer->data_size));
+}
+
+base::span<const cdm::SubsampleEntry> SubsamplesFrom(
+    const cdm::InputBuffer_2* input_buffer) {
+  CHECK(input_buffer);
+  // SAFETY: |input_buffer| is defined in the cdm interface submodule:
+  // https://chromium.googlesource.com/chromium/cdm
+  return UNSAFE_BUFFERS(
+      base::span(input_buffer->subsamples, input_buffer->num_subsamples));
+}
+
+base::span<const uint8_t> KeyIdFrom(const cdm::InputBuffer_2* input_buffer) {
+  CHECK(input_buffer);
+  // SAFETY: |input_buffer| is defined in the cdm interface submodule:
+  // https://chromium.googlesource.com/chromium/cdm
+  return UNSAFE_BUFFERS(
+      base::span(input_buffer->key_id, input_buffer->key_id_size));
 }
 
 }  // namespace media

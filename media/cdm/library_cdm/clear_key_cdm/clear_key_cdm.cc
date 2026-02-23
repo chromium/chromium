@@ -93,10 +93,7 @@ static scoped_refptr<media::DecoderBuffer> DecoderBufferFrom(
     CHECK(!input_buffer.data_size);
     return media::DecoderBuffer::CreateEOSBuffer();
   }
-  // SAFETY: `input_buffer` is defined in the cdm interface submodule:
-  // https://chromium.googlesource.com/chromium/cdm
-  auto input_buffer_span =
-      UNSAFE_BUFFERS(base::span(input_buffer.data, input_buffer.data_size));
+  auto input_buffer_span = media::AsSpan(&input_buffer);
 
   // Take |input_buffer|'s underlying memory and store it into |output_buffer|.
   // This is safe because this method is only used in Decrypt(). Decrypt() is
@@ -113,10 +110,7 @@ static scoped_refptr<media::DecoderBuffer> DecoderBufferFrom(
 
   DCHECK_GT(input_buffer.iv_size, 0u);
   DCHECK_GT(input_buffer.key_id_size, 0u);
-  // SAFETY: `input_buffer` is defined in the cdm interface submodule:
-  // https://chromium.googlesource.com/chromium/cdm
-  auto subsample_span = UNSAFE_BUFFERS(
-      base::span(input_buffer.subsamples, input_buffer.num_subsamples));
+  auto subsample_span = media::SubsamplesFrom(&input_buffer);
   std::vector<media::SubsampleEntry> subsamples;
   for (const cdm::SubsampleEntry& subsample : subsample_span) {
     subsamples.emplace_back(subsample.clear_bytes, subsample.cipher_bytes);
@@ -626,11 +620,8 @@ cdm::Status ClearKeyCdm::Decrypt(const cdm::InputBuffer_2& encrypted_buffer,
   decrypted_block->SetDecryptedBuffer(
       cdm_host_proxy_->Allocate(buffer_span.size()));
   decrypted_block->DecryptedBuffer()->SetSize(buffer_span.size());
-  // SAFETY: decrypted_block is allocated in the above line with
-  // `buffer_span.size()` capacity.
   base::span<uint8_t> decrypted_buffer_span =
-      UNSAFE_BUFFERS(base::span(decrypted_block->DecryptedBuffer()->Data(),
-                                decrypted_block->DecryptedBuffer()->Size()));
+      AsSpan(decrypted_block->DecryptedBuffer());
   decrypted_buffer_span.copy_from_nonoverlapping(buffer_span);
   decrypted_block->SetTimestamp(buffer->timestamp().InMicroseconds());
 
@@ -899,9 +890,13 @@ void ClearKeyCdm::OnStorageId(uint32_t version,
   }
 
   is_running_storage_id_test_ = false;
+
+  // SAFETY: CdmAdapter::OnStorageIdObtained guarantees that `storage_id` has a
+  // size of `storage_id_size`.
+  auto storage_id_span =
+      UNSAFE_BUFFERS(base::span<const uint8_t>(storage_id, storage_id_size));
   DVLOG(1) << __func__ << ": storage_id (hex encoded) = "
-           << (storage_id_size ? base::HexEncode(storage_id, storage_id_size)
-                               : "<empty>");
+           << (storage_id_size ? base::HexEncode(storage_id_span) : "<empty>");
 
 #if BUILDFLAG(ENABLE_CDM_STORAGE_ID)
   // Storage Id is enabled, so something should be returned. It should be the

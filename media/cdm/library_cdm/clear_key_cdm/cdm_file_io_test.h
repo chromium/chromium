@@ -17,6 +17,7 @@
 #include "base/containers/stack.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "media/cdm/api/content_decryption_module.h"
 
 namespace media {
@@ -93,9 +94,11 @@ class FileIOTest : public cdm::FileIOClient {
   void Run(CompletionCB completion_cb);
 
  private:
+  // SAFETY:
   struct TestStep {
-    // |this| object doesn't take the ownership of |data| or |data2|, which
-    // should be valid throughout the lifetime of |this| object.
+    // SAFETY: |data| must be of size |data_size|. Similarly, |data2| must be of
+    // size |data2_size|. |this| object doesn't take the ownership of |data| or
+    // |data2|, which should be valid throughout the lifetime of |this| object.
     TestStep(StepType type,
              Status status,
              const uint8_t* data = nullptr,
@@ -104,10 +107,8 @@ class FileIOTest : public cdm::FileIOClient {
              uint32_t data2_size = 0)
         : type(type),
           status(status),
-          data(data),
-          data_size(data_size),
-          data2(data2),
-          data2_size(data2_size) {}
+          UNSAFE_BUFFERS(data(data, data_size)),
+          UNSAFE_BUFFERS(data2(data2, data2_size)) {}
 
     StepType type;
 
@@ -115,12 +116,10 @@ class FileIOTest : public cdm::FileIOClient {
     Status status;
 
     // Data to write in ACTION_WRITE, or read data in RESULT_READ.
-    const uint8_t* data;
-    uint32_t data_size;
+    base::raw_span<const uint8_t> data;
 
     // Alternate read data in RESULT_READ, if |data2| != nullptr.
-    const uint8_t* data2;
-    uint32_t data2_size;
+    base::raw_span<const uint8_t> data2;
   };
 
   // Returns whether |test_step| is a RESULT_* step.
