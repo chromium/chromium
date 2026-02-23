@@ -58,10 +58,17 @@ message SkillsRequest {
 }
 
 // The response for the Skills feature.
-// Next ID: 2
+// Next ID: 4
 message SkillsResponse {
   // List of suggestions for the client to display.
   repeated Suggestion suggestions = 1;
+
+  // The type of error that occurred:
+  // "unclear_intent" | "inappropriate_content" | null
+  string error_type = 2 [features = { field_presence: EXPLICIT }];
+
+  // The error message from the model, if any.
+  string error_message = 3 [features = { field_presence: EXPLICIT }];
 
   // A single suggestion returned by the model.
   message Suggestion {
