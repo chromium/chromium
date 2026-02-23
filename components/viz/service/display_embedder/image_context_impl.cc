@@ -230,7 +230,8 @@ void ImageContextImpl::CreateFallbackImage(
     skgpu::graphite::DawnTextureInfo dawn_info;
     bool success = skgpu::graphite::TextureInfos::GetDawnTextureInfo(
         tex_infos[0], &dawn_info);
-    if (success && dawn_info.fFormat == wgpu::TextureFormat::External) {
+    if (success &&
+        dawn_info.fFormat == wgpu::TextureFormat::OpaqueYCbCrAndroid) {
       // Skia can't allocate a fallback texture since the original texture was
       // externally allocated.
       result = CreateFallbackImageResult::kFailedExternalTexture;

@@ -379,7 +379,7 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
 
     // Set the Dawn texture and SharedTextureMemory parameters.
 
-    wgpu::TextureFormat webgpu_format = wgpu::TextureFormat::External;
+    wgpu::TextureFormat webgpu_format = wgpu::TextureFormat::OpaqueYCbCrAndroid;
     auto device = context_state_->dawn_context_provider()->GetDevice();
 
     wgpu::TextureDescriptor texture_descriptor;

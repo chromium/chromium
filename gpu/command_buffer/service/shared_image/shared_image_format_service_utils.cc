@@ -695,7 +695,7 @@ skgpu::graphite::TextureInfo GraphitePromiseTextureInfo(
   skgpu::graphite::DawnTextureInfo dawn_texture_info;
   wgpu::TextureFormat wgpu_view_format;
   if (ycbcr_info) {
-    wgpu_view_format = wgpu::TextureFormat::External;
+    wgpu_view_format = wgpu::TextureFormat::OpaqueYCbCrAndroid;
   } else {
     wgpu_view_format = gpu::ToDawnTextureViewFormat(format, plane_index);
   }
