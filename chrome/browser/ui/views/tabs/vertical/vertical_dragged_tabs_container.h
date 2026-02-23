@@ -87,6 +87,9 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   struct DraggedViewVisualData {
     gfx::Vector2d offset;
     bool should_hide = false;
+    // If true, surrounding views do not have to be laid out around this
+    // view.
+    bool should_float = false;
   };
 
   // Returns the expected visual data, relative to the host view, for a dragged
@@ -117,8 +120,10 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // Returns the scroll view for the container.
   virtual views::ScrollView* GetScrollViewForContainer() const = 0;
 
-  // Invalidates the layout of the host view, skipping animations.
-  virtual void UpdateLayoutForDrag() = 0;
+  // Updates the target layout of the host view, and snaps `views_to_snap` to
+  // their target layout, skipping animations.
+  virtual void UpdateTargetLayoutForDrag(
+      const std::vector<const views::View*>& views_to_snap) = 0;
 
   // Get the layout of the host view, skipping animations.
   virtual const views::ProposedLayout& GetLayoutForDrag() const = 0;
@@ -184,7 +189,9 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // tabs' position changes.
   void ApplyUpdatesForDragPositionChange();
 
-  const raw_ref<const views::View> host_view_;
+  std::vector<const views::View*> GetDraggingViews() const;
+
+  const raw_ref<views::View> host_view_;
   raw_ptr<TabCollectionNode> collection_node_;
 
   base::CallbackListSubscription node_destroyed_subscription_;

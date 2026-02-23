@@ -94,21 +94,12 @@ TabDragContext* VerticalDraggedTabsContainer::OnTabDragUpdated(
 
   // Used to determine whether the layout should snap into position without
   // animating at the end of this drag cycle.
-  bool is_initial_drag = dragging_views_.empty();
-  if (is_initial_drag) {
+  if (dragging_views_.empty()) {
     HandleTabDragEnteredContainer();
     InitializeDragState(drag_controller);
   }
 
   ApplyUpdatesForDragPositionChange();
-
-  if (is_initial_drag) {
-    // This is needed so that the transformation takes over without animating
-    // any bounds changes. This needs to be done after applying the initial
-    // transformations because the transformation is taken into account
-    // when determining the view's bounds.
-    UpdateLayoutForDrag();
-  }
 
   return GetDragHandler().GetDragContext();
 }
@@ -150,7 +141,12 @@ bool VerticalDraggedTabsContainer::CanDropTab() {
 void VerticalDraggedTabsContainer::HandleTabDragEnteredContainer() {
   CHECK(collection_node_);
   GetDragHandler().HandleDraggedTabsIntoNode(*collection_node_);
-  UpdateLayoutForDrag();
+
+  // We don't need to snap any views here, since the layout manager already
+  // skips animating dragged views.
+  // The target layout just needs to be recalculated so that nodes added to this
+  // container will haver their views tracked in the layout manager.
+  UpdateTargetLayoutForDrag({});
 }
 
 base::CallbackListSubscription
@@ -181,7 +177,7 @@ void VerticalDraggedTabsContainer::AnimationProgressed(
 void VerticalDraggedTabsContainer::AnimationEnded(
     const gfx::Animation* animation) {
   CHECK_EQ(animation, &drag_start_animation_);
-  UpdateLayoutForDrag();
+  host_view_->InvalidateLayout();
 }
 
 void VerticalDraggedTabsContainer::InitializeDragState(
@@ -363,7 +359,10 @@ void VerticalDraggedTabsContainer::ResetDragState() {
     // The next layout update should allow the view to be shown by the host.
     visual_data.should_hide = false;
   }
-  UpdateLayoutForDrag();
+  // The dragged view's bounds need to be snapped. While dragging, the bounds
+  // are set to (0,0), but afterward the drag, the bounds must be updated to
+  // the actual position, without animating.
+  UpdateTargetLayoutForDrag(GetDraggingViews());
   dragging_views_.clear();
   animating_views_start_offsets_.clear();
   drag_start_animation_.Reset(0.0);
@@ -451,6 +450,14 @@ VerticalDraggedTabsContainer::GetVisualDataForDraggedView(
   if (it == dragging_views_.end()) {
     return std::nullopt;
   }
+
+  // Views that should be hidden are still shown while animating into position,
+  // but are set to "float" so that surrounding views may also animate into
+  // the end position.
+  const bool should_hide =
+      it->second.should_hide && !drag_start_animation_.is_animating();
+  const bool should_float =
+      it->second.should_hide && drag_start_animation_.is_animating();
   if (view.GetTransform().IsIdentity()) {
     // If a drag recently ended the child will still be in
     // `dragging_views_` but will not have a transformation, which let's
@@ -462,16 +469,17 @@ VerticalDraggedTabsContainer::GetVisualDataForDraggedView(
     return std::make_optional(DraggedViewVisualData{
         .offset = GetDraggingViewPositionForBounds(
             &view, bounding_box_for_point, it->second.offset),
-        .should_hide =
-            it->second.should_hide && !drag_start_animation_.is_animating(),
+        .should_hide = should_hide,
+        .should_float = should_float,
     });
   }
   // If the tab is being dragged, then it is rendered using
   // transformations, offset from the container's origin.
   return DraggedViewVisualData{
       .offset = gfx::Vector2d(),
-      .should_hide =
-          it->second.should_hide && !drag_start_animation_.is_animating()};
+      .should_hide = should_hide,
+      .should_float = should_float,
+  };
 }
 
 views::View* VerticalDraggedTabsContainer::GetViewForDragBounds(
@@ -560,4 +568,15 @@ bool VerticalDraggedTabsContainer::IsTabStripCollapsed() const {
 
 void VerticalDraggedTabsContainer::ResetCollectionNode() {
   collection_node_ = nullptr;
+}
+
+std::vector<const views::View*> VerticalDraggedTabsContainer::GetDraggingViews()
+    const {
+  std::vector<const views::View*> views;
+  views.reserve(dragging_views_.size());
+  std::transform(dragging_views_.begin(), dragging_views_.end(),
+                 std::back_inserter(views),
+                 [](const auto& entry) { return entry.first; });
+
+  return views;
 }

@@ -37,7 +37,7 @@ VerticalPinnedTabContainerView::VerticalPinnedTabContainerView(
       layout_manager_(*SetLayoutManager(std::make_unique<
                                         TabCollectionAnimatingLayoutManager>(
           std::make_unique<views::DelegatingLayoutManager>(this),
-          /*delegate=*/nullptr,
+          this,
           TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal))) {
   collection_node->set_remove_child_from_node(base::BindRepeating(
       &TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView,
@@ -107,6 +107,12 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
     bounds.set_width(child_width);
 
     auto drag_data = GetVisualDataForDraggedView(*child);
+    const bool should_show_child = !(drag_data && drag_data->should_hide);
+    if (!should_show_child) {
+      layouts.child_layouts.emplace_back(child, false, bounds);
+      continue;
+    }
+
     bounds.set_y(drag_data ? drag_data->offset.y() : y);
     int child_x = drag_data ? drag_data->offset.x() : x;
     if (drag_data && base::i18n::IsRTL()) {
@@ -114,12 +120,13 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
     }
     bounds.set_x(child_x);
 
-    const bool should_show_child =
-        drag_data.has_value() ? !drag_data->should_hide : true;
-    if (should_show_child) {
+    if (row_index != 0) {
+      bounds.set_x(bounds.x() + kTabPadding);
+    }
+
+    if (!drag_data || !drag_data->should_float) {
       if (row_index != 0) {
         x += kTabPadding;
-        bounds.set_x(bounds.x() + kTabPadding);
       }
       x += bounds.width();
       total_width = std::max(total_width, x);
@@ -133,7 +140,7 @@ views::ProposedLayout VerticalPinnedTabContainerView::CalculateProposedLayout(
       }
     }
 
-    layouts.child_layouts.emplace_back(child, should_show_child, bounds);
+    layouts.child_layouts.emplace_back(child, true, bounds);
   }
   layouts.host_size = gfx::Size(total_width, total_height);
   return layouts;
@@ -152,6 +159,14 @@ gfx::Size VerticalPinnedTabContainerView::GetMinimumSize() const {
                    min_height);
 }
 
+bool VerticalPinnedTabContainerView::IsViewDragging(
+    const views::View& child_view) const {
+  if (!collection_node_ || !collection_node_->GetController()) {
+    return false;
+  }
+  return GetDragHandler().IsViewDragging(child_view);
+}
+
 void VerticalPinnedTabContainerView::ResetCollectionNode() {
   collection_node_ = nullptr;
 }
@@ -168,8 +183,9 @@ views::ScrollView* VerticalPinnedTabContainerView::GetScrollViewForContainer()
       const_cast<VerticalPinnedTabContainerView*>(this));
 }
 
-void VerticalPinnedTabContainerView::UpdateLayoutForDrag() {
-  layout_manager_->ResetToTargetLayout();
+void VerticalPinnedTabContainerView::UpdateTargetLayoutForDrag(
+    const std::vector<const views::View*>& views_to_snap) {
+  layout_manager_->ResetViewsToTargetLayout(views_to_snap);
 }
 
 const views::ProposedLayout& VerticalPinnedTabContainerView::GetLayoutForDrag()
