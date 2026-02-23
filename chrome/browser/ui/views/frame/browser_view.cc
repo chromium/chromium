@@ -1539,6 +1539,11 @@ void BrowserView::OnProjectsPanelStateChanged(
 // BrowserView, BrowserWindow implementation:
 
 void BrowserView::Show() {
+  // Attempts to show closed windows should no-op.
+  if (browser_widget_->IsClosed()) {
+    return;
+  }
+
   if (auto* manager = InitialWebUIManager::From(browser())) {
     if (manager->RequestDeferShow(
             base::BindOnce(&BrowserView::OnInitialWebUIReady,

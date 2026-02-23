@@ -3231,6 +3231,21 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserTest, ClosedBrowsersShouldNotShow) {
+  // Create a new browser but do not show it yet.
+  BrowserWindowInterface* const new_browser =
+      Browser::Create(Browser::CreateParams(GetProfile(), true));
+  ui::BaseWindow* const new_window = new_browser->GetWindow();
+  EXPECT_FALSE(new_window->IsVisible());
+
+  // Close the browser before Show() is called.
+  new_window->Close();
+
+  // Attempts to show a closed browser should no-op.
+  new_window->Show();
+  EXPECT_FALSE(new_window->IsVisible());
+}
+
 class GuestSessionBrowserTest : public BrowserTest {
  public:
 #if BUILDFLAG(IS_CHROMEOS)
