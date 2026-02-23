@@ -204,6 +204,11 @@ LensQueryFlowRouter::GetSuggestInputs() {
       lens_overlay_query_controller()->GetLensSuggestInputs());
 }
 
+std::optional<base::UnguessableToken>
+LensQueryFlowRouter::overlay_tab_context_file_token() const {
+  return overlay_tab_context_file_token_;
+}
+
 void LensQueryFlowRouter::SetSuggestInputsReadyCallback(
     base::RepeatingClosure callback) {
   // Return the callback immediately if the suggest inputs are already ready.

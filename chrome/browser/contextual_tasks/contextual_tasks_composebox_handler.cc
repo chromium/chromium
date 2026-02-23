@@ -202,6 +202,17 @@ void ContextualTasksComposeboxHandler::OnFileUploadStatusChanged(
     lens::MimeType mime_type,
     contextual_search::FileUploadStatus file_upload_status,
     const std::optional<contextual_search::FileUploadErrorType>& error_type) {
+  // If the file token corresponds to the token uploaded via Lens when the
+  // overlay is opened, then there is no need to do anything about the file
+  // upload status.
+  if (auto* controller = GetLensSearchController()) {
+    if (controller->query_router() &&
+        controller->query_router()->overlay_tab_context_file_token() ==
+            file_token) {
+      return;
+    }
+  }
+
   ContextualSearchboxHandler::OnFileUploadStatusChanged(
       file_token, mime_type, file_upload_status, error_type);
   // Associate tab with task.
@@ -951,7 +962,7 @@ void ContextualTasksComposeboxHandler::HandleLensButtonClick() {
     }
     controller->SetThumbnailCreatedCallback(base::BindRepeating(
         &ContextualTasksComposeboxHandler::OnLensThumbnailCreated,
-        base::Unretained(this)));
+        weak_factory_.GetWeakPtr()));
     controller->OpenLensOverlay(
         lens::LensOverlayInvocationSource::kContextualTasksComposebox);
   }

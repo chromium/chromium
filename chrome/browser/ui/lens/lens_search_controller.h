@@ -238,7 +238,7 @@ class LensSearchController {
   virtual lens::LensOverlayQueryController* lens_overlay_query_controller();
 
   // Returns the LensQueryFlowRouter.
-  lens::LensQueryFlowRouter* query_router();
+  virtual lens::LensQueryFlowRouter* query_router();
 
   // Returns the LensOverlaySidePanelCoordinator.
   lens::LensOverlaySidePanelCoordinator* lens_overlay_side_panel_coordinator();
