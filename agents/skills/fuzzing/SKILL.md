@@ -1,19 +1,21 @@
 ---
 name: fuzzing
-description: Creates and maintains FUZZ_TESTs in Chromium using the Google
-  FuzzTest framework. Use for adding fuzz tests or improving fuzzer coverage.
+description: Implements, registers, and verifies fuzz tests in Chromium. Use when the user asks to add or write fuzzers in C++, or mentions fuzz testing or FUZZ_TEST.
 ---
 
 # Fuzzing (Chromium)
 
 ## 1. Setup
+
 Ensure the output directory is configured:
+
 ```bash
 gn gen out/fuzz --args='enable_fuzztest_fuzz=true is_debug=false is_asan=true \
 is_component_build=false use_remoteexec=true'
 ```
 
 ### 2. Implement the FUZZ_TEST
+
 Add to `*_unittest.cc` alongside existing tests:
 
 ```cpp
@@ -40,23 +42,25 @@ FUZZ_TEST(MyComponentFuzzTest, MyPropertyFunction)
 ```
 
 For complex types:
-*   **Construct from primitives:** If the object has a parsing constructor (e.g.
-    `GURL(string)`), accept the primitive and construct it inside your test
-    function.
-*   **Define a local domain:** Use `fuzztest::Constructor` or `fuzztest::Map` to
-    build valid objects.
-    ```cpp
-    auto ArbitraryFoo() {
-      return fuzztest::Constructor<Foo>(fuzztest::InRange(0, 10));
-    }
-    ```
+
+- **Construct from primitives:** If the object has a parsing constructor (e.g.
+  `GURL(string)`), accept the primitive and construct it inside your test
+  function.
+- **Define a local domain:** Use `fuzztest::Constructor` or `fuzztest::Map` to
+  build valid objects.
+  ```cpp
+  auto ArbitraryFoo() {
+    return fuzztest::Constructor<Foo>(fuzztest::InRange(0, 10));
+  }
+  ```
 
 ### 3. Register in BUILD.gn
+
 You **MUST** register the test in the `fuzztests` list (in alphabetical order)
 of the **executable** `test` target.
 
-**Case A: File is in a `test()` target**
-Add `//third_party/fuzztest:fuzztest_gtest_main` to `deps`.
+**Case A: File is in a `test()` target:** Add
+`//third_party/fuzztest:fuzztest_gtest_main` to `deps`.
 
 ```gn
 test("my_component_unittests") {
@@ -74,8 +78,8 @@ test("my_component_unittests") {
 }
 ```
 
-**Case B: File is in a `source_set()`**
-Add `//third_party/fuzztest:fuzztest` to `deps`.
+**Case B: File is in a `source_set()`:** Add `//third_party/fuzztest:fuzztest`
+to `deps`.
 
 ```gn
 source_set("tests") {
@@ -94,6 +98,7 @@ Then, ensure it lists the fuzz test in its `fuzztests` variable (in alphabetical
 order).
 
 ### 4. Mandatory verification workflow
+
 The task is **incomplete** until you successfully execute this sequence:
 
 1. **Build**
@@ -118,7 +123,7 @@ autoninja --quiet -C out/fuzz my_component_unittests
 
 ## Resources
 
-*   **Chromium Guide**: `testing/libfuzzer/getting_started.md`
-*   **Macro Usage**: `third_party/fuzztest/src/doc/fuzz-test-macro.md`
-*   **Domains**: `third_party/fuzztest/src/doc/domains-reference.md`
-*   **Fixtures**: `third_party/fuzztest/src/doc/fixtures.md`
+- **Chromium Guide**: `testing/libfuzzer/getting_started.md`
+- **Macro Usage**: `third_party/fuzztest/src/doc/fuzz-test-macro.md`
+- **Domains**: `third_party/fuzztest/src/doc/domains-reference.md`
+- **Fixtures**: `third_party/fuzztest/src/doc/fixtures.md`
