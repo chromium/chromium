@@ -20,6 +20,7 @@ source_set("contextual_tasks") {
     "contextual_tasks_context_service.h",
     "contextual_tasks_context_service_factory.h",
     "contextual_tasks_panel_controller.h",
+    "contextual_tasks_panel_host.h",
     "contextual_tasks_service_factory.h",
     "contextual_tasks_tab_visit_tracker.cc",
     "contextual_tasks_tab_visit_tracker.h",
@@ -135,6 +136,7 @@ source_set("ui") {
   if (!is_android) {
     sources += [
       "contextual_tasks_composebox_handler.h",
+      "contextual_tasks_panel_host_desktop_impl.h",
       "contextual_tasks_side_panel_coordinator.h",
       "contextual_tasks_ui.h",
       "contextual_tasks_ui_service_factory.h",
@@ -192,6 +194,7 @@ source_set("ui_impl") {
     sources += [
       "contextual_tasks_composebox_handler.cc",
       "contextual_tasks_navigation_throttle.cc",
+      "contextual_tasks_panel_host_desktop_impl.cc",
       "contextual_tasks_side_panel_coordinator.cc",
       "contextual_tasks_ui.cc",
       "contextual_tasks_ui_service.cc",
