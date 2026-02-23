@@ -2865,11 +2865,9 @@ static_library("browser") {
       "android/storage_loaded_data_android.h",
       "android/storage_restore_orchestrator_factory_android.cc",
       "android/storage_restore_orchestrator_factory_android.h",
-      "android/tab_android.cc",
-      "android/tab_android.h",
+      "android/tab_android.cc",  # TODO(crbug.com/486820940): Move to tabs_impl.
       "android/tab_android_conversions.cc",
       "android/tab_android_conversions.h",
-      "android/tab_android_data_provider.h",
       "android/tab_android_user_data.h",
       "android/tab_browser_controls_constraints_helper.cc",
       "android/tab_favicon.cc",

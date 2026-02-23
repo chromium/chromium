@@ -20,7 +20,10 @@ source_set("impl") {
     "//components/search_engines",
   ]
   if (is_android) {
-    deps += [ "//chrome/android:chrome_jni_headers" ]
+    deps += [
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/android:tabs_public",
+    ]
   }
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

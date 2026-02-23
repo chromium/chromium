@@ -5,20 +5,31 @@
 import("//chrome/common/features.gni")
 
 source_set("tabs_public") {
-  public = [ "tab_features.h" ]
+  public = [
+    "tab_android.h",
+    "tab_android_data_provider.h",
+    "tab_features.h",
+  ]
 
   public_deps = [
     "//base",
+    "//components/sessions:session_id",
+    "//components/split_tabs",
+    "//components/tab_groups",
+    "//components/tabs:public",
     "//ui/base/unowned_user_data",
   ]
 
   deps = [
+    "//chrome/browser/tab",
     "//chrome/common:buildflags",
     "//content/public/browser",
   ]
 }
 
 source_set("tabs_impl") {
+  # TODO(crbug.com/486820940): Split tab_android.cc into smaller build target
+  # files.
   sources = [ "tab_features.cc" ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

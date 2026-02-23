@@ -209,6 +209,9 @@ source_set("impl") {
   } else {
     sources += [ "sampling/shared_sampler_stub.cc" ]
   }
+  if (is_android) {
+    deps += [ "//chrome/browser/android:tabs_public" ]
+  }
   if (is_chromeos) {
     sources += [
       "providers/arc/arc_process_task.cc",

@@ -336,6 +336,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [ "javascript_optimizer_provider_android_unittest.cc" ]
+    deps += [ "//chrome/browser/android:tabs_public" ]
   } else {
     sources += [
       "generated_cookie_prefs_unittest.cc",

@@ -45,7 +45,7 @@ class MockTabAndroidDataProvider : public TabAndroidDataProvider {
   MOCK_METHOD(std::unique_ptr<WebContentsStateByteBuffer>,
               GetWebContentsByteBuffer,
               (),
-              (override));
+              (const override));
 };
 
 const int kVersion = 2;

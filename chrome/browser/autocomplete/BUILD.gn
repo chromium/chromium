@@ -120,6 +120,7 @@ source_set("impl") {
   if (is_android) {
     sources += [ "../android/autocomplete/tab_matcher_android.cc" ]
     deps += [
+      "//chrome/browser/android:tabs_public",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/ui/android/omnibox:jni_headers",
       "//chrome/browser/ui/android/tab_model",

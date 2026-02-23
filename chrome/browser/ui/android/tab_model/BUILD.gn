@@ -55,6 +55,7 @@ source_set("impl") {
     ":tab_model",
     "//chrome/android:chrome_jni_headers",
     "//chrome/browser:browser_process",
+    "//chrome/browser/android:tabs_public",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sessions",
@@ -88,6 +89,7 @@ source_set("test_support") {
     "//ui/base/unowned_user_data",
   ]
   deps = [
+    "//chrome/browser/android:tabs_public",
     "//chrome/browser/flags:flags_android",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/android/tab_model",

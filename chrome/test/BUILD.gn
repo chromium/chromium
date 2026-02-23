@@ -783,6 +783,7 @@ static_library("test_support") {
     public_deps += [
       ":test_support_ui_android",
       "//chrome:chrome_android_core",
+      "//chrome/browser/android:tabs_public",
       "//chrome/browser/ui/android/tab_model",
       "//components/feed/core/v2:feed_core_stubs",
       "//components/supervised_user/core/browser/android",
@@ -13090,7 +13091,10 @@ source_set("xr_browser_tests_common") {
   if (!is_android) {
     public_deps += [ "//chrome/test:test_support_ui" ]
   } else {
-    public_deps += [ "//chrome/test:test_support_ui_android" ]
+    public_deps += [
+      "//chrome/browser/android:tabs_public",
+      "//chrome/test:test_support_ui_android",
+    ]
   }
 
   data = [

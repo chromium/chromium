@@ -38,6 +38,7 @@
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
+#include "chrome/browser/tab/web_contents_state.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -194,7 +195,7 @@ int TabAndroid::GetAndroidId() const {
 }
 
 std::unique_ptr<WebContentsStateByteBuffer>
-TabAndroid::GetWebContentsByteBuffer() {
+TabAndroid::GetWebContentsByteBuffer() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> state =
       Java_TabImpl_getWebContentsStateByteBuffer(env, weak_java_tab_.get(env));

@@ -19,8 +19,8 @@ class TabAndroidDataProvider {
   virtual int GetAndroidId() const = 0;
 
   // May return nullptr, which caller should handle accordingly.
-  virtual std::unique_ptr<WebContentsStateByteBuffer>
-  GetWebContentsByteBuffer() = 0;
+  virtual std::unique_ptr<WebContentsStateByteBuffer> GetWebContentsByteBuffer()
+      const = 0;
 
  protected:
   virtual ~TabAndroidDataProvider() = default;

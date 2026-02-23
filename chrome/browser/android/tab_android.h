@@ -22,9 +22,7 @@
 #include "base/supports_user_data.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/android/tab_android_data_provider.h"
-#include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
 #include "chrome/browser/tab/web_contents_state.h"
-#include "components/infobars/core/infobar_manager.h"
 #include "components/sessions/core/session_id.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -33,20 +31,29 @@
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 class GURL;
+class TabAndroidDataProvider;
 class Profile;
 
 namespace cc::slim {
 class Layer;
-}
+}  // namespace cc::slim
 
 namespace android {
 class TabWebContentsDelegateAndroid;
-}
+}  // namespace android
+
+namespace browser_sync {
+class SyncedTabDelegateAndroid;
+}  // namespace browser_sync
 
 namespace content {
 class DevToolsAgentHost;
 class WebContents;
 }  // namespace content
+
+namespace sync_sessions {
+class SyncedTabDelegate;
+}  // namespace sync_sessions
 
 namespace tabs {
 class TabCollection;
@@ -106,7 +113,7 @@ class TabAndroid : public tabs::TabInterface,
   SessionID GetWindowId() const override;
   int GetAndroidId() const override;
   std::unique_ptr<WebContentsStateByteBuffer> GetWebContentsByteBuffer()
-      override;
+      const override;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
@@ -227,7 +234,7 @@ class TabAndroid : public tabs::TabInterface,
   content::WebContents* GetContents() const override;
   // This implementation of close immediately closes the tab without undo
   // support and without a warning dialog when closing the last tab in a tab
-  // group. For more granualar control it is strongly recommended to close tabs
+  // group. For more granular control it is strongly recommended to close tabs
   // from Java instead. This operation may fail if the TabModel for this tab is
   // not found for some reason.
   void Close() override;

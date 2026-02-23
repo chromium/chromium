@@ -23,6 +23,7 @@ source_set("common") {
       "glic_tab_observer_android.h",
     ]
     deps += [
+      "//chrome/browser/android:tabs_public",
       "//chrome/browser/tab",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/tabs:tabs_public",
