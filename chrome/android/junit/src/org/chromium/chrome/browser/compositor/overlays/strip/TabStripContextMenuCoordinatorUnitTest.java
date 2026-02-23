@@ -32,6 +32,8 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tabmodel.TabModel.RecentlyClosedEntryType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -214,10 +216,11 @@ public class TabStripContextMenuCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC)
-    // TODO(crbug.com/483509451): Split test to ensure pin only shows when Glic not visible
     public void showMenu_verifyPinGlicOption() {
         // Arrange.
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, false);
         mCoordinator.showMenu(mRectProvider, false, mActivity);
         verifyMenuState(/* expectedNumItems= */ 6);
         assertEquals(
@@ -231,6 +234,29 @@ public class TabStripContextMenuCoordinatorUnitTest {
 
         // Verify.
         verify(mDelegate).onPinGlic();
+        assertFalse(mMenuWindow.isShowing());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void showMenu_verifyUnpinGlicOption() {
+        // Arrange.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, true);
+        mCoordinator.showMenu(mRectProvider, false, mActivity);
+        verifyMenuState(/* expectedNumItems= */ 6);
+        assertEquals(
+                R.string.menu_unpin_glic,
+                getItemModelAtPosition(5).get(ListMenuItemProperties.TITLE_ID));
+
+        // Act: Select "Unpin Gemini" option.
+        mCoordinator
+                .getListMenuDelegate(mContentView)
+                .onItemSelected(getItemModelAtPosition(5), mListView);
+
+        // Verify.
+        verify(mDelegate).onUnpinGlic();
         assertFalse(mMenuWindow.isShowing());
     }
 

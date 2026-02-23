@@ -103,6 +103,8 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -3320,7 +3322,17 @@ public class StripLayoutHelper
                                 @Override
                                 public void onPinGlic() {
                                     RecordUserAction.record("Android.TabStripMenu.PinGlic");
-                                    // TODO(crbug.com/483509451): Pin Glic
+                                    ChromeSharedPreferences.getInstance()
+                                            .writeBoolean(
+                                                    ChromePreferenceKeys.GLIC_BUTTON_PINNED, true);
+                                }
+
+                                @Override
+                                public void onUnpinGlic() {
+                                    RecordUserAction.record("Android.TabStripMenu.UnpinGlic");
+                                    ChromeSharedPreferences.getInstance()
+                                            .writeBoolean(
+                                                    ChromePreferenceKeys.GLIC_BUTTON_PINNED, false);
                                 }
                             });
         }

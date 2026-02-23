@@ -23,6 +23,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tabmodel.TabModel.RecentlyClosedEntryType;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.tab_ui.R;
@@ -170,16 +172,29 @@ public class TabStripContextMenuCoordinator {
         if (ChromeFeatureList.isEnabled(
                         ChromeFeatureList.TAB_STRIP_EMPTY_SPACE_CONTEXT_MENU_ANDROID)
                 && ChromeFeatureList.sGlic.isEnabled()) {
-            // TODO(crbug.com/483810144): Add unpinning functionality.
-            // TODO(crbug.com/483509451): Only show when Glic button not already visible
             if (!isIncognito) {
                 itemList.add(BasicListMenu.buildMenuDivider(/* isIncognito= */ false));
-                itemList.add(
-                        new ListItemBuilder()
-                                .withTitleRes(R.string.menu_pin_glic)
-                                .withMenuId(R.id.pin_glic)
-                                .withIsIncognito(false)
-                                .build());
+
+                boolean isPinned =
+                        ChromeSharedPreferences.getInstance()
+                                .readBoolean(
+                                        ChromePreferenceKeys.GLIC_BUTTON_PINNED,
+                                        /* defaultValue= */ true);
+                if (isPinned) {
+                    itemList.add(
+                            new ListItemBuilder()
+                                    .withTitleRes(R.string.menu_unpin_glic)
+                                    .withMenuId(R.id.unpin_glic)
+                                    .withIsIncognito(false)
+                                    .build());
+                } else {
+                    itemList.add(
+                            new ListItemBuilder()
+                                    .withTitleRes(R.string.menu_pin_glic)
+                                    .withMenuId(R.id.pin_glic)
+                                    .withIsIncognito(false)
+                                    .build());
+                }
             }
         }
     }
@@ -218,6 +233,8 @@ public class TabStripContextMenuCoordinator {
                 mDelegate.onNameWindow();
             } else if (model.get(MENU_ITEM_ID) == R.id.pin_glic) {
                 mDelegate.onPinGlic();
+            } else if (model.get(MENU_ITEM_ID) == R.id.unpin_glic) {
+                mDelegate.onUnpinGlic();
             }
             assumeNonNull(mMenuWindow).dismiss();
         };

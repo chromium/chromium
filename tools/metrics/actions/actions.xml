@@ -4903,6 +4903,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.TabStripMenu.UnpinGlic">
+  <owner>mklw@google.com</owner>
+  <description>
+    User tapped 'Unpin Glic' on the tab strip context menu to unpin the Glic
+    button in the tab strip.
+  </description>
+</action>
+
 <action name="Android.WindowManager.ChangeWindowName">
   <owner>aishwaryarj@google.com</owner>
   <owner>rathomas@google.com</owner>

@@ -32,4 +32,7 @@ public interface TabStripContextMenuDelegate {
 
     /** Called when the "Pin Gemini" menu item is selected. */
     void onPinGlic();
+
+    /** Called when the "Unpin Gemini" menu item is selected. */
+    void onUnpinGlic();
 }
