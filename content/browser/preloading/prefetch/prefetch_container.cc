@@ -746,7 +746,7 @@ void PrefetchContainer::OnEligibilityCheckComplete(
   }
 
   if (is_eligible && !IsDecoy()) {
-    RegisterCookieListener();
+    GetCurrentSingleRedirectHopToPrefetch().RegisterCookieListener();
   }
 }
 
@@ -917,7 +917,7 @@ void PrefetchContainer::AddXClientDataHeader(
   }
 }
 
-void PrefetchContainer::RegisterCookieListener() {
+void PrefetchContainer::RegisterCookieListenerForTesting() {
   GetCurrentSingleRedirectHopToPrefetch().RegisterCookieListener();
 }
 
