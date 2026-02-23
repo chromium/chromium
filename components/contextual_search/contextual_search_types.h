@@ -73,6 +73,9 @@ struct FileInfo {
   // Gets the context id for this request.
   std::optional<int64_t> GetContextId() const;
 
+  // Gets the injected input id if it exists.
+  std::optional<std::string> GetInjectedInputId() const;
+
   // Client-side unique identifier.
   base::UnguessableToken file_token;
 

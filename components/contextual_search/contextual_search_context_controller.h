@@ -220,6 +220,11 @@ class ContextualSearchContextController {
   // Return the file infos for all files in the request.
   virtual std::vector<const FileInfo*> GetFileInfoList() = 0;
 
+  // Search the file infos for an injected input with the given id, and return
+  // the file token if present.
+  virtual std::optional<base::UnguessableToken> FindTokenForInjectedInput(
+      const std::string& id) = 0;
+
   // Returns a weak pointer to the context controller.
   virtual base::WeakPtr<ContextualSearchContextController> AsWeakPtr() = 0;
 };

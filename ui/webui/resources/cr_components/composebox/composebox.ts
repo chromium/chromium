@@ -755,6 +755,26 @@ export class ComposeboxElement extends I18nMixinLit
     this.$.context.onFileContextAdded(attachment);
   }
 
+  injectInput(title: string, thumbnail: string, fileToken: UnguessableToken) {
+    const attachment: ComposeboxFile = {
+      uuid: fileToken,
+      name: title,
+      dataUrl: thumbnail,
+      objectUrl: thumbnail,
+      type: 'injectedinput',
+      status: FileUploadStatus.kUploadSuccessful,
+      url: null,
+      tabId: null,
+      isDeletable: true,
+    };
+
+    this.$.context.onFileContextAdded(attachment);
+  }
+
+  deleteFile(fileToken: UnguessableToken) {
+    this.$.context.deleteFile(fileToken);
+  }
+
   private updateAutoSuggestedTabContext_(tab: TabInfo|null) {
     this.$.context.updateAutoActiveTabContext(tab);
   }

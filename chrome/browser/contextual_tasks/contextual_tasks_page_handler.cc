@@ -37,6 +37,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "third_party/lens_server_proto/modality_chip_props.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -336,6 +337,12 @@ void ContextualTasksPageHandler::OnWebviewMessage(
     web_ui_controller_->OnZeroStateChange(
         aim_to_client_message.notify_zero_state_rendered()
             .is_zero_state_rendered());
+  } else if (aim_to_client_message.has_inject_input()) {
+    OnReceivedInjectInput(std::make_unique<lens::ModalityChipProps>(
+        aim_to_client_message.inject_input().modality()));
+  } else if (aim_to_client_message.has_remove_injected_input()) {
+    OnReceivedRemoveInjectedInput(
+        std::string(aim_to_client_message.remove_injected_input().id()));
   } else if (aim_to_client_message.has_lock_input()) {
     web_ui_controller_->GetPageRemote()->LockInput();
   } else if (aim_to_client_message.has_unlock_input()) {
@@ -475,4 +482,27 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
                                                            submitted_context);
   contextual_tasks_service_->SetUrlResourcesFromServer(*task_id,
                                                        committed_context);
+}
+
+void ContextualTasksPageHandler::OnReceivedInjectInput(
+    std::unique_ptr<lens::ModalityChipProps> modality) {
+  contextual_search::ContextualSearchSessionHandle* handle =
+      web_ui_controller_->GetOrCreateContextualSessionHandle();
+  auto token = handle->CreateContextToken();
+  web_ui_controller_->GetPageRemote()->InjectInput(
+      std::string(modality->title()), std::string(modality->thumbnail_src()),
+      token);
+  // This does not actually upload anything, but allows the injected input to be
+  // shown in the chip carousel in the UI.
+  handle->StartModalityChipUploadFlow(token, std::move(modality));
+}
+
+void ContextualTasksPageHandler::OnReceivedRemoveInjectedInput(
+    const std::string& id) {
+  contextual_search::ContextualSearchSessionHandle* handle =
+      web_ui_controller_->GetOrCreateContextualSessionHandle();
+  auto token = handle->GetController()->FindTokenForInjectedInput(id);
+  if (token.has_value()) {
+    web_ui_controller_->GetPageRemote()->RemoveInjectedInput(token.value());
+  }
 }

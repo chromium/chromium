@@ -220,6 +220,9 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   // Helper to send the pending query if all uploads are complete.
   void MaybeSendPendingQuery();
 
+  // Sends an update to AIM that an injected input has been deleted.
+  void SendDeleteInjectedInputUpdate(const std::string& id);
+
   // The context controller for the current profile. The profile will outlive
   // this class.
   raw_ptr<contextual_tasks::ContextualTasksService> contextual_tasks_service_;

@@ -82,6 +82,8 @@ class ContextualTasksPageHandler
   void UpdateContextForTask(const base::Uuid& task_id);
   void OnReceivedUpdatedThreadContextLibrary(
       const lens::UpdateThreadContextLibrary& message);
+  void OnReceivedInjectInput(std::unique_ptr<lens::ModalityChipProps> modality);
+  void OnReceivedRemoveInjectedInput(const std::string& id);
 
   mojo::Receiver<contextual_tasks::mojom::PageHandler> receiver_;
   raw_ptr<contextual_tasks::ContextualTasksUIInterface> web_ui_controller_;
