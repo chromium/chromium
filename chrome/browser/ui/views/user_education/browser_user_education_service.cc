@@ -1633,7 +1633,8 @@ void MaybeRegisterChromeFeaturePromos(
                               &IOSPromoBubbleView::Create,
                               desktop_to_mobile_promos::PromoType::kLens)))
                       .SetMetadata(144, "scottyoder@google.com",
-                                   "Triggered when Lens Overlay is used.")));
+                                   "Triggered when Lens Overlay is used.")
+                      .SetBubbleArrow(HelpBubbleArrow::kNone)));
   }
 
   // kIPHiOSEnhancedBrowsingDesktopFeature
@@ -1650,7 +1651,8 @@ void MaybeRegisterChromeFeaturePromos(
             .SetPromoSubtype(
                 FeaturePromoSpecification::PromoSubtype::kActionableAlert)
             .SetMetadata(144, "scottyoder@google.com",
-                         "Triggered when ESB is first enabled.")));
+                         "Triggered when ESB is first enabled.")
+            .SetBubbleArrow(HelpBubbleArrow::kNone)));
   }
 
   // kIPHiOSPasswordPromoDesktopFeature
@@ -1665,7 +1667,8 @@ void MaybeRegisterChromeFeaturePromos(
                               &IOSPromoBubbleView::Create,
                               desktop_to_mobile_promos::PromoType::kPassword)))
                       .SetMetadata(144, "scottyoder@google.com",
-                                   "Triggered when a password is saved.")));
+                                   "Triggered when a password is saved.")
+                      .SetBubbleArrow(HelpBubbleArrow::kNone)));
   }
 
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
