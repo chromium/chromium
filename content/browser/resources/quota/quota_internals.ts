@@ -86,8 +86,11 @@ async function renderGlobalUsage() {
   const result = await getProxy().getGlobalUsage();
   const formattedResultString: string = `${Number(result.usage)} B (${
       result.unlimitedUsage} B for unlimited origins)`;
-  document.body.querySelector(`.global-and-unlimited-usage`)!.textContent =
-      formattedResultString;
+  const globalUsage =
+      document.body.querySelector(`.global-and-unlimited-usage`);
+  if (globalUsage) {
+    globalUsage.textContent = formattedResultString;
+  }
 }
 
 async function renderEvictionStats() {
