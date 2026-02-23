@@ -225,6 +225,18 @@ class CORE_EXPORT ColumnLayoutAlgorithm
     return !Style().HasAutoColumnHeight();
   }
 
+  // Return true if overflowing columns are created in the inline direction.
+  // This is always the case if there's no column wrapping and no nested
+  // fragmentation.
+  //
+  // Return false if overflowing columns are created inside a new line / row.
+  // This happens when column wrapping is enabled, and also generally for nested
+  // fragmentation, except if the block-size of the column is non-auto and known
+  // to be less than or equal to the available space in the outer fragmentainer.
+  // This is specified via `column_known_to_fit_in_outer_fragmentainer`.
+  bool ColumnsOverflowInInlineDirection(
+      bool column_known_to_fit_in_outer_fragmentainer) const;
+
   ConstraintSpace CreateConstraintSpaceForBalancing(
       const LogicalSize& column_size) const;
   ConstraintSpace CreateConstraintSpaceForSpanner(

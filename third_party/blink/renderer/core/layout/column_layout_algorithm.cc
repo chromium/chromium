@@ -875,7 +875,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
     column_size.block_size = column_size.block_size.ClampNegativeToZero();
   }
 
-  bool may_resume_in_next_outer_fragmentainer = false;
+  bool column_known_to_fit_in_outer = false;
   LayoutUnit available_outer_space = kIndefiniteSize;
   if (is_constrained_by_outer_fragmentation_context_) {
     available_outer_space =
@@ -883,16 +883,12 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
                  FragmentainerSpaceLeftForChildren() - line_offset);
     DCHECK_GE(available_outer_space, LayoutUnit());
 
-    // Determine if we should resume layout in the next outer fragmentation
-    // context if we run out of space in the current one. This is always the
-    // thing to do except when block-size is non-auto and short enough to fit in
-    // the current outer fragmentainer. In such cases we'll allow inner columns
-    // to overflow its outer fragmentainer (since the inner multicol is too
-    // short to reach the outer fragmentation line).
-    if (column_size.block_size == kIndefiniteSize ||
-        column_size.block_size > available_outer_space)
-      may_resume_in_next_outer_fragmentainer = true;
+    column_known_to_fit_in_outer =
+        column_size.block_size != kIndefiniteSize &&
+        column_size.block_size <= available_outer_space;
   }
+  bool overflow_in_inline_direction =
+      ColumnsOverflowInInlineDirection(column_known_to_fit_in_outer);
 
   bool shrink_to_fit_column_block_size = false;
 
@@ -955,8 +951,9 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
   // be better to push some of the content to the next outer fragmentainer and
   // retry there.
   bool may_have_more_space_in_next_outer_fragmentainer = false;
-  if (may_resume_in_next_outer_fragmentainer &&
-      !IsBreakInside(GetBreakToken())) {
+  if (!IsBreakInside(GetBreakToken()) &&
+      is_constrained_by_outer_fragmentation_context_ &&
+      !overflow_in_inline_direction) {
     if (intrinsic_block_size_) {
       may_have_more_space_in_next_outer_fragmentainer = true;
     } else if (!GetConstraintSpace().IsAtFragmentainerStart()) {
@@ -1084,10 +1081,9 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
       // overflow in the inline direction, if necessary). We're not going to
       // progress into a next outer fragmentainer if the (remaining part of the)
       // multicol container fits block-wise in the current outer fragmentainer.
-      if (column_break_token && actual_column_count >= used_column_count_) {
-        if (ShouldWrapColumns() || may_resume_in_next_outer_fragmentainer) {
-          break;
-        }
+      if (column_break_token && actual_column_count >= used_column_count_ &&
+          !overflow_in_inline_direction) {
+        break;
       }
 
       if (may_have_more_space_in_next_outer_fragmentainer) {
@@ -1791,6 +1787,12 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
   const BlockBreakToken* break_token = child_break_token;
   tallest_unbreakable_block_size_ = LayoutUnit();
   int forced_break_count = 0;
+
+  // If columns overflow in the inline direction (if there's no wrapping or
+  // nested fragmentation), overflowing columns will also affect the column
+  // block-size.
+  bool consider_all_columns = ColumnsOverflowInInlineDirection(
+      /*column_known_to_fit_in_outer_fragmentainer=*/false);
   do {
     TextAutosizer::ForceInlineSizeForColumn(Node(), column_size.inline_size);
     LayoutAlgorithmParams params(Node(), fragment_geometry, space, break_token);
@@ -1806,9 +1808,9 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
         To<PhysicalBoxFragment>(result->GetPhysicalFragment());
 
     // Add a content run, as long as we have soft break opportunities. Ignore
-    // content that's doomed to end up in overflowing columns (because of too
-    // many forced breaks).
-    if (forced_break_count < used_column_count_) {
+    // content that will end up in columns in a subsequent line (wrapping /
+    // nested fragmentation).
+    if (forced_break_count < used_column_count_ || consider_all_columns) {
       LayoutUnit column_block_size = BlockSizeForFragmentation(
           *result, GetConstraintSpace().GetWritingDirection());
 
@@ -1978,6 +1980,27 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
   }
 
   return size;
+}
+
+bool ColumnLayoutAlgorithm::ColumnsOverflowInInlineDirection(
+    bool column_known_to_fit_in_outer_fragmentainer) const {
+  if (ShouldWrapColumns()) {
+    // Columns are set up to wrap. They will never overflow in the inline
+    // direction.
+    return false;
+  }
+
+  if (is_constrained_by_outer_fragmentation_context_) {
+    // Determine if layout may resume in the next outer fragmentainer if we run
+    // out of columns in the current one. This is always the thing to do except
+    // when column block-size is non-auto and short enough to fit in the current
+    // outer fragmentainer. In such cases we'll allow inner columns to overflow
+    // its outer fragmentainer in the inline direction (since the inner multicol
+    // is too short to reach the outer fragmentation line).
+    return column_known_to_fit_in_outer_fragmentainer;
+  }
+
+  return true;
 }
 
 ConstraintSpace ColumnLayoutAlgorithm::CreateConstraintSpaceForBalancing(
