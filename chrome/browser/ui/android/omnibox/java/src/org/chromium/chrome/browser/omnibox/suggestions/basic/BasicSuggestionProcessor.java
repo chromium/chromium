@@ -105,6 +105,10 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             case SuggestTemplateInfo.IconType.NOTES_SPARK_VALUE:
                 return R.drawable.notes_spark;
 
+            case SuggestTemplateInfo.IconType.DRAFT_SPARK_VALUE:
+                // TODO(crbug.com/479890202): Replace with the correct symbol when it's available.
+                return R.drawable.ic_suggestion_magnifier;
+
             default: // Icon type is specified, but not recognized
                 assert false : "Unrecognized IconType: " + iconType;
                 return 0;

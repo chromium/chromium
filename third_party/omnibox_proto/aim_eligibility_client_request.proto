@@ -10,7 +10,6 @@ option java_outer_classname = 'AimEligibilityClientRequestProto';
 
 package omnibox;
 
-
 message AimEligibilityClientRequest {
   // The client's locale in IETF BCP 47 language tag format.
   string client_locale = 1;

@@ -1,8 +1,9 @@
 Name: Omnibox Protos
 Short Name: omnibox_proto
 URL: This is the canonical public repository
-Version: 862568501
-Date: 2026-01-29
+Update Mechanism: Manual
+Version: 873048966
+Date: 2026-02-20
 License: BSD-3-Clause
 License File: LICENSE
 Shipped: yes
@@ -19,5 +20,4 @@ blaze run //chrome/omnibox/tools/proto_export -- \
   --output=$CHROMIUM_SRC/third_party/omnibox_proto
 
 Local Modifications:
-Manually copied changes to ChromeAimEntryPoint before upstream changes were
-ready.
+Unchanged from the output of the export script.

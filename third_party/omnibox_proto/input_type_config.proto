@@ -10,11 +10,12 @@ option java_outer_classname = 'InputTypeConfigProto';
 
 package omnibox;
 
+import "icon.proto";
 import "input_type.proto";
 import "input_type_rule.proto";
 
 // Configuration for an input type.
-// Next ID: 4
+// Next ID: 5
 message InputTypeConfig {
   // The input type.
   optional InputType input_type = 1;
@@ -22,4 +23,6 @@ message InputTypeConfig {
   optional string menu_label = 2;
   // The constraint rule for the input type.
   optional InputTypeRule rule = 3;
+  // The icon for the input type.
+  optional Icon icon = 4;
 }

@@ -1,0 +1,27 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'ToolSubstateProto';
+
+package omnibox;
+
+// Tool specific Substate.
+// Next ID: 6
+enum ToolSubstate {
+  TOOL_SUBSTATE_UNSPECIFIED = 0;
+  // For DeepSearch Clarifying Question
+  TOOL_SUBSTATE_DEEP_SEARCH_CLARIFYING_QUESTION = 1;
+  // For DeepSearch Completed
+  TOOL_SUBSTATE_DEEP_SEARCH_COMPLETED = 2;
+  // For DeepBrowse Clarifying Question
+  TOOL_SUBSTATE_DEEP_BROWSE_CLARIFYING_QUESTION = 3;
+  // For DeepBrowse Completed
+  TOOL_SUBSTATE_DEEP_BROWSE_COMPLETED = 4;
+  // For Canvas followup
+  TOOL_SUBSTATE_CANVAS_FOLLOWUP = 5;
+}

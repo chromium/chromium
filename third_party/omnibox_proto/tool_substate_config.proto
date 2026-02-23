@@ -1,0 +1,26 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'ToolSubstateConfigProto';
+
+package omnibox;
+
+import "tool_substate.proto";
+
+// Configuration for Tool Substate specific behavior.
+// Next ID: 4
+message ToolSubstateConfig {
+  // The tool substate.
+  ToolSubstate tool_substate = 1;
+  // Tool SubState input text field hint text.
+  // Takes precedence over ToolConfig hint_text.
+  string hint_text = 2;
+  // Allow users to submit without any input.
+  // e.g. optional clarification state
+  bool allow_submit_without_input = 3;
+}

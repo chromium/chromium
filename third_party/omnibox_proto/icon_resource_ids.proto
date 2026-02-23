@@ -1,0 +1,320 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'IconResourceIdsProto';
+
+package omnibox;
+
+// These values represent mapping for icon resource ids
+// Next ID: 98
+enum IconResourceIds {
+  // DEPRECATED
+  reserved 80;
+
+  reserved "PQR";
+
+  //////////////////////////////////////////////////////////////////
+  // Quantum icons with AGSA and iGSA support.
+  //////////////////////////////////////////////////////////////////
+
+  // quantum_ic_place_white_24
+  PLACE_WHITE = 0;
+
+  // quantum_ic_movie_white_24
+  MOVIE_WHITE = 1;
+
+  // quantum_ic_local_activity_white_24
+  LOCAL_ACTIVITY_WHITE = 2;
+
+  // ic_baseball
+  BASEBALL = 3;
+
+  // ic_mlb
+  BASEBALL_MLB = 58;
+
+  // ic_basketball
+  BASKETBALL = 4;
+
+  // ic_cricket
+  CRICKET = 5;
+
+  // ic_cricket_fallback
+  CRICKET_BALL = 60;
+
+  // ic_football
+  FOOTBALL = 6;
+
+  // quantum_ic_public_white_24
+  GLOBE = 7;
+
+  // ic_hockey
+  HOCKEY = 8;
+
+  // quantum_ic_news_white_24
+  NEWS = 9;
+
+  // quantum_ic_restaurant_menu_white_24
+  RESTAURANT_MENU = 10;
+
+  // ic_rugby
+  RUGBY = 11;
+
+  // ic_soccer
+  SOCCER = 12;
+
+  // ic_search_movies_normal
+  SEARCH_MOVIES_NORMAL = 13;
+
+  // quantum_ic_local_gas_station_white_24
+  GAS_STATION = 14;
+
+  // quantum_ic_local_atm_white_24
+  ATM = 15;
+
+  // quantum_ic_local_cafe_white_24
+  CAFE = 16;
+
+  // quantum_ic_local_pharmacy_white_24
+  PHARMACY = 17;
+
+  // quantum_ic_local_grocery_store_white_24
+  GROCERY_STORE = 18;
+
+  // ic_local_hotel
+  HOTEL = 19;
+
+  // quantum_ic_local_bar_white_24
+  BAR = 20;
+
+  // quantum_ic_store_white_24
+  STORE = 21;
+
+  // quantum_ic_local_post_office_white_24
+  POST_OFFICE = 22;
+
+  // quantum_ic_local_parking_white_24
+  PARKING = 23;
+
+  // quantum_ic_explore_nearby_white_24
+  EXPLORE_NEARBY = 24;
+
+  // quantum_ic_whatshot_white_24
+  WHATSHOT = 25;
+
+  // ic_arrow_back
+  ARROW_BACK = 26;
+
+  // ic_access_time
+  HISTORY = 27;
+
+  // quantum_ic_translate_white_24
+  TRANSLATE = 28;
+
+  // quantum_ic_directions_transit_white_24
+  DIRECTIONS_TRANSIT = 29;
+
+  // quantum_ic_alarm_white_24
+  ALARM = 30;
+
+  // ic_plus
+  PLUS = 31;
+
+  // ic_search_upleftarrow_pressed
+  SEARCH_UPLEFTARROW_PRESSED = 32;
+
+  // ic_search_downleftarrow_pressed
+  SEARCH_DOWNLEFTARROW_PRESSED = 54;
+
+  // ic_trending_up
+  TRENDING = 33;
+
+  // ic_medal
+  MEDAL = 34;
+
+  // quantum_ic_image_white_24
+  IMAGE = 35;
+
+  // quantum_ic_video_library_white
+  VIDEO = 36;
+
+  // quantum_ic_shop_white_24
+  SHOPPING = 37;
+
+  // quantum_ic_library_books_white_24
+  BOOKS = 38;
+
+  // quantum_ic_home_white_24
+  HOME = 39;
+
+  // quantum_ic_work_white_24
+  WORK = 40;
+
+  // quantum_ic_history_white_24
+  HISTORY_WHITE = 41;
+
+  // ic_oscars
+  OSCARS = 42;
+
+  // ic_search
+  SEARCH = 43;
+
+  // ic_ramadan
+  RAMADAN = 46;
+
+  // quantum_ic_file_download_white_24
+  DOWNLOAD = 47;
+
+  // quantum_ic_flight_white_24
+  FLIGHTS = 48;
+
+  // ic_worldcup
+  WORLDCUP = 49;
+
+  // phone_call
+  PHONE_CALL = 50;
+
+  // quantum_ic_keyboard_arrow_down_grey600_24
+  ARROW_DOWN = 51;
+
+  // ic_recipe
+  RECIPE = 52;
+
+  // ic_empty
+  EMPTY = 53;
+
+  // ic_cricket_worldcup_2019
+  // LINT: LEGACY_NAMES
+  CRICKET_WORLDCUP_2019 = 55;
+
+  // ic_cricket_fallback
+  CRICKET_WORLDCUP_FALLBACK = 56;
+
+  // ic_cricket_team_india
+  CRICKET_TEAM_INDIA = 57;
+
+  // quantum_ic_menu_book_white_18
+  MENU_BOOK = 59;
+
+  // ic_local_categorical_marker_right
+  LOCAL_CATEGORICAL_MARKER_RIGHT = 61;
+
+  // ic_local_categorical_marker_left
+  LOCAL_CATEGORICAL_MARKER_LEFT = 62;
+
+  // ic_local_categorical_circle
+  LOCAL_CATEGORICAL_CIRCLE = 63;
+
+  // ic_hospital
+  HOSPITAL = 66;
+
+  // ic_restaurant
+  RESTAURANT = 67;
+
+  // ic_restaurant_chef_hat
+  RESTAURANT_CHEF_HAT = 68;
+
+  // ic_restaurant_chef_hat_spatula
+  RESTAURANT_CHEF_HAT_SPATULA = 69;
+
+  // ic_hotel_emoji
+  HOTEL_EMOJI = 70;
+
+  // product_logo_assistant_color_24
+  ASSISTANT = 71;
+
+  // product_logo_assistant_color_18
+  ASSISTANT_SMALL = 72;
+
+  // ic_tag
+  TAG = 73;
+
+  // LocalOffer
+  LOCAL_OFFER = 75;
+
+  // Bookmarks
+  BOOKMARKS = 76;
+
+  // Screenshot: https://screenshot.googleplex.com/B5wRtTHgRYkzBKk
+  COLORED_SEARCH_LOUPE_WITH_SPARKLE = 84;
+
+  // Screenshot: https://screenshot.googleplex.com/4FNrAJE79snwYne
+  SEARCH_LOUPE_WITH_SPARKLE = 86;
+
+  // follow_up
+  FOLLOW_UP = 87;
+
+  //////////////////////////////////////////////////////////////////
+  // Icons for LU Nearby Mode use only.
+  //////////////////////////////////////////////////////////////////
+
+  // nearby_mode_icon_entertainment
+  ENTERTAINMENT = 44;
+
+  // nearbymode_icon_fast_food
+  FAST_FOOD = 45;
+
+  //////////////////////////////////////////////////////////////////
+  // Google Material Icons
+  //////////////////////////////////////////////////////////////////
+
+  //
+  LOCATION_PIN = 74;
+
+  //
+  STORY_SUGGESTION = 77;
+
+  // http://fonts/icons?selected=Google+Symbols:group:FILL@0;wght@400;GRAD@0;opsz@48
+  GROUP_SYMBOL = 78;
+
+  // http://shortn/_0sp4vlu2bM
+  CELEBRATION = 79;
+
+  // http://fonts/icons?selected=Google+Symbols:update:FILL@0;wght@400;GRAD@0;opsz@24&icon.query=update
+  PERSONAL_UPDATE = 81;
+
+  // http://fonts/icons?selected=Google+Symbols:cloud_off:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
+  OFFLINE = 82;
+
+  // http://fonts/icons?selected=Google+Symbols:refresh:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24
+  REFRESH = 83;
+
+  // Query Builder icon
+  // (https://screenshot.googleplex.com/9HTD9HwsnUnKDWY.png)
+  QUERY_BUILDER = 85;
+
+  // Pen with spark icon
+  PEN_SPARK = 88;
+
+  // https://fonts.corp.google.com/icons?selected=Google+Symbols:astrophotography_mode:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // For AIM.
+  ASTROPHOTOGRAPHY_MODE = 89;
+  // https://fonts.corp.google.com/icons?selected=Google+Symbols:autorenew:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // For AIM.
+  AUTORENEW = 90;
+  // https://fonts.corp.google.com/icons?selected=Google+Symbols:bolt:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // For AIM.
+  BOLT = 91;
+  // https://fonts.corp.google.com/icons?selected=Google+Symbols:attach_file:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // For AIM.
+  ATTACH_FILE = 92;
+  // https://fonts.corp.google.com/icons?selected=Google+Symbols:add_photo_alternate:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // For AIM.
+  ADD_PHOTO_ALTERNATE = 93;
+  // https://fonts.corp.google.com/icons?selected=Google+Symbols:travel_explore:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3&
+  // For AIM.
+  TRAVEL_EXPLORE = 94;
+  // https://fonts.corp.google.com/icons?selected=Google+Symbols:task_spark:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // For AIM.
+  TASK_SPARK = 95;
+  // https://fonts.corp.google.com/icons?selected=Google+Symbols:draft_spark:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // For AIM.
+  DRAFT_SPARK = 96;
+  // https://fonts.corp.google.com/icons?selected=Google+Symbols:timer:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
+  // For AIM.
+  TIMER = 97;
+}

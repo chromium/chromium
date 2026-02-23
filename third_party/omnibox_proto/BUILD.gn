@@ -17,6 +17,8 @@ _proto_files = [
   "chrome_searchbox_stats.proto",
   "entity_info.proto",
   "groups.proto",
+  "icon.proto",
+  "icon_resource_ids.proto",
   "input_constraints.proto",
   "input_type.proto",
   "input_type_config.proto",
@@ -37,6 +39,8 @@ _proto_files = [
   "tool_config.proto",
   "tool_mode.proto",
   "tool_rule.proto",
+  "tool_substate.proto",
+  "tool_substate_config.proto",
   "types.proto",
   "url_param.proto",
 ]

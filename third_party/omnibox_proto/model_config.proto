@@ -10,12 +10,13 @@ option java_outer_classname = 'ModelConfigProto';
 
 package omnibox;
 
+import "icon.proto";
 import "model_mode.proto";
 import "model_rule.proto";
 import "url_param.proto";
 
 // Configuration for a model mode.
-// Next ID: 6
+// Next ID: 7
 message ModelConfig {
   // The model mode.
   ModelMode model = 1;
@@ -27,4 +28,6 @@ message ModelConfig {
   optional ModelRule rule = 4;
   // The URL params to be appended to the /search URL when this model is chosen.
   repeated UrlParam aim_url_params = 5;
+  // The icon for the model.
+  optional Icon icon = 6;
 }
