@@ -219,8 +219,6 @@ PASS 'function MediaList() { [native code] }' is 'function MediaList() { [native
 PASS 'function MediaList() { [native code] }' is 'function MediaList() { [native code] }'
 PASS 'function MouseEvent() { [native code] }' is 'function MouseEvent() { [native code] }'
 PASS 'function MouseEvent() { [native code] }' is 'function MouseEvent() { [native code] }'
-PASS 'function MutationEvent() { [native code] }' is 'function MutationEvent() { [native code] }'
-PASS 'function MutationEvent() { [native code] }' is 'function MutationEvent() { [native code] }'
 PASS 'function NamedNodeMap() { [native code] }' is 'function NamedNodeMap() { [native code] }'
 PASS 'function NamedNodeMap() { [native code] }' is 'function NamedNodeMap() { [native code] }'
 PASS 'function Node() { [native code] }' is 'function Node() { [native code] }'

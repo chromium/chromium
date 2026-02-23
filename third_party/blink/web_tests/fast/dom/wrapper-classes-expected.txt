@@ -87,10 +87,6 @@ PASS classString(document.createEvent('MouseEvent')) is "MouseEvent"
 FAIL classString(document.createEvent('MouseEvent').__proto__) should be MouseEventPrototype. Was MouseEvent.
 PASS classString(document.createEvent('MouseEvent').constructor) is "Function"
 PASS document.createEvent('MouseEvent').constructor.name is "MouseEvent"
-PASS classString(document.createEvent('MutationEvent')) is "MutationEvent"
-FAIL classString(document.createEvent('MutationEvent').__proto__) should be MutationEventPrototype. Was MutationEvent.
-PASS classString(document.createEvent('MutationEvent').constructor) is "Function"
-PASS document.createEvent('MutationEvent').constructor.name is "MutationEvent"
 PASS classString(document.createEvent('TextEvent')) is "TextEvent"
 FAIL classString(document.createEvent('TextEvent').__proto__) should be TextEventPrototype. Was TextEvent.
 PASS classString(document.createEvent('TextEvent').constructor) is "Function"

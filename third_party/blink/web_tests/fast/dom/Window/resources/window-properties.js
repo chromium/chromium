@@ -108,7 +108,6 @@ var propertyInfo = [
     ["KeyboardEvent", "object"],
     ["MediaList", "object"],
     ["MouseEvent", "object"],
-    ["MutationEvent", "object"],
     ["NamedNodeMap", "object"],
     ["Node", "object"],
     ["NodeFilter", "object"],

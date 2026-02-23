@@ -215,17 +215,11 @@ crbug.com/1446498 custom-elements/cereactions-with-exception.html [ Failure Pass
 crbug.com/1446498 dom/node/replace_child_recheck.html [ Failure Pass ]
 crbug.com/1446498 editing/execCommand/crash-inserting-list.html [ Failure Pass ]
 crbug.com/1446498 editing/execCommand/replaceSelectorCommand-crash.html [ Pass Timeout ]
-crbug.com/1446498 fast/dom/dom-constructors.html [ Failure Pass ]
-crbug.com/1446498 fast/dom/global-constructors.html [ Failure Pass ]
 crbug.com/1446498 fast/dom/move-nodes-across-documents.html [ Failure Pass ]
 crbug.com/1446498 fast/dom/replaceChild-domsubtreemodified.html [ Failure Pass ]
-crbug.com/1446498 fast/dom/wrapper-classes.html [ Failure Pass ]
 crbug.com/1446498 fast/dom/HTMLElement/set-inner-outer-optimization.html [ Failure Pass ]
 crbug.com/1446498 fast/dom/MutationObserver/observe-attributes.html [ Failure Pass ]
 crbug.com/1446498 fast/dom/MutationObserver/observe-characterdata.html [ Failure Pass ]
-crbug.com/1446498 fast/dom/Window/get-set-properties.html [ Failure Pass ]
-crbug.com/1446498 fast/dom/Window/window-lookup-precedence.html [ Failure Pass ]
-crbug.com/1446498 fast/dom/shadow/shadow-boundary-crossing.html [ Failure Pass ]
 # ====== Mutation Events tests to here ========================
 
 
@@ -1841,6 +1835,10 @@ crbug.com/421650040 fast/xsl/xslt/xmlviewer/long-multi-byte-char.xml [ Failure ]
 crbug.com/421650040 virtual/xslt-enabled/fast/xsl/xslt/xmlviewer/long-multi-byte-char.xml [ Pass ]
 crbug.com/440374744 external/wpt/content-security-policy/xslt/document-function-blocked.html [ Timeout ]
 crbug.com/421650040 external/wpt/content-security-policy/xslt/xsltprocessor-include-blocked.html [ Timeout ]
+crbug.com/435623334 fast/dom/dom-constructors.html [ Failure ]
+crbug.com/435623334 fast/dom/global-constructors.html [ Failure ]
+crbug.com/435623334 fast/dom/Window/get-set-properties.html [ Failure ]
+crbug.com/435623334 fast/dom/Window/window-lookup-precedence.html [ Failure ]
 
 # Rust XML related failures that still need work:
 crbug.com/441911594 virtual/rust-xml/http/tests/security/contentTypeOptions/xml-external-entity.xml [ Failure ]

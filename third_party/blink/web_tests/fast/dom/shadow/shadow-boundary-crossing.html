@@ -65,20 +65,6 @@ function leapForward()
 }
 
 var tests = {
-    mutationEventPropagation: function()
-    {
-        var textarea = document.body.appendChild(document.createElement('textarea'));
-        var mutationEventFired;
-        textarea.addEventListener('DOMSubtreeModified', function(e)
-        {
-            mutationEventFired = true;
-        }, false);
-        textarea.value = 'test';
-        // Trigger style recalc and sadly, the actual mutation of the textarea shadow DOM.
-        textarea.offsetHeight;
-        log('Mutation events should not propagate out of the shadow DOM', !mutationEventFired);
-        textarea.parentNode.removeChild(textarea);
-    },
     selectstartEventPropagation: function()
     {
         var textInput = document.body.appendChild(document.createElement('input'));

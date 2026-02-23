@@ -141,8 +141,6 @@ PASS: canGet('HTMLUListElement') should be 'true' and is.
 PASS: canSet('HTMLUListElement') should be 'true' and is.
 PASS: canGet('Image') should be 'true' and is.
 PASS: canSet('Image') should be 'true' and is.
-PASS: canGet('MutationEvent') should be 'true' and is.
-PASS: canSet('MutationEvent') should be 'true' and is.
 PASS: canGet('Node') should be 'true' and is.
 PASS: canSet('Node') should be 'true' and is.
 PASS: canGet('NodeFilter') should be 'true' and is.
