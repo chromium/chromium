@@ -100,7 +100,7 @@ class LazySyncIdToGuidMapInUpdates {
   LazySyncIdToGuidMapInUpdates& operator=(const LazySyncIdToGuidMapInUpdates&) =
       delete;
 
-  std::string_view GetGuidForSyncId(const std::string& sync_id) {
+  std::string_view GetGuidForSyncId(std::string_view sync_id) {
     InitializeIfNeeded();
     auto it = sync_id_to_guid_map_.find(sync_id);
     if (it == sync_id_to_guid_map_.end()) {
@@ -139,7 +139,6 @@ std::optional<ParentGuidInfo> GetParentGuidInfo(
     const syncer::UpdateResponseData& update,
     const SyncedBookmarkTracker* tracker,
     LazySyncIdToGuidMapInUpdates* sync_id_to_guid_map_in_updates) {
-  DCHECK(tracker);
   DCHECK(sync_id_to_guid_map_in_updates);
 
   // Tombstones and permanent folders don't need a parent GUID.
@@ -163,10 +162,13 @@ std::optional<ParentGuidInfo> GetParentGuidInfo(
 
   // If a tracker is available, i.e. initial sync already done, it may know
   // parent's GUID already.
-  base::Uuid newly_resolved_uuid = TryGetParentGuidFromTracker(tracker, update);
-  if (newly_resolved_uuid.is_valid()) {
-    return ParentGuidInfo{std::move(newly_resolved_uuid),
-                          ParentGuidSource::kFallbackFoundInTracker};
+  base::Uuid newly_resolved_uuid;
+  if (tracker) {
+    newly_resolved_uuid = TryGetParentGuidFromTracker(tracker, update);
+    if (newly_resolved_uuid.is_valid()) {
+      return ParentGuidInfo{std::move(newly_resolved_uuid),
+                            ParentGuidSource::kFallbackFoundInTracker};
+    }
   }
 
   // Otherwise, fall back to checking if the parent is included in the full list
@@ -189,7 +191,7 @@ std::optional<ParentGuidInfo> GetParentGuidInfo(
   // used here, which is known to never match an existing entity.
   newly_resolved_uuid = base::Uuid::ParseLowercase(kInvalidParentGuid);
   DCHECK(newly_resolved_uuid.is_valid());
-  DCHECK(!tracker->GetEntityForUuid(newly_resolved_uuid));
+  DCHECK(!tracker || !tracker->GetEntityForUuid(newly_resolved_uuid));
   return ParentGuidInfo{std::move(newly_resolved_uuid),
                         ParentGuidSource::kFallbackUnresolvable};
 }
@@ -198,31 +200,6 @@ void LogParentGuidSource(ParentGuidSource source) {
   base::UmaHistogramEnumeration("Sync.BookmarkParentGuidSource", source);
   base::UmaHistogramBoolean("Sync.BookmarkParentGuidFromSpecifics",
                             source == ParentGuidSource::kFoundInSpecifics);
-}
-
-// Same as PopulateParentGuidInSpecifics(), but |tracker| must not be null.
-void PopulateParentGuidInSpecificsWithTracker(
-    const SyncedBookmarkTracker* tracker,
-    syncer::UpdateResponseDataList* updates) {
-  DCHECK(tracker);
-  DCHECK(updates);
-
-  LazySyncIdToGuidMapInUpdates sync_id_to_guid_map(updates);
-
-  for (syncer::UpdateResponseData& update : *updates) {
-    std::optional<ParentGuidInfo> info =
-        GetParentGuidInfo(update, tracker, &sync_id_to_guid_map);
-    if (!info) {
-      continue;
-    }
-
-    LogParentGuidSource(info->source);
-    if (info->source != ParentGuidSource::kFoundInSpecifics &&
-        info->newly_resolved_uuid.is_valid()) {
-      update.entity.specifics.mutable_bookmark()->set_parent_guid(
-          info->newly_resolved_uuid.AsLowercaseString());
-    }
-  }
 }
 
 }  // namespace
@@ -242,16 +219,23 @@ void PopulateParentGuidInSpecifics(const SyncedBookmarkTracker* tracker,
         base::Uuid::ParseLowercase(bookmarks::kOtherBookmarksNodeUuid)));
     DCHECK(tracker->GetEntityForUuid(
         base::Uuid::ParseLowercase(bookmarks::kMobileBookmarksNodeUuid)));
-
-    PopulateParentGuidInSpecificsWithTracker(tracker, updates);
-    return;
   }
 
-  // No tracker provided, so use an empty tracker instead where all lookups will
-  // fail.
-  std::unique_ptr<SyncedBookmarkTracker> empty_tracker =
-      SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState());
-  PopulateParentGuidInSpecificsWithTracker(empty_tracker.get(), updates);
+  LazySyncIdToGuidMapInUpdates sync_id_to_guid_map(updates);
+
+  for (syncer::UpdateResponseData& update : *updates) {
+    std::optional<ParentGuidInfo> info =
+        GetParentGuidInfo(update, tracker, &sync_id_to_guid_map);
+    if (!info) {
+      continue;
+    }
+
+    LogParentGuidSource(info->source);
+    if (info->newly_resolved_uuid.is_valid()) {
+      update.entity.specifics.mutable_bookmark()->set_parent_guid(
+          info->newly_resolved_uuid.AsLowercaseString());
+    }
+  }
 }
 
 std::string GetGuidForSyncIdInUpdatesForTesting(  // IN-TEST
