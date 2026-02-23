@@ -1568,4 +1568,41 @@ TEST_F(BrowserAccessibilityAndroidTest,
   EXPECT_TRUE(node->GetTextContentUTF16().empty());
 }
 
+TEST_F(BrowserAccessibilityAndroidTest, CaptionMapsToLabeledBy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kAccessibilityLabeledBy);
+
+  ui::AXTreeUpdate tree;
+  tree.root_id = 1;
+  tree.nodes.resize(3);
+
+  tree.nodes[0].id = 1;
+  tree.nodes[0].role = ax::mojom::Role::kRootWebArea;
+  tree.nodes[0].child_ids = {2};
+
+  tree.nodes[1].id = 2;
+  tree.nodes[1].role = ax::mojom::Role::kTable;
+  tree.nodes[1].child_ids = {3};
+  tree.nodes[1].SetName("My Caption");
+  tree.nodes[1].SetNameFrom(ax::mojom::NameFrom::kCaption);
+
+  tree.nodes[2].id = 3;
+  tree.nodes[2].role = ax::mojom::Role::kCaption;
+  tree.nodes[2].SetName("My Caption");
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          tree, node_id_delegate_, test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityAndroid* table_node =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(2));
+  BrowserAccessibilityAndroid* caption_node =
+      static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(3));
+  ASSERT_NE(nullptr, table_node);
+  ASSERT_NE(nullptr, caption_node);
+
+  std::vector<int> labeled_by_ids = table_node->GetLabelledByAndroidIds();
+  ASSERT_EQ(1u, labeled_by_ids.size());
+  EXPECT_EQ(caption_node->GetUniqueId(), labeled_by_ids[0]);
+}
 }  // namespace content

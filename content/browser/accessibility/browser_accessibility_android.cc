@@ -2643,6 +2643,7 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
         name_to_cache_ = AndroidNameTo::kText;
       }
       break;
+    case ax::mojom::NameFrom::kCaption:
     case ax::mojom::NameFrom::kRelatedElement:
       if (::features::IsAccessibilityLabeledByEnabled() &&
           GetData().HasIntListAttribute(
@@ -2664,7 +2665,6 @@ BrowserAccessibilityAndroid::ComputeAndroidNameTo() const {
       name_to_cache_ = AndroidNameTo::kContentDescription;
       break;
     case ax::mojom::NameFrom::kNone:
-    case ax::mojom::NameFrom::kCaption:
     case ax::mojom::NameFrom::kContents:
     case ax::mojom::NameFrom::kPlaceholder:
     case ax::mojom::NameFrom::kProhibited:
@@ -2735,8 +2735,21 @@ const std::vector<int> BrowserAccessibilityAndroid::GetLabelledByAndroidIds()
   if (!::features::IsAccessibilityLabeledByEnabled()) {
     return std::vector<int>();
   }
-  const std::vector<int32_t>& ids = GetData().GetIntListAttribute(
+  std::vector<int32_t> ids = GetData().GetIntListAttribute(
       ax::mojom::IntListAttribute::kLabelledbyIds);
+
+  // If this is a table, check for a caption child that labels this table.
+  if (GetRole() == ax::mojom::Role::kTable ||
+      GetRole() == ax::mojom::Role::kGrid ||
+      GetRole() == ax::mojom::Role::kTreeGrid) {
+    if (GetNameFrom() == ax::mojom::NameFrom::kCaption) {
+      ui::AXNode* caption = node()->GetTableCaption();
+      if (caption) {
+        ids.push_back(caption->id());
+      }
+    }
+  }
+
   std::vector<int32_t> android_ids;
   android_ids.reserve(ids.size());
   for (const auto& id : ids) {
