@@ -41,7 +41,7 @@ class ContextualTasksPixelTestBase : public WebUIComposeBoxPixelTest {
     feature_list_.InitWithFeatures(
         {contextual_tasks::kContextualTasks,
          contextual_tasks::kContextualTasksForceEntryPointEligibility},
-        {});
+        {contextual_tasks::kContextualTasksExpandButton});
     WebUIComposeBoxPixelTest::SetUp();
   }
 

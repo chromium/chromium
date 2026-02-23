@@ -10,6 +10,7 @@ import type {ContextualTasksFaviconGroupElement} from 'chrome://contextual-tasks
 import type {SourcesMenuElement} from 'chrome://contextual-tasks/sources_menu.js';
 import type {TopToolbarElement} from 'chrome://contextual-tasks/top_toolbar.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -21,341 +22,361 @@ suite('TopToolbarTest', () => {
   let proxy: TestContextualTasksBrowserProxy;
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
     proxy = new TestContextualTasksBrowserProxy(
         'chrome://webui-test/contextual_tasks/test.html');
     BrowserProxyImpl.setInstance(proxy);
-
-    topToolbar = document.createElement('top-toolbar');
-    document.body.appendChild(topToolbar);
   });
 
-  test('shows correct logo', () => {
-    // <if expr="_google_chrome">
-    const logo = topToolbar.shadowRoot.querySelector<HTMLImageElement>(
-        '.top-toolbar-logo');
-    assertHTMLElement(logo);
-    assertEquals(
-        logo.src,
-        'chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg');
-    // </if>
-    // <if expr="not _google_chrome">
-    const lightLogo = topToolbar.shadowRoot.querySelector<HTMLImageElement>(
-        '.chrome-logo-light');
-    assertHTMLElement(lightLogo);
-    assertEquals(
-        lightLogo.src,
-        'chrome://resources/cr_components/searchbox/icons/chrome_product.svg');
-    const darkLogo = topToolbar.shadowRoot.querySelector<HTMLImageElement>(
-        '.chrome-logo-dark');
-    assertHTMLElement(darkLogo);
-    assertEquals(
-        darkLogo.src, 'chrome://resources/images/chrome_logo_dark.svg');
-    // </if>
-  });
+  suite('Expand button enabled', () => {
+    setup(() => {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-  test('handles new thread button click', async () => {
-    const newThreadButton = topToolbar.$.newThreadButton;
-    assertTrue(!!newThreadButton);
-    const newThreadEvent = eventToPromise('new-thread-click', topToolbar);
-    newThreadButton.click();
-    await newThreadEvent;
-  });
+      loadTimeData.overrideValues({expandButtonEnabled: true});
 
-  test('handles thread history button click', async () => {
-    const historyButton = topToolbar.$.threadHistoryButton;
-    assertTrue(!!historyButton);
-    historyButton.click();
-    await proxy.handler.whenCalled('showThreadHistory');
-  });
+      topToolbar = document.createElement('top-toolbar');
+      document.body.appendChild(topToolbar);
+    });
 
-  test('handles close button click', async () => {
-    const closeButton = topToolbar.$.closeButton;
-    assertTrue(!!closeButton);
-    closeButton.click();
-    await proxy.handler.whenCalled('closeSidePanel');
-  });
+    test('shows correct logo', () => {
+      // <if expr="_google_chrome">
+      const logo = topToolbar.shadowRoot.querySelector<HTMLImageElement>(
+          '.top-toolbar-logo');
+      assertHTMLElement(logo);
+      assertEquals(
+          logo.src,
+          'chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg');
+      // </if>
+      // <if expr="not _google_chrome">
+      const lightLogo = topToolbar.shadowRoot.querySelector<HTMLImageElement>(
+          '.chrome-logo-light');
+      assertHTMLElement(lightLogo);
+      assertEquals(
+          lightLogo.src,
+          'chrome://resources/cr_components/searchbox/icons/chrome_product.svg');
+      const darkLogo = topToolbar.shadowRoot.querySelector<HTMLImageElement>(
+          '.chrome-logo-dark');
+      assertHTMLElement(darkLogo);
+      assertEquals(
+          darkLogo.src, 'chrome://resources/images/chrome_logo_dark.svg');
+      // </if>
+    });
 
-  test('toggles sources button visibility', async () => {
-    const sourcesButton =
-        topToolbar.shadowRoot.querySelector<ContextualTasksFaviconGroupElement>(
-            '#sources');
-    assertTrue(!!sourcesButton);
+    test('handles new thread button click', async () => {
+      const newThreadButton = topToolbar.$.newThreadButton;
+      assertTrue(!!newThreadButton);
+      const newThreadEvent = eventToPromise('new-thread-click', topToolbar);
+      newThreadButton.click();
+      await newThreadEvent;
+    });
 
-    // Initially, there are no attached tabs, so the sources button should be
-    // hidden and contain no items.
-    assertTrue(sourcesButton.hidden);
-    assertFalse(!!sourcesButton.shadowRoot.querySelector('.favicon-item'));
+    test('handles thread history button click', async () => {
+      const historyButton = topToolbar.$.threadHistoryButton;
+      assertTrue(!!historyButton);
+      historyButton.click();
+      await proxy.handler.whenCalled('showThreadHistory');
+    });
 
-    topToolbar.contextInfos = [{
-      tab: {
+    test('handles close button click', async () => {
+      const closeButton = topToolbar.$.closeButton;
+      assertTrue(!!closeButton);
+      closeButton.click();
+      await proxy.handler.whenCalled('closeSidePanel');
+    });
+
+    test('toggles sources button visibility', async () => {
+      const sourcesButton =
+          topToolbar.shadowRoot
+              .querySelector<ContextualTasksFaviconGroupElement>('#sources');
+      assertTrue(!!sourcesButton);
+
+      // Initially, there are no attached tabs, so the sources button should be
+      // hidden and contain no items.
+      assertTrue(sourcesButton.hidden);
+      assertFalse(!!sourcesButton.shadowRoot.querySelector('.favicon-item'));
+
+      topToolbar.contextInfos = [{
+        tab: {
+          title: 'Tab 1',
+          url: 'https://example.com',
+          tabId: 1,
+        },
+      }];
+      await microtasksFinished();
+
+      // After attaching a tab, the sources button should be visible and contain
+      // items.
+      assertFalse(sourcesButton.hidden);
+      assertTrue(!!sourcesButton.shadowRoot.querySelector('.favicon-item'));
+    });
+
+    test('handles sources menu interactions', async () => {
+      const tab = {
         title: 'Tab 1',
         url: 'https://example.com',
         tabId: 1,
-      },
-    }];
-    await microtasksFinished();
+      };
+      topToolbar.contextInfos = [{tab: tab}];
+      await microtasksFinished();
 
-    // After attaching a tab, the sources button should be visible and contain
-    // items.
-    assertFalse(sourcesButton.hidden);
-    assertTrue(!!sourcesButton.shadowRoot.querySelector('.favicon-item'));
-  });
+      const sourcesButton =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#sources');
+      assertTrue(!!sourcesButton);
+      sourcesButton.click();
+      await microtasksFinished();
 
-  test('handles sources menu interactions', async () => {
-    const tab = {
-      title: 'Tab 1',
-      url: 'https://example.com',
-      tabId: 1,
-    };
-    topToolbar.contextInfos = [{tab: tab}];
-    await microtasksFinished();
+      const sourcesMenuElement: SourcesMenuElement =
+          topToolbar.$.sourcesMenu.get();
+      const crActionMenu =
+          sourcesMenuElement.shadowRoot.querySelector<CrActionMenuElement>(
+              'cr-action-menu');
+      assertTrue(!!crActionMenu);
+      assertTrue(crActionMenu.open);
 
-    const sourcesButton =
-        topToolbar.shadowRoot.querySelector<HTMLElement>('#sources');
-    assertTrue(!!sourcesButton);
-    sourcesButton.click();
-    await microtasksFinished();
+      // The header is "Shared tabs and files".
+      const headers = sourcesMenuElement.shadowRoot.querySelectorAll('.header');
+      assertEquals(1, headers.length);
 
-    const sourcesMenuElement: SourcesMenuElement =
-        topToolbar.$.sourcesMenu.get();
-    const crActionMenu =
-        sourcesMenuElement.shadowRoot.querySelector<CrActionMenuElement>(
-            'cr-action-menu');
-    assertTrue(!!crActionMenu);
-    assertTrue(crActionMenu.open);
+      // Click the first tab item.
+      const tabItem = sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
+          'cr-url-list-item.dropdown-item');
+      assertTrue(!!tabItem);
+      tabItem.click();
 
-    // The header is "Shared tabs and files".
-    const headers = sourcesMenuElement.shadowRoot.querySelectorAll('.header');
-    assertEquals(1, headers.length);
+      const [tabId, url] =
+          await proxy.handler.whenCalled('onTabClickedFromSourcesMenu');
+      assertEquals(tabId, 1);
+      assertDeepEquals(url, tab.url);
+    });
 
-    // Click the first tab item.
-    const tabItem = sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
-        'cr-url-list-item.dropdown-item');
-    assertTrue(!!tabItem);
-    tabItem.click();
+    test('handles file sources menu interactions', async () => {
+      const file = {
+        title: 'Sample Document',
+        url: 'https://example/sample.pdf',
+      };
+      topToolbar.contextInfos = [{file: file}];
+      await microtasksFinished();
 
-    const [tabId, url] =
-        await proxy.handler.whenCalled('onTabClickedFromSourcesMenu');
-    assertEquals(tabId, 1);
-    assertDeepEquals(url, tab.url);
-  });
+      const sourcesButton =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#sources');
+      assertTrue(!!sourcesButton);
+      sourcesButton.click();
+      await microtasksFinished();
 
-  test('handles file sources menu interactions', async () => {
-    const file = {
-      title: 'Sample Document',
-      url: 'https://example/sample.pdf',
-    };
-    topToolbar.contextInfos = [{file: file}];
-    await microtasksFinished();
+      const sourcesMenuElement = topToolbar.$.sourcesMenu.get();
+      const crActionMenu =
+          sourcesMenuElement.shadowRoot.querySelector('cr-action-menu');
+      assertTrue(!!crActionMenu);
+      assertTrue(crActionMenu.open);
 
-    const sourcesButton =
-        topToolbar.shadowRoot.querySelector<HTMLElement>('#sources');
-    assertTrue(!!sourcesButton);
-    sourcesButton.click();
-    await microtasksFinished();
+      const headers = sourcesMenuElement.shadowRoot.querySelectorAll('.header');
+      assertEquals(1, headers.length);
 
-    const sourcesMenuElement = topToolbar.$.sourcesMenu.get();
-    const crActionMenu =
-        sourcesMenuElement.shadowRoot.querySelector('cr-action-menu');
-    assertTrue(!!crActionMenu);
-    assertTrue(crActionMenu.open);
+      // Click the first file item.
+      const fileItem = sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
+          'cr-url-list-item.dropdown-item');
+      assertTrue(!!fileItem);
+      fileItem.click();
 
-    const headers = sourcesMenuElement.shadowRoot.querySelectorAll('.header');
-    assertEquals(1, headers.length);
+      const url =
+          await proxy.handler.whenCalled('onFileClickedFromSourcesMenu');
+      assertDeepEquals(url, file.url);
+    });
 
-    // Click the first file item.
-    const fileItem = sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
-        'cr-url-list-item.dropdown-item');
-    assertTrue(!!fileItem);
-    fileItem.click();
+    test('handles image sources menu interactions', async () => {
+      const image = {
+        title: 'Test Image',
+        url: 'https://www.example.com/example.jpeg',
+      };
+      topToolbar.contextInfos = [{image: image}];
+      await microtasksFinished();
 
-    const url = await proxy.handler.whenCalled('onFileClickedFromSourcesMenu');
-    assertDeepEquals(url, file.url);
-  });
+      const sourcesButton =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#sources');
+      assertTrue(!!sourcesButton);
+      sourcesButton.click();
+      await microtasksFinished();
 
-  test('handles image sources menu interactions', async () => {
-    const image = {
-      title: 'Test Image',
-      url: 'https://www.example.com/example.jpeg',
-    };
-    topToolbar.contextInfos = [{image: image}];
-    await microtasksFinished();
+      const sourcesMenuElement = topToolbar.$.sourcesMenu.get();
 
-    const sourcesButton =
-        topToolbar.shadowRoot.querySelector<HTMLElement>('#sources');
-    assertTrue(!!sourcesButton);
-    sourcesButton.click();
-    await microtasksFinished();
+      const crActionMenu =
+          sourcesMenuElement.shadowRoot.querySelector('cr-action-menu');
+      assertTrue(!!crActionMenu);
+      assertTrue(crActionMenu.open);
 
-    const sourcesMenuElement = topToolbar.$.sourcesMenu.get();
+      const headers = sourcesMenuElement.shadowRoot.querySelectorAll('.header');
+      assertEquals(1, headers.length);
 
-    const crActionMenu =
-        sourcesMenuElement.shadowRoot.querySelector('cr-action-menu');
-    assertTrue(!!crActionMenu);
-    assertTrue(crActionMenu.open);
+      // Click the first image item.
+      const imageItem =
+          sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
+              'cr-url-list-item.dropdown-item');
+      assertTrue(!!imageItem);
+      imageItem.click();
 
-    const headers = sourcesMenuElement.shadowRoot.querySelectorAll('.header');
-    assertEquals(1, headers.length);
+      const url =
+          await proxy.handler.whenCalled('onImageClickedFromSourcesMenu');
+      assertDeepEquals(url, image.url);
+    });
 
-    // Click the first image item.
-    const imageItem = sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
-        'cr-url-list-item.dropdown-item');
-    assertTrue(!!imageItem);
-    imageItem.click();
+    test('handles open in new tab click', async () => {
+      topToolbar.isAiPage = true;
+      await microtasksFinished();
 
-    const url = await proxy.handler.whenCalled('onImageClickedFromSourcesMenu');
-    assertDeepEquals(url, image.url);
-  });
+      const moreButton =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
+      assertTrue(!!moreButton);
+      moreButton.click();
+      await microtasksFinished();
 
-  test('handles more menu interactions', async () => {
-    const moreButton =
-        topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
-    assertTrue(!!moreButton);
-    moreButton.click();
-    await microtasksFinished();
+      const buttons = topToolbar.$.menu.get().querySelectorAll('button');
+      const openInNewTabButton = buttons[0];
+      assertTrue(!!openInNewTabButton);
+      assertFalse(openInNewTabButton.disabled);
+      openInNewTabButton.click();
+      await proxy.handler.whenCalled('moveTaskUiToNewTab');
 
-    assertTrue(topToolbar.$.menu.get().open);
+      topToolbar.isAiPage = false;
+      await microtasksFinished();
+      assertTrue(openInNewTabButton.disabled);
+      proxy.handler.reset();
+      openInNewTabButton.click();
+      assertEquals(0, proxy.handler.getCallCount('moveTaskUiToNewTab'));
+    });
 
-    const buttons = topToolbar.$.menu.get().querySelectorAll('button');
-    assertEquals(3, buttons.length);
-  });
+    test('handles my activity click', async () => {
+      const moreButton =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
+      assertTrue(!!moreButton);
+      moreButton.click();
+      await microtasksFinished();
 
-  test('handles open in new tab click', async () => {
-    topToolbar.isAiPage = true;
-    await microtasksFinished();
+      const buttons = topToolbar.$.menu.get().querySelectorAll('button');
+      const myActivityButton = buttons[1];
+      assertTrue(!!myActivityButton);
+      myActivityButton.click();
+      await proxy.handler.whenCalled('openMyActivityUi');
+    });
 
-    const moreButton =
-        topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
-    assertTrue(!!moreButton);
-    moreButton.click();
-    await microtasksFinished();
+    test('handles help click', async () => {
+      const moreButton =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
+      assertTrue(!!moreButton);
+      moreButton.click();
+      await microtasksFinished();
 
-    const buttons = topToolbar.$.menu.get().querySelectorAll('button');
-    const openInNewTabButton = buttons[0];
-    assertTrue(!!openInNewTabButton);
-    assertFalse(openInNewTabButton.disabled);
-    openInNewTabButton.click();
-    await proxy.handler.whenCalled('moveTaskUiToNewTab');
+      const buttons = topToolbar.$.menu.get().querySelectorAll('button');
+      const helpButton = buttons[2];
+      assertTrue(!!helpButton);
+      helpButton.click();
+      await proxy.handler.whenCalled('openHelpUi');
+    });
 
-    topToolbar.isAiPage = false;
-    await microtasksFinished();
-    assertTrue(openInNewTabButton.disabled);
-    proxy.handler.reset();
-    openInNewTabButton.click();
-    assertEquals(0, proxy.handler.getCallCount('moveTaskUiToNewTab'));
-  });
+    test('shows 3 tab icons without number for 3 tabs', async () => {
+      const sourcesButton =
+          topToolbar.shadowRoot
+              .querySelector<ContextualTasksFaviconGroupElement>('#sources');
+      assertTrue(!!sourcesButton);
 
-  test('handles my activity click', async () => {
-    const moreButton =
-        topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
-    assertTrue(!!moreButton);
-    moreButton.click();
-    await microtasksFinished();
-
-    const buttons = topToolbar.$.menu.get().querySelectorAll('button');
-    const myActivityButton = buttons[1];
-    assertTrue(!!myActivityButton);
-    myActivityButton.click();
-    await proxy.handler.whenCalled('openMyActivityUi');
-  });
-
-  test('handles help click', async () => {
-    const moreButton =
-        topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
-    assertTrue(!!moreButton);
-    moreButton.click();
-    await microtasksFinished();
-
-    const buttons = topToolbar.$.menu.get().querySelectorAll('button');
-    const helpButton = buttons[2];
-    assertTrue(!!helpButton);
-    helpButton.click();
-    await proxy.handler.whenCalled('openHelpUi');
-  });
-
-  test('shows 3 tab icons without number for 3 tabs', async () => {
-    const sourcesButton =
-        topToolbar.shadowRoot.querySelector<ContextualTasksFaviconGroupElement>(
-            '#sources');
-    assertTrue(!!sourcesButton);
-
-    topToolbar.contextInfos = [
-      {
-        tab: {
-          title: 'Tab 1',
-          url: 'https://example.com/1',
-          tabId: 1,
+      topToolbar.contextInfos = [
+        {
+          tab: {
+            title: 'Tab 1',
+            url: 'https://example.com/1',
+            tabId: 1,
+          },
         },
-      },
-      {
-        tab: {
-          title: 'Tab 2',
-          url: 'https://example.com/2',
-          tabId: 2,
+        {
+          tab: {
+            title: 'Tab 2',
+            url: 'https://example.com/2',
+            tabId: 2,
+          },
         },
-      },
-      {
-        tab: {
-          title: 'Tab 3',
-          url: 'https://example.com/3',
-          tabId: 3,
+        {
+          tab: {
+            title: 'Tab 3',
+            url: 'https://example.com/3',
+            tabId: 3,
+          },
         },
-      },
-    ];
-    await microtasksFinished();
+      ];
+      await microtasksFinished();
 
-    const faviconItems =
-        sourcesButton.shadowRoot.querySelectorAll('.favicon-item');
-    assertEquals(faviconItems.length, 3);
-    assertFalse(!!sourcesButton.shadowRoot.querySelector('.more-items'));
+      const faviconItems =
+          sourcesButton.shadowRoot.querySelectorAll('.favicon-item');
+      assertEquals(faviconItems.length, 3);
+      assertFalse(!!sourcesButton.shadowRoot.querySelector('.more-items'));
+    });
+
+    test('shows 3 tab icons with number for 4 tabs', async () => {
+      const sourcesButton =
+          topToolbar.shadowRoot
+              .querySelector<ContextualTasksFaviconGroupElement>('#sources');
+      assertTrue(!!sourcesButton);
+
+      topToolbar.contextInfos = [
+        {
+          tab: {
+            title: 'Tab 1',
+            url: 'https://example.com/1',
+            tabId: 1,
+          },
+        },
+        {
+          tab: {
+            title: 'Tab 2',
+            url: 'https://example.com/2',
+            tabId: 2,
+          },
+        },
+        {
+          tab: {
+            title: 'Tab 3',
+            url: 'https://example.com/3',
+            tabId: 3,
+          },
+        },
+        {
+          tab: {
+            title: 'Tab 4',
+            url: 'https://example.com/4',
+            tabId: 4,
+          },
+        },
+      ];
+      await microtasksFinished();
+
+      const faviconItems = sourcesButton.shadowRoot.querySelectorAll(
+          '.favicon-item:not(#more-items)');
+      assertEquals(faviconItems.length, 3);
+      const moreItems =
+          sourcesButton.shadowRoot.querySelector<HTMLElement>('#more-items');
+      assertTrue(!!moreItems);
+      assertEquals(moreItems.innerText, '+1');
+    });
   });
 
-  test('shows 3 tab icons with number for 4 tabs', async () => {
-    const sourcesButton =
-        topToolbar.shadowRoot.querySelector<ContextualTasksFaviconGroupElement>(
-            '#sources');
-    assertTrue(!!sourcesButton);
+  suite('Expand button disabled', () => {
+    setup(() => {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    topToolbar.contextInfos = [
-      {
-        tab: {
-          title: 'Tab 1',
-          url: 'https://example.com/1',
-          tabId: 1,
-        },
-      },
-      {
-        tab: {
-          title: 'Tab 2',
-          url: 'https://example.com/2',
-          tabId: 2,
-        },
-      },
-      {
-        tab: {
-          title: 'Tab 3',
-          url: 'https://example.com/3',
-          tabId: 3,
-        },
-      },
-      {
-        tab: {
-          title: 'Tab 4',
-          url: 'https://example.com/4',
-          tabId: 4,
-        },
-      },
-    ];
-    await microtasksFinished();
+      loadTimeData.overrideValues({expandButtonEnabled: false});
 
-    const faviconItems = sourcesButton.shadowRoot.querySelectorAll(
-        '.favicon-item:not(#more-items)');
-    assertEquals(faviconItems.length, 3);
-    const moreItems =
-        sourcesButton.shadowRoot.querySelector<HTMLElement>('#more-items');
-    assertTrue(!!moreItems);
-    assertEquals(moreItems.innerText, '+1');
+      topToolbar = document.createElement('top-toolbar');
+      document.body.appendChild(topToolbar);
+    });
+
+    test('handles more menu interactions', async () => {
+      const moreButton =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#more');
+      assertTrue(!!moreButton);
+      moreButton.click();
+      await microtasksFinished();
+
+      assertTrue(topToolbar.$.menu.get().open);
+
+      const buttons = topToolbar.$.menu.get().querySelectorAll('button');
+      assertEquals(3, buttons.length);
+    });
   });
 });
