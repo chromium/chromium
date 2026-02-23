@@ -15,6 +15,7 @@
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider+Testing.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -103,6 +104,7 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
     web_state->SetBrowserState(profile_.get());
+    data_controls::DataControlsTabHelper::CreateForWebState(web_state.get());
     browser_->GetWebStateList()->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate());

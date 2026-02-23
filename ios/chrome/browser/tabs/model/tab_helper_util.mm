@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/download/model/safari_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/vcard_tab_helper.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -486,4 +487,6 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
       IsModelBasedPageClassificationEnabled()) {
     ios::provider::AttachClassificationMetricsTabHelper(web_state);
   }
+
+  attacher.Create<data_controls::DataControlsTabHelper>();
 }

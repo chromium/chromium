@@ -22,6 +22,7 @@ class DataControlsEditMenuBuilderTest : public PlatformTest {
     profile_ = TestProfileIOS::Builder().Build();
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(profile_.get());
+    data_controls::DataControlsTabHelper::CreateForWebState(web_state_.get());
   }
 
   web::WebTaskEnvironment task_environment_;

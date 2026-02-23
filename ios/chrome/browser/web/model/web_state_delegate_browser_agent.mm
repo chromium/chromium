@@ -377,27 +377,27 @@ void WebStateDelegateBrowserAgent::OnNewWebViewCreated(web::WebState* source) {
 void WebStateDelegateBrowserAgent::ShouldAllowCopy(
     web::WebState* source,
     base::OnceCallback<void(bool)> callback) {
-  data_controls::DataControlsTabHelper::GetOrCreateForWebState(source)
-      ->ShouldAllowCopy(std::move(callback));
+  data_controls::DataControlsTabHelper::FromWebState(source)->ShouldAllowCopy(
+      std::move(callback));
 }
 
 void WebStateDelegateBrowserAgent::ShouldAllowPaste(
     web::WebState* source,
     base::OnceCallback<void(bool)> callback) {
-  data_controls::DataControlsTabHelper::GetOrCreateForWebState(source)
-      ->ShouldAllowPaste(std::move(callback));
+  data_controls::DataControlsTabHelper::FromWebState(source)->ShouldAllowPaste(
+      std::move(callback));
 }
 
 void WebStateDelegateBrowserAgent::ShouldAllowCut(
     web::WebState* source,
     base::OnceCallback<void(bool)> callback) {
-  data_controls::DataControlsTabHelper::GetOrCreateForWebState(source)
-      ->ShouldAllowCut(std::move(callback));
+  data_controls::DataControlsTabHelper::FromWebState(source)->ShouldAllowCut(
+      std::move(callback));
 }
 
 void WebStateDelegateBrowserAgent::DidFinishClipboardRead(
     web::WebState* source) {
-  data_controls::DataControlsTabHelper::GetOrCreateForWebState(source)
+  data_controls::DataControlsTabHelper::FromWebState(source)
       ->DidFinishClipboardRead();
 }
 

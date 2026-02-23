@@ -81,6 +81,7 @@ class DataControlsTabHelperTest : public PlatformTest {
             profile_.get()));
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(profile_);
+    DataControlsTabHelper::CreateForWebState(web_state_.get());
   }
 
   void TearDown() override {
@@ -89,7 +90,7 @@ class DataControlsTabHelperTest : public PlatformTest {
   }
 
   DataControlsTabHelper* tab_helper() {
-    return DataControlsTabHelper::GetOrCreateForWebState(web_state_.get());
+    return DataControlsTabHelper::FromWebState(web_state_.get());
   }
 
   bool ShouldAllowCopy(DataControlsTabHelper* tab_helper) {
@@ -829,8 +830,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromIncognito) {
   ProfileIOS* incognito_profile = profile_->GetOffTheRecordProfile();
   auto incognito_web_state = std::make_unique<web::FakeWebState>();
   incognito_web_state->SetBrowserState(incognito_profile);
+  DataControlsTabHelper::CreateForWebState(incognito_web_state.get());
   DataControlsTabHelper* incognito_tab_helper =
-      DataControlsTabHelper::GetOrCreateForWebState(incognito_web_state.get());
+      DataControlsTabHelper::FromWebState(incognito_web_state.get());
 
   // Simulate copying from the incognito profile.
   incognito_web_state->SetCurrentURL(GURL(kOtherUrl));
@@ -862,8 +864,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowPaste_BlockedFromOtherProfile) {
       std::move(TestProfileIOS::Builder().SetName("SourceProfile")));
   auto source_web_state = std::make_unique<web::FakeWebState>();
   source_web_state->SetBrowserState(source_profile);
+  DataControlsTabHelper::CreateForWebState(source_web_state.get());
   DataControlsTabHelper* source_tab_helper =
-      DataControlsTabHelper::GetOrCreateForWebState(source_web_state.get());
+      DataControlsTabHelper::FromWebState(source_web_state.get());
 
   // Simulate copying from the second profile.
   source_web_state->SetCurrentURL(GURL(kOtherUrl));

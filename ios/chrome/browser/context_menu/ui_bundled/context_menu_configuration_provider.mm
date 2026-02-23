@@ -1085,8 +1085,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   }
 
   auto* data_controls_tab_helper =
-      data_controls::DataControlsTabHelper::GetOrCreateForWebState(
-          self.webState);
+      data_controls::DataControlsTabHelper::FromWebState(self.webState);
   return data_controls_tab_helper->ShouldAllowShare();
 }
 

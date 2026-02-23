@@ -161,10 +161,10 @@
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(
       _overscrollActionsDelegate);
 
-  data_controls::DataControlsTabHelper::GetOrCreateForWebState(webState)
+  data_controls::DataControlsTabHelper::FromWebState(webState)
       ->SetEnterpriseCommandsHandler(
           HandlerForProtocol(_commandDispatcher, EnterpriseCommands));
-  data_controls::DataControlsTabHelper::GetOrCreateForWebState(webState)
+  data_controls::DataControlsTabHelper::FromWebState(webState)
       ->SetSnackbarHandler(
           static_cast<id<SnackbarCommands>>(_commandDispatcher));
 
@@ -336,9 +336,9 @@
 
   OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(nil);
 
-  data_controls::DataControlsTabHelper::GetOrCreateForWebState(webState)
+  data_controls::DataControlsTabHelper::FromWebState(webState)
       ->SetEnterpriseCommandsHandler(nil);
-  data_controls::DataControlsTabHelper::GetOrCreateForWebState(webState)
+  data_controls::DataControlsTabHelper::FromWebState(webState)
       ->SetSnackbarHandler(nil);
 
   DownloadManagerTabHelper::FromWebState(webState)->SetDelegate(nil);

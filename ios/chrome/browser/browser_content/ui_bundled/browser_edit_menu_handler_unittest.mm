@@ -9,6 +9,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_content_view_controller.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_edit_menu_builder.h"
+#import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_test_utils.h"
 #import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_mediator.h"
 #import "ios/chrome/browser/partial_translate/ui_bundled/partial_translate_mediator.h"
@@ -373,6 +374,7 @@ class BrowserEditMenuHandlerTest : public PlatformTest {
     web_state_ = web::WebState::Create(params);
 
     WebSelectionTabHelper::CreateForWebState(web_state_.get());
+    data_controls::DataControlsTabHelper::CreateForWebState(web_state_.get());
   }
 
   void SetUp() override {

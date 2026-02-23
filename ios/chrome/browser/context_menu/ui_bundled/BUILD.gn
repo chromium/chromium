@@ -115,6 +115,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//components/strings",
     "//components/url_formatter",
+    "//ios/chrome/browser/enterprise/data_controls/model",
     "//ios/chrome/browser/menu/ui_bundled",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/photos/model:photos_service_factory",

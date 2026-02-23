@@ -16,7 +16,7 @@
   }
 
   data_controls::DataControlsTabHelper* tab_helper =
-      data_controls::DataControlsTabHelper::GetOrCreateForWebState(webState);
+      data_controls::DataControlsTabHelper::FromWebState(webState);
   if (tab_helper && !tab_helper->ShouldAllowShare()) {
     [builder removeMenuForIdentifier:UIMenuShare];
   }
