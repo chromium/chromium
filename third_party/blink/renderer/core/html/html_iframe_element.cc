@@ -197,10 +197,10 @@ void HTMLIFrameElement::ParseAttribute(
     }
     if (name_.contains('\n') && name_.contains('<')) {
       UseCounter::Count(GetDocument(), WebFeature::kDanglingMarkupInWindowName);
-      if (!name_.EndsWith('>')) {
+      if (!name_.ends_with('>')) {
         UseCounter::Count(GetDocument(),
                           WebFeature::kDanglingMarkupInWindowNameNotEndsWithGT);
-        if (!name_.EndsWith('\n')) {
+        if (!name_.ends_with('\n')) {
           UseCounter::Count(
               GetDocument(),
               WebFeature::kDanglingMarkupInWindowNameNotEndsWithNewLineOrGT);

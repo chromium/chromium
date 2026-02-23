@@ -113,7 +113,7 @@ KURL NormalizeValue(const String& key,
     case ParsedSpecifier::Type::kURL:
       // <spec step="2.6">If specifierKey ends with U+002F (/), and the
       // serialization of addressURL does not end with U+002F (/), then:</spec>
-      if (key.EndsWith("/") && !value.GetUrl().GetString().EndsWith("/")) {
+      if (key.EndsWith("/") && !value.GetUrl().GetString().ends_with("/")) {
         // <spec step="2.6.1">Report a warning to the console that an invalid
         // address was given for the specifier key specifierKey; since
         // specifierKey ended in a slash, so must the address.</spec>
@@ -495,8 +495,9 @@ std::optional<ImportMap::MatchResult> ImportMap::MatchPrefix(
   for (auto it = specifier_map.begin(); it != specifier_map.end(); ++it) {
     // <spec step="1.2">If specifierKey ends with U+002F (/) and
     // normalizedSpecifier starts with specifierKey, then:</spec>
-    if (!it->key.EndsWith('/'))
+    if (!it->key.ends_with('/')) {
       continue;
+    }
 
     if (!key.StartsWith(it->key))
       continue;
@@ -537,7 +538,7 @@ std::optional<KURL> ImportMap::Resolve(const ParsedSpecifier& parsed_specifier,
     // <spec step="8.1">If scopePrefix is baseURLString, or if scopePrefix ends
     // with U+002F (/) and baseURLString starts with scopePrefix, then:</spec>
     if (scope == base_url.GetString() ||
-        (scope.EndsWith("/") && base_url.GetString().StartsWith(scope))) {
+        (scope.ends_with('/') && base_url.GetString().StartsWith(scope))) {
       // <spec step="8.1.1">Let scopeImportsMatch be the result of resolving an
       // imports match given normalizedSpecifier and scopeImports.</spec>
       std::optional<KURL> scope_match =

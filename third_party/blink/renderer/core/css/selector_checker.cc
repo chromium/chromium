@@ -1308,7 +1308,7 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
         return false;
       }
       return case_insensitive ? value.EndsWithIgnoringAsciiCase(selector_value)
-                              : value.EndsWith(selector_value);
+                              : value.ends_with(selector_value);
     case CSSSelector::kAttributeHyphen:
       if (value.length() < selector_value.length()) {
         return false;

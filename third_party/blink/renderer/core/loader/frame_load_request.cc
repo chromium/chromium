@@ -56,9 +56,9 @@ void LogDanglingMarkupHistogram(LocalDOMWindow* origin_window,
   DCHECK(origin_window);
 
   origin_window->CountUse(WebFeature::kDanglingMarkupInTarget);
-  if (!target.EndsWith('>')) {
+  if (!target.ends_with('>')) {
     origin_window->CountUse(WebFeature::kDanglingMarkupInTargetNotEndsWithGT);
-    if (!target.EndsWith('\n')) {
+    if (!target.ends_with('\n')) {
       origin_window->CountUse(
           WebFeature::kDanglingMarkupInTargetNotEndsWithNewLineOrGT);
     }
