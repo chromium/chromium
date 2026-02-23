@@ -1092,6 +1092,11 @@ void PaintArtifactCompositor::Update(
       if (!parent_node->backdrop_filters.IsEmpty()) {
         parent_node->backdrop_mask_element_id = effect.GetCompositorElementId();
       }
+    } else if (pending_layer.GetContentLayerClient() &&
+               !effect.RequiresCompositingForBackdropFilterMask() &&
+               static_cast<cc::PictureLayer&>(layer)
+                   .is_backdrop_filter_mask()) {
+      static_cast<cc::PictureLayer&>(layer).SetIsBackdropFilterMask(false);
     }
 
     int scroll_id =
