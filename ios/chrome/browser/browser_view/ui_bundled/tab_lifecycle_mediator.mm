@@ -182,8 +182,8 @@
   id<WebContentCommands> webContentsHandler =
       HandlerForProtocol(_commandDispatcher, WebContentCommands);
   DCHECK(webContentsHandler);
-  ITunesUrlsHandlerTabHelper::GetOrCreateForWebState(webState)
-      ->SetWebContentsHandler(webContentsHandler);
+  ITunesUrlsHandlerTabHelper::FromWebState(webState)->SetWebContentsHandler(
+      webContentsHandler);
   PassKitTabHelper::FromWebState(webState)->SetWebContentsHandler(
       webContentsHandler);
 

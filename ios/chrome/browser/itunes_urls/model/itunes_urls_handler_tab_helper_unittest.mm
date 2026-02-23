@@ -21,7 +21,8 @@ class ITunesUrlsHandlerTabHelperTest : public PlatformTest {
       : fake_handler_([[FakeWebContentHandler alloc] init]),
         profile_(TestProfileIOS::Builder().Build()) {
     web_state_.SetBrowserState(profile_->GetOriginalProfile());
-    ITunesUrlsHandlerTabHelper::GetOrCreateForWebState(&web_state_)
+    ITunesUrlsHandlerTabHelper::CreateForWebState(&web_state_);
+    ITunesUrlsHandlerTabHelper::FromWebState(&web_state_)
         ->SetWebContentsHandler(fake_handler_);
   }
 

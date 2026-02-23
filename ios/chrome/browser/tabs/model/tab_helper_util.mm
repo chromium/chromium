@@ -374,6 +374,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.Create<PassKitTabHelper>();
   attacher.Create<DriveTabHelper>();
 
+  attacher.Create<ITunesUrlsHandlerTabHelper>();
   attacher.Create<PageloadForegroundDurationTabHelper>();
 
   attacher.Create<LookalikeUrlTabHelper>();
