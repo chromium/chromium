@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.EditText;
 
 import androidx.activity.OnBackPressedCallback;
@@ -911,8 +912,17 @@ public class SettingsSearchCoordinator
      */
     public void onConfigurationChanged(Configuration newConfig) {
         // mUseMultiColumnSupplier doesn't return the right, updated value immediately.
-        // Posting the job to the next slot fixes it.
-        mHandler.post(this::onConfigurationChangedInternal);
+        // Observe the content view enclosing the PreferenceFragment for view tree update.
+        var contentViewObserver = mActivity.findViewById(R.id.content).getViewTreeObserver();
+        var listener =
+                new OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        contentViewObserver.removeOnGlobalLayoutListener(this);
+                        onConfigurationChangedInternal();
+                    }
+                };
+        contentViewObserver.addOnGlobalLayoutListener(listener);
     }
 
     private void onConfigurationChangedInternal() {
@@ -990,7 +1000,8 @@ public class SettingsSearchCoordinator
             ViewGroup appBarLayout = mActivity.findViewById(R.id.app_bar_layout);
             setSearchBoxVerticalMargin(searchBox, false);
             appBarLayout.addView(searchBox);
-            if (isShowingMainSettings()) {
+            boolean showingMain = isShowingMainSettings();
+            if (showingMain) {
                 // No need to check against |mSuppressUi| here since in single-column mode
                 // search UI is always hidden except at main settings in which the UI is
                 // never suppressed.
@@ -1004,17 +1015,17 @@ public class SettingsSearchCoordinator
             // Query edit UI should be hidden while we're browsing results.
             if (mFragmentState == FS_RESULTS) query.setVisibility(View.GONE);
 
-            // When switching from 2-column to single-column mode, we'll always be at non-main
+            // When switching from 2-column to single-column mode, we may be at non-main
             // settings where search cannot be initiated and search UI should be hidden.
             // For UI consistency, we revert to default state (FS_SETTINGS).
-            if (mFragmentState == FS_SEARCH) {
+            if (mFragmentState == FS_SEARCH && !showingMain) {
                 exitSearchState(/* clearFragment= */ false);
                 mUpdateFirstVisibleTitle.onResult(0);
                 return;
             }
 
             if (mFragmentState == FS_SEARCH || mFragmentState == FS_RESULTS) {
-                if (isShowingMainSettings()) {
+                if (showingMain) {
                     // Results in the detail pane should be slided in to be visible if the pane
                     // is showing main settings.
                     mMultiColumnSettings.getSlidingPaneLayout().openPane();
