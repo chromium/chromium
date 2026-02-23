@@ -4828,6 +4828,9 @@
       name: "SecurePaymentConfirmationUxRefresh",
       status: {
         "Android": "stable",
+        "Mac": "stable",
+        "Win": "stable",
+        "iOS": "",
         "default": "test",
       },
     },
