@@ -59,10 +59,18 @@ inline uint64_t EncodeLayerOrder(uint16_t layer_order, bool important) {
 // shadow-including tree order [2]; inline style, which is a boolean incidating
 // whether the declaration is in the style attribute [3]; layer order, which is
 // a number representing the cascade layer order in the origin and tree scope
-// [4]; position, which contains the index (or indices) required to lookup a
-// declaration in the underlying structure (e.g. a MatchResult); and finally
-// already_applied, which is a bit that StyleCascade uses to know what has been
-// applied during this call to StyleCascade::Apply.
+// [4]; rule_index/declaration_index, which contain the indices required to
+// lookup a declaration in the underlying structure (e.g. a MatchResult); and
+// finally already_applied, which is a bit that StyleCascade uses to know what
+// has been applied during this call to StyleCascade::Apply.
+//
+// Note that rule_index is more important for ordering than one'd think;
+// since we sort matched rules (in ElementRuleCollector::SortMatchedRules())
+// by the tuple {layer, specificity, -proximity, style sheet index, rule index},
+// and rule_index points into the vector of matched rules (it is _not_ a rule
+// index into the style sheet), sorting by rule_index will inherently sort by
+// that 5-tuple (except for the layer, which is irrelevant since we have our own
+// layer ordering ahead of rule_index).
 //
 // [1] https://drafts.csswg.org/css-cascade/#cascading
 // [2] https://drafts.csswg.org/css-shadow/#shadow-cascading
