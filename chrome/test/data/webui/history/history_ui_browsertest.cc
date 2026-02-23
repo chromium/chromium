@@ -211,10 +211,26 @@ class HistoryWithHistoryEmbeddingsTest : public WebUIMochaBrowserTest {
 
 // TODO(crbug.com/458161947): Re-enable flaky test
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_App DISABLED_App
+#define MAYBE_HistoryAppTest DISABLED_HistoryAppTest
 #else
-#define MAYBE_App App
+#define MAYBE_HistoryAppTest HistoryAppTest
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-IN_PROC_BROWSER_TEST_F(HistoryWithHistoryEmbeddingsTest, MAYBE_App) {
-  RunTest("history/history_app_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(HistoryWithHistoryEmbeddingsTest, MAYBE_HistoryAppTest) {
+  RunTest("history/history_app_test.js", "runMochaSuite('HistoryAppTest')");
 }
+
+// HistoryAppUnoPhase2FollowUpTest is only available outside CrOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/458161947): Re-enable flaky test
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_HistoryAppUnoPhase2FollowUpTest \
+  DISABLED_HistoryAppUnoPhase2FollowUpTest
+#else
+#define MAYBE_HistoryAppUnoPhase2FollowUpTest HistoryAppUnoPhase2FollowUpTest
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(HistoryWithHistoryEmbeddingsTest,
+                       MAYBE_HistoryAppUnoPhase2FollowUpTest) {
+  RunTest("history/history_app_test.js",
+          "runMochaSuite('HistoryAppUnoPhase2FollowUpTest')");
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
