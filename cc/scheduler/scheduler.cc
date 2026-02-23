@@ -28,6 +28,7 @@
 #include "cc/metrics/compositor_timing_history.h"
 #include "cc/scheduler/headless_scheduler_state_machine.h"
 #include "cc/scheduler/scheduler_state_machine.h"
+#include "cc/scheduler/webview_scheduler_state_machine.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
@@ -61,6 +62,10 @@ Scheduler::Scheduler(
   if (settings.wait_for_all_pipeline_stages_before_draw &&
       base::FeatureList::IsEnabled(features::kHeadlessSchedulerStateMachine)) {
     state_machine_ = std::make_unique<HeadlessSchedulerStateMachine>(settings);
+  } else if (settings.using_synchronous_renderer_compositor &&
+             base::FeatureList::IsEnabled(
+                 features::kWebviewSchedulerStateMachine)) {
+    state_machine_ = std::make_unique<WebviewSchedulerStateMachine>(settings);
   } else {
     state_machine_ = std::make_unique<SchedulerStateMachine>(settings);
   }

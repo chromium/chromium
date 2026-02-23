@@ -201,7 +201,7 @@ class CC_EXPORT SchedulerStateMachine {
   }
 
   // Returns BeginImplFrameDeadlineMode computed based on current state.
-  BeginImplFrameDeadlineMode CurrentBeginImplFrameDeadlineMode() const;
+  virtual BeginImplFrameDeadlineMode CurrentBeginImplFrameDeadlineMode() const;
 
   // If the main thread didn't manage to produce a new frame in time for the
   // impl thread to draw, it is in a high latency mode.
@@ -424,11 +424,13 @@ class CC_EXPORT SchedulerStateMachine {
   bool ShouldDraw() const;
   virtual bool CheckShouldDraw() const;
   bool ShouldActivateSyncTree() const;
+  virtual bool ShouldActivateSyncTreeBeforeDraw() const;
   bool ShouldSendBeginMainFrame() const;
+  virtual bool ShouldBeginMainFrameWhenIdle() const;
   bool ShouldCommit() const;
   bool ShouldRunPostCommit() const;
   virtual bool ShouldPrepareTiles() const;
-  bool ShouldInvalidateLayerTreeFrameSink() const;
+  virtual bool ShouldInvalidateLayerTreeFrameSink() const;
   bool ShouldNotifyBeginMainFrameNotExpectedUntil() const;
   bool ShouldNotifyBeginMainFrameNotExpectedSoon() const;
 

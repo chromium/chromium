@@ -451,6 +451,11 @@ bool SchedulerStateMachine::ShouldDraw() const {
   return needs_redraw_;
 }
 
+bool SchedulerStateMachine::ShouldActivateSyncTreeBeforeDraw() const {
+  return (!settings_.using_synchronous_renderer_compositor &&
+          active_tree_needs_first_draw_);
+}
+
 bool SchedulerStateMachine::ShouldActivateSyncTree() const {
   // There is nothing to activate.
   if (!has_pending_tree_) {
@@ -462,11 +467,8 @@ bool SchedulerStateMachine::ShouldActivateSyncTree() const {
 
   // We should not activate a second tree before drawing the first one.
   // Even if we need to force activation of the pending tree, we should abort
-  // drawing the active tree first. Relax this requirement for synchronous
-  // compositor where scheduler does not control draw, and blocking commit
-  // may lead to bad scheduling.
-  if (!settings_.using_synchronous_renderer_compositor &&
-      active_tree_needs_first_draw_) {
+  // drawing the active tree first.
+  if (ShouldActivateSyncTreeBeforeDraw()) {
     TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                          "Not activating before drawing active first",
                          TRACE_EVENT_SCOPE_THREAD);
@@ -605,6 +607,11 @@ bool SchedulerStateMachine::CouldSendBeginMainFrame() const {
   return true;
 }
 
+bool SchedulerStateMachine::ShouldBeginMainFrameWhenIdle() const {
+  return (!settings_.using_synchronous_renderer_compositor &&
+          begin_impl_frame_state_ == BeginImplFrameState::IDLE);
+}
+
 bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
   if (!CouldSendBeginMainFrame())
     return false;
@@ -654,13 +661,10 @@ bool SchedulerStateMachine::ShouldSendBeginMainFrame() const {
   }
 
   // We should not send BeginMainFrame while we are in the idle state since we
-  // might have new user input arriving soon. It's okay to send BeginMainFrame
-  // for the synchronous compositor because the main thread is always high
-  // latency in that case.
+  // might have new user input arriving soon.
   // TODO(brianderson): Allow sending BeginMainFrame while idle when the main
   // thread isn't consuming user input for non-synchronous compositor.
-  if (!settings_.using_synchronous_renderer_compositor &&
-      begin_impl_frame_state_ == BeginImplFrameState::IDLE) {
+  if (ShouldBeginMainFrameWhenIdle()) {
     return false;
   }
 

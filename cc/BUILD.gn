@@ -325,6 +325,8 @@ cc_component("cc") {
     "scheduler/scheduler_state_machine.cc",
     "scheduler/scheduler_state_machine.h",
     "scheduler/video_frame_controller.h",
+    "scheduler/webview_scheduler_state_machine.cc",
+    "scheduler/webview_scheduler_state_machine.h",
     "tiles/checker_image_tracker.cc",
     "tiles/checker_image_tracker.h",
     "tiles/decoded_image_tracker.cc",
