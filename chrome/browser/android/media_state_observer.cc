@@ -7,20 +7,10 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "media/base/media_switches.h"
-
-namespace {
-// Values defined in Tab.java and must be kept in sync.
-enum MediaState {
-  NONE = 0,
-  MUTED = 1,
-  AUDIBLE = 2,
-  RECORDING = 3,
-  SHARING = 4,
-};
-}  // namespace
 
 MediaStateObserver::MediaStateObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -107,21 +97,29 @@ void MediaStateObserver::UpdateAudibleState(bool audible) {
 }
 
 void MediaStateObserver::UpdateMediaState() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  MediaState new_state = MediaState::NONE;
+  if (is_being_mirrored_) {
+    new_state = MediaState::SHARING;
+  } else if (is_capturing_video_ || is_capturing_audio_) {
+    new_state = MediaState::RECORDING;
+  } else if (is_audible_) {
+    new_state = is_audio_muted_ ? MediaState::MUTED : MediaState::AUDIBLE;
+  } else {
+    new_state = MediaState::NONE;
+  }
+
+  if (media_state_ == new_state) {
+    return;
+  }
+
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents());
   if (!tab) {
     return;
   }
 
-  if (is_being_mirrored_) {
-    tab->SetMediaState(MediaState::SHARING);
-  } else if (is_capturing_video_ || is_capturing_audio_) {
-    tab->SetMediaState(MediaState::RECORDING);
-  } else if (is_audible_) {
-    tab->SetMediaState(is_audio_muted_ ? MediaState::MUTED
-                                       : MediaState::AUDIBLE);
-  } else {
-    tab->SetMediaState(MediaState::NONE);
-  }
+  media_state_ = new_state;
+  tab->SetMediaState(new_state);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(MediaStateObserver);
