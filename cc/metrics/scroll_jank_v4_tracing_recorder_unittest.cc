@@ -325,7 +325,7 @@ TEST_F(ScrollJankV4RecorderTest, RealDamagingFrame) {
                       "DAMAGING",
                       "16000000",
                       "50000000",
-                      "60000000"}}));
+                      "[NULL]"}}));
   EXPECT_THAT(
       QueryTraceProcessor(kScrollJankV4ReasonsQuery),
       QueryResultIs(
@@ -454,7 +454,7 @@ TEST_F(ScrollJankV4RecorderTest,
                       "NON_DAMAGING_WITH_EXTRAPOLATED_PRESENTATION_TIMESTAMP",
                       "16000000",
                       "50000000",
-                      "60000000"}}));
+                      "[NULL]"}}));
   EXPECT_THAT(
       QueryTraceProcessor(kScrollJankV4ReasonsQuery),
       QueryResultIs(
@@ -580,7 +580,7 @@ TEST_F(ScrollJankV4RecorderTest,
                       "DAMAGING",
                       "16000000",
                       "50000000",
-                      "60000000"}}));
+                      "[NULL]"}}));
   EXPECT_THAT(
       QueryTraceProcessor(kScrollJankV4ReasonsQuery),
       QueryResultIs(
@@ -683,7 +683,7 @@ TEST_F(ScrollJankV4RecorderTest,
                     "[NULL]",
                     "NON_DAMAGING_WITHOUT_EXTRAPOLATED_PRESENTATION_TIMESTAMP",
                     "16000000",
-                    "30000000",
+                    "[NULL]",
                     "[NULL]"}}));
   EXPECT_THAT(QueryTraceProcessor(kScrollJankV4ReasonsQuery),
               QueryResultIs({{"id", "jank_reason", "missed_vsyncs"}}));
