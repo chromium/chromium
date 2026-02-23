@@ -11,12 +11,12 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter_model.h"
@@ -97,7 +97,7 @@ class COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilter
   std::bitset<kNumTouchEvdevSlots> is_delay_;
   std::map<int, PalmFilterStroke> strokes_;
   base::TimeTicks previous_report_time_;
-  std::unordered_set<int> active_tracking_ids_;
+  absl::flat_hash_set<int> active_tracking_ids_;
   int tracking_ids_count_within_session_;
   std::array<int, kNumTouchEvdevSlots> tracking_ids_;
   const PalmFilterDeviceInfo palm_filter_dev_info_;

@@ -11,7 +11,6 @@
 #include <queue>
 #include <string>
 #include <tuple>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -19,6 +18,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter_model.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter_util.h"
@@ -192,7 +192,7 @@ void NeuralStylusPalmDetectionFilter::Filter(
   EraseOldStrokes(time);
   slots_to_hold->reset();
   slots_to_suppress->reset();
-  std::unordered_set<int> slots_to_decide;
+  absl::flat_hash_set<int> slots_to_decide;
   std::vector<int> ended_tracking_ids;
   for (const auto& touch : touches) {
     // Ignore touch events that are not touches.

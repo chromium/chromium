@@ -30,6 +30,7 @@
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -229,7 +230,7 @@ class FakeHeatmapPalmDetector : public HeatmapPalmDetector {
   void SetPalm(int tracking_id) { palm_tracking_ids_.insert(tracking_id); }
 
  private:
-  std::unordered_set<int> palm_tracking_ids_;
+  absl::flat_hash_set<int> palm_tracking_ids_;
 };
 
 }  // namespace
