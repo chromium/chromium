@@ -43,6 +43,7 @@ export function getHtml(this: ContextualTasksAppElement) {
               ${this.friendlyZeroStateSubtitle}` : ''}
       </h1>
     </div>
+<if expr="not is_android">
     <contextual-tasks-composebox id="composebox"
           ?hidden="${this.isInBasicMode_ && !this.enableBasicModeZOrder_}"
           .isZeroState="${this.isZeroState_}"
@@ -53,6 +54,7 @@ export function getHtml(this: ContextualTasksAppElement) {
               "${this.enableNativeZeroStateSuggestions_}"
           .inputEnabled="${!this.isInputLocked_}">
     </contextual-tasks-composebox>
+</if>
   </div>
   <error-page id="errorPage"></error-page>
   <!--_html_template_end_-->`;

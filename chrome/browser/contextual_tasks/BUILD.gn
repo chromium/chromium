@@ -266,6 +266,10 @@ mojom("mojo_bindings") {
     "//ui/base/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
+  if (!is_android) {
+    public_deps +=
+        [ "//ui/webui/resources/cr_components/composebox:mojo_bindings" ]
+  }
 }
 
 if (!is_android) {
