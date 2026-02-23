@@ -68,26 +68,40 @@ AslrMask(uintptr_t bits) {
     }
 
   #elif PA_BUILDFLAG(IS_APPLE)
-
-    // macOS as of 10.12.5 does not clean up entries in page map levels 3/4
-    // [PDP/PML4] created from mmap or mach_vm_allocate, even after the region
-    // is destroyed. Using a virtual address space that is too large causes a
-    // leak of about 1 wired [can never be paged out] page per call to mmap. The
-    // page is only reclaimed when the process is killed. Confine the hint to a
-    // 39-bit section of the virtual address space.
-    //
-    // This implementation adapted from
-    // https://chromium-review.googlesource.com/c/v8/v8/+/557958. The difference
-    // is that here we clamp to 39 bits, not 32.
-    //
-    // TODO(crbug.com/40528509): Remove this limitation if/when the macOS
-    // behavior changes.
     PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
     ASLRMask() {
+#if PA_BUILDFLAG(IS_MAC)
+      // macOS as of 10.12.5 does not clean up entries in page map levels 3/4
+      // [PDP/PML4] created from mmap or mach_vm_allocate, even after the region
+      // is destroyed. Using a virtual address space that is too large causes a
+      // leak of about 1 wired [can never be paged out] page per call to mmap.
+      // The page is only reclaimed when the process is killed. Confine the hint
+      // to a 39-bit section of the virtual address space.
+      //
+      // This implementation adapted from
+      // https://chromium-review.googlesource.com/c/v8/v8/+/557958. The
+      // difference is that here we clamp to 39 bits, not 32.
+      //
+      // TODO(crbug.com/40528509): Remove this limitation if/when the macOS
+      // behavior changes.
       return AslrMask(38);
+#elif PA_BUILDFLAG(IS_IOS)
+      // As of iOS/Xcode 26.4, Apple unified the Swift runtime's SWIFT_ISA_MASK
+      // across physical devices and the macOS-backed Simulator, strictly
+      // limiting class metadata pointers (like class_ro_t) to 36 bits (64 GiB).
+      // Physical iOS devices inherently restrict mmap allocations to this range
+      // anyway. However, the underlying macOS kernel on the Simulator will
+      // happily map pools above this boundary. If that happens, the Swift
+      // runtime silently truncates the upper bits, causing an EXC_BAD_ACCESS.
+      // We clamp the ASLR mask to 35 bits (32 GiB) to guarantee all hints
+      // remain safely below the 36-bit hardware ceiling on both device and
+      // simulator.
+      return AslrMask(35);
+#endif
     }
     PA_ALWAYS_INLINE PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR uintptr_t
     ASLROffset() {
+#if PA_BUILDFLAG(IS_MAC)
       // Be careful, there is a zone where macOS will not map memory, at least
       // on ARM64. From an ARM64 machine running 12.3, the range seems to be
       // [0x1000000000, 0x7000000000). Make sure that the range we use is
@@ -96,6 +110,9 @@ AslrMask(uintptr_t bits) {
       // which is reserved on ARM64. See these constants in XNU's source code
       // for details (xnu-8019.80.24/osfmk/mach/arm/vm_param.h).
       return AslrAddress(0x10000000000ULL);
+#elif PA_BUILDFLAG(IS_IOS)
+      return AslrAddress(0x300000000ULL);
+#endif
     }
 
   #elif PA_BUILDFLAG(IS_POSIX) || PA_BUILDFLAG(IS_FUCHSIA)
