@@ -6,10 +6,20 @@
 
 #include "chrome/browser/record_replay/record_replay_client.h"
 #include "chrome/browser/record_replay/record_replay_manager.h"
+#include "chrome/browser/record_replay/recording_data_manager.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/record_replay/save_recording_bubble_controller_impl.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
+#include "chrome/browser/ui/views/record_replay/save_recording_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
@@ -51,9 +61,38 @@ void RecordReplayPageActionController::ExecuteAction(
         manager.StartRecording();
       }
       break;
-    case State::kRecording:
+    case State::kRecording: {
       manager.StopRecording();
+      BrowserWindowInterface* bwi = tab_->GetBrowserWindowInterface();
+      // bwi can be null if the tab is not attached to a window.
+      if (!bwi) {
+        break;
+      }
+      BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(bwi);
+      if (!browser_view) {
+        break;
+      }
+      views::View* anchor_view = browser_view->GetLocationBarView()
+                                     ->page_action_container()
+                                     ->GetPageActionView(kActionRecordReplay);
+      // anchor_view can be null if the page action is not visible.
+      if (!anchor_view) {
+        break;
+      }
+
+      auto* rdm = client->GetRecordingDataManager();
+      if (!rdm) {
+        break;
+      }
+
+      record_replay::SaveRecordingBubbleView::Show(
+          anchor_view, tab_->GetContents(),
+          std::make_unique<record_replay::SaveRecordingBubbleControllerImpl>(
+              record_replay::Recording(), rdm,
+              base::BindOnce(&RecordReplayPageActionController::UpdateState,
+                             base::Unretained(this))));
       break;
+    }
     case State::kReplaying:
       manager.StopReplay();
       break;

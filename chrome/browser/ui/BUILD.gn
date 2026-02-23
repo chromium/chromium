@@ -4328,6 +4328,8 @@ static_library("ui") {
       "views/promos/ios_promo_constants.h",
       "views/qrcode_generator/qrcode_generator_bubble.cc",
       "views/qrcode_generator/qrcode_generator_bubble.h",
+      "views/record_replay/save_recording_bubble_view.cc",
+      "views/record_replay/save_recording_bubble_view.h",
       "views/relaunch_notification/relaunch_notification_controller.cc",
       "views/relaunch_notification/relaunch_notification_controller.h",
       "views/relaunch_notification/relaunch_required_timer.cc",
@@ -5536,6 +5538,7 @@ static_library("ui_public_dependencies") {
   if (!is_android) {
     public_deps += [
       "//build:branding_buildflags",
+      "//chrome/browser/ui/record_replay",
       "//ui/base/dragdrop/mojom:mojom_headers",
       "//ui/views",
       "//ui/views/controls/webview",

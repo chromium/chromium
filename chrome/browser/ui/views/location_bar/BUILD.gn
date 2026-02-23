@@ -124,6 +124,7 @@ source_set("impl") {
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/passwords",
+      "//chrome/browser/ui/record_replay",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/tabs:tabs_public",
       "//chrome/browser/ui/tabs/saved_tab_groups",
