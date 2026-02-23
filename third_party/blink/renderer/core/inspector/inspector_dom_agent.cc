@@ -1359,25 +1359,67 @@ protocol::Response InspectorDOMAgent::performSearch(
   bool include_user_agent_shadow_dom =
       optional_include_user_agent_shadow_dom.value_or(false);
 
-  bool start_tag_found = whitespace_trimmed_query.StartsWith('<');
-  bool start_closing_tag_found = whitespace_trimmed_query.StartsWith("</");
-  bool end_tag_found = whitespace_trimmed_query.EndsWith('>');
-  bool start_quote_found = whitespace_trimmed_query.StartsWith('"');
-  bool end_quote_found = whitespace_trimmed_query.EndsWith('"');
-  bool exact_attribute_match = start_quote_found && end_quote_found;
+  StringView tag_name_query = whitespace_trimmed_query;
+  bool start_tag_found = false;
+  if (whitespace_trimmed_query.StartsWith("</")) {
+    tag_name_query.remove_prefix(2);
+    start_tag_found = true;
+  } else if (whitespace_trimmed_query.StartsWith('<')) {
+    tag_name_query.remove_prefix(1);
+    start_tag_found = true;
+  }
+  bool end_tag_found = false;
+  if (whitespace_trimmed_query.EndsWith('>')) {
+    tag_name_query.remove_suffix(1);
+    end_tag_found = true;
+  }
 
-  String tag_name_query = whitespace_trimmed_query;
-  String attribute_query = whitespace_trimmed_query;
-  if (start_closing_tag_found)
-    tag_name_query = tag_name_query.Right(tag_name_query.length() - 2);
-  else if (start_tag_found)
-    tag_name_query = tag_name_query.Right(tag_name_query.length() - 1);
-  if (end_tag_found)
-    tag_name_query = tag_name_query.Left(tag_name_query.length() - 1);
-  if (start_quote_found)
-    attribute_query = attribute_query.Right(attribute_query.length() - 1);
-  if (end_quote_found)
-    attribute_query = attribute_query.Left(attribute_query.length() - 1);
+  // Classify what type of match should be done on element names.
+  enum { kSubstring, kExact, kPrefix, kSuffix } type;
+  if (!start_tag_found && !end_tag_found) {
+    type = kSubstring;
+  } else if (start_tag_found && end_tag_found) {
+    type = kExact;
+  } else if (start_tag_found && !end_tag_found) {
+    type = kPrefix;
+  } else {
+    type = kSuffix;
+  }
+  auto element_name_matcher = [type,
+                               tag_name_query](const String& element_name) {
+    switch (type) {
+      case kSubstring:
+        return element_name.DeprecatedFindIgnoringCase(tag_name_query) !=
+               kNotFound;
+      case kExact:
+        return DeprecatedEqualIgnoringCase(element_name, tag_name_query);
+      case kPrefix:
+        return element_name.DeprecatedStartsWithIgnoringCase(tag_name_query);
+      case kSuffix:
+        return element_name.DeprecatedEndsWithIgnoringCase(tag_name_query);
+    }
+  };
+
+  StringView attribute_query = whitespace_trimmed_query;
+  bool start_quote_found = false;
+  if (whitespace_trimmed_query.StartsWith('"')) {
+    attribute_query.remove_prefix(1);
+    start_quote_found = true;
+  }
+  bool end_quote_found = false;
+  if (whitespace_trimmed_query.EndsWith('"')) {
+    attribute_query.remove_suffix(1);
+    end_quote_found = true;
+  }
+  const bool exact_attribute_match = start_quote_found && end_quote_found;
+  auto attribute_value_matcher =
+      [exact_attribute_match, attribute_query](const String& attribute_value) {
+        if (exact_attribute_match) {
+          return DeprecatedEqualIgnoringCase(attribute_value, attribute_query);
+        }
+        return attribute_value.DeprecatedFindIgnoringCase(attribute_query) !=
+               kNotFound;
+      };
 
   HeapVector<Member<Document>> docs = Documents();
   HeapLinkedHashSet<Member<Node>> result_collector;
@@ -1437,17 +1479,7 @@ protocol::Response InspectorDOMAgent::performSearch(
           break;
         }
         case Node::kElementNode: {
-          if ((!start_tag_found && !end_tag_found &&
-               (node->nodeName().DeprecatedFindIgnoringCase(tag_name_query) !=
-                kNotFound)) ||
-              (start_tag_found && end_tag_found &&
-               DeprecatedEqualIgnoringCase(node->nodeName(), tag_name_query)) ||
-              (start_tag_found && !end_tag_found &&
-               node->nodeName().DeprecatedStartsWithIgnoringCase(
-                   tag_name_query)) ||
-              (!start_tag_found && end_tag_found &&
-               node->nodeName().DeprecatedEndsWithIgnoringCase(
-                   tag_name_query))) {
+          if (element_name_matcher(node->nodeName())) {
             result_collector.insert(node);
             break;
           }
@@ -1461,15 +1493,9 @@ protocol::Response InspectorDOMAgent::performSearch(
               result_collector.insert(node);
               break;
             }
-            size_t found_position =
-                attribute.Value().DeprecatedFindIgnoringCase(attribute_query);
-            if (found_position != kNotFound) {
-              if (!exact_attribute_match ||
-                  (!found_position &&
-                   attribute.Value().length() == attribute_query.length())) {
-                result_collector.insert(node);
-                break;
-              }
+            if (attribute_value_matcher(attribute.Value())) {
+              result_collector.insert(node);
+              break;
             }
           }
           break;
