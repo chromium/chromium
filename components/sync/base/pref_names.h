@@ -18,6 +18,12 @@ inline constexpr char kEnableLocalSyncBackend[] =
 // flag is present.
 inline constexpr char kLocalSyncBackendDir[] = "sync.local_sync_backend_dir";
 
+// This is set during the Sync-to-Signin migration  and indicates that the stats
+// table should be cleared from the account password store. This pref is
+// consumed by the password manager code.
+inline constexpr char kCleanUpStatsTableFromAccountPasswordStore[] =
+    "sync.clean_up_stats_table_from_account_password_store";
+
 // NOTE: All the "internal" prefs should not be used directly by non-sync code,
 // but should rather always be accessed via SyncUserSettings.
 // TODO(crbug.com/40265119): Clean up/replace any existing references to these

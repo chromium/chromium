@@ -1828,6 +1828,23 @@ TEST_P(SyncToSigninMigrationDataTypesTest, MovePasswords_FolderNotWritable) {
       -base::File::FILE_ERROR_ACCESS_DENIED, 1);
 }
 #endif  // BUILDFLAG(IS_POSIX)
+
+TEST_P(SyncToSigninMigrationDataTypesTest, MarkStatsTableToBeCleanedUp) {
+  ASSERT_FALSE(pref_service_.GetBoolean(
+      syncer::prefs::kCleanUpStatsTableFromAccountPasswordStore));
+
+  base::HistogramTester histograms;
+  MaybeMigrateSyncingUserToSignedInWrapper(
+      IsBlockingAllowed(), fake_profile_dir_.GetPath(), &pref_service_);
+
+  // The clean-up does not happen right away, but rather a pref is set
+  // to mark that it should be cleaned up.
+  EXPECT_TRUE(pref_service_.GetBoolean(
+      syncer::prefs::kCleanUpStatsTableFromAccountPasswordStore));
+  histograms.ExpectUniqueSample(
+      "Sync.SyncToSigninMigration.StatsTableCleanupStep",
+      syncer::SyncToSigninMigrationStatsTableCleanupStep::kCleanupRequested, 1);
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

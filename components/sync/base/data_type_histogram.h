@@ -118,6 +118,19 @@ enum class SyncToSigninMigrationThemeOutcome {
 void RecordSyncToSigninMigrationThemeOutcome(
     SyncToSigninMigrationThemeOutcome outcome);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SyncToSigninMigrationStatsTableCleanupStep)
+enum class SyncToSigninMigrationStatsTableCleanupStep {
+  kCleanupRequested = 0,
+  kCleanupStarted = 1,
+  kCleanupFinishedAndPrefCleared = 2,
+  kMaxValue = kCleanupFinishedAndPrefCleared
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationStatsTableCleanupStep)
+void RecordSyncToSigninMigrationStatsTableCleanupStep(
+    SyncToSigninMigrationStatsTableCleanupStep step);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_DATA_TYPE_HISTOGRAM_H_

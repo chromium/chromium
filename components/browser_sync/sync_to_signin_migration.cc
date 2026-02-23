@@ -559,6 +559,11 @@ void MaybeMigrateSyncingUserToSignedInInternal(
     blocking_operations.push_back(
         base::BindOnce(&RenameFileAndReportSuccess, from_path, to_path,
                        "Sync.SyncToSigninMigrationOutcome.PasswordsFileMove"));
+    // Mark clearing of the stats table from the newly migrated password store.
+    pref_service->SetBoolean(
+        syncer::prefs::kCleanUpStatsTableFromAccountPasswordStore, true);
+    syncer::RecordSyncToSigninMigrationStatsTableCleanupStep(
+        syncer::SyncToSigninMigrationStatsTableCleanupStep::kCleanupRequested);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

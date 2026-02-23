@@ -156,4 +156,10 @@ void RecordSyncToSigninMigrationThemeOutcome(
       "Sync.SyncToSigninMigrationOutcome.ThemeDeduplication", outcome);
 }
 
+void RecordSyncToSigninMigrationStatsTableCleanupStep(
+    SyncToSigninMigrationStatsTableCleanupStep step) {
+  base::UmaHistogramEnumeration(
+      "Sync.SyncToSigninMigration.StatsTableCleanupStep", step);
+}
+
 }  // namespace syncer
