@@ -1006,8 +1006,6 @@ void SessionServiceImpl::OnAddSessionKeyRestored(
     std::optional<std::string> session_id;
     std::optional<SessionDisplay> display_info;
     if (succeeded) {
-      // TODO(crbug.com/471021582): Some failed creation events could have a
-      // session_id. Can we thread that through?
       session_id = session_or_error.value()->id().value();
       display_info = session_or_error.value()->ToDisplay();
     }
@@ -1184,8 +1182,6 @@ SessionError::ErrorType SessionServiceImpl::OnRegistrationCompleteInternal(
               [&](SessionError error) {
                 // We failed to create a new session, so there's nothing to
                 // clean up.
-                // TODO(crbug.com/471021582): Some failed creation events could
-                // have a session_id. Can we thread that through?
                 SessionError::ErrorType error_type = error.type;
                 NotifyIfEventCallbackListeners([&] {
                   return SessionEvent::MakeCreationEvent(

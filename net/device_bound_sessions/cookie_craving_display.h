@@ -24,9 +24,6 @@ struct NET_EXPORT CookieCravingDisplay {
                        net::CookieSameSite same_site);
   ~CookieCravingDisplay();
 
-  // TODO(crbug.com/471021582): Does this need to be copyable? Same for all
-  // other display structs. See
-  // https://crrev.com/c/7302080/comment/1cbf7e82_39b59f88/.
   CookieCravingDisplay(const CookieCravingDisplay&);
   CookieCravingDisplay& operator=(const CookieCravingDisplay&);
   CookieCravingDisplay(CookieCravingDisplay&&) noexcept;
