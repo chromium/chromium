@@ -1332,6 +1332,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<CoralController> coral_controller_;
   std::unique_ptr<CoralDelegate> coral_delegate_;
 
+  bool shutting_down_ = false;
+
   base::WeakPtrFactory<Shell> weak_factory_{this};
 };
 

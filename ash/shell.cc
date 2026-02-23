@@ -644,18 +644,28 @@ void Shell::UpdateAfterLoginStatusChange(LoginStatus status) {
 
 void Shell::NotifyFullscreenStateChanged(bool is_fullscreen,
                                          aura::Window* container) {
-  for (auto& observer : shell_observers_) {
-    observer.OnFullscreenStateChanged(is_fullscreen, container);
+  if (shutting_down_) {
+    return;
   }
+  // A fullscreen state change may trigger another fullscreen state change.
+  // TODO(crbug.com/484371187): Investigate if we can remove the recentrancy.
+  shell_observers_.NotifyAllowReentrancyUntriaged(
+      &ShellObserver::OnFullscreenStateChanged, is_fullscreen, container);
 }
 
 void Shell::NotifyPinnedStateChanged(aura::Window* pinned_window) {
+  if (shutting_down_) {
+    return;
+  }
   for (auto& observer : shell_observers_) {
     observer.OnPinnedStateChanged(pinned_window);
   }
 }
 
 void Shell::NotifyUserWorkAreaInsetsChanged(aura::Window* root_window) {
+  if (shutting_down_) {
+    return;
+  }
   for (auto& observer : shell_observers_) {
     observer.OnUserWorkAreaInsetsChanged(root_window);
   }
@@ -663,12 +673,18 @@ void Shell::NotifyUserWorkAreaInsetsChanged(aura::Window* root_window) {
 
 void Shell::NotifyShelfAlignmentChanged(aura::Window* root_window,
                                         ShelfAlignment old_alignment) {
+  if (shutting_down_) {
+    return;
+  }
   for (auto& observer : shell_observers_) {
     observer.OnShelfAlignmentChanged(root_window, old_alignment);
   }
 }
 
 void Shell::NotifyDisplayForNewWindowsChanged() {
+  if (shutting_down_) {
+    return;
+  }
   for (auto& observer : shell_observers_) {
     observer.OnDisplayForNewWindowsChanged();
   }
@@ -785,6 +801,8 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
 
 Shell::~Shell() {
   TRACE_EVENT0("shutdown", "ash::Shell::Destructor");
+  shutting_down_ = true;
+
 #if DCHECK_IS_ON()
   // All WindowEventDispatchers should be shutdown before the Shell is
   // destroyed.
@@ -792,6 +810,7 @@ Shell::~Shell() {
     DCHECK(rwc->GetHost()->dispatcher()->in_shutdown());
   }
 #endif
+
   booting_animation_controller_.reset();
   unlock_throughput_recorder_.reset();
   login_unlock_throughput_recorder_.reset();
