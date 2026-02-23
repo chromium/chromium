@@ -6,6 +6,7 @@
 #define CC_INPUT_SCROLL_SNAP_DATA_H_
 
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -287,7 +288,7 @@ struct SnapAreaData {
   ElementId element_id;
 };
 
-struct TargetSnapAreaElementIds {
+struct CC_EXPORT TargetSnapAreaElementIds {
   TargetSnapAreaElementIds() = default;
   TargetSnapAreaElementIds(ElementId x_id, ElementId y_id) : x(x_id), y(y_id) {}
   bool operator==(const TargetSnapAreaElementIds& other) const {
@@ -297,6 +298,8 @@ struct TargetSnapAreaElementIds {
   bool operator!=(const TargetSnapAreaElementIds& other) const {
     return !(*this == other);
   }
+
+  std::string ToString() const;
 
   // Note that the same element can be snapped to on both the x and y axes.
   ElementId x;

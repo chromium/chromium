@@ -2584,9 +2584,96 @@ bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
 
   if (command == CommandEventType::kToggleOverscroll) {
     CHECK(RuntimeEnabledFeatures::OverscrollGesturesEnabled());
-    // TODO: This should handle "toggle" behavior, by scrolling `this` into
-    // view if not currently activated, and scrolling back out of view
-    // otherwise.
+    auto* overscroll_area_parent =
+        GetPseudoElement(kPseudoIdOverscrollAreaParent);
+    if (!overscroll_area_parent) {
+      return true;
+    }
+
+    auto* overscroll_area_object =
+        DynamicTo<LayoutBox>(overscroll_area_parent->GetLayoutObject());
+    if (!overscroll_area_object) {
+      return true;
+    }
+
+    auto* scrollable_area = DynamicTo<PaintLayerScrollableArea>(
+        overscroll_area_object->GetScrollableArea());
+    CHECK(scrollable_area);
+
+    const cc::SnapContainerData* container_data =
+        scrollable_area->GetSnapContainerData();
+    CHECK(container_data);
+    CHECK_EQ(container_data->size(), 2u);
+
+    const cc::TargetSnapAreaElementIds& previous_snap_targets =
+        container_data->GetTargetSnapAreaElementIds();
+    const auto& first_data = container_data->at(0);
+    const auto& second_data = container_data->at(1);
+
+    ScrollOffset scroll_origin =
+        gfx::PointF(scrollable_area->ScrollOrigin()).OffsetFromOrigin();
+
+    // We do the math in absolute space, since that's the space in which our
+    // snap targets are defined.
+    ScrollOffset old_offset =
+        scrollable_area->GetScrollOffset() + scroll_origin;
+    ScrollOffset new_offset;
+    if (previous_snap_targets.x == first_data.element_id) {
+      gfx::RectF target_rect = second_data.rect;
+
+      PhysicalSize box_size = overscroll_area_object->PhysicalContentBoxSize();
+
+      // We need to find distances in all 4 directions relative to the current
+      // scroll offset.
+      float min_x_offset = std::min(target_rect.x() - old_offset.x(), 0.f);
+      float min_y_offset = std::min(target_rect.y() - old_offset.y(), 0.f);
+      float max_x_offset = std::max(
+          target_rect.right() - box_size.width.ToFloat() - old_offset.x(), 0.f);
+      float max_y_offset = std::max(
+          target_rect.bottom() - box_size.height.ToFloat() - old_offset.y(),
+          0.f);
+
+      // These are now distances from scroll offset, so we need to pick a
+      // dimension which has the furthest distance to scroll from current
+      // offset. Note that "min" values should be less than or equal to 0 as a
+      // delta for the current offset.
+      // If values are equal we prefer the y axis and the "min" within the axis.
+      if (std::max(-min_x_offset, max_x_offset) >
+          std::max(-min_y_offset, max_y_offset)) {
+        new_offset.set_x(-min_x_offset >= max_x_offset ? min_x_offset
+                                                       : max_x_offset);
+      } else {
+        new_offset.set_y(-min_y_offset >= max_y_offset ? min_y_offset
+                                                       : max_y_offset);
+      }
+      // Now new offset has the delta we need to move relative to the old
+      // offset. We need to convert that into an actual offset (still in
+      // absolute space though).
+      new_offset += old_offset;
+    } else {
+      new_offset = scroll_origin;
+    }
+
+    bool x_changed = new_offset.x() != old_offset.x();
+    bool y_changed = new_offset.y() != old_offset.y();
+
+    // Convert the offset into scroll origin space.
+    new_offset -= scroll_origin;
+
+    std::unique_ptr<cc::SnapSelectionStrategy> strategy =
+        cc::SnapSelectionStrategy::CreateForEndPosition(
+            scrollable_area->ScrollOffsetToPosition(new_offset), x_changed,
+            y_changed);
+    std::optional<gfx::PointF> snap_point =
+        scrollable_area->GetSnapPositionAndSetTarget(*strategy);
+    if (snap_point.has_value()) {
+      new_offset = scrollable_area->ScrollPositionToOffset(snap_point.value());
+    }
+
+    scrollable_area->SetScrollOffset(new_offset,
+                                     mojom::blink::ScrollType::kProgrammatic,
+                                     cc::ScrollSourceType::kAbsoluteScroll,
+                                     mojom::blink::ScrollBehavior::kAuto);
     return true;
   }
 

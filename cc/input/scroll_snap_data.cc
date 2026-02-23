@@ -9,10 +9,12 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -1037,6 +1039,11 @@ std::ostream& operator<<(std::ostream& ostream,
     ostream << container_data.at(i) << "\n";
   }
   return ostream;
+}
+
+std::string TargetSnapAreaElementIds::ToString() const {
+  return base::StringPrintf("TargetSnapAreaElementIds{x=%s, y=%s}",
+                            x.ToString(), y.ToString());
 }
 
 }  // namespace cc
