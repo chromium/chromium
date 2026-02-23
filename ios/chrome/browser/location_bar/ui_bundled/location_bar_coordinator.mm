@@ -690,6 +690,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)locationBarDidTapAIHubNewBadge {
+  _tracker->Dismissed(feature_engagement::kIPHiOSAIHubNewBadge);
   _tracker->NotifyUsedEvent(feature_engagement::kIPHiOSAIHubNewBadge);
 }
 

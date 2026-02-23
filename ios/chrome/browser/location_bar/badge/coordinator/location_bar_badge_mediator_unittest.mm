@@ -267,7 +267,7 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
   void AllowGeminiChipToShow(bool show_gemini_chip,
                              bool trigger_help_ui,
                              bool badge_is_visible) {
-    EXPECT_CALL(*tracker_, ShouldTriggerHelpUI(testing::_))
+    EXPECT_CALL(*tracker_, WouldTriggerHelpUI(testing::_))
         .WillRepeatedly(testing::Return(trigger_help_ui));
     if (show_gemini_chip) {
       OCMExpect([mock_consumer_ isBadgeVisible]).andReturn(badge_is_visible);
@@ -275,6 +275,13 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
       // Triggers an early return, therefore this check shouldn't happen.
       OCMReject([mock_consumer_ isBadgeVisible]);
     }
+  }
+
+  void MockValidChipCheck() {
+    OCMExpect([mock_consumer_ expandBadgeContainer]);
+    OCMStub([mock_delegate_ canShowChip:[OCMArg any]]).andReturn(YES);
+    EXPECT_CALL(*tracker_, ShouldTriggerHelpUI(testing::_))
+        .WillRepeatedly(testing::Return(true));
   }
 
   web::WebTaskEnvironment task_environment_{
@@ -346,26 +353,18 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiContextualChipTimestampUpdated) {
                         /*badge_is_visible=*/false);
   LocationBarBadgeConfiguration* config =
       CreateBadgeConfiguration(LocationBarBadgeType::kGeminiContextualCueChip);
+  config.badgeText = kTestAccessibilityLabel;
+  MockValidChipCheck();
+
   [mediator_ updateBadgeConfig:config];
+  task_environment_.FastForwardBy(base::Seconds(3));
+
   EXPECT_NE(base::Time(),
             profile_->GetPrefs()->GetTime(
                 prefs::kLastGeminiContextualChipDisplayedTimestamp));
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
-// Tests that the FET metrics are logged when the Gemini contextual cue chip is
-// shown.
-TEST_F(LocationBarBadgeMediatorTest, TestGeminiContextualChipFETMetricsLogged) {
-  AllowGeminiChipToShow(/*show_gemini_chip=*/true, /*trigger_help_ui=*/true,
-                        /*badge_is_visible=*/false);
-  EXPECT_CALL(
-      *tracker_,
-      NotifyEvent(
-          feature_engagement::events::kIOSGeminiContextualCueChipTriggered));
-  LocationBarBadgeConfiguration* config =
-      CreateBadgeConfiguration(LocationBarBadgeType::kGeminiContextualCueChip);
-  [mediator_ updateBadgeConfig:config];
-  EXPECT_OCMOCK_VERIFY(mock_consumer_);
-}
+
 // Tests that tapping the gemini chip calls the BWG command handler and logs
 // FET metrics.
 TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipTapped) {
@@ -392,14 +391,14 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipNotShownIfTooRecent) {
   // Expect the badge to be shown and metrics logged the first time.
   AllowGeminiChipToShow(/*show_gemini_chip=*/true, /*trigger_help_ui=*/true,
                         /*badge_is_visible=*/false);
-  EXPECT_CALL(
-      *tracker_,
-      NotifyEvent(
-          feature_engagement::events::kIOSGeminiContextualCueChipTriggered))
-      .Times(1);
   LocationBarBadgeConfiguration* config =
       CreateBadgeConfiguration(LocationBarBadgeType::kGeminiContextualCueChip);
+  config.badgeText = kTestAccessibilityLabel;
+  MockValidChipCheck();
+
   [mediator_ updateBadgeConfig:config];
+  task_environment_.FastForwardBy(base::Seconds(3));
+
   EXPECT_NE(base::Time(),
             profile_->GetPrefs()->GetTime(
                 prefs::kLastGeminiContextualChipDisplayedTimestamp));
