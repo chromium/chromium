@@ -8,6 +8,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_params.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
@@ -91,6 +93,12 @@ gfx::Size BrowserViewAppLayoutImpl::GetMinimumSize(
     return gfx::Size(1, 1);
   }
 
+  const auto layout =
+      delegate().GetBrowserLayoutParams(/*use_browser_bounds=*/false);
+  const int exclusion_width =
+      base::ClampCeil(layout.leading_exclusion.ContentWithPadding().width() +
+                      layout.trailing_exclusion.ContentWithPadding().width());
+
   const gfx::Size title_size =
       views().web_app_window_title && views().web_app_window_title->GetVisible()
           ? views().web_app_window_title->GetMinimumSize()
@@ -108,12 +116,22 @@ gfx::Size BrowserViewAppLayoutImpl::GetMinimumSize(
   const gfx::Size infobar_container_size =
       views().infobar_container->GetMinimumSize();
   gfx::Size contents_size = views().contents_container->GetMinimumSize();
-  contents_size.SetToMin(gfx::Size(1, 1));
+
+  // For full PWAs, there is a minimum content width.
+  bool is_web_app = browser() && browser()->is_type_app() &&
+                    web_app::AppBrowserController::IsWebApp(browser());
+#if BUILDFLAG(IS_CHROMEOS)
+  is_web_app = is_web_app &&
+               !web_app::AppBrowserController::From(browser())->system_app();
+#endif
+  if (is_web_app) {
+    contents_size.SetToMax(gfx::Size(kMainBrowserContentsMinimumWidth, 1));
+  }
 
   const int width =
-      std::max({web_app_toolbar_size.width() +
+      std::max({exclusion_width + web_app_toolbar_size.width() +
                     std::max(tabstrip_size.width(), title_size.width()),
-                infobar_container_size.width()});
+                infobar_container_size.width(), contents_size.width()});
   const int height =
       std::max({title_size.height(), web_app_toolbar_size.height(),
                 tabstrip_size.height()}) +
