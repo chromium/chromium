@@ -42,6 +42,8 @@ build_webui("build") {
     "contextual_entrypoint_button.ts",
     "contextual_entrypoint_and_carousel.html.ts",
     "contextual_entrypoint_and_carousel.ts",
+    "contextual_entrypoint_and_carousel_context_menu.html.ts",
+    "contextual_entrypoint_and_carousel_tool_chips.html.ts",
     "contextual_entrypoint_and_menu.html.ts",
     "contextual_entrypoint_and_menu.ts",
     "contextual_action_menu.html.ts",
