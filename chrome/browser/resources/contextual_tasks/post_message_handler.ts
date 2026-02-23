@@ -23,6 +23,7 @@ export interface Rect {
 export interface InputPlateBoundsUpdateMessage {
   type: 'input-plate-bounds-update';
   'bounds-rect': Rect;
+  occluders: Rect[];
 }
 
 /**
@@ -39,7 +40,8 @@ export class PostMessageHandler {
   private handshakeIntervalId_: number|null = null;
   private pendingMessages_: Array<Uint8Array|object> = [];
   private handshakeMessage_: Uint8Array|null = null;
-  private onInputPlateBoundsUpdate_: ((rect: Rect) => void)|null = null;
+  private onInputPlateBoundsUpdate_:
+      ((rect: Rect, occluders: Rect[]) => void)|null = null;
 
   constructor(
       webview: chrome.webviewTag.WebView, browserProxy: BrowserProxy,
@@ -180,7 +182,8 @@ export class PostMessageHandler {
     // once the proto is implemented on the webview side.
     if (event.data && event.data.type === 'input-plate-bounds-update') {
       if (this.onInputPlateBoundsUpdate_) {
-        this.onInputPlateBoundsUpdate_(event.data['bounds-rect']);
+        this.onInputPlateBoundsUpdate_(
+            event.data['bounds-rect'], event.data['occluders']);
       }
       return;
     }
@@ -200,7 +203,8 @@ export class PostMessageHandler {
     }
   }
 
-  setInputPlateBoundsUpdateCallback(callback: (rect: Rect) => void) {
+  setInputPlateBoundsUpdateCallback(
+      callback: (rect: Rect, occluders: Rect[]) => void) {
     this.onInputPlateBoundsUpdate_ = callback;
   }
 

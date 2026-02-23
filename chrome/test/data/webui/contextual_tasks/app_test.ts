@@ -728,4 +728,58 @@ suite('ContextualTasksAppTest', function() {
     assertEquals('', crComposebox.style.width);
     assertEquals('', crComposebox.style.height);
   });
+
+  test('updates clip path on post message', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    const webview = appElement.shadowRoot.querySelector<HTMLElement>('webview');
+    assertTrue(!!webview);
+
+    // Simulate loadcommit to set up the target origin in PostMessageHandler.
+    const loadCommitEvent = new Event('loadcommit');
+    Object.assign(loadCommitEvent, {isTopLevel: true, url: fixtureUrl});
+    webview.dispatchEvent(loadCommitEvent);
+
+    const rect = {
+      top: 0,
+      left: 0,
+      width: 100,
+      height: 100,
+      right: 100,
+      bottom: 100,
+    };
+    const occluder = {
+      top: 0,
+      left: 0,
+      width: 50,
+      height: 100,
+      right: 50,
+      bottom: 100,
+    };
+    const message = {
+      type: 'input-plate-bounds-update',
+      'bounds-rect': rect,
+      occluders: [occluder],
+    };
+
+    window.dispatchEvent(new MessageEvent('message', {
+      data: message,
+      origin: new URL(fixtureUrl).origin,
+    }));
+    await microtasksFinished();
+
+    // Verify properties updated
+    assertDeepEquals(rect, (appElement as any).forcedComposeboxBounds_);
+    assertDeepEquals([occluder], (appElement as any).occluders_);
+
+    // Verify clip-path on webview
+    const clipPath = webview.style.clipPath;
+    assertTrue(
+        clipPath.includes('polygon'), 'clip-path should contain polygon');
+  });
 });

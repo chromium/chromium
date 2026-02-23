@@ -47,3 +47,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, WebView) {
   RunTest("contextual_tasks/contextual_tasks_webview_browsertest.js",
           "mocha.run();");
 }
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, ClipPath) {
+  RunTest("contextual_tasks/utils/clip_path_test.js", "mocha.run();");
+}
