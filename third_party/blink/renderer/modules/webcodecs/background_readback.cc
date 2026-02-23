@@ -175,8 +175,7 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
 
   auto* ri = GetSharedGpuRasterInterface();
   if (!ri || !result) {
-    base::BindPostTaskToCurrentDefault(std::move(std::move(result_cb)))
-        .Run(nullptr);
+    base::BindPostTaskToCurrentDefault(std::move(result_cb)).Run(nullptr);
     return;
   }
 
@@ -186,8 +185,8 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
 
   base::span<uint8_t> dst_pixels =
       result->GetWritableVisiblePlaneData(media::VideoFrame::Plane::kARGB);
-  int rgba_stide = result->stride(media::VideoFrame::Plane::kARGB);
-  DCHECK_GT(rgba_stide, 0);
+  int rgba_stride = result->stride(media::VideoFrame::Plane::kARGB);
+  DCHECK_GT(rgba_stride, 0);
 
   gfx::Point src_point = txt_frame->visible_rect().origin();
   auto shared_image = txt_frame->shared_image();
@@ -199,7 +198,7 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
   gfx::Size texture_size = txt_frame->coded_size();
   ri->ReadbackARGBPixelsAsync(
       shared_image->mailbox(), shared_image->GetTextureTarget(), origin,
-      texture_size, src_point, info, base::saturated_cast<GLuint>(rgba_stide),
+      texture_size, src_point, info, base::saturated_cast<GLuint>(rgba_stride),
       dst_pixels,
       blink::BindOnce(&BackgroundReadback::OnARGBPixelsFrameReadCompleted,
                       WrapWeakPersistent(this), std::move(result_cb), txt_frame,
@@ -241,8 +240,7 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
 
   auto* ri = GetSharedGpuRasterInterface();
   if (!ri) {
-    base::BindPostTaskToCurrentDefault(std::move(std::move(done_cb)))
-        .Run(false);
+    base::BindPostTaskToCurrentDefault(std::move(done_cb)).Run(false);
     return;
   }
 
@@ -251,10 +249,9 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
 
   base::span<uint8_t> dst_pixels = dest_buffer.subspan(offset);
   size_t max_bytes_written = stride * src_rect.height();
-  if (stride <= 0 || max_bytes_written > dst_pixels.size()) {
+  if (stride == 0 || max_bytes_written > dst_pixels.size()) {
     DLOG(ERROR) << "Buffer is not sufficiently large for readback";
-    base::BindPostTaskToCurrentDefault(std::move(std::move(done_cb)))
-        .Run(false);
+    base::BindPostTaskToCurrentDefault(std::move(done_cb)).Run(false);
     return;
   }
 
