@@ -172,6 +172,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSReplaceSyncPromosWithSignInPromos,
     &kIPHiOSTabGridSwipeRightForIncognito,
     &kIPHiOSDockingPromoFeature,
+    &kIPHiOSDockingPromoEligibilityFeature,
     &kIPHiOSDockingPromoRemindMeLaterFeature,
     &kIPHiOSPromoAllTabsFeature,
     &kIPHiOSPromoMadeForIOSFeature,

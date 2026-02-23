@@ -225,11 +225,6 @@ class FirstRunCoordinatorMetricsHelper final {
           initForFirstRunWithBaseNavigationController:_navigationController
                                               browser:self.browser
                                      firstRunDelegate:self];
-    case kDockingPromo:
-      return [[DockingPromoCoordinator alloc]
-          initWithBaseNavigationController:_navigationController
-                                   browser:self.browser
-                                  delegate:self];
     case kBestFeatures:
       return [[BestFeaturesScreenCoordinator alloc]
           initWithBaseNavigationController:_navigationController
@@ -251,6 +246,7 @@ class FirstRunCoordinatorMetricsHelper final {
       lensAnimatedPromoCoordinator.firstRunDelegate = self;
       return lensAnimatedPromoCoordinator;
     }
+    case kDockingPromo:
     case kSyncedSetUp:
     case kGuidedTour:
     case kSafariImport:

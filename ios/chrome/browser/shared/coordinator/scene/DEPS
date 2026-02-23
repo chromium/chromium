@@ -11,6 +11,7 @@ include_rules = [
   "+ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_scene_agent.h",
   "+ios/chrome/browser/data_sharing/model",
   "+ios/chrome/browser/default_browser/model",
+  "+ios/chrome/browser/docking_promo/model",
   "+ios/chrome/browser/enterprise/model/idle",
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/first_run/model",

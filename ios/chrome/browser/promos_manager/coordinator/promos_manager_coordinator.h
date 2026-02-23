@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol CredentialProviderPromoCommands;
-@protocol DockingPromoCommands;
 @protocol SceneCommands;
 
 // Coordinator for displaying app-wide promos.
@@ -20,8 +19,6 @@
                               sceneHandler:(id<SceneCommands>)sceneHandler
             credentialProviderPromoHandler:(id<CredentialProviderPromoCommands>)
                                                credentialProviderPromoHandler
-                       dockingPromoHandler:
-                           (id<DockingPromoCommands>)dockingPromoHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

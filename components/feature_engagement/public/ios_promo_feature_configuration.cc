@@ -222,10 +222,37 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config.used = EventConfig("docking_promo_used", Comparator(EQUAL, 0),
                               feature_engagement::kMaxStoragePeriod,
                               feature_engagement::kMaxStoragePeriod);
+    // Show a maximum of 1 time per year.
     config.trigger = EventConfig("docking_promo_trigger", Comparator(EQUAL, 0),
-                                 feature_engagement::kMaxStoragePeriod,
-                                 feature_engagement::kMaxStoragePeriod);
+                                 365, kMaxStoragePeriod);
     config.storage_type = StorageType::DEVICE;
+    return config;
+  } else if (kIPHiOSDockingPromoEligibilityFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.storage_type = StorageType::DEVICE;
+    config.tracking_only = true;
+
+    config.used =
+        EventConfig("docking_promo_eligibility_used", Comparator(ANY, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+
+    // Show this promo once in number of days specified by the feature param.
+    config.trigger =
+        EventConfig("docking_promo_eligibility_trigger", Comparator(ANY, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+
+    //  L7 days active.
+    config.event_configs.insert(EventConfig(
+        feature_engagement::events::kChromeOpened, Comparator(ANY, 0), 7, 365));
+
+    // TODO(crbug.com/479220063): create a new kChromeOpenedFromIcon event and
+    // use it to check if no app icon launches in last 7 days.
+
     return config;
   } else if (kIPHiOSPostDefaultAbandonmentPromoFeature.name == feature->name) {
     FeatureConfig config;

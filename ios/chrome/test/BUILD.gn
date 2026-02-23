@@ -291,7 +291,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/device_sharing/model:unit_tests",
     "//ios/chrome/browser/dialogs/ui_bundled:unit_tests",
     "//ios/chrome/browser/dialogs/ui_bundled:unit_tests_internal",
-    "//ios/chrome/browser/docking_promo/coordinator:unit_tests",
     "//ios/chrome/browser/dom_distiller/model:unit_tests",
     "//ios/chrome/browser/download/coordinator:unit_tests",
     "//ios/chrome/browser/download/model:unit_tests",

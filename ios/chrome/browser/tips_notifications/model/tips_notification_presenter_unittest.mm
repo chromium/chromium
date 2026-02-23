@@ -121,15 +121,6 @@ TEST_F(TipsNotificationPresenterTest, TestShowSetUpListContinuation) {
   EXPECT_OCMOCK_VERIFY(mock_handler);
 }
 
-// Tests that the presenter can show the Docking promo.
-TEST_F(TipsNotificationPresenterTest, TestShowDocking) {
-  id mock_handler = MockHandler(@protocol(DockingPromoCommands));
-  OCMExpect([mock_handler showDockingPromo:YES]);
-  TipsNotificationPresenter::Present(browser_->AsWeakPtr(),
-                                     TipsNotificationType::kDocking);
-  EXPECT_OCMOCK_VERIFY(mock_handler);
-}
-
 // Tests that the presenter can show the Omnibox Position promo.
 TEST_F(TipsNotificationPresenterTest, TestShowOmniboxPosition) {
   id mock_handler = MockHandler(@protocol(BrowserCoordinatorCommands));

@@ -6,8 +6,6 @@ source_set("coordinator") {
   sources = [
     "docking_promo_coordinator.h",
     "docking_promo_coordinator.mm",
-    "docking_promo_mediator.h",
-    "docking_promo_mediator.mm",
   ]
   deps = [
     "//components/feature_engagement/public",
@@ -53,31 +51,5 @@ source_set("display_handler") {
     "//ios/chrome/browser/promos_manager/coordinator:promos",
     "//ios/chrome/browser/promos_manager/model:types",
     "//ios/chrome/browser/shared/public/commands",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "docking_promo_mediator_unittest.mm" ]
-  deps = [
-    ":coordinator",
-    "//base/test:test_support",
-    "//components/prefs:test_support",
-    "//components/startup_metric_utils",
-    "//ios/chrome/app/application_delegate:app_state",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/default_browser/model:test_support",
-    "//ios/chrome/browser/docking_promo/ui",
-    "//ios/chrome/browser/first_run/model",
-    "//ios/chrome/browser/promos_manager/model:test_support",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/browser/shared/coordinator/scene/test",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/test:test_support",
-    "//testing/gtest",
-    "//third_party/ocmock",
-    "//ui/base",
   ]
 }
