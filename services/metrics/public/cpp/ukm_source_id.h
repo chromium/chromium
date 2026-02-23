@@ -161,7 +161,7 @@ METRICS_EXPORT SourceId NoURLSourceId();
 METRICS_EXPORT SourceIdType GetSourceIdType(SourceId source_id);
 
 // Get a string representation of the SourceIdType of the SourceId object.
-METRICS_EXPORT std::string GetSourceIdTypeDebugString(SourceId source_id);
+METRICS_EXPORT std::string_view GetSourceIdTypeDebugString(SourceId source_id);
 }  // namespace ukm
 
 #endif  // SERVICES_METRICS_PUBLIC_CPP_UKM_SOURCE_ID_H_

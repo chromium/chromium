@@ -55,10 +55,7 @@ net::CookieScopeSemantics CookieAccessDelegateImpl::GetScopeSemantics(
   if (!cookie_settings_) {
     return net::CookieScopeSemantics::UNKNOWN;
   }
-  // TODO(crbug.com/378827534)  finish propagating string_view thru cookie
-  // settings.
-  return cookie_settings_->GetCookieScopeSemanticsForDomain(
-      std::string(domain));
+  return cookie_settings_->GetCookieScopeSemanticsForDomain(domain);
 }
 
 bool CookieAccessDelegateImpl::ShouldIgnoreSameSiteRestrictions(
