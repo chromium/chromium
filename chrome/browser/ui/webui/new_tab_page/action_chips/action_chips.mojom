@@ -15,19 +15,6 @@ struct TabInfo {
   mojo_base.mojom.Time last_active_time;
 };
 
-// The types of action chips in NTP. This enum must match the numbering for
-// ChipType in enums.xml. These values are persisted to logs. Entries
-// should not be renumbered, removed or reused.
-// LINT.IfChange(ChipType)
-enum ChipType {
-  kImage = 0,
-  kDeepSearch = 1,
-  kRecentTab = 2,
-  kDeepDive = 3,
-};
-
-// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:ChipType)
-
 // This enum must be in sync with IconType in
 // third_party/omnibox_proto/suggest_template_info.proto.
 // In particular, the int values must match so the proto enum values are
@@ -60,7 +47,6 @@ struct ActionChip {
   string title;
   string subtitle;
   string suggestion;
-  ChipType type;
   SuggestTemplateInfo suggest_template_info;
   // the tab associated with this chip.
   TabInfo? tab;

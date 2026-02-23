@@ -41,7 +41,6 @@ using ::action_chips::RecordActionChipsRetrievalLatencyMetrics;
 using ::action_chips::RecordImpressionMetrics;
 using ::action_chips::mojom::ActionChip;
 using ::action_chips::mojom::ActionChipPtr;
-using ::action_chips::mojom::ChipType;
 using ::action_chips::mojom::TabInfo;
 using ::action_chips::mojom::TabInfoPtr;
 using ::tabs::TabInterface;
