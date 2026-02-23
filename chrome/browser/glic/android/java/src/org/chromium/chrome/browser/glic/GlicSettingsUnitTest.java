@@ -7,13 +7,16 @@ package org.chromium.chrome.browser.glic;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
+import androidx.preference.Preference;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -82,5 +85,29 @@ public class GlicSettingsUnitTest {
     public void testLaunchGlicSettings() {
         // Verifies that the fragment can be launched without crashing.
         launchFragment();
+    }
+
+    @Test
+    public void testClickPermissionsActivity() {
+        GlicSettings fragment = launchFragment();
+        Preference preference = fragment.findPreference("glic_permissions_activity");
+        preference.getOnPreferenceClickListener().onPreferenceClick(preference);
+        verify(mCustomTabLauncher)
+                .openUrlInCct(
+                        any(),
+                        eq(
+                                mActivity.getString(
+                                        R.string.settings_glic_permissions_activity_button_url)));
+    }
+
+    @Test
+    public void testClickExtensions() {
+        GlicSettings fragment = launchFragment();
+        Preference preference = fragment.findPreference("glic_extensions");
+        preference.getOnPreferenceClickListener().onPreferenceClick(preference);
+        verify(mCustomTabLauncher)
+                .openUrlInCct(
+                        any(),
+                        eq(mActivity.getString(R.string.settings_glic_extensions_button_url)));
     }
 }

@@ -250,6 +250,7 @@ android_resources("java_resources") {
     "java/res/drawable/list_item_background_top.xml",
     "java/res/drawable/list_item_ripple.xml",
     "java/res/drawable/material_ic_close_24dp.xml",
+    "java/res/drawable/open_in_new.xml",
     "java/res/drawable/report_octagon.xml",
     "java/res/drawable/secured_by_brand_shield_24.xml",
     "java/res/drawable/smartphone_black_24dp.xml",

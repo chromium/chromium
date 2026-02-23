@@ -14,7 +14,10 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [ "java/res/xml/glic_settings.xml" ]
-  deps = []
+  deps = [
+    "//chrome/app:java_strings_grd",
+    "//components/browser_ui/settings/android:java_resources",
+  ]
 }
 
 android_library("java") {

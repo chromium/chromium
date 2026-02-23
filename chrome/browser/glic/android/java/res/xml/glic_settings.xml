@@ -22,4 +22,17 @@ found in the LICENSE file.
         android:key="glic_permissions_section"
         android:title="@string/settings_glic_permissions_section" />
 
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="glic_permissions_activity"
+        android:title="@string/settings_glic_permissions_activity_button"
+        android:summary="@string/settings_glic_permissions_activity_button_sublabel"
+        android:widgetLayout="@layout/preference_widget_open_in_new" />
+
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="glic_extensions"
+        android:title="@string/settings_glic_extensions_button"
+        android:summary="@string/settings_glic_extensions_button_sublabel"
+        android:widgetLayout="@layout/preference_widget_open_in_new" />
+
+
 </PreferenceScreen>

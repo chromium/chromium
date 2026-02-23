@@ -101,6 +101,7 @@ android_resources("java_resources") {
     "java/res/layout/preference_spinner.xml",
     "java/res/layout/preference_spinner_single_line.xml",
     "java/res/layout/preference_spinner_single_line_item.xml",
+    "java/res/layout/preference_widget_open_in_new.xml",
     "java/res/layout/settings_action_bar_shadow.xml",
     "java/res/layout/settings_empty_state_view.xml",
     "java/res/values-sw600dp/dimens.xml",
