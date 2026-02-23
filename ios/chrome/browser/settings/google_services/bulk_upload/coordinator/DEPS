@@ -1,0 +1,8 @@
+include_rules = [
+  # keep-sorted start
+  "+ios/chrome/browser/passwords/coordinator/password_utils.h",
+  "+ios/chrome/browser/signin/model/identity_manager_factory.h",
+  "+ios/chrome/browser/signin/model/system_identity.h",
+  "+ios/chrome/browser/sync/model/sync_service_factory.h",
+  # keep-sorted end
+]

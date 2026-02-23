@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_BULK_UPLOAD_BULK_UPLOAD_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_BULK_UPLOAD_BULK_UPLOAD_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_SETTINGS_GOOGLE_SERVICES_BULK_UPLOAD_COORDINATOR_BULK_UPLOAD_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_SETTINGS_GOOGLE_SERVICES_BULK_UPLOAD_COORDINATOR_BULK_UPLOAD_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_mutator.h"
+#import "ios/chrome/browser/settings/google_services/bulk_upload/ui/bulk_upload_mutator.h"
 
 @protocol BulkUploadConsumer;
 @protocol BulkUploadMediatorDelegate;
@@ -38,4 +38,4 @@ class SyncService;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_BULK_UPLOAD_BULK_UPLOAD_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_SETTINGS_GOOGLE_SERVICES_BULK_UPLOAD_COORDINATOR_BULK_UPLOAD_MEDIATOR_H_

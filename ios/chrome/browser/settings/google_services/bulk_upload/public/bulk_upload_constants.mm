@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_constants.h"
+#import "ios/chrome/browser/settings/google_services/bulk_upload/public/bulk_upload_constants.h"
 
 NSString* const kBulkUploadTableViewAccessibilityIdentifier =
     @"BulkUploadTableViewAccessibilityIdentifier";

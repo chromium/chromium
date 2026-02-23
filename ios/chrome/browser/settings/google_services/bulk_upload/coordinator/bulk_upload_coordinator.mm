@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_coordinator.h"
+#import "ios/chrome/browser/settings/google_services/bulk_upload/coordinator/bulk_upload_coordinator.h"
 
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "components/sync/service/sync_service.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_coordinator_delegate.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_mediator.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_mediator_delegate.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/settings/google_services/bulk_upload/coordinator/bulk_upload_coordinator_delegate.h"
+#import "ios/chrome/browser/settings/google_services/bulk_upload/coordinator/bulk_upload_mediator.h"
+#import "ios/chrome/browser/settings/google_services/bulk_upload/coordinator/bulk_upload_mediator_delegate.h"
+#import "ios/chrome/browser/settings/google_services/bulk_upload/ui/bulk_upload_view_controller.h"
+#import "ios/chrome/browser/settings/google_services/bulk_upload/ui/bulk_upload_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"

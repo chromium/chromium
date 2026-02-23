@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_view_controller.h"
+#import "ios/chrome/browser/settings/google_services/bulk_upload/ui/bulk_upload_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_mutator.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_table_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/settings/google_services/bulk_upload/ui/bulk_upload_mutator.h"
+#import "ios/chrome/browser/settings/google_services/bulk_upload/ui/bulk_upload_table_view_controller.h"
+#import "ios/chrome/browser/settings/google_services/bulk_upload/ui/bulk_upload_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"

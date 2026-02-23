@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_mediator.h"
+#import "ios/chrome/browser/settings/google_services/bulk_upload/coordinator/bulk_upload_mediator.h"
 
 #import "base/check_op.h"
 #import "base/i18n/message_formatter.h"
@@ -17,8 +17,8 @@
 #import "components/sync/service/local_data_description.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/passwords/coordinator/password_utils.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_consumer.h"
-#import "ios/chrome/browser/settings/ui_bundled/google_services/bulk_upload/bulk_upload_mediator_delegate.h"
+#import "ios/chrome/browser/settings/google_services/bulk_upload/coordinator/bulk_upload_mediator_delegate.h"
+#import "ios/chrome/browser/settings/google_services/bulk_upload/ui/bulk_upload_consumer.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
