@@ -207,7 +207,9 @@ android_resources("java_resources") {
   ]
   sources = [
     "java/res/drawable/autofill_editor_notice_background.xml",
+    "java/res/drawable/google_24dp.xml",
     "java/res/drawable/store_locally_tooltip_background.xml",
+    "java/res/drawable/text_analysis_24dp.xml",
     "java/res/layout/autofill_ai_attribute_info.xml",
     "java/res/layout/autofill_ai_preference.xml",
     "java/res/layout/autofill_ai_save_entity_prompt.xml",

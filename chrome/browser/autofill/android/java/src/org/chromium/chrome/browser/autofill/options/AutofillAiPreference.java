@@ -43,12 +43,12 @@ public class AutofillAiPreference extends ChromeSwitchPreference {
                 holder.findViewById(R.id.autofill_ai_when_on),
                 R.string.settings_autofill_ai_when_on,
                 R.string.settings_autofill_ai_when_on_can_fill_difficult_fields,
-                R.drawable.ic_bar_chart_24dp);
+                R.drawable.text_analysis_24dp);
         setInfoItemDetails(
                 holder.findViewById(R.id.autofill_ai_things_to_consider),
                 R.string.settings_autofill_ai_things_to_consider,
                 R.string.settings_autofill_ai_to_consider_data_usage,
-                R.drawable.ic_logo_googleg_24dp);
+                R.drawable.google_24dp);
     }
 
     private void setInfoItemDetails(
