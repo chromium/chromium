@@ -1922,6 +1922,12 @@
       name: "DelegatesFocusTextControlInputFix",
       status: "stable",
     },
+    {
+      // Delete text from descendant text nodes before removing children of
+      // a root editable element to ensure selectionchange event fires.
+      name: "DeleteTextInContentEditableBeforeRemovingChildren",
+      status: "stable",
+    },
     // This allows pages to opt out of the unload deprecation. Enabling this
     // allows unload event handers to be used in the frame regardless of any
     // Permissions-Policy setting.

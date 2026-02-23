@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -655,8 +656,29 @@ void DeleteSelectionCommand::RemoveCompletelySelectedNodes(
       }
     }
 
-    if (IsTableStructureNode(node_to_be_removed) ||
-        IsRootEditableElement(*node_to_be_removed)) {
+    const bool is_root_editable = IsRootEditableElement(*node_to_be_removed);
+    if (IsTableStructureNode(node_to_be_removed) || is_root_editable) {
+      // Before removing children of a root editable element, delete text
+      // content from any descendant text nodes to ensure selectionchange
+      // event fires. This handles nested contenteditable elements and
+      // deeply nested text nodes.
+      if (is_root_editable &&
+          RuntimeEnabledFeatures::
+              DeleteTextInContentEditableBeforeRemovingChildrenEnabled()) {
+        HeapVector<Member<Text>> text_nodes_to_clear;
+        for (Node& descendant :
+             NodeTraversal::DescendantsOf(*node_to_be_removed)) {
+          if (auto* text_node = DynamicTo<Text>(descendant)) {
+            if (text_node->length() > 0) {
+              text_nodes_to_clear.push_back(text_node);
+            }
+          }
+        }
+        for (Text* text_node : text_nodes_to_clear) {
+          DeleteTextFromNode(text_node, 0, text_node->length());
+        }
+      }
+
       // Do not remove an element of table structure; remove its contents.
       // Likewise for the root editable element.
       RemoveAllChildrenIfPossible(To<ContainerNode>(node_to_be_removed),
