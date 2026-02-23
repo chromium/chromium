@@ -265,6 +265,7 @@ public class AutocompleteEditTextTest {
         mAutocomplete = new TestAutocompleteEditText(mContext, null);
         mFocusPlaceHolder = new LinearLayout(mContext);
         mFocusPlaceHolder.setFocusable(true);
+        mFocusPlaceHolder.setFocusableInTouchMode(true);
         mFocusPlaceHolder.addView(mAutocomplete);
         assertNotNull(mAutocomplete);
 
@@ -1277,9 +1278,6 @@ public class AutocompleteEditTextTest {
 
     // crbug.com/759876
 
-    // TODO(crbug.com/481750046): Fix failure on SDK 30+ due to focus and selection behavior changes
-    // in Robolectric.
-    @Config(sdk = 29)
     @Test
     public void testFocusInAndSelectAll() {
         final String url = "https://google.com";
@@ -1331,9 +1329,6 @@ public class AutocompleteEditTextTest {
 
     // crbug.com/768323
 
-    // TODO(crbug.com/481750046): Fix failure on SDK 30+ due to focus and selection behavior changes
-    // in Robolectric.
-    @Config(sdk = 29)
     @Test
     public void testFocusLossHidesCursor() {
         assertTrue(mAutocomplete.isFocused());
@@ -1436,9 +1431,6 @@ public class AutocompleteEditTextTest {
 
     // crbug.com/759876
 
-    // TODO(crbug.com/481750046): Fix failure on SDK 30+ due to focus and selection behavior changes
-    // in Robolectric.
-    @Config(sdk = 29)
     @Test
     public void testTextSelectionGetsAnnouncedAgainOnFocus() {
         final String text = "hello";
