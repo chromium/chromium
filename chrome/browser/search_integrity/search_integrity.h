@@ -14,6 +14,13 @@ class TemplateURLService;
 
 namespace search_integrity {
 
+// A struct to hold the results of the search integrity check.
+struct SearchIntegrityReport {
+  bool has_custom_option = false;
+  bool is_default_custom = false;
+  std::string referral_id;
+};
+
 // Manages the Search Integrity feature, which detects non-standard search
 // engines. This service is responsible for checking the user's installed and
 // default search engines against a predefined allowlist and recording metrics
@@ -38,9 +45,14 @@ class SearchIntegrity : public KeyedService {
   void CheckSearchEngines();
 
  private:
+  friend class SearchIntegrityTest;
+
   // Callback executed after the allowlist has been initialized. This method
   // proceeds with checking and recording metrics.
-  void OnAllowlistInitialized();
+  void OnAllowlistInitialized(const std::string& bloom_filter_data);
+
+  SearchIntegrityReport CheckSearchEnginesReport();
+
   // The template URL service, used to access se list.
   raw_ptr<TemplateURLService> template_url_service_;
   // The path to the profile, used to locate the bloom filter file.
