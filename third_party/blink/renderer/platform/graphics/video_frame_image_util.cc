@@ -146,7 +146,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   CHECK(!sw_draw_info || !snapshot_provider);
 
   auto raster_context_provider = GetRasterContextProvider();
-  if (snapshot_provider && snapshot_provider->IsAccelerated()) {
+  bool is_accelerated = snapshot_provider && snapshot_provider->IsAccelerated();
+  if (is_accelerated) {
     prefer_tagged_orientation = false;
   }
 
@@ -155,8 +156,7 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
 
   // If not doing an accelerated draw, avoid GPU round trips to upload frame
   // data from MappableSI-backed frames.
-  if (frame->HasMappableSharedImage() &&
-      (!snapshot_provider || !snapshot_provider->IsAccelerated())) {
+  if (frame->HasMappableSharedImage() && !is_accelerated) {
     frame = media::ConvertToMemoryMappedFrame(std::move(frame));
     if (!frame) {
       DLOG(ERROR) << "Failed to map VideoFrame.";
