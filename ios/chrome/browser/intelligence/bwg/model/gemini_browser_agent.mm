@@ -227,21 +227,24 @@ void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
   }
 
   is_keyboard_visible_ = is_visible;
-  // If the floaty is expanded or temporarily hidden, the floaty should not be
-  // re-shown on keyboard updates.
-  if (last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded ||
-      is_floaty_temporarily_hidden_) {
+  if (is_visible) {
+    // If the floaty is expanded or temporarily hidden, the floaty should not be
+    // re-shown on keyboard updates.
+    if (last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded ||
+        is_floaty_temporarily_hidden_) {
+      return;
+    }
+
+    is_hidden_by_keyboard_ = true;
+    HideFloatyIfInvoked(/*animated=*/false,
+                        gemini::FloatyUpdateSource::Keyboard);
     return;
   }
 
-  // Ensures that the floaty visibility is updated properly on a keyboard
-  // update.
-  CGFloat offset =
-      GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
-  if (is_keyboard_visible_) {
-    ios::provider::UpdateOverlayOffsetWithOpacity(offset, kFloatyHiddenOpacity);
-  } else {
-    ios::provider::UpdateOverlayOffsetWithOpacity(offset, kFloatyShownOpacity);
+  if (is_hidden_by_keyboard_) {
+    ShowFloatyIfInvoked(/*animated=*/false,
+                        gemini::FloatyUpdateSource::Keyboard);
+    is_hidden_by_keyboard_ = false;
   }
 }
 
@@ -590,6 +593,7 @@ void GeminiBrowserAgent::DismissFloaty() {
   }
 
   is_floaty_invoked_ = false;
+  is_hidden_by_keyboard_ = false;
   // TODO(crbug.com/484045717): Refactor to merge these two provider calls.
   if (IsGeminiCopresenceEnabled()) {
     ios::provider::UpdateGeminiViewState(
@@ -714,7 +718,7 @@ void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
 }
 
 void GeminiBrowserAgent::OnScrollEvent() {
-  if (!is_floaty_invoked_) {
+  if (!is_floaty_invoked_ || is_keyboard_visible_) {
     return;
   }
 

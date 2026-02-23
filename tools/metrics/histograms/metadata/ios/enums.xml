@@ -844,6 +844,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Snackbar"/>
   <int value="11" label="Website Alert"/>
   <int value="12" label="Bottom Banner (e.g. Download Banner)"/>
+  <int value="13" label="Keyboard"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h:FloatyUpdateSource) -->
