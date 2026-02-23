@@ -216,7 +216,7 @@ class FooStorage {
       base::Seconds(30);
 
   // Sets |key| to |value|. Flushed to disk on the next flush interval.
-  void Set(base::StringPiece key, base::StringPiece value);
+  void Set(std::string_view key, std::string_view value);
 };
 ```
 
@@ -227,7 +227,7 @@ class FooStorageTest {
   FooStorageTest() = default;
 
   // Test helper that returns true if |key| is found in the on disk storage.
-  bool FindKeyInOnDiskStorage(base::StringPiece key);
+  bool FindKeyInOnDiskStorage(std::string_view key);
 
  protected:
   base::test::TaskEnvironment task_environment{

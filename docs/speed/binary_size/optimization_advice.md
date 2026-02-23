@@ -208,7 +208,7 @@ Practical advice:
        calling.
        * E.g. For frequently called functions, it can make sense to provide
          separate `const char *` and `const std::string&` overloads rather than
-         a single `base::StringPiece`.
+         a single `std::string_view`.
 
 #### Optimizing Java Code
  * If you're adding a new feature, see if it makes sense for it to be packaged

@@ -91,7 +91,7 @@ the dependency will resolve them.
 
 #### 2. Set the Crash Key
 
-After a key has been allocated, its `Set(base::StringPiece)` and
+After a key has been allocated, its `Set(std::string_view)` and
 `Clear()` methods can be used to record and clear a value. In addition,
 crash_key.h provides a `ScopedCrashKeyString` class to set the value for the
 duration of a scope and clear it upon exiting.

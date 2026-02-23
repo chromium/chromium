@@ -21,7 +21,7 @@ extern const void* const kUserDataKey = &kUserDataKey;
 // Array of pointers.
 extern const char* const kMemoryDumpAllowedArgs[] = {"dumps", nullptr};
 // Array of structs that contain one or more pointers.
-extern const StringPiece kStrings[] = {"one, "two"};
+extern const std::string_view kStrings[] = {"one", "two"};
 ```
 
 Vtables are arrays of function pointers, and so require relative relocations.

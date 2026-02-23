@@ -710,7 +710,7 @@ serialization and deserialization. 😄
 // In url_gurl_mojom_traits.h:
 template <>
 struct StructTraits<url::mojom::UrlDataView, GURL> {
-  static base::StringPiece url(const GURL& r);
+  static std::string_view url(const GURL& r);
 
   // If Read() returns false, Mojo will discard the message.
   static bool Read(url::mojom::UrlDataView data, GURL* out);
@@ -719,19 +719,19 @@ struct StructTraits<url::mojom::UrlDataView, GURL> {
 // In url_gurl_mojom_traits.cc:
 // Note that methods that aren't simple getters should be defined
 // out-of-line to avoid code bloat.
-base::StringPiece StructTraits<url::mojom::UrlDataView, GURL>::url(
+std::string_view StructTraits<url::mojom::UrlDataView, GURL>::url(
     const GURL& r) {
   if (r.possibly_invalid_spec().length() > url::kMaxURLChars ||
       !r.is_valid()) {
-    return base::StringPiece();
+    return std::string_view();
   }
-  return base::StringPiece(r.possibly_invalid_spec().c_str(),
-                           r.possibly_invalid_spec().length());
+  return std::string_view(r.possibly_invalid_spec().c_str(),
+                          r.possibly_invalid_spec().length());
 }
 
 bool StructTraits<url::mojom::UrlDataView, GURL>::Read(
     url::mojom::UrlDataView data, GURL* out) {
-  base::StringPiece url_string;
+  std::string_view url_string;
   if (!data.ReadUrl(&url_string))
     return false;
   if (url_string.length() > url::kMaxURLChars)
