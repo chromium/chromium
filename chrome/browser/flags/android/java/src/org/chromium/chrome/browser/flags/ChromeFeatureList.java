@@ -454,7 +454,6 @@ public abstract class ChromeFeatureList {
     public static final String GLIC_ACTOR_UI = "GlicActorUi";
     public static final String GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE =
             "GridTabSwitcherSurfaceColorUpdate";
-    public static final String GRID_TAB_SWITCHER_UPDATE = "GridTabSwitcherUpdate";
     public static final String GROUP_NEW_TAB_WITH_PARENT = "GroupNewTabWithParent";
     public static final String GROUP_SUGGESTION_SERVICE = "GroupSuggestionService";
     public static final String HASH_PREFIX_REAL_TIME_LOOKUPS =
@@ -920,8 +919,6 @@ public abstract class ChromeFeatureList {
                     GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
-    public static final CachedFlag sGridTabSwitcherUpdate =
-            newCachedFlag(GRID_TAB_SWITCHER_UPDATE, true);
     public static final CachedFlag sHistoryPaneAndroid =
             newCachedFlag(
                     HISTORY_PANE_ANDROID,
@@ -1204,7 +1201,6 @@ public abstract class ChromeFeatureList {
                     sGlic,
                     sGlicActorUi,
                     sGridTabSwitcherSurfaceColorUpdate,
-                    sGridTabSwitcherUpdate,
                     sHistoryPaneAndroid,
                     sIncognitoThemeOverlayTesting,
                     sKeyboardEscBackNavigation,

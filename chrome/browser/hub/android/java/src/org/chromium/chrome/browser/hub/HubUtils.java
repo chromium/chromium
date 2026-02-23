@@ -12,8 +12,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Feature related utilities for Hub. */
@@ -47,8 +45,7 @@ public class HubUtils {
         // TODO(crbug.com/419822825): Remove explicit check once XR toolbar crash is resolved.
         if (DeviceInfo.isXr()) return false;
 
-        return ChromeFeatureList.sGridTabSwitcherUpdate.isEnabled()
-                || ThemeModuleUtils.isForceEnableDependencies();
+        return true;
     }
 
     /** Utility to determine which UI variants to show based on device width. */

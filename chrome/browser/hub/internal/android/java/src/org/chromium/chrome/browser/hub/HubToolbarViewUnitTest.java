@@ -469,11 +469,11 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
-    @DisableFeatures({
-        ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
-    })
     public void testHubColorMixer_searchBoxEnabled() {
-        verify(mColorMixer, times(9)).registerBlend(any());
+        // Possibly broken on XR devices.
+        if (!HubUtils.isGtsUpdateEnabled()) return;
+
+        verify(mColorMixer, times(12)).registerBlend(any());
     }
 
     @Test

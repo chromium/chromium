@@ -47,7 +47,6 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 @Features.DisableFeatures({
     ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
-    ChromeFeatureList.GRID_TAB_SWITCHER_UPDATE,
     ChromeFeatureList.ANDROID_THEME_MODULE
 })
 public class ColorPickerItemViewBinderUnitTest {
