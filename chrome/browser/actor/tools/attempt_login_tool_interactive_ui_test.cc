@@ -25,6 +25,10 @@
 #include "ui/compositor/compositor_switches.h"
 #include "ui/gfx/codec/png_codec.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace actor {
 namespace {
 
@@ -349,14 +353,20 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
 }
 
 // TODO(https://crbug.com/456675144): Flaky on asan.
-// This test does not work on Wayland, but setting SetOnIncompatibleAction does
-// not seem to skip the test, so we just disable on linux for now.
-#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_LINUX)
+#if defined(ADDRESS_SANITIZER)
 #define MAYBE_HandleReauth DISABLED_HandleReauth
 #else
 #define MAYBE_HandleReauth HandleReauth
 #endif
 IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_HandleReauth) {
+#if BUILDFLAG(IS_LINUX)
+  // This test does not work on Wayland, but setting SetOnIncompatibleAction
+  // does not seem to skip the test.
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP();
+  }
+#endif
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTargetTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherTabId);
 
