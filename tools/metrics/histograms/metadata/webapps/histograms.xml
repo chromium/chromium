@@ -1893,7 +1893,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.ManifestIconDownloader.ChromeUrl.Result"
-    enum="ManifestIconDownloaderResult" expires_after="2026-04-05">
+    enum="ManifestIconDownloaderResult" expires_after="2027-04-05">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1909,7 +1909,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.ManifestIconDownloader.Result"
-    enum="ManifestIconDownloaderResult" expires_after="2026-04-05">
+    enum="ManifestIconDownloaderResult" expires_after="2027-04-05">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2956,7 +2956,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.WebAppOriginAssociationFetchResult"
-    enum="WebAppOriginAssociationFetchResult" expires_after="2026-03-05">
+    enum="WebAppOriginAssociationFetchResult" expires_after="2027-03-05">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2966,7 +2966,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.WebAppOriginAssociationParseResult"
-    enum="WebAppOriginAssociationParseResult" expires_after="2026-03-05">
+    enum="WebAppOriginAssociationParseResult" expires_after="2027-03-05">
   <owner>mek@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2976,7 +2976,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.WebAppUrlLoaderPrepareForLoadResult"
-    enum="WebAppUrlLoaderResult" expires_after="2026-03-01">
+    enum="WebAppUrlLoaderResult" expires_after="2027-03-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2989,7 +2989,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.WebAppUrlLoaderResult" enum="WebAppUrlLoaderResult"
-    expires_after="2026-03-01">
+    expires_after="2027-03-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
