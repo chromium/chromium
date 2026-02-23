@@ -24,8 +24,14 @@ outfile = sys.argv[4]
 # Dump only when the output file is out-of-date.
 if not os.path.isfile(outfile) or \
    os.stat(outfile).st_mtime < os.stat(infile).st_mtime:
-  with open(outfile, 'w') as outfileobj:
-    subprocess.check_call([dumpsyms, '-m', '-d', infile], stdout=outfileobj)
+  try:
+    with open(outfile, 'w') as outfileobj:
+      subprocess.check_call([dumpsyms, '-m', '-d', infile], stdout=outfileobj)
+  except:
+    # Remove the output file on failure to make the build step atomic.
+    if os.path.isfile(outfile):
+      os.remove(outfile)
+    raise
 
 if strip_binary != '0':
   subprocess.check_call(['strip', infile])
