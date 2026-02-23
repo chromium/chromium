@@ -179,14 +179,12 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     private SiteSettingsCategory mCategory;
     // If not blank, represents a substring to use to search for site names.
     private @Nullable String mSearch;
-    // Whether to group by allowed/blocked list.
-    private boolean mGroupByAllowBlock;
     // Whether the Blocked list should be shown expanded.
     private boolean mBlockListExpanded;
     // Whether the Allowed list should be shown expanded.
     private boolean mAllowListExpanded = true;
     // Whether the Managed list should be shown expanded.
-    private boolean mManagedListExpanded;
+    private boolean mManagedListExpanded = true;
     // Whether this is the first time this screen is shown.
     private boolean mIsInitialRun = true;
     // The number of sites that are on the Allowed list.
@@ -393,7 +391,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             if (allowedGroup != null) getPreferenceScreen().removePreference(allowedGroup);
             return;
         }
-        if (!mGroupByAllowBlock) return;
 
         int resourceId;
         if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
@@ -413,7 +410,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             if (blockedGroup != null) getPreferenceScreen().removePreference(blockedGroup);
             return;
         }
-        if (!mGroupByAllowBlock) return;
 
         // Set the title and arrow icons for the header.
         int resourceId;
@@ -435,7 +431,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             if (managedGroup != null) getPreferenceScreen().removePreference(managedGroup);
             return;
         }
-        if (!mGroupByAllowBlock) return;
 
         // Set the title and arrow icons for the header.
         int resourceId = R.string.website_settings_managed_group_heading;
@@ -1025,66 +1020,58 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         int blocked = 0;
         int managed = 0;
 
-        if (!mGroupByAllowBlock) {
-            // We're not grouping sites into Allowed/Blocked lists, so show all in order
-            // (will be alphabetical).
-            for (WebsitePreference website : websites) {
-                getPreferenceScreen().addPreference(website);
+        // Group sites into Allowed/Blocked lists.
+        PreferenceGroup allowedGroup = getPreferenceScreen().findPreference(ALLOWED_GROUP);
+        PreferenceGroup blockedGroup = getPreferenceScreen().findPreference(BLOCKED_GROUP);
+        PreferenceGroup managedGroup = getPreferenceScreen().findPreference(MANAGED_GROUP);
+
+        Set<String> delegatedOrigins =
+                mCategory.getType() == SiteSettingsCategory.Type.NOTIFICATIONS
+                        ? getSiteSettingsDelegate().getAllDelegatedNotificationOrigins()
+                        : Collections.emptySet();
+
+        for (WebsitePreference website : websites) {
+            if (delegatedOrigins.contains(website.site().getAddress().getOrigin())) {
+                managedGroup.addPreference(website);
+                managed += 1;
+            } else if (isOnBlockList(website)) {
+                blockedGroup.addPreference(website);
+                blocked += 1;
+            } else {
+                allowedGroup.addPreference(website);
+                mAllowedSiteCount += 1;
             }
-        } else {
-            // Group sites into Allowed/Blocked lists.
-            PreferenceGroup allowedGroup = getPreferenceScreen().findPreference(ALLOWED_GROUP);
-            PreferenceGroup blockedGroup = getPreferenceScreen().findPreference(BLOCKED_GROUP);
-            PreferenceGroup managedGroup = getPreferenceScreen().findPreference(MANAGED_GROUP);
-
-            Set<String> delegatedOrigins =
-                    mCategory.getType() == SiteSettingsCategory.Type.NOTIFICATIONS
-                            ? getSiteSettingsDelegate().getAllDelegatedNotificationOrigins()
-                            : Collections.emptySet();
-
-            for (WebsitePreference website : websites) {
-                if (delegatedOrigins.contains(website.site().getAddress().getOrigin())) {
-                    managedGroup.addPreference(website);
-                    managed += 1;
-                } else if (isOnBlockList(website)) {
-                    blockedGroup.addPreference(website);
-                    blocked += 1;
-                } else {
-                    allowedGroup.addPreference(website);
-                    mAllowedSiteCount += 1;
-                }
-            }
-
-            // For the ads permission, the Allowed list should appear first. Default
-            // collapsed settings should not change.
-            if (mCategory.getType() == SiteSettingsCategory.Type.ADS) {
-                blockedGroup.setOrder(allowedGroup.getOrder() + 1);
-            }
-
-            // The default, when the lists are shown for the first time, is for the
-            // Blocked and Managed list to be collapsed and Allowed expanded -- because
-            // the data in the Allowed list is normally more useful than the data in
-            // the Blocked/Managed lists. A collapsed initial Blocked/Managed list works
-            // well *except* when there's nothing in the Allowed list because then
-            // there's only Blocked/Managed items to show and it doesn't make sense for
-            // those items to be hidden. So, in those cases (and only when the lists are
-            // shown for the first time) do we ignore the collapsed directive. The user
-            // can still collapse and expand the Blocked/Managed list at will.
-            if (mIsInitialRun) {
-                if (mAllowedSiteCount == 0) {
-                    if (blocked == 0 && managed > 0) {
-                        mManagedListExpanded = true;
-                    } else {
-                        mBlockListExpanded = true;
-                    }
-                }
-                mIsInitialRun = false;
-            }
-
-            if (!mBlockListExpanded) blockedGroup.removeAll();
-            if (!mAllowListExpanded) allowedGroup.removeAll();
-            if (!mManagedListExpanded) managedGroup.removeAll();
         }
+
+        // For the ads permission, the Allowed list should appear first. Default
+        // collapsed settings should not change.
+        if (mCategory.getType() == SiteSettingsCategory.Type.ADS) {
+            blockedGroup.setOrder(allowedGroup.getOrder() + 1);
+        }
+
+        // The default, when the lists are shown for the first time, is for the
+        // Blocked and Managed list to be collapsed and Allowed expanded -- because
+        // the data in the Allowed list is normally more useful than the data in
+        // the Blocked/Managed lists. A collapsed initial Blocked/Managed list works
+        // well *except* when there's nothing in the Allowed list because then
+        // there's only Blocked/Managed items to show and it doesn't make sense for
+        // those items to be hidden. So, in those cases (and only when the lists are
+        // shown for the first time) do we ignore the collapsed directive. The user
+        // can still collapse and expand the Blocked/Managed list at will.
+        if (mIsInitialRun) {
+            if (mAllowedSiteCount == 0) {
+                if (blocked == 0 && managed > 0) {
+                    mManagedListExpanded = true;
+                } else {
+                    mBlockListExpanded = true;
+                }
+            }
+            mIsInitialRun = false;
+        }
+
+        if (!mBlockListExpanded) blockedGroup.removeAll();
+        if (!mAllowListExpanded) allowedGroup.removeAll();
+        if (!mManagedListExpanded) managedGroup.removeAll();
 
         updateBlockedHeader(blocked);
         updateAllowedHeader(mAllowedSiteCount);
@@ -1405,14 +1392,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
 
         screen.removePreference(explainProtectedMediaKey);
         mListView.setFocusable(true);
-
-        // When this menu opens, make sure the Blocked list is collapsed.
-        if (!mGroupByAllowBlock) {
-            mBlockListExpanded = false;
-            mAllowListExpanded = true;
-            mManagedListExpanded = false;
-        }
-        mGroupByAllowBlock = true;
 
         allowedGroup.setOnPreferenceClickListener(this);
         blockedGroup.setOnPreferenceClickListener(this);
