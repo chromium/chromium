@@ -28,7 +28,7 @@ class WebAppFilter {
   // like stub ones. To also consider stub apps, use
   // `IsIsolatedWebAppIncludingUninstalling()` instead.
   static WebAppFilter IsIsolatedApp();
-  // Only Consider sub apps of isolated web apps (connected via parent_app_id).
+  // Only consider sub apps of isolated web apps (connected via parent_app_id).
   static WebAppFilter IsIsolatedSubApp();
   // Only consider isolated web apps installed in developer mode, that are not
   // scheduled for uninstallation, like stub ones.
@@ -72,10 +72,6 @@ class WebAppFilter {
   // Only consider web apps that have been installed in Chrome by trusted
   // sources, like admin or preinstalled apps.
   static WebAppFilter IsTrusted();
-
-  // Consider any isolated web apps, even ones that are stubs and have
-  // `is_uninstalling` set to true.
-  static WebAppFilter IsIsolatedWebAppIncludingUninstalling();
 
   // Only consider web apps that are in the middle of an app migration, and will
   // be treated rightfully so.
@@ -135,19 +131,8 @@ class WebAppFilter {
     WebAppManagementTypes sources;
   };
 
-  using Predicate =
+  using LeafFilter =
       std::variant<ManagementRequirement, InstallStateSet, SimpleCondition>;
-
-  struct LeafFilter {
-    LeafFilter();
-    ~LeafFilter();
-    LeafFilter(const LeafFilter&);
-    LeafFilter(LeafFilter&&) noexcept;
-    LeafFilter& operator=(LeafFilter&&) noexcept;
-
-    bool is_isolated_apps_including_uninstalling = false;
-    std::optional<Predicate> predicate;
-  };
 
   static WebAppFilter HasSource(WebAppManagement::Type source);
   static WebAppFilter HasAnySource(WebAppManagementTypes sources);

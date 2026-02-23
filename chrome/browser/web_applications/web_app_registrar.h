@@ -181,8 +181,8 @@ class WebAppRegistrar {
       const webapps::AppId& app_id,
       std::initializer_list<proto::InstallState> allowed_states) const;
 
-  // Returns true if an app exists in the registry with `app_id` and matches the
-  // filter provided.
+  // Returns true if an app exists in the registry with `app_id`, isn't a stub
+  // (i.e. is not being uninstalled) and matches the filter provided.
   //
   // Example usage:
   //     AppMatches(app_id, WebAppFilter::OpensInBrowserTab())
@@ -499,8 +499,9 @@ class WebAppRegistrar {
   GetAppCurrentOsIntegrationState(const webapps::AppId& app_id) const;
 
   // Returns the StoragePartitionConfig of all StoragePartitions used by
-  // |isolated_web_app_id|. Both the primary and any <controlledframe>
-  // StoragePartitions will be returned.
+  // `app_id` if `app_id` is an Isolated Web App; both the primary and any
+  // <controlledframe> StoragePartitions will be returned. Returns an empty
+  // vector if the app is not an Isolated Web App.
   std::vector<content::StoragePartitionConfig>
   GetIsolatedWebAppStoragePartitionConfigs(const webapps::AppId& app_id) const;
 

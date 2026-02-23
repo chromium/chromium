@@ -1019,58 +1019,48 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
 
 bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
                                  const WebAppFilter::LeafFilter& filter) const {
-  if (filter.is_isolated_apps_including_uninstalling) {
-    return IsIsolatedApp(app_id);
-  }
-
-  // All filters below this line rely on the app not being a stub app, which can
-  // happen if the app is marked for uninstallation.
   std::optional<proto::InstallState> install_state = GetInstallState(app_id);
-  if (install_state == std::nullopt) {
+  if (!install_state) {
     return false;
   }
 
-  if (filter.predicate) {
-    const auto& app = CHECK_DEREF(GetAppById(app_id));
-    return std::visit(
-        absl::Overload{
-            [&](WebAppFilter::SimpleCondition condition) {
-              switch (condition) {
-                case WebAppFilter::SimpleCondition::kIsDiy:
-                  return app.is_diy_app();
-                case WebAppFilter::SimpleCondition::kWasInstalledByUser:
-                  return app.WasInstalledByUser();
-                case WebAppFilter::SimpleCondition::kInstalledByTrustedSource:
-                  return app.WasInstalledByTrustedSources();
-                case WebAppFilter::SimpleCondition::kIsolatedApp:
-                  return IsIsolatedApp(app_id);
-                case WebAppFilter::SimpleCondition::kIsolatedAppDevMode:
-                  return IsIsolatedAppInDevMode(app_id);
-                case WebAppFilter::SimpleCondition::kIsolatedSubApp:
-                  return app.parent_app_id() &&
-                         IsIsolatedApp(*app.parent_app_id());
-                case WebAppFilter::SimpleCondition::kOpensInDedicatedWindow: {
-                  DisplayMode display_mode = GetAppEffectiveDisplayMode(app_id);
-                  return display_mode != DisplayMode::kBrowser &&
-                         display_mode != DisplayMode::kUndefined;
-                }
+  const auto& app = CHECK_DEREF(GetAppById(app_id));
+  return std::visit(
+      absl::Overload{
+          [&](WebAppFilter::SimpleCondition condition) {
+            switch (condition) {
+              case WebAppFilter::SimpleCondition::kIsDiy:
+                return app.is_diy_app();
+              case WebAppFilter::SimpleCondition::kWasInstalledByUser:
+                return app.WasInstalledByUser();
+              case WebAppFilter::SimpleCondition::kInstalledByTrustedSource:
+                return app.WasInstalledByTrustedSources();
+              case WebAppFilter::SimpleCondition::kIsolatedApp:
+                return IsIsolatedApp(app_id);
+              case WebAppFilter::SimpleCondition::kIsolatedAppDevMode:
+                return IsIsolatedAppInDevMode(app_id);
+              case WebAppFilter::SimpleCondition::kIsolatedSubApp:
+                return app.parent_app_id() &&
+                       IsIsolatedApp(*app.parent_app_id());
+              case WebAppFilter::SimpleCondition::kOpensInDedicatedWindow: {
+                DisplayMode display_mode = GetAppEffectiveDisplayMode(app_id);
+                return display_mode != DisplayMode::kBrowser &&
+                       display_mode != DisplayMode::kUndefined;
               }
-            },
-            [&](const WebAppFilter::ManagementRequirement& requirement) {
-              switch (requirement.type) {
-                case WebAppFilter::ManagementRequirement::Type::kHasAny:
-                  return app.GetSources().HasAny(requirement.sources);
-                case WebAppFilter::ManagementRequirement::Type::kHasAll:
-                  return app.GetSources().HasAll(requirement.sources);
-              }
-            },
-            [&](const WebAppFilter::InstallStateSet& install_states) {
-              return install_states.Has(*install_state);
-            }},
-        *filter.predicate);
-  }
-
-  return false;
+            }
+          },
+          [&](const WebAppFilter::ManagementRequirement& requirement) {
+            switch (requirement.type) {
+              case WebAppFilter::ManagementRequirement::Type::kHasAny:
+                return app.GetSources().HasAny(requirement.sources);
+              case WebAppFilter::ManagementRequirement::Type::kHasAll:
+                return app.GetSources().HasAll(requirement.sources);
+            }
+          },
+          [&](const WebAppFilter::InstallStateSet& install_states) {
+            return install_states.Has(*install_state);
+          }},
+      filter);
 }
 
 std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
@@ -1092,20 +1082,15 @@ std::optional<webapps::AppId> WebAppRegistrar::FindBestAppWithUrlInScope(
   std::optional<webapps::AppId> best_app_id;
   int best_score = 0;
 
-  for (const webapps::AppId& app_id :
-       GetAppIdsForAppSet(GetAppsIncludingStubs())) {
-    if (!AppMatches(app_id, options.eligibility_filter)) {
-      continue;
-    }
-
-    std::optional<WebAppScope> scope = GetEffectiveScope(app_id);
+  for (const WebApp& app : GetApps(options.eligibility_filter)) {
+    std::optional<WebAppScope> scope = GetEffectiveScope(app.app_id());
     if (!scope.has_value()) {
       continue;
     }
 
     int score = scope->GetScopeScore(url, options.scope_score_options);
     if (score > 0 && score > best_score) {
-      best_app_id = app_id;
+      best_app_id = app.app_id();
       best_score = score;
     }
   }
@@ -1128,12 +1113,8 @@ std::vector<webapps::AppId> WebAppRegistrar::FindAllAppsNestedInUrl(
   std::string outer_scope_spec = outer_scope.spec();
 
   std::vector<webapps::AppId> apps_in_outer_scope;
-  for (const auto& app_id : GetAppIdsForAppSet(GetAppsIncludingStubs())) {
-    if (!AppMatches(app_id, filter)) {
-      continue;
-    }
-
-    std::string app_scope = GetAppScope(app_id).spec();
+  for (const WebApp& app : GetApps(filter)) {
+    std::string app_scope = GetAppScope(app.app_id()).spec();
     DCHECK(!app_scope.empty());
 
     if (!base::StartsWith(app_scope, outer_scope_spec,
@@ -1141,7 +1122,7 @@ std::vector<webapps::AppId> WebAppRegistrar::FindAllAppsNestedInUrl(
       continue;
     }
 
-    apps_in_outer_scope.push_back(app_id);
+    apps_in_outer_scope.push_back(app.app_id());
   }
 
   return apps_in_outer_scope;
@@ -1293,10 +1274,10 @@ WebAppRegistrar::GetIsolatedWebAppStoragePartitionConfigs(
   if (!content::AreIsolatedWebAppsEnabled(profile_)) {
     return {};
   }
-  // Note: This function is called after is_uninstalling is set to true.
-  const WebApp* iwa =
-      GetAppById(app_id, WebAppFilter::IsIsolatedWebAppIncludingUninstalling());
-  if (!iwa) {
+  // Note: This function is called after is_uninstalling is set to true; hence
+  // we cannot use filters here.
+  const auto* iwa = GetAppById(app_id);
+  if (!iwa || !iwa->isolation_data()) {
     return {};
   }
 

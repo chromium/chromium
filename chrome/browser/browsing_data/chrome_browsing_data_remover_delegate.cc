@@ -1405,10 +1405,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
             ->registrar_unsafe();
     for (const web_app::WebApp& web_app :
          web_app_registrar.GetAppsIncludingStubs()) {
-      if (!web_app_registrar.AppMatches(
-              web_app.app_id(),
-              web_app::WebAppFilter::IsIsolatedWebAppIncludingUninstalling()) ||
-          !filter.Run(web_app.scope())) {
+      if (!filter.Run(web_app.scope())) {
         continue;
       }
       std::vector<content::StoragePartitionConfig> partitions =
