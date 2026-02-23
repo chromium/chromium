@@ -282,7 +282,7 @@ void GlicInstanceCoordinatorImpl::Close(const CloseOptions& options) {
 
 void GlicInstanceCoordinatorImpl::Invoke(tabs::TabInterface* tab,
                                          GlicInvokeOptions options) {
-  if (!tab) {
+  if (!tab || !GlicInstanceHelper::From(tab)) {
     // TODO(crbug.com/483387751): Add error handling for empty tab case.
     return;
   }
@@ -688,8 +688,14 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     std::optional<std::string> conversation_id) {
   auto* tab = TabListInterface::From(browser)->GetActiveTab();
   if (!tab) {
+    LOG(ERROR) << "Active tab is null";
     return;
   }
+  if (!GlicInstanceHelper::From(tab)) {
+    LOG(ERROR) << "Tab doesn't have an instance helper in its UnownedUserData";
+    return;
+  }
+
   GlicInstanceImpl* instance = nullptr;
   if (base::FeatureList::IsEnabled(features::kGlicWebContinuity) &&
       conversation_id && !conversation_id->empty()) {
@@ -1077,6 +1083,11 @@ void GlicInstanceCoordinatorImpl::RestoreTab(
     const glic::GlicRestoredState& state) {
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents);
   if (!tab) {
+    LOG(ERROR) << "Tab is null";
+    return;
+  }
+  if (!GlicInstanceHelper::From(tab)) {
+    LOG(ERROR) << "Tab doesn't have an instance helper in its UnownedUserData";
     return;
   }
 
