@@ -1904,6 +1904,11 @@
       name: "DeclarativeCSSModules",
       status: "experimental",
     },
+    // https://crbug.com/448174611
+    {
+      name: "DeclarativeCSSModulesStyleTag",
+      implied_by: ["DeclarativeCSSModules"],
+    },
     {
       // https://chromestatus.com/feature/5133099851317248
       name: "DecoupleComputedBorderWidthFromStyle",
@@ -5015,6 +5020,11 @@
     {
       name: "ShadowContourFollowsBorder",
       status: "stable",
+    },
+    // https://crbug.com/448174611
+    {
+      name: "ShadowRootAdoptedStyleSheet",
+      implied_by: ["DeclarativeCSSModules"],
     },
     {
       // Reference Target allows IDREF attributes to refer inside Shadow DOM.

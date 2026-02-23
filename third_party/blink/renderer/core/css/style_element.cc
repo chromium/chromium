@@ -90,7 +90,7 @@ StyleElement::ProcessingResult StyleElement::ProcessStyleSheet(
   // Module type is static based upon when it's first connected.
   // TODO(crbug.com/448174611): Confirm this with the WHATWG and update behavior
   // according to WHATWG resolutions.
-  if (RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled()) {
+  if (RuntimeEnabledFeatures::DeclarativeCSSModulesStyleTagEnabled()) {
     if ((element_type_ == StyleType::kPending) && element.isConnected()) {
       // TODO(crbug.com/448174611): For consistency with Import Maps, should we
       // mimic passing "Already Started" state when cloneNode is called? This
@@ -201,7 +201,7 @@ StyleElement::ProcessingResult StyleElement::CreateSheetOrModule(
   // TODO(crbug.com/448174611) - should Declarative CSS Modules continue
   // respecting CSP? Need to confirm with WHATWG.
   if (passes_content_security_policy_checks && IsModule()) {
-    CHECK(RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled());
+    CHECK(RuntimeEnabledFeatures::DeclarativeCSSModulesStyleTagEnabled());
     AddImportMapEntry(element, text);
 
     // Return early, since we explicitly *don't* want to create a CSSStyleSheet
@@ -359,7 +359,7 @@ bool StyleElement::IsLoading() const {
 bool StyleElement::IsModule() const {
   // It's only possible to set the type to module when the flag is enabled.
   DCHECK(element_type_ != StyleType::kModule ||
-         RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled());
+         RuntimeEnabledFeatures::DeclarativeCSSModulesStyleTagEnabled());
   return element_type_ == StyleType::kModule;
 }
 

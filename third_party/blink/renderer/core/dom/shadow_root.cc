@@ -330,7 +330,7 @@ V8SlotAssignmentMode ShadowRoot::slotAssignment() const {
 HeapVector<Member<CSSStyleSheet>>
 ShadowRoot::GetFetchedStyleSheetsFromModuleMap(
     const AtomicString& shadowrootadoptedstylesheets_attribute_value) {
-  CHECK(RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled());
+  CHECK(RuntimeEnabledFeatures::ShadowRootAdoptedStyleSheetEnabled());
 
   // Early exit if `domWindow` isn't available. This won't work in contexts such
   // as `Document.parseHTMLUnsafe`. This is probably fine, as adopted
@@ -397,7 +397,7 @@ ShadowRoot::GetFetchedStyleSheetsFromModuleMap(
 
 void ShadowRoot::ProcessAdoptedStylesheetAttribute(
     AtomicString value) {
-  CHECK(RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled());
+  CHECK(RuntimeEnabledFeatures::ShadowRootAdoptedStyleSheetEnabled());
   if (!value.empty()) {
     AppendAdoptedStyleSheets(GetFetchedStyleSheetsFromModuleMap(value));
   }
