@@ -6553,8 +6553,6 @@ crbug.com/340389272 virtual/text-size-adjust-with-os-font-scale/wpt_internal/css
 # Blocked on https://github.com/w3c/csswg-drafts/issues/4456 resolution.
 crbug.com/373478544 wpt_internal/css/css-overflow/column-scroll-marker-009.html [ Failure ]
 
-crbug.com/484218880 [ Win ] external/wpt/css/css-overflow/scroll-markers/column-scroll-marker-focus-001.html [ Pass Timeout ]
-
 # Sheriff 2022-01-04
 crbug.com/1283865 external/wpt/webmessaging/without-ports/020.html [ Failure Pass ]
 
