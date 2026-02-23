@@ -1002,6 +1002,7 @@ test("components_unittests") {
   }
 
   fuzztests = [
+    "CurrencyFormatterFuzzTest.FormatDoesNotCrash",
     "FilterDataTest.Matches",
     "OsRegistrationTest.Parses",
     "PrivacyMathTest.GetKCombinationAtIndexDoesNotCrash",

@@ -56,8 +56,8 @@ CurrencyFormatter::CurrencyFormatter(const std::string& currency_code,
   icu_formatter_.reset(
       icu::NumberFormat::createCurrencyInstance(locale_, error_code));
   if (U_FAILURE(error_code)) {
-    LOG(ERROR) << "Failed to initialize the currency formatter for "
-               << locale_name;
+    DVLOG(1) << "Failed to initialize the currency formatter for "
+             << locale_name;
     return;
   }
 
@@ -78,8 +78,8 @@ CurrencyFormatter::CurrencyFormatter(const std::string& currency_code,
   if (U_FAILURE(error_code)) {
     std::string currency_code_str;
     currency_code_->toUTF8String(currency_code_str);
-    LOG(ERROR) << "Could not set currency code on currency formatter: "
-               << currency_code_str;
+    DVLOG(1) << "Could not set currency code on currency formatter: "
+             << currency_code_str;
     return;
   }
 

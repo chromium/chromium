@@ -7,6 +7,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace payments {
 namespace {
@@ -140,6 +141,16 @@ INSTANTIATE_TEST_SUITE_P(
             "fr_FR",
             "123 456 789 012 345 678 901 234 567 890,123456789 $",
             "USD")));
+
+// Fuzz tests
+void FormatDoesNotCrash(std::string currency_code,
+                        std::string locale_name,
+                        std::string amount) {
+  CurrencyFormatter formatter(currency_code, locale_name);
+  formatter.Format(amount);
+}
+
+FUZZ_TEST(CurrencyFormatterFuzzTest, FormatDoesNotCrash);
 
 }  // namespace
 }  // namespace payments

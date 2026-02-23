@@ -204,6 +204,7 @@ source_set("unit_tests") {
     ":currency_formatter",
     ":test_support",
     "//base",
+    "//base/test:fuzztest_support",
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
@@ -219,6 +220,7 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/fuzztest",
     "//third_party/libaddressinput:test_support",
     "//ui/base",
   ]
