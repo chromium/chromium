@@ -7,8 +7,3 @@
 bool TestOmniboxPopupView::IsOpen() const {
   return false;
 }
-
-raw_ptr<OmniboxPopupViewWebUI>
-TestOmniboxPopupView::GetOmniboxPopupViewWebUI() {
-  return nullptr;
-}

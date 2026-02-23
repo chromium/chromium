@@ -11,7 +11,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
@@ -126,8 +125,3 @@ void OmniboxPopupViewWebUI::OnDragCanceled() {}
 
 void OmniboxPopupViewWebUI::GetPopupAccessibleNodeData(
     ui::AXNodeData* node_data) const {}
-
-raw_ptr<OmniboxPopupViewWebUI>
-OmniboxPopupViewWebUI::GetOmniboxPopupViewWebUI() {
-  return this;
-}
