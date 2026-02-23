@@ -97,6 +97,19 @@ bool IsThinkingModel(omnibox::ModelMode model) {
   return model == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO ||
          model == omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
 }
+
+searchbox::mojom::ToolMode GetSearchboxToolMode(omnibox::ToolMode tool) {
+  switch (tool) {
+    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN:
+      return searchbox::mojom::ToolMode::kCreateImage;
+    case omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH:
+      return searchbox::mojom::ToolMode::kDeepSearch;
+    case omnibox::ToolMode::TOOL_MODE_CANVAS:
+      return searchbox::mojom::ToolMode::kCanvas;
+    default:
+      return searchbox::mojom::ToolMode::kDefault;
+  }
+}
 }  // namespace
 
 OmniboxContextMenuController::OmniboxContextMenuController(
@@ -124,6 +137,13 @@ OmniboxContextMenuController::OmniboxContextMenuController(
 OmniboxContextMenuController::~OmniboxContextMenuController() = default;
 
 void OmniboxContextMenuController::InitializeMenuItemInfo() {
+  for (omnibox::ToolMode tool : input_state_.allowed_tools) {
+    tool_info_.insert({tool,
+                       {/*enabled=*/IsToolEnabled(tool),
+                        /*menu_label=*/GetMenuLabelForTool(tool),
+                        /*menu_icon=*/GetIconForTool(tool)}});
+  }
+
   for (omnibox::ModelMode model : input_state_.allowed_models) {
     model_info_.insert({model,
                         {/*enabled=*/IsModelEnabled(model),
@@ -142,7 +162,7 @@ void OmniboxContextMenuController::BuildMenu() {
       AddSeparator();
       AddContextualInputItems();
     }
-    if (!input_state_.allowed_tools.empty()) {
+    if (!tool_info_.empty()) {
       AddSeparator();
       AddToolItems();
     }
@@ -268,32 +288,15 @@ void OmniboxContextMenuController::AddToolItems() {
       menu_model_->AddTitle(base::UTF8ToUTF16(tool_section_config->header()));
     }
 
-    auto* image_gen_config =
-        GetToolConfig(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
-    auto image_gen_label =
-        image_gen_config && !image_gen_config->menu_label().empty()
-            ? base::UTF8ToUTF16(image_gen_config->menu_label())
-            : l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_CREATE_IMAGES);
-    AddItemWithIcon(IDC_OMNIBOX_CONTEXT_CREATE_IMAGES, image_gen_label,
-                    create_images_icon);
-
-    auto* deep_search_config =
-        GetToolConfig(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
-    auto deep_search_label =
-        deep_search_config && !deep_search_config->menu_label().empty()
-            ? base::UTF8ToUTF16(deep_search_config->menu_label())
-            : l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_DEEP_SEARCH);
-    AddItemWithIcon(IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH, deep_search_label,
-                    deep_search_icon);
-
-    auto canvas_icon =
-        ui::ImageModel::FromVectorIcon(kDraftSparkIcon, ui::kColorMenuIcon,
-                                       ui::SimpleMenuModel::kDefaultIconSize);
-    auto* canvas_config = GetToolConfig(omnibox::ToolMode::TOOL_MODE_CANVAS);
-    auto canvas_label = canvas_config && !canvas_config->menu_label().empty()
-                            ? base::UTF8ToUTF16(canvas_config->menu_label())
-                            : l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_CANVAS);
-    AddItemWithIcon(IDC_OMNIBOX_CONTEXT_CANVAS, canvas_label, canvas_icon);
+    next_command_id_ = min_tools_and_models_command_id_;
+    for (const auto tool : input_state_.allowed_tools) {
+      auto& menu_item_info = tool_info_[tool];
+      AddItemWithIcon(next_command_id_, menu_item_info.menu_label,
+                      menu_item_info.menu_icon);
+      tool_for_command_id_[next_command_id_] = tool;
+      next_command_id_++;
+    }
+    min_tools_and_models_command_id_ = next_command_id_;
   } else {
     AddItemWithStringIdAndIcon(IDC_OMNIBOX_CONTEXT_CREATE_IMAGES,
                                IDS_NTP_COMPOSE_CREATE_IMAGES,
@@ -528,6 +531,20 @@ bool OmniboxContextMenuController::IsContentSharingEnabled() const {
 OmniboxContextMenuController::ContextType
 OmniboxContextMenuController::CommandIdToEnum(int command_id) const {
   if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
+    if (auto it = tool_for_command_id_.find(command_id);
+        it != tool_for_command_id_.end()) {
+      switch (it->second) {
+        case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN:
+          return OmniboxContextMenuController::ContextType::kImageGen;
+        case omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH:
+          return OmniboxContextMenuController::ContextType::kDeepResearch;
+        case omnibox::ToolMode::TOOL_MODE_CANVAS:
+          return OmniboxContextMenuController::ContextType::kCanvas;
+        default:
+          return OmniboxContextMenuController::ContextType::kUnknown;
+      }
+    }
+
     if (auto it = model_for_command_id_.find(command_id);
         it != model_for_command_id_.end()) {
       switch (it->second) {
@@ -550,12 +567,10 @@ OmniboxContextMenuController::CommandIdToEnum(int command_id) const {
       return OmniboxContextMenuController::ContextType::kImage;
     case IDC_OMNIBOX_CONTEXT_ADD_FILE:
       return OmniboxContextMenuController::ContextType::kFile;
-    case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
-      return OmniboxContextMenuController::ContextType::kDeepResearch;
     case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
       return OmniboxContextMenuController::ContextType::kImageGen;
-    case IDC_OMNIBOX_CONTEXT_CANVAS:
-      return OmniboxContextMenuController::ContextType::kCanvas;
+    case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
+      return OmniboxContextMenuController::ContextType::kDeepResearch;
     default:
       // There is no command id for tabs due to there being multiple
       // tabs that would have the same command id.
@@ -614,20 +629,6 @@ bool OmniboxContextMenuController::IsInputTypeEnabled(
                       });
 }
 
-omnibox::ToolMode OmniboxContextMenuController::GetToolModeForCommandId(
-    int command_id) const {
-  switch (command_id) {
-    case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
-      return omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
-    case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
-      return omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
-    case IDC_OMNIBOX_CONTEXT_CANVAS:
-      return omnibox::ToolMode::TOOL_MODE_CANVAS;
-    default:
-      NOTREACHED();
-  }
-}
-
 const omnibox::ToolConfig* OmniboxContextMenuController::GetToolConfig(
     omnibox::ToolMode tool) const {
   auto it = std::find_if(
@@ -641,16 +642,49 @@ OmniboxContextMenuController::GetToolSectionConfig() const {
   return input_state_.tools_section_config;
 }
 
-bool OmniboxContextMenuController::IsToolVisible(omnibox::ToolMode tool) const {
-  return std::any_of(
-      input_state_.allowed_tools.begin(), input_state_.allowed_tools.end(),
-      [&](omnibox::ToolMode allowed_tool) { return allowed_tool == tool; });
-}
-
 bool OmniboxContextMenuController::IsToolEnabled(omnibox::ToolMode tool) const {
   return std::none_of(
       input_state_.disabled_tools.begin(), input_state_.disabled_tools.end(),
       [&](omnibox::ToolMode disabled_tool) { return disabled_tool == tool; });
+}
+
+std::u16string OmniboxContextMenuController::GetMenuLabelForTool(
+    omnibox::ToolMode tool) const {
+  auto* tool_config = GetToolConfig(tool);
+  if (tool_config && !tool_config->menu_label().empty()) {
+    return base::UTF8ToUTF16(tool_config->menu_label());
+  }
+
+  // If the server didn't provide a menu label, return a fallback value.
+  switch (tool) {
+    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN:
+      return l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_CREATE_IMAGES);
+    case omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH:
+      return l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_DEEP_SEARCH);
+    case omnibox::ToolMode::TOOL_MODE_CANVAS:
+      return l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_CANVAS);
+    default:
+      return u"";
+  }
+}
+
+ui::ImageModel OmniboxContextMenuController::GetIconForTool(
+    omnibox::ToolMode tool) const {
+  switch (tool) {
+    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN:
+      return ui::ImageModel::FromResourceId(
+          IDR_OMNIBOX_POPUP_IMAGES_CREATE_IMAGES_PNG);
+    case omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH:
+      return ui::ImageModel::FromVectorIcon(
+          kTravelExploreIcon, ui::kColorMenuIcon,
+          ui::SimpleMenuModel::kDefaultIconSize);
+    case omnibox::ToolMode::TOOL_MODE_CANVAS:
+      return ui::ImageModel::FromVectorIcon(
+          kDraftSparkIcon, ui::kColorMenuIcon,
+          ui::SimpleMenuModel::kDefaultIconSize);
+    default:
+      return ui::ImageModel();
+  }
 }
 
 const omnibox::ModelConfig* OmniboxContextMenuController::GetModelConfig(
@@ -777,6 +811,18 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
     }
 
     if (use_input_state_model) {
+      if (auto it = tool_for_command_id_.find(id);
+          it != tool_for_command_id_.end()) {
+        UpdateSearchboxContext(
+            /*tab_info=*/std::nullopt,
+            /*tool_mode=*/GetSearchboxToolMode(it->second));
+        GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
+                                   /*via_context_menu=*/true);
+        base::UmaHistogramEnumeration(sliced_prefix,
+                                      CommandIdToEnum(it->first));
+        return;
+      }
+
       if (auto it = model_for_command_id_.find(id);
           it != model_for_command_id_.end()) {
         composebox_handler->SetActiveModelMode(it->second);
@@ -804,18 +850,18 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
             /*is_image=*/false, GetEditModel(), CreateImageEncodingOptions(),
             /*was_ai_mode_open=*/is_aim_popup_open);
         break;
-      case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
-        UpdateSearchboxContext(
-            /*tab_info=*/std::nullopt,
-            /*tool_mode=*/searchbox::mojom::ToolMode::kDeepSearch);
-        GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
-                                   /*via_context_menu=*/true);
-        base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
-        break;
       case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
         UpdateSearchboxContext(
             /*tab_info=*/std::nullopt,
             /*tool_mode=*/searchbox::mojom::ToolMode::kCreateImage);
+        GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
+                                   /*via_context_menu=*/true);
+        base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
+        break;
+      case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
+        UpdateSearchboxContext(
+            /*tab_info=*/std::nullopt,
+            /*tool_mode=*/searchbox::mojom::ToolMode::kDeepSearch);
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
                                    /*via_context_menu=*/true);
         base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(id));
@@ -859,6 +905,16 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
       return IsInputTypeEnabled(GetInputTypeForCommandId(command_id));
     }
 
+    if (auto it = tool_for_command_id_.find(command_id);
+        it != tool_for_command_id_.end()) {
+      bool tool_enabled = tool_info_.at(it->second).enabled;
+      if (tool_enabled) {
+        base::UmaHistogramEnumeration(sliced_prefix,
+                                      CommandIdToEnum(command_id));
+      }
+      return tool_enabled;
+    }
+
     if (auto it = model_for_command_id_.find(command_id);
         it != model_for_command_id_.end()) {
       bool model_enabled = model_info_.at(it->second).enabled;
@@ -879,17 +935,6 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
                                         CommandIdToEnum(command_id));
         }
         return input_type_enabled;
-      }
-      case IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH:
-      case IDC_OMNIBOX_CONTEXT_CREATE_IMAGES:
-      case IDC_OMNIBOX_CONTEXT_CANVAS: {
-        const bool tool_enabled =
-            IsToolEnabled(GetToolModeForCommandId(command_id));
-        if (tool_enabled) {
-          base::UmaHistogramEnumeration(sliced_prefix,
-                                        CommandIdToEnum(command_id));
-        }
-        return tool_enabled;
       }
       default:
         base::UmaHistogramEnumeration(sliced_prefix,
@@ -991,8 +1036,7 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
   if (command_id == IDC_OMNIBOX_CONTEXT_ADD_IMAGE ||
       command_id == IDC_OMNIBOX_CONTEXT_ADD_FILE ||
       command_id == IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH ||
-      command_id == IDC_OMNIBOX_CONTEXT_CREATE_IMAGES ||
-      command_id == IDC_OMNIBOX_CONTEXT_CANVAS) {
+      command_id == IDC_OMNIBOX_CONTEXT_CREATE_IMAGES) {
     auto* browser_window_interface =
         webui::GetBrowserWindowInterface(web_contents_.get());
     if (!browser_window_interface) {
@@ -1010,8 +1054,6 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
       return omnibox::IsDeepSearchEnabled(profile);
     } else if (command_id == IDC_OMNIBOX_CONTEXT_CREATE_IMAGES) {
       return omnibox::IsCreateImagesEnabled(profile);
-    } else if (command_id == IDC_OMNIBOX_CONTEXT_CANVAS) {
-      return IsToolVisible(GetToolModeForCommandId(command_id));
     }
   }
 
