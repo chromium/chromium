@@ -47,8 +47,9 @@ class ThemeSyncableServiceIOS : public syncer::SyncableService {
     // Returns false for local-only theme (e.g., user-uploaded images).
     virtual bool IsCurrentThemeSyncable() const = 0;
 
-    // TODO(crbug.com/485933379): Add `IsCurrentThemeManagedByPolicy()` to
-    // respect enterprise policy when syncing themes.
+    // Returns true if the current theme is managed by enterprise policy.
+    // When true, incoming remote changes should be ignored.
+    virtual bool IsCurrentThemeManagedByPolicy() const = 0;
   };
 
   explicit ThemeSyncableServiceIOS(Delegate* delegate);

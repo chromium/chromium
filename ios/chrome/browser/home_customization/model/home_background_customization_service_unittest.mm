@@ -1159,6 +1159,38 @@ TEST_F(HomeBackgroundCustomizationServiceTest, DelegateIsThemeSyncable) {
       user_background.image_path, user_background.framing_coordinates);
 
   EXPECT_FALSE(service_->IsCurrentThemeSyncable());
+
+  // Clear user image. Should be syncable again.
+  service_->ClearCurrentUserUploadedBackground();
+  EXPECT_TRUE(service_->IsCurrentThemeSyncable());
+
+  // Policy themes are NOT syncable.
+  pref_service_->SetManagedPref(themes::prefs::kPolicyThemeColor,
+                                base::Value(static_cast<int>(0x0000ff)));
+  EXPECT_FALSE(service_->IsCurrentThemeSyncable());
+}
+
+// Tests that `IsCurrentThemeManagedByPolicy()` correctly identifies managed
+// state.
+TEST_F(HomeBackgroundCustomizationServiceTest,
+       DelegateIsCurrentThemeManagedByPolicy) {
+  CreateService();
+
+  // By default, not managed.
+  EXPECT_FALSE(service_->IsCurrentThemeManagedByPolicy());
+
+  // Managed by disable customization policy.
+  pref_service_->SetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy, false);
+  EXPECT_TRUE(service_->IsCurrentThemeManagedByPolicy());
+
+  // Reset policy.
+  pref_service_->SetBoolean(prefs::kNTPCustomBackgroundEnabledByPolicy, true);
+  EXPECT_FALSE(service_->IsCurrentThemeManagedByPolicy());
+
+  // Managed by theme color policy.
+  pref_service_->SetManagedPref(themes::prefs::kPolicyThemeColor,
+                                base::Value(static_cast<int>(0x0000ff)));
+  EXPECT_TRUE(service_->IsCurrentThemeManagedByPolicy());
 }
 
 // Tests that changing the theme locally automatically propagates the update
@@ -1182,6 +1214,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest, LocalChangesTriggerSync) {
   const syncer::SyncChangeList& changes = processor->changes();
   ASSERT_EQ(1u, changes.size());
 
+  // Local changes should always be sent as an UPDATE action.
   EXPECT_EQ(syncer::SyncChange::ACTION_UPDATE, changes[0].change_type());
 
   EXPECT_TRUE(changes[0].sync_data().GetSpecifics().has_theme_ios());

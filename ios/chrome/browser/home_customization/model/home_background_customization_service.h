@@ -146,6 +146,7 @@ class HomeBackgroundCustomizationService
   void CacheLocalTheme() override;
   void RestoreCachedTheme() override;
   bool IsCurrentThemeSyncable() const override;
+  bool IsCurrentThemeManagedByPolicy() const override;
 
   // Returns the current custom background data, if there is one.
   std::optional<HomeCustomBackground> GetCurrentCustomBackground();
@@ -217,7 +218,7 @@ class HomeBackgroundCustomizationService
   void ClearCurrentUserUploadedBackground();
 
   // Return whether the NTP custom background is disabled by enterprise policy.
-  bool IsCustomizationDisabledOrColorManagedByPolicy();
+  bool IsCustomizationDisabledOrColorManagedByPolicy() const;
 
   // Returns the `SyncableService` associated with `THEMES_IOS`. Returns
   // `nullptr` if the feature is disabled.

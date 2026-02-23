@@ -169,11 +169,7 @@ std::optional<ModelError> ThemeSyncableServiceIOS::ValidateAndApplyRemoteTheme(
   const sync_pb::ThemeIosSpecifics& remote_theme =
       sync_data.GetSpecifics().theme_ios();
 
-  // TODO(crbug.com/485895720): Allow incoming remote themes to overwrite
-  // local-only custom background images.
-  // TODO(crbug.com/485933379): Add `IsCurrentThemeManagedByPolicy()` to
-  // respect enterprise policy when syncing themes.
-  if (!delegate_->IsCurrentThemeSyncable() ||
+  if (delegate_->IsCurrentThemeManagedByPolicy() ||
       home_customization::AreThemeIosSpecificsEquivalent(
           delegate_->GetCurrentTheme(), remote_theme)) {
     return std::nullopt;

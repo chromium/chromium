@@ -250,8 +250,16 @@ void HomeBackgroundCustomizationService::RestoreCachedTheme() {
 }
 
 bool HomeBackgroundCustomizationService::IsCurrentThemeSyncable() const {
+  if (IsCurrentThemeManagedByPolicy()) {
+    return false;
+  }
+
   // If a user uploaded background is set, do NOT sync.
   return !current_user_uploaded_background_.has_value();
+}
+
+bool HomeBackgroundCustomizationService::IsCurrentThemeManagedByPolicy() const {
+  return IsCustomizationDisabledOrColorManagedByPolicy();
 }
 
 void HomeBackgroundCustomizationService::RegisterProfilePrefs(
@@ -576,7 +584,7 @@ void HomeBackgroundCustomizationService::ClearCurrentUserUploadedBackground() {
 }
 
 bool HomeBackgroundCustomizationService::
-    IsCustomizationDisabledOrColorManagedByPolicy() {
+    IsCustomizationDisabledOrColorManagedByPolicy() const {
   return !pref_service_->GetBoolean(
              prefs::kNTPCustomBackgroundEnabledByPolicy) ||
          pref_service_->IsManagedPreference(themes::prefs::kPolicyThemeColor);

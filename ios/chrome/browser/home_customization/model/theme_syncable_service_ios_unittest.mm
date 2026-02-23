@@ -47,6 +47,7 @@ class MockThemeSyncDelegate : public ThemeSyncableServiceIOS::Delegate {
   MOCK_METHOD(void, CacheLocalTheme, (), (override));
   MOCK_METHOD(void, RestoreCachedTheme, (), (override));
   MOCK_METHOD(bool, IsCurrentThemeSyncable, (), (const, override));
+  MOCK_METHOD(bool, IsCurrentThemeManagedByPolicy, (), (const, override));
 };
 
 // Creates a `ThemeIosSpecifics` with the specified user color.
@@ -80,6 +81,8 @@ class ThemeSyncableServiceIOSTest : public PlatformTest {
 
   void SetUp() override {
     ON_CALL(delegate_, IsCurrentThemeSyncable()).WillByDefault(Return(true));
+    ON_CALL(delegate_, IsCurrentThemeManagedByPolicy())
+        .WillByDefault(Return(false));
   }
 
  protected:
@@ -177,16 +180,38 @@ TEST_F(ThemeSyncableServiceIOSTest, MergeDataFailsWithMissingSpecifics) {
   EXPECT_EQ(syncer::ModelError::Type::kThemeMissingSpecifics, error->type());
 }
 
-// Checks that remote data is not applied if the current theme is marked as
-// unsyncable.
-TEST_F(ThemeSyncableServiceIOSTest, MergeDataDoesNotApplyIfNotSyncable) {
-  EXPECT_CALL(delegate_, IsCurrentThemeSyncable()).WillOnce(Return(false));
+// Checks that remote data is not applied if the current theme is managed by
+// policy.
+TEST_F(ThemeSyncableServiceIOSTest, MergeDataDoesNotApplyIfManagedByPolicy) {
+  EXPECT_CALL(delegate_, IsCurrentThemeManagedByPolicy())
+      .WillOnce(Return(true));
   EXPECT_CALL(delegate_, ApplyTheme(_)).Times(0);
 
   syncer::FakeSyncChangeProcessor* processor =
       StartSyncing({CreateSyncData(123)});
 
   EXPECT_TRUE(processor->changes().empty());
+}
+
+// Verifies that a remote theme is applied locally even if the current local
+// theme is unsyncable (e.g., user-uploaded image), as long as it's not managed.
+TEST_F(ThemeSyncableServiceIOSTest,
+       MergeDataAppliesLocallyIfNotSyncableButNotManaged) {
+  ON_CALL(delegate_, GetCurrentTheme())
+      .WillByDefault(Return(CreateTestTheme(111)));
+  EXPECT_CALL(delegate_, IsCurrentThemeSyncable())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(delegate_, IsCurrentThemeManagedByPolicy())
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(delegate_, ApplyTheme(EqualsProto(CreateTestTheme(222))))
+      .Times(1);
+
+  std::optional<syncer::ModelError> error = service_->MergeDataAndStartSyncing(
+      syncer::THEMES_IOS, {CreateSyncData(222)},
+      std::make_unique<syncer::FakeSyncChangeProcessor>());
+
+  EXPECT_FALSE(error.has_value());
 }
 
 // Checks that the theme is not re-applied if the remote theme matches the local
@@ -283,14 +308,39 @@ TEST_F(ThemeSyncableServiceIOSTest, ProcessChangesFailsWithMissingSpecifics) {
   EXPECT_TRUE(processor->changes().empty());
 }
 
-// Checks that remote updates are ignored if the local theme cannot be synced.
-TEST_F(ThemeSyncableServiceIOSTest, ProcessChangesIgnoredIfNotSyncable) {
+// Checks that remote updates are ignored if the theme is managed by policy.
+TEST_F(ThemeSyncableServiceIOSTest, ProcessChangesIgnoredIfManagedByPolicy) {
   syncer::FakeSyncChangeProcessor* processor = StartSyncing();
-  EXPECT_CALL(delegate_, IsCurrentThemeSyncable()).WillOnce(Return(false));
+  EXPECT_CALL(delegate_, IsCurrentThemeManagedByPolicy())
+      .WillOnce(Return(true));
   EXPECT_CALL(delegate_, ApplyTheme(_)).Times(0);
 
   std::optional<syncer::ModelError> error = service_->ProcessSyncChanges(
       FROM_HERE, {CreateSyncChange(syncer::SyncChange::ACTION_UPDATE, 123)});
+
+  EXPECT_FALSE(error.has_value());
+  EXPECT_TRUE(processor->changes().empty());
+}
+
+// Checks that remote updates are applied locally even if the current local
+// theme is unsyncable, as long as it's not managed by policy.
+TEST_F(ThemeSyncableServiceIOSTest,
+       ProcessChangesAppliesIfNotSyncableButNotManaged) {
+  syncer::FakeSyncChangeProcessor* processor = StartSyncing();
+  ON_CALL(delegate_, GetCurrentTheme())
+      .WillByDefault(Return(CreateTestTheme(111)));
+  EXPECT_CALL(delegate_, IsCurrentThemeSyncable())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(delegate_, IsCurrentThemeManagedByPolicy())
+      .WillRepeatedly(Return(false));
+
+  EXPECT_CALL(delegate_, ApplyTheme(EqualsProto(CreateTestTheme(222))))
+      .WillOnce([this](const sync_pb::ThemeIosSpecifics& theme) {
+        service_->OnThemeChanged();
+      });
+
+  std::optional<syncer::ModelError> error = service_->ProcessSyncChanges(
+      FROM_HERE, {CreateSyncChange(syncer::SyncChange::ACTION_UPDATE, 222)});
 
   EXPECT_FALSE(error.has_value());
   EXPECT_TRUE(processor->changes().empty());
