@@ -1607,8 +1607,8 @@ bool ChromeContentRendererClient::IsSafeRedirectTarget(
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (target_url.SchemeIs(extensions::kExtensionScheme)) {
     const extensions::Extension* extension =
-        extensions::RendererExtensionRegistry::Get()->GetByID(
-            target_url.GetHost());
+        extensions::RendererExtensionRegistry::Get()->GetExtensionOrAppByURL(
+            target_url, /*include_guid=*/true);
     if (!extension) {
       return false;
     }

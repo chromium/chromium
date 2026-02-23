@@ -1,0 +1,17 @@
+[
+  {
+    "action": {
+      "redirect": {
+        "extensionPath": "/war.js"
+      },
+      "type": "redirect"
+    },
+    "condition": {
+      "resourceTypes": [
+        "xmlhttprequest"
+      ],
+      "urlFilter": "english_page.html"
+    },
+    "id": 1
+  }
+]
