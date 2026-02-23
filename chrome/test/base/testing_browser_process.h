@@ -262,6 +262,16 @@ class TestingBrowserProcess
   // issues.
   std::unique_ptr<GlobalFeatures> features_;
 
+  // Tracks whether `TearDownGlobalFeaturesForTesting()` has been called for
+  // TestingBrowserProcess yet. This is public and can be invoked by individual
+  // test cases depending on their test setup and teardown requirements. Track
+  // this so we know whether this needs to be called before
+  // TestingBrowserProcess is finally destroyed.
+  // TODO(crbug.com/485923746): Explore whether we can guarantee
+  // `TearDownGlobalFeaturesForTesting()` is called only once during
+  // destruction.
+  bool is_global_features_torn_down_ = false;
+
   // The value returned by `IsShuttingDown()`.
   bool is_shutting_down_ = false;
 

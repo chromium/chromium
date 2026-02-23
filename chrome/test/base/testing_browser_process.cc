@@ -155,10 +155,7 @@ void TestingBrowserProcess::CreateInstance() {
 
 // static
 void TestingBrowserProcess::DeleteInstance() {
-  // g_browser_process must be null during its own destruction.
-  BrowserProcess* browser_process = g_browser_process;
-  g_browser_process = nullptr;
-  delete browser_process;
+  delete g_browser_process;
 }
 
 // static
@@ -187,6 +184,18 @@ TestingBrowserProcess::TestingBrowserProcess()
 }
 
 TestingBrowserProcess::~TestingBrowserProcess() {
+  // Ensure `TearDownGlobalFeaturesForTesting()` is run if it has not yet done
+  // so to ensure global feature lifecycle hooks are invoked in the correct
+  // order.
+  // Code in these hooks expects g_browser_process to be valid and must be run
+  // before g_browser_process is nullified. `TearDownGlobalFeaturesForTesting()`
+  // will no-op if this teardown phase has already occurred.
+  // TODO(crbug.com/485923746): Explore whether we can guarantee
+  // `TearDownGlobalFeaturesForTesting()` is called only once during
+  // destruction.
+  TearDownGlobalFeaturesForTesting();
+  g_browser_process = nullptr;
+
   base::test::TaskEnvironment::RemoveDestructionObserver(this);
 
   // Tear down components for tests that do not have TaskEnvironment.
@@ -229,6 +238,11 @@ TestingBrowserProcess::SetUpGlobalFeaturesForTesting(bool profile_manager) {
 }
 
 void TestingBrowserProcess::TearDownGlobalFeaturesForTesting() {
+  if (is_global_features_torn_down_) {
+    return;
+  }
+  is_global_features_torn_down_ = true;
+
   CHECK(features_);
   features_->PostMainMessageLoopRun();
 
