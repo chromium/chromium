@@ -8,10 +8,18 @@
 
 namespace syncer {
 
+namespace {
+constexpr bool IS_AUTOFILL_AI_PLATFORM = BUILDFLAG(IS_CHROMEOS) ||
+                                         BUILDFLAG(IS_LINUX) ||
+                                         BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN);
+}  // namespace
+
 BASE_FEATURE(kDeferredSyncStartupCustomDelay,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncAccountSettings, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSyncAccountSettings,
+             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
+                                     : base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncAutofillLoyaltyCard, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -19,7 +27,9 @@ BASE_FEATURE(kSyncAutofillLoyaltyCard, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSyncMakeAutofillValuableNonEncryptable,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncAutofillValuableMetadata, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSyncAutofillValuableMetadata,
+             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
+                                     : base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncSharedTabGroupAccountData, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -102,10 +112,13 @@ BASE_FEATURE(kSyncSupportAlwaysSyncingPriorityPreferences,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 );
 
-BASE_FEATURE(kSyncWalletFlightReservations, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSyncWalletFlightReservations,
+             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
+                                     : base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncWalletVehicleRegistrations,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             IS_AUTOFILL_AI_PLATFORM ? base::FEATURE_ENABLED_BY_DEFAULT
+                                     : base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSpellcheckSeparateLocalAndAccountDictionaries,
              base::FEATURE_DISABLED_BY_DEFAULT);

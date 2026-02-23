@@ -636,7 +636,11 @@ void ValuableSyncBridge::EntityInstanceChanged(
     return;
   }
 
-  CHECK(change_processor()->IsTrackingMetadata());
+  if (!change_processor()->IsTrackingMetadata()) {
+    // TODO(crbug.com/486845921): Don't drop the commit. Consider queuing it and
+    // uploading it once sync is available.
+    return;
+  }
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       CreateMetadataChangeList();

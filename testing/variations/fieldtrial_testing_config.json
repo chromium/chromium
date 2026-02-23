@@ -2374,32 +2374,6 @@
             ]
         }
     ],
-    "AutofillAiM3PublicPasses": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAiDedupeEntities",
-                        "AutofillAiVoteForFormatStringsForFlightNumbers",
-                        "AutofillAiWalletFlightReservation",
-                        "AutofillAiWalletVehicleRegistration",
-                        "IPH_AutofillAiValuables",
-                        "SyncAccountSettings",
-                        "SyncAutofillValuableMetadata",
-                        "SyncWalletFlightReservations",
-                        "SyncWalletVehicleRegistrations"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAiM4": [
         {
             "platforms": [

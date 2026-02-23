@@ -523,8 +523,16 @@ TEST_F(ValuableSuggestionGeneratorTest,
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+// TODO(crbug.com/431155933): Remove this test when cleaning up the feature.
+// The test is subsumed by GetSuggestionsForLoyaltyCards_SuggestionsUpdatedIPH
+// right below, whose name should be updated when cleaning up the feature.
 TEST_F(ValuableSuggestionGeneratorTest,
        GetSuggestionsForLoyaltyCards_SuggestionsIPH) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kAutofillAiWalletVehicleRegistration,
+                             features::kAutofillAiWalletFlightReservation});
   test_api(valuables_data_manager()).ClearLoyaltyCards();
   test_api(valuables_data_manager())
       .AddLoyaltyCard(LoyaltyCard(

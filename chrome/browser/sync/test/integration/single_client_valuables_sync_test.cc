@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientEntityValuablesSyncTest,
   // This will trigger a sync update to the client.
   GetFakeServer()->SetValuableData({EntityInstanceToSyncEntity(server_vehicle),
                                     EntityInstanceToSyncEntity(server_flight)});
-  EntityDataChangedWaiter(edm).Wait();
+  WaitForNumberOfEntityInstancesCards(2, edm);
   EXPECT_THAT(edm->GetEntityInstances(),
               UnorderedElementsAre(server_vehicle, server_flight));
 }

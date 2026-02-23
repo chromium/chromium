@@ -832,7 +832,8 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   }
 
   if (!disabled_types.Has(syncer::AUTOFILL_VALUABLE_METADATA) &&
-      base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata)) {
+      base::FeatureList::IsEnabled(syncer::kSyncAutofillValuableMetadata) &&
+      profile_autofill_web_data_service_.value()) {
     // Both `AUTOFILL_VALUABLE` and `AUTOFILL_VALUABLE_METADATA` use the same
     // controller as they share the same behaviour.
     controllers.push_back(
