@@ -85,6 +85,12 @@
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_mediator, base::NotFatalUntil::M155);
+}
+
+#pragma mark - ChromeCoordinator
+
 - (void)start {
   _viewController = [[DriveFilePickerTableViewController alloc] init];
   ProfileIOS* profile = self.profile->GetOriginalProfile();
@@ -121,9 +127,11 @@
   if (![_viewController isMovingFromParentViewController]) {
     [_viewController.navigationController popViewControllerAnimated:YES];
   }
-  [_childBrowseCoordinator stop];
-  _childBrowseCoordinator = nil;
+  [self stopChildBrowseCoordinator];
   _mediator = nil;
+  _viewController.delegate = nil;
+  _viewController.driveFilePickerHandler = nil;
+  _viewController.mutator = nil;
   _viewController = nil;
 }
 
@@ -135,6 +143,11 @@
                                    (std::unique_ptr<DriveFilePickerCollection>)
                                        collection
                                   options:(DriveFilePickerOptions)options {
+  if (_childBrowseCoordinator) {
+    // This can occurs if the user tap on the button before the previous child
+    // is stoped.
+    return;
+  }
   [_mediator setActive:NO];
   _childBrowseCoordinator = [[BrowseDriveFilePickerCoordinator alloc]
       initWithBaseNavigationViewController:_baseNavigationController
@@ -195,8 +208,7 @@
 
 - (void)coordinatorShouldStop:(ChromeCoordinator*)coordinator {
   CHECK(coordinator == _childBrowseCoordinator);
-  [_childBrowseCoordinator stop];
-  _childBrowseCoordinator = nil;
+  [self stopChildBrowseCoordinator];
   // Inform the mediator that it is back on the top.
   [_mediator setActive:YES];
 }
@@ -216,6 +228,14 @@
 - (void)coordinator:(ChromeCoordinator*)coordinator
     didAllowDismiss:(BOOL)allowDismiss {
   [self.delegate coordinator:self didAllowDismiss:allowDismiss];
+}
+
+#pragma mark - Private
+
+- (void)stopChildBrowseCoordinator {
+  [_childBrowseCoordinator stop];
+  _childBrowseCoordinator.delegate = nil;
+  _childBrowseCoordinator = nil;
 }
 
 @end

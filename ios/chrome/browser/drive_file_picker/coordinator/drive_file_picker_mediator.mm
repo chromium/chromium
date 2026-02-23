@@ -204,6 +204,10 @@ constexpr base::TimeDelta kClearItemsDelay = base::Seconds(2.0);
   }
   // Clear selection on shutdown (stops download, allows dismissal, etc...)
   [self setSelectedFiles:{}];
+  _delegate = nil;
+  _driveFilePickerHandler = nil;
+  _consumer = nil;
+  _metricsHelper = nil;
   _timerBeforeFetch.Stop();
   _timerAfterFetchBeforeClearItems.Stop();
   _webState = nullptr;
