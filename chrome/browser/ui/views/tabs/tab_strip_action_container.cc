@@ -51,6 +51,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#include "chrome/browser/ui/tabs/glic_actor_nudge_controller.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -284,6 +285,7 @@ TabStripActionContainer::TabStripActionContainer(
           AddChildView(CreateGlicActorButtonContainer());
       glic_actor_task_icon_ =
           glic_actor_button_container_->AddChildView(CreateGlicActorTaskIcon());
+      glic_actor_task_icon_->SetVisible(false);
       glic_actor_button_container_->SetVisible(false);
     }
     glic_button_ = AddChildView(CreateGlicButton());
@@ -851,6 +853,16 @@ void TabStripActionContainer::OnTabStripNudgeButtonTimeout(
   // Hide the button if not pressed. Use locked expansion mode to avoid
   // disrupting the user.
   HideTabStripNudge(button);
+}
+
+void TabStripActionContainer::AddedToWidget() {
+  views::View::AddedToWidget();
+#if BUILDFLAG(ENABLE_GLIC)
+  if (auto* controller =
+          tabs::GlicActorNudgeController::From(browser_window_interface_)) {
+    controller->UpdateCurrentActorNudgeState();
+  }
+#endif
 }
 
 void TabStripActionContainer::MouseMovedOutOfHost() {
