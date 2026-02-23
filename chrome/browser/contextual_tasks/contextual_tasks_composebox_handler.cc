@@ -9,6 +9,9 @@
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -898,6 +901,13 @@ void ContextualTasksComposeboxHandler::AddTabContext(
   // The tab was explicitly added by the user. Hence remove the URL from the
   // blocklist.
   if (tab) {
+    if (tab->IsActivated() && !blocklisted_suggestions_.empty()) {
+      const std::string metric_name =
+          "ContextualTasks.Composebox.UserAction."
+          "AddedActiveTabAfterDeletingAutoSuggestion";
+      base::UmaHistogramBoolean(metric_name, true);
+      base::RecordAction(base::UserMetricsAction(metric_name.c_str()));
+    }
     blocklisted_suggestions_.erase(tab->GetContents()->GetLastCommittedURL());
   }
 
