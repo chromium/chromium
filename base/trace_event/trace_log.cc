@@ -45,14 +45,6 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.gen.h"  // nogncheck
 #include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.gen.h"  // nogncheck
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/debug/elf_reader.h"
-
-// The linker assigns the virtual address of the start of current library to
-// this symbol.
-extern char __executable_start;
-#endif
-
 namespace base::trace_event {
 
 namespace {
