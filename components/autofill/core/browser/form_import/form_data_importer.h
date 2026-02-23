@@ -116,9 +116,6 @@ class FormDataImporter : public history::HistoryServiceObserver {
   std::optional<CreditCard> TryMatchingExistingServerCard(
       const CreditCard& candidate);
 
-  // Helper function which extracts the IBAN from the form structure.
-  Iban ExtractIbanFromForm(const FormStructure& form);
-
   PaymentsDataManager& payments_data_manager();
 
   // The associated autofill client.
