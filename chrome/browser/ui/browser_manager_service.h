@@ -81,9 +81,6 @@ class BrowserManagerService : public KeyedService,
 
   // ---------------------------------------------------------------------------
 
-  // Profile associated with this service.
-  const raw_ptr<Profile> profile_;
-
   // References to browsers owned by the service in activation order, with the
   // most recently activated browser appearing at the front of the vector.
   std::vector<raw_ptr<BrowserWindowInterface>> browsers_activation_order_;

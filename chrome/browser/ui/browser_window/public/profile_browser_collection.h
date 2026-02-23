@@ -23,7 +23,7 @@ class ProfileBrowserCollection : public BrowserCollection {
 
   static ProfileBrowserCollection* GetForProfile(Profile* profile);
 
- private:
+ protected:
   const raw_ref<Profile> profile_;
 
   friend base::ScopedObservationTraits<ProfileBrowserCollection,
