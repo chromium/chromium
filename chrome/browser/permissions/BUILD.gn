@@ -75,6 +75,7 @@ source_set("permissions") {
     "//chrome/browser/bluetooth",
     "//chrome/browser/content_extraction",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/display_capture",
     "//chrome/browser/favicon",
     "//chrome/browser/metrics",
     "//chrome/browser/nfc",

@@ -7,6 +7,7 @@
 
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/content_setting_permission_context_base.h"
+#include "url/gurl.h"
 
 class DisplayCapturePermissionContext
     : public permissions::ContentSettingPermissionContextBase {

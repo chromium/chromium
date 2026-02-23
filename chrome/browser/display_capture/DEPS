@@ -1,0 +1,8 @@
+include_rules = [
+  "-chrome/browser",
+  "+chrome/browser/display_capture",
+  "+components/content_settings/core/common",
+  "+components/permissions",
+  "+content/public/browser",
+  "+services/network/public/mojom",
+]

@@ -1,0 +1,27 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("display_capture") {
+  public = [
+    "captured_surface_control_permission_context.h",
+    "display_capture_permission_context.h",
+  ]
+
+  sources = [
+    "captured_surface_control_permission_context.cc",
+    "display_capture_permission_context.cc",
+  ]
+
+  public_deps = [
+    "//components/content_settings/core/common",
+    "//components/permissions",
+    "//url",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//services/network/public/mojom",
+  ]
+}

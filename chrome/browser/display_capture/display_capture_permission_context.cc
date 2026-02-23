@@ -4,6 +4,7 @@
 
 #include "chrome/browser/display_capture/display_capture_permission_context.h"
 
+#include "base/notreached.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_decision.h"
 #include "components/permissions/permission_prompt_decision.h"
