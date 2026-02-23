@@ -11,14 +11,6 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
-namespace {
-
-// The additional horizontal margin to ensure the composebox covers the top
-// omnibox.
-const CGFloat kComposeboxOmniboxLayoutGuideHorizontalMargin = 10.0f;
-
-}  // namespace
-
 @implementation ComposeboxiPadPresentationController {
   // The dimming view, used to dismiss the composebox when tapped.
   UIView* _dimmingView;

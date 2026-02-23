@@ -13,6 +13,9 @@ extern const CGFloat kOmniboxMinHeight;
 extern const CGFloat kInputPlateMargin;
 /// The corner radius for the input plate container.
 extern const CGFloat kInputPlateCornerRadius;
+/// The additional horizontal margin to ensure the composebox covers the top
+/// omnibox.
+extern const CGFloat kComposeboxOmniboxLayoutGuideHorizontalMargin;
 
 // Accessibility identifier for the composebox.
 extern NSString* const kComposeboxAccessibilityIdentifier;
