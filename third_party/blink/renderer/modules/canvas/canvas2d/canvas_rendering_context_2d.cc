@@ -1339,6 +1339,8 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
   const gfx::ColorSpace color_space = GetColorSpace();
   const bool use_gpu = canvas()->ShouldTryToUseGpuRaster() &&
                        canvas()->ShouldAccelerate2dContext();
+  const bool is_gpu_compositing_enabled =
+      SharedGpuContext::IsGpuCompositingEnabled();
   if (use_gpu && canvas()->LowLatencyEnabled()) {
     // Try a SharedImage provider with usage optimized for low-latency.
     gpu::SharedImageUsageSet shared_image_usage_flags =
@@ -1376,7 +1378,8 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
         canvas()->Size(), format, alpha_type, color_space,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
         shared_image_usage_flags, canvas());
-  } else if (SharedGpuContext::MaySupportImageChromium() &&
+  } else if (is_gpu_compositing_enabled &&
+             SharedGpuContext::MaySupportImageChromium() &&
              RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
     // In this case, we are using CPU raster and GPU compositing and native
     // mappable buffers are supported. Try to use a
@@ -1395,7 +1398,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
   // If either of the other modes failed and / or it was not possible to do, we
   // will backup with a software SharedImage, and if that was not possible with
   // a Bitmap provider.
-  if (!provider && !SharedGpuContext::IsGpuCompositingEnabled()) {
+  if (!provider && !is_gpu_compositing_enabled) {
     // In this case, we are using CPU raster and CPU compositing. Create a
     // CanvasResourceProvider that uses a SharedImage backed by a shared-memory
     // buffer that can be written by canvas raster and read by the compositor.
