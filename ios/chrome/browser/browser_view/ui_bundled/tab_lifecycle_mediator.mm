@@ -206,8 +206,7 @@
   }
 
   DCHECK(_printCoordinator);
-  PrintTabHelper::GetOrCreateForWebState(webState)->set_printer(
-      _printCoordinator);
+  PrintTabHelper::FromWebState(webState)->set_printer(_printCoordinator);
 
   RepostFormTabHelper::FromWebState(webState)->SetDelegate(_repostFormDelegate);
 
@@ -360,7 +359,7 @@
     readerModeTabHelper->SetReaderModeHandler(nil);
   }
 
-  PrintTabHelper::GetOrCreateForWebState(webState)->set_printer(nil);
+  PrintTabHelper::FromWebState(webState)->set_printer(nil);
 
   RepostFormTabHelper::FromWebState(webState)->SetDelegate(nil);
 
