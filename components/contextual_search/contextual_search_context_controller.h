@@ -115,10 +115,6 @@ class ContextualSearchContextController {
     // The tokens of the contextual inputs to attach to the search url.
     std::vector<base::UnguessableToken> file_tokens;
 
-    // The currently active model.
-    omnibox::ModelMode active_model =
-        omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
-
     // Additional params to attach to the search url.
     std::map<std::string, std::string> additional_params;
 

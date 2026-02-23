@@ -772,6 +772,7 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
 
     if (input_state_model_) {
       for (auto const& [key, val] :
+           // Appends url params for tool and model selection.
            input_state_model_->GetAdditionalQueryParams()) {
         additional_params[key] = val;
       }
@@ -787,7 +788,6 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     search_url_request_info->query_text = query_text;
     search_url_request_info->additional_params = additional_params;
     search_url_request_info->aim_entry_point = aim_entry_point;
-    search_url_request_info->active_model = GetInputState().active_model;
 
     contextual_session_handle->CreateSearchUrl(
         std::move(search_url_request_info),

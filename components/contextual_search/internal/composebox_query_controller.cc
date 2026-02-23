@@ -559,8 +559,7 @@ void ComposeboxQueryController::CreateSearchUrl(
       search_url_request_info->query_start_time,
       base::UTF8ToUTF16(search_url_request_info->query_text),
       search_url_request_info->invocation_source,
-      std::move(search_url_request_info->additional_params),
-      search_url_request_info->active_model));
+      std::move(search_url_request_info->additional_params)));
 }
 
 lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(

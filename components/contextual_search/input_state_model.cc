@@ -477,21 +477,34 @@ void InputStateModel::updateDisabledState() {
 
 std::map<std::string, std::string> InputStateModel::GetAdditionalQueryParams() {
   std::map<std::string, std::string> additional_params;
-  switch (state_.active_tool) {
-    case omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH:
-      additional_params["dr"] = "1";
-      break;
-    case omnibox::ToolMode::TOOL_MODE_CANVAS:
-      additional_params["rc"] = "1";
-      break;
-    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN:
-    case omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD:
-      additional_params["imgn"] = "1";
-      break;
-    default:
-      break;
+  if (state_.active_tool != omnibox::ToolMode::TOOL_MODE_UNSPECIFIED) {
+    const auto tool_it =
+        std::find_if(state_.tool_configs.begin(), state_.tool_configs.end(),
+                     [&](const omnibox::ToolConfig& config) {
+                       return config.tool() == state_.active_tool;
+                     });
+    if (tool_it != state_.tool_configs.end()) {
+      for (const auto& param : tool_it->aim_url_params()) {
+        additional_params[param.param_key()] = param.param_value();
+      }
+    }
   }
-
+  if (state_.active_model != omnibox::ModelMode::MODEL_MODE_UNSPECIFIED) {
+    const auto model_it =
+        std::find_if(state_.model_configs.begin(), state_.model_configs.end(),
+                     [&](const omnibox::ModelConfig& config) {
+                       return config.model() == state_.active_model;
+                     });
+    if (model_it != state_.model_configs.end()) {
+      for (const auto& param : model_it->aim_url_params()) {
+        additional_params[param.param_key()] = param.param_value();
+      }
+    }
+  } else {
+    // If no model is selected, add a default param to indicate that the query
+    // is an AIM query.
+    additional_params["udm"] = "50";
+  }
   return additional_params;
 }
 
