@@ -36,6 +36,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -154,7 +155,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             TabGroupCreationCallback tabGroupCreationCallback,
             MultiInstanceManager multiInstanceManager,
-            Supplier<ShareDelegate> shareDelegateSupplier,
+            MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
             Activity activity,
             @Nullable TabGroupSyncService tabGroupSyncService,
@@ -204,7 +205,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             TabGroupCreationCallback tabGroupCreationCallback,
             MultiInstanceManager multiInstanceManager,
-            Supplier<ShareDelegate> shareDelegateSupplier,
+            MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
             Activity activity,
             BiConsumer<AnchorInfo, Boolean> reorderFunction) {
@@ -236,7 +237,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             MultiInstanceManager multiInstanceManager,
-            Supplier<ShareDelegate> shareDelegateSupplier) {
+            MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier) {
         return (menuId, anchorInfo, collaborationId, listViewTouchTracker) -> {
             List<Integer> tabIds = anchorInfo.getAllTabIds();
             assert !tabIds.isEmpty() : "Empty tab id list provided";
@@ -257,9 +258,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 multiInstanceManager.moveTabsToOtherWindow(tabs, NewWindowAppSource.MENU);
             } else if (menuId == R.id.share_tab) {
                 assert tabs.size() == 1 : "Share is only available for single tab selection.";
-                shareDelegateSupplier
-                        .get()
-                        .share(tabs.get(0), /* shareDirectly= */ false, TAB_STRIP_CONTEXT_MENU);
+                ShareDelegate shareDelegate = shareDelegateSupplier.get();
+                assumeNonNull(shareDelegate);
+                shareDelegate.share(
+                        tabs.get(0), /* shareDirectly= */ false, TAB_STRIP_CONTEXT_MENU);
             } else if (menuId == R.id.duplicate_tab_menu_id) {
                 for (Tab tab : tabs) {
                     tabModel.duplicateTab(tab);

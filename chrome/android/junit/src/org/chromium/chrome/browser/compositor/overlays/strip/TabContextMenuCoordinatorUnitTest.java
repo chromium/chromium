@@ -53,6 +53,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -308,7 +309,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         mTabGroupModelFilter,
                         mBottomSheetCoordinator,
                         mMultiInstanceManager,
-                        () -> mShareDelegate);
+                        ObservableSuppliers.createMonotonic(mShareDelegate));
         mTabContextMenuCoordinator =
                 TabContextMenuCoordinator.createContextMenuCoordinator(
                         () -> mTabModel,
@@ -316,7 +317,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         mBottomSheetCoordinator,
                         mTabGroupCreationCallback,
                         mMultiInstanceManager,
-                        () -> mShareDelegate,
+                        ObservableSuppliers.createMonotonic(mShareDelegate),
                         mWindowAndroid,
                         mActivity,
                         mReorderFunction);

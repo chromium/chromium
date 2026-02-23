@@ -2563,7 +2563,7 @@ public class RootUiCoordinator
     }
 
     /** Returns a supplier of the share delegate. */
-    public Supplier<ShareDelegate> getShareDelegateSupplier() {
+    public MonotonicObservableSupplier<ShareDelegate> getShareDelegateSupplier() {
         return mShareDelegateSupplier;
     }
 

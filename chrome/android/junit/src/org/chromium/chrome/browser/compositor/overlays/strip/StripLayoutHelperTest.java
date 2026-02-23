@@ -84,6 +84,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -4678,7 +4679,7 @@ public class StripLayoutHelperTest {
                 () -> true,
                 mBottomSheetController,
                 mMultiInstanceManager,
-                () -> mShareDelegate,
+                ObservableSuppliers.createMonotonic(mShareDelegate),
                 mBottomSheetCoordinatorFactory,
                 mSnackbarManager);
     }
