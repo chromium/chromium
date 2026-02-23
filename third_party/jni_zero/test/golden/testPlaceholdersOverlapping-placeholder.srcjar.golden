@@ -11,6 +11,7 @@ package org.jni_zero;
 import javax.annotation.processing.Generated;
 
 @Generated("JNI Zero")
+@SuppressWarnings("rawtypes")
 public interface TinySample {
   public interface Natives {
     public boolean bar(int a, Object b);
@@ -30,6 +31,7 @@ package org.jni_zero.extrapackage;
 import javax.annotation.processing.Generated;
 
 @Generated("JNI Zero")
+@SuppressWarnings("rawtypes")
 public interface ImportsTinySample {
   public interface Natives {
     public void asdf();

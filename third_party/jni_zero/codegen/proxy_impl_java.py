@@ -133,6 +133,7 @@ package {jni_obj.java_class.class_without_prefix.package_with_dots};
   if not ctx.is_per_file:
     sb('@CheckDiscard("crbug.com/993421")\n')
   sb('@Generated("JNI Zero")\n')
+  sb('@SuppressWarnings("rawtypes")\n')
   sb('@NullUnmarked\n')
   sb(f'{visibility}class {class_name} implements {ctx.interface_name}')
   with sb.block():

@@ -15,6 +15,7 @@ import org.jni_zero.internal.Nullable;
 import org.stubs.MyClass;
 
 @Generated("JNI Zero")
+@SuppressWarnings("rawtypes")
 @NullUnmarked
 class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Natives {
   private static @Nullable JniTestInstanceHolder sOverride;

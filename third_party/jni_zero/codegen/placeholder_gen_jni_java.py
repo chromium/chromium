@@ -19,6 +19,7 @@ import javax.annotation.processing.Generated;
 import org.jni_zero.internal.NullUnmarked;
 
 @Generated("JNI Zero")
+@SuppressWarnings("rawtypes")
 @NullUnmarked
 public class {gen_jni_class.name} {{
 """)

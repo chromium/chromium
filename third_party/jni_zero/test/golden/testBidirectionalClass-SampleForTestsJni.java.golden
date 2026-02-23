@@ -18,6 +18,7 @@ import org.jni_zero.internal.Nullable;
 
 @CheckDiscard("crbug.com/993421")
 @Generated("JNI Zero")
+@SuppressWarnings("rawtypes")
 @NullUnmarked
 public class SampleForTestsJni implements SampleForTests.Natives {
   private static @Nullable JniTestInstanceHolder sOverride;
