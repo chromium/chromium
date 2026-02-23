@@ -25,7 +25,7 @@ import type {InputState} from '//resources/mojo/components/omnibox/composebox/co
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {ComposeboxFile, ContextualUpload} from './common.js';
+import type {ComposeboxFile, ContextualUpload, TabUpload} from './common.js';
 import {GlifAnimationState, hasValidInputState, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
 import {FileUploadErrorType, FileUploadStatus, InputType, ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
 import {getCss} from './contextual_entrypoint_and_carousel.css.js';
@@ -191,17 +191,18 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor activeTool_: ComposeboxToolMode =
       ComposeboxToolMode.kUnspecified;
   protected accessor submitButtonShown: boolean = false;
+  private automaticActiveTab_: ComposeboxFile|null = null;
 
   getActiveToolMode() {
     return this.activeTool_;
   }
 
   hasAutomaticActiveTabChipToken(): boolean {
-    return this.automaticActiveTabChipToken_ !== null;
+    return this.automaticActiveTab_ !== null;
   }
 
   getAutomaticActiveTabChipElement(): HTMLElement|null {
-    if (!this.automaticActiveTabChipToken_) {
+    if (!this.automaticActiveTab_) {
       return null;
     }
     const carousel =
@@ -211,8 +212,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       return null;
     }
 
-    return carousel.getThumbnailElementByUuid(
-        this.automaticActiveTabChipToken_);
+    return carousel.getThumbnailElementByUuid(this.automaticActiveTab_.uuid);
   }
 
   protected get inToolMode_(): boolean {
@@ -312,7 +312,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       loadTimeData.getInteger('composeboxFileMaxSize');
   private composeboxSource_: string =
       loadTimeData.getString('composeboxSource');
-  private automaticActiveTabChipToken_: UnguessableToken|null = null;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -381,16 +380,14 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
             file.origin === TabUploadOrigin.CONTEXT_MENU) {
           entrypointAndMenu.openMenuForMultiSelection();
         }
-        this.addTabContext_(new CustomEvent('addTabContext', {
-          detail: {
-            id: file.tabId,
-            title: file.title,
-            url: file.url,
-            delayUpload: file.delayUpload,
-            replaceAutoActiveTabToken: false,
-            origin: file.origin,
-          },
-        }));
+        this.addTabContextHandleCallback_({
+          tabId: file.tabId,
+          title: file.title,
+          url: file.url,
+          delayUpload: file.delayUpload,
+          replaceAutoActiveTabToken: false,
+          origin: file.origin,
+        } as TabUpload);
       } else {
         dataTransfer.items.add(file.file);
       }
@@ -537,40 +534,40 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   updateAutoActiveTabContext(tab: TabInfo|null) {
-    const chipPresentBeforeUpdate = this.automaticActiveTabChipToken_;
-    // If there is already a suggested tab context, remove it.
-    if (this.automaticActiveTabChipToken_) {
-      this.onDeleteFile_(new CustomEvent('deleteTabContext', {
-        detail: {
-          uuid: this.automaticActiveTabChipToken_,
-        },
-      }));
-      this.automaticActiveTabChipToken_ = null;
-    }
-
-    // Only query autocomplete if we're replacing the current chip or if we're
-    // adding a new chip. Autocomplete should not be re-queried if there was no
-    // autochip to start, and the current tab cannot be added as an autochip.
-    if (!tab) {
-      if (chipPresentBeforeUpdate) {
-        this.fire('query-autocomplete', {clearMatches: true});
-      }
-    } else {
-      this.addTabContext_(new CustomEvent('addTabContext', {
-        detail: {
-          id: tab.tabId,
-          title: tab.title,
-          url: tab.url,
-          delayUpload: /*delay_upload=*/ true,
-          replaceAutoActiveTabToken: true,
-          origin: TabUploadOrigin.OTHER,
-        },
-      }));
+    const shouldDeleteAutomaticActiveTab = this.automaticActiveTab_ &&
+        (!tab || this.automaticActiveTab_.tabId !== tab.tabId);
+    if (shouldDeleteAutomaticActiveTab) {
+      this.deleteFile(this.automaticActiveTab_!.uuid);
+      this.automaticActiveTab_ = null;
 
       // TODO(crbug.com/482150500): Correctly query for url based suggestions
       // when delayed tab is present. Right now, while url-based suggestions are
       // not set-up, clear the autocomplete matches.
-      this.fire('clear-autocomplete-matches');
+      this.fire('query-autocomplete', {clearMatches: true});
+    }
+
+    if (tab) {
+      // Ignore the `TabInfo` update if there is a matching
+      // `automaticActiveTab_`.
+      if (this.automaticActiveTab_ &&
+          tab.url === this.automaticActiveTab_.url &&
+          tab.tabId === this.automaticActiveTab_.tabId) {
+        return;
+      }
+
+      this.addTabContextHandleCallback_(
+          {
+            tabId: tab.tabId,
+            title: tab.title,
+            url: tab.url,
+            delayUpload: /*delay_upload=*/ true,
+            origin: TabUploadOrigin.AUTO_ACTIVE,
+          } as TabUpload,
+          /*replaceAutoActiveTabToke=*/ true);
+
+      // Only query autocomplete if we're replacing the current chip or if we're
+      // adding a new chip.
+      this.fire('query-autocomplete', {clearMatches: true});
     }
   }
 
@@ -607,16 +604,13 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   private addTabFromAttachment_(tabAttachment: TabAttachment) {
-    this.addTabContext_(new CustomEvent('addTabContext', {
-      detail: {
-        id: tabAttachment.tabId,
-        title: tabAttachment.title,
-        url: tabAttachment.url,
-        delayUpload: /*delay_upload=*/ false,
-        replaceAutoActiveTabToken: false,
-        origin: TabUploadOrigin.OTHER,
-      },
-    }));
+    this.addTabContextHandleCallback_({
+      tabId: tabAttachment.tabId,
+      title: tabAttachment.title,
+      url: tabAttachment.url,
+      delayUpload: /*delay_upload=*/ false,
+      origin: TabUploadOrigin.OTHER,
+    } as TabUpload);
   }
 
   addSearchContext(context: SearchContext) {
@@ -691,14 +685,14 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     }
 
     const fromAutoSuggestedChip =
-        uuidToDelete === this.automaticActiveTabChipToken_ &&
+        uuidToDelete === this.automaticActiveTab_?.uuid &&
         (fromUserAction === true);
     if (fromAutoSuggestedChip) {
       const metricName = 'ContextualSearch.UserAction.DeleteAutoSuggestedTab.' +
           this.composeboxSource_;
       recordUserAction(metricName);
       recordBoolean(metricName, true);
-      this.automaticActiveTabChipToken_ = null;
+      this.automaticActiveTab_ = null;
     }
 
     this.files_ = new Map([...this.files_.entries()].filter(
@@ -903,38 +897,39 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     });
   }
 
+  private addTabContextHandleCallback_(
+      tabUpload: TabUpload, replaceAutoActiveTabToken: boolean = false) {
+    this.fire('add-tab-context', {
+      id: tabUpload.tabId,
+      title: tabUpload.title,
+      url: tabUpload.url,
+      delayUpload: tabUpload.delayUpload,
+      origin: tabUpload.origin,
+      onContextAdded: (file: ComposeboxFile) => {
+        this.files_ = new Map([...this.files_.entries(), [file.uuid, file]]);
+        this.addedTabsIds_ = new Map(
+            [...this.addedTabsIds_.entries(), [tabUpload.tabId, file.uuid]]);
+        if (replaceAutoActiveTabToken) {
+          this.automaticActiveTab_ = Object.assign(file, {uuid: file.uuid});
+        }
+      },
+    });
+  }
+
   protected addTabContext_(e: CustomEvent<{
     id: number,
     title: string,
     url: Url,
     delayUpload: boolean,
-    replaceAutoActiveTabToken: boolean,
     origin: TabUploadOrigin,
   }>) {
-    e.stopPropagation();
-
-    this.fire('add-tab-context', {
-      id: e.detail.id,
+    this.addTabContextHandleCallback_({
+      tabId: e.detail.id,
       title: e.detail.title,
       url: e.detail.url,
       delayUpload: e.detail.delayUpload,
       origin: e.detail.origin,
-      onContextAdded: (file: ComposeboxFile) => {
-        this.files_ = new Map([...this.files_.entries(), [file.uuid, file]]);
-        this.addedTabsIds_ = new Map(
-            [...this.addedTabsIds_.entries(), [e.detail.id, file.uuid]]);
-        if (e.detail.replaceAutoActiveTabToken) {
-          if (this.automaticActiveTabChipToken_) {
-            this.onDeleteFile_(new CustomEvent('deleteTabContext', {
-              detail: {
-                uuid: this.automaticActiveTabChipToken_,
-              },
-            }));
-          }
-          this.automaticActiveTabChipToken_ = file.uuid;
-        }
-      },
-    });
+    } as TabUpload);
   }
 
   protected openImageUpload_() {
