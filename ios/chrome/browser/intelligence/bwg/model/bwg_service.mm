@@ -13,6 +13,7 @@
 #import "google_apis/gaia/google_service_auth_error.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -81,15 +82,10 @@ bool BwgService::IsProfileEligibleForGemini() {
           .state() == GoogleServiceAuthError::NONE;
 
   const bool can_use_model_execution = CanUseGeminiModelExecution(account_info);
-
-  // Checks the Chrome and Gemini Enterprise policies.
-  // kGeminiEnabledByPolicy is 0 for allowed, 1 for disallowed.
-  bool is_disabled_by_policy =
-      pref_service_->GetInteger(prefs::kGeminiEnabledByPolicy) == 1 ||
-      is_disabled_by_gemini_policy_;
-
-  bool is_eligible = can_use_model_execution && !is_disabled_by_policy &&
-                     tokens_ok && !profile_->IsOffTheRecord();
+  const bool allowed_by_enterprise =
+      gemini::GeminiAllowedByPolicy(pref_service_);
+  bool is_eligible = can_use_model_execution && allowed_by_enterprise && tokens_ok &&
+                     !is_disabled_by_gemini_policy_ && !profile_->IsOffTheRecord();
 
   base::UmaHistogramBoolean(kEligibilityHistogram, is_eligible);
 

@@ -13,6 +13,8 @@
 #import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -54,6 +56,8 @@ class BwgServiceTest : public PlatformTest {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     pref_service_->registry()->RegisterIntegerPref(
         prefs::kGeminiEnabledByPolicy, 0);
+    pref_service_->registry()->RegisterIntegerPref(prefs::kGenAiEnabledByPolicy,
+                                                   0);
     pref_service_->registry()->RegisterBooleanPref(
         prefs::kAIHubEligibilityTriggered, false);
 
@@ -115,7 +119,24 @@ TEST_F(BwgServiceTest, IsProfileEligibleForGemini_WhenUserIsEligible) {
 // capability is explicitly false.
 TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByCapability) {
   SignInAndSetCapability(false);
-  pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy, 0);
+  pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy,
+                            static_cast<int>(gemini::SettingsPolicy::kAllowed));
+
+  EXPECT_FALSE(gemini_service_->IsProfileEligibleForGemini());
+  histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
+                                       /*sample=*/false,
+                                       /*expected_count=*/1);
+}
+
+// Tests that a user is ineligible if both of the Gemini policies are disabled.
+TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByBothPolicies) {
+  SignInAndSetCapability(true);
+  pref_service_->SetInteger(
+      prefs::kGeminiEnabledByPolicy,
+      static_cast<int>(gemini::SettingsPolicy::kNotAllowed));
+  pref_service_->SetInteger(
+      prefs::kGenAiEnabledByPolicy,
+      static_cast<int>(gemini::GenAiDefaultSettingsPolicy::kNotAllowed));
 
   EXPECT_FALSE(gemini_service_->IsProfileEligibleForGemini());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
@@ -124,9 +145,11 @@ TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByCapability) {
 }
 
 // Tests that a user is ineligible if the Gemini policy is disabled.
-TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByPolicy) {
+TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByGeminiPolicy) {
   SignInAndSetCapability(true);
-  pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy, 1);
+  pref_service_->SetInteger(
+      prefs::kGeminiEnabledByPolicy,
+      static_cast<int>(gemini::SettingsPolicy::kNotAllowed));
 
   EXPECT_FALSE(gemini_service_->IsProfileEligibleForGemini());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
@@ -134,10 +157,28 @@ TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByPolicy) {
                                        /*expected_count=*/1);
 }
 
-// Tests that a user is eligible if the Gemini policy is enabled.
+// Tests that a user is ineligible if the GenAI policy is disabled.
+TEST_F(BwgServiceTest, IsProfileEligibleForGemini_IneligibleByGenAIPolicy) {
+  SignInAndSetCapability(true);
+  pref_service_->SetInteger(
+      prefs::kGenAiEnabledByPolicy,
+      static_cast<int>(gemini::GenAiDefaultSettingsPolicy::kNotAllowed));
+
+  EXPECT_FALSE(gemini_service_->IsProfileEligibleForGemini());
+  histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
+                                       /*sample=*/false,
+                                       /*expected_count=*/1);
+}
+
+// Tests that a user is eligible if both of the Gemini policies are enabled.
 TEST_F(BwgServiceTest, IsProfileEligibleForGemini_EligibleByPolicy) {
   SignInAndSetCapability(true);
-  pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy, 0);
+  pref_service_->SetInteger(prefs::kGeminiEnabledByPolicy,
+                            static_cast<int>(gemini::SettingsPolicy::kAllowed));
+  pref_service_->SetInteger(
+      prefs::kGenAiEnabledByPolicy,
+      static_cast<int>(
+          gemini::GenAiDefaultSettingsPolicy::kAllowedWithoutImprovingModels));
 
   EXPECT_TRUE(gemini_service_->IsProfileEligibleForGemini());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,

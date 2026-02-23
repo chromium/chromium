@@ -822,6 +822,11 @@ inline constexpr char kNextSSORecallTime[] = "ios.next_sso_recall_time";
 // 0 means Gemini is enabled (default), and 1 means it's disabled.
 inline constexpr char kGeminiEnabledByPolicy[] = "ios.gemini_enabled_by_policy";
 
+// An integer determining the enabled status of Gen Ai by policy.
+// 0 or 1 means all covered generative AI features are enabled, while 2 means
+// that they are disabled.
+inline constexpr char kGenAiEnabledByPolicy[] = "ios.gen_ai_enabled_by_policy";
+
 // A boolean specifying whether the user has ever been eligible for AI Hub.
 inline constexpr char kAIHubEligibilityTriggered[] =
     "ios.ai_hub_eligibility_triggered";

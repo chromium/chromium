@@ -8,3 +8,16 @@ source_set("constants") {
     "bwg_constants.mm",
   ]
 }
+
+source_set("prefs") {
+  sources = [
+    "gemini_prefs.h",
+    "gemini_prefs.mm",
+  ]
+  deps = [
+    "//components/pref_registry",
+    "//components/prefs",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+  ]
+}
