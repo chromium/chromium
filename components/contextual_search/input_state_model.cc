@@ -453,11 +453,13 @@ void InputStateModel::UpdateDisabledInputTypes() {
 
   for (const auto& input_type : state_.allowed_input_types) {
     bool input_limit_reached = false;
-    if (limits.count(input_type)) {
-      int limit = limits.at(input_type);
-      if (limit > 0 && current_input_counts.count(input_type) &&
-          current_input_counts.at(input_type) >= limit) {
-        input_limit_reached = true;
+    if (auto limits_it = limits.find(input_type); limits_it != limits.end()) {
+      int limit = limits_it->second;
+      if (limit > 0) {
+        if (auto it = current_input_counts.find(input_type);
+            it != current_input_counts.end() && it->second >= limit) {
+          input_limit_reached = true;
+        }
       }
     }
 
