@@ -7,7 +7,6 @@
 #include "base/process/process.h"
 #include "components/crash/core/app/crashpad.h"
 #include "content/public/browser/browser_child_process_host.h"
-#include "content/public/common/result_codes.h"
 
 void CrashDumpHungChildProcess(base::ProcessHandle handle) {
   base::PortProvider* provider =

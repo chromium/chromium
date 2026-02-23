@@ -511,7 +511,6 @@ static_library("browser") {
     "gpu/chrome_browser_main_extra_parts_gpu.h",
     "gpu/gpu_mode_manager.cc",
     "gpu/gpu_mode_manager.h",
-    "hang_monitor/hang_crash_dump.h",
     "heavy_ad_intervention/heavy_ad_service_factory.cc",
     "heavy_ad_intervention/heavy_ad_service_factory.h",
     "history/chrome_history_backend_client.cc",
@@ -1827,6 +1826,7 @@ static_library("browser") {
     "//chrome/browser/file_system_access:impl",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/gcm",
+    "//chrome/browser/hang_monitor",
     "//chrome/browser/history",
     "//chrome/browser/image_decoder",
     "//chrome/browser/image_fetcher",
@@ -6290,9 +6290,6 @@ static_library("browser") {
       # * `//chrome/browser/dock.h` (MacOS)
       "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar:impl",
     ]
-  } else {
-    # On other platforms, use the generic implementation.
-    sources += [ "hang_monitor/hang_crash_dump.cc" ]
   }
 
   if (is_win) {
@@ -6329,7 +6326,6 @@ static_library("browser") {
       "font_prewarmer_tab_helper.cc",
       "font_prewarmer_tab_helper.h",
       "fullscreen_win.cc",
-      "hang_monitor/hang_crash_dump_win.cc",
       "icon_loader_win.cc",
       "install_verification/win/module_info.h",
       "install_verification/win/module_list.cc",
@@ -6574,7 +6570,6 @@ static_library("browser") {
       "fullscreen_mac.mm",
       "global_keyboard_shortcuts_mac.h",
       "global_keyboard_shortcuts_mac.mm",
-      "hang_monitor/hang_crash_dump_mac.cc",
       "icon_loader_mac.mm",
       "lifetime/application_lifetime_mac.mm",
       "mac/auth_session_request.h",
