@@ -82,6 +82,11 @@ class ConsentAuditorImplTest : public testing::Test {
     CreateConsentAuditorImpl(std::make_unique<FakeConsentSyncBridge>());
   }
 
+  void TearDown() override {
+    consent_sync_bridge_ = nullptr;
+    testing::Test::TearDown();
+  }
+
   void CreateConsentAuditorImpl(std::unique_ptr<FakeConsentSyncBridge> bridge) {
     consent_sync_bridge_ = bridge.get();
     consent_auditor_ = std::make_unique<ConsentAuditorImpl>(
@@ -97,8 +102,7 @@ class ConsentAuditorImplTest : public testing::Test {
  private:
   // Test helpers.
   base::SimpleTestClock test_clock_;
-  raw_ptr<FakeConsentSyncBridge, DanglingUntriaged> consent_sync_bridge_ =
-      nullptr;
+  raw_ptr<FakeConsentSyncBridge> consent_sync_bridge_ = nullptr;
 
   // Test object to be tested.
   std::unique_ptr<ConsentAuditorImpl> consent_auditor_;
