@@ -5580,7 +5580,7 @@ bool CSSMathExpressionRandomFunction::IsComputationallyIndependent() const {
 }
 
 bool CSSMathExpressionRandomFunction::IsElementDependent() const {
-  return !random_value_sharing_->IsElementShared();
+  return true;
 }
 
 bool CSSMathExpressionRandomFunction::HasInvalidAnchorFunctions(
