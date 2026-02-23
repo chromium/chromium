@@ -126,6 +126,15 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
   void LoadBlockedPlugins(const std::string& identifier) override {}
   void SetShouldDeferMediaLoad(bool should_defer) override {}
 
+  void InitializeTool(actor::mojom::ToolInvocationPtr request,
+                      InitializeToolCallback callback) override {
+    std::move(callback).Run(
+        mojom::InitializeToolResult::NewSuccessPoint(gfx::Point(100, 100)));
+  }
+  void ExecuteTool(const actor::TaskId& task_id,
+                   ExecuteToolCallback callback) override {
+    std::move(callback).Run(MakeOkResult());
+  }
   void InvokeTool(actor::mojom::ToolInvocationPtr request,
                   InvokeToolCallback callback) override {
     std::move(callback).Run(MakeOkResult());
