@@ -152,6 +152,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
       std::string query,
       tabs::TabHandle active_tab_handle,
       std::optional<base::Uuid> original_task_id,
+      std::optional<base::UnguessableToken> overlay_token,
       std::unique_ptr<contextual_tasks::ContextualTaskContext> context);
 
   // Called when a tab context reupload has started or canceled, to continue

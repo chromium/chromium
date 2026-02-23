@@ -2209,6 +2209,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
        CreateAndSendQueryMessage_OverlayOpen) {
   std::string kQuery = "overlay query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  base::UnguessableToken overlay_token = base::UnguessableToken::Create();
 
   // Set task ID so we enter the relevant if block.
   EXPECT_CALL(*mock_ui_, GetTaskId())
@@ -2218,6 +2219,10 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   // Mock IsLensOverlayShowing to return true.
   EXPECT_CALL(*mock_ui_, IsLensOverlayShowing())
       .WillRepeatedly(testing::Return(true));
+
+  // Mock GetLensOverlayToken to return a token.
+  EXPECT_CALL(*handler_, GetLensOverlayToken())
+      .WillOnce(testing::Return(overlay_token));
 
   // Expect CloseLensSync to be called.
   EXPECT_CALL(
@@ -2231,17 +2236,102 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       .Times(0);
 
   // Expect CreateClientToAimRequest IS called (immediate submission).
+  // Verify overlay token is included.
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
-      .WillOnce(testing::Return(lens::ClientToAimMessage()));
+      .WillOnce([&](std::unique_ptr<
+                    contextual_search::ContextualSearchContextController::
+                        CreateClientToAimRequestInfo> info) {
+        EXPECT_EQ(info->query_text, kQuery);
+        EXPECT_THAT(info->file_tokens, testing::Contains(overlay_token));
+        EXPECT_TRUE(info->force_include_latest_interaction_request_data);
+        return lens::ClientToAimMessage();
+      });
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
 
   handler_->CreateAndSendQueryMessage(kQuery);
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
+       CreateAndSendQueryMessage_OverlayOpen_WithUpload) {
+  std::string kQuery = "overlay query with upload";
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  base::UnguessableToken overlay_token = base::UnguessableToken::Create();
+
+  // Setup an upload to make IsAnyContextUploading() true.
+  auto file_info = searchbox::mojom::SelectedFileInfo::New();
+  file_info->file_name = "test.pdf";
+  file_info->mime_type = "application/pdf";
+  std::vector<uint8_t> data = {0x1};
+
+  // Create a pending upload
+  base::MockCallback<ContextualTasksComposeboxHandler::AddFileContextCallback>
+      callback;
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    run_loop.Quit();
+  });
+
+  handler_->AddFileContext(std::move(file_info), mojo_base::BigBuffer(data),
+                           callback.Get());
+  run_loop.Run();
+
+  ASSERT_TRUE(handler_->IsAnyContextUploading());
+
+  EXPECT_CALL(*mock_ui_, GetTaskId())
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+
+  EXPECT_CALL(*mock_ui_, IsLensOverlayShowing())
+      .WillRepeatedly(testing::Return(true));
+
+  EXPECT_CALL(*handler_, GetLensOverlayToken())
+      .WillOnce(testing::Return(overlay_token));
+
+  EXPECT_CALL(
+      *mock_lens_controller_,
+      CloseLensSync(
+          lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted));
+
+  // Expect GetContextForTask TO be called because an upload is in progress.
+  contextual_tasks::ContextualTask task(task_id);
+  auto context =
+      std::make_unique<contextual_tasks::ContextualTaskContext>(task);
+
+  EXPECT_CALL(*mock_contextual_tasks_service_ptr_,
+              GetContextForTask(task_id, testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&context](
+              const base::Uuid& task_id,
+              const std::set<contextual_tasks::ContextualTaskContextSource>&
+                  sources,
+              std::unique_ptr<contextual_tasks::ContextDecorationParams> params,
+              base::OnceCallback<void(
+                  std::unique_ptr<contextual_tasks::ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::move(context)); });
+
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillOnce([&](std::unique_ptr<
+                    contextual_search::ContextualSearchContextController::
+                        CreateClientToAimRequestInfo> info) {
+        EXPECT_EQ(info->query_text, kQuery);
+        EXPECT_THAT(info->file_tokens, testing::Contains(overlay_token));
+        EXPECT_TRUE(info->force_include_latest_interaction_request_data);
+        return lens::ClientToAimMessage();
+      });
+
+  EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_)).Times(0);
+
+  handler_->CreateAndSendQueryMessage(kQuery);
+
+  EXPECT_TRUE(handler_->HasPendingQueryForTesting());
+}
+
+TEST_F(ContextualTasksComposeboxHandlerTest,
        CreateAndSendQueryMessage_OverlayClosed) {
   std::string kQuery = "normal query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  // Token that exists but should not be used.
+  base::UnguessableToken overlay_token = base::UnguessableToken::Create();
 
   EXPECT_CALL(*mock_ui_, GetTaskId())
       .WillRepeatedly(
@@ -2250,6 +2340,10 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   // Mock IsLensOverlayShowing to return false.
   EXPECT_CALL(*mock_ui_, IsLensOverlayShowing())
       .WillRepeatedly(testing::Return(false));
+
+  // Even if token is available, it should not be used if overlay is closed.
+  EXPECT_CALL(*handler_, GetLensOverlayToken())
+      .WillOnce(testing::Return(overlay_token));
 
   // Expect CloseLensSync to be called (it's always called).
   EXPECT_CALL(
@@ -2276,7 +2370,16 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   // The test returns a context with no matching attachments to the active tab,
   // so it will proceed to submission immediately.
   EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
-      .WillOnce(testing::Return(lens::ClientToAimMessage()));
+      .WillOnce([&](std::unique_ptr<
+                    contextual_search::ContextualSearchContextController::
+                        CreateClientToAimRequestInfo> info) {
+        EXPECT_EQ(info->query_text, kQuery);
+        // Verify overlay token is NOT included.
+        EXPECT_THAT(info->file_tokens,
+                    testing::Not(testing::Contains(overlay_token)));
+        EXPECT_FALSE(info->force_include_latest_interaction_request_data);
+        return lens::ClientToAimMessage();
+      });
   EXPECT_CALL(*mock_ui_, PostMessageToWebview(testing::_));
 
   handler_->CreateAndSendQueryMessage(kQuery);
