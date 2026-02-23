@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
-#include "components/viz/common/color_space_utils.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/blit_request.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"

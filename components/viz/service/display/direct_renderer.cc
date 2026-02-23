@@ -23,7 +23,6 @@
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
 #include "cc/paint/filter_operations.h"
-#include "components/viz/common/color_space_utils.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -923,10 +922,12 @@ gfx::ColorSpace DirectRenderer::RenderPassColorSpace(
   const auto& display_color_spaces = current_frame()->display_color_spaces;
   auto content_color_usage = render_pass->content_color_usage;
   bool has_transparent_background = render_pass->has_transparent_background;
+  gfx::ColorSpace output_color_space =
+      display_color_spaces
+          .GetOutputColorSpace(content_color_usage, has_transparent_background)
+          .GetWithSdrWhiteLevel(display_color_spaces.GetSDRMaxLuminanceNits());
   return render_pass == current_frame()->root_render_pass
-             ? ColorSpaceUtils::OutputColorSpace(display_color_spaces,
-                                                 content_color_usage,
-                                                 has_transparent_background)
+             ? output_color_space
              : display_color_spaces.GetRasterAndCompositeColorSpace(
                    content_color_usage);
 }

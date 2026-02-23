@@ -61,8 +61,6 @@ viz_component("common") {
   defines = [ "VIZ_COMMON_IMPLEMENTATION" ]
 
   sources = [
-    "color_space_utils.cc",
-    "color_space_utils.h",
     "constants.cc",
     "constants.h",
     "display/overlay_strategy.cc",
