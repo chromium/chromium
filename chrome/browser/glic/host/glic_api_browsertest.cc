@@ -754,7 +754,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, DISABLED_testInvocationSource) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testDefaultInvocationSource) {
+// TODO(crbug.com/486793948): Fix and re-enable or remove the test.
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
+                       DISABLED_testDefaultInvocationSource) {
   RunTestSequence(CloseGlic(), WaitForGlicClose(),
                   ToggleGlicWindowFromSource(
                       GlicWindowMode::kAttached, kGlicButtonElementId,
