@@ -384,6 +384,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   closeMenu() {
+    if (!this.showMenuOnClick) {
+      return;
+    }
+
     const entrypointAndMenu =
         this.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
             '#contextEntrypoint');
