@@ -96,6 +96,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="History.BrowsingHistoryResult.DuplicateVisitsCount"
+    units="visits" expires_after="2026-08-19">
+  <owner>zalmashni@google.com</owner>
+  <owner>rainhard@chromium.org</owner>
+  <component>1456716</component>
+  <summary>
+    Recorded whenever history data is queried for display on chrome://history
+    (i.e. when the page is opened, when the user scrolls to the bottom of the
+    available list, and when the user changes the search terms). Records the
+    number of duplicate visits removed from each query on the client side. If
+    kBrowsingHistorySimilarVisitsGrouping experimentis enabled, duplicate visits
+    are those that have the same host and title whithin the same day. If the
+    experiment is disabled, duplicate visits are those that have the same URL
+    whithin the same day.
+  </summary>
+</histogram>
+
 <histogram name="History.BrowsingHistoryResult.{LocalOrRemote}.{VisitAge}"
     units="visits" expires_after="2026-07-01">
   <owner>treib@chromium.org</owner>
