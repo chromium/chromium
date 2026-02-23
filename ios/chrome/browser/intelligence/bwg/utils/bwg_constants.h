@@ -29,7 +29,9 @@ enum class EntryPoint {
   ImageContextMenu = 6,
   // Gemini was opened via tapping the image remix in-product help.
   ImageRemixIPH = 7,
-  kMaxValue = ImageRemixIPH,
+  // Gemini was opened via the edit menu to explain the selection.
+  EditMenu = 8,
+  kMaxValue = EditMenu,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiEntryPoint)
 
