@@ -1,0 +1,4 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++image name='A red circle' nameFrom=relatedElement

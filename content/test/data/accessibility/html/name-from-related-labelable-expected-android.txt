@@ -1,0 +1,4 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.view.View interesting name='Username:'
+++++android.widget.EditText clickable editable_text focusable interesting hint='Username:' input_type=1

@@ -1,0 +1,6 @@
+rootWebArea name='Document Title Example' nameFrom=relatedElement
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='Testing document title name mapping.' nameFrom=contents
+++++++++++inlineTextBox name='Testing document title name mapping.' nameFrom=contents

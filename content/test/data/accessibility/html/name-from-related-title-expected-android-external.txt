@@ -1,0 +1,2 @@
+WebView text:"Document Title Example" focusable focused actions:[CLEAR_FOCUS, AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="rootWebArea"]
+++TextView text:"Testing document title name mapping." actions:[AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="paragraph"]

@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++group name='User Preferences' nameFrom=relatedElement
+++++++++legend
+++++++++++staticText name='User Preferences' nameFrom=contents
+++++++++++++inlineTextBox name='User Preferences' nameFrom=contents
+++++++++checkBox name='Dark Mode' nameFrom=relatedElement checkedState=false
+++++++++labelText ignored
+++++++++++staticText ignored

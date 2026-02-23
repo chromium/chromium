@@ -1,0 +1,3 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]
+++++Image text:"A red circle" tooltipText:"A red circle" actions:[AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="image", hasImage="true"]

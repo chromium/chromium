@@ -1,0 +1,4 @@
+WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View text:"User Preferences" actions:[AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="group"]
+++++View text:"User Preferences" actions:[AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="legend"]
+++++CheckBox text:"Dark Mode" viewIdResName:"dark-mode" checkable clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_SELECTION] bundle:[chromeRole="checkBox", clickableScore="300"]

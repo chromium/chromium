@@ -1,0 +1,4 @@
+android.webkit.WebView focusable focused
+++android.view.View name='User Preferences'
+++++android.view.View interesting name='User Preferences'
+++++android.widget.CheckBox checkable clickable focusable interesting name='Dark Mode'
