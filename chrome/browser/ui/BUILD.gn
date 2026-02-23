@@ -58,7 +58,6 @@ static_library("ui") {
     "chrome_select_file_policy.h",
     "confirm_bubble.h",
     "crypto_module_password_dialog.h",
-    "cryptuiapi_shim.h",
     "enterprise_startup_dialog.h",
     "idle_bubble.h",
     "incognito_allowed_url.cc",

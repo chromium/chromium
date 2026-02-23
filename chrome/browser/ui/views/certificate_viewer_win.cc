@@ -6,13 +6,14 @@
 
 #include <windows.h>
 
+#include <cryptuiapi.h>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread.h"
-#include "chrome/browser/ui/cryptuiapi_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util_win.h"

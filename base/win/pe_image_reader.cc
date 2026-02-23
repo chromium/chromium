@@ -9,12 +9,15 @@
 
 #include "base/win/pe_image_reader.h"
 
+#include <windows.h>
+
+#include <wintrust.h>
+
 #include <memory>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
-#include "base/win/wintrust_shim.h"
 
 namespace base {
 namespace win {

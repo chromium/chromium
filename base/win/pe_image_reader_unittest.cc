@@ -8,12 +8,12 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <wintrust.h>
 
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/win/wintrust_shim.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

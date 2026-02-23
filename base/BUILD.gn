@@ -1996,7 +1996,6 @@ component("base") {
       "win/winrt_foundation_helpers.h",
       "win/winrt_storage_util.cc",
       "win/winrt_storage_util.h",
-      "win/wintrust_shim.h",
       "win/wmi.cc",
       "win/wmi.h",
       "win/wrapped_window_proc.cc",

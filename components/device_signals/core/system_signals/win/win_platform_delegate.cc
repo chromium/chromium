@@ -4,11 +4,11 @@
 
 #include "components/device_signals/core/system_signals/win/win_platform_delegate.h"
 
-// clang-format off
-#include <windows.h> // Must be in front of other Windows header files.
-// clang-format on
+#include <windows.h>  // Must be in front of other Windows header files.
 
 #include <softpub.h>
+#include <wincrypt.h>
+#include <wintrust.h>
 
 #include <memory>
 #include <optional>
@@ -19,8 +19,6 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
-#include "base/win/wincrypt_shim.h"
-#include "base/win/wintrust_shim.h"
 #include "components/device_signals/core/common/common_types.h"
 #include "components/device_signals/core/common/platform_utils.h"
 #include "crypto/scoped_capi_types.h"
