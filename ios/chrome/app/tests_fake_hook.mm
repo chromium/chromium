@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#import "ios/chrome/app/tests_hook_helper.h"
+#import "ios/chrome/app/tests_hook_helper.h"  // nogncheck
 #endif
 
 namespace tests_hook {
