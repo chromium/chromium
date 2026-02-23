@@ -795,11 +795,13 @@ public class SettingsSearchCoordinator
 
     // Update search UI width/location when multi-column settings fragment is enabled.
     private void updateSearchUiWidth() {
-        View searchBox = mActivity.findViewById(R.id.search_box);
-        View query = mActivity.findViewById(R.id.search_query_container);
-        int settingsMargin = getPixelSize(R.dimen.settings_item_margin);
         boolean showBackIcon = mFragmentState != FS_SEARCH;
         if (mUseMultiColumn) {
+            View searchBox = mActivity.findViewById(R.id.search_box);
+            View query = mActivity.findViewById(R.id.search_query_container);
+            if (searchBox == null || query == null) return;
+
+            int settingsMargin = getPixelSize(R.dimen.settings_item_margin);
             int detailPaneWidth = mActivity.findViewById(R.id.preferences_detail).getWidth();
             if (detailPaneWidth == 0 || getHelpMenuView() == null) {
                 mHandler.post(this::updateSearchUiWidth);
