@@ -455,18 +455,6 @@ void Canvas2DRecorderContext::beginLayerImpl(ScriptState* script_state,
     return;
   }
 
-  // Make sure we have a recorder and paint canvas.
-  if (!GetOrCreatePaintCanvas()) {
-    return;
-  }
-
-  MemoryManagedPaintRecorder* recorder = Recorder();
-  if (!recorder) {
-    return;
-  }
-
-  ValidateStateStack();
-
   sk_sp<PaintFilter> filter;
   if (options != nullptr) {
     CHECK(exception_state != nullptr);
@@ -494,6 +482,20 @@ void Canvas2DRecorderContext::beginLayerImpl(ScriptState* script_state,
           kInterpolationSpaceSRGB);
     }
   }
+
+  // Create the `PaintCanvas` AFTER parsing the filter. It's possible for
+  // filters to reset the canvas, using a custom object property getter for
+  // instance.
+  if (!GetOrCreatePaintCanvas()) {
+    return;
+  }
+
+  MemoryManagedPaintRecorder* recorder = Recorder();
+  if (!recorder) {
+    return;
+  }
+
+  ValidateStateStack();
 
   if (layer_count_ == 0) {
     recorder->BeginSideRecording();
