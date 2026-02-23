@@ -31,6 +31,8 @@ class ConnectionTimeout : public Connection {
             base::TimeDelta timeout,
             OnRequestCallback callback) override;
 
+  void OnDestroy(ErrorCode error) override;
+
  private:
   void OnResponse(int32_t internal_request_id,
                   base::expected<proto::LegionResponse, ErrorCode> result);

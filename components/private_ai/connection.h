@@ -36,6 +36,10 @@ class Connection {
   virtual void Send(proto::LegionRequest request,
                     base::TimeDelta timeout,
                     OnRequestCallback callback) = 0;
+
+  // Invoked when the connection is being destroyed. Implementations should
+  // resolve all pending requests with `error`.
+  virtual void OnDestroy(ErrorCode error) = 0;
 };
 
 }  // namespace private_ai

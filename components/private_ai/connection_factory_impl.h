@@ -41,7 +41,7 @@ class ConnectionFactoryImpl : public ConnectionFactory {
 
   // ConnectionFactory override:
   std::unique_ptr<Connection> Create(
-      base::RepeatingClosure on_disconnect) override;
+      base::OnceCallback<void(ErrorCode)> on_disconnect) override;
 
  private:
   const GURL url_;

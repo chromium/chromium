@@ -35,7 +35,7 @@ ConnectionTokenAttestation::PendingRequest::operator=(PendingRequest&&) =
 ConnectionTokenAttestation::ConnectionTokenAttestation(
     std::unique_ptr<Connection> inner_connection,
     phosphor::TokenManager* token_manager,
-    base::OnceClosure on_disconnect)
+    base::OnceCallback<void(ErrorCode)> on_disconnect)
     : inner_connection_(std::move(inner_connection)),
       token_manager_(token_manager),
       on_disconnect_(std::move(on_disconnect)) {
@@ -77,7 +77,7 @@ void ConnectionTokenAttestation::OnTokenFetched(
     std::optional<phosphor::BlindSignedAuthToken> auth_token) {
   if (!auth_token.has_value()) {
     LOG(ERROR) << "Failed to get anonymous auth token";
-    FailPendingRequestsAndCallOnDisconnect(ErrorCode::kClientAttestationFailed);
+    CallOnDisconnect(ErrorCode::kClientAttestationFailed);
     return;
   }
 
@@ -102,7 +102,7 @@ void ConnectionTokenAttestation::OnAttestationResponse(
                << static_cast<int>(result.error());
     base::UmaHistogramEnumeration("Legion.Client.RequestErrorCode",
                                   result.error());
-    FailPendingRequestsAndCallOnDisconnect(ErrorCode::kClientAttestationFailed);
+    CallOnDisconnect(ErrorCode::kClientAttestationFailed);
     return;
   }
 
@@ -115,17 +115,20 @@ void ConnectionTokenAttestation::OnAttestationResponse(
   pending_requests_.clear();
 }
 
-void ConnectionTokenAttestation::FailPendingRequestsAndCallOnDisconnect(
-    ErrorCode error_code) {
+void ConnectionTokenAttestation::OnDestroy(ErrorCode error) {
   attestation_state_ = AttestationState::kFailed;
 
-  for (auto& pending_request : pending_requests_) {
-    std::move(pending_request.callback).Run(base::unexpected(error_code));
+  auto pending_requests = std::move(pending_requests_);
+  for (auto& pending_request : pending_requests) {
+    std::move(pending_request.callback).Run(base::unexpected(error));
   }
-  pending_requests_.clear();
 
+  inner_connection_->OnDestroy(error);
+}
+
+void ConnectionTokenAttestation::CallOnDisconnect(ErrorCode error_code) {
   if (on_disconnect_) {
-    std::move(on_disconnect_).Run();
+    std::move(on_disconnect_).Run(error_code);
   }
 }
 

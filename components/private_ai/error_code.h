@@ -14,30 +14,32 @@ namespace private_ai {
 // LINT.IfChange(ErrorCode)
 enum class ErrorCode {
   // A non-transient error occurred. The client should not retry the request.
-  kError,
+  kError = 0,
   // Authentication failed, e.g., due to an invalid API key.
-  kAuthenticationFailed,
+  kAuthenticationFailed = 1,
   // A transient network error occurred. The client may retry the request.
-  kNetworkError,
+  kNetworkError = 2,
   // Attestation failed. The client should not retry the request.
-  kAttestationFailed,
+  kAttestationFailed = 3,
   // Handshake or attestation failed. The client should not retry the request.
-  kHandshakeFailed,
+  kHandshakeFailed = 4,
   // Encryption failed. The client should not retry the request.
-  kEncryptionFailed,
+  kEncryptionFailed = 5,
   // Decryption failed. The client should not retry the request.
-  kDecryptionFailed,
+  kDecryptionFailed = 6,
   // Failed to parse the server response.
-  kResponseParseError,
+  kResponseParseError = 7,
   // The server response did not contain any content.
-  kNoContent,
+  kNoContent = 8,
   // The server response did not contain a generate_content_response.
-  kNoResponse,
+  kNoResponse = 9,
   // The request timed out. The client may retry the request.
-  kTimeout,
+  kTimeout = 10,
   // Client attestation failed. The client may retry the request.
-  kClientAttestationFailed,
-  kMaxValue = kClientAttestationFailed,
+  kClientAttestationFailed = 11,
+  // The client is being destroyed before the response is received.
+  kDestroyed = 12,
+  kMaxValue = kDestroyed,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:LegionErrorCode)
 

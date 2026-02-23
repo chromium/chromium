@@ -29,6 +29,8 @@ class ConnectionMetrics : public Connection {
             base::TimeDelta timeout,
             OnRequestCallback callback) override;
 
+  void OnDestroy(ErrorCode error) override;
+
  private:
   void OnResponse(base::TimeTicks start_time,
                   OnRequestCallback callback,

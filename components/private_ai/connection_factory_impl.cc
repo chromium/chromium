@@ -8,13 +8,16 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/connection_basic.h"
+#include "components/private_ai/connection_factory.h"
 #include "components/private_ai/connection_metrics.h"
 #include "components/private_ai/connection_proxy.h"
 #include "components/private_ai/connection_timeout.h"
 #include "components/private_ai/connection_token_attestation.h"
 #include "components/private_ai/phosphor/token_manager.h"
+#include "components/private_ai/secure_channel.h"
 #include "components/private_ai/secure_channel_impl.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -28,14 +31,15 @@ std::unique_ptr<Connection> CreateConnectionStack(
     const GURL& url,
     PrivateAiLogger* logger,
     phosphor::TokenManager* token_manager,
-    base::RepeatingClosure on_disconnect,
+    base::OnceCallback<void(ErrorCode)> on_disconnect,
     network::mojom::NetworkContext* network_context) {
+  auto split_on_disconnect = base::SplitOnceCallback(std::move(on_disconnect));
   auto secure_channel_factory =
       std::make_unique<SecureChannelImpl::FactoryImpl>(url, network_context,
                                                        logger);
 
   std::unique_ptr<Connection> connection = std::make_unique<ConnectionBasic>(
-      std::move(secure_channel_factory), on_disconnect);
+      std::move(secure_channel_factory), std::move(split_on_disconnect.first));
 
   connection = std::make_unique<ConnectionMetrics>(std::move(connection));
 
@@ -43,7 +47,8 @@ std::unique_ptr<Connection> CreateConnectionStack(
 
   if (token_manager) {
     connection = std::make_unique<ConnectionTokenAttestation>(
-        std::move(connection), token_manager, std::move(on_disconnect));
+        std::move(connection), token_manager,
+        std::move(split_on_disconnect.second));
   }
 
   return connection;
@@ -80,22 +85,25 @@ void ConnectionFactoryImpl::EnableProxy(
 }
 
 std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
-    base::RepeatingClosure on_disconnect) {
+    base::OnceCallback<void(ErrorCode)> on_disconnect) {
   if (!proxy_url_.is_valid()) {
-    return CreateConnectionStack(url_, logger_, token_manager_, on_disconnect,
-                                 network_context_);
+    return CreateConnectionStack(url_, logger_, token_manager_,
+                                 std::move(on_disconnect), network_context_);
   }
 
   CHECK(network_service_);
   CHECK(token_manager_);
+  auto split_on_disconnect = base::SplitOnceCallback(std::move(on_disconnect));
   // ConnectionProxy requires an inner factory that creates a connection
   // with token attestation.
-  auto inner_connection_factory = base::BindOnce(
-      &CreateConnectionStack, url_, logger_, token_manager_, on_disconnect);
+  auto inner_connection_factory =
+      base::BindOnce(&CreateConnectionStack, url_, logger_, token_manager_,
+                     std::move(split_on_disconnect.first));
 
   return std::make_unique<ConnectionProxy>(
       proxy_url_, token_manager_, network_service_,
-      std::move(inner_connection_factory), std::move(on_disconnect));
+      std::move(inner_connection_factory),
+      std::move(split_on_disconnect.second));
 }
 
 }  // namespace private_ai

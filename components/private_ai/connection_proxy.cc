@@ -55,7 +55,7 @@ ConnectionProxy::ConnectionProxy(
     phosphor::TokenManager* token_manager,
     network::mojom::NetworkService* network_service,
     InnerConnectionFactory inner_connection_factory,
-    base::OnceClosure on_disconnect)
+    base::OnceCallback<void(ErrorCode)> on_disconnect)
     : proxy_url_(proxy_url),
       token_manager_(token_manager),
       network_service_(network_service),
@@ -91,13 +91,30 @@ void ConnectionProxy::Send(proto::LegionRequest request,
   inner_connection_->Send(std::move(request), timeout, std::move(callback));
 }
 
+void ConnectionProxy::OnDestroy(ErrorCode error) {
+  auto pending_requests = std::move(pending_requests_);
+  for (auto& pending : pending_requests) {
+    std::move(pending.callback).Run(base::unexpected(error));
+  }
+
+  if (inner_connection_) {
+    inner_connection_->OnDestroy(error);
+  }
+}
+
+void ConnectionProxy::CallOnDisconnect(ErrorCode error_code) {
+  if (on_disconnect_) {
+    std::move(on_disconnect_).Run(error_code);
+  }
+}
+
 void ConnectionProxy::OnProxyToken(
     std::optional<phosphor::BlindSignedAuthToken> auth_token) {
   is_initializing_ = false;
 
   if (!auth_token) {
     LOG(ERROR) << "Failed to get auth token for proxy.";
-    FailPendingRequestsAndDisconnect();
+    CallOnDisconnect(ErrorCode::kError);
     return;
   }
 
@@ -118,17 +135,6 @@ void ConnectionProxy::OnProxyToken(
                             std::move(pending.callback));
   }
   pending_requests_.clear();
-}
-
-void ConnectionProxy::FailPendingRequestsAndDisconnect() {
-  for (auto& pending : pending_requests_) {
-    std::move(pending.callback).Run(base::unexpected(ErrorCode::kError));
-  }
-  pending_requests_.clear();
-
-  if (on_disconnect_) {
-    std::move(on_disconnect_).Run();
-  }
 }
 
 }  // namespace private_ai

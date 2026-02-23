@@ -44,6 +44,14 @@ void ConnectionTimeout::Send(proto::LegionRequest request,
       timeout);
 }
 
+void ConnectionTimeout::OnDestroy(ErrorCode error) {
+  auto pending = std::move(pending_callbacks_);
+  for (auto& entry : pending) {
+    std::move(entry.second).Run(base::unexpected(error));
+  }
+  inner_connection_->OnDestroy(error);
+}
+
 void ConnectionTimeout::OnResponse(
     int32_t internal_request_id,
     base::expected<proto::LegionResponse, ErrorCode> result) {

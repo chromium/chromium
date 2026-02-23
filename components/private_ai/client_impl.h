@@ -71,7 +71,7 @@ class ClientImpl : public Client {
       OnRequestCompletedCallback cb,
       base::expected<proto::LegionResponse, ErrorCode> legion_response);
 
-  void OnConnectionDisconnected();
+  void OnConnectionDisconnected(ErrorCode error_code);
 
   std::unique_ptr<PrivateAiLogger> logger_;
 

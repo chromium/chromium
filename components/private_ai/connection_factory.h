@@ -22,7 +22,7 @@ class ConnectionFactory {
   // `on_disconnect` is invoked when the connection is disconnected. Sending
   // requests to disconnected connection will result in an error.
   virtual std::unique_ptr<Connection> Create(
-      base::RepeatingClosure on_disconnect) = 0;
+      base::OnceCallback<void(ErrorCode)> on_disconnect) = 0;
 };
 
 }  // namespace private_ai

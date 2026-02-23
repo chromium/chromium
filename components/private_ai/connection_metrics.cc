@@ -36,6 +36,10 @@ void ConnectionMetrics::Send(proto::LegionRequest request,
                      base::TimeTicks::Now(), std::move(callback)));
 }
 
+void ConnectionMetrics::OnDestroy(ErrorCode error) {
+  inner_connection_->OnDestroy(error);
+}
+
 void ConnectionMetrics::OnResponse(
     base::TimeTicks start_time,
     OnRequestCallback callback,

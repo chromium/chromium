@@ -35,7 +35,10 @@ class ConnectionTokenAttestationTest : public testing::Test {
                        base::Unretained(this)));
   }
 
-  void OnDisconnect() { on_disconnect_counter_++; }
+  void OnDisconnect(ErrorCode error_code) {
+    on_disconnect_counter_++;
+    connection_attestation_->OnDestroy(error_code);
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_{
@@ -139,8 +142,8 @@ TEST_F(ConnectionTokenAttestationTest, AttestationFailed) {
 
   // Respond to attestation request with error.
   ASSERT_EQ(fake_connection_->pending_requests().size(), 1u);
-  std::move(fake_connection_->pending_requests()[0].callback)
-      .Run(base::unexpected(ErrorCode::kError));
+  auto requests = std::move(fake_connection_->pending_requests());
+  std::move(requests[0].callback).Run(base::unexpected(ErrorCode::kError));
 
   base::test::TestFuture<base::expected<proto::LegionResponse, ErrorCode>>
       future;

@@ -61,7 +61,10 @@ class ConnectionProxyTest : public testing::Test {
     return connection;
   }
 
-  void OnDisconnect() { on_disconnect_called_ = true; }
+  void OnDisconnect(ErrorCode error_code) {
+    on_disconnect_called_ = true;
+    connection_proxy_->OnDestroy(error_code);
+  }
 
  protected:
   // Use MainThreadType::IO to satisfy NetworkService threading

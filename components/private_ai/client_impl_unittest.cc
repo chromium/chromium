@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/connection.h"
+#include "components/private_ai/error_code.h"
 #include "components/private_ai/proto/legion.pb.h"
 #include "components/private_ai/testing/fake_connection.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,7 +31,7 @@ class FakeConnectionFactory : public ConnectionFactory {
   ~FakeConnectionFactory() override = default;
 
   std::unique_ptr<Connection> Create(
-      base::RepeatingClosure on_disconnect) override {
+      base::OnceCallback<void(ErrorCode)> on_disconnect) override {
     auto connection = std::make_unique<FakeConnection>(
         std::move(on_disconnect), std::move(on_destruction_));
     last_connection_ = connection.get();

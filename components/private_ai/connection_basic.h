@@ -26,7 +26,7 @@ class ConnectionBasic : public Connection {
   // fail immediately without attempting to send a request over the wire.
   ConnectionBasic(
       std::unique_ptr<SecureChannel::Factory> secure_channel_factory,
-      base::OnceClosure on_disconnect);
+      base::OnceCallback<void(ErrorCode)> on_disconnect);
   ~ConnectionBasic() override;
 
   ConnectionBasic(const ConnectionBasic&) = delete;
@@ -41,17 +41,19 @@ class ConnectionBasic : public Connection {
             base::TimeDelta timeout,
             OnRequestCallback callback) override;
 
+  void OnDestroy(ErrorCode error) override;
+
  private:
   // Handles responses from the secure channel.
   void OnResponseReceived(base::expected<Response, ErrorCode> result);
 
   // Handles disconnect by resolving all `pending_request_callbacks_` with
   // `error_code` and resolves `on_disconnect_` callback if not yet resolved.
-  void HandleDisconnect(ErrorCode error_code);
+  void CallOnDisconnect(ErrorCode error_code);
 
   std::unique_ptr<SecureChannel> secure_channel_;
 
-  base::OnceClosure on_disconnect_;
+  base::OnceCallback<void(ErrorCode)> on_disconnect_;
 
   int32_t next_request_id_{1};
 

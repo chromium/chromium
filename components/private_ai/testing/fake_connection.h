@@ -34,7 +34,7 @@ class FakeConnection : public Connection {
     OnRequestCallback callback;
   };
 
-  explicit FakeConnection(base::OnceClosure on_disconnect,
+  explicit FakeConnection(base::OnceCallback<void(ErrorCode)> on_disconnect,
                           base::OnceClosure on_destruction = {});
   ~FakeConnection() override;
 
@@ -43,6 +43,8 @@ class FakeConnection : public Connection {
             base::TimeDelta timeout,
             OnRequestCallback callback) override;
 
+  void OnDestroy(ErrorCode error) override;
+
   // Resolves all pending callbacks with ErrorCode::kNetworkError and runs the
   // on_disconnect callback.
   void SimulateDisconnect();
@@ -50,7 +52,7 @@ class FakeConnection : public Connection {
   std::vector<PendingRequest>& pending_requests() { return pending_requests_; }
 
  private:
-  base::OnceClosure on_disconnect_;
+  base::OnceCallback<void(ErrorCode)> on_disconnect_;
   base::OnceClosure on_destruction_;
   std::vector<PendingRequest> pending_requests_;
 };

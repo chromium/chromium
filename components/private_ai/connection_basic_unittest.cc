@@ -111,7 +111,10 @@ class ConnectionBasicTest : public testing::Test {
     secure_channel_ = secure_channel;
   }
 
-  void on_disconnect() { on_disconnect_counter_++; }
+  void on_disconnect(ErrorCode error_code) {
+    on_disconnect_counter_++;
+    connection_->OnDestroy(error_code);
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_{

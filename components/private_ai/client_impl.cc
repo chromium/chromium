@@ -82,7 +82,11 @@ ClientImpl::ClientImpl(std::unique_ptr<ConnectionFactory> connection_factory,
   CHECK(logger_);
 }
 
-ClientImpl::~ClientImpl() = default;
+ClientImpl::~ClientImpl() {
+  if (connection_) {
+    connection_->OnDestroy(ErrorCode::kDestroyed);
+  }
+}
 
 void ClientImpl::EstablishConnection() {
   GetOrCreateConnection();
@@ -90,7 +94,7 @@ void ClientImpl::EstablishConnection() {
 
 Connection* ClientImpl::GetOrCreateConnection() {
   if (!connection_) {
-    connection_ = connection_factory_->Create(base::BindRepeating(
+    connection_ = connection_factory_->Create(base::BindOnce(
         &ClientImpl::OnConnectionDisconnected, base::Unretained(this)));
   }
   return connection_.get();
@@ -176,9 +180,17 @@ void ClientImpl::OnReponseReceived(
   std::move(cb).Run(legion_response);
 }
 
-void ClientImpl::OnConnectionDisconnected() {
-  logger_->LogInfo(FROM_HERE,
-                   "Connection disconnected. Destroying connection.");
+void ClientImpl::OnConnectionDisconnected(ErrorCode error_code) {
+  CHECK(connection_);
+  logger_->LogInfo(
+      FROM_HERE, "Connection disconnected. Destroying connection with error: " +
+                     base::ToString(error_code));
+
+  // Remove the reference to this Connection object to ensure that any
+  // attempt at sending new requests from response handlers will create
+  // a new Connection.
+  auto connection = std::move(connection_);
+  connection->OnDestroy(error_code);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(
@@ -186,7 +198,7 @@ void ClientImpl::OnConnectionDisconnected() {
                        // Release the connection asynchronously to avoid
                        // use-after-free inside this callback.
                      },
-                     std::move(connection_)));
+                     std::move(connection)));
 }
 
 }  // namespace private_ai
