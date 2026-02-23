@@ -44,7 +44,7 @@ std::unique_ptr<views::Label> CreateTitleLabel() {
   return title_label;
 }
 
-std::unique_ptr<views::BoxLayoutView> CreateBodyText() {
+std::unique_ptr<views::BoxLayoutView> CreateBodyText(bool can_pin_to_taskbar) {
   auto text_container = std::make_unique<views::BoxLayoutView>();
   text_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   text_container->SetBetweenChildSpacing(8);
@@ -64,9 +64,19 @@ std::unique_ptr<views::BoxLayoutView> CreateBodyText() {
   std::u16string str_default = l10n_util::GetStringUTF16(
       IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_SET_DEFAULT_LABEL);
   std::vector<size_t> offsets;
-  std::u16string steps_text = l10n_util::GetStringFUTF16(
-      IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_STEPS_COMBINED, {str_open, str_default},
-      &offsets);
+  std::u16string steps_text;
+
+  if (can_pin_to_taskbar) {
+    std::u16string str_yes =
+        l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_YES_LABEL);
+    steps_text = l10n_util::GetStringFUTF16(
+        IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_STEPS_PINNED_COMBINED,
+        {str_open, str_default, str_yes}, &offsets);
+  } else {
+    steps_text = l10n_util::GetStringFUTF16(
+        IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_STEPS_COMBINED,
+        {str_open, str_default}, &offsets);
+  }
 
   auto* steps_label =
       text_container->AddChildView(std::make_unique<views::StyledLabel>());
@@ -82,10 +92,18 @@ std::unique_ptr<views::BoxLayoutView> CreateBodyText() {
   steps_label->AddStyleRange(
       gfx::Range(offsets[1], offsets[1] + str_default.length()), bold_style);
 
+  if (can_pin_to_taskbar) {
+    std::u16string str_yes =
+        l10n_util::GetStringUTF16(IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_YES_LABEL);
+    steps_label->AddStyleRange(
+        gfx::Range(offsets[2], offsets[2] + str_yes.length()), bold_style);
+  }
+
   return text_container;
 }
 
-std::unique_ptr<views::BoxLayoutView> CreateDialogBody() {
+std::unique_ptr<views::BoxLayoutView> CreateDialogBody(
+    bool can_pin_to_taskbar) {
   auto container = std::make_unique<views::BoxLayoutView>();
   container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   container->SetCrossAxisAlignment(
@@ -94,7 +112,7 @@ std::unique_ptr<views::BoxLayoutView> CreateDialogBody() {
   container->AddChildView(CreateTitleImage());
   container->AddChildView(CreateTitleLabel());
 
-  container->AddChildView(CreateBodyText());
+  container->AddChildView(CreateBodyText(can_pin_to_taskbar));
 
   return container;
 }
@@ -142,13 +160,14 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kBubbleDialogId);
 // Static.
 std::unique_ptr<views::Widget> ShowDefaultBrowserBubbleDialog(
     views::View* anchor_view,
+    bool can_pin_to_taskbar,
     base::OnceClosure on_accept,
     base::OnceClosure on_dismiss) {
   std::unique_ptr<ui::DialogModel> dialog_model =
       ui::DialogModel::Builder()
           .AddCustomField(
               std::make_unique<views::BubbleDialogModelHost::CustomView>(
-                  CreateDialogBody(),
+                  CreateDialogBody(can_pin_to_taskbar),
                   views::BubbleDialogModelHost::FieldType::kText))
           .AddCustomField(
               std::make_unique<views::BubbleDialogModelHost::CustomView>(

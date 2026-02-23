@@ -13678,6 +13678,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_SET_DEFAULT_LABEL" desc="Text corresponding to the button in Windows System Settings. Used inside the instructions.">
         Set default
       </message>
+      <message name="IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_YES_LABEL" desc="Text corresponding to the Yes button in Windows notification. Used inside the instructions.">
+        Yes
+      </message>
       <message name="IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_SET_LATER_LABEL" desc="Label for the 'Set later' (decline) button.">
         Set later
       </message>

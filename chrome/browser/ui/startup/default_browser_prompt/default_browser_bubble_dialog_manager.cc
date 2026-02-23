@@ -73,7 +73,7 @@ void DefaultBrowserBubbleDialogManager::OnBrowserCreated(
       browser_view->toolbar_button_provider()->GetAppMenuButton();
 
   dialog_widgets_[browser] = default_browser::ShowDefaultBrowserBubbleDialog(
-      anchor_view,
+      anchor_view, can_pin_to_taskbar_,
       base::BindOnce(&DefaultBrowserBubbleDialogManager::OnAccept,
                      base::Unretained(this)),
       base::BindOnce(&DefaultBrowserBubbleDialogManager::OnDismiss,

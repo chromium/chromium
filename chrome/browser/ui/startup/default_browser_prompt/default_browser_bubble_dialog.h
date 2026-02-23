@@ -24,6 +24,7 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kBubbleDialogId);
 // Factory method to create and show the bubble.
 std::unique_ptr<views::Widget> ShowDefaultBrowserBubbleDialog(
     views::View* anchor_view,
+    bool can_pin_to_taskbar,
     base::OnceClosure on_accept,
     base::OnceClosure on_dismiss);
 
