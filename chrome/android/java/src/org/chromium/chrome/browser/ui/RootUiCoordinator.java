@@ -2460,12 +2460,14 @@ public class RootUiCoordinator
      *     information.
      */
     public void onSavePersistentState(PersistableBundle outPersistentState) {
-        if (mToolbarManager.isUrlBarFocused()) {
+        if (mToolbarManager != null && mToolbarManager.isUrlBarFocused()) {
             outPersistentState.putString(
                     URL_BAR_EDIT_TEXT, mToolbarManager.getUrlBarTextWithoutAutocomplete());
         }
-        outPersistentState.putBoolean(
-                IS_TAB_SWITCHER_SHOWN, mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER));
+        if (mLayoutManager != null) {
+            outPersistentState.putBoolean(
+                    IS_TAB_SWITCHER_SHOWN, mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER));
+        }
     }
 
     /**
