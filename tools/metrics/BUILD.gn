@@ -161,6 +161,13 @@ group("metrics_python_tests") {
     "//tools/variations/unittest_data/test_config.json",
     "//tools/variations/unittest_data/variations_cmd.txt",
     "//components/variations/field_trial_config/field_trial_testing_config_schema.json",
+    "//tools/json_to_struct/aggregation_test.py",
+    "//tools/json_to_struct/element_generator_test.py",
+    "//tools/json_to_struct/struct_generator_test.py",
+    "//tools/metrics/actions/PRESUBMIT_test.py",
+    "//tools/metrics/histograms/presubmit_caching_support_test.py",
+    "//tools/metrics/histograms/split_xml_unittest.py",
+    "//tools/metrics/python_support/setup_modules_lib_test.py",
   ]
 
   data += JSON_TO_STRUCT_FILES + JSON_TO_STRUCT_TEST_FILES
