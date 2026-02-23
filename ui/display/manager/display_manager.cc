@@ -2574,8 +2574,9 @@ void DisplayManager::NotifyMetricsChanged(const Display& display,
     delegate_->UpdateDisplayMetrics(display, metrics);
   }
 
-  display_observers_.Notify(&DisplayObserver::OnDisplayMetricsChanged, display,
-                            metrics);
+  // TODO(crbug.com/484371187): Investigate if this can be non reentrant.
+  display_observers_.NotifyAllowReentrancyUntriaged(
+      &DisplayObserver::OnDisplayMetricsChanged, display, metrics);
 }
 
 void DisplayManager::NotifyDisplayAdded(const Display& display) {

@@ -433,6 +433,16 @@ class ObserverList {
     }
   }
 
+  // Same as `NotifyReentrantly` but the reentrancy of the observer method is
+  // not trigaged and needs investigation.
+  // TODO(40562847(): Add static_assert to ensure the reentrancy is
+  // kDisallowReentrancy.
+  template <typename Method, typename... Args>
+    requires std::invocable<Method, ObserverType*, const Args&...>
+  void NotifyAllowReentrancyUntriaged(Method method, const Args&... args) {
+    NotifyAllowReentrancy(method, args...);
+  }
+
  private:
   friend class internal::WeakLinkNode<ObserverList>;
 

@@ -764,7 +764,6 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // time.
   base::OnceClosure created_mirror_window_;
 
-  // TODO(oshima): Make this non reentrant.
   base::ObserverList<DisplayObserver> display_observers_;
 
   base::ObserverList<DisplayManagerObserver> manager_observers_;
