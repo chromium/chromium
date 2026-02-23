@@ -581,7 +581,8 @@ void ContextualSearchboxHandler::InitializeInputStateModel() {
     const omnibox::SearchboxConfig* config_ptr =
         service ? service->GetSearchboxConfig() : nullptr;
     input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
-        *session_handle, config_ptr ? *config_ptr : omnibox::SearchboxConfig());
+        *session_handle, config_ptr ? *config_ptr : omnibox::SearchboxConfig(),
+        profile_ ? profile_->IsOffTheRecord() : false);
     if (profile_) {
       input_state_model_->SetPrefService(profile_->GetPrefs());
     }

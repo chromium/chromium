@@ -39,8 +39,8 @@ class InputStateModelTest : public testing::Test {
         contextual_search::kSearchContentSharingSettings,
         static_cast<int>(
             contextual_search::SearchContentSharingSettingsValue::kEnabled));
-    input_state_model_ =
-        std::make_unique<InputStateModel>(session_handle_, config_);
+    input_state_model_ = std::make_unique<InputStateModel>(
+        session_handle_, config_, /*is_off_the_record=*/false);
     input_state_model_->SetPrefService(&pref_service_);
   }
 
@@ -77,8 +77,8 @@ TEST_F(InputStateModelTest,
   rule_set->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
   rule_set->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_FILE);
 
-  input_state_model_ =
-      std::make_unique<InputStateModel>(session_handle_, config);
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config, /*is_off_the_record=*/false);
   const auto& state = input_state_model_->get_state_for_testing();
 
   EXPECT_THAT(state.allowed_input_types,
@@ -114,8 +114,8 @@ TEST_F(InputStateModelTest, DefaultToFirstAllowedModel) {
   pro_rule->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
 
   // Initialize Model.
-  input_state_model_ =
-      std::make_unique<InputStateModel>(session_handle_, config);
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config, /*is_off_the_record=*/false);
   const auto& state = input_state_model_->get_state_for_testing();
 
   // Verify Initialization Logic.
@@ -156,10 +156,9 @@ TEST_F(InputStateModelTest, RegularModelAllowsAllToolsAndInputsWithEmptyLists) {
   model_rule->set_allow_all_input_types(true);
 
   // 3. Initialize the model.
-  input_state_model_ =
-      std::make_unique<InputStateModel>(session_handle_, config);
-  input_state_model_->SetPrefService(
-      &pref_service_);
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config, /*is_off_the_record=*/false);
+  input_state_model_->SetPrefService(&pref_service_);
 
   const auto& state = input_state_model_->get_state_for_testing();
 
@@ -194,8 +193,8 @@ TEST_F(InputStateModelTest, ModelWithAllowAllToolsIsNotDisabled) {
   rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
   rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
 
-  input_state_model_ =
-      std::make_unique<InputStateModel>(session_handle_, config);
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config, /*is_off_the_record=*/false);
   input_state_model_->SetPrefService(&pref_service_);
 
   // Select Deep Search tool.
@@ -230,8 +229,8 @@ TEST_F(InputStateModelTest, ModelWithAllowAllInputsIsNotDisabled) {
   rule_set->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
   rule_set->add_allowed_input_types(omnibox::InputType::INPUT_TYPE_LENS_FILE);
 
-  input_state_model_ =
-      std::make_unique<InputStateModel>(session_handle_, config);
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config, /*is_off_the_record=*/false);
   input_state_model_->SetPrefService(&pref_service_);
 
   // Simulate adding a file.
@@ -421,8 +420,8 @@ TEST_F(InputStateModelTest, GetAdditionalQueryParams) {
   gp_param->set_param_value("143");
 
   // Recreate the model with the new config.
-  input_state_model_ =
-      std::make_unique<InputStateModel>(session_handle_, config_);
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config_, /*is_off_the_record=*/false);
   input_state_model_->SetPrefService(&pref_service_);
 
   // No tool or model added.
@@ -537,8 +536,8 @@ TEST_F(InputStateModelCompatibilityTest, MaxTotalInputsDisablesInputs) {
   // Set max_total_inputs to 2.
   config_.mutable_rule_set()->set_max_total_inputs(2);
   // Recreate the model with the new config.
-  input_state_model_ =
-      std::make_unique<InputStateModel>(session_handle_, config_);
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config_, /*is_off_the_record=*/false);
   input_state_model_->SetPrefService(&pref_service_);
   input_state_model_->set_state_for_testing(state_);
 
@@ -616,8 +615,8 @@ TEST_F(InputStateModelCompatibilityTest, ToolWithAllowAllInputs) {
   tool_canvas_rule->set_allow_all_input_types(true);
 
   // Re-create the model with the modified config.
-  input_state_model_ =
-      std::make_unique<InputStateModel>(session_handle_, config_);
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config_, /*is_off_the_record=*/false);
   input_state_model_->SetPrefService(&pref_service_);
   input_state_model_->set_state_for_testing(state_);
 
@@ -649,8 +648,8 @@ TEST_F(InputStateModelCompatibilityTest, ToolWithSpecificInputs) {
       omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
 
   // Re-create the model with the modified config.
-  input_state_model_ =
-      std::make_unique<InputStateModel>(session_handle_, config_);
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config_, /*is_off_the_record=*/false);
   input_state_model_->SetPrefService(&pref_service_);
   input_state_model_->set_state_for_testing(state_);
 
@@ -717,6 +716,23 @@ TEST_F(InputStateModelTest, ImageGenUploadActive) {
   state = input_state_model_->get_state_for_testing();
   EXPECT_EQ(state.active_tool, omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
   EXPECT_FALSE(state.image_gen_upload_active);
+}
+
+TEST_F(InputStateModelTest, FiltersImageGenInIncognito) {
+  omnibox::SearchboxConfig config;
+  auto* rule_set = config.mutable_rule_set();
+  rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN);
+  rule_set->add_allowed_tools(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
+
+  // Initialize with is_off_the_record = true.
+  input_state_model_ = std::make_unique<InputStateModel>(
+      session_handle_, config, /*is_off_the_record=*/true);
+  const auto& state = input_state_model_->get_state_for_testing();
+
+  // Verify that IMAGE_GEN is filtered out but DEEP_SEARCH remains.
+  EXPECT_THAT(
+      state.allowed_tools,
+      testing::UnorderedElementsAre(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH));
 }
 
 }  // namespace contextual_search

@@ -114,8 +114,8 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
     const omnibox::SearchboxConfig* config_ptr =
         aim_service->GetSearchboxConfig();
     input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
-        *session_handle_,
-        config_ptr ? *config_ptr : omnibox::SearchboxConfig());
+        *session_handle_, config_ptr ? *config_ptr : omnibox::SearchboxConfig(),
+        profile_ ? profile_->IsOffTheRecord() : false);
     input_state_subscription_ =
         input_state_model_->subscribe(base::BindRepeating(
             &ComposeboxQueryControllerBridge::OnInputStateChanged,

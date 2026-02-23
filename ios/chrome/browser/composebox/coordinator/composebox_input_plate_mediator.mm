@@ -1868,7 +1868,7 @@ CreateInputDataFromAnnotatedPageContent(
   contextual_search::ContextualSearchSessionHandle* sessionHandle =
       _contextualSearchSession.get();
   _inputStateModel = std::make_unique<contextual_search::InputStateModel>(
-      *sessionHandle, *config);
+      *sessionHandle, *config, _isIncognito);
 }
 
 - (void)preselectPreferencesIfAvailable:
