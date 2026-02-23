@@ -19,6 +19,7 @@
 }
 
 cr-icon-button {
+  cursor: default;
   margin: 0;
   --cr-icon-button-size: var(--toolbar-button-height);
   --cr-icon-button-icon-size: var(--toolbar-button-icon-size);
