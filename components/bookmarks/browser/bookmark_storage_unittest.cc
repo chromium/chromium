@@ -17,6 +17,8 @@
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_codec.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/common/bookmark_features.h"
+#include "components/bookmarks/test/bookmark_test_with_encryption_stages.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -265,6 +267,9 @@ TEST(BookmarkStorageTest, ShouldSaveDespiteAccountBookmarksEmpty) {
 }
 
 TEST(BookmarkStorageTest, ShouldSaveUnencryptedAndEncryptedBookmarks) {
+  base::test::ScopedFeatureList features;
+  test::InitFeaturesForBookmarkTestEncryptionStage(
+      features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
   base::HistogramTester histogram_tester;
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
 
@@ -305,8 +310,10 @@ TEST(BookmarkStorageTest, ShouldSaveUnencryptedAndEncryptedBookmarks) {
       "ImportantFile.WriteDuration.BookmarkStorageEncrypted", 1);
 }
 
-TEST(BookmarkStorageTest,
-     ShouldGenerateUnencryptedAndEncryptedBackupFileUponFirstSave) {
+TEST(BookmarkStorageTest, ShouldGenerateTwoBackupFilesUponFirstSave) {
+  base::test::ScopedFeatureList features;
+  test::InitFeaturesForBookmarkTestEncryptionStage(
+      features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
   std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
 
   const base::FilePath temp_dir = base::CreateUniqueTempDirectoryScopedToTest();

@@ -2,30 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/bookmarks/model/bookmark_client_impl.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_client_impl.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/check_is_test.h"
-#include "base/feature_list.h"
-#include "base/task/cancelable_task_tracker.h"
-#include "components/bookmarks/browser/bookmark_node.h"
-#include "components/bookmarks/browser/bookmark_storage.h"
-#include "components/bookmarks/managed/managed_bookmark_service.h"
-#include "components/browser_sync/browser_sync_switches.h"
-#include "components/favicon/core/favicon_util.h"
-#include "components/favicon_base/favicon_types.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/history/core/browser/url_database.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/sync/base/features.h"
-#include "components/sync_bookmarks/bookmark_model_view.h"
-#include "components/sync_bookmarks/bookmark_sync_service.h"
-#include "components/undo/bookmark_undo_service.h"
-#include "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
-#include "ios/chrome/browser/favicon/model/favicon_service_factory.h"
-#include "ios/chrome/browser/history/model/history_service_factory.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "base/check_is_test.h"
+#import "base/feature_list.h"
+#import "base/task/cancelable_task_tracker.h"
+#import "components/bookmarks/browser/bookmark_node.h"
+#import "components/bookmarks/browser/bookmark_storage.h"
+#import "components/bookmarks/managed/managed_bookmark_service.h"
+#import "components/browser_sync/browser_sync_switches.h"
+#import "components/favicon/core/favicon_util.h"
+#import "components/favicon_base/favicon_types.h"
+#import "components/history/core/browser/history_service.h"
+#import "components/history/core/browser/url_database.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/os_crypt/async/browser/os_crypt_async.h"
+#import "components/sync/base/features.h"
+#import "components/sync_bookmarks/bookmark_model_view.h"
+#import "components/sync_bookmarks/bookmark_sync_service.h"
+#import "components/undo/bookmark_undo_service.h"
+#import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
+#import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
+#import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 BookmarkClientImpl::BookmarkClientImpl(
     ProfileIOS* profile,
@@ -166,4 +168,11 @@ void BookmarkClientImpl::OnBookmarkNodeRemovedUndoable(
 void BookmarkClientImpl::SchedulePersistentTimerForDailyMetrics(
     base::RepeatingClosure metrics_callback) {
   // Nothing to record on iOS.
+}
+
+void BookmarkClientImpl::GetEncryptor(
+    base::OnceCallback<void(os_crypt_async::Encryptor encryptor)> callback) {
+  CHECK(GetApplicationContext());
+  CHECK(GetApplicationContext()->GetOSCryptAsync());
+  GetApplicationContext()->GetOSCryptAsync()->GetInstance(std::move(callback));
 }

@@ -19,6 +19,7 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -32,6 +33,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -42,13 +44,17 @@
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/url_and_title.h"
+#include "components/bookmarks/common/bookmark_constants.h"
 #include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/bookmarks/test/bookmark_test_with_encryption_stages.h"
 #include "components/bookmarks/test/mock_bookmark_model_observer.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/query_parser/query_parser.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
@@ -1651,8 +1657,6 @@ TEST_F(BookmarkModelTest, MostRecentlyAddedEntries) {
 // Make sure MostRecentlyAddedEntries applies across local and account
 // bookmarks.
 TEST_F(BookmarkModelTest, MostRecentlyAddedEntriesLocalAndAccountBookmarks) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      switches::kSyncEnableBookmarksInTransportMode};
   model_->CreateAccountPermanentFolders();
 
   // Add nodes such that the following holds for the creation time of the
@@ -2890,7 +2894,17 @@ TEST_F(BookmarkModelTest, GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes) {
             model_->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes());
 }
 
-TEST(BookmarkModelLoadTest, NodesPopulatedOnLoad) {
+class BookmarkModelLoadTest
+    : public testing::TestWithParam<BookmarkEncryptionStage> {
+ protected:
+  BookmarkModelLoadTest() {
+    test::InitFeaturesForBookmarkTestEncryptionStage(feature_list_, GetParam());
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(BookmarkModelLoadTest, NodesPopulatedOnLoad) {
   // Create a model with a single url.
   base::ScopedTempDir tmp_dir;
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
@@ -2923,7 +2937,7 @@ TEST(BookmarkModelLoadTest, NodesPopulatedOnLoad) {
                                     1);
 }
 
-TEST(BookmarkModelLoadTest, NodesPopulatedIncludingAccountNodesOnLoad) {
+TEST_P(BookmarkModelLoadTest, NodesPopulatedIncludingAccountNodesOnLoad) {
   base::test::ScopedFeatureList features{
       switches::kSyncEnableBookmarksInTransportMode};
 
@@ -2962,7 +2976,7 @@ TEST(BookmarkModelLoadTest, NodesPopulatedIncludingAccountNodesOnLoad) {
             model->account_bookmark_bar_node()->children()[0]->url());
 }
 
-TEST(BookmarkModelLoadTest, AccountSyncMetadataPopulatedWithoutNodesOnLoad) {
+TEST_P(BookmarkModelLoadTest, AccountSyncMetadataPopulatedWithoutNodesOnLoad) {
   base::test::ScopedFeatureList features{
       switches::kSyncEnableBookmarksInTransportMode};
 
@@ -3009,7 +3023,8 @@ TEST(BookmarkModelLoadTest, AccountSyncMetadataPopulatedWithoutNodesOnLoad) {
   EXPECT_EQ(sync_metadata_str, client_ptr->account_bookmark_sync_metadata());
 }
 
-TEST(BookmarkModelLoadTest, RemoveAccountPermanentFoldersUponMetadataDecoding) {
+TEST_P(BookmarkModelLoadTest,
+       RemoveAccountPermanentFoldersUponMetadataDecoding) {
   base::test::ScopedFeatureList features{
       switches::kSyncEnableBookmarksInTransportMode};
 
@@ -3053,7 +3068,7 @@ TEST(BookmarkModelLoadTest, RemoveAccountPermanentFoldersUponMetadataDecoding) {
 }
 
 // Verifies the TitledUrlIndex is properly loaded.
-TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
+TEST_P(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
   // Create a model with a single url.
   base::ScopedTempDir tmp_dir;
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
@@ -3084,7 +3099,7 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedOnLoad) {
 }
 
 // Verifies the TitledUrlIndex is properly loaded for account bookmarks.
-TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedForAccountNodesOnLoad) {
+TEST_P(BookmarkModelLoadTest, TitledUrlIndexPopulatedForAccountNodesOnLoad) {
   base::test::ScopedFeatureList features{
       switches::kSyncEnableBookmarksInTransportMode};
 
@@ -3119,7 +3134,7 @@ TEST(BookmarkModelLoadTest, TitledUrlIndexPopulatedForAccountNodesOnLoad) {
 }
 
 // Verifies the UUID index is properly loaded.
-TEST(BookmarkModelLoadTest, UuidIndexPopulatedOnLoad) {
+TEST_P(BookmarkModelLoadTest, UuidIndexPopulatedOnLoad) {
   // Create a model with a single url.
   base::ScopedTempDir tmp_dir;
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
@@ -3153,7 +3168,7 @@ TEST(BookmarkModelLoadTest, UuidIndexPopulatedOnLoad) {
 }
 
 // Verifies the UUID index is properly loaded, for account nodes.
-TEST(BookmarkModelLoadTest, UuidIndexPopulatedForAccountNodesOnLoad) {
+TEST_P(BookmarkModelLoadTest, UuidIndexPopulatedForAccountNodesOnLoad) {
   base::test::ScopedFeatureList features{
       switches::kSyncEnableBookmarksInTransportMode};
 
@@ -3191,8 +3206,8 @@ TEST(BookmarkModelLoadTest, UuidIndexPopulatedForAccountNodesOnLoad) {
                          node_uuid, NodeTypeForUuidLookup::kAccountNodes));
 }
 
-TEST(BookmarkModelStorageTest,
-     GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes) {
+TEST_P(BookmarkModelLoadTest,
+       GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes) {
   base::test::ScopedFeatureList features{
       switches::kSyncEnableBookmarksInTransportMode};
 
@@ -3258,9 +3273,15 @@ TEST(BookmarkModelStorageTest,
             model->GetTotalNumberOfUrlsAndFoldersIncludingManagedNodes());
 }
 
-TEST(BookmarkModelStorageTest, SaveExactlyOneFile) {
-  base::test::ScopedFeatureList features{
-      switches::kSyncEnableBookmarksInTransportMode};
+INSTANTIATE_TEST_SUITE_P(
+    BookmarkModelLoadTest,
+    BookmarkModelLoadTest,
+    ::testing::ValuesIn(test::kAllBookmarkEncryptionStages));
+
+TEST(BookmarkModelUnencryptedStorageTest, SaveExactlyOneUnencryptedFile) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({switches::kSyncEnableBookmarksInTransportMode},
+                            {kEncryptBookmarks});
 
   base::ScopedTempDir tmp_dir;
   ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
@@ -3305,6 +3326,82 @@ TEST(BookmarkModelStorageTest, SaveExactlyOneFile) {
                   metrics::BookmarkEditSource::kOther);
   EXPECT_TRUE(model->LocalOrSyncableStorageHasPendingWriteForTest());
   EXPECT_FALSE(model->AccountStorageHasPendingWriteForTest());
+}
+
+// TODO(crbug.com/435317726): Remove this function once encryption is fully
+// rolled out.
+void AssertSameFileContent(const base::FilePath& unencrypted_file_path,
+                           const base::FilePath& encrypted_file_path,
+                           BookmarkClient* client) {
+  std::string file_content;
+  ASSERT_TRUE(base::ReadFileToString(unencrypted_file_path, &file_content));
+
+  std::string encrypted_file_content;
+  ASSERT_TRUE(
+      base::ReadFileToString(encrypted_file_path, &encrypted_file_content));
+
+  std::string decrypted_file_content;
+  base::test::TestFuture<os_crypt_async::Encryptor> future;
+  client->GetEncryptor(future.GetCallback());
+  os_crypt_async::Encryptor encryptor = future.Take();
+  ASSERT_TRUE(
+      encryptor.DecryptString(encrypted_file_content, &decrypted_file_content));
+
+  EXPECT_FALSE(file_content.empty());
+  EXPECT_EQ(file_content, decrypted_file_content);
+}
+
+TEST(BookmarkModelEncryptedStorageTest,
+     SaveSameContentEncryptedAndUnencryptedToDisk) {
+  base::test::ScopedFeatureList features{
+      switches::kSyncEnableBookmarksInTransportMode};
+  base::test::ScopedFeatureList encryption_features;
+  test::InitFeaturesForBookmarkTestEncryptionStage(
+      encryption_features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
+
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  auto model =
+      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model->Load(tmp_dir.GetPath());
+  test::WaitForBookmarkModelToLoad(model.get());
+
+  // Create one local-or-syncable bookmark.
+  const BookmarkNode* local_or_syncable_node = model->AddURL(
+      model->bookmark_bar_node(), 0, u"Foo", GURL("http://foo.com"));
+  task_environment.FastForwardUntilNoTasksRemain();
+  AssertSameFileContent(
+      tmp_dir.GetPath().Append(kLocalOrSyncableBookmarksFileName),
+      tmp_dir.GetPath().Append(kEncryptedLocalOrSyncableBookmarksFileName),
+      model->client());
+
+  // Create account permanent folders.
+  model->CreateAccountPermanentFolders();
+  task_environment.FastForwardUntilNoTasksRemain();
+  AssertSameFileContent(
+      tmp_dir.GetPath().Append(kAccountBookmarksFileName),
+      tmp_dir.GetPath().Append(kEncryptedAccountBookmarksFileName),
+      model->client());
+
+  // Save one account bookmark.
+  model->AddURL(model->account_bookmark_bar_node(), 0, u"Bar",
+                GURL("http://bar.com"));
+  task_environment.FastForwardUntilNoTasksRemain();
+  AssertSameFileContent(
+      tmp_dir.GetPath().Append(kAccountBookmarksFileName),
+      tmp_dir.GetPath().Append(kEncryptedAccountBookmarksFileName),
+      model->client());
+
+  // Edit the local-or-syncable bookmark.
+  model->SetTitle(local_or_syncable_node, u"Foo2",
+                  metrics::BookmarkEditSource::kOther);
+  task_environment.FastForwardUntilNoTasksRemain();
+  AssertSameFileContent(
+      tmp_dir.GetPath().Append(kLocalOrSyncableBookmarksFileName),
+      tmp_dir.GetPath().Append(kEncryptedLocalOrSyncableBookmarksFileName),
+      model->client());
 }
 
 TEST(BookmarkNodeTest, NodeMetaInfo) {

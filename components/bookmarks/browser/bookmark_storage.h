@@ -54,9 +54,12 @@ class BookmarkStorage
   //
   // All disk writes will be executed as a task in a backend task runner.
   //
-  // If both an encryptor and an encrypted file path are provided, an additional
-  // encrypted copy of the bookmarks will be saved to the specified path. This
-  // encrypted write operation is scheduled on the same backend task runner.
+  // Based on feature flags defined in
+  // components/bookmarks/common/bookmark_features.h, an additional encrypted
+  // copy of the bookmarks might be saved to the specified path. If this
+  // additional save is required, an encryptor and an encrypted file
+  // path must be provided. This encrypted write operation is scheduled on the
+  // same backend task runner.
   BookmarkStorage(
       const BookmarkModel* model,
       PermanentNodeSelection permanent_node_selection,

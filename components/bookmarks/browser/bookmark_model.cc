@@ -246,6 +246,32 @@ BookmarkModel::~BookmarkModel() {
 }
 
 void BookmarkModel::Load(const base::FilePath& profile_path) {
+  if (base::FeatureList::IsEnabled(kEncryptBookmarks)) {
+    client_->GetEncryptor(base::BindOnce(
+        [](base::WeakPtr<BookmarkModel> model,
+           const base::FilePath& profile_path,
+           os_crypt_async::Encryptor encryptor) {
+          // TODO(crbug.com/435317726): Verify the encryption/decryption is
+          // available for the encryptor.
+          if (!model) {
+            return;
+          }
+          model->ContinueLoadWithEncryptor(
+              profile_path,
+              base::MakeRefCounted<
+                  base::RefCountedData<const os_crypt_async::Encryptor>>(
+                  std::in_place, std::move(encryptor)));
+        },
+        AsWeakPtr(), profile_path));
+  } else {
+    ContinueLoadWithEncryptor(profile_path, /*encryptor=*/nullptr);
+  }
+}
+
+void BookmarkModel::ContinueLoadWithEncryptor(
+    const base::FilePath& profile_path,
+    const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+        encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If the stores are non-null, it means Load was already invoked. Load should
   // only be invoked once.
@@ -254,21 +280,26 @@ void BookmarkModel::Load(const base::FilePath& profile_path) {
 
   const base::FilePath local_or_syncable_file_path =
       profile_path.Append(kLocalOrSyncableBookmarksFileName);
+  const base::FilePath encrypted_local_or_syncable_file_path =
+      profile_path.Append(kEncryptedLocalOrSyncableBookmarksFileName);
 
   const base::FilePath account_file_path =
       AreFoldersForAccountStorageAllowed()
           ? profile_path.Append(kAccountBookmarksFileName)
           : base::FilePath();
+  const base::FilePath encrypted_account_file_path =
+      AreFoldersForAccountStorageAllowed()
+          ? profile_path.Append(kEncryptedAccountBookmarksFileName)
+          : base::FilePath();
 
   local_or_syncable_store_ = std::make_unique<BookmarkStorage>(
-      this, BookmarkStorage::kSelectLocalOrSyncableNodes,
-      /*encryptor=*/nullptr, local_or_syncable_file_path,
-      /*encrypted_file_path=*/std::nullopt);
+      this, BookmarkStorage::kSelectLocalOrSyncableNodes, encryptor,
+      local_or_syncable_file_path, encrypted_local_or_syncable_file_path);
 
   if (!account_file_path.empty()) {
     account_store_ = std::make_unique<BookmarkStorage>(
-        this, BookmarkStorage::kSelectAccountNodes, /*encryptor=*/nullptr,
-        account_file_path, /*encrypted_file_path=*/std::nullopt);
+        this, BookmarkStorage::kSelectAccountNodes, encryptor,
+        account_file_path, encrypted_account_file_path);
   }
 
   // Creating ModelLoader schedules the load on a backend task runner.

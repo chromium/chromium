@@ -19,6 +19,10 @@
 
 class GURL;
 
+namespace os_crypt_async {
+class Encryptor;
+}  // namespace os_crypt_async
+
 namespace bookmarks {
 
 class BookmarkModel;
@@ -133,6 +137,12 @@ class BookmarkClient {
   // compute the metrics to be logged.
   virtual void SchedulePersistentTimerForDailyMetrics(
       base::RepeatingClosure metrics_callback) = 0;
+
+  // Returns an encryptor instance to read / write bookmarks from / to the disk
+  // in an encrypted form.
+  virtual void GetEncryptor(
+      base::OnceCallback<void(os_crypt_async::Encryptor encryptor)>
+          callback) = 0;
 };
 
 }  // namespace bookmarks

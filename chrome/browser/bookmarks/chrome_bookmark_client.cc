@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -27,6 +28,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/offline_pages/buildflags/buildflags.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/power_bookmarks/core/suggested_save_location_provider.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
 #include "components/sync/base/features.h"
@@ -112,8 +114,9 @@ ChromeBookmarkClient::~ChromeBookmarkClient() {
 
 void ChromeBookmarkClient::Init(bookmarks::BookmarkModel* model) {
   BookmarkClientBase::Init(model);
-  if (managed_bookmark_service_)
+  if (managed_bookmark_service_) {
     managed_bookmark_service_->BookmarkModelCreated(model);
+  }
   model_ = model;
 
   shopping_save_location_provider_ =
@@ -170,8 +173,9 @@ void ChromeBookmarkClient::GetTypedCountForUrls(
           profile_, ServiceAccessType::EXPLICIT_ACCESS);
   history::URLDatabase* url_db =
       history_service ? history_service->InMemoryDatabase() : nullptr;
-  if (!url_db)
+  if (!url_db) {
     return;
+  }
 
   for (auto& url_typed_count_pair : *url_typed_count_map) {
     // The in-memory URLDatabase might not cache all URLRows, but it
@@ -179,15 +183,17 @@ void ChromeBookmarkClient::GetTypedCountForUrls(
     // fetch the URLRow, it is safe to assume that its `typed_count` is 0.
     history::URLRow url_row;
     const GURL* url = url_typed_count_pair.first;
-    if (url && url_db->GetRowForURL(*url, &url_row))
+    if (url && url_db->GetRowForURL(*url, &url_row)) {
       url_typed_count_pair.second = url_row.typed_count();
+    }
   }
 }
 
 bookmarks::LoadManagedNodeCallback
 ChromeBookmarkClient::GetLoadManagedNodeCallback() {
-  if (!managed_bookmark_service_)
+  if (!managed_bookmark_service_) {
     return bookmarks::LoadManagedNodeCallback();
+  }
 
   return managed_bookmark_service_->GetLoadManagedNodeCallback();
 }
@@ -265,4 +271,11 @@ void ChromeBookmarkClient::SchedulePersistentTimerForDailyMetrics(
         base::Hours(24), metrics_callback);
     repeating_timer_->Start();
   }
+}
+
+void ChromeBookmarkClient::GetEncryptor(
+    base::OnceCallback<void(os_crypt_async::Encryptor encryptor)> callback) {
+  CHECK(g_browser_process);
+  CHECK(g_browser_process->os_crypt_async());
+  g_browser_process->os_crypt_async()->GetInstance(std::move(callback));
 }

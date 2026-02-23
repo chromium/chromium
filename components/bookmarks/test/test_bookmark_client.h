@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_client.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 
 namespace gfx {
 class Image;
@@ -112,6 +113,9 @@ class TestBookmarkClient : public BookmarkClient {
       std::unique_ptr<BookmarkNode> node) override;
   void SchedulePersistentTimerForDailyMetrics(
       base::RepeatingClosure metrics_callback) override;
+  void GetEncryptor(
+      base::OnceCallback<void(os_crypt_async::Encryptor encryptor)> callback)
+      override;
 
  private:
   // Helpers for GetLoadManagedNodeCallback().
@@ -140,6 +144,7 @@ class TestBookmarkClient : public BookmarkClient {
           DecodeAccountBookmarkSyncMetadataResult::kSuccess;
 
   base::RepeatingClosure metrics_callback_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 };
 
 }  // namespace bookmarks

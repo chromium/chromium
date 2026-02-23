@@ -4,7 +4,9 @@
 
 #include "components/bookmarks/common/bookmark_features.h"
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace bookmarks {
 
@@ -26,5 +28,53 @@ BASE_FEATURE(kEnableBookmarkCodecSHA256, base::FEATURE_DISABLED_BY_DEFAULT);
 // write the fields into the pickle in sequential order.
 BASE_FEATURE(kEnableBookmarkNodeDataNewPickleFormat,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This feature enables encryption of bookmarks.
+BASE_FEATURE(kEncryptBookmarks, base::FEATURE_DISABLED_BY_DEFAULT);
+// Define the stage of the bookmark encryption feature. This param is ignored if
+// kEncryptBookmarks is disabled.
+// The possible values are:
+// - write_both_read_only_clear: Bookmarks are written in both clear and
+// encrypted files. Only the unencrypted file is read. This is used to evaluate
+// the encryption process.
+// Do not use this feature directly, instead use helper functions defined above.
+// TODO(crbug.com/435317726): Support other stages as we implement them:
+// -write both, read encrypted,
+// -write & read encrypted only; fallback to unencrypted file if needed,
+// -write & read encrypted only; unencrypted file is deleted.
+const base::FeatureParam<std::string> kBookmarkEncryptionStageParam{
+    &kEncryptBookmarks, "stage", "write_both_read_only_clear"};
+
+constexpr auto kBookmarkEncryptionStageMap =
+    base::MakeFixedFlatMap<std::string_view, BookmarkEncryptionStage>(
+        {{"write_both_read_only_clear",
+          BookmarkEncryptionStage::kWriteBothReadOnlyClear}});
+
+BookmarkEncryptionStage GetBookmarkEncryptionStage() {
+  if (!base::FeatureList::IsEnabled(kEncryptBookmarks)) {
+    return BookmarkEncryptionStage::kDisabled;
+  }
+  return kBookmarkEncryptionStageMap.at(kBookmarkEncryptionStageParam.Get());
+}
+
+bool ShouldWriteEncryptedBookmarksToDisk() {
+  switch (GetBookmarkEncryptionStage()) {
+    case BookmarkEncryptionStage::kWriteBothReadOnlyClear:
+      return true;
+    case BookmarkEncryptionStage::kDisabled:
+      return false;
+  }
+  NOTREACHED();
+}
+
+std::string GetBookmarkEncryptionStageNameForTesting(  // IN-TEST
+    BookmarkEncryptionStage stage) {
+  for (const auto& pair : kBookmarkEncryptionStageMap) {
+    if (pair.second == stage) {
+      return std::string(pair.first);
+    }
+  }
+  NOTREACHED();
+}
 
 }  // namespace bookmarks

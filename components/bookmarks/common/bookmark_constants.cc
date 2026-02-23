@@ -14,6 +14,10 @@ const base::FilePath::CharType kLocalOrSyncableBookmarksFileName[] =
     FPL("Bookmarks");
 const base::FilePath::CharType kAccountBookmarksFileName[] =
     FPL("AccountBookmarks");
+const base::FilePath::CharType kEncryptedLocalOrSyncableBookmarksFileName[] =
+    FPL("EncryptedBookmarks");
+const base::FilePath::CharType kEncryptedAccountBookmarksFileName[] =
+    FPL("EncryptedAccountBookmarks");
 
 // ID of the root node. This is also exposed externally via an extensions API.
 const int64_t kRootNodeId = 0;

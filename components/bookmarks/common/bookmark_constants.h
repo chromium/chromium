@@ -13,6 +13,9 @@ namespace bookmarks {
 
 extern const base::FilePath::CharType kLocalOrSyncableBookmarksFileName[];
 extern const base::FilePath::CharType kAccountBookmarksFileName[];
+extern const base::FilePath::CharType
+    kEncryptedLocalOrSyncableBookmarksFileName[];
+extern const base::FilePath::CharType kEncryptedAccountBookmarksFileName[];
 
 extern const int64_t kRootNodeId;
 

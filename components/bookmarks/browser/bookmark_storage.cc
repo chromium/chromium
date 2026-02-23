@@ -24,6 +24,7 @@
 #include "components/bookmarks/browser/bookmark_codec.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/os_crypt/async/common/encryptor.h"
 
@@ -41,7 +42,8 @@ void BackupCallback(const base::FilePath& path,
                     const std::optional<base::FilePath> encrypted_file_path) {
   base::FilePath backup_path = path.ReplaceExtension(kBackupExtension);
   base::CopyFile(path, backup_path);
-  if (encrypted_file_path) {
+  if (ShouldWriteEncryptedBookmarksToDisk()) {
+    CHECK(encrypted_file_path);
     base::FilePath encrypted_backup_path =
         encrypted_file_path->ReplaceExtension(kBackupExtension);
     base::CopyFile(encrypted_file_path.value(), encrypted_backup_path);
@@ -115,7 +117,6 @@ BookmarkStorage::BookmarkStorage(
               kBookmarkStorageHistogramSuffix),
       last_scheduled_save_(base::TimeTicks::Now()) {
   CHECK(!file_path.empty());
-  CHECK_EQ(encryptor != nullptr, encrypted_file_path.has_value());
 }
 
 BookmarkStorage::~BookmarkStorage() {
@@ -156,7 +157,9 @@ BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
           return std::nullopt;
         }
 
-        if (encrypted_file_path) {
+        if (ShouldWriteEncryptedBookmarksToDisk()) {
+          CHECK(encryptor);
+          CHECK(encrypted_file_path);
           std::string encrypted;
           if (encryptor->data.EncryptString(output, &encrypted)) {
             // Also write the encrypted data to disk. Make sure this second

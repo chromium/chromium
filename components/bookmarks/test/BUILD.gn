@@ -9,6 +9,8 @@ source_set("test") {
   sources = [
     "bookmark_test_helpers.cc",
     "bookmark_test_helpers.h",
+    "bookmark_test_with_encryption_stages.cc",
+    "bookmark_test_with_encryption_stages.h",
     "mock_bookmark_model_observer.cc",
     "mock_bookmark_model_observer.h",
     "test_bookmark_client.cc",
@@ -18,8 +20,11 @@ source_set("test") {
 
   deps = [
     "//base",
+    "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/favicon_base",
+    "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/browser:test_support",
     "//testing/gmock",
     "//ui/events/platform",
     "//ui/gfx",

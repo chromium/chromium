@@ -21,3 +21,15 @@ static_library("common") {
     deps += [ "//components/bookmarks/common/android" ]
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "bookmark_features_unittest.cc" ]
+
+  deps = [
+    ":common",
+    "//base/test:test_support",
+    "//components/bookmarks/test",
+    "//testing/gtest",
+  ]
+}

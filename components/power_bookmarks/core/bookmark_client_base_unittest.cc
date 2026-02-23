@@ -72,6 +72,10 @@ class TestBookmarkClientImpl : public BookmarkClientBase {
 
   void SchedulePersistentTimerForDailyMetrics(
       base::RepeatingClosure metrics_callback) override {}
+
+  void GetEncryptor(
+      base::OnceCallback<void(os_crypt_async::Encryptor encryptor)> callback)
+      override {}
 };
 
 class MockSuggestionProvider : public SuggestedSaveLocationProvider {

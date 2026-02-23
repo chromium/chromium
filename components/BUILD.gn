@@ -202,6 +202,7 @@ test("components_unittests") {
     "//components/blocklist/opt_out_blocklist:unit_tests",
     "//components/blocklist/opt_out_blocklist/sql:unit_tests",
     "//components/bookmarks/browser:unit_tests",
+    "//components/bookmarks/common:unit_tests",
     "//components/bookmarks/managed:unit_tests",
     "//components/breadcrumbs/core:unit_tests",
     "//components/browser_sync:unit_tests",
