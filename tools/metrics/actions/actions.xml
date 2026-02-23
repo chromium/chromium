@@ -109,6 +109,13 @@ should be able to be added at any place in this file.
   <variant name=".UnpinItem" summary="Remove a custom item."/>
 </variants>
 
+<variants name="ContextualSearchContextState">
+  <variant name="WithNonTabContext"
+      summary="with non-tab context (e.g. files)"/>
+  <variant name="WithoutContext" summary="without any context"/>
+  <variant name="WithTabContext" summary="with tab context"/>
+</variants>
+
 <variants name="ContextualSearchSource">
   <variant name="ContextualTasks" summary="Contextual tasks"/>
   <variant name="Lens" summary="Lens"/>
@@ -10887,6 +10894,19 @@ should be able to be added at any place in this file.
     A user deleted the auto-suggested tab context when using the composebox on
     {ContextualSearchSource}.
   </description>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</action>
+
+<action
+    name="ContextualSearch.UserAction.SubmitQuery.{ContextualSearchContextState}.{ContextualSearchSource}">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when a query is submitted {ContextualSearchContextState} from
+    {ContextualSearchSource}.
+  </description>
+  <token key="ContextualSearchContextState"
+      variants="ContextualSearchContextState"/>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </action>
 

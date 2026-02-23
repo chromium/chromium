@@ -5,6 +5,7 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/lens/lens_overlay_mime_type.h"
@@ -89,7 +90,6 @@ void ContextualSearchMetricsRecorder::NotifySessionStateChanged(
       NotifySessionStarted();
       break;
     case SessionState::kQuerySubmitted:
-      NotifyQuerySubmitted();
       break;
     case SessionState::kSessionAbandoned:
       RecordSessionAbandonedMetrics();
@@ -248,7 +248,29 @@ void ContextualSearchMetricsRecorder::NotifySessionStarted() {
       std::make_unique<base::ElapsedTimer>();
 }
 
-void ContextualSearchMetricsRecorder::NotifyQuerySubmitted() {
+void ContextualSearchMetricsRecorder::NotifyQuerySubmitted(
+    bool has_tab_context,
+    bool has_non_tab_context) {
+  NotifySessionStateChanged(SessionState::kQuerySubmitted);
+  std::string context_state = "WithoutContext";
+  // It is possible for a query to have both, but in this case it is preferred
+  // to be recorded as including tab context.
+  if (has_tab_context) {
+    context_state = "WithTabContext";
+  } else if (has_non_tab_context) {
+    context_state = "WithNonTabContext";
+  }
+
+  base::RecordAction(base::UserMetricsAction(
+      base::StrCat({"ContextualSearch.UserAction.SubmitQuery.", context_state,
+                    ".", metrics_suffix_})
+          .c_str()));
+
+  base::UmaHistogramBoolean(
+      base::StrCat({"ContextualSearch.UserAction.SubmitQuery.", context_state,
+                    ".", metrics_suffix_}),
+      true);
+
   if (!session_metrics_->session_elapsed_timer) {
     base::UmaHistogramBoolean(
         base::StrCat(

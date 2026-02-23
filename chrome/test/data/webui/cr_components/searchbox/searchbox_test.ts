@@ -170,9 +170,12 @@ suite('NewTabPageRealboxTest', () => {
   let realbox: SearchboxElement;
   let testProxy: TestSearchboxBrowserProxy;
   let testMetricsReporterProxy: TestMock<BrowserProxyImpl>;
+  let metrics: MetricsTracker;
 
   setup(async () => {
-    ({realbox, testProxy, testMetricsReporterProxy} = await setupRealboxTest());
+    ({realbox, testProxy, testMetricsReporterProxy, metrics} =
+         await setupRealboxTest());
+    window.open = () => null;
   });
 
   // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
@@ -397,6 +400,38 @@ suite('NewTabPageRealboxTest', () => {
 
     // Assert.
     await whenOpenComposeBox;
+  });
+
+  test('clicking composebox button with text records user action', async () => {
+    // Arrange.
+    realbox = await createAndAppendRealbox(
+        {composeButtonEnabled: true, composeboxEnabled: true});
+    realbox.$.input.value = 'hello';
+
+    // Act.
+    const composeButton =
+        realbox.shadowRoot.querySelector<HTMLElement>('#composeButton');
+    assertTrue(!!composeButton);
+
+    const eventDetail: ClickEventDetail = {
+      button: 0,
+      ctrlKey: false,
+      metaKey: false,
+      shiftKey: false,
+    };
+    composeButton.dispatchEvent(new CustomEvent('compose-click', {
+      detail: eventDetail,
+      bubbles: true,
+      composed: true,
+    }));
+
+    // Assert.
+    const metricName =
+        'ContextualSearch.UserAction.SubmitQuery.WithoutContext.NewTabPage';
+    // One histogram and one action metric should be emitted.
+    assertEquals(2, metrics.count(metricName));
+    // Only one histogram should be recorded.
+    assertEquals(1, metrics.count(metricName, true));
   });
 
   test('hovering on composebox button plays the animation.', async () => {
