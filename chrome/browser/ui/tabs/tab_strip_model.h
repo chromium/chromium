@@ -771,7 +771,6 @@ class TabStripModel {
     CommandGoBack,
     CommandCloseAllTabs,
     CommandToggleVertical,
-    CommandSendTabStripFeedback,
 #if BUILDFLAG(ENABLE_GLIC)
     CommandGlicShareLimit,
     CommandGlicStartShare,

@@ -6,6 +6,8 @@
 
 #import "base/apple/foundation_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/app_controller_mac.h"
@@ -24,6 +26,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/pref_names.h"
@@ -231,6 +234,15 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
                                             : IDS_ENTER_FULLSCREEN_MAC));
       break;
     }
+    case IDC_TOGGLE_VERTICAL_TABS: {
+      // TODO(crbug.com/475222200): When in immersive, swapping between tab
+      // strip types create duplicate tab strips. Until that is resolved,
+      // disable the ability to swap between tab strips while in immersive.
+      result->set_hidden_state = true;
+      result->new_hidden_state =
+          ImmersiveModeController::From(browser)->IsEnabled();
+      break;
+    }
     case IDC_SHOW_AS_TAB: {
       // Hide this menu option if the window is tabbed or is the devtools
       // window.
@@ -429,6 +441,16 @@ bool BrowserNativeWidgetMac::ExecuteCommand(
   }
 
   Browser* browser = browser_view_->browser();
+
+  if (command == IDC_TOGGLE_VERTICAL_TABS) {
+    if (auto* controller =
+            tabs::VerticalTabStripStateController::From(browser)) {
+      base::RecordAction(base::UserMetricsAction(
+          controller->ShouldDisplayVerticalTabs()
+              ? "SwitchToHorizontalTabStrip_FromMacMenu"
+              : "SwitchToVerticalTabStrip_FromMacMenu"));
+    }
+  }
 
   chrome::ExecuteCommandWithDisposition(browser, command,
                                         window_open_disposition);

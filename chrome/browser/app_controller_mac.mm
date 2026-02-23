@@ -1122,15 +1122,17 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
 - (void)onVerticalTabStripModeChanged:
     (tabs::VerticalTabStripStateController*)stateController {
+  bool enabled = stateController->ShouldDisplayVerticalTabs();
+  bool is_rtl = base::i18n::IsRTL();
+
+  // Updates the `Tab` menu's "New Tab to the ..." and "Close Tabs to the ..."
+  // accordingly.
   if (_tabMenuBridge) {
     NSMenu* tabSubmenu = [[[NSApp mainMenu] itemWithTag:IDC_TAB_MENU] submenu];
     NSMenuItem* newTabPositionalItem =
         [tabSubmenu itemWithTag:IDC_NEW_TAB_TO_RIGHT];
     NSMenuItem* closeTabsPositionalItem =
         [tabSubmenu itemWithTag:IDC_WINDOW_CLOSE_TABS_TO_RIGHT];
-
-    bool enabled = stateController->ShouldDisplayVerticalTabs();
-    bool is_rtl = base::i18n::IsRTL();
 
     [newTabPositionalItem
         setTitle:l10n_util::GetNSString(enabled ? IDS_TAB_CXMENU_NEWTABBELOW
@@ -1143,6 +1145,17 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
                                         : is_rtl
                                             ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
                                             : IDS_TAB_CXMENU_CLOSETABSTORIGHT)];
+  }
+
+  // Updates the `View` menu's "Move Tabs to the ..." accordingly.
+  NSMenu* viewSubmenu = [[[NSApp mainMenu] itemWithTag:IDC_VIEW_MENU] submenu];
+  NSMenuItem* toggleVerticalItem =
+      [viewSubmenu itemWithTag:IDC_TOGGLE_VERTICAL_TABS];
+
+  if (toggleVerticalItem) {
+    [toggleVerticalItem
+        setTitle:l10n_util::GetNSString(enabled ? IDS_SWITCH_TO_HORIZONTAL_TAB
+                                                : IDS_SWITCH_TO_VERTICAL_TAB)];
   }
 }
 

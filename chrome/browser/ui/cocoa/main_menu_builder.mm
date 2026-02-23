@@ -11,6 +11,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/cocoa/accelerators_cocoa.h"
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
@@ -349,6 +350,12 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
                       Item(IDS_ALLOW_JAVASCRIPT_APPLE_EVENTS_MAC)
                           .command_id(IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS),
                   }),
+              Item().is_separator()
+                  .remove_if(!tabs::IsVerticalTabsFeatureEnabled()),
+              Item(IDS_SWITCH_TO_VERTICAL_TAB)
+                  .command_id(IDC_TOGGLE_VERTICAL_TABS)
+                  .remove_if(!tabs::IsVerticalTabsFeatureEnabled()),
+
         })
         .Build();
   // clang-format on

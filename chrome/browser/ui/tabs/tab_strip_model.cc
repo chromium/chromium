@@ -2564,9 +2564,6 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandToggleVertical:
       return true;
 
-    case CommandSendTabStripFeedback:
-      return true;
-
     default:
       NOTREACHED();
   }
@@ -3049,16 +3046,6 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
               : "SwitchToVerticalTabStrip_FromTabContextMenu"));
       browser->GetFeatures().browser_command_controller()->ExecuteCommand(
           IDC_TOGGLE_VERTICAL_TABS);
-      break;
-    }
-    case CommandSendTabStripFeedback: {
-      base::UmaHistogramCounts1000(
-          "Tab.ContextMenu.SendTabStripFeedback.SelectedTabsCount",
-          selection_model_.size());
-      const Browser* const browser =
-          chrome::FindBrowserWithTab(GetWebContentsAt(context_index));
-      browser->GetFeatures().browser_command_controller()->ExecuteCommand(
-          IDC_VERTICAL_TABS_SEND_FEEDBACK);
       break;
     }
     case CommandAddToNewGroupFromMenuItem: {

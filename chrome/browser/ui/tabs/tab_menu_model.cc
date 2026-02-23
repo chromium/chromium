@@ -383,8 +383,6 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
                                           : tabs::kVerticalTabsNewBadge);
         SetIsNewFeatureAt(GetItemCount() - 1, show_badge);
       }
-      AddItemWithStringId(TabStripModel::CommandSendTabStripFeedback,
-                          IDS_VERTICAL_TABS_SEND_FEEDBACK);
     }
   }
 }

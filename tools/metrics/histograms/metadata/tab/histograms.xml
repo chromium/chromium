@@ -84,8 +84,6 @@ chromium-metrics-reviews@google.com.
   <variant name="OrganizeTabs" summary="the Organize tabs command"/>
   <variant name="Reload" summary="the Reload command"/>
   <variant name="RemoveFromGroup" summary="the Remove from Group command"/>
-  <variant name="SendTabStripFeedback"
-      summary="the Send Tab Strip Feedback for VT command"/>
   <variant name="SendTabToSelf" summary="the Send to Your Devices command"/>
   <variant name="SwapWithActiveSplit"
       summary="the Swap with Active Split command"/>
