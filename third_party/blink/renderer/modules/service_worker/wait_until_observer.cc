@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
@@ -137,8 +138,13 @@ bool WaitUntilObserver::WaitUntil(
   // 3. `Add f to the extend lifetime promises.`
   // 4. `Increment the pending promises count by one.`
   IncrementPendingPromiseCount();
+  TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
   script_promise.Then(script_state, MakeGarbageCollected<ThenFulfilled>(this),
                       MakeGarbageCollected<ThenRejected>(this));
+  if (rethrow_scope.HasCaught()) {
+    DecrementPendingPromiseCount();
+    return false;
+  }
   return true;
 }
 
