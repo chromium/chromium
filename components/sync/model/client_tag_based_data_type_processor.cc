@@ -54,25 +54,18 @@ BASE_FEATURE(kSyncClearMetadataOnUnsyncedEntitiesForFullUpdateTypes,
 
 const char kErrorSiteHistogramPrefix[] = "Sync.DataTypeErrorSite.";
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(SyncMetadataConsistency)
 enum class SyncMetadataConsistency {
   // Stored metadata is consistent with the activation request.
-  kMetadataConsistent = 0,
+  kMetadataConsistent,
 
   // The following cases will result in metadata being cleared.
-  kCacheGuidMismatch = 1,
-  kDataTypeIdMismatch = 2,
+  kCacheGuidMismatch,
+  kDataTypeIdMismatch,
 
   // The following cases won't result in metadata being cleared.
-  kEmptyPersistedAuthenticatedGaiaId = 3,
-  kAuthenticatedGaiaIdMismatch = 4,
-
-  kMaxValue = kAuthenticatedGaiaIdMismatch,
+  kEmptyPersistedAuthenticatedGaiaId,
+  kAuthenticatedGaiaIdMismatch,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:SyncMetadataConsistency)
 
 SyncMetadataConsistency GetSyncMetadataConsistency(
     const sync_pb::DataTypeState& data_type_state,
@@ -1542,10 +1535,6 @@ void ClientTagBasedDataTypeProcessor::
   const SyncMetadataConsistency sync_metadata_consistency =
       GetSyncMetadataConsistency(entity_tracker_->data_type_state(),
                                  activation_request_, type_);
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Sync.DataTypeMetadataConsistency.",
-                    DataTypeToHistogramSuffix(type_)}),
-      sync_metadata_consistency);
 
   switch (sync_metadata_consistency) {
     case SyncMetadataConsistency::kMetadataConsistent:
