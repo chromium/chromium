@@ -1,0 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary LocalType {
+  required DOMString requiredString;
+  object optionalObject;
+};
+
+[ExternalExtensionType="basics.ExampleType"]
+typedef object BasicsExampleType;
+
+// Schema to test using a type defined in another schema file.
+interface UsesSharedTypes {
+  static undefined localTypeFunction(LocalType localTypeParam);
+  static undefined sharedTypeFunction(BasicsExampleType sharedTypeParam);
+};
+
+partial interface Browser {
+  static attribute UsesSharedTypes usesSharedTypes;
+};
