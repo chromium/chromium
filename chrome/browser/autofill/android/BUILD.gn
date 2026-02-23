@@ -75,6 +75,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/editors/common/text_field/TextFieldView.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/text_field/TextFieldViewBinder.java",
     "java/src/org/chromium/chrome/browser/autofill/helpers/FaviconHelper.java",
+    "java/src/org/chromium/chrome/browser/autofill/options/AutofillAiPreference.java",
     "java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsFragment.java",
     "java/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsMediator.java",
@@ -200,12 +201,17 @@ generate_jni("jni_headers") {
 }
 
 android_resources("java_resources") {
-  deps = [ "//components/strings:components_strings_grd" ]
+  deps = [
+    "//components/browser_ui/settings/android:java_resources",
+    "//components/strings:components_strings_grd",
+  ]
   sources = [
     "java/res/drawable/autofill_editor_notice_background.xml",
     "java/res/drawable/store_locally_tooltip_background.xml",
     "java/res/layout/autofill_ai_attribute_info.xml",
+    "java/res/layout/autofill_ai_preference.xml",
     "java/res/layout/autofill_ai_save_entity_prompt.xml",
+    "java/res/layout/autofill_ai_settings_info_item.xml",
     "java/res/layout/autofill_editor_base.xml",
     "java/res/layout/autofill_editor_base_buttons.xml",
     "java/res/layout/autofill_editor_dialog.xml",

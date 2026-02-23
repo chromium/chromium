@@ -19,4 +19,8 @@ found in the LICENSE file.
 
     <!-- Keyboard Accessory -->
     <dimen name="keyboard_accessory_suggestion_icon_size">20dp</dimen>
+
+    <!-- Autofill AI preference dimensions -->
+    <dimen name="autofill_ai_preference_info_item_icon_size">20dp</dimen>
+    <dimen name="autofill_ai_preference_info_item_icon_padding">16dp</dimen>
 </resources>
