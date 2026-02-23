@@ -210,9 +210,11 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
       },
       enableCarouselScrolling: {type: Boolean},
+      inputPlaceholderOverride: {type: String},
     };
   }
 
+  accessor inputPlaceholderOverride: string = '';
   accessor disableCaretColorAnimation: boolean = false;
   accessor disableComposeboxAnimation: boolean = false;
   accessor enableCarouselScrolling: boolean = false;
@@ -436,6 +438,10 @@ export class ComposeboxElement extends I18nMixinLit
           (this.inputState_.allowedModels.length > 0 ||
            this.inputState_.allowedTools.length > 0 ||
            this.inputState_.allowedInputTypes.length > 0);
+    }
+
+    if (changedPrivateProperties.has('inputPlaceholderOverride')) {
+      this.updateInputPlaceholder_();
     }
   }
   override updated(changedProperties: PropertyValues<this>) {
@@ -951,6 +957,11 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   private updateInputPlaceholder_() {
+    if (this.inputPlaceholderOverride) {
+      this.inputPlaceholder_ = this.inputPlaceholderOverride;
+      return;
+    }
+
     if (this.inputState_) {
       if (this.activeToolMode_ !== ToolMode.kUnspecified) {
         const config = this.inputState_.toolConfigs.find(

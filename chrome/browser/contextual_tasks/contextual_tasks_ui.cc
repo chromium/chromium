@@ -274,6 +274,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       {"oauthErrorDialogBody", IDS_CONTEXTUAL_TASKS_OAUTH_ERROR_DIALOG_BODY},
       {"oauthErrorDialogReloadButton",
        IDS_CONTEXTUAL_TASKS_OAUTH_ERROR_DIALOG_RELOAD_BUTTON},
+      {"composeboxHintTextLensOverlay",
+       IDS_LENS_COMPOSEBOX_HINT_TEXT_SELECT_PAGE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
   source->AddLocalizedString(
