@@ -207,12 +207,7 @@ void DistillerPageWebContents::DOMContentLoaded(
 
 void DistillerPageWebContents::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // If the navigation was not for the main frame, we should not fail the
-  // distillation. This is because non-essential subframes (e.g. analytics,
-  // social widgets) can fail to load or be cancelled without affecting the main
-  // content.
-  if (navigation_handle->IsInPrimaryMainFrame() &&
-      !navigation_handle->HasCommitted()) {
+  if (!navigation_handle->HasCommitted()) {
     content::WebContentsObserver::Observe(nullptr);
     DCHECK(state_ == LOADING_PAGE || state_ == EXECUTING_JAVASCRIPT);
     state_ = PAGELOAD_FAILED;
