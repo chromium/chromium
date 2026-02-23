@@ -113,6 +113,9 @@ class QuicSessionPoolPeer;
 // URLs will also influence the ideal value.
 const int kMaxRecentCryptoConfigs = 100;
 
+// Default number of entries in the QUIC session cache.
+const size_t kDefaultQuicSessionCacheSize = 1024;
+
 enum QuicPlatformNotification {
   NETWORK_CONNECTED,
   NETWORK_MADE_DEFAULT,
@@ -939,6 +942,7 @@ class QuicSessionPool::QuicCryptoClientConfigOwner
   QuicCryptoClientConfigOwner(
       std::unique_ptr<quic::ProofVerifier> proof_verifier,
       std::unique_ptr<quic::QuicClientSessionCache> session_cache,
+      size_t max_cache_entries,
       QuicSessionPool* quic_session_pool);
 
   QuicCryptoClientConfigOwner(const QuicCryptoClientConfigOwner&) = delete;
@@ -973,7 +977,7 @@ class QuicSessionPool::QuicCryptoClientConfigOwner
 
   int num_refs_ = 0;
   quic::QuicCryptoClientConfig config_;
-  raw_ptr<base::Clock> clock_;
+  const size_t max_cache_entries_;
   std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
   const raw_ptr<QuicSessionPool> quic_session_pool_;
