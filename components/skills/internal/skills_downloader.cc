@@ -56,9 +56,6 @@ constexpr net::NetworkTrafficAnnotationTag kSkillsDownloaderNetworkTag =
         "downloaded to be displayed on all Chrome accounts."
       })");
 
-inline constexpr char kSkillsDownloaderGstaticUrl[] =
-    "https://www.gstatic.com/chrome/skills/first_party_skills_binary";
-
 std::unique_ptr<network::SimpleURLLoader> CreateSimpleURLLoader(
     const GURL& url,
     const std::string_view last_modified_header) {

@@ -7,17 +7,26 @@
 #include "base/command_line.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/skills/skills_service_factory.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/skills/features.h"
+#include "components/skills/internal/skills_downloader.h"
+#include "components/skills/internal/skills_service_impl.h"
 #include "components/skills/public/skills_service.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "content/public/test/browser_test.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/ui_base_switches.h"
@@ -29,7 +38,7 @@
 
 namespace {
 // Baseline Gerrit CL number of the most recent CL that modified the UI.
-constexpr char kScreenshotBaselineCL[] = "7568791";
+constexpr char kScreenshotBaselineCL[] = "7573535";
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSkillsPageElementId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSkillsDialogElementId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
@@ -56,11 +65,26 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest,
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+    skills::SkillsServiceFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindRepeating(&SkillsPageInteractiveUITest::CreateSkillsService,
+                            base::Unretained(this)));
     skills::SkillsService* skills_service =
         skills::SkillsServiceFactory::GetForProfile(browser()->profile());
     ASSERT_TRUE(skills_service);
     skills_service->SetServiceStatusForTesting(
         skills::SkillsService::ServiceStatus::kReady);
+  }
+
+  std::unique_ptr<KeyedService> CreateSkillsService(
+      content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
+    return std::make_unique<skills::SkillsServiceImpl>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+        chrome::GetChannel(),
+        DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_url_loader_factory_));
   }
 
   bool IsDarkMode() const { return GetParam(); }
@@ -100,6 +124,9 @@ class SkillsPageInteractiveUITest : public InteractiveBrowserTest,
     signin::MakePrimaryAccountAvailable(identity_manager, email,
                                         signin::ConsentLevel::kSync);
   }
+
+ protected:
+  network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -217,6 +244,52 @@ IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, YourSkillsPage) {
       MoveMouseTo(kSkillsDialogElementId, kSaveButtonQuery), ClickMouse(),
       WaitForHide(skills::SkillsDialogView::kSkillsDialogElementId),
       WaitForElementExists(kSkillsPageElementId, kNewSkillCardQuery),
+      Screenshot(kSkillsPageElementId,
+                 /*screenshot_name=*/screenshot_name,
+                 /*baseline_cl=*/kScreenshotBaselineCL));
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(SkillsPageInteractiveUITest, BrowseSkillsPage) {
+  skills::proto::SkillsList skills_list;
+  skills::proto::Skill* skill = skills_list.add_skills();
+  skill->set_id("123");
+  skill->set_name("Look for socks");
+  skill->set_category("Test Category");
+  skill->set_description("Look for some socks");
+  skill->set_icon("🧦");
+  skill->set_prompt("Look for some socks");
+
+  skills::proto::Skill* skill2 = skills_list.add_skills();
+  skill2->set_id("345");
+  skill2->set_name("Find frog photos");
+  skill2->set_category("Top Pick");
+  skill2->set_description("Find a cute frog photo");
+  skill2->set_icon("🐸");
+  skill2->set_prompt("Find a cute frog photo");
+
+  std::string response_data;
+  ASSERT_TRUE(skills_list.SerializeToString(&response_data));
+
+  GURL expected_url(skills::kSkillsDownloaderGstaticUrl);
+  test_url_loader_factory_.AddResponse(expected_url.spec(), response_data,
+                                       net::HTTP_OK);
+
+  const InteractiveBrowserWindowTestApi::DeepQuery kSkillCardQuery{
+      "skills-app", "discover-skills-page", "skill-card"};
+
+#if BUILDFLAG(ENABLE_GLIC)
+  std::string screenshot_name =
+      IsDarkMode() ? "browse_skills_dark" : "browse_skills_light";
+  SignIn("testskills@gmail.com");
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+  RunTestSequence(
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshots not supported in all testing environments."),
+      OpenSkillsPage(GURL(chrome::kChromeUISkillsURL)
+                         .Resolve(chrome::kChromeUISkillsBrowsePath)),
+      WaitForElementExists(kSkillsPageElementId, kSkillCardQuery),
       Screenshot(kSkillsPageElementId,
                  /*screenshot_name=*/screenshot_name,
                  /*baseline_cl=*/kScreenshotBaselineCL));

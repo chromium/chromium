@@ -11812,6 +11812,7 @@ if (!is_android && !is_chromeos_device) {
       "//components/shared_highlighting/core/common",
       "//components/site_engagement/content",
       "//components/skills:features",
+      "//components/skills/internal",
       "//components/soda:constants",
       "//components/sync",
       "//components/sync:test_support",

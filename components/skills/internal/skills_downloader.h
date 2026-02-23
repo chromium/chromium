@@ -18,6 +18,9 @@
 
 namespace skills {
 
+inline constexpr char kSkillsDownloaderGstaticUrl[] =
+    "https://www.gstatic.com/chrome/skills/first_party_skills_binary";
+
 // SkillsDownloader downloads a list of 1P agent prompts that are accessible to
 // users via chrome://skills/discover-skills.
 class SkillsDownloader {
