@@ -135,10 +135,9 @@ class IOSPromoBubbleViewTest : public ChromeViewsTestBase {
   void CreateAndShowBubble(PromoType promo_type = PromoType::kLens,
                            BubbleType bubble_type = BubbleType::kQRCode) {
     auto bubble = std::make_unique<IOSPromoBubbleView>(
-        GetProfile(), promo_type, bubble_type, anchor_view_,
+        nullptr, GetProfile(), promo_type, bubble_type, anchor_view_,
         views::BubbleBorder::TOP_RIGHT);
     bubble_view_ = bubble.get();
-
     user_action_subscription_ =
         bubble_view_->AddUserActionCallback(user_action_callback_.Get());
 

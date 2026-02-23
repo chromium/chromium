@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/promos/ios_promos_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
 #include "chrome/browser/ui/views/promos/ios_promo_constants.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
@@ -29,6 +30,7 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -54,7 +56,9 @@ class IOSPromoBubbleHeaderView : public views::View {
 
  public:
   IOSPromoBubbleHeaderView(const std::u16string& title,
-                           const std::u16string& subtitle) {
+                           const std::u16string& subtitle,
+                           BrowserView* browser_view,
+                           int corner_radius) {
     const auto* layout_provider = views::LayoutProvider::Get();
     const int bottom_margin = layout_provider->GetDistanceMetric(
         views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_TEXT);
@@ -68,7 +72,20 @@ class IOSPromoBubbleHeaderView : public views::View {
 
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, insets, vertical_spacing));
-    SetBackground(views::CreateSolidBackground(ui::kColorSysSurface));
+
+    if (browser_view) {
+      auto background = std::make_unique<CustomCornersBackground>(
+          *this, *browser_view, ui::kColorSysSurface,
+          CustomCornersBackground::FrameTheme(), corner_radius);
+
+      CustomCornersBackground::Corners corners;
+      corners.upper_leading = {CustomCornersBackground::CornerType::kRounded};
+      corners.upper_trailing = {CustomCornersBackground::CornerType::kRounded};
+      corners.lower_leading = {CustomCornersBackground::CornerType::kSquare};
+      corners.lower_trailing = {CustomCornersBackground::CornerType::kSquare};
+      background->SetCorners(corners);
+      SetBackground(std::move(background));
+    }
 
     // Add the green checkmark, centered horizontally.
     ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
@@ -122,9 +139,9 @@ std::unique_ptr<IOSPromoBubbleView> IOSPromoBubbleView::Create(
     PromoType promo_type,
     const scoped_refptr<user_education::UserEducationContext>& context,
     user_education::FeaturePromoSpecification::BuildHelpBubbleParams params) {
-  Profile* profile = context->AsA<BrowserUserEducationContext>()
-                         ->GetBrowserView()
-                         .GetProfile();
+  BrowserView& browser_view =
+      context->AsA<BrowserUserEducationContext>()->GetBrowserView();
+  Profile* profile = browser_view.GetProfile();
   IOSPromoTriggerService* service =
       IOSPromoTriggerServiceFactory::GetForProfile(profile);
   // If the user has a synced iOS device, show the reminder bubble. Otherwise,
@@ -135,17 +152,19 @@ std::unique_ptr<IOSPromoBubbleView> IOSPromoBubbleView::Create(
 
   auto* const anchor_element = params.anchor_element.get();
   return std::make_unique<IOSPromoBubbleView>(
-      profile, promo_type, promo_bubble_type,
+      &browser_view, profile, promo_type, promo_bubble_type,
       anchor_element->AsA<views::TrackedElementViews>()->view(),
       user_education::HelpBubbleViews::TranslateArrow(params.arrow));
 }
 
-IOSPromoBubbleView::IOSPromoBubbleView(Profile* profile,
+IOSPromoBubbleView::IOSPromoBubbleView(BrowserView* browser_view,
+                                       Profile* profile,
                                        PromoType promo_type,
                                        BubbleType promo_bubble_type,
                                        views::View* anchor_view,
                                        views::BubbleBorder::Arrow arrow)
     : views::BubbleDialogDelegateView(anchor_view, arrow),
+      browser_view_(browser_view),
       profile_(profile),
       promo_type_(promo_type),
       promo_bubble_type_(promo_bubble_type),
@@ -199,7 +218,9 @@ void IOSPromoBubbleView::AddedToWidget() {
     GetBubbleFrameView()->SetHeaderView(
         std::make_unique<IOSPromoBubbleHeaderView>(
             l10n_util::GetStringUTF16(config_.bubble_title_id),
-            l10n_util::GetStringUTF16(config_.bubble_subtitle_id)));
+            l10n_util::GetStringUTF16(config_.bubble_subtitle_id),
+            browser_view_,
+            GetBubbleFrameView()->GetRoundedCorners().upper_left()));
   }
 }
 
