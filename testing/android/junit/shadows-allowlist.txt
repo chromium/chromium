@@ -9,9 +9,6 @@
 # TODO(https://crbug.com/341267427): Reduce this list.
 +org.chromium.base.task.AsyncTask
 +org.chromium.base.task.PostTask
-+org.chromium.chrome.browser.multiwindow.MultiInstanceManagerApi31
-+org.chromium.components.embedder_support.util.UrlUtilities
-+org.chromium.components.url_formatter.UrlFormatter
 
 # Disallow new shadows of chrome-authored code.
 -com.google.android.apps.chrome
