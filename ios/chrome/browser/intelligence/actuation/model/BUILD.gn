@@ -30,10 +30,7 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "actuation_service_unittest.mm",
-    "actuation_tool_factory_unittest.mm",
-  ]
+  sources = [ "actuation_service_unittest.mm" ]
   deps = [
     ":model",
     "//base/test:test_support",
@@ -41,11 +38,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/intelligence/actuation/model/tools:actuation_interface",
     "//ios/chrome/browser/intelligence/actuation/model/tools:navigate_tool",
     "//ios/chrome/browser/intelligence/features",
-    "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
-    "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]
 }
