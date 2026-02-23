@@ -12275,6 +12275,7 @@ from previous Chrome versions.
       label="AutofillEnableMerchantBoundVirtualCards:disabled"/>
   <int value="-733155387"
       label="SafetyHubAbusiveNotificationRevocation:enabled"/>
+  <int value="-733016172" label="GlicTabRestoration:disabled"/>
   <int value="-731967727" label="OmahaMinSdkVersionAndroid:disabled"/>
   <int value="-731502579" label="CupsPrintersUiOverhaul:disabled"/>
   <int value="-731133967" label="AutofillSettingsCardTypeSplit:disabled"/>
@@ -12885,6 +12886,7 @@ from previous Chrome versions.
   <int value="-526236814" label="WebAssemblyTiering:enabled"/>
   <int value="-525988723" label="AndroidCaretBrowsing:disabled"/>
   <int value="-524878465" label="RobustWindowManagementExperimental:enabled"/>
+  <int value="-524278467" label="GlicTabRestoration:enabled"/>
   <int value="-523224129" label="PwaRestoreUi:disabled"/>
   <int value="-523155003" label="PhoneHubCameraRoll:disabled"/>
   <int value="-523030434" label="EnableBackgroundBlur:enabled"/>
