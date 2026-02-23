@@ -43,7 +43,7 @@ class RecordReplayManager : public autofill::AutofillManager::Observer {
 
   // Starts or stops a recording.
   void StartRecording();
-  void StopRecording();
+  std::optional<Recording> StopRecording();
 
   // Events that need to be recorded.
   void OnClick(RecordReplayDriver& driver,

@@ -25,6 +25,7 @@ class SaveRecordingBubbleControllerImpl : public SaveRecordingBubbleController {
   SaveRecordingBubbleControllerImpl(
       Recording recording,
       RecordingDataManager* recording_data_manager,
+      base::OnceCallback<void(std::string_view)> show_toast_callback,
       base::OnceClosure on_close_closure);
   ~SaveRecordingBubbleControllerImpl() override;
 
@@ -37,6 +38,7 @@ class SaveRecordingBubbleControllerImpl : public SaveRecordingBubbleController {
  private:
   Recording recording_;
   const raw_ref<RecordingDataManager> recording_data_manager_;
+  base::OnceCallback<void(std::string_view)> show_toast_callback_;
   base::OnceClosure on_close_closure_;
 };
 

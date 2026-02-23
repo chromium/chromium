@@ -13,9 +13,11 @@ namespace record_replay {
 SaveRecordingBubbleControllerImpl::SaveRecordingBubbleControllerImpl(
     Recording recording,
     RecordingDataManager* recording_data_manager,
+    base::OnceCallback<void(std::string_view)> show_toast_callback,
     base::OnceClosure on_close_closure)
     : recording_(std::move(recording)),
       recording_data_manager_(*recording_data_manager),
+      show_toast_callback_(std::move(show_toast_callback)),
       on_close_closure_(std::move(on_close_closure)) {
   CHECK(recording_data_manager);
 }
@@ -27,12 +29,14 @@ SaveRecordingBubbleControllerImpl::~SaveRecordingBubbleControllerImpl() {
 }
 
 void SaveRecordingBubbleControllerImpl::OnSave(std::u16string_view name) {
-  // TODO(crbug.com/484307350): Set the name in the recording.
+  recording_.set_name(base::UTF16ToUTF8(name));
   recording_data_manager_->AddRecording(std::move(recording_));
+  if (show_toast_callback_) {
+    std::move(show_toast_callback_).Run("Recording saved");
+  }
 }
 
 void SaveRecordingBubbleControllerImpl::OnCancel() {
-  // TODO(crbug.com/484307350): Implement cancel logic.
 }
 
 void SaveRecordingBubbleControllerImpl::OnBubbleClosed() {

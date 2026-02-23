@@ -93,8 +93,8 @@ class RecordReplayManagerTest : public ChromeRenderViewHostTestHarness {
   std::optional<NiceMock<MockRecordReplayClient>> client_;
 };
 
-// Tests that StartRecording() starts a recording and, when called again, also
-// stores the ongoing recording.
+// Tests that StartRecording() starts a recording and, when called again, it
+// finishes the ongoing recording without implicitly saving it.
 // TODO(b/476101114): Expect StartRecording() on the current and future drivers.
 TEST_F(RecordReplayManagerTest, StartRecording) {
   MockFunction<void(std::string_view)> check;
@@ -104,8 +104,6 @@ TEST_F(RecordReplayManagerTest, StartRecording) {
     EXPECT_CALL(client(), ReportToUser);
 
     EXPECT_CALL(check, Call("second StartRecording() call"));
-    EXPECT_CALL(client(), ReportToUser);
-    EXPECT_CALL(data_manager(), AddRecording);
     EXPECT_CALL(client(), ReportToUser);
   }
 
@@ -130,8 +128,6 @@ TEST_F(RecordReplayManagerTest, StopRecording) {
     EXPECT_CALL(client(), ReportToUser);
 
     EXPECT_CALL(check, Call("first StopRecording() call"));
-    EXPECT_CALL(client(), ReportToUser);
-    EXPECT_CALL(data_manager(), AddRecording);
 
     EXPECT_CALL(check, Call("second StopRecording() call"));
   }

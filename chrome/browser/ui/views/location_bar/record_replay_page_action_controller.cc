@@ -62,7 +62,12 @@ void RecordReplayPageActionController::ExecuteAction(
       }
       break;
     case State::kRecording: {
-      manager.StopRecording();
+      std::optional<record_replay::Recording> recording =
+          manager.StopRecording();
+      if (!recording) {
+        break;
+      }
+
       BrowserWindowInterface* bwi = tab_->GetBrowserWindowInterface();
       // bwi can be null if the tab is not attached to a window.
       if (!bwi) {
@@ -88,7 +93,9 @@ void RecordReplayPageActionController::ExecuteAction(
       record_replay::SaveRecordingBubbleView::Show(
           anchor_view, tab_->GetContents(),
           std::make_unique<record_replay::SaveRecordingBubbleControllerImpl>(
-              record_replay::Recording(), rdm,
+              std::move(*recording), rdm,
+              base::BindOnce(&record_replay::RecordReplayManager::ReportToUser,
+                             manager.GetWeakPtr()),
               base::BindOnce(&RecordReplayPageActionController::UpdateState,
                              base::Unretained(this))));
       break;
