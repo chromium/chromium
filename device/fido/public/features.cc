@@ -221,8 +221,8 @@ BASE_FEATURE(kWebAuthnCreatePinWhenSystemUvDisabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
-// Not yet enabled by default.
-BASE_FEATURE(kWebAuthnWinPrfOnCreate, base::FEATURE_DISABLED_BY_DEFAULT);
+// Enabled by default in M147. Remove in or after M150.
+BASE_FEATURE(kWebAuthnWinPrfOnCreate, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace device
