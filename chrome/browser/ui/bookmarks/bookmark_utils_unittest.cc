@@ -93,8 +93,7 @@ TEST_F(BookmarkUtilsGetBookmarkDropOperationTest, DropNodeFromSameProfile) {
   ui::OSExchangeData os_drag_data;
   {
     bookmarks::BookmarkNodeData drag_data(
-        model()->bookmark_bar_node()->children()[1].get(),
-        bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+        model()->bookmark_bar_node()->children()[1].get());
     drag_data.Write(profile()->GetPath(), &os_drag_data);
   }
   ui::DropTargetEvent target_event(os_drag_data, gfx::PointF(), gfx::PointF(),
@@ -114,8 +113,7 @@ TEST_F(BookmarkUtilsGetBookmarkDropOperationTest,
   ui::OSExchangeData os_drag_data;
   {
     bookmarks::BookmarkNodeData drag_data(
-        model()->bookmark_bar_node()->children()[1].get(),
-        bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+        model()->bookmark_bar_node()->children()[1].get());
     drag_data.Write(base::FilePath(FILE_PATH_LITERAL("/tmp/differentProfile")),
                     &os_drag_data);
   }
@@ -137,8 +135,7 @@ TEST_F(BookmarkUtilsGetBookmarkDropOperationTest, DropMultipleNodes) {
   {
     bookmarks::BookmarkNodeData drag_data(
         {model()->bookmark_bar_node()->children()[1].get(),
-         model()->bookmark_bar_node()->children()[2].get()},
-        bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+         model()->bookmark_bar_node()->children()[2].get()});
     drag_data.Write(profile()->GetPath(), &os_drag_data);
   }
   ui::DropTargetEvent target_event(os_drag_data, gfx::PointF(), gfx::PointF(),
@@ -158,8 +155,7 @@ TEST_F(BookmarkUtilsGetBookmarkDropOperationTest, DropNodeInSamePosition) {
   ui::OSExchangeData os_drag_data;
   {
     bookmarks::BookmarkNodeData drag_data(
-        model()->bookmark_bar_node()->children()[1].get(),
-        bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+        model()->bookmark_bar_node()->children()[1].get());
     drag_data.Write(profile()->GetPath(), &os_drag_data);
   }
   ui::DropTargetEvent target_event(os_drag_data, gfx::PointF(), gfx::PointF(),
@@ -200,8 +196,7 @@ TEST_F(BookmarkUtilsGetBookmarkDropOperationTest, DropOnManagedNode) {
     ui::OSExchangeData os_drag_data;
     {
       bookmarks::BookmarkNodeData drag_data(
-          model()->bookmark_bar_node()->children()[1].get(),
-          bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+          model()->bookmark_bar_node()->children()[1].get());
       drag_data.Write(profile()->GetPath(), &os_drag_data);
     }
     ui::DropTargetEvent target_event(os_drag_data, gfx::PointF(), gfx::PointF(),
@@ -220,9 +215,7 @@ TEST_F(BookmarkUtilsGetBookmarkDropOperationTest, DropManagedNode) {
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
   ui::OSExchangeData os_drag_data;
   {
-    bookmarks::BookmarkNodeData drag_data(
-        managed_node()->children()[0].get(),
-        bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+    bookmarks::BookmarkNodeData drag_data(managed_node()->children()[0].get());
     drag_data.Write(profile()->GetPath(), &os_drag_data);
   }
   ui::DropTargetEvent target_event(os_drag_data, gfx::PointF(), gfx::PointF(),
@@ -243,8 +236,7 @@ TEST_F(BookmarkUtilsGetBookmarkDropOperationTest, DropWhenNodeDeleted) {
   ui::OSExchangeData os_drag_data;
   {
     bookmarks::BookmarkNodeData drag_data(
-        model()->bookmark_bar_node()->children()[1].get(),
-        bookmarks::BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+        model()->bookmark_bar_node()->children()[1].get());
     drag_data.Write(profile()->GetPath(), &os_drag_data);
   }
 

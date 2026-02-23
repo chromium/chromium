@@ -290,11 +290,10 @@ TEST_F(BookmarkUtilsTest, CloneMetaInfo) {
   const BookmarkNode* folder =
       model->AddFolder(model->bookmark_bar_node(), 0, u"Folder");
   std::vector<BookmarkNodeData::Element> elements;
-  BookmarkNodeData::Element node_data(
-      node, BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields);
+  BookmarkNodeData::Element node_data(node);
   elements.push_back(node_data);
   ASSERT_EQ(0u, folder->children().size());
-  CloneBookmarkNode(model.get(), elements, folder, 0);
+  CloneBookmarkNode(model.get(), elements, folder, 0, false);
   ASSERT_EQ(1u, folder->children().size());
 
   // Verify that the cloned node contains the same meta info.

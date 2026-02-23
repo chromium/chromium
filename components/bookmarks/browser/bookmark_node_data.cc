@@ -13,7 +13,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/common/bookmark_features.h"
@@ -24,18 +23,6 @@ namespace bookmarks {
 #if !BUILDFLAG(IS_APPLE)
 namespace {
 constexpr size_t kMaxVectorPreallocateSize = 10000;
-
-// If time is null, ToDeltaSinceWindowsEpoch().InMicroseconds() will return 0.
-// To explicitly indicate the meaning of "absence of time information", we
-// handle the case where time is null explicitly.
-int64_t ToMicrosecondsSinceWindowsEpochOrZero(const base::Time& time) {
-  return time.is_null() ? 0 : time.ToDeltaSinceWindowsEpoch().InMicroseconds();
-}
-base::Time FromMicrosecondsSinceWindowsEpochOrZero(int64_t microseconds) {
-  return microseconds == 0 ? base::Time()
-                           : base::Time::FromDeltaSinceWindowsEpoch(
-                                 base::Microseconds(microseconds));
-}
 }  // namespace
 
 const char BookmarkNodeData::kClipboardFormatString[] =
@@ -44,21 +31,18 @@ const char BookmarkNodeData::kClipboardFormatString[] =
 
 BookmarkNodeData::Element::Element() : is_url(false), id_(0) {}
 
-BookmarkNodeData::Element::Element(const BookmarkNode* node,
-                                   DateFieldsBehavior date_fields_behavior)
+BookmarkNodeData::Element::Element(const BookmarkNode* node)
     : is_url(node->is_url()),
       url(node->url()),
       title(node->GetTitle()),
+      date_added(node->date_added()),
+      date_folder_modified(node->date_folder_modified()),
       id_(node->id()) {
-  if (date_fields_behavior == DateFieldsBehavior::kPreserveDateFields) {
-    date_added = node->date_added();
-    date_folder_modified = node->date_folder_modified();
-  }
   if (node->GetMetaInfoMap()) {
     meta_info_map = *node->GetMetaInfoMap();
   }
   for (const auto& child : node->children()) {
-    children.emplace_back(child.get(), date_fields_behavior);
+    children.emplace_back(child.get());
   }
 }
 
@@ -143,15 +127,8 @@ base::Pickle BookmarkNodeData::Element::ToPickle() const {
   pickle.WriteString(url.spec());
   pickle.WriteString16(title);
   pickle.WriteInt64(id_);
-
-  // if date_added is null, write 0 to pickle.
-  pickle.WriteInt64(ToMicrosecondsSinceWindowsEpochOrZero(date_added));
-  if (!is_url) {
-    pickle.WriteInt64(
-        ToMicrosecondsSinceWindowsEpochOrZero(date_folder_modified));
-  }
-
   pickle.WriteUInt32(static_cast<uint32_t>(meta_info_map.size()));
+
   for (const auto& [key, value] : meta_info_map) {
     pickle.WriteString(key);
     pickle.WriteString(value);
@@ -168,26 +145,16 @@ base::Pickle BookmarkNodeData::Element::ToPickle() const {
 
 bool BookmarkNodeData::Element::FromPickle(base::PickleIterator iterator) {
   std::string url_spec;
-  int64_t date_added_microseconds = 0;
   if (!iterator.ReadBool(&is_url) || !iterator.ReadString(&url_spec) ||
-      !iterator.ReadString16(&title) || !iterator.ReadInt64(&id_) ||
-      !iterator.ReadInt64(&date_added_microseconds)) {
+      !iterator.ReadString16(&title) || !iterator.ReadInt64(&id_)) {
     return false;
   }
 
   url = GURL(url_spec);
-  date_added = FromMicrosecondsSinceWindowsEpochOrZero(date_added_microseconds);
+  date_added = base::Time();
   date_folder_modified = base::Time();
-  if (!is_url) {
-    int64_t date_folder_modified_microseconds = 0;
-    if (!iterator.ReadInt64(&date_folder_modified_microseconds)) {
-      return false;
-    }
-    date_folder_modified = FromMicrosecondsSinceWindowsEpochOrZero(
-        date_folder_modified_microseconds);
-  }
-
   meta_info_map.clear();
+
   uint32_t meta_field_count = 0;
   if (!iterator.ReadUInt32(&meta_field_count)) {
     return false;
@@ -209,11 +176,10 @@ bool BookmarkNodeData::Element::FromPickle(base::PickleIterator iterator) {
       return false;
     }
 
-    static_assert(std::numeric_limits<size_t>::max() >=
-                      std::numeric_limits<decltype(children_count_tmp)>::max(),
-                  "size_t is too small to hold all values");
-    CHECK(base::IsValueInRangeForNumericType<size_t>(children_count_tmp));
-
+    if (!base::IsValueInRangeForNumericType<size_t>(children_count_tmp)) {
+      LOG(WARNING) << "children_count failed bounds check";
+      return false;
+    }
     // Note: do not preallocate the children vector. A pickle could be
     // constructed to contain N nested Elements. By continually recursing on
     // this ReadFromPickle function, the fast-fail logic is subverted. Each
@@ -244,15 +210,13 @@ BookmarkNodeData::BookmarkNodeData() = default;
 
 BookmarkNodeData::BookmarkNodeData(const BookmarkNodeData& other) = default;
 
-BookmarkNodeData::BookmarkNodeData(const BookmarkNode* node,
-                                   DateFieldsBehavior date_fields_behavior) {
-  elements.emplace_back(node, date_fields_behavior);
+BookmarkNodeData::BookmarkNodeData(const BookmarkNode* node) {
+  elements.emplace_back(node);
 }
 
 BookmarkNodeData::BookmarkNodeData(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
-    DateFieldsBehavior date_fields_behavior) {
-  ReadFromVector(nodes, date_fields_behavior);
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes) {
+  ReadFromVector(nodes);
 }
 
 BookmarkNodeData::~BookmarkNodeData() {}
@@ -269,8 +233,7 @@ bool BookmarkNodeData::ClipboardContainsBookmarks() {
 #endif
 
 bool BookmarkNodeData::ReadFromVector(
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes,
-    DateFieldsBehavior date_fields_behavior) {
+    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes) {
   Clear();
 
   if (nodes.empty()) {
@@ -278,7 +241,7 @@ bool BookmarkNodeData::ReadFromVector(
   }
 
   for (const auto& node : nodes) {
-    elements.emplace_back(node, date_fields_behavior);
+    elements.emplace_back(node);
   }
 
   CHECK(is_valid());

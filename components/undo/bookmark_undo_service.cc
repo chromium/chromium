@@ -177,13 +177,13 @@ class BookmarkEditOperation : public BookmarkUndoOperation {
   BookmarkNodeData original_bookmark_;
 };
 
-BookmarkEditOperation::BookmarkEditOperation(BookmarkModel* bookmark_model,
-                                             const BookmarkNode* node)
+BookmarkEditOperation::BookmarkEditOperation(
+    BookmarkModel* bookmark_model,
+    const BookmarkNode* node)
     : BookmarkUndoOperation(bookmark_model),
       node_id_(node->id()),
-      original_bookmark_(
-          node,
-          BookmarkNodeData::DateFieldsBehavior::kPreserveDateFields) {}
+      original_bookmark_(node) {
+}
 
 void BookmarkEditOperation::Undo() {
   DCHECK(original_bookmark_.is_valid());

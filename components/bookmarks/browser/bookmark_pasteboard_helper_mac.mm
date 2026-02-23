@@ -9,12 +9,10 @@
 #include <stdint.h>
 
 #include <memory>
-#include <optional>
 
 #include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -48,8 +46,6 @@ NSString* const kWebBookmarkTypeLeaf = @"WebBookmarkTypeLeaf";
 NSString* const kTitleKey = @"Title";
 NSString* const kURLStringKey = @"URLString";
 NSString* const kChildrenKey = @"Children";
-NSString* const kDateAddedKey = @"DateAdded";
-NSString* const kDateFolderModifiedKey = @"DateFolderModified";
 
 BookmarkNode::MetaInfoMap MetaInfoMapFromDictionary(NSDictionary* dictionary) {
   __block BookmarkNode::MetaInfoMap meta_info_map;
@@ -79,25 +75,14 @@ NSDictionary* DictionaryFromBookmarkMetaInfo(
   return dictionary;
 }
 
-std::optional<base::Time> TimeFromDictionary(NSDictionary* dictionary,
-                                             NSString* key) {
-  NSNumber* number = base::apple::ObjCCast<NSNumber>(dictionary[key]);
-  if (!number) {
-    return std::nullopt;
-  }
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::Microseconds(number.longLongValue));
-}
-
 void ConvertNSArrayToElements(
     NSArray* input,
     std::vector<BookmarkNodeData::Element>* elements) {
   for (NSDictionary* bookmark_dict in input) {
     NSString* type =
         base::apple::ObjCCast<NSString>(bookmark_dict[kWebBookmarkTypeKey]);
-    if (!type) {
+    if (!type)
       continue;
-    }
 
     BOOL is_folder = [type isEqualToString:kWebBookmarkTypeList];
 
@@ -105,9 +90,8 @@ void ConvertNSArrayToElements(
     if (!is_folder) {
       NSString* url_string =
           base::apple::ObjCCast<NSString>(bookmark_dict[kURLStringKey]);
-      if (!url_string) {
+      if (!url_string)
         continue;
-      }
       url = GURL(base::SysNSStringToUTF8(url_string));
     }
 
@@ -116,34 +100,25 @@ void ConvertNSArrayToElements(
 
     NSNumber* node_id =
         base::apple::ObjCCast<NSNumber>(bookmark_dict[kChromiumBookmarkIdKey]);
-    if (node_id) {
+    if (node_id)
       new_node->set_id(node_id.longLongValue);
-    }
 
     NSDictionary* meta_info = base::apple::ObjCCast<NSDictionary>(
         bookmark_dict[kChromiumBookmarkMetaInfoKey]);
-    if (meta_info) {
+    if (meta_info)
       new_node->SetMetaInfoMap(MetaInfoMapFromDictionary(meta_info));
-    }
 
     NSString* title = base::apple::ObjCCast<NSString>(bookmark_dict[kTitleKey]);
     new_node->SetTitle(base::SysNSStringToUTF16(title));
 
-    std::optional<base::Time> date_added =
-        TimeFromDictionary(bookmark_dict, kDateAddedKey);
-    std::optional<base::Time> date_folder_modified =
-        TimeFromDictionary(bookmark_dict, kDateFolderModifiedKey);
+    BookmarkNodeData::Element e = BookmarkNodeData::Element(new_node.get());
+    // BookmarkNodeData::Element::ReadFromPickle explicitly zeroes out the two
+    // date fields so do so too. TODO(avi): Refactor this code to be a member
+    // function of BookmarkNodeData::Element so that it can write the id_ field
+    // directly and avoid the round-trip through BookmarkNode.
+    e.date_added = base::Time();
+    e.date_folder_modified = base::Time();
 
-    // TODO(avi): Refactor this code to be a member
-    // function of BookmarkNodeData::Element so that it can write the id_
-    // field directly and avoid the round-trip through BookmarkNode.
-    BookmarkNodeData::Element e = BookmarkNodeData::Element(
-        new_node.get(),
-        BookmarkNodeData::DateFieldsBehavior::kIgnoreDateFields);
-    e.date_added = date_added.has_value() ? date_added.value() : base::Time();
-    e.date_folder_modified = date_folder_modified.has_value()
-                                 ? date_folder_modified.value()
-                                 : base::Time();
     if (is_folder) {
       ConvertNSArrayToElements(bookmark_dict[kChildrenKey], &e.children);
     }
@@ -155,14 +130,12 @@ void ConvertNSArrayToElements(
 bool ReadChromiumBookmarks(NSPasteboard* pb,
                            std::vector<BookmarkNodeData::Element>* elements) {
   id bookmarks = [pb propertyListForType:kUTTypeChromiumBookmarkDictionaryList];
-  if (!bookmarks) {
+  if (!bookmarks)
     return false;
-  }
 
   NSArray* bookmarks_array = base::apple::ObjCCast<NSArray>(bookmarks);
-  if (!bookmarks_array) {
+  if (!bookmarks_array)
     return false;
-  }
 
   ConvertNSArrayToElements(bookmarks_array, elements);
   return true;
@@ -202,27 +175,26 @@ NSArray* GetNSArrayForBookmarkList(
         DictionaryFromBookmarkMetaInfo(element.meta_info_map);
     NSString* title = base::SysUTF16ToNSString(element.title);
     NSNumber* element_id = @(element.id());
-    NSMutableDictionary* object = [NSMutableDictionary dictionary];
-    object[kTitleKey] = title;
-    object[kChromiumBookmarkIdKey] = element_id;
-    object[kChromiumBookmarkMetaInfoKey] = meta_info;
 
-    if (!element.date_added.is_null()) {
-      object[kDateAddedKey] =
-          @(element.date_added.ToDeltaSinceWindowsEpoch().InMicroseconds());
-    }
-
+    NSDictionary* object;
     if (element.is_url) {
-      object[kURLStringKey] = base::SysUTF8ToNSString(element.url.spec());
-      object[kWebBookmarkTypeKey] = kWebBookmarkTypeLeaf;
+      NSString* url = base::SysUTF8ToNSString(element.url.spec());
+      object = @{
+        kTitleKey : title,
+        kURLStringKey : url,
+        kWebBookmarkTypeKey : kWebBookmarkTypeLeaf,
+        kChromiumBookmarkIdKey : element_id,
+        kChromiumBookmarkMetaInfoKey : meta_info
+      };
     } else {
-      object[kChildrenKey] = GetNSArrayForBookmarkList(element.children);
-      object[kWebBookmarkTypeKey] = kWebBookmarkTypeList;
-      if (!element.date_folder_modified.is_null()) {
-        object[kDateFolderModifiedKey] =
-            @(element.date_folder_modified.ToDeltaSinceWindowsEpoch()
-                  .InMicroseconds());
-      }
+      NSArray* children = GetNSArrayForBookmarkList(element.children);
+      object = @{
+        kTitleKey : title,
+        kChildrenKey : children,
+        kWebBookmarkTypeKey : kWebBookmarkTypeList,
+        kChromiumBookmarkIdKey : element_id,
+        kChromiumBookmarkMetaInfoKey : meta_info
+      };
     }
     [array addObject:object];
   }

@@ -244,8 +244,8 @@ void PermanentFolderOrderingTracker::AddNodesAsCopiesOfNodeData(
   const size_t in_storage_index =
       GetInStorageBookmarkCountBeforeIndex(parent == account_node_, index);
   const size_t elements_size = elements.size();
-  bookmarks::CloneBookmarkNode(model_, elements, parent, in_storage_index);
-
+  bookmarks::CloneBookmarkNode(model_, elements, parent, in_storage_index,
+                               /*reset_node_times=*/true);
   // `BookmarkNodeAdded()` must have been called, verify the size is as
   // expected.
   CHECK_EQ(ordering_.size(), GetExpectedOrderingSize());

@@ -362,7 +362,8 @@ void BookmarkMergedSurfaceService::AddNodesAsCopiesOfNodeData(
   // `CloneBookmarkNode` will trigger `BookmarkNodeAdded()` which will notify
   // the observers of this class with the new nodes.
   bookmarks::CloneBookmarkNode(model_, elements,
-                               new_parent.as_non_permanent_folder(), index);
+                               new_parent.as_non_permanent_folder(), index,
+                               /*reset_node_times=*/true);
 }
 
 bool BookmarkMergedSurfaceService::IsNonDefaultOrderingTracked(

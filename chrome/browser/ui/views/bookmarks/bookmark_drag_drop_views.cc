@@ -224,15 +224,8 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
         drag_data_(std::make_unique<ui::OSExchangeData>()) {
     observation_.Observe(model_.get());
 
-    // When dragging bookmarks across different profiles or browsers, the
-    // bookmark's date_added and date_folder_modified fields must be reset.
-    // Dragging a bookmark within the same profile is a move operation and does
-    // not create a new BookmarkNode. Therefore, the date fields of the
-    // BookmarkNode need to be ignored and do not need to be written into the
-    // drag data.
-    bookmarks::BookmarkNodeData bookmark_drag_data(
-        params.nodes,
-        bookmarks::BookmarkNodeData::DateFieldsBehavior::kIgnoreDateFields);
+    // Set up our OLE machinery.
+    bookmarks::BookmarkNodeData bookmark_drag_data(params.nodes);
     bookmark_drag_data.Write(profile->GetPath(), drag_data_.get());
 
     operation_ = ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_LINK;
