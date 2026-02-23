@@ -223,7 +223,7 @@ void ClientTagBasedDataTypeProcessor::ModelReadyToSync(
     if (IsInitialSyncAtLeastPartiallyDone(
             data_type_state.initial_sync_state())) {
       entity_tracker_ = std::make_unique<ProcessorEntityTracker>(
-          type_, data_type_state, batch->TakeAllMetadata());
+          data_type_state, batch->TakeAllMetadata());
       RecordDataTypeNumUnsyncedEntitiesOnModelReady(type_, *entity_tracker_);
     } else {
       // If initial sync isn't done, there must be no entity metadata (if there
@@ -1170,7 +1170,7 @@ std::optional<ModelError> ClientTagBasedDataTypeProcessor::OnFullUpdateReceived(
 
   if (!entity_tracker_) {
     entity_tracker_ = std::make_unique<ProcessorEntityTracker>(
-        type_, data_type_state, EntityMetadataMap());
+        data_type_state, EntityMetadataMap());
   }
 
   // All existing sync entities are either deleted (in the full update case) or

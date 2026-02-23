@@ -20,20 +20,17 @@
 namespace syncer {
 
 ProcessorEntityTracker::ProcessorEntityTracker(
-    DataType type,
     const sync_pb::DataTypeState& data_type_state,
     std::map<std::string, std::unique_ptr<sync_pb::EntityMetadata>>
         metadata_map)
     : data_type_state_(data_type_state) {
   DCHECK(
       IsInitialSyncAtLeastPartiallyDone(data_type_state.initial_sync_state()));
-  size_t invalid_entities = 0;
   for (auto& [storage_key, metadata] : metadata_map) {
     std::unique_ptr<ProcessorEntity> entity =
         ProcessorEntity::CreateFromMetadata(storage_key, std::move(*metadata));
     if (!entity) {
       // The persisted metadata was invalid. This should be very rare.
-      ++invalid_entities;
       continue;
     }
     const ClientTagHash client_tag_hash =
@@ -45,13 +42,6 @@ ProcessorEntityTracker::ProcessorEntityTracker(
     storage_key_to_tag_hash_[entity->storage_key()] = client_tag_hash;
     entities_[client_tag_hash] = std::move(entity);
   }
-  std::string suffix = DataTypeToHistogramSuffix(type);
-  base::UmaHistogramCounts1000(
-      base::StrCat({"Sync.EntityTracker.InvalidEntitiesOnLoad.", suffix}),
-      invalid_entities);
-  base::UmaHistogramCounts1000(
-      base::StrCat({"Sync.EntityTracker.TotalEntitiesOnLoad.", suffix}),
-      metadata_map.size());
 }
 
 ProcessorEntityTracker::~ProcessorEntityTracker() = default;

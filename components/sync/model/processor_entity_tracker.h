@@ -33,7 +33,6 @@ class ProcessorEntityTracker {
   // constructor must be used only if the `initial_sync_state` in
   // `data_type_state` is at least partially-done.
   ProcessorEntityTracker(
-      DataType type,
       const sync_pb::DataTypeState& data_type_state,
       std::map<std::string, std::unique_ptr<sync_pb::EntityMetadata>>
           metadata_map);
