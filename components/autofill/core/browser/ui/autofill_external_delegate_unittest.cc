@@ -1449,7 +1449,7 @@ TEST_F(AutofillExternalDelegateTest, FillAutofillAiFillsFullForm) {
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
 // Tests that when accepting a `kFillAutofillAi` suggestion that requires
 // re-authentication, the re-authentication flow is triggered and the form is
 // filled upon success.
@@ -1537,10 +1537,10 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthMessage) {
       .WillOnce(Return(true));
 
   std::u16string expected_message;
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   expected_message = l10n_util::GetStringFUTF16(IDS_AUTOFILL_AI_FILLING_REAUTH,
                                                 base::UTF8ToUTF16(kUrl.host()));
-#endif
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_CALL(*authenticator, AuthenticateWithMessage(expected_message, _))
       .WillOnce(RunOnceCallback<1>(true));
 

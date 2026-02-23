@@ -191,7 +191,7 @@ constexpr auto kCommonSyncablePrefsAllowlist =
          {syncable_prefs_ids::kAutofillAiTravelEntitiesEnabled,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
         {autofill::prefs::kAutofillAiReauthBeforeViewingSensitiveData,
          {syncable_prefs_ids::kAutofillAiReauthBeforeViewingSensitiveData,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},

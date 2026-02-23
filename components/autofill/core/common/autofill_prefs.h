@@ -49,14 +49,14 @@ inline constexpr char kAutofillAiSyncedOptInStatus[] =
 inline constexpr char kAutofillAiOptInStatus[] =
     "autofill.autofill_ai.opt_in_status";
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
 // Boolean that is true if re-authentication is required before viewing Autofill
 // AI values. This could happen during the filling moment or when visiting the
 // management page.
 inline constexpr char kAutofillAiReauthBeforeViewingSensitiveData[] =
     "autofill.autofill_ai.reauth_before_viewing_sensitive_data";
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
-        // BUILDFLAG(IS_CHROMEOS)
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
 // Integer that is set to the last version where the Autofill AI deduping
 // routine was run. This routine will be run once per version.
 inline constexpr char kAutofillAiLastVersionDeduped[] =

@@ -17,6 +17,7 @@
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
+#import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/common/features.h"
@@ -144,6 +145,13 @@ BOOL RequiresReauth(FormSuggestion* suggestion, web::WebState* web_state) {
   base::optional_ref<const autofill::EntityInstance> entity =
       GetAutofillAiEntity(suggestion.payload, web_state);
   if (!entity.has_value()) {
+    return NO;
+  }
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+  if (!autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(
+          profile->GetPrefs())) {
     return NO;
   }
 
