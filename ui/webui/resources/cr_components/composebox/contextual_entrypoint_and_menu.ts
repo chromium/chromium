@@ -14,7 +14,7 @@ import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbo
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {GlifAnimationState} from './common.js';
+import {GlifAnimationState, hasValidInputState} from './common.js';
 import type {ContextualActionMenuElement} from './contextual_action_menu.js';
 import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_button.js';
 import type {ContextMenuEntrypointElement} from './context_menu_entrypoint.js';
@@ -136,10 +136,7 @@ export class ContextualEntrypointAndMenuElement extends
   }
 
   protected hasAllowedInputs_(): boolean {
-    return !!this.inputState &&
-        (this.inputState.allowedModels.length > 0 ||
-         this.inputState.allowedTools.length > 0 ||
-         this.inputState.allowedInputTypes.length > 0);
+    return hasValidInputState(this.inputState);
   }
 }
 

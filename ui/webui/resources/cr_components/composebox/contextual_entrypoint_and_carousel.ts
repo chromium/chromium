@@ -26,7 +26,7 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {ComposeboxFile, ContextualUpload} from './common.js';
-import {GlifAnimationState, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
+import {GlifAnimationState, hasValidInputState, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordUserAction, TabUploadOrigin} from './common.js';
 import {FileUploadErrorType, FileUploadStatus, InputType, ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
 import {getCss} from './contextual_entrypoint_and_carousel.css.js';
 import {getHtml} from './contextual_entrypoint_and_carousel.html.js';
@@ -120,7 +120,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       // Determines if the entrypoint button should be hidden. This applies
       // specifically to Omnibox Searchbox in compact mode, as opposed to the
       // AIM composebox where the entrypoint is always visible.
-      hideEntrypointButton: {type: Boolean},
       inComposebox: {type: Boolean},
       showModelPicker: {type: Boolean},
       fileUploadsComplete: {
@@ -200,7 +199,6 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   protected accessor activeTool_: ComposeboxToolMode =
       ComposeboxToolMode.kUnspecified;
   protected accessor submitButtonShown: boolean = false;
-  protected accessor hideEntrypointButton: boolean = false;
 
   computeUploadButtonDisabled(): boolean {
     // If only 1 image is uploaded and the create image tool is enabled, we
@@ -305,7 +303,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   protected get shouldHideEntrypointButton_(): boolean {
     return this.shouldShowContextualChipsForCompactMode_ ||
-        this.hideEntrypointButton;
+        (this.showModelPicker && !hasValidInputState(this.inputState));
   }
 
   protected shouldShowDescription_(): boolean {
