@@ -40,6 +40,7 @@
 #include "components/contextual_search/internal/test_composebox_query_controller.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
 #include "components/omnibox/composebox/contextual_search_mojom_traits.h"
@@ -691,6 +692,92 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQueryWithAdditionalParams) {
   std::string udm_param;
   EXPECT_TRUE(net::GetValueForKeyInQuery(query_url, "udm", &udm_param));
   EXPECT_EQ("50", udm_param);
+}
+
+TEST_F(ContextualSearchboxHandlerTest, QueryAutocomplete_SetsLensInputs) {
+  // Set suggest inputs on the client.
+  lens::proto::LensOverlaySuggestInputs suggest_inputs;
+  suggest_inputs.set_encoded_image_signals("xyz");
+  EXPECT_CALL(*static_cast<TestOmniboxClient*>(
+                  handler().omnibox_controller()->client()),
+              GetLensOverlaySuggestInputs())
+      .WillRepeatedly(testing::Return(suggest_inputs));
+
+  // Set input state where `image_gen_upload_active` is false and active_tool is
+  // not CANVAS.
+  omnibox::InputState state;
+  state.image_gen_upload_active = false;
+  state.active_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+  handler().input_state_model()->set_state_for_testing(state);
+  handler().OnInputStateChangedForTesting(state);
+
+  // Set mock AutocompleteController.
+  auto autocomplete_controller =
+      std::make_unique<testing::NiceMock<MockAutocompleteController>>(
+          std::make_unique<MockAutocompleteProviderClient>(), 0);
+  AutocompleteInput input;
+  EXPECT_CALL(*autocomplete_controller, Start(_))
+      .WillOnce(testing::SaveArg<0>(&input));
+  handler().omnibox_controller()->SetAutocompleteControllerForTesting(
+      std::move(autocomplete_controller));
+
+  handler().QueryAutocomplete(u"test", false);
+
+  EXPECT_TRUE(input.lens_overlay_suggest_inputs().has_value());
+  EXPECT_EQ(input.lens_overlay_suggest_inputs()->encoded_image_signals(),
+            "xyz");
+}
+
+TEST_F(ContextualSearchboxHandlerTest,
+       QueryAutocomplete_SkipsLensInputs_InToolModes) {
+  lens::proto::LensOverlaySuggestInputs suggest_inputs;
+  suggest_inputs.set_encoded_image_signals("xyz");
+  EXPECT_CALL(*static_cast<TestOmniboxClient*>(
+                  handler().omnibox_controller()->client()),
+              GetLensOverlaySuggestInputs())
+      .WillRepeatedly(testing::Return(suggest_inputs));
+
+  // 1. Case: `image_gen_upload_active = true`.
+  {
+    omnibox::InputState state;
+    state.image_gen_upload_active = true;
+    state.active_tool = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
+    handler().input_state_model()->set_state_for_testing(state);
+    handler().OnInputStateChangedForTesting(state);
+
+    auto autocomplete_controller =
+        std::make_unique<testing::NiceMock<MockAutocompleteController>>(
+            std::make_unique<MockAutocompleteProviderClient>(), 0);
+    AutocompleteInput input;
+    EXPECT_CALL(*autocomplete_controller, Start(_))
+        .WillOnce(testing::SaveArg<0>(&input));
+    handler().omnibox_controller()->SetAutocompleteControllerForTesting(
+        std::move(autocomplete_controller));
+
+    handler().QueryAutocomplete(u"test", false);
+    EXPECT_FALSE(input.lens_overlay_suggest_inputs().has_value());
+  }
+
+  // 2. Case: `active_tool = TOOL_MODE_CANVAS`.
+  {
+    omnibox::InputState state;
+    state.image_gen_upload_active = false;
+    state.active_tool = omnibox::ToolMode::TOOL_MODE_CANVAS;
+    handler().input_state_model()->set_state_for_testing(state);
+    handler().OnInputStateChangedForTesting(state);
+
+    auto autocomplete_controller =
+        std::make_unique<testing::NiceMock<MockAutocompleteController>>(
+            std::make_unique<MockAutocompleteProviderClient>(), 0);
+    AutocompleteInput input;
+    EXPECT_CALL(*autocomplete_controller, Start(_))
+        .WillOnce(testing::SaveArg<0>(&input));
+    handler().omnibox_controller()->SetAutocompleteControllerForTesting(
+        std::move(autocomplete_controller));
+
+    handler().QueryAutocomplete(u"test", false);
+    EXPECT_FALSE(input.lens_overlay_suggest_inputs().has_value());
+  }
 }
 
 class ContextualSearchboxHandlerTestTabsTest
