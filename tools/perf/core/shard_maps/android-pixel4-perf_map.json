@@ -11,9 +11,6 @@
             "jetstream2": {
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -29,9 +26,6 @@
             "jetstream2": {
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -45,9 +39,6 @@
                 "abridged": false
             },
             "jetstream2": {
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -68,9 +59,6 @@
             "jetstream2": {
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -84,9 +72,6 @@
                 "abridged": false
             },
             "jetstream2": {
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -104,9 +89,6 @@
                 "end": 9,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -117,9 +99,6 @@
             "blink_perf.css": {
                 "begin": 9,
                 "end": 49,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -134,9 +113,6 @@
                 "end": 55,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -147,9 +123,6 @@
             "blink_perf.css": {
                 "begin": 55,
                 "end": 77,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -170,9 +143,6 @@
                 "end": 2,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -191,9 +161,6 @@
                 "end": 19,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -206,9 +173,6 @@
                 "end": 54,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -219,9 +183,6 @@
             "blink_perf.layout": {
                 "begin": 54,
                 "end": 91,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -242,9 +203,6 @@
                 "end": 4,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -260,9 +218,6 @@
                 "end": 17,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -276,9 +231,6 @@
             },
             "blink_perf.webaudio": {
                 "end": 7,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -310,9 +262,6 @@
             "jetstream2": {
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -331,12 +280,6 @@
             "media.mobile": {
                 "abridged": false
             },
-            "octane": {
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -351,9 +294,6 @@
                 "end": 10,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -364,9 +304,6 @@
             "rendering.mobile": {
                 "begin": 10,
                 "end": 38,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -481,33 +418,15 @@
             },
             "rendering.mobile.notracing": {
                 "abridged": false
-            },
-            "speedometer": {
-                "abridged": false
-            },
-            "speedometer-future": {
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer2-future": {
-                "abridged": false
             }
         }
     },
     "32": {
         "benchmarks": {
-            "speedometer2-predictable": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             },
             "speedometer3-future": {
-                "abridged": false
-            },
-            "speedometer3-predictable": {
                 "abridged": false
             },
             "startup.mobile": {

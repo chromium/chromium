@@ -12,9 +12,6 @@
             "jetstream2": {
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 4
@@ -32,9 +29,6 @@
         },
         "benchmarks": {
             "jetstream2": {
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -56,9 +50,6 @@
             "jetstream2": {
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 4
@@ -78,9 +69,6 @@
             "jetstream2": {
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 4
@@ -98,9 +86,6 @@
         },
         "benchmarks": {
             "jetstream2": {
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -176,9 +161,6 @@
             },
             "media.mobile": {
                 "abridged": false
-            },
-            "octane": {
-                "abridged": false
             }
         },
         "executables": {
@@ -228,29 +210,11 @@
             "rendering.mobile.notracing": {
                 "abridged": false
             },
-            "speedometer": {
-                "abridged": false
-            },
-            "speedometer-future": {
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer2-future": {
-                "abridged": false
-            },
-            "speedometer2-predictable": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 4
             },
             "speedometer3-future": {
-                "abridged": false
-            },
-            "speedometer3-predictable": {
                 "abridged": false
             },
             "startup.mobile": {

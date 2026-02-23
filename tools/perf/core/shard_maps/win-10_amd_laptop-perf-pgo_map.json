@@ -7,11 +7,7 @@
         }
     },
     "1": {
-        "benchmarks": {
-            "octane": {
-                "abridged": false
-            }
-        }
+        "benchmarks": {}
     },
     "2": {
         "benchmarks": {

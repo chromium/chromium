@@ -31,6 +31,10 @@ class _Speedometer2(press._PressBenchmark):  # pylint: disable=protected-access
   expression provided.
   """
 
+  # Speedometer 2 is outdated, set SCHEDULED = False by default to
+  # not accidentally run it.
+  SCHEDULED = False
+
   enable_smoke_test_mode = False
   enable_systrace = False
   extra_chrome_categories = False
@@ -131,6 +135,7 @@ class Speedometer20(_Speedometer2):
   """Speedometer2.0 benchmark.
   Explicitly named version."""
 
+  SCHEDULED = False
   _SOURCE_DIR = os.path.join(_SPEEDOMETER_DIR, 'v2.0')
 
   @classmethod
@@ -139,7 +144,7 @@ class Speedometer20(_Speedometer2):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_speedometer2.0'
+    return 'speedometer2.0'
 
 
 @benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
@@ -149,6 +154,7 @@ class Speedometer21(_Speedometer2):
   """Speedometer2.1 benchmark.
   Explicitly named version."""
 
+  SCHEDULED = False
   _SOURCE_DIR = os.path.join(_SPEEDOMETER_DIR, 'v2.1')
 
   @classmethod
@@ -157,7 +163,7 @@ class Speedometer21(_Speedometer2):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_speedometer2.1'
+    return 'speedometer2.1'
 
 
 @benchmark.Info(emails=['cbruni@chromium.org', 'vahl@chromium.org'],
@@ -165,6 +171,9 @@ class Speedometer21(_Speedometer2):
                 documentation_url='https://browserbench.org/Speedometer2.1')
 class Speedometer2(Speedometer21):
   """The latest version of the Speedometer2 benchmark."""
+
+  SCHEDULED = False
+
   @classmethod
   def GetStoryClass(cls):
     return speedometer2_pages.Speedometer2Story
@@ -183,6 +192,8 @@ class V8Speedometer2Future(Speedometer2):
   Shows the performance of upcoming V8 VM features.
   """
 
+  SCHEDULED = False
+
   @classmethod
   def Name(cls):
     return 'speedometer2-future'
@@ -199,6 +210,7 @@ class Speedometer2Predictable(Speedometer2):
 
   This should (hopefully) help reduce variance in the score.
   """
+  SCHEDULED = False
 
   @classmethod
   def Name(cls):

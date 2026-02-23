@@ -19,9 +19,6 @@
             },
             "jetstream2": {
                 "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
             }
         }
     },
@@ -48,9 +45,6 @@
                 "abridged": false
             },
             "jetstream2": {
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             }
         }
@@ -94,9 +88,6 @@
             "memory.desktop": {
                 "end": 3,
                 "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
             }
         }
     },
@@ -104,9 +95,6 @@
         "benchmarks": {
             "memory.desktop": {
                 "begin": 3,
-                "abridged": false
-            },
-            "octane": {
                 "abridged": false
             },
             "power.desktop": {
@@ -121,9 +109,6 @@
             },
             "jetstream2": {
                 "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
             }
         }
     },
@@ -136,9 +121,6 @@
             },
             "jetstream2": {
                 "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
             }
         }
     },
@@ -147,9 +129,6 @@
             "rendering.desktop": {
                 "begin": 103,
                 "end": 173,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             }
         }
@@ -160,9 +139,6 @@
                 "begin": 173,
                 "end": 252,
                 "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
             }
         }
     },
@@ -171,9 +147,6 @@
             "rendering.desktop": {
                 "begin": 252,
                 "end": 319,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             }
         }
@@ -187,28 +160,10 @@
             "rendering.desktop.notracing": {
                 "abridged": false
             },
-            "speedometer": {
-                "abridged": false
-            },
-            "speedometer-future": {
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer2-future": {
-                "abridged": false
-            },
-            "speedometer2-predictable": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             },
             "speedometer3-future": {
-                "abridged": false
-            },
-            "speedometer3-predictable": {
                 "abridged": false
             },
             "system_health.common_desktop": {
@@ -226,9 +181,6 @@
             "system_health.memory_desktop": {
                 "end": 15,
                 "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
             }
         }
     },
@@ -238,9 +190,6 @@
                 "begin": 15,
                 "end": 53,
                 "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
             }
         }
     },
@@ -249,9 +198,6 @@
             "system_health.memory_desktop": {
                 "begin": 53,
                 "end": 77,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             }
         }
@@ -268,9 +214,6 @@
             "v8.browsing_desktop-future": {
                 "end": 26,
                 "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
             }
         }
     },
@@ -282,9 +225,6 @@
             },
             "v8.runtime_stats.top_25": {
                 "end": 73,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             }
         }
@@ -299,9 +239,6 @@
                 "abridged": false
             },
             "webrtc": {
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             }
         }

@@ -1688,10 +1688,6 @@
         "name": "dummy_benchmark.stable_benchmark_1/dummy_page.html"
     },
     {
-        "duration": "41.0",
-        "name": "octane/Octane"
-    },
-    {
         "duration": "18.0",
         "name": "rasterize_and_record_micro.top_25/file://static_top_25/amazon.html"
     },
@@ -3392,32 +3388,8 @@
         "name": "rendering.mobile/zoom_in_animation"
     },
     {
-        "duration": "16.0",
-        "name": "speedometer-future/http://browserbench.org/Speedometer/"
-    },
-    {
-        "duration": "16.0",
-        "name": "speedometer/http://browserbench.org/Speedometer/"
-    },
-    {
-        "duration": "71.0",
-        "name": "speedometer2-future/Speedometer2"
-    },
-    {
-        "duration": "81.0",
-        "name": "speedometer2-predictable/Speedometer2"
-    },
-    {
-        "duration": "70.0",
-        "name": "speedometer2/Speedometer2"
-    },
-    {
         "duration": "95.0",
         "name": "speedometer3-future/Speedometer3"
-    },
-    {
-        "duration": "100.0",
-        "name": "speedometer3-predictable/Speedometer3"
     },
     {
         "duration": "94.0",

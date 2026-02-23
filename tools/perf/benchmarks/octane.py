@@ -23,6 +23,9 @@ class Octane(press._PressBenchmark): # pylint: disable=protected-access
 
   http://chromium.github.io/octane/index.html?auto=1
   """
+
+  SCHEDULED = False
+
   @classmethod
   def Name(cls):
     return 'octane'

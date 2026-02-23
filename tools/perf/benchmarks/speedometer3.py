@@ -179,6 +179,7 @@ class Speedometer31(_Speedometer3):
                 documentation_url='https://github.com/WebKit/Speedometer')
 class Speedometer3(Speedometer31):
   """The latest version of the Speedometer 3.x benchmark."""
+
   SCHEDULED = True
 
   @classmethod
@@ -214,6 +215,8 @@ class Speedometer3Predictable(Speedometer3):
 
   This should (hopefully) help reduce variance in the score.
   """
+
+  SCHEDULED = False
 
   @classmethod
   def Name(cls):

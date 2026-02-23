@@ -26,9 +26,12 @@ from benchmarks import press
 class Speedometer10(press._PressBenchmark):  # pylint: disable=protected-access
   """Speedometer1.0 benchmark.
   Explicitly named version."""
+
+  SCHEDULED = False
+
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_speedometer1.0'
+    return 'speedometer1.0'
 
   def CreateStorySet(self, options):
     return page_sets.Speedometer1StorySet()
@@ -39,6 +42,9 @@ class Speedometer10(press._PressBenchmark):  # pylint: disable=protected-access
                 documentation_url='https://browserbench.org/Speedometer')
 class Speedometer(Speedometer10):
   """Speedometer 1 benchmark."""
+
+  SCHEDULED = False
+
   @classmethod
   def Name(cls):
     return 'speedometer'
@@ -52,6 +58,9 @@ class V8SpeedometerFuture(Speedometer):
 
   Shows the performance of upcoming V8 VM features.
   """
+
+  SCHEDULED = False
+
   @classmethod
   def Name(cls):
     return 'speedometer-future'

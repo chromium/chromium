@@ -13,9 +13,6 @@
                 "abridged": false,
                 "pageset_repeat": 11
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 6
@@ -59,9 +56,6 @@
                 "abridged": false,
                 "pageset_repeat": 11
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 6
@@ -96,9 +90,6 @@
             "jetstream2": {
                 "abridged": false,
                 "pageset_repeat": 11
-            },
-            "speedometer2": {
-                "abridged": false
             },
             "speedometer3": {
                 "abridged": false,
@@ -141,9 +132,6 @@
                 "abridged": false,
                 "pageset_repeat": 11
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 6
@@ -169,9 +157,6 @@
             "jetstream2": {
                 "abridged": false,
                 "pageset_repeat": 11
-            },
-            "speedometer2": {
-                "abridged": false
             },
             "speedometer3": {
                 "abridged": false,
@@ -217,9 +202,6 @@
                 "abridged": false,
                 "pageset_repeat": 11
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 6
@@ -245,9 +227,6 @@
             "rendering.desktop.notracing": {
                 "abridged": false,
                 "pageset_repeat": 2
-            },
-            "speedometer2": {
-                "abridged": false
             },
             "speedometer3": {
                 "abridged": false,
@@ -303,9 +282,6 @@
                 "end": 18,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 6
@@ -331,9 +307,6 @@
             "rendering.desktop.notracing": {
                 "abridged": false,
                 "pageset_repeat": 2
-            },
-            "speedometer2": {
-                "abridged": false
             },
             "speedometer3": {
                 "abridged": false,
@@ -399,9 +372,6 @@
                 "end": 3,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 6
@@ -446,9 +416,6 @@
                 "end": 10,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 6
@@ -483,9 +450,6 @@
                 "end": 5,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 6
@@ -516,14 +480,8 @@
                 "begin": 5,
                 "abridged": false
             },
-            "octane": {
-                "abridged": false
-            },
             "power.desktop": {
                 "end": 12,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -563,9 +521,6 @@
                 "end": 28,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 6
@@ -595,9 +550,6 @@
             "rendering.desktop": {
                 "begin": 28,
                 "end": 72,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -631,9 +583,6 @@
                 "end": 118,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 6
@@ -663,9 +612,6 @@
             "rendering.desktop": {
                 "begin": 118,
                 "end": 156,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -699,9 +645,6 @@
                 "end": 202,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 6
@@ -733,9 +676,6 @@
                 "end": 240,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 6
@@ -765,9 +705,6 @@
             "rendering.desktop": {
                 "begin": 240,
                 "end": 275,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -831,29 +768,11 @@
                 "begin": 315,
                 "abridged": false
             },
-            "speedometer": {
-                "abridged": false
-            },
-            "speedometer-future": {
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer2-future": {
-                "abridged": false
-            },
-            "speedometer2-predictable": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 6
             },
             "speedometer3-future": {
-                "abridged": false
-            },
-            "speedometer3-predictable": {
                 "abridged": false
             },
             "system_health.common_desktop": {

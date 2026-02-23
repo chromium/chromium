@@ -195,9 +195,6 @@
             "memory.desktop": {
                 "abridged": false
             },
-            "octane": {
-                "abridged": false
-            },
             "power.desktop": {
                 "abridged": false
             }
@@ -302,18 +299,6 @@
                 "abridged": false
             },
             "rendering.desktop.notracing": {
-                "abridged": false
-            },
-            "speedometer": {
-                "abridged": false
-            },
-            "speedometer-future": {
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer2-future": {
                 "abridged": false
             },
             "system_health.common_desktop": {

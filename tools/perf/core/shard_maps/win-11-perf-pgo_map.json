@@ -175,9 +175,6 @@
             "memory.desktop": {
                 "abridged": false
             },
-            "octane": {
-                "abridged": false
-            },
             "power.desktop": {
                 "abridged": false
             },
@@ -211,20 +208,7 @@
         "benchmarks": {}
     },
     "20": {
-        "benchmarks": {
-            "speedometer": {
-                "abridged": false
-            },
-            "speedometer-future": {
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer2-future": {
-                "abridged": false
-            }
-        }
+        "benchmarks": {}
     },
     "21": {
         "benchmarks": {}

@@ -336,9 +336,6 @@
                 "begin": 1,
                 "abridged": false
             },
-            "octane": {
-                "abridged": false
-            },
             "system_health.common_desktop": {
                 "sections": [
                     {
@@ -476,12 +473,6 @@
             },
             "rendering.desktop.notracing": {
                 "abridged": false
-            },
-            "speedometer": {
-                "abridged": false
-            },
-            "speedometer-future": {
-                "abridged": false
             }
         },
         "crossbench": {
@@ -493,22 +484,10 @@
     },
     "12": {
         "benchmarks": {
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer2-future": {
-                "abridged": false
-            },
-            "speedometer2-predictable": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             },
             "speedometer3-future": {
-                "abridged": false
-            },
-            "speedometer3-predictable": {
                 "abridged": false
             },
             "system_health.common_desktop": {

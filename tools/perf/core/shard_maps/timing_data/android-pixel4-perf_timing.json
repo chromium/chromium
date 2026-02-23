@@ -1080,10 +1080,6 @@
         "name": "media.mobile/video.html?src=tulip2.vp9.webm&background"
     },
     {
-        "duration": "40.0",
-        "name": "octane/Octane"
-    },
-    {
         "duration": "18.0",
         "name": "rasterize_and_record_micro.top_25/file://static_top_25/amazon.html"
     },
@@ -1872,16 +1868,8 @@
         "name": "rendering.mobile/wsj_mobile_2018"
     },
     {
-        "duration": "81.0",
-        "name": "speedometer2/Speedometer2"
-    },
-    {
         "duration": "100.0",
         "name": "speedometer3-future/Speedometer3"
-    },
-    {
-        "duration": "109.0",
-        "name": "speedometer3-predictable/Speedometer3"
     },
     {
         "duration": "116.0",

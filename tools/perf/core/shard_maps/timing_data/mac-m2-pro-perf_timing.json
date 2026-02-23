@@ -1932,10 +1932,6 @@
         "name": "memory.desktop/WebWorker"
     },
     {
-        "duration": "36.0",
-        "name": "octane/Octane"
-    },
-    {
         "duration": "38.0",
         "name": "power.desktop/TrivialAnimationPageSharedPageState"
     },
@@ -3496,32 +3492,8 @@
         "name": "rendering.desktop/youtube_pinch_2018"
     },
     {
-        "duration": "10.0",
-        "name": "speedometer-future/http://browserbench.org/Speedometer/"
-    },
-    {
-        "duration": "10.0",
-        "name": "speedometer/http://browserbench.org/Speedometer/"
-    },
-    {
-        "duration": "26.0",
-        "name": "speedometer2-future/Speedometer2"
-    },
-    {
-        "duration": "27.0",
-        "name": "speedometer2-predictable/Speedometer2"
-    },
-    {
-        "duration": "23.0",
-        "name": "speedometer2/Speedometer2"
-    },
-    {
         "duration": "23.0",
         "name": "speedometer3-future/Speedometer3"
-    },
-    {
-        "duration": "25.0",
-        "name": "speedometer3-predictable/Speedometer3"
     },
     {
         "duration": "23.0",

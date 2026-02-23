@@ -87,9 +87,6 @@
             "media.mobile": {
                 "abridged": false
             },
-            "octane": {
-                "abridged": false
-            },
             "rasterize_and_record_micro.top_25": {
                 "abridged": false
             },
@@ -121,28 +118,10 @@
     },
     "5": {
         "benchmarks": {
-            "speedometer": {
-                "abridged": false
-            },
-            "speedometer-future": {
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer2-future": {
-                "abridged": false
-            },
-            "speedometer2-predictable": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             },
             "speedometer3-future": {
-                "abridged": false
-            },
-            "speedometer3-predictable": {
                 "abridged": false
             },
             "startup.mobile": {

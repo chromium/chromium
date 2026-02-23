@@ -251,9 +251,6 @@
                 "begin": 3,
                 "abridged": false
             },
-            "octane": {
-                "abridged": false
-            },
             "power.desktop": {
                 "end": 1,
                 "abridged": false
@@ -390,28 +387,10 @@
             "rendering.desktop.notracing": {
                 "abridged": false
             },
-            "speedometer": {
-                "abridged": false
-            },
-            "speedometer-future": {
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer2-future": {
-                "abridged": false
-            },
-            "speedometer2-predictable": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             },
             "speedometer3-future": {
-                "abridged": false
-            },
-            "speedometer3-predictable": {
                 "abridged": false
             },
             "system_health.common_desktop": {

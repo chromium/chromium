@@ -14,9 +14,6 @@
                 "end": 10,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -41,9 +38,6 @@
                 "end": 9,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -60,9 +54,6 @@
             },
             "blink_perf.parser": {
                 "end": 14,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -97,9 +88,6 @@
             "dummy_benchmark.stable_benchmark_1": {
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -127,9 +115,6 @@
             }
         },
         "benchmarks": {
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -140,17 +125,11 @@
             "media.mobile": {
                 "abridged": false
             },
-            "octane": {
-                "abridged": false
-            },
             "rasterize_and_record_micro.top_25": {
                 "abridged": false
             },
             "rendering.mobile": {
                 "end": 3,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -177,9 +156,6 @@
                 "end": 57,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -190,9 +166,6 @@
             "rendering.mobile": {
                 "begin": 57,
                 "end": 114,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -207,9 +180,6 @@
                 "end": 161,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -220,9 +190,6 @@
             "rendering.mobile": {
                 "begin": 161,
                 "end": 211,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -237,9 +204,6 @@
                 "end": 266,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -252,9 +216,6 @@
                 "end": 321,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -265,9 +226,6 @@
             "rendering.mobile": {
                 "begin": 321,
                 "end": 364,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -284,18 +242,6 @@
             "rendering.mobile.notracing": {
                 "abridged": false
             },
-            "speedometer": {
-                "abridged": false
-            },
-            "speedometer-future": {
-                "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
-            },
-            "speedometer2-future": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -303,16 +249,10 @@
     },
     "14": {
         "benchmarks": {
-            "speedometer2-predictable": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             },
             "speedometer3-future": {
-                "abridged": false
-            },
-            "speedometer3-predictable": {
                 "abridged": false
             },
             "startup.mobile": {
@@ -324,9 +264,6 @@
             "system_health.memory_mobile": {
                 "end": 6,
                 "abridged": false
-            },
-            "speedometer2": {
-                "abridged": false
             }
         }
     },
@@ -335,9 +272,6 @@
             "system_health.memory_mobile": {
                 "begin": 6,
                 "end": 24,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -352,9 +286,6 @@
                 "end": 42,
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -365,9 +296,6 @@
             "system_health.memory_mobile": {
                 "begin": 42,
                 "end": 62,
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
@@ -384,9 +312,6 @@
             "system_health.webview_startup": {
                 "abridged": false
             },
-            "speedometer2": {
-                "abridged": false
-            },
             "speedometer3": {
                 "abridged": false
             }
@@ -401,9 +326,6 @@
                 "abridged": false
             },
             "webrtc": {
-                "abridged": false
-            },
-            "speedometer2": {
                 "abridged": false
             },
             "speedometer3": {
