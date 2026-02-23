@@ -10,7 +10,10 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 
 /**
  * Java side of the JNI bridge between GlicKeyedServiceImpl in Java and C++. All method calls are
@@ -33,6 +36,10 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
     @Override
     public void toggleUI(long browserWindowPtr, Profile profile, int invocationSource) {
         if (mNativePtr == 0) return;
+
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        tracker.notifyEvent(EventConstants.GLIC_ANDROID_USED);
+
         GlicKeyedServiceImplJni.get()
                 .toggleUI(mNativePtr, browserWindowPtr, profile, invocationSource);
     }

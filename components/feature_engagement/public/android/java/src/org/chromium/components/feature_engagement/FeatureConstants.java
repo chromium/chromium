@@ -364,6 +364,9 @@ public @interface FeatureConstants {
     /** A generic IPH feature to always trigger help UI when asked. */
     String GENERIC_ALWAYS_TRIGGER_HELP_UI_FEATURE = "IPH_GenericAlwaysTriggerHelpUiFeature";
 
+    /** An IPH feature to show on the Glic Promo on Android. */
+    String GLIC_PROMO_ANDROID_FEATURE = "IPH_GlicPromoAndroid";
+
     /**
      * An IPH feature prompting user to tap on identity disc to navigate to "Sync and Google
      * services" preferences.

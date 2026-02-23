@@ -1140,6 +1140,22 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return CreateAlwaysTriggerConfig(feature);
   }
 
+  if (kIPHGlicPromoAndroidFeature.name == feature->name) {
+    // A config that allows the GLIC promo IPH to be shown.
+    // * Only once in its lifetime.
+    // * Only as long as the user hasn't opened the glic feature on Android.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger =
+        EventConfig("glic_promo_android_iph_trigger", Comparator(LESS_THAN, 1),
+                    k10YearsInDays, k10YearsInDays);
+    config.used = EventConfig("glic_android_used", Comparator(EQUAL, 0),
+                              k10YearsInDays, k10YearsInDays);
+    return config;
+  }
+
   if (kIPHLowUserEngagementDetectorFeature.name == feature->name) {
     FeatureConfig config;
     config.valid = true;

@@ -249,6 +249,9 @@ public final class EventConstants {
     /** Fusebox attachment popup was toggled open by the user. */
     public static final String FUSEBOX_ATTACHMENT_POPUP_USED = "fusebox_attachment_popup_used";
 
+    /** Glic on Android used by the user. */
+    public static final String GLIC_ANDROID_USED = "glic_android_used";
+
     /** Do not instantiate. */
     private EventConstants() {}
 }
