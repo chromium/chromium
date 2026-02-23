@@ -1421,11 +1421,14 @@ ScrollableArea* GetNearestScrollableArea(LayoutBox* current_box) {
   // RootScroller node. The RootScroller node will have a custom applyScroll
   // callback that performs scrolling as well as associated "root" actions like
   // browser control movement and overscroll glow.
+  // TODO(crbug.com/485240464): Make sure the iteration is correct for
+  // overscroll areas.
   do {
     if (next_box->IsGlobalRootScroller() ||
         (next_box->IsScrollContainer() &&
          (next_box->GetScrollableArea()->ScrollsOverflow() ||
-          !next_box->GetScrollableArea()->CanPropagateScroll()))) {
+          !next_box->GetScrollableArea()->CanPropagateScroll() ||
+          next_box->IsOverscrollContainer()))) {
       return next_box->GetScrollableArea();
     }
 
