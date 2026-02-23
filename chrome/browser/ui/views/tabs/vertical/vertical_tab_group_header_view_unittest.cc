@@ -13,6 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 
@@ -29,6 +30,7 @@ class MockDelegate : public VerticalTabGroupHeaderView::Delegate {
   MOCK_METHOD(void, InitHeaderDrag, (const ui::MouseEvent&), (override));
   MOCK_METHOD(bool, ContinueHeaderDrag, (const ui::MouseEvent&), (override));
   MOCK_METHOD(void, CancelHeaderDrag, (), (override));
+  MOCK_METHOD(void, HideHoverCard, (), (const, override));
 };
 
 }  // namespace
@@ -67,4 +69,22 @@ TEST_F(VerticalTabGroupHeaderViewTest, TooltipText) {
       IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP, u"3 tabs");
 
   EXPECT_EQ(header->GetTooltipText(), expected_tooltip);
+}
+
+TEST_F(VerticalTabGroupHeaderViewTest, HideHoverCardOnMouseEnter) {
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* header =
+      widget->SetContentsView(std::make_unique<VerticalTabGroupHeaderView>(
+          delegate, nullptr, &visual_data));
+  widget->Show();
+
+  EXPECT_CALL(delegate, HideHoverCard());
+
+  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
+  generator.MoveMouseTo(header->GetBoundsInScreen().CenterPoint());
 }

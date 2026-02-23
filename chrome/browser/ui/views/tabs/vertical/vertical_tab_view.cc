@@ -395,8 +395,6 @@ void VerticalTabView::OnMouseExited(const ui::MouseEvent& event) {
     return;
   }
 
-  UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kHover);
-
   // Hover state is handled by the parent if it is split.
   if (split_) {
     return;
@@ -425,6 +423,7 @@ void VerticalTabView::OnGestureEvent(ui::GestureEvent* event) {
 
   auto* controller = collection_node_->GetController();
   CHECK(controller);
+  UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kEvent);
 
   switch (event->type()) {
     case ui::EventType::kGestureTapDown: {
