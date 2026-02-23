@@ -4,6 +4,8 @@
 
 package org.chromium.components.signin;
 
+
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -40,15 +42,12 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowAccountManager;
 import org.robolectric.shadows.ShadowUserManager;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.base.task.test.CustomShadowAsyncTask;
-import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -64,7 +63,6 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GaiaId;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -74,12 +72,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         shadows = {
-            CustomShadowAsyncTask.class,
             ShadowUserManager.class,
             ShadowAccountManager.class,
-            ShadowPostTask.class
         })
-@LooperMode(LooperMode.Mode.LEGACY)
 public class AccountManagerFacadeImplTest {
     private static final AccountInfo TEST_ACCOUNT =
             new AccountInfo.Builder("test@gmail.com", new GaiaId("testGaiaId")).build();
@@ -91,22 +86,6 @@ public class AccountManagerFacadeImplTest {
                                     .setIsSubjectToParentalControls(false)
                                     .build())
                     .build();
-
-    private static class ShadowPostTaskImpl implements ShadowPostTask.TestImpl {
-        private final List<Runnable> mRunnables = new ArrayList<>();
-
-        @Override
-        public void postDelayedTask(@TaskTraits int traits, Runnable task, long delay) {
-            mRunnables.add(task);
-        }
-
-        void runAll() {
-            for (int index = 0; index < mRunnables.size(); index++) {
-                mRunnables.get(index).run();
-            }
-            mRunnables.clear();
-        }
-    }
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -122,7 +101,6 @@ public class AccountManagerFacadeImplTest {
     private final Context mContext = RuntimeEnvironment.application;
     private ShadowUserManager mShadowUserManager;
     private ShadowAccountManager mShadowAccountManager;
-    private ShadowPostTaskImpl mPostTaskRunner;
 
     private FakeAccountManagerDelegate mDelegate;
     private AccountManagerFacadeImpl mFacade;
@@ -137,11 +115,10 @@ public class AccountManagerFacadeImplTest {
         mShadowUserManager =
                 shadowOf((UserManager) mContext.getSystemService(Context.USER_SERVICE));
         mShadowAccountManager = shadowOf(AccountManager.get(mContext));
-        mPostTaskRunner = new ShadowPostTaskImpl();
-        ShadowPostTask.setTestImpl(mPostTaskRunner);
         ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         mDelegate = spy(new FakeAccountManagerDelegate());
         mFacade = new AccountManagerFacadeImpl(mDelegate);
+        RobolectricUtil.runAllBackgroundAndUi();
         mFacade.resetAccountsForTesting();
     }
 
@@ -152,6 +129,7 @@ public class AccountManagerFacadeImplTest {
         addTestAccount("test@gmail.com");
 
         new AccountManagerFacadeImpl(mDelegate);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         numberOfAccountsHistogram.assertExpected();
     }
@@ -181,6 +159,7 @@ public class AccountManagerFacadeImplTest {
         FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
         delegate.addAccount(TEST_ACCOUNT);
         AccountManagerFacade facade = new AccountManagerFacadeImpl(delegate);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(facade.getAccounts().getResult(), List.of(TEST_ACCOUNT));
         assertTrue(facade.didAccountFetchSucceed());
@@ -209,13 +188,14 @@ public class AccountManagerFacadeImplTest {
                         .build();
 
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegateMock);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Called once on AccountManagerFacade creation.
         verify(mDelegateMock).getAccountsSynchronous();
         assertFalse(facade.getAccounts().isFulfilled());
 
         // The delegate call is retried once, and succeeds.
-        mPostTaskRunner.runAll();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mDelegateMock, times(2)).getAccountsSynchronous();
         assertTrue(facade.getAccounts().isFulfilled());
         assertTrue(facade.didAccountFetchSucceed());
@@ -238,13 +218,15 @@ public class AccountManagerFacadeImplTest {
                         .build();
 
         mDelegate.callOnCoreAccountInfoChanged();
+        RobolectricUtil.runAllBackgroundAndUi();
         // Called once on AccountManagerFacade creation and a second time when
         // onCoreAccountInfoChanged is called.
         verify(mDelegate, times(2)).getAccountsSynchronous();
 
         // The delegate call fails indefinitely but is only retried MAXIMUM_RETRIES times (plus the
         // two interactions checked above).
-        mPostTaskRunner.runAll();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
         verify(mDelegate, times(AccountManagerFacadeImpl.MAXIMUM_RETRIES + 2))
                 .getAccountsSynchronous();
         assertFalse(mFacade.didAccountFetchSucceed());
@@ -259,12 +241,13 @@ public class AccountManagerFacadeImplTest {
         // Initially, account fetching fails.
         doThrow(AccountManagerDelegateException.class).when(mDelegate).getAccountsSynchronous();
         mDelegate.callOnCoreAccountInfoChanged();
-        mPostTaskRunner.runAll();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertFalse(mFacade.didAccountFetchSucceed());
         assertEquals(mFacade.getAccounts().getResult(), List.of());
 
         // Accounts are updated again.
         mDelegate.callOnCoreAccountInfoChanged();
+        RobolectricUtil.runAllBackgroundAndUi();
         // Account fetch is still marked as non-successful.
         assertFalse(mFacade.didAccountFetchSucceed());
         // This time account fetch will succeed.
@@ -274,8 +257,9 @@ public class AccountManagerFacadeImplTest {
         doReturn(TEST_ACCOUNT.getGaiaId())
                 .when(mDelegate)
                 .getAccountGaiaId(TEST_ACCOUNT.getEmail());
-        mPostTaskRunner.runAll();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertTrue(mFacade.didAccountFetchSucceed());
+        assertEquals(mFacade.getAccounts().getResult(), List.of(TEST_ACCOUNT));
     }
 
     // If this test starts flaking, please re-open crbug.com/568636 and make sure there is some sort
@@ -283,6 +267,7 @@ public class AccountManagerFacadeImplTest {
     @Test
     public void testNonCanonicalAccount() throws Exception {
         addTestAccount("test.me@gmail.com");
+        RobolectricUtil.runAllBackgroundAndUi();
         var accounts = mFacade.getAccounts().getResult();
 
         Assert.assertNotNull(AccountUtils.findAccountByEmail(accounts, "test.me@gmail.com"));
@@ -315,7 +300,7 @@ public class AccountManagerFacadeImplTest {
                             // Without this check FakeAccountManagerDelegate.removeAccount() will
                             // crash because the account doesn't exist.
                             if (!accountRemoved.get()) {
-                                removeTestAccount(new CoreAccountId(accountGaiaId));
+                                mDelegate.removeAccount(new CoreAccountId(accountGaiaId));
                                 accountRemoved.set(true);
                             }
                             return null;
@@ -413,6 +398,7 @@ public class AccountManagerFacadeImplTest {
 
         mShadowUserManager.setApplicationRestrictions(mContext.getPackageName(), new Bundle());
         mContext.sendBroadcast(new Intent(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(List.of(accountInfo1, accountInfo2), mFacade.getAccounts().getResult());
     }
@@ -438,6 +424,7 @@ public class AccountManagerFacadeImplTest {
                 .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
         facade.checkIsSubjectToParentalControls(accountInfo, mChildAccountStatusListenerMock);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mChildAccountStatusListenerMock).onStatusReady(true, accountInfo);
     }
@@ -453,6 +440,7 @@ public class AccountManagerFacadeImplTest {
                 .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
         facade.checkIsSubjectToParentalControls(accountInfo, mChildAccountStatusListenerMock);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mChildAccountStatusListenerMock).onStatusReady(false, null);
     }
@@ -468,6 +456,7 @@ public class AccountManagerFacadeImplTest {
                 .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
         facade.checkIsSubjectToParentalControls(accountInfo, mChildAccountStatusListenerMock);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mChildAccountStatusListenerMock).onStatusReady(false, null);
     }
@@ -482,7 +471,10 @@ public class AccountManagerFacadeImplTest {
                 .when(mDelegate)
                 .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
-        AccountCapabilities capabilities = facade.getAccountCapabilities(accountInfo).getResult();
+        var promise = facade.getAccountCapabilities(accountInfo);
+        RobolectricUtil.runAllBackgroundAndUi();
+        AccountCapabilities capabilities = promise.getResult();
+
         Assert.assertEquals(
                 Tribool.TRUE,
                 capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
@@ -503,7 +495,10 @@ public class AccountManagerFacadeImplTest {
                 .when(mDelegate)
                 .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
-        AccountCapabilities capabilities = facade.getAccountCapabilities(accountInfo).getResult();
+        var promise = facade.getAccountCapabilities(accountInfo);
+        RobolectricUtil.runAllBackgroundAndUi();
+        AccountCapabilities capabilities = promise.getResult();
+
         Assert.assertEquals(
                 Tribool.FALSE,
                 capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
@@ -524,7 +519,10 @@ public class AccountManagerFacadeImplTest {
                 .when(mDelegate)
                 .hasCapability(eq(CoreAccountInfo.getAndroidAccountFrom(accountInfo)), any());
 
-        AccountCapabilities capabilities = facade.getAccountCapabilities(accountInfo).getResult();
+        var promise = facade.getAccountCapabilities(accountInfo);
+        RobolectricUtil.runAllBackgroundAndUi();
+        AccountCapabilities capabilities = promise.getResult();
+
         Assert.assertEquals(
                 Tribool.UNKNOWN,
                 capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice());
@@ -540,9 +538,11 @@ public class AccountManagerFacadeImplTest {
     public void testCheckIsSubjectToParentalControls_migrateAccountManagerDelegateEnabled() {
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
         mDelegate.addAccount(TestAccounts.CHILD_ACCOUNT);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         facade.checkIsSubjectToParentalControls(
                 TestAccounts.CHILD_ACCOUNT, mChildAccountStatusListenerMock);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mChildAccountStatusListenerMock).onStatusReady(true, TestAccounts.CHILD_ACCOUNT);
     }
@@ -553,9 +553,11 @@ public class AccountManagerFacadeImplTest {
         FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
         AccountManagerFacade facade = new AccountManagerFacadeImpl(delegate);
         delegate.addAccount(TEST_ACCOUNT_NOT_SUBJECT_TO_PARENTAL_CONTROLS);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         facade.checkIsSubjectToParentalControls(
                 TEST_ACCOUNT_NOT_SUBJECT_TO_PARENTAL_CONTROLS, mChildAccountStatusListenerMock);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mChildAccountStatusListenerMock).onStatusReady(false, null);
     }
@@ -567,8 +569,10 @@ public class AccountManagerFacadeImplTest {
         FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
         AccountManagerFacade facade = new AccountManagerFacadeImpl(delegate);
         delegate.addAccount(TEST_ACCOUNT);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         facade.checkIsSubjectToParentalControls(TEST_ACCOUNT, mChildAccountStatusListenerMock);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mChildAccountStatusListenerMock).onStatusReady(false, null);
     }
@@ -579,10 +583,12 @@ public class AccountManagerFacadeImplTest {
             throws Exception {
         FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
         AccountManagerFacade facade = new AccountManagerFacadeImpl(delegate);
-
         delegate.addAccount(TestAccounts.CHILD_ACCOUNT);
-        AccountCapabilities capabilities =
-                facade.getAccountCapabilities(TestAccounts.CHILD_ACCOUNT).getResult();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        var promise = facade.getAccountCapabilities(TestAccounts.CHILD_ACCOUNT);
+        RobolectricUtil.runAllBackgroundAndUi();
+        AccountCapabilities capabilities = promise.getResult();
 
         Assert.assertEquals(Tribool.TRUE, capabilities.isSubjectToParentalControls());
         Assert.assertEquals(
@@ -596,6 +602,7 @@ public class AccountManagerFacadeImplTest {
         // Do not crash if a corresponding PlatformAccount is not found for the given
         // CoreAccountInfo.
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegate);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertTrue(facade.getAccountCapabilities(TEST_ACCOUNT).isPending());
     }
@@ -609,6 +616,7 @@ public class AccountManagerFacadeImplTest {
         addTestAccount("test@gmail.com");
 
         new AccountManagerFacadeImpl(mDelegate);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         numberOfAccountsHistogram.assertExpected();
     }
@@ -640,6 +648,7 @@ public class AccountManagerFacadeImplTest {
         FakeAccountManagerDelegate delegate = new FakeAccountManagerDelegate();
         delegate.addAccount(TEST_ACCOUNT);
         AccountManagerFacade facade = new AccountManagerFacadeImpl(delegate);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(facade.getAccounts().getResult(), List.of(TEST_ACCOUNT));
         assertTrue(facade.didAccountFetchSucceed());
@@ -665,13 +674,14 @@ public class AccountManagerFacadeImplTest {
                         .build();
 
         AccountManagerFacade facade = new AccountManagerFacadeImpl(mDelegateMock);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Called once on AccountManagerFacade creation.
         verify(mDelegateMock).getPlatformAccountsSynchronous();
         assertFalse(facade.getAccounts().isFulfilled());
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // The delegate call is retried once, and succeeds.
-        mPostTaskRunner.runAll();
         verify(mDelegateMock, times(2)).getPlatformAccountsSynchronous();
         assertTrue(facade.getAccounts().isFulfilled());
         assertTrue(facade.didAccountFetchSucceed());
@@ -697,13 +707,15 @@ public class AccountManagerFacadeImplTest {
                         .build();
 
         mDelegate.callOnCoreAccountInfoChanged();
+        RobolectricUtil.runAllBackgroundAndUi();
         // Called once on AccountManagerFacade creation and a second time when
         // onCoreAccountInfoChanged is called.
         verify(mDelegate, times(2)).getPlatformAccountsSynchronous();
 
         // The delegate call fails indefinitely but is only retried MAXIMUM_RETRIES times (plus the
         // two interactions checked above).
-        mPostTaskRunner.runAll();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
         verify(mDelegate, times(AccountManagerFacadeImpl.MAXIMUM_RETRIES + 2))
                 .getPlatformAccountsSynchronous();
         assertFalse(mFacade.didAccountFetchSucceed());
@@ -721,20 +733,22 @@ public class AccountManagerFacadeImplTest {
                 .when(mDelegate)
                 .getPlatformAccountsSynchronous();
         mDelegate.callOnCoreAccountInfoChanged();
-        mPostTaskRunner.runAll();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertFalse(mFacade.didAccountFetchSucceed());
-        assertEquals(mFacade.getAccounts().getResult(), List.of());
 
         // Accounts are updated again.
         mDelegate.callOnCoreAccountInfoChanged();
+        RobolectricUtil.runAllBackgroundAndUi();
         // Account fetch is still marked as non-successful.
         assertFalse(mFacade.didAccountFetchSucceed());
+
         // This time account fetch will succeed.
         doReturn(List.of(new FakePlatformAccount(TEST_ACCOUNT)))
                 .when(mDelegate)
                 .getPlatformAccountsSynchronous();
-        mPostTaskRunner.runAll();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertTrue(mFacade.didAccountFetchSucceed());
+        assertEquals(mFacade.getAccounts().getResult(), List.of(TEST_ACCOUNT));
     }
 
     @Test
@@ -842,6 +856,7 @@ public class AccountManagerFacadeImplTest {
 
         mShadowUserManager.setApplicationRestrictions(mContext.getPackageName(), new Bundle());
         mContext.sendBroadcast(new Intent(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(List.of(accountInfo1, accountInfo2), mFacade.getAccounts().getResult());
     }
@@ -863,6 +878,7 @@ public class AccountManagerFacadeImplTest {
         restrictions.putStringArray("RestrictAccountsToPatterns", patterns);
         mShadowUserManager.setApplicationRestrictions(mContext.getPackageName(), restrictions);
         mContext.sendBroadcast(new Intent(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED));
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     private CoreAccountInfo addTestAccount(String accountEmail) {
@@ -871,10 +887,13 @@ public class AccountManagerFacadeImplTest {
                                 accountEmail, FakeAccountManagerDelegate.toGaiaId(accountEmail))
                         .build();
         mDelegate.addAccount(accountInfo);
+        // testGetCoreAccountInfosWhenGaiaIdIsNull() requires the blocking variant.
+        RobolectricUtil.runAllBackgroundAndUiAllowBlocking();
         return accountInfo;
     }
 
     private void removeTestAccount(CoreAccountId accountId) {
         mDelegate.removeAccount(accountId);
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 }
