@@ -95,8 +95,6 @@ void ProxyingURLLoaderFactory::MaybeProxyRequest(
             prefs::kExtensibleEnterpriseSSOConfiguredHosts);
     base::flat_set<std::string> configured_hosts;
     configured_hosts.reserve(configured_hosts_pref.size());
-    // TODO: b/433226247 - This loop is O(N^2). Consider constructing the
-    // flat_set from a sorted vector if there might ever be more than 10 hosts.
     for (const base::Value& host : configured_hosts_pref) {
       configured_hosts.insert(host.GetString());
     }
