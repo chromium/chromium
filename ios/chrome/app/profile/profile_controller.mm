@@ -37,6 +37,7 @@
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/deferred_initialization_task_names.h"
+#import "ios/chrome/app/profile/app_icon_launched_profile_agent.h"
 #import "ios/chrome/app/profile/application_storage_metrics.h"
 #import "ios/chrome/app/profile/certificate_policy_profile_agent.h"
 #import "ios/chrome/app/profile/docking_promo_profile_agent.h"
@@ -647,6 +648,10 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   [_state addAgent:[[PostRestoreProfileAgent alloc] init]];
   [_state addAgent:[[SearchEngineChoiceProfileAgent alloc] init]];
   [_state addAgent:[[SessionMetricsProfileAgent alloc] init]];
+
+  if (IsDockingPromoV2Enabled()) {
+    [_state addAgent:[[AppIconLaunchedProfileAgent alloc] init]];
+  }
 
   if (IsDockingPromoEnabled()) {
     switch (DockingPromoExperimentTypeEnabled()) {
