@@ -31,11 +31,8 @@ CallbackWorkItem* WorkItem::CreateCallbackWorkItem(
 CopyTreeWorkItem* WorkItem::CreateCopyTreeWorkItem(
     const base::FilePath& source_path,
     const base::FilePath& dest_path,
-    const base::FilePath& temp_path,
-    CopyOverWriteOption overwrite_option,
-    const base::FilePath& alternative_path) {
-  return new CopyTreeWorkItem(source_path, dest_path, temp_path,
-                              overwrite_option, alternative_path);
+    const base::FilePath& temp_path) {
+  return new CopyTreeWorkItem(source_path, dest_path, temp_path);
 }
 
 CreateDirWorkItem* WorkItem::CreateCreateDirWorkItem(

@@ -6,23 +6,17 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/win/shlwapi.h"
 
 CopyTreeWorkItem::~CopyTreeWorkItem() = default;
 
 CopyTreeWorkItem::CopyTreeWorkItem(const base::FilePath& source_path,
                                    const base::FilePath& dest_path,
-                                   const base::FilePath& temp_path,
-                                   CopyOverWriteOption overwrite_option,
-                                   const base::FilePath& alternative_path)
+                                   const base::FilePath& temp_path)
     : source_path_(source_path),
       dest_path_(dest_path),
       temp_path_(temp_path),
-      overwrite_option_(overwrite_option),
-      alternative_path_(alternative_path),
       copied_to_dest_path_(false),
       moved_to_backup_(false),
-      copied_to_alternate_path_(false),
       backup_path_created_(false) {}
 
 bool CopyTreeWorkItem::DoImpl() {
@@ -31,28 +25,8 @@ bool CopyTreeWorkItem::DoImpl() {
     return false;
   }
 
-  bool dest_exist = base::PathExists(dest_path_);
-  if ((dest_exist) &&
-             (overwrite_option_ == WorkItem::NEW_NAME_IF_IN_USE) &&
-             (!base::DirectoryExists(source_path_)) &&
-             (!base::DirectoryExists(dest_path_)) &&
-             (IsFileInUse(dest_path_))) {
-    // handle overwrite_option_ = NEW_NAME_IF_IN_USE case.
-    if (alternative_path_.empty() || base::PathExists(alternative_path_) ||
-        !base::CopyFile(source_path_, alternative_path_)) {
-      LOG(ERROR) << "failed to copy " << source_path_.value() << " to "
-                 << alternative_path_.value();
-      return false;
-    } else {
-      copied_to_alternate_path_ = true;
-      VLOG(1) << "Copied source file " << source_path_.value()
-              << " to alternative path " << alternative_path_.value();
-      return true;
-    }
-  }
-
-  // In all cases that reach here, move dest to a backup path.
-  if (dest_exist) {
+  // Move `dest_path` to a backup directory if it exists.
+  if (base::PathExists(dest_path_)) {
     if (!backup_path_.CreateUniqueTempDirUnderPath(temp_path_)) {
       PLOG(ERROR) << "Failed to get backup path in folder "
                   << temp_path_.value();
@@ -103,36 +77,4 @@ void CopyTreeWorkItem::RollbackImpl() {
                   << dest_path_.value();
     }
   }
-  if (copied_to_alternate_path_ &&
-      !base::DeletePathRecursively(alternative_path_)) {
-    LOG(ERROR) << "Can not delete " << alternative_path_.value();
-  }
-}
-
-// static
-bool CopyTreeWorkItem::IsFileInUse(const base::FilePath& path) {
-  if (!base::PathExists(path))
-    return false;
-
-  // A running executable is open with exclusive write access, so attempting to
-  // write to it will fail with a sharing violation. A more precise method would
-  // be to open the file with DELETE access and attempt to set the delete
-  // disposition on the handle. This would fail if the file was mapped into a
-  // process's address space, but succeed otherwise. This seems like overkill,
-  // however.
-  HANDLE handle =
-      ::CreateFile(path.value().c_str(), FILE_WRITE_DATA,
-                   FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-                   nullptr, OPEN_EXISTING, 0, nullptr);
-  if (handle == INVALID_HANDLE_VALUE) {
-    // By and large, we expect the error to be ERROR_SHARING_VIOLATION if the
-    // file is being executed (see above). It may also be something like
-    // ERROR_ACCESS_DENIED; e.g., if the file was deleted but open handles to it
-    // remain. Consider any failure to open the file to mean that it's in-use
-    // and shouldn't be replaced.
-    return true;
-  }
-
-  CloseHandle(handle);
-  return false;
 }

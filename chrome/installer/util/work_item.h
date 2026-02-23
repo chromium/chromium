@@ -69,11 +69,6 @@ class WorkItem {
   //                   systems, and 64-bit on 64-bit systems).
   // See http://msdn.microsoft.com/en-us/library/windows/desktop/aa384129.aspx
   static const REGSAM kWow64Default = 0;
-  // Possible states
-  enum CopyOverWriteOption {
-    ALWAYS,          // Always overwrite regardless of what existed before.
-    NEW_NAME_IF_IN_USE  // Copy to a new path if dest is in use(only files).
-  };
 
   // Abstract base class for the conditions used by ConditionWorkItemList.
   // TODO(robertshield): Move this out of WorkItem.
@@ -92,16 +87,10 @@ class WorkItem {
 
   // Create a CopyTreeWorkItem that recursively copies a file system hierarchy
   // from source path to destination path.
-  // * If overwrite_option is ALWAYS, the created CopyTreeWorkItem always
-  //   overwrites files.
-  // * If overwrite_option is NEW_NAME_IF_IN_USE, file is copied with an
-  //   alternate name specified by alternative_path.
   static CopyTreeWorkItem* CreateCopyTreeWorkItem(
       const base::FilePath& source_path,
       const base::FilePath& dest_path,
-      const base::FilePath& temp_path,
-      CopyOverWriteOption overwrite_option,
-      const base::FilePath& alternative_path);
+      const base::FilePath& temp_path);
 
   // Create a CreateDirWorkItem that creates a directory at the given path.
   static CreateDirWorkItem* CreateCreateDirWorkItem(const base::FilePath& path);

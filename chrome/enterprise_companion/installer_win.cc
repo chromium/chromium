@@ -102,14 +102,13 @@ bool Install() {
 
   install_list->AddCopyTreeWorkItem(
       source_exe_path, install_directory->AppendUTF8(kExecutableName),
-      temp_dir.GetPath(), WorkItem::ALWAYS);
+      temp_dir.GetPath());
 #if ENTERPRISE_COMPANION_USE_ICU_DATA_FILE
   if (base::PathExists(source_exe_path.DirName().Append(kIcuDataFileName))) {
     if (WaitForFileWritable(install_directory->Append(kIcuDataFileName))) {
       install_list->AddCopyTreeWorkItem(
           source_exe_path.DirName().Append(kIcuDataFileName),
-          install_directory->Append(kIcuDataFileName), temp_dir.GetPath(),
-          WorkItem::ALWAYS);
+          install_directory->Append(kIcuDataFileName), temp_dir.GetPath());
     } else {
       VLOG(1) << "ICU data file is not writable. It will be omitted from the "
                  "installation.";

@@ -102,7 +102,7 @@ int Setup(UpdaterScope scope) {
     const base::FilePath target_path = versioned_dir->Append(file.BaseName());
     const base::FilePath source_path = source_dir.Append(file);
     install_list->AddCopyTreeWorkItem(source_path, target_path,
-                                      temp_dir->GetPath(), WorkItem::ALWAYS);
+                                      temp_dir->GetPath());
   }
 
   const HKEY key = UpdaterScopeToHKeyRoot(scope);

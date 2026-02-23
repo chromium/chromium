@@ -43,12 +43,9 @@ class WorkItemList : public WorkItem {
   // Add a CopyTreeWorkItem to the list of work items.
   // See the NOTE in the documentation for the CopyTreeWorkItem class for
   // special considerations regarding |temp_path|.
-  virtual WorkItem* AddCopyTreeWorkItem(
-      const base::FilePath& source_path,
-      const base::FilePath& dest_path,
-      const base::FilePath& temp_path,
-      CopyOverWriteOption overwrite_option,
-      const base::FilePath& alternative_path = base::FilePath());
+  virtual WorkItem* AddCopyTreeWorkItem(const base::FilePath& source_path,
+                                        const base::FilePath& dest_path,
+                                        const base::FilePath& temp_path);
 
   // Add a CreateDirWorkItem that creates a directory at the given path.
   virtual WorkItem* AddCreateDirWorkItem(const base::FilePath& path);

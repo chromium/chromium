@@ -68,11 +68,9 @@ class MockWorkItemList : public WorkItemList {
  public:
   MockWorkItemList() = default;
 
-  MOCK_METHOD5(AddCopyTreeWorkItem,
+  MOCK_METHOD3(AddCopyTreeWorkItem,
                WorkItem*(const base::FilePath&,
                          const base::FilePath&,
-                         const base::FilePath&,
-                         CopyOverWriteOption,
                          const base::FilePath&));
   MOCK_METHOD1(AddCreateDirWorkItem, WorkItem*(const base::FilePath&));
   MOCK_METHOD3(AddCreateRegKeyWorkItem,
@@ -304,8 +302,7 @@ TEST_F(InstallWorkerTest, TestInstallChromeSystem) {
 
   // Set up some expectations.
   // TODO(robertshield): Set up some real expectations.
-  EXPECT_CALL(work_item_list, AddCopyTreeWorkItem(_, _, _, _, _))
-      .Times(AtLeast(1));
+  EXPECT_CALL(work_item_list, AddCopyTreeWorkItem(_, _, _)).Times(AtLeast(1));
   EXPECT_CALL(work_item_list, AddCreateRegKeyWorkItem(_, _, _))
       .WillRepeatedly(Return(create_reg_key_work_item.get()));
   EXPECT_CALL(work_item_list, AddSetRegStringValueWorkItem(_, _, _, _, _, _))

@@ -151,8 +151,7 @@ bool AddSwapGoogleUpdateWorkItems(UpdaterScope scope,
   stop_google_update_processes->set_best_effort(true);
   stop_google_update_processes->set_rollback_enabled(false);
 
-  list->AddCopyTreeWorkItem(updater_path, *target_path, temp_path,
-                            WorkItem::ALWAYS);
+  list->AddCopyTreeWorkItem(updater_path, *target_path, temp_path);
 
   const std::wstring google_update_appid_key =
       GetAppClientsKey(kLegacyGoogleUpdateAppID);
