@@ -51,13 +51,23 @@ export class FilterDialogElement extends CrLitElement {
 
   override firstUpdated() {
     this.$.dialog.showModal();
-    this.positionDialog();
+
+    // firstUpdated guarantees that this element is in the DOM but does not
+    // guarantee that the browser has completed a full layout pass for its
+    // children. Because positionDialog is sensitive to the height of the
+    // dialog, ensure that a paint has occurred before attempting to position
+    // the dialog.
+    requestAnimationFrame(() => {
+      this.positionDialog();
+    });
   }
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
     if (changedProperties.has('anchorElement')) {
-      this.positionDialog();
+      requestAnimationFrame(() => {
+        this.positionDialog();
+      });
     }
   }
 
