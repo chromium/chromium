@@ -49,6 +49,7 @@ import org.chromium.chrome.test.transit.page.TabSwitcherActionMenuFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
+import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -551,11 +552,61 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @MediumTest
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
+    @DisableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2,
+        ChromeFeatureList.ENABLE_TOOLBAR_POSITIONING_IN_RESIZE_MODE
+    })
+    @Restriction(DeviceFormFactor.PHONE)
+    // TODO(crbug.com/485814887): Clean up this test.
+    public void testRender_incognitoNtpWithOmniboxAutofocus_toolbarTop() throws Exception {
+        loadAndRenderIncognitoNtp("incognito_ntp_omnibox_autofocus_toolbar_top", true);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({
+        ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP,
+        ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2 + ":force_bottom_for_focused_omnibox/true"
+    })
+    @DisableFeatures(ChromeFeatureList.ENABLE_TOOLBAR_POSITIONING_IN_RESIZE_MODE)
+    @Restriction(DeviceFormFactor.PHONE)
+    // TODO(crbug.com/485814887): Clean up this test.
+    public void testRender_incognitoNtpWithOmniboxAutofocus_toolbarBottom() throws Exception {
+        loadAndRenderIncognitoNtp("incognito_ntp_omnibox_autofocus_toolbar_bottom", true);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @DisableFeatures({
+        ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP,
+        ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2
+    })
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testRender_incognitoNtp_keyboardOverlay_toolbarTop() throws Exception {
+        loadAndRenderIncognitoNtp("incognito_ntp_keyboard_overlay_toolbar_top", false);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2 + ":force_bottom_for_focused_omnibox/true")
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testRender_incognitoNtp_keyboardOverlay_toolbarBottom() throws Exception {
+        loadAndRenderIncognitoNtp("incognito_ntp_keyboard_overlay_toolbar_bottom", false);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
     @Restriction(DeviceFormFactor.PHONE)
-    public void testRender_incognitoNtpWithOmniboxAutofocus_toolbarTop() throws Exception {
-        loadAndRenderIncognitoNtpWithOmniboxAutofocus(
-                "incognito_ntp_omnibox_autofocus_toolbar_top");
+    public void testRender_incognitoNtp_keyboardResize_toolbarTop() throws Exception {
+        loadAndRenderIncognitoNtp("incognito_ntp_keyboard_resize_toolbar_top", true);
     }
 
     @Test
@@ -566,14 +617,25 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
         ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2 + ":force_bottom_for_focused_omnibox/true"
     })
     @Restriction(DeviceFormFactor.PHONE)
-    public void testRender_incognitoNtpWithOmniboxAutofocus_toolbarBottom() throws Exception {
-        loadAndRenderIncognitoNtpWithOmniboxAutofocus(
-                "incognito_ntp_omnibox_autofocus_toolbar_bottom");
+    public void testRender_incognitoNtp_keyboardResize_toolbarBottom() throws Exception {
+        loadAndRenderIncognitoNtp("incognito_ntp_keyboard_resize_toolbar_bottom", true);
     }
 
-    private void loadAndRenderIncognitoNtpWithOmniboxAutofocus(String goldenId) throws Exception {
+    private void loadAndRenderIncognitoNtp(String goldenId, boolean withOmniboxAutofocus)
+            throws Exception {
         final Tab incognitoNtpTab =
                 mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), true);
+
+        if (!withOmniboxAutofocus) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mActivityTestRule
+                                .getActivity()
+                                .getToolbarManager()
+                                .setUrlBarFocus(true, OmniboxFocusReason.OMNIBOX_TAP);
+                    });
+        }
+
         verifyPhoneOmniboxFocusAndKeyboardVisibility(true, incognitoNtpTab);
 
         // Disable scrollbar and cursor to avoid screenshot diffs due to fading animation.

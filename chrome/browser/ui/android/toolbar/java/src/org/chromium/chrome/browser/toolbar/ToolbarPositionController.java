@@ -682,7 +682,9 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
             int keyboardHeight = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom;
 
-            if (shouldIgnoreKeyboardHeightForIncognitoNtp()) {
+            // Ignore keyboard's height for offset calculation if the keyboard resizes the window.
+            if (shouldIgnoreKeyboardHeightInResizeMode()
+                    || shouldIgnoreKeyboardHeightForIncognitoNtp()) {
                 keyboardHeight = 0;
             }
 
@@ -725,6 +727,9 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
      * mode to work correctly. This is managed by not attaching the {@code
      * DeferredIMEWindowInsetApplicationCallback} in {@code AutocompleteMediator}.
      *
+     * <p>TODO(crbug.com/485814887): This is a temporary method that should be removed after the feature is
+     * stable, along with the {@code sEnableToolbarPositioningInResizeMode} killswitch.
+     *
      * @return Whether the keyboard height should be ignored.
      */
     private boolean shouldIgnoreKeyboardHeightForIncognitoNtp() {
@@ -749,6 +754,24 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 && isIncognitoNtpShowing
                 && isOmniboxFocused
                 && isKeyboardInResizingMode;
+    }
+
+    /**
+     * Returns whether the keyboard height should be ignored for toolbar's Y offset calculation when
+     * omnibox is focused and keyboard is in resize mode. This can be true only if the
+     * corresponding feature flag is enabled.
+     *
+     * @return Whether the keyboard height should be ignored.
+     */
+    private boolean shouldIgnoreKeyboardHeightInResizeMode() {
+        InsetObserver insetObserver = mWindowAndroid.getInsetObserver();
+        boolean allowToolbarPositioningInResizeMode =
+                ChromeFeatureList.sEnableToolbarPositioningInResizeMode.isEnabled();
+
+        boolean isKeyboardInResizeMode =
+                insetObserver != null && !insetObserver.isKeyboardInOverlayMode();
+
+        return allowToolbarPositioningInResizeMode && isKeyboardInResizeMode;
     }
 
     /** Returns whether the toolbar will be shown on top for the supplied tab. */

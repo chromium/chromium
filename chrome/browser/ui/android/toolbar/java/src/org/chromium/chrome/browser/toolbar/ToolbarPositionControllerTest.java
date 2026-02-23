@@ -83,6 +83,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -96,6 +97,7 @@ public class ToolbarPositionControllerTest {
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
     private static final int TOOLBAR_HEIGHT = 56;
     private static final int CONTROL_CONTAINER_ID = 12356;
+    private static final int STATUS_BAR_HEIGHT = 10;
 
     private final BrowserControlsSizer mBrowserControlsSizer =
             new BrowserControlsSizer() {
@@ -280,6 +282,7 @@ public class ToolbarPositionControllerTest {
     @Mock private PrefService mLocalPrefService;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private DisplayAndroid mDisplayAndroid;
+    @Mock private InsetObserver mInsetObserver;
 
     private Context mContext;
     private final SettableNonNullObservableSupplier<Boolean> mIsNtpShowing =
@@ -355,6 +358,7 @@ public class ToolbarPositionControllerTest {
         mProfileSupplier = ObservableSuppliers.createNonNull(mProfile);
         UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefs);
+        doReturn(mInsetObserver).when(mWindowAndroid).getInsetObserver();
 
         ResettersForTesting.register(
                 ToolbarPositionController::resetCachedToolbarConfigurationForTesting);
@@ -1038,21 +1042,9 @@ public class ToolbarPositionControllerTest {
     @Config(qualifiers = "sw400dp", sdk = 30)
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
     public void testBottomAnchoredFocusedOmnibox() {
-        doReturn(mDisplayAndroid).when(mWindowAndroid).getDisplay();
-        doReturn(1000).when(mDisplayAndroid).getDisplayHeight();
-        doReturn(mRootView).when(mControlContainerView).getRootView();
-        int statusBarHeight = 10;
-        WindowInsets rootViewInsets =
-                new WindowInsets.Builder()
-                        .setInsets(WindowInsets.Type.ime(), Insets.of(0, 0, 0, 400))
-                        .setInsets(
-                                WindowInsets.Type.statusBars(), Insets.of(0, statusBarHeight, 0, 0))
-                        .build();
-        doReturn(rootViewInsets).when(mControlContainerView).getRootWindowInsets();
-
-        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
-        mIsOmniboxFocused.set(true);
-        assertControlsAtBottom();
+        // Null InsetObserver, should fallback to keyboard's overlay mode.
+        doReturn(null).when(mWindowAndroid).getInsetObserver();
+        setupBottomAnchoredFocusedOmniboxTest();
 
         mKeyboardHeightSupplier.set(400);
         verify(mControlContainerView).setTranslationY(-400f);
@@ -1061,8 +1053,32 @@ public class ToolbarPositionControllerTest {
         // the toolbar should be translated up to the top of the screen but no further.
         doReturn(430).when(mDisplayAndroid).getDisplayHeight();
         mKeyboardHeightSupplier.set(401);
-        verify(mControlContainerView).setTranslationY(-(430f - TOOLBAR_HEIGHT - statusBarHeight));
+        verify(mControlContainerView)
+                .setTranslationY(-(430f - TOOLBAR_HEIGHT - STATUS_BAR_HEIGHT));
         verify(mControlContainer, atLeast(1)).setMaxHeight(20);
+    }
+
+    @Test
+    @Config(qualifiers = "sw400dp", sdk = 30)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
+    public void testBottomAnchoredFocusedOmnibox_whenOverlayKeyboardMode() {
+        doReturn(true).when(mInsetObserver).isKeyboardInOverlayMode();
+        setupBottomAnchoredFocusedOmniboxTest();
+
+        mKeyboardHeightSupplier.set(400);
+        verify(mControlContainerView, atLeast(1)).setTranslationY(-400f);
+    }
+
+    @Test
+    @Config(qualifiers = "sw400dp", sdk = 30)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
+    public void testBottomAnchoredFocusedOmnibox_whenResizeKeyboardMode() {
+        doReturn(false).when(mInsetObserver).isKeyboardInOverlayMode();
+        setupBottomAnchoredFocusedOmniboxTest();
+
+        mKeyboardHeightSupplier.set(400);
+        // In resize mode, keyboard height should be ignored for translation.
+        verify(mControlContainerView, atLeast(1)).setTranslationY(0f);
     }
 
     @Test
@@ -1070,6 +1086,25 @@ public class ToolbarPositionControllerTest {
         mController.destroy();
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtTop();
+    }
+
+    private void setupBottomAnchoredFocusedOmniboxTest() {
+        doReturn(mDisplayAndroid).when(mWindowAndroid).getDisplay();
+        doReturn(1000).when(mDisplayAndroid).getDisplayHeight();
+        doReturn(mRootView).when(mControlContainerView).getRootView();
+
+        WindowInsets rootViewInsets =
+                new WindowInsets.Builder()
+                        .setInsets(WindowInsets.Type.ime(), Insets.of(0, 0, 0, 400))
+                        .setInsets(
+                                WindowInsets.Type.statusBars(),
+                                Insets.of(0, STATUS_BAR_HEIGHT, 0, 0))
+                        .build();
+        doReturn(rootViewInsets).when(mControlContainerView).getRootWindowInsets();
+
+        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
+        mIsOmniboxFocused.set(true);
+        assertControlsAtBottom();
     }
 
     @Test
