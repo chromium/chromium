@@ -33,7 +33,8 @@ class DriveTabHelperTest : public PlatformTest {
     download_task_ =
         std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
     download_task_->SetWebState(web_state_.get());
-    helper_ = DriveTabHelper::GetOrCreateForWebState(web_state_.get());
+    DriveTabHelper::CreateForWebState(web_state_.get());
+    helper_ = DriveTabHelper::FromWebState(web_state_.get());
   }
 
   web::WebTaskEnvironment task_environment;

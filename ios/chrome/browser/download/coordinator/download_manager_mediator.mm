@@ -317,7 +317,7 @@ void DownloadManagerMediator::UpdateUploadTask() {
   UploadTask* new_upload_task = nullptr;
   if (download_task_) {
     DriveTabHelper* drive_tab_helper =
-        DriveTabHelper::GetOrCreateForWebState(download_task_->GetWebState());
+        DriveTabHelper::FromWebState(download_task_->GetWebState());
     new_upload_task =
         drive_tab_helper->GetUploadTaskForDownload(download_task_);
   }

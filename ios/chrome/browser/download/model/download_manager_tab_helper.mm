@@ -181,7 +181,7 @@ void DownloadManagerTabHelper::AdaptToFullscreen(bool adapt_to_fullscreen) {
 
 bool DownloadManagerTabHelper::WillDownloadTaskBeSavedToDrive() const {
   DriveTabHelper* drive_tab_helper =
-      DriveTabHelper::GetOrCreateForWebState(task_->GetWebState());
+      DriveTabHelper::FromWebState(task_->GetWebState());
   UploadTask* upload_task =
       drive_tab_helper->GetUploadTaskForDownload(task_.get());
   return upload_task && !upload_task->IsDone();

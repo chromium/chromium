@@ -9,8 +9,8 @@
 #import "ios/chrome/browser/drive/model/upload_task_observer.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/download/download_task_observer.h"
-#import "ios/web/public/lazy_web_state_user_data.h"
 #import "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
 
 class DriveUploadTask;
 @protocol SystemIdentity;
@@ -24,7 +24,7 @@ class UploadTask;
 // Drive service upon completion of the download task.
 // - 3 - observes the `UploadTask` and removes the local copy of the downloaded
 // file upon completion of the upload task.
-class DriveTabHelper : public web::LazyWebStateUserData<DriveTabHelper>,
+class DriveTabHelper : public web::WebStateUserData<DriveTabHelper>,
                        public web::DownloadTaskObserver,
                        public UploadTaskObserver {
  public:
@@ -40,7 +40,7 @@ class DriveTabHelper : public web::LazyWebStateUserData<DriveTabHelper>,
   UploadTask* GetUploadTaskForDownload(web::DownloadTask* task);
 
  private:
-  friend class web::LazyWebStateUserData<DriveTabHelper>;
+  friend class web::WebStateUserData<DriveTabHelper>;
   explicit DriveTabHelper(web::WebState* web_state);
 
   // web::DownloadTaskObserver overrides:

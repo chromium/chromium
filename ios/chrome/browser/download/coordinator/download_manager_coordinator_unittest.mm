@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/download/ui/download_manager_view_controller+Testing.h"
 #import "ios/chrome/browser/download/ui/download_manager_view_controller.h"
 #import "ios/chrome/browser/download/ui/download_manager_view_controller_delegate.h"
+#import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -81,6 +82,7 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
     OverlayRequestQueue::CreateForWebState(web_state_.get());
     DownloadManagerTabHelper::CreateForWebState(web_state_.get());
     DocumentDownloadTabHelper::CreateForWebState(web_state_.get());
+    DriveTabHelper::CreateForWebState(web_state_.get());
     web_state_->SetBrowserState(profile_.get());
     coordinator_ = [[DownloadManagerCoordinator alloc]
         initWithBaseViewController:base_view_controller_

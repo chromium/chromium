@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_mimetype_util.h"
 #import "ios/chrome/browser/drive/model/drive_policy.h"
+#import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/fakes/fake_download_manager_tab_helper_delegate.h"
@@ -42,6 +43,7 @@ class DocumentDownloadTabHelperTest : public PlatformTest {
         ->SetDelegate(download_manager_delegate_);
 
     DocumentDownloadTabHelper::CreateForWebState(&web_state_);
+    DriveTabHelper::CreateForWebState(&web_state_);
     web_state_.SetBrowserState(profile_.get());
     web_state_.WasShown();
   }

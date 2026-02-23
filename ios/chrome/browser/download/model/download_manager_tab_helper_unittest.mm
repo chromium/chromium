@@ -75,7 +75,7 @@ class DownloadManagerTabHelperTest : public PlatformTest {
             std::make_unique<FakeAuthenticationServiceDelegate>()));
     profile_ = std::move(builder).Build();
     web_state_->SetBrowserState(profile_.get());
-    DriveTabHelper::GetOrCreateForWebState(web_state_.get());
+    DriveTabHelper::CreateForWebState(web_state_.get());
     DownloadManagerTabHelper::CreateForWebState(web_state_.get());
     DownloadManagerTabHelper::FromWebState(web_state_.get())
         ->SetDelegate(delegate_);

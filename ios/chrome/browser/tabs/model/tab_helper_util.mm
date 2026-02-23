@@ -371,6 +371,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.Create<DocumentDownloadTabHelper>();
   attacher.Create<ARQuickLookTabHelper>();
   attacher.Create<PassKitTabHelper>();
+  attacher.Create<DriveTabHelper>();
 
   attacher.Create<PageloadForegroundDurationTabHelper>();
 
