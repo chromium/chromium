@@ -143,6 +143,9 @@ class AimEligibilityService
   // Checks if user is eligible for Canvas in AIM features.
   virtual bool IsCanvasEligible() const;
 
+  // Checks if the user is eligible for Co-Browse in AIM features.
+  virtual bool IsCobrowseEligible() const;
+
   // Determining whether the provided URL is an AI page based on server-provided
   // params.
   virtual bool HasAimUrlParams(const GURL& url) const;
@@ -165,14 +168,6 @@ class AimEligibilityService
   bool SetEligibilityResponseForDebugging(
       const std::string& base64_encoded_response);
 
- protected:
-  // Virtual methods for platform-specific country and locale access.
-  virtual std::string GetCountryCode() const = 0;
-  virtual std::string GetLocale() const = 0;
-
- private:
-  friend class AimEligibilityServiceFriend;
-
   // Tracks the source of the eligibility request.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -183,9 +178,21 @@ class AimEligibilityService
     kPrimaryAccountChange = 2,
     kNetworkChange = 3,
     kUser = 4,
-    kMaxValue = kUser,
+    kCoBrowseAimUrlDetection = 5,
+    kMaxValue = kCoBrowseAimUrlDetection,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:AimEligibilityRequestSource)
+
+  // Triggers a server request to fetch eligibility from the server.
+  virtual void FetchEligibility(RequestSource source);
+
+ protected:
+  // Virtual methods for platform-specific country and locale access.
+  virtual std::string GetCountryCode() const = 0;
+  virtual std::string GetLocale() const = 0;
+
+ private:
+  friend class AimEligibilityServiceFriend;
 
   // Converts RequestSource enum to histogram suffix string.
   static std::string RequestSourceToString(RequestSource source);
