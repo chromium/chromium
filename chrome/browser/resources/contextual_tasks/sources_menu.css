@@ -9,16 +9,9 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-:host {
-  --mwb-primary-text-font-size: 12px;
-  --mwb-secondary-text-font-size: 11px;
-}
-
 .dropdown-item {
-  display: flex;
-  align-items: center;
-  padding: 0 0;
   width: 320px;
+  padding: 0 0;
 }
 
 cr-action-menu {
@@ -28,16 +21,19 @@ cr-action-menu {
 
 .header {
   color: var(--cr-primary-text-color);
-  padding: 0 0 8px 16px;
-}
-
-/* Top padding for the main header, "Shared tabs and files" */
-cr-action-menu > .header:first-child {
+  padding: 0 16px 8px 16px;
+  font-size: 14px;
   font-weight: bold;
+  line-height: 20px;
 }
 
 .file-icon {
   color: #b3261e;
   border-radius: 8px;
-  display: flex;
+}
+
+.dropdown-item img[slot='customIcon'] {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
 }

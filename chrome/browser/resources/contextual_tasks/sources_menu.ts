@@ -100,6 +100,10 @@ export class SourcesMenuElement extends CrLitElement {
       return url;
     }
   }
+
+  protected getImageSrc_(url: string): string {
+    return 'chrome://image?url=' + encodeURIComponent(url);
+  }
 }
 
 declare global {
