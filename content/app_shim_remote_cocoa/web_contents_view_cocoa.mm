@@ -126,11 +126,6 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 }
 
 + (void)initialize {
-  if (![WebContentsOcclusionCheckerMac
-          manualOcclusionDetectionSupportedForCurrentMacOSVersion]) {
-    return;
-  }
-
   // Create the WebContentsOcclusionCheckerMac shared instance.
   [WebContentsOcclusionCheckerMac sharedInstance];
 }
