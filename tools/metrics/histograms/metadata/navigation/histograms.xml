@@ -915,31 +915,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Navigation.BrowserInitiated.DuplicateNavigationInputStartPresence2"
-    enum="InputStartPresence" expires_after="2026-12-01">
-  <owner>annasato@google.com</owner>
-  <owner>chrome-navigation@google.com</owner>
-  <summary>
-    When a new navigation is a duplicate of a currently ongoing navigation,
-    where the destination and params are the same, records whether the
-    input_start timestamp was available on the new navigation, the old (ongoing)
-    navigation, both, or neither.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.BrowserInitiated.DuplicateNavInputTimeDiff2"
-    units="ms" expires_after="2026-12-01">
-  <owner>annasato@google.com</owner>
-  <owner>chrome-navigation@google.com</owner>
-  <summary>
-    When a new navigation is a duplicate of a currently ongoing navigation,
-    where the destination and params are the same, records the difference
-    between the new navigation's input start time and the ongoing (old)
-    navigation's input start time.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.BrowserInitiatedSessionHistoryCount"
     enum="HistoryNavType" expires_after="2026-05-03">
   <owner>liuwilliam@chromium.org</owner>
@@ -2392,35 +2367,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Navigation.RendererInitiated.DuplicateNavigationInputStartPresence2"
-    enum="InputStartPresence" expires_after="2026-12-01">
-  <owner>annasato@google.com</owner>
-  <owner>chrome-navigation@google.com</owner>
-  <summary>
-    When a new navigation is a duplicate of a currently ongoing navigation,
-    where the destination and params are the same, records whether the
-    input_start timestamp was available on the new navigation, the old (ongoing)
-    navigation, both, or neither. Updated to version 2 because this recording
-    was moved from the browser process to the renderer process to prevent the
-    input_start timestamp from being lost.
-  </summary>
-</histogram>
-
-<histogram name="Navigation.RendererInitiated.DuplicateNavInputTimeDiff2"
-    units="ms" expires_after="2026-12-01">
-  <owner>annasato@google.com</owner>
-  <owner>chrome-navigation@google.com</owner>
-  <summary>
-    When a new navigation is a duplicate of a currently ongoing navigation,
-    where the destination and params are the same, records the difference
-    between the new navigation's input start time and the ongoing (old)
-    navigation's input start time. Updated to version 2 because this recording
-    was moved from the browser process to the renderer process to prevent the
-    input_start timestamp from being lost.
-  </summary>
-</histogram>
-
-<histogram
     name="Navigation.RendererRunLoopStartToFirstCommitNavigation2.{FrameType}"
     units="ms" expires_after="2026-06-28">
   <owner>chikamune@chromium.org</owner>
@@ -3606,6 +3552,32 @@ chromium-metrics-reviews@google.com.
     engaged sites data. Recorded whenever a navigation is deferred waiting for
     engaged sites.
   </summary>
+</histogram>
+
+<histogram name="Navigation{Initiator}.DuplicateNavigationInputStartPresence2"
+    enum="InputStartPresence" expires_after="2026-12-01">
+  <owner>annasato@google.com</owner>
+  <owner>chrome-navigation@google.com</owner>
+  <summary>
+    When a new navigation is a duplicate of a currently ongoing navigation,
+    where the destination and params are the same, records whether the
+    input_start timestamp was available on the new navigation, the old (ongoing)
+    navigation, both, or neither.
+  </summary>
+  <token key="Initiator" variants="Initiator"/>
+</histogram>
+
+<histogram name="Navigation{Initiator}.DuplicateNavInputTimeDiff2" units="ms"
+    expires_after="2026-12-01">
+  <owner>annasato@google.com</owner>
+  <owner>chrome-navigation@google.com</owner>
+  <summary>
+    When a new navigation is a duplicate of a currently ongoing navigation,
+    where the destination and params are the same, records the difference
+    between the new navigation's input start time and the ongoing (old)
+    navigation's input start time.
+  </summary>
+  <token key="Initiator" variants="Initiator"/>
 </histogram>
 
 <histogram name="Navigation{Initiator}.DuplicateNavIsUnderThreshold2"
