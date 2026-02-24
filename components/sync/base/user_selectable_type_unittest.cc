@@ -66,6 +66,10 @@ class UserSelectableTypeTest : public ::testing::Test {
     // selectable type or to a new one and remove it from here (unless it's
     // ambiguous).
     data_types.Put(GEMINI_THREAD);
+    // TODO(crbug.com/486879778): In CL #3, map ACCESSIBILITY_ANNOTATION to an
+    // existing selectable type or to a new one and remove it from here (unless
+    // it's ambiguous).
+    data_types.Put(ACCESSIBILITY_ANNOTATION);
 
     return data_types;
   }

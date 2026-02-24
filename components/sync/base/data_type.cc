@@ -16,11 +16,11 @@ namespace syncer {
 
 namespace {
 
-static_assert(62 == syncer::GetNumDataTypes(),
+static_assert(63 == syncer::GetNumDataTypes(),
               "When adding a new type, update enum SyncDataTypes in enums.xml "
               "and suffix SyncDataType in histograms.xml.");
 
-static_assert(62 == syncer::GetNumDataTypes(),
+static_assert(63 == syncer::GetNumDataTypes(),
               "When adding a new type, follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
               "integration-checklist/");
@@ -119,6 +119,8 @@ constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
         {sync_pb::EntitySpecifics::kSkillFieldNumber, SKILL},
         {sync_pb::EntitySpecifics::kGeminiThreadFieldNumber, GEMINI_THREAD},
         {sync_pb::EntitySpecifics::kThemeIosFieldNumber, THEMES_IOS},
+        {sync_pb::EntitySpecifics::kAccessibilityAnnotationFieldNumber,
+         ACCESSIBILITY_ANNOTATION},
         // ---- Control Types ----
         {sync_pb::EntitySpecifics::kNigoriFieldNumber, NIGORI},
     });
@@ -313,6 +315,9 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
     case GEMINI_THREAD:
       specifics->mutable_gemini_thread();
       break;
+    case ACCESSIBILITY_ANNOTATION:
+      specifics->mutable_accessibility_annotation();
+      break;
   }
 }
 
@@ -453,6 +458,8 @@ int GetSpecificsFieldNumberFromDataType(DataType data_type) {
       return sync_pb::EntitySpecifics::kSkillFieldNumber;
     case GEMINI_THREAD:
       return sync_pb::EntitySpecifics::kGeminiThreadFieldNumber;
+    case ACCESSIBILITY_ANNOTATION:
+      return sync_pb::EntitySpecifics::kAccessibilityAnnotationFieldNumber;
   }
   NOTREACHED();
 }
@@ -513,10 +520,13 @@ DataTypeSet AlwaysPreferredUserTypes() {
 }
 
 DataTypeSet EncryptableUserTypes() {
-  static_assert(62 == syncer::GetNumDataTypes(),
+  static_assert(63 == syncer::GetNumDataTypes(),
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   DataTypeSet encryptable_user_types = UserTypes();
+  // Accessibility annotations are not encrypted since they originate from the
+  // server.
+  encryptable_user_types.Remove(ACCESSIBILITY_ANNOTATION);
   // Account settings are read-only and therefore never encrypted.
   encryptable_user_types.Remove(ACCOUNT_SETTING);
   if (base::FeatureList::IsEnabled(kSyncMakeAutofillValuableNonEncryptable)) {
@@ -688,6 +698,8 @@ const char* DataTypeToDebugString(DataType data_type) {
       return "Skill";
     case GEMINI_THREAD:
       return "Gemini Thread";
+    case ACCESSIBILITY_ANNOTATION:
+      return "Accessibility Annotation";
   }
   NOTREACHED();
 }
@@ -819,6 +831,8 @@ const char* DataTypeToHistogramSuffix(DataType data_type) {
       return "SKILL";
     case GEMINI_THREAD:
       return "GEMINI_THREAD";
+    case ACCESSIBILITY_ANNOTATION:
+      return "ACCESSIBILITY_ANNOTATION";
   }
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:DataTypeHistogramSuffix)
   NOTREACHED();
@@ -950,6 +964,8 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kSkill;
     case GEMINI_THREAD:
       return DataTypeForHistograms::kGeminiThread;
+    case ACCESSIBILITY_ANNOTATION:
+      return DataTypeForHistograms::kAccessibilityAnnotation;
   }
   NOTREACHED();
 }
@@ -1098,6 +1114,8 @@ const char* DataTypeToStableLowerCaseString(DataType data_type) {
       return "skill";
     case GEMINI_THREAD:
       return "gemini_thread";
+    case ACCESSIBILITY_ANNOTATION:
+      return "accessibility_annotation";
   }
   // WARNING: existing strings must not be changed without migration, they
   // are persisted!

@@ -739,7 +739,7 @@ VISIT_PROTO_FIELDS(
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
-  static_assert(62 == GetNumDataTypes(),
+  static_assert(63 == GetNumDataTypes(),
                 "When adding a new protocol type, you will likely need to add "
                 "it here as well.");
   VISIT(encrypted);
@@ -806,6 +806,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(contextual_task);
   VISIT(skill);
   VISIT(gemini_thread);
+  VISIT(accessibility_annotation);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ExtensionSettingSpecifics& proto) {
@@ -2288,6 +2289,10 @@ VISIT_PROTO_FIELDS(const sync_pb::GeminiThreadSpecifics& proto) {
   VISIT(conversation_id);
   VISIT(title);
   VISIT(last_turn_time_unix_epoch_millis);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::AccessibilityAnnotationSpecifics& proto) {
+  // TODO(crbug.com/486879778): In CL #2, VISIT fields added to specifics.
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AiThreadSpecifics& proto) {

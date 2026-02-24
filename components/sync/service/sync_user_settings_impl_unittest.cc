@@ -177,6 +177,10 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
   // a selectable type.
   expected_types.Remove(GEMINI_THREAD);
 
+  // TODO(crbug.com/486879778): In CL #3, delete (ACCESSIBILITY_ANNOTATION is
+  // now mapped to a selectable type.
+  expected_types.Remove(ACCESSIBILITY_ANNOTATION);
+
 #if BUILDFLAG(IS_CHROMEOS)
   expected_types.RemoveAll({WEB_APKS});
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -358,6 +362,10 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncAllOsTypes) {
   // TODO(crbug.com/476335087): In CL #3, delete (GEMINI_THREAD is now mapped to
   // a selectable type.
   expected_types.Remove(GEMINI_THREAD);
+
+  // TODO(crbug.com/486879778): In CL #3, delete (ACCESSIBILITY_ANNOTATION is
+  // now mapped to a selectable type.
+  expected_types.Remove(ACCESSIBILITY_ANNOTATION);
 
   EXPECT_TRUE(sync_user_settings->IsSyncAllOsTypesEnabled());
   EXPECT_THAT(GetPreferredUserTypes(*sync_user_settings),
