@@ -28,10 +28,11 @@ export {ExtensionsHostPermissionsToggleListElement} from './host_permissions_tog
 export type {ItemDelegate} from './item.js';
 export {ExtensionsItemElement} from './item.js';
 export {ExtensionsItemListElement} from './item_list.js';
-export {createDummyExtensionInfo, UserAction} from './item_util.js';
+export {createDummyExtensionInfo} from './item_util.js';
 export {ExtensionsKeyboardShortcutsElement} from './keyboard_shortcuts.js';
 export {LoadErrorElement} from './load_error.js';
 export {ExtensionsManagerElement} from './manager.js';
+export {UserAction} from './metrics_util.js';
 export {ExtensionsMv2DeprecationPanelElement} from './mv2_deprecation_panel.js';
 export {Mv2ExperimentStage} from './mv2_deprecation_util.js';
 export type {PageState} from './navigation_helper.js';

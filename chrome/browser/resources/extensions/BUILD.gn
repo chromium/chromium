@@ -52,6 +52,7 @@ build_webui("build") {
     "load_error.ts",
     "manager.html.ts",
     "manager.ts",
+    "metrics_util.ts",
     "mv2_deprecation_delegate.ts",
     "mv2_deprecation_panel.html.ts",
     "mv2_deprecation_panel.ts",
