@@ -674,7 +674,7 @@ void ChromeCaptureModeDelegate::UnregisterVideoConferenceManagerClient(
 }
 
 void ChromeCaptureModeDelegate::UpdateVideoConferenceManager(
-    crosapi::mojom::VideoConferenceMediaUsageStatusPtr status) {
+    ash::VideoConferenceMediaUsageStatus status) {
   video_conference_manager_ash_->NotifyMediaUsageUpdate(std::move(status),
                                                         base::DoNothing());
 }

@@ -2698,6 +2698,7 @@ component("ash") {
     "system/video_conference/effects/video_conference_tray_effects_manager_types.h",
     "system/video_conference/fake_video_conference_tray_controller.cc",
     "system/video_conference/fake_video_conference_tray_controller.h",
+    "system/video_conference/video_conference_common.cc",
     "system/video_conference/video_conference_common.h",
     "system/video_conference/video_conference_tray.cc",
     "system/video_conference/video_conference_tray.h",

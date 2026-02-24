@@ -39,14 +39,7 @@ crosapi::mojom::VideoConferenceAppType ToVideoConferenceAppType(
 VideoConferenceClientBase::VideoConferenceClientBase(
     VideoConferenceManagerAsh* video_conference_manager_ash)
     : client_id_(base::UnguessableToken::Create()),
-      status_(crosapi::mojom::VideoConferenceMediaUsageStatus::New(
-          /*client_id=*/client_id_,
-          /*has_media_app=*/false,
-          /*has_camera_permission=*/false,
-          /*has_microphone_permission=*/false,
-          /*is_capturing_camera=*/false,
-          /*is_capturing_microphone=*/false,
-          /*is_capturing_screen=*/false)),
+      status_(client_id_),
       video_conference_manager_ash_(CHECK_DEREF(video_conference_manager_ash)) {
   video_conference_manager_ash_->RegisterCppClient(this, client_id_);
 }
@@ -98,26 +91,25 @@ void VideoConferenceClientBase::SetSystemMediaDeviceStatus(
 }
 
 void VideoConferenceClientBase::HandleMediaUsageUpdate() {
-  crosapi::mojom::VideoConferenceMediaUsageStatusPtr new_status =
-      crosapi::mojom::VideoConferenceMediaUsageStatus::New();
-  new_status->client_id = client_id_;
-  new_status->has_media_app = !id_to_app_state_.empty();
+  ash::VideoConferenceMediaUsageStatus new_status(client_id_);
+  new_status.state.has_media_app = !id_to_app_state_.empty();
 
   for (const auto& [app_id, app_state] : id_to_app_state_) {
-    new_status->is_capturing_camera |= app_state.is_capturing_camera;
-    new_status->is_capturing_microphone |= app_state.is_capturing_microphone;
+    new_status.state.is_capturing_camera |= app_state.is_capturing_camera;
+    new_status.state.is_capturing_microphone |=
+        app_state.is_capturing_microphone;
 
     VideoConferencePermissions permissions = GetAppPermission(app_id);
-    new_status->has_camera_permission |= permissions.has_camera_permission;
-    new_status->has_microphone_permission |=
+    new_status.state.has_camera_permission |= permissions.has_camera_permission;
+    new_status.state.has_microphone_permission |=
         permissions.has_microphone_permission;
   }
 
   // If `status` equals the previously sent status, don't notify manager.
-  if (new_status.Equals(status_)) {
+  if (new_status == status_) {
     return;
   }
-  status_ = new_status->Clone();
+  status_ = new_status;
 
   auto callback = base::BindOnce([](bool success) {
     if (!success) {

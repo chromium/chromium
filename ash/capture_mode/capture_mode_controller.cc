@@ -47,6 +47,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/notification_center/message_view_factory.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/screen_pinning_controller.h"
@@ -1397,15 +1398,14 @@ void CaptureModeController::MaybeUpdateVcPanel() {
   const bool is_recording_audio = IsAudioRecordingInProgress();
   const bool has_media_app = is_camera_used || is_recording_audio;
 
-  delegate_->UpdateVideoConferenceManager(
-      crosapi::mojom::VideoConferenceMediaUsageStatus::New(
-          /*client_id=*/vc_client_id_,
-          /*has_media_app=*/has_media_app,
-          /*has_camera_permission=*/has_media_app,
-          /*has_microphone_permission=*/has_media_app,
-          /*is_capturing_camera=*/is_camera_used,
-          /*is_capturing_microphone=*/is_recording_audio,
-          /*is_capturing_screen=*/false));
+  VideoConferenceMediaUsageStatus usage_status(vc_client_id_);
+  usage_status.state.has_media_app = has_media_app;
+  usage_status.state.has_camera_permission = has_media_app;
+  usage_status.state.has_microphone_permission = has_media_app;
+  usage_status.state.is_capturing_camera = is_camera_used;
+  usage_status.state.is_capturing_microphone = is_recording_audio;
+  usage_status.state.is_capturing_screen = false;
+  delegate_->UpdateVideoConferenceManager(std::move(usage_status));
 
   // If the camera is being recorded while disabled (e.g. privacy switch is
   // turned on), or the microphone is being recorded while mic input is muted,

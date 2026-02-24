@@ -667,13 +667,12 @@ void VideoConferenceTrayController::OnShellDestroying() {
 }
 
 void VideoConferenceTrayController::HandleClientUpdate(
-    crosapi::mojom::VideoConferenceClientUpdatePtr update) {
+    VideoConferenceClientUpdate update) {
   // Use `HandleClientUpdate()` to detect apps being
   // added because this function is guaranteed to be called when an app is
   // added, even if the `VideoConferecenMediaState` does not change.
 
-  if (update->added_or_removed_app ==
-      crosapi::mojom::VideoConferenceAppUpdate::kAppAdded) {
+  if (update.added_or_removed_app == VideoConferenceAppUpdate::kAppAdded) {
     OnAppAdded();
   }
 }

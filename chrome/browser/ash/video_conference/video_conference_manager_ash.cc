@@ -129,17 +129,11 @@ void VideoConferenceManagerAsh::CreateBackgroundImage() {
 }
 
 void VideoConferenceManagerAsh::NotifyMediaUsageUpdate(
-    crosapi::mojom::VideoConferenceMediaUsageStatusPtr status,
+    VideoConferenceMediaUsageStatus status,
     base::OnceCallback<void(bool)> callback) {
-  if (auto it = client_id_to_wrapper_.find(status->client_id);
+  if (auto it = client_id_to_wrapper_.find(status.client_id);
       it != client_id_to_wrapper_.end()) {
-    it->second.state() = {
-        .has_media_app = status->has_media_app,
-        .has_camera_permission = status->has_camera_permission,
-        .has_microphone_permission = status->has_microphone_permission,
-        .is_capturing_camera = status->is_capturing_camera,
-        .is_capturing_microphone = status->is_capturing_microphone,
-        .is_capturing_screen = status->is_capturing_screen};
+    it->second.state() = std::move(status.state);
   } else {
     LOG(ERROR) << "VideoConferenceManagerAsh::NotifyMediaUsageUpdate client_id "
                   "does not exist.";
@@ -165,7 +159,7 @@ void VideoConferenceManagerAsh::NotifyDeviceUsedWhileDisabled(
 }
 
 void VideoConferenceManagerAsh::NotifyClientUpdate(
-    crosapi::mojom::VideoConferenceClientUpdatePtr update) {
+    VideoConferenceClientUpdate update) {
   // TODO(crbug.com/40240249): Remove this conditional check once it becomes
   // possible to enable ash features in lacros browsertests.
   if (ash::features::IsVideoConferenceEnabled()) {

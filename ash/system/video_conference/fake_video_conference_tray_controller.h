@@ -48,8 +48,7 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   void HandleDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice device,
       const std::u16string& app_name) override;
-  void HandleClientUpdate(
-      crosapi::mojom::VideoConferenceClientUpdatePtr update) override;
+  void HandleClientUpdate(VideoConferenceClientUpdate update) override;
 
   // Adds or clears media app(s) in `media_apps_`.
   void AddMediaApp(crosapi::mojom::VideoConferenceMediaAppInfoPtr media_app);
@@ -61,7 +60,7 @@ class ASH_EXPORT FakeVideoConferenceTrayController
     return device_used_while_disabled_records_;
   }
 
-  const crosapi::mojom::VideoConferenceClientUpdatePtr& last_client_update() {
+  const VideoConferenceClientUpdate& last_client_update() {
     return last_client_update_;
   }
 
@@ -98,7 +97,7 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   std::unique_ptr<fake_video_conference::EffectRepository> effect_repository_;
 
   // Last client update received.
-  crosapi::mojom::VideoConferenceClientUpdatePtr last_client_update_;
+  VideoConferenceClientUpdate last_client_update_;
 };
 
 }  // namespace ash

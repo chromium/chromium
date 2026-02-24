@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_CLIENT_BASE_H_
 #define CHROME_BROWSER_ASH_VIDEO_CONFERENCE_VIDEO_CONFERENCE_CLIENT_BASE_H_
 
+#include "ash/system/video_conference/video_conference_common.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -73,7 +74,7 @@ class VideoConferenceClientBase
   const base::UnguessableToken client_id_;
 
   // Current status_ aggregated from all apps in `id_to_app_state_`.
-  crosapi::mojom::VideoConferenceMediaUsageStatusPtr status_;
+  ash::VideoConferenceMediaUsageStatus status_;
 
   const raw_ref<VideoConferenceManagerAsh> video_conference_manager_ash_;
 };

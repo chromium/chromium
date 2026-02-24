@@ -54,10 +54,13 @@ void VerifyVideoConferenceManagerAsh(
     FakeVideoConferenceManagerClient& client,
     ash::VideoConferenceManagerAsh* vc_manager) {
   base::test::TestFuture<bool> future1;
-  vc_manager->NotifyMediaUsageUpdate(
-      crosapi::mojom::VideoConferenceMediaUsageStatus::New(
-          client.id_, true, true, false, false, true, true),
-      future1.GetCallback());
+  ash::VideoConferenceMediaUsageStatus status(client.id_);
+  status.state.has_media_app = true;
+  status.state.has_camera_permission = true;
+  status.state.is_capturing_microphone = true;
+  status.state.is_capturing_screen = true;
+
+  vc_manager->NotifyMediaUsageUpdate(std::move(status), future1.GetCallback());
   EXPECT_TRUE(future1.Take());
 
   base::test::TestFuture<bool> future2;

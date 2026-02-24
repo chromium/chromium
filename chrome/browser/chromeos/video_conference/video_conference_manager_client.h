@@ -8,6 +8,7 @@
 #include <map>
 #include <utility>
 
+#include "ash/system/video_conference/video_conference_common.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
@@ -76,8 +77,7 @@ class VideoConferenceManagerClientImpl
  protected:
   // Sends VcManager the updated `VideoConferenceMediaUsageStatus`. Can be
   // overridden by test clients.
-  virtual void NotifyManager(
-      crosapi::mojom::VideoConferenceMediaUsageStatusPtr status);
+  virtual void NotifyManager(ash::VideoConferenceMediaUsageStatus status);
 
  private:
   friend class FakeVideoConferenceManagerClient;
@@ -88,14 +88,14 @@ class VideoConferenceManagerClientImpl
 
   // Sends a new client update to the VC Manager. Uses mojo for lacros-chrome
   // clients.
-  void SendClientUpdate(crosapi::mojom::VideoConferenceClientUpdatePtr update);
+  void SendClientUpdate(ash::VideoConferenceClientUpdate update);
 
   // Unique id associated with this client. It is used by the VcManager to
   // identify clients.
   const base::UnguessableToken client_id_;
 
   // Previous status
-  crosapi::mojom::VideoConferenceMediaUsageStatusPtr status_;
+  ash::VideoConferenceMediaUsageStatus status_;
 
   std::unique_ptr<VideoConferenceMediaListener> media_listener_;
 

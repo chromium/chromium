@@ -217,8 +217,7 @@ class ASH_EXPORT VideoConferenceTrayController
 
   // Handles client updates such as a change of title or addition / removal of a
   // VC app. Virtual to allow mock classes to override for testing.
-  virtual void HandleClientUpdate(
-      crosapi::mojom::VideoConferenceClientUpdatePtr update);
+  virtual void HandleClientUpdate(VideoConferenceClientUpdate update);
 
   // Handles showing the shelf when a new app is added.
   void OnAppAdded();

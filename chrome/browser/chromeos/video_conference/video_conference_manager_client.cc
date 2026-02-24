@@ -81,14 +81,7 @@ crosapi::mojom::VideoConferenceAppType GetAppType(
 VideoConferenceManagerClientImpl::VideoConferenceManagerClientImpl(
     ash::VideoConferenceManagerAsh* video_conference_manager_ash)
     : client_id_(base::UnguessableToken::Create()),
-      status_(crosapi::mojom::VideoConferenceMediaUsageStatus::New(
-          /*client_id=*/client_id_,
-          /*has_media_app=*/false,
-          /*has_camera_permission=*/false,
-          /*has_microphone_permission=*/false,
-          /*is_capturing_camera=*/false,
-          /*is_capturing_microphone=*/false,
-          /*is_capturing_screen=*/false)),
+      status_(client_id_),
       video_conference_manager_ash_(CHECK_DEREF(video_conference_manager_ash)) {
   media_listener_ = std::make_unique<
       VideoConferenceMediaListener>(/*media_usage_update_callback=*/
@@ -136,10 +129,8 @@ void VideoConferenceManagerClientImpl::RemoveMediaApp(
   id_to_webcontents_.erase(it);
 
   // Send a client update notification to the VCManager.
-  SendClientUpdate(crosapi::mojom::VideoConferenceClientUpdate::New(
-      /*added_or_removed_app=*/crosapi::mojom::VideoConferenceAppUpdate::
-          kAppRemoved,
-      /*title_change_info=*/nullptr));
+  SendClientUpdate(ash::VideoConferenceClientUpdate(
+      ash::VideoConferenceAppUpdate::kAppRemoved));
 
   HandleMediaUsageUpdate();
 }
@@ -168,10 +159,8 @@ VideoConferenceManagerClientImpl::CreateVideoConferenceWebApp(
   id_to_webcontents_.insert({id, web_contents});
 
   // Send a client update notification to the VCManager.
-  SendClientUpdate(crosapi::mojom::VideoConferenceClientUpdate::New(
-      /*added_or_removed_app=*/crosapi::mojom::VideoConferenceAppUpdate::
-          kAppAdded,
-      /*title_change_info=*/nullptr));
+  SendClientUpdate(ash::VideoConferenceClientUpdate(
+      ash::VideoConferenceAppUpdate::kAppAdded));
 
   return content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
       web_contents);
@@ -224,21 +213,20 @@ void VideoConferenceManagerClientImpl::HandleMediaUsageUpdate() {
       base::MakeRefCounted<ash::PrivacyIndicatorsNotificationDelegate>(),
       ash::PrivacyIndicatorsSource::kApps);
 
-  crosapi::mojom::VideoConferenceMediaUsageStatusPtr status =
-      crosapi::mojom::VideoConferenceMediaUsageStatus::New(
-          /*client_id=*/client_id_,
-          /*has_media_app=*/has_media_app,
-          /*has_camera_permission=*/permissions.has_camera_permission,
-          /*has_microphone_permission=*/permissions.has_microphone_permission,
-          /*is_capturing_camera=*/is_capturing_camera,
-          /*is_capturing_microphone=*/is_capturing_microphone,
-          /*is_capturing_screen=*/is_capturing_screen);
+  ash::VideoConferenceMediaUsageStatus status(client_id_);
+  status.state.has_media_app = has_media_app;
+  status.state.has_camera_permission = permissions.has_camera_permission;
+  status.state.has_microphone_permission =
+      permissions.has_microphone_permission;
+  status.state.is_capturing_camera = is_capturing_camera;
+  status.state.is_capturing_microphone = is_capturing_microphone;
+  status.state.is_capturing_screen = is_capturing_screen;
 
   // If `status` equal the previously sent status, don't notify manager.
-  if (status.Equals(status_)) {
+  if (status == status_) {
     return;
   }
-  status_ = status->Clone();
+  status_ = status;
 
   NotifyManager(std::move(status));
 }
@@ -311,7 +299,7 @@ void VideoConferenceManagerClientImpl::SetSystemMediaDeviceStatus(
 }
 
 void VideoConferenceManagerClientImpl::NotifyManager(
-    crosapi::mojom::VideoConferenceMediaUsageStatusPtr status) {
+    ash::VideoConferenceMediaUsageStatus status) {
   auto callback = base::BindOnce([](bool success) {
     if (!success) {
       LOG(ERROR)
@@ -351,7 +339,7 @@ VideoConferenceManagerClientImpl::GetAggregatedPermissions() {
 }
 
 void VideoConferenceManagerClientImpl::SendClientUpdate(
-    crosapi::mojom::VideoConferenceClientUpdatePtr update) {
+    ash::VideoConferenceClientUpdate update) {
   video_conference_manager_ash_->NotifyClientUpdate(std::move(update));
 }
 

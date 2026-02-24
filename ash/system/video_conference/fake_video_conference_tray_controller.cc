@@ -106,7 +106,7 @@ void FakeVideoConferenceTrayController::HandleDeviceUsedWhileDisabled(
 }
 
 void FakeVideoConferenceTrayController::HandleClientUpdate(
-    crosapi::mojom::VideoConferenceClientUpdatePtr update) {
+    VideoConferenceClientUpdate update) {
   last_client_update_ = std::move(update);
 }
 

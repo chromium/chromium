@@ -76,13 +76,10 @@ class FakeVideoConferenceManagerClient
     return media_listener_->microphone_system_enabled_;
   }
 
-  crosapi::mojom::VideoConferenceMediaUsageStatusPtr& status() {
-    return status_;
-  }
+  ash::VideoConferenceMediaUsageStatus& status() { return status_; }
 
  protected:
-  void NotifyManager(
-      crosapi::mojom::VideoConferenceMediaUsageStatusPtr status) override {}
+  void NotifyManager(ash::VideoConferenceMediaUsageStatus status) override {}
 };
 
 class VideoConferenceManagerClientTest : public InProcessBrowserTest {
@@ -296,27 +293,27 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, ClientUpdate) {
 
   // Confirm the update received by the controller has `added_or_removed_app`
   // set to true.
-  EXPECT_EQ(controller->last_client_update()->added_or_removed_app,
-            crosapi::mojom::VideoConferenceAppUpdate::kAppAdded);
-  EXPECT_FALSE(controller->last_client_update()->title_change_info);
+  EXPECT_EQ(controller->last_client_update().added_or_removed_app,
+            ash::VideoConferenceAppUpdate::kAppAdded);
+  EXPECT_FALSE(controller->last_client_update().title_change_info);
 
   // Update the title and confirm correct fields were set.
   std::u16string new_title = u"New Title";
   UpdateWebContentsTitle(web_contents, new_title);
 
-  EXPECT_EQ(controller->last_client_update()->added_or_removed_app,
-            crosapi::mojom::VideoConferenceAppUpdate::kNone);
-  EXPECT_TRUE(controller->last_client_update()->title_change_info);
-  EXPECT_EQ(controller->last_client_update()->title_change_info->new_title,
+  EXPECT_EQ(controller->last_client_update().added_or_removed_app,
+            ash::VideoConferenceAppUpdate::kNone);
+  EXPECT_TRUE(controller->last_client_update().title_change_info);
+  EXPECT_EQ(controller->last_client_update().title_change_info->new_title,
             new_title);
 
   // Remove the VC web app by closing the corresponding WebContents.
   browser()->tab_strip_model()->CloseWebContentsAt(0,
                                                    TabCloseTypes::CLOSE_NONE);
 
-  EXPECT_EQ(controller->last_client_update()->added_or_removed_app,
-            crosapi::mojom::VideoConferenceAppUpdate::kAppRemoved);
-  EXPECT_FALSE(controller->last_client_update()->title_change_info);
+  EXPECT_EQ(controller->last_client_update().added_or_removed_app,
+            ash::VideoConferenceAppUpdate::kAppRemoved);
+  EXPECT_FALSE(controller->last_client_update().title_change_info);
 }
 
 // Tests aggregated media usage status received on `HandleMediaUsageUpdate`.
@@ -324,10 +321,10 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, MediaUsageUpdate) {
   FakeVideoConferenceManagerClient client(
       ash::VideoConferenceManagerAsh::Get());
 
-  EXPECT_FALSE(client.status()->has_media_app);
-  EXPECT_FALSE(client.status()->is_capturing_camera);
-  EXPECT_FALSE(client.status()->is_capturing_microphone);
-  EXPECT_FALSE(client.status()->is_capturing_screen);
+  EXPECT_FALSE(client.status().state.has_media_app);
+  EXPECT_FALSE(client.status().state.is_capturing_camera);
+  EXPECT_FALSE(client.status().state.is_capturing_microphone);
+  EXPECT_FALSE(client.status().state.is_capturing_screen);
 
   auto* web_contents1 = CreateWebContentsAt(0);
   UpdateWebContentsTitle(web_contents1, u"app1");
@@ -341,41 +338,41 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest, MediaUsageUpdate) {
   auto* vc_app3 = client.CreateVideoConferenceWebApp(web_contents3);
 
   client.HandleMediaUsageUpdate();
-  EXPECT_TRUE(client.status()->has_media_app);
-  EXPECT_FALSE(client.status()->is_capturing_camera);
-  EXPECT_FALSE(client.status()->is_capturing_microphone);
-  EXPECT_FALSE(client.status()->is_capturing_screen);
+  EXPECT_TRUE(client.status().state.has_media_app);
+  EXPECT_FALSE(client.status().state.is_capturing_camera);
+  EXPECT_FALSE(client.status().state.is_capturing_microphone);
+  EXPECT_FALSE(client.status().state.is_capturing_screen);
 
   vc_app1->state().is_capturing_camera = true;
   client.HandleMediaUsageUpdate();
-  EXPECT_TRUE(client.status()->has_media_app);
-  EXPECT_TRUE(client.status()->is_capturing_camera);
-  EXPECT_FALSE(client.status()->is_capturing_microphone);
-  EXPECT_FALSE(client.status()->is_capturing_screen);
+  EXPECT_TRUE(client.status().state.has_media_app);
+  EXPECT_TRUE(client.status().state.is_capturing_camera);
+  EXPECT_FALSE(client.status().state.is_capturing_microphone);
+  EXPECT_FALSE(client.status().state.is_capturing_screen);
 
   vc_app2->state().is_capturing_microphone = true;
   client.HandleMediaUsageUpdate();
-  EXPECT_TRUE(client.status()->has_media_app);
-  EXPECT_TRUE(client.status()->is_capturing_camera);
-  EXPECT_TRUE(client.status()->is_capturing_microphone);
-  EXPECT_FALSE(client.status()->is_capturing_screen);
+  EXPECT_TRUE(client.status().state.has_media_app);
+  EXPECT_TRUE(client.status().state.is_capturing_camera);
+  EXPECT_TRUE(client.status().state.is_capturing_microphone);
+  EXPECT_FALSE(client.status().state.is_capturing_screen);
 
   vc_app3->state().is_capturing_screen = true;
   client.HandleMediaUsageUpdate();
-  EXPECT_TRUE(client.status()->has_media_app);
-  EXPECT_TRUE(client.status()->is_capturing_camera);
-  EXPECT_TRUE(client.status()->is_capturing_microphone);
-  EXPECT_TRUE(client.status()->is_capturing_screen);
+  EXPECT_TRUE(client.status().state.has_media_app);
+  EXPECT_TRUE(client.status().state.is_capturing_camera);
+  EXPECT_TRUE(client.status().state.is_capturing_microphone);
+  EXPECT_TRUE(client.status().state.is_capturing_screen);
 
   RemoveWebContentsAt(2);
   RemoveWebContentsAt(1);
   RemoveWebContentsAt(0);
 
   client.HandleMediaUsageUpdate();
-  EXPECT_FALSE(client.status()->has_media_app);
-  EXPECT_FALSE(client.status()->is_capturing_camera);
-  EXPECT_FALSE(client.status()->is_capturing_microphone);
-  EXPECT_FALSE(client.status()->is_capturing_screen);
+  EXPECT_FALSE(client.status().state.has_media_app);
+  EXPECT_FALSE(client.status().state.is_capturing_camera);
+  EXPECT_FALSE(client.status().state.is_capturing_microphone);
+  EXPECT_FALSE(client.status().state.is_capturing_screen);
 }
 
 // Tests if `ReturnToApp` correctly activates tab of the `VideoConferenceWebApp`

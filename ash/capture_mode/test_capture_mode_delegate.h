@@ -144,7 +144,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void UnregisterVideoConferenceManagerClient(
       const base::UnguessableToken& client_id) override;
   void UpdateVideoConferenceManager(
-      crosapi::mojom::VideoConferenceMediaUsageStatusPtr status) override;
+      VideoConferenceMediaUsageStatus status) override;
   void NotifyDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice device) override;
   void FinalizeSavedFile(

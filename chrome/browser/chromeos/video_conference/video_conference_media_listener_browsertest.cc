@@ -146,8 +146,7 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
     content::WebContentsUserData<VideoConferenceWebApp>::CreateForWebContents(
         web_contents, base::UnguessableToken::Create(),
         base::BindRepeating([](const base::UnguessableToken& id) {}),
-        base::DoNothingAs<void(
-            crosapi::mojom::VideoConferenceClientUpdatePtr)>());
+        base::DoNothingAs<void(ash::VideoConferenceClientUpdate)>());
 
     return content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
         web_contents);

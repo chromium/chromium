@@ -56,15 +56,13 @@ class VideoConferenceManagerAsh : public VideoConferenceManagerBase {
   void RegisterCppClient(crosapi::mojom::VideoConferenceManagerClient* client,
                          const base::UnguessableToken& client_id);
 
-  void NotifyMediaUsageUpdate(
-      crosapi::mojom::VideoConferenceMediaUsageStatusPtr status,
-      base::OnceCallback<void(bool)> callback);
+  void NotifyMediaUsageUpdate(VideoConferenceMediaUsageStatus status,
+                              base::OnceCallback<void(bool)> callback);
   void NotifyDeviceUsedWhileDisabled(
       crosapi::mojom::VideoConferenceMediaDevice device,
       const std::u16string& app_name,
       base::OnceCallback<void(bool)> callback);
-  void NotifyClientUpdate(
-      crosapi::mojom::VideoConferenceClientUpdatePtr update);
+  void NotifyClientUpdate(VideoConferenceClientUpdate update);
 
   // Removes entry corresponding to |client_id| from
   // |client_id_to_wrapper_|. Called by the destructor of

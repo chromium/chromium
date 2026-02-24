@@ -12,6 +12,7 @@
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "base/functional/callback.h"
 #include "base/threading/thread_restrictions.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
@@ -218,7 +219,7 @@ void TestCaptureModeDelegate::UnregisterVideoConferenceManagerClient(
     const base::UnguessableToken& client_id) {}
 
 void TestCaptureModeDelegate::UpdateVideoConferenceManager(
-    crosapi::mojom::VideoConferenceMediaUsageStatusPtr status) {}
+    VideoConferenceMediaUsageStatus status) {}
 
 void TestCaptureModeDelegate::NotifyDeviceUsedWhileDisabled(
     crosapi::mojom::VideoConferenceMediaDevice device) {}

@@ -23,6 +23,7 @@ class SkBitmap;
 namespace ash {
 enum class CaptureModeImageSearchResult;
 enum class CaptureModeTextDetectionResult;
+struct VideoConferenceMediaUsageStatus;
 }  // namespace ash
 
 namespace aura {
@@ -230,7 +231,7 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   // Updates the video conference manager with the given media usage `status`.
   // This will in-turn update the video conference panel on the shelf.
   virtual void UpdateVideoConferenceManager(
-      crosapi::mojom::VideoConferenceMediaUsageStatusPtr status) = 0;
+      VideoConferenceMediaUsageStatus status) = 0;
 
   // Requests that the video conference manager notifies the user that the given
   // `device` (e.g. a camera or microphone) is being used for a screen recording
