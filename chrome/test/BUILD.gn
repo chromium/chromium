@@ -5461,6 +5461,7 @@ if (!is_android) {
         "//chrome/browser/ui/file_system_access",
         "//chrome/browser/ui/file_system_access:browser_tests",
         "//chrome/browser/ui/find_bar",
+        "//chrome/browser/ui/find_bar:browser_tests",
         "//chrome/browser/ui/global_error:browser_tests",
         "//chrome/browser/ui/hats:test_support",
         "//chrome/browser/ui/lens",

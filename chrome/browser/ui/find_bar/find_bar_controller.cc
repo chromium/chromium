@@ -20,8 +20,10 @@
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/range/range.h"
@@ -125,6 +127,8 @@ void FindBarController::ChangeWebContents(WebContents* contents) {
     }
   }
 
+  // Reset navigation tracking state when changing tabs.
+  close_find_bar_on_navigation_commit_.reset();
   find_in_page::FindTabHelper* find_tab_helper =
       contents ? find_in_page::FindTabHelper::FromWebContents(contents)
                : nullptr;
@@ -213,14 +217,66 @@ void FindBarController::HandleActiveTabChanged(
 ////////////////////////////////////////////////////////////////////////////////
 // FindBarController, content::WebContentsObserver implementation:
 
+void FindBarController::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrimaryMainFrame()) {
+    // Capture find bar visibility at navigation start. If visible now, it means
+    // user was searching the old page and find bar should close when new page
+    // commits. If not visible, user has opened it during load to search new
+    // page.
+    //
+    // Note: FindBarController is lazily created on first use, so if the user
+    // has never opened the find bar, the first navigation will miss this
+    // callback due to timing issues. In that case, when the user opens the
+    // find bar after the current navigation, the find bar will still be closed
+    // (default behavior, See crbug.com/469819146).
+    // This is acceptable. Fixing would require either eager initialization of
+    // FindBarController or more complex tracking mechanisms.
+    close_find_bar_on_navigation_commit_ = find_bar_->IsFindBarVisible();
+  }
+}
+
+void FindBarController::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrimaryMainFrame()) {
+    close_find_bar_on_navigation_commit_.reset();
+  }
+}
+
 void FindBarController::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
-  // Hide the find bar on navigation.
-  if (find_bar_->IsFindBarVisible() && load_details.is_main_frame &&
-      load_details.is_navigation_to_different_page()) {
+  if (!find_bar_->IsFindBarVisible() || !load_details.is_main_frame ||
+      !load_details.is_navigation_to_different_page()) {
+    return;
+  }
+
+  // Close find bar only if it was visible when navigation started (user was
+  // searching old page). Keep it open if user opened it after the current
+  // navigation (race condition - user likely intends to search new page).
+  // See crbug.com/469819146.
+  if (close_find_bar_on_navigation_commit_.value_or(true)) {
     EndFindSession(find_in_page::SelectionAction::kKeep,
                    find_in_page::ResultAction::kClear);
+  } else {
+    // Find bar stays open, but stop any active search.
+    // When the user opens the find bar after the current navigation and starts
+    // searching, the search initially runs on the old page's content (if the
+    // new page loads slowly). By stopping the search on commit, we ensure the
+    // user must explicitly press Enter to initiate a fresh search on the new
+    // page's content. This helps mitigate the risk of leaking what the user was
+    // searching for on the previous origin.
+    find_in_page::FindTabHelper* find_tab_helper =
+        find_in_page::FindTabHelper::FromWebContents(web_contents());
+    if (find_tab_helper) {
+      find_tab_helper->StopFinding(find_in_page::SelectionAction::kClear);
+      // Use UpdateUIForFindResult instead of ClearResults to preserve the text
+      // field content.
+      find_bar_->UpdateUIForFindResult(find_tab_helper->find_result(),
+                                       std::u16string());
+    }
   }
+
+  close_find_bar_on_navigation_commit_.reset();
 }
 
 void FindBarController::OnFindEmptyText(content::WebContents* web_contents) {

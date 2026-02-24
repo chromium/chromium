@@ -45,6 +45,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/base/filename_util.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -834,6 +835,143 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest, NavigateClearsOrdinal) {
 
   EXPECT_EQ(u"e", GetFindBarText());
   EXPECT_TRUE(GetMatchCountText().empty());
+}
+
+// This test verifies that an open find bar closes on navigation, if it was
+// visible prior to the navigation starting. This is the expected behavior when
+// navigating away from a page the user is done searching on.
+IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
+                       FindBarClosesWhenVisibleAtNavigationStart) {
+  // First we navigate to our test content.
+  GURL url = GetURL(kSimple);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Open the Find box and perform a search.
+  EnsureFindBoxOpen();
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  int ordinal = 0;
+  EXPECT_EQ(8, FindInPageASCII(web_contents, "e", kFwd, kIgnoreCase, &ordinal));
+
+  // The find bar should be visible at this point.
+  gfx::Point position;
+  bool fully_visible = false;
+  EXPECT_TRUE(GetFindBarWindowInfo(&position, &fully_visible));
+  EXPECT_TRUE(fully_visible);
+
+  // Navigate to a different page while the find bar is visible.
+  // The find bar should be closed because the user was searching the old page.
+  url = GetURL(kLinkPage);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Verify that the find bar is now hidden.
+  EXPECT_TRUE(GetFindBarWindowInfo(&position, &fully_visible));
+  EXPECT_FALSE(fully_visible);
+}
+
+// This tests that the find bar does not close if it was opened after the
+// current navigation starts. See crbug.com/469819146: user types URL + Enter,
+// then immediately presses Ctrl+F - the find bar should remain open because the
+// user likely intends to search the new page.
+IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
+                       FindBarStaysOpenWhenOpenedAfterCurrentNavigation) {
+  // First we navigate to our test content.
+  GURL url = GetURL(kSimple);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  // Ensure FindBarController exists and is observing the WebContents before
+  // we start the navigation. If we create the controller after
+  // navigation starts, it will miss the DidStartNavigation callback.
+  browser()->GetFeatures().GetFindBarController();
+
+  // Start a navigation but don't wait for it to complete.
+  url = GetURL(kLinkPage);
+  content::TestNavigationObserver observer(web_contents, 1);
+  ASSERT_TRUE(content::BeginNavigateToURLFromRenderer(web_contents, url));
+
+  // Now open the find bar after the current navigation.
+  // At this point, the find bar was not visible when navigation started.
+  EnsureFindBoxOpen();
+
+  // The find bar should be visible.
+  gfx::Point position;
+  bool fully_visible = false;
+  EXPECT_TRUE(GetFindBarWindowInfo(&position, &fully_visible));
+  EXPECT_TRUE(fully_visible);
+
+  // Wait for the navigation to complete.
+  observer.Wait();
+
+  // The find bar should still be visible because it was opened after
+  // navigation started - user intends to search the new page.
+  EXPECT_TRUE(GetFindBarWindowInfo(&position, &fully_visible));
+  EXPECT_TRUE(fully_visible);
+}
+
+// This tests that when the find bar stays open after navigation commits,
+// any active search is stopped to prevent auto-scrolling to matches.
+// The user must press Enter to initiate a new search on the new page.
+// This prevents leaking what the user was searching for on the previous
+// origin by automatically scrolling after navigation.
+IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
+                       FindBarResetsSearchStateOnNavigationCommit) {
+  // First navigate to a page with searchable content.
+  GURL url = GetURL(kSimple);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+
+  // Ensure FindBarController exists and is observing the WebContents before
+  // we start the navigation.
+  browser()->GetFeatures().GetFindBarController();
+
+  // Start a navigation but don't wait for it to complete.
+  url = GetURL(kLinkPage);
+  content::TestNavigationObserver observer(web_contents, 1);
+  ASSERT_TRUE(content::BeginNavigateToURLFromRenderer(web_contents, url));
+
+  // Open the find bar after the navigation and search for text.
+  EnsureFindBoxOpen();
+  int ordinal = 0;
+  // This search happens on the old page (kSimple) which contains "test".
+  FindInPageASCII(web_contents, "test", kFwd, kIgnoreCase, &ordinal);
+  EXPECT_GT(ordinal, 0);
+
+  // Wait for the navigation to complete.
+  observer.Wait();
+
+  // The find bar should still be visible.
+  gfx::Point position;
+  bool fully_visible = false;
+  EXPECT_TRUE(GetFindBarWindowInfo(&position, &fully_visible));
+  EXPECT_TRUE(fully_visible);
+
+  // The search text should still be in the find bar (for user convenience).
+  EXPECT_EQ(u"test", GetFindBarText());
+
+  // But the match count should be cleared - search state was reset.
+  // This ensures we don't auto-scroll to matches on the new page.
+  EXPECT_TRUE(GetMatchCountText().empty());
+
+  // The find session should not be active - user must press Enter to search.
+  // This is the key check that ensures the first search has not occurred
+  // and that performing the first search requires action from the user.
+  find_in_page::FindTabHelper* find_tab_helper =
+      find_in_page::FindTabHelper::FromWebContents(web_contents);
+  ASSERT_TRUE(find_tab_helper);
+
+  // Verify that the search was stopped (find_text cleared internally).
+  EXPECT_TRUE(find_tab_helper->find_text().empty());
+
+  // Verify that no find session is active.
+  EXPECT_FALSE(find_tab_helper->is_find_session_active());
 }
 
 // Load a page with no selectable text and make sure we don't crash.

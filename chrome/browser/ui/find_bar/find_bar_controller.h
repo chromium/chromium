@@ -59,6 +59,10 @@ class FindBarController : public content::WebContentsObserver,
   void ChangeWebContents(content::WebContents* contents);
 
   // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;
 
@@ -115,6 +119,18 @@ class FindBarController : public content::WebContentsObserver,
   base::ScopedObservation<find_in_page::FindTabHelper,
                           find_in_page::FindResultObserver>
       find_tab_observation_{this};
+
+  // Tracks whether find bar was visible when the current main frame navigation
+  // started. See crbug.com/469819146.
+  // - If true, find bar should close when navigation commits (user was
+  //   searching old page).
+  // - If false, user opened find bar after the current navigation started and
+  //   likely intends to search the new page, so find bar stays open.
+  // - If nullopt, no navigation is in progress and find bar follows default
+  //   close behavior.
+  // Set in DidStartNavigation and cleared in NavigationEntryCommitted and
+  // DidFinishNavigation.
+  std::optional<bool> close_find_bar_on_navigation_commit_;
 };
 
 #endif  // CHROME_BROWSER_UI_FIND_BAR_FIND_BAR_CONTROLLER_H_
