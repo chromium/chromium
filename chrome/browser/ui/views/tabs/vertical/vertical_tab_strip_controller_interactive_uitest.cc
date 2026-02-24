@@ -350,32 +350,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
                   2));
 }
 
-IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
-                       VerifyTabContextMenuText) {
-  RunTestSequence(
-      // Verify Vertical Tabs is showing.
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
-      // Identify Tab by Type (VerticalTabView).
-      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
-                                                kFirstTabName, 0),
-      // Open Tab Context Menu.
-      MoveMouseTo(kFirstTabName),
-      MayInvolveNativeContextMenu(
-          ClickMouse(ui_controls::RIGHT),
-          WaitForShow(TabMenuModel::kAddNewTabAdjacentMenuItem), Do([this]() {
-            // Verify "New Tab Below" text is present.
-            EXPECT_TRUE(CheckMenuHasStringId(IDS_TAB_CXMENU_NEWTABBELOW));
-            // Verify "Close Tabs Below" text is present.
-            EXPECT_TRUE(CheckMenuHasStringId(IDS_TAB_CXMENU_CLOSETABSBELOW));
-          }),
-          // Close menu to avoid the test hanging.
-          Do([this]() {
-            vertical_tab_strip_controller()
-                ->GetTabContextMenuController()
-                ->CloseMenu();
-          })));
-}
-
 class VerticalTabStripControllerTabGroupFocusingInteractiveUiTest
     : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
  public:

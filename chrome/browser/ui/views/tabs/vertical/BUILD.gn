@@ -112,6 +112,7 @@ source_set("browser_tests") {
     "tab_collection_node_browsertest.cc",
     "vertical_split_tab_view_browsertest.cc",
     "vertical_tab_group_view_browsertest.cc",
+    "vertical_tab_strip_controller_browsertest.cc",
     "vertical_tab_strip_link_drag_browsertest.cc",
     "vertical_tab_view_browsertest.cc",
   ]
