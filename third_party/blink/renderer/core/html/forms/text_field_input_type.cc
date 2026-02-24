@@ -230,13 +230,14 @@ void TextFieldInputType::HandleKeydownEvent(KeyboardEvent& event) {
     if (HandleKeydownForCustomizableCombobox(event)) {
       event.SetDefaultHandled();
     }
+    // If this is a base appearance combobox, then we should never call into
+    // ChromeClient to do stuff with the "native" datalist popup, so return
+    // early here.
     return;
   }
   if (ChromeClient* chrome_client = GetChromeClient()) {
     chrome_client->HandleKeyboardEventOnTextField(GetElement(), event);
-    return;
   }
-  event.SetDefaultHandled();
 }
 
 bool TextFieldInputType::HandleKeydownForCustomizableCombobox(
