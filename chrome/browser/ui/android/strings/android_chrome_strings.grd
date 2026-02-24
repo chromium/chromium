@@ -7496,6 +7496,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_POSITIVE_BUTTON_TEXT_LENS" desc="Button text for the Tips Promo bottom sheet to open Google Lens.">
         Open Google Lens
       </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_POSITIVE_BUTTON_TEXT_TRY_NOW" desc="Button text for the Tips Promo bottom sheet to try out the feature now.">
+        Try it now
+      </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_POSITIVE_BUTTON_TEXT_NOOP" desc="Button text for the Tips Promo bottom sheet to exit without action.">
         Got it
       </message>
@@ -7532,14 +7535,8 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_PASSWORD_AUTOFILL" desc="Description of the Password Autofill feature tip main page promo.">
         Create, save, and manage your passwords so you can easily sign in to sites and apps using Chrome
       </message>
-      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_SIGNIN" desc="Title of the Sign in feature tip main page promo. [CHAR_LIMIT=32]">
-        Sign in to Chrome
-      </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_SIGNIN_SIGNED_IN" desc="Title of the Sign in feature tip main page promo when the user is already signed in. [CHAR_LIMIT=32]">
         You\u2019re already signed in
-      </message>
-      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_SIGNIN" desc="Description of the Sign in feature tip main page promo.">
-        Sign in to easily continue on all your devices
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_FIRST_STEP_ESB" desc="Description of the Enhanced Safe Browsing feature tip first step detail page promo.">
         Open Chrome menu > Settings
@@ -7594,6 +7591,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_THIRD_STEP_SIGNIN" desc="Description of the Sign in feature tip third step detail page promo.">
         Press continue
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_FIRST_STEP_CREATE_TAB_GROUPS" desc="Description of the Create Tab Groups feature tip first step detail page promo.">
+        Open the grid tab switcher
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_SECOND_STEP_CREATE_TAB_GROUPS" desc="Description of the Create Tab Groups feature tip second step detail page promo.">
+        Drag and drop one tab over another
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_THIRD_STEP_CREATE_TAB_GROUPS" desc="Description of the Create Tab Groups feature tip third step detail page promo.">
+        Customize tab group and hit Done
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_QUICK_DELETE_SHORT" desc="Title of the Quick Delete feature tip detail page promo. [CHAR_LIMIT=32]">
         Quickly delete browsing data

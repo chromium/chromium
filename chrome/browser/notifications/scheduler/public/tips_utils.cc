@@ -40,6 +40,9 @@ GetTipsNotificationsFeatureTypeMap() {
           {TipsNotificationsFeatureType::kSignin,
            {IDS_TIPS_NOTIFICATIONS_SIGNIN_TITLE,
             IDS_TIPS_NOTIFICATIONS_SIGNIN_SUBTITLE}},
+          {TipsNotificationsFeatureType::kCreateTabGroups,
+           {IDS_TIPS_NOTIFICATIONS_CREATE_TAB_GROUPS_TITLE,
+            IDS_TIPS_NOTIFICATIONS_CREATE_TAB_GROUPS_SUBTITLE}},
       });
   return *kTipsNotificationsFeatureTypeMap;
 }
@@ -82,6 +85,8 @@ std::string GetFeatureTypePref(TipsNotificationsFeatureType feature_type) {
       return prefs::kAndroidTipNotificationShownPasswordAutofill;
     case TipsNotificationsFeatureType::kSignin:
       return prefs::kAndroidTipNotificationShownSignin;
+    case TipsNotificationsFeatureType::kCreateTabGroups:
+      return prefs::kAndroidTipNotificationShownCreateTabGroup;
     default:
       NOTREACHED();
   }

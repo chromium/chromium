@@ -178,16 +178,33 @@ public class TipsUtils {
                 mainPageTitleRes =
                         isUserSignedIn
                                 ? R.string.tips_promo_bottom_sheet_title_signin_signed_in
-                                : R.string.tips_promo_bottom_sheet_title_signin;
-                mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_signin;
+                                : R.string.educational_tip_sign_in_promo_title;
+                mainPageDescriptionRes = R.string.educational_tip_sign_in_promo_description;
                 mainPageLogoViewRes = R.drawable.tips_promo_signin_logo;
-                detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_signin;
+                detailPageTitleRes = R.string.sign_in_to_chrome;
                 detailPageSteps.add(
                         context.getString(R.string.tips_promo_bottom_sheet_first_step_signin));
                 detailPageSteps.add(
                         context.getString(R.string.tips_promo_bottom_sheet_second_step_signin));
                 detailPageSteps.add(
                         context.getString(R.string.tips_promo_bottom_sheet_third_step_signin));
+                break;
+            case TipsNotificationsFeatureType.CREATE_TAB_GROUPS:
+                positiveButtonTextRes =
+                        R.string.tips_promo_bottom_sheet_positive_button_text_try_now;
+                mainPageTitleRes = R.string.educational_tip_tab_group_title;
+                mainPageDescriptionRes = R.string.educational_tip_tab_group_description;
+                mainPageLogoViewRes = R.drawable.tips_promo_signin_logo;
+                detailPageTitleRes = R.string.educational_tip_tab_group_title;
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_first_step_create_tab_groups));
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_second_step_create_tab_groups));
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_third_step_create_tab_groups));
                 break;
             default:
                 assert false : "Invalid feature type: " + featureType;
@@ -366,6 +383,7 @@ public class TipsUtils {
         UserPrefs.get(profile).setBoolean(BOTTOM_OMNIBOX_SHOWN, false);
         UserPrefs.get(profile).setBoolean(PASSWORD_AUTOFILL_SHOWN, false);
         UserPrefs.get(profile).setBoolean(SIGNIN_SHOWN, false);
+        UserPrefs.get(profile).setBoolean(CREATE_TAB_GROUP_SHOWN, false);
     }
 
     /**

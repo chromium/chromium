@@ -31,6 +31,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
@@ -44,6 +45,7 @@ import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment.HighlightedOption;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
@@ -111,6 +113,7 @@ public class TipsPromoCoordinator {
     private final BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
     private final WindowAndroid mWindowAndroid;
     private final boolean mIsIncognito;
+    private final LayoutManager mLayoutManager;
     private final TipsPromoSheetContent mSheetContent;
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mChangeProcessor;
@@ -130,6 +133,7 @@ public class TipsPromoCoordinator {
      * @param windowAndroid The current WindowAndroid.
      * @param isIncognito Whether the current context is incognito.
      * @param profile The current profile.
+     * @param layoutManager The layout manager to use for navigation to other pages.
      * @param featureType The {@link TipsNotificationsFeatureType} to show.
      */
     public TipsPromoCoordinator(
@@ -140,6 +144,7 @@ public class TipsPromoCoordinator {
             WindowAndroid windowAndroid,
             boolean isIncognito,
             Profile profile,
+            LayoutManager layoutManager,
             @TipsNotificationsFeatureType int featureType) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
@@ -147,6 +152,7 @@ public class TipsPromoCoordinator {
         mSigninCoordinator = signinCoordinator;
         mWindowAndroid = windowAndroid;
         mIsIncognito = isIncognito;
+        mLayoutManager = layoutManager;
         mPropertyModel = TipsPromoProperties.createDefaultModel();
         mLensController = LensController.getInstance();
         mFeatureType = featureType;
@@ -296,6 +302,10 @@ public class TipsPromoCoordinator {
                             TipsUtils.getAccountPickerBottomSheetConfig(mContext));
                 }
                 break;
+            case TipsNotificationsFeatureType.CREATE_TAB_GROUPS:
+                TabSwitcherUtils.navigateToTabSwitcher(
+                        mLayoutManager, /* animate= */ true, /* onNavigationFinished= */ null);
+                break;
             default:
                 assert false : "Invalid feature type: " + featureType;
         }
@@ -338,6 +348,9 @@ public class TipsPromoCoordinator {
 
                 logoView.setImageResource(logoViewRes);
                 break;
+            case TipsNotificationsFeatureType.CREATE_TAB_GROUPS:
+                logoView.setImageResource(logoViewRes);
+                break;
             default:
                 assert false : "Invalid feature type: " + featureType;
         }
@@ -357,6 +370,8 @@ public class TipsPromoCoordinator {
                 return ".PasswordAutofill";
             case TipsNotificationsFeatureType.SIGNIN:
                 return ".Signin";
+            case TipsNotificationsFeatureType.CREATE_TAB_GROUPS:
+                return ".CreateTabGroups";
             default:
                 assert false : "Invalid feature type: " + featureType;
                 return "";

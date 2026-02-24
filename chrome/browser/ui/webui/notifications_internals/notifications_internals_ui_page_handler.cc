@@ -43,6 +43,8 @@ void NotificationsInternalsUIPageHandler::ScheduleNotification(
     type = notifications::TipsNotificationsFeatureType::kPasswordAutofill;
   } else if (feature_type == "signin") {
     type = notifications::TipsNotificationsFeatureType::kSignin;
+  } else if (feature_type == "create_tab_groups") {
+    type = notifications::TipsNotificationsFeatureType::kCreateTabGroups;
   } else {
     NOTREACHED();
   }

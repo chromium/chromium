@@ -40,6 +40,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator.TipsPromoSheetContent;
@@ -75,6 +77,7 @@ public class TipsPromoCoordinatorUnitTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private LensController mLensController;
     @Mock private Profile mProfile;
+    @Mock private LayoutManager mLayoutManager;
     @Mock private IdentityManager mIdentityManagerMock;
 
     @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
@@ -101,6 +104,7 @@ public class TipsPromoCoordinatorUnitTest {
                         mWindowAndroid,
                         /* isIncognito= */ false,
                         mProfile,
+                        mLayoutManager,
                         TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING);
         verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
         mPropertyModel = mTipsPromoCoordinator.getModelForTesting();
@@ -429,6 +433,54 @@ public class TipsPromoCoordinatorUnitTest {
         verify(mBottomSheetController).hideContent(any(), eq(true));
     }
 
+    @SmallTest
+    @Test
+    public void testShowBottomSheet_CreateTabGroups() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Notifications.Tips.FeatureTipPromo.EventType.CreateTabGroups",
+                                TipsPromoCoordinator.FeatureTipPromoEventType.SHOWN,
+                                TipsPromoCoordinator.FeatureTipPromoEventType.ACCEPTED,
+                                TipsPromoCoordinator.FeatureTipPromoEventType
+                                        .DETAIL_PAGE_BACK_BUTTON)
+                        .expectIntRecordTimes(
+                                "Notifications.Tips.FeatureTipPromo.EventType.CreateTabGroups",
+                                TipsPromoCoordinator.FeatureTipPromoEventType.DETAIL_PAGE_CLICKED,
+                                2)
+                        .build();
+
+        setUpTipsPromoCoordinator(TipsNotificationsFeatureType.CREATE_TAB_GROUPS);
+        mTipsPromoCoordinator.showBottomSheet();
+        assertNotNull(((ImageView) mView.findViewById(R.id.main_page_logo)).getDrawable());
+
+        assertEquals(
+                ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+
+        mView.findViewById(R.id.tips_promo_details_button).performClick();
+        assertEquals(
+                ScreenType.DETAIL_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+
+        mView.findViewById(R.id.details_page_back_button).performClick();
+        assertEquals(
+                ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+        mView.findViewById(R.id.tips_promo_details_button).performClick();
+
+        assertEquals(
+                3,
+                mPropertyModel
+                        .get(TipsPromoProperties.FEATURE_TIP_PROMO_DATA)
+                        .detailPageSteps
+                        .size());
+        verify(mBottomSheetController).requestShowContent(any(), eq(true));
+
+        mView.findViewById(R.id.tips_promo_settings_button).performClick();
+        verify(mBottomSheetController).hideContent(any(), eq(true));
+        verify(mLayoutManager).showLayout(eq(LayoutType.TAB_SWITCHER), eq(true));
+
+        histogramWatcher.assertExpected();
+    }
+
     @Test
     public void testSheetContent_handleBackPressDetailScreen() {
         HistogramWatcher histogramWatcher =
@@ -534,6 +586,7 @@ public class TipsPromoCoordinatorUnitTest {
                         mWindowAndroid,
                         /* isIncognito= */ false,
                         mProfile,
+                        mLayoutManager,
                         featureType);
         mPropertyModel = mTipsPromoCoordinator.getModelForTesting();
         mView = mTipsPromoCoordinator.getViewForTesting();

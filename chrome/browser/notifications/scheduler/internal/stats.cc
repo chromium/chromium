@@ -58,6 +58,8 @@ std::string ToHistogramTipsFeatureSuffix(
       return ".PasswordAutofill";
     case TipsNotificationsFeatureType::kSignin:
       return ".Signin";
+    case TipsNotificationsFeatureType::kCreateTabGroups:
+      return ".CreateTabGroups";
     default:
       NOTREACHED();
   }

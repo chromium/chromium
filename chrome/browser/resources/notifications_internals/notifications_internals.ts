@@ -47,6 +47,11 @@ function setupEventListeners() {
         assert(pageHandler);
         pageHandler.scheduleNotification('signin');
       });
+  getRequiredElement('create-tab-groups-notification')
+      .addEventListener('click', function() {
+        assert(pageHandler);
+        pageHandler.scheduleNotification('create_tab_groups');
+      });
 }
 
 document.addEventListener('DOMContentLoaded', function() {

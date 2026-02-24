@@ -19939,6 +19939,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_TIPS_NOTIFICATIONS_SIGNIN_SUBTITLE" desc="Subtitle for the sign-in tip notification.">
       Sign in to easily continue on all your devices
     </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_CREATE_TAB_GROUPS_TITLE" desc="Title for the create tab groups tip notification. [CHAR_LIMIT=32]">
+      Tidy up with tab groups
+    </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_CREATE_TAB_GROUPS_SUBTITLE" desc="Subtitle for the create tab groups tip notification.">
+      Create tab groups that automatically save and update across all your devices
+    </message>
 
     <!-- chrome://updater -->
     <if expr="is_linux or is_macosx or is_win">
