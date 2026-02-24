@@ -7,6 +7,8 @@ if (window.testRunner) {
     testRunner.waitUntilDone();
 }
 
+window.iframe_onload_count = 0;
+
 window.onload = function() {
     window.postMessage("postmessage", "*");
     document.querySelector('iframe').src = "http://localhost:8000/navigation/resources/postmessage-on-hashchange.html#anchor1";
@@ -33,12 +35,15 @@ window.addEventListener('message', function (e) {
             alert('PASS: hashchange triggered after postMessage().');
         else
             alert('FAIL: hashchange triggered before postMessage().');
-        testRunner.notifyDone();
     }
 });
 
 function onloadFired() {
+    window.iframe_onload_count++;
     alert("iframe onload fired");
+    // 2 load events: 1 initial iframe load, 1 async fragment change.
+    if (window.iframe_onload_count == 2)
+        testRunner.notifyDone();
 }
 </script>
 <p>This tests that cross-origin-initiated fragment navigations are asynchronous

@@ -881,6 +881,18 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // Stores the total time taken by `UpdateSubresourceLoadMetrics()` for the
   // measurement purpose.
   base::TimeDelta total_taken_time_to_update_subresource_load_metrics_;
+
+  // Special case for same-document navigations initiated by a cross-origin
+  // frame: When a same-document navigation occurs in an iframe, we call
+  // FrameOwner::DispatchLoad() to fire a load event on the iframe that is
+  // embedding this frame. The parent frame containing that iframe might be
+  // cross-origin, and therefore shouldn't know whether the navigation was
+  // same-document or cross-document. We therefore schedule the DispatchLoad
+  // on a timer, which allows us to coalesce repeated same-document navigations
+  // into a single DispatchLoad, emulating the behavior of repeated
+  // cross-document navigations that will cancel each other if one doesn't have
+  // time to finish before the next one begins.
+  TaskHandle cross_origin_parent_load_event_task_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);
