@@ -6230,6 +6230,11 @@
       status: "experimental",
     },
     {
+      name: "WebMCPDeclarativeFileInput",
+      depends_on: ["WebMCP"],
+      status: "test",
+    },
+    {
       // Support for form-associated custom elements in declarative
       // WebMCP tools.
       name: "WebMCPFormAssociatedCustomElements",
