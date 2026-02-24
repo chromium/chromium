@@ -59,6 +59,7 @@ class CORE_EXPORT ScriptCustomElementDefinitionBuilder
   v8::Local<v8::Value> v8_form_reset_callback_;
   v8::Local<v8::Value> v8_form_disabled_callback_;
   v8::Local<v8::Value> v8_form_state_restore_callback_;
+  v8::Local<v8::Value> v8_tool_fill_callback_;
 };
 
 }  // namespace blink

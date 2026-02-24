@@ -20,6 +20,7 @@ class V8CustomElementConstructor;
 class V8CustomElementFormAssociatedCallback;
 class V8CustomElementFormDisabledCallback;
 class V8CustomElementFormStateRestoreCallback;
+class V8CustomElementToolFillCallback;
 class V8VoidFunction;
 
 class CORE_EXPORT ScriptCustomElementDefinition final
@@ -51,6 +52,7 @@ class CORE_EXPORT ScriptCustomElementDefinition final
   bool HasFormResetCallback() const override;
   bool HasFormDisabledCallback() const override;
   bool HasFormStateRestoreCallback() const override;
+  bool HasToolFillCallback() const override;
 
   void RunConnectedCallback(Element&) override;
   void RunDisconnectedCallback(Element&) override;
@@ -69,6 +71,7 @@ class CORE_EXPORT ScriptCustomElementDefinition final
   void RunFormStateRestoreCallback(Element& element,
                                    const V8ControlValue* value,
                                    const String& mode) override;
+  void RunToolFillCallback(Element& element, const String& value) override;
 
  private:
   // Implementations of |CustomElementDefinition|
@@ -92,6 +95,7 @@ class CORE_EXPORT ScriptCustomElementDefinition final
   Member<V8VoidFunction> form_reset_callback_;
   Member<V8CustomElementFormDisabledCallback> form_disabled_callback_;
   Member<V8CustomElementFormStateRestoreCallback> form_state_restore_callback_;
+  Member<V8CustomElementToolFillCallback> tool_fill_callback_;
 };
 
 }  // namespace blink

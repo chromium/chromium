@@ -118,6 +118,7 @@ class CORE_EXPORT CustomElement {
   static void EnqueueFormStateRestoreCallback(Element& element,
                                               const V8ControlValue* value,
                                               const String& mode);
+  static void EnqueueToolFillCallback(Element& element, const String& value);
 
   static void TryToUpgrade(Element&);
 

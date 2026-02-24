@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<title>WebMCP: Form-associated custom element ceasing to be a parameter</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  class MyParam extends HTMLElement {
+    static formAssociated = true;
+    constructor(schema) {
+      super();
+      this._internals = this.attachInternals();
+      this._internals.setToolParamSchema('{"type":"string"}');
+    }
+    stopBeingToolParameter() {
+      this._internals.setToolParamSchema(null);
+    }
+  }
+  customElements.define('my-param', MyParam);
+</script>
+<form toolname=test tooldescription="Test">
+  <my-param name="my-param"></my-param>
+</form>
+<script>
+  function findParam(name) {
+    let tools = navigator.modelContextTesting.listTools();
+    assert_equals(tools.length, 1);
+    let schema = JSON.parse(tools[0].inputSchema);
+    let properties = schema['properties'];
+    assert_equals(typeof properties, 'object');
+    return typeof properties[name] == 'object';
+  }
+
+  test(t => {
+    assert_true(!!navigator.modelContextTesting);
+    assert_true(findParam('my-param'));
+    let myParam = document.querySelector('my-param')
+    myParam.stopBeingToolParameter();
+    assert_false(findParam('my-param'));
+  }, 'Form-associated custom element ceasing to be a parameter');
+</script>

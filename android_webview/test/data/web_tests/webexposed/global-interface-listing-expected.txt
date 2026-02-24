@@ -2663,6 +2663,7 @@ interface ElementInternals
     method constructor
     method reportValidity
     method setFormValue
+    method setToolParamSchema
     method setValidity
     setter ariaActiveDescendantElement
     setter ariaAtomic

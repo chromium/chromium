@@ -268,6 +268,30 @@ class CustomElementFormStateRestoreCallbackReaction final
 
 // ----------------------------------------------------------------
 
+class CustomElementToolFillCallbackReaction final
+    : public CustomElementReaction {
+ public:
+  CustomElementToolFillCallbackReaction(CustomElementDefinition& definition,
+                                        const String& value)
+      : CustomElementReaction(definition), value_(value) {
+    DCHECK(definition.HasToolFillCallback());
+  }
+
+  CustomElementToolFillCallbackReaction(
+      const CustomElementToolFillCallbackReaction&) = delete;
+  CustomElementToolFillCallbackReaction& operator=(
+      const CustomElementToolFillCallbackReaction&) = delete;
+
+ private:
+  void Invoke(Element& element) override {
+    definition_->RunToolFillCallback(element, value_);
+  }
+
+  String value_;
+};
+
+// ----------------------------------------------------------------
+
 CustomElementReaction& CustomElementReactionFactory::CreateUpgrade(
     CustomElementDefinition& definition) {
   return *MakeGarbageCollected<CustomElementUpgradeReaction>(definition);
@@ -334,6 +358,13 @@ CustomElementReaction& CustomElementReactionFactory::CreateFormStateRestore(
     const String& mode) {
   return *MakeGarbageCollected<CustomElementFormStateRestoreCallbackReaction>(
       definition, value, mode);
+}
+
+CustomElementReaction& CustomElementReactionFactory::CreateToolFillCallback(
+    CustomElementDefinition& definition,
+    const String& value) {
+  return *MakeGarbageCollected<CustomElementToolFillCallbackReaction>(
+      definition, value);
 }
 
 }  // namespace blink

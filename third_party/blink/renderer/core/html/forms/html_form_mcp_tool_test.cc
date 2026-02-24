@@ -4,13 +4,16 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
+#include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -2708,6 +2711,65 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_FillRadio_Invalid) {
   EXPECT_FALSE(s->Checked());
   EXPECT_FALSE(m->Checked());
   EXPECT_FALSE(l->Checked());
+}
+
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_FormAssociatedCustom) {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  ClassicScript::CreateUnspecifiedScript(R"JS(
+      class MyInput extends HTMLElement {
+        static formAssociated = true;
+        constructor() {
+          super();
+          this._internals = this.attachInternals();
+          this._internals.setToolParamSchema(`{ "type":"string" }`);
+        }
+      }
+      customElements.define('my-input', MyInput);
+
+      document.body.innerHTML = `
+        <form id="form" toolname="mytool" tooldescription="perform task">
+          <input type=text name=text1>
+          <my-input
+            id=my-input
+            name=custom-input
+            toolparamdescription="Just some custom text"
+          ></my-input>
+        </form>
+      `;
+   )JS")
+      ->RunScript(GetDocument().domWindow());
+
+  UpdateAllLifecyclePhasesForTest();
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+
+  auto* my_input = DynamicTo<HTMLElement>(
+      GetDocument().getElementById(AtomicString("my-input")));
+  ASSERT_TRUE(my_input);
+  EXPECT_EQ(CustomElementState::kCustom, my_input->GetCustomElementState());
+  ASSERT_TRUE(my_input->GetCustomElementDefinition());
+  ASSERT_TRUE(my_input->IsFormAssociatedCustomElement());
+
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+  String actual = ComputeInputSchema(*form_element);
+  std::unique_ptr<JSONValue> expected_json = ParseJSON(R"JSON(
+    {
+      "type": "object",
+      "properties": {
+         "text1": {
+            "type": "string"
+         },
+         "custom-input": {
+            "type": "string",
+            "description": "Just some custom text"
+         }
+      },
+      "required": []
+    }
+  )JSON");
+  ASSERT_TRUE(expected_json);
+  EXPECT_EQ(expected_json->ToJSONString(), actual);
 }
 
 }  // namespace blink

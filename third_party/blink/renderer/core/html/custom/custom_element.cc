@@ -308,6 +308,15 @@ void CustomElement::EnqueueFormStateRestoreCallback(Element& element,
   }
 }
 
+void CustomElement::EnqueueToolFillCallback(Element& element,
+                                            const String& value) {
+  auto& definition = *DefinitionForElementWithoutCheck(element);
+  if (definition.HasToolFillCallback()) {
+    Enqueue(element, CustomElementReactionFactory::CreateToolFillCallback(
+                         definition, value));
+  }
+}
+
 void CustomElement::TryToUpgrade(Element& element) {
   // Try to upgrade an element
   // https://html.spec.whatwg.org/C/#concept-try-upgrade

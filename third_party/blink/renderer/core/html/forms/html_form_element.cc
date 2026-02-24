@@ -45,12 +45,14 @@
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
 #include "third_party/blink/renderer/core/html/collection_type.h"
+#include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
@@ -168,8 +170,13 @@ void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
   bool require_submit_button =
       !form_->FastHasAttribute(html_names::kToolautosubmitAttr);
   HTMLFormControlElement* submit_button = nullptr;
-  std::optional<WebDocument::ScriptToolError> error =
-      FillFormControls(input_arguments, require_submit_button, &submit_button);
+
+  std::optional<WebDocument::ScriptToolError> error;
+  {
+    CEReactionsScope reactions(form_->GetDocument().GetAgent().isolate());
+    error = FillFormControls(input_arguments, require_submit_button,
+                             &submit_button);
+  }
 
   if (error.has_value()) {
     return std::move(done_callback).Run(base::unexpected(error.value()));

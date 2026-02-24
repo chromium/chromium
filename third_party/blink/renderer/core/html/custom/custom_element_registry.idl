@@ -25,3 +25,4 @@ callback CustomElementFormAssociatedCallback = void (HTMLFormElement? form);
 callback CustomElementFormDisabledCallback = void (boolean disabled);
 enum FormStateRestoreMode { "restore", "autocomplete" };
 callback CustomElementFormStateRestoreCallback = void (ControlValue value, FormStateRestoreMode mode);
+callback CustomElementToolFillCallback = void (DOMString value);

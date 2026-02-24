@@ -65,6 +65,9 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   String type() const;
   void setType(const String& value);
 
+  String ToolParamSchema() const;
+  void setToolParamSchema(const String& schema);
+
   bool HasState(const AtomicString& state) const;
 
   ShadowRoot* shadowRoot() const;
@@ -141,6 +144,7 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   Member<ValidityStateFlags> validity_flags_;
   Member<Element> validation_anchor_;
   String type_;
+  String tool_param_schema_;
   Member<CustomStateSet> custom_states_;
 
   HashMap<QualifiedName, AtomicString> accessibility_semantics_map_;

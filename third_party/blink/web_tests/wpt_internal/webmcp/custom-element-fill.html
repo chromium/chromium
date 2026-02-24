@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<title>WebMCP: Filling custom element</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  class MyInput extends HTMLElement {
+    static formAssociated = true;
+    constructor() {
+      super();
+      this._internals = this.attachInternals();
+      this._internals.setToolParamSchema(`{ "type":"string" }`);
+      this.attachShadow({ mode: 'open' });
+      let div = document.createElement('div');
+      this.shadowRoot.append(div);
+      this.render("<none>");
+    }
+    toolFillCallback(json) {
+      // Note that we expect a top-level string inside `json`,
+      // per our schema.
+      let string = JSON.parse(json);
+      this.render(string);
+    }
+    render(s) {
+      this.shadowRoot.querySelector('div').textContent = `Custom text: ${s}`;
+    }
+  }
+  customElements.define('my-input', MyInput);
+</script>
+
+<!-- We'll submit the form to this frame. -->
+<iframe name=hidden_iframe style="display:none"></iframe>
+
+<form
+  toolname=fill_text
+  tooldescription="Fill some text"
+  toolautosubmit
+  target=hidden_iframe
+  action="about:blank">
+  <input name=text type=text>
+  <my-input name="mytext"></my-input>
+  <input type=submit>
+</form>
+
+<script>
+promise_test(async t => {
+  assert_true(!!navigator.modelContextTesting);
+
+  let inputArgs = JSON.stringify({
+    text: "regular text",
+    mytext: "very custom text"
+  });
+
+  await navigator.modelContextTesting.executeTool('fill_text', inputArgs);
+
+  let inner_div = document.querySelector('my-input').shadowRoot.querySelector('div');
+  assert_equals(inner_div.textContent, 'Custom text: very custom text');
+}, 'executeTool on form with custom element');
+
+</script>

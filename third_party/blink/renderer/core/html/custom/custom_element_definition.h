@@ -81,6 +81,7 @@ class CORE_EXPORT CustomElementDefinition
   virtual bool HasFormResetCallback() const = 0;
   virtual bool HasFormDisabledCallback() const = 0;
   virtual bool HasFormStateRestoreCallback() const = 0;
+  virtual bool HasToolFillCallback() const = 0;
 
   virtual void RunConnectedCallback(Element&) = 0;
   virtual void RunDisconnectedCallback(Element&) = 0;
@@ -99,6 +100,7 @@ class CORE_EXPORT CustomElementDefinition
   virtual void RunFormStateRestoreCallback(Element& element,
                                            const V8ControlValue* value,
                                            const String& mode) = 0;
+  virtual void RunToolFillCallback(Element& element, const String& value) = 0;
 
   void EnqueueUpgradeReaction(Element&);
   void EnqueueConnectedCallback(Element&);

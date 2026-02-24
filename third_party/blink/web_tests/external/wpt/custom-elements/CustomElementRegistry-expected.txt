@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] customElements.define must get four additional callbacks on the prototype if formAssociated is converted to true
+  assert_array_equals: customElements.define must get 8 callbacks on the prototype lengths differ, expected array ["connectedCallback", "disconnectedCallback", "connectedMoveCallback", "adoptedCallback", "attributeChangedCallback", "formAssociatedCallback", "formResetCallback", "formDisabledCallback", "formStateRestoreCallback"] length 9, got ["connectedCallback", "disconnectedCallback", "connectedMoveCallback", "adoptedCallback", "attributeChangedCallback", "formAssociatedCallback", "formResetCallback", "formDisabledCallback", "formStateRestoreCallback", "toolFillCallback"] length 10
+Harness: the test ran to completion.
+

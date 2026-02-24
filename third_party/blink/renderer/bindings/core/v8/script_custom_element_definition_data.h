@@ -20,6 +20,7 @@ class V8CustomElementConstructor;
 class V8CustomElementFormAssociatedCallback;
 class V8CustomElementFormDisabledCallback;
 class V8CustomElementFormStateRestoreCallback;
+class V8CustomElementToolFillCallback;
 class V8VoidFunction;
 
 class ScriptCustomElementDefinitionData {
@@ -47,6 +48,7 @@ class ScriptCustomElementDefinitionData {
   V8CustomElementFormDisabledCallback* form_disabled_callback_ = nullptr;
   V8CustomElementFormStateRestoreCallback* form_state_restore_callback_ =
       nullptr;
+  V8CustomElementToolFillCallback* tool_fill_callback_ = nullptr;
   HashSet<AtomicString> observed_attributes_;
   Vector<String> disabled_features_;
   bool is_form_associated_ = false;

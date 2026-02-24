@@ -12,6 +12,8 @@
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/live_node_list.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element.h"
+#include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -22,6 +24,7 @@
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/forms/step_range.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -193,6 +196,10 @@ bool FormMCPSchema::ValidateParameterData(const String& name,
   if (IsColor(*controls_for_name)) {
     return ValidateTextData(*controls_for_name, value);
   }
+  if (IsCustomElement(*controls_for_name)) {
+    // TODO(andruud): How to do validation for custom elements?
+    return true;
+  }
 
   return false;
 }
@@ -355,6 +362,8 @@ void FormMCPSchema::FillParameterData(const String& name,
     FillRadioData(*controls_for_name, value);
   } else if (IsColor(*controls_for_name)) {
     FillTextData(*controls_for_name, value);
+  } else if (IsCustomElement(*controls_for_name)) {
+    FillCustomElementData(*controls_for_name, value);
   }
 }
 
@@ -406,6 +415,9 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeParameterSchema(
   }
   if (IsColor(*controls_for_name)) {
     return ComputeColorParameterSchema(*controls_for_name, required);
+  }
+  if (IsCustomElement(*controls_for_name)) {
+    return ComputeCustomElementParameterSchema(*controls_for_name, required);
   }
 
   return nullptr;
@@ -757,6 +769,23 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeColorParameterSchema(
   return schema;
 }
 
+std::unique_ptr<JSONObject> FormMCPSchema::ComputeCustomElementParameterSchema(
+    const ControlVector& controls_for_name,
+    bool& required) {
+  CHECK(IsCustomElement(controls_for_name));
+  auto& element_internals =
+      To<ElementInternals>(*controls_for_name.front().Get());
+  std::unique_ptr<JSONObject> schema =
+      JSONObject::From(ParseJSON(element_internals.ToolParamSchema()));
+  // Note that the above ParseJSON() call (and conversion to JSONObject)
+  // is guaranteed to succeed by IsCustomElement().
+  CHECK(schema);
+  AddTitle(element_internals, *schema);
+  AddDescription(element_internals, *schema);
+  required = false;
+  return schema;
+}
+
 // Note: Fill* functions may assume that the incoming value passed
 // the corresponding Validate* function.
 
@@ -867,6 +896,15 @@ void FormMCPSchema::FillSelectData(const ControlVector& controls_for_name,
   select.SelectMultipleOptions(selected_indices);
 }
 
+void FormMCPSchema::FillCustomElementData(
+    const ControlVector& controls_for_name,
+    const JSONValue& value) {
+  auto& element_internals =
+      To<ElementInternals>(*controls_for_name.front().Get());
+  CustomElement::EnqueueToolFillCallback(element_internals.Target(),
+                                         value.ToJSONString());
+}
+
 void FormMCPSchema::AddTitle(ListedElement& control, JSONObject& obj) {
   if (String title = ToolParamTitleAttribute(control); !title.empty()) {
     obj.SetString("title", title);
@@ -965,8 +1003,13 @@ void FormMCPSchema::ProcessForm(HTMLFormElement& form) {
       if (form_control->IsSuccessfulSubmitButton() && !submit_button_) {
         submit_button_ = form_control;
       }
+    } else if (auto* element_internals = DynamicTo<ElementInternals>(element)) {
+      String name = element_internals->GetName();
+      if (!name.empty()) {
+        EnsureControlVector(name).push_back(element_internals);
+        ordered_names_.push_back(name);
+      }
     }
-    // TODO(crbug.com/475972617): Support custom elements.
   }
 }
 
@@ -1054,6 +1097,19 @@ bool FormMCPSchema::IsColor(ListedElement& control) const {
   return input && input->FormControlType() == FormControlType::kInputColor;
 }
 
+bool FormMCPSchema::IsCustomElement(ListedElement& control) const {
+  auto* element_internals = DynamicTo<ElementInternals>(control);
+  if (!element_internals) {
+    return false;
+  }
+  String schema_string = element_internals->ToolParamSchema();
+  if (schema_string.empty()) {
+    return false;
+  }
+  std::unique_ptr<JSONValue> json = ParseJSON(schema_string);
+  return json && JSONObject::Cast(json.get());
+}
+
 bool FormMCPSchema::IsText(const ControlVector& controls_for_name) const {
   return controls_for_name.size() == 1u && IsText(*controls_for_name.front());
 }
@@ -1114,6 +1170,12 @@ bool FormMCPSchema::IsRadio(const ControlVector& controls_for_name) const {
 
 bool FormMCPSchema::IsColor(const ControlVector& controls_for_name) const {
   return controls_for_name.size() == 1u && IsColor(*controls_for_name.front());
+}
+
+bool FormMCPSchema::IsCustomElement(
+    const ControlVector& controls_for_name) const {
+  return controls_for_name.size() == 1u &&
+         IsCustomElement(*controls_for_name.front());
 }
 
 }  // namespace blink

@@ -116,6 +116,7 @@ class TestCustomElementDefinition : public CustomElementDefinition {
   bool HasFormResetCallback() const override { return false; }
   bool HasFormDisabledCallback() const override { return false; }
   bool HasFormStateRestoreCallback() const override { return false; }
+  bool HasToolFillCallback() const override { return false; }
 
   void RunConnectedCallback(Element&) override {
     NOTREACHED() << "definition does not have connected callback";
@@ -158,6 +159,10 @@ class TestCustomElementDefinition : public CustomElementDefinition {
                                    const V8ControlValue* value,
                                    const String& mode) override {
     NOTREACHED() << "definition does not have restoreValueCallback";
+  }
+
+  void RunToolFillCallback(Element& element, const String& mode) override {
+    NOTREACHED() << "definition does not have toolFillCallback";
   }
 
  private:

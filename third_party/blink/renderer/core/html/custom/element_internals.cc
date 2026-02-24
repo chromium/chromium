@@ -160,6 +160,14 @@ void ElementInternals::setType(const String& value) {
   type_ = value;
 }
 
+String ElementInternals::ToolParamSchema() const {
+  return tool_param_schema_;
+}
+
+void ElementInternals::setToolParamSchema(const String& schema) {
+  tool_param_schema_ = schema;
+}
+
 void ElementInternals::setValidity(ValidityStateFlags* flags,
                                    ExceptionState& exception_state) {
   setValidity(flags, String(), nullptr, exception_state);

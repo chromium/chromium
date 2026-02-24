@@ -90,6 +90,9 @@ class CORE_EXPORT FormMCPSchema {
   std::unique_ptr<JSONObject> ComputeColorParameterSchema(
       const ControlVector& controls_for_name,
       bool& required);
+  std::unique_ptr<JSONObject> ComputeCustomElementParameterSchema(
+      const ControlVector& controls_for_name,
+      bool& required);
 
   // Compute an array representing the values (as HTMLInputElement::Value()
   // of the specified controls, suitable for assignment to a 'oneOf' field.
@@ -128,6 +131,8 @@ class CORE_EXPORT FormMCPSchema {
                         const JSONValue&);
   void FillRadioData(const ControlVector& controls_for_name, const JSONValue&);
   void FillSelectData(const ControlVector& controls_for_name, const JSONValue&);
+  void FillCustomElementData(const ControlVector& controls_for_name,
+                             const JSONValue&);
 
   void AddTitle(ListedElement&, JSONObject&);
   void AddDescription(ListedElement&, JSONObject&, String = String());
@@ -165,6 +170,7 @@ class CORE_EXPORT FormMCPSchema {
   bool IsCheckbox(ListedElement&) const;
   bool IsRadio(ListedElement&) const;
   bool IsColor(ListedElement&) const;
+  bool IsCustomElement(ListedElement&) const;
 
   bool IsText(const ControlVector& controls_for_name) const;
   bool IsDate(const ControlVector& controls_for_name) const;
@@ -178,6 +184,7 @@ class CORE_EXPORT FormMCPSchema {
   bool IsCheckbox(const ControlVector& controls_for_name) const;
   bool IsRadio(const ControlVector& controls_for_name) const;
   bool IsColor(const ControlVector& controls_for_name) const;
+  bool IsCustomElement(const ControlVector& controls_for_name) const;
 
   // Maps a WebMCP parameter name (HTMLFormControlElement::
   // GetWebMCPParameterName()) to a list of form controls.

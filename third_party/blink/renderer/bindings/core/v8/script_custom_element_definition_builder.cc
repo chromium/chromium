@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_form_associated_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_form_disabled_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_form_state_restore_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_custom_element_tool_fill_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
@@ -217,6 +218,16 @@ bool ScriptCustomElementDefinitionBuilder::RememberOriginalProperties() {
       data_.form_state_restore_callback_ =
           V8CustomElementFormStateRestoreCallback::Create(
               v8_form_state_restore_callback_.As<v8::Function>());
+    }
+
+    v8_tool_fill_callback_ =
+        retriever.GetMethodOrUndefined("toolFillCallback", exception_state_);
+    if (exception_state_.HadException()) {
+      return false;
+    }
+    if (v8_tool_fill_callback_->IsFunction()) {
+      data_.tool_fill_callback_ = V8CustomElementToolFillCallback::Create(
+          v8_tool_fill_callback_.As<v8::Function>());
     }
   }
 

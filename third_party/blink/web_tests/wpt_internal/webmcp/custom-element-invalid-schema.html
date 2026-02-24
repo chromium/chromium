@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<title>WebMCP: Form-associated custom element with invalid schema</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  class ToolParameterInputElement extends HTMLElement {
+    static formAssociated = true;
+    constructor(schema) {
+      super();
+      this._internals = this.attachInternals();
+      this._internals.setToolParamSchema(schema);
+    }
+  }
+  class InvalidParamEmpty extends ToolParameterInputElement {
+    constructor() {
+      super('');
+    }
+  }
+  class InvalidParamNonsense extends ToolParameterInputElement {
+    constructor() {
+      super('asdfasdf');
+    }
+  }
+  class InvalidParamComma extends ToolParameterInputElement {
+    constructor() {
+      super('{"type":"string",}'); // Trailing comma.
+    }
+  }
+  class InvalidParamArray extends ToolParameterInputElement {
+    constructor() {
+      super('[]'); // Top-level array. (We expect an object.)
+    }
+  }
+  class InvalidParamString extends ToolParameterInputElement {
+    constructor() {
+      super('"string"'); // Top-level string. (We expect an object.)
+    }
+  }
+  class ValidParamString extends ToolParameterInputElement {
+    constructor() {
+      super('{"type":"string"}');
+    }
+  }
+  customElements.define('invalid-param-empty', InvalidParamEmpty);
+  customElements.define('invalid-param-nonsense', InvalidParamNonsense);
+  customElements.define('invalid-param-comma', InvalidParamComma);
+  customElements.define('invalid-param-array', InvalidParamArray);
+  customElements.define('invalid-param-string', InvalidParamString);
+  customElements.define('valid-param-string', ValidParamString);
+</script>
+<form toolname=test tooldescription="Test">
+  <invalid-param-empty name="invalid-param-empty"></invalid-param-empty>
+  <invalid-param-nonsense name="invalid-param-nonsense"></invalid-param-nonsense>
+  <invalid-param-comma name="invalid-param-comma"></invalid-param-comma>
+  <invalid-param-array name="invalid-param-array"></invalid-param-array>
+  <invalid-param-string name="invalid-param-string"></invalid-param-string>
+  <valid-param-string name="valid-param-string"></valid-param-string>
+</form>
+<script>
+  test(t => {
+    assert_true(!!navigator.modelContextTesting);
+    let tools = navigator.modelContextTesting.listTools();
+    assert_equals(tools.length, 1);
+    let schema = JSON.parse(tools[0].inputSchema);
+    let properties = schema['properties'];
+    assert_equals(typeof properties, 'object');
+    assert_equals(properties['invalid-param-empty'], undefined);
+    assert_equals(properties['invalid-param-nonsense'], undefined);
+    assert_equals(properties['invalid-param-comma'], undefined);
+    assert_equals(properties['invalid-param-array'], undefined);
+    assert_equals(properties['invalid-param-string'], undefined);
+    assert_equals(typeof properties['valid-param-string'], 'object');
+  }, 'Invalid schema for setToolParamSchema()');
+</script>

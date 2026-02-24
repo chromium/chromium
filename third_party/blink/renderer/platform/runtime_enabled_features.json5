@@ -6235,6 +6235,12 @@
       status: "experimental",
     },
     {
+      // Support for form-associated custom elements in declarative
+      // WebMCP tools.
+      name: "WebMCPFormAssociatedCustomElements",
+      status: "experimental",
+    },
+    {
       name: "WebMCPTesting",
       status: "experimental",
     },
