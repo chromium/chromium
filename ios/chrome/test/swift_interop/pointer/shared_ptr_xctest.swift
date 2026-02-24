@@ -9,74 +9,68 @@ class SharedPointerTest: XCTestCase {
 
   override func setUp() {
     super.setUp()
-    ResetSharedObjectLiveCount()
-    XCTAssertEqual(GetSharedObjectLiveCount(), 0, "Counter did not reset")
+    ResetTotalReferenceCount()
+    XCTAssertEqual(GetTotalReferenceCount(), 0, "Counter did not reset")
   }
 
   override func tearDown() {
-    XCTAssertEqual(GetSharedObjectLiveCount(), 0, "C++ object is leaked")
+    XCTAssertEqual(GetTotalReferenceCount(), 0, "C++ object is leaked")
     super.tearDown()
   }
 
   func testSharedObject() throws {
     let object = SharedObject.MakeForSwift(42)
-    XCTAssertEqual(object!.IsValid(), true, "Object should be valid")
-    XCTAssertEqual(object!.GetValue(), 42, "The value is wrong")
-    XCTAssertEqual(
-      GetSharedObjectLiveCount(), 1,
-      "The count of living objects is wrong")
+    XCTAssertEqual(object!.IsValid(), true)
+    XCTAssertEqual(object!.GetValue(), 42)
+    XCTAssertEqual(GetTotalReferenceCount(), 1)
+  }
+
+  func testTwoSharedObjects() throws {
+    let object1 = SharedObject.MakeForSwift(1)
+    XCTAssertEqual(object1!.IsValid(), true)
+    XCTAssertEqual(object1!.GetValue(), 1)
+    XCTAssertEqual(GetTotalReferenceCount(), 1)
+
+    let object2 = SharedObject.MakeForSwift(2)
+    XCTAssertEqual(object2!.IsValid(), true)
+    XCTAssertEqual(object2!.GetValue(), 2)
+    XCTAssertEqual(GetTotalReferenceCount(), 2)
   }
 
   func testLifetimeManagedByARC() throws {
     var object: SharedObject? = SharedObject.MakeForSwift(42)
-    XCTAssertEqual(object!.IsValid(), true, "Object should be valid")
-    XCTAssertEqual(object!.GetValue(), 42, "The value is wrong")
-    XCTAssertEqual(
-      GetSharedObjectLiveCount(), 1,
-      "The count of living objects is wrong")
+    XCTAssertEqual(object!.IsValid(), true)
+    XCTAssertEqual(object!.GetValue(), 42)
+    XCTAssertEqual(GetTotalReferenceCount(), 1)
 
     var object2: SharedObject? = object
-    XCTAssertEqual(object2!.IsValid(), true, "Object should be valid")
-    XCTAssertEqual(object2!.GetValue(), 42, "The value is wrong")
-    XCTAssertEqual(
-      GetSharedObjectLiveCount(), 2,
-      "The count of living objects is wrong")
+    XCTAssertEqual(object2!.IsValid(), true)
+    XCTAssertEqual(object2!.GetValue(), 42)
+    XCTAssertEqual(GetTotalReferenceCount(), 2)
 
     var object3: SharedObject? = object
-    XCTAssertEqual(object3!.IsValid(), true, "Object should be valid")
-    XCTAssertEqual(object3!.GetValue(), 42, "The value is wrong")
-    XCTAssertEqual(
-      GetSharedObjectLiveCount(), 3,
-      "The count of living objects is wrong")
+    XCTAssertEqual(object3!.IsValid(), true)
+    XCTAssertEqual(object3!.GetValue(), 42)
+    XCTAssertEqual(GetTotalReferenceCount(), 3)
 
     object = nil
-    XCTAssertEqual(
-      GetSharedObjectLiveCount(), 2,
-      "The count of living objects is wrong")
+    XCTAssertEqual(GetTotalReferenceCount(), 2)
 
     object2 = nil
-    XCTAssertEqual(
-      GetSharedObjectLiveCount(), 1,
-      "The count of living objects is wrong")
+    XCTAssertEqual(GetTotalReferenceCount(), 1)
 
     object3 = nil
-    XCTAssertEqual(
-      GetSharedObjectLiveCount(), 0,
-      "The count of living objects is wrong")
+    XCTAssertEqual(GetTotalReferenceCount(), 0)
   }
 
   func testLifetimeByAutoreleasePool() {
     autoreleasepool {
       let object = SharedObject.MakeForSwift(42)
-      XCTAssertEqual(object!.IsValid(), true, "Object should be valid")
-      XCTAssertEqual(object!.GetValue(), 42, "The value is wrong")
-      XCTAssertEqual(
-        GetSharedObjectLiveCount(), 1,
-        "The count of living objects is wrong")
+      XCTAssertEqual(object!.IsValid(), true)
+      XCTAssertEqual(object!.GetValue(), 42)
+      XCTAssertEqual(GetTotalReferenceCount(), 1)
     }
-    XCTAssertEqual(
-      GetSharedObjectLiveCount(), 0,
-      "The count of living objects is wrong")
+    XCTAssertEqual(GetTotalReferenceCount(), 0)
   }
 
 }

@@ -6,34 +6,26 @@
 #define IOS_CHROME_TEST_SWIFT_INTEROP_POINTER_SHARED_PTR_H_
 
 #include "base/apple/swift_interop_util.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_refptr.h"
-#include "ios/chrome/test/swift_interop/pointer/unique_ptr.h"
-
-static int g_live_object_count = 0;
 
 class SharedObject;
 
-void RetainSharedObject(SharedObject* obj);
-void ReleaseSharedObject(SharedObject* obj);
+void Retain_SharedObject(SharedObject* obj);
+void Release_SharedObject(SharedObject* obj);
 
-int GetSharedObjectLiveCount();
-void ResetSharedObjectLiveCount();
+int GetTotalReferenceCount();
+void ResetTotalReferenceCount();
 
-class SharedObject : public base::RefCounted<SharedObject> {
+class SharedObject {
  public:
   SharedObject(const SharedObject&) = delete;  // non-copyable
-  explicit SharedObject(int value);
+
+  SharedObject() = default;
+  virtual ~SharedObject() = default;
+
   static SharedObject* MakeForSwift(int value) SWIFT_RETURNS_RETAINED;
 
-  bool IsValid();
-  int GetValue();
-
- private:
-  friend class base::RefCounted<SharedObject>;
-  ~SharedObject();
-
-  int value_;
-} SWIFT_SHARED_REFERENCE(RetainSharedObject, ReleaseSharedObject);
+  virtual bool IsValid() const = 0;
+  virtual int GetValue() const = 0;
+} SWIFT_SHARED_REFERENCE(Retain_SharedObject, Release_SharedObject);
 
 #endif  // IOS_CHROME_TEST_SWIFT_INTEROP_POINTER_SHARED_PTR_H_
