@@ -10,8 +10,6 @@ desc: |-
 
   Not setting the policy, or setting it to '<ph name="DEFAULT_NAME">default</ph>', configures <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> to use its default key exchange methods.
 
-  If this policy is set to a value that would configure <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> to prefer a post-quantum key agreement algorithm but <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME">DevicePostQuantumKeyAgreementEnabled</ph> is Disabled, the setting of <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME">DevicePostQuantumKeyAgreementEnabled</ph> takes precedence.
-
   Setting this policy is not required for security. The default cryptography used by <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> is strong enough to withstand a brute force attack using the entire power of the Sun.
 
   Setting this policy will cause <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> to be slower when making network requests from the login screen.

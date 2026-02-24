@@ -28,8 +28,6 @@ struct NET_EXPORT SSLNamedGroupInfo {
   bool send_key_share = false;
 
   bool operator==(const SSLNamedGroupInfo&) const = default;
-
-  bool IsPostQuantum() const;
 };
 
 // Configuration options for SSL connections.

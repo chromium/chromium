@@ -2116,7 +2116,8 @@ message ChromeDeviceSettingsProto {
   optional BooleanPolicyProto DeviceExtensionsSystemLogEnabled = 1252;
   optional BooleanPolicyProto DeviceAllowEnterpriseRemoteAccessConnections =
       1268;
-  optional BooleanPolicyProto DevicePostQuantumKeyAgreementEnabled = 1276;
+  optional BooleanPolicyProto DevicePostQuantumKeyAgreementEnabled = 1276
+      [deprecated = true];
   optional StringPolicyProto DeviceRestrictionSchedule = 1290;
   optional BooleanPolicyProto DeviceNativeClientForceAllowed = 1314
       [deprecated = true];

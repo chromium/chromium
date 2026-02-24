@@ -60,13 +60,6 @@ void AddIntersectingTrustAnchorIdsToEncodedList(
 
 }  // namespace
 
-// This function should be kept updated to include all the post-quantum groups
-// that //net and callers know about and may configure.
-bool SSLNamedGroupInfo::IsPostQuantum() const {
-  return group_id == SSL_GROUP_X25519_MLKEM768 ||
-         group_id == SSL_GROUP_MLKEM1024;
-}
-
 SSLContextConfig::SSLContextConfig() {
   supported_named_groups.assign(std::begin(kDefaultSSLSupportedGroups),
                                 std::end(kDefaultSSLSupportedGroups));

@@ -77,9 +77,6 @@ struct SSLConfig {
   // preset configures.
   SSLNamedGroupsPreset named_groups_preset = kDefault;
 
-  // Controls whether post-quantum key agreement in TLS connections is allowed.
-  bool post_quantum_key_agreement_enabled = true;
-
   // If false, disables TLS Encrypted ClientHello (ECH). If true, the feature
   // may be enabled or disabled, depending on feature flags.
   bool ech_enabled = true;

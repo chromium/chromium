@@ -82,10 +82,6 @@ class SSLConfigServiceManager {
   StringPrefMember ssl_version_min_;
   StringPrefMember ssl_version_max_;
   StringListPrefMember h2_client_cert_coalescing_host_patterns_;
-  BooleanPrefMember post_quantum_enabled_;
-#if BUILDFLAG(IS_CHROMEOS)
-  BooleanPrefMember device_post_quantum_enabled_;
-#endif
   BooleanPrefMember ech_enabled_;
   StringPrefMember key_exchange_compliance_;
   StringPrefMember tls13_cipher_compliance_;

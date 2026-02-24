@@ -334,27 +334,6 @@ TEST_F(QuicEndToEndTest, EnableMLKEM) {
             SSL_GROUP_X25519_MLKEM768);
 }
 
-TEST_F(QuicEndToEndTest, MLKEMDisabled) {
-  // Disable ML-KEM on the client.
-  SSLContextConfig config;
-  std::erase_if(config.supported_named_groups,
-                std::mem_fn(&net::SSLNamedGroupInfo::IsPostQuantum));
-  ssl_config_service_->UpdateSSLConfigAndNotify(config);
-
-  // Configure the server to only support ML-KEM.
-  server_->crypto_config()->set_preferred_groups({SSL_GROUP_X25519_MLKEM768});
-
-  AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
-
-  TestTransactionConsumer consumer(DEFAULT_PRIORITY,
-                                   transaction_factory_.get());
-  consumer.Start(&request_, NetLogWithSource());
-
-  // Connection should fail because there's no supported group in common between
-  // client and server.
-  EXPECT_EQ(consumer.error(), net::ERR_QUIC_PROTOCOL_ERROR);
-}
-
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 class QuicEndToEndMTCTest : public QuicEndToEndTest {
  public:

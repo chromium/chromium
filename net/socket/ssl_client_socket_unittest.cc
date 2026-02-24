@@ -6470,24 +6470,9 @@ TEST_F(SSLClientSocketTest, PostQuantumKeyExchange) {
   server_config.curves_for_testing.push_back(NID_X25519MLKEM768);
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
-
-  for (bool enabled : {false, true}) {
-    SCOPED_TRACE(enabled);
-
-    SSLContextConfig config;
-    if (!enabled) {
-      std::erase_if(config.supported_named_groups,
-                    std::mem_fn(&SSLNamedGroupInfo::IsPostQuantum));
-    }
-    ssl_config_service_->UpdateSSLConfigAndNotify(config);
-    int rv;
-    ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
-    if (enabled) {
-      EXPECT_THAT(rv, IsOk());
-    } else {
-      EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
-    }
-  }
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+  EXPECT_THAT(rv, IsOk());
 }
 
 // Test that the compliance policy that reorders the cipher preference for TLS

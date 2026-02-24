@@ -2938,14 +2938,6 @@ inline constexpr char kH2ClientCertCoalescingHosts[] =
 inline constexpr char kHSTSPolicyBypassList[] =
     "hsts.policy.upgrade_bypass_list";
 
-// If false, disable post-quantum key agreement in TLS connections.
-inline constexpr char kPostQuantumKeyAgreementEnabled[] =
-    "ssl.post_quantum_enabled";
-#if BUILDFLAG(IS_CHROMEOS)
-inline constexpr char kDevicePostQuantumKeyAgreementEnabled[] =
-    "ssl.device_post_quantum_enabled";
-#endif
-
 // String identifying the compliance regime, if any, that must be adhered to for
 // key exchange in TLS.
 inline constexpr char kPreferSlowKexAlgorithms[] =

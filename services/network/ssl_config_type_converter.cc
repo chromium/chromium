@@ -55,10 +55,6 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
       };
       break;
   }
-  if (!mojo_config->post_quantum_key_agreement_enabled) {
-    std::erase_if(net_config.supported_named_groups,
-                  std::mem_fn(&net::SSLNamedGroupInfo::IsPostQuantum));
-  }
 
   for (const auto& tai : mojo_config->trust_anchor_ids) {
     net_config.trust_anchor_ids.insert(tai);

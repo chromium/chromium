@@ -137,13 +137,6 @@ SSLConfigServiceManager::SSLConfigServiceManager(PrefService* local_state) {
                         local_state_callback);
   h2_client_cert_coalescing_host_patterns_.Init(
       prefs::kH2ClientCertCoalescingHosts, local_state, local_state_callback);
-  post_quantum_enabled_.Init(prefs::kPostQuantumKeyAgreementEnabled,
-                             local_state, local_state_callback);
-#if BUILDFLAG(IS_CHROMEOS)
-  device_post_quantum_enabled_.Init(
-      prefs::kDevicePostQuantumKeyAgreementEnabled, local_state,
-      local_state_callback);
-#endif
   ech_enabled_.Init(prefs::kEncryptedClientHelloEnabled, local_state,
                     local_state_callback);
   key_exchange_compliance_.Init(prefs::kPreferSlowKexAlgorithms, local_state,
@@ -181,14 +174,6 @@ void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
   // in certain Profiles. Their value is only used if managed.
   registry->RegisterStringPref(prefs::kPreferSlowKexAlgorithms, std::string());
   registry->RegisterStringPref(prefs::kPreferSlowCiphers, std::string());
-
-  // Default value for these prefs don't matter since they are only used when
-  // managed.
-  registry->RegisterBooleanPref(prefs::kPostQuantumKeyAgreementEnabled, false);
-#if BUILDFLAG(IS_CHROMEOS)
-  registry->RegisterBooleanPref(prefs::kDevicePostQuantumKeyAgreementEnabled,
-                                true);
-#endif
 }
 
 void SSLConfigServiceManager::AddToNetworkContextParams(
@@ -267,17 +252,6 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetNewSSLConfig() const {
       h2_client_cert_coalescing_host_patterns_.GetValue());
 
   config->ech_enabled = ech_enabled_.GetValue();
-
-  if (post_quantum_enabled_.IsManaged()) {
-    config->post_quantum_key_agreement_enabled =
-        post_quantum_enabled_.GetValue();
-  }
-#if BUILDFLAG(IS_CHROMEOS)
-  if (device_post_quantum_enabled_.IsManaged()) {
-    config->post_quantum_key_agreement_enabled =
-        device_post_quantum_enabled_.GetValue();
-  }
-#endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   config->trust_anchor_ids =

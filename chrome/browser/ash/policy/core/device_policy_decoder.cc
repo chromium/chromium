@@ -913,17 +913,6 @@ void DecodeNetworkPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
-  if (policy.has_devicepostquantumkeyagreementenabled()) {
-    const em::BooleanPolicyProto& container(
-        policy.devicepostquantumkeyagreementenabled());
-    if (container.has_value()) {
-      policies->Set(key::kDevicePostQuantumKeyAgreementEnabled,
-                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
-                    nullptr);
-    }
-  }
-
   if (policy.has_deviceloginscreenpreferslowkexalgorithms()) {
     const em::StringPolicyProto& container(
         policy.deviceloginscreenpreferslowkexalgorithms());
