@@ -90,6 +90,7 @@ export class ComposeboxElement extends I18nMixinLit
   static override get properties() {
     return {
       showLensButton: {type: Boolean},
+      suggestionActivityEnabled: {type: Boolean},
       lensButtonTriggersOverlay: {type: Boolean},
       input_: {type: String},
       isCollapsible: {
@@ -215,6 +216,7 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   accessor inputPlaceholderOverride: string = '';
+  accessor suggestionActivityEnabled: boolean = true;
   accessor disableCaretColorAnimation: boolean = false;
   accessor disableComposeboxAnimation: boolean = false;
   accessor enableCarouselScrolling: boolean = false;
@@ -637,10 +639,10 @@ export class ComposeboxElement extends I18nMixinLit
   }
 
   protected shouldShowSuggestionActivityLink_() {
-    if (!this.result_ || !this.showDropdown_) {
-      return false;
-    }
-    return this.result_.matches.some((match) => match.isNoncannedAimSuggestion);
+    const showActivityLink = this.result_ && this.showDropdown_ &&
+        this.result_.matches.some((match) => match.isNoncannedAimSuggestion);
+    this.fire('show-suggestion-activity-link', showActivityLink);
+    return showActivityLink;
   }
 
   protected shouldShowSmartComposeInlineHint_() {
