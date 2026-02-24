@@ -32,6 +32,7 @@
 #include "chrome/browser/extensions/api/preference/privacy_sandbox_transformer.h"
 #include "chrome/browser/extensions/api/preference/protected_content_enabled_transformer.h"
 #include "chrome/browser/extensions/api/proxy/proxy_pref_transformer.h"
+#include "chrome/browser/extensions/api/proxy_override_rules/proxy_override_rules_transformer.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 #include "chrome/browser/extensions/blocklist_factory.h"
 #include "chrome/browser/extensions/chrome_component_extension_resource_manager.h"
@@ -208,6 +209,11 @@ bool RegisterTransformers() {
       std::make_unique<CookieControlsModeTransformer>());
   pref_mapping->RegisterPrefTransformer(
       proxy_config::prefs::kProxy, std::make_unique<ProxyPrefTransformer>());
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  pref_mapping->RegisterPrefTransformer(
+      proxy_config::prefs::kProxyOverrideRules,
+      std::make_unique<ProxyOverrideRulesTransformer>());
+#endif  // ENABLE_EXTENSIONS
   pref_mapping->RegisterPrefTransformer(
       prefetch::prefs::kNetworkPredictionOptions,
       std::make_unique<NetworkPredictionTransformer>());

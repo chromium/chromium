@@ -76,6 +76,8 @@ constexpr char kManifestTemplate[] = R"(
       "background": { "service_worker": "background.js" }
     })";
 
+}  // namespace
+
 class ProxyOverrideRulesPrivateApiTest : public extensions::ExtensionApiTest {
  public:
   ProxyOverrideRulesPrivateApiTest() {
@@ -103,14 +105,7 @@ class ProxyOverrideRulesPrivateApiTest : public extensions::ExtensionApiTest {
         kManifestTemplate, authorized_manifest_key ? kAuthorizedManifestKey
                                                    : kUnauthorizedManifestKey));
 
-    constexpr char kTestWrapper[] = R"(
-        chrome.test.runTests([
-          function asyncAssertions() {
-            %s
-          }
-        ]);)";
-    test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
-                       base::StringPrintf(kTestWrapper, background_js.c_str()));
+    test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), background_js);
 
     const Extension* extension = LoadExtension(
         test_dir.UnpackedPath(), {.ignore_manifest_warnings = true});
@@ -188,39 +183,49 @@ class ProxyOverrideRulesPrivateApiTest : public extensions::ExtensionApiTest {
 IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesPrivateApiTest, ProxyOverrideRules) {
   // Test that the setting can be set and retrieved.
   constexpr char kTest[] = R"(
-    const rule = {
-      DestinationMatchers: ["google.com"],
-      ProxyList: ["https://proxy.example.com"],
-      Conditions: [{
-        DnsProbe: {
-          Host: "corp.ads",
-          Result: "resolved"
-        }
-      }]
-    };
+    chrome.test.runTests([
+      function setAndGet() {
+        const rule = {
+          DestinationMatchers: ["google.com"],
+          ProxyList: ["https://proxy.example.com"],
+          Conditions: [{
+            DnsProbe: {
+              Host: "corp.ads",
+              Result: "resolved"
+            }
+          }]
+        };
 
-    chrome.proxyOverrideRulesPrivate.rules.set({value: [rule]}, () => {
-      chrome.test.assertNoLastError();
-      chrome.proxyOverrideRulesPrivate.rules.get({}, (details) => {
-        chrome.test.assertNoLastError();
-        chrome.test.assertEq(1, details.value.length);
-        chrome.test.assertEq("google.com", details.value[0].DestinationMatchers[0]);
-        chrome.test.assertEq("https://proxy.example.com", details.value[0].ProxyList[0]);
-        chrome.test.assertEq("corp.ads", details.value[0].Conditions[0].DnsProbe.Host);
-        chrome.test.assertEq("resolved", details.value[0].Conditions[0].DnsProbe.Result);
-        chrome.test.assertEq("controlled_by_this_extension", details.levelOfControl);
-
-        chrome.proxyOverrideRulesPrivate.rules.clear({}, () => {
+        chrome.proxyOverrideRulesPrivate.rules.set({value: [rule]}, () => {
           chrome.test.assertNoLastError();
           chrome.proxyOverrideRulesPrivate.rules.get({}, (details) => {
             chrome.test.assertNoLastError();
-            chrome.test.assertEq(0, details.value.length);
-            chrome.test.assertEq("controllable_by_this_extension", details.levelOfControl);
-            chrome.test.succeed();
+            chrome.test.assertEq(1, details.value.length);
+            chrome.test.assertEq("google.com",
+                                 details.value[0].DestinationMatchers[0]);
+            chrome.test.assertEq("https://proxy.example.com",
+                                 details.value[0].ProxyList[0]);
+            chrome.test.assertEq("corp.ads",
+                                 details.value[0].Conditions[0].DnsProbe.Host);
+            chrome.test.assertEq("resolved",
+                                 details.value[0].Conditions[0].DnsProbe.Result);
+            chrome.test.assertEq("controlled_by_this_extension",
+                                 details.levelOfControl);
+
+            chrome.proxyOverrideRulesPrivate.rules.clear({}, () => {
+              chrome.test.assertNoLastError();
+              chrome.proxyOverrideRulesPrivate.rules.get({}, (details) => {
+                chrome.test.assertNoLastError();
+                chrome.test.assertEq(0, details.value.length);
+                chrome.test.assertEq("controllable_by_this_extension",
+                                     details.levelOfControl);
+                chrome.test.succeed();
+              });
+            });
           });
         });
-      });
-    });
+      }
+    ]);
   )";
   RunTest(kTest);
 }
@@ -229,23 +234,43 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesPrivateApiTest,
                        ProxyOverrideRules_OnChange) {
   // Test that the onChange event is fired.
   constexpr char kTest[] = R"(
-    const rule = {
-      DestinationMatchers: ["google.com"],
-      ProxyList: ["https://proxy.example.com"]
-    };
+    chrome.test.runTests([
+      function onChange() {
+        const rule = {
+          DestinationMatchers: ["google.com"],
+          ProxyList: ["https://proxy.example.com"]
+        };
 
-    chrome.proxyOverrideRulesPrivate.rules.onChange.addListener((details) => {
-      chrome.test.assertEq(1, details.value.length);
-      chrome.test.assertEq("google.com", details.value[0].DestinationMatchers[0]);
-      chrome.test.assertEq("https://proxy.example.com", details.value[0].ProxyList[0]);
-      chrome.test.succeed();
-    });
+        chrome.proxyOverrideRulesPrivate.rules.onChange.addListener((details) => {
+          chrome.test.assertEq(1, details.value.length);
+          chrome.test.assertEq("google.com",
+                               details.value[0].DestinationMatchers[0]);
+          chrome.test.assertEq("https://proxy.example.com",
+                               details.value[0].ProxyList[0]);
+          chrome.test.succeed();
+        });
 
-    chrome.proxyOverrideRulesPrivate.rules.set({value: [rule]}, () => {
-      chrome.test.assertNoLastError();
-    });
+        chrome.proxyOverrideRulesPrivate.rules.set({value: [rule]}, () => {
+          chrome.test.assertNoLastError();
+        });
+      }
+    ]);
   )";
   RunTest(kTest);
+}
+
+IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesPrivateApiTest,
+                       ProxyOverrideRules_Unauthorized) {
+  // Test that an unauthorized extension cannot use the API.
+  constexpr char kTest[] = R"(
+    chrome.test.runTests([
+      function unauthorized() {
+        chrome.test.assertEq(undefined, chrome.proxyOverrideRulesPrivate);
+        chrome.test.succeed();
+      }
+    ]);
+  )";
+  RunTest(kTest, /*authorized_manifest_key=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesPrivateApiTest,
@@ -256,37 +281,45 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesPrivateApiTest,
   SetProxyOverrideRulesPolicy(base::ListValue().Append(std::move(rule)));
 
   constexpr char kTest[] = R"(
-    chrome.proxyOverrideRulesPrivate.rules.get({}, (details) => {
-      chrome.test.assertNoLastError();
-      chrome.test.assertEq(1, details.value.length);
-      chrome.test.assertEq("managed.com", details.value[0].DestinationMatchers[0]);
-      chrome.test.assertEq("not_controllable", details.levelOfControl);
-
-      const extensionRule = {
-        DestinationMatchers: ["google.com"],
-        ProxyList: ["https://proxy.example.com"]
-      };
-
-      // Try to set value, should not overwrite policy.
-      chrome.proxyOverrideRulesPrivate.rules.set({value: [extensionRule]}, () => {
-        chrome.test.assertNoLastError();
+    chrome.test.runTests([
+      function managedByPolicy() {
         chrome.proxyOverrideRulesPrivate.rules.get({}, (details) => {
+          chrome.test.assertNoLastError();
           chrome.test.assertEq(1, details.value.length);
-          chrome.test.assertEq("managed.com", details.value[0].DestinationMatchers[0]);
+          chrome.test.assertEq("managed.com",
+                               details.value[0].DestinationMatchers[0]);
           chrome.test.assertEq("not_controllable", details.levelOfControl);
 
-          // Try to clear value, should not overwrite policy.
-          chrome.proxyOverrideRulesPrivate.rules.clear({}, () => {
+          const extensionRule = {
+            DestinationMatchers: ["google.com"],
+            ProxyList: ["https://proxy.example.com"]
+          };
+
+          // Try to set value, should not overwrite policy.
+          chrome.proxyOverrideRulesPrivate.rules.set({value: [extensionRule]},
+                                                     () => {
             chrome.test.assertNoLastError();
             chrome.proxyOverrideRulesPrivate.rules.get({}, (details) => {
               chrome.test.assertEq(1, details.value.length);
-              chrome.test.assertEq("managed.com", details.value[0].DestinationMatchers[0]);
-              chrome.test.succeed();
+              chrome.test.assertEq("managed.com",
+                                   details.value[0].DestinationMatchers[0]);
+              chrome.test.assertEq("not_controllable", details.levelOfControl);
+
+              // Try to clear value, should not overwrite policy.
+              chrome.proxyOverrideRulesPrivate.rules.clear({}, () => {
+                chrome.test.assertNoLastError();
+                chrome.proxyOverrideRulesPrivate.rules.get({}, (details) => {
+                  chrome.test.assertEq(1, details.value.length);
+                  chrome.test.assertEq("managed.com",
+                                       details.value[0].DestinationMatchers[0]);
+                  chrome.test.succeed();
+                });
+              });
             });
           });
         });
-      });
-    });
+      }
+    ]);
   )";
   RunTest(kTest);
 }
@@ -344,5 +377,76 @@ IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesPrivateApiTest,
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
-}  // namespace
+IN_PROC_BROWSER_TEST_F(ProxyOverrideRulesPrivateApiTest,
+                       ProxyOverrideRules_InvalidInput) {
+  constexpr char kTest[] = R"(
+    chrome.test.runTests([
+      function invalidProxyString() {
+        const rule = {
+          DestinationMatchers: ["google.com"],
+          ProxyList: ["invalid-proxy-string"]
+        };
+        chrome.proxyOverrideRulesPrivate.rules.set({value: [rule]}, () => {
+          chrome.test.assertLastError("Invalid proxy: invalid-proxy-string");
+          chrome.test.succeed();
+        });
+      },
+      function invalidDnsProbeHost() {
+        const rule = {
+          DestinationMatchers: ["google.com"],
+          ProxyList: ["https://proxy.com"],
+          Conditions: [{
+            DnsProbe: {
+              Host: "invalid host",
+              Result: "resolved"
+            }
+          }]
+        };
+        chrome.proxyOverrideRulesPrivate.rules.set({value: [rule]}, () => {
+          chrome.test.assertLastError("Invalid DnsProbe Host: invalid host");
+          chrome.test.succeed();
+        });
+      },
+      function emptyCondition() {
+        const rule = {
+          DestinationMatchers: ["google.com"],
+          ProxyList: ["https://proxy.com"],
+          Conditions: [{}]
+        };
+        chrome.proxyOverrideRulesPrivate.rules.set({value: [rule]}, () => {
+          chrome.test.assertLastError(
+              "Each condition must have exactly one probe type.");
+          chrome.test.succeed();
+        });
+      },
+      function multipleProxiesOneInvalid() {
+        const rule = {
+          DestinationMatchers: ["google.com"],
+          ProxyList: ["https://proxy.com", "invalid-proxy"]
+        };
+        chrome.proxyOverrideRulesPrivate.rules.set({value: [rule]}, () => {
+          chrome.test.assertLastError("Invalid proxy: invalid-proxy");
+          chrome.test.succeed();
+        });
+      },
+      function multipleRulesOneInvalid() {
+        const validRule = {
+          DestinationMatchers: ["google.com"],
+          ProxyList: ["https://proxy.com"]
+        };
+        const invalidRule = {
+          DestinationMatchers: ["google.com"],
+          ProxyList: ["invalid-proxy"]
+        };
+        chrome.proxyOverrideRulesPrivate.rules.set(
+            {value: [validRule, invalidRule]}, () => {
+          chrome.test.assertLastError("Invalid proxy: invalid-proxy");
+          chrome.test.succeed();
+        });
+      }
+    ]);
+  )";
+  RunTest(kTest);
+}
+
 }  // namespace extensions

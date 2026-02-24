@@ -772,6 +772,8 @@ source_set("extensions") {
       "api/passwords_private/passwords_private_event_router_factory.h",
       "api/passwords_private/passwords_private_utils.cc",
       "api/passwords_private/passwords_private_utils.h",
+      "api/proxy_override_rules/proxy_override_rules_transformer.cc",
+      "api/proxy_override_rules/proxy_override_rules_transformer.h",
       "api/settings_private/generated_pref.cc",
       "api/settings_private/generated_pref.h",
       "api/settings_private/generated_prefs.cc",
