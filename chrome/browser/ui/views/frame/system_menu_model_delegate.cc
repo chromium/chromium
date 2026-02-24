@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_metrics.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -167,12 +168,15 @@ void SystemMenuModelDelegate::ExecuteCommand(int command_id, int event_flags) {
       base::RecordAction(
           base::UserMetricsAction("SystemContextMenu_NameWindow"));
       break;
-    case IDC_TOGGLE_VERTICAL_TABS:
-      base::RecordAction(base::UserMetricsAction(
-          tabs::VerticalTabStripStateController::From(browser_)
-              ? "SwitchToHorizontalTabStrip_FromSystemContextMenu"
-              : "SwitchToVerticalTabStrip_FromSystemContextMenu"));
+    case IDC_TOGGLE_VERTICAL_TABS: {
+      auto* controller = tabs::VerticalTabStripStateController::From(browser_);
+      if (controller) {
+        const bool is_vertical = !controller->ShouldDisplayVerticalTabs();
+        tabs::RecordVerticalTabStripModeChanged(
+            is_vertical, tabs::VerticalTabStripEntryPoint::kSystemContextMenu);
+      }
       break;
+    }
   }
   chrome::ExecuteCommand(browser_, command_id);
 }

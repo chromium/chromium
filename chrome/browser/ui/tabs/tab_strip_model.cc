@@ -76,6 +76,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_metrics.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
@@ -3040,10 +3041,12 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
           selection_model_.size());
       const Browser* const browser =
           chrome::FindBrowserWithTab(GetWebContentsAt(context_index));
-      base::RecordAction(UserMetricsAction(
-          tabs::VerticalTabStripStateController::From(browser)
-              ? "SwitchToHorizontalTabStrip_FromTabContextMenu"
-              : "SwitchToVerticalTabStrip_FromTabContextMenu"));
+      if (auto* controller =
+              tabs::VerticalTabStripStateController::From(browser)) {
+        const bool is_vertical = !controller->ShouldDisplayVerticalTabs();
+        tabs::RecordVerticalTabStripModeChanged(
+            is_vertical, tabs::VerticalTabStripEntryPoint::kTabContextMenu);
+      }
       browser->GetFeatures().browser_command_controller()->ExecuteCommand(
           IDC_TOGGLE_VERTICAL_TABS);
       break;

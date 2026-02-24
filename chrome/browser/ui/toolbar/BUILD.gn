@@ -156,6 +156,7 @@ source_set("impl") {
       "//chrome/browser/ui/tabs/organization",
       "//chrome/browser/ui/toolbar/chrome_labs",
       "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views/tabs/vertical",
       "//chrome/browser/ui/web_applications:launch_utils",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/upgrade_detector",

@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_metrics.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/pref_names.h"
@@ -445,10 +446,9 @@ bool BrowserNativeWidgetMac::ExecuteCommand(
   if (command == IDC_TOGGLE_VERTICAL_TABS) {
     if (auto* controller =
             tabs::VerticalTabStripStateController::From(browser)) {
-      base::RecordAction(base::UserMetricsAction(
-          controller->ShouldDisplayVerticalTabs()
-              ? "SwitchToHorizontalTabStrip_FromMacMenu"
-              : "SwitchToVerticalTabStrip_FromMacMenu"));
+      const bool is_vertical = !controller->ShouldDisplayVerticalTabs();
+      tabs::RecordVerticalTabStripModeChanged(
+          is_vertical, tabs::VerticalTabStripEntryPoint::kMacViewMenu);
     }
   }
 

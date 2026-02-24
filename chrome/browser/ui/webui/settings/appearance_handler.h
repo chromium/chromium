@@ -46,6 +46,8 @@ class AppearanceHandler : public SettingsPageUIHandler {
   void ResetPinnedToolbarActions(const base::ListValue& args);
   // Whether toolbar pinning is in its default state or not.
   void PinnedToolbarActionsAreDefault(const base::ListValue& args);
+  // Records the vertical tab strip mode change.
+  void HandleRecordVerticalTabStripModeChanged(const base::ListValue& args);
 
   raw_ptr<Profile> profile_;  // Weak pointer.
 

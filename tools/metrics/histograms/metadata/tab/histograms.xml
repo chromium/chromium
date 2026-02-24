@@ -4019,6 +4019,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabStrip.{Mode}.EnteredMode" enum="VerticalTabStripEntryPoint"
+    expires_after="2027-02-20">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-vertical-tabs-team@google.com</owner>
+  <summary>
+    Recorded when the user switches to {Mode} tab strip mode. The value
+    indicates the entry point from which the user initiated the switch.
+  </summary>
+  <token key="Mode">
+    <variant name="Horizontal"/>
+    <variant name="Vertical"/>
+  </token>
+</histogram>
+
 <histogram name="TabStrip.{TabStripMode}.TabDragDestination"
     enum="TabDragDestination" expires_after="2026-07-01">
   <owner>kunaldaftari@google.com</owner>

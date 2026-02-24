@@ -83,6 +83,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_metrics.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
@@ -1878,10 +1879,9 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
     case IDC_TOGGLE_VERTICAL_TABS:
       if (auto* controller =
               tabs::VerticalTabStripStateController::From(browser_)) {
-        base::RecordAction(
-            UserMetricsAction(controller->ShouldDisplayVerticalTabs()
-                                  ? "SwitchToHorizontalTabStrip_FromAppMenu"
-                                  : "SwitchToVerticalTabStrip_FromAppMenu"));
+        const bool is_vertical = !controller->ShouldDisplayVerticalTabs();
+        tabs::RecordVerticalTabStripModeChanged(
+            is_vertical, tabs::VerticalTabStripEntryPoint::kAppMenu);
       }
       break;
     default: {

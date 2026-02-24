@@ -517,6 +517,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_metrics_provider.h:VerticalTabsState) -->
 
+<!-- LINT.IfChange(VerticalTabStripEntryPoint) -->
+
+<enum name="VerticalTabStripEntryPoint">
+  <int value="0" label="AppMenu"/>
+  <int value="1" label="Settings"/>
+  <int value="2" label="SystemContextMenu"/>
+  <int value="3" label="TabContextMenu"/>
+  <int value="4" label="MacViewMenu"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_metrics.h:VerticalTabStripEntryPoint) -->
+
 </enums>
 
 </histogram-configuration>

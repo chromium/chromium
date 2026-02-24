@@ -18,6 +18,7 @@ export interface AppearanceBrowserProxy {
   openCustomizeChrome(): void;
   openCustomizeChromeToolbarSection(): void;
   recordHoverCardImagesEnabledChanged(enabled: boolean): void;
+  recordVerticalTabStripModeChanged(enabled: boolean): void;
   resetPinnedToolbarActions(): void;
   useDefaultTheme(): void;
 
@@ -54,6 +55,10 @@ export class AppearanceBrowserProxyImpl implements AppearanceBrowserProxy {
   recordHoverCardImagesEnabledChanged(enabled: boolean) {
     chrome.metricsPrivate.recordBoolean(
         'Settings.HoverCards.ImagePreview.Enabled', enabled);
+  }
+
+  recordVerticalTabStripModeChanged(enabled: boolean) {
+    chrome.send('recordVerticalTabStripModeChanged', [enabled]);
   }
 
   resetPinnedToolbarActions() {

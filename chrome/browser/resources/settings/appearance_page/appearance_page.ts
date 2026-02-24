@@ -564,13 +564,8 @@ export class SettingsAppearancePageElement extends
   }
 
   private onTabStripPositionChanged_() {
-    if (this.getPref<boolean>('vertical_tabs.enabled').value) {
-      this.metricsBrowserProxy_.recordAction(
-          'SwitchToVerticalTabStrip_FromSettings');
-    } else {
-      this.metricsBrowserProxy_.recordAction(
-          'SwitchToHorizontalTabStrip_FromSettings');
-    }
+    const enabled = this.getPref<boolean>('vertical_tabs.enabled').value;
+    this.appearanceBrowserProxy_.recordVerticalTabStripModeChanged(enabled);
   }
 
   private showEverythingMenuToggle_(): boolean {

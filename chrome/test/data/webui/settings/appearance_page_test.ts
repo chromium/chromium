@@ -464,18 +464,17 @@ suite('TabStripPositionSettings', () => {
 
     selectElement.value = 'true';
     selectElement.dispatchEvent(new Event('change'));
-    const verticalUserAction =
-        await metricsBrowserProxy.whenCalled('recordAction');
-    assertEquals('SwitchToVerticalTabStrip_FromSettings', verticalUserAction);
+    const verticalEnabled = await appearanceBrowserProxy.whenCalled(
+        'recordVerticalTabStripModeChanged');
+    assertTrue(verticalEnabled);
 
-    metricsBrowserProxy.reset();
+    appearanceBrowserProxy.reset();
 
     selectElement.value = 'false';
     selectElement.dispatchEvent(new Event('change'));
-    const horizontalUserAction =
-        await metricsBrowserProxy.whenCalled('recordAction');
-    assertEquals(
-        'SwitchToHorizontalTabStrip_FromSettings', horizontalUserAction);
+    const horizontalEnabled = await appearanceBrowserProxy.whenCalled(
+        'recordVerticalTabStripModeChanged');
+    assertFalse(horizontalEnabled);
   });
 });
 

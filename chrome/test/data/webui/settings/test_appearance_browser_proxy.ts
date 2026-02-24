@@ -20,6 +20,7 @@ export class TestAppearanceBrowserProxy extends TestBrowserProxy implements
       'openCustomizeChrome',
       'openCustomizeChromeToolbarSection',
       'recordHoverCardImagesEnabledChanged',
+      'recordVerticalTabStripModeChanged',
       'resetPinnedToolbarActions',
       'useDefaultTheme',
       // <if expr="is_linux">
@@ -69,6 +70,10 @@ export class TestAppearanceBrowserProxy extends TestBrowserProxy implements
 
   recordHoverCardImagesEnabledChanged(enabled: boolean) {
     this.methodCalled('recordHoverCardImagesEnabledChanged', enabled);
+  }
+
+  recordVerticalTabStripModeChanged(enabled: boolean) {
+    this.methodCalled('recordVerticalTabStripModeChanged', enabled);
   }
 
   resetPinnedToolbarActions() {
