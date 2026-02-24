@@ -13,11 +13,9 @@
 
 namespace media {
 
-// Below constant values are taken from :
+// The constant below is taken from:
 // https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/sdk/objc/components/audio/RTCAudioSessionConfiguration.m
 const int kRTCAudioSessionPreferredNumberOfChannels = 1;
-const double kRTCAudioSessionHighPerformanceSampleRate = 48000.0;
-const double kRTCAudioSessionHighPerformanceIOBufferDuration = 0.02;
 
 // static
 AudioSessionManagerIOS& AudioSessionManagerIOS::GetInstance() {
@@ -55,12 +53,6 @@ AudioSessionManagerIOS::AudioSessionManagerIOS() {
           error.localizedDescription);
   }
 
-  [audio_session
-      setPreferredSampleRate:kRTCAudioSessionHighPerformanceSampleRate
-                       error:nil];
-  [audio_session setPreferredIOBufferDuration:
-                     kRTCAudioSessionHighPerformanceIOBufferDuration
-                                        error:nil];
   // Find the desired input port
   NSArray* inputs = [audio_session availableInputs];
   AVAudioSessionPortDescription* builtInMic = nil;
@@ -132,9 +124,6 @@ AudioSessionManagerIOS::AudioSessionManagerIOS() {
   [audio_session setPreferredInputNumberOfChannels:
                      kRTCAudioSessionPreferredNumberOfChannels
                                              error:nil];
-  [audio_session setPreferredOutputNumberOfChannels:
-                     kRTCAudioSessionPreferredNumberOfChannels
-                                              error:nil];
 }
 
 void AudioSessionManagerIOS::SetActive(bool active) {
