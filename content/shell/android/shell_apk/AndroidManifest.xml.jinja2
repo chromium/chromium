@@ -22,6 +22,10 @@ found in the LICENSE file.
     {% block extra_uses_permissions %}
     {% endblock %}
 
+    <queries>
+        <package android:name="org.chromium.ui.accessibility.testservice" />
+    </queries>
+
     <application android:name="org.chromium.content_shell_apk.ContentShellApplication"
             android:icon="@mipmap/app_icon"
             android:zygotePreloadName="org.chromium.content_public.app.ZygotePreload"
