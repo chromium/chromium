@@ -88,12 +88,11 @@ void CreateAndAddGpuHTMLSource(BrowserContext* browser_context) {
 std::string GPUDeviceToString(const gpu::GPUInfo::GPUDevice& gpu) {
   std::string vendor = base::StringPrintf("0x%04x", gpu.vendor_id);
   if (!gpu.vendor_string.empty())
-    vendor += " [" + gpu.vendor_string + "]";
+    base::StrAppend(&vendor, {" [", gpu.vendor_string, "]"});
   std::string device = base::StringPrintf("0x%04x", gpu.device_id);
   if (!gpu.device_string.empty())
-    device += " [" + gpu.device_string + "]";
-  std::string rt = base::StringPrintf("VENDOR= %s, DEVICE=%s", vendor.c_str(),
-                                      device.c_str());
+    base::StrAppend(&device, {" [", gpu.device_string, "]"});
+  std::string rt = base::StringPrintf("VENDOR= %s, DEVICE=%s", vendor, device);
 #if BUILDFLAG(IS_WIN)
   if (gpu.sub_sys_id)
     rt += base::StringPrintf(", SUBSYS=0x%08x", gpu.sub_sys_id);
@@ -107,9 +106,9 @@ std::string GPUDeviceToString(const gpu::GPUInfo::GPUDevice& gpu) {
                            gpu.luid.LowPart);
 #endif
   if (!gpu.driver_vendor.empty())
-    rt += ", DRIVER_VENDOR=" + gpu.driver_vendor;
+    base::StrAppend(&rt, {", DRIVER_VENDOR=", gpu.driver_vendor});
   if (!gpu.driver_version.empty())
-    rt += ", DRIVER_VERSION=" + gpu.driver_version;
+    base::StrAppend(&rt, {", DRIVER_VERSION=", gpu.driver_version});
   if (gpu.active)
     rt += " *ACTIVE*";
   return rt;
@@ -186,7 +185,7 @@ base::ListValue GetBasicGpuInfo(const gpu::GPUInfo& gpu_info,
     const double rounded_size_inches = floor(10.0 * size_inches) / 10.0;
     std::string size_string = base::StringPrintf("%.1f\"", rounded_size_inches);
     std::string description_string = base::StringPrintf(
-        "Diagonal Monitor Size of %s", display_size.display_name.c_str());
+        "Diagonal Monitor Size of %s", display_size.display_name);
     basic_info.Append(
         display::BuildGpuInfoEntry(description_string, size_string));
   }
@@ -327,13 +326,13 @@ base::ListValue GetDisplayInfo() {
       display_color_spaces.ToStrings(&names, &color_spaces, &formats);
       for (size_t i = 0; i < names.size(); ++i) {
         display_info.Append(display::BuildGpuInfoEntry(
-            base::StringPrintf("Color space (%s)", names[i].c_str()),
+            base::StringPrintf("Color space (%s)", names[i]),
             color_spaces[i]
                 .GetWithSdrWhiteLevel(
                     display_color_spaces.GetSDRMaxLuminanceNits())
                 .ToString()));
         display_info.Append(display::BuildGpuInfoEntry(
-            base::StringPrintf("Buffer format (%s)", names[i].c_str()),
+            base::StringPrintf("Buffer format (%s)", names[i]),
             formats[i].ToString()));
       }
     }
@@ -555,8 +554,8 @@ base::ListValue GetVideoAcceleratorsInfo() {
     std::string codec_string =
         base::StringPrintf("Decode %s", GetProfileName(profile.profile));
     std::string resolution_string = base::StringPrintf(
-        "%s to %s pixels%s", profile.min_resolution.ToString().c_str(),
-        profile.max_resolution.ToString().c_str(),
+        "%s to %s pixels%s", profile.min_resolution.ToString(),
+        profile.max_resolution.ToString(),
         profile.encrypted_only ? " (encrypted)" : "");
     info.Append(display::BuildGpuInfoEntry(codec_string, resolution_string));
   }
@@ -568,8 +567,7 @@ base::ListValue GetVideoAcceleratorsInfo() {
         base::StringPrintf("Encode %s", GetProfileName(profile.profile));
     std::string resolution_string = base::StringPrintf(
         "%s to %s pixels, and/or %.3f fps%s.",
-        profile.min_resolution.ToString().c_str(),
-        profile.max_resolution.ToString().c_str(),
+        profile.min_resolution.ToString(), profile.max_resolution.ToString(),
         static_cast<double>(profile.max_framerate_numerator) /
             profile.max_framerate_denominator,
         profile.is_software_codec ? " (software codec)" : "");

@@ -5,6 +5,7 @@
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -17,11 +18,11 @@ namespace content::indexed_db {
 
 namespace {
 
-std::string BucketLocatorToCustomHistogramSuffix(
+std::string_view BucketLocatorToCustomHistogramSuffix(
     const storage::BucketLocator& bucket_locator) {
   if (bucket_locator.storage_key.origin().host() == "docs.google.com")
     return ".Docs";
-  return std::string();
+  return {};
 }
 
 void ParseAndReportIOErrorDetails(const std::string& histogram_name,
@@ -66,7 +67,7 @@ void ReportOpenStatus(BackingStoreOpenResult result,
                       const storage::BucketLocator& bucket_locator) {
   base::UmaHistogramEnumeration("WebCore.IndexedDB.BackingStore.OpenStatus",
                                 result, INDEXED_DB_BACKING_STORE_OPEN_MAX);
-  const std::string suffix =
+  const std::string_view suffix =
       BucketLocatorToCustomHistogramSuffix(bucket_locator);
   // Data from the WebCore.IndexedDB.BackingStore.OpenStatus histogram is used
   // to generate a graph. So as not to alter the meaning of that graph,

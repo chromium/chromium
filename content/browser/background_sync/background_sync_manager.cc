@@ -287,7 +287,7 @@ BackgroundSyncType GetBackgroundSyncType(
                                     : BackgroundSyncType::PERIODIC;
 }
 
-std::string GetSyncEventName(const BackgroundSyncType sync_type) {
+std::string_view GetSyncEventName(const BackgroundSyncType sync_type) {
   if (sync_type == BackgroundSyncType::ONE_SHOT)
     return "sync";
   else
@@ -1353,8 +1353,9 @@ void BackgroundSyncManager::AddOrUpdateActiveRegistration(
     devtools_context_->LogBackgroundServiceEvent(
         sw_registration_id, blink::StorageKey::CreateFirstParty(origin),
         GetDevToolsBackgroundService(sync_type),
-        /* event_name= */ "Registered " + GetSyncEventName(sync_type),
-        /* instance_id= */ sync_registration.options()->tag, event_metadata);
+        /*event_name=*/
+        base::StrCat({"Registered ", GetSyncEventName(sync_type)}),
+        /*instance_id=*/sync_registration.options()->tag, event_metadata);
   }
 }
 
@@ -2224,8 +2225,9 @@ void BackgroundSyncManager::EventCompleteDidGetDelay(
     registration_completed = false;
     registration->set_delay_until(clock_->Now() + delay);
 
-    std::string event_name = GetSyncEventName(registration->sync_type()) +
-                             (succeeded ? " event completed" : " event failed");
+    std::string event_name =
+        base::StrCat({GetSyncEventName(registration->sync_type()),
+                      (succeeded ? " event completed" : " event failed")});
     base::TimeDelta display_delay =
         registration->sync_type() == BackgroundSyncType::ONE_SHOT
             ? delay

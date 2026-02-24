@@ -152,7 +152,7 @@ const char DevToolsAgentHost::kTypeBrowserUI[] = "browser_ui";
 int DevToolsAgentHostImpl::s_force_creation_count_ = 0;
 
 // static
-std::string DevToolsAgentHost::GetProtocolVersion() {
+std::string_view DevToolsAgentHost::GetProtocolVersion() {
   // TODO(dgozman): generate this.
   return "1.3";
 }

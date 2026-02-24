@@ -62,7 +62,7 @@ enum class CanaryCheckLookupResult {
 // Please keep this up to date with logged histogram suffix
 // |PrefetchProxy.CanaryChecker.Clients| in
 // //tools/metrics/histograms/metadata/prefetch/histograms.xml.
-std::string NameForClient(PrefetchCanaryChecker::CheckType name) {
+std::string_view NameForClient(PrefetchCanaryChecker::CheckType name) {
   switch (name) {
     case PrefetchCanaryChecker::CheckType::kTLS:
       return "TLS";

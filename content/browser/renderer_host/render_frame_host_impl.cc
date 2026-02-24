@@ -17749,7 +17749,7 @@ std::string GetURLTypeForCrashKey(const GURL& url) {
   return url.GetScheme();
 }
 
-std::string GetURLRelationForCrashKey(
+std::string_view GetURLRelationForCrashKey(
     const GURL& actual_url,
     const GURL& predicted_url,
     const blink::mojom::CommonNavigationParams& common_params,

@@ -74,7 +74,7 @@ class WebUIDataSourceTest : public testing::Test {
                               WebContents::Getter(), std::move(callback));
   }
 
-  std::string GetMimeTypeForPath(const std::string& path) const {
+  std::string_view GetMimeTypeForPath(const std::string& path) const {
     return source_->GetMimeType(GURL("https://any-host/" + path));
   }
 

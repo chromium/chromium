@@ -76,7 +76,7 @@ class CONTENT_EXPORT DevToolsAgentHost
   static constexpr int kWriteFD = 4;
 
   // Latest DevTools protocol version supported.
-  static std::string GetProtocolVersion();
+  static std::string_view GetProtocolVersion();
 
   // Returns whether particular version of DevTools protocol is supported.
   static bool IsSupportedProtocolVersion(const std::string& version);

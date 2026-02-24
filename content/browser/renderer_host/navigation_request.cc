@@ -9027,8 +9027,9 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactoryBeforeResponse(
 // `ancestor`: the initiator is the ancestor of the navigating frame.
 // `descendant`: the initiator is the descendant of the navigating frame.
 // `other`: any other scenarios.
-std::string DetermineInitiatorRelationship(RenderFrameHost* initiator_frame,
-                                           RenderFrameHost* current_frame) {
+std::string_view DetermineInitiatorRelationship(
+    RenderFrameHost* initiator_frame,
+    RenderFrameHost* current_frame) {
   if (!current_frame || !initiator_frame) {
     return "other";
   }

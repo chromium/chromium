@@ -78,7 +78,7 @@ base::File GetDictionaryFile(const std::string& locale) {
 #if BUILDFLAG(IS_ANDROID)
   base::FilePath dir("/system/usr/hyphen-data");
 #endif
-  std::string filename = base::StringPrintf("hyph-%s.hyb", locale.c_str());
+  std::string filename = base::StringPrintf("hyph-%s.hyb", locale);
   base::FilePath path = dir.AppendASCII(filename);
   base::ElapsedTimer timer;
   file.Initialize(path, base::File::FLAG_OPEN | base::File::FLAG_READ);

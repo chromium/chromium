@@ -146,7 +146,7 @@ class WebUIDataSourceImpl::InternalDataSource : public URLDataSource {
   // URLDataSource implementation.
   std::string GetSource() override { return parent_->GetSource(); }
   std::string GetMimeType(const GURL& url) override {
-    return parent_->GetMimeType(url);
+    return std::string(parent_->GetMimeType(url));
   }
   void StartDataRequest(const GURL& url,
                         const WebContents::Getter& wc_getter,
@@ -429,7 +429,7 @@ void WebUIDataSourceImpl::SetSupportedScheme(std::string_view scheme) {
   supported_scheme_ = scheme;
 }
 
-std::string WebUIDataSourceImpl::GetMimeType(const GURL& url) const {
+std::string_view WebUIDataSourceImpl::GetMimeType(const GURL& url) const {
   const std::string_view file_path = url.path();
 
   if (base::EndsWith(file_path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {

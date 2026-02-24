@@ -4,7 +4,10 @@
 
 #include "content/browser/background_sync/background_sync_metrics.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 
 namespace {
 
@@ -22,7 +25,7 @@ content::BackgroundSyncMetrics::ResultPattern EventResultToResultPattern(
              : content::BackgroundSyncMetrics::RESULT_PATTERN_FAILED_BACKGROUND;
 }
 
-const std::string GetBackgroundSyncSuffix(
+const std::string_view GetBackgroundSyncSuffix(
     blink::mojom::BackgroundSyncType sync_type) {
   if (sync_type == blink::mojom::BackgroundSyncType::ONE_SHOT)
     return "OneShot";
@@ -30,7 +33,7 @@ const std::string GetBackgroundSyncSuffix(
     return "Periodic";
 }
 
-const std::string GetBackgroundSyncPrefix(
+const std::string_view GetBackgroundSyncPrefix(
     blink::mojom::BackgroundSyncType sync_type) {
   if (sync_type == blink::mojom::BackgroundSyncType::ONE_SHOT)
     return "";
@@ -46,10 +49,10 @@ namespace content {
 void BackgroundSyncMetrics::RecordEventStarted(
     blink::mojom::BackgroundSyncType sync_type,
     bool started_in_foreground) {
-  base::UmaHistogramBoolean("BackgroundSync.Event." +
-                                GetBackgroundSyncSuffix(sync_type) +
-                                "StartedInForeground",
-                            started_in_foreground);
+  base::UmaHistogramBoolean(
+      base::StrCat({"BackgroundSync.Event.", GetBackgroundSyncSuffix(sync_type),
+                    "StartedInForeground"}),
+      started_in_foreground);
 }
 
 // static
@@ -74,8 +77,8 @@ void BackgroundSyncMetrics::RecordEventResult(
     bool success,
     bool finished_in_foreground) {
   base::UmaHistogramEnumeration(
-      "BackgroundSync.Event." + GetBackgroundSyncSuffix(sync_type) +
-          "ResultPattern",
+      base::StrCat({"BackgroundSync.Event.", GetBackgroundSyncSuffix(sync_type),
+                    "ResultPattern"}),
       EventResultToResultPattern(success, finished_in_foreground),
       static_cast<ResultPattern>(RESULT_PATTERN_MAX + 1));
 }
@@ -89,17 +92,20 @@ void BackgroundSyncMetrics::RecordBatchSyncEventComplete(
   // The total batch handling time should be under 5 minutes; we'll record up to
   // 6 minutes, to be safe.
   base::UmaHistogramCustomTimes(
-      GetBackgroundSyncPrefix(sync_type) + "BackgroundSync.Event.Time", time,
+      base::StrCat(
+          {GetBackgroundSyncPrefix(sync_type), "BackgroundSync.Event.Time"}),
+      time,
       /* min= */ base::Milliseconds(10),
       /* max= */ base::Minutes(6),
       /* buckets= */ 50);
-  base::UmaHistogramCounts100(
-      GetBackgroundSyncPrefix(sync_type) + "BackgroundSync.Event.BatchSize",
-      number_of_batched_sync_events);
+  base::UmaHistogramCounts100(base::StrCat({GetBackgroundSyncPrefix(sync_type),
+                                            "BackgroundSync.Event.BatchSize"}),
+                              number_of_batched_sync_events);
 
-  base::UmaHistogramBoolean(GetBackgroundSyncPrefix(sync_type) +
-                                "BackgroundSync.Event.FromWakeupTask",
-                            from_wakeup_task);
+  base::UmaHistogramBoolean(
+      base::StrCat({GetBackgroundSyncPrefix(sync_type),
+                    "BackgroundSync.Event.FromWakeupTask"}),
+      from_wakeup_task);
 }
 
 // static
@@ -109,7 +115,8 @@ void BackgroundSyncMetrics::CountRegisterSuccess(
     RegistrationCouldFire registration_could_fire,
     RegistrationIsDuplicate registration_is_duplicate) {
   base::UmaHistogramEnumeration(
-      "BackgroundSync.Registration." + GetBackgroundSyncSuffix(sync_type),
+      base::StrCat(
+          {"BackgroundSync.Registration.", GetBackgroundSyncSuffix(sync_type)}),
       BACKGROUND_SYNC_STATUS_OK,
       static_cast<BackgroundSyncStatus>(BACKGROUND_SYNC_STATUS_MAX + 1));
 
@@ -125,8 +132,8 @@ void BackgroundSyncMetrics::CountRegisterSuccess(
   }
 
   base::UmaHistogramBoolean(
-      "BackgroundSync.Registration." + GetBackgroundSyncSuffix(sync_type) +
-          ".IsDuplicate",
+      base::StrCat({"BackgroundSync.Registration.",
+                    GetBackgroundSyncSuffix(sync_type), ".IsDuplicate"}),
       registration_is_duplicate == REGISTRATION_IS_DUPLICATE);
 }
 
@@ -135,8 +142,8 @@ void BackgroundSyncMetrics::CountRegisterFailure(
     blink::mojom::BackgroundSyncType sync_type,
     BackgroundSyncStatus result) {
   base::UmaHistogramEnumeration(
-      std::string("BackgroundSync.Registration.") +
-          GetBackgroundSyncSuffix(sync_type),
+      base::StrCat(
+          {"BackgroundSync.Registration.", GetBackgroundSyncSuffix(sync_type)}),
       result,
       static_cast<BackgroundSyncStatus>(BACKGROUND_SYNC_STATUS_MAX + 1));
 }
@@ -153,9 +160,10 @@ void BackgroundSyncMetrics::CountUnregisterPeriodicSync(
 void BackgroundSyncMetrics::RecordEventsFiredFromWakeupTask(
     blink::mojom::BackgroundSyncType sync_type,
     bool fired_events) {
-  base::UmaHistogramBoolean("BackgroundSync.WakeupTaskFiredEvents." +
-                                GetBackgroundSyncSuffix(sync_type),
-                            fired_events);
+  base::UmaHistogramBoolean(
+      base::StrCat({"BackgroundSync.WakeupTaskFiredEvents.",
+                    GetBackgroundSyncSuffix(sync_type)}),
+      fired_events);
 }
 
 }  // namespace content

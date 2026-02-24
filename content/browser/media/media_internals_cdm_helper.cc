@@ -20,7 +20,7 @@ namespace content {
 
 namespace {
 
-std::string GetCdmInfoCapabilityStatusName(CdmInfo::Status status) {
+std::string_view GetCdmInfoCapabilityStatusName(CdmInfo::Status status) {
   switch (status) {
     case CdmInfo::Status::kUninitialized:
       return "Uninitialized";
@@ -45,7 +45,7 @@ std::string GetCdmInfoCapabilityStatusName(CdmInfo::Status status) {
   }
 }
 
-std::string GetCdmSessionTypeName(media::CdmSessionType session_type) {
+std::string_view GetCdmSessionTypeName(media::CdmSessionType session_type) {
   switch (session_type) {
     case media::CdmSessionType::kTemporary:
       return "temporary";
