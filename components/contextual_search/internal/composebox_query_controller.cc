@@ -72,6 +72,7 @@ constexpr char kSessionIdQueryParameterKey[] = "gsessionid";
 constexpr char kVisualSearchInteractionQueryParameterKey[] = "vsint";
 constexpr char kAddedInputsQueryParameterKey[] = "aai";
 constexpr char kVisualInputTypeQueryParameter[] = "vit";
+constexpr char kAimMultiContextQueryParameter[] = "amc";
 
 // TODO(crbug.com/432348301): Move away from hardcoded entrypoint and lns
 // surface values.
@@ -433,6 +434,12 @@ void ComposeboxQueryController::CreateSearchUrl(
       search_url_request_info->additional_params.insert(
           {kAddedInputsQueryParameterKey, encoded_proto});
     }
+
+    // Add the amc param to indicate that the query was generated from a client
+    // capable of sending multi-context queries. This param is needed even if
+    // there are no context uploads.
+    search_url_request_info->additional_params.insert(
+        {kAimMultiContextQueryParameter, "1"});
   }
 
   if (should_create_multimodal_url && cluster_info_.has_value()) {
