@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_debug_utils.h"
+#include "third_party/blink/renderer/modules/content_extraction/ai_page_content_redaction_heuristics.h"
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -1550,113 +1551,6 @@ AIPageContentAgent::ExistingCustomPasswordReason(
 }
 
 namespace {
-
-bool IsCSSSecurityMaskingEnabled(const LayoutObject& object) {
-  // Checks the computed value of the non-standard CSS property
-  // `-webkit-text-security`. Authors sometimes use this on non-password
-  // elements to create custom masked "password-like" fields.
-  const ComputedStyle* style = object.Style();
-  if (!style) {
-    return false;
-  }
-  return style->TextSecurity() != ETextSecurity::kNone;
-}
-
-bool IsSecurityMaskCharacter(UChar c) {
-  switch (c) {
-    // Standard Asterisks & Stars.
-    case '*':     // U+002A
-    case 0x2731:  // Heavy Asterisk (✱)
-    case 0x2732:  // Open Centre Asterisk (✲)
-    case 0x2733:  // Eight Spoked Asterisk (✳)
-    case 0xFF0A:  // Fullwidth Asterisk (＊)
-
-    // Standard Bullets & Circles.
-    case 0x2022:  // Bullet (•)
-    case 0x25CF:  // Black Circle (●)
-    case 0x25CB:  // White Circle (○)
-    case 0x25EF:  // Large Circle (◯)
-    case 0x26AB:  // Medium Black Circle (⚫)
-    case 0x2B24:  // Black Large Circle (⬤)
-    case 0x25E6:  // White Bullet (◦)
-    case 0x25C9:  // Fisheye (◉)
-
-    // Dots & Mathematical Operators.
-    case 0x00B7:  // Middle Dot (·)
-    case 0x2219:  // Bullet Operator (∙)
-    case 0x22C5:  // Dot Operator (⋅)
-    case 0x2802:  // Braille Dot-2 (⠂)
-    case 0x2812:  // Braille Dots-2-5 (⠒)
-    case 0x2836:  // Braille Dots-2-3-5-6 (⠶)
-
-    // Squares, Blocks & Diamonds.
-    case 0x25A0:  // Black Square (■)
-    case 0x25A1:  // White Square (□)
-    case 0x25AA:  // Black Small Square (▪)
-    case 0x25AB:  // White Small Square (▫)
-    case 0x25AE:  // Black Vertical Rectangle (▮)
-    case 0x2588:  // Full Block (█)
-    case 0x2589:  // Left Seven Eighths Block (▉)
-    case 0x25C6:  // Black Diamond (◆)
-    case 0x25C7:  // White Diamond (◇)
-      return true;
-
-    default:
-      return false;
-  }
-}
-
-bool IsLikelyJSCustomPasswordField(const String& value) {
-  // Heuristic for JS-masked values where most characters are replaced by
-  // bullet-like mask characters but one character (often the last typed
-  // character) remains visible.
-  //
-  // Example: "••••a"
-  //
-  // This intentionally errs on the side of privacy: if a field *looks* like a
-  // password field, we redact it to prevent credential leakage.
-  if (value.length() < 2) {
-    return false;
-  }
-
-  wtf_size_t mask_count = 0;
-  bool has_visible_last_character = false;
-  for (wtf_size_t index = 0; index < value.length(); ++index) {
-    const UChar ch = value[index];
-    // Whitespace is a strong signal this is not a password field (e.g. a bullet
-    // used as a list marker: "• item"). Bail out early to reduce false
-    // positives and improve performance on large editor-like fields.
-    if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r') {
-      return false;
-    }
-    if (IsSecurityMaskCharacter(ch)) {
-      ++mask_count;
-    } else {
-      // If a non-mask character appears before the final character, this is
-      // unlikely to be a password-style control (typical patterns reveal at
-      // most the last typed character). Bail out early.
-      if (index + 1 < value.length()) {
-        return false;
-      }
-      has_visible_last_character = true;
-    }
-  }
-
-  // Prefer classifying early once masking begins to prevent leaking typed
-  // characters during initial entry. For example, some JS-masked fields show:
-  // - "•b" when the user has typed 2 characters.
-  // - "••c" when the user has typed 3 characters.
-  if (has_visible_last_character) {
-    if (mask_count >= 1) {
-      return true;
-    }
-    return value.length() == 2;
-  }
-
-  // Typical patterns show only one character (often the last). Require that
-  // the value is "mostly masked" to reduce false positives.
-  return mask_count >= value.length() - 1;
-}
 
 DOMNodeId GetAccessibilityFocusedDOMNodeId(const LocalFrame& frame) {
   const Document* document = frame.GetDocument();
