@@ -5,7 +5,7 @@
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {GlicRequestHeaderInjector} from '/shared/glic_request_headers.js';
-import {createWebView, isFullWebView} from '/shared/web_view_type.js';
+import {isFullWebView} from '/shared/web_view_type.js';
 import type {WebViewType} from '/shared/web_view_type.js';
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 
@@ -134,7 +134,7 @@ export class WebviewController {
       private hostEmbedder: ApiHostEmbedder,
       private persistentState: WebviewPersistentState,
   ) {
-    this.webview = createWebView();
+    this.webview = document.createElement('webview');
 
     if (isFullWebView(this.webview)) {
       this.glicRequestHeaderInjector = new GlicRequestHeaderInjector(

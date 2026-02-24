@@ -15,13 +15,6 @@ import type {SlimWebViewElement} from '/shared/guest_view/slim_web_view.js';
 
 export type WebViewType = chrome.webviewTag.WebView|SlimWebViewElement;
 
-export function createWebView(): WebViewType {
-  if ('WebView' in window) {
-    return document.createElement('webview') as WebViewType;
-  }
-  return document.createElement('slim-webview');
-}
-
 export function isFullWebView(webview: WebViewType):
     webview is chrome.webviewTag.WebView {
   // Bypass field check because WebView is added dynamically to the window

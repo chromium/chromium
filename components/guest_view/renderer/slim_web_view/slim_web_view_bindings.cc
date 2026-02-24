@@ -21,6 +21,7 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
+#include "third_party/blink/public/web/web_custom_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-function.h"
@@ -168,6 +169,19 @@ void AttachIframeGuest(v8::Isolate* isolate,
   guest_view_container->IssueRequest(std::move(request));
 }
 
+void AllowGuestViewElementDefinition(v8::Isolate* isolate,
+                                     v8::Local<v8::Function> callback) {
+  auto context = isolate->GetCurrentContext();
+  blink::WebCustomElement::EmbedderNamesAllowedScope embedder_names_scope;
+  v8::TryCatch try_catch(isolate);
+  auto result = callback->Call(context, context->Global(), 0, nullptr);
+
+  if (result.IsEmpty()) {
+    v8::String::Utf8Value exception(isolate, try_catch.Exception());
+    NOTREACHED() << "AllowGuestViewElementDefinition failed: " << *exception;
+  }
+}
+
 }  // namespace
 
 // static
@@ -196,11 +210,14 @@ void SlimWebViewBindings::MaybeInstall(content::RenderFrame& render_frame) {
                   .ToLocalChecked())
         .Check();
   };
+  blink::WebCustomElement::AddEmbedderCustomElementName(
+      blink::WebString("webview"));
 
   bind("getNextId", &GetNextId);
   bind("registerView", &RegisterView);
   bind("getViewFromId", &GetViewFromId);
   bind("attachIframeGuest", &AttachIframeGuest);
+  bind("allowGuestViewElementDefinition", &AllowGuestViewElementDefinition);
 }
 
 }  // namespace guest_view

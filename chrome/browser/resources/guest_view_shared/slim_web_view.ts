@@ -187,8 +187,10 @@ const eventDescriptors: EventMap = new Map([
 
 export class SlimWebViewElement extends CrLitElement {
   static get is() {
-    // TODO(crbug.com/460804848): Rename to webview, which is a restricted name.
-    return 'slim-webview';
+    // This is a restricted custom element name that is allowed-listed in
+    // slim_web_view_bindings.cc.
+    // TODO(crbug.com/487332297): Rename class to WebviewElement.
+    return 'webview';
   }
 
   static override get styles() {
@@ -396,8 +398,10 @@ export class SlimWebViewElement extends CrLitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'slim-webview': SlimWebViewElement;
+    'webview': SlimWebViewElement;
   }
 }
 
-customElements.define(SlimWebViewElement.is, SlimWebViewElement);
+chrome.slimWebViewPrivate.allowGuestViewElementDefinition(() => {
+  customElements.define(SlimWebViewElement.is, SlimWebViewElement);
+});
