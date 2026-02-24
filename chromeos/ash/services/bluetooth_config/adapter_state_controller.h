@@ -51,7 +51,12 @@ class AdapterStateController {
   void NotifyAdapterStateChanged();
 
  private:
-  base::ObserverList<Observer> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 };
 
 }  // namespace ash::bluetooth_config

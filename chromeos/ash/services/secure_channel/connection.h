@@ -145,7 +145,12 @@ class Connection {
   Status status_;
 
   // The registered observers of the connection.
-  base::ObserverList<ConnectionObserver> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      ConnectionObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   base::ObserverList<NearbyConnectionObserver>
       nearby_connection_state_observers_;

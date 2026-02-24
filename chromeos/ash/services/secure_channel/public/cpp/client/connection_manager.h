@@ -85,7 +85,12 @@ class ConnectionManager {
   void NotifyMessageReceived(const std::string& payload);
 
  private:
-  base::ObserverList<Observer> observer_list_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observer_list_;
 };
 
 std::ostream& operator<<(std::ostream& stream,
