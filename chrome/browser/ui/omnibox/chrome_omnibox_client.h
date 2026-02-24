@@ -70,6 +70,8 @@ class ChromeOmniboxClient final : public OmniboxClient {
   std::u16string GetFormattedFullURL() const override;
   std::u16string GetURLForDisplay() const override;
   GURL GetNavigationEntryURL() const override;
+  bool IsContextualTasksPage() const override;
+  GURL GetContextualTasksInnerFrameURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       bool is_prefetch) const override;
   metrics::OmniboxEventProto::PageClassification

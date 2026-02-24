@@ -55,6 +55,14 @@ bool LocationBarModelDelegate::IsHomePage(const GURL& url) const {
   return false;
 }
 
+bool LocationBarModelDelegate::IsContextualTasksPage() const {
+  return false;
+}
+
+GURL LocationBarModelDelegate::GetContextualTasksInnerFrameURL() const {
+  return GURL();
+}
+
 AutocompleteClassifier* LocationBarModelDelegate::GetAutocompleteClassifier() {
   return nullptr;
 }

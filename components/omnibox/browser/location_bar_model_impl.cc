@@ -26,13 +26,22 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_canon.h"
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #endif
 
 using metrics::OmniboxEventProto;
+
+namespace {
+
+constexpr char kChromeUIContextualTasksScheme[] = "chrome";
+constexpr char kChromeUIContextualTasksVirtualHost[] = "googlesearch";
+
+}  // namespace
 
 LocationBarModelImpl::LocationBarModelImpl(LocationBarModelDelegate* delegate,
                                            size_t max_url_display_chars)
@@ -48,6 +57,18 @@ std::u16string LocationBarModelImpl::GetFormattedFullURL() const {
 }
 
 std::u16string LocationBarModelImpl::GetURLForDisplay() const {
+  // For the contextual tasks page, apply "origin-swapping" logic in order to
+  // display the proper URL in the Omnibox.
+  auto contextual_tasks_url = delegate_->GetContextualTasksInnerFrameURL();
+  if (contextual_tasks_url.is_valid()) {
+    GURL::Replacements replacements;
+    replacements.SetSchemeStr(kChromeUIContextualTasksScheme);
+    replacements.SetHostStr(kChromeUIContextualTasksVirtualHost);
+    replacements.ClearPath();
+    return base::UTF8ToUTF16(
+        contextual_tasks_url.ReplaceComponents(replacements).spec());
+  }
+
   url_formatter::FormatUrlTypes format_types =
       url_formatter::kFormatUrlOmitDefaults;
   if (delegate_->ShouldTrimDisplayUrlAfterHostName()) {
@@ -143,6 +164,14 @@ GURL LocationBarModelImpl::GetURL() const {
   return (ShouldDisplayURL() && delegate_->GetURL(&url))
              ? url
              : GURL(url::kAboutBlankURL);
+}
+
+bool LocationBarModelImpl::IsContextualTasksPage() const {
+  return delegate_->IsContextualTasksPage();
+}
+
+GURL LocationBarModelImpl::GetContextualTasksInnerFrameURL() const {
+  return delegate_->GetContextualTasksInnerFrameURL();
 }
 
 security_state::SecurityLevel LocationBarModelImpl::GetSecurityLevel() const {

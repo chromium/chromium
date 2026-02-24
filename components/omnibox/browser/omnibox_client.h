@@ -163,6 +163,13 @@ class OmniboxClient {
   // Returns the URL of the current navigation entry.
   virtual GURL GetNavigationEntryURL() const = 0;
 
+  // Returns true if the current page is a contextual tasks UI page (i.e.
+  // chrome://contextual-tasks/).
+  virtual bool IsContextualTasksPage() const;
+
+  // Returns the inner frame URL for the current contextual tasks page.
+  virtual GURL GetContextualTasksInnerFrameURL() const;
+
   // Classify the current page being viewed as, for example, the new tab
   // page or a normal web page.  Used for logging omnibox events for
   // UMA opted-in users.  Examines the user's profile to determine if the

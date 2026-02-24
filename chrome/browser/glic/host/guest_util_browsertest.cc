@@ -70,7 +70,12 @@ class TestWebUIController : public content::WebUIController {
                   </html>)"));
             }));
   }
+
+ private:
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
+
+WEB_UI_CONTROLLER_TYPE_IMPL(TestWebUIController)
 
 class TestWebUIConfig
     : public content::DefaultWebUIConfig<TestWebUIController> {

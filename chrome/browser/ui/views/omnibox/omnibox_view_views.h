@@ -363,6 +363,10 @@ class OmniboxViewViews
   // view doesn't exist.
   IconLabelBubbleView* GetAiModePageActionIconView() const;
 
+  // Helper for updating the text in the Omnibox based on current focus state
+  // and whether the user is currently on a "contextual tasks" page.
+  void UpdateTextForContextualTasksPage();
+
   // When true, the location bar view is read only and also is has a slightly
   // different presentation (smaller font size). This is used for popups.
   bool popup_window_mode_;

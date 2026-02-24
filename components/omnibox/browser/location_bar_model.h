@@ -41,6 +41,13 @@ class LocationBarModel {
   // Returns the URL of the current navigation entry.
   virtual GURL GetURL() const = 0;
 
+  // Returns true if the current page is a contextual tasks UI page (i.e.
+  // chrome://contextual-tasks/).
+  virtual bool IsContextualTasksPage() const = 0;
+
+  // Returns the URL for the current contextual tasks page.
+  virtual GURL GetContextualTasksInnerFrameURL() const = 0;
+
   // Returns the security level that the toolbar should display.
   virtual security_state::SecurityLevel GetSecurityLevel() const = 0;
 

@@ -12,8 +12,15 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_client.h"
+#include "content/public/common/url_constants.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+
+namespace {
+
+constexpr char kChromeUIContextualTasksVirtualHost[] = "googlesearch";
+
+}  // namespace
 
 namespace omnibox {
 
@@ -192,6 +199,29 @@ void AdjustTextForCopy(int sel_min,
       // current page, since the URL in the Omnibox will be from that match.
       current_page_url = current_match.destination_url;
     }
+  }
+
+  // If `url_from_text` looks like a "contextual tasks" virtual URL, then apply
+  // "origin-swapping" logic to generate a valid shareable URL.
+  if (url_from_text->is_valid() &&
+      url_from_text->SchemeIs(content::kChromeUIScheme) &&
+      url_from_text->GetHost() == kChromeUIContextualTasksVirtualHost) {
+    const GURL inner_frame_url = client->GetContextualTasksInnerFrameURL();
+    if (!inner_frame_url.is_valid()) {
+      return;
+    }
+
+    GURL::Replacements replacements;
+    replacements.SetSchemeStr(inner_frame_url.scheme());
+    replacements.SetHostStr(inner_frame_url.host());
+    replacements.SetPathStr(inner_frame_url.path());
+
+    *url_from_text = url_from_text->ReplaceComponents(replacements);
+    *text = base::UTF8ToUTF16(url_from_text->spec());
+    // In order for "origin-swapping" to work properly, we need to ensure that
+    // callers interpret the copied text as "plain text" content.
+    *write_url = false;
+    return;
   }
 
   // If the user has altered the host piece of the omnibox text, then we cannot

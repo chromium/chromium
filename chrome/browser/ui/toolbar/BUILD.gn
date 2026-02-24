@@ -15,6 +15,7 @@ source_set("toolbar") {
   deps = [
     "//base",
     "//chrome/browser/autocomplete",
+    "//chrome/browser/contextual_tasks",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search",
     "//chrome/browser/search_engines",

@@ -48,6 +48,8 @@ class ChromeLocationBarModelDelegate : public LocationBarModelDelegate {
   bool IsNewTabPage() const override;
   bool IsNewTabPageURL(const GURL& url) const override;
   bool IsHomePage(const GURL& url) const override;
+  bool IsContextualTasksPage() const override;
+  GURL GetContextualTasksInnerFrameURL() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;
   TemplateURLService* GetTemplateURLService() override;
 
