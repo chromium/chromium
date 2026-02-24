@@ -27637,6 +27637,44 @@
             ]
         }
     ],
+    "V8EnforceGlobalHeapLimit": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "maximum_global_heap_limit_factor": "2"
+                    },
+                    "enable_features": [
+                        "V8Flag_enforce_global_heap_limit"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "maximum_global_heap_limit_factor": "8"
+                    },
+                    "enable_features": [
+                        "V8Flag_enforce_global_heap_limit"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8ExternalMemoryAccountedInGlobalLimit": [
         {
             "platforms": [
