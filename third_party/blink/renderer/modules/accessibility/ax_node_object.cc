@@ -1716,12 +1716,14 @@ ax::mojom::blink::Role AXNodeObject::DetermineTableCellRole() const {
 
   const AtomicString& scope =
       GetElement()->FastGetAttribute(html_names::kScopeAttr);
-  if (EqualIgnoringASCIICase(scope, "row") ||
-      EqualIgnoringASCIICase(scope, "rowgroup"))
+  if (EqualIgnoringAsciiCase(scope, "row") ||
+      EqualIgnoringAsciiCase(scope, "rowgroup")) {
     return ax::mojom::blink::Role::kRowHeader;
-  if (EqualIgnoringASCIICase(scope, "col") ||
-      EqualIgnoringASCIICase(scope, "colgroup"))
+  }
+  if (EqualIgnoringAsciiCase(scope, "col") ||
+      EqualIgnoringAsciiCase(scope, "colgroup")) {
     return ax::mojom::blink::Role::kColumnHeader;
+  }
 
   return DecideRoleFromSiblings(GetElement());
 }
@@ -1832,13 +1834,13 @@ ax::mojom::blink::SortDirection AXNodeObject::GetSortDirection() const {
 
   if (const AtomicString& aria_sort =
           AriaTokenAttribute(html_names::kAriaSortAttr)) {
-    if (EqualIgnoringASCIICase(aria_sort, "none")) {
+    if (EqualIgnoringAsciiCase(aria_sort, "none")) {
       return ax::mojom::blink::SortDirection::kNone;
     }
-    if (EqualIgnoringASCIICase(aria_sort, "ascending")) {
+    if (EqualIgnoringAsciiCase(aria_sort, "ascending")) {
       return ax::mojom::blink::SortDirection::kAscending;
     }
-    if (EqualIgnoringASCIICase(aria_sort, "descending")) {
+    if (EqualIgnoringAsciiCase(aria_sort, "descending")) {
       return ax::mojom::blink::SortDirection::kDescending;
     }
     // Technically, illegal values should be exposed as is, but this does
@@ -2551,7 +2553,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
       const AtomicString& checkable_type =
           menu_item->NearestAncestorFieldSet()->FastGetAttribute(
               html_names::kCheckableAttr);
-      if (EqualIgnoringASCIICase(checkable_type, keywords::kSingle)) {
+      if (EqualIgnoringAsciiCase(checkable_type, keywords::kSingle)) {
         return ax::mojom::blink::Role::kMenuItemRadio;
       }
       return ax::mojom::blink::Role::kMenuItemCheckBox;
@@ -2858,8 +2860,9 @@ static Element* SiblingWithAriaRole(String role, Node* node) {
       continue;
     const AtomicString& sibling_aria_role =
         blink::AXObject::AriaAttribute(*element, html_names::kRoleAttr);
-    if (EqualIgnoringASCIICase(sibling_aria_role, role))
+    if (EqualIgnoringAsciiCase(sibling_aria_role, role)) {
       return element;
+    }
   }
 
   return nullptr;
@@ -3893,10 +3896,10 @@ AccessibilityOrientation AXNodeObject::Orientation() const {
       RoleValue() == ax::mojom::blink::Role::kTextFieldWithComboBox) {
     const AtomicString& aria_orientation =
         AriaTokenAttribute(html_names::kAriaOrientationAttr);
-    if (EqualIgnoringASCIICase(aria_orientation, "horizontal")) {
+    if (EqualIgnoringAsciiCase(aria_orientation, "horizontal")) {
       return kAccessibilityOrientationHorizontal;
     }
-    if (EqualIgnoringASCIICase(aria_orientation, "vertical")) {
+    if (EqualIgnoringAsciiCase(aria_orientation, "vertical")) {
       return kAccessibilityOrientationVertical;
     }
   }
@@ -3909,19 +3912,19 @@ AccessibilityOrientation AXNodeObject::Orientation() const {
   // If there's a valid value, use it.
   const AtomicString& aria_orientation =
       AriaTokenAttribute(html_names::kAriaOrientationAttr);
-  if (EqualIgnoringASCIICase(aria_orientation, "horizontal")) {
+  if (EqualIgnoringAsciiCase(aria_orientation, "horizontal")) {
     return kAccessibilityOrientationHorizontal;
   }
-  if (EqualIgnoringASCIICase(aria_orientation, "vertical")) {
+  if (EqualIgnoringAsciiCase(aria_orientation, "vertical")) {
     return kAccessibilityOrientationVertical;
   }
 
   // Fall back on the implicit value, should one exist.
   const String& implicit_orientation = GetImplicitAriaOrientation(RoleValue());
-  if (EqualIgnoringASCIICase(implicit_orientation, "horizontal")) {
+  if (EqualIgnoringAsciiCase(implicit_orientation, "horizontal")) {
     return kAccessibilityOrientationHorizontal;
   }
-  if (EqualIgnoringASCIICase(implicit_orientation, "vertical")) {
+  if (EqualIgnoringAsciiCase(implicit_orientation, "vertical")) {
     return kAccessibilityOrientationVertical;
   }
 
@@ -4276,8 +4279,9 @@ RGBA32 AXNodeObject::ColorValue() const {
     return AXObject::ColorValue();
 
   const AtomicString& type = input->getAttribute(kTypeAttr);
-  if (!EqualIgnoringASCIICase(type, "color"))
+  if (!EqualIgnoringAsciiCase(type, "color")) {
     return AXObject::ColorValue();
+  }
 
   // HTMLInputElement::Value always returns a string parseable by Color.
   Color color;
@@ -4395,22 +4399,22 @@ ax::mojom::blink::AriaCurrentState AXNodeObject::GetAriaCurrentState() const {
     }
     return ax::mojom::blink::AriaCurrentState::kNone;
   }
-  if (EqualIgnoringASCIICase(attribute_value, "false")) {
+  if (EqualIgnoringAsciiCase(attribute_value, "false")) {
     return ax::mojom::blink::AriaCurrentState::kFalse;
   }
-  if (EqualIgnoringASCIICase(attribute_value, "page")) {
+  if (EqualIgnoringAsciiCase(attribute_value, "page")) {
     return ax::mojom::blink::AriaCurrentState::kPage;
   }
-  if (EqualIgnoringASCIICase(attribute_value, "step")) {
+  if (EqualIgnoringAsciiCase(attribute_value, "step")) {
     return ax::mojom::blink::AriaCurrentState::kStep;
   }
-  if (EqualIgnoringASCIICase(attribute_value, "location")) {
+  if (EqualIgnoringAsciiCase(attribute_value, "location")) {
     return ax::mojom::blink::AriaCurrentState::kLocation;
   }
-  if (EqualIgnoringASCIICase(attribute_value, "date")) {
+  if (EqualIgnoringAsciiCase(attribute_value, "date")) {
     return ax::mojom::blink::AriaCurrentState::kDate;
   }
-  if (EqualIgnoringASCIICase(attribute_value, "time")) {
+  if (EqualIgnoringAsciiCase(attribute_value, "time")) {
     return ax::mojom::blink::AriaCurrentState::kTime;
   }
 
@@ -4423,7 +4427,7 @@ ax::mojom::blink::InvalidState AXNodeObject::GetInvalidState() const {
   if (const AtomicString& attribute_value =
           AriaTokenAttribute(html_names::kAriaInvalidAttr)) {
     // aria-invalid="false".
-    if (EqualIgnoringASCIICase(attribute_value, "false")) {
+    if (EqualIgnoringAsciiCase(attribute_value, "false")) {
       return ax::mojom::blink::InvalidState::kFalse;
     }
     // In most cases, aria-invalid="spelling"| "grammar" are used on inline text
@@ -4432,8 +4436,8 @@ ax::mojom::blink::InvalidState AXNodeObject::GetInvalidState() const {
     // exposing the state twice, and to prevent superfluous "invalid"
     // announcements in some screen readers.
     // On text fields, they are simply exposed as if aria-invalid="true".
-    if (EqualIgnoringASCIICase(attribute_value, "spelling") ||
-        EqualIgnoringASCIICase(attribute_value, "grammar")) {
+    if (EqualIgnoringAsciiCase(attribute_value, "spelling") ||
+        EqualIgnoringAsciiCase(attribute_value, "grammar")) {
       return RoleValue() == ax::mojom::blink::Role::kTextField
                  ? ax::mojom::blink::InvalidState::kTrue
                  : ax::mojom::blink::InvalidState::kNone;

@@ -63,7 +63,7 @@ static ColorParseResult ParseColor(Color& parsed_color,
                                    mojom::blink::ColorScheme color_scheme,
                                    const ui::ColorProvider* color_provider,
                                    bool is_in_web_app_scope) {
-  if (EqualIgnoringASCIICase(color_string, "currentcolor")) {
+  if (EqualIgnoringAsciiCase(color_string, "currentcolor")) {
     return ColorParseResult::kCurrentColor;
   }
   if (CSSParser::ParseColor(parsed_color, color_string)) {

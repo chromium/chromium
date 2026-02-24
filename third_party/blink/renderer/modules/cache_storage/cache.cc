@@ -126,7 +126,7 @@ CodeCachePolicy GetCodeCachePolicy(ExecutionContext* context,
   // Count the hint usage regardless of its value.
   context->CountUse(mojom::WebFeature::kCacheStorageCodeCacheHint);
 
-  if (EqualIgnoringASCIICase(header_value, "none")) {
+  if (EqualIgnoringAsciiCase(header_value, "none")) {
     return CodeCachePolicy::kNone;
   }
 

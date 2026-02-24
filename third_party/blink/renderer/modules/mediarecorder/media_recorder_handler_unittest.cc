@@ -421,8 +421,8 @@ class MediaRecorderHandlerTest : public TestWithParam<MediaRecorderTestParams>,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     // TODO(crbug/1480178): Support valid   codec_description  parameter
     // for OnEncodedVideo/Audio to support real stream write.
-    if (EqualIgnoringASCIICase(GetParam().mime_type, "video/mp4") ||
-        EqualIgnoringASCIICase(GetParam().mime_type, "audio/mp4")) {
+    if (EqualIgnoringAsciiCase(GetParam().mime_type, "video/mp4") ||
+        EqualIgnoringAsciiCase(GetParam().mime_type, "audio/mp4")) {
       return false;
     }
 #endif

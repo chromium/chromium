@@ -48,7 +48,7 @@ TextDecoder* TextDecoder::Create(const String& label,
   // The replacement encoding is not valid, but the Encoding API also
   // rejects aliases of the replacement encoding.
   if (!encoding.IsValid() ||
-      EqualIgnoringASCIICase(encoding.GetName(), "replacement")) {
+      EqualIgnoringAsciiCase(encoding.GetName(), "replacement")) {
     exception_state.ThrowRangeError(
         StrCat({"The encoding label provided ('", label, "') is invalid."}));
     return nullptr;
