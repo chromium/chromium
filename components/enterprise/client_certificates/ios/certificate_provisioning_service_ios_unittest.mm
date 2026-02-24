@@ -161,9 +161,9 @@ TEST_F(CertificateProvisioningServiceIOSTest, GetIdentityIOS_Success) {
 
   ASSERT_TRUE(ios_identity.has_value());
   EXPECT_TRUE(ios_identity->is_valid());
-  EXPECT_EQ(ios_identity->identity.name, "test");
-  EXPECT_EQ(ios_identity->identity.private_key, private_key);
-  EXPECT_EQ(ios_identity->identity.certificate, certificate);
+  EXPECT_EQ(ios_identity->name(), "test");
+  EXPECT_EQ(ios_identity->private_key(), private_key);
+  EXPECT_EQ(ios_identity->certificate(), certificate);
   EXPECT_NE(ios_identity->identity_ref.get(), nullptr);
 }
 
@@ -249,11 +249,9 @@ TEST_F(CertificateProvisioningServiceIOSTest,
   base::test::TestFuture<std::optional<ClientIdentityIOS>> second_future;
   service_->GetManagedIdentityIOS(second_future.GetCallback());
   auto second_identity = second_future.Get();
-
   ASSERT_TRUE(second_identity.has_value());
-  EXPECT_NE(first_identity->identity.private_key,
-            second_identity->identity.private_key);
-  EXPECT_EQ(second_identity->identity.private_key, mocked_private_key_2);
+  EXPECT_NE(first_identity->private_key(), second_identity->private_key());
+  EXPECT_EQ(second_identity->private_key(), mocked_private_key_2);
 }
 
 // Tests that if creating the SecIdentityRef fails (e.g., bad private key),
@@ -339,7 +337,7 @@ TEST_F(CertificateProvisioningServiceIOSTest,
   ASSERT_TRUE(second_identity.has_value());
   EXPECT_NE(first_identity->identity_ref.get(),
             second_identity->identity_ref.get());
-  EXPECT_EQ(second_identity->identity.private_key, mocked_private_key_2);
+  EXPECT_EQ(second_identity->private_key(), mocked_private_key_2);
 }
 
 }  // namespace client_certificates

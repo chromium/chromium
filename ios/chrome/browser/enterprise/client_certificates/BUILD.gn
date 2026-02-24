@@ -2,6 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("client_certificates") {
+  public = [
+    "client_certificates_service_ios.h",
+    "client_certificates_service_ios_factory.h",
+  ]
+
+  sources = [
+    "client_certificates_service_ios.mm",
+    "client_certificates_service_ios_factory.mm",
+  ]
+
+  public_deps = [
+    ":util",
+    "//base",
+    "//components/enterprise/client_certificates/ios",
+    "//components/keyed_service/core",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+  ]
+
+  deps = [
+    "//components/certificate_matching",
+    "//components/content_settings/core/browser",
+    "//components/enterprise",
+    "//components/enterprise/client_certificates/core:management_delegate",
+    "//crypto",
+    "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//services/network/public/cpp",
+  ]
+}
+
 source_set("util") {
   public = [ "cert_utils.h" ]
 
@@ -26,15 +59,21 @@ source_set("util") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "browser_context_delegate_ios_unittest.mm" ]
+  sources = [
+    "browser_context_delegate_ios_unittest.mm",
+    "client_certificates_service_ios_unittest.mm",
+  ]
 
   deps = [
-    ":util",
+    ":client_certificates",
     "//base",
     "//base/test:test_support",
+    "//components/content_settings/core/browser",
     "//components/enterprise/client_certificates/core:test_support",
     "//components/enterprise/client_certificates/ios",
+    "//ios/chrome/browser/content_settings/model",
     "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test:test_support",
     "//net:test_support",

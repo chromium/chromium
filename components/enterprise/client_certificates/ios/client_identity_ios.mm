@@ -45,6 +45,13 @@ ClientIdentityIOS::TryCreate(const ClientIdentity& identity) {
   return ClientIdentityIOS(identity, std::move(identity_ref));
 }
 
+// static
+ClientIdentityIOS ClientIdentityIOS::CreateForTesting(
+    const ClientIdentity& identity,
+    base::apple::ScopedCFTypeRef<SecIdentityRef> identity_ref) {
+  return ClientIdentityIOS(identity, std::move(identity_ref));
+}
+
 ClientIdentityIOS::ClientIdentityIOS(const ClientIdentity& identity)
     : identity(identity) {}
 
@@ -61,6 +68,18 @@ ClientIdentityIOS::ClientIdentityIOS(ClientIdentityIOS&&) = default;
 ClientIdentityIOS& ClientIdentityIOS::operator=(ClientIdentityIOS&&) = default;
 
 ClientIdentityIOS::~ClientIdentityIOS() = default;
+
+const std::string& ClientIdentityIOS::name() const {
+  return identity.name;
+}
+
+scoped_refptr<PrivateKey> ClientIdentityIOS::private_key() const {
+  return identity.private_key;
+}
+
+scoped_refptr<net::X509Certificate> ClientIdentityIOS::certificate() const {
+  return identity.certificate;
+}
 
 bool ClientIdentityIOS::operator==(const ClientIdentityIOS& other) const {
   return identity == other.identity &&

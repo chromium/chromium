@@ -58,6 +58,7 @@
 #import "ios/chrome/browser/download/model/download_file_service_factory.h"
 #import "ios/chrome/browser/download/model/download_record_service_factory.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
+#import "ios/chrome/browser/enterprise/client_certificates/client_certificates_service_ios_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_realtime_reporting_client_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
@@ -222,6 +223,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   collaboration::messaging::InstantMessagingServiceFactory::GetInstance();
   collaboration::messaging::MessagingBackendServiceFactory::GetInstance();
   commerce::ShoppingServiceFactory::GetInstance();
+  client_certificates::ClientCertificatesServiceIOSFactory::GetInstance();
   data_controls::IOSRulesServiceFactory::GetInstance();
   data_sharing::DataSharingServiceFactory::GetInstance();
   drive::DriveServiceFactory::GetInstance();

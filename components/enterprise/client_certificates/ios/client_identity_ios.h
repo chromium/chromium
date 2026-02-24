@@ -15,7 +15,13 @@
 #include "components/enterprise/client_certificates/core/client_identity.h"
 #include "components/enterprise/client_certificates/ios/client_identity_ios_error.h"
 
+namespace net {
+class X509Certificate;
+}  // namespace net
+
 namespace client_certificates {
+
+class PrivateKey;
 
 // iOS-specific extension of ClientIdentity that includes the SecIdentityRef
 // required for platform-level operations.
@@ -32,6 +38,10 @@ struct ClientIdentityIOS {
   static base::expected<ClientIdentityIOS, ClientIdentityIOSError> TryCreate(
       const ClientIdentity& identity);
 
+  static ClientIdentityIOS CreateForTesting(
+      const ClientIdentity& identity,
+      base::apple::ScopedCFTypeRef<SecIdentityRef> identity_ref);
+
   ClientIdentityIOS(const ClientIdentityIOS&);
   ClientIdentityIOS& operator=(const ClientIdentityIOS&);
 
@@ -41,6 +51,10 @@ struct ClientIdentityIOS {
   ~ClientIdentityIOS();
 
   bool is_valid() const { return identity.is_valid() && identity_ref.get(); }
+
+  const std::string& name() const;
+  scoped_refptr<PrivateKey> private_key() const;
+  scoped_refptr<net::X509Certificate> certificate() const;
 
   ClientIdentity identity;
   base::apple::ScopedCFTypeRef<SecIdentityRef> identity_ref{};
