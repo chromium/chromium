@@ -3402,12 +3402,6 @@ inline constexpr char kPageContentCacheName[] = "Page content cache";
 inline constexpr char kPageContentCacheDescription[] =
     "Enables caching of the annotated page content and screenshot";
 
-inline constexpr char kGeolocationPermissionControlName[] =
-    "Geolocation permission control (geolocation element)";
-inline constexpr char kGeolocationPermissionControlDescription[] =
-    "Enables the Geolocation Permission Control feature, which allows the "
-    "use of the HTML 'geolocation' element.";
-
 inline constexpr char kPageVisibilityPageContentAnnotationsName[] =
     "Page visibility content annotations";
 inline constexpr char kPageVisibilityPageContentAnnotationsDescription[] =
