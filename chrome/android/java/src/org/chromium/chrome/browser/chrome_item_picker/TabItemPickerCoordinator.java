@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.page_content_annotations.PageContentExtractio
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
@@ -379,6 +380,35 @@ public class TabItemPickerCoordinator {
         public void onSelectionStateChange(Set<TabListEditorItemSelectionId> selectedItems) {
             boolean hasSelectionChanged = !Objects.equals(mInitialSelectedTabIds, selectedItems);
             mEnableDoneButtonSupplier.set(hasSelectionChanged);
+
+            if (ChromeFeatureList.sOnDemandBackgroundTabContextCapture.isEnabled()) {
+                // The maximum number of tabs that can be selected is determined by
+                // mAllowedSelectionCount, which should always be sufficiently small that there is
+                // no point caching which tabs have already been loaded. It is also safer to update
+                // each time as the OS may kill background tabs at any time.
+                for (TabListEditorItemSelectionId item : selectedItems) {
+                    assert item.isTabId();
+                    int tabId = item.getTabId();
+
+                    if (mCachedTabIds.contains(tabId)) continue;
+
+                    Tab tab = mTabModelSelector.getTabById(tabId);
+                    if (tab == null
+                            || !FuseboxTabUtils.isTabEligibleForAttachment(tab)
+                            || FuseboxTabUtils.isTabActive(tab)) {
+                        continue;
+                    }
+
+                    // If everything is working as expected the current tab should always be active
+                    // and therefore not loaded on demand, but just in case we still allow it to be
+                    // loaded here.
+                    tab.loadIfNeeded(TabLoadIfNeededCaller.FUSEBOX_ATTACHMENT);
+
+                    // TODO(crbug.com/486943788): On load complete, capture a new thumbnail and try
+                    // to extract the context. The context extraction might be left to
+                    // FuseboxAttachment, this is still under investigation.
+                }
+            }
         }
 
         @Override
