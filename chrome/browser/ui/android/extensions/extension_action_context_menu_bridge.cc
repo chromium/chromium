@@ -61,7 +61,7 @@ void ExtensionActionContextMenuBridge::Destroy(JNIEnv* env) {
 static int64_t JNI_ExtensionActionContextMenuBridge_Init(
     JNIEnv* env,
     int64_t browser_window_interface_ptr,
-    ToolbarActionsModel::ActionId& action_id,
+    const ToolbarActionsModel::ActionId& action_id,
     content::WebContents* web_contents,
     ExtensionContextMenuModel::ContextMenuSource context_menu_source) {
   BrowserWindowInterface* browser =

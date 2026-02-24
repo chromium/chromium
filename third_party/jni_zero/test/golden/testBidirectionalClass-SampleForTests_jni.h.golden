@@ -320,27 +320,27 @@ JNI_ZERO_BOUNDARY_EXPORT jlong Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Samp
         env,
         caller_ref,
         param_ref,
-        std::move(bytes_converted),
-        std::move(convertedType_converted),
+        bytes_converted,
+        convertedType_converted,
         nonConvertedArray_converted); }) {
       return func_wrapper(
           env,
           caller_ref,
           param_ref,
-          std::move(bytes_converted),
-          std::move(convertedType_converted),
+          bytes_converted,
+          convertedType_converted,
           nonConvertedArray_converted);
     } else if constexpr (requires { func_wrapper(
         caller_ref,
         param_ref,
-        std::move(bytes_converted),
-        std::move(convertedType_converted),
+        bytes_converted,
+        convertedType_converted,
         nonConvertedArray_converted); }) {
       return func_wrapper(
           caller_ref,
           param_ref,
-          std::move(bytes_converted),
-          std::move(convertedType_converted),
+          bytes_converted,
+          convertedType_converted,
           nonConvertedArray_converted);
     } else {
       static_assert(false, "JNI_SampleForTests_Init() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jobject>&, const jni_zero::JavaRef<jstring>&, jni_zero::ByteArrayView, jni_zero::tests::CPPClass*, std::vector<jni_zero::ScopedJavaLocalRef<jobject>>)\nSee SampleForTests_jni.h for an example.");

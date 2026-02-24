@@ -452,7 +452,7 @@ std::string EmbeddedTestServerAdapter::GetFileURL(
 
 void EmbeddedTestServerAdapter::RegisterRequestHandler(
     JNIEnv* env,
-    std::unique_ptr<NativeTestServerHandleRequestCallback>& callback) {
+    std::unique_ptr<NativeTestServerHandleRequestCallback>&& callback) {
   test_server.RegisterRequestHandler(
       base::BindRepeating(&NativeTestServerHandleRequestCallback::operator(),
                           base::Owned(std::move(callback))));

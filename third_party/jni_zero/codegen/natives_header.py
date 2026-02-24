@@ -71,7 +71,7 @@ def _entry_point_example(sb, native):
                    f'{p.cpp_name()}' for p in params)
 
 
-def _prep_param(sb, param, native):
+def _prep_param(sb, param, native, include_forward_declaration):
   """Returns the snippet to use for the parameter."""
   orig_name = param.cpp_name()
   java_type = param.java_type
@@ -81,9 +81,7 @@ def _prep_param(sb, param, native):
     with sb.statement():
       sb(f'{java_type.converted_type} {ret} = ')
       convert_type.from_jni_expression(sb, orig_name, java_type)
-    # TODO(crbug.com/469809169): Remove these exceptions.
-    if not java_type.converted_type.startswith(
-        'std::') and java_type.converted_type not in ('GURL', 'url::Origin'):
+    if not include_forward_declaration:
       ret = f'std::move({ret})'
     return ret
 
@@ -178,7 +176,10 @@ def entry_point_method(sb,
       sb(f'{marker_func_name}();\n')
       sb('\n')
 
-    param_rvalues = [_prep_param(sb, param, native) for param in params]
+    param_rvalues = [
+        _prep_param(sb, param, native, include_forward_declaration)
+        for param in params
+    ]
     if not native.static:
       param_rvalues.insert(
           0, 'jni_zero::JavaRef<jobject>::CreateLeaky(env, jcaller)')
