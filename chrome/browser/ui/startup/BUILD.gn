@@ -537,5 +537,9 @@ if (!is_android && !is_chromeos_device) {
       sources += [ "startup_launch_infobar_interactive_uitest.cc" ]
       deps += [ "//chrome/browser/ui/views/infobars" ]
     }
+
+    if (!is_chromeos) {
+      deps += [ "//chrome/browser/default_browser" ]
+    }
   }
 }

@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
+#include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
@@ -87,7 +88,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, LastUsedProfileActivated) {
   ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_2));
   new_browser = chrome::FindBrowserWithProfile(&profile_2);
   ASSERT_TRUE(new_browser);
-  EXPECT_TRUE(new_browser->window()->IsActive());
+  EXPECT_TRUE(new_browser->window()->IsVisible());
+
+  // When bubble dialog surface is used for default browser prompts, focus will
+  // be on the bubble dialog instead.
+  if (default_browser::GetDefaultBrowserPromptSurface() !=
+      default_browser::DefaultBrowserPromptSurface::kBubbleDialog) {
+    EXPECT_TRUE(new_browser->window()->IsActive());
+  }
 
   // All other profiles browser should not be active.
   ASSERT_EQ(1u, chrome::GetBrowserCount(&profile_1));

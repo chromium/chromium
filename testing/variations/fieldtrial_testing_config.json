@@ -8418,6 +8418,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "prompt_surface": "bubble_dialog"
+                    },
                     "enable_features": [
                         "DefaultBrowserFramework"
                     ]
