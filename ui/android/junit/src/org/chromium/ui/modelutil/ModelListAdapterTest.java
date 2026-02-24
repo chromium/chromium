@@ -12,10 +12,12 @@ import android.widget.LinearLayout;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -29,6 +31,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ModelListAdapterTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final Integer VIEW_TYPE_1 = 0;
     private static final Integer VIEW_TYPE_2 = 1;
     private static final Integer VIEW_TYPE_3_INFLATED = 2;
@@ -92,7 +95,6 @@ public class ModelListAdapterTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         MVCListAdapter.ModelList testData = new MVCListAdapter.ModelList();
         mModel = new PropertyModel(BOOLEAN_PROPERTY, FLOAT_PROPERTY, INT_PROPERTY, OBJECT_PROPERTY);

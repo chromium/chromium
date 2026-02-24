@@ -19,11 +19,13 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -38,6 +40,7 @@ import org.chromium.ui.test.util.modelutil.FakeViewProvider;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LazyConstructionPropertyMcpTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final WritableBooleanPropertyKey VISIBILITY = new WritableBooleanPropertyKey();
     private static final WritableObjectPropertyKey<String> STRING_PROPERTY =
             new WritableObjectPropertyKey<>();
@@ -53,7 +56,6 @@ public class LazyConstructionPropertyMcpTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         mModel = new PropertyModel(ALL_PROPERTIES);
         mModel.set(VISIBILITY, false);
         mViewProvider = new FakeViewProvider<>();

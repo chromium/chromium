@@ -11,10 +11,12 @@ import android.app.Activity;
 import android.view.View;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -32,6 +34,7 @@ import java.util.List;
             "androidx.recyclerview.widget.RecyclerView" // required to mock final
         })
 public class SimpleRecyclerViewAdapterTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final PropertyModel.WritableIntPropertyKey INT_PROPERTY =
             new PropertyModel.WritableIntPropertyKey();
     private static final Integer VIEW_TYPE_1 = 1;
@@ -46,7 +49,6 @@ public class SimpleRecyclerViewAdapterTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mModel = new PropertyModel(INT_PROPERTY);
         mModelList = new ModelList();
