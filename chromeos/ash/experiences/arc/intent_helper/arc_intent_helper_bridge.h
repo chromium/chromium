@@ -165,7 +165,7 @@ class ArcIntentHelperBridge : public KeyedService,
   // Android.
   std::map<std::string, std::vector<IntentFilter>> intent_filters_;
 
-  base::ObserverList<ArcIntentHelperObserver>::Unchecked observer_list_;
+  base::ObserverList<ArcIntentHelperObserver> observer_list_;
 
   // Schemes that ARC is known to send via OnOpenUrl.
   const std::set<std::string> allowed_arc_schemes_;

@@ -54,7 +54,7 @@ class ArcNotificationSurfaceManagerImpl
 
   NotificationSurfaceMap notification_surface_map_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash

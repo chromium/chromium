@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/observer_list_types.h"
+
 namespace ash {
 
 class ArcNotificationSurface;
@@ -14,7 +16,7 @@ class ArcNotificationSurface;
 // Keeps track of NotificationSurface.
 class ArcNotificationSurfaceManager {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Invoked when a notification surface is added to the registry.
     virtual void OnNotificationSurfaceAdded(
@@ -29,7 +31,7 @@ class ArcNotificationSurfaceManager {
         ArcNotificationSurface* surface) {}
 
    protected:
-    virtual ~Observer() = default;
+    ~Observer() override = default;
   };
   static ArcNotificationSurfaceManager* Get();
 

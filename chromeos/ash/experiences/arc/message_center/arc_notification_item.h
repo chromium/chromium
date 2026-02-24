@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_MESSAGE_CENTER_ARC_NOTIFICATION_ITEM_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_MESSAGE_CENTER_ARC_NOTIFICATION_ITEM_H_
 
+#include "base/observer_list_types.h"
 #include "chromeos/ash/experiences/arc/mojom/notifications.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -12,7 +13,7 @@ namespace ash {
 
 class ArcNotificationItem {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     // Invoked when the notification data for this item has changed.
     virtual void OnItemDestroying() = 0;
@@ -26,7 +27,7 @@ class ArcNotificationItem {
     virtual void OnRemoteInputActivationChanged(bool activated) {}
 
    protected:
-    virtual ~Observer() = default;
+    ~Observer() override = default;
   };
 
   virtual ~ArcNotificationItem() = default;

@@ -8,16 +8,15 @@
 #include <optional>
 #include <string>
 
+#include "base/observer_list_types.h"
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom-forward.h"
 
 namespace arc {
 
 class ArcIntentHelperBridge;
 
-class ArcIntentHelperObserver {
+class ArcIntentHelperObserver : public base::CheckedObserver {
  public:
-  virtual ~ArcIntentHelperObserver() = default;
-
   // Called when intent filters are added, removed or updated.
   // A std::nullopt |package_name| indicates that intent filters were updated
   // for all packages. Otherwise, |package_name| contains the name of the
@@ -38,6 +37,9 @@ class ArcIntentHelperObserver {
 
   // Called when ArcIntentHelperBridge is shut down.
   virtual void OnArcIntentHelperBridgeShutdown(ArcIntentHelperBridge* bridge) {}
+
+ protected:
+  ~ArcIntentHelperObserver() override = default;
 };
 
 }  // namespace arc

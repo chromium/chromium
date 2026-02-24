@@ -33,9 +33,12 @@ struct LinkHandlerInfo {
 
 class LinkHandlerModel {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void ModelChanged(const std::vector<LinkHandlerInfo>& handlers) = 0;
+
+   protected:
+    ~Observer() override = default;
   };
 
   // Creates and inits a model. Will return null if Init() fails.
@@ -78,7 +81,7 @@ class LinkHandlerModel {
 
   GURL url_;
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   // Url handler info passed from ARC.
   std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers_;
