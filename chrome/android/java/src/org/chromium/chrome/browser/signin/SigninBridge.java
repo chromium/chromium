@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.signin;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.accounts.AccountManager;
@@ -320,6 +321,36 @@ final class SigninBridge {
                 DeviceLockActivityLauncherImpl.get(),
                 AccountPickerLaunchMode.DEFAULT,
                 selectedAccountId);
+    }
+
+    /**
+     * Starts the flow to reauthenticate.
+     *
+     * @param tab The target tab for the continueUrl navigation.
+     * @param selectedAccountId The account to be reauthenticated .
+     */
+    @CalledByNative
+    private static void startUpdateCredentialsFlow(
+            Tab tab, @JniType("CoreAccountId") CoreAccountId selectedAccountId) {
+        assert selectedAccountId != null;
+        WindowAndroid windowAndroid = tab.getWindowAndroid();
+        if (windowAndroid == null || !tab.isUserInteractable()) {
+            // The page is opened in the background, ignore the header. See
+            // https://crbug.com/1145031#c5 and https://crbug.com/323424409 for details.
+            return;
+        }
+        AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
+        Profile profile = tab.getProfile().getOriginalProfile();
+        IdentityManager identityManager =
+                assertNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
+
+        accountManagerFacade.updateCredentials(
+                assertNonNull(
+                        identityManager.findExtendedAccountInfoByAccountId(selectedAccountId)),
+                assumeNonNull(windowAndroid.getActivity().get()),
+                (response) -> {
+                    // TODO(crbug.com/465701665): Redirect user if there is a specified URL.
+                });
     }
 
     private SigninBridge() {}

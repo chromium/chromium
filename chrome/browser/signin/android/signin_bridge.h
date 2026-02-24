@@ -43,6 +43,11 @@ class SigninBridge : public KeyedService {
       content::WebContents* web_contents,
       const GURL& continue_url,
       const std::optional<CoreAccountId>& account_id);
+
+  // Opens the reauthenication flow.
+  virtual void StartUpdateCredentialsFlow(TabAndroid* tab,
+                                          const GURL& continue_url,
+                                          const CoreAccountId& account_id);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_ANDROID_SIGNIN_BRIDGE_H_
