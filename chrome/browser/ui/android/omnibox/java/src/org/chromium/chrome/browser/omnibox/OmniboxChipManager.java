@@ -146,6 +146,7 @@ public class OmniboxChipManager {
     private @Nullable OmniboxChipCoordinator mChip;
     private @VisibilityState int mChipVisibilityState;
     private @Nullable ChipCallback mChipCallback;
+    private boolean mOmniboxFocused;
 
     /**
      * Creates an instance of {@link OmniboxChipManager}.
@@ -168,8 +169,8 @@ public class OmniboxChipManager {
     }
 
     /**
-     * Displays a chip in the Omnibox with the specified properties. If there is already a chip
-     * showing, updates its properties.
+     * Places a chip in the Omnibox with the specified properties. If there is already a chip
+     * placed, updates its properties.
      *
      * @param text The text to display when the chip is in its expanded state.
      * @param icon The icon drawable to display on the chip.
@@ -177,9 +178,7 @@ public class OmniboxChipManager {
      * @param onClick A runnable to execute when the chip is clicked.
      * @param callback A callback to get notified when the chip is hidden or shown.
      */
-    // TODO(crbug.com/450253146): Think of a better verb than "show" since calling this won't
-    // display the chip on the omnibox if there isn't enough space.
-    public void showChip(
+    public void placeChip(
             String text,
             Drawable icon,
             String contentDesc,
@@ -199,7 +198,7 @@ public class OmniboxChipManager {
             mChip.updateChip(text, icon, contentDesc, onClick);
         }
 
-        mRootView.setVisibility(View.VISIBLE);
+        mRootView.setVisibility(getRootVisibility());
     }
 
     /** Dismisses the existing chip, if exists. */
@@ -213,9 +212,19 @@ public class OmniboxChipManager {
         }
     }
 
-    /** Returns whether the chip is shown. */
-    public boolean isChipShown() {
+    /** Returns whether the chip is placed. */
+    public boolean isChipPlaced() {
         return mChip != null;
+    }
+
+    /**
+     * Sets whether the omnibox is focused and the chip should be hidden.
+     *
+     * @param focused Whether the omnibox is focused.
+     */
+    public void setOmniboxFocused(boolean focused) {
+        mOmniboxFocused = focused;
+        mRootView.setVisibility(getRootVisibility());
     }
 
     /** Returns the {@link ToolbarWidthConsumer} for the collapsed (icon only) state. */
@@ -236,5 +245,11 @@ public class OmniboxChipManager {
     @Px
     int getMinExpandedWidthForTesting() {
         return mMinExpandedWidth;
+    }
+
+    private int getRootVisibility() {
+        if (!isChipPlaced()) return View.GONE;
+
+        return mOmniboxFocused ? View.INVISIBLE : View.VISIBLE;
     }
 }

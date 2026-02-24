@@ -39,7 +39,7 @@ public class TabbedOpenInAppEntryPoint extends OpenInAppEntryPoint {
 
     @Override
     protected void onOpenInAppInfoChanged(OpenInAppDelegate.@Nullable OpenInAppInfo openInAppInfo) {
-        if (openInAppInfo == null && mOmniboxChipManager.isChipShown()) {
+        if (openInAppInfo == null && mOmniboxChipManager.isChipPlaced()) {
             mOmniboxChipManager.dismissChip();
         } else if (openInAppInfo != null) {
             Drawable icon = openInAppInfo.appIcon;
@@ -53,7 +53,7 @@ public class TabbedOpenInAppEntryPoint extends OpenInAppEntryPoint {
                             ? mContext.getString(R.string.open_in_app_desc, openInAppInfo.appName)
                             : text;
 
-            mOmniboxChipManager.showChip(
+            mOmniboxChipManager.placeChip(
                     text,
                     icon,
                     desc,

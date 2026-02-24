@@ -120,7 +120,7 @@ public class TabbedOpenInAppEntryPointUnitTest {
     }
 
     @Test
-    public void showAndDismissChip() {
+    public void placeAndDismissChip() {
         OpenInAppDelegate delegate = OpenInAppDelegate.from(mTab);
 
         var captor = ArgumentCaptor.forClass(WebContentsObserver.class);
@@ -142,13 +142,13 @@ public class TabbedOpenInAppEntryPointUnitTest {
         String chipTitle = mContext.getString(R.string.open_in_app);
         String chipDescription = mContext.getString(R.string.open_in_app_desc, LABEL);
         verify(mOmniboxChipManager)
-                .showChip(
+                .placeChip(
                         eq(chipTitle),
                         eq(mIcon),
                         eq(chipDescription),
                         any(Runnable.class),
                         callbackCaptor.capture());
-        when(mOmniboxChipManager.isChipShown()).thenReturn(true);
+        when(mOmniboxChipManager.isChipPlaced()).thenReturn(true);
 
         // When chip is shown, it shouldn't be in the menu.
         callbackCaptor.getValue().onChipShown();

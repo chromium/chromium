@@ -49,6 +49,7 @@ import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -868,6 +869,10 @@ class LocationBarMediator
         }
 
         mLocationBarEmbedder.onWidthConsumerVisibilityChanged();
+
+        if (mOmniboxChipManager != null) {
+            updateOmniboxChipVisibility();
+        }
     }
 
     /**
@@ -1816,6 +1821,12 @@ class LocationBarMediator
         }
 
         return !mUrlHasFocus && mIsLocationBarFocusedFromNtpScroll;
+    }
+
+    @RequiresNonNull("mOmniboxChipManager")
+    private void updateOmniboxChipVisibility() {
+        boolean focused = mUrlHasFocus || mIsUrlFocusChangeInProgress;
+        mOmniboxChipManager.setOmniboxFocused(focused);
     }
 
     private void onAutocompleteRequestTypeChanged(@AutocompleteRequestType int type) {
