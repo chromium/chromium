@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -289,9 +290,17 @@ CGFloat GeminiBrowserAgent::GetFloatyOffsetFromFullscreenController(
     FullscreenController* controller) {
   CGFloat fully_expanded_bottom_toolbar_height =
       controller->GetMaxViewportInsets().bottom;
+
+  SceneState* scene_state = browser_->GetSceneState();
+  if (scene_state && scene_state.window && IsLandscape(scene_state.window)) {
+    fully_expanded_bottom_toolbar_height +=
+        scene_state.window.safeAreaInsets.bottom;
+  }
+
   CGFloat offset =
       (fully_expanded_bottom_toolbar_height * controller->GetProgress()) -
       kFloatyIntrinsicPaddingCorrection;
+
   return offset;
 }
 
@@ -360,7 +369,8 @@ void GeminiBrowserAgent::UpdateForTraitCollection(
   // Update the offset for a device orientation update to landscape or portrait.
   CGFloat offset =
       GetFloatyOffsetFromFullscreenController(fullscreen_controller_);
-  ios::provider::UpdateOverlayOffsetWithOpacity(offset, kFloatyShownOpacity);
+  ios::provider::UpdateOverlayOffsetWithOpacity(
+      offset, fullscreen_controller_->GetProgress());
 }
 
 void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
