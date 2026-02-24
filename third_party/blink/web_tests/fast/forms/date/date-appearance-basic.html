@@ -1,4 +1,5 @@
 <html>
+<script src="../resources/common.js"></script>
 <body>
 <ul>
     <li>Basic <input type="date"> <input type="date" value="2012-10-05"></li>
@@ -28,9 +29,8 @@
 </ul>
 <script>
 var input = document.getElementById('hovered');
-if (window.eventSender)
-    eventSender.mouseMoveTo(input.offsetLeft + input.offsetWidth / 2, input.offsetTop + input.offsetHeight / 2);
 document.querySelector('input').focus();
+hoverElementAndFinishAfterPaint(input);
 </script>
 </body>
 </html>

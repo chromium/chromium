@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <meta name="color-scheme" content="light dark">
-<script src="../../../../resources/run-after-layout-and-paint.js"></script>
 <script src="../../resources/common.js"></script>
 <body>
 
@@ -42,12 +41,7 @@
 </ul>
 
 <script>
-
-runAfterLayoutAndPaint(function() {
-  var target = document.getElementById('hoverTarget');
-  hoverOverElement(target);
-}, true);
-
+hoverElementAndFinishAfterPaint(document.getElementById('hoverTarget'));
 </script>
 
 </body>

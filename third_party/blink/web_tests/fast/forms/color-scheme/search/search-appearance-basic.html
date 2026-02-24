@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <meta name='color-scheme' content="light dark">
+<script src="../../resources/common.js"></script>
 <body>
 <style>
 input {
@@ -54,8 +55,7 @@ input {
 
 <script>
 var input = document.getElementById('hovered');
-if (window.eventSender)
-    eventSender.mouseMoveTo(input.offsetLeft + input.offsetWidth / 2, input.offsetTop + input.offsetHeight / 2);
 document.querySelector('input[readonly]').focus();
+hoverElementAndFinishAfterPaint(input);
 </script>
 </body>

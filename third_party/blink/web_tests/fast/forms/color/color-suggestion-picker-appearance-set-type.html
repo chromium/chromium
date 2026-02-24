@@ -10,5 +10,7 @@
   window.onload = openPickerAppearanceOnly(document.querySelector('input'),() => {
     // The color suggestion picker popup should close when the input type changes.
     document.querySelector('input').type = 'text';
+    return requestAnimationFramePromise()
+      .then(() => requestAnimationFramePromise());
   });
 </script>

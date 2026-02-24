@@ -65,6 +65,8 @@
 </div>
 
 <script>
+if (window.testRunner)
+  testRunner.waitUntilDone();
 
 runAfterLayoutAndPaint(function() {
   indeterminateCheckbox.indeterminate = true;
@@ -79,8 +81,14 @@ runAfterLayoutAndPaint(function() {
   indeterminateCheckboxZoom4WhiteBG.indeterminate = true;
   indeterminateCheckboxZoom4BlackBG.indeterminate = true;
 
+  // hoverElementAndFinishAfterPaint() changes snapshot timing after
+  // indeterminate-state changes, causing reliable failures on the
+  // accessibility bot.
   var target = document.getElementById('hoverTarget');
-  hoverOverElement(target);
-}, true);
+  hoverElementAfterPaint(target, function() {
+    if (window.testRunner)
+      testRunner.notifyDone();
+  });
+});
 </script>
 </body>

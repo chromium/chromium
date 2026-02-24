@@ -154,6 +154,41 @@ function hoverOverElement(element) {
     eventSender.mouseMoveTo(center[0], center[1]);
 }
 
+function configureHoverEnvironmentForTest() {
+    if (!window.internals)
+        return;
+    internals.setIsCursorVisible(document, true);
+    internals.settings.setPrimaryHoverType('hover');
+    internals.settings.setAvailableHoverTypes('hover');
+}
+
+function hoverElementAfterPaint(element, callback) {
+    const runAfterLayoutAndPaint = () => new Promise(resolve =>
+        requestAnimationFrame(() => setTimeout(resolve, 0)));
+
+    runAfterLayoutAndPaint()
+    .then(() => {
+        configureHoverEnvironmentForTest();
+        hoverOverElement(element);
+        return runAfterLayoutAndPaint();
+    })
+    .then(() => {
+        if (callback) {
+            callback();
+        }
+    });
+}
+
+function hoverElementAndFinishAfterPaint(element) {
+    if (window.testRunner)
+        testRunner.waitUntilDone();
+
+    hoverElementAfterPaint(element, function() {
+        if (window.testRunner)
+            testRunner.notifyDone();
+    });
+}
+
 function clickElement(element) {
     hoverOverElement(element);
     eventSender.mouseDown();

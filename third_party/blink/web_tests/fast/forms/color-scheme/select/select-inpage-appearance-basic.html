@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <meta name="color-scheme" content="light dark">
-<script src="../../../../resources/run-after-layout-and-paint.js"></script>
 <script src="../../resources/common.js"></script>
 <body>
 
@@ -48,14 +47,7 @@
 <select style="zoom: 3;"><option>zoom: 3</option></select> <br>
 
 <script>
-
-runAfterLayoutAndPaint(function() {
-  let focusTarget = document.getElementById('focusTarget');
-  focusTarget.focus();
-
-  let hoverTarget = document.getElementById('hoverTarget');
-  hoverOverElement(hoverTarget);
-}, true);
-
+document.getElementById('focusTarget').focus();
+hoverElementAndFinishAfterPaint(document.getElementById('hoverTarget'));
 </script>
 </body>
