@@ -112,7 +112,6 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       recentTabForChip_: {type: Object},
       webuiOmniboxPopupSelectionControlEnabled_: {type: Boolean},
       inputState_: {type: Object},
-      showModelPicker_: {type: Boolean},
       usePecApi_: {type: Boolean},
       canShowContextEntrypointDescription_: {type: Boolean},
     };
@@ -264,13 +263,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   }
 
   protected get shouldHideEntrypointButton_(): boolean {
-    const hasAllowedInputsForPecApi = !this.usePecApi_ ||
-        (!!this.inputState_ &&
-          (this.inputState_.allowedModels.length > 0 ||
-           this.inputState_.allowedTools.length > 0 ||
-           this.inputState_.allowedInputTypes.length > 0));
-    return this.searchboxLayoutMode_ === 'Compact' ||
-        !hasAllowedInputsForPecApi;
+    return this.searchboxLayoutMode_ === 'Compact';
   }
 
   private computeShowContextEntrypoint_(): boolean {

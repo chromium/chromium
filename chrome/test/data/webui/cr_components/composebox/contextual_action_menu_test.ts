@@ -7,33 +7,11 @@ import 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 
 import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-function createInputState(overrides?: Partial<InputState>): InputState {
-  return Object.assign(
-      {
-        allowedTools: [],
-        disabledTools: [],
-        toolConfigs: [],
-        toolsSectionConfig: {header: ''},
-        allowedModels: [],
-        disabledModels: [],
-        activeModel: 0,
-        activeTool: 0,
-        hintText: '',
-        modelConfigs: [],
-        modelSectionConfig: {header: ''},
-        allowedInputTypes: [],
-        disabledInputTypes: [],
-        inputTypeConfigs: [],
-        maxInstances: {},
-        maxTotalInputs: 0,
-      },
-      overrides);
-}
+import {createInputState} from './composebox_test_utils.js';
 
 suite('ContextualActionMenu', () => {
   let actionMenu: ContextualActionMenuElement;
