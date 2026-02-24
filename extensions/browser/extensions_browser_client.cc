@@ -15,6 +15,7 @@
 #include "components/update_client/configurator.h"
 #include "components/update_client/update_client.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
@@ -224,7 +225,8 @@ void ExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
       browser_context, owner_site_url.GetHost(), partition_name, in_memory);
 
   if (owner_site_url.SchemeIs(extensions::kExtensionScheme)) {
-    const auto& owner_config = owner_site_instance->GetStoragePartitionConfig();
+    const auto& owner_config =
+        owner_site_instance->GetSecurityPrincipal().GetStoragePartitionConfig();
 #if DCHECK_IS_ON()
     if (browser_context->IsOffTheRecord()) {
       DCHECK(owner_config.in_memory());

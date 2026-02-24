@@ -370,7 +370,9 @@ ExtensionId GetExtensionIdForSiteInstance(
     content::SiteInstance& site_instance) {
   // <webview> guests always store the ExtensionId in the partition domain.
   if (site_instance.GetSecurityPrincipal().IsGuest()) {
-    return site_instance.GetStoragePartitionConfig().partition_domain();
+    return site_instance.GetSecurityPrincipal()
+        .GetStoragePartitionConfig()
+        .partition_domain();
   }
 
   // This works for both apps and extensions because the site has been

@@ -146,7 +146,8 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
 
       // Note: |default_site_instance_| will get set inside this call
       // via RegisterSiteInstance().
-      site_instance->SetSiteInfoToDefault(site_info.storage_partition_config());
+      site_instance->SetSiteInfoToDefault(
+          site_info.GetStoragePartitionConfig());
       DCHECK_EQ(default_site_instance_, site_instance.get());
     }
 
@@ -166,7 +167,7 @@ void BrowsingInstance::RegisterSiteInstance(SiteInstanceImpl* site_instance) {
   // Verify that the SiteInstance's StoragePartitionConfig matches this
   // BrowsingInstance's StoragePartitionConfig if it already has one.
   const StoragePartitionConfig& storage_partition_config =
-      site_instance->GetSiteInfo().storage_partition_config();
+      site_instance->GetSecurityPrincipal().GetStoragePartitionConfig();
   if (storage_partition_config_.has_value()) {
     // We should only use a single StoragePartition within a BrowsingInstance.
     // If we're attempting to use multiple, something has gone wrong with the

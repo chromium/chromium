@@ -185,6 +185,7 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   // Initializes |storage_partition_config_| with a value appropriate for
   // |browser_context|.
   explicit SiteInfo(BrowserContext* browser_context);
+
   // The SiteInfo constructor should take in all values needed for comparing two
   // SiteInfos, to help ensure all creation sites are updated accordingly when
   // new values are added. The private function MakeSecurityPrincipalKey()
@@ -210,6 +211,7 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   ~SiteInfo() override;
   bool IsSandboxed() const override;
   bool IsGuest() const override;
+  const StoragePartitionConfig& GetStoragePartitionConfig() const override;
 
   // This function returns a new SiteInfo which is equivalent to the original,
   // except that its AgentClusterKey is made site-keyed if it had been created
@@ -403,13 +405,6 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   // the current site), in which case we should ensure there is only one
   // RenderProcessHost per site for the entire browser context.
   bool ShouldUseProcessPerSite(BrowserContext* browser_context) const;
-
-  // Get the StoragePartitionConfig, which describes the StoragePartition this
-  // SiteInfo is associated with.  For example, this will correspond to a
-  // non-default StoragePartition for <webview> guests.
-  const StoragePartitionConfig& storage_partition_config() const {
-    return storage_partition_config_;
-  }
 
   // Write a representation of this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;

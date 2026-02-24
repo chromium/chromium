@@ -11705,8 +11705,9 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
   UrlInfo url_info(
       UrlInfoInit(url)
           .WithOrigin(origin)
-          .WithStoragePartitionConfig(
-              GetSiteInstance()->GetSiteInfo().storage_partition_config())
+          .WithStoragePartitionConfig(GetSiteInstance()
+                                          ->GetSecurityPrincipal()
+                                          .GetStoragePartitionConfig())
           .WithWebExposedIsolationInfo(
               GetSiteInstance()->GetWebExposedIsolationInfo())
           .WithSandbox(is_sandboxed)
@@ -16727,8 +16728,9 @@ void RenderFrameHostImpl::SendCommitNavigation(
           navigation_request->frame_tree_node()
               ->frame_tree()
               .controller()
-              .GetSessionStorageNamespace(
-                  GetSiteInstance()->GetStoragePartitionConfig())
+              .GetSessionStorageNamespace(GetSiteInstance()
+                                              ->GetSecurityPrincipal()
+                                              .GetStoragePartitionConfig())
               ->id();
       partition->BindSessionStorageAreaForProcess(
           process_id, commit_params->storage_key, namespace_id,

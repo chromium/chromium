@@ -10638,7 +10638,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderTargetHintBrowserTest,
           ->frame_tree()
           .controller()
           .GetSessionStorageNamespace(prerender_web_contents->GetSiteInstance()
-                                          ->GetStoragePartitionConfig())
+                                          ->GetSecurityPrincipal()
+                                          .GetStoragePartitionConfig())
           ->id();
   EXPECT_EQ(
       "prerendering",
@@ -10679,14 +10680,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderTargetHintBrowserTest,
       prerender_web_contents->GetPrimaryFrameTree()
           .controller()
           .GetSessionStorageNamespace(prerender_web_contents->GetSiteInstance()
-                                          ->GetStoragePartitionConfig())
+                                          ->GetSecurityPrincipal()
+                                          .GetStoragePartitionConfig())
           ->id());
   EXPECT_NE(
       prerender_session_storage_id_before_activation,
       initiator_web_contents->GetPrimaryFrameTree()
           .controller()
           .GetSessionStorageNamespace(prerender_web_contents->GetSiteInstance()
-                                          ->GetStoragePartitionConfig())
+                                          ->GetSecurityPrincipal()
+                                          .GetStoragePartitionConfig())
           ->id());
 
   // The navigation occurred in a new WebContents, so the original WebContents

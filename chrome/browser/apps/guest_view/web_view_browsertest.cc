@@ -1695,8 +1695,9 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindow) {
   auto* guest_instance2 = guest2->GetSiteInstance();
   EXPECT_TRUE(guest_instance1->GetSecurityPrincipal().IsGuest());
   EXPECT_TRUE(guest_instance2->GetSecurityPrincipal().IsGuest());
-  EXPECT_EQ(guest_instance1->GetStoragePartitionConfig(),
-            guest_instance2->GetStoragePartitionConfig());
+  EXPECT_EQ(
+      guest_instance1->GetSecurityPrincipal().GetStoragePartitionConfig(),
+      guest_instance2->GetSecurityPrincipal().GetStoragePartitionConfig());
   EXPECT_TRUE(guest_instance1->IsRelatedSiteInstance(guest_instance2));
 }
 
@@ -1735,8 +1736,9 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindowNoReferrerLink) {
   auto* guest_instance2 = guest2_rfh->GetSiteInstance();
   EXPECT_TRUE(guest_instance1->GetSecurityPrincipal().IsGuest());
   EXPECT_TRUE(guest_instance2->GetSecurityPrincipal().IsGuest());
-  EXPECT_EQ(guest_instance1->GetStoragePartitionConfig(),
-            guest_instance2->GetStoragePartitionConfig());
+  EXPECT_EQ(
+      guest_instance1->GetSecurityPrincipal().GetStoragePartitionConfig(),
+      guest_instance2->GetSecurityPrincipal().GetStoragePartitionConfig());
 
   // The new guest should be in a different BrowsingInstance.
   EXPECT_FALSE(guest_instance1->IsRelatedSiteInstance(guest_instance2));
@@ -1752,8 +1754,11 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindowNoReferrerLink) {
     ASSERT_TRUE(observer.last_source_site_instance());
     EXPECT_TRUE(
         observer.last_source_site_instance()->GetSecurityPrincipal().IsGuest());
-    EXPECT_EQ(observer.last_source_site_instance()->GetStoragePartitionConfig(),
-              guest_instance1->GetStoragePartitionConfig());
+    EXPECT_EQ(
+        observer.last_source_site_instance()
+            ->GetSecurityPrincipal()
+            .GetStoragePartitionConfig(),
+        guest_instance1->GetSecurityPrincipal().GetStoragePartitionConfig());
   }
 }
 
@@ -6637,7 +6642,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
       main_frame->GetSiteInstance();
   EXPECT_TRUE(starting_instance->GetSecurityPrincipal().IsGuest());
   EXPECT_TRUE(starting_instance->GetProcess()->IsForGuestsOnly());
-  EXPECT_FALSE(starting_instance->GetStoragePartitionConfig().is_default());
+  EXPECT_FALSE(starting_instance->GetSecurityPrincipal()
+                   .GetStoragePartitionConfig()
+                   .is_default());
 
   // Navigate <webview> to a cross-site page with a same-site iframe.
   const GURL start_url =
@@ -6658,8 +6665,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
   EXPECT_NE(starting_instance, main_frame->GetSiteInstance());
   EXPECT_TRUE(
       starting_instance->IsRelatedSiteInstance(main_frame->GetSiteInstance()));
-  EXPECT_EQ(starting_instance->GetStoragePartitionConfig(),
-            main_frame->GetSiteInstance()->GetStoragePartitionConfig());
+  EXPECT_EQ(
+      starting_instance->GetSecurityPrincipal().GetStoragePartitionConfig(),
+      main_frame->GetSiteInstance()
+          ->GetSecurityPrincipal()
+          .GetStoragePartitionConfig());
   EXPECT_EQ(
       starting_instance->GetOrCreateProcessForTesting()->GetStoragePartition(),
       main_frame->GetProcess()->GetStoragePartition());
@@ -6686,8 +6696,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
   EXPECT_TRUE(subframe->GetProcess()->IsForGuestsOnly());
   EXPECT_TRUE(main_frame->GetSiteInstance()->IsRelatedSiteInstance(
       subframe->GetSiteInstance()));
-  EXPECT_EQ(subframe->GetSiteInstance()->GetStoragePartitionConfig(),
-            main_frame->GetSiteInstance()->GetStoragePartitionConfig());
+  EXPECT_EQ(subframe->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetStoragePartitionConfig(),
+            main_frame->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetStoragePartitionConfig());
   EXPECT_EQ(subframe->GetProcess()->GetStoragePartition(),
             main_frame->GetProcess()->GetStoragePartition());
   EXPECT_EQ("http://b.test/", subframe->GetSiteInstance()->GetSiteURL().spec());
@@ -6735,8 +6749,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ErrorPageIsolation) {
   EXPECT_TRUE(error_instance->RequiresDedicatedProcess());
   EXPECT_NE(error_instance, first_instance);
   EXPECT_TRUE(error_instance->GetSecurityPrincipal().IsGuest());
-  EXPECT_EQ(first_instance->GetStoragePartitionConfig(),
-            error_instance->GetStoragePartitionConfig());
+  EXPECT_EQ(first_instance->GetSecurityPrincipal().GetStoragePartitionConfig(),
+            error_instance->GetSecurityPrincipal().GetStoragePartitionConfig());
 
   // Navigate to a normal page and then repeat the above with an
   // embedder-initiated navigation to an error page.
@@ -6761,15 +6775,17 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, ErrorPageIsolation) {
       GetGuestRenderFrameHost()->GetSiteInstance();
   EXPECT_TRUE(second_error_instance->RequiresDedicatedProcess());
   EXPECT_TRUE(second_error_instance->GetSecurityPrincipal().IsGuest());
-  EXPECT_EQ(first_instance->GetStoragePartitionConfig(),
-            second_error_instance->GetStoragePartitionConfig());
+  EXPECT_EQ(first_instance->GetSecurityPrincipal().GetStoragePartitionConfig(),
+            second_error_instance->GetSecurityPrincipal()
+                .GetStoragePartitionConfig());
 
   // Because we swapped BrowsingInstances above, this error page SiteInstance
   // should be different from the first error page SiteInstance, but it should
   // be in the same StoragePartition.
   EXPECT_NE(error_instance, second_error_instance);
-  EXPECT_EQ(error_instance->GetStoragePartitionConfig(),
-            second_error_instance->GetStoragePartitionConfig());
+  EXPECT_EQ(error_instance->GetSecurityPrincipal().GetStoragePartitionConfig(),
+            second_error_instance->GetSecurityPrincipal()
+                .GetStoragePartitionConfig());
 }
 
 // Ensure that the browser doesn't crash when a subframe in a <webview> is
@@ -6865,8 +6881,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, BrowsingInstanceSwap) {
   EXPECT_TRUE(second_instance->GetProcess()->IsForGuestsOnly());
   EXPECT_NE(first_instance, second_instance);
   EXPECT_FALSE(first_instance->IsRelatedSiteInstance(second_instance.get()));
-  EXPECT_EQ(first_instance->GetStoragePartitionConfig(),
-            second_instance->GetStoragePartitionConfig());
+  EXPECT_EQ(
+      first_instance->GetSecurityPrincipal().GetStoragePartitionConfig(),
+      second_instance->GetSecurityPrincipal().GetStoragePartitionConfig());
   EXPECT_EQ(
       first_instance->GetOrCreateProcessForTesting()->GetStoragePartition(),
       second_instance->GetProcess()->GetStoragePartition());
@@ -6955,8 +6972,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, NavigateToAboutBlank) {
   EXPECT_TRUE(third_instance->GetProcess()->IsForGuestsOnly());
   EXPECT_NE(first_instance, third_instance);
   EXPECT_FALSE(first_instance->IsRelatedSiteInstance(third_instance.get()));
-  EXPECT_EQ(first_instance->GetStoragePartitionConfig(),
-            third_instance->GetStoragePartitionConfig());
+  EXPECT_EQ(first_instance->GetSecurityPrincipal().GetStoragePartitionConfig(),
+            third_instance->GetSecurityPrincipal().GetStoragePartitionConfig());
   EXPECT_EQ(
       first_instance->GetOrCreateProcessForTesting()->GetStoragePartition(),
       third_instance->GetProcess()->GetStoragePartition());
@@ -7228,8 +7245,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SubframeProcessReuse) {
   subframe = content::ChildFrameAt(guest->GetGuestMainFrame(), 0);
   subframe2 = content::ChildFrameAt(guest2->GetGuestMainFrame(), 0);
   EXPECT_NE(subframe->GetSiteInstance(), subframe2->GetSiteInstance());
-  EXPECT_EQ(subframe->GetSiteInstance()->GetStoragePartitionConfig(),
-            subframe2->GetSiteInstance()->GetStoragePartitionConfig());
+  EXPECT_EQ(subframe->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetStoragePartitionConfig(),
+            subframe2->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetStoragePartitionConfig());
   EXPECT_EQ(subframe->GetProcess(), subframe2->GetProcess());
 }
 
@@ -7312,7 +7333,9 @@ IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, SimpleNavigations) {
   EXPECT_FALSE(starting_instance->RequiresDedicatedProcess());
   EXPECT_TRUE(starting_instance->GetSecurityPrincipal().IsGuest());
   EXPECT_TRUE(starting_instance->GetProcess()->IsForGuestsOnly());
-  EXPECT_FALSE(starting_instance->GetStoragePartitionConfig().is_default());
+  EXPECT_FALSE(starting_instance->GetSecurityPrincipal()
+                   .GetStoragePartitionConfig()
+                   .is_default());
 
   // Navigate <webview> to a cross-site page with a same-site iframe.
   const GURL start_url =
@@ -7389,7 +7412,9 @@ IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, IsolatedOrigin) {
   EXPECT_FALSE(starting_instance->RequiresDedicatedProcess());
   EXPECT_TRUE(starting_instance->GetSecurityPrincipal().IsGuest());
   EXPECT_TRUE(starting_instance->GetProcess()->IsForGuestsOnly());
-  EXPECT_FALSE(starting_instance->GetStoragePartitionConfig().is_default());
+  EXPECT_FALSE(starting_instance->GetSecurityPrincipal()
+                   .GetStoragePartitionConfig()
+                   .is_default());
 
   // Navigate to an isolated origin.  Isolated origins take precedence over
   // switches::kDisableSiteIsolation, so we should swap SiteInstances and
@@ -7431,10 +7456,17 @@ IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, IsolatedOrigin) {
   EXPECT_FALSE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
 
   // Check that all frames stayed in the same guest StoragePartition.
-  EXPECT_EQ(main_frame->GetSiteInstance()->GetStoragePartitionConfig(),
-            subframe->GetSiteInstance()->GetStoragePartitionConfig());
-  EXPECT_EQ(main_frame->GetSiteInstance()->GetStoragePartitionConfig(),
-            starting_instance->GetStoragePartitionConfig());
+  EXPECT_EQ(main_frame->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetStoragePartitionConfig(),
+            subframe->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetStoragePartitionConfig());
+  EXPECT_EQ(
+      main_frame->GetSiteInstance()
+          ->GetSecurityPrincipal()
+          .GetStoragePartitionConfig(),
+      starting_instance->GetSecurityPrincipal().GetStoragePartitionConfig());
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, FencedFrame) {
@@ -7454,8 +7486,11 @@ IN_PROC_BROWSER_TEST_P(WebViewWithDefaultSiteInstanceTest, FencedFrame) {
   EXPECT_FALSE(fenced_frame->IsErrorDocument());
   EXPECT_NE(fenced_frame_site_instance, guest_rfh->GetSiteInstance());
   EXPECT_TRUE(fenced_frame_site_instance->GetSecurityPrincipal().IsGuest());
-  EXPECT_EQ(fenced_frame_site_instance->GetStoragePartitionConfig(),
-            guest_rfh->GetSiteInstance()->GetStoragePartitionConfig());
+  EXPECT_EQ(fenced_frame_site_instance->GetSecurityPrincipal()
+                .GetStoragePartitionConfig(),
+            guest_rfh->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetStoragePartitionConfig());
   EXPECT_EQ(fenced_frame->GetProcess(), guest_rfh->GetProcess());
 }
 
@@ -7552,8 +7587,12 @@ IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest,
   EXPECT_NE(ff_rfh->GetSiteInstance(), guest_rfh->GetSiteInstance());
   EXPECT_TRUE(guest_rfh->GetSiteInstance()->GetSecurityPrincipal().IsGuest());
   EXPECT_TRUE(ff_rfh->GetSiteInstance()->GetSecurityPrincipal().IsGuest());
-  EXPECT_EQ(ff_rfh->GetSiteInstance()->GetStoragePartitionConfig(),
-            guest_rfh->GetSiteInstance()->GetStoragePartitionConfig());
+  EXPECT_EQ(ff_rfh->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetStoragePartitionConfig(),
+            guest_rfh->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetStoragePartitionConfig());
 
   // The fenced frame will be in a different process from the embedding guest
   // only if Process Isolation for Fenced Frames is enabled.

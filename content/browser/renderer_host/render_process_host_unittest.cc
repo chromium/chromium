@@ -1225,8 +1225,8 @@ TEST_F(RenderProcessHostUnitTest,
   scoped_refptr<SiteInstanceImpl> sw_site_instance2 =
       SiteInstanceImpl::CreateForServiceWorker(
           browser_context(),
-          UrlInfo::CreateForTesting(kUrl,
-                                    site_instance->GetStoragePartitionConfig()),
+          UrlInfo::CreateForTesting(kUrl, site_instance->GetSecurityPrincipal()
+                                              .GetStoragePartitionConfig()),
           /*can_reuse_process=*/true);
   RenderProcessHost* sw_process2 =
       sw_site_instance2->GetOrCreateProcessForTesting();

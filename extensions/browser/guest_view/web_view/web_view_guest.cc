@@ -851,7 +851,7 @@ content::GuestPageHolder* WebViewGuest::GuestCreateNewWindow(
       GuestViewManager::FromBrowserContext(browser_context());
   // Set the attach params to use the same partition as the opener.
   const auto storage_partition_config =
-      site_instance->GetStoragePartitionConfig();
+      site_instance->GetSecurityPrincipal().GetStoragePartitionConfig();
   const std::string storage_partition_id =
       GetStoragePartitionIdFromPartitionConfig(storage_partition_config);
   base::DictValue create_params;
@@ -927,8 +927,10 @@ void WebViewGuest::CreateNewGuestWebViewWindow(
   GuestViewManager* guest_manager =
       GuestViewManager::FromBrowserContext(browser_context());
   // Set the attach params to use the same partition as the opener.
-  const auto storage_partition_config =
-      web_contents()->GetSiteInstance()->GetStoragePartitionConfig();
+  const auto storage_partition_config = web_contents()
+                                            ->GetSiteInstance()
+                                            ->GetSecurityPrincipal()
+                                            .GetStoragePartitionConfig();
   const std::string storage_partition_id =
       GetStoragePartitionIdFromPartitionConfig(storage_partition_config);
   base::DictValue create_params;
@@ -1521,8 +1523,9 @@ void WebViewGuest::PushWebViewStateToIOThread(
   if (!guest_host->GetSiteInstance()->GetSecurityPrincipal().IsGuest()) {
     NOTREACHED();
   }
-  auto storage_partition_config =
-      guest_host->GetSiteInstance()->GetStoragePartitionConfig();
+  auto storage_partition_config = guest_host->GetSiteInstance()
+                                      ->GetSecurityPrincipal()
+                                      .GetStoragePartitionConfig();
 
   WebViewRendererState::WebViewInfo web_view_info;
   web_view_info.embedder_process_id = owner_rfh()->GetProcess()->GetID();
@@ -2216,7 +2219,8 @@ void WebViewGuest::RequestNewWindowPermission(
   // Retrieve the opener partition info if we have it.
   const auto storage_partition_config = new_guest->GetGuestMainFrame()
                                             ->GetSiteInstance()
-                                            ->GetStoragePartitionConfig();
+                                            ->GetSecurityPrincipal()
+                                            .GetStoragePartitionConfig();
   std::string storage_partition_id =
       GetStoragePartitionIdFromPartitionConfig(storage_partition_config);
 

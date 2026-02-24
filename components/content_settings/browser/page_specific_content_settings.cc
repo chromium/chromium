@@ -41,6 +41,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/trust_token_access_details.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -743,8 +744,9 @@ void PageSpecificContentSettings::StorageAccessed(
       auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
       const auto& session_storage_namespace_map =
           web_contents->GetController().GetSessionStorageNamespaceMap();
-      const auto& storage_partition_config =
-          web_contents->GetSiteInstance()->GetStoragePartitionConfig();
+      const auto& storage_partition_config = web_contents->GetSiteInstance()
+                                                 ->GetSecurityPrincipal()
+                                                 .GetStoragePartitionConfig();
       const auto& namespace_id =
           session_storage_namespace_map.at(storage_partition_config);
 

@@ -171,9 +171,9 @@ bool DoesNavigationChangeStoragePartition(SiteInstanceImpl* current_instance,
       current_instance
           ->DeriveSiteInfo(dest_url_info, /*is_related=*/false,
                            /*disregard_web_exposed_isolation_info=*/true)
-          .storage_partition_config();
+          .GetStoragePartitionConfig();
   StoragePartitionConfig current_partition_config =
-      current_instance->GetSiteInfo().storage_partition_config();
+      current_instance->GetSecurityPrincipal().GetStoragePartitionConfig();
   return current_partition_config != dest_partition_config;
 }
 
@@ -3924,7 +3924,7 @@ scoped_refptr<SiteInstanceImpl> RenderFrameHostManager::ConvertToSiteInstance(
   UrlInfo dest_url_info = descriptor.dest_url_info;
   if (current_instance->IsFixedStoragePartition()) {
     dest_url_info.storage_partition_config =
-        current_instance->GetSiteInfo().storage_partition_config();
+        current_instance->GetSecurityPrincipal().GetStoragePartitionConfig();
   }
 
   // First check if the candidate SiteInstance matches.  For example, we get

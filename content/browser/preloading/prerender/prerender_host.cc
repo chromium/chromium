@@ -497,11 +497,11 @@ PrerenderHost::PrerenderHost(
     // Use the same SessionStorageNamespace as the primary page for the
     // prerendering page.
     GetFrameTree()->controller().SetSessionStorageNamespace(
-        site_instance->GetStoragePartitionConfig(),
+        site_instance->GetSecurityPrincipal().GetStoragePartitionConfig(),
         web_contents_->GetPrimaryFrameTree()
             .controller()
-            .GetSessionStorageNamespace(
-                site_instance->GetStoragePartitionConfig()));
+            .GetSessionStorageNamespace(site_instance->GetSecurityPrincipal()
+                                            .GetStoragePartitionConfig()));
 
     // TODO(crbug.com/40177940): This should be moved to FrameTree::Init
     web_contents_->NotifySwappedFromRenderManager(

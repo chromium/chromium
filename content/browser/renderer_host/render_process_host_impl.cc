@@ -4724,7 +4724,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
   // same StoragePartition, since a RenderProcessHost can only support a
   // single StoragePartition.  This is relevant for packaged apps.
   StoragePartition* dest_partition = browser_context->GetStoragePartition(
-      site_info.storage_partition_config());
+      site_info.GetStoragePartitionConfig());
   if (!host->InSameStoragePartition(dest_partition))
     return false;
 

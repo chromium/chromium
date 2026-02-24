@@ -185,9 +185,6 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   //   corresponds to a site URL with the host "example.com".
   virtual const GURL& GetSiteURL() const = 0;
 
-  // Get the StoragePartitionConfig used by this SiteInstance.
-  virtual const StoragePartitionConfig& GetStoragePartitionConfig() = 0;
-
   // Gets a SiteInstance for the given URL that shares the current
   // BrowsingInstance, creating a new SiteInstance if necessary.  This ensures
   // that a BrowsingInstance only has one SiteInstance per site, so that pages

@@ -1636,8 +1636,9 @@ TEST_P(RenderFrameHostManagerTest, GuestNavigations) {
       TestWebContents::Create(browser_context(), initial_instance));
 
   EXPECT_TRUE(initial_instance->GetSecurityPrincipal().IsGuest());
-  EXPECT_EQ(kGuestPartitionConfig,
-            initial_instance->GetStoragePartitionConfig());
+  EXPECT_EQ(
+      kGuestPartitionConfig,
+      initial_instance->GetSecurityPrincipal().GetStoragePartitionConfig());
 
   RenderFrameHostManager* manager =
       web_contents->GetPrimaryFrameTree().root()->render_manager();
@@ -1657,7 +1658,8 @@ TEST_P(RenderFrameHostManagerTest, GuestNavigations) {
   // The SiteInstance of the navigating RenderFrameHost should still be a guest
   // SiteInstance in the same StoragePartition.
   scoped_refptr<SiteInstanceImpl> first_instance = host->GetSiteInstance();
-  EXPECT_EQ(first_instance->GetStoragePartitionConfig(), kGuestPartitionConfig);
+  EXPECT_EQ(first_instance->GetSecurityPrincipal().GetStoragePartitionConfig(),
+            kGuestPartitionConfig);
   EXPECT_TRUE(first_instance->GetSecurityPrincipal().IsGuest());
 
   // We have to swap SiteInstances and RenderFrameHosts, since the initial

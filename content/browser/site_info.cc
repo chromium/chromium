@@ -451,6 +451,10 @@ auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
       site_info.browser_context_id_);
 }
 
+const StoragePartitionConfig& SiteInfo::GetStoragePartitionConfig() const {
+  return storage_partition_config_;
+}
+
 SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
     const IsolationContext& isolation_context) const {
   SiteInfo non_oac_site_info(*this);

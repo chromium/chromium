@@ -103,7 +103,7 @@ GURL ProcessLock::GetProcessLockURL() const {
 
 StoragePartitionConfig ProcessLock::GetStoragePartitionConfig() const {
   DCHECK(site_info_.has_value());
-  return site_info_->storage_partition_config();
+  return site_info_->GetStoragePartitionConfig();
 }
 
 WebExposedIsolationInfo ProcessLock::GetWebExposedIsolationInfo() const {

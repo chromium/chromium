@@ -75,7 +75,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
   // If the SiteInstance has a non-default StoragePartition, include a basic
   // string representation of it.  Skip cases where the StoragePartition is
   // already conveyed in the site URL to avoid redundancy.
-  const auto& partition = site_instance->GetStoragePartitionConfig();
+  const auto& partition =
+      site_instance->GetSecurityPrincipal().GetStoragePartitionConfig();
   if (!partition.is_default() &&
       site_instance->GetSiteInfo().site_url().spec().find(
           partition.partition_domain()) == std::string::npos) {

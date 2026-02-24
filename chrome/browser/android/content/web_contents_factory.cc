@@ -6,6 +6,7 @@
 #include "chrome/browser/android/content/web_contents_factory_data_deleter.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
@@ -72,9 +73,10 @@ JNI_WebContentsFactory_CreateWebContentsWithSeparateStoragePartitionForExperimen
 
   // WebContentsFactoryDataDeleter owns itself and is also bound to
   // `web_contents` lifetime by observing WebContentsDestroyed().
-  new WebContentsFactoryDataDeleter(
-      web_contents.get(),
-      web_contents->GetSiteInstance()->GetStoragePartitionConfig());
+  new WebContentsFactoryDataDeleter(web_contents.get(),
+                                    web_contents->GetSiteInstance()
+                                        ->GetSecurityPrincipal()
+                                        .GetStoragePartitionConfig());
 
   return web_contents.release()->GetJavaWebContents();
 }

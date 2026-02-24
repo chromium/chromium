@@ -4295,8 +4295,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       static_cast<WebContentsImpl*>(shell()->web_contents())
           ->GetPrimaryMainFrame();
   SiteInstanceImpl* a_site_instance = rfh->GetSiteInstance();
-  EXPECT_TRUE(
-      a_site_instance->GetSiteInfo().storage_partition_config().is_default());
+  EXPECT_TRUE(a_site_instance->GetSecurityPrincipal()
+                  .GetStoragePartitionConfig()
+                  .is_default());
 
   // Make sure proactive BrowserInstance swapping doesn't interfere.
   rfh->DisableProactiveBrowsingInstanceSwapForTesting();
@@ -4308,8 +4309,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   rfh = static_cast<WebContentsImpl*>(shell()->web_contents())
             ->GetPrimaryMainFrame();
   SiteInstanceImpl* b_site_instance = rfh->GetSiteInstance();
-  EXPECT_FALSE(
-      b_site_instance->GetSiteInfo().storage_partition_config().is_default());
+  EXPECT_FALSE(b_site_instance->GetSecurityPrincipal()
+                   .GetStoragePartitionConfig()
+                   .is_default());
   EXPECT_FALSE(a_site_instance->IsRelatedSiteInstance(b_site_instance));
 }
 
@@ -4330,8 +4332,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
       static_cast<WebContentsImpl*>(shell()->web_contents())
           ->GetPrimaryMainFrame();
   EXPECT_FALSE(rfh->GetSiteInstance()
-                   ->GetSiteInfo()
-                   .storage_partition_config()
+                   ->GetSecurityPrincipal()
+                   .GetStoragePartitionConfig()
                    .is_default());
 
   // Load a page on a.com that iframes a b.com page.
@@ -4346,8 +4348,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   } else {
     EXPECT_TRUE(a_site_instance->IsDefaultSiteInstance());
   }
-  EXPECT_TRUE(
-      a_site_instance->GetSiteInfo().storage_partition_config().is_default());
+  EXPECT_TRUE(a_site_instance->GetSecurityPrincipal()
+                  .GetStoragePartitionConfig()
+                  .is_default());
 
   // Verify that the iframe uses the default StoragePartition.
   EXPECT_EQ(1UL, rfh->child_count());
@@ -4358,8 +4361,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   } else {
     EXPECT_TRUE(b_site_instance->IsDefaultSiteInstance());
   }
-  EXPECT_TRUE(
-      b_site_instance->GetSiteInfo().storage_partition_config().is_default());
+  EXPECT_TRUE(b_site_instance->GetSecurityPrincipal()
+                  .GetStoragePartitionConfig()
+                  .is_default());
 }
 
 // Ensure that these two browser-initiated navigations:

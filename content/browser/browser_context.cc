@@ -132,9 +132,10 @@ StoragePartition* BrowserContext::GetStoragePartition(
   if (site_instance)
     DCHECK_EQ(this, site_instance->GetBrowserContext());
 
-  auto partition_config = site_instance
-                              ? site_instance->GetStoragePartitionConfig()
-                              : StoragePartitionConfig::CreateDefault(this);
+  auto partition_config =
+      site_instance
+          ? site_instance->GetSecurityPrincipal().GetStoragePartitionConfig()
+          : StoragePartitionConfig::CreateDefault(this);
   return GetStoragePartition(partition_config, can_create);
 }
 

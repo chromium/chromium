@@ -47,7 +47,8 @@ StoragePartitionConfig GetOrCreateStoragePartitionConfig(
   if (site_instance) {
     SiteInstanceImpl* site_instance_impl =
         static_cast<SiteInstanceImpl*>(site_instance);
-    return site_instance_impl->GetSiteInfo().storage_partition_config();
+    return site_instance_impl->GetSecurityPrincipal()
+        .GetStoragePartitionConfig();
   }
   return StoragePartitionConfig::CreateDefault(browser_context);
 }

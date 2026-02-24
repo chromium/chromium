@@ -276,7 +276,8 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     if (is_guest) {
       storage_partition_config = navigation_handle()
                                      ->GetStartingSiteInstance()
-                                     ->GetStoragePartitionConfig();
+                                     ->GetSecurityPrincipal()
+                                     .GetStoragePartitionConfig();
     }
     CHECK_EQ(is_guest, navigation_handle()
                            ->GetStartingSiteInstance()

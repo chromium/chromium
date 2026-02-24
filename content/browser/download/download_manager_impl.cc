@@ -1382,8 +1382,9 @@ void DownloadManagerImpl::InterceptNavigationOnChecksComplete(
     if (render_frame_host) {
       render_process_id = render_frame_host->GetProcess()->GetDeprecatedID();
       render_frame_id = render_frame_host->GetRoutingID();
-      storage_partition_config =
-          render_frame_host->GetSiteInstance()->GetStoragePartitionConfig();
+      storage_partition_config = render_frame_host->GetSiteInstance()
+                                     ->GetSecurityPrincipal()
+                                     .GetStoragePartitionConfig();
     }
     auto* web_contents = WebContentsImpl::FromFrameTreeNode(ftn);
     DCHECK(web_contents);
@@ -1530,8 +1531,9 @@ void DownloadManagerImpl::BeginDownloadInternal(
 
   StoragePartitionConfig storage_partition_config;
   if (rfh && serialized_embedder_download_data.empty()) {
-    storage_partition_config =
-        rfh->GetSiteInstance()->GetStoragePartitionConfig();
+    storage_partition_config = rfh->GetSiteInstance()
+                                   ->GetSecurityPrincipal()
+                                   .GetStoragePartitionConfig();
   } else {
     storage_partition_config =
         SerializedEmbedderDownloadDataToStoragePartitionConfig(

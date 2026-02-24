@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/gtest_util.h"
 #include "base/test/mock_log.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -2086,7 +2087,8 @@ TEST_F(SiteInstanceTest, CreateForGuest) {
       context(), "appid", "partition_name", /*in_memory=*/false);
   auto instance2 = SiteInstanceImpl::CreateForGuest(context(), kGuestConfig);
   EXPECT_TRUE(instance2->GetSecurityPrincipal().IsGuest());
-  EXPECT_EQ(instance2->GetStoragePartitionConfig(), kGuestConfig);
+  EXPECT_EQ(instance2->GetSecurityPrincipal().GetStoragePartitionConfig(),
+            kGuestConfig);
 }
 
 TEST_F(SiteInstanceTest, DoesSiteRequireDedicatedProcess) {
@@ -2249,6 +2251,30 @@ TEST_F(SiteInstanceTest, ErrorPage) {
       static_cast<SiteInstanceImpl*>(related_instance.get())->GetSiteInfo());
 }
 
+TEST_F(SiteInstanceTest, SiteInstanceNewStoragePartitionConfig) {
+  const GURL test_url("https://example.com");
+  const auto site_instance = SiteInstanceImpl::Create(context());
+  const auto default_partition_config =
+      CreateStoragePartitionConfigForTesting();
+
+  EXPECT_FALSE(site_instance->HasSite());
+  EXPECT_EQ(default_partition_config,
+            site_instance->GetSecurityPrincipal().GetStoragePartitionConfig());
+
+  const auto non_default_partition_config =
+      CreateStoragePartitionConfigForTesting(
+          /*in_memory=*/false, /*partition_domain=*/"test_partition");
+  EXPECT_NE(default_partition_config, non_default_partition_config);
+
+  const UrlInfo partitioned_url_info(
+      UrlInfoInit(test_url).WithStoragePartitionConfig(
+          non_default_partition_config));
+
+  // Can not change storage partition config after it was accessed before. See
+  // checks in SiteInstanceImpl::SetSiteInfoInternal() for more information.
+  EXPECT_CHECK_DEATH(site_instance->SetSite(partitioned_url_info));
+}
+
 TEST_F(SiteInstanceTest, RelatedSitesInheritStoragePartitionConfig) {
   const GURL test_url("https://example.com");
 
@@ -2268,8 +2294,8 @@ TEST_F(SiteInstanceTest, RelatedSitesInheritStoragePartitionConfig) {
       /*is_fixed_storage_partition=*/false);
   EXPECT_EQ(non_default_partition_config,
             static_cast<SiteInstanceImpl*>(partitioned_instance.get())
-                ->GetSiteInfo()
-                .storage_partition_config());
+                ->GetSecurityPrincipal()
+                .GetStoragePartitionConfig());
 
   // Create a related SiteInstance that doesn't specify a
   // StoragePartitionConfig and make sure the StoragePartition gets propagated.
@@ -2277,8 +2303,8 @@ TEST_F(SiteInstanceTest, RelatedSitesInheritStoragePartitionConfig) {
       partitioned_instance->GetRelatedSiteInstance(test_url);
   EXPECT_EQ(non_default_partition_config,
             static_cast<SiteInstanceImpl*>(related_instance.get())
-                ->GetSiteInfo()
-                .storage_partition_config());
+                ->GetSecurityPrincipal()
+                .GetStoragePartitionConfig());
 }
 
 TEST_F(SiteInstanceTest, GetNonOriginKeyedEquivalentPreservesIsPdf) {

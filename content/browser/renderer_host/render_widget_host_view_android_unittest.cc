@@ -278,7 +278,10 @@ void RenderWidgetHostViewAndroidTest::SetUp() {
   host_ = mock_host.get();
   render_view_host_ = new TestRenderViewHost(
       &contents()->GetPrimaryFrameTree(), site_instance_group_.get(),
-      contents()->GetSiteInstance()->GetStoragePartitionConfig(),
+      contents()
+          ->GetSiteInstance()
+          ->GetSecurityPrincipal()
+          .GetStoragePartitionConfig(),
       std::move(mock_host), contents(), process_->GetNextRoutingID(),
       process_->GetNextRoutingID(), nullptr,
       CreateRenderViewHostCase::kDefault);

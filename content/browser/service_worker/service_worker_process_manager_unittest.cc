@@ -50,7 +50,8 @@ class SiteInstanceRenderProcessHostFactory : public RenderProcessHostFactory {
       BrowserContext* browser_context,
       SiteInstance* site_instance) override {
     processes_.push_back(std::make_unique<MockRenderProcessHost>(
-        browser_context, site_instance->GetStoragePartitionConfig(),
+        browser_context,
+        site_instance->GetSecurityPrincipal().GetStoragePartitionConfig(),
         site_instance->GetSecurityPrincipal().IsGuest()));
 
     // A spare RenderProcessHost is created with a null SiteInstance.
@@ -303,9 +304,11 @@ TEST_F(ServiceWorkerProcessManagerTest,
             true /* can_use_existing_process */,
             AncestorFrameType::kNormalFrame, &process_info);
     EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
-    EXPECT_EQ(guest_site_instance->GetStoragePartitionConfig(),
-              render_process_host_factory_->last_site_instance_used()
-                  ->GetStoragePartitionConfig());
+    EXPECT_EQ(
+        guest_site_instance->GetSecurityPrincipal().GetStoragePartitionConfig(),
+        render_process_host_factory_->last_site_instance_used()
+            ->GetSecurityPrincipal()
+            .GetStoragePartitionConfig());
     EXPECT_TRUE(render_process_host_factory_->last_site_instance_used()
                     ->GetSecurityPrincipal()
                     .IsGuest());
