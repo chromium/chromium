@@ -42,11 +42,17 @@ class ProjectsPanelTabGroupsItemView : public views::Button {
       const ProjectsPanelTabGroupsItemView&) = delete;
   ~ProjectsPanelTabGroupsItemView() override;
 
+  const base::Uuid& guid() const { return group_guid_; }
+
+  void SetIsDragging(bool dragging);
+  bool is_dragging() const { return dragging_; }
+
   // views::View
   void OnThemeChanged() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
+  void OnDragDone() override;
 
   views::Label* title_for_testing() { return title_; }
   views::MenuButton* more_button_for_testing() { return more_button_; }
@@ -64,6 +70,9 @@ class ProjectsPanelTabGroupsItemView : public views::Button {
 
   const base::Uuid group_guid_;
   MoreButtonPressedCallback more_button_callback_;
+
+  // Whether this item is currently being dragged.
+  bool dragging_ = false;
 
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::ImageView> tab_group_icon_ = nullptr;

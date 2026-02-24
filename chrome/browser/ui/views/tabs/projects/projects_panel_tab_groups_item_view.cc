@@ -158,6 +158,14 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
 
 ProjectsPanelTabGroupsItemView::~ProjectsPanelTabGroupsItemView() = default;
 
+void ProjectsPanelTabGroupsItemView::SetIsDragging(bool dragging) {
+  if (dragging_ == dragging) {
+    return;
+  }
+  dragging_ = dragging;
+  UpdateHoverState();
+}
+
 void ProjectsPanelTabGroupsItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
   ui::ColorId color_id = GetTabGroupContextMenuColorId(tab_group_color_id_);
@@ -182,6 +190,11 @@ void ProjectsPanelTabGroupsItemView::OnMouseMoved(const ui::MouseEvent& event) {
   UpdateHoverState();
 }
 
+void ProjectsPanelTabGroupsItemView::OnDragDone() {
+  views::Button::OnDragDone();
+  SetIsDragging(false);
+}
+
 void ProjectsPanelTabGroupsItemView::OnMoreButtonPressed() {
   more_button_callback_.Run(group_guid_, *more_button_);
   UpdateHoverState();
@@ -193,8 +206,9 @@ void ProjectsPanelTabGroupsItemView::OnMoreButtonStateChanged() {
 
 void ProjectsPanelTabGroupsItemView::UpdateHoverState() {
   const bool show_more =
-      IsMouseHovered() || (more_button_ && more_button_->GetState() ==
-                                               views::Button::STATE_PRESSED);
+      !dragging_ &&
+      (IsMouseHovered() || (more_button_ && more_button_->GetState() ==
+                                                views::Button::STATE_PRESSED));
 
   if (shared_icon_) {
     shared_icon_->SetVisible(!show_more);

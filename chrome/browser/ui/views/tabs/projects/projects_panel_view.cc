@@ -133,6 +133,7 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
   panel_controller_ = std::make_unique<ProjectsPanelController>(
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser->GetProfile()));
+  panel_controller_observer_.Observe(panel_controller_.get());
 
   controls_view_ = content_container_->AddChildView(
       std::make_unique<ProjectsPanelControlsView>(
@@ -155,6 +156,8 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
           base::BindRepeating(&ProjectsPanelView::OnTabGroupButtonPressed,
                               base::Unretained(this)),
           base::BindRepeating(&ProjectsPanelView::OnTabGroupMoreButtonPressed,
+                              base::Unretained(this)),
+          base::BindRepeating(&ProjectsPanelView::OnTabGroupMoved,
                               base::Unretained(this)),
           base::BindRepeating(
               &ProjectsPanelView::OnCreateNewTabGroupButtonPressed,
@@ -308,6 +311,31 @@ void ProjectsPanelView::AnimationEnded(const gfx::Animation* animation) {
   }
 }
 
+void ProjectsPanelView::OnTabGroupsInitialized(
+    const std::vector<tab_groups::SavedTabGroup>& tab_groups) {
+  // TODO(crbug.com/477602874): Handle incremental data updates.
+}
+
+void ProjectsPanelView::OnTabGroupAdded(const tab_groups::SavedTabGroup& group,
+                                        int index) {
+  // TODO(crbug.com/477602874): Handle incremental data updates.
+}
+
+void ProjectsPanelView::OnTabGroupUpdated(
+    const tab_groups::SavedTabGroup& group) {
+  // TODO(crbug.com/477602874): Handle incremental data updates.
+}
+
+void ProjectsPanelView::OnTabGroupRemoved(const base::Uuid& sync_id,
+                                          int old_index) {
+  // TODO(crbug.com/477602874): Handle incremental data updates.
+}
+
+void ProjectsPanelView::OnTabGroupsReordered(
+    const std::vector<tab_groups::SavedTabGroup>& tab_groups) {
+  tab_groups_view_->SetTabGroups(tab_groups);
+}
+
 // static
 void ProjectsPanelView::disable_animations_for_testing() {
   disable_animations_for_testing_ = true;
@@ -360,6 +388,11 @@ void ProjectsPanelView::OnTabGroupMoreButtonPressed(
       button.GetWidget(), button.button_controller(),
       button.GetAnchorBoundsInScreen(), views::MenuAnchorPosition::kTopRight,
       ui::mojom::MenuSourceType::kMouse);
+}
+
+void ProjectsPanelView::OnTabGroupMoved(const base::Uuid& group_guid,
+                                        int new_index) {
+  panel_controller_->MoveTabGroup(group_guid, new_index);
 }
 
 void ProjectsPanelView::OnCreateNewTabGroupButtonPressed() {

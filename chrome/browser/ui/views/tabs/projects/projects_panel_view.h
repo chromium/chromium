@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
 #include "ui/events/event_observer.h"
@@ -43,7 +44,9 @@ class ProjectsPanelTabGroupsView;
 
 // Parent view of the Projects Panel - holds together the views
 // hierarchy including Tab Groups and AI threads.
-class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
+class ProjectsPanelView : public views::View,
+                          gfx::AnimationDelegate,
+                          ProjectsPanelController::Observer {
   METADATA_HEADER(ProjectsPanelView, views::View)
 
  public:
@@ -76,6 +79,16 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
+  // ProjectsPanelController::Observer:
+  void OnTabGroupsInitialized(
+      const std::vector<tab_groups::SavedTabGroup>& tab_groups) override;
+  void OnTabGroupAdded(const tab_groups::SavedTabGroup& group,
+                       int index) override;
+  void OnTabGroupUpdated(const tab_groups::SavedTabGroup& group) override;
+  void OnTabGroupRemoved(const base::Uuid& sync_id, int old_index) override;
+  void OnTabGroupsReordered(
+      const std::vector<tab_groups::SavedTabGroup>& tab_groups) override;
+
   views::View* content_container_for_testing() { return content_container_; }
 
   static void disable_animations_for_testing();
@@ -106,6 +119,7 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
   void OnTabGroupButtonPressed(const base::Uuid& group_guid);
   void OnTabGroupMoreButtonPressed(const base::Uuid& group_guid,
                                    views::MenuButton& button);
+  void OnTabGroupMoved(const base::Uuid& group_guid, int new_index);
   void OnCreateNewTabGroupButtonPressed();
 
   const raw_ptr<BrowserWindowInterface> browser_;
@@ -142,6 +156,10 @@ class ProjectsPanelView : public views::View, gfx::AnimationDelegate {
   // The default appearance of the panel is elevated, but this must be false
   // for the SetIsElevated call in the constructor to be effective.
   bool elevated_ = false;
+
+  base::ScopedObservation<ProjectsPanelController,
+                          ProjectsPanelController::Observer>
+      panel_controller_observer_{this};
 
   base::WeakPtrFactory<ProjectsPanelView> weak_ptr_factory_{this};
 };
