@@ -182,6 +182,8 @@ class Host : public GlicSharingManagerProvider {
   ~Host() override;
   Host& operator=(const Host&) = delete;
 
+  Profile* profile() const { return profile_; }
+
   void SetDelegate(EmbedderDelegate* delegate);
 
   struct PanelWillOpenOptions {
@@ -280,6 +282,14 @@ class Host : public GlicSharingManagerProvider {
   // Whether the primary web client is connected.
   bool IsReady() const;
   bool IsContextAccessIndicatorEnabled() const;
+
+  std::optional<mojom::InvocationSource> invocation_source() const {
+    return invocation_source_;
+  }
+
+  void SetInvocationSource(mojom::InvocationSource invocation_source) {
+    invocation_source_ = invocation_source;
+  }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);

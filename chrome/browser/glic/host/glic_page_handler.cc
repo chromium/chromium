@@ -987,7 +987,16 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (GlicEnabling::IsMultiInstanceEnabled()) {
       state->host_capabilities.push_back(mojom::HostCapability::kMultiInstance);
     }
-    if (GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_)) {
+
+    const mojom::InvocationSource invocation_source =
+        host().invocation_source().value_or(
+            mojom::InvocationSource::kUnsupported);
+
+    const bool should_bypass_fre_ui =
+        GlicEnabling::ShouldBypassFreUi(profile_, invocation_source);
+
+    if (!should_bypass_fre_ui &&
+        GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_)) {
       int arm = features::kGlicTrustFirstOnboardingArmParam.Get();
       if (arm == 1) {
         state->host_capabilities.push_back(
@@ -1890,6 +1899,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void PanelWillOpen(glic::mojom::PanelOpeningDataPtr panel_opening_data,
                      PanelWillOpenCallback done) override {
+    host().SetInvocationSource(panel_opening_data->invocation_source);
     base::UmaHistogramBoolean("Glic.Host.OpenedInRegularTab", false);
     web_client_->NotifyPanelWillOpen(
         std::move(panel_opening_data),
@@ -1905,6 +1915,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void PanelWasClosed(base::OnceClosure done) override {
+    host().SetInvocationSource(mojom::InvocationSource::kUnsupported);
     web_client_->NotifyPanelWasClosed(
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(done)));
   }
@@ -2118,6 +2129,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void Uninstall() {
+    host().SetInvocationSource(mojom::InvocationSource::kUnsupported);
     page_metadata_manager_.reset();
     SetAudioDucking(false, base::DoNothing());
     host().UnsetWebClient(this);
