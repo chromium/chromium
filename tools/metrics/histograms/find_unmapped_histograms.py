@@ -567,6 +567,8 @@ def main() -> None:
   else:
     _output_log(unmapped_histograms, location_map, options.verbose)
 
+  sys.exit(len(unmapped_histograms) == 0)
+
 
 if __name__ == '__main__':
   main()

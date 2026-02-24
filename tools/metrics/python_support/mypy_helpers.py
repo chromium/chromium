@@ -7,6 +7,7 @@ import os
 import pathlib
 import re
 import platform
+
 import shutil
 import subprocess
 import tempfile
@@ -65,6 +66,7 @@ def _convert_to_windows_ignore_line_if_needed(ignore_file_entry: str) -> str:
   parts = ignore_file_entry.split(':', 1)
   parts[0] = parts[0].replace('/', '\\')
   return ':'.join(parts)
+
 
 
 def _create_symlink(target: pathlib.Path, link_name: pathlib.Path) -> None:
