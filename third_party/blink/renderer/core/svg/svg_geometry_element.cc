@@ -268,6 +268,11 @@ void SVGGeometryElement::GeometryAttributeChanged() {
   if (auto* layout_object = To<LayoutSVGShape>(GetLayoutObject())) {
     layout_object->SetNeedsShapeUpdate();
     MarkForLayoutAndParentResourceInvalidation(*layout_object);
+  } else {
+    NotifyIncomingReferences([](SVGElement& element) {
+      DCHECK(element.GetLayoutObject());
+      MarkForLayoutAndParentResourceInvalidation(*element.GetLayoutObject());
+    });
   }
   NotifyResourceClients();
 }
