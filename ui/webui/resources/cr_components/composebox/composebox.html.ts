@@ -134,6 +134,7 @@ export function getHtml(this: ComposeboxElement) {
             <cr-icon-button id="submitIcon"
                 class="action-icon icon-arrow-upward"
                 part="action-icon submit-icon" tabindex="0"
+                title="${this.i18n('composeboxSubmitButtonTitle')}"
                 ?disabled="${!this.canSubmitFilesAndInput_}">
             </cr-icon-button>
           </div>
@@ -164,6 +165,7 @@ export function getHtml(this: ComposeboxElement) {
         </div>
         <cr-icon-button id="submitIcon" class="action-icon icon-arrow-upward"
             part="action-icon submit-icon" tabindex="0"
+            title="${this.i18n('composeboxSubmitButtonTitle')}"
             ?disabled="${!this.canSubmitFilesAndInput_}">
         </cr-icon-button>
       </div>
