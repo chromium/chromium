@@ -345,16 +345,6 @@ base::expected<TfLitePadding, std::string> GetPool2dTfLitePaddingMode(
     const mojom::Size2d& stride,
     const mojom::Size2d& dilation,
     const webnn::Size2d<uint32_t>& output) {
-  // WebNN explicit padding is in [beginning_height, ending_height,
-  // beginning_width, ending_width] sequence.
-  std::array<uint32_t, 4> explicit_padding = {
-      padding2d.beginning->height, padding2d.ending->height,
-      padding2d.beginning->width, padding2d.ending->width};
-  std::array<uint32_t, 4> no_padding = {0, 0, 0, 0};
-  if (explicit_padding == no_padding) {
-    return TfLitePadding{.mode = ::tflite::Padding_VALID};
-  }
-
   // TFLite always performs a floor operation in VALID mode. If WebNN's
   // RoundingType is ceil, the `actual_output_height` might be 1 greater than
   // what TFLite's VALID padding formula (floor based) would produce. In this
@@ -390,7 +380,7 @@ base::expected<TfLitePadding, std::string> GetPool2dTfLitePaddingMode(
     // Otherwise, a TFLite PAD operator will be inserted later using VALID
     // padding.
     return GetTfLitePaddingMode(padding2d, input, filter, stride, dilation,
-                                /*is_transposed_conv2d*/ false);
+                                /*is_transposed_conv2d=*/false);
   } else if (actual_output_height ==
                  base::ClampCeil<uint32_t>(calculated_output_sizes.height) &&
              actual_output_width ==
@@ -405,8 +395,9 @@ base::expected<TfLitePadding, std::string> GetPool2dTfLitePaddingMode(
         CalculatePaddingEndForCeilRoundingType(
             input.width, filter.width, stride.width, dilation.width,
             output.width, padding2d.beginning->width));
-    explicit_padding = {padding2d.beginning->height, padding_height_end,
-                        padding2d.beginning->width, padding_width_end};
+    std::array<uint32_t, 4> explicit_padding = {
+        padding2d.beginning->height, padding_height_end,
+        padding2d.beginning->width, padding_width_end};
     // The explicit padding are used to insert a TfLite PAD operator.
     return TfLitePadding{.mode = ::tflite::Padding_VALID,
                          .paddings = explicit_padding};
