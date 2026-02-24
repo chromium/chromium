@@ -49,6 +49,7 @@ constexpr char kEndDomNodeIdKey[] = "endDomNodeId";
 constexpr char kEndOffsetKey[] = "endOffset";
 constexpr char kSelectedTextKey[] = "selectedText";
 constexpr char kFocusedDomNodeIdKey[] = "focusedDomNodeId";
+constexpr char kDocumentIdKey[] = "documentId";
 
 // Reads a JS number (double) from a `dict` stored under `key`.
 std::optional<int> ReadJsNumber(const base::DictValue& dict, const char* key) {
@@ -191,6 +192,13 @@ void PopulateFrameData(
         selection->set_selected_text(*selected_text);
       }
     }
+  }
+
+  const std::string* document_id_ptr =
+      local_frame_data.FindString(kDocumentIdKey);
+  if (document_id_ptr && !document_id_ptr->empty()) {
+    destination_frame_data->mutable_document_identifier()->set_serialized_token(
+        *document_id_ptr);
   }
 }
 

@@ -471,27 +471,26 @@ function getContentForIframeNode(
 
   let childTree: PageContentNode|null = null;
   let localFrameData: PageContentFrameData|undefined;
-  let remoteToken: string|undefined;
+
+  // Always register the frame to get a remote token, even for same-origin
+  // frames. This allows identification of the frame document in the browser.
+  const remoteToken = getRemoteFrameRemoteToken(iframeElement);
 
   try {
     const contentDoc = iframeElement.contentDocument;
-    if (contentDoc) {
-      if (contentDoc.body) {
-        // Recurse to start a new tree walk on the iframe content when available
-        // (i.e. when on the same origin) because the TreeWalker doesn't walk
-        // through iframe content.
-        const pageContent = extractAnnotatedPageContent(
-            contentDoc, nonce, depth + APC_NODE_DEPTH_COST, maxDepth);
-        if (pageContent) {
-          childTree = pageContent.rootNode;
-          localFrameData = pageContent.frameData;
-        }
+    if (contentDoc && contentDoc.body) {
+      // Recurse to start a new tree walk on the iframe content when available
+      // (i.e. when on the same origin) because the TreeWalker doesn't walk
+      // through iframe content.
+      const pageContent = extractAnnotatedPageContent(
+          contentDoc, nonce, depth + APC_NODE_DEPTH_COST, maxDepth);
+      if (pageContent) {
+        childTree = pageContent.rootNode;
+        localFrameData = pageContent.frameData;
       }
-    } else {
-      remoteToken = getRemoteFrameRemoteToken(iframeElement);
     }
   } catch (error) {
-    remoteToken = getRemoteFrameRemoteToken(iframeElement);
+    // Ignore errors when accessing the iframe content.
   }
 
   if (!localFrameData) {
@@ -504,11 +503,16 @@ function getContentForIframeNode(
     };
   }
 
+  // Set the document ID for the frame data.
+  localFrameData.documentId = remoteToken;
+
+
   // TODO(crbug.com/468857979): Add `redactedFrameMetadata` to the `content`
   // data once there is an option to only extract iframe data on the same
-  // site (domain and one level of subdomain).
+  // site (domain and one level of subdomain). Only populate the remote token if
+  // grafting is needed to get the iframe content.
   attributes.iframeData = {
-    frameToken: {value: remoteToken ?? ''},
+    frameToken: {value: childTree ? '' : remoteToken},
     content: {
       localFrameData: localFrameData,
     },

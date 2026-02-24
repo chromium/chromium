@@ -278,6 +278,9 @@ export interface PageContentFrameData {
   // Exclusive to ios which needs to get the full url from JS to get more than
   // the URL origin from the WebFrame data.
   sourceUrl?: string;
+  // Exclusive to ios which gets the document id from the remote token issued
+  // during iframe registration. Just populated for PageContentIframeContent.
+  documentId?: string;
 }
 
 // The numbers are aligned with the RedactedFrameMetadata enum in

@@ -870,6 +870,20 @@ result.links = linksArray;
     // Main frame: Use the root node as the destination.
     destinationContentNode = _rootAPCNode->mutable_root_node();
     destinationFrameData = _rootAPCNode->mutable_main_frame_data();
+
+    // Populate DocumentIdentifier for the Main Frame. It is not provided from
+    // the renderer so we need to do it here.
+    autofill::RemoteFrameToken token = static_cast<autofill::RemoteFrameToken>(
+        base::UnguessableToken::Create());
+    destinationFrameData->mutable_document_identifier()->set_serialized_token(
+        token.ToString());
+
+    // Register the Main Frame token to allow lookups (e.g. for actions).
+    autofill::ChildFrameRegistrar* registrar = [self frameRegistrar];
+    if (registrar && localFrameToken) {
+      registrar->RegisterMapping(token, *localFrameToken);
+    }
+
   } else if (localFrameToken) {
     // Grafting possible: Use the content node directly from the grafter.
     FrameGrafter::FrameContent* content =
@@ -1048,7 +1062,7 @@ result.links = linksArray;
       [self populateForRichExtractionWithValue:valueAsDict
                                 securityOrigin:securityOrigin
                                    isMainFrame:YES
-                               localFrameToken:std::nullopt];
+                               localFrameToken:localFrameToken];
     } else {
       [self populateMainFrameForLightExtractionWithValue:valueAsDict
                                           securityOrigin:securityOrigin];

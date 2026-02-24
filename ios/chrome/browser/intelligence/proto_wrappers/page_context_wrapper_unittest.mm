@@ -1880,6 +1880,8 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction) {
   EXPECT_EQ(origin.value(), test_server_.GetOrigin().Serialize());
   EXPECT_EQ(main_frame.title(), "Test Title");
   EXPECT_EQ(main_frame.url(), test_server_.GetURL(kMainPagePath).spec());
+  EXPECT_TRUE(main_frame.has_document_identifier());
+  EXPECT_FALSE(main_frame.document_identifier().serialized_token().empty());
 
   const auto& root = actual_apc.root_node();
   EXPECT_EQ(root.content_attributes().attribute_type(),
@@ -1989,6 +1991,16 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction) {
             page_helper_->GetUrlForId("iframe_cross").spec());
   EXPECT_EQ(iframe.content_attributes().iframe_data().frame_data().title(),
             "Child Cross Origin");
+  EXPECT_TRUE(iframe.content_attributes()
+                  .iframe_data()
+                  .frame_data()
+                  .has_document_identifier());
+  EXPECT_FALSE(iframe.content_attributes()
+                   .iframe_data()
+                   .frame_data()
+                   .document_identifier()
+                   .serialized_token()
+                   .empty());
 
   ASSERT_EQ(iframe.children_nodes_size(), 1);
 
@@ -2041,6 +2053,16 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction) {
                 .frame_data()
                 .title(),
             "Child 3");
+  EXPECT_TRUE(same_origin_iframe.content_attributes()
+                  .iframe_data()
+                  .frame_data()
+                  .has_document_identifier());
+  EXPECT_FALSE(same_origin_iframe.content_attributes()
+                   .iframe_data()
+                   .frame_data()
+                   .document_identifier()
+                   .serialized_token()
+                   .empty());
   EXPECT_EQ(
       same_origin_iframe.content_attributes().iframe_data().frame_data().url(),
       page_helper_->GetUrlForId("iframe_same").spec());
