@@ -7,12 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_other_data/ui/quick_delete_other_data_consumer.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
 @protocol QuickDeleteOtherDataCommands;
 
 // Provides the table view for "Quick Delete Other Data" page.
-@interface QuickDeleteOtherDataViewController : ChromeTableViewController
+@interface QuickDeleteOtherDataViewController
+    : ChromeTableViewController <QuickDeleteOtherDataConsumer>
 
 // Action handler for the local QuickDeleteOtherDataCommands.
 @property(nonatomic, weak) id<QuickDeleteOtherDataCommands>

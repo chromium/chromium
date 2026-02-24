@@ -50,6 +50,7 @@
 
   _viewController = [[QuickDeleteOtherDataViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
+  _mediator.consumer = _viewController;
   _viewController.quickDeleteOtherDataHandler =
       self.quickDeleteOtherDataHandler;
   [_baseNavigationController pushViewController:_viewController animated:YES];
@@ -58,6 +59,8 @@
 - (void)stop {
   _viewController.quickDeleteOtherDataHandler = nil;
   _viewController = nil;
+
+  _mediator.consumer = nil;
   [_mediator disconnect];
   _mediator = nil;
 }

@@ -4,6 +4,7 @@
 
 source_set("ui") {
   sources = [
+    "quick_delete_other_data_consumer.h",
     "quick_delete_other_data_view_controller.h",
     "quick_delete_other_data_view_controller.mm",
   ]
