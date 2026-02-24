@@ -1,0 +1,31 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+import("//ios/web/public/js_messaging/compile_ts.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+compile_ts("crash_keys_js") {
+  sources = [ "resources/crash_keys.ts" ]
+}
+
+optimize_ts("crash_keys_test") {
+  sources = [ "resources/crash_keys_test.ts" ]
+  deps = [
+    ":crash_keys_js",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [ "crash_keys_js_unittest.mm" ]
+  deps = [
+    ":crash_keys_test",
+    "//base/test:test_support",
+    "//ios/web/public/test:javascript_test",
+    "//ios/web/public/test:util",
+    "//testing/gtest",
+  ]
+}
