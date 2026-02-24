@@ -70,6 +70,7 @@
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
+#include "chrome/updater/win/ui/webview_progress_wnd.h"
 #include "chrome/updater/win/win_constants.h"
 #include "components/update_client/update_client_errors.h"
 #include "url/gurl.h"
@@ -894,19 +895,28 @@ void AppInstallControllerImpl::InitializeUI() {
   if (is_silent_install_) {
     observer_ = std::make_unique<InstallProgressSilentObserver>(this);
   } else {
-    auto progress_wnd =
-        std::make_unique<ui::ProgressWnd>(ui_message_loop_.get(), nullptr);
+#define VISIT_PROGRESS_WND(progress_wnd)                                     \
+  std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;          \
+  if (tag_args) {                                                            \
+    progress_wnd->set_bundle_name(base::UTF8ToUTF16(tag_args->bundle_name)); \
+  }                                                                          \
+  progress_wnd->SetEventSink(this);                                          \
+  progress_wnd->Initialize();                                                \
+  progress_wnd->Show();                                                      \
+                                                                             \
+  observer_hwnd_ = progress_wnd->m_hWnd;                                     \
+  observer_.reset(progress_wnd.release());
 
-    std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
-    if (tag_args) {
-      progress_wnd->set_bundle_name(base::UTF8ToUTF16(tag_args->bundle_name));
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(kWebViewUISwitch)) {
+      auto wnd = std::make_unique<ui::WebviewProgressWnd>();
+      VISIT_PROGRESS_WND(wnd);
+      return;
     }
-    progress_wnd->SetEventSink(this);
-    progress_wnd->Initialize();
-    progress_wnd->Show();
-
-    observer_hwnd_ = progress_wnd->m_hWnd;
-    observer_.reset(progress_wnd.release());
+    auto wnd =
+        std::make_unique<ui::ProgressWnd>(ui_message_loop_.get(), nullptr);
+    VISIT_PROGRESS_WND(wnd);
+    return;
+#undef VISIT_PROGRESS_WND
   }
 }
 

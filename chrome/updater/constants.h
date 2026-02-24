@@ -253,6 +253,9 @@ inline constexpr char kCmdLinePrefersUser[] = "prefers-user";
 // pings to be user defined on the offline installer command line.
 inline constexpr char kInstallSourceSwitch[] = "installsource";
 
+// An experimental flag to use a WebView-based UI.
+inline constexpr char kWebViewUISwitch[] = "webviewui";
+
 // File system paths.
 //
 // The directory name where CRX apps get installed. This is provided for demo
