@@ -214,7 +214,7 @@ void VerticalDraggedTabsContainer::InitializeDragStartAnimation(
 
   const auto& drag_handler = GetDragHandler();
   base::TimeDelta drag_time_elapsed =
-      base::TimeTicks::Now() - drag_handler.GetDragStartTime();
+      base::TimeTicks::Now() - controller.GetSessionData().drag_start_time;
   if (drag_time_elapsed >= kDragStartAnimationDuration) {
     return;
   }

@@ -1276,6 +1276,7 @@ void TabDragController::StartDrag() {
   AttachImpl();
 
   drag_start_time_ = base::TimeTicks::Now();
+  drag_data_.drag_start_time = *drag_start_time_;
 
   // Request a thumbnail to use as drag image if we'll use fallback tab
   // dragging.

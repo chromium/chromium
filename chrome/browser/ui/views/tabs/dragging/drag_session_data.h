@@ -100,6 +100,9 @@ struct DragSessionData final {
   // height.
   gfx::Vector2dF mouse_offset_to_size_ratios;
 
+  // When the drag session started.
+  base::TimeTicks drag_start_time;
+
   std::optional<tab_groups::TabGroupId> group_header_id() const {
     return group_header_drag_data_.has_value()
                ? std::make_optional(group_header_drag_data_.value().group)

@@ -81,12 +81,6 @@ class VerticalTabDragHandler {
   virtual std::optional<gfx::Vector2d> GetOffsetFromSourceAtDragStart(
       views::View* view) const = 0;
 
-  // The time that the drag started for this tab strip. Returns default
-  // value if a drag isn't being handled.
-  // Note: this is not necessarily the same time that the drag session
-  // started (e.g. dragging between windows).
-  virtual base::TimeTicks GetDragStartTime() const = 0;
-
   // Returns the DropIndex for a given node and position hint.
   // For tab nodes, a nullopt position hint indicates that the drop is over the
   // middle of the tab and should be interpreted as a "replace" operation.
@@ -127,7 +121,6 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   views::View* ViewFromTabSlot(TabSlotView* view) const override;
   std::optional<gfx::Vector2d> GetOffsetFromSourceAtDragStart(
       views::View* view) const override;
-  base::TimeTicks GetDragStartTime() const override;
   std::optional<BrowserRootView::DropIndex> GetLinkDropIndexForNode(
       const TabCollectionNode& node,
       std::optional<DragPositionHint> position_hint) const override;
@@ -218,10 +211,6 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
 
   // Null if this handler is not managing a dragging session.
   std::unique_ptr<TabDragController> drag_controller_ = nullptr;
-
-  // The time that this started draggging. May be stale if the a drag is not
-  // being handled.
-  base::TimeTicks drag_start_time_;
 
   // A mapping from nodes to their `TabSlotView`, used for compatibility
   // with the core dragging system.

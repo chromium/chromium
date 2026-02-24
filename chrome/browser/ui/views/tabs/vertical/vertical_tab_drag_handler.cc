@@ -535,13 +535,6 @@ VerticalTabDragHandlerImpl::GetOffsetFromSourceAtDragStart(View* view) const {
   return offset ? std::make_optional(*offset) : std::nullopt;
 }
 
-base::TimeTicks VerticalTabDragHandlerImpl::GetDragStartTime() const {
-  if (drag_controller_ && drag_controller_->IsActive()) {
-    return drag_start_time_;
-  }
-  return base::TimeTicks();
-}
-
 std::optional<BrowserRootView::DropIndex>
 VerticalTabDragHandlerImpl::GetLinkDropIndexForNode(
     const TabCollectionNode& node,
@@ -669,7 +662,6 @@ void VerticalTabDragHandlerImpl::DestroyDragController() {
 void VerticalTabDragHandlerImpl::StartedDragging(
     const std::vector<TabSlotView*>& views) {
   CHECK(drag_controller_);
-  drag_start_time_ = base::TimeTicks::Now();
   auto* source_dragged_view = ViewFromTabSlot(drag_controller_->GetSessionData()
                                                   .source_view_drag_data()
                                                   ->attached_view);
