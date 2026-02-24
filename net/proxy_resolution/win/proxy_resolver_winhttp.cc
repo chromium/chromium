@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/net_errors.h"
+#include "net/base/url_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolver.h"
 #include "url/gurl.h"
@@ -105,13 +106,10 @@ int ProxyResolverWinHttp::GetProxyForURL(
   // documentation at
   // https://docs.microsoft.com/en-us/windows/desktop/api/winhttp/nf-winhttp-winhttpgetproxyforurl.
   // See https://crbug.com/862121.
-  GURL mutable_query_url = query_url;
-  if (query_url.SchemeIsWSOrWSS()) {
-    GURL::Replacements replacements;
-    replacements.SetSchemeStr(query_url.SchemeIsCryptographic() ? "https"
-                                                                : "http");
-    mutable_query_url = query_url.ReplaceComponents(replacements);
-  }
+  GURL mutable_query_url =
+      query_url.SchemeIsWSOrWSS()
+          ? net::ChangeWebSocketSchemeToHttpScheme(query_url)
+          : query_url;
 
   // If we have been given an empty PAC url, then use auto-detection.
   //

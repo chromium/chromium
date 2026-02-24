@@ -23,6 +23,8 @@ EnumTraits<proxy_resolver::mojom::MacProxyStatus,
       return proxy_resolver::mojom::MacProxyStatus::kPacScriptFetchFailed;
     case net::MacProxyResolutionStatus::kPacScriptExecutionFailed:
       return proxy_resolver::mojom::MacProxyStatus::kPacScriptExecutionFailed;
+    case net::MacProxyResolutionStatus::kCFNetworkResolutionError:
+      return proxy_resolver::mojom::MacProxyStatus::kCFNetworkResolutionError;
     case net::MacProxyResolutionStatus::kEmptyProxyList:
       return proxy_resolver::mojom::MacProxyStatus::kEmptyProxyList;
   }
@@ -51,6 +53,9 @@ bool EnumTraits<proxy_resolver::mojom::MacProxyStatus,
       return true;
     case proxy_resolver::mojom::MacProxyStatus::kPacScriptExecutionFailed:
       *output = net::MacProxyResolutionStatus::kPacScriptExecutionFailed;
+      return true;
+    case proxy_resolver::mojom::MacProxyStatus::kCFNetworkResolutionError:
+      *output = net::MacProxyResolutionStatus::kCFNetworkResolutionError;
       return true;
     case proxy_resolver::mojom::MacProxyStatus::kEmptyProxyList:
       *output = net::MacProxyResolutionStatus::kEmptyProxyList;

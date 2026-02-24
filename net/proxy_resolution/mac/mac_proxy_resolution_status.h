@@ -20,8 +20,9 @@ enum class MacProxyResolutionStatus {
   kPacScriptFetchFailed = 3,
   kPacScriptExecutionFailed = 4,
   kEmptyProxyList = 5,
+  kCFNetworkResolutionError = 6,
 
-  kMaxValue = kEmptyProxyList,
+  kMaxValue = kCFNetworkResolutionError,
 };
 // LINT.ThenChange(//services/proxy_resolver/public/mojom/proxy_resolver.mojom:
 //                 MacProxyStatus)

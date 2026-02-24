@@ -1,5 +1,7 @@
 include_rules = [
   "+mojo/public",
+  "+net/base/apple/url_conversions.h",
+  "+net/base/url_util.h",
   "+net/proxy_resolution",
   "+services/network/public/mojom",
   "+services/proxy_resolver/public/mojom",
