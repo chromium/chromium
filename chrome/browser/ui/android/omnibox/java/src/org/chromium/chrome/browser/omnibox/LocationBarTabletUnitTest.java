@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.Gravity;
+import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
@@ -225,6 +226,23 @@ public class LocationBarTabletUnitTest {
                 outerRect.getCornerRadii(),
                 MathUtils.EPSILON);
         assertEquals(0, background.getLayerInsetBottom(1));
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    @Config(qualifiers = "w800dp-xhdpi")
+    public void testFuseboxStateChanged_compact() {
+        View urlBar = mLocationBarTablet.findViewById(R.id.url_bar);
+        View deleteButton = mLocationBarTablet.findViewById(R.id.delete_button);
+        View micButton = mLocationBarTablet.findViewById(R.id.mic_button);
+        mLocationBarTablet.onFuseboxStateChanged(FuseboxState.COMPACT);
+        int translationY =
+                mLocationBarTablet
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.fusebox_url_bar_translation_y);
+        assertEquals(translationY, urlBar.getTranslationY(), MathUtils.EPSILON);
+        assertEquals(translationY, deleteButton.getTranslationY(), MathUtils.EPSILON);
+        assertEquals(-translationY, micButton.getTranslationY(), MathUtils.EPSILON);
     }
 
     private void longClickAndVerifyToast(int viewId, int stringId) {

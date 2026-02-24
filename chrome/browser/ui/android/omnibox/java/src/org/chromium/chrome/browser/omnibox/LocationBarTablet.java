@@ -392,13 +392,15 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     @Override
     public void onFuseboxStateChanged(@FuseboxState int state) {
         super.onFuseboxStateChanged(state);
+        adjustVerticalTranslationForFuseboxState(state);
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
         mFuseboxState = state;
+        Resources resources = getResources();
         if (state == FuseboxState.COMPACT || state == FuseboxState.EXPANDED) {
             layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
             int expansionPx =
-                    getResources()
-                            .getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
+                    resources.getDimensionPixelSize(
+                            R.dimen.location_bar_tablet_fusebox_popup_inset);
             layoutParams.topMargin = -expansionPx;
             setMarginsForWindowWidth(layoutParams, expansionPx);
             layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
@@ -413,8 +415,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             layoutParams.rightMargin = 0;
             layoutParams.topMargin = 0;
             layoutParams.height =
-                    getResources()
-                            .getDimensionPixelSize(R.dimen.modern_toolbar_tablet_background_size);
+                    resources.getDimensionPixelSize(R.dimen.modern_toolbar_tablet_background_size);
             layoutParams.gravity = Gravity.CENTER_VERTICAL;
             setPadding(0, 0, 0, getPaddingBottom());
             setTranslationZ(NEUTRAL_Z_TRANSLATION);
@@ -430,6 +431,27 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         }
         adjustBackgroundForSuggestions();
         setLayoutParams(layoutParams);
+    }
+
+    private void adjustVerticalTranslationForFuseboxState(@FuseboxState int state) {
+        if (state == FuseboxState.COMPACT) {
+            // In the compact fusebox state, the location bar is taller than its inner background,
+            // creating the appearance of vertical misalignment. We resolve this by translating
+            // constituent views to be centered withing the 56 dp inner background, shifting them
+            // either 4dp up or down.
+            int translationY =
+                    getResources().getDimensionPixelSize(R.dimen.fusebox_url_bar_translation_y);
+            // Url bar and delete button are positioned too high relative to inner background.
+            mUrlBar.setTranslationY(translationY);
+            mDeleteButton.setTranslationY(translationY);
+            // Bottom stacked buttons are positioned too low relative to inner background; use a
+            // negative translation.
+            setTranslationYOfBottomStackedUrlActionButtons(-translationY);
+        } else {
+            mUrlBar.setTranslationY(0);
+            mDeleteButton.setTranslationY(0);
+            setTranslationYOfBottomStackedUrlActionButtons(0);
+        }
     }
 
     private void setMarginsForWindowWidth(
@@ -495,5 +517,10 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             mFocusedPopupDrawable.setLayerInsetRelative(1, inset, inset, inset, 0);
         }
         setLayoutParams(layoutParams);
+    }
+
+    private void setTranslationYOfBottomStackedUrlActionButtons(float translationY) {
+        mMicButton.setTranslationY(translationY);
+        mLensButton.setTranslationY(translationY);
     }
 }

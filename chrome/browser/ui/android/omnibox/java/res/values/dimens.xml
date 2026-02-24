@@ -189,6 +189,7 @@ found in the LICENSE file.
     <dimen name="fusebox_attachment_visible_height">40dp</dimen>
     <dimen name="fusebox_vertical_space_above_popup">32dp</dimen>
     <dimen name="fusebox_min_tablet_width">504dp</dimen>
+    <dimen name="fusebox_url_bar_translation_y">4dp</dimen>
 
     <!-- Search engine logo. -->
     <dimen name="omnibox_search_engine_logo_composed_size">24dp</dimen>
