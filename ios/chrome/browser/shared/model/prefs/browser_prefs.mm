@@ -609,6 +609,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kIOSAppPreviewLastAttributionWindowType,
                                 0);
 
+  registry->RegisterTimePref(prefs::kLastRecordedActiveDay, base::Time());
+
   // Deprecated 02/2025.
   registry->RegisterIntegerPref(
       prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness,
