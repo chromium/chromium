@@ -165,6 +165,8 @@ class TabStripGlicButton : public TabStripNudgeButton,
 
   gfx::Size PreferredSize() const;
 
+  void SetLabelMargins();
+
   views::View* highlight_view() { return highlight_view_; }
   WidthState width_state() { return width_state_; }
 
