@@ -22,5 +22,53 @@ found in the LICENSE file.
         android:src="@drawable/ic_menu_fill_24dp"
         app:tint="@color/default_icon_color_tint_list" />
 
+<androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/page_navigation"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/page_decrease_button"
+        style="@style/ToolbarButton"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_chevron_left_24dp"
+        app:tint="@color/default_icon_color_tint_list"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <TextView
+            android:id="@+id/current_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+            app:layout_constraintStart_toEndOf="@id/page_decrease_button"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    <TextView
+            android:id="@+id/page_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+            app:layout_constraintStart_toEndOf="@id/current_page"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/page_increase_button"
+        style="@style/ToolbarButton"
+        android:layout_height="match_parent"
+        android:layout_marginStart="10dp"
+        android:src="@drawable/ic_chevron_right_24dp"
+        app:tint="@color/default_icon_color_tint_list"
+        app:layout_constraintStart_toEndOf="@id/page_count"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 </org.chromium.chrome.browser.pdf.PdfToolbar>
 

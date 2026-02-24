@@ -117,7 +117,10 @@ public class PdfCoordinator implements PdfActionsDelegate {
         mUrl = url;
         mView = LayoutInflater.from(activity).inflate(R.layout.pdf_page, null);
         if (PdfUtils.isInlinePdfV2Enabled()) {
-            mView.findViewById(R.id.pdf_toolbar).setVisibility(View.VISIBLE);
+            PdfToolbar toolbar = mView.findViewById(R.id.pdf_toolbar);
+            toolbar.setVisibility(View.VISIBLE);
+            toolbar.setPageNumber(getCurrentPageString());
+            toolbar.setPageCount(getPageCountString());
         }
         mProgressBar = mView.findViewById(R.id.progress_bar);
         mView.setBackgroundColor(
@@ -329,6 +332,16 @@ public class PdfCoordinator implements PdfActionsDelegate {
             // TODO(crbug.com/348712628): show some error UI when content URI is null.
             Log.e(TAG, "Uri is null.");
         }
+    }
+
+    private String getCurrentPageString() {
+        // TODO(rathomas): Update the current page.
+        return "99";
+    }
+
+    private String getPageCountString() {
+        // TODO(rathomas): Update the page count.
+        return " / 99";
     }
 
     @Nullable String requestAssistContent(String filename, boolean isWorkProfile) {
