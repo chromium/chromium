@@ -745,7 +745,9 @@ suite('ContextualTasksAppTest', function() {
     await microtasksFinished();
 
     const composebox = appElement.$.composebox;
-    assertTrue(!!composebox);
+    const crComposebox =
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
+    assertTrue(!!crComposebox);
 
     const rect = {
       top: 10,
@@ -760,26 +762,23 @@ suite('ContextualTasksAppTest', function() {
     (appElement as any).forcedComposeboxBounds_ = rect;
     await microtasksFinished();
 
-    const frameRect = appElement.$.threadFrame.getBoundingClientRect();
-
     // Verify styles applied
-    assertEquals('fixed', composebox.style.position);
+    assertEquals('fixed', crComposebox.style.position);
     assertEquals(
-        `${window.innerHeight - (frameRect.top + rect.bottom)}px`,
-        composebox.style.bottom);
-    assertEquals(`${frameRect.left + rect.left}px`, composebox.style.left);
-    assertEquals(`${rect.width}px`, composebox.style.width);
-    assertEquals('', composebox.style.height);
+        `${window.innerHeight - rect.bottom}px`, crComposebox.style.bottom);
+    assertEquals('20px', crComposebox.style.left);
+    assertEquals('100px', crComposebox.style.width);
+    assertEquals('', crComposebox.style.height);
 
     // Verify zero state clears styles
     (appElement as any).isZeroState_ = true;
     await microtasksFinished();
 
-    assertEquals('', composebox.style.position);
-    assertEquals('', composebox.style.top);
-    assertEquals('', composebox.style.left);
-    assertEquals('', composebox.style.width);
-    assertEquals('', composebox.style.height);
+    assertEquals('', crComposebox.style.position);
+    assertEquals('', crComposebox.style.top);
+    assertEquals('', crComposebox.style.left);
+    assertEquals('', crComposebox.style.width);
+    assertEquals('', crComposebox.style.height);
   });
 
   test('updates clip path on post message', async () => {
