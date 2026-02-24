@@ -1170,8 +1170,9 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
     DVLOG(1) << "VAE drops the input frame to reduce latency";
     base::AutoLock lock(lock_);
     if (encoded_image_callback_) {
-      encoded_image_callback_->OnDroppedFrame(
-          webrtc::EncodedImageCallback::DropReason::kDroppedByEncoder);
+      encoded_image_callback_->OnFrameDropped(frame_chunk.timestamp,
+                                              /*spatial_id=*/0,
+                                              /*is_end_of_temporal_unit=*/true);
     }
     return;
   }
@@ -1595,39 +1596,6 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
     return;
   }
 
-  // An encoder drops a frame.
-  if (metadata.dropped_frame()) {
-    BitstreamBufferAvailable(bitstream_buffer_id);
-    // Invoke OnDroppedFrame() only in the end of picture. How to call
-    // OnDroppedFrame() in spatial layers is not defined in the webrtc encoder
-    // API. We call once in spatial layers. This point will be fixed in a
-    // new WebRTC encoder API.
-    if (metadata.end_of_picture()) {
-      base::AutoLock lock(lock_);
-      if (!encoded_image_callback_) {
-        return;
-      }
-      encoded_image_callback_->OnDroppedFrame(
-          webrtc::EncodedImageCallback::DropReason::kDroppedByEncoder);
-    }
-    return;
-  }
-
-  scoped_refptr<RefCountedWritableSharedMemoryMapping> output_mapping =
-      output_buffers_[bitstream_buffer_id].second;
-  if (metadata.payload_size_bytes >
-      output_buffers_[bitstream_buffer_id].second->size()) {
-    NotifyErrorStatus({media::EncoderStatus::Codes::kInvalidOutputBuffer,
-                       "invalid payload_size: " +
-                           base::NumberToString(metadata.payload_size_bytes)});
-    return;
-  }
-
-  if (metadata.end_of_picture()) {
-    CHECK(encoder_metrics_provider_);
-    encoder_metrics_provider_->IncrementEncodedFrameCount();
-  }
-
   // Find RTP and capture timestamps by going through |pending_timestamps_|.
   // Derive it from current time otherwise.
   std::optional<uint32_t> rtp_timestamp;
@@ -1670,6 +1638,34 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
       submitted_frames_.pop_front();
     }
     DCHECK(rtp_timestamp.has_value());
+  }
+
+  // An encoder drops a frame.
+  if (metadata.dropped_frame()) {
+    BitstreamBufferAvailable(bitstream_buffer_id);
+    base::AutoLock lock(lock_);
+    if (encoded_image_callback_) {
+      encoded_image_callback_->OnFrameDropped(
+          *rtp_timestamp, metadata.spatial_idx().value_or(0),
+          metadata.end_of_picture());
+    }
+
+    return;
+  }
+
+  scoped_refptr<RefCountedWritableSharedMemoryMapping> output_mapping =
+      output_buffers_[bitstream_buffer_id].second;
+  if (metadata.payload_size_bytes >
+      output_buffers_[bitstream_buffer_id].second->size()) {
+    NotifyErrorStatus({media::EncoderStatus::Codes::kInvalidOutputBuffer,
+                       "invalid payload_size: " +
+                           base::NumberToString(metadata.payload_size_bytes)});
+    return;
+  }
+
+  if (metadata.end_of_picture()) {
+    CHECK(encoder_metrics_provider_);
+    encoder_metrics_provider_->IncrementEncodedFrameCount();
   }
 
   if (!rtp_timestamp.has_value() || !capture_timestamp_ms.has_value()) {
@@ -1721,6 +1717,8 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
   // media::BitstreamBufferMetadata, and libwebrtc would parse bitstream to get
   // the qp if |qp_| is less than zero.
   image.qp_ = metadata.qp;
+
+  image.set_end_of_temporal_unit(metadata.end_of_picture());
 
   webrtc::CodecSpecificInfo info;
   info.codecType = video_codec_type_;

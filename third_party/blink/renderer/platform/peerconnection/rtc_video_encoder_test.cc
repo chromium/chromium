@@ -120,6 +120,10 @@ class EncodedImageCallbackWrapper : public webrtc::EncodedImageCallback {
     return Result(Result::OK);
   }
 
+  void OnFrameDropped(uint32_t rtp_timestamp,
+                      int spatial_id,
+                      bool is_end_of_temporal_unit) override {}
+
  private:
   EncodedCallback encoded_callback_;
 };
@@ -1495,7 +1499,9 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeWithDropFrame) {
     DropFrameVerifier() = default;
     ~DropFrameVerifier() override = default;
 
-    void OnDroppedFrame(DropReason reason) override {
+    void OnFrameDropped(uint32_t rtp_timestamp,
+                        int spatial_id,
+                        bool is_end_of_temporal_unit) override {
       AddResult(EncodeResult::kDropped);
     }
 
@@ -1636,6 +1642,10 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeSpatialLayer) {
       return Result(Result::OK);
     }
 
+    void OnFrameDropped(uint32_t rtp_timestamp,
+                        int spatial_id,
+                        bool is_end_of_temporal_unit) override {}
+
     void Wait() { waiter_.Wait(); }
 
    private:
@@ -1651,6 +1661,74 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeSpatialLayer) {
     std::vector<webrtc::VideoFrameType> frame_types;
     if (i == 0)
       frame_types.emplace_back(webrtc::VideoFrameType::kVideoFrameKey);
+    base::WaitableEvent event;
+    if (i > 0) {
+      EXPECT_CALL(*mock_vea_, UseOutputBitstreamBuffer(_))
+          .Times(kNumSpatialLayers);
+    }
+    EXPECT_CALL(*mock_vea_, Encode)
+        .WillOnce(DoAll(
+            Invoke(this,
+                   &RTCVideoEncoderTest::ReturnSVCLayerFrameWithVp9Metadata),
+            [&event]() { event.Signal(); }));
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+              rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                       .set_video_frame_buffer(buffer)
+                                       .set_rtp_timestamp(i)
+                                       .set_timestamp_us(i)
+                                       .set_rotation(webrtc::kVideoRotation_0)
+                                       .build(),
+                                   &frame_types));
+    event.Wait();
+  }
+  sl_verifier.Wait();
+  RunUntilIdle();
+}
+
+TEST_F(RTCVideoEncoderEncodeTest, EndOfPictureSetsEndOfTemporalUnit) {
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
+  CreateEncoder(codec_type);
+  constexpr size_t kNumSpatialLayers = 3;
+  webrtc::VideoCodec sl_codec =
+      GetSVCLayerCodec(webrtc::kVideoCodecVP9, kNumSpatialLayers);
+  ExpectCreateInitAndDestroyVEA();
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&sl_codec, kVideoEncoderSettings));
+
+  constexpr size_t kNumEncodeFrames = 5u;
+  class EndOfTemporalUnitVerifier : public webrtc::EncodedImageCallback {
+   public:
+    EndOfTemporalUnitVerifier() = default;
+    webrtc::EncodedImageCallback::Result OnEncodedImage(
+        const webrtc::EncodedImage& encoded_image,
+        const webrtc::CodecSpecificInfo* codec_specific_info) override {
+      EXPECT_EQ(encoded_image.is_end_of_temporal_unit().value_or(false),
+                codec_specific_info->end_of_picture);
+      if (encoded_image.RtpTimestamp() == kNumEncodeFrames - 1 &&
+          codec_specific_info->end_of_picture) {
+        waiter_.Signal();
+      }
+      return Result(Result::OK);
+    }
+    void OnFrameDropped(uint32_t rtp_timestamp,
+                        int spatial_id,
+                        bool is_end_of_temporal_unit) override {}
+    void Wait() { waiter_.Wait(); }
+
+   private:
+    base::WaitableEvent waiter_;
+  };
+
+  EndOfTemporalUnitVerifier sl_verifier;
+  rtc_encoder_->RegisterEncodeCompleteCallback(&sl_verifier);
+  for (size_t i = 0; i < kNumEncodeFrames; i++) {
+    const webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
+        webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
+    FillFrameBuffer(buffer);
+    std::vector<webrtc::VideoFrameType> frame_types;
+    if (i == 0) {
+      frame_types.emplace_back(webrtc::VideoFrameType::kVideoFrameKey);
+    }
     base::WaitableEvent event;
     if (i > 0) {
       EXPECT_CALL(*mock_vea_, UseOutputBitstreamBuffer(_))
@@ -1692,14 +1770,19 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeSpatialLayerWithDropFrame) {
     DropFrameVerifier() = default;
     ~DropFrameVerifier() override = default;
 
-    void OnDroppedFrame(DropReason reason) override {
-      AddResult(EncodeResult::kDropped);
+    void OnFrameDropped(uint32_t rtp_timestamp,
+                        int spatial_id,
+                        bool is_end_of_temporal_unit) override {
+      if (is_end_of_temporal_unit) {
+        AddResult(EncodeResult::kDropped);
+      }
     }
 
     webrtc::EncodedImageCallback::Result OnEncodedImage(
         const webrtc::EncodedImage& encoded_image,
         const webrtc::CodecSpecificInfo* codec_specific_info) override {
-      if (codec_specific_info->end_of_picture) {
+      if (encoded_image.is_end_of_temporal_unit().value_or(
+              codec_specific_info->end_of_picture)) {
         AddResult(EncodeResult::kEncoded);
       }
       return Result(Result::OK);
@@ -2127,6 +2210,10 @@ TEST_F(RTCVideoEncoderEncodeTest, LowerSpatialLayerTurnedOffAndOnAgain) {
 
       return Result(Result::OK);
     }
+
+    void OnFrameDropped(uint32_t rtp_timestamp,
+                        int spatial_id,
+                        bool is_end_of_temporal_unit) override {}
 
     const std::vector<webrtc::CodecSpecificInfoVP9>& infos() { return infos_; }
 
@@ -2640,6 +2727,10 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodedBufferLifetimeExceedsEncoderLifetime) {
       return Result(Result::OK);
     }
 
+    void OnFrameDropped(uint32_t rtp_timestamp,
+                        int spatial_id,
+                        bool is_end_of_temporal_unit) override {}
+
     void Wait() { waiter_.Wait(); }
 
    private:
@@ -2696,8 +2787,9 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeAndDropWhenTooManyFramesInEncoder) {
     DropFrameVerifier() = default;
     ~DropFrameVerifier() override = default;
 
-    void OnDroppedFrame(DropReason reason) override {
-      EXPECT_EQ(reason, DropReason::kDroppedByEncoder);
+    void OnFrameDropped(uint32_t rtp_timestamp,
+                        int spatial_id,
+                        bool is_end_of_temporal_unit) override {
       num_dropped_frames_++;
       CHECK(event_);
       event_->Signal();
@@ -2762,8 +2854,6 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeAndDropWhenTooManyFramesInEncoder) {
 
   // At this stage the encoder holds `kMaxFramesInEncoder` frames and the next
   // frame sent to the encoder should not be encoded but dropped instead.
-  // OnDroppedFrame(DropReason::kDroppedByMediaOptimizations) should be called
-  // as a result and this.
   event.Reset();
   dropframe_verifier.SetEvent(&event);
   EXPECT_CALL(*mock_vea_, Encode).Times(0);
@@ -2867,6 +2957,10 @@ TEST_F(RTCVideoEncoderEncodeTest, EncodeH265WithBitstreamFix) {
       waiter_.Signal();
       return Result(Result::OK);
     }
+
+    void OnFrameDropped(uint32_t rtp_timestamp,
+                        int spatial_id,
+                        bool is_end_of_temporal_unit) override {}
 
     void Wait() { waiter_.Wait(); }
 
@@ -3298,6 +3392,10 @@ TEST_F(RTCVideoEncoderEncodeTest, AV1TemporalLayerGenericFrameInfo) {
       waiter_.Signal();
       return Result(Result::OK);
     }
+
+    void OnFrameDropped(uint32_t rtp_timestamp,
+                        int spatial_id,
+                        bool is_end_of_temporal_unit) override {}
 
     void Wait() { waiter_.Wait(); }
 
@@ -3740,6 +3838,10 @@ TEST_F(RTCVideoEncoderEncodeTest, H265TemporalLayerGenericFrameInfo) {
       waiter_.Signal();
       return Result(Result::OK);
     }
+
+    void OnFrameDropped(uint32_t rtp_timestamp,
+                        int spatial_id,
+                        bool is_end_of_temporal_unit) override {}
 
     void Wait() { waiter_.Wait(); }
 
