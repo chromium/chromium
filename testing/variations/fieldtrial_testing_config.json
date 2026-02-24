@@ -28104,7 +28104,7 @@
                     "enable_features": [
                         "V8Flag_turbolev"
                     ],
-                    "disable_benchmarking": "true"
+                    "disable_benchmarking": true
                 }
             ]
         }
