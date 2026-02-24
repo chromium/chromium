@@ -15,6 +15,8 @@
 
 namespace glic {
 
+constexpr base::TimeDelta kDefaultTimeout = base::Minutes(1);
+
 GlicInvokeHandler::GlicInvokeHandler(GlicInstanceImpl& instance,
                                      GlicInvokeOptions options,
                                      CompletionCallback completion_callback)
@@ -25,8 +27,21 @@ GlicInvokeHandler::GlicInvokeHandler(GlicInstanceImpl& instance,
 GlicInvokeHandler::~GlicInvokeHandler() = default;
 
 void GlicInvokeHandler::Invoke() {
-  // TODO(crbug.com/483387751): Add readiness delay and timeout handling.
-  // For now, fail immediately if not ready.
+  timeout_timer_.Start(FROM_HERE, options_.timeout.value_or(kDefaultTimeout),
+                       base::BindOnce(&GlicInvokeHandler::OnError,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      GlicInvokeError::kTimeout));
+
+  if (instance_->host().IsReady()) {
+    SendToClient();
+    return;
+  }
+
+  host_observation_.Observe(&instance_->host());
+}
+
+void GlicInvokeHandler::ClientReadyToShow(const mojom::OpenPanelInfo&) {
+  host_observation_.Reset();
   SendToClient();
 }
 
@@ -42,6 +57,8 @@ void GlicInvokeHandler::SendToClient() {
 }
 
 void GlicInvokeHandler::OnSuccess() {
+  timeout_timer_.Stop();
+
   if (options_.on_success) {
     std::move(options_.on_success).Run();
   }
@@ -51,6 +68,8 @@ void GlicInvokeHandler::OnSuccess() {
 }
 
 void GlicInvokeHandler::OnError(GlicInvokeError error) {
+  timeout_timer_.Stop();
+
   if (options_.on_error) {
     std::move(options_.on_error).Run(error);
   }
