@@ -75,14 +75,17 @@ constexpr int kNumMaxRecoveryTime = 2;
 constexpr base::TimeDelta kRecoveryResetInterval = base::Seconds(10);
 constexpr base::TimeDelta kRecoveryRetryInterval = base::Seconds(20);
 
-std::string GetSplitTabsButtonAppJS() {
-  return "document.querySelector('toolbar-app')?.shadowRoot"
-         "?.querySelector('split-tabs-button-app')";
+constexpr char kSplitTabsSelector[] = "split-tabs-button-app";
+
+std::string GetButtonAppJS(const std::string& selector) {
+  return base::StringPrintf(
+      "document.querySelector('toolbar-app')?.shadowRoot?.querySelector('%s')",
+      selector.c_str());
 }
 
-std::string GetSplitTabsButtonIconJS() {
-  return GetSplitTabsButtonAppJS() +
-         "?.shadowRoot?.querySelector('cr-icon-button')";
+std::string GetButtonIconJS(const std::string& selector) {
+  return base::StrCat({GetButtonAppJS(selector),
+                       "?.shadowRoot?.querySelector('cr-icon-button')"});
 }
 
 std::string GetValueForCSSProperty(const std::string& element_js,
@@ -97,7 +100,8 @@ std::string GetValueForToolbarAppCSSProperty(const std::string& property) {
                                 property);
 }
 
-bool WaitForSplitTabsButtonVisible(content::WebContents* web_contents) {
+bool WaitForButtonVisible(content::WebContents* web_contents,
+                          const std::string& selector) {
   static constexpr char kScript[] = R"(
     (() => {
       const btn = %s;
@@ -108,7 +112,7 @@ bool WaitForSplitTabsButtonVisible(content::WebContents* web_contents) {
   return base::test::RunUntil([&]() {
     return content::EvalJs(
                web_contents,
-               base::StringPrintf(kScript, GetSplitTabsButtonAppJS().c_str()))
+               base::StringPrintf(kScript, GetButtonAppJS(selector).c_str()))
         .ExtractBool();
   });
 }
@@ -119,7 +123,7 @@ WebUIToolbarWebView* GetWebUIToolbarWebView(Browser* browser) {
       ->GetWebUIToolbarViewForTesting();
 }
 
-void EnableSplitTabsButton(Browser* browser, views::WebView* web_view) {
+void PinSplitTabsButton(Browser* browser, views::WebView* web_view) {
   browser->profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton, true);
   content::WaitForCopyableViewInWebContents(web_view->GetWebContents());
 }
@@ -134,8 +138,8 @@ std::string DispatchEventScript(const std::string& event_class,
   return base::StringPrintf(
       "%s?.dispatchEvent(new %s('%s', "
       "{bubbles: true, cancelable: true, view: window, %s}));",
-      GetSplitTabsButtonIconJS().c_str(), event_class.c_str(), type.c_str(),
-      options.c_str());
+      GetButtonIconJS(kSplitTabsSelector).c_str(), event_class.c_str(),
+      type.c_str(), options.c_str());
 }
 
 class NavigationCounter : public content::WebContentsObserver {
@@ -759,6 +763,130 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewStabilityTest,
   widget1->CloseNow();
 }
 
+class WebUIToolbarWebViewBrowserTest : public InProcessBrowserTest {
+ public:
+  WebUIToolbarWebViewBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUIReloadButton,
+         features::kWebUISplitTabsButton,
+         features::kSkipIPCChannelPausingForNonGuests,
+         features::kWebUIInProcessResourceLoadingV2,
+         features::kInitialWebUISyncNavStartToCommit},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    ThemeServiceFactory::GetForProfile(browser()->profile())
+        ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       ToggleSplitTabsButtonVisibility) {
+  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  ASSERT_TRUE(webui_toolbar_view);
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  ASSERT_TRUE(web_view);
+
+  // Initially, the button should NOT be visible (default is unpinned).
+  std::string button_name =
+      l10n_util::GetStringUTF8(IDS_ACCNAME_SPLIT_TABS_TOOLBAR_BUTTON_PINNED);
+
+  PinSplitTabsButton(browser(), web_view);
+  EXPECT_TRUE(
+      WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
+
+  // Wait for it to appear in accessibility tree.
+  content::WaitForAccessibilityTreeToContainNodeWithName(
+      web_view->GetWebContents(), button_name);
+
+  // Verify accessibility properties.
+  content::FindAccessibilityNodeCriteria find_criteria;
+  find_criteria.name = button_name;
+  find_criteria.role = ax::mojom::Role::kButton;
+  ui::AXPlatformNodeDelegate* split_tabs_node =
+      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
+  ASSERT_TRUE(split_tabs_node);
+
+  // Disable the button via pref.
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
+                                               false);
+  // Wait for the tree to change.
+  content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
+
+  // Verify it is gone.
+  split_tabs_node =
+      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
+  EXPECT_FALSE(split_tabs_node);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
+                       VerifyDynamicTouchModeUpdate) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  PinSplitTabsButton(browser(), web_view);
+  ASSERT_TRUE(WaitForButtonVisible(web_contents, kSplitTabsSelector));
+
+  // Initial state: Standard (Touch disabled).
+  EXPECT_EQ("34px",
+            content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
+                                              "--toolbar-button-height"))
+                .ExtractString());
+  EXPECT_EQ("20px",
+            content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
+                                              "--toolbar-button-icon-size"))
+                .ExtractString());
+  EXPECT_EQ("1px", content::EvalJs(web_contents,
+                                   GetValueForCSSProperty(
+                                       GetButtonAppJS(kSplitTabsSelector),
+                                       "--split-tabs-indicator-spacing"))
+                       .ExtractString());
+  std::string get_indicator_bottom_js = base::StringPrintf(
+      "window.getComputedStyle("
+      "%s.shadowRoot.querySelector('.status-indicator')).bottom",
+      GetButtonAppJS(kSplitTabsSelector).c_str());
+  EXPECT_EQ(
+      "4px",
+      content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
+
+  // Enable Touch UI.
+  {
+    ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper(true);
+
+    // Wait for the WebUI to update CSS variables.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
+                                               "--toolbar-button-height"))
+                 .ExtractString() == "48px";
+    }));
+
+    EXPECT_EQ("24px",
+              content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
+                                                "--toolbar-button-icon-size"))
+                  .ExtractString());
+    EXPECT_EQ(
+        "9px",
+        content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
+  }
+
+  // Verify revert to Standard.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
+                                             "--toolbar-button-height"))
+               .ExtractString() == "34px";
+  }));
+  EXPECT_EQ(
+      "4px",
+      content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
+}
+
 class WebUIReloadButtonBrowserTest : public InProcessBrowserTest {
  public:
   WebUIReloadButtonBrowserTest() {
@@ -829,7 +957,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   // Wait for the button to know it is in split state.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return content::EvalJs(web_view->GetWebContents(),
-                           base::StrCat({GetSplitTabsButtonAppJS(),
+                           base::StrCat({GetButtonAppJS(kSplitTabsSelector),
                                          ".state.isCurrentTabSplit"}))
         .ExtractBool();
   }));
@@ -878,74 +1006,13 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   }
 }
 
-class WebUIToolbarWebViewSplitTabsWithReloadBrowserTest
-    : public InProcessBrowserTest {
- public:
-  WebUIToolbarWebViewSplitTabsWithReloadBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kInitialWebUI, features::kWebUIReloadButton,
-         features::kWebUISplitTabsButton,
-         features::kSkipIPCChannelPausingForNonGuests,
-         features::kWebUIInProcessResourceLoadingV2,
-         features::kInitialWebUISyncNavStartToCommit},
-        {});
-  }
-
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    ThemeServiceFactory::GetForProfile(browser()->profile())
-        ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kLight);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsWithReloadBrowserTest,
-                       ToggleSplitTabsButtonVisibility) {
-  content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
-  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
-  ASSERT_TRUE(webui_toolbar_view);
-  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-  ASSERT_TRUE(web_view);
-
-  // Initially, the button should NOT be visible (default is unpinned).
-  std::string button_name =
-      l10n_util::GetStringUTF8(IDS_ACCNAME_SPLIT_TABS_TOOLBAR_BUTTON_PINNED);
-
-  EnableSplitTabsButton(browser(), web_view);
-  EXPECT_TRUE(WaitForSplitTabsButtonVisible(web_view->GetWebContents()));
-
-  // Wait for it to appear in accessibility tree.
-  content::WaitForAccessibilityTreeToContainNodeWithName(
-      web_view->GetWebContents(), button_name);
-
-  // Verify accessibility properties.
-  content::FindAccessibilityNodeCriteria find_criteria;
-  find_criteria.name = button_name;
-  find_criteria.role = ax::mojom::Role::kButton;
-  ui::AXPlatformNodeDelegate* split_tabs_node =
-      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
-  ASSERT_TRUE(split_tabs_node);
-
-  // Disable the button via pref.
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton,
-                                               false);
-  // Wait for the tree to change.
-  content::WaitForAccessibilityTreeToChange(web_view->GetWebContents());
-
-  // Verify it is gone.
-  split_tabs_node =
-      content::FindAccessibilityNode(web_view->GetWebContents(), find_criteria);
-  EXPECT_FALSE(split_tabs_node);
-}
-
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
                        ClickSplitTabsButton) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-  EnableSplitTabsButton(browser(), web_view);
-  EXPECT_TRUE(WaitForSplitTabsButtonVisible(web_view->GetWebContents()));
+  PinSplitTabsButton(browser(), web_view);
+  EXPECT_TRUE(
+      WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
 
   // Ensure NOT in split view initially.
   auto* tab_strip_model = browser()->tab_strip_model();
@@ -966,12 +1033,12 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   content::WebContents* web_contents = web_view->GetWebContents();
 
-  EnableSplitTabsButton(browser(), web_view);
-  ASSERT_TRUE(WaitForSplitTabsButtonVisible(web_contents));
+  PinSplitTabsButton(browser(), web_view);
+  ASSERT_TRUE(WaitForButtonVisible(web_contents, kSplitTabsSelector));
 
   // Initially NOT split. aria-haspopup should be 'false'.
   const std::string kGetAriaHasPopup =
-      base::StrCat({GetSplitTabsButtonIconJS(),
+      base::StrCat({GetButtonIconJS(kSplitTabsSelector),
                     "?.getAttribute('aria-haspopup') || 'false'"});
   EXPECT_EQ("false", content::EvalJs(web_contents, kGetAriaHasPopup));
 
@@ -1000,8 +1067,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
                        MAYBE_RightClickSplitTabsButton) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-  EnableSplitTabsButton(browser(), web_view);
-  EXPECT_TRUE(WaitForSplitTabsButtonVisible(web_view->GetWebContents()));
+  PinSplitTabsButton(browser(), web_view);
+  EXPECT_TRUE(
+      WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
   EXPECT_TRUE(content::ExecJs(
       web_view->GetWebContents(),
       DispatchEventScript("MouseEvent", "contextmenu", "button: 2")));
@@ -1020,8 +1088,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
                        MAYBE_ClickSplitTabsButtonWhileSplit) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-  EnableSplitTabsButton(browser(), web_view);
-  EXPECT_TRUE(WaitForSplitTabsButtonVisible(web_view->GetWebContents()));
+  PinSplitTabsButton(browser(), web_view);
+  EXPECT_TRUE(
+      WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
 
   // Create a split tab group manually to simulate being in split mode.
   chrome::NewSplitTab(browser(),
@@ -1042,8 +1111,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
                        VerifySplitTabLocations) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-  EnableSplitTabsButton(browser(), web_view);
-  EXPECT_TRUE(WaitForSplitTabsButtonVisible(web_view->GetWebContents()));
+  PinSplitTabsButton(browser(), web_view);
+  EXPECT_TRUE(
+      WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
 
   // Create split [A, B]. A is active.
   chrome::NewSplitTab(browser(),
@@ -1056,7 +1126,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   // the right.
   EXPECT_EQ("split-tabs-button:split-scene-right",
             content::EvalJs(web_view->GetWebContents(),
-                            base::StrCat({GetSplitTabsButtonIconJS(),
+                            base::StrCat({GetButtonIconJS(kSplitTabsSelector),
                                           "?.getAttribute('iron-icon')"}))
                 .ExtractString());
 
@@ -1067,72 +1137,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   // Verify icon is 'split-scene-left' (kStart).
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return content::EvalJs(web_view->GetWebContents(),
-                           base::StrCat({GetSplitTabsButtonIconJS(),
+                           base::StrCat({GetButtonIconJS(kSplitTabsSelector),
                                          "?.getAttribute('iron-icon')"}))
                .ExtractString() == "split-tabs-button:split-scene-left";
   }));
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
-                       VerifyDynamicTouchModeUpdate) {
-  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
-  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-  content::WebContents* web_contents = web_view->GetWebContents();
-
-  EnableSplitTabsButton(browser(), web_view);
-  ASSERT_TRUE(WaitForSplitTabsButtonVisible(web_contents));
-
-  // Initial state: Standard (Touch disabled).
-  EXPECT_EQ("34px",
-            content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
-                                              "--toolbar-button-height"))
-                .ExtractString());
-  EXPECT_EQ("20px",
-            content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
-                                              "--toolbar-button-icon-size"))
-                .ExtractString());
-  EXPECT_EQ("1px",
-            content::EvalJs(web_contents, GetValueForCSSProperty(
-                                              GetSplitTabsButtonAppJS(),
-                                              "--split-tabs-indicator-spacing"))
-                .ExtractString());
-  std::string get_indicator_bottom_js = base::StringPrintf(
-      "window.getComputedStyle("
-      "%s.shadowRoot.querySelector('.status-indicator')).bottom",
-      GetSplitTabsButtonAppJS().c_str());
-  EXPECT_EQ(
-      "4px",
-      content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
-
-  // Enable Touch UI.
-  {
-    ui::TouchUiController::TouchUiScoperForTesting touch_ui_scoper(true);
-
-    // Wait for the WebUI to update CSS variables.
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
-                                               "--toolbar-button-height"))
-                 .ExtractString() == "48px";
-    }));
-
-    EXPECT_EQ("24px",
-              content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
-                                                "--toolbar-button-icon-size"))
-                  .ExtractString());
-    EXPECT_EQ(
-        "9px",
-        content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
-  }
-
-  // Verify revert to Standard.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
-                                             "--toolbar-button-height"))
-               .ExtractString() == "34px";
-  }));
-  EXPECT_EQ(
-      "4px",
-      content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
 }
 
 class WebUIToolbarWebViewTouchBrowserTest
@@ -1152,8 +1160,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewTouchBrowserTest, VerifyLayout) {
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   content::WebContents* web_contents = web_view->GetWebContents();
 
-  EnableSplitTabsButton(browser(), web_view);
-  ASSERT_TRUE(WaitForSplitTabsButtonVisible(web_contents));
+  PinSplitTabsButton(browser(), web_view);
+  ASSERT_TRUE(
+      WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
 
   // Verify CSS variables set by app.ts based on loadTimeData.
   // Toolbar button height should be 48px in touch mode (vs 34px).
@@ -1169,18 +1178,18 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewTouchBrowserTest, VerifyLayout) {
                 .ExtractString());
 
   // Spacing should be 1px.
-  EXPECT_EQ("1px",
-            content::EvalJs(web_contents, GetValueForCSSProperty(
-                                              GetSplitTabsButtonAppJS(),
-                                              "--split-tabs-indicator-spacing"))
-                .ExtractString());
+  EXPECT_EQ("1px", content::EvalJs(web_contents,
+                                   GetValueForCSSProperty(
+                                       GetButtonAppJS(kSplitTabsSelector),
+                                       "--split-tabs-indicator-spacing"))
+                       .ExtractString());
 
   // Verify computed style for indicator bottom margin.
   // Formula: (48 - 24) / 2 - 1 - 2 = 9px.
   std::string get_indicator_bottom_js = base::StringPrintf(
       "window.getComputedStyle("
       "%s.shadowRoot.querySelector('.status-indicator')).bottom",
-      GetSplitTabsButtonAppJS().c_str());
+      GetButtonAppJS(kSplitTabsSelector).c_str());
   EXPECT_EQ(
       "9px",
       content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
