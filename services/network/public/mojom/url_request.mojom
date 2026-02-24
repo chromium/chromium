@@ -570,7 +570,7 @@ struct URLRequest {
 
   // The target address space to which a given fetch operation is expected to
   // connect. See more:
-  // https://wicg.github.io/private-network-access/#permission-prompt.
+  // https://wicg.github.io/local-network-access/#permission-prompt.
   // If the actual address space and the expected address space don't match, a
   // network error will be returned.
   network.mojom.IPAddressSpace required_ip_address_space;

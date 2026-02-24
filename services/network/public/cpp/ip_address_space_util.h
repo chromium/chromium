@@ -72,7 +72,7 @@ mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP)
 // `info.endpoint`. This returns `kUnknown` for invalid IP addresses. Otherwise,
 // takes into account the `--ip-address-space-overrides` command-line switch. If
 // no override applies, then follows this algorithm:
-// https://wicg.github.io/private-network-access/#determine-the-ip-address-space
+// https://wicg.github.io/local-network-access/#determine-the-ip-address-space
 //
 // `info.endpoint`'s port is only used for matching to command-line overrides.
 // It is ignored otherwise. In particular, if no overrides are specified on the
@@ -91,14 +91,14 @@ mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP)
 // Address spaces go from most public to least public in the following order:
 //
 //  - public and unknown (equivalent)
-//  - private
+//  - local
 //  - loopback
 //
 bool COMPONENT_EXPORT(NETWORK_CPP)
     IsLessPublicAddressSpace(mojom::IPAddressSpace lhs,
                              mojom::IPAddressSpace rhs);
 
-// Returns whether `lhs` is less public than `rhs`, but collapses the private
+// Returns whether `lhs` is less public than `rhs`, but collapses the local
 // and loopback address spaces into the same bucket.
 //
 // This comparator is compatible with std::less.
@@ -106,7 +106,7 @@ bool COMPONENT_EXPORT(NETWORK_CPP)
 // Address spaces go from most public to least public in the following order:
 //
 //  - public and unknown (equivalent)
-//  - private and loopback (equivalent)
+//  - local and loopback (equivalent)
 //
 bool COMPONENT_EXPORT(NETWORK_CPP)
     IsLessPublicAddressSpaceLNA(mojom::IPAddressSpace lhs,

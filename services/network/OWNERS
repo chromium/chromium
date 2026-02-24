@@ -32,7 +32,7 @@ per-file *cookie*=file://net/cookies/OWNERS
 # Web-facing security features
 per-file content_security_policy*=file://third_party/blink/SECURITY_OWNERS
 per-file cross_origin_read_blocking*=file://third_party/blink/SECURITY_OWNERS
-per-file private_network_access*=file://third_party/blink/SECURITY_OWNERS
+per-file local_network_access*=file://third_party/blink/SECURITY_OWNERS
 per-file sec_header_helpers*=file://third_party/blink/SECURITY_OWNERS
 
 # WebTransport

@@ -27,7 +27,7 @@ std::string_view LocalNetworkAccessCheckResultToStringPiece(Result result) {
     case Result::kBlockedByLoadOption:
       return "blocked-by-load-option";
     case Result::kBlockedByPolicyBlock:
-      return "insecure-private-network";
+      return "insecure-local-network";
     case Result::kBlockedByInconsistentIpAddressSpace:
       return "blocked-by-inconsistent-ip-address-space";
     case Result::kAllowedPotentiallyTrustworthySameOrigin:

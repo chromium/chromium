@@ -93,7 +93,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) LocalNetworkAccessChecker {
   // passed to the last call to `Check()`, if any.
   //
   // Spec:
-  // https://wicg.github.io/private-network-access/#response-ip-address-space
+  // https://wicg.github.io/local-network-access/#response-ip-address-space
   std::optional<mojom::IPAddressSpace> ResponseAddressSpace() const {
     return response_address_space_;
   }

@@ -58,22 +58,22 @@ class LocalNetworkAccessUrlLoaderInterceptor {
 
   // Called when the URLLoader establishes a connection (or retrieves a cached
   // entry) for the given `url` with resolved `info`. This method performs
-  // PNA checks.
+  // LNA checks.
   // `callback_getter` is a function that, when run, returns the final
-  // completion callback to be invoked after any asynchronous PNA steps (like
+  // completion callback to be invoked after any asynchronous LNA steps (like
   // LNA permission) complete. `callback_getter` itself is called synchronously
   // inside this method.
   // `set_cors_error_status_callback` allows this interceptor to synchronously
-  // report a PNA-related CORS error status back to the owning URLLoader.
+  // report a LNA-related CORS error status back to the owning URLLoader.
   //
-  // Returns `net::OK` if the PNA checks pass synchronously and the request
+  // Returns `net::OK` if the LNA checks pass synchronously and the request
   // should proceed.
   // Returns `net::ERR_IO_PENDING` if a Local Network Access permission prompt
   // is required; the final result will be delivered asynchronously via the
   // callback obtained from `callback_getter`.
   // Otherwise, returns a specific `net::Error` code (e.g.,
-  // `net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS`) if the request is
-  // blocked by PNA checks synchronously.
+  // `net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS`) if the request is
+  // blocked by LNA checks synchronously.
   net::Error OnConnected(
       const GURL& url,
       const net::TransportInfo& info,
@@ -85,10 +85,10 @@ class LocalNetworkAccessUrlLoaderInterceptor {
       const std::optional<std::string>& devtools_request_id,
       mojom::URLLoaderNetworkServiceObserver* url_loader_network_observer);
 
-  // Resets the internal state of the PNA checker when a redirect occurs.
+  // Resets the internal state of the LNA checker when a redirect occurs.
   void ResetForRedirect(const GURL& new_url);
 
-  // The following methods provide access to PNA-related state derived from the
+  // The following methods provide access to LNA-related state derived from the
   // checks. They delegate to the internal LocalNetworkAccessChecker. See
   // `local_network_access_checker.h` for detailed semantics.
   std::optional<mojom::IPAddressSpace> ResponseAddressSpace() const;
@@ -96,7 +96,7 @@ class LocalNetworkAccessUrlLoaderInterceptor {
   mojom::ClientSecurityStatePtr CloneClientSecurityState() const;
 
  private:
-  // Internal helper for `OnConnected()`: performs the core PNA check using the
+  // Internal helper for `OnConnected()`: performs the core LNA check using the
   // provided `transport_info`, logs events, and notifies observers. Returns
   // the raw check result.
   LocalNetworkAccessCheckResult DoCheck(
