@@ -40,8 +40,7 @@ jobs:
         if: matrix.rust == 'nightly'
       - run: cargo test
       - run: cargo check --no-default-features
-      - run: cargo check --features backtrace
-        if: matrix.rust != '1.80.0' && matrix.rust != '1.76.0'
+      - run: cargo check
       - uses: actions/upload-artifact@v6
         if: matrix.rust == 'nightly' && always()
         with:
@@ -78,7 +77,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@nightly
       - run: cargo generate-lockfile -Z minimal-versions
-      - run: cargo check --locked --features backtrace
+      - run: cargo check --locked
 
   windows:
     name: Windows
@@ -91,7 +90,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rust-src
-      - run: cargo check --features backtrace
+      - run: cargo check
 
   doc:
     name: Documentation

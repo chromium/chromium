@@ -1,6 +1,6 @@
 [package]
 name = "anyhow"
-version = "1.0.101"
+version = "1.0.102"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["rust-patterns", "no-std"]
 description = "Flexible concrete Error type built on std::error::Error"
@@ -14,13 +14,9 @@ rust-version = "1.68"
 [features]
 default = ["std"]
 std = []
-
-[dependencies]
-# On compilers older than 1.65, features=["backtrace"] may be used to enable
-# backtraces via the `backtrace` crate. This feature has no effect on 1.65+
-# besides bringing in an unused dependency, as `std::backtrace` is always
-# preferred.
-backtrace = { version = "0.3.51", optional = true }
+# THIS HAS NO EFFECT. This feature remains to preserve compatibility with the
+# old `backtrace` optional dependency that this crate used to have.
+backtrace = []
 
 [dev-dependencies]
 futures = { version = "0.3", default-features = false }

@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.68"
 name = "anyhow"
-version = "1.0.101"
+version = "1.0.102"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 autolib = false
@@ -46,6 +46,7 @@ rustdoc-args = [
 ]
 
 [features]
+backtrace = []
 default = ["std"]
 std = []
 
@@ -108,10 +109,6 @@ path = "tests/test_repr.rs"
 [[test]]
 name = "test_source"
 path = "tests/test_source.rs"
-
-[dependencies.backtrace]
-version = "0.3.51"
-optional = true
 
 [dev-dependencies.futures]
 version = "0.3"

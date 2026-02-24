@@ -441,7 +441,6 @@ third_party/blink/web_tests/wpt_internal/fenced_frame/resources
 third_party/blink/web_tests/wpt_internal/hid
 third_party/blink/web_tests/wpt_internal/html/semantics/parser-blocking-stylesheets
 third_party/blink/web_tests/wpt_internal/webgpu/canvas_webgpu_transfer
-third_party/brotli
 third_party/brotli/enc
 third_party/byte_buddy
 third_party/chevron
@@ -708,6 +707,7 @@ third_party/rust/chromium_crates_io/vendor/once_cell-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5
 third_party/rust/chromium_crates_io/vendor/opusic-sys-v0_5/.github/workflows
 third_party/rust/chromium_crates_io/vendor/parking_lot-v0_12/.github/workflows
+third_party/rust/chromium_crates_io/vendor/png-v0_18/src/filter
 third_party/rust/chromium_crates_io/vendor/proc-macro2-v1
 third_party/rust/chromium_crates_io/vendor/proc-macro2-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/proc-macro-error2-v2

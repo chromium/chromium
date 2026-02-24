@@ -40,10 +40,10 @@ impl ErrorImpl {
             }
         }
 
-        #[cfg(any(std_backtrace, feature = "backtrace"))]
+        #[cfg(feature = "std")]
         {
-            use crate::backtrace::BacktraceStatus;
             use alloc::string::ToString;
+            use std::backtrace::BacktraceStatus;
 
             let backtrace = unsafe { Self::backtrace(this) };
             if let BacktraceStatus::Captured = backtrace.status() {

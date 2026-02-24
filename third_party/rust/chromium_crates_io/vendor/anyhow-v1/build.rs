@@ -9,16 +9,11 @@ use std::path::Path;
 use std::process::{self, Command, Stdio};
 use std::str;
 
-#[cfg(all(feature = "backtrace", not(feature = "std")))]
-compile_error! {
-    "`backtrace` feature without `std` feature is not supported"
-}
-
 fn main() {
-    let mut error_generic_member_access = false;
     if cfg!(feature = "std") {
         println!("cargo:rerun-if-changed=src/nightly.rs");
 
+        let error_generic_member_access;
         let consider_rustc_bootstrap;
         if compile_probe(false) {
             // This is a nightly or dev compiler, so it supports unstable
@@ -55,7 +50,6 @@ fn main() {
         }
 
         if error_generic_member_access {
-            println!("cargo:rustc-cfg=std_backtrace");
             println!("cargo:rustc-cfg=error_generic_member_access");
         }
 
@@ -74,13 +68,6 @@ fn main() {
         println!("cargo:rustc-check-cfg=cfg(anyhow_no_clippy_format_args)");
         println!("cargo:rustc-check-cfg=cfg(anyhow_no_core_error)");
         println!("cargo:rustc-check-cfg=cfg(error_generic_member_access)");
-        println!("cargo:rustc-check-cfg=cfg(std_backtrace)");
-    }
-
-    if !error_generic_member_access && cfg!(feature = "std") {
-        // std::backtrace::Backtrace
-        // https://blog.rust-lang.org/2022/11/03/Rust-1.65.0.html#stabilized-apis
-        println!("cargo:rustc-cfg=std_backtrace");
     }
 
     if rustc < 81 {
