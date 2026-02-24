@@ -641,6 +641,15 @@ struct AIPageContentOptions {
 
   // Whether to include data for visible sensitive payment information.
   bool include_sensitive_payments_for_redaction = false;
+
+  // Optional node-id policy options.
+  // If unset, extraction emits node ids for all nodes.
+  // If set, extraction emits ids for always-required override cases (actionable
+  // targets and metadata-linked nodes such as focus/selection/label-for
+  // references), plus any attribute types listed here.
+  // For better overall Blink performance, request node ids only for attribute
+  // types that require DOM round-trip behavior.
+  array<AIPageContentAttributeType>? node_id_allowlist;
 };
 
 // Used to obtain the AIPageContent representation for Documents. Lives in the

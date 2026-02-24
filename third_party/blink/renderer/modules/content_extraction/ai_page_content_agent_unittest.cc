@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 
 #include <cstddef>
+#include <initializer_list>
 #include <limits>
 #include <optional>
 #include <string>
@@ -350,6 +351,46 @@ class AIPageContentAgentTest : public testing::Test {
     return options;
   }
 
+  static void SetNodeIdAllowlistForTest(
+      mojom::blink::AIPageContentOptions& options,
+      std::initializer_list<mojom::blink::AIPageContentAttributeType>
+          allowlisted_attribute_types) {
+    // Centralize node-id options setup so test bodies focus on policy intent.
+    // `emplace()` means the policy is explicitly requested for this test.
+    options.node_id_allowlist.emplace();
+    for (const auto attribute_type : allowlisted_attribute_types) {
+      options.node_id_allowlist->push_back(attribute_type);
+    }
+  }
+
+  static mojom::blink::AIPageContentOptions CreateNodeIdPolicyOptionsForTest(
+      std::initializer_list<mojom::blink::AIPageContentAttributeType>
+          allowlisted_attribute_types = {},
+      mojom::blink::AIPageContentMode mode =
+          mojom::blink::AIPageContentMode::kDefault) {
+    auto options = GetAIPageContentOptionsForTest();
+    options.mode = mode;
+    SetNodeIdAllowlistForTest(options, allowlisted_attribute_types);
+    return options;
+  }
+
+  static mojom::blink::AIPageContentOptions CreateNodeIdPolicyOptionsForTest(
+      mojom::blink::AIPageContentMode mode) {
+    return CreateNodeIdPolicyOptionsForTest(
+        /*allowlisted_attribute_types=*/{}, mode);
+  }
+
+  void LoadNodeIdPolicyParagraphFixture() {
+    // Shared fixture for default-mode type-policy tests. Keeping this in one
+    // helper makes test intent clearer and avoids repeated HTML boilerplate.
+    frame_test_helpers::LoadHTMLString(
+        helper_.LocalMainFrame(),
+        "<body>"
+        "  <p id='paragraph'>visible paragraph text</p>"
+        "</body>",
+        url_test_helpers::ToKURL("http://foobar.com"));
+  }
+
   void GetAIPageContent(std::optional<mojom::blink::AIPageContentOptions>
                             options = std::nullopt) {
     auto* agent = AIPageContentAgent::GetOrCreateForTesting(
@@ -418,15 +459,39 @@ class AIPageContentAgentTest : public testing::Test {
     return nullptr;
   }
 
-  const mojom::blink::AIPageContentNode* FindNodeBySelector(String selector) {
+  DOMNodeId GetDomNodeIdForSelector(String selector) {
     Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
     EXPECT_TRUE(document);
+    if (!document) {
+      return kInvalidDOMNodeId;
+    }
+
     Element* element = document->QuerySelector(AtomicString(selector));
     EXPECT_TRUE(element) << "Couldn't find element with selector = "
                          << selector;
+    if (!element) {
+      return kInvalidDOMNodeId;
+    }
+
     DOMNodeId dom_node_id = DOMNodeIds::IdForNode(element);
-    EXPECT_GE(dom_node_id, 1);
+    EXPECT_GT(dom_node_id, kInvalidDOMNodeId);
+    return dom_node_id;
+  }
+
+  const mojom::blink::AIPageContentNode* FindNodeBySelector(String selector) {
+    const DOMNodeId dom_node_id = GetDomNodeIdForSelector(selector);
+    if (dom_node_id == kInvalidDOMNodeId) {
+      return nullptr;
+    }
     return FindNodeByDomNodeId(dom_node_id);
+  }
+
+  void ExpectSelectorNotInApcOutput(String selector) {
+    // Validate that the selector resolves in the live DOM and has a valid
+    // DOMNodeId, then assert that APC output intentionally omitted it.
+    const DOMNodeId dom_node_id = GetDomNodeIdForSelector(selector);
+    ASSERT_GT(dom_node_id, kInvalidDOMNodeId);
+    EXPECT_FALSE(FindNodeByDomNodeId(dom_node_id));
   }
 
   void CheckHitTestableButNotInteractive(
@@ -3967,9 +4032,8 @@ TEST_F(AIPageContentAgentTest, NestedIframesMetaTags) {
   EXPECT_EQ(iframe.children_nodes.size(), 1u);
 
   // In the iframe children_nodes there is a root node that has two children.
-  // The first child is a text node and the second is the subiframe.  The key
-  // thing we want to check here is that the subiframe has the correct meta
-  // data.
+  // The first child is a text node and the second is the subiframe. The key
+  // thing we want to check here is that the subiframe has the correct metadata.
   const auto& subiframe = *iframe.children_nodes[0]->children_nodes[1];
   EXPECT_EQ(subiframe.content_attributes->attribute_type,
             mojom::blink::AIPageContentAttributeType::kIframe);
@@ -3984,6 +4048,375 @@ TEST_F(AIPageContentAgentTest, NestedIframesMetaTags) {
   EXPECT_EQ(
       subiframe_data.content->get_local_frame_data()->meta_data[0]->content,
       "Jordan");
+}
+
+TEST_F(AIPageContentAgentTest, NodeIdAllowlist_DefaultModeTypePolicy) {
+  // This page has a paragraph with a text child. It gives us a simple shape to
+  // verify that type-based node-id policy does not implicitly propagate ids to
+  // descendants.
+  LoadNodeIdPolicyParagraphFixture();
+
+  auto options = CreateNodeIdPolicyOptionsForTest(
+      {mojom::blink::AIPageContentAttributeType::kParagraph});
+  GetAIPageContent(options);
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& paragraph = *root.children_nodes[0];
+  EXPECT_EQ(paragraph.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kParagraph);
+  ASSERT_TRUE(paragraph.content_attributes->dom_node_id.has_value());
+  EXPECT_GT(*paragraph.content_attributes->dom_node_id, kInvalidDOMNodeId);
+
+  ASSERT_EQ(paragraph.children_nodes.size(), 1u);
+  const auto& text = *paragraph.children_nodes[0];
+  EXPECT_EQ(text.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kText);
+  EXPECT_FALSE(text.content_attributes->dom_node_id.has_value());
+}
+
+TEST_F(AIPageContentAgentTest,
+       NodeIdAllowlist_UnsetOptionsPreserveLegacyIdEmission) {
+  // If `node_id_allowlist` is unset, APC should preserve legacy broad emission.
+  LoadNodeIdPolicyParagraphFixture();
+
+  auto options = GetAIPageContentOptionsForTest();
+  GetAIPageContent(options);
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& paragraph = *root.children_nodes[0];
+  ASSERT_TRUE(paragraph.content_attributes->dom_node_id.has_value());
+
+  ASSERT_EQ(paragraph.children_nodes.size(), 1u);
+  const auto& text = *paragraph.children_nodes[0];
+  ASSERT_TRUE(text.content_attributes->dom_node_id.has_value());
+}
+
+TEST_F(AIPageContentAgentTest,
+       NodeIdAllowlist_EmptyOptionsSuppressTypeBasedIds) {
+  // With explicit but empty options, regular structural nodes should not emit
+  // ids.
+  LoadNodeIdPolicyParagraphFixture();
+
+  auto options = CreateNodeIdPolicyOptionsForTest();
+  GetAIPageContent(options);
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& paragraph = *root.children_nodes[0];
+  EXPECT_FALSE(paragraph.content_attributes->dom_node_id.has_value());
+
+  ASSERT_EQ(paragraph.children_nodes.size(), 1u);
+  const auto& text = *paragraph.children_nodes[0];
+  EXPECT_FALSE(text.content_attributes->dom_node_id.has_value());
+}
+
+TEST_F(AIPageContentAgentTest,
+       NodeIdAllowlist_EmptyOptionsDoNotGenerateIdForSuppressedTextNode) {
+  // Build a simple paragraph dynamically and verify APC does not generate a
+  // DOM id for its text node when empty node-id options suppress output ids.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), "<body></body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+  ASSERT_TRUE(document->body());
+
+  auto* paragraph = document->CreateRawElement(html_names::kPTag);
+  paragraph->setAttribute(html_names::kIdAttr, AtomicString("dynamic_p"));
+  auto* text_node = document->createTextNode("dynamic paragraph text");
+  paragraph->appendChild(text_node);
+  document->body()->appendChild(paragraph);
+
+  // Precondition: this test is only meaningful if APC starts from an idless
+  // text node.
+  ASSERT_EQ(DOMNodeIds::ExistingIdForNode(text_node), kInvalidDOMNodeId);
+
+  auto options = CreateNodeIdPolicyOptionsForTest();
+  GetAIPageContent(options);
+
+  // The text node is suppressed by policy, so APC must not generate its id.
+  EXPECT_EQ(DOMNodeIds::ExistingIdForNode(text_node), kInvalidDOMNodeId);
+
+  // Keep the output-side assertion as an additional behavior guard.
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& output_paragraph = *root.children_nodes[0];
+  ASSERT_EQ(output_paragraph.children_nodes.size(), 1u);
+  const auto& output_text = *output_paragraph.children_nodes[0];
+  EXPECT_FALSE(output_text.content_attributes->dom_node_id.has_value());
+}
+
+TEST_F(
+    AIPageContentAgentTest,
+    NodeIdAllowlist_AllowlistedParentDoesNotGenerateIdForSuppressedTextNode) {
+  // The parent paragraph is allowlisted and may emit its id. The text child is
+  // still suppressed and must remain idless before and after APC extraction.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), "<body></body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+  ASSERT_TRUE(document->body());
+
+  auto* paragraph = document->CreateRawElement(html_names::kPTag);
+  paragraph->setTextContent("allowlisted parent text");
+  auto* text_node = paragraph->firstChild();
+  ASSERT_TRUE(text_node);
+
+  document->body()->appendChild(paragraph);
+  ASSERT_EQ(DOMNodeIds::ExistingIdForNode(text_node), kInvalidDOMNodeId);
+
+  auto options = CreateNodeIdPolicyOptionsForTest(
+      {mojom::blink::AIPageContentAttributeType::kParagraph});
+  GetAIPageContent(options);
+
+  EXPECT_EQ(DOMNodeIds::ExistingIdForNode(text_node), kInvalidDOMNodeId);
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& output_paragraph = *root.children_nodes[0];
+  ASSERT_TRUE(output_paragraph.content_attributes->dom_node_id.has_value());
+  ASSERT_EQ(output_paragraph.children_nodes.size(), 1u);
+  const auto& output_text = *output_paragraph.children_nodes[0];
+  EXPECT_FALSE(output_text.content_attributes->dom_node_id.has_value());
+}
+
+TEST_F(AIPageContentAgentTest, NodeIdAllowlist_ActionableNodesAlwaysShowId) {
+  // Action execution depends on ids for actionable targets. This override
+  // should apply even if the type allowlist is empty.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <button id='button'>button</button>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto options = CreateNodeIdPolicyOptionsForTest(
+      mojom::blink::AIPageContentMode::kActionableElements);
+  GetAIPageContent(options);
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& button = *root.children_nodes[0];
+  ASSERT_TRUE(button.content_attributes->node_interaction_info);
+  ASSERT_TRUE(button.content_attributes->dom_node_id.has_value());
+  EXPECT_GT(*button.content_attributes->dom_node_id, kInvalidDOMNodeId);
+}
+
+TEST_F(AIPageContentAgentTest, NodeIdAllowlist_FocusedNodeAlwaysShowsId) {
+  // Focus metadata is consumed browser-side. The focused node must remain
+  // id-backed even with an empty allowlist.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <input id='focused_input' value='x'>"
+      "  <p id='paragraph'>visible paragraph text</p>"
+      "  <script>"
+      "    document.getElementById('focused_input').focus();"
+      "  </script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto options = CreateNodeIdPolicyOptionsForTest();
+  GetAIPageContent(options);
+
+  const auto& page_interaction_info = Content()->page_interaction_info;
+  ASSERT_TRUE(page_interaction_info->focused_dom_node_id.has_value());
+  EXPECT_GT(*page_interaction_info->focused_dom_node_id, kInvalidDOMNodeId);
+
+  const mojom::blink::AIPageContentNode* focused_node =
+      FindNodeByDomNodeId(*page_interaction_info->focused_dom_node_id);
+  ASSERT_TRUE(focused_node);
+  ASSERT_TRUE(focused_node->content_attributes->dom_node_id.has_value());
+  EXPECT_EQ(*focused_node->content_attributes->dom_node_id,
+            *page_interaction_info->focused_dom_node_id);
+
+  // Non-focused nodes should continue to suppress ids under empty allowlist
+  // policy.
+  ExpectSelectorNotInApcOutput("#paragraph");
+}
+
+TEST_F(AIPageContentAgentTest, NodeIdAllowlist_LabelForTargetAlwaysShowsId) {
+  // `label_for_dom_node_id` is a metadata edge. The referenced control must
+  // still emit a node id so browser-side linking remains valid.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <label for='name_input' id='name_label'>Name</label>"
+      "  <input id='name_input' value='Ada'>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto options = CreateNodeIdPolicyOptionsForTest(
+      mojom::blink::AIPageContentMode::kActionableElements);
+  GetAIPageContent(options);
+
+  const auto* label_node = FindNodeBySelector("#name_label");
+  ASSERT_TRUE(label_node);
+  ASSERT_TRUE(
+      label_node->content_attributes->label_for_dom_node_id.has_value());
+
+  const DOMNodeId target_dom_node_id =
+      *label_node->content_attributes->label_for_dom_node_id;
+  const auto* target_node = FindNodeByDomNodeId(target_dom_node_id);
+  ASSERT_TRUE(target_node);
+  ASSERT_TRUE(target_node->content_attributes->dom_node_id.has_value());
+  EXPECT_EQ(*target_node->content_attributes->dom_node_id, target_dom_node_id);
+}
+
+TEST_F(AIPageContentAgentTest,
+       NodeIdAllowlist_LabelTargetShowsIdWhenLabelFollowsControl) {
+  // The label can appear after its target control in layout order.
+  // The target must still remain id-backed for label metadata round-trips.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <input id='name_input' value='Ada'>"
+      "  <label for='name_input' id='name_label'>Name</label>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto options = CreateNodeIdPolicyOptionsForTest(
+      mojom::blink::AIPageContentMode::kActionableElements);
+  GetAIPageContent(options);
+
+  const auto* label_node = FindNodeBySelector("#name_label");
+  ASSERT_TRUE(label_node);
+  ASSERT_TRUE(
+      label_node->content_attributes->label_for_dom_node_id.has_value());
+
+  const DOMNodeId target_dom_node_id =
+      *label_node->content_attributes->label_for_dom_node_id;
+  const auto* target_node = FindNodeByDomNodeId(target_dom_node_id);
+  ASSERT_TRUE(target_node);
+  ASSERT_TRUE(target_node->content_attributes->dom_node_id.has_value());
+  EXPECT_EQ(*target_node->content_attributes->dom_node_id, target_dom_node_id);
+}
+
+TEST_F(AIPageContentAgentTest,
+       NodeIdAllowlist_AccessibilityFocusedNodeAlwaysShowsId) {
+  // Accessibility focus should force id emission even when type policy would
+  // otherwise suppress ids.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <button id='button1'>button1</button>"
+      "  <div id='div2'>div2</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  ui::AXMode ax_mode = ui::kAXModeComplete;
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+  auto context = std::make_unique<AXContext>(*document, ax_mode);
+  auto* ax_object_cache =
+      To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
+  ASSERT_TRUE(ax_object_cache);
+  ax_object_cache->UpdateAXForAllDocuments();
+  auto* button_element = document->getElementById(AtomicString("button1"));
+  ASSERT_TRUE(button_element);
+  auto* button_ax_object = ax_object_cache->Get(button_element);
+  ASSERT_TRUE(button_ax_object);
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::blink::Action::kSetAccessibilityFocus;
+  button_ax_object->PerformAction(action_data);
+
+  auto options = CreateNodeIdPolicyOptionsForTest();
+  GetAIPageContent(options);
+
+  const auto& page_interaction_info = Content()->page_interaction_info;
+  ASSERT_TRUE(
+      page_interaction_info->accessibility_focused_dom_node_id.has_value());
+  EXPECT_GT(*page_interaction_info->accessibility_focused_dom_node_id,
+            kInvalidDOMNodeId);
+
+  const mojom::blink::AIPageContentNode* focused_node = FindNodeByDomNodeId(
+      *page_interaction_info->accessibility_focused_dom_node_id);
+  ASSERT_TRUE(focused_node);
+  ASSERT_TRUE(focused_node->content_attributes->dom_node_id.has_value());
+
+  // Non-focused nodes should continue to suppress ids under empty allowlist
+  // policy.
+  ExpectSelectorNotInApcOutput("#div2");
+}
+
+TEST_F(AIPageContentAgentTest, NodeIdAllowlist_SelectionNodesAlwaysShowId) {
+  // Selection metadata references start/end DOM nodes and must remain
+  // round-trippable even when the policy allowlist is empty.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <p id='p1'>Paragraph 1</p>"
+      "  <p id='p2'>Paragraph 2</p>"
+      "  <p id='p3'>Paragraph 3</p>"
+      "  <script>"
+      "    const p1 = document.getElementById('p1');"
+      "    const p2 = document.getElementById('p2');"
+      "    const range = new Range();"
+      "    range.setStart(p1.childNodes[0], 10);"
+      "    range.setEnd(p2.childNodes[0], 9);"
+      "    const selection = window.getSelection();"
+      "    selection.removeAllRanges();"
+      "    selection.addRange(range);"
+      "  </script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto options = CreateNodeIdPolicyOptionsForTest();
+  GetAIPageContent(options);
+
+  const auto& frame_interaction_info =
+      Content()->frame_data->frame_interaction_info;
+  ASSERT_TRUE(frame_interaction_info->selection);
+  const auto& selection = *frame_interaction_info->selection;
+
+  EXPECT_GT(selection.start_dom_node_id, kInvalidDOMNodeId);
+  EXPECT_GT(selection.end_dom_node_id, kInvalidDOMNodeId);
+
+  const auto* start_node = FindNodeByDomNodeId(selection.start_dom_node_id);
+  ASSERT_TRUE(start_node);
+  ASSERT_TRUE(start_node->content_attributes->dom_node_id.has_value());
+
+  const auto* end_node = FindNodeByDomNodeId(selection.end_dom_node_id);
+  ASSERT_TRUE(end_node);
+  ASSERT_TRUE(end_node->content_attributes->dom_node_id.has_value());
+
+  // Nodes unrelated to the selection should continue to suppress ids.
+  ExpectSelectorNotInApcOutput("#p3");
+}
+
+TEST_F(AIPageContentAgentTest,
+       NodeIdAllowlist_DefaultModeMultipleAllowlistedTypes) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <h1 id='heading'>Visible heading text</h1>"
+      "  <p id='paragraph'>Visible paragraph text</p>"
+      "  <div id='container'>Visible container text</div>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto options = CreateNodeIdPolicyOptionsForTest(
+      {mojom::blink::AIPageContentAttributeType::kParagraph,
+       mojom::blink::AIPageContentAttributeType::kHeading});
+  GetAIPageContent(options);
+
+  const auto* heading_node = FindNodeBySelector("#heading");
+  ASSERT_TRUE(heading_node);
+  ASSERT_TRUE(heading_node->content_attributes->dom_node_id.has_value());
+  EXPECT_GT(*heading_node->content_attributes->dom_node_id, kInvalidDOMNodeId);
+
+  const auto* paragraph_node = FindNodeBySelector("#paragraph");
+  ASSERT_TRUE(paragraph_node);
+  ASSERT_TRUE(paragraph_node->content_attributes->dom_node_id.has_value());
+  EXPECT_GT(*paragraph_node->content_attributes->dom_node_id,
+            kInvalidDOMNodeId);
+
+  ExpectSelectorNotInApcOutput("#container");
 }
 
 TEST_F(AIPageContentAgentTest, Title) {

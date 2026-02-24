@@ -107,6 +107,27 @@ element by matching key properties like its type, interactivity, and location.
 If needed, it can further verify the element by comparing its text content to
 ensure the correct action is taken.
 
+### Selective Node ID Emission
+
+APC now supports a selective node-id policy in `AIPageContentOptions`:
+
+* `node_id_allowlist`: Optional list of `AIPageContentAttributeType` values
+  that should emit `dom_node_id`.
+
+The main goal is to avoid assigning DOM node ids to more nodes than needed.
+Over-emitting ids grows Blink's DOM node id hash map, which hurts overall
+renderer performance after extraction finishes.
+
+Semantics:
+
+* If `node_id_allowlist` is unset, APC preserves legacy behavior and emits ids
+  broadly.
+* If `node_id_allowlist` is set (empty or non-empty), APC always emits ids for
+  required override cases (for example actionable targets and metadata-linked
+  nodes such as focus/selection/label-for references).
+* If `node_id_allowlist` is non-empty, APC also emits ids for the listed
+  attribute types.
+
 ## 5\. Critical Considerations for Implementation
 
 Using APC requires careful attention to privacy and security. While APC

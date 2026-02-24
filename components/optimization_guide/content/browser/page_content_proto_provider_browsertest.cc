@@ -4,10 +4,12 @@
 
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 
+#include <initializer_list>
 #include <memory>
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/android/device_info.h"
 #include "base/containers/flat_map.h"
@@ -77,6 +79,66 @@ void AssertHasText(const optimization_guide::proto::ContentNode& node,
   AssertIsTextNode(text_node, text);
 }
 
+const optimization_guide::proto::ContentNode* FindFirstNodeWithAttributeType(
+    const optimization_guide::proto::ContentNode& root,
+    optimization_guide::proto::ContentAttributeType attribute_type) {
+  std::vector<const optimization_guide::proto::ContentNode*> nodes_to_visit;
+  nodes_to_visit.push_back(&root);
+  while (!nodes_to_visit.empty()) {
+    const auto* current = nodes_to_visit.back();
+    nodes_to_visit.pop_back();
+    if (current->content_attributes().attribute_type() == attribute_type) {
+      return current;
+    }
+    for (const auto& child : current->children_nodes()) {
+      nodes_to_visit.push_back(&child);
+    }
+  }
+  return nullptr;
+}
+
+const optimization_guide::proto::ContentNode* FindFirstInteractiveNode(
+    const optimization_guide::proto::ContentNode& root) {
+  std::vector<const optimization_guide::proto::ContentNode*> stack;
+  stack.push_back(&root);
+  while (!stack.empty()) {
+    const auto* current = stack.back();
+    stack.pop_back();
+    if (current->content_attributes().has_interaction_info()) {
+      return current;
+    }
+    for (const auto& child : current->children_nodes()) {
+      stack.push_back(&child);
+    }
+  }
+  return nullptr;
+}
+
+// This helper is only used by popup opener tests, and those tests are not
+// built on Android, Mac, or iOS. Keep the helper under the same guard to
+// avoid unused-function build failures on those bots.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_IOS)
+const optimization_guide::proto::ContentNode* FindFirstNodeWithDomNodeId(
+    const optimization_guide::proto::ContentNode& root,
+    int64_t dom_node_id) {
+  std::vector<const optimization_guide::proto::ContentNode*> stack;
+  stack.push_back(&root);
+  while (!stack.empty()) {
+    const auto* current = stack.back();
+    stack.pop_back();
+    if (current->content_attributes().has_common_ancestor_dom_node_id() &&
+        current->content_attributes().common_ancestor_dom_node_id() ==
+            dom_node_id) {
+      return current;
+    }
+    for (const auto& child : current->children_nodes()) {
+      stack.push_back(&child);
+    }
+  }
+  return nullptr;
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_IOS)
+
 void AssertRectsEqual(const optimization_guide::proto::BoundingRect& proto_rect,
                       gfx::Rect rect) {
   EXPECT_EQ(proto_rect.width(), rect.width());
@@ -114,8 +176,7 @@ void AssertValidOrigin(
 }
 
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
-  auto request = DefaultAIPageContentOptions(/*on_critical_path =*/true);
-  return request;
+  return DefaultAIPageContentOptions(/*on_critical_path =*/true);
 }
 
 blink::mojom::AIPageContentOptionsPtr GetActionableAIPageContentOptions(
@@ -123,6 +184,38 @@ blink::mojom::AIPageContentOptionsPtr GetActionableAIPageContentOptions(
   auto request = ActionableAIPageContentOptions(
       /*on_critical_path =*/true);
   request->include_same_site_only = include_same_site_only;
+  return request;
+}
+
+// Helpers for selective node-id policy tests. These keep request setup
+// consistent and make each test body focus on assertions.
+void SetNodeIdAllowlistForTest(
+    blink::mojom::AIPageContentOptions& request,
+    std::initializer_list<blink::mojom::AIPageContentAttributeType>
+        allowlisted_attribute_types) {
+  // Keep options setup centralized so policy tests read as intent.
+  // `emplace()` means policy mode is requested for this test.
+  request.node_id_allowlist.emplace();
+  for (const auto attribute_type : allowlisted_attribute_types) {
+    request.node_id_allowlist->push_back(attribute_type);
+  }
+}
+
+blink::mojom::AIPageContentOptionsPtr
+CreateDefaultNodeIdAllowlistPolicyOptionsForTest(
+    std::initializer_list<blink::mojom::AIPageContentAttributeType>
+        allowlisted_attribute_types = {}) {
+  auto request = GetAIPageContentOptions();
+  SetNodeIdAllowlistForTest(*request, allowlisted_attribute_types);
+  return request;
+}
+
+blink::mojom::AIPageContentOptionsPtr
+CreateActionableNodeIdAllowlistPolicyOptionsForTest(
+    std::initializer_list<blink::mojom::AIPageContentAttributeType>
+        allowlisted_attribute_types = {}) {
+  auto request = GetActionableAIPageContentOptions();
+  SetNodeIdAllowlistForTest(*request, allowlisted_attribute_types);
   return request;
 }
 
@@ -320,6 +413,81 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, Selection) {
   EXPECT_NE(selection.start_node_id(), 0);
   EXPECT_NE(selection.end_node_id(), 0);
   EXPECT_EQ(selection.selected_text(), "Non empty simple page");
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       NodeIdAllowlist_DefaultModeUsesTypePolicy) {
+  // Keep the page shape minimal so assertions are about policy behavior, not
+  // unrelated content extraction detail.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     https_server()->GetURL("/simple.html")));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      "document.body.innerHTML = '<p id=\"p\">Policy paragraph</p>';"));
+
+  auto request = CreateDefaultNodeIdAllowlistPolicyOptionsForTest(
+      {blink::mojom::AIPageContentAttributeType::kParagraph});
+  LoadData(std::move(request));
+
+  const auto* paragraph = FindFirstNodeWithAttributeType(
+      page_content().root_node(),
+      optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+  ASSERT_TRUE(paragraph);
+  ASSERT_TRUE(
+      paragraph->content_attributes().has_common_ancestor_dom_node_id());
+  EXPECT_GT(paragraph->content_attributes().common_ancestor_dom_node_id(), 0);
+
+  ASSERT_EQ(paragraph->children_nodes().size(), 1);
+  const auto& text = paragraph->children_nodes().at(0);
+  EXPECT_EQ(text.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_FALSE(text.content_attributes().has_common_ancestor_dom_node_id());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentProtoProviderBrowserTest,
+    NodeIdAllowlist_UnsetOptionsPreserveLegacyDefaultEmission) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     https_server()->GetURL("/simple.html")));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      "document.body.innerHTML = '<p id=\"p\">Policy paragraph</p>';"));
+
+  auto request = GetAIPageContentOptions();
+  // Keep options unset on purpose to verify legacy behavior.
+  LoadData(std::move(request));
+
+  const auto* paragraph = FindFirstNodeWithAttributeType(
+      page_content().root_node(),
+      optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH);
+  ASSERT_TRUE(paragraph);
+  ASSERT_TRUE(
+      paragraph->content_attributes().has_common_ancestor_dom_node_id());
+
+  ASSERT_EQ(paragraph->children_nodes().size(), 1);
+  const auto& text = paragraph->children_nodes().at(0);
+  EXPECT_EQ(text.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_TRUE(text.content_attributes().has_common_ancestor_dom_node_id());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       NodeIdAllowlist_ActionableNodesRemainIdBacked) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     https_server()->GetURL("/simple.html")));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      "document.body.innerHTML = '<button id=\"b\">Action</button>';"));
+
+  auto request = CreateActionableNodeIdAllowlistPolicyOptionsForTest();
+  LoadData(std::move(request));
+
+  const auto* interactive =
+      FindFirstInteractiveNode(ActionableContentRootNode());
+  ASSERT_TRUE(interactive);
+  ASSERT_TRUE(
+      interactive->content_attributes().has_common_ancestor_dom_node_id());
+  EXPECT_GT(interactive->content_attributes().common_ancestor_dom_node_id(), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
@@ -2253,6 +2421,33 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest, ColorPicker) {
   const auto& color_node = page_content().root_node().children_nodes()[1];
   EXPECT_EQ(popup_window.opener_common_ancestor_dom_node_id(),
             color_node.content_attributes().common_ancestor_dom_node_id());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderPopupBrowserTest,
+                       NodeIdAllowlist_DefaultModePopupOpenerRemainsIdBacked) {
+  LoadPage(https_server()->GetURL("a.com", "/open_popup_iframe.html"), nullptr);
+
+  content::RenderFrameHost* iframe =
+      content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+
+  content::ShowPopupWidgetWaiter new_popup_waiter(web_contents(), iframe);
+  ASSERT_TRUE(content::ExecJs(
+      iframe, "document.getElementById('select_input').showPicker();"));
+  new_popup_waiter.Wait();
+
+  auto request = CreateDefaultNodeIdAllowlistPolicyOptionsForTest();
+  LoadData(std::move(request));
+  ASSERT_TRUE(page_content().has_popup_window());
+
+  const auto& popup_window = page_content().popup_window();
+  ASSERT_GT(popup_window.opener_common_ancestor_dom_node_id(), 0);
+
+  const auto* opener_node = FindFirstNodeWithDomNodeId(
+      page_content().root_node(),
+      popup_window.opener_common_ancestor_dom_node_id());
+  ASSERT_TRUE(opener_node);
+  EXPECT_EQ(opener_node->content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
 }
 #endif
 

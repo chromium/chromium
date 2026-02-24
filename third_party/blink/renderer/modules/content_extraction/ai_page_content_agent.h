@@ -28,6 +28,7 @@ class Document;
 class LayoutIFrame;
 class LayoutObject;
 class LocalFrame;
+class Node;
 #if DCHECK_IS_ON()
 class AutoBuildHelper;
 #endif
@@ -92,8 +93,8 @@ class MODULES_EXPORT AIPageContentAgent final
                             GetAIPageContentCallback callback,
                             base::TimeTicks start_time) const;
 
-  std::optional<CustomPasswordSource> CustomPasswordReason(
-      DOMNodeId dom_node_id) const;
+  std::optional<CustomPasswordSource> ExistingCustomPasswordReason(
+      const LayoutObject& object) const;
 
   // Synchronously services a single request.
   class ContentBuilder {
@@ -166,13 +167,34 @@ class MODULES_EXPORT AIPageContentAgent final
     // control. This includes both explicit association using for, or
     // implicit association when the input node is a descendant of the label
     // node.
-    void AddForDomNodeId(
+    void PopulateLabelForDomNodeId(
         const LayoutObject& object,
-        mojom::blink::AIPageContentAttributes& attributes) const;
+        mojom::blink::AIPageContentAttributes& attributes);
+    // Returns whether `attributes.dom_node_id` should be emitted in APC output.
+    //
+    // If `node_id_allowlist` is unset, emit all ids.
+    //
+    // Otherwise, emit ids for:
+    // 1. Actionable targets (`node_interaction_info` in actionable mode).
+    // 2. Metadata-linked nodes tracked in `interactive_dom_node_ids_` (focused
+    //    element, accessibility focus, selection endpoints, label-for targets,
+    //    popup openers).
+    // 3. Attribute types listed in `node_id_allowlist`.
+    // This method must not allocate a new DomNodeIds entry for nodes that are
+    // ultimately suppressed by policy. Callers should only mint new ids after
+    // this returns true.
+    bool ShouldEmitNodeIdForOutput(
+        const LayoutObject& object,
+        const mojom::blink::AIPageContentAttributes& attributes) const;
+    // Returns true when the caller policy allowlists this `attribute_type` for
+    // id emission.
+    bool IsNodeIdAttributeTypeAllowlisted(
+        mojom::blink::AIPageContentAttributeType attribute_type) const;
     bool IsGenericContainer(
         const LayoutObject& object,
         const mojom::blink::AIPageContentAttributes& attributes) const;
 
+    DOMNodeId AddInteractiveNode(Node& node);
     void AddInteractiveNode(DOMNodeId dom_node_id);
     void ComputeHitTestableNodesInViewport(const LocalFrame& frame);
 
@@ -187,7 +209,6 @@ class MODULES_EXPORT AIPageContentAgent final
     // author-defined password controls which do not use <input type=password>.
     void ApplyCustomPasswordRedactionHeuristicsIfNeeded(
         const LayoutObject& object,
-        DOMNodeId dom_node_id,
         mojom::blink::AIPageContentAttributes& attributes) const;
 
     bool ShouldAddNodeGeometry(
@@ -197,8 +218,8 @@ class MODULES_EXPORT AIPageContentAgent final
 
     Vector<gfx::Rect> visible_bounding_box_for_passwords_;
 
-    // The set of nodes which are involved in a user interaction and must
-    // produce a ContentNode.
+    // The set of node ids that must always be emitted in APC output for
+    // round-trippable metadata and interaction flows.
     HashSet<DOMNodeId, IntWithZeroKeyHashTraits<DOMNodeId>>
         interactive_dom_node_ids_;
 
