@@ -25,6 +25,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 
@@ -38,6 +39,7 @@ public class ActorOverlayCoordinatorTest {
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private Tab mTab;
 
+    private TabObscuringHandler mTabObscuringHandler;
     private ActorOverlayCoordinator mCoordinator;
     private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
 
@@ -46,12 +48,17 @@ public class ActorOverlayCoordinatorTest {
         MockitoAnnotations.initMocks(this);
         Mockito.when(mViewStub.inflate()).thenReturn(mView);
 
+        mTabObscuringHandler = new TabObscuringHandler();
+
         mCurrentTabSupplier = ObservableSuppliers.createNullable();
         Mockito.when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
 
         mCoordinator =
                 new ActorOverlayCoordinator(
-                        mViewStub, mTabModelSelector, mBrowserControlsVisibilityManager);
+                        mViewStub,
+                        mTabModelSelector,
+                        mBrowserControlsVisibilityManager,
+                        mTabObscuringHandler);
     }
 
     @Test
@@ -119,6 +126,21 @@ public class ActorOverlayCoordinatorTest {
 
         observerCaptor.getValue().onBottomControlsHeightChanged(50, 0);
         verify(mView).setMargins(100, 50);
+    }
+
+    @Test
+    public void testObscuringHandler() {
+        ActorOverlayMediator mediator = mCoordinator.getMediator();
+
+        Assert.assertFalse(mTabObscuringHandler.isTabContentObscured());
+
+        // CAN_SHOW is true by default. Setting VISIBLE to true makes it visible.
+        mediator.setOverlayVisible(true);
+        Assert.assertTrue(mTabObscuringHandler.isTabContentObscured());
+
+        // Setting VISIBLE to false hides it.
+        mediator.setOverlayVisible(false);
+        Assert.assertFalse(mTabObscuringHandler.isTabContentObscured());
     }
 
     @Test

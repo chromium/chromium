@@ -9,6 +9,7 @@ import android.view.ViewStub;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -27,11 +28,13 @@ public class ActorOverlayCoordinator {
      * @param viewStub The ViewStub to inflate the overlay into.
      * @param tabModelSelector The TabModelSelector to observe.
      * @param browserControlsVisibilityManager The BrowserControlsVisibilityManager to observe.
+     * @param tabObscuringHandler The TabObscuringHandler to obscure the web content.
      */
     public ActorOverlayCoordinator(
             ViewStub viewStub,
             TabModelSelector tabModelSelector,
-            BrowserControlsVisibilityManager browserControlsVisibilityManager) {
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
+            TabObscuringHandler tabObscuringHandler) {
         mView = (ActorOverlayView) viewStub.inflate();
 
         mModel =
@@ -46,7 +49,10 @@ public class ActorOverlayCoordinator {
 
         mMediator =
                 new ActorOverlayMediator(
-                        mModel, tabModelSelector, browserControlsVisibilityManager);
+                        mModel,
+                        tabModelSelector,
+                        browserControlsVisibilityManager,
+                        tabObscuringHandler);
     }
 
     /** Returns the root view of the overlay. */

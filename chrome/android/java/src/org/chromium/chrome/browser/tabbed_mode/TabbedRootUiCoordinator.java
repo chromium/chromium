@@ -981,7 +981,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     new ActorOverlayCoordinator(
                             stub,
                             assumeNonNull(mTabModelSelectorSupplier.get()),
-                            mBrowserControlsManager);
+                            mBrowserControlsManager,
+                            mTabObscuringHandlerSupplier.get());
         }
     }
 

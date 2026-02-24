@@ -18,6 +18,8 @@ import org.chromium.build.annotations.NullMarked;
 public class ActorOverlayView extends FrameLayout {
     public ActorOverlayView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setClickable(true);
+        setFocusable(true);
     }
 
     /**

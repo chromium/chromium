@@ -10,6 +10,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -23,25 +24,31 @@ class ActorOverlayMediator {
     private final Callback<@Nullable Tab> mCurrentTabObserver;
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
+    private final TabObscuringHandler mTabObscuringHandler;
+
+    private TabObscuringHandler.@Nullable Token mTabObscuringToken;
 
     /**
      * @param model The PropertyModel to modify.
      * @param tabModelSelector The TabModelSelector to observe.
      * @param browserControlsVisibilityManager The BrowserControlsVisibilityManager to observe.
+     * @param tabObscuringHandler The TabObscuringHandler to obscure the web content.
      */
     public ActorOverlayMediator(
             PropertyModel model,
             TabModelSelector tabModelSelector,
-            BrowserControlsVisibilityManager browserControlsVisibilityManager) {
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
+            TabObscuringHandler tabObscuringHandler) {
         mModel = model;
         mTabModelSelector = tabModelSelector;
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
+        mTabObscuringHandler = tabObscuringHandler;
 
         mTabModelSelectorObserver =
                 new TabModelSelectorObserver() {
                     @Override
                     public void onTabHidden(Tab tab) {
-                        mModel.set(ActorOverlayProperties.CAN_SHOW, false);
+                        setCanShow(false);
                     }
                 };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
@@ -80,13 +87,16 @@ class ActorOverlayMediator {
     }
 
     private void updateCanShowOverlay(@Nullable Tab tab) {
-        if (tab == null || tab.isDestroyed() || tab.isClosing()) {
-            mModel.set(ActorOverlayProperties.CAN_SHOW, false);
-            return;
-        }
         // TODO(wenyufu): This is a placeholder. Update this based on whether the overlay can be
         // shown for the tab.
-        mModel.set(ActorOverlayProperties.CAN_SHOW, !tab.isNativePage());
+        boolean canShow =
+                tab != null && !tab.isDestroyed() && !tab.isClosing() && !tab.isNativePage();
+        setCanShow(canShow);
+    }
+
+    private void setCanShow(boolean canShow) {
+        mModel.set(ActorOverlayProperties.CAN_SHOW, canShow);
+        updateObscuringState();
     }
 
     /**
@@ -96,10 +106,28 @@ class ActorOverlayMediator {
      */
     public void setOverlayVisible(boolean visible) {
         mModel.set(ActorOverlayProperties.VISIBLE, visible);
+        updateObscuringState();
+    }
+
+    private void updateObscuringState() {
+        boolean isVisible =
+                mModel.get(ActorOverlayProperties.VISIBLE)
+                        && mModel.get(ActorOverlayProperties.CAN_SHOW);
+
+        if (isVisible && mTabObscuringToken == null) {
+            mTabObscuringToken = mTabObscuringHandler.obscure(TabObscuringHandler.Target.TAB_CONTENT);
+        } else if (mTabObscuringToken != null) {
+            mTabObscuringHandler.unobscure(mTabObscuringToken);
+            mTabObscuringToken = null;
+        }
     }
 
     /** Cleans up the mediator. */
     public void destroy() {
+        if (mTabObscuringToken != null) {
+            mTabObscuringHandler.unobscure(mTabObscuringToken);
+            mTabObscuringToken = null;
+        }
         mTabModelSelector.getCurrentTabSupplier().removeObserver(mCurrentTabObserver);
         mTabModelSelector.removeObserver(mTabModelSelectorObserver);
         mBrowserControlsVisibilityManager.removeObserver(mBrowserControlsObserver);
