@@ -26,6 +26,7 @@ namespace apps {
 //   - reuse the value which was used (even in past historically)
 // Email chromeos-data-team@google.com to request a corresponding change to
 // backend enums.
+// LINT.IfChange(LaunchSource)
 enum class LaunchSource {
   kUnknown = 0,
   kFromAppListGrid = 1,              // Grid of apps, not the search box.
@@ -75,11 +76,15 @@ enum class LaunchSource {
   kFromSparky = 41,               // From Sparky feature.
   kFromNavigationCapturing = 42,  // Web App Navigation Capturing.
   kFromWebInstallApi = 43,        // Web Install API.
+  kFromMigration = 44,            // Web App Migration.
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kFromWebInstallApi,
+  kMaxValue = kFromMigration,
 };
+// LINT.ThenChange(//depot/google3/components/services/app_service/public/protos/app_types.proto:ApplicationLaunchSource,
+//                 //tools/metrics/histograms/metadata/apps/histograms.xml:LaunchSource,
+//                 //tools/metrics/histograms/enums.xml:LaunchSource)
 
 // Don't remove items or change the order of this enum.  It's used in
 // histograms and preferences.

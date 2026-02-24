@@ -177,6 +177,7 @@ ash::ShelfLaunchSource ConvertLaunchSource(apps::LaunchSource launch_source) {
     case apps::LaunchSource::kFromSparky:
     case apps::LaunchSource::kFromNavigationCapturing:
     case apps::LaunchSource::kFromWebInstallApi:
+    case apps::LaunchSource::kFromMigration:
       return ash::LAUNCH_FROM_UNKNOWN;
   }
 }

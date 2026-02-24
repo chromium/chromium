@@ -88,7 +88,10 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
     fake_provider().scheduler().ApplyManifestMigration(
         from_app_id, to_app_id, migration_behavior, /*keep_alive=*/nullptr,
         /*profile_keep_alive=*/nullptr, result_future.GetCallback());
-    EXPECT_TRUE(result_future.Wait());
+    if (!result_future.Wait()) {
+      // This avoids a crash if there is a timeout.
+      return ApplyManifestMigrationResult::kSystemShutdown;
+    }
     return result_future.Get();
   }
 
@@ -230,7 +233,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
           source_app_id);
-  EXPECT_TRUE(state.has_value());
+  ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state.value().has_shortcut());
   if (IsOsIntegrationSupported()) {
     EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
@@ -255,7 +258,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
   auto destination_state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
           destination_app_id);
-  EXPECT_TRUE(destination_state.has_value());
+  ASSERT_TRUE(destination_state.has_value());
   EXPECT_TRUE(destination_state.value().has_shortcut());
   if (IsOsIntegrationSupported()) {
     EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
@@ -269,19 +272,23 @@ TEST_F(ApplyManifestMigrationCommandTest,
   observer.SetWebAppMigratedDelegate(future.GetRepeatingCallback());
 
   // Trigger the command, and verify a successful migration.
+  // Note: The FakeWebAppUiManager has launches fail for unit tests, the launch
+  // is tested in the browser test.
   ApplyManifestMigrationResult result =
       RunMigrationAndGetResult(source_app_id, destination_app_id);
-  ASSERT_EQ(ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully,
+  ASSERT_EQ(ApplyManifestMigrationResult::
+                kAppMigrationAppliedSuccessfullyLaunchFailed,
             result);
 
-  EXPECT_TRUE(future.Wait());
+  ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get<0>(), source_app_id);
   EXPECT_EQ(future.Get<1>(), destination_app_id);
 
   EXPECT_THAT(
       GetApplyMigrationHistograms(),
-      BucketsAre(base::Bucket(
-          ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully, 1)));
+      BucketsAre(base::Bucket(ApplyManifestMigrationResult::
+                                  kAppMigrationAppliedSuccessfullyLaunchFailed,
+                              1)));
 
   // Source app is not in the registrar, and has no OS integration left over.
   EXPECT_FALSE(fake_provider().registrar_unsafe().AppMatches(
@@ -324,7 +331,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
           source_app_id);
-  EXPECT_TRUE(state.has_value());
+  ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state.value().has_shortcut());
   if (IsOsIntegrationSupported()) {
     EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
@@ -356,16 +363,20 @@ TEST_F(ApplyManifestMigrationCommandTest,
   }
 
   // Trigger the command, and verify a successful migration.
+  // Note: The FakeWebAppUiManager has launches fail for unit tests, the launch
+  // is tested in the browser test.
   ApplyManifestMigrationResult result = RunMigrationAndGetResult(
       source_app_id, destination_app_id,
       proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_FORCE);
-  ASSERT_EQ(ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully,
+  ASSERT_EQ(ApplyManifestMigrationResult::
+                kAppMigrationAppliedSuccessfullyLaunchFailed,
             result);
 
   EXPECT_THAT(
       GetApplyMigrationHistograms(),
-      BucketsAre(base::Bucket(
-          ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully, 1)));
+      BucketsAre(base::Bucket(ApplyManifestMigrationResult::
+                                  kAppMigrationAppliedSuccessfullyLaunchFailed,
+                              1)));
 
   // Source app is not in the registrar, and has no OS integration left over.
   EXPECT_FALSE(fake_provider().registrar_unsafe().AppMatches(
@@ -411,7 +422,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
           source_app_id);
-  EXPECT_TRUE(state.has_value());
+  ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state.value().has_shortcut());
   if (IsOsIntegrationSupported()) {
     EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
@@ -444,16 +455,20 @@ TEST_F(ApplyManifestMigrationCommandTest,
   }
 
   // Trigger the command, and verify a successful migration.
+  // Note: The FakeWebAppUiManager has launches fail for unit tests, the launch
+  // is tested in the browser test.
   ApplyManifestMigrationResult result = RunMigrationAndGetResult(
       source_app_id, destination_app_id,
       proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_FORCE);
-  ASSERT_EQ(ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully,
+  ASSERT_EQ(ApplyManifestMigrationResult::
+                kAppMigrationAppliedSuccessfullyLaunchFailed,
             result);
 
   EXPECT_THAT(
       GetApplyMigrationHistograms(),
-      BucketsAre(base::Bucket(
-          ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully, 1)));
+      BucketsAre(base::Bucket(ApplyManifestMigrationResult::
+                                  kAppMigrationAppliedSuccessfullyLaunchFailed,
+                              1)));
 
   // Source app is not in the registrar, and has no OS integration left over.
   EXPECT_FALSE(fake_provider().registrar_unsafe().AppMatches(
@@ -496,7 +511,7 @@ TEST_F(ApplyManifestMigrationCommandTest, SuccessSuggestedForMigration) {
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
           source_app_id);
-  EXPECT_TRUE(state.has_value());
+  ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state.value().has_shortcut());
   if (IsOsIntegrationSupported()) {
     EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
@@ -529,15 +544,19 @@ TEST_F(ApplyManifestMigrationCommandTest, SuccessSuggestedForMigration) {
   }
 
   // Trigger the command, and verify a successful migration.
+  // Note: The FakeWebAppUiManager has launches fail for unit tests, the launch
+  // is tested in the browser test.
   ApplyManifestMigrationResult result =
       RunMigrationAndGetResult(source_app_id, destination_app_id);
-  ASSERT_EQ(ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully,
+  ASSERT_EQ(ApplyManifestMigrationResult::
+                kAppMigrationAppliedSuccessfullyLaunchFailed,
             result);
 
   EXPECT_THAT(
       GetApplyMigrationHistograms(),
-      BucketsAre(base::Bucket(
-          ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully, 1)));
+      BucketsAre(base::Bucket(ApplyManifestMigrationResult::
+                                  kAppMigrationAppliedSuccessfullyLaunchFailed,
+                              1)));
 
   // Source app is not in the registrar, and has no OS integration left over.
   EXPECT_FALSE(fake_provider().registrar_unsafe().AppMatches(
@@ -578,12 +597,12 @@ TEST_F(ApplyManifestMigrationCommandTest, RunOnOsLoginMigrated) {
   base::test::TestFuture<void> future;
   provider().scheduler().SetRunOnOsLoginMode(
       source_app_id, RunOnOsLoginMode::kWindowed, future.GetCallback());
-  EXPECT_TRUE(future.Wait());
+  ASSERT_TRUE(future.Wait());
 
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
           source_app_id);
-  EXPECT_TRUE(state.has_value());
+  ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state->has_run_on_os_login());
   EXPECT_EQ(proto::os_state::RunOnOsLogin::MODE_WINDOWED,
             state->run_on_os_login().run_on_os_login_mode());
@@ -614,15 +633,19 @@ TEST_F(ApplyManifestMigrationCommandTest, RunOnOsLoginMigrated) {
   }
 
   // Trigger the command, and verify a successful migration.
+  // Note: The FakeWebAppUiManager has launches fail for unit tests, the launch
+  // is tested in the browser test.
   ApplyManifestMigrationResult result =
       RunMigrationAndGetResult(source_app_id, destination_app_id);
-  ASSERT_EQ(ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully,
+  ASSERT_EQ(ApplyManifestMigrationResult::
+                kAppMigrationAppliedSuccessfullyLaunchFailed,
             result);
 
   EXPECT_THAT(
       GetApplyMigrationHistograms(),
-      BucketsAre(base::Bucket(
-          ApplyManifestMigrationResult::kAppMigrationAppliedSuccessfully, 1)));
+      BucketsAre(base::Bucket(ApplyManifestMigrationResult::
+                                  kAppMigrationAppliedSuccessfullyLaunchFailed,
+                              1)));
 
   // Source app is not in the registrar, and has no OS integration for run on OS
   // login left over.
@@ -665,7 +688,7 @@ TEST_F(ApplyManifestMigrationCommandTest, DoNotSetValidatedSources) {
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
           source_app_id);
-  EXPECT_TRUE(state.has_value());
+  ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state.value().has_shortcut());
   if (IsOsIntegrationSupported()) {
     EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
@@ -725,7 +748,7 @@ TEST_F(ApplyManifestMigrationCommandTest, SourceAppPolicyInstalled) {
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
           source_app_id);
-  EXPECT_TRUE(state.has_value());
+  ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state.value().has_shortcut());
   if (IsOsIntegrationSupported()) {
     EXPECT_TRUE(fake_os_integration().IsShortcutCreated(
@@ -824,7 +847,7 @@ TEST_F(ApplyManifestMigrationCommandTest, NoDestinationApp) {
   auto state =
       fake_provider().registrar_unsafe().GetAppCurrentOsIntegrationState(
           source_app_id);
-  EXPECT_TRUE(state.has_value());
+  ASSERT_TRUE(state.has_value());
   EXPECT_TRUE(state.value().has_shortcut());
   if (IsOsIntegrationSupported()) {
     EXPECT_TRUE(fake_os_integration().IsShortcutCreated(

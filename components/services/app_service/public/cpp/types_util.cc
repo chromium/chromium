@@ -75,6 +75,7 @@ bool IsHumanLaunch(apps::LaunchSource launch_source) {
     case apps::LaunchSource::kFromFocusMode:
     case apps::LaunchSource::kFromNavigationCapturing:
     case apps::LaunchSource::kFromWebInstallApi:
+    case apps::LaunchSource::kFromMigration:
       return true;
     case apps::LaunchSource::kUnknown:
     case apps::LaunchSource::kFromChromeInternal:

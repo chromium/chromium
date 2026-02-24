@@ -50,6 +50,12 @@ class WebAppInstallManager;
 // Always selects to open app in its own window.
 webapps::AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url);
 
+// Navigates to |app_url| and installs app without any installability checks.
+// Always selects to open app in its own window. Returns the browser for the
+// newly installed app. Use AppBrowserController::From(browser)->app_id() to get
+// the app id.
+Browser* InstallWebAppFromPageGetBrowser(Browser* browser, const GURL& app_url);
+
 // Same as InstallWebAppFromPage() but waits for the app browser window to
 // appear and closes it.
 webapps::AppId InstallWebAppFromPageAndCloseAppBrowser(Browser* browser,

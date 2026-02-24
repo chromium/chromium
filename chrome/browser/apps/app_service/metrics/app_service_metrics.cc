@@ -179,6 +179,10 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
       base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromWebInstallApi",
                                     default_app_name);
       break;
+    case apps::LaunchSource::kFromMigration:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromMigration",
+                                    default_app_name);
+      break;
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:
     case apps::LaunchSource::kFromAppHomePage:

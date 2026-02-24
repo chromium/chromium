@@ -20,7 +20,16 @@
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 
+class Browser;
 class Profile;
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+namespace apps {
+enum class LaunchContainer;
+}  // namespace apps
 
 namespace web_app {
 
@@ -69,6 +78,12 @@ class ApplyManifestMigrationCommand
   // the sync system, and uninstall the source app.
   void SetupDestinationAppUninstallSourceApp();
   void AppUninstalledCompleteMigration(webapps::UninstallResultCode code);
+
+  void OnAppLaunched(base::WeakPtr<Browser> browser,
+                     base::WeakPtr<content::WebContents> web_contents,
+                     apps::LaunchContainer container,
+                     base::Value debug_value);
+
   void CompleteCommandAndSelfDestruct(ApplyManifestMigrationResult result);
 
   const webapps::AppId source_app_id_;

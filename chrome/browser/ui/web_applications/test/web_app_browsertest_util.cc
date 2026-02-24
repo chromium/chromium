@@ -206,6 +206,22 @@ webapps::AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
   return install_future.Get<webapps::AppId>();
 }
 
+Browser* InstallWebAppFromPageGetBrowser(Browser* browser,
+                                         const GURL& app_url) {
+  // Create new tab to navigate, install, automatically pop out and then
+  // close. This sequence avoids altering the browser window state it started
+  // with.
+  chrome::AddTabAt(browser, app_url, /*index=*/-1,
+                   /*foreground=*/true);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  webapps::AppId app_id = InstallWebAppFromPage(browser, app_url);
+
+  Browser* app_browser = browser_created_observer.Wait();
+  CHECK_NE(app_browser, browser);
+  CHECK(AppBrowserController::IsForWebApp(app_browser, app_id));
+  return app_browser;
+}
+
 webapps::AppId InstallWebAppFromPageAndCloseAppBrowser(Browser* browser,
                                                        const GURL& app_url) {
   // Create new tab to navigate, install, automatically pop out and then

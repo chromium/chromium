@@ -7567,6 +7567,7 @@ shown properly on the user-facing crash UI.
   <int value="41" label="Sparky"/>
   <int value="42" label="Web App Navigation Capturing"/>
   <int value="43" label="Web Install API"/>
+  <int value="44" label="Web App Migration API"/>
 </enum>
 
 <enum name="LaunchTypeForBackgroundRefreshType">

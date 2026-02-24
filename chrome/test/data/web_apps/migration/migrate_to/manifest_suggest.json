@@ -1,0 +1,17 @@
+{
+  "name": "Migrate To - With migrate_from suggested",
+  "icons": [
+    {
+      "src": "192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "id": "web_apps/migration/migrate_to/manifest_id",
+  "start_url": "/web_apps/migration/migrate_to/suggest.html",
+  "display": "standalone",
+  "migrate_from": [{
+    "id": "/web_apps/migration/migrate_from/manifest_id",
+    "behavior": "suggest"
+  }]
+}

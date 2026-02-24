@@ -243,6 +243,7 @@ extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source) {
     case LaunchSource::kFromInstaller:
     case LaunchSource::kFromNavigationCapturing:
     case LaunchSource::kFromWebInstallApi:
+    case LaunchSource::kFromMigration:
       return extensions::AppLaunchSource::kSourceNone;
   }
 }

@@ -2360,6 +2360,7 @@ chromium-metrics-reviews@google.com.
     <variant name=".FromLockScreen" summary="From lock screen app launcher."/>
     <variant name=".FromManagementApi" summary="From management API."/>
     <variant name=".FromMenu" summary="From menu."/>
+    <variant name=".FromMigration" summary="From Web App Migration."/>
     <variant name=".FromNewTabPage" summary="From new tab page."/>
     <variant name=".FromOmnibox" summary="From Omnibox."/>
     <variant name=".FromOsLogin" summary="Run on OS login."/>
