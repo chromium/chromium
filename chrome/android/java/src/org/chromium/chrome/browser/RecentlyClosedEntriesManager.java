@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,20 +72,24 @@ public class RecentlyClosedEntriesManager {
      * Helper class for the getRecentlyClosedWindowInternal() method. Calls a callback when the tab
      * state is initialized. Similar to {@code TabModelUtils.runOnTabStateInitialized()} but calls
      * the callback when destroyed so the C++ side is always notified. The timestamp is the time in
-     * milliseconds since the UNIX epoch when the window containing the tab model was closed.
+     * milliseconds since the UNIX epoch when the window containing the tab model was closed. The
+     * instance ID is from the Chrome Activity for the window.
      */
     static class TabStateInitializedObserver implements TabModelSelectorObserver {
         private final TabModelSelector mTabModelSelector;
         private final long mTimestamp;
-        private @Nullable JniOnceCallback<@Nullable TabModelAndTimestamp> mCallback;
+        private final int mInstanceId;
+        private @Nullable JniOnceCallback<@Nullable RecentlyClosedWindowMetadata> mCallback;
 
         TabStateInitializedObserver(
                 TabModelSelector selector,
                 long timestamp,
-                JniOnceCallback<@Nullable TabModelAndTimestamp> callback) {
+                int instanceId,
+                JniOnceCallback<@Nullable RecentlyClosedWindowMetadata> callback) {
             assert callback != null;
             mTabModelSelector = selector;
             mTimestamp = timestamp;
+            mInstanceId = instanceId;
             mCallback = callback;
             mTabModelSelector.addObserver(this);
         }
@@ -93,9 +98,10 @@ public class RecentlyClosedEntriesManager {
         public void onTabStateInitialized() {
             // Call the callback with the TabModelSelector.
             assumeNonNull(mCallback);
-            TabModelAndTimestamp result = new TabModelAndTimestamp();
+            RecentlyClosedWindowMetadata result = new RecentlyClosedWindowMetadata();
             result.tabModel = mTabModelSelector.getCurrentModel();
             result.timestamp = mTimestamp;
+            result.instanceId = mInstanceId;
             mCallback.onResult(result);
             // Set the callback to null to indicate we ran it.
             mCallback = null;
@@ -140,12 +146,13 @@ public class RecentlyClosedEntriesManager {
     }
 
     /**
-     * Returns the TabModel via callback for the most recently closed window, if such a window
-     * Otherwise the callback is invoked with null.
+     * Returns the TabModel and other metadata via callback for a recently closed window with the
+     * given instance ID. If the instance ID is {@code TabWindowManager.INVALID_WINDOW_ID}, the most
+     * recently closed window is returned. If no window is found the callback is invoked with null.
      */
     @CalledByNative
     public static void getRecentlyClosedWindow(
-            JniOnceCallback<@Nullable TabModelAndTimestamp> callback) {
+            int instanceId, JniOnceCallback<@Nullable RecentlyClosedWindowMetadata> callback) {
         // This function requires the kRecentlyClosedTabsAndWindows feature.
         if (!UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
             callback.onResult(null);
@@ -163,12 +170,12 @@ public class RecentlyClosedEntriesManager {
         RecentlyClosedEntriesManager manager = managers.iterator().next();
 
         // Move from static to instance method to simplify using inner classes.
-        manager.getRecentlyClosedWindowInternal(callback);
+        manager.getRecentlyClosedWindowInternal(instanceId, callback);
     }
 
     @VisibleForTesting
     public void getRecentlyClosedWindowInternal(
-            JniOnceCallback<@Nullable TabModelAndTimestamp> callback) {
+            int instanceId, JniOnceCallback<@Nullable RecentlyClosedWindowMetadata> callback) {
         // Look up recently closed windows.
         List<RecentlyClosedWindow> windows = getRecentlyClosedWindows();
         if (windows.size() == 0) {
@@ -176,11 +183,32 @@ public class RecentlyClosedEntriesManager {
             return;
         }
 
-        // Use the first window. Entries are sorted by close time, with most recently closed first.
-        RecentlyClosedWindow window = windows.get(0);
+        // Look for the window.
+        RecentlyClosedWindow window = null;
+        if (instanceId == TabWindowManager.INVALID_WINDOW_ID) {
+            // Use the first window. Entries are sorted by close time, most recently closed first.
+            window = windows.get(0);
+        } else {
+            // Search for a window with matching instance id.
+            for (RecentlyClosedWindow w : windows) {
+                if (w.getInstanceId() == instanceId) {
+                    window = w;
+                    break;
+                }
+            }
+        }
+
+        // Return an error if no window was found.
+        if (window == null) {
+            callback.onResult(null);
+            return;
+        }
 
         // Milliseconds since UNIX epoch when this entry was created.
-        long timestamp = window.getDate().getTime();
+        final long timestamp = window.getDate().getTime();
+
+        // Get the window's instance ID in case we looked it up with instanceId == -1.
+        final int windowInstanceId = window.getInstanceId();
 
         // Get the TabModelSelector for the closed window.
         TabModelSelector selector =
@@ -197,16 +225,17 @@ public class RecentlyClosedEntriesManager {
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     () -> {
-                        TabModelAndTimestamp result = new TabModelAndTimestamp();
+                        RecentlyClosedWindowMetadata result = new RecentlyClosedWindowMetadata();
                         result.tabModel = selector.getCurrentModel();
                         result.timestamp = timestamp;
+                        result.instanceId = windowInstanceId;
                         callback.onResult(result);
                     });
             return;
         }
 
         // Otherwise wait for tab state to be initialized. The observer adds and removes itself.
-        new TabStateInitializedObserver(selector, timestamp, callback);
+        new TabStateInitializedObserver(selector, timestamp, windowInstanceId, callback);
     }
 
     /**

@@ -71,7 +71,7 @@
 #if BUILDFLAG(IS_ANDROID)
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/RecentlyClosedEntriesManager_jni.h"
-#include "chrome/android/chrome_jni_headers/TabModelAndTimestamp_jni.h"
+#include "chrome/android/chrome_jni_headers/RecentlyClosedWindowMetadata_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -96,6 +96,11 @@ const char kRestoreInIncognitoError[] =
     "Can not restore sessions in incognito mode.";
 const char kNoLiveTabContextError[] = "Unable to determine live tab context.";
 const char kNoActiveTabError[] = "No active tab.";
+
+#if BUILDFLAG(IS_ANDROID)
+// Must match Java TabWindowManager.WINDOW_INVALID_ID.
+constexpr int kInvalidWindowId = -1;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Comparator function for use with std::sort that will sort sessions by
 // descending modified_time (i.e., most recent first).
@@ -248,16 +253,19 @@ void UpdateTabState(TabAndroid* saved_tab,
   }
 }
 
-// Uses JNI to unpack a Java TabModelAndTimestamp object.
-void UnpackTabModelAndTimestamp(
+// Uses JNI to unpack a Java RecentlyClosedWindowMetadata object.
+void UnpackRecentlyClosedWindowMetadata(
     const base::android::JavaRef<jobject>& j_tab_model_and_timestamp,
     base::android::ScopedJavaLocalRef<jobject>* j_tab_model,
-    int64_t* timestamp) {
+    int64_t* timestamp,
+    int* instance_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  *j_tab_model =
-      Java_TabModelAndTimestamp_getTabModel(env, j_tab_model_and_timestamp);
-  *timestamp =
-      Java_TabModelAndTimestamp_getTimestamp(env, j_tab_model_and_timestamp);
+  *j_tab_model = Java_RecentlyClosedWindowMetadata_getTabModel(
+      env, j_tab_model_and_timestamp);
+  *timestamp = Java_RecentlyClosedWindowMetadata_getTimestamp(
+      env, j_tab_model_and_timestamp);
+  *instance_id = Java_RecentlyClosedWindowMetadata_getInstanceId(
+      env, j_tab_model_and_timestamp);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -379,11 +387,14 @@ ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
   // state is available. The callback is invoked with null on error and when
   // there is no window available.
   JNIEnv* env = base::android::AttachCurrentThread();
+  // Don't filter by instance id.
+  constexpr int instance_id = kInvalidWindowId;
   base::OnceCallback<void(const base::android::JavaRef<jobject>&)> j_callback =
       base::BindOnce(
           &SessionsGetRecentlyClosedFunction::OnGetRecentlyClosedWindow, this);
   Java_RecentlyClosedEntriesManager_getRecentlyClosedWindow(
-      env, base::android::ToJniCallback(env, std::move(j_callback)));
+      env, instance_id,
+      base::android::ToJniCallback(env, std::move(j_callback)));
   if (did_respond()) {
     // The callback may be invoked immediately for errors, in which case
     // we have already responded.
@@ -411,8 +422,9 @@ void SessionsGetRecentlyClosedFunction::OnGetRecentlyClosedWindow(
   // Unpack the Java object.
   base::android::ScopedJavaLocalRef<jobject> j_tab_model;
   int64_t timestamp = 0;
-  UnpackTabModelAndTimestamp(j_tab_model_and_timestamp, &j_tab_model,
-                             &timestamp);
+  int instance_id = kInvalidWindowId;
+  UnpackRecentlyClosedWindowMetadata(j_tab_model_and_timestamp, &j_tab_model,
+                                     &timestamp, &instance_id);
 
   if (j_tab_model.is_null()) {
     // No tab model, so no valid window to add.
@@ -441,10 +453,14 @@ void SessionsGetRecentlyClosedFunction::OnGetRecentlyClosedWindow(
     api_tabs.push_back(std::move(api_tab));
   }
 
-  // Populate the window and session objects.
+  // Populate the window and session objects. Android uses Chrome Activity
+  // instance ids instead of session ids because that's what the
+  // RecentlyClosedEntriesManager tracks. They are stable across the browsing
+  // session and work fine as a session ID replacement.
+  std::string session_id = base::NumberToString(instance_id);
   api::windows::Window window = CreateWindowModelHelper(
-      std::move(api_tabs), base::NumberToString(model->GetSessionId().id()),
-      api::windows::WindowType::kNormal, api::windows::WindowState::kNormal);
+      std::move(api_tabs), session_id, api::windows::WindowType::kNormal,
+      api::windows::WindowState::kNormal);
 
   // The timestamp from Java is in milliseconds, last_modified is in seconds.
   int last_modified = window_last_modified_for_test_
@@ -708,7 +724,9 @@ SessionsRestoreFunction::RestoreMostRecentlyClosed(
 #if BUILDFLAG(IS_ANDROID)
     // Android only stores tab restore information in TabRestoreService, so we
     // must also query the Java side to check for window restore information.
-    return QueryRecentlyClosedEntitiesManager();
+    // Use instance id of kInvalidWindowId so we don't filter and just get the
+    // most recent.
+    return QueryRecentlyClosedEntitiesManager(/*instance_id=*/kInvalidWindowId);
 #else
     // Other platforms store everything in TabRestoreService, so if there are no
     // entries there is nothing to restore.
@@ -737,14 +755,14 @@ SessionsRestoreFunction::RestoreMostRecentlyClosed(
 
 #if BUILDFLAG(IS_ANDROID)
 ExtensionFunction::ResponseAction
-SessionsRestoreFunction::QueryRecentlyClosedEntitiesManager() {
+SessionsRestoreFunction::QueryRecentlyClosedEntitiesManager(int instance_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   // Getting recently closed windows from Java is asynchronous. `this` is safe
   // because `SessionsRestoreFunction` is ref-counted.
   base::OnceCallback<void(const base::android::JavaRef<jobject>&)> callback =
       base::BindOnce(&SessionsRestoreFunction::OnGetRecentlyClosedWindow, this);
   Java_RecentlyClosedEntriesManager_getRecentlyClosedWindow(
-      env, base::android::ToJniCallback(env, std::move(callback)));
+      env, instance_id, base::android::ToJniCallback(env, std::move(callback)));
 
   // Check if the callback already ran and responded to the extension.
   if (did_respond()) {
@@ -765,8 +783,9 @@ void SessionsRestoreFunction::OnGetRecentlyClosedWindow(
   // Unpack the Java object.
   base::android::ScopedJavaLocalRef<jobject> j_tab_model;
   int64_t timestamp = 0;
-  UnpackTabModelAndTimestamp(j_tab_model_and_timestamp, &j_tab_model,
-                             &timestamp);
+  int instance_id = kInvalidWindowId;
+  UnpackRecentlyClosedWindowMetadata(j_tab_model_and_timestamp, &j_tab_model,
+                                     &timestamp, &instance_id);
 
   if (j_tab_model.is_null()) {
     // No tab model, so no window to restore.
@@ -863,7 +882,7 @@ void SessionsRestoreFunction::OnBrowserWindowCreated(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreLocalSession(
+ExtensionFunction::ResponseAction SessionsRestoreFunction::RestoreLocalSession(
     const SessionId& session_id,
     BrowserWindowInterface* browser) {
   sessions::TabRestoreService* tab_restore_service =
@@ -873,7 +892,15 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreLocalSession(
       tab_restore_service->entries();
 
   if (entries.empty()) {
-    return Error(kInvalidSessionIdError, session_id.ToString());
+#if BUILDFLAG(IS_ANDROID)
+    // Android only stores tab restore information in TabRestoreService, so we
+    // must also query the Java side to check for window restore information.
+    return QueryRecentlyClosedEntitiesManager(session_id.id());
+#else
+    // Other platforms store everything in TabRestoreService, so if there are no
+    // entries there is nothing matching that session id.
+    return RespondNow(Error(kInvalidSessionIdError, session_id.ToString()));
+#endif
   }
 
   // Check if the recently closed list contains an entry with the provided id.
@@ -889,7 +916,7 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreLocalSession(
 
   sessions::LiveTabContext* context = GetLiveTabContextForBrowser(browser);
   if (!context) {
-    return Error(kNoLiveTabContextError);
+    return RespondNow(Error(kNoLiveTabContextError));
   }
   std::vector<sessions::LiveTab*> restored_tabs =
       tab_restore_service->RestoreEntryById(
@@ -897,7 +924,7 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreLocalSession(
           WindowOpenDisposition::UNKNOWN);
   // If the ID is invalid, restored_tabs will be empty.
   if (restored_tabs.empty()) {
-    return Error(kInvalidSessionIdError, session_id.ToString());
+    return RespondNow(Error(kInvalidSessionIdError, session_id.ToString()));
   }
 
   sessions::ContentLiveTab* first_tab =
@@ -905,11 +932,11 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::RestoreLocalSession(
 
   // Retrieve the window through any of the tabs in restored_tabs.
   if (is_window) {
-    return GetRestoredWindowResult(
-        ExtensionTabUtil::GetWindowIdOfTab(&first_tab->GetWebContents()));
+    return RespondNow(GetRestoredWindowResult(
+        ExtensionTabUtil::GetWindowIdOfTab(&first_tab->GetWebContents())));
   }
 
-  return GetRestoredTabResult(&first_tab->GetWebContents());
+  return RespondNow(GetRestoredTabResult(&first_tab->GetWebContents()));
 }
 
 ExtensionFunction::ResponseAction
@@ -1011,7 +1038,7 @@ ExtensionFunction::ResponseAction SessionsRestoreFunction::Run() {
   }
 
   if (!session_id->IsForeign()) {
-    return RespondNow(RestoreLocalSession(*session_id, browser));
+    return RestoreLocalSession(*session_id, browser);
   }
 
   // Foreign window restore is sometimes asynchronous, so it may return

@@ -13,14 +13,15 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import java.util.Objects;
 
 /**
- * Helper class for the RecentlyClosedEntriesManager. Allows a callback to call into C++ with two
- * objects. equals() is provided so tests can check equality. Exists as a standalone class (rather
- * than an inner class) to simplify JNI access via JNI Zero.
+ * Helper class for the RecentlyClosedEntriesManager. Allows a callback to call into C++ with
+ * multiple objects. equals() is provided so tests can check equality. Exists as a standalone class
+ * (rather than an inner class) to simplify JNI access via JNI Zero.
  */
 @NullMarked
-public class TabModelAndTimestamp {
+public class RecentlyClosedWindowMetadata {
     public @Nullable TabModel tabModel;
     public long timestamp;
+    public int instanceId;
 
     @CalledByNative
     public @Nullable TabModel getTabModel() {
@@ -32,11 +33,18 @@ public class TabModelAndTimestamp {
         return timestamp;
     }
 
+    @CalledByNative
+    public int getInstanceId() {
+        return instanceId;
+    }
+
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) return true;
-        if (obj instanceof TabModelAndTimestamp other) {
-            return other.tabModel == tabModel && other.timestamp == timestamp;
+        if (obj instanceof RecentlyClosedWindowMetadata other) {
+            return other.tabModel == tabModel
+                    && other.timestamp == timestamp
+                    && other.instanceId == instanceId;
         }
         return false;
     }
