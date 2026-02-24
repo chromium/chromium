@@ -38,6 +38,8 @@ void WebUILocationBar::Init(WebUIToolbarWebView* toolbar_view) {
   omnibox_controller_ =
       std::make_unique<OmniboxController>(std::make_unique<ChromeOmniboxClient>(
           /*location_bar=*/this, browser_, browser_->profile()));
+
+  is_initialized_ = true;
 }
 
 void WebUILocationBar::FocusLocation(bool is_user_initiated,
@@ -114,6 +116,10 @@ void WebUILocationBar::UpdateWithoutTabRestore() {
   NOTIMPLEMENTED();
 }
 
+bool WebUILocationBar::IsInitialized() const {
+  return is_initialized_;
+}
+
 bool WebUILocationBar::IsVisible() const {
   return toolbar_view_ && toolbar_view_->GetVisible();
 }
@@ -122,9 +128,8 @@ bool WebUILocationBar::IsDrawn() const {
   return toolbar_view_ && toolbar_view_->IsDrawn();
 }
 
-bool WebUILocationBar::IsTopLevelFullscreen() const {
-  return toolbar_view_ &&
-         toolbar_view_->GetWidget()->GetTopLevelWidget()->IsFullscreen();
+bool WebUILocationBar::IsFullscreen() const {
+  return toolbar_view_ && toolbar_view_->GetWidget()->IsFullscreen();
 }
 
 bool WebUILocationBar::IsEditingOrEmpty() const {

@@ -69,7 +69,7 @@ bool PermissionPromptDesktop::IsAskPrompt() const {
   return true;
 }
 
-LocationBarView* PermissionPromptDesktop::GetLocationBarView() {
+LocationBar* PermissionPromptDesktop::GetLocationBar() {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-  return browser_view ? browser_view->GetLocationBarView() : nullptr;
+  return browser_view ? browser_view->GetLocationBar() : nullptr;
 }

@@ -29,17 +29,17 @@ PermissionPromptChip::PermissionPromptChip(Browser* browser,
                                            Delegate* delegate)
     : PermissionPromptDesktop(browser, web_contents, delegate) {
   DCHECK(delegate);
-  LocationBarView* lbv = GetLocationBarView();
+  LocationBar* lb = GetLocationBar();
 
   // Before showing a chip make sure the LocationBar is in a valid state. That
   // fixes a bug when a chip overlays the padlock icon.
-  lbv->InvalidateLayout();
+  lb->InvalidateLayout();
 
   if (delegate->ShouldCurrentRequestUseQuietUI()) {
     delegate->PreIgnoreQuietPrompt();
   }
 
-  chip_controller_ = lbv->GetChipController();
+  chip_controller_ = lb->GetChipController();
   chip_controller_->ShowPermissionPrompt(delegate->GetWeakPtr());
 }
 
@@ -56,14 +56,13 @@ bool PermissionPromptChip::UpdateAnchor() {
     return false;
   }
 
-  LocationBarView* lbv = GetLocationBarView();
+  LocationBar* lb = GetLocationBar();
 
-  if (!lbv || !lbv->IsInitialized()) {
+  if (!lb || !lb->IsInitialized()) {
     return false;  // view should be recreated
   }
 
-  const bool is_location_bar_drawn =
-      lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen();
+  const bool is_location_bar_drawn = lb->IsDrawn() && !lb->IsFullscreen();
   if (chip_controller_->IsPermissionPromptChipVisible() &&
       !is_location_bar_drawn) {
     chip_controller_->ResetPermissionPromptChip();
@@ -99,10 +98,10 @@ std::optional<gfx::Rect> PermissionPromptChip::GetViewBoundsInScreen() const {
 
 views::Widget* PermissionPromptChip::GetPromptBubbleWidgetForTesting() {
   CHECK_IS_TEST();
-  LocationBarView* lbv = GetLocationBarView();
+  LocationBar* lb = GetLocationBar();
 
   return chip_controller_->IsPermissionPromptChipVisible() &&
-                 lbv->GetChipController()->IsBubbleShowing()
-             ? lbv->GetChipController()->GetBubbleWidget()
+                 lb->GetChipController()->IsBubbleShowing()
+             ? lb->GetChipController()->GetBubbleWidget()
              : nullptr;
 }

@@ -13,7 +13,7 @@
 #include "components/permissions/permission_prompt.h"
 
 class Browser;
-class LocationBarView;
+class LocationBar;
 
 namespace content {
 class WebContents;
@@ -49,7 +49,7 @@ class PermissionPromptDesktop : public permissions::PermissionPrompt {
   virtual views::Widget* GetPromptBubbleWidgetForTesting();
 
  protected:
-  LocationBarView* GetLocationBarView();
+  LocationBar* GetLocationBar();
 
   Browser* browser() const { return browser_; }
   bool UpdateBrowser();

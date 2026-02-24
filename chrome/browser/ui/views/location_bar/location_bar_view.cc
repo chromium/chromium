@@ -1262,8 +1262,8 @@ bool LocationBarView::IsDrawn() const {
   return View::IsDrawn();
 }
 
-bool LocationBarView::IsTopLevelFullscreen() const {
-  return GetWidget()->GetTopLevelWidget()->IsFullscreen();
+bool LocationBarView::IsFullscreen() const {
+  return GetWidget()->IsFullscreen();
 }
 
 void LocationBarView::InvalidateLayout() {

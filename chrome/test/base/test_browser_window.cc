@@ -87,6 +87,10 @@ Browser* TestBrowserWindow::TestLocationBar::GetBrowser() {
   return nullptr;
 }
 
+bool TestBrowserWindow::TestLocationBar::IsInitialized() const {
+  return true;
+}
+
 bool TestBrowserWindow::TestLocationBar::IsVisible() const {
   return true;
 }
@@ -95,7 +99,7 @@ bool TestBrowserWindow::TestLocationBar::IsDrawn() const {
   return true;
 }
 
-bool TestBrowserWindow::TestLocationBar::IsTopLevelFullscreen() const {
+bool TestBrowserWindow::TestLocationBar::IsFullscreen() const {
   return false;
 }
 

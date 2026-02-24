@@ -307,9 +307,10 @@ class TestLocationBar : public LocationBar {
 
   ui::TrackedElement* GetAnchorOrNull() override { return nullptr; }
   Browser* GetBrowser() override { return nullptr; }
+  bool IsInitialized() const override { return true; }
   bool IsVisible() const override { return true; }
   bool IsDrawn() const override { return true; }
-  bool IsTopLevelFullscreen() const override { return false; }
+  bool IsFullscreen() const override { return false; }
   bool IsEditingOrEmpty() const override { return false; }
   void InvalidateLayout() override {}
   gfx::Rect Bounds() const override { return gfx::Rect(); }

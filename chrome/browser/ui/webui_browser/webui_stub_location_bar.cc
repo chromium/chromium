@@ -104,6 +104,11 @@ void WebUIStubLocationBar::UpdateWithoutTabRestore() {
   NOTIMPLEMENTED();
 }
 
+bool WebUIStubLocationBar::IsInitialized() const {
+  NOTIMPLEMENTED();
+  return true;
+}
+
 bool WebUIStubLocationBar::IsVisible() const {
   NOTIMPLEMENTED();
   return true;
@@ -114,7 +119,7 @@ bool WebUIStubLocationBar::IsDrawn() const {
   return true;
 }
 
-bool WebUIStubLocationBar::IsTopLevelFullscreen() const {
+bool WebUIStubLocationBar::IsFullscreen() const {
   NOTIMPLEMENTED();
   return false;
 }

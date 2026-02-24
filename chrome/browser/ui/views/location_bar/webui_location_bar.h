@@ -45,9 +45,10 @@ class WebUILocationBar : public LocationBar,
   Browser* GetBrowser() override;
   void OnChanged() override;
   void UpdateWithoutTabRestore() override;
+  bool IsInitialized() const override;
   bool IsVisible() const override;
   bool IsDrawn() const override;
-  bool IsTopLevelFullscreen() const override;
+  bool IsFullscreen() const override;
   bool IsEditingOrEmpty() const override;
   void InvalidateLayout() override;
   gfx::Rect Bounds() const override;
@@ -74,6 +75,8 @@ class WebUILocationBar : public LocationBar,
   raw_ptr<PermissionDashboardView> permission_dashboard_view_ = nullptr;
 
   std::unique_ptr<OmniboxController> omnibox_controller_;
+
+  bool is_initialized_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_WEBUI_LOCATION_BAR_H_

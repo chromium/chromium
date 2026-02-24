@@ -22,10 +22,10 @@ PermissionPromptBubble::PermissionPromptBubble(
     content::WebContents* web_contents,
     Delegate* delegate)
     : PermissionPromptDesktop(browser, web_contents, delegate) {
-  LocationBarView* lbv = GetLocationBarView();
-  if (lbv && lbv->IsDrawn() &&
+  LocationBar* lb = GetLocationBar();
+  if (lb && lb->IsDrawn() &&
       delegate->Requests()[0]->IsConfirmationChipSupported()) {
-    lbv->GetChipController()->InitializePermissionPrompt(
+    lb->GetChipController()->InitializePermissionPrompt(
         delegate->GetWeakPtr(),
         base::BindOnce(&PermissionPromptBubble::ShowBubble,
                        weak_factory_.GetWeakPtr()));
@@ -124,11 +124,10 @@ bool PermissionPromptBubble::UpdateAnchor() {
     // location bar view. In that case we should create the chip in the location
     // bar view if required, then obtain a reference to the chip controller and
     // finally initialize it with the current permission request.
-    LocationBarView* lbv = GetLocationBarView();
+    LocationBar* lb = GetLocationBar();
 
-    if (lbv && lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen() &&
-        !lbv->IsEditingOrEmpty()) {
-      auto* chip_controller = lbv->GetChipController();
+    if (lb && lb->IsDrawn() && !lb->IsFullscreen() && !lb->IsEditingOrEmpty()) {
+      auto* chip_controller = lb->GetChipController();
       chip_controller->InitializePermissionPrompt(delegate()->GetWeakPtr());
     }
   }

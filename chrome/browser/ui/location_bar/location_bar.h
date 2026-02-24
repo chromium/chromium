@@ -137,6 +137,10 @@ class LocationBar {
   // PresentationReceiverWindowView.
   virtual Browser* GetBrowser() = 0;
 
+  // Returns true if the location bar finished initializing --- it's linked to
+  // the UI and has the subobjects all created.
+  virtual bool IsInitialized() const = 0;
+
   // Returns true if the location bar is visible.
   virtual bool IsVisible() const = 0;
 
@@ -144,9 +148,8 @@ class LocationBar {
   // equivalent of IsVisible() that also checks the parent UI elements.
   virtual bool IsDrawn() const = 0;
 
-  // True if the top-level window this location bar is on is in a full-screen
-  // mode.
-  virtual bool IsTopLevelFullscreen() const = 0;
+  // True if the window this location bar is in is in a full-screen mode.
+  virtual bool IsFullscreen() const = 0;
 
   // Returns true if corresponding omnibox is editing text or empty.
   virtual bool IsEditingOrEmpty() const = 0;

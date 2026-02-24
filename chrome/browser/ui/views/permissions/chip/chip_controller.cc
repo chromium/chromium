@@ -138,8 +138,7 @@ void ChipController::OnPromptRemoved() {
 void ChipController::OnRequestDecided(
     permissions::PermissionAction permission_action) {
   RemoveBubbleObserverAndResetTimersAndChipCallbacks();
-  if (!GetLocationBar()->IsDrawn() ||
-      GetLocationBar()->IsTopLevelFullscreen() ||
+  if (!GetLocationBar()->IsDrawn() || GetLocationBar()->IsFullscreen() ||
       permission_action == permissions::PermissionAction::IGNORED ||
       permission_action == permissions::PermissionAction::DISMISSED ||
       permission_action == permissions::PermissionAction::REVOKED ||

@@ -142,10 +142,6 @@ class LocationBarView
 
   bool in_popup_state_transition() const { return in_popup_state_transition_; }
 
-  // True if this instance has been initialized by calling Init, which can only
-  // be called when the receiving instance is attached to a view container.
-  bool IsInitialized() const;
-
   // Returns a background that paints an (optionally stroked) rounded rect with
   // the given color.
   std::unique_ptr<views::Background> CreateRoundRectBackground(
@@ -218,9 +214,13 @@ class LocationBarView
       override;
   ui::TrackedElement* GetAnchorOrNull() override;
   Browser* GetBrowser() override;
+
+  // True if this instance has been initialized by calling Init, which can only
+  // be called when the receiving instance is attached to a view container.
+  bool IsInitialized() const override;
   bool IsVisible() const override;
   bool IsDrawn() const override;
-  bool IsTopLevelFullscreen() const override;
+  bool IsFullscreen() const override;
   void InvalidateLayout() override;
   gfx::Rect Bounds() const override;
   gfx::Size MinimumSize() const override;
