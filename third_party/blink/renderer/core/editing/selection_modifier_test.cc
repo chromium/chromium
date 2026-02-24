@@ -194,6 +194,38 @@ TEST_F(SelectionModifierTest, StartOfSentenceWithNull) {
                                TextGranularity::kSentenceBoundary));
 }
 
+// Test that selection extension works correctly when a line contains only a
+// pseudo-element (like ::after with display:inline-block). Such lines should
+// be skipped in line navigation because pseudo-elements don't have DOM nodes
+// for caret positioning.
+TEST_F(SelectionModifierTest, ExtendByLineWithInlineBlockPseudoAfterBr) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 10px/20px Ahem; }"
+      ".after::after { content: ''; display: inline-block; }");
+  const SelectionInDOMTree selection = SetSelectionTextToBody(
+      "<div class='after'>first|<br></div>"
+      "<div>second</div>");
+  SelectionModifier modifier(GetFrame(), selection);
+
+  // Extending forward by line should skip the pseudo-element-only line
+  // and land in the next div with actual content.
+  modifier.Modify(SelectionModifyAlteration::kExtend,
+                  SelectionModifyDirection::kForward, TextGranularity::kLine);
+
+  // The selection should extend to the second div, not go in reverse
+  // direction or stay in place.
+  const SelectionInDOMTree result = modifier.Selection().AsSelection();
+  EXPECT_FALSE(result.IsNone());
+  EXPECT_TRUE(result.IsRange());
+
+  // The selection should extend forward (anchor before focus in DOM order)
+  EXPECT_TRUE(result.Anchor() < result.Focus() ||
+              result.Anchor() == result.Focus())
+      << "Selection should extend forward, not backward. "
+      << "Anchor: " << result.Anchor() << ", Focus: " << result.Focus();
+}
+
 TEST_F(SelectionModifierTest, MoveCaretWithShadow) {
   const char* body_content =
       "a a"

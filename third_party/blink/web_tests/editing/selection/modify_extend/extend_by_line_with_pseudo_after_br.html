@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+.after::after {
+  content: "";
+  display: inline-block;
+}
+</style>
+<div id="log"></div>
+
+<div id="container">
+  <div id="div1" class="after">1 First text with pseudo and br<br></div>
+  <div id="div2">2 Second text</div>
+</div>
+
+<script>
+
+test(() => {
+  const div1 = document.getElementById('div1');
+  const div2 = document.getElementById('div2');
+  const selection = window.getSelection();
+
+  // Start in div1
+  selection.collapse(div1.firstChild, 5);
+
+  // Extend forward by line
+  selection.modify('extend', 'forward', 'line');
+
+  // Focus should be in div2 (skipped the pseudo-only line)
+  assert_true(div2.contains(selection.focusNode),
+      'Extend forward should reach div2, not stay in div1 or go backward');
+}, 'Extend forward skips pseudo-only line after BR');
+
+test(() => {
+  const div1 = document.getElementById('div1');
+  const div2 = document.getElementById('div2');
+  const selection = window.getSelection();
+
+  // Start in div2
+  selection.collapse(div2.firstChild, 5);
+
+  // Extend backward by line
+  selection.modify('extend', 'backward', 'line');
+
+  // Focus should be in div1 (skipped the pseudo-only line going back)
+  assert_true(div1.contains(selection.focusNode),
+      'Extend backward should reach div1');
+}, 'Extend backward skips pseudo-only line');
+
+test(() => {
+  const div1 = document.getElementById('div1');
+  const selection = window.getSelection();
+
+  // Start at position 0 in div1
+  selection.collapse(div1.firstChild, 0);
+  const anchorNode = selection.anchorNode;
+  const anchorOffset = selection.anchorOffset;
+
+  // Extend forward
+  selection.modify('extend', 'forward', 'line');
+
+  // Anchor should not move, and focus should be AFTER anchor in document order
+  assert_equals(selection.anchorNode, anchorNode, 'Anchor should stay put');
+  assert_equals(selection.anchorOffset, anchorOffset, 'Anchor offset unchanged');
+
+  // This is the KEY test for the original bug - selection must go FORWARD
+  const range = selection.getRangeAt(0);
+  assert_true(range.toString().length > 0, 'Selection should have content');
+  assert_false(selection.anchorNode === selection.focusNode &&
+               selection.focusOffset < selection.anchorOffset,
+      'Selection must not go backward (this was the bug)');
+}, 'Extend forward never causes backward selection (original bug)');
+</script>

@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/line_utils.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -67,8 +68,16 @@ class AbstractLineBox {
       return false;
     for (InlineCursor cursor(cursor_); cursor; cursor.MoveToNext()) {
       const InlineCursorPosition& current = cursor.Current();
-      if (current.GetLayoutObject() && current.IsInlineLeaf())
-        return true;
+      if (current.GetLayoutObject() && current.IsInlineLeaf()) {
+        // Pseudo-elements (like ::before/::after) don't have DOM nodes that
+        // can be used for caret positioning. Skip lines that only contain
+        // pseudo-elements to ensure we find a valid caret position.
+        if (!RuntimeEnabledFeatures::
+                SkipPseudoOnlyLinesInLineNavigationEnabled() ||
+            current.GetLayoutObject()->NonPseudoNode()) {
+          return true;
+        }
+      }
     }
     return false;
   }

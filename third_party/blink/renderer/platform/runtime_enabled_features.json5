@@ -5135,6 +5135,15 @@
       status: "stable",
     },
     {
+      // Skip lines that contain only pseudo-element content (like ::before
+      // or ::after) when determining valid caret positions for line
+      // navigation. Pseudo-elements don't have DOM nodes for caret positioning,
+      // so including them caused incorrect selection behavior.
+      // See crbug.com/357889508
+      name: "SkipPseudoOnlyLinesInLineNavigation",
+      status: "stable",
+    },
+    {
       // Skips the browser touch event filter, ensuring that events that reach
       // the queue and would otherwise be filtered out will instead be passed
       // onto the renderer compositor process as long as the page hasn't timed
