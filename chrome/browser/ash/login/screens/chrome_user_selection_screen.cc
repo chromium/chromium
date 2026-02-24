@@ -37,8 +37,9 @@
 namespace ash {
 
 ChromeUserSelectionScreen::ChromeUserSelectionScreen(
+    PrefService* local_state,
     DisplayedScreen display_type)
-    : UserSelectionScreen(display_type) {
+    : UserSelectionScreen(local_state, display_type) {
   device_local_account_policy_service_ =
       g_browser_process->platform_part()
           ->browser_policy_connector_ash()
@@ -84,7 +85,7 @@ void ChromeUserSelectionScreen::OnDeviceLocalAccountsChanged() {
 
 void ChromeUserSelectionScreen::CheckForPublicSessionDisplayNameChange(
     policy::DeviceLocalAccountPolicyBroker* broker) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   const AccountId account_id = known_user.GetAccountId(
       broker->user_id(), std::string() /* id */, AccountType::UNKNOWN);
   DCHECK(account_id.is_valid());
@@ -117,7 +118,7 @@ void ChromeUserSelectionScreen::CheckForPublicSessionDisplayNameChange(
 
 void ChromeUserSelectionScreen::CheckForPublicSessionLocalePolicyChange(
     policy::DeviceLocalAccountPolicyBroker* broker) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   const AccountId account_id = known_user.GetAccountId(
       broker->user_id(), std::string() /* id */, AccountType::UNKNOWN);
   DCHECK(account_id.is_valid());

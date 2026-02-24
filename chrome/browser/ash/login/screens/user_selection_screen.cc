@@ -17,6 +17,7 @@
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/token_handle_store.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -150,10 +151,10 @@ bool IsUserAllowedForARC(const AccountId& account_id) {
              user_manager::UserManager::Get()->FindUser(account_id));
 }
 
-AccountId GetOwnerAccountId() {
+AccountId GetOwnerAccountId(PrefService& local_state) {
   std::string owner_email;
   CrosSettings::Get()->GetString(kDeviceOwner, &owner_email);
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state);
   const AccountId owner = known_user.GetAccountId(
       owner_email, std::string() /* id */, AccountType::UNKNOWN);
   return owner;
@@ -164,7 +165,7 @@ bool IsSigninToAdd() {
          user_manager::UserManager::Get()->IsUserLoggedIn();
 }
 
-bool CanRemoveUser(const user_manager::User* user) {
+bool CanRemoveUser(PrefService& local_state, const user_manager::User* user) {
   const bool is_single_user =
       user_manager::UserManager::Get()->GetPersistedUsers().size() == 1;
 
@@ -177,7 +178,7 @@ bool CanRemoveUser(const user_manager::User* user) {
   if (!user->GetAccountId().is_valid()) {
     return false;
   }
-  if (user->GetAccountId() == GetOwnerAccountId()) {
+  if (user->GetAccountId() == GetOwnerAccountId(local_state)) {
     return false;
   }
   if (user->GetType() == user_manager::UserType::kPublicAccount ||
@@ -204,6 +205,7 @@ std::tuple<bool, user_manager::MultiUserSignInPolicy> GetMultiUserSignInPolicy(
 
 // Determines if user auth status requires online sign in.
 proximity_auth::mojom::AuthType GetInitialUserAuthType(
+    PrefService& local_state,
     const user_manager::User* user) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSkipForceOnlineSignInForTesting)) {
@@ -251,7 +253,7 @@ proximity_auth::mojom::AuthType GetInitialUserAuthType(
     return proximity_auth::mojom::AuthType::ONLINE_SIGN_IN;
   }
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state);
   const std::optional<base::TimeDelta> offline_signin_time_limit =
       known_user.GetOfflineSigninLimit(user->GetAccountId());
   if (!offline_signin_time_limit) {
@@ -482,8 +484,9 @@ class UserSelectionScreen::TpmLockedChecker {
   base::WeakPtrFactory<TpmLockedChecker> weak_ptr_factory_{this};
 };
 
-UserSelectionScreen::UserSelectionScreen(DisplayedScreen display_type)
-    : display_type_(display_type) {
+UserSelectionScreen::UserSelectionScreen(PrefService* local_state,
+                                         DisplayedScreen display_type)
+    : local_state_(CHECK_DEREF(local_state)), display_type_(display_type) {
   session_manager::SessionManager::Get()->AddObserver(this);
   if (display_type_ != DisplayedScreen::SIGN_IN_SCREEN) {
     return;
@@ -632,7 +635,7 @@ void UserSelectionScreen::HandleFocusPod(const AccountId& account_id) {
           DisplayedScreen::SIGN_IN_SCREEN /* honor_device_policy */);
   lock_screen_utils::SetKeyboardSettings(account_id);
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   std::optional<bool> use_24hour_clock =
       known_user.FindBoolPath(account_id, ::prefs::kUse24HourClock);
   if (!use_24hour_clock.has_value()) {
@@ -791,7 +794,7 @@ std::vector<LoginUserInfo>
 UserSelectionScreen::UpdateAndReturnUserListForAsh() {
   std::vector<LoginUserInfo> user_info_list;
 
-  const AccountId owner = GetOwnerAccountId();
+  const AccountId owner = GetOwnerAccountId(local_state_.get());
   const bool is_signin_to_add = IsSigninToAdd();
   users_to_send_ = PrepareUserListForSending(users_, owner, is_signin_to_add);
 
@@ -805,14 +808,14 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     const proximity_auth::mojom::AuthType initial_auth_type =
         is_public_account
             ? proximity_auth::mojom::AuthType::EXPAND_THEN_USER_CLICK
-            : GetInitialUserAuthType(user);
+            : GetInitialUserAuthType(local_state_.get(), user);
     user_auth_type_map_[account_id] = initial_auth_type;
 
     LoginUserInfo user_info;
     user_info.basic_user_info.type = user->GetType();
     user_info.basic_user_info.account_id = user->GetAccountId();
 
-    user_manager::KnownUser known_user(g_browser_process->local_state());
+    user_manager::KnownUser known_user(&local_state_.get());
 
     user_info.use_24hour_clock =
         known_user.FindBoolPath(account_id, ::prefs::kUse24HourClock)
@@ -825,7 +828,7 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     user_info.auth_type = initial_auth_type;
     user_info.is_signed_in = user->is_logged_in();
     user_info.is_device_owner = is_owner;
-    user_info.can_remove = CanRemoveUser(user);
+    user_info.can_remove = CanRemoveUser(local_state_.get(), user);
     user_info.fingerprint_state = quick_unlock::GetFingerprintStateForUser(
         user, quick_unlock::Purpose::kUnlock);
 
@@ -895,7 +898,7 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
           !ash::demo_mode::IsDeviceInDemoMode();
     }
 
-    user_info.can_remove = CanRemoveUser(user);
+    user_info.can_remove = CanRemoveUser(local_state_.get(), user);
 
     // Send a request to get keyboard layouts for default locale.
     if (is_public_account && LoginScreenClientImpl::HasInstance()) {

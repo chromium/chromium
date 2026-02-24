@@ -26,6 +26,7 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
+class PrefService;
 
 namespace ash {
 
@@ -42,7 +43,8 @@ class UserSelectionScreen
       public PasswordSyncTokenLoginChecker::Observer,
       public UserOnlineSigninNotifier::Observer {
  public:
-  explicit UserSelectionScreen(DisplayedScreen display_type);
+  // `local_state` must be non-null and must outlive `this`.
+  UserSelectionScreen(PrefService* local_state, DisplayedScreen display_type);
 
   UserSelectionScreen(const UserSelectionScreen&) = delete;
   UserSelectionScreen& operator=(const UserSelectionScreen&) = delete;
@@ -99,6 +101,8 @@ class UserSelectionScreen
   void SetUsersLoaded(bool loaded);
 
  protected:
+  const raw_ref<PrefService> local_state_;
+
   raw_ptr<UserBoardView> view_ = nullptr;
 
   // Map from public session account IDs to recommended locales set by policy.

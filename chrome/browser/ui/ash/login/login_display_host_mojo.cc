@@ -191,8 +191,10 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
     DisplayedScreen displayed_screen,
     bool update_geolocation_usage_allowed)
     : LoginDisplayHostCommon(update_geolocation_usage_allowed),
-      user_selection_screen_(
-          std::make_unique<ChromeUserSelectionScreen>(displayed_screen)),
+      user_selection_screen_(std::make_unique<ChromeUserSelectionScreen>(
+          // TODO(crbug.com/404133029): Avoid using g_browser_process.
+          g_browser_process->local_state(),
+          displayed_screen)),
       auth_performer_(UserDataAuthClient::Get()),
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {
   CHECK(!g_login_display_host_mojo);

@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/login/screens/chrome_user_selection_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/system_clock.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
@@ -49,8 +50,11 @@ ViewsScreenLocker::ViewsScreenLocker()
     : system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()),
       auth_performer_(UserDataAuthClient::Get()) {
   LoginScreenClientImpl::Get()->SetDelegate(this);
-  user_selection_screen_ =
-      std::make_unique<ChromeUserSelectionScreen>(DisplayedScreen::LOCK_SCREEN);
+
+  // TODO(crbug.com/404133029): Avoid using g_browser_process.
+  PrefService* local_state = g_browser_process->local_state();
+  user_selection_screen_ = std::make_unique<ChromeUserSelectionScreen>(
+      local_state, DisplayedScreen::LOCK_SCREEN);
 }
 
 ViewsScreenLocker::~ViewsScreenLocker() {
