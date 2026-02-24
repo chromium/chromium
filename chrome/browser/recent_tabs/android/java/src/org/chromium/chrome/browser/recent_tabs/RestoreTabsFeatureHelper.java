@@ -60,7 +60,7 @@ public class RestoreTabsFeatureHelper {
     /** Check the criteria for displaying the restore tabs promo. */
     public void maybeShowPromo(
             Activity activity,
-            Profile profile,
+            @Nullable Profile profile,
             TabCreatorManager tabCreatorManager,
             BottomSheetController bottomSheetController,
             Supplier<Integer> gtsTabListModelSizeSupplier,

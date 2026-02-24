@@ -27,8 +27,6 @@ import android.view.ViewStub;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -50,6 +48,8 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
+import org.chromium.build.annotations.NonNull;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
@@ -318,7 +318,7 @@ public class RootUiCoordinator
     /** A subclass of TopUiThemeColorProvider to provide adjusted tint color. */
     private AdjustedTopUiThemeColorProvider mAdjustedTopUiThemeColorProvider;
 
-    @Nullable private final Callback<Boolean> mOnOmniboxFocusChangedListener;
+    private final @Nullable Callback<Boolean> mOnOmniboxFocusChangedListener;
     protected ToolbarManager mToolbarManager;
     private ModalDialogManagerObserver mModalDialogManagerObserver;
 
@@ -345,14 +345,14 @@ public class RootUiCoordinator
     protected final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     protected final OneshotSupplier<TabSwitcher> mTabSwitcherSupplier;
     protected final OneshotSupplier<TabSwitcher> mIncognitoTabSwitcherSupplier;
-    @Nullable protected ManagedMessageDispatcher mMessageDispatcher;
-    @Nullable private MessageContainerCoordinator mMessageContainerCoordinator;
+    protected @Nullable ManagedMessageDispatcher mMessageDispatcher;
+    private @Nullable MessageContainerCoordinator mMessageContainerCoordinator;
     private MessageContainerObserver mMessageContainerObserver;
-    @Nullable private ChromeMessageQueueMediator mMessageQueueMediator;
+    private @Nullable ChromeMessageQueueMediator mMessageQueueMediator;
     private LayoutManagerImpl mLayoutManager;
     protected OneshotSupplier<ToolbarIntentMetadata> mIntentMetadataOneshotSupplier;
     protected OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier = new OneshotSupplierImpl<>();
-    @Nullable private VoiceRecognitionHandler.Observer mMicStateObserver;
+    private VoiceRecognitionHandler.@Nullable Observer mMicStateObserver;
     private MediaCaptureOverlayController mCaptureController;
     private @Nullable ScrollCaptureManager mScrollCaptureManager;
     protected final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -372,7 +372,7 @@ public class RootUiCoordinator
     protected final MonotonicObservableSupplier<SnackbarManager> mSnackbarManagerSupplier;
     protected final SettableMonotonicObservableSupplier<EdgeToEdgeController>
             mEdgeToEdgeControllerSupplier;
-    protected Destroyable mEdgeToEdgeBottomChin;
+    protected @Nullable Destroyable mEdgeToEdgeBottomChin;
     protected final @ActivityType int mActivityType;
     protected final Supplier<Boolean> mIsInOverviewModeSupplier;
     private final AppMenuDelegate mAppMenuDelegate;
@@ -381,17 +381,17 @@ public class RootUiCoordinator
     private final boolean mInitializeUiWithIncognitoColors;
     protected final SettableMonotonicObservableSupplier<EphemeralTabCoordinator>
             mEphemeralTabCoordinatorSupplier;
-    @Nullable protected final BackPressManager mBackPressManager;
+    protected final BackPressManager mBackPressManager;
     private final boolean mIsIncognitoReauthPendingOnRestore;
     protected final ExpandedSheetHelper mExpandedBottomSheetHelper;
     protected @Nullable EdgeToEdgeControllerCreator mEdgeToEdgeControllerCreator;
     protected final BottomControlsStacker mBottomControlsStacker;
     protected final TopControlsStacker mTopControlsStacker;
     protected final @Nullable TopControlsLockCoordinator mTopControlsLockCoordinator;
-    @NonNull protected final NonNullObservableSupplier<Integer> mOverviewColorSupplier;
-    @Nullable private ContextualSearchObserver mReadAloudContextualSearchObserver;
-    @Nullable private PageZoomBarCoordinator mPageZoomBarCoordinator;
-    @Nullable private ReaderModeBottomSheetManager mReaderModeBottomSheetManager;
+    protected final @NonNull NonNullObservableSupplier<Integer> mOverviewColorSupplier;
+    private @Nullable ContextualSearchObserver mReadAloudContextualSearchObserver;
+    private @Nullable PageZoomBarCoordinator mPageZoomBarCoordinator;
+    private @Nullable ReaderModeBottomSheetManager mReaderModeBottomSheetManager;
     private AppMenuObserver mAppMenuObserver;
     private @Nullable LinkHoverStatusBarCoordinator mLinkHoverStatusBarCoordinator;
 
@@ -509,7 +509,7 @@ public class RootUiCoordinator
                     SettableMonotonicObservableSupplier<EphemeralTabCoordinator>
                             ephemeralTabCoordinatorSupplier,
             boolean initializeUiWithIncognitoColors,
-            @Nullable BackPressManager backPressManager,
+            BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
             @Nullable PersistableBundle persistentState,
             @NonNull NonNullObservableSupplier<Integer> overviewColorSupplier,
@@ -793,6 +793,7 @@ public class RootUiCoordinator
     }
 
     @Override
+    @SuppressWarnings("NullAway")
     public void onDestroy() {
         // TODO(meiliang): Understand why we need to set most of the class member instances to null
         //  other than the mActivity. If the nulling calls are not necessary, we can remove them.
@@ -1654,7 +1655,7 @@ public class RootUiCoordinator
     }
 
     /** Returns the {@link MenuButtonCoordinator.VisibilityDelegate}. */
-    protected @Nullable MenuButtonCoordinator.VisibilityDelegate getMenuButtonVisibilityDelegate() {
+    protected MenuButtonCoordinator.@Nullable VisibilityDelegate getMenuButtonVisibilityDelegate() {
         return null;
     }
 
@@ -1706,9 +1707,8 @@ public class RootUiCoordinator
     }
 
     protected AdaptiveToolbarBehavior createAdaptiveToolbarBehavior(
-            Supplier<Tracker> trackerSupplier) {
-        assert false : "Should be overriden by an inherited class.";
-        return null;
+            Supplier<@Nullable Tracker> trackerSupplier) {
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -1736,7 +1736,7 @@ public class RootUiCoordinator
                         getDesktopWindowStateManager().isInUnfocusedDesktopWindow());
             }
 
-            Supplier<Tracker> trackerSupplier =
+            Supplier<@Nullable Tracker> trackerSupplier =
                     () -> {
                         Profile profile = mProfileSupplier.get();
                         return profile == null
@@ -1890,7 +1890,7 @@ public class RootUiCoordinator
         }
     }
 
-    protected void addVoiceSearchAdaptiveButton(Supplier<Tracker> trackerSupplier) {
+    protected void addVoiceSearchAdaptiveButton(Supplier<@Nullable Tracker> trackerSupplier) {
         mAdaptiveToolbarUiCoordinator.addVoiceSearchAdaptiveButton(
                 () -> mToolbarManager.getVoiceRecognitionHandler(), trackerSupplier);
     }
@@ -2131,7 +2131,7 @@ public class RootUiCoordinator
                                     mModalDialogManagerSupplier.get());
                 };
 
-        Supplier<OverlayPanelManager> panelManagerSupplier =
+        Supplier<@Nullable OverlayPanelManager> panelManagerSupplier =
                 () -> {
                     var compositorViewHolder = mCompositorViewHolderSupplier.get();
                     if (compositorViewHolder != null
@@ -2268,7 +2268,7 @@ public class RootUiCoordinator
     }
 
     /** Create a bottom chin for Edge-to-Edge. */
-    protected Destroyable createEdgeToEdgeBottomChin() {
+    protected @Nullable Destroyable createEdgeToEdgeBottomChin() {
         return null;
     }
 
@@ -2547,10 +2547,11 @@ public class RootUiCoordinator
 
     // Testing methods
 
-    public AppMenuCoordinator getAppMenuCoordinatorForTesting() {
+    public @Nullable AppMenuCoordinator getAppMenuCoordinatorForTesting() {
         return mAppMenuCoordinator;
     }
 
+    @SuppressWarnings("NullAway")
     public void destroyActivityForTesting() {
         // Actually destroying or finishing the activity hinders the shutdown process after
         // a test is done. Just null it out to give an effect of |onDestroy| being invoked.
@@ -2565,8 +2566,8 @@ public class RootUiCoordinator
         return mAdaptiveToolbarUiCoordinator;
     }
 
-    public DataSharingTabManager getDataSharingTabManager() {
-        // This should only be called on an instance of TabbedRootUiCoordinator.
+    public @Nullable DataSharingTabManager getDataSharingTabManager() {
+        // TabbedRootUiCoordinator returns non-null.
         return null;
     }
 

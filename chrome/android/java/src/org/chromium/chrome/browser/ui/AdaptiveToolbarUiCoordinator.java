@@ -274,7 +274,7 @@ public class AdaptiveToolbarUiCoordinator {
      * @param trackerSupplier Supplies {@link Tracker} object.
      */
     public void addVoiceSearchAdaptiveButton(
-            Supplier<VoiceRecognitionHandler> voiceRecognitionHandler,
+            Supplier<@Nullable VoiceRecognitionHandler> voiceRecognitionHandler,
             Supplier<@Nullable Tracker> trackerSupplier) {
         var voiceSearchDelegate =
                 new VoiceToolbarButtonController.VoiceSearchDelegate() {
