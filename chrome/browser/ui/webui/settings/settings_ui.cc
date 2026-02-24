@@ -38,6 +38,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/https_upgrades_util.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -780,6 +781,14 @@ void SettingsUI::CreateBatchUploadPromoHandler(
     mojo::PendingRemote<batch_upload_promo::mojom::Page> pending_page,
     mojo::PendingReceiver<batch_upload_promo::mojom::PageHandler>
         pending_page_handler) {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  CHECK(profile);
+
+  // Batch upload needs the sync service to be present in order to start.
+  if (!SyncServiceFactory::GetForProfile(profile)) {
+    return;
+  }
+
   batch_upload_promo_handler_ = std::make_unique<BatchUploadPromoHandler>(
       std::move(pending_page_handler), std::move(pending_page),
       Profile::FromWebUI(web_ui()), web_ui()->GetWebContents());
