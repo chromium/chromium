@@ -490,10 +490,10 @@ std::set<split_tabs::SplitTabId> TabStripCollection::ListSplits() const {
 
 void TabStripCollection::ValidateData() const {
   for (const auto& [_, group] : group_mapping_) {
-    CHECK(group->ChildCount() > 0);
+    CHECK_GT(group->ChildCount(), 0UL);
   }
   for (const auto& [_, split] : split_mapping_) {
-    CHECK(split->ChildCount() >= 2);
+    CHECK_GE(split->ChildCount(), 2UL);
     for (auto child : split->GetTabsRecursive()) {
       CHECK(split->GetSplitTabId() == child->GetSplit().value());
     }
