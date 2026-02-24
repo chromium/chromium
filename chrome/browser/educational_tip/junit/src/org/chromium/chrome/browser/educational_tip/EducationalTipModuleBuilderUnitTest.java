@@ -172,6 +172,8 @@ public class EducationalTipModuleBuilderUnitTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
     public void testCreateInputContext() {
+        when(mSetupListManager.isSetupListActive()).thenReturn(true);
+        when(mSetupListManager.isModuleEligible(anyInt())).thenReturn(true);
         EducationalTipModuleBuilder moduleBuilderForDefaultBrowserPromo =
                 new EducationalTipModuleBuilder(ModuleType.DEFAULT_BROWSER_PROMO, mActionDelegate);
         InputContext inputContextForTest = moduleBuilderForDefaultBrowserPromo.createInputContext();
@@ -204,6 +206,8 @@ public class EducationalTipModuleBuilderUnitTest {
     public void testIsEligible_SetupList_StrictlyFollowsManager() {
         // Mock Setup List module.
         int setupListModule = ModuleType.SIGN_IN_PROMO;
+        when(mSetupListManager.isSetupListActive()).thenReturn(true);
+        when(mSetupListManager.isSetupListModule(setupListModule)).thenReturn(true);
         EducationalTipModuleBuilder builder =
                 new EducationalTipModuleBuilder(setupListModule, mActionDelegate);
 

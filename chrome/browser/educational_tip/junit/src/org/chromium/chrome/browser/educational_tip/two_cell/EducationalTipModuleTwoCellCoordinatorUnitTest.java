@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.educational_tip.two_cell;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -37,7 +36,6 @@ import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDeleg
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
@@ -80,8 +78,15 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
         when(mActionDelegate.getContext()).thenReturn(mContext);
         mProfileSupplier = ObservableSuppliers.createNonNull(mProfile);
         when(mActionDelegate.getProfileSupplier()).thenReturn(mProfileSupplier);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mActionDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
         SetupListManager.setInstanceForTesting(mSetupListManager);
+        when(mSetupListManager.shouldShowTwoCellLayout()).thenReturn(true);
+        when(mSetupListManager.getRankedModuleTypes())
+                .thenReturn(
+                        Arrays.asList(
+                                ModuleType.ENHANCED_SAFE_BROWSING_PROMO,
+                                ModuleType.ADDRESS_BAR_PLACEMENT_PROMO));
     }
 
     @Test
@@ -194,10 +199,8 @@ public class EducationalTipModuleTwoCellCoordinatorUnitTest {
 
         // verify it marks the specific item (not the container) as complete.
         // This is what triggers the internal reordering.
-        String expectedKey =
-                SetupListModuleUtils.getCompletionKeyForModule(
-                        ModuleType.ENHANCED_SAFE_BROWSING_PROMO);
-        assertTrue(ChromeSharedPreferences.getInstance().readBoolean(expectedKey, false));
+        verify(mSetupListManager)
+                .setModuleCompleted(ModuleType.ENHANCED_SAFE_BROWSING_PROMO, /* silent= */ false);
     }
 
     @Test

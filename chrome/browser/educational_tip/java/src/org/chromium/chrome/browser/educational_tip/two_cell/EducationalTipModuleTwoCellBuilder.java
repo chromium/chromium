@@ -69,6 +69,6 @@ public class EducationalTipModuleTwoCellBuilder implements ModuleProviderBuilder
 
     @Override
     public boolean isEligible() {
-        return SetupListModuleUtils.isSetupListModule(mModuleType);
+        return SetupListModuleUtils.isModuleEligible(mModuleType);
     }
 }

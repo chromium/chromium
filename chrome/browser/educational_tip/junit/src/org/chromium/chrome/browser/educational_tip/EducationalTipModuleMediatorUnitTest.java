@@ -335,7 +335,7 @@ public class EducationalTipModuleMediatorUnitTest {
         assertEquals(true, mModel.get(EducationalTipModuleProperties.MARK_COMPLETED));
 
         // Verify reordering has NOT happened yet.
-        verify(mModuleDelegate, never()).updateModuleRanking(anyInt());
+        verify(mModuleDelegate, never()).maybeMoveModuleToTheEnd(anyInt());
 
         // 1. Advance to the combined duration.
         mFakeTime.advanceMillis(
@@ -344,7 +344,7 @@ public class EducationalTipModuleMediatorUnitTest {
 
         // Final verification of completion signal and reordering trigger.
         verify(mSetupListManager).onCompletionAnimationFinished(ModuleType.SIGN_IN_PROMO);
-        verify(mModuleDelegate).updateModuleRanking(ModuleType.SIGN_IN_PROMO);
+        verify(mModuleDelegate).maybeMoveModuleToTheEnd(ModuleType.SIGN_IN_PROMO);
     }
 
     @Test

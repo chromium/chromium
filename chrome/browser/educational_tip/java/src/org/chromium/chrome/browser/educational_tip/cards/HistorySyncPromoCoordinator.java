@@ -140,7 +140,8 @@ public class HistorySyncPromoCoordinator
                 .getSelectedTypes()
                 .containsAll(Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS))) {
             if (SetupListModuleUtils.isSetupListModule(ModuleType.HISTORY_SYNC_PROMO)) {
-                SetupListModuleUtils.setModuleCompleted(ModuleType.HISTORY_SYNC_PROMO);
+                SetupListModuleUtils.setModuleCompleted(
+                        ModuleType.HISTORY_SYNC_PROMO, /* silent= */ true);
             } else {
                 mRemoveModuleRunnable.run();
             }

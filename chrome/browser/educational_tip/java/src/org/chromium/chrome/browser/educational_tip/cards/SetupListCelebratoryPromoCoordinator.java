@@ -10,6 +10,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 
 /** Coordinator for the setup list celebratory promo card. */
 @NullMarked
@@ -53,5 +55,11 @@ public class SetupListCelebratoryPromoCoordinator implements EducationalTipCardP
     @Override
     public void onCardClicked() {
         mOnModuleClickedCallback.run();
+    }
+
+    @Override
+    public void onViewCreated() {
+        SetupListModuleUtils.setModuleCompleted(
+                ModuleType.SETUP_LIST_CELEBRATORY_PROMO, /* silent= */ true);
     }
 }

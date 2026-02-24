@@ -976,12 +976,12 @@ public class HomeModulesMediatorUnitTest {
 
     @Test
     @SmallTest
-    public void testUpdateModuleRanking_MovesItemToCorrectManualPosition() {
+    public void testMaybeMoveModuleToTheEnd_MovesItemToCorrectManualPosition() {
         int manual1 = ModuleType.ENHANCED_SAFE_BROWSING_PROMO;
         int manual2 = ModuleType.ADDRESS_BAR_PLACEMENT_PROMO;
         int segmentation1 = ModuleType.SINGLE_TAB;
 
-        // Mock Builders needed for the re-insertion loop in updateModuleRanking.
+        // Mock Builders needed for the re-insertion loop in maybeMoveModuleToTheEnd.
         ModuleProviderBuilder manualBuilder = mock(ModuleProviderBuilder.class);
         when(manualBuilder.getManualRank()).thenReturn(0); // Any non-null value
         when(mModuleRegistry.getModuleProviderBuilder(manual1)).thenReturn(manualBuilder);
@@ -1008,7 +1008,7 @@ public class HomeModulesMediatorUnitTest {
         mModel.add(new ListItem(segmentation1, mock(PropertyModel.class)));
 
         // Act: Trigger reordering.
-        mMediator.updateModuleRanking(manual1);
+        mMediator.maybeMoveModuleToTheEnd(manual1);
 
         // Assert: manual1 should now be at the absolute end.
         assertEquals(3, mModel.size());

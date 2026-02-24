@@ -5,7 +5,6 @@ package org.chromium.chrome.browser.educational_tip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -103,9 +102,8 @@ public class HistorySyncPromoCoordinatorUnitTest {
 
         // Should mark complete, but NOT call remove.
         // The animation will be triggered by onShown() or on return from UI.
-        String expectedKey =
-                SetupListModuleUtils.getCompletionKeyForModule(ModuleType.HISTORY_SYNC_PROMO);
-        assertTrue(ChromeSharedPreferences.getInstance().readBoolean(expectedKey, false));
+        verify(mSetupListManager)
+                .setModuleCompleted(ModuleType.HISTORY_SYNC_PROMO, /* silent= */ true);
         verify(mRemoveModuleCallback, never()).run();
     }
 

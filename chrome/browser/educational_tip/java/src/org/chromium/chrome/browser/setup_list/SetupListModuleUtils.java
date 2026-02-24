@@ -22,6 +22,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -49,10 +50,10 @@ public class SetupListModuleUtils {
 
     /** Returns the list of module types to be registered with the framework. */
     public static List<Integer> getModuleTypesForRegistration(boolean showTwoCell) {
-        if (showTwoCell) {
-            return getTwoCellContainerModuleTypes();
-        }
-        return SetupListManager.BASE_SETUP_LIST_ORDER;
+        List<Integer> modules = new ArrayList<>(SetupListManager.BASE_SETUP_LIST_ORDER);
+        modules.addAll(getTwoCellContainerModuleTypes());
+        modules.add(ModuleType.SETUP_LIST_CELEBRATORY_PROMO);
+        return modules;
     }
 
     /** Returns whether the setup list is active based on the 14-day window. */
@@ -92,17 +93,19 @@ public class SetupListModuleUtils {
     /**
      * Marks the given module type as completed by setting its individual boolean preference key.
      * The {@link SetupListManager} will observe this change and update the ranking automatically.
+     *
+     * @param moduleType The module to mark as completed.
+     * @param silent Whether to bypass the completion animation. If true, the module is reordered
+     *     immediately.
      */
-    public static void setModuleCompleted(@ModuleType int moduleType) {
-        String individualPrefKey = getCompletionKeyForModule(moduleType);
-        if (individualPrefKey != null) {
-            ChromeSharedPreferences.getInstance().writeBoolean(individualPrefKey, true);
-        }
+    public static void setModuleCompleted(@ModuleType int moduleType, boolean silent) {
+        SetupListManager.getInstance().setModuleCompleted(moduleType, silent);
     }
 
     @Nullable
     public static String getCompletionKeyForModule(@ModuleType int type) {
-        if (SetupListManager.isBaseSetupListModule(type)) {
+        if (SetupListManager.isBaseSetupListModule(type)
+                || type == ModuleType.SETUP_LIST_CELEBRATORY_PROMO) {
             return ChromePreferenceKeys.SETUP_LIST_COMPLETED_KEY_PREFIX.createKey(
                     String.valueOf(type));
         }
@@ -152,7 +155,9 @@ public class SetupListModuleUtils {
 
     /** Resets the completion status of all Setup List modules to incomplete for testing. */
     public static void resetAllModuleCompletionForTesting() {
-        for (int moduleType : SetupListManager.BASE_SETUP_LIST_ORDER) {
+        List<Integer> modules = new ArrayList<>(SetupListManager.BASE_SETUP_LIST_ORDER);
+        modules.add(ModuleType.SETUP_LIST_CELEBRATORY_PROMO);
+        for (int moduleType : modules) {
             String individualPrefKey = getCompletionKeyForModule(moduleType);
             if (individualPrefKey != null) {
                 ChromeSharedPreferences.getInstance().writeBoolean(individualPrefKey, false);

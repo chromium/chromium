@@ -116,10 +116,14 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
      * on the top items.
      */
     private void refreshSlots() {
+        if (!SetupListModuleUtils.shouldShowTwoCellLayout()) {
+            return;
+        }
         mCurrentRankedModuleTypes = SetupListModuleUtils.getRankedModuleTypes();
+        if (mCurrentRankedModuleTypes.size() < 2) {
+            return;
+        }
         populateEducationalTipCardProviderMap();
-        assert mCurrentRankedModuleTypes.size() >= 2
-                : "Two cell layout requires at least two items";
 
         mItem1Type = mCurrentRankedModuleTypes.get(0);
         mItem2Type = mCurrentRankedModuleTypes.get(1);
@@ -139,7 +143,8 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
                         mItem1Type,
                         () -> {
                             mModuleDelegate.onModuleClicked(mModuleType);
-                            SetupListModuleUtils.setModuleCompleted(mItem1Type);
+                            SetupListModuleUtils.setModuleCompleted(
+                                    mItem1Type, /* silent= */ false);
                         },
                         mCallbackController,
                         mActionDelegate,
@@ -167,7 +172,8 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
                         mItem2Type,
                         () -> {
                             mModuleDelegate.onModuleClicked(mModuleType);
-                            SetupListModuleUtils.setModuleCompleted(mItem2Type);
+                            SetupListModuleUtils.setModuleCompleted(
+                                    mItem2Type, /* silent= */ false);
                         },
                         mCallbackController,
                         mActionDelegate,
@@ -257,6 +263,10 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
 
                             // Re-query ranking and update slots with new top items.
                             refreshSlots();
+
+                            if (SetupListManager.getInstance().shouldShowCelebratoryPromo()) {
+                                mModuleDelegate.refreshModules();
+                            }
                         }),
                 SetupListManager.STRIKETHROUGH_DURATION_MS + SetupListManager.HIDE_DURATION_MS);
     }
@@ -264,6 +274,16 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
     @Override
     public int getModuleType() {
         return mModuleType;
+    }
+
+    @Override
+    public void onViewCreated() {
+        if (mItem1Provider != null) {
+            mItem1Provider.onViewCreated();
+        }
+        if (mItem2Provider != null) {
+            mItem2Provider.onViewCreated();
+        }
     }
 
     /** Sets the map used to obtain {@EducationalTipCardProvider} based on a {@ModuleType} */
@@ -276,7 +296,7 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
                             type,
                             () -> {
                                 mModuleDelegate.onModuleClicked(mModuleType);
-                                SetupListModuleUtils.setModuleCompleted(type);
+                                SetupListModuleUtils.setModuleCompleted(type, /* silent= */ false);
                             },
                             mCallbackController,
                             mActionDelegate,

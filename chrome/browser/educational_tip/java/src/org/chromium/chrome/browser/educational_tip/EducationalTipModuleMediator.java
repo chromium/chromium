@@ -120,6 +120,10 @@ public class EducationalTipModuleMediator {
 
     /** Called when the educational tip module is visible to users on the magic stack. */
     void onViewCreated() {
+        if (mEducationalTipCardProvider != null) {
+            mEducationalTipCardProvider.onViewCreated();
+        }
+
         if (mModuleType == ModuleType.DEFAULT_BROWSER_PROMO) {
             // For the Setup List version, we notify the system immediately to ensure mutual
             // exclusion with other surfaces (banners on Messages/Settings pages).
@@ -174,7 +178,10 @@ public class EducationalTipModuleMediator {
                 mCallbackController.makeCancelable(
                         () -> {
                             SetupListModuleUtils.finishCompletionAnimation(mModuleType);
-                            mModuleDelegate.updateModuleRanking(mModuleType);
+                            mModuleDelegate.maybeMoveModuleToTheEnd(mModuleType);
+                            if (SetupListManager.getInstance().shouldShowCelebratoryPromo()) {
+                                mModuleDelegate.refreshModules();
+                            }
                         }),
                 SetupListManager.STRIKETHROUGH_DURATION_MS + SetupListManager.HIDE_DURATION_MS);
     }
@@ -213,7 +220,7 @@ public class EducationalTipModuleMediator {
 
         if (SetupListModuleUtils.isSetupListModule(mModuleType)) {
             // Considered complete if the user clicks on the promo
-            SetupListModuleUtils.setModuleCompleted(mModuleType);
+            SetupListModuleUtils.setModuleCompleted(mModuleType, /* silent= */ false);
         }
     }
 

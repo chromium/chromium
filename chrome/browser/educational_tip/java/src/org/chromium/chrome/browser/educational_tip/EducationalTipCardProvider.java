@@ -29,4 +29,7 @@ public interface EducationalTipCardProvider {
 
     /** Called when the module is hidden. */
     default void destroy() {}
+
+    /** Called when the module view is created and visible on the magic stack. */
+    default void onViewCreated() {}
 }

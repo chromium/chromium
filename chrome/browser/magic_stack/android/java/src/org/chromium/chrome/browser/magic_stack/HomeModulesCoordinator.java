@@ -251,7 +251,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
 
         var profile = mProfileSupplier.get();
         if (profile != null) {
-            mMediator.showModules(callback, this);
+            mMediator.showModules(callback, this, /* useCachedSegmentationRanking= */ false);
         } else {
             long waitForProfileStartTimeMs = SystemClock.elapsedRealtime();
             mOnProfileAvailableObserver =
@@ -286,7 +286,8 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private void onProfileAvailable(
             Runnable onHomeModulesChangedCallback, long waitForProfileStartTimeMs) {
         long delay = SystemClock.elapsedRealtime() - waitForProfileStartTimeMs;
-        mMediator.showModules(onHomeModulesChangedCallback, this);
+        mMediator.showModules(
+                onHomeModulesChangedCallback, this, /* useCachedSegmentationRanking= */ false);
 
         assumeNonNull(mOnProfileAvailableObserver);
         mProfileSupplier.removeObserver(mOnProfileAvailableObserver);
@@ -405,8 +406,13 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     }
 
     @Override
-    public void updateModuleRanking(@ModuleType int moduleType) {
-        mMediator.updateModuleRanking(moduleType);
+    public void maybeMoveModuleToTheEnd(@ModuleType int moduleType) {
+        mMediator.maybeMoveModuleToTheEnd(moduleType);
+    }
+
+    @Override
+    public void refreshModules() {
+        mMediator.refreshModules();
     }
 
     // OnViewCreatedCallback implementation.

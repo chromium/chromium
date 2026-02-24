@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
 import org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.segmentation_platform.InputContext;
@@ -96,11 +95,17 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder {
 
     @Override
     public boolean isEligible() {
-        if (SetupListManager.isBaseSetupListModule(mModuleType)) {
-            return SetupListModuleUtils.isModuleEligible(mModuleType);
+        if (SetupListModuleUtils.isSetupListActive()) {
+            // While the Setup List is active, it takes priority. Only modules acting as Setup List
+            // items (including dual-purpose ones like Default Browser) are eligible.
+            if (SetupListModuleUtils.isSetupListModule(mModuleType)) {
+                return SetupListModuleUtils.isModuleEligible(mModuleType);
+            }
+            return false;
         }
 
-        return true;
+        // When the Setup List is inactive, only standard Educational Tip modules are eligible.
+        return EducationalTipModuleUtils.getModuleTypes().contains(mModuleType);
     }
 
     @Override
