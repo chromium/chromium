@@ -2403,8 +2403,7 @@ void Element::ScrollIntoViewNoVisualUpdate(
       *target, bounds, std::move(params),
       container ? container->GetLayoutObject() : nullptr,
       /* from_remote_frame = */ false,
-      /* include_self = */ include_self ||
-          !RuntimeEnabledFeatures::ScrollIntoViewSelfScrollFixEnabled());
+      /* include_self = */ include_self);
 
   GetDocument().SetSequentialFocusNavigationStartingPoint(originating_element);
 }

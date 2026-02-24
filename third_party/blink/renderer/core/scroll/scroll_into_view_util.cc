@@ -303,8 +303,6 @@ BubblingScrollResult PerformBubblingScrollIntoViewWithResult(
       // TODO(crbug.com/416730010): Revisit this if we allow passing a
       // container from a different document.
       if ((area_to_scroll &&
-           (RuntimeEnabledFeatures::ScrollIntoViewSelfScrollFixEnabled() ||
-            current_box != &box) &&
            stop_at.Contains(current_box)) ||
           (next_box && next_box->GetFrame() != current_box->GetFrame())) {
         return BubblingScrollResult{std::nullopt, any_actual_scroll};
