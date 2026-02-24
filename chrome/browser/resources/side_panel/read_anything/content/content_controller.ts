@@ -649,11 +649,13 @@ export class ContentController {
     for (const anchor of anchors) {
       const url = anchor.href;
       if (!url) {
+        this.transformLinkContainer_(anchor, false);
         continue;
       }
 
       const options = originalAnchors[url];
       if (!options) {
+        this.transformLinkContainer_(anchor, false);
         continue;
       }
 
