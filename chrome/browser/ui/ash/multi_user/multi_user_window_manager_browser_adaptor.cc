@@ -23,9 +23,10 @@
 #include "chrome/browser/ui/ash/session/session_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -78,12 +79,11 @@ MultiUserWindowManagerBrowserAdaptor::MultiUserWindowManagerBrowserAdaptor(
   multi_user_window_manager_observation_.Observe(
       &multi_user_window_manager_.get());
 
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
 MultiUserWindowManagerBrowserAdaptor::~MultiUserWindowManagerBrowserAdaptor() {
-  BrowserList::RemoveObserver(this);
-
   // Remove all app observers.
   account_id_to_app_observer_.clear();
 }
@@ -116,21 +116,22 @@ void MultiUserWindowManagerBrowserAdaptor::AddUser(
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&](BrowserWindowInterface* browser) {
         if (browser->GetProfile()->IsSameOrParent(profile)) {
-          OnBrowserAdded(browser->GetBrowserForMigrationOnly());
+          OnBrowserCreated(browser);
         }
         return true;
       });
 }
 
-void MultiUserWindowManagerBrowserAdaptor::OnBrowserAdded(Browser* browser) {
+void MultiUserWindowManagerBrowserAdaptor::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
   // A unit test (e.g. CrashRestoreComplexTest.RestoreSessionForThreeUsers) can
   // come here with no valid window.
-  if (!browser->window() || !browser->window()->GetNativeWindow()) {
+  if (!browser->GetWindow() || !browser->GetWindow()->GetNativeWindow()) {
     return;
   }
   multi_user_window_manager_->SetWindowOwner(
-      browser->window()->GetNativeWindow(),
-      multi_user_util::GetAccountIdFromProfile(browser->profile()));
+      browser->GetWindow()->GetNativeWindow(),
+      multi_user_util::GetAccountIdFromProfile(browser->GetProfile()));
 }
 
 void MultiUserWindowManagerBrowserAdaptor::OnWindowOwnerEntryChanged(

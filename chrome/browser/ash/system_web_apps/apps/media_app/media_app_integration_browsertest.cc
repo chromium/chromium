@@ -46,7 +46,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -281,28 +280,11 @@ using MediaAppIntegrationAllProfilesTest = MediaAppIntegrationTest;
 using MediaAppIntegrationWithFilesAppAllProfilesTest =
     MediaAppIntegrationWithFilesAppTest;
 
-class BrowserWindowWaiter : public BrowserListObserver {
- public:
-  void WaitForBrowserAdded() {
-    BrowserList::GetInstance()->AddObserver(this);
-    base::RunLoop run_loop;
-    quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
-    BrowserList::GetInstance()->RemoveObserver(this);
-  }
-
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override { quit_closure_.Run(); }
-
- private:
-  base::RepeatingClosure quit_closure_;
-};
-
 // Waits for the number of active Browsers in the test process to reach `count`.
 void WaitForBrowserCount(size_t count) {
   EXPECT_LE(chrome::GetTotalBrowserCount(), count) << "Too many browsers";
   while (chrome::GetTotalBrowserCount() < count) {
-    BrowserWindowWaiter().WaitForBrowserAdded();
+    ui_test_utils::BrowserCreatedObserver().Wait();
   }
 }
 

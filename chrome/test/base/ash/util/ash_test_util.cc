@@ -17,8 +17,8 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -174,18 +174,17 @@ Browser* InstallAndLaunchPWA(Profile* profile,
 
 BrowsersWaiter::BrowsersWaiter(int expected_count)
     : expected_count_(expected_count) {
-  BrowserList::AddObserver(this);
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
-BrowsersWaiter::~BrowsersWaiter() {
-  BrowserList::RemoveObserver(this);
-}
+BrowsersWaiter::~BrowsersWaiter() = default;
 
 void BrowsersWaiter::Wait() {
   run_loop_.Run();
 }
 
-void BrowsersWaiter::OnBrowserAdded(Browser* browser) {
+void BrowsersWaiter::OnBrowserCreated(BrowserWindowInterface* browser) {
   ++current_count_;
   if (current_count_ == expected_count_) {
     run_loop_.Quit();

@@ -11,13 +11,15 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
 #include "chrome/browser/platform_util.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
@@ -97,7 +99,7 @@ class CloudUploadDialog;
 // The business logic for running setup, moving files to a cloud provider, and
 // opening files on cloud providers. Spawns instances of `CloudUploadDialog` if
 // necessary to run setup or get confirmation from the user.
-class CloudOpenTask : public BrowserListObserver,
+class CloudOpenTask : public BrowserCollectionObserver,
                       public base::RefCounted<CloudOpenTask> {
  public:
   CloudOpenTask(const CloudOpenTask&) = delete;
@@ -123,11 +125,11 @@ class CloudOpenTask : public BrowserListObserver,
   void SetTasksForTest(
       const std::vector<::file_manager::file_tasks::TaskDescriptor>& tasks);
 
-  // BrowserListObserver implementation.
+  // BrowserCollectionObserver implementation.
   // Use this to check if a new Files app window has been launched when there
   // wasn't already one to be used as the modal parent. This is triggered by
   // ShowDialog().
-  void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
   // Use this to check if the Files app window the dialog is modal to has
   // closed.
@@ -274,6 +276,9 @@ class CloudOpenTask : public BrowserListObserver,
 
   // Subscription for files app browser closed callback.
   base::CallbackListSubscription files_app_close_subscription_;
+
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 // Returns True if OneDrive is the selected `cloud_provider` but either ODFS

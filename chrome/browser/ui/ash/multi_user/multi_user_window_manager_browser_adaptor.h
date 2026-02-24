@@ -11,10 +11,11 @@
 #include "ash/multi_user/multi_user_window_manager_observer.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/account_id/account_id.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace ash {
 }  // namespace ash
@@ -34,7 +35,7 @@ class MultiUserWindowManagerBrowserAdaptorTest;
 // created if SessionControllerClient::IsMultiProfileAvailable() returns true.
 class MultiUserWindowManagerBrowserAdaptor
     : public MultiUserWindowManagerObserver,
-      public BrowserListObserver {
+      public BrowserCollectionObserver {
  public:
   // Constructs the adaptor for the given MultiUserWindowManager.
   // `multi_user_window_manager` must not be nullptr, and outlive this instance.
@@ -50,8 +51,8 @@ class MultiUserWindowManagerBrowserAdaptor
 
   void AddUser(const AccountId& account_id);
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
  private:
   class AppObserver;
@@ -72,6 +73,9 @@ class MultiUserWindowManagerBrowserAdaptor
   base::ScopedObservation<MultiUserWindowManager,
                           MultiUserWindowManagerObserver>
       multi_user_window_manager_observation_{this};
+
+  base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 
   // A list of all known users and their app window observers.
   AccountIdToAppWindowObserver account_id_to_app_observer_;
