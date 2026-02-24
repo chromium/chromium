@@ -4,7 +4,11 @@
 
 #include "net/tools/tld_cleanup/tld_cleanup_util.h"
 
+#include "base/base_paths.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
 #include "net/base/registry_controlled_domain_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -192,6 +196,25 @@ TEST(TldCleanupUtilTest, RuleSerialize) {
   EXPECT_EQ(Rule(/*exception=*/true, /*wildcard=*/true, /*is_private=*/true)
                 .Serialize(),
             kDafsaExceptionRule | kDafsaPrivateRule);
+}
+
+TEST(TldCleanupUtilTest, GperfIsUpToDate) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  const base::FilePath source_dir =
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
+          .AppendASCII("net")
+          .AppendASCII("base")
+          .AppendASCII("registry_controlled_domains");
+
+  const base::FilePath temp_file = temp_dir.GetPath().AppendASCII("temp.gperf");
+  ASSERT_EQ(NormalizeFile(source_dir.AppendASCII("effective_tld_names.dat"),
+                          temp_file),
+            NormalizeResult::kSuccess);
+
+  EXPECT_TRUE(base::ContentsEqual(
+      source_dir.AppendASCII("effective_tld_names.gperf"), temp_file));
 }
 
 }  // namespace net::tld_cleanup

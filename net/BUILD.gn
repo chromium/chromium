@@ -2748,6 +2748,16 @@ if (is_ios) {
     testonly = true
     filelist_name = "data/test_bundle_data.filelist"
   }
+
+  bundle_data("registry_controlled_domains_bundle_data") {
+    testonly = true
+    sources = [
+      "//net/base/registry_controlled_domains/effective_tld_names.dat",
+      "//net/base/registry_controlled_domains/effective_tld_names.gperf",
+    ]
+    outputs = [ "{{bundle_resources_dir}}/" +
+                "{{source_root_relative_dir}}/{{source_file_part}}" ]
+  }
 }
 
 # TODO(crbug.com/477528387): Consider enabling net_fuzztests for cronet builds.
@@ -3324,6 +3334,7 @@ target(_test_target_type, "net_unittests") {
   }
 
   data = [
+    "base/registry_controlled_domains/",
     "data/cache_tests/",
     "data/cert_issuer_source_aia_unittest/",
     "data/cert_issuer_source_static_unittest/",
@@ -3458,7 +3469,10 @@ target(_test_target_type, "net_unittests") {
   }
 
   if (is_ios) {
-    bundle_deps = [ ":net_test_bundle_data" ]
+    bundle_deps = [
+      ":net_test_bundle_data",
+      ":registry_controlled_domains_bundle_data",
+    ]
   }
 
   if (enable_unix_sockets) {
