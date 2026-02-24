@@ -739,7 +739,9 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_SentDataObserved) {
   // There shouldn't be too much usage on the browser process. Note that it
   // should be the first row since tasks are sorted by process ID then by task
   // ID.
-  model()->UpdateModel(DisplayCategory::kSystem, u"");
+  if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    model()->UpdateModel(DisplayCategory::kSystem, u"");
+  }
   EXPECT_GE(20000,
             model()->GetColumnValue(ColumnSpecifier::TOTAL_NETWORK_USE, 0));
 }
@@ -801,7 +803,9 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest, MAYBE_TotalSentDataObserved) {
   // There shouldn't be too much usage on the browser process. Note that it
   // should be the first row since tasks are sorted by process ID then by task
   // ID.
-  model()->UpdateModel(DisplayCategory::kSystem, u"");
+  if (base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    model()->UpdateModel(DisplayCategory::kSystem, u"");
+  }
   EXPECT_GE(20000,
             model()->GetColumnValue(ColumnSpecifier::TOTAL_NETWORK_USE, 0));
 }
@@ -2246,9 +2250,35 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest,
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnySubframe()));
 }
 
+//==============================================================================
+// Desktop refreshed task manager test.
+class TaskManagerDesktopRefreshBrowserTest : public TaskManagerBrowserTest {
+ public:
+  TaskManagerDesktopRefreshBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kTaskManagerDesktopRefresh, {}}},
+        /*disabled_features=*/{});
+    EXPECT_TRUE(
+        base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh));
+  }
+  TaskManagerDesktopRefreshBrowserTest(
+      const TaskManagerDesktopRefreshBrowserTest&) = delete;
+  TaskManagerDesktopRefreshBrowserTest& operator=(
+      const TaskManagerDesktopRefreshBrowserTest&) = delete;
+  ~TaskManagerDesktopRefreshBrowserTest() override = default;
+
+  void UpdateModel(const DisplayCategory display_category,
+                   std::u16string_view search_term) {
+    model()->UpdateModel(display_category, search_term);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Testing that the refreshed task manager properly displays tasks on different
 // tabs.
-IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(TaskManagerDesktopRefreshBrowserTest,
                        FilterTasksByCategoryAndSearchTerm) {
   ShowTaskManager();
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchAboutBlankTab()));
@@ -2288,19 +2318,19 @@ IN_PROC_BROWSER_TEST_F(TaskManagerBrowserTest,
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyUtility()));
 
   // Switch to `System` tab, the extension and tabs should not be shown.
-  model()->UpdateModel(DisplayCategory::kSystem, u"");
+  UpdateModel(DisplayCategory::kSystem, u"");
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyTab()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyExtension()));
 
   // Input search terms, all matched tasks would be shown no matter which tab
   // they lie in.
-  model()->UpdateModel(DisplayCategory::kAll, u"title");
+  UpdateModel(DisplayCategory::kAll, u"title");
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyExtension()));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(0, MatchAnyUtility()));
 
-  model()->UpdateModel(DisplayCategory::kAll, u"EN");
+  UpdateModel(DisplayCategory::kAll, u"EN");
   ASSERT_NO_FATAL_FAILURE(
       WaitForTaskManagerRows(1, MatchTab("Title Of Awesomeness")));
   ASSERT_NO_FATAL_FAILURE(WaitForTaskManagerRows(1, MatchExtension("Foobar")));

@@ -365,8 +365,9 @@ const TaskIdList& TaskManagerImpl::GetTaskIdsList() const {
 #if !BUILDFLAG(IS_ANDROID)
       // Move vm processes up over the arc tasks.
       should_make_adjustment =
-          (a->GetType() == Task::ARC && b->GetType() == Task::CROSTINI) ||
-          (b->GetType() == Task::ARC && a->GetType() == Task::CROSTINI);
+          base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh) &&
+          ((a->GetType() == Task::ARC && b->GetType() == Task::CROSTINI) ||
+           (b->GetType() == Task::ARC && a->GetType() == Task::CROSTINI));
 #endif
       return std::make_tuple(
                  a->HasParentTask(),

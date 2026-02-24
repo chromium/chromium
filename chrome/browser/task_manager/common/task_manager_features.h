@@ -11,6 +11,8 @@ namespace features {
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kTaskManagerClank);
+#else
+BASE_DECLARE_FEATURE(kTaskManagerDesktopRefresh);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features

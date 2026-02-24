@@ -17,6 +17,9 @@ BASE_FEATURE(kTaskManagerClank,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
 );
+#else
+// Enables the Task Manager Desktop Refresh project.
+BASE_FEATURE(kTaskManagerDesktopRefresh, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features

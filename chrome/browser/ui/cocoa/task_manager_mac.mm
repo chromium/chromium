@@ -813,11 +813,15 @@ namespace chrome {
 task_manager::TaskManagerTableModel* ShowTaskManager(
     Browser* browser,
     task_manager::StartAction start_action) {
-  return ShowTaskManagerViews(browser, start_action);
+  return base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)
+             ? ShowTaskManagerViews(browser, start_action)
+             : task_manager::TaskManagerMac::Show(start_action);
 }
 
 void HideTaskManager() {
-  HideTaskManagerViews();
+  base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)
+      ? HideTaskManagerViews()
+      : task_manager::TaskManagerMac::Hide();
 }
 
 }  // namespace chrome
