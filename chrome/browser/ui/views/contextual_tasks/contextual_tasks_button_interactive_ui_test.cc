@@ -51,7 +51,7 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
                                     template_url_service,
                                     /*url_loader_factory=*/nullptr,
                                     /*identity_manager=*/nullptr,
-                                    /*is_off_the_record=*/false) {}
+                                    /*configuration=*/{}) {}
 
   ~TestingAimEligibilityService() override = default;
 

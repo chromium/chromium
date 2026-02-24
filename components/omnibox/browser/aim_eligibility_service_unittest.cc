@@ -53,13 +53,14 @@ class MockAimEligibilityServiceForInterception : public AimEligibilityService {
   MockAimEligibilityServiceForInterception(
       PrefService& pref_service,
       TemplateURLService* template_url_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      Configuration configuration = {})
       : AimEligibilityService(pref_service,
                               template_url_service,
                               std::move(url_loader_factory),
                               nullptr,
-                              false,
-                              "en-US") {}
+                              "en-US",
+                              std::move(configuration)) {}
   ~MockAimEligibilityServiceForInterception() override = default;
 
   MOCK_METHOD(std::string, GetCountryCode, (), (const, override));
@@ -88,11 +89,16 @@ class AimEligibilityServiceTest : public testing::Test {
   void SetUp() override {
     AimEligibilityService::RegisterProfilePrefs(
         search_engines_test_environment_.pref_service().registry());
+    CreateService();
+  }
+
+  void CreateService(
+      const AimEligibilityService::Configuration& configuration = {}) {
     aim_eligibility_service_ =
         std::make_unique<MockAimEligibilityServiceForInterception>(
             search_engines_test_environment_.pref_service(),
             search_engines_test_environment_.template_url_service(),
-            test_url_loader_factory_.GetSafeWeakWrapper());
+            test_url_loader_factory_.GetSafeWeakWrapper(), configuration);
   }
 
   void TearDown() override { aim_eligibility_service_ = nullptr; }
@@ -379,4 +385,84 @@ TEST_F(AimEligibilityServiceTest, ParsingResponse) {
       encoded_response));
   EXPECT_TRUE(aim_eligibility_service_->IsAimEligible());
   EXPECT_TRUE(aim_eligibility_service_->IsCobrowseEligible());
+}
+
+TEST_F(AimEligibilityServiceTest, FullVersionListHeader) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      omnibox::kAimServerEligibilitySendFullVersionListEnabled);
+
+  AimEligibilityService::Configuration config;
+  config.full_version_list = "Test Brand List";
+  CreateService(config);
+
+  // Trigger a request.
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+
+  std::optional<std::string> header_value =
+      request.headers.GetHeader("Sec-CH-UA-Full-Version-List");
+  EXPECT_TRUE(header_value.has_value());
+  EXPECT_EQ(*header_value, "Test Brand List");
+}
+
+TEST_F(AimEligibilityServiceTest, FullVersionListHeader_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox::kAimServerEligibilitySendFullVersionListEnabled);
+
+  AimEligibilityService::Configuration config;
+  config.full_version_list = "Test Brand List";
+  CreateService(config);
+
+  // Trigger a request.
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+
+  EXPECT_FALSE(request.headers.HasHeader("Sec-CH-UA-Full-Version-List"));
+}
+
+TEST_F(AimEligibilityServiceTest, CoBrowseUserAgentSuffix) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kAimServerEligibilitySendCoBrowseUserAgentSuffixEnabled,
+       omnibox::kAimCoBrowseAutomatedFetchRequestEnabled},
+      {});
+
+  AimEligibilityService::Configuration config;
+  config.user_agent_with_cobrowse_suffix = "UA with Suffix";
+  CreateService(config);
+
+  // 1. Trigger a request with source kCoBrowseAimUrlDetection. Header SHOULD be
+  // present.
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->FetchEligibility(
+      AimEligibilityService::RequestSource::kCoBrowseAimUrlDetection);
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  const network::ResourceRequest& request =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+
+  std::optional<std::string> ua_value = request.headers.GetHeader("User-Agent");
+  EXPECT_TRUE(ua_value.has_value());
+  EXPECT_EQ(*ua_value, "UA with Suffix");
+
+  // 2. Trigger a request with another source (e.g. kUser). Header SHOULD NOT be
+  // present.
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->StartServerEligibilityRequestForDebugging();
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  const network::ResourceRequest& request2 =
+      test_url_loader_factory_.GetPendingRequest(0)->request;
+
+  EXPECT_FALSE(request2.headers.HasHeader("User-Agent"));
 }

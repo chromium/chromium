@@ -51,6 +51,10 @@ BASE_DECLARE_FEATURE(kEnableNotifyZeroStateRenderedCapability);
 // the thread to a new tab.
 BASE_DECLARE_FEATURE(kContextualTasksExpandButton);
 
+// If enabled, adds the Sec-CH-UA-Full-Version-List header to all network
+// requests initiated from within an embedded Co-Browse <webview>.
+BASE_DECLARE_FEATURE(kContextualTasksSendFullVersionListEnabled);
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,

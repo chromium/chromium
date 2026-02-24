@@ -19,7 +19,7 @@ class MockIOSChromeAimEligibilityService : public MockAimEligibilityService {
       TemplateURLService* template_url_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      bool is_off_the_record);
+      Configuration configuration = {});
   ~MockIOSChromeAimEligibilityService() override;
 
   // Factory method to create a testing instance for the given profile.

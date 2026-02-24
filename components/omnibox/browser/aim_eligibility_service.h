@@ -97,6 +97,21 @@ class AimEligibilityService
     kPostWithProto = 2,
   };
 
+  // Configuration object for the service.
+  struct Configuration {
+    // Whether the profile is off-the-record.
+    bool is_off_the_record = false;
+
+    // The value for the `User-Agent` header when Co-Browse is enabled. The
+    // enabled / disabled state refers to the feature flag for Co-Browse, not
+    // whether this client is Co-Browse eligible.
+    std::string user_agent_with_cobrowse_suffix;
+
+    // The value for the `Sec-CH-UA-Full-Version-List` HTTP Header. The header
+    // is skipped if it is empty.
+    std::string full_version_list;
+  };
+
   // Returns the current server eligibility request mode based on the feature
   // flag configuration.
   static ServerEligibilityRequestMode GetServerEligibilityRequestMode();
@@ -106,8 +121,8 @@ class AimEligibilityService
       TemplateURLService* template_url_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      bool is_off_the_record,
-      const std::string& locale);
+      const std::string& locale,
+      Configuration configuration);
   ~AimEligibilityService() override;
 
   // Checks if the application country matches the given country.
@@ -347,7 +362,6 @@ class AimEligibilityService
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Outlives `this` due to BCKSF dependency. Can be nullptr in tests.
   const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
-  const bool is_off_the_record_;
   bool is_dse_google_ = false;
 
   PrefChangeRegistrar pref_change_registrar_;
@@ -371,6 +385,9 @@ class AimEligibilityService
 
   // Used to store the default config when the response doesn't have one.
   mutable omnibox::SearchboxConfig fallback_config_;
+
+  // A configuration for the service.
+  const Configuration configuration_;
 
   // For binding the `OnServerEligibilityResponse()` callback.
   base::WeakPtrFactory<AimEligibilityService> weak_factory_{this};

@@ -365,13 +365,13 @@ AimEligibilityService::AimEligibilityService(
     TemplateURLService* template_url_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    bool is_off_the_record,
-    const std::string& locale)
+    const std::string& locale,
+    Configuration configuration)
     : pref_service_(pref_service),
       template_url_service_(template_url_service),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
-      is_off_the_record_(is_off_the_record) {
+      configuration_(std::move(configuration)) {
   if (!base::FeatureList::IsEnabled(omnibox::kAimEnabled)) {
     return;
   }
@@ -494,7 +494,7 @@ bool AimEligibilityService::IsDeepSearchEligible() const {
 }
 
 bool AimEligibilityService::IsCreateImagesEligible() const {
-  if (is_off_the_record_) {
+  if (configuration_.is_off_the_record) {
     return false;
   }
   bool server_eligible = IsToolAllowed(*GetSearchboxConfig(),
@@ -843,6 +843,21 @@ void AimEligibilityService::StartServerEligibilityRequest(
   if (GetServerEligibilityRequestMode() ==
       ServerEligibilityRequestMode::kPostWithProto) {
     request->method = "POST";
+  }
+
+  if (request_source == RequestSource::kCoBrowseAimUrlDetection &&
+      base::FeatureList::IsEnabled(
+          omnibox::kAimServerEligibilitySendCoBrowseUserAgentSuffixEnabled) &&
+      !configuration_.user_agent_with_cobrowse_suffix.empty()) {
+    request->headers.SetHeader("User-Agent",
+                               configuration_.user_agent_with_cobrowse_suffix);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          omnibox::kAimServerEligibilitySendFullVersionListEnabled) &&
+      !configuration_.full_version_list.empty()) {
+    request->headers.SetHeader("Sec-CH-UA-Full-Version-List",
+                               configuration_.full_version_list);
   }
 
   if (use_oauth) {

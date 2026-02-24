@@ -185,6 +185,8 @@ source_set("aim_eligibility_service") {
     "//chrome/browser/search_engines",
     "//chrome/browser/signin",
     "//components/application_locale_storage",
+    "//components/contextual_tasks/public:feature_list",
+    "//components/embedder_support:user_agent",
     "//components/keyed_service/core",
     "//components/omnibox/browser",
     "//components/prefs",
@@ -192,6 +194,7 @@ source_set("aim_eligibility_service") {
     "//components/variations/service",
     "//content/public/browser",
     "//services/network/public/cpp",
+    "//third_party/blink/public/common:headers",
   ]
 }
 

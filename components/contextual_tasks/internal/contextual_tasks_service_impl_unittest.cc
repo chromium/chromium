@@ -49,8 +49,8 @@ class MockAimEligibilityService : public AimEligibilityService {
                               nullptr,
                               nullptr,
                               nullptr,
-                              false,
-                              "en-US") {}
+                              "en-US",
+                              {}) {}
   MOCK_METHOD(bool, IsAimEligible, (), (const, override));
 
   // The following methods are marked as pure virtual in AimEligibilityService,

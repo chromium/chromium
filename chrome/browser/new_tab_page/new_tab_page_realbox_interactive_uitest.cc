@@ -76,7 +76,7 @@ std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
       std::make_unique<MockAimEligibilityService>(
           CHECK_DEREF(profile->GetPrefs()), /*template_url_service=*/nullptr,
           /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr,
-          /*is_off_the_record=*/false);
+          AimEligibilityService::Configuration{});
 
   ON_CALL(*mock_aim_eligibility_service, IsAimEligible())
       .WillByDefault(testing::Return(true));

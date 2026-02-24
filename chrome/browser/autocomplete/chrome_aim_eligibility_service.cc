@@ -7,28 +7,32 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 ChromeAimEligibilityService::ChromeAimEligibilityService(
     PrefService& pref_service,
     TemplateURLService* template_url_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
-    bool is_off_the_record)
+    Configuration configuration)
     : AimEligibilityService(pref_service,
                             template_url_service,
                             url_loader_factory,
                             identity_manager,
-                            is_off_the_record,
-                            GetLocale()) {}
+                            GetLocale(),
+                            std::move(configuration)) {}
 
 ChromeAimEligibilityService::~ChromeAimEligibilityService() = default;
 

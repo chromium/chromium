@@ -1533,7 +1533,7 @@ class OmniboxViewViewsAIMBrowserTest : public OmniboxViewViewsTest {
                   TemplateURLServiceFactory::GetForProfile(profile),
                   /*url_loader_factory=*/nullptr,
                   /*identity_manager=*/nullptr,
-                  /*is_off_the_record=*/false);
+                  AimEligibilityService::Configuration{});
           ON_CALL(*mock_service, IsAimLocallyEligible())
               .WillByDefault(Return(is_locally_eligible));
           ON_CALL(*mock_service, IsServerEligibilityEnabled())
