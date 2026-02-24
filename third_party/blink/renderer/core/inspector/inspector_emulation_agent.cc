@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_emulation_agent.h"
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -1026,6 +1029,16 @@ protocol::Response InspectorEmulationAgent::setDisabledImageTypes(
       disabled_image_types_.Set(StrCat({prefix, type}), true);
       continue;
     }
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+    // Keep the compile-time guard in addition to the runtime feature check:
+    // some downstream builds have custom JXL integration tied to
+    // ENABLE_JXL_DECODER.
+    if (DisabledImageTypeEnum::Jxl == type &&
+        base::FeatureList::IsEnabled(features::kJXLImageFormat)) {
+      disabled_image_types_.Set(StrCat({prefix, type}), true);
+      continue;
+    }
+#endif
     disabled_image_types_.Clear();
     return protocol::Response::InvalidParams("Invalid image type");
   }

@@ -4,6 +4,10 @@
 
   await dp.Page.enable();
 
+  const jxlResult = await dp.Emulation.setDisabledImageTypes({imageTypes: ['jxl']});
+  testRunner.log('JXL result: ' +
+      (jxlResult.error ? jxlResult.error.message : 'Success'));
+
   await dp.Emulation.setDisabledImageTypes({imageTypes: ['avif', 'webp']});
 
   dp.Page.navigate(

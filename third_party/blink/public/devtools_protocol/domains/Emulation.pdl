@@ -525,6 +525,7 @@ domain Emulation
   experimental type DisabledImageType extends string
     enum
       avif
+      jxl
       webp
 
   experimental command setDisabledImageTypes
