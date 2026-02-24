@@ -785,6 +785,7 @@ class FormDataImporterTest : public testing::Test {
 };
 
 // Tests that the country is not complemented if a country is part of the form.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ComplementCountry_PartOfForm) {
   AutofillProfile kDefaultGermanProfile =
       ConstructDefaultProfileWithOverriddenCountry("DE");
@@ -797,6 +798,7 @@ TEST_F(FormDataImporterTest, ComplementCountry_PartOfForm) {
 
 // Tests that the complemented country prefers the variation country code over
 // the app locale (US). The form's country field is left empty.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ComplementCountry_VariationCountryCode) {
   AutofillProfile kDefaultGermanProfile =
       ConstructDefaultProfileWithOverriddenCountry("DE");
@@ -819,6 +821,7 @@ TEST_F(FormDataImporterTest, ComplementCountry_VariationCountryCode) {
 
 // Tests that without a variation country code, the country is complemented by
 // the app locale. The form's country field is left empty.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ComplementCountry_VariationConfigCountryCode) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(
@@ -830,6 +833,7 @@ TEST_F(FormDataImporterTest, ComplementCountry_VariationConfigCountryCode) {
 // Tests that the country is complemented before parsing the phone number. This
 // is important, since the phone number validation relies on the profile's
 // country for nationally formatted numbers.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ComplementCountry_PhoneNumberParsing) {
   // This is a nationally formatted German phone number, which libphonenumber
   // doesn't parse under the "US" region.
@@ -870,6 +874,7 @@ TEST_F(FormDataImporterTest, ComplementCountry_PhoneNumberParsing) {
 // country. Otherwise, the stored value is incorrect. Before a fix, the
 // number quoted above would be stored as "(010) 123456" for a DE address
 // profile and not stored at all for a US address profile.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ParseI18nPhoneNumberInCityAndNumberField) {
   // This is an Armenian phone number
   const char* kInternationalNumber = "+374 10 123456";
@@ -910,6 +915,7 @@ TEST_F(FormDataImporterTest, ParseI18nPhoneNumberInCityAndNumberField) {
 // Tests that invalid countries in submitted forms are ignored, and that the
 // complement country logic overwrites it. In this case, expect the country to
 // default to the locale's country "US".
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, InvalidCountry) {
   // Due to the extra 'A', the country of this `form_structure` is invalid.
   std::unique_ptr<FormStructure> form_structure =
@@ -919,6 +925,7 @@ TEST_F(FormDataImporterTest, InvalidCountry) {
 }
 
 // Tests that invalid phone numbers are removed and importing continues.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, InvalidPhoneNumber) {
   TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
   SetValueForType(type_value_pairs, PHONE_HOME_WHOLE_NUMBER, "invalid");
@@ -933,6 +940,7 @@ TEST_F(FormDataImporterTest, InvalidPhoneNumber) {
 
 // Tests that active plus addresses are not part of the values captured during
 // form submissions.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ActivePlusAddressesExcluded) {
   const std::string kDummyPlusAddress = "plus+plus@plus.plus";
 
@@ -964,6 +972,7 @@ TEST_F(FormDataImporterTest, ActivePlusAddressesExcluded) {
 
 // Tests that strings matching the plus address format are not part of the
 // values captured during form submissions.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, MatchedPlusAddressesExcluded) {
   const std::string kMatchedPlusAddress = "plus+plus@grelay.com";
 
@@ -994,6 +1003,7 @@ TEST_F(FormDataImporterTest, MatchedPlusAddressesExcluded) {
 }
 
 // ImportAddressProfiles tests.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportStructuredNameProfile) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
@@ -1034,6 +1044,7 @@ TEST_F(FormDataImporterTest, ImportStructuredNameProfile) {
             VerificationStatus::kObserved);
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest,
        ImportStructuredAddressProfile_StreetNameAndHouseNumber) {
   FormData form;
@@ -1078,6 +1089,7 @@ TEST_F(FormDataImporterTest,
             VerificationStatus::kFormatted);
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(
     FormDataImporterTest,
     ImportStructuredAddressProfile_StreetNameAndHouseNumberAndApartmentNumber) {
@@ -1125,6 +1137,7 @@ TEST_F(
             VerificationStatus::kFormatted);
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest,
        ImportStructuredAddressProfile_GermanStreetNameAndHouseNumber) {
   FormData form;
@@ -1168,6 +1181,7 @@ TEST_F(FormDataImporterTest,
             VerificationStatus::kFormatted);
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportStructuredAddressProfile_I18nAddressFormMX) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
@@ -1211,6 +1225,7 @@ TEST_F(FormDataImporterTest, ImportStructuredAddressProfile_I18nAddressFormMX) {
   ExtractAddressProfilesAndVerifyExpectation(*form_structure, {mx_profile});
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportStructuredAddressProfile_I18nAddressFormBR) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
@@ -1266,6 +1281,7 @@ TEST_F(FormDataImporterTest, ImportStructuredAddressProfile_I18nAddressFormBR) {
 }
 
 // ImportAddressProfiles tests.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportStructuredNameAddressProfile) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
@@ -1300,12 +1316,14 @@ TEST_F(FormDataImporterTest, ImportStructuredNameAddressProfile) {
   EXPECT_EQ(results[0]->GetRawInfo(NAME_LAST_SECOND), u"Picasso");
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultProfileFormStructure();
   ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportSecondAddressProfiles) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructSecondProfileFormStructure();
@@ -1313,6 +1331,7 @@ TEST_F(FormDataImporterTest, ImportSecondAddressProfiles) {
                                              {ConstructSecondProfile()});
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportThirdAddressProfiles) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructThirdProfileFormStructure();
@@ -1322,6 +1341,7 @@ TEST_F(FormDataImporterTest, ImportThirdAddressProfiles) {
 
 // Test that with dependent locality parsing enabled, dependent locality fields
 // are imported.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_DependentLocality) {
   // The Mexican address format contains a dependent locality.
   TypeValuePairs mx_profile =
@@ -1336,6 +1356,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_DependentLocality) {
 
 // Test that the storage is prevented if the structured address prompt feature
 // is enabled, but address prompts are not allowed.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_DontAllowPrompt) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultProfileFormStructure();
@@ -1344,6 +1365,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_DontAllowPrompt) {
   VerifyExpectationForExtractedAddressProfiles({});
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfileFromUnifiedSection) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultProfileFormStructure();
@@ -1355,6 +1377,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfileFromUnifiedSection) {
   ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_BadEmail) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultProfileFormStructure();
@@ -1369,6 +1392,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_BadEmail) {
 }
 
 // Tests that a 'confirm email' field does not block profile import.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_TwoEmails) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(
@@ -1387,6 +1411,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_TwoEmails) {
 }
 
 // Tests two email fields containing different values blocks profile import.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_TwoDifferentEmails) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(
@@ -1406,6 +1431,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_TwoDifferentEmails) {
 
 // Tests that multiple phone numbers do not block profile extraction and the
 // first one is saved.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_MultiplePhoneNumbers) {
   base::test::ScopedFeatureList enable_import_when_multiple_phones_feature;
   enable_import_when_multiple_phones_feature.InitAndEnableFeature(
@@ -1429,6 +1455,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_MultiplePhoneNumbers) {
 
 // Tests that multiple phone numbers do not block profile import and the first
 // one is saved.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest,
        ImportAddressProfiles_MultiplePhoneNumbersSplitAcrossMultipleFields) {
   base::test::ScopedFeatureList enable_import_when_multiple_phones_feature;
@@ -1478,6 +1505,7 @@ TEST_F(FormDataImporterTest,
 }
 
 // Tests that not enough filled fields will result in not importing an address.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_NotEnoughFilledFields) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(
@@ -1490,6 +1518,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_NotEnoughFilledFields) {
   ASSERT_EQ(0U, payments_data_manager().GetCreditCards().size());
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_MinimumAddressUSA) {
   TypeValuePairs type_value_pairs = {
       {NAME_FULL, kDefaultFullName},
@@ -1508,6 +1537,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_MinimumAddressUSA) {
   ExtractAddressProfilesAndVerifyExpectation(*form_structure, {profile});
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_MinimumAddressGB) {
   TypeValuePairs type_value_pairs = {
       {NAME_FULL, kDefaultFullName},
@@ -1525,6 +1555,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_MinimumAddressGB) {
   ExtractAddressProfilesAndVerifyExpectation(*form_structure, {profile});
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_MinimumAddressGI) {
   TypeValuePairs type_value_pairs = {
       {NAME_FULL, kDefaultFullName},
@@ -1540,6 +1571,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_MinimumAddressGI) {
   ExtractAddressProfilesAndVerifyExpectation(*form_structure, {profile});
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest,
        ImportAddressProfiles_PhoneNumberSplitAcrossMultipleFields) {
   FormData form_data = ConstructFormDateFromTypeValuePairs(
@@ -1578,6 +1610,7 @@ TEST_F(FormDataImporterTest,
 }
 
 // Test that even from unfocusable fields we extract.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_UnfocusableFields) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultProfileFormStructure();
@@ -1586,6 +1619,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_UnfocusableFields) {
   ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_MultilineAddress) {
   TypeValuePairs type_value_pairs = {
       {NAME_FULL, kDefaultFullName},
@@ -1605,6 +1639,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_MultilineAddress) {
   ExtractAddressProfilesAndVerifyExpectation(*form_structure, {profile});
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest,
        ImportAddressProfiles_TwoValidProfilesDifferentForms) {
   std::unique_ptr<FormStructure> default_form_structure =
@@ -1624,6 +1659,7 @@ TEST_F(FormDataImporterTest,
       *alternative_form_structure, {alternative_profile, default_profile});
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_TwoValidProfilesSameForm) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructShippingAndBillingFormStructure();
@@ -1631,6 +1667,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_TwoValidProfilesSameForm) {
       *form_structure, {ConstructDefaultProfile(), ConstructSecondProfile()});
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest,
        ImportAddressProfiles_OneValidProfileSameForm_PartsHidden) {
   FormData form_data = ConstructDefaultFormData();
@@ -1650,6 +1687,7 @@ TEST_F(FormDataImporterTest,
   ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_MissingInfoInOld) {
   TypeValuePairs initial_type_value_pairs{
       {NAME_FULL, kDefaultFullName},
@@ -1687,6 +1725,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_MissingInfoInOld) {
                                              {superset_profile});
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_MissingInfoInNew) {
   TypeValuePairs subset_type_value_pairs({
       {NAME_FULL, kDefaultFullName},
@@ -1725,6 +1764,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_MissingInfoInNew) {
   VerifyExpectationForExtractedAddressProfiles({superset_profile});
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_InsufficientAddress) {
   // This address is missing a state which is required in the US.
   TypeValuePairs type_value_pairs = {
@@ -1743,6 +1783,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_InsufficientAddress) {
 
 // Tests that an address can be imported from an Indian address form without
 // synthesized field types.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_NoSynthesizedTypes) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillUseINAddressModel};
@@ -1795,6 +1836,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_NoSynthesizedTypes) {
 // Tests that an address cannot be imported from an Indian address form which
 // contains synthesized fields. We don't allow that because the address will
 // likely look incomplete when shown to the user.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ImportAddressProfiles_ContainsSynthesizedTypes) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kAutofillUseINAddressModel}, {});
@@ -1827,6 +1869,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_ContainsSynthesizedTypes) {
 }
 
 // Tests that a profile is created for countries with composed names.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest,
        ImportAddressProfiles_CompleteComposedCountryName) {
   FormData form;
@@ -1867,6 +1910,7 @@ TEST_F(FormDataImporterTest,
 // TODO(crbug.com/41267680): Create profiles if part of a standalone part of a
 // composed country name is present. Currently this is treated as an invalid
 // country, which is ignored on import.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest,
        ImportAddressProfiles_IncompleteComposedCountryName) {
   std::unique_ptr<FormStructure> form_structure =
@@ -3443,6 +3487,7 @@ TEST_F(FormDataImporterTest,
 // fields.
 // Note that this function doesn't test the removal functionality itself. This
 // is done in the AutofillProfile unit tests.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, RemoveInaccessibleProfileValuesMetrics) {
   // State is setting-inaccessible in Bermuda. Expect that when importing a
   // Bermudan profile with a state, the state information is removed.
@@ -3467,6 +3512,7 @@ TEST_F(FormDataImporterTest, RemoveInaccessibleProfileValuesMetrics) {
 }
 
 // Tests a 2-page multi-step extraction.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, MultiStepImport) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructSplitDefaultProfileFormStructure(/*part=*/1);
@@ -3479,6 +3525,7 @@ TEST_F(FormDataImporterTest, MultiStepImport) {
 // Tests that when multi-step complements are enabled, complete profiles those
 // import was accepted are added as a multi-step candidate. This enables
 // complementing the profile with additional information on further pages.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, MultiStepImport_Complement) {
   // Extract the default profile without an email address.
   TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
@@ -3502,6 +3549,7 @@ TEST_F(FormDataImporterTest, MultiStepImport_Complement) {
 // Tests that when an imported profile is modified through external means (e.g.
 // via the settings), the multi-step complement candidate is updated accordingly
 // and the correct profile update occurs.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, MultiStepImport_Complement_ExternalUpdate) {
   // Extract the default profile without an email address.
   TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
@@ -3530,6 +3578,7 @@ TEST_F(FormDataImporterTest, MultiStepImport_Complement_ExternalUpdate) {
 // Tests that when an imported profile is deleted through external means (e.g.
 // via the settings), the multi-step complement candidate is removed and no
 // further updates related to it are offered.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, MultiStepImport_Complement_ExternalRemove) {
   // Extract the default profile without an email address.
   TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
@@ -3551,6 +3600,7 @@ TEST_F(FormDataImporterTest, MultiStepImport_Complement_ExternalRemove) {
 
 // Tests that multi-step candidate profiles from different origins are not
 // merged.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, MultiStepImport_DifferentOrigin) {
   FormData form = ConstructSplitDefaultFormData(/*part=*/1);
   form.set_url(GURL("https://www.foo.com"));
@@ -3565,6 +3615,7 @@ TEST_F(FormDataImporterTest, MultiStepImport_DifferentOrigin) {
 }
 
 // Tests that multi-step candidates profiles are invalidated after some TTL.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, MultiStepImport_TTL) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructSplitDefaultProfileFormStructure(/*part=*/1);
@@ -4087,6 +4138,7 @@ TEST_F(FormDataImporterTest, AutofillPromptStatusMetric_AddressAndCreditCard) {
       AutofillMetrics::AutofillPromptStatus::kAddressAndCreditCardShown, 1);
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, ExtractGUIDsOfProfilesWithoutManualEdits) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultProfileFormStructure();
@@ -4102,6 +4154,7 @@ TEST_F(FormDataImporterTest, ExtractGUIDsOfProfilesWithoutManualEdits) {
   EXPECT_THAT(guids, UnorderedElementsAre(kDefaultGuid, kSecondGuid));
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest,
        ExtractGUIDsOfProfilesWithoutManualEdits_FieldWasEdited) {
   std::unique_ptr<FormStructure> form_structure =
@@ -4119,6 +4172,7 @@ TEST_F(FormDataImporterTest,
   EXPECT_THAT(guids, IsEmpty());
 }
 
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest,
        ImportAddressProfiles_PrefilledStateAndCountry_Imported) {
   base::test::ScopedFeatureList feature_list{
@@ -4462,6 +4516,7 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
 
 // Tests that duplicate fields with identical field values are valid. They would
 // thus not abandon the import of the address.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, DuplicateFieldsWithIdenticalValuesAreValid) {
   AutofillField field;
   field.SetTypeTo(AutofillType(NAME_FIRST),
@@ -4478,6 +4533,7 @@ TEST_F(FormDataImporterTest, DuplicateFieldsWithIdenticalValuesAreValid) {
 
 // Tests that duplicate fields with different field values are invalid. They
 // would thus abandon the import of the address.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, DuplicateFieldsWithDifferentValuesAreInvalid) {
   AutofillField field;
   field.SetTypeTo(AutofillType(NAME_FIRST),
@@ -4496,6 +4552,7 @@ TEST_F(FormDataImporterTest, DuplicateFieldsWithDifferentValuesAreInvalid) {
 // case where a <select> field follows an <input> field and the input field's
 // value is the selected option's value. They would thus not abandon the import
 // of the address.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, InputFollowedBySelectWithIdenticalValuesAreValid) {
   AutofillField field;
   field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
@@ -4521,6 +4578,7 @@ TEST_F(FormDataImporterTest, InputFollowedBySelectWithIdenticalValuesAreValid) {
 // case where a <select> field is followed by an <input> field and the input
 // field's value is the selected option's value. They would thus not abandon the
 // import of the address.
+// TODO(crbug.com/481379161): Move this to AddressFDITest.
 TEST_F(FormDataImporterTest, SelectFollowedByInputWithIdenticalValuesAreValid) {
   AutofillField field(
       test::CreateTestSelectField("Country", "country", "US", "country",
