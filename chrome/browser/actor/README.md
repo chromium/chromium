@@ -47,3 +47,10 @@ The diagram is not exhaustive.
 ```
 
 To edit the diagram, copy it into asciiflow.com.
+
+# Flags
+
+To disable the actor framework in Chrome, pass the following commandline flags:
+
+`--disable-features=GlicActor,GlicActorUi`
+

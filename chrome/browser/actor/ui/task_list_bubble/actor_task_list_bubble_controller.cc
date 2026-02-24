@@ -20,10 +20,13 @@
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #if BUILDFLAG(ENABLE_GLIC)
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
-#endif
+#include "chrome/common/chrome_features.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
 
 DEFINE_USER_DATA(ActorTaskListBubbleController);
 
@@ -33,6 +36,7 @@ ActorTaskListBubbleController::ActorTaskListBubbleController(
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
                                 *this) {
 #if BUILDFLAG(ENABLE_GLIC)
+  CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   if (auto* manager = tabs::GlicActorTaskIconManagerFactory::GetForProfile(
           browser_->GetProfile())) {
     bubble_state_change_callback_subscription_.push_back(

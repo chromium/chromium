@@ -778,7 +778,8 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
               ->GetViewAs<ToolbarView>(ToolbarView::kToolbarElementId),
           glic_service);
 
-      if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+      if (base::FeatureList::IsEnabled(features::kGlicActor) &&
+          base::FeatureList::IsEnabled(features::kGlicActorUi) &&
           features::kGlicActorUiTaskIcon.Get() &&
           browser_->GetProfile()->IsRegularProfile()) {
         // Will be referenced in GlicActorNudgeController and thus needs to be

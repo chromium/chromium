@@ -393,12 +393,30 @@ IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest, FirstActionIsntTabScoped) {
   );
 }
 
-class GlicActorWithActorDisabledUiTest : public test::InteractiveGlicTest {
+struct GlicActorEnabling {
+  bool enable_glic_actor = true;
+  bool enable_glic_actor_ui = true;
+};
+
+class GlicActorWithActorDisabledUiTest
+    : public test::InteractiveGlicTest,
+      public testing::WithParamInterface<GlicActorEnabling> {
  public:
   GlicActorWithActorDisabledUiTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features*/ {},
-        /*disabled_features*/ {features::kGlicActor, features::kGlicActorUi});
+    const GlicActorEnabling& params = GetParam();
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (params.enable_glic_actor) {
+      enabled_features.push_back(features::kGlicActor);
+    } else {
+      disabled_features.push_back(features::kGlicActor);
+    }
+    if (params.enable_glic_actor_ui) {
+      enabled_features.push_back(features::kGlicActorUi);
+    } else {
+      disabled_features.push_back(features::kGlicActorUi);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   ~GlicActorWithActorDisabledUiTest() override = default;
 
@@ -406,12 +424,18 @@ class GlicActorWithActorDisabledUiTest : public test::InteractiveGlicTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicActorWithActorDisabledUiTest, ActorNotAvailable) {
+IN_PROC_BROWSER_TEST_P(GlicActorWithActorDisabledUiTest, ActorNotAvailable) {
   RunTestSequence(DeprecatedOpenGlicWindow(GlicWindowMode::kAttached),
                   InAnyContext(CheckJsResult(
                       kGlicContentsElementId,
                       "() => { return !(client.browser.actInFocusedTab); }")));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GlicActorWithActorDisabledUiTest,
+                         testing::Values(GlicActorEnabling{true, false},
+                                         GlicActorEnabling{false, true},
+                                         GlicActorEnabling{false, false}));
 
 IN_PROC_BROWSER_TEST_F(GlicActorGeneralUiTest,
                        ActuationSucceedsOnBackgroundTab) {

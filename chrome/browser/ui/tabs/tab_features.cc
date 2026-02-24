@@ -379,7 +379,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     }
 #endif  // BUILDFLAG(ENABLE_GLIC)
     // TODO(crbug.com/433973411): Move this logic to a helper function.
-    if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+    if (base::FeatureList::IsEnabled(features::kGlicActor) &&
+        base::FeatureList::IsEnabled(features::kGlicActorUi) &&
         profile->IsRegularProfile()) {
       // The associated tab is passed to CreateInstance twice: for dependency
       // injection callbacks and as a direct constructor argument.
