@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
@@ -523,14 +524,9 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
   NOT_DESTROYED();
   DCHECK(StyleRef().HasStickyConstrainedPosition());
 
-  StickyPositionScrollingConstraints* constraints =
-      MakeGarbageCollected<StickyPositionScrollingConstraints>();
-
   bool is_fixed_to_view = false;
   const auto* scroll_container_layer =
       Layer()->ContainingScrollContainerLayer(&is_fixed_to_view);
-  constraints->containing_scroll_container_layer = scroll_container_layer;
-  constraints->is_fixed_to_view = is_fixed_to_view;
 
   // Skip anonymous containing blocks except for anonymous fieldset content box.
   LayoutBlock* sticky_container = StickyContainer();
@@ -552,8 +548,8 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
                               kIgnoreScrollOriginAndOffset;
 
   // Compute the sticky-container rect.
+  PhysicalRect scroll_container_relative_containing_block_rect;
   {
-    PhysicalRect scroll_container_relative_containing_block_rect;
     if (sticky_container == scroll_container) {
       scroll_container_relative_containing_block_rect =
           sticky_container->ScrollableOverflowRect();
@@ -589,9 +585,6 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
           MinimumValueForLength(StyleRef().MarginBottom(), max_width),
           MinimumValueForLength(StyleRef().MarginLeft(), max_width));
     }
-
-    constraints->scroll_container_relative_containing_block_rect =
-        scroll_container_relative_containing_block_rect;
   }
 
   // The location container for boxes is not always the containing block.
@@ -600,6 +593,7 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
 
   // Compute the sticky-box rect.
   PhysicalRect sticky_box_rect;
+  PhysicalRect scroll_container_relative_sticky_box_rect;
   {
     if (IsLayoutInline()) {
       sticky_box_rect = To<LayoutInline>(this)->PhysicalLinesBoundingBox();
@@ -609,15 +603,13 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
           PhysicalRect(box.PhysicalLocation(), box.StitchedSize());
     }
 
-    PhysicalRect scroll_container_relative_sticky_box_rect =
+    scroll_container_relative_sticky_box_rect =
         location_container->LocalToAncestorRect(sticky_box_rect,
                                                 scroll_container, flags);
 
     // Make relative to the padding-box instead of border-box.
     scroll_container_relative_sticky_box_rect.Move(
         -scroll_container_border_offset);
-    constraints->scroll_container_relative_sticky_box_rect =
-        scroll_container_relative_sticky_box_rect;
   }
 
   // To correctly compute the offsets, the constraints need to know about any
@@ -626,69 +618,61 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
   //
   // The respective search ranges are [location_container, sticky_container)
   // and [sticky_container, scroll_container).
-  constraints->nearest_sticky_layer_shifting_sticky_box =
+  const LayoutBoxModelObject* nearest_sticky_layer_shifting_sticky_box =
       location_container->FindFirstStickyContainer(sticky_container);
-  constraints->nearest_sticky_layer_shifting_containing_block =
+  const LayoutBoxModelObject* nearest_sticky_layer_shifting_containing_block =
       sticky_container->FindFirstStickyContainer(scroll_container);
 
-  constraints->constraining_rect =
+  const PhysicalRect constraining_rect =
       scroll_container->ComputeStickyConstrainingRect();
 
-  // Compute the insets.
-  {
-    auto ResolveInset = [](const Length& length,
-                           LayoutUnit size) -> std::optional<LayoutUnit> {
-      if (length.IsAuto()) {
-        return std::nullopt;
-      }
-      return MinimumValueForLength(length, size);
-    };
+  auto compute_axis_data = [&](PhysicalAxis axis, const Length& min_length,
+                               const Length& max_length,
+                               LayoutUnit available_size,
+                               LayoutUnit sticky_box_size, bool is_flipped) {
+    std::optional<LayoutUnit> min_inset;
+    std::optional<LayoutUnit> max_inset;
 
-    const PhysicalSize available_size = constraints->constraining_rect.size;
-    const auto& style = StyleRef();
-    std::optional<LayoutUnit> left =
-        ResolveInset(style.Left(), available_size.width);
-    std::optional<LayoutUnit> right =
-        ResolveInset(style.Right(), available_size.width);
-    std::optional<LayoutUnit> top =
-        ResolveInset(style.Top(), available_size.height);
-    std::optional<LayoutUnit> bottom =
-        ResolveInset(style.Bottom(), available_size.height);
-
-    const WritingDirectionMode sticky_container_writing_direction =
-        sticky_container->StyleRef().GetWritingDirection();
+    if (!min_length.IsAuto()) {
+      min_inset = MinimumValueForLength(min_length, available_size);
+    }
+    if (!max_length.IsAuto()) {
+      max_inset = MinimumValueForLength(max_length, available_size);
+    }
 
     // Reduce the end inset if there is not enough space to honor both insets.
-    if (left && right) {
+    if (min_inset && max_inset) {
       const LayoutUnit free_space =
-          available_size.width - sticky_box_rect.Width() - *left - *right;
+          available_size - sticky_box_size - *min_inset - *max_inset;
       if (free_space < LayoutUnit()) {
-        if (sticky_container_writing_direction.IsFlippedX()) {
-          *left += free_space;
+        if (is_flipped) {
+          *min_inset += free_space;
         } else {
-          *right += free_space;
-        }
-      }
-    }
-    if (top && bottom) {
-      const LayoutUnit free_space =
-          available_size.height - sticky_box_rect.Height() - *top - *bottom;
-      if (free_space < LayoutUnit()) {
-        if (sticky_container_writing_direction.IsFlippedY()) {
-          *top += free_space;
-        } else {
-          *bottom += free_space;
+          *max_inset += free_space;
         }
       }
     }
 
-    constraints->left_inset = left;
-    constraints->right_inset = right;
-    constraints->top_inset = top;
-    constraints->bottom_inset = bottom;
-  }
+    return MakeGarbageCollected<
+        StickyPositionScrollingConstraints::PerAxisData>(
+        axis, scroll_container_relative_containing_block_rect,
+        scroll_container_relative_sticky_box_rect, constraining_rect,
+        nearest_sticky_layer_shifting_sticky_box,
+        nearest_sticky_layer_shifting_containing_block, scroll_container_layer,
+        is_fixed_to_view, min_inset, max_inset);
+  };
 
-  return constraints;
+  const auto& style = StyleRef();
+  const WritingDirectionMode sticky_container_writing_direction =
+      sticky_container->StyleRef().GetWritingDirection();
+
+  return MakeGarbageCollected<StickyPositionScrollingConstraints>(
+      compute_axis_data(PhysicalAxis::kHorizontal, style.Left(), style.Right(),
+                        constraining_rect.size.width, sticky_box_rect.Width(),
+                        sticky_container_writing_direction.IsFlippedX()),
+      compute_axis_data(PhysicalAxis::kVertical, style.Top(), style.Bottom(),
+                        constraining_rect.size.height, sticky_box_rect.Height(),
+                        sticky_container_writing_direction.IsFlippedY()));
 }
 
 PhysicalOffset LayoutBoxModelObject::StickyPositionOffset() const {

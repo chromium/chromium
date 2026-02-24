@@ -287,10 +287,9 @@ CompositingReasons CompositingReasonsForScrollDependentPosition(
   // position elements are composited under overflow: hidden, which can still
   // have smooth scroll animations.
   if (const auto* constraints = layer.GetLayoutObject().StickyConstraints()) {
-    if (!constraints->is_fixed_to_view &&
-        constraints->containing_scroll_container_layer->GetScrollableArea()
-            ->HasOverflow())
+    if (constraints->HasScrollDependentOffset()) {
       reasons |= CompositingReason::kStickyPosition;
+    }
   }
 
   return reasons;
