@@ -215,6 +215,9 @@ suite('MagicCursor', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isMagicCursorEnabled: true,
+      magicCursorSpeed: 0.667,
+      magicCursorMinDurationMs: 50,
+      magicCursorMaxDurationMs: 675,
     });
     const testBrowserProxy = new TestActorOverlayBrowserProxy();
     ActorOverlayBrowserProxy.setInstance(testBrowserProxy);

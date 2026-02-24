@@ -39,6 +39,12 @@ ActorOverlayUI::ActorOverlayUI(content::WebUI* web_ui)
   source->AddBoolean("isStandaloneBorderGlowEnabled",
                      features::kGlicActorUiStandaloneBorderGlow.Get());
   source->AddResourcePath("magic_cursor.svg", IDR_ACTOR_OVERLAY_MAGIC_CURSOR);
+  source->AddDouble("magicCursorSpeed",
+                    features::kGlicActorUiOverlayMagicCursorSpeed.Get());
+  source->AddInteger("magicCursorMinDurationMs",
+                     features::kGlicActorUiOverlayMagicCursorMinDuration.Get());
+  source->AddInteger("magicCursorMaxDurationMs",
+                     features::kGlicActorUiOverlayMagicCursorMaxDuration.Get());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ActorOverlayUI)

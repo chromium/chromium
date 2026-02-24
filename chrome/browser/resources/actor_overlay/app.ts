@@ -20,26 +20,6 @@ export interface ActorOverlayAppElement {
   $: {magicCursor: HTMLDivElement};
 }
 
-/**
- * Magic Cursor Kinematics Tuning Parameters for CSS Transitions.
- *
- * These constants define the cursor's movement (speed, duration, and
- * responsiveness). Adjusting these values controls the perceived pace and
- * smoothness of the cursor.
- */
-
-// Constant speed the cursor maintains during animation, measured in pixels per
-// millisecond.
-const DESIRED_SPEED_PX_PER_MS = 0.667;
-// The minimum allowed duration (in ms) for any single cursor movement.
-// Increasing this value makes short movements appear slower and smoother;
-// decreasing it makes them pop into position more instantly.
-const MIN_DURATION_MS = 50;
-// The maximum allowed duration (in ms) for any single cursor movement.
-// Increasing this value allows long movements to take more time; decreasing it
-// makes all long movements finish faster.
-const MAX_DURATION_MS = 675;
-
 export class ActorOverlayAppElement extends CrLitElement {
   static get is() {
     return 'actor-overlay-app';
@@ -79,6 +59,20 @@ export class ActorOverlayAppElement extends CrLitElement {
   // Position State for Magic Cursor (Logical Pixels)
   private currentX_: number = 0;
   private currentY_: number = 0;
+  // Speed the cursor maintains during animation, measured in pixels per
+  // millisecond.
+  private desiredSpeedPxPerMs_: number =
+      Number(loadTimeData.getValue('magicCursorSpeed'));
+  // The minimum allowed duration (in ms) for any single cursor movement.
+  // Increasing this value makes short movements appear slower and smoother;
+  // decreasing it makes them pop into position more instantly.
+  private minDurationMs_: number =
+      loadTimeData.getInteger('magicCursorMinDurationMs');
+  // The maximum allowed duration (in ms) for any single cursor movement.
+  // Increasing this value allows long movements to take more time; decreasing
+  // it makes all long movements finish faster.
+  private maxDurationMs_: number =
+      loadTimeData.getInteger('magicCursorMaxDurationMs');
 
   override connectedCallback() {
     super.connectedCallback();
@@ -266,9 +260,9 @@ export class ActorOverlayAppElement extends CrLitElement {
     const dx = targetX - this.currentX_;
     const dy = targetY - this.currentY_;
     const distance = Math.hypot(dx, dy);
-    let durationMs = Math.round(distance / DESIRED_SPEED_PX_PER_MS);
-    durationMs =
-        Math.max(MIN_DURATION_MS, Math.min(MAX_DURATION_MS, durationMs));
+    let durationMs = Math.round(distance / this.desiredSpeedPxPerMs_);
+    durationMs = Math.max(
+        this.minDurationMs_, Math.min(this.maxDurationMs_, durationMs));
 
     const transitionFinished = new Promise<void>(resolve => {
       // TODO(crbug.com/454339982): If the transitionend event is never
