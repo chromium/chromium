@@ -566,13 +566,18 @@ constexpr MessageInfo kChromeFrameReporter2 = {kChromeFrameReporter2Indices,
                                                nullptr};
 
 // Proto Message: InputTransferHandler
-constexpr int kInputTransferHandlerIndices[] = {1, -1};
+constexpr int kInputTransferHandlerIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo kInputTransferHandler = {kInputTransferHandlerIndices,
                                                nullptr};
 
 // Proto Message: ResponseInfo
 constexpr int kResponseInfoIndices[] = {1, 2, -1};
 constexpr MessageInfo kResponseInfo = {kResponseInfoIndices, nullptr};
+
+// Proto Message: MemoryDumpProvider
+constexpr int kMemoryDumpProviderIndices[] = {1, -1};
+constexpr MessageInfo kMemoryDumpProvider = {kMemoryDumpProviderIndices,
+                                             nullptr};
 
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
@@ -584,7 +589,7 @@ constexpr int kTrackEventIndices[] = {
     1022, 1023, 1024, 1025, 1028, 1031, 1032, 1033, 1034, 1036, 1038,
     1039, 1040, 1041, 1042, 1046, 1047, 1048, 1049, 1050, 1051, 1052,
     1053, 1054, 1055, 1056, 1057, 1058, 1059, 1060, 1061, 1064, 1065,
-    1066, 1067, 1068, 1069, 1071, 1075, 1076, 1077, 1078, -1};
+    1066, 1067, 1068, 1069, 1071, 1075, 1076, 1077, 1078, 1079, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -682,7 +687,8 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kChromeFrameReporter2,
     &kInputTransferHandler,
     &kResponseInfo,
-    &kScrollJankV4Result};
+    &kScrollJankV4Result,
+    &kMemoryDumpProvider};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
