@@ -1,3 +1,12 @@
+# Flaky on Linux: crbug.com/485943735
+-DownloadsFocusTest.Item
+
+# Flaky on Linux: crbug.com/485941543
+-DownloadsFocusTest.Item__ItemFocusTest_copy_download_link_button_copies_data_url_and_shows_generic_toast
+
+# Flaky/failing on most bots: crbug.com/487030467
+-NtpRealboxNextUiTest.ContextualEntrypointAttachTabTriggersComposebox/Compact
+
 # These tests require that accessibility is disabled at startup, or that there
 # is some other AXMode during the test, which will not be the case when
 # --force-renderer-accessibility is used.
