@@ -30,7 +30,7 @@ class SecuritySettingsBundleToastHelper : public base::SupportsUserData::Data {
 
   void SetToastControllerForTesting(ToastController* controller);
 
-  static constexpr base::TimeDelta kRetryDelay = base::Minutes(1);
+  static constexpr base::TimeDelta kRetryDelay = base::Seconds(15);
   static constexpr int kMaxRetries = 3;
 
  private:
