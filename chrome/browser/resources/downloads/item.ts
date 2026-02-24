@@ -1025,7 +1025,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     const controlledBy = this.computeControlledBy_();
     this.$.controlledBy.innerHTML = sanitizeInnerHtml(controlledBy);
     if (controlledBy) {
-      const link = this.shadowRoot.querySelector('#controlled-by a');
+      const link = this.shadowRoot.querySelector('#controlledBy a');
       link!.setAttribute('focus-row-control', '');
       link!.setAttribute('focus-type', 'controlledBy');
     }
