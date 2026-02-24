@@ -53,14 +53,10 @@ class MediaInitializer {
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
 
 #if BUILDFLAG(ENABLE_LIBVPX)
-    if (base::FeatureList::IsEnabled(kLibvpxUseChromeThreads)) {
-      InitLibVpxThreadWrapper();
-    }
+    InitLibVpxThreadWrapper();
 #endif  // BUILDFLAG(ENABLE_LIBVPX)
 #if BUILDFLAG(ENABLE_LIBAOM)
-    if (base::FeatureList::IsEnabled(kLibaomUseChromeThreads)) {
-      InitLibAomThreadWrapper();
-    }
+    InitLibAomThreadWrapper();
 #endif  // BUILDFLAG(ENABLE_LIBAOM)
   }
 

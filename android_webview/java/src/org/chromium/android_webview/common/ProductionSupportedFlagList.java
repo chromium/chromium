@@ -770,12 +770,6 @@ public final class ProductionSupportedFlagList {
                 "If enabled, non-render-blocking style loading tasks have higher priority on"
                         + " visible pages"),
         Flag.baseFeature(
-                MediaFeatures.LIBVPX_USE_CHROME_THREADS,
-                "Attaches libvpx threads to the chromium thread system."),
-        Flag.baseFeature(
-                MediaFeatures.LIBAOM_USE_CHROME_THREADS,
-                "Attaches libaom threads to the chromium thread system."),
-        Flag.baseFeature(
                 MediaFeatures.PAUSE_MUTED_BACKGROUND_AUDIO,
                 "Prevents inaudble audio from decoding in background tabs (experimental)."),
         Flag.baseFeature(
