@@ -33,6 +33,7 @@ source_set("browser_tests") {
   ]
 
   deps = [
+    "//chrome/browser/bookmarks",
     "//chrome/browser/ui/tabs/tab_group_home:constants",
     "//chrome/test:test_support",
     "//components/commerce/core:commerce_constants",

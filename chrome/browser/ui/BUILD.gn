@@ -285,6 +285,8 @@ static_library("ui") {
     "//chrome/browser/autofill",
     "//chrome/browser/banners",
     "//chrome/browser/bitmap_fetcher",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/bookmarks:impl",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/commerce",
     "//chrome/browser/complex_tasks",
@@ -709,6 +711,10 @@ static_library("ui") {
   # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
   # These are all-platform circular includes.
   allow_circular_includes_from += [
+    # TODO(crbug.com/353332589): Remove when bookmark_merged_surface_service.cc
+    # no longer includes bookmark_account_storage_move_dialog.h.
+    "//chrome/browser/bookmarks:impl",
+
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/autofill/payments:impl",
 

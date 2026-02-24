@@ -42,6 +42,7 @@ source_set("impl") {
     ":commerce",
     "//chrome/app:command_ids",
     "//chrome/browser:browser_process",
+    "//chrome/browser/bookmarks",
     "//chrome/browser/commerce",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/feedback",

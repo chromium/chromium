@@ -138,6 +138,7 @@ if (!is_android) {
         "//base",
         "//base/test:test_support",
         "//chrome/browser",
+        "//chrome/browser/bookmarks",
         "//chrome/browser/ui",
         "//chrome/browser/ui:browser_element_identifiers",
         "//chrome/browser/ui:ui_features",

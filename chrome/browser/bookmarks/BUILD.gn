@@ -1,0 +1,76 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("bookmarks") {
+  public = [
+    "bookmark_expanded_state_tracker.h",
+    "bookmark_expanded_state_tracker_factory.h",
+    "bookmark_html_writer.h",
+    "bookmark_merged_surface_ordering_storage.h",
+    "bookmark_merged_surface_service.h",
+    "bookmark_merged_surface_service_factory.h",
+    "bookmark_merged_surface_service_observer.h",
+    "bookmark_model_factory.h",
+    "bookmark_parent_folder.h",
+    "bookmark_parent_folder_children.h",
+    "chrome_bookmark_client.h",
+    "managed_bookmark_service_factory.h",
+    "permanent_folder_ordering_tracker.h",
+    "url_and_id.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//components/bookmarks/browser",
+    "//components/keyed_service/core",
+    "//components/offline_pages/buildflags",
+    "//components/power_bookmarks/core",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "bookmark_expanded_state_tracker.cc",
+    "bookmark_expanded_state_tracker_factory.cc",
+    "bookmark_html_writer.cc",
+    "bookmark_merged_surface_ordering_storage.cc",
+    "bookmark_merged_surface_service.cc",
+    "bookmark_merged_surface_service_factory.cc",
+    "bookmark_model_factory.cc",
+    "bookmark_parent_folder.cc",
+    "bookmark_parent_folder_children.cc",
+    "chrome_bookmark_client.cc",
+    "managed_bookmark_service_factory.cc",
+    "permanent_folder_ordering_tracker.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":bookmarks",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/commerce",
+    "//chrome/browser/enterprise/browser_management:management_identity",
+    "//chrome/browser/favicon",
+    "//chrome/browser/history",
+    "//chrome/browser/sync",
+    "//components/bookmarks/common",
+    "//components/bookmarks/managed",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//components/favicon/core",
+    "//components/history/core/browser",
+    "//components/policy:generated",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//components/sync/base",
+    "//components/sync_bookmarks",
+    "//components/undo",
+    "//content/public/browser",
+    "//ui/gfx",
+  ]
+}

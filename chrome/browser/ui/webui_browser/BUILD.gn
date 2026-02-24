@@ -74,6 +74,7 @@ source_set("impl") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/app_mode",
+    "//chrome/browser/bookmarks",
     "//chrome/browser/contextual_search",
     "//chrome/browser/devtools",
     "//chrome/browser/extensions",

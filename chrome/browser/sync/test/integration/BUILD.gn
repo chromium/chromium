@@ -19,6 +19,7 @@ source_set("sync_integration_tests_impl") {
   deps = [
     ":sync_integration_test_support",
     "//chrome/browser/autofill",
+    "//chrome/browser/bookmarks",
     "//chrome/browser/history",
     "//chrome/browser/metrics:test_support",
     "//chrome/browser/password_manager/factories",
@@ -478,6 +479,7 @@ source_set("sync_integration_test_support") {
     "//base",
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/autofill",
+    "//chrome/browser/bookmarks",
     "//chrome/browser/gcm",
     "//chrome/browser/history",
     "//chrome/browser/password_manager/factories",

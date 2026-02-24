@@ -208,12 +208,6 @@ static_library("browser") {
     "after_startup_task_utils.h",
     "bad_message.cc",
     "bad_message.h",
-    "bookmarks/bookmark_model_factory.cc",
-    "bookmarks/bookmark_model_factory.h",
-    "bookmarks/chrome_bookmark_client.cc",
-    "bookmarks/chrome_bookmark_client.h",
-    "bookmarks/managed_bookmark_service_factory.cc",
-    "bookmarks/managed_bookmark_service_factory.h",
     "browser_about_handler.cc",
     "browser_about_handler.h",
     "browser_features.cc",
@@ -1511,6 +1505,12 @@ static_library("browser") {
     "//chrome/browser/actor:impl",
     "//chrome/browser/ai:impl",
     "//chrome/browser/autofill",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency once the
+    # following headers get componentized:
+    # c/b/undo/bookmark_undo_service_factory.h
+    # c/b/policy/profile_policy_connector.h
+    "//chrome/browser/bookmarks:impl",
     "//chrome/browser/commerce:impl",
     "//chrome/browser/content_settings:content_settings_factory_impl",
     "//chrome/browser/content_settings:content_settings_util_impl",
@@ -1667,7 +1667,6 @@ static_library("browser") {
     # c/b/custom_handlers/protocol_handler_registry_factory.h"
     # c/b/external_protocol/external_protocol_handler.h"
     # c/b/profiles/profile_io_data.h"
-    # c/b/bookmarks/bookmark_model_factory.h"
     # c/b/history/top_sites_factory.h"
     # c/b/history_clusters/history_clusters_service_factory.h"
     # c/b/history_embeddings/history_embeddings_service_factory.h"
@@ -1772,6 +1771,8 @@ static_library("browser") {
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/bluetooth",
     "//chrome/browser/bluetooth:impl",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/bookmarks:impl",
     "//chrome/browser/breadcrumbs",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/btm",
@@ -3686,26 +3687,6 @@ static_library("browser") {
       "accessibility/phrase_segmentation/dependency_parser_model_loader_factory.h",
       "apps/intent_helper/intent_chip_display_prefs.cc",
       "apps/intent_helper/intent_chip_display_prefs.h",
-      "bookmarks/bookmark_expanded_state_tracker.cc",
-      "bookmarks/bookmark_expanded_state_tracker.h",
-      "bookmarks/bookmark_expanded_state_tracker_factory.cc",
-      "bookmarks/bookmark_expanded_state_tracker_factory.h",
-      "bookmarks/bookmark_html_writer.cc",
-      "bookmarks/bookmark_html_writer.h",
-      "bookmarks/bookmark_merged_surface_ordering_storage.cc",
-      "bookmarks/bookmark_merged_surface_ordering_storage.h",
-      "bookmarks/bookmark_merged_surface_service.cc",
-      "bookmarks/bookmark_merged_surface_service.h",
-      "bookmarks/bookmark_merged_surface_service_factory.cc",
-      "bookmarks/bookmark_merged_surface_service_factory.h",
-      "bookmarks/bookmark_merged_surface_service_observer.h",
-      "bookmarks/bookmark_parent_folder.cc",
-      "bookmarks/bookmark_parent_folder.h",
-      "bookmarks/bookmark_parent_folder_children.cc",
-      "bookmarks/bookmark_parent_folder_children.h",
-      "bookmarks/permanent_folder_ordering_tracker.cc",
-      "bookmarks/permanent_folder_ordering_tracker.h",
-      "bookmarks/url_and_id.h",
       "certificate_viewer.h",
       "chrome_browser_interface_binders_webui_parts_desktop.cc",
       "chrome_process_singleton.cc",
@@ -4459,7 +4440,6 @@ static_library("browser") {
     #!is_android
     deps += [
       # TODO(crbug.com/418180294): Remove this circular dependency when:
-      # - bookmark_model_factory.h,
       # - after_startup_task_utils.h,
       # - history_service_factory.h,
       # - identity_manager_factory.h
@@ -4515,7 +4495,6 @@ static_library("browser") {
       "//chrome/browser/ui/global_media_controls:impl",
 
       # TODO(crbug.com/418180294): Remove this circular dependency when:
-      # - bookmark_model_factory.h,
       # - after_startup_task_utils.h,
       # - history_service_factory.h,
       # - identity_manager_factory.h
@@ -4535,7 +4514,6 @@ static_library("browser") {
 
       # TODO(crbug.com/434882143): Remove this circular dependency when the following files get
       # componentized:
-      # - c/b/bookmarks/bookmark_merged_surface_service_observer.h
       # - c/b/lifetime/browser_close_manager.h
       # - c/b/command_observer.h
       "//chrome/browser/ui/views/toolbar",

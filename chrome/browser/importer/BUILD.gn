@@ -49,6 +49,7 @@ source_set("impl") {
   deps = [
     ":importer",
     "//chrome/browser:shell_integration",
+    "//chrome/browser/bookmarks",
     "//chrome/browser/favicon",
     "//chrome/browser/history",
     "//chrome/browser/password_manager/factories:password_factory_headers",
@@ -117,6 +118,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/bookmarks",
     "//chrome/browser/history",
     "//chrome/browser/search_engines",
     "//chrome/common:constants",

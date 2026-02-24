@@ -29,6 +29,7 @@ source_set("impl") {
   deps = [
     ":android",
     "//chrome/android:chrome_jni_headers",
+    "//chrome/browser/bookmarks",
     "//chrome/browser/commerce",
     "//chrome/browser/profiles",
     "//chrome/browser/reading_list",
