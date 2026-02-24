@@ -4591,11 +4591,22 @@ if (enable_nocompile_tests) {
 }
 
 if (is_android || is_robolectric) {
+  generate_jni("base_junit_tests_jni") {
+    testonly = true
+    sources = [ "android/junit/src/org/chromium/base/JniCallbacksTest.java" ]
+  }
+
   shared_library_with_jni("libbase_junit_tests") {
     testonly = true
     enable_target = is_robolectric
-    sources = [ "android/robolectric_jni_onload.cc" ]
-    deps = [ ":base($robolectric_toolchain)" ]
+    sources = [
+      "android/jni_callbacks_test_support.cc",
+      "android/robolectric_jni_onload.cc",
+    ]
+    deps = [
+      ":base($robolectric_toolchain)",
+      ":base_junit_tests_jni($robolectric_toolchain)",
+    ]
     java_targets = [ ":base_junit_tests" ]
     visibility = [ ":*" ]
 
@@ -5840,6 +5851,18 @@ if (is_android) {
     ]
   }
 
+  robolectric_library("jni_callbacks_junit_tests_java") {
+    testonly = true
+    sources = [ "android/junit/src/org/chromium/base/JniCallbacksTest.java" ]
+    srcjar_deps = [ ":base_junit_tests_jni" ]
+    deps = [
+      ":base_java",
+      ":base_junit_test_support",
+      "//third_party/jni_zero:jni_zero_java",
+      "//third_party/junit",
+    ]
+  }
+
   robolectric_binary("base_junit_tests") {
     shared_libraries = [ ":libbase_junit_tests($robolectric_toolchain)" ]
     sources = [
@@ -5921,6 +5944,7 @@ if (is_android) {
       ":base_shared_preferences_java",
       ":features_java",
       ":flagged_apis_java",
+      ":jni_callbacks_junit_tests_java",
       ":location_junit_tests",
       ":task_executor_java",
       "//base/test:public_transit_robolectric_tests_java",
