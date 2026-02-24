@@ -17,9 +17,6 @@ MockAimEligibilityService::MockAimEligibilityService(
                             url_loader_factory,
                             identity_manager,
                             is_off_the_record,
-                            "en-US") {
-  ON_CALL(*this, GetSearchboxConfig())
-      .WillByDefault(testing::Return(&mock_config));
-}
+                            "en-US") {}
 
 MockAimEligibilityService::~MockAimEligibilityService() = default;
