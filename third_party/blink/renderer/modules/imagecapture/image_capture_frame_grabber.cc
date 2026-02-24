@@ -18,6 +18,9 @@
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_non2d_snapshot_provider_bitmap.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
@@ -176,8 +179,16 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
 
   if (!snapshot_provider_ ||
       !required_provider_info.Matches(*snapshot_provider_)) {
-    snapshot_provider_ = CreateSnapshotProviderForVideo(
-        required_provider_info, GetRasterContextProvider().get());
+    if (!ShouldCreateAcceleratedImages(GetRasterContextProvider().get())) {
+      snapshot_provider_ =
+          CanvasNon2DSnapshotProviderBitmap::Create(required_provider_info);
+    } else {
+      snapshot_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
+          required_provider_info.size, required_provider_info.format,
+          required_provider_info.alpha_type, required_provider_info.color_space,
+          SharedGpuContext::ContextProviderWrapper(),
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+    }
   }
 
   scoped_refptr<StaticBitmapImage> image = CreateImageFromVideoFrame(
