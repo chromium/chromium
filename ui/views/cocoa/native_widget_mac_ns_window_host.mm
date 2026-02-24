@@ -53,6 +53,7 @@
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_activation_delegate.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/views/word_lookup_client.h"
@@ -852,6 +853,15 @@ void NativeWidgetMacNSWindowHost::ReorderChildViews() {
   GetNSWindowMojo()->SortSubviews(attached_subview_ids);
 }
 
+bool NativeWidgetMacNSWindowHost::IsWindowKey() const {
+  if (WidgetActivationDelegate::Get()) {
+    auto* widget =
+        native_widget_mac_ ? native_widget_mac_->GetWidget() : nullptr;
+    return WidgetActivationDelegate::Get()->IsActive(widget);
+  }
+  return is_window_key_;
+}
+
 void NativeWidgetMacNSWindowHost::SetVisibilityState(
     remote_cocoa::mojom::WindowVisibilityState new_state) {
   // On macOS 14 an application can't generally activate themselves. If we're
@@ -865,7 +875,14 @@ void NativeWidgetMacNSWindowHost::SetVisibilityState(
                  base::SysUTF8ToNSString(application_host_->bundle_id())];
     }
   }
+
   GetNSWindowMojo()->SetVisibilityState(new_state);
+
+  if (WidgetActivationDelegate::Get()) {
+    WidgetActivationDelegate::Get()->MaybeActivate(
+        GetWidget(),
+        new_state == WindowVisibilityState::kShowAndActivateWindow);
+  }
 }
 
 void NativeWidgetMacNSWindowHost::GetAttachedNativeViewHostViewsRecursive(
@@ -1457,6 +1474,11 @@ void NativeWidgetMacNSWindowHost::OnWindowKeyStatusChanged(
     bool is_key,
     bool is_content_first_responder,
     bool full_keyboard_access_enabled) {
+  if (WidgetActivationDelegate::Get()) {
+    // Do not propagate the native activation state.
+    return;
+  }
+
   // We need `setRemoteUIApp` to YES to support some accessibility
   // features on out-of-process remote cocoa windows like those used
   // for PWAs. However this breaks accessibility on in-process windows,
