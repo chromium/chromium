@@ -4,16 +4,6 @@
         "project": "chromium-m138",
         "ref": "refs/branch-heads/7204"
     },
-    "142": {
-        "name": "m142",
-        "project": "chromium-m142",
-        "ref": "refs/branch-heads/7444"
-    },
-    "143": {
-        "name": "m143",
-        "project": "chromium-m143",
-        "ref": "refs/branch-heads/7499"
-    },
     "144": {
         "name": "m144",
         "project": "chromium-m144",
