@@ -83,15 +83,16 @@ void AddNativeNotificationWorkItems(
     const base::FilePath& notification_helper_path,
     WorkItemList* list);
 
-// Adds work items to `list` to delete all previous WER runtime exception helper
-// module registrations. Registry values that fit the following pattern are
-// deleted: target_path.value()\<valid version>\kWerDll
+// Adds best-effort work items to `list` to delete all previous WER runtime
+// exception helper module registrations. Registry values that fit the following
+// pattern are deleted: target_path.value()\<valid version>\kWerDll
 void AddOldWerHelperRegistrationCleanupItems(HKEY root,
                                              const base::FilePath& target_path,
                                              WorkItemList* list);
 
-// Adds work items to `list` to register a WER runtime exception helper module
-// in the registry. The wer module should be located at `wer_helper_path`.
+// Adds best-effort work items to `list` to register a WER runtime exception
+// helper module in the registry. The wer module should be located at
+// `wer_helper_path`.
 void AddWerHelperRegistration(HKEY root,
                               const base::FilePath& wer_helper_path,
                               WorkItemList* list);

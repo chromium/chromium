@@ -1102,7 +1102,8 @@ void AddOldWerHelperRegistrationCleanupItems(HKEY root,
           value_name.size() - value_prefix.size() - value_postfix.size());
       if (base::Version(base::WideToASCII(value_version)).IsValid()) {
         list->AddDeleteRegValueWorkItem(root, wer_registry_path,
-                                        WorkItem::kWow64Default, value_name);
+                                        WorkItem::kWow64Default, value_name)
+            ->set_best_effort(true);
       }
     }
   }
@@ -1116,12 +1117,14 @@ void AddWerHelperRegistration(HKEY root,
   std::wstring wer_registry_path = GetWerHelperRegistryPath();
 
   list->AddCreateRegKeyWorkItem(root, wer_registry_path,
-                                WorkItem::kWow64Default);
+                                WorkItem::kWow64Default)
+      ->set_best_effort(true);
 
   // The DWORD value is not important.
   list->AddSetRegValueWorkItem(root, wer_registry_path, WorkItem::kWow64Default,
                                wer_helper_path.value().c_str(), DWORD{0},
-                               /*overwrite=*/true);
+                               /*overwrite=*/true)
+      ->set_best_effort(true);
 }
 
 void AddSetMsiMarkerWorkItem(const InstallerState& installer_state,
