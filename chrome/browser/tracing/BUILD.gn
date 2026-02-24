@@ -41,6 +41,7 @@ source_set("impl") {
   deps = [
     ":tracing",
     "//chrome/browser:browser_process",
+    "//chrome/browser/metrics",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/common:channel_info",
@@ -70,6 +71,7 @@ source_set("unit_tests") {
     ":tracing",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/metrics",
     "//chrome/test:test_support",
     "//content/public/browser",
     "//content/test:test_support",

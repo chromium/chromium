@@ -9457,6 +9457,8 @@ test("unit_tests") {
       "//chrome/browser/apps/app_preload_service:unit_tests",
       "//chrome/browser/ash:unit_tests",
       "//chrome/browser/chromeos:unit_tests",
+      "//chrome/browser/metrics",
+      "//chrome/browser/metrics/perf",
       "//chrome/browser/nearby_sharing/certificates:unit_tests",
       "//chrome/browser/nearby_sharing/client:unit_tests",
       "//chrome/browser/nearby_sharing/common:unit_tests",

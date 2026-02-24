@@ -7,14 +7,16 @@
 
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/sessions/session_restore.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "content/public/browser/jank_monitor.h"
+
+class Profile;
 
 namespace metrics {
 

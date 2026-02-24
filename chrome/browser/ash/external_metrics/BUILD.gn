@@ -18,6 +18,7 @@ static_library("external_metrics") {
   deps = [
     "//ash/constants",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/metrics",
     "//components/metrics:serialization",
     "//content/public/browser",
   ]

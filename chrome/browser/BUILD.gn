@@ -606,9 +606,7 @@ static_library("browser") {
     "memory_details.cc",
     "memory_details.h",
     "metrics/accessibility_state_provider.cc",
-    "metrics/accessibility_state_provider.h",
     "metrics/cached_metrics_profile.cc",
-    "metrics/cached_metrics_profile.h",
     "metrics/chrome_browser_main_extra_parts_metrics.cc",
     "metrics/chrome_browser_main_extra_parts_metrics.h",
     "metrics/chrome_browser_sampling_trials.cc",
@@ -632,7 +630,6 @@ static_library("browser") {
     "metrics/metrics_reporting_state.cc",
     "metrics/metrics_reporting_state.h",
     "metrics/network_quality_estimator_provider_impl.cc",
-    "metrics/network_quality_estimator_provider_impl.h",
     "metrics/process_memory_metrics_emitter.cc",
     "metrics/process_memory_metrics_emitter.h",
     "metrics/profile_metrics_service_factory.cc",
@@ -1667,13 +1664,6 @@ static_library("browser") {
     # TODO(crbug.com/430804948): Remove this circular dependency when profiles/profile_manager.h
     # gets componentized.
     "//chrome/browser/subscription_eligibility",
-
-    # TODO(crbug.com/353332589): Remove this circular dependency when the following headers get componentized:
-    # - c/b/metrics/accessibility_state_provider.h
-    # - c/b/metrics/chromeos_system_profile_provider.h
-    # - c/b/metrics/chromeos_metrics_provider.h
-    # - c/b/metrics/network_quality_estimator_provider_impl.h
-    "//chrome/browser/tracing:impl",
   ]
 
   public_deps = [
@@ -4855,9 +4845,7 @@ static_library("browser") {
       "metrics/chromeos_family_link_user_metrics_provider.cc",
       "metrics/chromeos_family_link_user_metrics_provider.h",
       "metrics/chromeos_metrics_provider.cc",
-      "metrics/chromeos_metrics_provider.h",
       "metrics/chromeos_system_profile_provider.cc",
-      "metrics/chromeos_system_profile_provider.h",
       "metrics/class_management_enabled_metrics_provider.cc",
       "metrics/class_management_enabled_metrics_provider.h",
       "metrics/cros_healthd_metrics_provider.cc",
@@ -4886,7 +4874,6 @@ static_library("browser") {
       "metrics/perf/process_type_collector.cc",
       "metrics/perf/process_type_collector.h",
       "metrics/perf/profile_provider_chromeos.cc",
-      "metrics/perf/profile_provider_chromeos.h",
       "metrics/perf/random_selector.cc",
       "metrics/perf/random_selector.h",
       "metrics/perf/windowed_incognito_observer.cc",
@@ -5467,6 +5454,7 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:google_key_proto",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:interface_proto",
       "//chrome/browser/extensions/api/enterprise_networking_attributes",
+      "//chrome/browser/metrics/perf",
       "//chrome/browser/nearby_sharing:share_target",
       "//chrome/browser/nearby_sharing/certificates",
       "//chrome/browser/nearby_sharing/client",
@@ -6293,7 +6281,6 @@ static_library("browser") {
       "media/media_foundation_service_monitor.h",
       "memory_details_win.cc",
       "metrics/antivirus_metrics_provider_win.cc",
-      "metrics/antivirus_metrics_provider_win.h",
       "metrics/google_update_metrics_provider_win.cc",
       "metrics/google_update_metrics_provider_win.h",
       "metrics/key_credential_manager_support_reporter_win.cc",

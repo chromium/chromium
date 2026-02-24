@@ -20,6 +20,7 @@ static_library("safe_browsing") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/metrics",
     "//chrome/browser/notifications",
   ]
 

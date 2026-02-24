@@ -5,9 +5,22 @@
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
+assert(is_chromeos)
+
+source_set("perf") {
+  sources = [ "profile_provider_chromeos.h" ]
+  public_deps = [
+    "//base",
+    "//chromeos/ash/components/login/login_state",
+    "//chromeos/dbus/power",
+    "//content/public/browser",
+  ]
+}
+
 test("profile_provider_unittest") {
   sources = [ "profile_provider_unittest_main.cc" ]
   deps = [
+    ":perf",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
