@@ -6571,12 +6571,6 @@ inline constexpr char kArcEnableVirtioBlkForDataName[] =
 inline constexpr char kArcEnableVirtioBlkForDataDesc[] =
     "If enabled, ARCVM uses virtio-blk for /data in Android storage.";
 
-inline constexpr char kArcExternalStorageAccessName[] =
-    "External storage access by ARC";
-inline constexpr char kArcExternalStorageAccessDescription[] =
-    "Allow Android apps to access external storage devices like USB flash "
-    "drives and SD cards";
-
 inline constexpr char kArcUnthrottleOnActiveAudioV2Name[] =
     "Unthrottle ARC on active audio";
 inline constexpr char kArcUnthrottleOnActiveAudioV2Description[] =
