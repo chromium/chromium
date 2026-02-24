@@ -410,16 +410,6 @@ class CC_EXPORT PictureLayerImpl
   // TileBasedLayerImpl:
   std::unique_ptr<AppendQuadsCustomSharedData> WillAppendQuads(
       float max_contents_scale) override;
-  int AppendQuadsSpecialization(
-      const AppendQuadsContext& context,
-      viz::CompositorRenderPass* render_pass,
-      AppendQuadsData* append_quads_data,
-      viz::SharedQuadState* shared_quad_state,
-      const Occlusion& scaled_occlusion,
-      const gfx::Vector2d& quad_offset,
-      const std::optional<gfx::Rect>& scaled_cull_rect,
-      float max_contents_scale,
-      std::unique_ptr<AppendQuadsCustomSharedData> custom_data) override;
   float GetMaximumContentsScaleForUseInAppendQuads() const override;
   void AppendQuadsForResourcelessSoftwareDraw(
       const AppendQuadsContext& context,
@@ -434,7 +424,6 @@ class CC_EXPORT PictureLayerImpl
   void ComputeCheckerboardedNeedsRecord(
       AppendQuadsData* append_quads_data) override;
 
-  // Returns whether the tile was missing.
   bool AppendQuadForTile(TilingSetCoverageIterator<PictureLayerTiling> iter,
                          const AppendQuadsContext& context,
                          viz::CompositorRenderPass* render_pass,
@@ -443,7 +432,8 @@ class CC_EXPORT PictureLayerImpl
                          const Occlusion& scaled_occlusion,
                          const gfx::Vector2d& quad_offset,
                          const std::optional<gfx::Rect>& scaled_cull_rect,
-                         AppendQuadsCustomSharedData* custom_data);
+                         float max_contents_scale,
+                         AppendQuadsCustomSharedData* custom_data) override;
   TilingResolution GetTilingResolutionForDebugBorders(
       const PictureLayerTiling* tiling) const override;
 };

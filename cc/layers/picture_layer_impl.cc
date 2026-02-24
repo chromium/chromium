@@ -322,31 +322,6 @@ std::unique_ptr<AppendQuadsCustomSharedData> PictureLayerImpl::WillAppendQuads(
   return std::move(custom_data);
 }
 
-int PictureLayerImpl::AppendQuadsSpecialization(
-    const AppendQuadsContext& context,
-    viz::CompositorRenderPass* render_pass,
-    AppendQuadsData* append_quads_data,
-    viz::SharedQuadState* shared_quad_state,
-    const Occlusion& scaled_occlusion,
-    const gfx::Vector2d& quad_offset,
-    const std::optional<gfx::Rect>& scaled_cull_rect,
-    float max_contents_scale,
-    std::unique_ptr<AppendQuadsCustomSharedData> custom_data) {
-  int missing_tile_count = 0;
-  for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
-                         max_contents_scale, GetIdealContentsScaleKey());
-       iter; ++iter) {
-    bool missing_tile = AppendQuadForTile(
-        iter, context, render_pass, append_quads_data, shared_quad_state,
-        scaled_occlusion, quad_offset, scaled_cull_rect, custom_data.get());
-    if (missing_tile) {
-      ++missing_tile_count;
-    }
-  }
-
-  return missing_tile_count;
-}
-
 bool PictureLayerImpl::AppendQuadForTile(
     TilingSetCoverageIterator<PictureLayerTiling> iter,
     const AppendQuadsContext& context,
@@ -356,6 +331,7 @@ bool PictureLayerImpl::AppendQuadForTile(
     const Occlusion& scaled_occlusion,
     const gfx::Vector2d& quad_offset,
     const std::optional<gfx::Rect>& scaled_cull_rect,
+    float max_contents_scale,
     AppendQuadsCustomSharedData* custom_data) {
   auto* shared_data =
       static_cast<AppendQuadsCustomSharedDataImpl*>(custom_data);
