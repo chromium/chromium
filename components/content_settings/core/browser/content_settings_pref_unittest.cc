@@ -461,4 +461,25 @@ TEST_F(ContentSettingsPrefTest,
             std::nullopt);
 }
 
+TEST_F(ContentSettingsPrefTest, DeletePrefWithDeprecatedSessionModelValue) {
+  // Set the SessionModel to the deprecated value 2.
+  base::DictValue original_pref_value;
+  original_pref_value.Set(kTestPatternCanonicalAlpha,
+                          base::DictValue()
+                              .Set(kSettingKey, CONTENT_SETTING_BLOCK)
+                              .Set(kSessionModelKey, 2));
+  SetPrefDict(std::move(original_pref_value));
+
+  auto content_settings_pref = std::make_unique<ContentSettingsPref>(
+      ContentSettingsType::STORAGE_ACCESS, &prefs_, &registrar_,
+      kTestContentSettingPrefName, false, /*restore_session=*/true,
+      base::DoNothing());
+
+  ASSERT_EQ(content_settings_pref->GetRuleIterator(/*off_the_record=*/false),
+            nullptr);
+
+  // Check that the pref is empty.
+  EXPECT_TRUE(GetPrefDict()->empty());
+}
+
 }  // namespace content_settings
