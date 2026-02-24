@@ -84,7 +84,6 @@
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/authenticator_get_assertion_response.h"
-#include "device/fido/cable/cable_mock_bluetooth_adapter.h"
 #include "device/fido/cable/fido_tunnel_device.h"
 #include "device/fido/cable/pairing.h"
 #include "device/fido/cable/v2_authenticator.h"
@@ -9474,12 +9473,8 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
                  POINT_CONVERSION_UNCOMPRESSED, peer_identity_x962_,
                  sizeof(peer_identity_x962_), /*ctx=*/nullptr));
 
-    // These tests use a more specialized adapter than is used in the base
-    // class.
-    mock_bluetooth_adapter_ =
-        device::cablev2::CableMockBluetoothAdapter::MakePoweredOn();
-    device::BluetoothAdapterFactory::SetAdapterForTesting(
-        mock_bluetooth_adapter_);
+    std::tie(ble_advert_callback_, ble_advert_events_) =
+        device::cablev2::Discovery::AdvertEventStream::New();
   }
 
   void TearDown() override {
@@ -9618,18 +9613,12 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
 
   void OnCableEvent(Event event) { events_.push_back(event); }
 
-  void MaybeExpectDiscoveryWithScanCallback() {
-#if !BUILDFLAG(IS_CHROMEOS)
-    mock_bluetooth_adapter_->ExpectDiscoveryWithScanCallback();
-#endif
-  }
-
   void DoPairingConnection() {
     // First do unpaired exchange to get pairing data.
     auto discovery = std::make_unique<device::cablev2::Discovery>(
         device::FidoRequestType::kGetAssertion,
         base::BindLambdaForTesting([&]() { return network_context_.get(); }),
-        qr_generator_key_,
+        qr_generator_key_, std::move(ble_advert_events_),
         /*contact_device_stream=*/nullptr,
         /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
         GetPairingCallback(), GetInvalidatedPairingCallback(),
@@ -9637,13 +9626,12 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
 
     ReplaceDiscoveryFactory(
         std::make_unique<DiscoveryFactory>(std::move(discovery)));
-    MaybeExpectDiscoveryWithScanCallback();
 
     const std::vector<uint8_t> contact_id(/*count=*/200, /*value=*/1);
     std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
         device::cablev2::authenticator::TransactFromQRCode(
             device::cablev2::authenticator::NewMockPlatform(
-                &virtual_device_, mock_bluetooth_adapter_,
+                std::move(ble_advert_callback_), &virtual_device_,
                 /*observer=*/nullptr),
             base::BindLambdaForTesting(
                 [&]() { return network_context_.get(); }),
@@ -9664,12 +9652,16 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
       expected_request_type_string = "ga";
     }
 
+    std::tie(ble_advert_callback_, ble_advert_events_) =
+        device::cablev2::Discovery::EventStream<
+            base::span<const uint8_t, device::cablev2::kAdvertSize>>::New();
     auto callback_and_event_stream = device::cablev2::Discovery::EventStream<
         std::unique_ptr<device::cablev2::Pairing>>::New();
     discovery = std::make_unique<device::cablev2::Discovery>(
         request_type,
         base::BindLambdaForTesting([&]() { return network_context_.get(); }),
-        qr_generator_key_, std::move(callback_and_event_stream.second),
+        qr_generator_key_, std::move(ble_advert_events_),
+        std::move(callback_and_event_stream.second),
         /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
         GetPairingCallback(), GetInvalidatedPairingCallback(),
         GetEventCallback(), /*must_support_ctap=*/true);
@@ -9700,7 +9692,7 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
           CHECK_EQ(request_type_hint, expected_request_type_string);
           transaction = device::cablev2::authenticator::TransactFromFCM(
               device::cablev2::authenticator::NewMockPlatform(
-                  &virtual_device_, mock_bluetooth_adapter_,
+                  std::move(ble_advert_callback_), &virtual_device_,
                   /*observer=*/nullptr),
               base::BindLambdaForTesting(
                   [&]() { return network_context_.get(); }),
@@ -9710,7 +9702,6 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
 
     ReplaceDiscoveryFactory(
         std::make_unique<DiscoveryFactory>(std::move(discovery)));
-    MaybeExpectDiscoveryWithScanCallback();
 
     EXPECT_EQ(AuthenticatorMakeCredential().status,
               AuthenticatorStatus::SUCCESS);
@@ -9740,15 +9731,15 @@ class AuthenticatorCableV2Test : public AuthenticatorImplRequestDelegateTest {
       base::span<const uint8_t, device::cablev2::kClientNonceSize> client_nonce,
       const std::string& request_type_hint)>
       contact_callback_;
+  std::unique_ptr<device::cablev2::Discovery::AdvertEventStream>
+      ble_advert_events_;
+  device::cablev2::Discovery::AdvertEventStream::Callback ble_advert_callback_;
   ContactWhenReadyContentBrowserClient browser_client_{
       base::BindRepeating(&AuthenticatorCableV2Test::MaybeContactPhones,
                           base::Unretained(this))};
   raw_ptr<ContentBrowserClient> old_client_ = nullptr;
   base::OnceClosure maybe_contact_phones_callback_;
   std::vector<Event> events_;
-
-  scoped_refptr<device::cablev2::CableMockBluetoothAdapter>
-      mock_bluetooth_adapter_;
 
  private:
   static VirtualCtap2Device::State* DeviceState() {
@@ -9776,7 +9767,7 @@ TEST_F(AuthenticatorCableV2Test, QRBasedWithNoPairing) {
   auto discovery = std::make_unique<device::cablev2::Discovery>(
       device::FidoRequestType::kGetAssertion,
       base::BindLambdaForTesting([&]() { return network_context_.get(); }),
-      qr_generator_key_,
+      qr_generator_key_, std::move(ble_advert_events_),
       /*contact_device_stream=*/nullptr,
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback(), GetInvalidatedPairingCallback(), GetEventCallback(),
@@ -9784,12 +9775,11 @@ TEST_F(AuthenticatorCableV2Test, QRBasedWithNoPairing) {
 
   ReplaceDiscoveryFactory(
       std::make_unique<DiscoveryFactory>(std::move(discovery)));
-  MaybeExpectDiscoveryWithScanCallback();
 
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
       device::cablev2::authenticator::TransactFromQRCode(
           device::cablev2::authenticator::NewMockPlatform(
-              &virtual_device_, mock_bluetooth_adapter_,
+              std::move(ble_advert_callback_), &virtual_device_,
               /*observer=*/nullptr),
           base::BindLambdaForTesting([&]() { return network_context_.get(); }),
           root_secret_, "Test Authenticator", zero_qr_secret_,
@@ -9807,7 +9797,7 @@ TEST_F(AuthenticatorCableV2Test, HandshakeError) {
       base::BindLambdaForTesting([&]() { return network_context_.get(); });
   auto discovery = std::make_unique<device::cablev2::Discovery>(
       device::FidoRequestType::kGetAssertion, network_context_factory,
-      qr_generator_key_,
+      qr_generator_key_, std::move(ble_advert_events_),
       /*contact_device_stream=*/nullptr,
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback(), GetInvalidatedPairingCallback(), GetEventCallback(),
@@ -9815,12 +9805,11 @@ TEST_F(AuthenticatorCableV2Test, HandshakeError) {
 
   ReplaceDiscoveryFactory(
       std::make_unique<DiscoveryFactory>(std::move(discovery)));
-  MaybeExpectDiscoveryWithScanCallback();
 
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
       device::cablev2::authenticator::NewHandshakeErrorDevice(
           device::cablev2::authenticator::NewMockPlatform(
-              &virtual_device_, mock_bluetooth_adapter_,
+              std::move(ble_advert_callback_), &virtual_device_,
               /*observer=*/nullptr),
           network_context_factory, zero_qr_secret_);
 
@@ -9849,7 +9838,7 @@ TEST_F(AuthenticatorCableV2Test, NetworkServiceCrash) {
   auto discovery = std::make_unique<device::cablev2::Discovery>(
       device::FidoRequestType::kGetAssertion,
       base::BindLambdaForTesting([&]() { return network_context_.get(); }),
-      qr_generator_key_,
+      qr_generator_key_, std::move(ble_advert_events_),
       /*contact_device_stream=*/nullptr,
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback(), GetInvalidatedPairingCallback(), GetEventCallback(),
@@ -9857,7 +9846,6 @@ TEST_F(AuthenticatorCableV2Test, NetworkServiceCrash) {
 
   ReplaceDiscoveryFactory(
       std::make_unique<DiscoveryFactory>(std::move(discovery)));
-  MaybeExpectDiscoveryWithScanCallback();
 
   // Simulate the network service restarting.
   ResetNetworkService();
@@ -9865,7 +9853,7 @@ TEST_F(AuthenticatorCableV2Test, NetworkServiceCrash) {
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
       device::cablev2::authenticator::TransactFromQRCode(
           device::cablev2::authenticator::NewMockPlatform(
-              &virtual_device_, mock_bluetooth_adapter_,
+              std::move(ble_advert_callback_), &virtual_device_,
               /*observer=*/nullptr),
           base::BindLambdaForTesting([&]() { return network_context_.get(); }),
           root_secret_, "Test Authenticator", zero_qr_secret_,
@@ -9928,14 +9916,14 @@ TEST_F(AuthenticatorCableV2Test, ContactIDDisabled) {
   auto discovery = std::make_unique<device::cablev2::Discovery>(
       device::FidoRequestType::kGetAssertion,
       base::BindLambdaForTesting([&]() { return network_context_.get(); }),
-      qr_generator_key_, std::move(callback_and_event_stream.second),
+      qr_generator_key_, std::move(ble_advert_events_),
+      std::move(callback_and_event_stream.second),
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback(), GetInvalidatedPairingCallback(), GetEventCallback(),
       /*must_support_ctap=*/true);
 
   ReplaceDiscoveryFactory(
       std::make_unique<DiscoveryFactory>(std::move(discovery)));
-  MaybeExpectDiscoveryWithScanCallback();
 
   maybe_contact_phones_callback_ =
       base::BindLambdaForTesting([&callback_and_event_stream]() {
@@ -10003,25 +9991,24 @@ TEST_F(AuthenticatorCableV2Test, ServerLink) {
   auto discovery = std::make_unique<device::cablev2::Discovery>(
       device::FidoRequestType::kGetAssertion,
       base::BindLambdaForTesting([&]() { return network_context_.get(); }),
-      qr_generator_key_,
+      qr_generator_key_, std::move(ble_advert_events_),
       /*contact_device_stream=*/nullptr, extension_values, GetPairingCallback(),
       GetInvalidatedPairingCallback(), GetEventCallback(),
       /*must_support_ctap=*/true);
 
   ReplaceDiscoveryFactory(
       std::make_unique<DiscoveryFactory>(std::move(discovery)));
-  MaybeExpectDiscoveryWithScanCallback();
 
-  // Both extension values should work, but we can only do a single
-  // transaction per test because a lot of state is setup for a test.
-  // Therefore pick one of the two to check, at random.
+  // Both extension values should work, but we can only do a single transaction
+  // per test because a lot of state is setup for a test. Therefore pick one of
+  // the two to check, at random.
   const auto& server_link =
       (base::RandUint64() & 1) ? server_link_1 : server_link_2;
 
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
       device::cablev2::authenticator::TransactFromQRCode(
           device::cablev2::authenticator::NewMockPlatform(
-              &virtual_device_, mock_bluetooth_adapter_,
+              std::move(ble_advert_callback_), &virtual_device_,
               /*observer=*/nullptr),
           base::BindLambdaForTesting([&]() { return network_context_.get(); }),
           root_secret_, "Test Authenticator", server_link.secret,
@@ -10037,7 +10024,7 @@ TEST_F(AuthenticatorCableV2Test, LateLinking) {
       base::BindLambdaForTesting([&]() { return network_context_.get(); });
   auto discovery = std::make_unique<device::cablev2::Discovery>(
       device::FidoRequestType::kGetAssertion, network_context_factory,
-      qr_generator_key_,
+      qr_generator_key_, std::move(ble_advert_events_),
       /*contact_device_stream=*/nullptr,
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback(), GetInvalidatedPairingCallback(), GetEventCallback(),
@@ -10045,14 +10032,13 @@ TEST_F(AuthenticatorCableV2Test, LateLinking) {
 
   ReplaceDiscoveryFactory(
       std::make_unique<DiscoveryFactory>(std::move(discovery)));
-  MaybeExpectDiscoveryWithScanCallback();
 
   const std::vector<uint8_t> contact_id(/*count=*/200, /*value=*/1);
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
       device::cablev2::authenticator::NewLateLinkingDevice(
           device::CtapDeviceResponseCode::kCtap2ErrOperationDenied,
           device::cablev2::authenticator::NewMockPlatform(
-              &virtual_device_, mock_bluetooth_adapter_,
+              std::move(ble_advert_callback_), &virtual_device_,
               /*observer=*/nullptr),
           network_context_factory, zero_qr_secret_, peer_identity_x962_);
 
@@ -10081,7 +10067,7 @@ class AuthenticatorCableV2AuthenticatorTest
     auto discovery = std::make_unique<device::cablev2::Discovery>(
         device::FidoRequestType::kGetAssertion,
         base::BindLambdaForTesting([&]() { return network_context_.get(); }),
-        qr_generator_key_,
+        qr_generator_key_, std::move(ble_advert_events_),
         /*contact_device_stream=*/nullptr,
         /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
         GetPairingCallback(), GetInvalidatedPairingCallback(),
@@ -10089,11 +10075,10 @@ class AuthenticatorCableV2AuthenticatorTest
 
     ReplaceDiscoveryFactory(
         std::make_unique<DiscoveryFactory>(std::move(discovery)));
-    MaybeExpectDiscoveryWithScanCallback();
 
     transaction_ = device::cablev2::authenticator::TransactFromQRCode(
         device::cablev2::authenticator::NewMockPlatform(
-            &virtual_device_, mock_bluetooth_adapter_, this),
+            std::move(ble_advert_callback_), &virtual_device_, this),
         base::BindLambdaForTesting([&]() { return network_context_.get(); }),
         root_secret_, "Test Authenticator", zero_qr_secret_,
         peer_identity_x962_,
