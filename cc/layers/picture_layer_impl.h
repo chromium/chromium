@@ -442,9 +442,8 @@ class CC_EXPORT PictureLayerImpl
                          viz::SharedQuadState* shared_quad_state,
                          const Occlusion& scaled_occlusion,
                          const gfx::Vector2d& quad_offset,
-                         const gfx::Rect& scaled_viewport_for_tile_priority,
                          const std::optional<gfx::Rect>& scaled_cull_rect,
-                         const gfx::Rect& scaled_recorded_bounds);
+                         AppendQuadsCustomSharedData* custom_data);
   TilingResolution GetTilingResolutionForDebugBorders(
       const PictureLayerTiling* tiling) const override;
 };

@@ -333,17 +333,12 @@ int PictureLayerImpl::AppendQuadsSpecialization(
     float max_contents_scale,
     std::unique_ptr<AppendQuadsCustomSharedData> custom_data) {
   int missing_tile_count = 0;
-  auto* shared_data =
-      static_cast<AppendQuadsCustomSharedDataImpl*>(custom_data.get());
-  DCHECK(shared_data);
   for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
                          max_contents_scale, GetIdealContentsScaleKey());
        iter; ++iter) {
     bool missing_tile = AppendQuadForTile(
         iter, context, render_pass, append_quads_data, shared_quad_state,
-        scaled_occlusion, quad_offset,
-        shared_data->scaled_viewport_for_tile_priority_, scaled_cull_rect,
-        shared_data->scaled_recorded_bounds_);
+        scaled_occlusion, quad_offset, scaled_cull_rect, custom_data.get());
     if (missing_tile) {
       ++missing_tile_count;
     }
@@ -360,13 +355,15 @@ bool PictureLayerImpl::AppendQuadForTile(
     viz::SharedQuadState* shared_quad_state,
     const Occlusion& scaled_occlusion,
     const gfx::Vector2d& quad_offset,
-    const gfx::Rect& scaled_viewport_for_tile_priority,
     const std::optional<gfx::Rect>& scaled_cull_rect,
-    const gfx::Rect& scaled_recorded_bounds) {
+    AppendQuadsCustomSharedData* custom_data) {
+  auto* shared_data =
+      static_cast<AppendQuadsCustomSharedDataImpl*>(custom_data);
+
   gfx::Rect geometry_rect = iter.geometry_rect();
   gfx::Rect visible_geometry_rect;
-  if (ShouldSkipTile(geometry_rect, scaled_recorded_bounds, scaled_occlusion,
-                     visible_geometry_rect)) {
+  if (ShouldSkipTile(geometry_rect, shared_data->scaled_recorded_bounds_,
+                     scaled_occlusion, visible_geometry_rect)) {
     return /*tile_missing=*/false;
   }
 
@@ -399,7 +396,8 @@ bool PictureLayerImpl::AppendQuadForTile(
         // scale that is >= ideal, which may be < raster_contents_scale_.
         if (iter->contents_scale_key() != raster_contents_scale_key() &&
             iter->contents_scale_key() < GetIdealContentsScaleKey() &&
-            geometry_rect.Intersects(scaled_viewport_for_tile_priority)) {
+            geometry_rect.Intersects(
+                shared_data->scaled_viewport_for_tile_priority_)) {
           append_quads_data->checkerboarded_needs_raster = true;
         }
 
@@ -459,7 +457,8 @@ bool PictureLayerImpl::AppendQuadForTile(
     }
 
     // Report the tile as missing iff it is in the viewport.
-    return geometry_rect.Intersects(scaled_viewport_for_tile_priority);
+    return geometry_rect.Intersects(
+        shared_data->scaled_viewport_for_tile_priority_);
   }
 
   if (iter.resolution() != HIGH_RESOLUTION) {
