@@ -48,11 +48,7 @@ using browsertest_util::WaitForTaskManagerRows;
 
 class TaskManagerMacTest : public InProcessBrowserTest {
  public:
-  TaskManagerMacTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{features::kTaskManagerDesktopRefresh});
-  }
+  TaskManagerMacTest() = default;
   ~TaskManagerMacTest() override = default;
 
   TaskManagerMacTest(const TaskManagerMacTest&) = delete;

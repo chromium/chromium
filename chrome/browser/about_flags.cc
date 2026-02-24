@@ -10528,11 +10528,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-task-manager-clank", flag_descriptions::kTaskManagerClankName,
      flag_descriptions::kTaskManagerClankDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kTaskManagerClank)},
-#else
-    {"enable-task-manager-desktop-refresh",
-     flag_descriptions::kTaskManagerDesktopRefreshName,
-     flag_descriptions::kTaskManagerDesktopRefreshDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTaskManagerDesktopRefresh)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

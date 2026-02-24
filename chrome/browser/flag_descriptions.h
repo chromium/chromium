@@ -8001,11 +8001,6 @@ inline constexpr char kLocalNetworkAccessChecksSplitPermissionsDescription[] =
     "Requires the "
     "#local-network-access-check flag to also be enabled.";
 
-inline constexpr char kTaskManagerDesktopRefreshName[] =
-    "Task Manager Desktop Refresh";
-inline constexpr char kTaskManagerDesktopRefreshDescription[] =
-    "Enables a refreshed design for the Task Manager on Desktop platforms.";
-
 inline constexpr char kGeminiAntiscamProtectionsMetricsOnlyName[] =
     "Gemini Antiscam Protection";
 inline constexpr char kGeminiAntiscamProtectionsMetricsOnlyDescription[] =

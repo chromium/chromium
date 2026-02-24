@@ -398,16 +398,14 @@ TaskManagerView* TaskManagerView::GetInstanceForTests() {
 
 // static
 TaskManagerView::TableConfigs TaskManagerView::GetTableConfigs() {
-  const bool tm_refresh_enabled =
-      base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh);
   return TableConfigs{
-      .table_has_border = !tm_refresh_enabled,
-      .header_style = tm_refresh_enabled,
-      .table_refresh = tm_refresh_enabled,
-      .scroll_view_rounded = tm_refresh_enabled,
-      .layout_refresh = tm_refresh_enabled,
-      .dialog_button_disabled = tm_refresh_enabled,
-      .sort_on_cpu_by_default = tm_refresh_enabled,
+      .table_has_border = false,
+      .header_style = true,
+      .table_refresh = true,
+      .scroll_view_rounded = true,
+      .layout_refresh = true,
+      .dialog_button_disabled = true,
+      .sort_on_cpu_by_default = true,
   };
 }
 
@@ -646,8 +644,7 @@ void TaskManagerView::Init() {
         /*separator_vertical_color_id=*/ui::kColorSysDivider,
         /*background_color_id=*/kColorTaskManagerTableHeaderBackground,
         /*focus_ring_upper_corner_radius=*/corner_radius,
-        /*header_sort_state=*/
-        base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh));
+        /*header_sort_state=*/true);
     tab_table->SetHeaderStyle(header_style);
   }
 
