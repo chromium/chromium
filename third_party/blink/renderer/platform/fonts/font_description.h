@@ -59,7 +59,7 @@ namespace blink {
 typedef struct { uint32_t parts[2]; } FieldsAsUnsignedType;
 
 class PLATFORM_EXPORT FontDescription {
-  USING_FAST_MALLOC(FontDescription);
+  DISALLOW_NEW();
 
  public:
   enum HashCategory {
@@ -486,18 +486,9 @@ class PLATFORM_EXPORT FontDescription {
   unsigned StyleHashWithoutFamilyList() const;
   unsigned GetHash() const;
 
-  // TODO(drott): We should not expose internal structure here, but rather
-  // introduce a hash function here.
-  unsigned BitmapFields() const { return fields_as_unsigned_.parts[0]; }
-  unsigned AuxiliaryBitmapFields() const {
-    return fields_as_unsigned_.parts[1];
-  }
-
   SkFontStyle SkiaFontStyle() const;
 
   void UpdateFromSkiaFontStyle(const SkFontStyle& font_style);
-
-  int MinimumPrefixWidthToHyphenate() const;
 
   ResolvedFontFeatures ResolveFontFeatures() const;
   void MergeFontFeatureSettingsWithDescriptor(const FontFeatureSettings*);
