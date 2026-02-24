@@ -492,11 +492,6 @@ const base::FeatureParam<base::TimeDelta> kGlicActorMoveBeforeClickDelay{
     &kGlicActorMoveBeforeClick, "glic-actor-move-before-click-delay",
     base::Milliseconds(5)};
 
-// Controls whether the Glic's act-on-web capability is checked for managed
-// trial clients.
-BASE_FEATURE(kGlicActOnWebCapabilityForManagedTrials,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls country and locale filtering for Glic.
 // See chrome/browser/glic/public/glic_enabling.cc for more details.
 // TODO(b/454431875): Re-enable after Finch configs are updated to allow

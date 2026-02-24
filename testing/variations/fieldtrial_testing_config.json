@@ -11912,23 +11912,6 @@
             ]
         }
     ],
-    "GlicActOnWebCapabilityForManagedTrials": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "GlicActOnWebCapabilityForManagedTrials"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicActorObservationDelayExcludeAdFrameLoading": [
         {
             "platforms": [
