@@ -119,7 +119,7 @@ void LensQueryFlowRouter::StartQueryFlow(
             should_upload_page_content ? underlying_page_contents
                                        : base::span<const PageContent>(),
             should_upload_page_content ? primary_content_type
-                                       : lens::MimeType::kUnknown,
+                                       : lens::MimeType::kImage,
             pdf_current_page, ui_scale_factor, invocation_time));
 
     if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
