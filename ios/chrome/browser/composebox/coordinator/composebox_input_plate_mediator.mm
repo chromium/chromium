@@ -1009,8 +1009,7 @@ CreateInputDataFromAnnotatedPageContent(
     return;
   }
 
-  BOOL imageGenUploadMode =
-      (_items.count) > 0 && [self uploadAllowedInImageGeneration];
+  BOOL imageGenUploadMode = _items.count > 0;
 
   omnibox::ToolMode toolMode =
       imageGenUploadMode ? omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD
@@ -1547,19 +1546,6 @@ CreateInputDataFromAnnotatedPageContent(
   }
 }
 
-// Whether upload is permitted when in image generation.
-- (BOOL)uploadAllowedInImageGeneration {
-  if (![self imageToolAllowed]) {
-    return NO;
-  }
-  if (EnableComposeboxServerSideState()) {
-    return [self
-        toolAllowedInInputState:omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD];
-  }
-
-  return YES;
-}
-
 // Whether the client is allowed to access canvas mode.
 - (BOOL)canvasToolAllowed {
   if (!ShowComposeboxAdditionalAdvancedTools()) {
@@ -1779,12 +1765,6 @@ CreateInputDataFromAnnotatedPageContent(
   if (EnableComposeboxServerSideState() &&
       ![self inputStateAllowsType:omnibox::INPUT_TYPE_LENS_IMAGE]) {
     return NO;
-  }
-
-  BOOL isImageCreationMode =
-      _modeHolder.mode == ComposeboxMode::kImageGeneration;
-  if (isImageCreationMode) {
-    return [self uploadAllowedInImageGeneration];
   }
 
   return YES;
