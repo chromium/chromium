@@ -35,9 +35,16 @@ namespace base {
 struct Feature;
 }
 
+namespace signin {
+struct AccessTokenInfo;
+class IdentityManager;
+class PrimaryAccountAccessTokenFetcher;
+}  // namespace signin
+
 namespace network {
 class SimpleURLLoader;
 class SharedURLLoaderFactory;
+struct ResourceRequest;
 }  // namespace network
 
 // Utility service to check if the profile is eligible for AI mode features.
@@ -246,6 +253,15 @@ class AimEligibilityService
   // Loads `most_recent_response_` from the prefs, if valid.
   void LoadMostRecentResponse();
 
+  // Returns whether the service should try to use OAuth for the eligibility
+  // request.
+  bool ShouldTryOAuth() const;
+
+  // Configures the `request` credentials and cookies based on `use_oauth` and
+  // the `kAimEligibilityServiceOauth` feature.
+  void ConfigureRequestCookiesAndCredentials(network::ResourceRequest* request,
+                                             bool use_oauth) const;
+
   // Returns the request URL or an empty GURL if a valid URL cannot be created;
   // e.g., Google is not the default search provider.
   GURL GetRequestUrl(RequestSource request_source,
@@ -253,9 +269,24 @@ class AimEligibilityService
                      signin::IdentityManager* identity_manager,
                      const std::string& locale);
 
-  // Fetch eligibility from the server.
+  // Starts a server eligibility request, first fetching an access token if
+  // OAuth is enabled and the user is logged in.
   void StartServerEligibilityRequest(RequestSource request_source,
                                      const std::string& locale);
+
+  // Callback for when an access token is available.
+  void OnAccessTokenAvailable(RequestSource request_source,
+                              const std::string& locale,
+                              std::unique_ptr<network::ResourceRequest> request,
+                              GoogleServiceAuthError error,
+                              signin::AccessTokenInfo access_token_info);
+
+  // Sends a server eligibility request, triggered after receiving an access
+  // token or directly by `StartServerEligibilityRequest` if OAuth is disabled.
+  void SendServerEligibilityRequest(
+      RequestSource request_source,
+      const std::string& locale,
+      std::unique_ptr<network::ResourceRequest> request);
   void OnServerEligibilityResponse(
       std::unique_ptr<network::SimpleURLLoader> loader,
       RequestSource request_source,
@@ -285,6 +316,18 @@ class AimEligibilityService
   void LogEligibilityRequestPrimaryAccountIndex(
       size_t session_index,
       RequestSource request_source) const;
+  // Records total and sliced histograms for OAuth token fetch status.
+  void LogEligibilityRequestOAuthTokenFetchStatus(
+      GoogleServiceAuthError::State state,
+      RequestSource request_source) const;
+  // Records total and sliced histograms for whether the OAuth token was
+  // provided.
+  void LogEligibilityRequestOAuthTokenProvided(
+      bool has_token,
+      RequestSource request_source) const;
+  // Records total and sliced histograms for OAuth fallback.
+  void LogEligibilityRequestOAuthFallback(bool fallback_happened,
+                                          RequestSource request_source) const;
   // Records total and sliced histograms for eligibility request status.
   void LogEligibilityRequestStatus(EligibilityRequestStatus status,
                                    RequestSource request_source) const;
@@ -319,6 +362,9 @@ class AimEligibilityService
   omnibox::AimEligibilityResponse most_recent_response_;
   EligibilityResponseSource most_recent_response_source_ =
       EligibilityResponseSource::kDefault;
+
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+      access_token_fetcher_;
 
   // Tracks whether the startup request has been sent.
   bool startup_request_sent_ = false;

@@ -750,6 +750,7 @@ chromium-metrics-reviews@google.com.
   <int value="86" label="Sync Device Statistics Metrics"/>
   <int value="87" label="Private AI Service"/>
   <int value="88" label="Wallet Passes Service"/>
+  <int value="89" label="Aim Eligibility Service"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->

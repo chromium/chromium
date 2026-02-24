@@ -1251,3 +1251,119 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOffTheRecordBrowserTest,
   EXPECT_NE(service, otr_service);
   EXPECT_FALSE(otr_service->IsCreateImagesEligible());
 }
+
+class ChromeAimEligibilityServiceOAuthBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  ChromeAimEligibilityServiceOAuthBrowserTest() = default;
+  ~ChromeAimEligibilityServiceOAuthBrowserTest() override = default;
+
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_adaptor_->identity_test_env();
+  }
+
+  network::TestURLLoaderFactory* test_url_loader_factory() {
+    return signin_client_with_url_loader_helper_.test_url_loader_factory();
+  }
+
+ protected:
+  void SetUp() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        // Enabled features.
+        {{omnibox::kAimEnabled, {}},
+         {omnibox::kAimServerEligibilityEnabled, {}},
+         {omnibox::kAimServerRequestOnStartupEnabled, {}},
+         {omnibox::kAimEligibilityServiceOauth, {}}},
+        // Disabled features.
+        {contextual_tasks::kContextualTasks});
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    SetUpDefaultSearchEngine(browser()->profile(), /*is_google_dse=*/true);
+
+    // Set the adaptor that supports signin::IdentityTestEnvironment.
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
+
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindOnce(AimEligibilityServiceFactory::GetDefaultFactory()));
+
+    identity_test_env()->SetTestURLLoaderFactory(test_url_loader_factory());
+    identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+  }
+
+  void TearDownOnMainThread() override {
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    signin_client_with_url_loader_helper_.SetUp();
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &ChromeAimEligibilityServiceOAuthBrowserTest::
+                    OnWillCreateBrowserContextServices));
+  }
+
+  static void OnWillCreateBrowserContextServices(
+      content::BrowserContext* context) {
+    // Set up IdentityTestEnvironment.
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
+  ChromeSigninClientWithURLLoaderHelper signin_client_with_url_loader_helper_;
+  base::CallbackListSubscription create_services_subscription_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
+                       RequestIncludesOAuthToken) {
+  // Setup: Make a primary account available with a refresh token.
+  auto* identity_manager = identity_test_env()->identity_manager();
+  AccountInfo primary_account_info = signin::MakeAccountAvailable(
+      identity_manager,
+      signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          .WithRefreshToken("refresh_token")
+          .Build("primary@email.com"));
+
+  // Expectation: The request should include the Authorization header.
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+  base::test::TestFuture<bool> request_handled_future;
+  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [&](content::URLLoaderInterceptor::RequestParams* params) {
+            if (params->url_request.url.path() != "/async/folae") {
+              return false;
+            }
+            std::optional<std::string> authorization =
+                params->url_request.headers.GetHeader(
+                    net::HttpRequestHeaders::kAuthorization);
+            bool has_auth = authorization.has_value();
+            EXPECT_TRUE(has_auth);
+            EXPECT_TRUE(base::StartsWith(*authorization, "Bearer "));
+            EXPECT_EQ(params->url_request.credentials_mode,
+                      network::mojom::CredentialsMode::kOmit);
+            return OnRequest(params, std::make_optional(response),
+                             request_handled_future.GetRepeatingCallback());
+          }));
+
+  // Trigger the request.
+  auto* service =
+      AimEligibilityServiceFactory::GetForProfile(browser()->profile());
+  base::test::TestFuture<void> eligibility_changed_future;
+  auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
+      eligibility_changed_future.GetRepeatingCallback());
+
+  EXPECT_TRUE(eligibility_changed_future.Wait());
+  EXPECT_TRUE(request_handled_future.Get());
+}
