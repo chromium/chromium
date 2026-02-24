@@ -39,7 +39,6 @@
 #include <stdint.h>
 #include <windows.foundation.h>
 
-#include <algorithm>
 #include <atomic>
 #include <ostream>
 
@@ -47,7 +46,6 @@
 #include "base/bit_cast.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/containers/span.h"
 #include "base/cpu.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -379,7 +377,7 @@ bool Time::FromExploded(bool is_local, const Exploded& exploded, Time* time) {
 void Time::Explode(bool is_local, Exploded* exploded) const {
   if (!CanConvertToFileTime(us_)) {
     // We are not able to convert it to FILETIME.
-    std::ranges::fill(base::byte_span_from_ref(*exploded), 0);
+    *exploded = Exploded();
     return;
   }
 
@@ -402,7 +400,7 @@ void Time::Explode(bool is_local, Exploded* exploded) const {
   }
 
   if (!success) {
-    std::ranges::fill(base::byte_span_from_ref(*exploded), 0);
+    *exploded = Exploded();
     return;
   }
 
