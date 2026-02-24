@@ -50,7 +50,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/commerce/model/push_notification",
     "//ios/chrome/browser/content_suggestions/app_bundle_promo/coordinator",
     "//ios/chrome/browser/content_suggestions/default_browser/coordinator",
-    "//ios/chrome/browser/content_suggestions/default_browser/public:features",
     "//ios/chrome/browser/content_suggestions/impression_limits/model",
     "//ios/chrome/browser/content_suggestions/magic_stack/public:utils",
     "//ios/chrome/browser/content_suggestions/magic_stack/ui",

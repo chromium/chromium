@@ -267,9 +267,6 @@ extern const char kDataSharingSharedDataTypesEnabledWithUi[];
 extern const char kDataSharingVersioningStatesName[];
 extern const char kDataSharingVersioningStatesDescription[];
 
-extern const char kDefaultBrowserMagicStackIosName[];
-extern const char kDefaultBrowserMagicStackIosDescription[];
-
 extern const char kDefaultBrowserOffCyclePromoName[];
 extern const char kDefaultBrowserOffCyclePromoDescription[];
 

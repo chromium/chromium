@@ -94,7 +94,6 @@
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/badges/model/features.h"
 #import "ios/chrome/browser/composebox/public/features.h"
-#import "ios/chrome/browser/content_suggestions/default_browser/public/features.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
@@ -1192,17 +1191,6 @@ const FeatureEntry::FeatureVariation kMobilePromoOnDesktopVariations[] = {
     {" - Price Tracking with push notification",
      kMobilePromoOnDesktopPriceTrackingNotification, nullptr},
 };
-
-const FeatureEntry::FeatureParam kDefaultBrowserMagicStackIosDeviceSettings[] =
-    {{kDefaultBrowserMagicStackIosVariation, "1"}};
-const FeatureEntry::FeatureParam kDefaultBrowserMagicStackIosInAppSettings[] = {
-    {kDefaultBrowserMagicStackIosVariation, "2"}};
-
-const FeatureEntry::FeatureVariation kDefaultBrowserMagicStackIosVariations[] =
-    {{" - Tap to Device Settings", kDefaultBrowserMagicStackIosDeviceSettings,
-      nullptr},
-     {" - Tap to In App Settings", kDefaultBrowserMagicStackIosInAppSettings,
-      nullptr}};
 
 const FeatureEntry::FeatureParam kTaiyakiChoiceScreenSurfaceParamAll[] = {
     {"choice_screen_surface", "all"}};
@@ -2401,14 +2389,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kMobilePromoOnDesktopWithReminder,
                                     kMobilePromoOnDesktopVariations,
                                     "MobilePromoOnDesktopWithReminder")},
-    {"ios-default-browser-magic-stack",
-     flag_descriptions::kDefaultBrowserMagicStackIosName,
-     flag_descriptions::kDefaultBrowserMagicStackIosDescription,
-     flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         segmentation_platform::features::kDefaultBrowserMagicStackIos,
-         kDefaultBrowserMagicStackIosVariations,
-         "DefaultBrowserMagicStackIos")},
     {"lens-search-headers-check-enabled",
      flag_descriptions::kLensSearchHeadersCheckEnabledName,
      flag_descriptions::kLensSearchHeadersCheckEnabledDescription,

@@ -204,7 +204,7 @@ bool IsAppBundlePromoEphemeralCardEnabled() {
 
 BASE_FEATURE(kDefaultBrowserMagicStackIos,
 #if BUILDFLAG(IS_IOS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
@@ -213,11 +213,6 @@ constexpr base::FeatureParam<int> kMaxDefaultBrowserMagicStackIosImpressions{
     &kDefaultBrowserMagicStackIos,
     "max_default_browser_magic_stack_ios_impressions",
     /*default_value=*/6};
-
-bool IsDefaultBrowserMagicStackEnabled() {
-  return base::FeatureList::IsEnabled(
-      segmentation_platform::features::kDefaultBrowserMagicStackIos);
-}
 
 BASE_FEATURE(kAndroidTipsNotifications, base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -432,11 +432,6 @@ const char kDataSharingVersioningStatesName[] =
 const char kDataSharingVersioningStatesDescription[] =
     "Testing multiple scenarios for versioning.";
 
-const char kDefaultBrowserMagicStackIosName[] =
-    "Default Browser Magic Stack card.";
-const char kDefaultBrowserMagicStackIosDescription[] =
-    "When enabled, display the Default Browser module in the Magic Stack.";
-
 const char kDefaultBrowserOffCyclePromoName[] =
     "Default Browser off-cycle promo";
 const char kDefaultBrowserOffCyclePromoDescription[] =

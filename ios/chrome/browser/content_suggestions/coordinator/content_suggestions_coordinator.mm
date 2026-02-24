@@ -49,7 +49,6 @@
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_delegate.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_mediator.h"
 #import "ios/chrome/browser/content_suggestions/default_browser/coordinator/default_browser_mediator.h"
-#import "ios/chrome/browser/content_suggestions/default_browser/public/features.h"
 #import "ios/chrome/browser/content_suggestions/impression_limits/model/impression_limit_service_factory.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/coordinator/magic_stack_ranking_model.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_utils.h"
@@ -498,8 +497,7 @@ using segmentation_platform::TipIdentifier;
     _appBundlePromoMediator.presentationAudience = self;
     [moduleMediators addObject:_appBundlePromoMediator];
   }
-  if (segmentation_platform::features::IsDefaultBrowserMagicStackEnabled() &&
-      areTipsCardsEnabled) {
+  if (areTipsCardsEnabled) {
     _defaultBrowserMediator =
         [[DefaultBrowserMediator alloc] initWithProfilePrefService:prefs];
     _defaultBrowserMediator.presentationAudience = self;
@@ -764,22 +762,7 @@ using segmentation_platform::TipIdentifier;
 - (void)didTapDefaultBrowserPromo {
   [_magicStackRankingModel logMagicStackEngagementForType:
                                ContentSuggestionsModuleType::kDefaultBrowser];
-  DefaultBrowserMagicStackIosVariationType variation =
-      GetDefaultBrowserMagicStackIosVariation();
-
-  if (variation ==
-      DefaultBrowserMagicStackIosVariationType::kTapToDeviceSettings) {
-    OpenIOSDefaultBrowserSettingsPage();
-  } else if (variation ==
-             DefaultBrowserMagicStackIosVariationType::kTapToAppSettings) {
-    id<SettingsCommands> settingsHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), SettingsCommands);
-    [settingsHandler
-        showDefaultBrowserSettingsFromViewController:nil
-                                        sourceForUMA:
-                                            DefaultBrowserSettingsPageSource::
-                                                kMagicStackCard];
-  }
+  OpenIOSDefaultBrowserSettingsPage();
 }
 
 - (void)openTipDestination:(segmentation_platform::TipIdentifier)tip {

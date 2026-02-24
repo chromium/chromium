@@ -137,6 +137,19 @@ void ConfigureForAppBundleModule(scoped_refptr<InputContext> input_context,
       segmentation_platform::processing::ProcessedValue::FromFloat(count));
 }
 
+// Sets signals relevant for the Default Browser ephemeral module.
+void ConfigureForDefaultBrowserModule(scoped_refptr<InputContext> input_context,
+                                      bool enable = true) {
+  float signal_value = enable ? 1.0f : 0.0f;
+  input_context->metadata_args.emplace(
+      segmentation_platform::kIsNewUser,
+      segmentation_platform::processing::ProcessedValue::FromFloat(0.0f));
+  input_context->metadata_args.emplace(
+      segmentation_platform::kIsDefaultBrowserChromeIos,
+      segmentation_platform::processing::ProcessedValue::FromFloat(
+          signal_value));
+}
+
 // Observer that waits for service initialization.
 class WaitServiceInitializedObserver : public ServiceProxy::Observer {
  public:
@@ -426,7 +439,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
       SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
           profile_data_->profile.get());
   ASSERT_TRUE(registry);
-  EXPECT_EQ(5u, registry->get_all_cards_by_priority().size());
+  EXPECT_EQ(6u, registry->get_all_cards_by_priority().size());
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
@@ -440,6 +453,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
   ConfigureForEnhancedSafeBrowsingModule(input_context, false);
   ConfigureForSendTabModule(input_context, false);
   ConfigureForAppBundleModule(input_context, false);
+  ConfigureForDefaultBrowserModule(input_context, false);
 
   std::vector<std::string> result = {
       segmentation_platform::kPriceTrackingNotificationPromo};
@@ -457,7 +471,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
       SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
           profile_data_->profile.get());
   ASSERT_TRUE(registry);
-  EXPECT_EQ(5u, registry->get_all_cards_by_priority().size());
+  EXPECT_EQ(6u, registry->get_all_cards_by_priority().size());
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
@@ -471,6 +485,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
   ConfigureForEnhancedSafeBrowsingModule(input_context, false);
   ConfigureForSendTabModule(input_context, false);
   ConfigureForAppBundleModule(input_context, false);
+  ConfigureForDefaultBrowserModule(input_context, false);
 
   std::vector<std::string> result = {
       segmentation_platform::kLensEphemeralModuleSearchVariation};
@@ -488,7 +503,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
       SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
           profile_data_->profile.get());
   ASSERT_TRUE(registry);
-  EXPECT_EQ(5u, registry->get_all_cards_by_priority().size());
+  EXPECT_EQ(6u, registry->get_all_cards_by_priority().size());
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
@@ -502,6 +517,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
   ConfigureForLensModule(input_context, false);
   ConfigureForSendTabModule(input_context, false);
   ConfigureForAppBundleModule(input_context, false);
+  ConfigureForDefaultBrowserModule(input_context, false);
 
   std::vector<std::string> result = {
       segmentation_platform::kEnhancedSafeBrowsingEphemeralModule};
@@ -518,7 +534,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
       SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
           profile_data_->profile.get());
   ASSERT_TRUE(registry);
-  EXPECT_EQ(5u, registry->get_all_cards_by_priority().size());
+  EXPECT_EQ(6u, registry->get_all_cards_by_priority().size());
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
@@ -530,6 +546,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest,
   ConfigureForEnhancedSafeBrowsingModule(input_context, true);
   ConfigureForSendTabModule(input_context, true);
   ConfigureForAppBundleModule(input_context, true);
+  ConfigureForDefaultBrowserModule(input_context, true);
 
   // The highest priority card should be returned first. In this case, Price
   // Tracking takes precedence over others.

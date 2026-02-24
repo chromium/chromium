@@ -45,7 +45,6 @@
 #import "ios/chrome/browser/content_suggestions/app_bundle_promo/coordinator/app_bundle_promo_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/app_bundle_promo/ui/app_bundle_promo_config.h"
 #import "ios/chrome/browser/content_suggestions/default_browser/coordinator/default_browser_mediator.h"
-#import "ios/chrome/browser/content_suggestions/default_browser/public/features.h"
 #import "ios/chrome/browser/content_suggestions/default_browser/ui/default_browser_config.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/coordinator/magic_stack_ranking_model_delegate.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/public/magic_stack_utils.h"
@@ -645,12 +644,10 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
               static_cast<float>(
                   _appStoreBundleService->GetInstalledAppCount())));
     }
-    if (segmentation_platform::features::IsDefaultBrowserMagicStackEnabled()) {
-      inputContext->metadata_args.emplace(
-          segmentation_platform::kIsDefaultBrowserChromeIos,
-          segmentation_platform::processing::ProcessedValue::FromFloat(
-              IsChromeLikelyDefaultBrowser()));
-    }
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kIsDefaultBrowserChromeIos,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            IsChromeLikelyDefaultBrowser()));
   }
 
   __weak MagicStackRankingModel* weakSelf = self;
@@ -731,9 +728,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       }
     } else if (label ==
                segmentation_platform::kDefaultBrowserPromoEphemeralModule) {
-      if (segmentation_platform::features::
-              IsDefaultBrowserMagicStackEnabled() &&
-          areTipsCardsEnabled) {
+      if (areTipsCardsEnabled) {
         _ephemeralCardToShow = ContentSuggestionsModuleType::kDefaultBrowser;
         card = _defaultBrowserMediator.config;
         break;
@@ -984,9 +979,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         }
         break;
       case ContentSuggestionsModuleType::kDefaultBrowser:
-        if (segmentation_platform::features::
-                IsDefaultBrowserMagicStackEnabled() &&
-            _defaultBrowserMediator) {
+        if (_defaultBrowserMediator) {
           [magicStackOrder addObject:_defaultBrowserMediator.config];
         }
         break;
