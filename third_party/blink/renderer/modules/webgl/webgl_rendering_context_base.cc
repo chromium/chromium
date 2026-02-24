@@ -6281,6 +6281,11 @@ BASE_FEATURE(kAllowGpuUploadForTexSubImageOnAndroid,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Killswitch guarding WebGL not caching the SkSurface used for
+// VideoFrame->StaticBitmapImage software draws.
+BASE_FEATURE(kWebGLVideoFrameDrawCacheSkSurface,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     TexImageParams params,
     WebGLTexture* texture,
@@ -6447,13 +6452,29 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
 
   auto info = CreateSnapshotProviderInfoForVideoFrame(
       *media_video_frame, dest_rect.size(), reinterpret_video_as_srgb);
+  auto* snapshot_provider = image_cache.GetCanvasSnapshotProvider(info);
+  std::optional<CanvasSnapshotProvider::Info> sw_draw_info;
+  CanvasNon2DResourceProviderSharedImage* snapshot_provider_si = nullptr;
+  sk_sp<SkSurface> sw_draw_surface;
+
+  if (snapshot_provider->IsExternalBitmapProvider()) {
+    sw_draw_info = info;
+    if (base::FeatureList::IsEnabled(kWebGLVideoFrameDrawCacheSkSurface)) {
+      sw_draw_surface =
+          static_cast<CanvasNon2DSnapshotProviderBitmap*>(snapshot_provider)
+              ->GetCachedSurface();
+    }
+  } else {
+    snapshot_provider_si =
+        static_cast<CanvasNon2DResourceProviderSharedImage*>(snapshot_provider);
+  }
 
   // Since TexImageStaticBitmapImage() and TexImageGPU() don't know how to
   // handle tagged orientation, we set |prefer_tagged_orientation| to false.
   scoped_refptr<StaticBitmapImage> image = CreateImageFromVideoFrame(
-      std::move(media_video_frame), image_cache.GetCanvasSnapshotProvider(info),
-      video_renderer, /*prefer_tagged_orientation=*/false,
-      reinterpret_video_as_srgb);
+      std::move(media_video_frame), snapshot_provider_si,
+      std::move(sw_draw_info), sw_draw_surface, video_renderer,
+      /*prefer_tagged_orientation=*/false, reinterpret_video_as_srgb);
   if (!image) {
     return;
   }
