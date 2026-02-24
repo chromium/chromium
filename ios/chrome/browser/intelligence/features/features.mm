@@ -346,13 +346,13 @@ bool IsZeroStateSuggestionsAskGeminiEnabled() {
       kZeroStateSuggestions, kZeroStateSuggestionsPlacementAskGemini, false);
 }
 
-BASE_FEATURE(kGeminiFullChatHistory, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiFullChatHistory, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiFullChatHistoryEnabled() {
   return base::FeatureList::IsEnabled(kGeminiFullChatHistory);
 }
 
-BASE_FEATURE(kGeminiLoadingStateRedesign, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiLoadingStateRedesign, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiLoadingStateRedesignEnabled() {
   return base::FeatureList::IsEnabled(kGeminiLoadingStateRedesign);

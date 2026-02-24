@@ -13535,22 +13535,6 @@
             ]
         }
     ],
-    "HeliosFullChatHistory": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GeminiFullChatHistory",
-                        "GeminiLoadingStateRedesign"
-                    ]
-                }
-            ]
-        }
-    ],
     "HeliosWithReaderMode": [
         {
             "platforms": [
