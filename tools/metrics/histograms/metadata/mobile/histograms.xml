@@ -386,7 +386,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Mobile.Messages.Confirm.Accept.Time{Mobile_Messages_Confirm_Type}"
-    units="ms" expires_after="2026-04-06">
+    units="ms" expires_after="2027-04-06">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@chromium.org</owner>
   <summary>
