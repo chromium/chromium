@@ -15,6 +15,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
+#include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -4451,6 +4452,15 @@ bool PaintPropertyTreeBuilder::CanDoDeferredOpacityNodeUpdate(
   if (!properties || !properties->Effect())
     return false;
 
+  if (properties->Effect()->HasActiveOpacityAnimation()) {
+    const CSSBitset* important_properties =
+        object.StyleRef().GetBaseImportantSet();
+    if (important_properties &&
+        important_properties->Has(CSSPropertyID::kOpacity)) {
+      return false;
+    }
+  }
+
   // Descendant state depends on opacity being zero, so we can't do a direct
   // update if it changes
   bool old_opacity_is_zero = properties->Effect()->Opacity() == 0;
@@ -4467,6 +4477,7 @@ bool PaintPropertyTreeBuilder::CanDoDeferredOpacityNodeUpdate(
       To<Element>(object.GetNode())->IsInCanvasSubtree()) {
     return false;
   }
+
   return true;
 }
 

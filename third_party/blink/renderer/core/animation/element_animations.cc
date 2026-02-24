@@ -231,4 +231,30 @@ bool ElementAnimations::SetCompositedBackgroundColorStatus(
   return false;
 }
 
+void ElementAnimations::CancelCompositedAnimationsAffectingProperties(
+    const CSSBitset& property_bitset) {
+  for (auto& entry : animations_) {
+    if (!entry.key->HasActiveAnimationsOnCompositor()) {
+      continue;
+    }
+    KeyframeEffect* effect = DynamicTo<KeyframeEffect>(entry.key->effect());
+    if (!effect) {
+      continue;
+    }
+
+    for (const auto& property : effect->Model()->DynamicProperties()) {
+      if (!property.IsCSSProperty()) {
+        continue;
+      }
+      if (property_bitset.Has(property.GetCSSProperty().PropertyID())) {
+        entry.key->SetCompositorPending(
+            Animation::CompositorPendingReason::kPendingCancel);
+        // No need to check the remaining properties once we have forced the
+        // fallback to a main-thread animation.
+        break;
+      }
+    }
+  }
+}
+
 }  // namespace blink

@@ -141,6 +141,14 @@ class CORE_EXPORT ElementAnimations final
 
   bool SetCompositedClipPathStatus(CompositedPaintStatus status);
 
+  // Animations affecting properties marked as important cannot be composited.
+  // An animation running on the compositor must be cancelled once the affected
+  // property is added to the important set. Note that a animation affecting
+  // an important property still continues to run on the main thread, but the
+  // property value will not applied by the style cascade.
+  void CancelCompositedAnimationsAffectingProperties(
+      const CSSBitset& property_bitset);
+
   void Trace(Visitor*) const override;
 
  private:

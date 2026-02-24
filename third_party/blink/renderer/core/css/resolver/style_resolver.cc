@@ -2619,6 +2619,15 @@ bool StyleResolver::ApplyAnimatedStyle(
     DCHECK(!state.GetFontBuilder().FontDirty());
   }
 
+  if (ElementAnimations* animations =
+          animating_element->GetElementAnimations()) {
+    if (StyleBaseData* base_data = state.StyleBuilder().BaseData()) {
+      if (const CSSBitset* important_set = base_data->GetBaseImportantSet()) {
+        animations->CancelCompositedAnimationsAffectingProperties(
+            *important_set);
+      }
+    }
+  }
   CSSAnimations::CalculateCompositorAnimationUpdate(
       state.AnimationUpdate(), *animating_element, element,
       *state.StyleBuilder().GetBaseComputedStyle(), state.ParentStyle(),

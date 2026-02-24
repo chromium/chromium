@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/properties/css_bitset.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -509,8 +510,19 @@ CompositingReasons CompositingReasonFinder::CompositingReasonsForAnimation(
   if (style.HasCurrentTranslateAnimation() &&
       ObjectTypeSupportsCompositedTransformAnimation(object))
     reasons |= CompositingReason::kActiveTranslateAnimation;
-  if (style.HasCurrentOpacityAnimation())
-    reasons |= CompositingReason::kActiveOpacityAnimation;
+  // Opacity needs an additional check that the base value for opacity is not
+  // marked as important. The compositor does not know about the effect
+  // of an important property on composite ordering, and it is unsafe to use
+  // the fast path even when updating opacity from main. Other properties do not
+  // require the same added safeguard since they don't have the same fast path
+  // mechanics for deferred updates from main.
+  if (style.HasCurrentOpacityAnimation()) {
+    const CSSBitset* important_properties = style.GetBaseImportantSet();
+    if (!important_properties ||
+        !important_properties->Has(CSSPropertyID::kOpacity)) {
+      reasons |= CompositingReason::kActiveOpacityAnimation;
+    }
+  }
   if (style.HasCurrentFilterAnimation())
     reasons |= CompositingReason::kActiveFilterAnimation;
   if (style.HasCurrentBackdropFilterAnimation())
