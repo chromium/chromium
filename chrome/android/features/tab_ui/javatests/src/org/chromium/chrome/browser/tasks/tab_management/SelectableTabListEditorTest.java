@@ -218,6 +218,7 @@ public class SelectableTabListEditorTest {
                                     mAppHeaderStateProvider,
                                     mEdgeToEdgeSupplier,
                                     CreationMode.FULL_SCREEN,
+                                    /* itemPickerSelectionHandler= */ null,
                                     /* undoBarExplicitTrigger= */ null,
                                     /* componentName= */ null,
                                     TabListEditorCoordinator.UNLIMITED_SELECTION,

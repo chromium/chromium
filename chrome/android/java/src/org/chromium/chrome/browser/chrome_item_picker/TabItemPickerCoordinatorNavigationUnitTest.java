@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.chrome_item_picker;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
@@ -26,6 +28,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -38,7 +42,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelectionId;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 
@@ -58,7 +61,9 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
     @Mock private ChromeItemPickerActivity mActivity;
     @Mock private TabListEditorCoordinator mTabListEditorCoordinator;
     @Mock private TabListEditorController mTabListEditorController;
-    @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegateMock;
+
+    private final Set<TabListEditorItemSelectionId> mInitialSelectedTabIds = new HashSet<>();
+
     private TabItemPickerCoordinator mItemPickerCoordinator;
     private ItemPickerNavigationProvider mNavigationProvider;
     private Set<Integer> mCachedTabIds = new HashSet<>();
@@ -106,10 +111,10 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         mNavigationProvider =
                 new ItemPickerNavigationProvider(
                         mActivity,
-                        mTabListEditorController,
-                        mSelectionDelegateMock,
+                        ObservableSuppliers.createMonotonic(mTabListEditorController),
                         mTabModelSelector,
-                        mCachedTabIds);
+                        mCachedTabIds,
+                        mInitialSelectedTabIds);
 
         doReturn(mNavigationProvider)
                 .when(mItemPickerCoordinator)
@@ -181,5 +186,34 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
 
         watcher.assertExpected();
         verify(mActivity).finishWithSelectedItems(selectedList);
+    }
+
+    @Test
+    public void testSelectionChangeUpdatesDoneButton() {
+        TabListEditorItemSelectionId id1 = TabListEditorItemSelectionId.createTabId(101);
+        mInitialSelectedTabIds.add(id1);
+
+        captureAndSpyNavigationProvider();
+
+        NonNullObservableSupplier<Boolean> supplier =
+                mNavigationProvider.getEnableDoneButtonSupplier();
+        assertFalse(supplier.get());
+
+        // Select the same item.
+        Set<TabListEditorItemSelectionId> selection = new HashSet<>();
+        selection.add(id1);
+        mNavigationProvider.onSelectionStateChange(selection);
+        assertFalse(supplier.get());
+
+        // Select a different item.
+        TabListEditorItemSelectionId id2 = TabListEditorItemSelectionId.createTabId(102);
+        selection.add(id2);
+        mNavigationProvider.onSelectionStateChange(selection);
+        assertTrue(supplier.get());
+
+        // Back to original.
+        selection.remove(id2);
+        mNavigationProvider.onSelectionStateChange(selection);
+        assertFalse(supplier.get());
     }
 }

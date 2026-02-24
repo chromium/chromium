@@ -17,9 +17,13 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.HeadlessBrowserControlsStateProvider;
@@ -45,12 +49,12 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.ItemPickerSelectionHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorItemSelectionId;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
@@ -58,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /** Provides access to, and management of, Tab data for the {@link ChromeItemPickerActivity}. */
@@ -73,6 +78,7 @@ public class TabItemPickerCoordinator {
     private final OnBackPressedCallback mBackPressCallback;
     private final Callback<Boolean> mBackPressEnabledObserver;
     private final ArrayList<Integer> mPreselectedTabIds;
+    private final Set<TabListEditorItemSelectionId> mInitialSelectedTabIds = new HashSet<>();
     private final int mAllowedSelectionCount;
     private final boolean mIsSingleContextMode;
     private final Set<Integer> mCachedTabIdsSet = new HashSet<>();
@@ -330,10 +336,12 @@ public class TabItemPickerCoordinator {
             if (id == null) continue;
             @Nullable Tab tab = mTabModelSelector.getTabById(id);
             if (tab != null) {
-                selectionSet.add(TabListEditorItemSelectionId.createTabId(tab.getId()));
+                var selectionId = TabListEditorItemSelectionId.createTabId(tab.getId());
+                selectionSet.add(selectionId);
+                mInitialSelectedTabIds.add(selectionId);
             }
         }
-        controller.preselectTabs(selectionSet);
+        controller.selectTabs(selectionSet);
     }
 
     private static void cancelPicker(Activity activity) {
@@ -344,38 +352,46 @@ public class TabItemPickerCoordinator {
         }
     }
 
-    public interface ItemPickerSelectionHandler {
-
-        /**
-         * Executes the successful selection logic, typically finishing the host activity. * @param
-         * selectedItems The list of items chosen by the user.
-         */
-        void finishSelection(List<TabListEditorItemSelectionId> selectedItems);
-    }
-
     public static class ItemPickerNavigationProvider
             implements TabListEditorCoordinator.NavigationProvider, ItemPickerSelectionHandler {
+        private final SettableNonNullObservableSupplier<Boolean> mEnableDoneButtonSupplier =
+                ObservableSuppliers.createNonNull(false);
         private final Activity mActivity;
-        private final TabListEditorController mController;
+        private final MonotonicObservableSupplier<TabListEditorController> mControllerSupplier;
         private final TabModelSelector mTabModelSelector;
         private final Set<Integer> mCachedTabIds;
+        private final Set<TabListEditorItemSelectionId> mInitialSelectedTabIds;
 
         public ItemPickerNavigationProvider(
                 Activity activity,
-                TabListEditorController controller,
-                SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate,
+                MonotonicObservableSupplier<TabListEditorController> controllerSupplier,
                 TabModelSelector tabModelSelector,
-                Set<Integer> cachedTabIds) {
+                Set<Integer> cachedTabIds,
+                Set<TabListEditorItemSelectionId> initialSelectedTabIds) {
             mActivity = activity;
-            mController = controller;
+            mControllerSupplier = controllerSupplier;
             mTabModelSelector = tabModelSelector;
             mCachedTabIds = cachedTabIds;
+            mInitialSelectedTabIds = initialSelectedTabIds;
+        }
+
+        @Override
+        public void onSelectionStateChange(Set<TabListEditorItemSelectionId> selectedItems) {
+            boolean hasSelectionChanged = !Objects.equals(mInitialSelectedTabIds, selectedItems);
+            mEnableDoneButtonSupplier.set(hasSelectionChanged);
+        }
+
+        @Override
+        public NonNullObservableSupplier<Boolean> getEnableDoneButtonSupplier() {
+            return mEnableDoneButtonSupplier;
         }
 
         @Override
         public void goBack() {
-            if (mController.isVisible()) {
-                mController.hide();
+            var controller = mControllerSupplier.get();
+            assert controller != null;
+            if (controller.isVisible()) {
+                controller.hide();
             }
 
             // Route back press to the Activity's cancel handler.
@@ -406,7 +422,9 @@ public class TabItemPickerCoordinator {
                     "Android.TabItemPicker.ActiveTabsPicked.Count", activePickedCount);
             RecordHistogram.recordCount100Histogram(
                     "Android.TabItemPicker.CachedTabsPicked.Count", cachedPickedCount);
-            mController.hideByAction();
+            var controller = mControllerSupplier.get();
+            assert controller != null;
+            controller.hideByAction();
 
             // Route the result to the Activity's success handler.
             if (mActivity instanceof ChromeItemPickerActivity cipa) {
@@ -472,6 +490,16 @@ public class TabItemPickerCoordinator {
         ModalDialogManager modalDialogManager =
                 new ModalDialogManager(new AppModalPresenter(mActivity), ModalDialogType.APP);
 
+        SettableMonotonicObservableSupplier<TabListEditorController> controllerSupplier =
+                ObservableSuppliers.createMonotonic();
+        mNavigationProvider =
+                new ItemPickerNavigationProvider(
+                        mActivity,
+                        controllerSupplier,
+                        assumeNonNull(mTabModelSelector),
+                        mCachedTabIdsSet,
+                        mInitialSelectedTabIds);
+
         TabListEditorCoordinator coordinator =
                 new TabListEditorCoordinator(
                         mActivity,
@@ -491,21 +519,14 @@ public class TabItemPickerCoordinator {
                         /* desktopWindowStateManager= */ null,
                         /* edgeToEdgeSupplier= */ null,
                         CreationMode.ITEM_PICKER,
+                        mNavigationProvider,
                         /* undoBarExplicitTrigger= */ null,
                         /* componentName= */ "TabItemPickerCoordinator",
                         mAllowedSelectionCount,
                         mIsSingleContextMode);
 
-        mNavigationProvider =
-                new ItemPickerNavigationProvider(
-                        mActivity,
-                        coordinator.getController(),
-                        coordinator.getSelectionDelegate(),
-                        assumeNonNull(mTabModelSelector),
-                        mCachedTabIdsSet);
-
+        controllerSupplier.set(coordinator.getController());
         coordinator.getController().setNavigationProvider(mNavigationProvider);
-        coordinator.getController().setSelectionHandler(mNavigationProvider);
 
         return coordinator;
     }

@@ -287,14 +287,14 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             recyclerView.addOnScrollListener(mTabListOnScrollListener);
 
             @LayoutRes
-            int toolbar_res_id =
+            int toolbarResId =
                     isDataSharingAndroidEnabled
                             ? R.layout.tab_grid_dialog_toolbar_two_row
                             : R.layout.tab_grid_dialog_toolbar;
             TabGridDialogToolbarView toolbarView =
                     (TabGridDialogToolbarView)
                             LayoutInflater.from(activity)
-                                    .inflate(toolbar_res_id, recyclerView, false);
+                                    .inflate(toolbarResId, recyclerView, false);
             if (isDataSharingAndroidEnabled) {
                 FrameLayout imageTilesContainer =
                         toolbarView.findViewById(R.id.image_tiles_container);
@@ -380,6 +380,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* desktopWindowStateManager= */ null,
                             /* edgeToEdgeSupplier= */ null,
                             CreationMode.DIALOG,
+                            /* itemPickerSelectionHandler= */ null,
                             /* undoBarExplicitTrigger= */ null,
                             /* componentName= */ null,
                             TabListEditorCoordinator.UNLIMITED_SELECTION,

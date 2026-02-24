@@ -107,6 +107,7 @@ public class ClosableTabListEditorTest {
                                     /* desktopWindowStateManager= */ null,
                                     mEdgeToEdgeSupplier,
                                     CreationMode.FULL_SCREEN,
+                                    /* itemPickerSelectionHandler= */ null,
                                     /* undoBarExplicitTrigger= */ null,
                                     /* componentName= */ null,
                                     TabListEditorCoordinator.UNLIMITED_SELECTION,

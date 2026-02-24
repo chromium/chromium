@@ -810,6 +810,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         mDesktopWindowStateManager,
                         /* edgeToEdgeSupplier= */ null,
                         CreationMode.FULL_SCREEN,
+                        /* itemPickerSelectionHandler= */ null,
                         mUndoBarController,
                         COMPONENT_NAME,
                         TabListEditorCoordinator.UNLIMITED_SELECTION,

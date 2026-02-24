@@ -29,14 +29,19 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.ItemPickerSelectionHandler;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.NavigationProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.ResetHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -44,8 +49,9 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /** Unit tests for {@link TabListEditorMediator}. */
@@ -68,6 +74,28 @@ public final class TabListEditorMediatorUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private Profile mProfile;
+    @Mock private NavigationProvider mNavigationProvider;
+    @Mock private SnackbarManager mSnackbarManager;
+
+    private final SettableNonNullObservableSupplier<Boolean> mEnableDoneButtonSupplier =
+            ObservableSuppliers.createNonNull(false);
+    private final ItemPickerSelectionHandler mItemPickerSelectionHandler =
+            new ItemPickerSelectionHandler() {
+                @Override
+                public NonNullObservableSupplier<Boolean> getEnableDoneButtonSupplier() {
+                    return mEnableDoneButtonSupplier;
+                }
+
+                @Override
+                public void onSelectionStateChange(
+                        Set<TabListEditorItemSelectionId> selectedItems) {
+                    mEnableDoneButtonSupplier.set(
+                            !Objects.equals(mInitialSelectedItems, selectedItems));
+                }
+
+                @Override
+                public void finishSelection(List<TabListEditorItemSelectionId> selectedItems) {}
+            };
 
     private Context mContext;
     private PropertyModel mModel;
@@ -75,6 +103,7 @@ public final class TabListEditorMediatorUnitTest {
     private MonotonicObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private ArgumentCaptor<SelectionObserver<TabListEditorItemSelectionId>>
             mSelectionObserverCaptor;
+    private Set<TabListEditorItemSelectionId> mInitialSelectedItems;
 
     @Before
     public void setUp() {
@@ -101,6 +130,9 @@ public final class TabListEditorMediatorUnitTest {
         mModel = new PropertyModel.Builder(TabListEditorProperties.ALL_KEYS).build();
         reset(mSelectionDelegate);
 
+        ItemPickerSelectionHandler itemPickerSelectionHandler =
+                mode == CreationMode.ITEM_PICKER ? mItemPickerSelectionHandler : null;
+
         mMediator =
                 new TabListEditorMediator(
                         mContext,
@@ -108,24 +140,22 @@ public final class TabListEditorMediatorUnitTest {
                         mModel,
                         mSelectionDelegate,
                         /* actionOnRelatedTabs= */ false,
-                        /* snackbarManager= */ null,
+                        mSnackbarManager,
                         /* bottomSheetController= */ null,
                         mTabListEditorLayout,
                         TabActionState.SELECTABLE,
                         mDesktopWindowStateManager,
-                        mode);
+                        mode,
+                        itemPickerSelectionHandler);
         mMediator.initializeWithTabListCoordinator(mTabListCoordinator, mResetHandler);
+        mMediator.setNavigationProvider(mNavigationProvider);
         mSelectionObserverCaptor = ArgumentCaptor.forClass(SelectionObserver.class);
 
         // Verify times(1) is correct because we reset the mock first.
         verify(mSelectionDelegate, times(1)).addObserver(mSelectionObserverCaptor.capture());
     }
 
-    private void triggerUpdateModelsFromSelection(Set<TabListEditorItemSelectionId> selectedItems) {
-        mSelectionObserverCaptor.getValue().onSelectionStateChange(List.copyOf(selectedItems));
-    }
-
-    private void triggerUpdateToolbar(Set<TabListEditorItemSelectionId> selectedItems) {
+    private void triggerSelection(Set<TabListEditorItemSelectionId> selectedItems) {
         mSelectionObserverCaptor.getValue().onSelectionStateChange(List.copyOf(selectedItems));
     }
 
@@ -154,88 +184,39 @@ public final class TabListEditorMediatorUnitTest {
     }
 
     @Test
-    public void testUpdateToolbar_NonItemPickerMode() {
+    public void testConfigureToolbar_NonItemPickerMode() {
         // Test in the default FULL_SCREEN mode.
         setupMediator(CreationMode.FULL_SCREEN);
-        triggerUpdateToolbar(Collections.emptySet());
+        mMediator.show(new ArrayList<>(), new ArrayList<>(), /* recyclerViewPosition= */ null);
 
         assertFalse(mModel.get(TabListEditorProperties.DONE_BUTTON_VISIBILITY));
         assertFalse(mModel.get(TabListEditorProperties.IS_DONE_BUTTON_ENABLED));
     }
 
     @Test
-    public void testUpdateToolbar_NoSelectionChange() {
+    public void testItemPicker_DifferentSelection() {
         setupMediator(CreationMode.ITEM_PICKER);
-
-        // Set Initial selection.
-        Set<TabListEditorItemSelectionId> initialSelection = Set.of(TAB_ID_1);
-        mMediator.preselectTabs(initialSelection);
-
-        // Mock current selection to be same as initial.
-        when(mSelectionDelegate.getSelectedItems()).thenReturn(initialSelection);
-
-        triggerUpdateToolbar(initialSelection);
+        mMediator.show(new ArrayList<>(), new ArrayList<>(), /* recyclerViewPosition= */ null);
 
         assertTrue(mModel.get(TabListEditorProperties.DONE_BUTTON_VISIBILITY));
         assertFalse(mModel.get(TabListEditorProperties.IS_DONE_BUTTON_ENABLED));
-    }
-
-    @Test
-    public void testUpdateToolbar_InitialEmptyToSelected() {
-        setupMediator(CreationMode.ITEM_PICKER);
-
-        // Set Initial selection to be empty.
-        Set<TabListEditorItemSelectionId> initialSelection = Collections.emptySet();
-        mMediator.preselectTabs(initialSelection);
-
-        // Mock current selection to include a tab.
-        Set<TabListEditorItemSelectionId> currentSelection = Set.of(TAB_ID_1);
-        when(mSelectionDelegate.getSelectedItems()).thenReturn(currentSelection);
-
-        triggerUpdateToolbar(currentSelection);
-
-        assertTrue(mModel.get(TabListEditorProperties.DONE_BUTTON_VISIBILITY));
-        assertTrue(mModel.get(TabListEditorProperties.IS_DONE_BUTTON_ENABLED));
-    }
-
-    @Test
-    public void testUpdateToolbar_InitialSelectedToEmpty() {
-        setupMediator(CreationMode.ITEM_PICKER);
-
-        // Initial selection has a preselected tab.
-        Set<TabListEditorItemSelectionId> initialSelection = Set.of(TAB_ID_1);
-        mMediator.preselectTabs(initialSelection);
-
-        // Mock current selection to be empty.
-        Set<TabListEditorItemSelectionId> currentSelection = Collections.emptySet();
-        when(mSelectionDelegate.getSelectedItems()).thenReturn(currentSelection);
-
-        triggerUpdateToolbar(currentSelection);
-
-        assertTrue(mModel.get(TabListEditorProperties.DONE_BUTTON_VISIBILITY));
-        assertTrue(mModel.get(TabListEditorProperties.IS_DONE_BUTTON_ENABLED));
-    }
-
-    @Test
-    public void testUpdateToolbar_DifferentSelection() {
-        setupMediator(CreationMode.ITEM_PICKER);
 
         // Initial selection contains a tab.
-        Set<TabListEditorItemSelectionId> initialSelection = Set.of(TAB_ID_1);
-        mMediator.preselectTabs(initialSelection);
+        mInitialSelectedItems = Set.of(TAB_ID_1);
+        mMediator.selectTabs(mInitialSelectedItems);
 
         // Mock current selection contains different tab.
         Set<TabListEditorItemSelectionId> currentSelection = Set.of(TAB_ID_2);
         when(mSelectionDelegate.getSelectedItems()).thenReturn(currentSelection);
 
-        triggerUpdateToolbar(currentSelection);
+        triggerSelection(currentSelection);
 
         assertTrue(mModel.get(TabListEditorProperties.DONE_BUTTON_VISIBILITY));
         assertTrue(mModel.get(TabListEditorProperties.IS_DONE_BUTTON_ENABLED));
     }
 
     @Test
-    public void testUpdateModelsFromSelection_SingleContext_CheckmarkSync() {
+    public void testSelection_SingleContext_CheckmarkSync() {
         setupMediator(CreationMode.ITEM_PICKER);
 
         PropertyModel model1 =
@@ -254,7 +235,7 @@ public final class TabListEditorMediatorUnitTest {
         modelList.add(new MVCListAdapter.ListItem(TabProperties.UiType.TAB, model2));
         when(mTabListCoordinator.getTabListModel()).thenReturn(modelList);
 
-        triggerUpdateModelsFromSelection(Set.of(TAB_ID_2));
+        triggerSelection(Set.of(TAB_ID_2));
 
         assertFalse(model1.get(TabProperties.IS_SELECTED));
         assertTrue(model2.get(TabProperties.IS_SELECTED));
