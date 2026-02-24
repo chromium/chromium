@@ -29,6 +29,7 @@
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_change_notifier.h"
@@ -621,43 +622,44 @@ void ClipboardAndroid::ReadAsciiText(ClipboardBuffer buffer,
 // |src_url| isn't really used. It is only implemented in Windows.
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardAndroid::ReadHTML(ClipboardBuffer buffer,
-                                const DataTransferEndpoint* data_dst,
-                                std::u16string* markup,
-                                std::string* src_url,
-                                uint32_t* fragment_start,
-                                uint32_t* fragment_end) const {
+void ClipboardAndroid::ReadHTML(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadHtmlCallback callback) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kHtml);
-  if (src_url)
-    src_url->clear();
 
   std::string input = GetClipboardMap().Get(ClipboardFormatType::HtmlType());
-  *markup = base::UTF8ToUTF16(input);
+  std::u16string markup = base::UTF8ToUTF16(input);
 
-  *fragment_start = 0;
-  *fragment_end = static_cast<uint32_t>(markup->length());
+  uint32_t fragment_start = 0;
+  uint32_t fragment_end = static_cast<uint32_t>(markup.length());
+  std::move(callback).Run(std::move(markup), GURL(), fragment_start,
+                          fragment_end);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardAndroid::ReadSvg(ClipboardBuffer buffer,
-                               const DataTransferEndpoint* data_dst,
-                               std::u16string* result) const {
+void ClipboardAndroid::ReadSvg(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadSvgCallback callback) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   std::string utf8 = GetClipboardMap().Get(ClipboardFormatType::SvgType());
-  *result = base::UTF8ToUTF16(utf8);
+  std::move(callback).Run(base::UTF8ToUTF16(utf8));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardAndroid::ReadRTF(ClipboardBuffer buffer,
-                               const DataTransferEndpoint* data_dst,
-                               std::string* result) const {
+void ClipboardAndroid::ReadRTF(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadRTFCallback callback) const {
   DCHECK(CalledOnValidThread());
   NOTIMPLEMENTED();
+  std::move(callback).Run("");
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -677,24 +679,24 @@ void ClipboardAndroid::ReadPng(
 void ClipboardAndroid::ReadDataTransferCustomData(
     ClipboardBuffer buffer,
     const std::u16string& type,
-    const DataTransferEndpoint* data_dst,
-    std::u16string* result) const {
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadDataTransferCustomDataCallback callback) const {
   DCHECK(CalledOnValidThread());
   NOTIMPLEMENTED();
+  std::move(callback).Run(u"");
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardAndroid::ReadFilenames(ClipboardBuffer buffer,
-                                     const DataTransferEndpoint* data_dst,
-                                     std::vector<ui::FileInfo>* result) const {
+void ClipboardAndroid::ReadFilenames(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadFilenamesCallback callback) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kFilenames);
-  std::ranges::copy(GetClipboardMap().GetFilenames(),
-                    std::back_inserter(*result));
+  std::move(callback).Run(GetClipboardMap().GetFilenames());
 }
-
 // 'data_dst' and 'title' are not used. It's only passed to be consistent with
 // other platforms.
 void ClipboardAndroid::ReadBookmark(const DataTransferEndpoint* data_dst,

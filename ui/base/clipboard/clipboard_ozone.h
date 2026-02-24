@@ -88,25 +88,6 @@ class ClipboardOzone : public Clipboard {
   void ReadAsciiText(ClipboardBuffer buffer,
                      const DataTransferEndpoint* data_dst,
                      std::string* result) const override;
-  void ReadHTML(ClipboardBuffer buffer,
-                const DataTransferEndpoint* data_dst,
-                std::u16string* markup,
-                std::string* src_url,
-                uint32_t* fragment_start,
-                uint32_t* fragment_end) const override;
-  void ReadSvg(ClipboardBuffer buffer,
-               const DataTransferEndpoint* data_dst,
-               std::u16string* result) const override;
-  void ReadRTF(ClipboardBuffer buffer,
-               const DataTransferEndpoint* data_dst,
-               std::string* result) const override;
-  void ReadDataTransferCustomData(ClipboardBuffer buffer,
-                                  const std::u16string& type,
-                                  const DataTransferEndpoint* data_dst,
-                                  std::u16string* result) const override;
-  void ReadFilenames(ClipboardBuffer buffer,
-                     const DataTransferEndpoint* data_dst,
-                     std::vector<ui::FileInfo>* result) const override;
   void ReadBookmark(const DataTransferEndpoint* data_dst,
                     std::u16string* title,
                     std::string* url) const override;

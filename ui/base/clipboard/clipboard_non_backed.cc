@@ -684,18 +684,17 @@ void ClipboardNonBacked::ReadAsciiText(ClipboardBuffer buffer,
 #endif
 }
 
-void ClipboardNonBacked::ReadHTML(ClipboardBuffer buffer,
-                                  const DataTransferEndpoint* data_dst,
-                                  std::u16string* markup,
-                                  std::string* src_url,
-                                  uint32_t* fragment_start,
-                                  uint32_t* fragment_end) const {
+void ClipboardNonBacked::ReadHTML(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadHtmlCallback callback) const {
   DCHECK(CalledOnValidThread());
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
-  if (!clipboard_internal.IsReadAllowed(data_dst,
+  if (!clipboard_internal.IsReadAllowed(base::OptionalToPtr(data_dst),
                                         ClipboardInternalFormat::kHtml)) {
+    std::move(callback).Run(u"", GURL(), 0, 0);
     return;
   }
 
@@ -704,22 +703,31 @@ void ClipboardNonBacked::ReadHTML(ClipboardBuffer buffer,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kHtml);
-  clipboard_internal.ReadHTML(markup, src_url, fragment_start, fragment_end);
+  std::u16string markup;
+  std::string src_url;
+  uint32_t fragment_start;
+  uint32_t fragment_end;
+  clipboard_internal.ReadHTML(&markup, &src_url, &fragment_start,
+                              &fragment_end);
+  std::move(callback).Run(std::move(markup), GURL(src_url), fragment_start,
+                          fragment_end);
 
 #if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
 #endif
 }
 
-void ClipboardNonBacked::ReadSvg(ClipboardBuffer buffer,
-                                 const DataTransferEndpoint* data_dst,
-                                 std::u16string* result) const {
+void ClipboardNonBacked::ReadSvg(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadSvgCallback callback) const {
   DCHECK(CalledOnValidThread());
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
-  if (!clipboard_internal.IsReadAllowed(data_dst,
+  if (!clipboard_internal.IsReadAllowed(base::OptionalToPtr(data_dst),
                                         ClipboardInternalFormat::kSvg)) {
+    std::move(callback).Run(u"");
     return;
   }
 
@@ -728,22 +736,26 @@ void ClipboardNonBacked::ReadSvg(ClipboardBuffer buffer,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kSvg);
-  clipboard_internal.ReadSvg(result);
+  std::u16string result;
+  clipboard_internal.ReadSvg(&result);
+  std::move(callback).Run(std::move(result));
 
 #if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
 #endif
 }
 
-void ClipboardNonBacked::ReadRTF(ClipboardBuffer buffer,
-                                 const DataTransferEndpoint* data_dst,
-                                 std::string* result) const {
+void ClipboardNonBacked::ReadRTF(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadRTFCallback callback) const {
   DCHECK(CalledOnValidThread());
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
-  if (!clipboard_internal.IsReadAllowed(data_dst,
+  if (!clipboard_internal.IsReadAllowed(base::OptionalToPtr(data_dst),
                                         ClipboardInternalFormat::kRtf)) {
+    std::move(callback).Run("");
     return;
   }
 
@@ -752,7 +764,9 @@ void ClipboardNonBacked::ReadRTF(ClipboardBuffer buffer,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kRtf);
-  clipboard_internal.ReadRTF(result);
+  std::string result;
+  clipboard_internal.ReadRTF(&result);
+  std::move(callback).Run(std::move(result));
 
 #if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
@@ -788,15 +802,16 @@ void ClipboardNonBacked::ReadPng(
 void ClipboardNonBacked::ReadDataTransferCustomData(
     ClipboardBuffer buffer,
     const std::u16string& type,
-    const DataTransferEndpoint* data_dst,
-    std::u16string* result) const {
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadDataTransferCustomDataCallback callback) const {
   DCHECK(CalledOnValidThread());
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
   if (!clipboard_internal.IsReadAllowed(
-          data_dst, ClipboardInternalFormat::kCustom,
+          base::OptionalToPtr(data_dst), ClipboardInternalFormat::kCustom,
           ClipboardFormatType::DataTransferCustomType())) {
+    std::move(callback).Run(u"");
     return;
   }
 
@@ -805,7 +820,9 @@ void ClipboardNonBacked::ReadDataTransferCustomData(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kCustomData);
-  clipboard_internal.ReadDataTransferCustomData(type, result);
+  std::u16string result;
+  clipboard_internal.ReadDataTransferCustomData(type, &result);
+  std::move(callback).Run(std::move(result));
 
 #if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();
@@ -814,14 +831,15 @@ void ClipboardNonBacked::ReadDataTransferCustomData(
 
 void ClipboardNonBacked::ReadFilenames(
     ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst,
-    std::vector<ui::FileInfo>* result) const {
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadFilenamesCallback callback) const {
   DCHECK(CalledOnValidThread());
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);
 
-  if (!clipboard_internal.IsReadAllowed(data_dst,
+  if (!clipboard_internal.IsReadAllowed(base::OptionalToPtr(data_dst),
                                         ClipboardInternalFormat::kFilenames)) {
+    std::move(callback).Run({});
     return;
   }
 
@@ -830,7 +848,7 @@ void ClipboardNonBacked::ReadFilenames(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   RecordRead(ClipboardFormatMetric::kFilenames);
-  *result = clipboard_internal.ReadFilenames();
+  std::move(callback).Run(clipboard_internal.ReadFilenames());
 
 #if BUILDFLAG(IS_CHROMEOS)
   ClipboardMonitor::GetInstance()->NotifyClipboardDataRead();

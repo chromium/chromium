@@ -643,19 +643,6 @@ std::string ClipboardWin::ReadAsciiTextInternal(
   return result;
 }
 
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
-                            const DataTransferEndpoint* data_dst,
-                            std::u16string* markup,
-                            std::string* src_url,
-                            uint32_t* fragment_start,
-                            uint32_t* fragment_end) const {
-  ReadHTMLInternal(GetClipboardWindow(), buffer,
-                   base::OptionalFromPtr(data_dst), markup, src_url,
-                   fragment_start, fragment_end);
-}
-
 // static
 // |data_dst| is not used, but is kept as it may be used in the future.
 void ClipboardWin::ReadHTMLInternal(
@@ -719,16 +706,6 @@ void ClipboardWin::ReadHTMLInternal(
   *fragment_end = base::checked_cast<uint32_t>(end);
 }
 
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-void ClipboardWin::ReadSvg(ClipboardBuffer buffer,
-                           const DataTransferEndpoint* data_dst,
-                           std::u16string* result) const {
-  CHECK(result);
-  *result = ReadSvgInternal(buffer, base::OptionalFromPtr(data_dst),
-                            GetClipboardWindow());
-}
-
 // static
 // |data_dst| is not used, but is kept as it may be used in the future.
 std::u16string ClipboardWin::ReadSvgInternal(
@@ -749,16 +726,6 @@ std::u16string ClipboardWin::ReadSvgInternal(
   }
   TrimAfterNull(&result);
   return result;
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-void ClipboardWin::ReadRTF(ClipboardBuffer buffer,
-                           const DataTransferEndpoint* data_dst,
-                           std::string* result) const {
-  CHECK(result);
-  *result = ReadRTFInternal(buffer, base::OptionalFromPtr(data_dst),
-                            GetClipboardWindow());
 }
 
 // static
@@ -810,18 +777,6 @@ void ClipboardWin::ReadPng(ClipboardBuffer buffer,
                 std::move(callback)));
 }
 
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-void ClipboardWin::ReadDataTransferCustomData(
-    ClipboardBuffer buffer,
-    const std::u16string& type,
-    const DataTransferEndpoint* data_dst,
-    std::u16string* result) const {
-  CHECK(result);
-  *result = ReadDataTransferCustomDataInternal(
-      buffer, type, base::OptionalFromPtr(data_dst), GetClipboardWindow());
-}
-
 // static
 // |data_dst| is not used, but is kept as it may be used in the future.
 std::u16string ClipboardWin::ReadDataTransferCustomDataInternal(
@@ -852,16 +807,6 @@ std::u16string ClipboardWin::ReadDataTransferCustomDataInternal(
     result = std::move(maybe_result.value());
   }
   return result;
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
-                                 const DataTransferEndpoint* data_dst,
-                                 std::vector<ui::FileInfo>* result) const {
-  CHECK(result);
-  *result = ReadFilenamesInternal(buffer, base::OptionalFromPtr(data_dst),
-                                  GetClipboardWindow());
 }
 
 // static

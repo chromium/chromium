@@ -174,53 +174,58 @@ void TestClipboard::ReadAsciiText(ClipboardBuffer buffer,
     *result = it->second;
 }
 
-void TestClipboard::ReadHTML(ClipboardBuffer buffer,
-                             const DataTransferEndpoint* data_dst,
-                             std::u16string* markup,
-                             std::string* src_url,
-                             uint32_t* fragment_start,
-                             uint32_t* fragment_end) const {
+void TestClipboard::ReadHTML(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadHtmlCallback callback) const {
   const DataStore& store = GetStore(buffer);
-  if (!IsReadAllowed(store.data_src, data_dst)) {
+  if (!IsReadAllowed(store.data_src, base::OptionalToPtr(data_dst))) {
+    std::move(callback).Run(u"", GURL(), 0, 0);
     return;
   }
 
-  markup->clear();
-  src_url->clear();
+  std::u16string markup;
   auto it = store.data.find(ClipboardFormatType::HtmlType());
-  if (it != store.data.end())
-    *markup = base::UTF8ToUTF16(it->second);
-  *src_url = store.html_src_url;
-  *fragment_start = 0;
-  *fragment_end = base::checked_cast<uint32_t>(markup->size());
+  if (it != store.data.end()) {
+    markup = base::UTF8ToUTF16(it->second);
+  }
+  uint32_t markup_size = base::checked_cast<uint32_t>(markup.size());
+  std::move(callback).Run(std::move(markup), GURL(store.html_src_url), 0,
+                          markup_size);
 }
 
 void TestClipboard::ReadSvg(ClipboardBuffer buffer,
-                            const DataTransferEndpoint* data_dst,
-                            std::u16string* result) const {
+                            const std::optional<DataTransferEndpoint>& data_dst,
+                            ReadSvgCallback callback) const {
   const DataStore& store = GetStore(buffer);
-  if (!IsReadAllowed(store.data_src, data_dst)) {
+  if (!IsReadAllowed(store.data_src, base::OptionalToPtr(data_dst))) {
+    std::move(callback).Run(u"");
     return;
   }
 
-  result->clear();
+  std::u16string result;
   auto it = store.data.find(ClipboardFormatType::SvgType());
-  if (it != store.data.end())
-    *result = base::UTF8ToUTF16(it->second);
+  if (it != store.data.end()) {
+    result = base::UTF8ToUTF16(it->second);
+  }
+  std::move(callback).Run(std::move(result));
 }
 
 void TestClipboard::ReadRTF(ClipboardBuffer buffer,
-                            const DataTransferEndpoint* data_dst,
-                            std::string* result) const {
+                            const std::optional<DataTransferEndpoint>& data_dst,
+                            ReadRTFCallback callback) const {
   const DataStore& store = GetStore(buffer);
-  if (!IsReadAllowed(store.data_src, data_dst)) {
+  if (!IsReadAllowed(store.data_src, base::OptionalToPtr(data_dst))) {
+    std::move(callback).Run("");
     return;
   }
 
-  result->clear();
+  std::string result;
   auto it = store.data.find(ClipboardFormatType::RtfType());
-  if (it != store.data.end())
-    *result = it->second;
+  if (it != store.data.end()) {
+    result = it->second;
+  }
+  std::move(callback).Run(std::move(result));
 }
 
 void TestClipboard::ReadPng(ClipboardBuffer buffer,
@@ -237,30 +242,34 @@ void TestClipboard::ReadPng(ClipboardBuffer buffer,
 void TestClipboard::ReadDataTransferCustomData(
     ClipboardBuffer buffer,
     const std::u16string& type,
-    const DataTransferEndpoint* data_dst,
-    std::u16string* result) const {
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadDataTransferCustomDataCallback callback) const {
   const DataStore& store = GetStore(buffer);
-  if (!IsReadAllowed(store.data_src, data_dst)) {
+  if (!IsReadAllowed(store.data_src, base::OptionalToPtr(data_dst))) {
+    std::move(callback).Run(u"");
     return;
   }
 
+  std::u16string result;
   auto it = store.data.find(ClipboardFormatType::DataTransferCustomType());
   if (it != store.data.end()) {
-    result->clear();
-    *result = ReadCustomDataForType(base::as_byte_span(it->second), type)
-                  .value_or(u"");
+    result = ReadCustomDataForType(base::as_byte_span(it->second), type)
+                 .value_or(u"");
   }
+  std::move(callback).Run(std::move(result));
 }
 
-void TestClipboard::ReadFilenames(ClipboardBuffer buffer,
-                                  const DataTransferEndpoint* data_dst,
-                                  std::vector<ui::FileInfo>* result) const {
+void TestClipboard::ReadFilenames(
+    ClipboardBuffer buffer,
+    const std::optional<DataTransferEndpoint>& data_dst,
+    ReadFilenamesCallback callback) const {
   const DataStore& store = GetStore(buffer);
-  if (!IsReadAllowed(store.data_src, data_dst)) {
+  if (!IsReadAllowed(store.data_src, base::OptionalToPtr(data_dst))) {
+    std::move(callback).Run({});
     return;
   }
 
-  *result = store.filenames;
+  std::move(callback).Run(store.filenames);
 }
 
 // TODO(crbug.com/40704509): |data_dst| should be supported.

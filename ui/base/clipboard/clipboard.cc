@@ -446,55 +446,6 @@ void Clipboard::ReadAsciiText(
   std::move(callback).Run(std::move(result));
 }
 
-void Clipboard::ReadHTML(ClipboardBuffer buffer,
-                         const std::optional<DataTransferEndpoint>& data_dst,
-                         ReadHtmlCallback callback) const {
-  std::u16string markup;
-  std::string src_url;
-  uint32_t fragment_start;
-  uint32_t fragment_end;
-  ReadHTML(buffer, base::OptionalToPtr(data_dst), &markup, &src_url,
-           &fragment_start, &fragment_end);
-  std::move(callback).Run(std::move(markup), GURL(src_url), fragment_start,
-                          fragment_end);
-}
-
-void Clipboard::ReadSvg(ClipboardBuffer buffer,
-                        const std::optional<DataTransferEndpoint>& data_dst,
-                        ReadSvgCallback callback) const {
-  std::u16string result;
-  ReadSvg(buffer, base::OptionalToPtr(data_dst), &result);
-  std::move(callback).Run(std::move(result));
-}
-
-void Clipboard::ReadRTF(ClipboardBuffer buffer,
-                        const std::optional<DataTransferEndpoint>& data_dst,
-                        ReadRTFCallback callback) const {
-  std::string result;
-  ReadRTF(buffer, base::OptionalToPtr(data_dst), &result);
-  std::move(callback).Run(std::move(result));
-}
-
-void Clipboard::ReadDataTransferCustomData(
-    ClipboardBuffer buffer,
-    const std::u16string& type,
-    const std::optional<DataTransferEndpoint>& data_dst,
-    ReadDataTransferCustomDataCallback callback) const {
-  std::u16string result;
-  ReadDataTransferCustomData(buffer, type, base::OptionalToPtr(data_dst),
-                             &result);
-  std::move(callback).Run(std::move(result));
-}
-
-void Clipboard::ReadFilenames(
-    ClipboardBuffer buffer,
-    const std::optional<DataTransferEndpoint>& data_dst,
-    ReadFilenamesCallback callback) const {
-  std::vector<ui::FileInfo> result;
-  ReadFilenames(buffer, base::OptionalToPtr(data_dst), &result);
-  std::move(callback).Run(std::move(result));
-}
-
 void Clipboard::ReadBookmark(
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadBookmarkCallback callback) const {
