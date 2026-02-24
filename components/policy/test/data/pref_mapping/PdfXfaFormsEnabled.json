@@ -1,0 +1,54 @@
+[
+  {
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "pdf.xfa_forms_enabled": {
+            "location": "user_profile",
+            "default_value": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PdfXfaFormsEnabled": true
+        },
+        "prefs": {
+          "pdf.xfa_forms_enabled": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PdfXfaFormsEnabled": false
+        },
+        "prefs": {
+          "pdf.xfa_forms_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

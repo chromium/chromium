@@ -2236,6 +2236,7 @@ chromium-metrics-reviews@google.com.
   <int value="1365" label="PrefetchWithServiceWorkerEnabled"/>
   <int value="1366" label="AIModeSearchSuggestSettings"/>
   <int value="1367" label="AIModeSettings"/>
+  <int value="1368" label="PdfXfaFormsEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
