@@ -1531,6 +1531,11 @@ gpu::gles2::ErrorState* GLES2DecoderPassthroughImpl::GetErrorState() {
   return nullptr;
 }
 
+void GLES2DecoderPassthroughImpl::BindFramebuffer(unsigned target,
+                                                  uint32_t service_id) const {
+  NOTREACHED();
+}
+
 void GLES2DecoderPassthroughImpl::WaitForReadPixels(
     base::OnceClosure callback) {}
 

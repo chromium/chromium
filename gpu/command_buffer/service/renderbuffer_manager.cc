@@ -15,6 +15,7 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
+#include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/framebuffer_manager.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
@@ -141,6 +142,7 @@ Renderbuffer::Renderbuffer(RenderbufferManager* manager,
 }
 
 bool Renderbuffer::RegenerateAndBindBackingObjectIfNeeded(
+    const DecoderContext* decoder,
     const GpuDriverBugWorkarounds& workarounds) {
   bool multisample_workaround =
       workarounds.multisample_renderbuffer_resize_emulation;
@@ -167,7 +169,7 @@ bool Renderbuffer::RegenerateAndBindBackingObjectIfNeeded(
 
   // Attach new renderbuffer to all framebuffers
   for (auto& point : framebuffer_attachment_points_) {
-    glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER, point.first->service_id());
+    decoder->BindFramebuffer(GL_DRAW_FRAMEBUFFER, point.first->service_id());
     glFramebufferRenderbufferEXT(GL_DRAW_FRAMEBUFFER, point.second,
                                  GL_RENDERBUFFER, service_id_);
   }

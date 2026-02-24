@@ -563,6 +563,7 @@ class RasterDecoderImpl final : public RasterDecoder,
 
   gles2::ContextGroup* GetContextGroup() override;
   gles2::ErrorState* GetErrorState() override;
+  void BindFramebuffer(unsigned target, uint32_t service_id) const override;
 
   bool IsCompressedTextureFormat(unsigned format) override;
   bool ClearLevel(gles2::Texture* texture,
@@ -1612,6 +1613,11 @@ gles2::ContextGroup* RasterDecoderImpl::GetContextGroup() {
 
 gles2::ErrorState* RasterDecoderImpl::GetErrorState() {
   return error_state_.get();
+}
+
+void RasterDecoderImpl::BindFramebuffer(unsigned target,
+                                        uint32_t service_id) const {
+  NOTREACHED();
 }
 
 bool RasterDecoderImpl::IsCompressedTextureFormat(unsigned format) {

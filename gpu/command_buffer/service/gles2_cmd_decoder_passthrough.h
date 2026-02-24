@@ -315,6 +315,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   ErrorState* GetErrorState() override;
 
+  void BindFramebuffer(unsigned target, uint32_t service_id) const override;
+
   void WaitForReadPixels(base::OnceClosure callback) override;
 
   // Returns true if the context was lost either by GL_ARB_robustness, forced

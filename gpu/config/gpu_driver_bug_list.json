@@ -3817,6 +3817,17 @@
       "features": [
         "disable_d3d12_video_encoder"
       ]
+    },
+    {
+      "id": 471,
+      "description": "IMG drivers can sometimes reference previously bound complete framebuffers.",
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Imagination.*",
+      "features": [
+        "ensure_previous_framebuffer_not_deleted"
+      ]
     }
   ]
 }
