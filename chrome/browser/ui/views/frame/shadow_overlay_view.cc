@@ -42,6 +42,10 @@ class ShadowOverlayView::CornerView : public views::View {
   // of the overlay. They will render correctly by virtue of being on a layer.
   static constexpr int kCornerOutset = 1;
 
+  // Additional amount to overpaint the border to prevent subpixel issues with
+  // antialiasing and alignment between webcontents and corners.
+  static constexpr float kCornerSubpixelOverpaint = 0.5f;
+
   CornerView(Corner corner, BrowserView& browser_view) : corner_(corner) {
     SetBackground(std::make_unique<ThemedBackground>(&browser_view));
   }
@@ -81,44 +85,46 @@ class ShadowOverlayView::CornerView : public views::View {
   SkPath GetClipPath() const {
     gfx::Rect visible_area = GetLocalBounds();
     visible_area.Inset(kCornerOutset);
+    gfx::RectF clip_area = gfx::RectF(GetLocalBounds());
+    clip_area.Outset(kCornerSubpixelOverpaint);
 
     SkPathBuilder path;
     switch (corner_) {
       case Corner::kTopLeading:
-        path.moveTo(0, 0);
-        path.lineTo(visible_area.right(), 0);
+        path.moveTo(clip_area.x(), clip_area.y());
+        path.lineTo(visible_area.right(), clip_area.y());
         path.lineTo(visible_area.right(), visible_area.y());
         path.arcTo(SkVector(visible_area.width(), visible_area.height()), 0,
                    SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCCW,
                    SkPoint(visible_area.x(), visible_area.bottom()));
-        path.lineTo(0, visible_area.bottom());
+        path.lineTo(clip_area.x(), visible_area.bottom());
         break;
       case Corner::kTopTrailing:
-        path.moveTo(width(), 0);
-        path.lineTo(width(), visible_area.bottom());
+        path.moveTo(clip_area.right(), clip_area.y());
+        path.lineTo(clip_area.right(), visible_area.bottom());
         path.lineTo(visible_area.right(), visible_area.bottom());
         path.arcTo(SkVector(visible_area.width(), visible_area.height()), 0,
                    SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCCW,
                    SkPoint(visible_area.x(), visible_area.y()));
-        path.lineTo(visible_area.x(), 0);
+        path.lineTo(visible_area.x(), clip_area.y());
         break;
       case Corner::kBottomLeading:
-        path.moveTo(0, height());
-        path.lineTo(0, visible_area.y());
+        path.moveTo(clip_area.x(), clip_area.bottom());
+        path.lineTo(clip_area.x(), visible_area.y());
         path.lineTo(visible_area.x(), visible_area.y());
         path.arcTo(SkVector(visible_area.width(), visible_area.height()), 0,
                    SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCCW,
                    SkPoint(visible_area.right(), visible_area.bottom()));
-        path.lineTo(visible_area.right(), height());
+        path.lineTo(visible_area.right(), clip_area.bottom());
         break;
       case Corner::kBottomTrailing:
-        path.moveTo(width(), height());
-        path.lineTo(visible_area.x(), height());
+        path.moveTo(clip_area.right(), clip_area.bottom());
+        path.lineTo(visible_area.x(), clip_area.bottom());
         path.lineTo(visible_area.x(), visible_area.bottom());
         path.arcTo(SkVector(visible_area.width(), visible_area.height()), 0,
                    SkPathBuilder::kSmall_ArcSize, SkPathDirection::kCCW,
                    SkPoint(visible_area.right(), visible_area.y()));
-        path.lineTo(width(), visible_area.y());
+        path.lineTo(clip_area.right(), visible_area.y());
         break;
     }
 
