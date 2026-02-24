@@ -122,8 +122,8 @@ bool ImportBlockedByPolicy(const PrefService* pref_service,
 
 - (void)startImportingCredentialsWithTrustedVaultKeys:
     (webauthn::SharedKeyList)trustedVaultKeys {
+  [_consumer transitionToImportStage:CredentialImportStage::kImporting];
   self.importStage = CredentialImportStage::kImporting;
-  [_consumer transitionToImportStage:self.importStage];
   [_credentialImporter
       startImportingCredentialsWithTrustedVaultKeys:std::move(
                                                         trustedVaultKeys)];

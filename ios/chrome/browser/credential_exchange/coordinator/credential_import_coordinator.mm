@@ -94,6 +94,10 @@
 
   // Provides status of password manager as iOS AutoFill credential provider.
   PasswordAutoFillStatusManager* _passwordAutoFillStatusManager;
+
+  // Whether there is currently an ongoing action triggered by the primary
+  // button tap, that should not be handled twice.
+  BOOL _primaryActionInProgress;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -213,12 +217,18 @@
 #pragma mark - CredentialImportViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
+  if (_primaryActionInProgress) {
+    return;
+  }
+
+  _primaryActionInProgress = YES;
   switch (_mediator.importStage) {
     case CredentialImportStage::kNotStarted: {
       // If no passkeys are being imported, there is no point in fetching the
-      // trusted vault keys Proceed to start the importing process.
+      // trusted vault keys, proceed to start the importing process.
       if (!_mediator.importingPasskeys) {
         [_mediator startImportingCredentialsWithTrustedVaultKeys:{}];
+        _primaryActionInProgress = NO;
         break;
       }
 
@@ -251,7 +261,12 @@
       break;
     }
     case CredentialImportStage::kImporting:
-      NOTREACHED() << "Primary action button should be disabled";
+      NOTREACHED(base::NotFatalUntil::M153)
+          << "Primary action button should be disabled";
+      // This code should not be reached, but in case it is, ensure that the
+      // further stages can proceed. Clean up when cleaning up not fatal until.
+      _primaryActionInProgress = NO;
+      break;
     case CredentialImportStage::kImported: {
       // On successful import, display the credential provider prompt, if the
       // AutoFill is not already enabled.
@@ -395,6 +410,8 @@
         startImportingCredentialsWithTrustedVaultKeys:std::move(
                                                           trustedVaultKeys)];
   }
+
+  _primaryActionInProgress = NO;
 }
 
 // Presents the invalid credentials view for `credentials` with `type`.
