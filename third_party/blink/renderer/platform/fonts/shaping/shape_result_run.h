@@ -389,6 +389,12 @@ struct PLATFORM_EXPORT ShapeResultRun final
       }
     }
 
+#if DCHECK_IS_ON()
+    bool operator==(const GlyphDataCollection& other) const {
+      return data_ == other.data_ && offsets_ == other.offsets_;
+    }
+#endif
+
     void Trace(Visitor* visitor) const {
       visitor->Trace(data_);
       visitor->Trace(offsets_);
@@ -416,6 +422,31 @@ struct PLATFORM_EXPORT ShapeResultRun final
   };
 
 #if DCHECK_IS_ON()
+  bool operator==(const ShapeResultRun& other) const {
+    // We can't check that `script_` is the same due to our 8-bit string
+    // optimization for segmentation. See: `InlineNode::SegmentScriptRuns`.
+    // Allow HB_SCRIPT_COMMON and HB_SCRIPT_LATIN to be equivalent.
+    const bool script_equivalent = ([&]() {
+      if (script_ == other.script_) {
+        return true;
+      }
+      if (script_ == HB_SCRIPT_COMMON && other.script_ == HB_SCRIPT_LATIN) {
+        return true;
+      }
+      if (script_ == HB_SCRIPT_LATIN && other.script_ == HB_SCRIPT_COMMON) {
+        return true;
+      }
+      return false;
+    })();
+
+    return glyph_data_ == other.glyph_data_ && font_data_ == other.font_data_ &&
+           base::ValuesEquivalent(graphemes_, other.graphemes_) &&
+           start_index_ == other.start_index_ &&
+           num_characters_ == other.num_characters_ && width_ == other.width_ &&
+           script_equivalent && hb_direction_ == other.hb_direction_ &&
+           canvas_rotation_ == other.canvas_rotation_;
+  }
+
   void CheckConsistency() const {
     for (const HarfBuzzRunGlyphData& glyph : glyph_data_) {
       DCHECK_LT(glyph.character_index, num_characters_);

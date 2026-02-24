@@ -389,6 +389,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
                                       TextDirection,
                                       Vector<uint16_t> safe_break_offsets = {});
 #if DCHECK_IS_ON()
+  bool operator==(const ShapeResult&) const;
   void CheckConsistency() const;
 #endif
 

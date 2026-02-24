@@ -1807,6 +1807,25 @@ const ShapeResult* ShapeResult::CopyAdjustedOffset(unsigned start_index) const {
 }
 
 #if DCHECK_IS_ON()
+bool ShapeResult::operator==(const ShapeResult& other) const {
+  if (runs_.size() != other.runs_.size()) {
+    return false;
+  }
+
+  for (wtf_size_t i = 0u; i < runs_.size(); ++i) {
+    if (!base::ValuesEquivalent(runs_[i], other.runs_[i])) {
+      return false;
+    }
+  }
+
+  // We don't check `character_position_`.
+  return width_ == other.width_ && start_index_ == other.start_index_ &&
+         num_characters_ == other.num_characters_ &&
+         direction_ == other.direction_ &&
+         has_vertical_offsets_ == other.has_vertical_offsets_ &&
+         is_applied_spacing_ == other.is_applied_spacing_;
+}
+
 void ShapeResult::CheckConsistency() const {
   if (runs_.empty()) {
     DCHECK_EQ(0u, num_characters_);
@@ -2022,6 +2041,7 @@ void ShapeResult::ToString(StringBuilder* output) const {
     output->AppendNumber(run.num_characters_);
     output->Append(", dir=");
     output->AppendNumber(run.hb_direction_);
+    output->AppendFormat(", script=%c%c%c%c", HB_UNTAG(run.script_));
     output->Append(", glyphs[");
     output->AppendNumber(run.glyph_data_.size());
     output->Append("]{");

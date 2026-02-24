@@ -161,8 +161,30 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
     }
 
     const auto add_result = map.insert(text, nullptr);
-    if (add_result.stored_value->value) {
-      return add_result.stored_value->value;
+    if (const auto* cached_result = add_result.stored_value->value.Get()) {
+      // Verify that the cache is consistent.
+#if EXPENSIVE_DCHECKS_ARE_ON()
+      const auto [other_shape_result, can_cache_other] = shape_result_func();
+      const bool has_private_or_non_characters =
+          !text.Is8Bit() && std::ranges::any_of(text.Span16(), [](UChar32 c) {
+            return Character::IsPrivateUse(c) || Character::IsNonCharacter(c);
+          });
+      // The shape-result call might try and reuse previous shape-results, we
+      // can't check for equality in this case.
+      //
+      // TODO(crbug.com/486945341): We currently incorrectly cache shape-results
+      // which contain PUA or non-characters.
+      //
+      // Specifically `FontCache::FallbackFontForCharacter` has different
+      // fallback logic for these characters; for the same primary-font, and
+      // different fallback lists we may produce two different shape-results.
+      //
+      // We should avoid the cache for this case.
+      if (can_cache_other && !has_private_or_non_characters) {
+        DCHECK_EQ(*cached_result, *other_shape_result);
+      }
+#endif
+      return cached_result;
     }
 
     const auto [shape_result, can_cache] = shape_result_func();
