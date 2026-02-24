@@ -19750,18 +19750,19 @@
             "experiments": [
                 {
                     "name": "EnabledConservative",
-                    "params": {
-                        "MacCriticalDiskSpacePressureThresholdMB": "250"
-                    },
                     "enable_features": [
                         "AbslFlatMapInVariantMap",
                         "AsyncSetCookie",
-                        "CompressParkableStrings",
+                        "AvoidCloneArgsOnExtensionFunctionDispatch",
+                        "AvoidUnnecessaryGetMinimizeButtonOffset",
+                        "AvoidUnnecessaryShouldRenderRichAnimation",
                         "FastPathNoRaster",
                         "GCOnArrayBufferAllocationFailure",
+                        "MvcUpdateViewWhenModelChanged",
                         "ReducePPMs",
                         "ReleaseResourceDecodedDataOnMemoryPressure",
                         "ReleaseResourceStrongReferencesOnMemoryPressure",
+                        "ReloadTabUiResourcesIfChanged",
                         "RemoveCancelledScriptedIdleTasks",
                         "SlimDirectReceiverIpc"
                     ],
