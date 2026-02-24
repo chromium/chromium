@@ -7,8 +7,6 @@
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
 #include "ui/views/layout/box_layout.h"
@@ -26,17 +24,10 @@ constexpr int kMediaListUpdatedPadding = 8;
 
 }  // anonymous namespace
 
-MediaItemUIListView::SeparatorStyle::SeparatorStyle(SkColor separator_color,
-                                                    int separator_thickness)
-    : separator_color(separator_color),
-      separator_thickness(separator_thickness) {}
-
 MediaItemUIListView::MediaItemUIListView()
-    : MediaItemUIListView(std::nullopt, /*should_clip_height=*/true) {}
+    : MediaItemUIListView(/*should_clip_height=*/true) {}
 
-MediaItemUIListView::MediaItemUIListView(
-    const std::optional<SeparatorStyle>& separator_style,
-    bool should_clip_height) {
+MediaItemUIListView::MediaItemUIListView(bool should_clip_height) {
   SetBackgroundColor(std::nullopt);
   SetContents(std::make_unique<views::View>());
   contents()->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -74,13 +65,6 @@ void MediaItemUIListView::ShowItem(const std::string& id,
 void MediaItemUIListView::HideItem(const std::string& id) {
   if (!items_.contains(id))
     return;
-
-  // If we're removing the topmost item and there are others, then we need to
-  // remove the top-sided separator border from the new topmost item.
-  if (contents()->children().size() > 1 &&
-      contents()->children().at(0) == items_[id]) {
-    contents()->children().at(1)->SetBorder(nullptr);
-  }
 
   contents()->RemoveChildViewT(items_[id]);
   items_.erase(id);

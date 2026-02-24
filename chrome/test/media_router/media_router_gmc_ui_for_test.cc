@@ -117,11 +117,10 @@ views::Button* MediaRouterGmcUiForTest::GetSinkButton(
   CHECK(IsDialogShown());
 
   // Get the device selector associated with the list of cast devices.
-  auto& updated_items =
-      MediaDialogView::GetDialogViewForTesting()->GetUpdatedItemsForTesting();
-  CHECK_GE(updated_items.size(), 1u);
-  global_media_controls::MediaItemUIUpdatedView* view =
-      updated_items.begin()->second;
+  auto& items =
+      MediaDialogView::GetDialogViewForTesting()->GetItemsForTesting();
+  CHECK_GE(items.size(), 1u);
+  global_media_controls::MediaItemUIUpdatedView* view = items.begin()->second;
   CHECK(view);
   auto* device_selector =
       static_cast<CastDeviceSelectorView*>(view->GetDeviceSelectorForTesting());

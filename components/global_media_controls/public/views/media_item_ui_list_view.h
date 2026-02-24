@@ -21,23 +21,13 @@ class MediaItemUIUpdatedView;
 class MediaItemUIView;
 
 // MediaItemUIListView is a scrollable view container that holds a list of
-// MediaItemUIViews or MediaItemUIUpdatedViews, and creates item separators if
-// needed.
+// MediaItemUIViews for CrOS or MediaItemUIUpdatedViews for non-CrOS.
 class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
     : public views::ScrollView {
   METADATA_HEADER(MediaItemUIListView, views::ScrollView)
 
  public:
-  struct SeparatorStyle {
-    SeparatorStyle(SkColor separator_color, int separator_thickness);
-
-    const SkColor separator_color;
-    const int separator_thickness;
-  };
-
-  explicit MediaItemUIListView(
-      const std::optional<SeparatorStyle>& separator_style,
-      bool should_clip_height);
+  explicit MediaItemUIListView(bool should_clip_height);
   MediaItemUIListView();
   MediaItemUIListView(const MediaItemUIListView&) = delete;
   MediaItemUIListView& operator=(const MediaItemUIListView&) = delete;
@@ -78,9 +68,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
   }
 
  private:
-  // `updated_items_` is used for non-CrOS, otherwise `items_` is used. `items_`
-  // is always used for CrOS.
-  // TODO(b/329160058): Use better naming.
+  // `items_` is used for CrOS while `updated_items_` is used for non-CrOS.
   std::map<const std::string, raw_ptr<MediaItemUIView, CtnExperimental>> items_;
   std::map<const std::string, raw_ptr<MediaItemUIUpdatedView, CtnExperimental>>
       updated_items_;

@@ -405,8 +405,8 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
   // Finds a global_media_controls::MediaItemUIUpdatedView by title.
   global_media_controls::MediaItemUIUpdatedView* GetViewByTitle(
       const std::u16string& title) {
-    for (const auto& item_pair : MediaDialogView::GetDialogViewForTesting()
-                                     ->GetUpdatedItemsForTesting()) {
+    for (const auto& item_pair :
+         MediaDialogView::GetDialogViewForTesting()->GetItemsForTesting()) {
       if (item_pair.second->GetTitleLabelForTesting()->GetText() == title) {
         return item_pair.second;
       }

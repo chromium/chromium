@@ -4,7 +4,6 @@
 
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
@@ -20,7 +19,6 @@ namespace {
 // Test IDs for items.
 const char kTestItemId1[] = "testid1";
 const char kTestItemId2[] = "testid2";
-const char kTestItemId3[] = "testid3";
 
 }  // anonymous namespace
 
@@ -51,14 +49,12 @@ class MediaItemUIListViewTest : public views::ViewsTestBase {
     views::ViewsTestBase::TearDown();
   }
 
-
   void ShowItem(const std::string& id) {
 #if BUILDFLAG(IS_CHROMEOS)
-      list_view_->ShowItem(
-          id, std::make_unique<MediaItemUIView>(
-                  id, item_->GetWeakPtr(), nullptr, nullptr, std::nullopt,
-                  media_message_center::MediaColorTheme(),
-                  MediaDisplayPage::kQuickSettingsMediaView));
+    list_view_->ShowItem(id, std::make_unique<MediaItemUIView>(
+                                 id, item_->GetWeakPtr(), nullptr, nullptr,
+                                 media_message_center::MediaColorTheme(),
+                                 MediaDisplayPage::kQuickSettingsMediaView));
 #else
       list_view_->ShowUpdatedItem(
           id, std::make_unique<MediaItemUIUpdatedView>(
@@ -91,28 +87,9 @@ class MediaItemUIListViewTest : public views::ViewsTestBase {
   std::unique_ptr<media_message_center::test::MockMediaNotificationItem> item_;
 };
 
-TEST_F(MediaItemUIListViewTest, NoSeparatorForOneItem) {
-  // Show a single item.
-  ShowItem(kTestItemId1);
-  EXPECT_EQ(1, GetItemsSize());
-}
-
-TEST_F(MediaItemUIListViewTest, SeparatorBetweenItems) {
-  // Show two items.
+TEST_F(MediaItemUIListViewTest, ShowItems) {
   ShowItem(kTestItemId1);
   ShowItem(kTestItemId2);
-  EXPECT_EQ(2, GetItemsSize());
-}
-
-TEST_F(MediaItemUIListViewTest, SeparatorRemovedWhenItemRemoved) {
-  // Show three items.
-  ShowItem(kTestItemId1);
-  ShowItem(kTestItemId2);
-  ShowItem(kTestItemId3);
-  EXPECT_EQ(3, GetItemsSize());
-
-  // Remove the topmost item.
-  HideItem(kTestItemId1);
   EXPECT_EQ(2, GetItemsSize());
 }
 

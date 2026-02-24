@@ -14,7 +14,6 @@
 #include "components/global_media_controls/public/media_session_notification_item.h"
 #include "components/global_media_controls/public/test/mock_media_session_notification_item_delegate.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
-#include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/media_session.h"
@@ -63,14 +62,6 @@ class MediaDialogViewTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
-  bool UseUpdatedUI() {
-#if BUILDFLAG(IS_CHROMEOS)
-    return false;
-#else
-    return true;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  }
-
   std::unique_ptr<global_media_controls::MediaSessionNotificationItem>
   SimulateMediaSessionNotificationItem() {
     auto session_info = media_session::mojom::MediaSessionInfo::New();
@@ -117,12 +108,8 @@ class MediaDialogViewTest : public ChromeViewsTestBase {
     return route;
   }
 
-  global_media_controls::MediaItemUIView* media_item_ui_view() {
-    return view_->GetItemsForTesting().begin()->second;
-  }
-
   global_media_controls::MediaItemUIUpdatedView* media_item_ui_updated_view() {
-    return view_->GetUpdatedItemsForTesting().begin()->second;
+    return view_->GetItemsForTesting().begin()->second;
   }
 
   Profile* profile() { return &profile_; }
@@ -153,26 +140,16 @@ TEST_F(MediaDialogViewTest, BuildDeviceSelectorView_RemotePlaybackSource) {
       content::MediaSession::GetRequestIdFromWebContents(web_contents())
           .ToString(),
       item->GetWeakPtr());
-  if (UseUpdatedUI()) {
-    EXPECT_FALSE(media_item_ui_updated_view()->GetFooterForTesting());
-    EXPECT_TRUE(media_item_ui_updated_view()->GetDeviceSelectorForTesting());
-  } else {
-    EXPECT_FALSE(media_item_ui_view()->footer_view_for_testing());
-    EXPECT_TRUE(media_item_ui_view()->device_selector_view_for_testing());
-  }
+  EXPECT_FALSE(media_item_ui_updated_view()->GetFooterForTesting());
+  EXPECT_TRUE(media_item_ui_updated_view()->GetDeviceSelectorForTesting());
 
   SimulateMediaRouteUpdate({CreateRemotePlaybackRoute()});
   view()->RefreshMediaItem(
       content::MediaSession::GetRequestIdFromWebContents(web_contents())
           .ToString(),
       item->GetWeakPtr());
-  if (UseUpdatedUI()) {
-    EXPECT_TRUE(media_item_ui_updated_view()->GetFooterForTesting());
-    EXPECT_FALSE(media_item_ui_updated_view()->GetDeviceSelectorForTesting());
-  } else {
-    EXPECT_TRUE(media_item_ui_view()->footer_view_for_testing());
-    EXPECT_FALSE(media_item_ui_view()->device_selector_view_for_testing());
-  }
+  EXPECT_TRUE(media_item_ui_updated_view()->GetFooterForTesting());
+  EXPECT_FALSE(media_item_ui_updated_view()->GetDeviceSelectorForTesting());
 }
 
 TEST_F(MediaDialogViewTest, BuildDeviceSelectorView_TabMirroringSource) {
@@ -183,13 +160,8 @@ TEST_F(MediaDialogViewTest, BuildDeviceSelectorView_TabMirroringSource) {
       content::MediaSession::GetRequestIdFromWebContents(web_contents())
           .ToString(),
       item->GetWeakPtr());
-  if (UseUpdatedUI()) {
-    EXPECT_TRUE(media_item_ui_updated_view()->GetFooterForTesting());
-    EXPECT_FALSE(media_item_ui_updated_view()->GetDeviceSelectorForTesting());
-  } else {
-    EXPECT_TRUE(media_item_ui_view()->footer_view_for_testing());
-    EXPECT_FALSE(media_item_ui_view()->device_selector_view_for_testing());
-  }
+  EXPECT_TRUE(media_item_ui_updated_view()->GetFooterForTesting());
+  EXPECT_FALSE(media_item_ui_updated_view()->GetDeviceSelectorForTesting());
 }
 
 TEST_F(MediaDialogViewTest, TerminateSession) {
@@ -200,26 +172,14 @@ TEST_F(MediaDialogViewTest, TerminateSession) {
       content::MediaSession::GetRequestIdFromWebContents(web_contents())
           .ToString(),
       item->GetWeakPtr());
-  if (UseUpdatedUI()) {
-    auto* footer_view = media_item_ui_updated_view()->GetFooterForTesting();
-    EXPECT_TRUE(footer_view && footer_view->GetVisible());
-    EXPECT_FALSE(media_item_ui_updated_view()->GetDeviceSelectorForTesting());
-  } else {
-    auto* footer_view = media_item_ui_view()->footer_view_for_testing();
-    EXPECT_TRUE(footer_view && footer_view->GetVisible());
-    EXPECT_FALSE(media_item_ui_view()->device_selector_view_for_testing());
-  }
+  auto* footer_view = media_item_ui_updated_view()->GetFooterForTesting();
+  EXPECT_TRUE(footer_view && footer_view->GetVisible());
+  EXPECT_FALSE(media_item_ui_updated_view()->GetDeviceSelectorForTesting());
 
   EXPECT_CALL(*media_router(),
               TerminateRoute(CreateRemotePlaybackRoute().media_route_id()));
-  views::Button* stop_casting_button;
-  if (UseUpdatedUI()) {
-    stop_casting_button = static_cast<views::Button*>(
-        media_item_ui_updated_view()->GetFooterForTesting()->children()[2]);
-  } else {
-    stop_casting_button = static_cast<views::Button*>(
-        media_item_ui_view()->footer_view_for_testing()->children()[0]);
-  }
+  views::Button* stop_casting_button = static_cast<views::Button*>(
+      media_item_ui_updated_view()->GetFooterForTesting()->children()[2]);
   views::test::ButtonTestApi(stop_casting_button)
       .NotifyClick(ui::MouseEvent(
           ui::EventType::kMousePressed, gfx::Point(0, 0), gfx::Point(0, 0),
@@ -230,11 +190,6 @@ TEST_F(MediaDialogViewTest, TerminateSession) {
       content::MediaSession::GetRequestIdFromWebContents(web_contents())
           .ToString(),
       item->GetWeakPtr());
-  if (UseUpdatedUI()) {
-    EXPECT_FALSE(media_item_ui_updated_view()->GetFooterForTesting());
-    EXPECT_TRUE(media_item_ui_updated_view()->GetDeviceSelectorForTesting());
-  } else {
-    EXPECT_FALSE(media_item_ui_view()->footer_view_for_testing());
-    EXPECT_TRUE(media_item_ui_view()->device_selector_view_for_testing());
-  }
+  EXPECT_FALSE(media_item_ui_updated_view()->GetFooterForTesting());
+  EXPECT_TRUE(media_item_ui_updated_view()->GetDeviceSelectorForTesting());
 }

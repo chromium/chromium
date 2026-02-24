@@ -133,7 +133,7 @@ class ASH_EXPORT MediaNotificationProviderImpl
 
   std::optional<media_message_center::NotificationTheme> color_theme_;
 
-  std::optional<media_message_center::MediaColorTheme> media_color_theme_;
+  media_message_center::MediaColorTheme media_color_theme_;
 
   global_media_controls::MediaItemUIObserverSet item_ui_observer_set_{this};
 

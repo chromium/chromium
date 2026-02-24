@@ -34,7 +34,6 @@ class WebContents;
 namespace global_media_controls {
 class MediaItemUIListView;
 class MediaItemUIUpdatedView;
-class MediaItemUIView;
 }  // namespace global_media_controls
 
 namespace views {
@@ -105,13 +104,8 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
 
   const std::map<
       const std::string,
-      raw_ptr<global_media_controls::MediaItemUIView, CtnExperimental>>&
-  GetItemsForTesting() const;
-
-  const std::map<
-      const std::string,
       raw_ptr<global_media_controls::MediaItemUIUpdatedView, CtnExperimental>>&
-  GetUpdatedItemsForTesting() const;
+  GetItemsForTesting() const;
 
   const global_media_controls::MediaItemUIListView* GetListViewForTesting()
       const;
@@ -161,9 +155,6 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   void InitializeCaptionSettingsSection();
   void SetLiveCaptionTitle(const std::u16string& new_text);
 
-  std::unique_ptr<global_media_controls::MediaItemUIView> BuildMediaItemUIView(
-      const std::string& id,
-      base::WeakPtr<media_message_center::MediaNotificationItem> item);
   std::unique_ptr<global_media_controls::MediaItemUIUpdatedView>
   BuildMediaItemUIUpdatedView(
       const std::string& id,
@@ -180,15 +171,11 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
   base::ObserverList<MediaDialogViewObserver> observers_;
 
   // A map of all the media item UIs that `MediaDialogView` is currently
-  // observing. `updated_items_` is used for non-CrOS platforms, otherwise
-  // `observed_items_` is used.
-  std::map<const std::string,
-           raw_ptr<global_media_controls::MediaItemUIView, CtnExperimental>>
-      observed_items_;
+  // observing.
   std::map<
       const std::string,
       raw_ptr<global_media_controls::MediaItemUIUpdatedView, CtnExperimental>>
-      updated_items_;
+      items_;
 
   raw_ptr<views::View> live_caption_container_ = nullptr;
   raw_ptr<views::Label> live_caption_title_ = nullptr;
@@ -214,8 +201,7 @@ class MediaDialogView : public views::BubbleDialogDelegateView,
       web_contents_for_presentation_request_ = nullptr;
   const global_media_controls::GlobalMediaControlsEntryPoint entry_point_;
 
-  // Only sets colors for the updated UI if it is enabled.
-  std::optional<media_message_center::MediaColorTheme> media_color_theme_;
+  media_message_center::MediaColorTheme media_color_theme_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_DIALOG_VIEW_H_

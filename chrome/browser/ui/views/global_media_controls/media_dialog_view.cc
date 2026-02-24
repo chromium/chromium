@@ -36,7 +36,6 @@
 #include "components/global_media_controls/public/views/media_item_ui_detailed_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_list_view.h"
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
-#include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/media_router/browser/media_router.h"
@@ -48,6 +47,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/web_contents.h"
+#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/url_util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -178,17 +178,10 @@ global_media_controls::MediaItemUI* MediaDialogView::ShowMediaItem(
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
   global_media_controls::MediaItemUI* view_ptr;
 
-  if (media_color_theme_.has_value()) {
-    auto view = BuildMediaItemUIUpdatedView(id, item);
-    view_ptr = view.get();
-    updated_items_[id] = view.get();
-    active_sessions_view_->ShowUpdatedItem(id, std::move(view));
-  } else {
-    auto view = BuildMediaItemUIView(id, item);
-    view_ptr = view.get();
-    observed_items_[id] = view.get();
-    active_sessions_view_->ShowItem(id, std::move(view));
-  }
+  auto view = BuildMediaItemUIUpdatedView(id, item);
+  view_ptr = view.get();
+  items_[id] = view.get();
+  active_sessions_view_->ShowUpdatedItem(id, std::move(view));
 
   view_ptr->AddObserver(this);
   UpdateBubbleSize();
@@ -197,11 +190,7 @@ global_media_controls::MediaItemUI* MediaDialogView::ShowMediaItem(
 }
 
 void MediaDialogView::HideMediaItem(const std::string& id) {
-  if (media_color_theme_.has_value()) {
-    active_sessions_view_->HideUpdatedItem(id);
-  } else {
-    active_sessions_view_->HideItem(id);
-  }
+  active_sessions_view_->HideUpdatedItem(id);
 
   if (active_sessions_view_->empty()) {
     HideDialog();
@@ -215,26 +204,17 @@ void MediaDialogView::HideMediaItem(const std::string& id) {
 void MediaDialogView::RefreshMediaItem(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
-  if (observed_items_.find(id) == observed_items_.end() &&
-      updated_items_.find(id) == updated_items_.end()) {
+  if (items_.find(id) == items_.end()) {
     return;
   }
   bool show_devices =
       entry_point_ == GlobalMediaControlsEntryPoint::kPresentation;
 
-  if (media_color_theme_.has_value()) {
-    updated_items_[id]->UpdateFooterView(
-        BuildFooter(id, item, profile_, media_color_theme_));
-    updated_items_[id]->UpdateDeviceSelectorView(
-        BuildDeviceSelector(id, item, service_, service_, profile_,
-                            entry_point_, show_devices, media_color_theme_));
-  } else {
-    observed_items_[id]->UpdateFooterView(
-        BuildFooter(id, item, profile_, media_color_theme_));
-    observed_items_[id]->UpdateDeviceSelector(
-        BuildDeviceSelector(id, item, service_, service_, profile_,
-                            entry_point_, show_devices, media_color_theme_));
-  }
+  items_[id]->UpdateFooterView(
+      BuildFooter(id, item, profile_, media_color_theme_));
+  items_[id]->UpdateDeviceSelectorView(
+      BuildDeviceSelector(id, item, service_, service_, profile_, entry_point_,
+                          show_devices, media_color_theme_));
 
   UpdateBubbleSize();
 }
@@ -355,11 +335,7 @@ void MediaDialogView::OnMediaItemUIActionsChanged() {
 }
 
 void MediaDialogView::OnMediaItemUIDestroyed(const std::string& id) {
-  if (media_color_theme_.has_value()) {
-    updated_items_.erase(id);
-  } else {
-    observed_items_.erase(id);
-  }
+  items_.erase(id);
 }
 
 void MediaDialogView::AddObserver(MediaDialogViewObserver* observer) {
@@ -379,15 +355,8 @@ void MediaDialogView::TargetLanguageChanged() {
 
 const std::map<
     const std::string,
-    raw_ptr<global_media_controls::MediaItemUIView, CtnExperimental>>&
-MediaDialogView::GetItemsForTesting() const {
-  return active_sessions_view_->items_for_testing();  // IN-TEST
-}
-
-const std::map<
-    const std::string,
     raw_ptr<global_media_controls::MediaItemUIUpdatedView, CtnExperimental>>&
-MediaDialogView::GetUpdatedItemsForTesting() const {
+MediaDialogView::GetItemsForTesting() const {
   return active_sessions_view_->updated_items_for_testing();  // IN-TEST
 }
 
@@ -414,7 +383,7 @@ MediaDialogView::MediaDialogView(
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetAccessibleTitle(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_DIALOG_NAME));
-  DCHECK(service_);
+  CHECK(service_);
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(profile->GetPrefs());
@@ -427,16 +396,11 @@ MediaDialogView::MediaDialogView(
       base::BindRepeating(&MediaDialogView::OnLiveTranslateEnabledChanged,
                           base::Unretained(this)));
 
-#if !BUILDFLAG(IS_CHROMEOS)
   media_color_theme_ = GetMediaColorTheme();
-#endif
 }
 
 MediaDialogView::~MediaDialogView() {
-  for (auto& item_pair : observed_items_) {
-    item_pair.second->RemoveObserver(this);
-  }
-  for (auto& item_pair : updated_items_) {
+  for (auto& item_pair : items_) {
     item_pair.second->RemoveObserver(this);
   }
 }
@@ -706,29 +670,14 @@ void MediaDialogView::SetLiveCaptionTitle(const std::u16string& new_text) {
   UpdateBubbleSize();
 }
 
-std::unique_ptr<global_media_controls::MediaItemUIView>
-MediaDialogView::BuildMediaItemUIView(
-    const std::string& id,
-    base::WeakPtr<media_message_center::MediaNotificationItem> item) {
-  bool show_devices =
-      entry_point_ == GlobalMediaControlsEntryPoint::kPresentation;
-  return std::make_unique<global_media_controls::MediaItemUIView>(
-      id, item, BuildFooter(id, item, profile_, media_color_theme_),
-      BuildDeviceSelector(id, item, service_, service_, profile_, entry_point_,
-                          show_devices, media_color_theme_),
-      /*notification_theme=*/std::nullopt, media_color_theme_,
-      global_media_controls::MediaDisplayPage::kMediaDialogView);
-}
-
 std::unique_ptr<global_media_controls::MediaItemUIUpdatedView>
 MediaDialogView::BuildMediaItemUIUpdatedView(
     const std::string& id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item) {
-  CHECK(media_color_theme_);
   bool show_devices =
       entry_point_ == GlobalMediaControlsEntryPoint::kPresentation;
   return std::make_unique<global_media_controls::MediaItemUIUpdatedView>(
-      id, item, media_color_theme_.value(),
+      id, item, media_color_theme_,
       BuildDeviceSelector(id, item, service_, service_, profile_, entry_point_,
                           show_devices, media_color_theme_),
       BuildFooter(id, item, profile_, media_color_theme_));

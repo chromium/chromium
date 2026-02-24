@@ -54,7 +54,9 @@ TEST_F(QuickSettingsMediaViewTest, ShowOrHideItem) {
   const std::string item_id = "item_id";
   std::unique_ptr<global_media_controls::MediaItemUIView> item_ui =
       std::make_unique<global_media_controls::MediaItemUIView>(
-          item_id, item(), nullptr, nullptr);
+          item_id, item(), nullptr, nullptr,
+          media_message_center::MediaColorTheme(),
+          global_media_controls::MediaDisplayPage::kQuickSettingsMediaView);
 
   EXPECT_EQ(0u, view()->items_for_testing().size());
   EXPECT_EQ(-1, view()->pagination_model_for_testing()->total_pages());
@@ -75,7 +77,9 @@ TEST_F(QuickSettingsMediaViewTest, NoCrashOnScrollFlingStart) {
   const std::string item_id = "item_id";
   std::unique_ptr<global_media_controls::MediaItemUIView> item_ui =
       std::make_unique<global_media_controls::MediaItemUIView>(
-          item_id, item(), nullptr, nullptr);
+          item_id, item(), nullptr, nullptr,
+          media_message_center::MediaColorTheme(),
+          global_media_controls::MediaDisplayPage::kQuickSettingsMediaView);
 
   view()->ShowItem(item_id, std::move(item_ui));
   EXPECT_EQ(1, view()->pagination_model_for_testing()->total_pages());

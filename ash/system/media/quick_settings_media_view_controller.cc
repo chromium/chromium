@@ -84,7 +84,7 @@ QuickSettingsMediaViewController::ShowMediaItem(
       MediaNotificationProvider::Get()->BuildDeviceSelectorView(
           id, item,
           global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray),
-      /*notification_theme=*/std::nullopt, GetCrosMediaColorTheme(),
+      GetCrosMediaColorTheme(),
       global_media_controls::MediaDisplayPage::kQuickSettingsMediaView);
   auto* media_item_ui_ptr = media_item_ui.get();
   media_item_ui_observer_set_.Observe(id, media_item_ui_ptr);

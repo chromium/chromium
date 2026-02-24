@@ -141,7 +141,6 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
 
     provider_ = static_cast<MediaNotificationProviderImpl*>(
         MediaNotificationProvider::Get());
-    provider_->SetColorTheme(media_message_center::NotificationTheme());
     observer_ = std::make_unique<MockMediaNotificationProviderObserver>();
     provider_->AddObserver(observer_.get());
     layout_provider_ = std::make_unique<ChromeLayoutProvider>();
