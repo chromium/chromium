@@ -49,7 +49,6 @@ import org.robolectric.shadows.ShadowPackageManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -85,7 +84,6 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.url.GURL;
-import org.chromium.url.JUnitTestGURLs;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -310,8 +308,6 @@ public class ToolbarPositionControllerTest {
             ObservableSuppliers.createNonNull(TOOLBAR_HEIGHT);
     private final SettableNonNullObservableSupplier<Integer> mKeyboardHeightSupplier =
             ObservableSuppliers.createNonNull(0);
-    private final SettableMonotonicObservableSupplier<Tab> mActivityTabSupplier =
-            ObservableSuppliers.createMonotonic();
     private SettableNonNullObservableSupplier<Profile> mProfileSupplier;
     private HistogramWatcher mStartupExpectation;
 
@@ -391,8 +387,7 @@ public class ToolbarPositionControllerTest {
                         mToolbarPosition,
                         mProfileSupplier,
                         mKeyboardHeightSupplier,
-                        mWindowAndroid,
-                        mActivityTabSupplier);
+                        mWindowAndroid);
 
         LocalStatePrefs.setNativePrefsLoadedForTesting(true);
         LocalStatePrefsJni.setInstanceForTesting(mLocalStatePrefsNatives);
@@ -1112,7 +1107,7 @@ public class ToolbarPositionControllerTest {
         // 1. Test mIsFirstPositionChange is true.
         assertTrue(mController.getIsFirstPositionChangeForTesting());
         // After setUp, mIsFirstPositionChange is true because initial position (TOP) didn't change.
-        mController.maybeForceBottomToolbarLayoutUpdateAndCapture();
+        mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ true);
         verify(mControlContainer, never()).doSynchronousLayoutAndCapture();
 
         // Trigger a position change to set mIsFirstPositionChange to false.
@@ -1126,29 +1121,21 @@ public class ToolbarPositionControllerTest {
         assertFalse(mController.getIsFirstPositionChangeForTesting());
 
         // 2. Test active tab is NTP.
-        Tab ntpTab = mock(Tab.class);
-        when(ntpTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
-        when(ntpTab.isOffTheRecord()).thenReturn(false);
-        mActivityTabSupplier.set(ntpTab);
-        mController.maybeForceBottomToolbarLayoutUpdateAndCapture();
+        mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ true);
         verify(mControlContainer, never()).doSynchronousLayoutAndCapture();
 
         // 3. Test active tab is not NTP, and layout changed.
-        Tab regularTab = mock(Tab.class);
-        when(regularTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
-        mActivityTabSupplier.set(regularTab);
-
         // We need onToEdgeChange to return true.
         // maybeForceToolbarLayoutUpdateAndCapture calls onToEdgeChange(0, false).
         // Set mTopInset to something non-zero first.
         mController.onToEdgeChange(50, true);
-        mController.maybeForceBottomToolbarLayoutUpdateAndCapture();
+        mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ false);
         verify(mControlContainer).doSynchronousLayoutAndCapture();
 
         // 4. Test active tab is not NTP, but layout DID NOT change.
         // mTopInset is now 0 (from previous call).
         clearInvocations(mControlContainer);
-        mController.maybeForceBottomToolbarLayoutUpdateAndCapture();
+        mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ false);
         verify(mControlContainer, never()).doSynchronousLayoutAndCapture();
     }
 

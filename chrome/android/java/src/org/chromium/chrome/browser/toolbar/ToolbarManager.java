@@ -1872,8 +1872,7 @@ public class ToolbarManager
                         (MonotonicObservableSupplier<Profile>) mProfileSupplier,
                         assertNonNull(mWindowAndroid.getInsetObserver())
                                 .getSupplierForKeyboardInset(),
-                        mWindowAndroid,
-                        mActivityTabProvider);
+                        mWindowAndroid);
 
         mMiniOriginBarController =
                 new MiniOriginBarController(
