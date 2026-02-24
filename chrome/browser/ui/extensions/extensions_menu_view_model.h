@@ -16,6 +16,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/models/image_model.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -272,6 +273,9 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Returns the action button state for an extension's menu entry.
   ControlState GetActionButtonState(const extensions::ExtensionId& extension_id,
                                     const gfx::Size& icon_size);
+
+  // Returns the icon for an extension's action at `action_index`.
+  ui::ImageModel GetActionIcon(int action_index, const gfx::Size& icon_size);
 
   // Returns the state for the extension's context menu button.
   ControlState GetContextMenuButtonState(

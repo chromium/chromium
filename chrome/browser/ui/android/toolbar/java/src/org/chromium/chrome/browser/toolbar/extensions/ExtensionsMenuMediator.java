@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.view.View;
 
@@ -194,20 +195,38 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         List<ExtensionsMenuTypes.MenuEntryState> entries = mMenuBridge.getMenuEntries();
 
         for (ExtensionsMenuTypes.MenuEntryState entry : entries) {
-            PropertyModel model =
+            PropertyModel.Builder modelBuilder =
                     new PropertyModel.Builder(ExtensionsMenuItemProperties.ALL_KEYS)
                             .with(ExtensionsMenuItemProperties.TITLE, entry.actionButton.text)
                             .with(
                                     ExtensionsMenuItemProperties.CLICK_LISTENER,
                                     (view) ->
                                             onContextMenuButtonClicked(
-                                                    (ListMenuButton) view, entry.id))
-                            .build();
+                                                    (ListMenuButton) view, entry.id));
+
+            if (entry.actionButton.icon != null) {
+                modelBuilder.with(ExtensionsMenuItemProperties.ICON, entry.actionButton.icon);
+            }
+
+            PropertyModel model = modelBuilder.build();
             mActionModels.add(new ListItem(0, model));
         }
 
         boolean isZeroState = entries.isEmpty();
         mMenuPropertyModel.set(ExtensionsMenuProperties.IS_ZERO_STATE, isZeroState);
+    }
+
+    @Override
+    public void onActionIconUpdated(int actionIndex) {
+        PropertyModel model = mActionModels.get(actionIndex).model;
+        if (model == null) {
+            return;
+        }
+
+        Bitmap icon = mMenuBridge.getActionIcon(actionIndex);
+        if (icon != null) {
+            model.set(ExtensionsMenuItemProperties.ICON, icon);
+        }
     }
 
     private boolean isMainPageVisible() {

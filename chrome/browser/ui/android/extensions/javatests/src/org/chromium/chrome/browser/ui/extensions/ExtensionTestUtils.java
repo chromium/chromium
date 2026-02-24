@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.ui.extensions;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -11,6 +15,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 import java.io.File;
@@ -115,15 +120,26 @@ public class ExtensionTestUtils {
      * host permissions. The entry will only have a disabled action button.
      */
     public static ExtensionsMenuTypes.MenuEntryState createSimpleMenuEntry(
-            String extensionId, String extensionName) {
+            String extensionId, String extensionName, @Nullable Bitmap extensionIcon) {
         ExtensionsMenuTypes.ControlState actionButton =
                 new ExtensionsMenuTypes.ControlState(
                         ExtensionsMenuTypes.ControlState.Status.DISABLED,
                         /* text= */ extensionName,
                         /* accessibleName= */ "",
                         /* tooltipText= */ "",
-                        /* isOn= */ false);
+                        /* isOn= */ false,
+                        extensionIcon);
         return new ExtensionsMenuTypes.MenuEntryState(extensionId, actionButton);
+    }
+
+    /** Helper to create a simple icon with the given color. */
+    public static Bitmap createSimpleIcon(int color) {
+        Bitmap bitmap = Bitmap.createBitmap(12, 12, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+        paint.setColor(color);
+        canvas.drawRect(0, 0, 12, 12, paint);
+        return bitmap;
     }
 
     @NativeMethods

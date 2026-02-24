@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.extensions;
 
+import android.graphics.Bitmap;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -42,6 +44,12 @@ public class ExtensionsMenuBridge implements Destroyable {
         LifetimeAssert.destroy(mLifetimeAssert);
     }
 
+    /** Returns the icon for the given extension index from native. */
+    public @Nullable Bitmap getActionIcon(int actionIndex) {
+        return ExtensionsMenuBridgeJni.get()
+                .getActionIcon(mNativeExtensionsMenuDelegateAndroid, actionIndex);
+    }
+
     /** Returns the list of menu entries with their states from native. */
     public List<ExtensionsMenuTypes.MenuEntryState> getMenuEntries() {
         return ExtensionsMenuBridgeJni.get().getMenuEntries(mNativeExtensionsMenuDelegateAndroid);
@@ -68,6 +76,16 @@ public class ExtensionsMenuBridge implements Destroyable {
     }
 
     /**
+     * Callback from native indicating that an extension icon has been updated.
+     *
+     * @param actionIndex The index of the updated extension in the menu.
+     */
+    @CalledByNative
+    public void onActionIconUpdated(int actionIndex) {
+        mObserver.onActionIconUpdated(actionIndex);
+    }
+
+    /**
      * Callback from native indicating that the menu data is ready. This will not be called if the
      * menu data is ready at the menu bridge initialization.
      */
@@ -84,6 +102,9 @@ public class ExtensionsMenuBridge implements Destroyable {
     }
 
     public interface Observer {
+        /** Called when an extension icon has been updated on actionIndex. */
+        void onActionIconUpdated(int actionIndex);
+
         /** Called when the menu data is ready to be consumed. */
         void onReady();
 
@@ -107,6 +128,9 @@ public class ExtensionsMenuBridge implements Destroyable {
 
         /** Destroys the native ExtensionsMenuDelegateAndroid. */
         void destroy(long nativeExtensionsMenuDelegateAndroid);
+
+        // Returns the icon for an extension's action at actionIndex.
+        @Nullable Bitmap getActionIcon(long nativeExtensionsMenuDelegateAndroid, int actionIndex);
 
         /** Returns the list of menu entries with their states from native. */
         @JniType("std::vector<base::android::ScopedJavaLocalRef<jobject>>")

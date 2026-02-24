@@ -791,6 +791,16 @@ ExtensionsMenuViewModel::GetActionButtonState(
   return button_state;
 }
 
+ui::ImageModel ExtensionsMenuViewModel::GetActionIcon(
+    int action_index,
+    const gfx::Size& icon_size) {
+  CHECK_GE(action_index, 0);
+  CHECK_LT(static_cast<size_t>(action_index), action_models_.size());
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  return action_models_[action_index]->GetIcon(web_contents, icon_size);
+}
+
 ExtensionsMenuViewModel::ControlState
 ExtensionsMenuViewModel::GetContextMenuButtonState(
     const extensions::ExtensionId& extension_id) {

@@ -76,7 +76,8 @@ public class ExtensionsMenuAndAccessControlButtonCoordinatorTest {
                         "toggle_text",
                         "accessible_name",
                         "tooltip",
-                        true);
+                        true,
+                        /* icon= */ null);
         ExtensionsMenuTypes.SiteSettingsState siteSettingsState =
                 new ExtensionsMenuTypes.SiteSettingsState("label", false, toggleState);
         when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong())).thenReturn(siteSettingsState);

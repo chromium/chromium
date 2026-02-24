@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -266,7 +267,9 @@ public class ExtensionsMenuCoordinatorTest {
         // We must mock a non-null return value for getMenuEntries() and getSiteSettings() because
         // the Mediator will immediately call this method upon receiving the onReady signal.
         List<ExtensionsMenuTypes.MenuEntryState> mockEntries = new ArrayList<>();
-        mockEntries.add(ExtensionTestUtils.createSimpleMenuEntry("id_a", "Extension A"));
+        mockEntries.add(
+                ExtensionTestUtils.createSimpleMenuEntry(
+                        "id_a", "Extension A", ExtensionTestUtils.createSimpleIcon(Color.RED)));
         when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(mockEntries);
         mSiteSettingsState = createSiteSettingsState("label", true);
         when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
@@ -331,7 +334,12 @@ public class ExtensionsMenuCoordinatorTest {
             String label, boolean isOn, @ExtensionsMenuTypes.ControlState.Status int status) {
         ExtensionsMenuTypes.ControlState toggleState =
                 new ExtensionsMenuTypes.ControlState(
-                        status, "toggle_text", "accessible_name", "tooltip", isOn);
+                        status,
+                        "toggle_text",
+                        "accessible_name",
+                        "tooltip",
+                        isOn,
+                        /* icon= */ null);
         return new ExtensionsMenuTypes.SiteSettingsState(
                 label, /* hasTooltip= */ false, toggleState);
     }
