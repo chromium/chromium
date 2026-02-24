@@ -193,7 +193,7 @@ void SecureChannelImpl::OnAttestationResponse(
     logger_->LogError(FROM_HERE,
                       "Response proto does not have attestation message.");
     base::UmaHistogramMediumTimes(
-        "Legion.SecureChannel.SendAttestationRequestLatency.Error",
+        "PrivateAi.SecureChannel.SendAttestationRequestLatency.Error",
         base::TimeTicks::Now() -
             state_entry_times_[State::kPerformingAttestation]);
     FailAllRequestsAndClose(ErrorCode::kAttestationFailed);
@@ -209,7 +209,7 @@ void SecureChannelImpl::OnAttestationResponse(
   if (!attestation_evidence) {
     logger_->LogError(FROM_HERE, "Attestation evidence conversion failed.");
     base::UmaHistogramMediumTimes(
-        "Legion.SecureChannel.SendAttestationRequestLatency.Error",
+        "PrivateAi.SecureChannel.SendAttestationRequestLatency.Error",
         base::TimeTicks::Now() -
             state_entry_times_[State::kPerformingAttestation]);
     FailAllRequestsAndClose(ErrorCode::kAttestationFailed);
@@ -219,7 +219,7 @@ void SecureChannelImpl::OnAttestationResponse(
   if (!attestation_handler_->VerifyAttestationResponse(*attestation_evidence)) {
     logger_->LogError(FROM_HERE, "Attestation verification failed.");
     base::UmaHistogramMediumTimes(
-        "Legion.SecureChannel.SendAttestationRequestLatency.Error",
+        "PrivateAi.SecureChannel.SendAttestationRequestLatency.Error",
         base::TimeTicks::Now() -
             state_entry_times_[State::kPerformingAttestation]);
     FailAllRequestsAndClose(ErrorCode::kAttestationFailed);
@@ -227,7 +227,7 @@ void SecureChannelImpl::OnAttestationResponse(
   }
   logger_->LogInfo(FROM_HERE, "Attestation verified successfully.");
   base::UmaHistogramMediumTimes(
-      "Legion.SecureChannel.SendAttestationRequestLatency.Success",
+      "PrivateAi.SecureChannel.SendAttestationRequestLatency.Success",
       base::TimeTicks::Now() -
           state_entry_times_[State::kPerformingAttestation]);
 
@@ -248,7 +248,7 @@ void SecureChannelImpl::OnHandshakeMessageReady(
   if (!handshake_request.has_value()) {
     logger_->LogError(FROM_HERE, "Failed to generate handshake request.");
     base::UmaHistogramMediumTimes(
-        "Legion.SecureChannel.GetHandshakeMessageLatency.Error",
+        "PrivateAi.SecureChannel.GetHandshakeMessageLatency.Error",
         base::TimeTicks::Now() -
             state_entry_times_[State::kPerformingHandshake]);
     FailAllRequestsAndClose(ErrorCode::kHandshakeFailed);
@@ -256,7 +256,7 @@ void SecureChannelImpl::OnHandshakeMessageReady(
   }
 
   base::UmaHistogramMediumTimes(
-      "Legion.SecureChannel.GetHandshakeMessageLatency.Success",
+      "PrivateAi.SecureChannel.GetHandshakeMessageLatency.Success",
       base::TimeTicks::Now() -
           state_entry_times_[State::kWaitingHandshakeMessage]);
 
@@ -273,9 +273,9 @@ void SecureChannelImpl::RecordSessionDurationMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == State::kEstablished) {
     base::UmaHistogramMediumTimes(
-        "Legion.SecureChannel.SessionDuration",
+        "PrivateAi.SecureChannel.SessionDuration",
         base::TimeTicks::Now() - state_entry_times_[State::kEstablished]);
-    base::UmaHistogramCounts1000("Legion.SecureChannel.RequestsPerSession",
+    base::UmaHistogramCounts1000("PrivateAi.SecureChannel.RequestsPerSession",
                                  requests_in_session_count_);
   }
 }
@@ -290,7 +290,7 @@ void SecureChannelImpl::OnHandshakeResponse(
     logger_->LogError(FROM_HERE,
                       "Response proto does not have handshake message.");
     base::UmaHistogramMediumTimes(
-        "Legion.SecureChannel.SendHandshakeRequestLatency.Error",
+        "PrivateAi.SecureChannel.SendHandshakeRequestLatency.Error",
         base::TimeTicks::Now() -
             state_entry_times_[State::kPerformingHandshake]);
     FailAllRequestsAndClose(ErrorCode::kHandshakeFailed);
@@ -316,7 +316,7 @@ void SecureChannelImpl::OnHandshakeVerification(bool handshake_verified) {
   if (!handshake_verified) {
     logger_->LogError(FROM_HERE, "Failed to handle handshake response.");
     base::UmaHistogramMediumTimes(
-        "Legion.SecureChannel.SendHandshakeRequestLatency.Error",
+        "PrivateAi.SecureChannel.SendHandshakeRequestLatency.Error",
         base::TimeTicks::Now() -
             state_entry_times_[State::kPerformingHandshake]);
     FailAllRequestsAndClose(ErrorCode::kHandshakeFailed);
@@ -325,7 +325,7 @@ void SecureChannelImpl::OnHandshakeVerification(bool handshake_verified) {
   logger_->LogInfo(FROM_HERE, "Session established.");
 
   base::UmaHistogramMediumTimes(
-      "Legion.SecureChannel.SendHandshakeRequestLatency.Success",
+      "PrivateAi.SecureChannel.SendHandshakeRequestLatency.Success",
       base::TimeTicks::Now() - state_entry_times_[State::kPerformingHandshake]);
 
   state_ = State::kEstablished;
@@ -387,13 +387,13 @@ void SecureChannelImpl::StartSessionEstablishment() {
   if (!attestation_req.has_value()) {
     logger_->LogError(FROM_HERE, "Failed to get attestation request.");
     base::UmaHistogramMediumTimes(
-        "Legion.SecureChannel.GetAttestationRequestLatency.Error",
+        "PrivateAi.SecureChannel.GetAttestationRequestLatency.Error",
         base::TimeTicks::Now() - get_attestation_start_time);
     FailAllRequestsAndClose(ErrorCode::kAttestationFailed);
     return;
   }
   base::UmaHistogramMediumTimes(
-      "Legion.SecureChannel.GetAttestationRequestLatency.Success",
+      "PrivateAi.SecureChannel.GetAttestationRequestLatency.Success",
       base::TimeTicks::Now() - get_attestation_start_time);
 
   state_ = State::kPerformingAttestation;

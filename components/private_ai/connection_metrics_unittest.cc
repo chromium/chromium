@@ -74,18 +74,18 @@ TEST_F(ConnectionMetricsTest, Success) {
   EXPECT_EQ(result.value().request_id(), 123);
 
   // Verify request related metrics.
-  histogram_tester_.ExpectUniqueSample("Legion.Client.RequestSize",
+  histogram_tester_.ExpectUniqueSample("PrivateAi.Client.RequestSize",
                                        request_size, 1);
   histogram_tester_.ExpectUniqueSample(
-      "Legion.Client.FeatureName",
+      "PrivateAi.Client.FeatureName",
       proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT, 1);
 
   // Verify response related metrics.
-  histogram_tester_.ExpectUniqueSample("Legion.Client.ResponseSize.Success",
+  histogram_tester_.ExpectUniqueSample("PrivateAi.Client.ResponseSize.Success",
                                        response_size, 1);
   histogram_tester_.ExpectUniqueTimeSample(
-      "Legion.Client.RequestLatency.Success", base::Milliseconds(500), 1);
-  histogram_tester_.ExpectTotalCount("Legion.Client.RequestErrorCode", 0);
+      "PrivateAi.Client.RequestLatency.Success", base::Milliseconds(500), 1);
+  histogram_tester_.ExpectTotalCount("PrivateAi.Client.RequestErrorCode", 0);
 }
 
 TEST_F(ConnectionMetricsTest, Timeout) {
@@ -108,12 +108,14 @@ TEST_F(ConnectionMetricsTest, Timeout) {
   EXPECT_EQ(result.error(), ErrorCode::kTimeout);
 
   // Verify response related metrics.
-  histogram_tester_.ExpectUniqueSample("Legion.Client.RequestErrorCode",
+  histogram_tester_.ExpectUniqueSample("PrivateAi.Client.RequestErrorCode",
                                        ErrorCode::kTimeout, 1);
   histogram_tester_.ExpectUniqueTimeSample(
-      "Legion.Client.RequestLatency.Timeout", base::Seconds(10), 1);
-  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 0);
-  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Error", 0);
+      "PrivateAi.Client.RequestLatency.Timeout", base::Seconds(10), 1);
+  histogram_tester_.ExpectTotalCount("PrivateAi.Client.RequestLatency.Success",
+                                     0);
+  histogram_tester_.ExpectTotalCount("PrivateAi.Client.RequestLatency.Error",
+                                     0);
 }
 
 TEST_F(ConnectionMetricsTest, Error) {
@@ -137,12 +139,14 @@ TEST_F(ConnectionMetricsTest, Error) {
   EXPECT_EQ(result.error(), ErrorCode::kNetworkError);
 
   // Verify response related metrics.
-  histogram_tester_.ExpectUniqueSample("Legion.Client.RequestErrorCode",
+  histogram_tester_.ExpectUniqueSample("PrivateAi.Client.RequestErrorCode",
                                        ErrorCode::kNetworkError, 1);
-  histogram_tester_.ExpectUniqueTimeSample("Legion.Client.RequestLatency.Error",
-                                           base::Milliseconds(200), 1);
-  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Success", 0);
-  histogram_tester_.ExpectTotalCount("Legion.Client.RequestLatency.Timeout", 0);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "PrivateAi.Client.RequestLatency.Error", base::Milliseconds(200), 1);
+  histogram_tester_.ExpectTotalCount("PrivateAi.Client.RequestLatency.Success",
+                                     0);
+  histogram_tester_.ExpectTotalCount("PrivateAi.Client.RequestLatency.Timeout",
+                                     0);
 }
 
 }  // namespace

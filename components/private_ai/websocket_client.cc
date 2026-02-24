@@ -295,12 +295,12 @@ void WebSocketClient::OnDropChannel(bool was_clean,
                                              base::NumberToString(code),
                                              ", reason:", reason, ")"}));
 
-  base::UmaHistogramSparse("Legion.Client.WebSocketCloseCode", code);
+  base::UmaHistogramSparse("PrivateAi.Client.WebSocketCloseCode", code);
 
   // If there is a reason, it indicates an error from the server.
   if (!reason.empty()) {
     base::UmaHistogramEnumeration(
-        "Legion.Client.ServerErrorCode", ParseGoogleRpcCode(reason),
+        "PrivateAi.Client.ServerErrorCode", ParseGoogleRpcCode(reason),
         static_cast<rpc::GoogleRpcCode>(rpc::GoogleRpcCode_MAX + 1));
   }
   ClosePipe(TransportError::kSocketClosed);

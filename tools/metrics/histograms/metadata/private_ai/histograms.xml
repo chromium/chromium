@@ -5,7 +5,7 @@ found in the LICENSE file.
 -->
 
 <!--
-This file is used to generate a comprehensive list of Legion histograms
+This file is used to generate a comprehensive list of Private AI histograms
 along with a detailed description for each histogram.
 
 For best practices on writing histogram descriptions, see
@@ -19,7 +19,7 @@ reviewer.
 
 <histograms>
 
-<histogram name="Legion.Client.FeatureName" enum="LegionFeatureName"
+<histogram name="PrivateAi.Client.FeatureName" enum="PrivateAiFeatureName"
     expires_after="2026-12-01">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
@@ -27,12 +27,12 @@ reviewer.
   <owner>lamzin@google.com</owner>
   <owner>saeideid@google.com</owner>
   <summary>
-    Records the Legion feature name for each request sent. Recorded for every
-    request.
+    Records the Private AI feature name for each request sent. Recorded for
+    every request.
   </summary>
 </histogram>
 
-<histogram name="Legion.Client.RequestErrorCode" enum="LegionErrorCode"
+<histogram name="PrivateAi.Client.RequestErrorCode" enum="PrivateAiErrorCode"
     expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
@@ -45,7 +45,7 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="Legion.Client.RequestLatency.{Status}" units="ms"
+<histogram name="PrivateAi.Client.RequestLatency.{Status}" units="ms"
     expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
@@ -53,10 +53,10 @@ reviewer.
   <owner>lamzin@google.com</owner>
   <owner>saeideid@google.com</owner>
   <summary>
-    Records the latency of a request sent from the Legion Client. This is the
-    time from when the request is sent to when the response is received or the
-    request times out. Recorded for every request. The suffix on the histogram
-    name indicates the outcome: {Status}
+    Records the latency of a request sent from the Private AI Client. This is
+    the time from when the request is sent to when the response is received or
+    the request times out. Recorded for every request. The suffix on the
+    histogram name indicates the outcome: {Status}
   </summary>
   <token key="Status">
     <variant name="Error" summary="The request failed with an error."/>
@@ -65,7 +65,7 @@ reviewer.
   </token>
 </histogram>
 
-<histogram name="Legion.Client.RequestSize" units="bytes"
+<histogram name="PrivateAi.Client.RequestSize" units="bytes"
     expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
@@ -73,12 +73,12 @@ reviewer.
   <owner>lamzin@google.com</owner>
   <owner>saeideid@google.com</owner>
   <summary>
-    Records the size of the request payload sent from the Legion Client.
+    Records the size of the request payload sent from the Private AI Client.
     Recorded for every request.
   </summary>
 </histogram>
 
-<histogram name="Legion.Client.ResponseSize.Success" units="bytes"
+<histogram name="PrivateAi.Client.ResponseSize.Success" units="bytes"
     expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
@@ -86,12 +86,12 @@ reviewer.
   <owner>lamzin@google.com</owner>
   <owner>saeideid@google.com</owner>
   <summary>
-    Records the size of the response payload received by the Legion Client for
-    successful requests. Recorded for every successful request.
+    Records the size of the response payload received by the Private AI Client
+    for successful requests. Recorded for every successful request.
   </summary>
 </histogram>
 
-<histogram name="Legion.Client.ServerErrorCode" enum="GoogleRpcCode"
+<histogram name="PrivateAi.Client.ServerErrorCode" enum="GoogleRpcCode"
     expires_after="2026-12-01">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
@@ -106,7 +106,7 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="Legion.Client.WebSocketCloseCode" enum="WebSocketCloseCode"
+<histogram name="PrivateAi.Client.WebSocketCloseCode" enum="WebSocketCloseCode"
     expires_after="2026-12-10">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
@@ -120,7 +120,7 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="Legion.OakSessionSandboxStability.{CallName}"
+<histogram name="PrivateAi.OakSessionSandboxStability.{CallName}"
     enum="BooleanSuccess" expires_after="2026-12-01">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
@@ -139,7 +139,7 @@ reviewer.
   </token>
 </histogram>
 
-<histogram name="Legion.SecureChannel.GetAttestationRequestLatency.{Status}"
+<histogram name="PrivateAi.SecureChannel.GetAttestationRequestLatency.{Status}"
     units="ms" expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
@@ -158,7 +158,7 @@ reviewer.
   </token>
 </histogram>
 
-<histogram name="Legion.SecureChannel.GetHandshakeMessageLatency.{Status}"
+<histogram name="PrivateAi.SecureChannel.GetHandshakeMessageLatency.{Status}"
     units="ms" expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
@@ -176,7 +176,7 @@ reviewer.
   </token>
 </histogram>
 
-<histogram name="Legion.SecureChannel.RequestsPerSession" units="requests"
+<histogram name="PrivateAi.SecureChannel.RequestsPerSession" units="requests"
     expires_after="2026-11-28">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
@@ -189,7 +189,8 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="Legion.SecureChannel.SendAttestationRequestLatency.{Status}"
+<histogram
+    name="PrivateAi.SecureChannel.SendAttestationRequestLatency.{Status}"
     units="ms" expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
@@ -209,7 +210,7 @@ reviewer.
   </token>
 </histogram>
 
-<histogram name="Legion.SecureChannel.SendHandshakeRequestLatency.{Status}"
+<histogram name="PrivateAi.SecureChannel.SendHandshakeRequestLatency.{Status}"
     units="ms" expires_after="2026-11-25">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>
@@ -229,7 +230,7 @@ reviewer.
   </token>
 </histogram>
 
-<histogram name="Legion.SecureChannel.SessionDuration" units="ms"
+<histogram name="PrivateAi.SecureChannel.SessionDuration" units="ms"
     expires_after="2026-11-28">
   <owner>nikhiljakhar@google.com</owner>
   <owner>arabm@google.com</owner>

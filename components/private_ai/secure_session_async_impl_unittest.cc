@@ -117,7 +117,7 @@ TEST_F(SecureSessionAsyncImplTest, GetHandshakeMessageDisconnect) {
   fake_oak_session_service_.reset();
   EXPECT_FALSE(future.Get().has_value());
   histogram_tester_.ExpectUniqueSample(
-      "Legion.OakSessionSandboxStability.InitiateHandshake", false, 1);
+      "PrivateAi.OakSessionSandboxStability.InitiateHandshake", false, 1);
 }
 
 TEST_F(SecureSessionAsyncImplTest, ProcessHandshakeResponseDisconnect) {
@@ -138,7 +138,7 @@ TEST_F(SecureSessionAsyncImplTest, ProcessHandshakeResponseDisconnect) {
   fake_oak_session_service_.reset();
   EXPECT_FALSE(future.Get());
   histogram_tester_.ExpectUniqueSample(
-      "Legion.OakSessionSandboxStability.CompleteHandshake", false, 1);
+      "PrivateAi.OakSessionSandboxStability.CompleteHandshake", false, 1);
 }
 
 TEST_F(SecureSessionAsyncImplTest, EncryptDisconnect) {
@@ -148,7 +148,7 @@ TEST_F(SecureSessionAsyncImplTest, EncryptDisconnect) {
   fake_oak_session_service_.reset();
   EXPECT_FALSE(future.Get().has_value());
   histogram_tester_.ExpectUniqueSample(
-      "Legion.OakSessionSandboxStability.Encrypt", false, 1);
+      "PrivateAi.OakSessionSandboxStability.Encrypt", false, 1);
 }
 
 TEST_F(SecureSessionAsyncImplTest, DecryptDisconnect) {
@@ -157,7 +157,7 @@ TEST_F(SecureSessionAsyncImplTest, DecryptDisconnect) {
   fake_oak_session_service_.reset();
   EXPECT_FALSE(future.Get().has_value());
   histogram_tester_.ExpectUniqueSample(
-      "Legion.OakSessionSandboxStability.Decrypt", false, 1);
+      "PrivateAi.OakSessionSandboxStability.Decrypt", false, 1);
 }
 
 TEST_F(SecureSessionAsyncImplTest, GetHandshakeMessageSuccess) {
@@ -177,7 +177,7 @@ TEST_F(SecureSessionAsyncImplTest, GetHandshakeMessageSuccess) {
 
   EXPECT_TRUE(future.Get().has_value());
   histogram_tester_.ExpectUniqueSample(
-      "Legion.OakSessionSandboxStability.InitiateHandshake", true, 1);
+      "PrivateAi.OakSessionSandboxStability.InitiateHandshake", true, 1);
 }
 
 TEST_F(SecureSessionAsyncImplTest, ProcessHandshakeResponseSuccess) {
@@ -198,7 +198,7 @@ TEST_F(SecureSessionAsyncImplTest, ProcessHandshakeResponseSuccess) {
 
   EXPECT_TRUE(future.Get());
   histogram_tester_.ExpectUniqueSample(
-      "Legion.OakSessionSandboxStability.CompleteHandshake", true, 1);
+      "PrivateAi.OakSessionSandboxStability.CompleteHandshake", true, 1);
 }
 
 TEST_F(SecureSessionAsyncImplTest, EncryptSuccess) {
@@ -211,7 +211,7 @@ TEST_F(SecureSessionAsyncImplTest, EncryptSuccess) {
 
   EXPECT_TRUE(future.Get().has_value());
   histogram_tester_.ExpectUniqueSample(
-      "Legion.OakSessionSandboxStability.Encrypt", true, 1);
+      "PrivateAi.OakSessionSandboxStability.Encrypt", true, 1);
 }
 
 TEST_F(SecureSessionAsyncImplTest, DecryptSuccess) {
@@ -223,7 +223,7 @@ TEST_F(SecureSessionAsyncImplTest, DecryptSuccess) {
 
   EXPECT_TRUE(future.Get().has_value());
   histogram_tester_.ExpectUniqueSample(
-      "Legion.OakSessionSandboxStability.Decrypt", true, 1);
+      "PrivateAi.OakSessionSandboxStability.Decrypt", true, 1);
 }
 
 }  // namespace

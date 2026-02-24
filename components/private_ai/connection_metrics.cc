@@ -25,9 +25,9 @@ ConnectionMetrics::~ConnectionMetrics() = default;
 void ConnectionMetrics::Send(proto::PrivateAiRequest request,
                              base::TimeDelta timeout,
                              OnRequestCallback callback) {
-  base::UmaHistogramCounts1M("Legion.Client.RequestSize",
+  base::UmaHistogramCounts1M("PrivateAi.Client.RequestSize",
                              static_cast<int>(request.ByteSizeLong()));
-  base::UmaHistogramSparse("Legion.Client.FeatureName",
+  base::UmaHistogramSparse("PrivateAi.Client.FeatureName",
                            static_cast<int>(request.feature_name()));
 
   inner_connection_->Send(
@@ -48,19 +48,19 @@ void ConnectionMetrics::OnResponse(
 
   if (result.has_value()) {
     // Records the response size in bytes. The max value is 1M bytes.
-    base::UmaHistogramCounts1M("Legion.Client.ResponseSize.Success",
+    base::UmaHistogramCounts1M("PrivateAi.Client.ResponseSize.Success",
                                result->ByteSizeLong());
-    base::UmaHistogramMediumTimes("Legion.Client.RequestLatency.Success",
+    base::UmaHistogramMediumTimes("PrivateAi.Client.RequestLatency.Success",
                                   latency);
   } else if (result.error() == ErrorCode::kTimeout) {
-    base::UmaHistogramEnumeration("Legion.Client.RequestErrorCode",
+    base::UmaHistogramEnumeration("PrivateAi.Client.RequestErrorCode",
                                   ErrorCode::kTimeout);
-    base::UmaHistogramMediumTimes("Legion.Client.RequestLatency.Timeout",
+    base::UmaHistogramMediumTimes("PrivateAi.Client.RequestLatency.Timeout",
                                   latency);
   } else {
-    base::UmaHistogramEnumeration("Legion.Client.RequestErrorCode",
+    base::UmaHistogramEnumeration("PrivateAi.Client.RequestErrorCode",
                                   result.error());
-    base::UmaHistogramMediumTimes("Legion.Client.RequestLatency.Error",
+    base::UmaHistogramMediumTimes("PrivateAi.Client.RequestLatency.Error",
                                   latency);
   }
 

@@ -110,7 +110,7 @@ void ConnectionTokenAttestation::OnAttestationResponse(
         FROM_HERE,
         base::StrCat({"Client attestation request failed with error: ",
                       base::NumberToString(static_cast<int>(result.error()))}));
-    base::UmaHistogramEnumeration("Legion.Client.RequestErrorCode",
+    base::UmaHistogramEnumeration("PrivateAi.Client.RequestErrorCode",
                                   result.error());
     CallOnDisconnect(ErrorCode::kClientAttestationFailed);
     return;

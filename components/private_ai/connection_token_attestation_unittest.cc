@@ -156,7 +156,7 @@ TEST_F(ConnectionTokenAttestationTest, AttestationFailed) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ErrorCode::kClientAttestationFailed);
 
-  histogram_tester.ExpectUniqueSample("Legion.Client.RequestErrorCode",
+  histogram_tester.ExpectUniqueSample("PrivateAi.Client.RequestErrorCode",
                                       ErrorCode::kError, 1);
 
   EXPECT_EQ(on_disconnect_counter_, 1);

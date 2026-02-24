@@ -300,21 +300,21 @@ TEST_F(SecureChannelImplTest, WriteAndEstablishConnectionSucceeds) {
   EXPECT_EQ(BytesToString(result.value()), "secret response");
 
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetAttestationRequestLatency.Success", 1);
+      "PrivateAi.SecureChannel.GetAttestationRequestLatency.Success", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendAttestationRequestLatency.Success", 1);
+      "PrivateAi.SecureChannel.SendAttestationRequestLatency.Success", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetHandshakeMessageLatency.Success", 1);
+      "PrivateAi.SecureChannel.GetHandshakeMessageLatency.Success", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendHandshakeRequestLatency.Success", 1);
+      "PrivateAi.SecureChannel.SendHandshakeRequestLatency.Success", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetAttestationRequestLatency.Error", 0);
+      "PrivateAi.SecureChannel.GetAttestationRequestLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendAttestationRequestLatency.Error", 0);
+      "PrivateAi.SecureChannel.SendAttestationRequestLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetHandshakeMessageLatency.Error", 0);
+      "PrivateAi.SecureChannel.GetHandshakeMessageLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendHandshakeRequestLatency.Error", 0);
+      "PrivateAi.SecureChannel.SendHandshakeRequestLatency.Error", 0);
 }
 
 // Tests that a closed channel is reported through the response callback.
@@ -357,19 +357,19 @@ TEST_F(SecureChannelImplTest, AttestationErrorFailsWrite) {
   EXPECT_EQ(result.error(), ErrorCode::kAttestationFailed);
 
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetAttestationRequestLatency.Success", 1);
+      "PrivateAi.SecureChannel.GetAttestationRequestLatency.Success", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendAttestationRequestLatency.Error", 1);
+      "PrivateAi.SecureChannel.SendAttestationRequestLatency.Error", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetHandshakeMessageLatency.Success", 0);
+      "PrivateAi.SecureChannel.GetHandshakeMessageLatency.Success", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendHandshakeRequestLatency.Success", 0);
+      "PrivateAi.SecureChannel.SendHandshakeRequestLatency.Success", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetAttestationRequestLatency.Error", 0);
+      "PrivateAi.SecureChannel.GetAttestationRequestLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetHandshakeMessageLatency.Error", 0);
+      "PrivateAi.SecureChannel.GetHandshakeMessageLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendHandshakeRequestLatency.Error", 0);
+      "PrivateAi.SecureChannel.SendHandshakeRequestLatency.Error", 0);
 }
 
 // Tests the case where attestation evidence conversion fails, leading to a
@@ -402,13 +402,13 @@ TEST_F(SecureChannelImplTest, AttestationEvidenceConversionFails) {
   EXPECT_EQ(result.error(), ErrorCode::kAttestationFailed);
 
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetAttestationRequestLatency.Success", 1);
+      "PrivateAi.SecureChannel.GetAttestationRequestLatency.Success", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendAttestationRequestLatency.Error", 1);
+      "PrivateAi.SecureChannel.SendAttestationRequestLatency.Error", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetAttestationRequestLatency.Error", 0);
+      "PrivateAi.SecureChannel.GetAttestationRequestLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendAttestationRequestLatency.Success", 0);
+      "PrivateAi.SecureChannel.SendAttestationRequestLatency.Success", 0);
 }
 
 // Tests a transport-level error during the attestation phase of session
@@ -440,19 +440,19 @@ TEST_F(SecureChannelImplTest, TransportErrorDuringAttestationFailsRequest) {
   EXPECT_EQ(result.error(), ErrorCode::kAttestationFailed);
 
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetAttestationRequestLatency.Success", 1);
+      "PrivateAi.SecureChannel.GetAttestationRequestLatency.Success", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetHandshakeMessageLatency.Success", 0);
+      "PrivateAi.SecureChannel.GetHandshakeMessageLatency.Success", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendHandshakeRequestLatency.Success", 0);
+      "PrivateAi.SecureChannel.SendHandshakeRequestLatency.Success", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetAttestationRequestLatency.Error", 0);
+      "PrivateAi.SecureChannel.GetAttestationRequestLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendAttestationRequestLatency.Error", 0);
+      "PrivateAi.SecureChannel.SendAttestationRequestLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetHandshakeMessageLatency.Error", 0);
+      "PrivateAi.SecureChannel.GetHandshakeMessageLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendHandshakeRequestLatency.Error", 0);
+      "PrivateAi.SecureChannel.SendHandshakeRequestLatency.Error", 0);
 }
 
 // Tests a transport-level error during the handshake phase of session
@@ -502,19 +502,19 @@ TEST_F(SecureChannelImplTest, TransportErrorDuringHandshakeFailsRequest) {
   EXPECT_EQ(result.error(), ErrorCode::kHandshakeFailed);
 
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetAttestationRequestLatency.Success", 1);
+      "PrivateAi.SecureChannel.GetAttestationRequestLatency.Success", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendAttestationRequestLatency.Success", 1);
+      "PrivateAi.SecureChannel.SendAttestationRequestLatency.Success", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetHandshakeMessageLatency.Error", 0);
+      "PrivateAi.SecureChannel.GetHandshakeMessageLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendHandshakeRequestLatency.Error", 0);
+      "PrivateAi.SecureChannel.SendHandshakeRequestLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetAttestationRequestLatency.Error", 0);
+      "PrivateAi.SecureChannel.GetAttestationRequestLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetHandshakeMessageLatency.Success", 1);
+      "PrivateAi.SecureChannel.GetHandshakeMessageLatency.Success", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendHandshakeRequestLatency.Success", 0);
+      "PrivateAi.SecureChannel.SendHandshakeRequestLatency.Success", 0);
 }
 
 // Tests a transport-level error after the session is established.
@@ -548,9 +548,10 @@ TEST_F(SecureChannelImplTest, TransportErrorAfterSessionEstablished) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), ErrorCode::kNetworkError);
 
-  histogram_tester_.ExpectTotalCount("Legion.SecureChannel.SessionDuration", 1);
+  histogram_tester_.ExpectTotalCount("PrivateAi.SecureChannel.SessionDuration",
+                                     1);
   histogram_tester_.ExpectUniqueSample(
-      "Legion.SecureChannel.RequestsPerSession", /*sample=*/1,
+      "PrivateAi.SecureChannel.RequestsPerSession", /*sample=*/1,
       /*expected_bucket_count=*/1);
 }
 
@@ -568,17 +569,17 @@ TEST_F(SecureChannelImplTest, GetAttestationRequestFails) {
   EXPECT_EQ(result.error(), ErrorCode::kAttestationFailed);
 
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetAttestationRequestLatency.Error", 1);
+      "PrivateAi.SecureChannel.GetAttestationRequestLatency.Error", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetAttestationRequestLatency.Success", 0);
+      "PrivateAi.SecureChannel.GetAttestationRequestLatency.Success", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetHandshakeMessageLatency.Success", 0);
+      "PrivateAi.SecureChannel.GetHandshakeMessageLatency.Success", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendHandshakeRequestLatency.Success", 0);
+      "PrivateAi.SecureChannel.SendHandshakeRequestLatency.Success", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetHandshakeMessageLatency.Error", 0);
+      "PrivateAi.SecureChannel.GetHandshakeMessageLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendHandshakeRequestLatency.Error", 0);
+      "PrivateAi.SecureChannel.SendHandshakeRequestLatency.Error", 0);
 }
 
 // Tests that a response without an attestation response during attestation
@@ -648,21 +649,21 @@ TEST_F(SecureChannelImplTest, ProcessHandshakeResponseFails) {
   EXPECT_EQ(result.error(), ErrorCode::kHandshakeFailed);
 
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetAttestationRequestLatency.Success", 1);
+      "PrivateAi.SecureChannel.GetAttestationRequestLatency.Success", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendAttestationRequestLatency.Success", 1);
+      "PrivateAi.SecureChannel.SendAttestationRequestLatency.Success", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetHandshakeMessageLatency.Success", 1);
+      "PrivateAi.SecureChannel.GetHandshakeMessageLatency.Success", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendHandshakeRequestLatency.Error", 1);
+      "PrivateAi.SecureChannel.SendHandshakeRequestLatency.Error", 1);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetAttestationRequestLatency.Error", 0);
+      "PrivateAi.SecureChannel.GetAttestationRequestLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendAttestationRequestLatency.Error", 0);
+      "PrivateAi.SecureChannel.SendAttestationRequestLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetHandshakeMessageLatency.Error", 0);
+      "PrivateAi.SecureChannel.GetHandshakeMessageLatency.Error", 0);
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.SendHandshakeRequestLatency.Success", 0);
+      "PrivateAi.SecureChannel.SendHandshakeRequestLatency.Success", 0);
 }
 
 // Tests that a response without a handshake response during handshake fails.
@@ -778,7 +779,7 @@ TEST_F(SecureChannelImplTest, GetHandshakeMessageFails) {
   EXPECT_EQ(result.error(), ErrorCode::kHandshakeFailed);
 
   histogram_tester_.ExpectTotalCount(
-      "Legion.SecureChannel.GetHandshakeMessageLatency.Error", 1);
+      "PrivateAi.SecureChannel.GetHandshakeMessageLatency.Error", 1);
 }
 
 // Tests that `Write` returns false if the channel is closed.

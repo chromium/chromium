@@ -105,14 +105,15 @@ void SecureSessionAsyncImpl::GetHandshakeMessage(
           [](GetHandshakeMessageOnceCallback callback,
              HandshakeMessage message) {
             base::UmaHistogramBoolean(
-                "Legion.OakSessionSandboxStability.InitiateHandshake", true);
+                "PrivateAi.OakSessionSandboxStability.InitiateHandshake", true);
             std::move(callback).Run(ConvertToRequestProto(message));
           },
           std::move(split_callback.first)),
       base::BindOnce(
           [](GetHandshakeMessageOnceCallback callback) {
             base::UmaHistogramBoolean(
-                "Legion.OakSessionSandboxStability.InitiateHandshake", false);
+                "PrivateAi.OakSessionSandboxStability.InitiateHandshake",
+                false);
             std::move(callback).Run(std::nullopt);
           },
           std::move(split_callback.second)));
@@ -136,14 +137,15 @@ void SecureSessionAsyncImpl::ProcessHandshakeResponse(
       base::BindOnce(
           [](ProcessHandshakeResponseOnceCallback callback, bool result) {
             base::UmaHistogramBoolean(
-                "Legion.OakSessionSandboxStability.CompleteHandshake", true);
+                "PrivateAi.OakSessionSandboxStability.CompleteHandshake", true);
             std::move(callback).Run(result);
           },
           std::move(split_callback.first)),
       base::BindOnce(
           [](ProcessHandshakeResponseOnceCallback callback) {
             base::UmaHistogramBoolean(
-                "Legion.OakSessionSandboxStability.CompleteHandshake", false);
+                "PrivateAi.OakSessionSandboxStability.CompleteHandshake",
+                false);
             std::move(callback).Run(false);
           },
           std::move(split_callback.second)));
@@ -161,14 +163,14 @@ void SecureSessionAsyncImpl::Encrypt(const Request& data,
           [](EncryptOnceCallback callback,
              const std::optional<std::vector<uint8_t>>& encrypted_data) {
             base::UmaHistogramBoolean(
-                "Legion.OakSessionSandboxStability.Encrypt", true);
+                "PrivateAi.OakSessionSandboxStability.Encrypt", true);
             std::move(callback).Run(ConvertToEncryptedMessage(encrypted_data));
           },
           std::move(split_callback.first)),
       base::BindOnce(
           [](EncryptOnceCallback callback) {
             base::UmaHistogramBoolean(
-                "Legion.OakSessionSandboxStability.Encrypt", false);
+                "PrivateAi.OakSessionSandboxStability.Encrypt", false);
             std::move(callback).Run(std::nullopt);
           },
           std::move(split_callback.second)));
@@ -186,14 +188,14 @@ void SecureSessionAsyncImpl::Decrypt(
           [](DecryptOnceCallback callback,
              const std::optional<std::vector<uint8_t>>& decrypted_data) {
             base::UmaHistogramBoolean(
-                "Legion.OakSessionSandboxStability.Decrypt", true);
+                "PrivateAi.OakSessionSandboxStability.Decrypt", true);
             std::move(callback).Run(decrypted_data);
           },
           std::move(split_callback.first)),
       base::BindOnce(
           [](DecryptOnceCallback callback) {
             base::UmaHistogramBoolean(
-                "Legion.OakSessionSandboxStability.Decrypt", false);
+                "PrivateAi.OakSessionSandboxStability.Decrypt", false);
             std::move(callback).Run(std::nullopt);
           },
           std::move(split_callback.second)));

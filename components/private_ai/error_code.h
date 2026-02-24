@@ -41,7 +41,7 @@ enum class ErrorCode {
   kDestroyed = 12,
   kMaxValue = kDestroyed,
 };
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:LegionErrorCode)
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivateAiErrorCode)
 
 }  // namespace private_ai
 
