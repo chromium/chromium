@@ -6,10 +6,14 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
+#include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -63,6 +67,23 @@ void AttemptFastKillForDiscard(
 #endif
   base::UmaHistogramEnumeration("Discarding.AttemptFastKillForDiscardResult",
                                 result);
+}
+
+content::WebContents* DiscardLeastImportantTab(
+    ::mojom::LifecycleUnitDiscardReason discard_reason,
+    base::TimeDelta urgent_protection_time) {
+  performance_manager::Graph* graph =
+      performance_manager::PerformanceManager::GetGraph();
+  CHECK(graph);
+
+  auto* discarding_helper =
+      performance_manager::policies::PageDiscardingHelper::GetFromGraph(graph);
+  if (!discarding_helper) {
+    return nullptr;
+  }
+
+  return discarding_helper->DiscardAPage(discard_reason, urgent_protection_time)
+      .first_content_after_discard;
 }
 
 }  // namespace resource_coordinator

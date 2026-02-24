@@ -64,6 +64,10 @@ class TabManager : public LifecycleUnitObserver,
   // discards the least important tab using DiscardTab(). Otherwise discards
   // the given contents. Returns the new web_contents or null if no tab
   // was discarded.
+  // TODO(crbug.com/485935303): Remove this method as its callers are using
+  // TabListInterface to discard specific tabs and discarding the least
+  // important tab needs to be supported on Android whereas this method is only
+  // callable on desktop.
   content::WebContents* DiscardTabByExtension(content::WebContents* contents);
 
  private:

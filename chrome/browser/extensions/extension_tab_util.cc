@@ -416,7 +416,11 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
 
   tab_object.audible = get_audible();
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_ANDROID)
+  tab_object.discarded = contents->WasDiscarded();
+  // TODO(crbug.com/371432155): Determine auto-discardable and frozen states on
+  // desktop Android where the TabLifecycleUnit is not available.
+#else
   auto* tab_lifecycle_unit_external =
       resource_coordinator::TabLifecycleUnitExternal::FromWebContents(contents);
 
@@ -434,7 +438,7 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
   tab_object.frozen = tab_lifecycle_unit_external &&
                       tab_lifecycle_unit_external->GetTabState() ==
                           ::mojom::LifecycleUnitState::FROZEN;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   tab_object.muted_info = CreateMutedInfo(contents);
 

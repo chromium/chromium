@@ -24,6 +24,8 @@
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
+#include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -117,6 +119,7 @@ constexpr char kWindowCreateLockedFullscreenUrlCountMismatchError[] =
 constexpr char kInvalidWindowTypeError[] = "Invalid value for type";
 constexpr char kNoHighlightedTabError[] = "No highlighted tab";
 constexpr char kTabIndexNotFoundError[] = "No tab at index: *.";
+constexpr char kCannotFindTabToDiscard[] = "Cannot find a tab to discard.";
 
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kWindowCreateSupportsOnlySingleIwaUrlError[] =
@@ -3692,6 +3695,64 @@ ExtensionFunction::ResponseAction TabsGetZoomSettingsFunction::Run() {
   return RespondNow(
       ArgumentList(api::tabs::GetZoomSettings::Results::Create(zoom_settings)));
 }
+
+ExtensionFunction::ResponseAction TabsDiscardFunction::Run() {
+  std::optional<tabs::Discard::Params> params =
+      tabs::Discard::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  WindowController* window = nullptr;
+  content::WebContents* contents = nullptr;
+
+  // If `tab_id` is given, find the web_contents respective to it.
+  // Otherwise invoke discard function in TabManager with null web_contents
+  // that will discard the least important tab.
+  if (params->tab_id) {
+    int tab_id = *params->tab_id;
+    std::string error;
+
+    int tab_index = -1;
+    if (!tabs_internal::GetTabById(tab_id, browser_context(),
+                                   include_incognito_information(), &window,
+                                   &contents, &tab_index, &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
+
+    if (DevToolsWindow::IsDevToolsWindow(contents)) {
+      return RespondNow(Error(tabs_constants::kNotAllowedForDevToolsError));
+    }
+
+    BrowserWindowInterface* browser_window =
+        window->GetBrowserWindowInterface();
+    if (!browser_window ||
+        !ExtensionTabUtil::BrowserSupportsTabs(browser_window)) {
+      return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
+    }
+
+    TabListInterface* tab_list = TabListInterface::From(browser_window);
+    CHECK(tab_list);
+
+    contents = tab_list->DiscardTab(tab_list->GetTab(tab_index)->GetHandle());
+  } else {
+    contents = resource_coordinator::DiscardLeastImportantTab(
+        ::mojom::LifecycleUnitDiscardReason::EXTERNAL);
+  }
+
+  if (!contents) {
+    // Return appropriate error message otherwise.
+    return RespondNow(Error(params->tab_id
+                                ? ErrorUtils::FormatErrorMessage(
+                                      tabs_constants::kCannotDiscardTab,
+                                      base::NumberToString(*params->tab_id))
+                                : kCannotFindTabToDiscard));
+  }
+
+  return RespondNow(ArgumentList(
+      tabs::Discard::Results::Create(tabs_internal::CreateTabObjectHelper(
+          contents, extension(), source_context_type(), nullptr, -1))));
+}
+
+TabsDiscardFunction::TabsDiscardFunction() = default;
+TabsDiscardFunction::~TabsDiscardFunction() = default;
 
 ExtensionFunction::ResponseAction TabsGoForwardFunction::Run() {
   std::optional<tabs::GoForward::Params> params =

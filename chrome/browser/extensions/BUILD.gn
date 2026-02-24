@@ -635,7 +635,6 @@ source_set("extensions") {
       "api/management/chrome_management_api_delegate_android.cc",
       "api/messaging/native_message_android_host.cc",
       "api/messaging/native_message_android_host.h",
-      "api/tabs/tabs_api_android.cc",
       "api/tabs/tabs_event_router_platform_delegate_android.cc",
       "api/tabs/tabs_event_router_platform_delegate_android.h",
       "chrome_extension_host_delegate_android.cc",
@@ -654,7 +653,6 @@ source_set("extensions") {
   } else {
     sources += [
       "api/chrome_extensions_api_client_non_android.cc",
-      "api/tabs/tabs_api_non_android.cc",
       "api/tabs/tabs_event_router_platform_delegate_non_android.cc",
       "api/tabs/tabs_event_router_platform_delegate_non_android.h",
       "chrome_extension_host_delegate_non_android.cc",

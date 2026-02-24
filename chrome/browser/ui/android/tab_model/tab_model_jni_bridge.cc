@@ -551,7 +551,9 @@ content::WebContents* TabModelJniBridge::DiscardTab(tabs::TabHandle tab) {
   }
 
   content::WebContents* web_contents = tab_android->web_contents();
-  if (!web_contents) {
+  // Don't discard if there are no WebContents or if the WebContents is already
+  // discarded.
+  if (!web_contents || web_contents->WasDiscarded()) {
     return nullptr;
   }
   web_contents->Discard(base::DoNothing());

@@ -86,7 +86,6 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/time.h"
@@ -1720,15 +1719,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
   }
 }
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 // Tests chrome.tabs.discard(tabId).
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithId) {
-  // Create an additional tab.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  // Create an additional tab and navigate to `url::kAboutBlankURL`.
+  GetTabListInterface()->OpenTab(GURL(url::kAboutBlankURL), -1);
   content::WebContents* web_contents =
       GetTabListInterface()->GetTab(1)->GetContents();
+  content::WaitForLoadStop(web_contents);
+  EXPECT_FALSE(web_contents->WasDiscarded());
+
+  // Activate the first tab since the second one will be discarded and active
+  // tabs cannot be discarded on Android.
+  GetTabListInterface()->ActivateTab(
+      GetTabListInterface()->GetTab(0)->GetHandle());
 
   // Set up the function with an extension.
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
@@ -1741,12 +1746,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithId) {
       utils::ToDict(utils::RunFunctionAndReturnSingleResult(
           discard.get(), base::StringPrintf("[%u]", tab_id), profile()));
 
-  // Confirms that TabManager sees the tab as discarded.
+  // Confirm that the tab was discarded.
   web_contents = GetTabListInterface()->GetTab(1)->GetContents();
-  EXPECT_EQ(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
-                web_contents)
-                ->GetTabState(),
-            ::mojom::LifecycleUnitState::DISCARDED);
+  EXPECT_TRUE(web_contents->WasDiscarded());
 
   // Make sure the returned tab is the one discarded and its discarded state is
   // correct.
@@ -1768,10 +1770,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithId) {
 // Tests chrome.tabs.discard(invalidId).
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithInvalidId) {
   // Create an additional tab.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  GetTabListInterface()->OpenTab(GURL(url::kAboutBlankURL), -1);
+  content::WebContents* web_contents =
+      GetTabListInterface()->GetTab(1)->GetContents();
+  content::WaitForLoadStop(web_contents);
+  EXPECT_FALSE(web_contents->WasDiscarded());
 
   // Set up the function with an extension.
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
@@ -1789,11 +1792,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithInvalidId) {
   std::string error = utils::RunFunctionAndReturnError(
       discard.get(), base::StringPrintf("[%u]", tab_invalid_id), profile());
 
-  // State should still be `ACTIVE` as no tab was discarded.
-  EXPECT_EQ(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
-                GetTabListInterface()->GetTab(1)->GetContents())
-                ->GetTabState(),
-            ::mojom::LifecycleUnitState::ACTIVE);
+  // The tab should not be discarded.
+  EXPECT_FALSE(GetTabListInterface()->GetTab(1)->GetContents()->WasDiscarded());
 
   // Check error message.
   EXPECT_TRUE(base::MatchPattern(error, ExtensionTabUtil::kTabNotFoundError));
@@ -1802,12 +1802,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithInvalidId) {
 // Tests chrome.tabs.discard().
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithoutId) {
   // Create an additional tab.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url::kAboutBlankURL),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  GetTabListInterface()->OpenTab(GURL(url::kAboutBlankURL), -1);
   content::WebContents* web_contents =
       GetTabListInterface()->GetTab(1)->GetContents();
+  content::WaitForLoadStop(web_contents);
+  EXPECT_FALSE(web_contents->WasDiscarded());
+
+  // Activate the first created tab to make the second one the least recently
+  // used and therefore the one that should be discarded.
+  GetTabListInterface()->ActivateTab(
+      GetTabListInterface()->GetTab(0)->GetHandle());
 
   // Set up the function with an extension.
   scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
@@ -1818,12 +1822,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithoutId) {
   const base::DictValue result = utils::ToDict(
       utils::RunFunctionAndReturnSingleResult(discard.get(), "[]", profile()));
 
-  // Confirms that TabManager sees the tab as discarded.
+  // Confirm that the tab was discarded.
   web_contents = GetTabListInterface()->GetTab(1)->GetContents();
-  EXPECT_EQ(resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
-                web_contents)
-                ->GetTabState(),
-            ::mojom::LifecycleUnitState::DISCARDED);
+  EXPECT_TRUE(web_contents->WasDiscarded());
 
   // Make sure the returned tab is the one discarded and its discarded state is
   // correct.
@@ -1833,6 +1834,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithoutId) {
   // The result should be scrubbed.
   EXPECT_FALSE(result.contains("url"));
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TestGroupDetachedAndReInserted) {
   // Create the `TabsEventRouter`, which is required to get a tab update event.
