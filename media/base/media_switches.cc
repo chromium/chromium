@@ -1540,6 +1540,10 @@ BASE_FEATURE(kMediaLogToConsole,
 #endif
 );
 
+// Controls whether AOM/VPX decoders should use the presentation thread type.
+BASE_FEATURE(kAomVpxUsePresentationThreadType,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // Controls whether to use D3D12 video decoder instead of D3D11 when supported.
 BASE_FEATURE(kD3D12VideoDecoder, base::FEATURE_DISABLED_BY_DEFAULT);

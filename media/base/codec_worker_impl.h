@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
+#include "media/base/media_switches.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
@@ -45,7 +47,11 @@ class CodecWorkerImpl {
   CodecWorkerImpl()
       : thread_("CodecWorker"),
         event_(base::WaitableEvent::ResetPolicy::AUTOMATIC) {
-    thread_.Start();
+    base::Thread::Options options;
+    if (base::FeatureList::IsEnabled(kAomVpxUsePresentationThreadType)) {
+      options.thread_type = base::ThreadType::kPresentation;
+    }
+    thread_.StartWithOptions(std::move(options));
   }
 
   static CodecWorkerImpl* GetImpl(Worker* const worker) {
