@@ -575,23 +575,6 @@ static_library("browser") {
     "login_detection/login_detection_util.h",
     "login_detection/oauth_login_detector.cc",
     "login_detection/oauth_login_detector.h",
-    "lookalikes/lookalike_url_blocking_page.cc",
-    "lookalikes/lookalike_url_blocking_page.h",
-    "lookalikes/lookalike_url_controller_client.cc",
-    "lookalikes/lookalike_url_controller_client.h",
-    "lookalikes/lookalike_url_navigation_throttle.cc",
-    "lookalikes/lookalike_url_navigation_throttle.h",
-    "lookalikes/lookalike_url_service.cc",
-    "lookalikes/lookalike_url_service.h",
-    "lookalikes/lookalike_url_service_factory.cc",
-    "lookalikes/lookalike_url_service_factory.h",
-    "lookalikes/lookalike_url_tab_storage.cc",
-    "lookalikes/lookalike_url_tab_storage.h",
-    "lookalikes/safety_tip_ui.h",
-    "lookalikes/safety_tip_ui_helper.cc",
-    "lookalikes/safety_tip_ui_helper.h",
-    "lookalikes/safety_tip_web_contents_observer.cc",
-    "lookalikes/safety_tip_web_contents_observer.h",
     "manta/manta_service_factory.cc",
     "manta/manta_service_factory.h",
     "media/audio_service_util.cc",
@@ -1499,10 +1482,6 @@ static_library("browser") {
   # "browser_public_dependencies".
   allow_circular_includes_from = [
     "//chrome/browser/preloading/search_preload:search_preload",
-
-    # TODO(crbug.com/426554250): This needs //chrome/browser/lookalikes which is
-    # not yet modularized.
-    "//chrome/browser/actor:impl",
     "//chrome/browser/ai:impl",
     "//chrome/browser/autofill",
 
@@ -1834,6 +1813,8 @@ static_library("browser") {
     "//chrome/browser/k_anonymity_service:impl",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/local_network_access",
+    "//chrome/browser/lookalikes",
+    "//chrome/browser/lookalikes:impl",
     "//chrome/browser/media:access_handler",
     "//chrome/browser/media:access_handler_impl",
     "//chrome/browser/media:audio_process_ml_model_forwarder",
@@ -3075,8 +3056,6 @@ static_library("browser") {
       "lifetime/application_lifetime_android.h",
       "long_screenshots/long_screenshots_tab_service_factory.cc",
       "long_screenshots/long_screenshots_tab_service_factory.h",
-      "lookalikes/safety_tip_message_delegate_android.cc",
-      "lookalikes/safety_tip_message_delegate_android.h",
       "mandatory_reauth/android/mandatory_reauth_opt_in_view_android.cc",
       "mandatory_reauth/android/mandatory_reauth_opt_in_view_android.h",
       "media/android/cdm/media_drm_origin_id_manager.cc",
@@ -3639,6 +3618,12 @@ static_library("browser") {
       # headers get componentized:
       # - c/b/android/service_tab_launcher.h
       "//chrome/browser/content_index:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when the following
+      # headers get componentized:
+      # - c/b/android/android_theme_resources.h
+      # - c/b/android/resource_mapper.h
+      "//chrome/browser/lookalikes:impl",
     ]
 
     if (safe_browsing_mode == 2) {

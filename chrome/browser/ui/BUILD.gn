@@ -308,6 +308,7 @@ static_library("ui") {
     "//chrome/browser/history",
     "//chrome/browser/image_decoder",
     "//chrome/browser/image_fetcher",
+    "//chrome/browser/lookalikes",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
