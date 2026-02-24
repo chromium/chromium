@@ -98,8 +98,7 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
   int remaining_height = 0;
   if (size_bounds.height().is_bounded()) {
     remaining_height = size_bounds.height().value();
-    if (!pinned_tabs_container_view_->children().empty() &&
-        !unpinned_tabs_container_view_->children().empty()) {
+    if (pinned_preferred_height != 0 && unpinned_preferred_height != 0) {
       remaining_height -= region_vertical_padding;
     }
     if (should_show_separator) {
