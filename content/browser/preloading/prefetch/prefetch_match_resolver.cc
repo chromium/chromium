@@ -444,7 +444,8 @@ void PrefetchMatchResolver::StartWaitFor(const PrefetchKey& prefetch_key,
 
   // `kServable` -> `kNotServable` is the only possible change during
   // `FindPrefetchInternal()` call.
-  CHECK_EQ(prefetch_container.GetServableState(), servable_state);
+  CHECK_EQ(prefetch_container.GetMatchResolverAction().ToServableState(),
+           servable_state);
   switch (servable_state) {
     case PrefetchServableState::kServable:
     case PrefetchServableState::kNotServable:
@@ -567,62 +568,61 @@ void PrefetchMatchResolver::OnDeterminedHead(
     return;
   }
 
-  PrefetchServableState servable_state = prefetch_container.GetServableState();
   PrefetchMatchResolverAction match_resolver_action =
       prefetch_container.GetMatchResolverAction();
+  PrefetchServableState servable_state =
+      match_resolver_action.ToServableState();
   switch (servable_state) {
     case PrefetchServableState::kShouldBlockUntilEligibilityGot:
       // All callsites of `PrefetchContainer::OnDeterminedHead()` are
       // `PrefetchStreamingURLLoader`, which implies the prefetch passed
       // eligibility check.
       NOTREACHED();
+    case PrefetchServableState::kShouldBlockUntilHeadReceived:
+      // Previously, this case was hit because the old
+      // `PrefetchContainer::GetServableState()` returned
+      // `PrefetchServableState::kShouldBlockUntilHeadReceived`, because
+      // `OnDeterminedHead()` is called when redirect is judged as ineligible,
+      // with `GetNonRedirectResponseReader()` null. On the other hand, the
+      // match resolver action is `(kDrop, kFailedDeterminedHead)` and the
+      // servable state of it is `kNotServable`.
+      //
+      // So, we expect that this clause is not hit.
+      NOTREACHED();
     case PrefetchServableState::kServable:
       // proceed
       break;
     // Otherwise, `MaybeUnblockForUnmatch()`.
-    case PrefetchServableState::kShouldBlockUntilHeadReceived:
     case PrefetchServableState::kNotServable:
       auto potential_candidate_serving_result = [&]() {
-        switch (servable_state) {
-          case PrefetchServableState::kShouldBlockUntilEligibilityGot:
-          case PrefetchServableState::kServable:
+        switch (match_resolver_action.kind()) {
+          case PrefetchMatchResolverAction::ActionKind::kWait:
+            // Contradicts to `PrefetchServableState::kNotServable`.
             NOTREACHED();
-            // `kShouldBlockUntilHeadReceived` case occurs if a prefetch is
-            // redirected and the redirect is not eligible.
-            //
-            //    PrefetchService::OnGotEligibilityForRedirect()
-            // -> PrefetchStreamingURLLoader::HandleRedirect(kFail)
-            // -> PrefetchContainer::OnDeterminedHead()
-            // -> here
-          case PrefetchServableState::kShouldBlockUntilHeadReceived:
-            return PrefetchPotentialCandidateServingResult::
-                kNotServedOnDeterminedHeadWithShouldBlockUntilHeadReceived;
-          case PrefetchServableState::kNotServable:
-            if (match_resolver_action.kind() ==
-                    PrefetchMatchResolverAction::ActionKind::kMaybeServe &&
-                match_resolver_action.is_expired() == true) {
+          case PrefetchMatchResolverAction::ActionKind::kMaybeServe:
+            if (match_resolver_action.is_expired()) {
               return PrefetchPotentialCandidateServingResult::
                   kNotServedOnDeterminedHeadWithServableExpired;
             } else {
-              CHECK_EQ(match_resolver_action.kind(),
-                       PrefetchMatchResolverAction::ActionKind::kDrop);
-
-              switch (match_resolver_action.prefetch_container_load_state()) {
-                case PrefetchContainer::LoadState::kFailedIneligible:
-                  return PrefetchPotentialCandidateServingResult::
-                      kNotServedIneligibleRedirect;
-                case PrefetchContainer::LoadState::kFailedDeterminedHead:
-                case PrefetchContainer::LoadState::kFailed:
-                  return PrefetchPotentialCandidateServingResult::
-                      kNotServedLoadFailed;
-                case PrefetchContainer::LoadState::kNotStarted:
-                case PrefetchContainer::LoadState::kEligible:
-                case PrefetchContainer::LoadState::kStarted:
-                case PrefetchContainer::LoadState::kDeterminedHead:
-                case PrefetchContainer::LoadState::kCompleted:
-                case PrefetchContainer::LoadState::kFailedHeldback:
-                  NOTREACHED();
-              }
+              // Contradicts to `PrefetchServableState::kNotServable`.
+              NOTREACHED();
+            }
+          case PrefetchMatchResolverAction::ActionKind::kDrop:
+            switch (match_resolver_action.prefetch_container_load_state()) {
+              case PrefetchContainer::LoadState::kFailedIneligible:
+                return PrefetchPotentialCandidateServingResult::
+                    kNotServedIneligibleRedirect;
+              case PrefetchContainer::LoadState::kFailedDeterminedHead:
+              case PrefetchContainer::LoadState::kFailed:
+                return PrefetchPotentialCandidateServingResult::
+                    kNotServedLoadFailed;
+              case PrefetchContainer::LoadState::kNotStarted:
+              case PrefetchContainer::LoadState::kEligible:
+              case PrefetchContainer::LoadState::kStarted:
+              case PrefetchContainer::LoadState::kDeterminedHead:
+              case PrefetchContainer::LoadState::kCompleted:
+              case PrefetchContainer::LoadState::kFailedHeldback:
+                NOTREACHED();
             }
         }
       }();
@@ -893,7 +893,7 @@ void PrefetchMatchResolver::AttachPrefetchMatchPrerenderDebugMetrics() {
     metrics->prefetch_ahead_of_prerender_debug_metrics->prefetch_status =
         prefetch_container->GetPrefetchStatus();
     metrics->prefetch_ahead_of_prerender_debug_metrics->servable_state =
-        prefetch_container->GetServableState();
+        prefetch_container->GetMatchResolverAction().ToServableState();
     metrics->prefetch_ahead_of_prerender_debug_metrics->match_resolver_action =
         prefetch_container->GetMatchResolverAction();
     metrics->prefetch_ahead_of_prerender_debug_metrics->queue_size =

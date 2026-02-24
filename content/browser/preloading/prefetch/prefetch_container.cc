@@ -1196,44 +1196,12 @@ PrefetchServableState PrefetchContainer::GetServableStateForTesting(  // IN-TEST
 
 PrefetchServableState PrefetchContainer::GetServableStateInternal(
     base::TimeDelta cacheable_duration) const {
-  // We allow the differences between `GetServableStateInternal2()` and
-  // `match_resolver_action.ToServableState()` because we know the latter should
-  // be the correct behavior.
-  auto is_known_allowed_exception =
-      [&](PrefetchServableState servable_state,
-          const PrefetchMatchResolverAction& match_resolver_action) {
-        // `GetCodeOfPrefetchServableStateAndPrefetchMatchResolverActionForDebug()
-        // == 2181`
-        // Failed test: PrefetchServiceTest.IneligibleRedirectCookies/*
-        //
-        // `OnDeterminedHead()` is called when redirect is judged as ineligible,
-        // with `GetNonRedirectResponseReader()` null. Ideally, we should treat
-        // this case as `PrefetchServableState::kNotServable`, but the current
-        // `GetServableStateInternal2()` returns
-        // `PrefetchServableState::kShouldBlockUntilHeadReceived`. We will keep
-        // the current behavior and fix it by replacing the implementation with
-        // `GetMatchResolverAction()`.
-        //
-        // TODO(crbug.com/455448933): Do it.
-        if (servable_state ==
-                PrefetchServableState::kShouldBlockUntilHeadReceived &&
-            match_resolver_action.kind() ==
-                PrefetchMatchResolverAction::ActionKind::kDrop &&
-            match_resolver_action.prefetch_container_load_state() ==
-                PrefetchContainer::LoadState::kFailedDeterminedHead) {
-          return true;
-        }
-
-        return false;
-      };
-
   PrefetchServableState servable_state =
       GetServableStateInternal2(cacheable_duration);
   PrefetchMatchResolverAction match_resolver_action =
       GetMatchResolverActionInternal(cacheable_duration);
 
-  if (servable_state != match_resolver_action.ToServableState() &&
-      !is_known_allowed_exception(servable_state, match_resolver_action)) {
+  if (servable_state != match_resolver_action.ToServableState()) {
     // We are going to switch from the old implementation
     // (`GetServableStateInternal2()`) to the new one
     // (`match_resolver_action.ToServableState()`), and check the behavior
