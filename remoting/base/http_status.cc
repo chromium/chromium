@@ -5,6 +5,7 @@
 #include "remoting/base/http_status.h"
 
 #include "base/no_destructor.h"
+#include "base/strings/stringprintf.h"
 #include "net/http/http_status_code.h"
 #include "remoting/base/protobuf_http_client_messages.pb.h"
 
@@ -84,7 +85,10 @@ const HttpStatus& HttpStatus::OK() {
 
 HttpStatus::HttpStatus(net::HttpStatusCode http_status_code)
     : error_code_(HttpStatusCodeToClientCode(http_status_code)),
-      error_message_(net::GetHttpReasonPhrase(http_status_code)) {}
+      error_message_(
+          base::StringPrintf("%s (HTTP status code: %d)",
+                             net::GetHttpReasonPhrase(http_status_code),
+                             http_status_code)) {}
 
 HttpStatus::HttpStatus(net::Error net_error)
     : error_code_(NetErrorToClientCode(net_error)),
