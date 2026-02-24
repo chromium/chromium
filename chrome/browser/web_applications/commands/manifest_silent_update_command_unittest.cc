@@ -70,10 +70,7 @@ class ManifestSilentUpdateCommandTest : public WebAppTest {
   ~ManifestSilentUpdateCommandTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kWebAppUsePrimaryIcon,
-         features::kSilentPolicyAndDefaultAppUpdating},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(features::kWebAppUsePrimaryIcon);
     WebAppTest::SetUp();
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
     provider->SetOriginAssociationManager(

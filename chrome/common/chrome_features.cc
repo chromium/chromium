@@ -2010,9 +2010,4 @@ BASE_FEATURE(kUnicornChromeActivityReporting,
 // that to create DIY apps.
 BASE_FEATURE(kDisableShortcutsEnableDiy, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// A feature to enabled updating policy and default management installed PWAs to
-// happen silently without prompting an updating dialog.
-BASE_FEATURE(kSilentPolicyAndDefaultAppUpdating,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace features

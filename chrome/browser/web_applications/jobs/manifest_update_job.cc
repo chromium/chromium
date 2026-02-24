@@ -274,9 +274,7 @@ void ManifestUpdateJob::OnWebAppInfoCreated(
   // Store the conditions for which a silent update of the app's identity is
   // allowed.
   bool is_trusted_install =
-      (base::FeatureList::IsEnabled(
-           features::kSilentPolicyAndDefaultAppUpdating) &&
-       lock_->registrar().AppMatches(app_id_, WebAppFilter::IsTrusted())) ||
+      lock_->registrar().AppMatches(app_id_, WebAppFilter::IsTrusted()) ||
       options_.use_manifest_icons_as_trusted;
   bool can_fix_generated_icons =
       app->is_generated_icon() &&
