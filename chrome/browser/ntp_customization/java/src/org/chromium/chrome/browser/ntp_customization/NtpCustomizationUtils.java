@@ -50,7 +50,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Browser;
 import android.text.TextUtils;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -1235,17 +1234,8 @@ public class NtpCustomizationUtils {
      */
     public static BackgroundImageInfo getDefaultBackgroundImageInfo(
             Context context, Bitmap bitmap) {
-        Activity activity = ContextUtils.activityFromContext(context);
         Resources resources = context.getResources();
-
-        Point windowSize;
-        if (activity != null) {
-            windowSize = CropImageUtils.getCurrentWindowDimensions(activity);
-        } else {
-            // Fallback to display metrics if the activity context is unavailable.
-            DisplayMetrics displayMetrics = resources.getDisplayMetrics();
-            windowSize = new Point(displayMetrics.widthPixels, displayMetrics.heightPixels);
-        }
+        Point windowSize = CropImageUtils.getCurrentWindowDimensions(context);
 
         // If the device is portrait, use the current width/height; otherwise, swap them.
         boolean isPortrait =

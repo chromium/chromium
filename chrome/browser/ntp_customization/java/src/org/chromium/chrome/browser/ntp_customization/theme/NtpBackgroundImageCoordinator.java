@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtil
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageUtils.getCurrentWindowDimensions;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -154,9 +153,7 @@ public class NtpBackgroundImageCoordinator {
                 || mOriginalBitmap == null
                 || mBackgroundImageInfo == null) return;
 
-        Matrix matrixToApply =
-                getValidatedMatrixForCurrentWindowSize(
-                        (Activity) mContext, mBackgroundImageInfo, mOriginalBitmap);
+        Matrix matrixToApply = getValidatedMatrixForCurrentWindowSize();
 
         // 1. Updates the density property to synchronize the bitmap's metadata and prevent
         // incorrect intrinsic scaling.
@@ -184,17 +181,15 @@ public class NtpBackgroundImageCoordinator {
      * where the image gradually zooms in or moves away from the user's original selection without
      * any user input.
      *
-     * @param activity The current activity used to determine window dimensions.
-     * @param backgroundImageInfo The source of truth containing the user's original cropping
-     *     intent.
-     * @param bitmap The bitmap being displayed.
      * @return A matrix that is validated and adjusted for the current window dimensions.
      */
-    private Matrix getValidatedMatrixForCurrentWindowSize(
-            Activity activity, BackgroundImageInfo backgroundImageInfo, Bitmap bitmap) {
+    private Matrix getValidatedMatrixForCurrentWindowSize() {
         assertNonNull(mCachedBackgroundImageInfo);
-        Point currentWindowSize = getCurrentWindowDimensions(activity);
-        int currentOrientation = activity.getResources().getConfiguration().orientation;
+        assertNonNull(mBackgroundImageInfo);
+        assertNonNull(mOriginalBitmap);
+
+        Point currentWindowSize = getCurrentWindowDimensions(mContext);
+        int currentOrientation = mContext.getResources().getConfiguration().orientation;
 
         Point cachedSize = mCachedBackgroundImageInfo.getWindowSize(currentOrientation);
         if (currentWindowSize.equals(cachedSize)) {
@@ -203,8 +198,8 @@ public class NtpBackgroundImageCoordinator {
         }
 
         // Cache miss: uses the source of truth matrix to calculate the matrixToApply
-        Matrix sourceMatrix = backgroundImageInfo.getMatrix(currentOrientation);
-        Point sourceWindowSize = backgroundImageInfo.getWindowSize(currentOrientation);
+        Matrix sourceMatrix = mBackgroundImageInfo.getMatrix(currentOrientation);
+        Point sourceWindowSize = mBackgroundImageInfo.getWindowSize(currentOrientation);
         Matrix matrixToApply = new Matrix(sourceMatrix);
         assertNonNull(sourceWindowSize);
         matrixToApply =
@@ -214,12 +209,10 @@ public class NtpBackgroundImageCoordinator {
                         currentWindowSize.y,
                         sourceWindowSize.x,
                         sourceWindowSize.y,
-                        bitmap);
+                        mOriginalBitmap);
 
-        float[] matrixValues = new float[9];
-        matrixToApply.getValues(matrixValues);
         CropImageUtils.validateMatrix(
-                matrixToApply, currentWindowSize.x, currentWindowSize.y, bitmap, matrixValues);
+                matrixToApply, currentWindowSize.x, currentWindowSize.y, mOriginalBitmap);
 
         // Updates the cached BackgroundImageInfo
         updateCachedBackgroundInfo(currentOrientation, currentWindowSize, matrixToApply);
