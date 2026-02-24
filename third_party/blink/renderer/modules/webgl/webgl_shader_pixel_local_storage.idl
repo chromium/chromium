@@ -18,14 +18,17 @@
     const unsigned long PIXEL_LOCAL_TEXTURE_NAME_WEBGL = 0x96E8;
     const unsigned long PIXEL_LOCAL_TEXTURE_LEVEL_WEBGL = 0x96E9;
     const unsigned long PIXEL_LOCAL_TEXTURE_LAYER_WEBGL = 0x96EA;
-    const unsigned long PIXEL_LOCAL_CLEAR_VALUE_FLOAT_WEBGL = 0x96EB;
-    const unsigned long PIXEL_LOCAL_CLEAR_VALUE_INT_WEBGL = 0x96EC;
-    const unsigned long PIXEL_LOCAL_CLEAR_VALUE_UNSIGNED_INT_WEBGL = 0x96ED;
+    const unsigned long PIXEL_LOCAL_USAGE_WEBGL = 0x96EB;
+    const unsigned long PIXEL_LOCAL_CLEAR_VALUE_FLOAT_WEBGL = 0x96EC;
+    const unsigned long PIXEL_LOCAL_CLEAR_VALUE_INT_WEBGL = 0x96ED;
+    const unsigned long PIXEL_LOCAL_CLEAR_VALUE_UNSIGNED_INT_WEBGL = 0x96EE;
+    const unsigned long PIXEL_LOCAL_USAGE_ALWAYS_NONCOHERENT_BIT_WEBGL = 0x1;
     boolean isCoherent();
     undefined framebufferTexturePixelLocalStorageWEBGL(GLint plane,
                                                        WebGLTexture? texture,
                                                        GLint level,
-                                                       GLint layer);
+                                                       GLint layer,
+                                                       GLbitfield usage);
     undefined framebufferPixelLocalClearValuefvWEBGL(
             GLint plane,
             [AllowShared, PassAsSpan] Float32Array value,

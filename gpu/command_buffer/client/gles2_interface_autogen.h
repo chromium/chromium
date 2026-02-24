@@ -873,13 +873,14 @@ virtual void ColorMaskiOES(GLuint buf,
                            GLboolean a) = 0;
 virtual GLboolean IsEnablediOES(GLenum target, GLuint index) = 0;
 virtual void ProvokingVertexANGLE(GLenum provokeMode) = 0;
-virtual void FramebufferMemorylessPixelLocalStorageANGLE(
-    GLint plane,
-    GLenum internalformat) = 0;
+virtual void FramebufferMemorylessPixelLocalStorageANGLE(GLint plane,
+                                                         GLenum internalformat,
+                                                         GLbitfield usage) = 0;
 virtual void FramebufferTexturePixelLocalStorageANGLE(GLint plane,
                                                       GLuint backingtexture,
                                                       GLint level,
-                                                      GLint layer) = 0;
+                                                      GLint layer,
+                                                      GLbitfield usage) = 0;
 virtual void FramebufferPixelLocalClearValuefvANGLE(GLint plane,
                                                     const GLfloat* value) = 0;
 virtual void FramebufferPixelLocalClearValueivANGLE(GLint plane,

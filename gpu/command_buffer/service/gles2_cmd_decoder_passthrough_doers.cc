@@ -4967,7 +4967,8 @@ constexpr static char kPLSDefaultFramebufferBound[] =
 error::Error
 GLES2DecoderPassthroughImpl::DoFramebufferMemorylessPixelLocalStorageANGLE(
     GLint plane,
-    GLenum internalformat) {
+    GLenum internalformat,
+    GLbitfield usage) {
   // Memoryless pixel local storage planes cannot be saved and restored for a
   // context switch, so we do not support them in the command buffer.
   InsertError(GL_INVALID_OPERATION,
@@ -4981,14 +4982,15 @@ GLES2DecoderPassthroughImpl::DoFramebufferTexturePixelLocalStorageANGLE(
     GLint plane,
     GLuint backingtexture,
     GLint level,
-    GLint layer) {
+    GLint layer,
+    GLbitfield usage) {
   if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
     InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
     return error::kNoError;
   }
   api()->glFramebufferTexturePixelLocalStorageANGLEFn(
       plane, GetTextureServiceID(api(), backingtexture, resources_), level,
-      layer);
+      layer, usage);
   return error::kNoError;
 }
 

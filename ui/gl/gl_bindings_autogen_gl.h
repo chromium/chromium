@@ -441,7 +441,8 @@ typedef void(GL_BINDING_CALL* glFlushMappedBufferRangeProc)(GLenum target,
 typedef void(
     GL_BINDING_CALL* glFramebufferMemorylessPixelLocalStorageANGLEProc)(
     GLint plane,
-    GLenum internalformat);
+    GLenum internalformat,
+    GLbitfield usage);
 typedef void(GL_BINDING_CALL* glFramebufferParameteriMESAProc)(GLenum target,
                                                                GLenum pname,
                                                                GLint param);
@@ -490,7 +491,8 @@ typedef void(GL_BINDING_CALL* glFramebufferTexturePixelLocalStorageANGLEProc)(
     GLint plane,
     GLuint backingtexture,
     GLint level,
-    GLint layer);
+    GLint layer,
+    GLbitfield usage);
 typedef void(GL_BINDING_CALL* glFrontFaceProc)(GLenum mode);
 typedef void(GL_BINDING_CALL* glGenBuffersARBProc)(GLsizei n, GLuint* buffers);
 typedef void(GL_BINDING_CALL* glGenerateMipmapEXTProc)(GLenum target);
@@ -2441,7 +2443,8 @@ class GL_EXPORT GLApi {
                                           GLsizeiptr length) = 0;
   virtual void glFramebufferMemorylessPixelLocalStorageANGLEFn(
       GLint plane,
-      GLenum internalformat) = 0;
+      GLenum internalformat,
+      GLbitfield usage) = 0;
   virtual void glFramebufferParameteriMESAFn(GLenum target,
                                              GLenum pname,
                                              GLint param) = 0;
@@ -2486,7 +2489,8 @@ class GL_EXPORT GLApi {
       GLint plane,
       GLuint backingtexture,
       GLint level,
-      GLint layer) = 0;
+      GLint layer,
+      GLbitfield usage) = 0;
   virtual void glFrontFaceFn(GLenum mode) = 0;
   virtual void glGenBuffersARBFn(GLsizei n, GLuint* buffers) = 0;
   virtual void glGenerateMipmapEXTFn(GLenum target) = 0;

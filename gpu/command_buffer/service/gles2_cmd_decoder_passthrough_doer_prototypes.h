@@ -1050,11 +1050,13 @@ error::Error DoColorMaskiOES(GLuint buf,
 error::Error DoIsEnablediOES(GLenum target, GLuint index, uint32_t* result);
 error::Error DoFramebufferMemorylessPixelLocalStorageANGLE(
     GLint plane,
-    GLenum internalformat);
+    GLenum internalformat,
+    GLbitfield usage);
 error::Error DoFramebufferTexturePixelLocalStorageANGLE(GLint plane,
                                                         GLuint backingtexture,
                                                         GLint level,
-                                                        GLint layer);
+                                                        GLint layer,
+                                                        GLbitfield usage);
 error::Error DoFramebufferPixelLocalClearValuefvANGLE(
     GLint plane,
     const volatile GLfloat* value);

@@ -381,7 +381,8 @@ void glFlushMappedBufferRangeFn(GLenum target,
                                 GLsizeiptr length) override {}
 void glFramebufferMemorylessPixelLocalStorageANGLEFn(
     GLint plane,
-    GLenum internalformat) override {}
+    GLenum internalformat,
+    GLbitfield usage) override {}
 void glFramebufferParameteriMESAFn(GLenum target,
                                    GLenum pname,
                                    GLint param) override {}
@@ -424,7 +425,8 @@ void glFramebufferTextureMultiviewOVRFn(GLenum target,
 void glFramebufferTexturePixelLocalStorageANGLEFn(GLint plane,
                                                   GLuint backingtexture,
                                                   GLint level,
-                                                  GLint layer) override {}
+                                                  GLint layer,
+                                                  GLbitfield usage) override {}
 void glFrontFaceFn(GLenum mode) override {}
 void glGenBuffersARBFn(GLsizei n, GLuint* buffers) override {}
 void glGenerateMipmapEXTFn(GLenum target) override {}

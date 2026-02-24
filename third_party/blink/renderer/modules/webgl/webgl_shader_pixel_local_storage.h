@@ -31,7 +31,8 @@ class WebGLShaderPixelLocalStorage final : public WebGLExtension {
   void framebufferTexturePixelLocalStorageWEBGL(GLint plane,
                                                 WebGLTexture*,
                                                 GLint level,
-                                                GLint layer);
+                                                GLint layer,
+                                                GLbitfield usage);
   void framebufferPixelLocalClearValuefvWEBGL(GLint plane,
                                               base::span<const GLfloat>,
                                               GLuint src_offset);

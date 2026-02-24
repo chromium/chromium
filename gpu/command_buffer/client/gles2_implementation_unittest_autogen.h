@@ -2942,9 +2942,9 @@ TEST_F(GLES2ImplementationTest, FramebufferMemorylessPixelLocalStorageANGLE) {
     cmds::FramebufferMemorylessPixelLocalStorageANGLE cmd;
   };
   Cmds expected;
-  expected.cmd.Init(1, 2);
+  expected.cmd.Init(1, 2, 3);
 
-  gl_->FramebufferMemorylessPixelLocalStorageANGLE(1, 2);
+  gl_->FramebufferMemorylessPixelLocalStorageANGLE(1, 2, 3);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 
@@ -2953,9 +2953,9 @@ TEST_F(GLES2ImplementationTest, FramebufferTexturePixelLocalStorageANGLE) {
     cmds::FramebufferTexturePixelLocalStorageANGLE cmd;
   };
   Cmds expected;
-  expected.cmd.Init(1, 2, 3, 4);
+  expected.cmd.Init(1, 2, 3, 4, 5);
 
-  gl_->FramebufferTexturePixelLocalStorageANGLE(1, 2, 3, 4);
+  gl_->FramebufferTexturePixelLocalStorageANGLE(1, 2, 3, 4, 5);
   EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
 }
 

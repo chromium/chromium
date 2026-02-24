@@ -4628,8 +4628,9 @@ GLES2DecoderPassthroughImpl::HandleFramebufferMemorylessPixelLocalStorageANGLE(
 
   GLint plane = static_cast<GLint>(c.plane);
   GLenum internalformat = static_cast<GLenum>(c.internalformat);
-  error::Error error =
-      DoFramebufferMemorylessPixelLocalStorageANGLE(plane, internalformat);
+  GLbitfield usage = static_cast<GLbitfield>(c.usage);
+  error::Error error = DoFramebufferMemorylessPixelLocalStorageANGLE(
+      plane, internalformat, usage);
   if (error != error::kNoError) {
     return error;
   }
@@ -4653,8 +4654,9 @@ GLES2DecoderPassthroughImpl::HandleFramebufferTexturePixelLocalStorageANGLE(
   GLuint backingtexture = static_cast<GLuint>(c.backingtexture);
   GLint level = static_cast<GLint>(c.level);
   GLint layer = static_cast<GLint>(c.layer);
+  GLbitfield usage = static_cast<GLbitfield>(c.usage);
   error::Error error = DoFramebufferTexturePixelLocalStorageANGLE(
-      plane, backingtexture, level, layer);
+      plane, backingtexture, level, layer, usage);
   if (error != error::kNoError) {
     return error;
   }

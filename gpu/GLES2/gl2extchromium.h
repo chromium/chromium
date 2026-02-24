@@ -317,27 +317,37 @@ typedef void(GL_APIENTRYP PFNGLPROVOKINGVERTEXANGLEPROC)(GLenum provokeMode);
 #define GL_PIXEL_LOCAL_TEXTURE_LAYER_ANGLE 0x96EA
 #endif
 
+#ifndef GL_PIXEL_LOCAL_USAGE_ANGLE
+#define GL_PIXEL_LOCAL_USAGE_ANGLE 0x96EB
+#endif
+
 #ifndef GL_PIXEL_LOCAL_CLEAR_VALUE_FLOAT_ANGLE
-#define GL_PIXEL_LOCAL_CLEAR_VALUE_FLOAT_ANGLE 0x96EB
+#define GL_PIXEL_LOCAL_CLEAR_VALUE_FLOAT_ANGLE 0x96EC
 #endif
 
 #ifndef GL_PIXEL_LOCAL_CLEAR_VALUE_INT_ANGLE
-#define GL_PIXEL_LOCAL_CLEAR_VALUE_INT_ANGLE 0x96EC
+#define GL_PIXEL_LOCAL_CLEAR_VALUE_INT_ANGLE 0x96ED
 #endif
 
 #ifndef GL_PIXEL_LOCAL_CLEAR_VALUE_UNSIGNED_INT_ANGLE
-#define GL_PIXEL_LOCAL_CLEAR_VALUE_UNSIGNED_INT_ANGLE 0x96ED
+#define GL_PIXEL_LOCAL_CLEAR_VALUE_UNSIGNED_INT_ANGLE 0x96EE
+#endif
+
+#ifndef GL_PIXEL_LOCAL_USAGE_ALWAYS_NONCOHERENT_BIT_ANGLE
+#define GL_PIXEL_LOCAL_USAGE_ALWAYS_NONCOHERENT_BIT_ANGLE 0x1
 #endif
 
 #ifdef GL_GLEXT_PROTOTYPES
 GL_APICALL void GL_APIENTRY
 glFramebufferMemorylessPixelLocalStorageANGLE(GLint plane,
-                                              GLenum internalformat);
+                                              GLenum internalformat,
+                                              GLbitfield usage);
 GL_APICALL void GL_APIENTRY
 glFramebufferTexturePixelLocalStorageANGLE(GLint plane,
                                            GLuint backingtexture,
                                            GLint level,
-                                           GLint layer);
+                                           GLint layer,
+                                           GLbitfield usage);
 GL_APICALL void GL_APIENTRY
 glFramebufferPixelLocalClearValuefvANGLE(GLint plane, const GLfloat value[]);
 GL_APICALL void GL_APIENTRY
@@ -362,12 +372,14 @@ glGetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
 #endif
 typedef void(GL_APIENTRYP PFNGLFRAMEBUFFERMEMORYLESSPIXELLOCALSTORAGEANGLEPROC)(
     GLint plane,
-    GLenum internalformat);
+    GLenum internalformat,
+    GLbitfield usage);
 typedef void(GL_APIENTRYP PFNGLFRAMEBUFFERTEXTUREPIXELLOCALSTORAGEANGLEPROC)(
     GLint plane,
     GLuint backingtexture,
     GLint level,
-    GLint layer);
+    GLint layer,
+    GLbitfield usage);
 typedef void(GL_APIENTRYP PFNGLFRAMEBUFFERPIXELLOCALCLEARVALUEFVANGLEPROC)(
     GLint plane,
     const GLfloat value[]);

@@ -2788,9 +2788,10 @@ void GLApiBase::glFlushMappedBufferRangeFn(GLenum target,
 
 void GLApiBase::glFramebufferMemorylessPixelLocalStorageANGLEFn(
     GLint plane,
-    GLenum internalformat) {
-  driver_->fn.glFramebufferMemorylessPixelLocalStorageANGLEFn(plane,
-                                                              internalformat);
+    GLenum internalformat,
+    GLbitfield usage) {
+  driver_->fn.glFramebufferMemorylessPixelLocalStorageANGLEFn(
+      plane, internalformat, usage);
 }
 
 void GLApiBase::glFramebufferParameteriMESAFn(GLenum target,
@@ -2874,9 +2875,10 @@ void GLApiBase::glFramebufferTexturePixelLocalStorageANGLEFn(
     GLint plane,
     GLuint backingtexture,
     GLint level,
-    GLint layer) {
+    GLint layer,
+    GLbitfield usage) {
   driver_->fn.glFramebufferTexturePixelLocalStorageANGLEFn(
-      plane, backingtexture, level, layer);
+      plane, backingtexture, level, layer, usage);
 }
 
 void GLApiBase::glFrontFaceFn(GLenum mode) {
@@ -5593,11 +5595,12 @@ void TraceGLApi::glFlushMappedBufferRangeFn(GLenum target,
 
 void TraceGLApi::glFramebufferMemorylessPixelLocalStorageANGLEFn(
     GLint plane,
-    GLenum internalformat) {
+    GLenum internalformat,
+    GLbitfield usage) {
   TRACE_EVENT_BINARY_EFFICIENT0(
       "gpu", "TraceGLAPI::glFramebufferMemorylessPixelLocalStorageANGLE");
-  gl_api_->glFramebufferMemorylessPixelLocalStorageANGLEFn(plane,
-                                                           internalformat);
+  gl_api_->glFramebufferMemorylessPixelLocalStorageANGLEFn(
+      plane, internalformat, usage);
 }
 
 void TraceGLApi::glFramebufferParameteriMESAFn(GLenum target,
@@ -5702,11 +5705,12 @@ void TraceGLApi::glFramebufferTexturePixelLocalStorageANGLEFn(
     GLint plane,
     GLuint backingtexture,
     GLint level,
-    GLint layer) {
+    GLint layer,
+    GLbitfield usage) {
   TRACE_EVENT_BINARY_EFFICIENT0(
       "gpu", "TraceGLAPI::glFramebufferTexturePixelLocalStorageANGLE");
   gl_api_->glFramebufferTexturePixelLocalStorageANGLEFn(plane, backingtexture,
-                                                        level, layer);
+                                                        level, layer, usage);
 }
 
 void TraceGLApi::glFrontFaceFn(GLenum mode) {
@@ -8964,12 +8968,14 @@ void LogGLApi::glFlushMappedBufferRangeFn(GLenum target,
 
 void LogGLApi::glFramebufferMemorylessPixelLocalStorageANGLEFn(
     GLint plane,
-    GLenum internalformat) {
+    GLenum internalformat,
+    GLbitfield usage) {
   GL_SERVICE_LOG("glFramebufferMemorylessPixelLocalStorageANGLE"
                  << "(" << plane << ", "
-                 << GLEnums::GetStringEnum(internalformat) << ")");
-  gl_api_->glFramebufferMemorylessPixelLocalStorageANGLEFn(plane,
-                                                           internalformat);
+                 << GLEnums::GetStringEnum(internalformat) << ", " << usage
+                 << ")");
+  gl_api_->glFramebufferMemorylessPixelLocalStorageANGLEFn(
+      plane, internalformat, usage);
 }
 
 void LogGLApi::glFramebufferParameteriMESAFn(GLenum target,
@@ -9091,12 +9097,13 @@ void LogGLApi::glFramebufferTexturePixelLocalStorageANGLEFn(
     GLint plane,
     GLuint backingtexture,
     GLint level,
-    GLint layer) {
+    GLint layer,
+    GLbitfield usage) {
   GL_SERVICE_LOG("glFramebufferTexturePixelLocalStorageANGLE"
                  << "(" << plane << ", " << backingtexture << ", " << level
-                 << ", " << layer << ")");
+                 << ", " << layer << ", " << usage << ")");
   gl_api_->glFramebufferTexturePixelLocalStorageANGLEFn(plane, backingtexture,
-                                                        level, layer);
+                                                        level, layer, usage);
 }
 
 void LogGLApi::glFrontFaceFn(GLenum mode) {
@@ -12574,7 +12581,8 @@ void NoContextGLApi::glFlushMappedBufferRangeFn(GLenum target,
 
 void NoContextGLApi::glFramebufferMemorylessPixelLocalStorageANGLEFn(
     GLint plane,
-    GLenum internalformat) {
+    GLenum internalformat,
+    GLbitfield usage) {
   NoContextHelper("glFramebufferMemorylessPixelLocalStorageANGLE");
 }
 
@@ -12655,7 +12663,8 @@ void NoContextGLApi::glFramebufferTexturePixelLocalStorageANGLEFn(
     GLint plane,
     GLuint backingtexture,
     GLint level,
-    GLint layer) {
+    GLint layer,
+    GLbitfield usage) {
   NoContextHelper("glFramebufferTexturePixelLocalStorageANGLE");
 }
 

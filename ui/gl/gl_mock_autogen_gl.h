@@ -342,8 +342,8 @@ MOCK_METHOD1(FinishFenceNV, void(GLuint fence));
 MOCK_METHOD0(Flush, void());
 MOCK_METHOD3(FlushMappedBufferRange,
              void(GLenum target, GLintptr offset, GLsizeiptr length));
-MOCK_METHOD2(FramebufferMemorylessPixelLocalStorageANGLE,
-             void(GLint plane, GLenum internalformat));
+MOCK_METHOD3(FramebufferMemorylessPixelLocalStorageANGLE,
+             void(GLint plane, GLenum internalformat, GLbitfield usage));
 MOCK_METHOD3(FramebufferParameteriMESA,
              void(GLenum target, GLenum pname, GLint param));
 MOCK_METHOD2(FramebufferPixelLocalClearValuefvANGLE,
@@ -385,9 +385,12 @@ MOCK_METHOD6(FramebufferTextureMultiviewOVR,
                   GLint level,
                   GLint baseViewIndex,
                   GLsizei numViews));
-MOCK_METHOD4(
-    FramebufferTexturePixelLocalStorageANGLE,
-    void(GLint plane, GLuint backingtexture, GLint level, GLint layer));
+MOCK_METHOD5(FramebufferTexturePixelLocalStorageANGLE,
+             void(GLint plane,
+                  GLuint backingtexture,
+                  GLint level,
+                  GLint layer,
+                  GLbitfield usage));
 MOCK_METHOD1(FrontFace, void(GLenum mode));
 MOCK_METHOD2(GenBuffersARB, void(GLsizei n, GLuint* buffers));
 MOCK_METHOD1(GenerateMipmapEXT, void(GLenum target));

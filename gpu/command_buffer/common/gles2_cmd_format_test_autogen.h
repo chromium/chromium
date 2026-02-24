@@ -5123,22 +5123,24 @@ TEST_F(GLES2FormatTest, FramebufferMemorylessPixelLocalStorageANGLE) {
   cmds::FramebufferMemorylessPixelLocalStorageANGLE& cmd =
       *GetBufferAs<cmds::FramebufferMemorylessPixelLocalStorageANGLE>();
   void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLenum>(12));
+      cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLenum>(12),
+              static_cast<GLbitfield>(13));
   EXPECT_EQ(static_cast<uint32_t>(
                 cmds::FramebufferMemorylessPixelLocalStorageANGLE::kCmdId),
             cmd.header.command);
   EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
   EXPECT_EQ(static_cast<GLint>(11), cmd.plane);
   EXPECT_EQ(static_cast<GLenum>(12), cmd.internalformat);
+  EXPECT_EQ(static_cast<GLbitfield>(13), cmd.usage);
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
 TEST_F(GLES2FormatTest, FramebufferTexturePixelLocalStorageANGLE) {
   cmds::FramebufferTexturePixelLocalStorageANGLE& cmd =
       *GetBufferAs<cmds::FramebufferTexturePixelLocalStorageANGLE>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLuint>(12),
-              static_cast<GLint>(13), static_cast<GLint>(14));
+  void* next_cmd = cmd.Set(&cmd, static_cast<GLint>(11),
+                           static_cast<GLuint>(12), static_cast<GLint>(13),
+                           static_cast<GLint>(14), static_cast<GLbitfield>(15));
   EXPECT_EQ(static_cast<uint32_t>(
                 cmds::FramebufferTexturePixelLocalStorageANGLE::kCmdId),
             cmd.header.command);
@@ -5147,6 +5149,7 @@ TEST_F(GLES2FormatTest, FramebufferTexturePixelLocalStorageANGLE) {
   EXPECT_EQ(static_cast<GLuint>(12), cmd.backingtexture);
   EXPECT_EQ(static_cast<GLint>(13), cmd.level);
   EXPECT_EQ(static_cast<GLint>(14), cmd.layer);
+  EXPECT_EQ(static_cast<GLbitfield>(15), cmd.usage);
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 

@@ -480,7 +480,8 @@ static void GL_BINDING_CALL Mock_glFlushMappedBufferRangeEXT(GLenum target,
                                                              GLsizeiptr length);
 static void GL_BINDING_CALL
 Mock_glFramebufferMemorylessPixelLocalStorageANGLE(GLint plane,
-                                                   GLenum internalformat);
+                                                   GLenum internalformat,
+                                                   GLbitfield usage);
 static void GL_BINDING_CALL Mock_glFramebufferParameteriMESA(GLenum target,
                                                              GLenum pname,
                                                              GLint param);
@@ -534,7 +535,8 @@ static void GL_BINDING_CALL
 Mock_glFramebufferTexturePixelLocalStorageANGLE(GLint plane,
                                                 GLuint backingtexture,
                                                 GLint level,
-                                                GLint layer);
+                                                GLint layer,
+                                                GLbitfield usage);
 static void GL_BINDING_CALL Mock_glFrontFace(GLenum mode);
 static void GL_BINDING_CALL Mock_glGenBuffers(GLsizei n, GLuint* buffers);
 static void GL_BINDING_CALL Mock_glGenFencesNV(GLsizei n, GLuint* fences);

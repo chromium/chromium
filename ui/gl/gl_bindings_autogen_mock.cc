@@ -1122,10 +1122,11 @@ MockGLInterface::Mock_glFlushMappedBufferRangeEXT(GLenum target,
 void GL_BINDING_CALL
 MockGLInterface::Mock_glFramebufferMemorylessPixelLocalStorageANGLE(
     GLint plane,
-    GLenum internalformat) {
+    GLenum internalformat,
+    GLbitfield usage) {
   MakeGlMockFunctionUnique("glFramebufferMemorylessPixelLocalStorageANGLE");
-  interface_->FramebufferMemorylessPixelLocalStorageANGLE(plane,
-                                                          internalformat);
+  interface_->FramebufferMemorylessPixelLocalStorageANGLE(plane, internalformat,
+                                                          usage);
 }
 
 void GL_BINDING_CALL
@@ -1245,10 +1246,11 @@ MockGLInterface::Mock_glFramebufferTexturePixelLocalStorageANGLE(
     GLint plane,
     GLuint backingtexture,
     GLint level,
-    GLint layer) {
+    GLint layer,
+    GLbitfield usage) {
   MakeGlMockFunctionUnique("glFramebufferTexturePixelLocalStorageANGLE");
   interface_->FramebufferTexturePixelLocalStorageANGLE(plane, backingtexture,
-                                                       level, layer);
+                                                       level, layer, usage);
 }
 
 void GL_BINDING_CALL MockGLInterface::Mock_glFrontFace(GLenum mode) {

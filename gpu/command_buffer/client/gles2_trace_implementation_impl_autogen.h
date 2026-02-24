@@ -2390,21 +2390,24 @@ void GLES2TraceImplementation::ProvokingVertexANGLE(GLenum provokeMode) {
 
 void GLES2TraceImplementation::FramebufferMemorylessPixelLocalStorageANGLE(
     GLint plane,
-    GLenum internalformat) {
+    GLenum internalformat,
+    GLbitfield usage) {
   TRACE_EVENT_BINARY_EFFICIENT0(
       "gpu", "GLES2Trace::FramebufferMemorylessPixelLocalStorageANGLE");
-  gl_->FramebufferMemorylessPixelLocalStorageANGLE(plane, internalformat);
+  gl_->FramebufferMemorylessPixelLocalStorageANGLE(plane, internalformat,
+                                                   usage);
 }
 
 void GLES2TraceImplementation::FramebufferTexturePixelLocalStorageANGLE(
     GLint plane,
     GLuint backingtexture,
     GLint level,
-    GLint layer) {
+    GLint layer,
+    GLbitfield usage) {
   TRACE_EVENT_BINARY_EFFICIENT0(
       "gpu", "GLES2Trace::FramebufferTexturePixelLocalStorageANGLE");
   gl_->FramebufferTexturePixelLocalStorageANGLE(plane, backingtexture, level,
-                                                layer);
+                                                layer, usage);
 }
 
 void GLES2TraceImplementation::FramebufferPixelLocalClearValuefvANGLE(

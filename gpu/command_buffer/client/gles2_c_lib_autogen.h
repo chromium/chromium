@@ -1655,17 +1655,19 @@ void GL_APIENTRY GLES2ProvokingVertexANGLE(GLenum provokeMode) {
 }
 void GL_APIENTRY
 GLES2FramebufferMemorylessPixelLocalStorageANGLE(GLint plane,
-                                                 GLenum internalformat) {
+                                                 GLenum internalformat,
+                                                 GLbitfield usage) {
   gles2::GetGLContext()->FramebufferMemorylessPixelLocalStorageANGLE(
-      plane, internalformat);
+      plane, internalformat, usage);
 }
 void GL_APIENTRY
 GLES2FramebufferTexturePixelLocalStorageANGLE(GLint plane,
                                               GLuint backingtexture,
                                               GLint level,
-                                              GLint layer) {
+                                              GLint layer,
+                                              GLbitfield usage) {
   gles2::GetGLContext()->FramebufferTexturePixelLocalStorageANGLE(
-      plane, backingtexture, level, layer);
+      plane, backingtexture, level, layer, usage);
 }
 void GL_APIENTRY
 GLES2FramebufferPixelLocalClearValuefvANGLE(GLint plane, const GLfloat* value) {

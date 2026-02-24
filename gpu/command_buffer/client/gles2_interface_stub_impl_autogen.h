@@ -1138,12 +1138,14 @@ GLboolean GLES2InterfaceStub::IsEnablediOES(GLenum /* target */,
 void GLES2InterfaceStub::ProvokingVertexANGLE(GLenum /* provokeMode */) {}
 void GLES2InterfaceStub::FramebufferMemorylessPixelLocalStorageANGLE(
     GLint /* plane */,
-    GLenum /* internalformat */) {}
+    GLenum /* internalformat */,
+    GLbitfield /* usage */) {}
 void GLES2InterfaceStub::FramebufferTexturePixelLocalStorageANGLE(
     GLint /* plane */,
     GLuint /* backingtexture */,
     GLint /* level */,
-    GLint /* layer */) {}
+    GLint /* layer */,
+    GLbitfield /* usage */) {}
 void GLES2InterfaceStub::FramebufferPixelLocalClearValuefvANGLE(
     GLint /* plane */,
     const GLfloat* /* value */) {}

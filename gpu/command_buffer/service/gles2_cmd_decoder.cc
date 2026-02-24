@@ -1110,11 +1110,13 @@ class GLES2DecoderImpl : public GLES2Decoder,
 
   // Wrappers for ANGLE_shader_pixel_local_storage.
   void DoFramebufferMemorylessPixelLocalStorageANGLE(GLint plane,
-                                                     GLenum internalformat);
+                                                     GLenum internalformat,
+                                                     GLbitfield usage);
   void DoFramebufferTexturePixelLocalStorageANGLE(GLint plane,
                                                   GLuint backingtexture,
                                                   GLint level,
-                                                  GLint layer);
+                                                  GLint layer,
+                                                  GLbitfield usage);
   void DoFramebufferPixelLocalClearValuefvANGLE(GLint plane,
                                                 const volatile GLfloat* value);
   void DoFramebufferPixelLocalClearValueivANGLE(GLint plane,
@@ -16789,7 +16791,8 @@ void GLES2DecoderImpl::DoFlushMappedBufferRange(
 
 void GLES2DecoderImpl::DoFramebufferMemorylessPixelLocalStorageANGLE(
     GLint plane,
-    GLenum internalformat) {
+    GLenum internalformat,
+    GLbitfield usage) {
   NOTIMPLEMENTED();
 }
 
@@ -16797,7 +16800,8 @@ void GLES2DecoderImpl::DoFramebufferTexturePixelLocalStorageANGLE(
     GLint plane,
     GLuint client_texture_id,
     GLint level,
-    GLint layer) {
+    GLint layer,
+    GLbitfield usage) {
   NOTIMPLEMENTED();
 }
 

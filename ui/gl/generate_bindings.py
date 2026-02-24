@@ -566,7 +566,7 @@ GL_FUNCTIONS = [
 { 'return_type': 'void',
   'versions': [{'name': 'glFramebufferMemorylessPixelLocalStorageANGLE',
                 'extensions': ['GL_ANGLE_shader_pixel_local_storage']}],
-  'arguments': 'GLint plane, GLenum internalformat', },
+  'arguments': 'GLint plane, GLenum internalformat, GLbitfield usage', },
 { 'return_type': 'void',
   'versions': [{'name': 'glFramebufferParameteriMESA',
                 'extensions': ['GL_MESA_framebuffer_flip_y']}],
@@ -622,7 +622,7 @@ GL_FUNCTIONS = [
   'versions': [{'name': 'glFramebufferTexturePixelLocalStorageANGLE',
                 'extensions': ['GL_ANGLE_shader_pixel_local_storage']}],
   'arguments': 'GLint plane, GLuint backingtexture, GLint level, '
-               'GLint layer', },
+               'GLint layer, GLbitfield usage', },
 { 'return_type': 'void',
   'names': ['glFrontFace'],
   'arguments': 'GLenum mode', },

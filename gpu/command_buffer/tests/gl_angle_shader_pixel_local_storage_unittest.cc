@@ -17,9 +17,6 @@
 #include "ui/gl/gl_implementation.h"
 
 namespace gpu {
-// TODO(anglebug.com/40096838): put this test back in once ANGLE has
-// rolled into Chromium with non-coherent PLS changes.
-#if 0
 class ANGLEShaderPixelLocalStorageTest : public testing::Test {
  public:
   ANGLEShaderPixelLocalStorageTest() = default;
@@ -133,14 +130,14 @@ TEST_F(ANGLEShaderPixelLocalStorageTest,
     EXPECT_PLS_INTEGER(plane, GL_PIXEL_LOCAL_TEXTURE_LEVEL_ANGLE, 0);
     EXPECT_PLS_INTEGER(plane, GL_PIXEL_LOCAL_TEXTURE_LAYER_ANGLE, 0);
 
-    glFramebufferTexturePixelLocalStorageANGLE(plane, tex, 1, 0);
+    glFramebufferTexturePixelLocalStorageANGLE(plane, tex, 1, 0, 0);
     EXPECT_PLS_INTEGER(plane, GL_PIXEL_LOCAL_FORMAT_ANGLE, GL_RGBA8UI);
     EXPECT_PLS_INTEGER(plane, GL_PIXEL_LOCAL_TEXTURE_NAME_ANGLE, tex);
     EXPECT_PLS_INTEGER(plane, GL_PIXEL_LOCAL_TEXTURE_LEVEL_ANGLE, 1);
     EXPECT_PLS_INTEGER(plane, GL_PIXEL_LOCAL_TEXTURE_LAYER_ANGLE, 0);
 
     // Using texture name 0 deinitializes the entire plane.
-    glFramebufferTexturePixelLocalStorageANGLE(plane, 0, 1, 2);
+    glFramebufferTexturePixelLocalStorageANGLE(plane, 0, 1, 2, 0);
     EXPECT_PLS_INTEGER(plane, GL_PIXEL_LOCAL_FORMAT_ANGLE, GL_NONE);
     EXPECT_PLS_INTEGER(plane, GL_PIXEL_LOCAL_TEXTURE_NAME_ANGLE, 0);
     EXPECT_PLS_INTEGER(plane, GL_PIXEL_LOCAL_TEXTURE_LEVEL_ANGLE, 0);
@@ -196,10 +193,10 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, LoadStoreTokens) {
 
   glDisable(GL_DITHER);
 
-  glFramebufferTexturePixelLocalStorageANGLE(0, texs[0], 0, 0);
-  glFramebufferTexturePixelLocalStorageANGLE(1, texs[1], 0, 0);
-  glFramebufferTexturePixelLocalStorageANGLE(2, texs[2], 0, 0);
-  glFramebufferTexturePixelLocalStorageANGLE(3, texs[3], 0, 0);
+  glFramebufferTexturePixelLocalStorageANGLE(0, texs[0], 0, 0, 0);
+  glFramebufferTexturePixelLocalStorageANGLE(1, texs[1], 0, 0, 0);
+  glFramebufferTexturePixelLocalStorageANGLE(2, texs[2], 0, 0, 0);
+  glFramebufferTexturePixelLocalStorageANGLE(3, texs[3], 0, 0, 0);
   glBeginPixelLocalStorageANGLE(
       4, std::array<GLenum, 4>{GL_LOAD_OP_CLEAR_ANGLE, GL_LOAD_OP_LOAD_ANGLE,
                                GL_LOAD_OP_ZERO_ANGLE, GL_DONT_CARE}
@@ -240,7 +237,7 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, DrawAPI) {
   GLuint fbo;
   glGenFramebuffers(1, &fbo);
   glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-  glFramebufferTexturePixelLocalStorageANGLE(0, tex, 0, 0);
+  glFramebufferTexturePixelLocalStorageANGLE(0, tex, 0, 0, 0);
   EXPECT_GL_ERROR(GL_NO_ERROR);
 
   glViewport(0, 0, 10, 10);
@@ -312,7 +309,7 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, BlockEmulatedDefaultFramebuffer) {
   glTexStorage2DEXT(GL_TEXTURE_2D, 1, GL_RGBA8, 10, 10);
   EXPECT_GL_ERROR(GL_NO_ERROR);
 
-  glFramebufferTexturePixelLocalStorageANGLE(0, tex, 0, 0);
+  glFramebufferTexturePixelLocalStorageANGLE(0, tex, 0, 0, 0);
   EXPECT_GL_ERROR(GL_INVALID_OPERATION);
   EXPECT_GL_ERROR(GL_NO_ERROR);
 
@@ -356,5 +353,4 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, BlockEmulatedDefaultFramebuffer) {
   EXPECT_GL_ERROR(GL_INVALID_OPERATION);
   EXPECT_GL_ERROR(GL_NO_ERROR);
 }
-#endif  // TODO(anglebug.com/40096838)
 }  // namespace gpu

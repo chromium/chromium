@@ -3565,13 +3565,15 @@ void GLES2Implementation::ProvokingVertexANGLE(GLenum provokeMode) {
 
 void GLES2Implementation::FramebufferMemorylessPixelLocalStorageANGLE(
     GLint plane,
-    GLenum internalformat) {
+    GLenum internalformat,
+    GLbitfield usage) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix()
-                     << "] glFramebufferMemorylessPixelLocalStorageANGLE("
-                     << plane << ", "
-                     << GLES2Util::GetStringEnum(internalformat) << ")");
-  helper_->FramebufferMemorylessPixelLocalStorageANGLE(plane, internalformat);
+  GPU_CLIENT_LOG(
+      "[" << GetLogPrefix()
+          << "] glFramebufferMemorylessPixelLocalStorageANGLE(" << plane << ", "
+          << GLES2Util::GetStringEnum(internalformat) << ", " << usage << ")");
+  helper_->FramebufferMemorylessPixelLocalStorageANGLE(plane, internalformat,
+                                                       usage);
   CheckGLError();
 }
 
@@ -3579,14 +3581,15 @@ void GLES2Implementation::FramebufferTexturePixelLocalStorageANGLE(
     GLint plane,
     GLuint backingtexture,
     GLint level,
-    GLint layer) {
+    GLint layer,
+    GLbitfield usage) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix()
                      << "] glFramebufferTexturePixelLocalStorageANGLE(" << plane
                      << ", " << backingtexture << ", " << level << ", " << layer
-                     << ")");
+                     << ", " << usage << ")");
   helper_->FramebufferTexturePixelLocalStorageANGLE(plane, backingtexture,
-                                                    level, layer);
+                                                    level, layer, usage);
   CheckGLError();
 }
 
