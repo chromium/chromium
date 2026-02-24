@@ -190,6 +190,10 @@ void WebUIBrowserBookmarkBarPageHandler::BookmarkNodeChildrenReordered(
 
 void WebUIBrowserBookmarkBarPageHandler::BookmarkNodeFaviconChanged(
     const bookmarks::BookmarkNode* node) {
+  if (node->parent() != bookmark_model_->bookmark_bar_node()) {
+    return;
+  }
+
   if (node->is_favicon_loaded()) {
     page_->FavIconChanged(GetBookmarkData(node));
   }
