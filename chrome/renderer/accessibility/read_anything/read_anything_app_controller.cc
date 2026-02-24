@@ -535,7 +535,8 @@ void ReadAnythingAppController::OnStringAttributeChanged(
     const std::string& old_value,
     const std::string& new_value) {
   // Return early when the images flag is disabled to avoid potential crashes.
-  if (!features::IsReadAnythingImagesViaAlgorithmEnabled()) {
+  if (!features::IsReadAnythingImagesViaAlgorithmEnabled() ||
+      attr != ax::mojom::StringAttribute::kUrl) {
     return;
   }
 
@@ -546,8 +547,7 @@ void ReadAnythingAppController::OnStringAttributeChanged(
   // When the src for an image changes (e.g if an image was lazy loaded and
   // previously had a placeholder image), request the updated image. The info
   // will be returned via OnImageDataDownloaded.
-  if (attr == ax::mojom::StringAttribute::kUrl &&
-      rm_node->GetRole() == ax::mojom::Role::kImage) {
+  if (rm_node->GetRole() == ax::mojom::Role::kImage) {
     RequestImageData(node->id());
   }
 }
