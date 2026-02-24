@@ -4818,8 +4818,10 @@ if (is_android) {
       "android/java/src/org/chromium/base/JavaHandlerThread.java",
       "android/java/src/org/chromium/base/JniCallbackImpl.java",
       "android/java/src/org/chromium/base/JniOnceCallback.java",
+      "android/java/src/org/chromium/base/JniOnceCallback2.java",
       "android/java/src/org/chromium/base/JniOnceRunnable.java",
       "android/java/src/org/chromium/base/JniRepeatingCallback.java",
+      "android/java/src/org/chromium/base/JniRepeatingCallback2.java",
       "android/java/src/org/chromium/base/JniRepeatingRunnable.java",
       "android/java/src/org/chromium/base/LocaleUtils.java",
       "android/java/src/org/chromium/base/MathUtils.java",
@@ -5146,12 +5148,16 @@ if (is_android) {
   }
 
   generate_jni("callback_jni") {
-    sources = [ "android/java/src/org/chromium/base/Callback.java" ]
+    sources = [
+      "android/java/src/org/chromium/base/Callback.java",
+      "android/java/src/org/chromium/base/Callback2.java",
+    ]
   }
 
   android_library("callback_java") {
     sources = [
       "android/java/src/org/chromium/base/Callback.java",
+      "android/java/src/org/chromium/base/Callback2.java",
       "android/java/src/org/chromium/base/CallbackUtils.java",
     ]
     deps = [

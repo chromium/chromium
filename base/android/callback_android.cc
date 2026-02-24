@@ -12,6 +12,7 @@
 #include "base/types/optional_ref.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
+#include "base/callback_jni/Callback2_jni.h"
 #include "base/callback_jni/Callback_jni.h"
 
 namespace base {
@@ -20,6 +21,13 @@ namespace android {
 void RunObjectCallbackAndroid(const JavaRef<jobject>& callback,
                               const JavaRef<jobject>& arg) {
   Java_Helper_onObjectResultFromNative(AttachCurrentThread(), callback, arg);
+}
+
+void RunObjectCallbackAndroid2(const JavaRef<jobject>& callback,
+                               const JavaRef<jobject>& arg1,
+                               const JavaRef<jobject>& arg2) {
+  Java_JniHelper_onResultFromNative(AttachCurrentThread(), callback, arg1,
+                                    arg2);
 }
 
 void RunBooleanCallbackAndroid(const JavaRef<jobject>& callback, bool arg) {

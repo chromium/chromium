@@ -24,6 +24,10 @@ namespace base::android {
 void BASE_EXPORT RunObjectCallbackAndroid(const JavaRef<jobject>& callback,
                                           const JavaRef<jobject>& arg);
 
+void BASE_EXPORT RunObjectCallbackAndroid2(const JavaRef<jobject>& callback,
+                                           const JavaRef<jobject>& arg1,
+                                           const JavaRef<jobject>& arg2);
+
 void BASE_EXPORT RunBooleanCallbackAndroid(const JavaRef<jobject>& callback,
                                            bool arg);
 
@@ -59,6 +63,12 @@ struct IsOnceCallback<base::OnceCallback<void(T)>> : std::true_type {
   using ArgType = T;
 };
 
+template <typename T1, typename T2>
+struct IsOnceCallback<base::OnceCallback<void(T1, T2)>> : std::true_type {
+  using Arg1Type = T1;
+  using Arg2Type = T2;
+};
+
 template <typename T>
 struct IsRepeatingCallback : std::false_type {};
 
@@ -68,6 +78,13 @@ struct IsRepeatingCallback<base::RepeatingCallback<void()>> : std::true_type {};
 template <typename T>
 struct IsRepeatingCallback<base::RepeatingCallback<void(T)>> : std::true_type {
   using ArgType = T;
+};
+
+template <typename T1, typename T2>
+struct IsRepeatingCallback<base::RepeatingCallback<void(T1, T2)>>
+    : std::true_type {
+  using Arg1Type = T1;
+  using Arg2Type = T2;
 };
 
 template <typename T>
@@ -86,6 +103,34 @@ void RunJavaCallback(const jni_zero::ScopedJavaGlobalRef<jobject>& callback,
   }
 }
 
+template <typename T1, typename T2>
+void RunJavaCallback2(const jni_zero::ScopedJavaGlobalRef<jobject>& callback,
+                      T1 arg1,
+                      T2 arg2) {
+  if constexpr (requires { jni_zero::ToJniType(nullptr, std::move(arg1)); }) {
+    if constexpr (requires { jni_zero::ToJniType(nullptr, std::move(arg2)); }) {
+      JNIEnv* env = jni_zero::AttachCurrentThread();
+      base::android::RunObjectCallbackAndroid2(
+          callback, jni_zero::ToJniType(env, std::move(arg1)),
+          jni_zero::ToJniType(env, std::move(arg2)));
+    } else {
+      static_assert(
+          sizeof(T1) == 0,
+          "Could not find ToJniType<> specialization for the callback's "
+          "second parameter. Make sure the header declaring it is #included "
+          "before "
+          "base/callback_android.h");
+    }
+  } else {
+    static_assert(
+        sizeof(T1) == 0,
+        "Could not find ToJniType<> specialization for the callback's "
+        "first parameter. Make sure the header declaring it is #included "
+        "before "
+        "base/callback_android.h");
+  }
+}
+
 }  // namespace base::android::internal
 
 namespace jni_zero {
@@ -98,9 +143,16 @@ inline T FromJniType(JNIEnv* env, const JavaRef<jobject>& obj) {
   if constexpr (std::same_as<std::remove_cvref_t<T>, base::OnceClosure>) {
     return base::BindOnce(&jni_zero::RunRunnable,
                           jni_zero::ScopedJavaGlobalRef<jobject>(env, obj));
-  } else {
+  } else if constexpr (requires {
+                         typename internal::IsOnceCallback<T>::ArgType;
+                       }) {
     using ArgType = typename internal::IsOnceCallback<T>::ArgType;
     return base::BindOnce(&internal::RunJavaCallback<ArgType>,
+                          ScopedJavaGlobalRef<jobject>(env, obj));
+  } else {
+    using Arg1Type = typename internal::IsOnceCallback<T>::Arg1Type;
+    using Arg2Type = typename internal::IsOnceCallback<T>::Arg2Type;
+    return base::BindOnce(&internal::RunJavaCallback2<Arg1Type, Arg2Type>,
                           ScopedJavaGlobalRef<jobject>(env, obj));
   }
 }
@@ -114,9 +166,16 @@ inline T FromJniType(JNIEnv* env, const JavaRef<jobject>& obj) {
     return base::BindRepeating(
         &jni_zero::RunRunnable,
         jni_zero::ScopedJavaGlobalRef<jobject>(env, obj));
-  } else {
+  } else if constexpr (requires {
+                         typename internal::IsRepeatingCallback<T>::ArgType;
+                       }) {
     using ArgType = typename internal::IsRepeatingCallback<T>::ArgType;
     return base::BindRepeating(&internal::RunJavaCallback<ArgType>,
+                               ScopedJavaGlobalRef<jobject>(env, obj));
+  } else {
+    using Arg1Type = typename internal::IsRepeatingCallback<T>::Arg1Type;
+    using Arg2Type = typename internal::IsRepeatingCallback<T>::Arg2Type;
+    return base::BindRepeating(&internal::RunJavaCallback2<Arg1Type, Arg2Type>,
                                ScopedJavaGlobalRef<jobject>(env, obj));
   }
 }

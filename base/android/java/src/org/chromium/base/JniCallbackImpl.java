@@ -27,11 +27,13 @@ import org.chromium.build.annotations.Nullable;
  */
 @JNINamespace("base::android")
 @NullMarked
-final class JniCallbackImpl<T extends @Nullable Object>
-        implements JniOnceCallback<T>,
+final class JniCallbackImpl
+        implements JniOnceCallback<Object>,
                 JniOnceRunnable,
-                JniRepeatingCallback<T>,
-                JniRepeatingRunnable {
+                JniRepeatingCallback<Object>,
+                JniRepeatingRunnable,
+                JniOnceCallback2<Object, Object>,
+                JniRepeatingCallback2<Object, Object> {
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private long mNativePointer;
     private final boolean mIsRepeating;
@@ -52,13 +54,25 @@ final class JniCallbackImpl<T extends @Nullable Object>
     }
 
     @Override
-    public void onResult(T result) {
+    public void onResult(Object result) {
         // Exception rather than assert since this sort of error often happens in low-frequency
         // edge cases.
         if (mNativePointer == 0) {
             throw new NullPointerException();
         }
         JniCallbackImplJni.get().onResult(mIsRepeating, mNativePointer, result);
+        if (!mIsRepeating) {
+            mNativePointer = 0;
+            LifetimeAssert.destroy(mLifetimeAssert);
+        }
+    }
+
+    @Override
+    public void onResult(@Nullable Object result1, @Nullable Object result2) {
+        if (mNativePointer == 0) {
+            throw new NullPointerException();
+        }
+        JniCallbackImplJni.get().onResult2(mIsRepeating, mNativePointer, result1, result2);
         if (!mIsRepeating) {
             mNativePointer = 0;
             LifetimeAssert.destroy(mLifetimeAssert);
@@ -78,6 +92,12 @@ final class JniCallbackImpl<T extends @Nullable Object>
     @NativeMethods
     interface Natives {
         void onResult(boolean isRepeating, long callbackPtr, @Nullable Object result);
+
+        void onResult2(
+                boolean isRepeating,
+                long callbackPtr,
+                @Nullable Object result1,
+                @Nullable Object result2);
 
         void destroy(boolean isRepeating, long callbackPtr);
     }

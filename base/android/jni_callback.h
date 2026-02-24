@@ -22,6 +22,12 @@ using JniOnceWrappedCallbackType =
     base::OnceCallback<void(const jni_zero::JavaRef<jobject>&)>;
 using JniRepeatingWrappedCallbackType =
     base::RepeatingCallback<void(const jni_zero::JavaRef<jobject>&)>;
+using JniOnceWrappedCallback2Type =
+    base::OnceCallback<void(const jni_zero::JavaRef<jobject>&,
+                            const jni_zero::JavaRef<jobject>&)>;
+using JniRepeatingWrappedCallback2Type =
+    base::RepeatingCallback<void(const jni_zero::JavaRef<jobject>&,
+                                 const jni_zero::JavaRef<jobject>&)>;
 
 BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
     JNIEnv* env,
@@ -32,6 +38,15 @@ BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
 BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
     JNIEnv* env,
     const JniRepeatingWrappedCallbackType& callback);
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    JniOnceWrappedCallback2Type&& callback);
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    JniRepeatingWrappedCallback2Type&& callback);
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    const JniRepeatingWrappedCallback2Type& callback);
 // Overloads that accept no parameter.
 BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
     JNIEnv* env,
@@ -39,6 +54,47 @@ BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
 BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
     JNIEnv* env,
     const base::RepeatingCallback<void()>& callback);
+
+// Java Callbacks don't return a value so any return value by the passed in
+// callback will be ignored.
+template <typename R, typename Arg1, typename Arg2>
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    base::OnceCallback<R(Arg1, Arg2)>&& callback) {
+  return ToJniCallback(
+      env, base::BindOnce(
+               [](base::OnceCallback<R(Arg1, Arg2)> captured_callback,
+                  const jni_zero::JavaRef<jobject>& j_result1,
+                  const jni_zero::JavaRef<jobject>& j_result2) {
+                 std::move(captured_callback)
+                     .Run(jni_zero::FromJniType<std::decay_t<Arg1>>(
+                              jni_zero::AttachCurrentThread(), j_result1),
+                          jni_zero::FromJniType<std::decay_t<Arg2>>(
+                              jni_zero::AttachCurrentThread(), j_result2));
+               },
+               std::move(callback)));
+}
+
+// Java Callbacks don't return a value so any return value by the passed in
+// callback will be ignored.
+template <typename R, typename Arg1, typename Arg2>
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    const base::RepeatingCallback<R(Arg1, Arg2)>& callback) {
+  return ToJniCallback(
+      env,
+      base::BindRepeating(
+          [](const base::RepeatingCallback<R(Arg1, Arg2)>& captured_callback,
+             const jni_zero::JavaRef<jobject>& j_result1,
+             const jni_zero::JavaRef<jobject>& j_result2) {
+            captured_callback.Run(
+                jni_zero::FromJniType<std::decay_t<Arg1>>(
+                    jni_zero::AttachCurrentThread(), j_result1),
+                jni_zero::FromJniType<std::decay_t<Arg2>>(
+                    jni_zero::AttachCurrentThread(), j_result2));
+          },
+          callback));
+}
 
 // Java Callbacks don't return a value so any return value by the passed in
 // callback will be ignored.

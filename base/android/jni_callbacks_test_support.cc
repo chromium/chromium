@@ -19,6 +19,9 @@ int g_once_closure_run_count = 0;
 bool g_once_callback_result = false;
 int g_repeating_closure_run_count = 0;
 int g_repeating_callback_result_count = 0;
+bool g_once_callback2_result1 = false;
+int g_once_callback2_result2 = 0;
+int g_repeating_callback2_result_count = 0;
 }  // namespace
 
 static void JNI_JniCallbacksTest_ResetCounters(JNIEnv* env) {
@@ -26,6 +29,9 @@ static void JNI_JniCallbacksTest_ResetCounters(JNIEnv* env) {
   g_once_callback_result = false;
   g_repeating_closure_run_count = 0;
   g_repeating_callback_result_count = 0;
+  g_once_callback2_result1 = false;
+  g_once_callback2_result2 = 0;
+  g_repeating_callback2_result_count = 0;
 }
 
 static base::OnceClosure JNI_JniCallbacksTest_GetOnceClosure() {
@@ -62,6 +68,32 @@ static jint JNI_JniCallbacksTest_GetRepeatingCallbackResultCount() {
   return g_repeating_callback_result_count;
 }
 
+static base::OnceCallback<void(bool, int32_t)>
+JNI_JniCallbacksTest_GetOnceCallback2() {
+  return base::BindOnce([](bool r1, int32_t r2) {
+    g_once_callback2_result1 = r1;
+    g_once_callback2_result2 = r2;
+  });
+}
+
+static jboolean JNI_JniCallbacksTest_GetOnceCallback2Result1() {
+  return g_once_callback2_result1;
+}
+
+static jint JNI_JniCallbacksTest_GetOnceCallback2Result2() {
+  return g_once_callback2_result2;
+}
+
+static base::RepeatingCallback<void(bool, int32_t)>
+JNI_JniCallbacksTest_GetRepeatingCallback2() {
+  return base::BindRepeating(
+      [](bool r1, int32_t r2) { g_repeating_callback2_result_count++; });
+}
+
+static jint JNI_JniCallbacksTest_GetRepeatingCallback2ResultCount() {
+  return g_repeating_callback2_result_count;
+}
+
 static void JNI_JniCallbacksTest_PassOnceClosure(base::OnceClosure closure) {
   std::move(closure).Run();
 }
@@ -81,6 +113,17 @@ static void JNI_JniCallbacksTest_PassRepeatingCallback(
     base::RepeatingCallback<void(int32_t)> callback) {
   callback.Run(1);
   callback.Run(2);
+}
+
+static void JNI_JniCallbacksTest_PassOnceCallback2(
+    base::OnceCallback<void(bool, int32_t)> callback) {
+  std::move(callback).Run(true, 100);
+}
+
+static void JNI_JniCallbacksTest_PassRepeatingCallback2(
+    base::RepeatingCallback<void(bool, int32_t)> callback) {
+  callback.Run(true, 1);
+  callback.Run(false, 2);
 }
 
 }  // namespace base::android

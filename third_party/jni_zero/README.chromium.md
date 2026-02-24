@@ -106,17 +106,22 @@ void JNI_MyClass_DoSomething(JNIEnv* env, base::OnceClosure callback) {
 
 ### Callbacks (Native -> Java)
 
-To pass a C++ callback to Java, use `ToJniCallback()`. The Java side should
-receive a `JniOnceCallback<T>`, `JniRepeatedCallback<T>`, `JniOnceRunnable`, or
-`JniRepeatingRunnable` (which for the Once* variants, can be typed as
-`Runnable` or `Callback` if you don't need to call `destroy()`.
+To pass a C++ callback to Java, use `@JniType` on the Java side. The Java side should
+receive a `JniOnceCallback<T>`, `JniRepeatingCallback<T>`, `JniOnceRunnable`, or
+`JniRepeatingRunnable` (which for the `Once*` variants, can be typed as
+`Runnable` or `Callback` if you don't need to call `destroy()`). For two-parameter
+callbacks, use `Callback2<T1, T2>`.
 
 **Java:**
 ```java
 @CalledByNative
-void onResult(JniOnceCallback<String> callback) {
+void onResult(@JniType("base::OnceCallback<void(std::string)>") JniOnceCallback<String> callback) {
     callback.onResult("success");
 }
+
+@CalledByNative
+@JniType("base::OnceClosure")
+Runnable getClosure();
 ```
 
 **C++:**
@@ -125,15 +130,22 @@ void onResult(JniOnceCallback<String> callback) {
 #include "path/to/generated_jni/MyClass_jni.h"
 
 void Finish(JNIEnv* env, base::OnceCallback<void(std::string)> callback) {
-    Java_MyClass_onResult(env, ToJniCallback(env, std::move(callback)));
+    Java_MyClass_onResult(env, std::move(callback));
+}
+
+base::OnceClosure JNI_MyClass_GetClosure(JNIEnv* env) {
+    return base::BindOnce([](){
+      ...
+    });
 }
 ```
 
 **Header:** `#include "base/android/jni_callback.h"`
+
 **Important:** For the `Once*` variants, you must call `destroy()` on the Java
 callback if it is never run to avoid leaking the native object.
 `JniOnceCallback` and `JniOnceRunnable` will automatically destroy themselves
-after one call. For the `Repeated*` variants, you must call `destroy()` when
+after one call. For the `Repeating*` variants, you must call `destroy()` when
 done with them.
 
 ### Nullable Parameters (std::optional)
@@ -157,6 +169,7 @@ void JNI_MyClass_MaybeDoSomething(JNIEnv* env, std::optional<std::string> maybeN
 ```
 
 **Header:** `#include "third_party/jni_zero/default_conversions.h"`
+
 **Behavior:** `null` is converted to `std::nullopt`.
 
 ### Collections and Spans
@@ -196,6 +209,7 @@ Searching for `FromJniType` or `ToJniType` specializations will reveal more. Com
 | `std::u16string` | `String` | `base/android/jni_string.h` |
 | `base::OnceClosure` | `Runnable` | `base/android/callback_android.h` |
 | `base::OnceCallback<void(T)>`| `Callback<T>` | `base/android/callback_android.h` |
+| `base::OnceCallback<void(T1, T2)>`| `Callback2<T1, T2>` | `base/android/callback_android.h` |
 | `GURL` | `GURL` | `url/android/gurl_android.h` |
 | `base::Token` | `Token` | `base/android/token_android.h` |
 | `base::UnguessableToken` | `UnguessableToken` | `base/android/unguessable_token_android.h` |
