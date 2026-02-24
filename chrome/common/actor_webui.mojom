@@ -32,6 +32,16 @@ enum UserGrantedPermissionDuration {
   kAlwaysAllow = 1,
 };
 
+// @generate glic_api
+// Describes the login method for the credential.
+[Extensible]
+enum CredentialType {
+  // Used to fill in a username/password form.
+  [Default] kPassword = 0,
+  // Used with an identity provider (e.g. Sign in with Google).
+  kFederated = 1,
+};
+
 //
 // Credential selection dialog.
 //
@@ -45,6 +55,7 @@ struct Credential {
   string source_site_or_app;
   url.mojom.Origin request_origin;
   string display_origin;
+  CredentialType type;
 };
 
 struct SelectCredentialDialogRequest {

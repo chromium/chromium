@@ -2139,6 +2139,8 @@ export declare interface Credential {
   requestOrigin?: string;
   // The optional icon for the credential, encoded as a PNG image.
   getIcon?(): Promise<Blob>;
+  // The login method for this credential.
+  type?: CredentialType;
 }
 
 export declare interface SelectCredentialDialogRequest {
@@ -2740,6 +2742,16 @@ export enum UserGrantedPermissionDuration {
   // sensitive data. The persistence of this permission is defined differently
   // for different features.
   ALWAYS_ALLOW = 1,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Describes the login method for the credential.
+export enum CredentialType {
+  // Used to fill in a username/password form.
+  PASSWORD = 0,
+  // Used with an identity provider (e.g. Sign in with Google).
+  FEDERATED = 1,
 }
 
 

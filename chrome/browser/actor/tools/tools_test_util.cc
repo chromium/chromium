@@ -58,6 +58,18 @@ actor_login::Credential MakeTestCredential(
   return credential;
 }
 
+actor_login::Credential MakeTestCredentialFederated(
+    const std::u16string& username,
+    const GURL& url) {
+  actor_login::Credential credential = MakeTestCredential(
+      username, url, /*immediately_available_to_login=*/true);
+  credential.type = actor_login::CredentialType::kFederated;
+  credential.federation_detail =
+      actor_login::FederationDetail{.idp_origin = url::Origin::Create(url),
+                                    .account_id = base::ToString(username)};
+  return credential;
+}
+
 MockActorLoginService::MockActorLoginService() = default;
 
 MockActorLoginService::~MockActorLoginService() = default;

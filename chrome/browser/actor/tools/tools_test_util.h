@@ -37,6 +37,9 @@ namespace actor {
 actor_login::Credential MakeTestCredential(const std::u16string& username,
                                            const GURL& url,
                                            bool immediately_available_to_login);
+actor_login::Credential MakeTestCredentialFederated(
+    const std::u16string& username,
+    const GURL& url);
 
 class MockActorLoginService : public actor_login::ActorLoginService {
  public:
