@@ -39,16 +39,17 @@ PaymentsProfileComparator::GetMissingProfileFields(
   if (!profile)
     return kName | kPhone | kEmail | kAddress;
 
-  if (!cache_.count(profile->guid())) {
-    cache_[profile->guid()] = ComputeMissingFields(*profile);
+  auto it = cache_.find(profile->guid());
+  if (it == cache_.end()) {
+    it = cache_.emplace(profile->guid(), ComputeMissingFields(*profile)).first;
   } else {
     // Cache hit. In debug mode, recompute and check that invalidation has
     // occurred where necessary.
-    DCHECK_EQ(cache_[profile->guid()], ComputeMissingFields(*profile))
+    DCHECK_EQ(it->second, ComputeMissingFields(*profile))
         << "Profiles must be invalidated when their contents change.";
   }
 
-  return cache_[profile->guid()];
+  return it->second;
 }
 
 std::vector<raw_ptr<autofill::AutofillProfile, VectorExperimental>>
