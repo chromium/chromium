@@ -738,6 +738,30 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
     }
 
     @Test
+    public void getNativeBrowserWindowPtrsOrderedByActivation_withPendingTask_doesNotCrash() {
+        // Arrange.
+        var activityScopedObjects =
+                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(
+                        IdSequencer.next());
+        mChromeAndroidTaskTracker.obtainTask(
+                BrowserWindowType.NORMAL, activityScopedObjects, /* pendingId= */ null);
+
+        var mockParams =
+                ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowCreateParams(
+                        BrowserWindowType.NORMAL);
+        mChromeAndroidTaskTracker.createPendingTask(mockParams, null);
+
+        // Act.
+        long[] ptrs = mChromeAndroidTaskTracker.getNativeBrowserWindowPtrsOrderedByActivation();
+
+        // Assert.
+        assertEquals(
+                "The pointer array should contain both the alive and the pending task.",
+                2,
+                ptrs.length);
+    }
+
+    @Test
     public void obtainTask_fromPendingState_dispatchesPendingShowInactive() {
         doTestDispatchPendingShowInactiveOrDeactivate(PendingAction.SHOW_INACTIVE);
     }

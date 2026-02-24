@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.role.RoleManager;
@@ -288,7 +286,7 @@ final class ChromeAndroidTaskImpl
             };
 
     private @Nullable Integer mId;
-    private @Nullable Long mLastActivatedTimeMillis;
+    private long mLastActivatedTimeMillis;
     private @Nullable PendingTaskInfo mPendingTaskInfo;
 
     /** Last Task (window) bounds updated by {@link #onConfigurationChanged(Configuration)}. */
@@ -743,7 +741,7 @@ final class ChromeAndroidTaskImpl
     @Override
     public long getLastActivatedTimeMillis() {
         ThreadUtils.assertOnUiThread();
-        return assertNonNull(mLastActivatedTimeMillis);
+        return mLastActivatedTimeMillis;
     }
 
     @Override

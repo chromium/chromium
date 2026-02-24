@@ -293,7 +293,8 @@ public interface ChromeAndroidTask {
      * when its state changed from nonexistent or inactive (minimized/unfocused), to the active
      * state (in the foreground and focused).
      *
-     * <p>The timestamp is in milliseconds since boot.
+     * <p>The timestamp is in milliseconds since boot. Returns 0 if this task has never been
+     * activated.
      */
     long getLastActivatedTimeMillis();
 
