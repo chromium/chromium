@@ -273,7 +273,7 @@ void LogErrorToSyslog(KioskAppLaunchError::Error error) {
       SYSLOG(ERROR) << "LoginPerformer disallowed Kiosk user sign in.";
       break;
     default:
-      SYSLOG(ERROR) << "Unexpected error " << (int)error;
+      SYSLOG(ERROR) << "Unexpected error " << static_cast<int>(error);
   }
 }
 
