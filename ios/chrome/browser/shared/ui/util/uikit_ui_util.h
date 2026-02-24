@@ -126,6 +126,9 @@ UIImage* ImageWithColor(UIColor* color);
 // down. If the source image is not square, the image is first cropped.
 UIImage* CircularImageFromImage(UIImage* image, CGFloat width);
 
+// Returns a copy of `image` with rounded corner.
+UIImage* ImageWithCornerRadius(UIImage* image, CGFloat cornerRadius);
+
 // Returns true if the window is in portrait orientation or if orientation is
 // unknown.
 bool IsPortrait(UIWindow* window);

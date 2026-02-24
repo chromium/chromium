@@ -228,6 +228,23 @@ UIImage* CircularImageFromImage(UIImage* image, CGFloat width) {
       }];
 }
 
+UIImage* ImageWithCornerRadius(UIImage* image, CGFloat cornerRadius) {
+  CGRect rect = CGRectMake(0, 0, image.size.width, image.size.height);
+
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:rect.size];
+
+  UIImage* roundedImage = [renderer
+      imageWithActions:^(UIGraphicsImageRendererContext* rendererContext) {
+        UIBezierPath* path =
+            [UIBezierPath bezierPathWithRoundedRect:rect
+                                       cornerRadius:cornerRadius];
+        [path addClip];
+        [image drawInRect:rect];
+      }];
+  return roundedImage;
+}
+
 bool IsPortrait(UIWindow* window) {
   UIInterfaceOrientation orient = GetInterfaceOrientation(window);
   return UIInterfaceOrientationIsPortrait(orient) ||
