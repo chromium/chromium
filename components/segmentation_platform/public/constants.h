@@ -290,6 +290,7 @@ const char kGoogleLens[] = "GoogleLens";
 const char kBottomOmnibox[] = "BottomOmnibox";
 const char kPasswordAutofill[] = "PasswordAutofill";
 const char kSignin[] = "Signin";
+const char kCreateTabGroups[] = "CreateTabGroups";
 
 // Input Context keys for tips notifications ranker.
 // V1 Tips: ESB, Quick Delete, Google Lens, Bottom Omnibox
@@ -301,10 +302,11 @@ const char kEnhancedSafeBrowsingTipShown[] = "enhanced_safe_browsing_tip_shown";
 const char kQuickDeleteTipShown[] = "quick_delete_tip_shown";
 const char kGoogleLensTipShown[] = "google_lens_tip_shown";
 const char kBottomOmniboxTipShown[] = "bottom_omnibox_tip_shown";
-// V2 Tips: Password Autofill, Signin
+// V2 Tips: Password Autofill, Signin, Create Tab Groups
 const char kTipsIsUserSignedIn[] = "is_user_signed_in";
 const char kPasswordAutofillTipShown[] = "password_autofill_tip_shown";
 const char kSigninTipShown[] = "signin_tip_shown";
+const char kCreateTabGroupsTipShown[] = "create_tab_groups_tip_shown";
 
 }  // namespace segmentation_platform
 

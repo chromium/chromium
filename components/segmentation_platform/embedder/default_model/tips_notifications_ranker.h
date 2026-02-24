@@ -24,6 +24,7 @@ class TipsNotificationsRanker : public DefaultModelProvider {
     kBottomOmniboxTipIdx,
     kPasswordAutofillTipIdx,
     kSigninTipIdx,
+    kCreateTabGroupsTipIdx,
     kLabelCount
   };
 
@@ -49,8 +50,10 @@ class TipsNotificationsRanker : public DefaultModelProvider {
     kPasswordAutofillLocalPasswordsCountIdx,
     kIsUserSignedInIdx,
     kSigninMagicStackShownCountIdx,
+    kTabGroupsCreatedCountIdx,
     kPasswordAutofillTipShownIdx,
     kSigninTipShownIdx,
+    kCreateTabGroupsTipShownIdx,
     kFeatureCount
   };
 

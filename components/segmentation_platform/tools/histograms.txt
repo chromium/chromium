@@ -55,6 +55,7 @@ Sync.DeviceCount2
 Sync.DeviceCount2.Desktop
 Sync.DeviceCount2.Phone
 Sync.DeviceCount2.Tablet
+TabGroups.Sync.TabGroup.Created.GroupCreateOrigin
 TabGroups.UserGroupCount
 UMA.ProfileSignInStatusV2
 UMA.ProfileSyncStatusV2

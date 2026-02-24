@@ -23,8 +23,8 @@ using proto::SegmentId;
 // Default parameters for TipsNotificationsRanker model.
 constexpr SegmentId kSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_TIPS_NOTIFICATIONS_RANKER;
-// Update the model to include the sign in feature.
-constexpr int64_t kModelVersion = 6;
+// Update the model to include the create tab groups feature.
+constexpr int64_t kModelVersion = 7;
 // Store 28 buckets of input data (28 days).
 constexpr int64_t kSignalStorageLength = 28;
 // Wait until we have 0 days of data.
@@ -38,7 +38,8 @@ constexpr LabelPair<TipsNotificationsRanker::Label> kTipsNotificationsLabels[] =
      {TipsNotificationsRanker::kGoogleLensTipIdx, kGoogleLens},
      {TipsNotificationsRanker::kBottomOmniboxTipIdx, kBottomOmnibox},
      {TipsNotificationsRanker::kPasswordAutofillTipIdx, kPasswordAutofill},
-     {TipsNotificationsRanker::kSigninTipIdx, kSignin}};
+     {TipsNotificationsRanker::kSigninTipIdx, kSignin},
+     {TipsNotificationsRanker::kCreateTabGroupsTipIdx, kCreateTabGroups}};
 
 // Enum values for histograms.
 constexpr std::array<int32_t, 1> kEnumValueForQuickDeleteMagicStackImpression{
@@ -49,6 +50,9 @@ constexpr std::array<int32_t, 1> kEnumValueForAllTipsNotificationsShownCount{
 
 constexpr std::array<int32_t, 1> kEnumValueForSigninMagicStackImpression{
     /*Signin=*/15};
+
+constexpr std::array<int32_t, 1> kEnumValueForTabGroupsCreatedCount{
+    /*Local=*/1};
 
 // The features here should be in the same order as defined in the header file
 // tips_notifications_ranker.h Feature enum.
@@ -91,7 +95,7 @@ constexpr FeaturePair<TipsNotificationsRanker::Feature>
          features::InputContext(kGoogleLensTipShown)},
         {TipsNotificationsRanker::kBottomOmniboxTipShownIdx,
          features::InputContext(kBottomOmniboxTipShown)},
-        // V2 Tips: Password Autofill, Sign in
+        // V2 Tips: Password Autofill, Sign in, Create Tab Groups
         // Check that both the synced account and local passwords count have an
         // aggregate sum of 0 during the specified window across all instances.
         {TipsNotificationsRanker::kPasswordAutofillAccountPasswordsCountIdx,
@@ -108,10 +112,16 @@ constexpr FeaturePair<TipsNotificationsRanker::Feature>
          features::UMAEnum("MagicStack.Clank.NewTabPage.Module.TopImpressionV2",
                            28,
                            kEnumValueForSigninMagicStackImpression)},
+        {TipsNotificationsRanker::kTabGroupsCreatedCountIdx,
+         features::UMAEnum("TabGroups.Sync.TabGroup.Created.GroupCreateOrigin",
+                           28,
+                           kEnumValueForTabGroupsCreatedCount)},
         {TipsNotificationsRanker::kPasswordAutofillTipShownIdx,
          features::InputContext(kPasswordAutofillTipShown)},
         {TipsNotificationsRanker::kSigninTipShownIdx,
-         features::InputContext(kSigninTipShown)}};
+         features::InputContext(kSigninTipShown)},
+        {TipsNotificationsRanker::kCreateTabGroupsTipShownIdx,
+         features::InputContext(kCreateTabGroupsTipShown)}};
 
 std::vector<int> GetTipsPriorityRankingList() {
   std::vector<int> tips_list;
@@ -120,6 +130,7 @@ std::vector<int> GetTipsPriorityRankingList() {
   if (base::FeatureList::IsEnabled(features::kAndroidTipsNotificationsV2)) {
     tips_list.emplace_back(TipsNotificationsRanker::kPasswordAutofillTipIdx);
     tips_list.emplace_back(TipsNotificationsRanker::kSigninTipIdx);
+    tips_list.emplace_back(TipsNotificationsRanker::kCreateTabGroupsTipIdx);
   }
 
   if (features::kTrustAndSafety.Get()) {
@@ -210,6 +221,11 @@ bool IsSigninTipEligible(float is_user_signed_in,
          tip_shown == 0;
 }
 
+bool IsCreateTabGroupsTipEligible(float tab_groups_created_count,
+                                  float tip_shown) {
+  return tab_groups_created_count == 0 && tip_shown == 0;
+}
+
 }  // namespace
 
 // static
@@ -288,8 +304,10 @@ void TipsNotificationsRanker::ExecuteModelWithInput(
       inputs[kPasswordAutofillLocalPasswordsCountIdx];
   float is_user_signed_in = inputs[kIsUserSignedInIdx];
   float signin_magic_stack_shown_count = inputs[kSigninMagicStackShownCountIdx];
+  float tab_groups_created_count = inputs[kTabGroupsCreatedCountIdx];
   float password_autofill_tip_shown = inputs[kPasswordAutofillTipShownIdx];
   float signin_tip_shown = inputs[kSigninTipShownIdx];
+  float create_tab_groups_tip_shown = inputs[kCreateTabGroupsTipShownIdx];
 
   // Only choose an eligible tip if none have been shown for the last 7 days or
   // if the testing flags to instantly schedule a notification are active.
@@ -347,6 +365,13 @@ void TipsNotificationsRanker::ExecuteModelWithInput(
                                     signin_magic_stack_shown_count,
                                     signin_tip_shown)) {
               response[kSigninTipIdx] = 1;
+              has_eligible_tip = true;
+            }
+            break;
+          case kCreateTabGroupsTipIdx:
+            if (IsCreateTabGroupsTipEligible(tab_groups_created_count,
+                                             create_tab_groups_tip_shown)) {
+              response[kCreateTabGroupsTipIdx] = 1;
               has_eligible_tip = true;
             }
             break;

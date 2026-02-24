@@ -212,23 +212,32 @@ TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForV2Features) {
   input2[TipsFeature::kPasswordAutofillLocalPasswordsCountIdx] = 1;
   ExpectClassifierResults(input2, {kSignin});
 
-  // Test QuickDelete from V1 with V2 features being used.
+  // Test Create Tab Groups with PasswordAutofill and Signin being used.
   std::vector<float> input3(TipsFeature::kFeatureCount, 0);
   input3[TipsFeature::kPasswordAutofillAccountPasswordsCountIdx] = 1;
   input3[TipsFeature::kPasswordAutofillLocalPasswordsCountIdx] = 1;
   input3[TipsFeature::kIsUserSignedInIdx] = 1;
   input3[TipsFeature::kSigninMagicStackShownCountIdx] = 1;
-  ExpectClassifierResults(input3, {kQuickDelete});
+  ExpectClassifierResults(input3, {kCreateTabGroups});
+
+  // Test QuickDelete from V1 with V2 features being used.
+  std::vector<float> input4(TipsFeature::kFeatureCount, 0);
+  input4[TipsFeature::kPasswordAutofillAccountPasswordsCountIdx] = 1;
+  input4[TipsFeature::kPasswordAutofillLocalPasswordsCountIdx] = 1;
+  input4[TipsFeature::kIsUserSignedInIdx] = 1;
+  input4[TipsFeature::kSigninMagicStackShownCountIdx] = 1;
+  input4[TipsFeature::kTabGroupsCreatedCountIdx] = 1;
+  ExpectClassifierResults(input4, {kQuickDelete});
 
   // Test AllFeatureTipsShownCount blocks scheduling notifications.
-  std::vector<float> input4(TipsFeature::kFeatureCount, 0);
-  input4[TipsFeature::kAllFeatureTipsShownCountIdx] = 1;
-  ExpectClassifierResults(input4, {});
+  std::vector<float> input5(TipsFeature::kFeatureCount, 0);
+  input5[TipsFeature::kAllFeatureTipsShownCountIdx] = 1;
+  ExpectClassifierResults(input5, {});
 
   // Test TipShown blocks scheduling PasswordAutofill as first eligible.
-  std::vector<float> input5(TipsFeature::kFeatureCount, 0);
-  input5[TipsFeature::kPasswordAutofillTipShownIdx] = 1;
-  ExpectClassifierResults(input5, {kSignin});
+  std::vector<float> input6(TipsFeature::kFeatureCount, 0);
+  input6[TipsFeature::kPasswordAutofillTipShownIdx] = 1;
+  ExpectClassifierResults(input6, {kSignin});
 }
 
 }  // namespace segmentation_platform
