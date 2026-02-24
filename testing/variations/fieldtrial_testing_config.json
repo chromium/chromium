@@ -27468,21 +27468,6 @@
             ]
         }
     ],
-    "UseSceneViewController": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseSceneViewController"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseSmartRefForGPUFenceHandle": [
         {
             "platforms": [
