@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/test/mock_connection_manager.h"
+#include "components/sync/test/fake_connection_manager.h"
 
 #include <algorithm>
 #include <map>
@@ -40,7 +40,7 @@ constexpr std::string_view kValidAccessToken = "AccessToken";
 constexpr std::string_view kCacheGuid = "kqyg7097kro6GSUod+GSg==";
 constexpr base::TimeDelta kValidAccessTokenTtl = base::Hours(1);
 
-MockConnectionManager::MockConnectionManager() {
+FakeConnectionManager::FakeConnectionManager() {
   SetNewTimestamp(0);
 
   signin::AccessTokenInfo access_token_info;
@@ -49,20 +49,20 @@ MockConnectionManager::MockConnectionManager() {
   SetAccessTokenInfo(access_token_info);
 }
 
-MockConnectionManager::~MockConnectionManager() {
+FakeConnectionManager::~FakeConnectionManager() {
   EXPECT_TRUE(update_queue_.empty()) << "Unfetched updates.";
 }
 
-void MockConnectionManager::SetMidCommitCallback(base::OnceClosure callback) {
+void FakeConnectionManager::SetMidCommitCallback(base::OnceClosure callback) {
   mid_commit_callback_ = std::move(callback);
 }
 
-void MockConnectionManager::SetMidCommitObserver(
-    MockConnectionManager::MidCommitObserver* observer) {
+void FakeConnectionManager::SetMidCommitObserver(
+    FakeConnectionManager::MidCommitObserver* observer) {
   mid_commit_observer_ = observer;
 }
 
-HttpResponse MockConnectionManager::PostBuffer(const std::string& buffer_in,
+HttpResponse FakeConnectionManager::PostBuffer(const std::string& buffer_in,
                                                std::string* buffer_out) {
   ClientToServerMessage post;
   if (!post.ParseFromString(buffer_in) || !post.has_protocol_version() ||
@@ -170,14 +170,14 @@ HttpResponse MockConnectionManager::PostBuffer(const std::string& buffer_in,
   return HttpResponse::ForSuccessForTest();
 }
 
-sync_pb::GetUpdatesResponse* MockConnectionManager::GetUpdateResponse() {
+sync_pb::GetUpdatesResponse* FakeConnectionManager::GetUpdateResponse() {
   if (update_queue_.empty()) {
     NextUpdateBatch();
   }
   return &update_queue_.back();
 }
 
-void MockConnectionManager::AddDefaultBookmarkData(sync_pb::SyncEntity* entity,
+void FakeConnectionManager::AddDefaultBookmarkData(sync_pb::SyncEntity* entity,
                                                    bool is_folder) {
   entity->set_folder(is_folder);
   entity->mutable_specifics()->mutable_bookmark();
@@ -187,21 +187,21 @@ void MockConnectionManager::AddDefaultBookmarkData(sync_pb::SyncEntity* entity,
   }
 }
 
-void MockConnectionManager::SetGUClientCommand(
+void FakeConnectionManager::SetGUClientCommand(
     std::unique_ptr<sync_pb::ClientCommand> command) {
   gu_client_command_ = std::move(command);
 }
 
-void MockConnectionManager::SetCommitClientCommand(
+void FakeConnectionManager::SetCommitClientCommand(
     std::unique_ptr<sync_pb::ClientCommand> command) {
   commit_client_command_ = std::move(command);
 }
 
-void MockConnectionManager::SetTransientErrorId(const std::string& id) {
+void FakeConnectionManager::SetTransientErrorId(const std::string& id) {
   transient_error_ids_.push_back(id);
 }
 
-sync_pb::SyncEntity* MockConnectionManager::AddUpdateSpecifics(
+sync_pb::SyncEntity* FakeConnectionManager::AddUpdateSpecifics(
     const std::string& id,
     const std::string& parent_id,
     const string& name,
@@ -216,7 +216,7 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateSpecifics(
   return ent;
 }
 
-sync_pb::SyncEntity* MockConnectionManager::AddUpdateSpecifics(
+sync_pb::SyncEntity* FakeConnectionManager::AddUpdateSpecifics(
     const std::string& id,
     const std::string& parent_id,
     const string& name,
@@ -233,7 +233,7 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateSpecifics(
   return ent;
 }
 
-sync_pb::SyncEntity* MockConnectionManager::SetNigori(
+sync_pb::SyncEntity* FakeConnectionManager::SetNigori(
     const std::string& id,
     int64_t version,
     int64_t sync_ts,
@@ -252,7 +252,7 @@ sync_pb::SyncEntity* MockConnectionManager::SetNigori(
   return ent;
 }
 
-sync_pb::SyncEntity* MockConnectionManager::AddUpdatePref(
+sync_pb::SyncEntity* FakeConnectionManager::AddUpdatePref(
     const string& id,
     const string& parent_id,
     const string& client_tag,
@@ -270,7 +270,7 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdatePref(
   return ent;
 }
 
-sync_pb::SyncEntity* MockConnectionManager::AddUpdateFull(
+sync_pb::SyncEntity* FakeConnectionManager::AddUpdateFull(
     const string& id,
     const string& parent_id,
     const string& name,
@@ -283,7 +283,7 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateFull(
   return ent;
 }
 
-sync_pb::SyncEntity* MockConnectionManager::AddUpdateMeta(
+sync_pb::SyncEntity* FakeConnectionManager::AddUpdateMeta(
     const string& id,
     const string& parent_id,
     const string& name,
@@ -313,7 +313,7 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateMeta(
   return ent;
 }
 
-sync_pb::SyncEntity* MockConnectionManager::AddUpdateDirectory(
+sync_pb::SyncEntity* FakeConnectionManager::AddUpdateDirectory(
     const string& id,
     const string& parent_id,
     const string& name,
@@ -328,7 +328,7 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateDirectory(
   return ret;
 }
 
-sync_pb::SyncEntity* MockConnectionManager::AddUpdateBookmark(
+sync_pb::SyncEntity* FakeConnectionManager::AddUpdateBookmark(
     const string& id,
     const string& parent_id,
     const string& name,
@@ -343,7 +343,7 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateBookmark(
   return ret;
 }
 
-sync_pb::SyncEntity* MockConnectionManager::AddUpdateFromLastCommit() {
+sync_pb::SyncEntity* FakeConnectionManager::AddUpdateFromLastCommit() {
   EXPECT_EQ(1, last_sent_commit().entries_size());
   EXPECT_EQ(1, last_commit_response().entryresponse_size());
   EXPECT_EQ(CommitResponse::SUCCESS,
@@ -377,7 +377,7 @@ sync_pb::SyncEntity* MockConnectionManager::AddUpdateFromLastCommit() {
   return GetMutableLastUpdate();
 }
 
-void MockConnectionManager::AddUpdateTombstone(const std::string& id,
+void FakeConnectionManager::AddUpdateTombstone(const std::string& id,
                                                DataType type) {
   // Tombstones have only the ID set and fake values for the required fields.
   sync_pb::SyncEntity* ent = GetUpdateResponse()->add_entries();
@@ -390,7 +390,7 @@ void MockConnectionManager::AddUpdateTombstone(const std::string& id,
   AddDefaultFieldValue(type, ent->mutable_specifics());
 }
 
-void MockConnectionManager::SetLastUpdateDeleted() {
+void FakeConnectionManager::SetLastUpdateDeleted() {
   // Tombstones have only the ID set.  Wipe anything else.
   string id_string = GetMutableLastUpdate()->id_string();
   DataType type = GetDataTypeFromSpecifics(GetMutableLastUpdate()->specifics());
@@ -398,32 +398,32 @@ void MockConnectionManager::SetLastUpdateDeleted() {
   AddUpdateTombstone(id_string, type);
 }
 
-void MockConnectionManager::SetLastUpdateOriginatorFields(
+void FakeConnectionManager::SetLastUpdateOriginatorFields(
     const string& client_id,
     const string& entry_id) {
   GetMutableLastUpdate()->set_originator_cache_guid(client_id);
   GetMutableLastUpdate()->set_originator_client_item_id(entry_id);
 }
 
-void MockConnectionManager::SetLastUpdateServerTag(const string& tag) {
+void FakeConnectionManager::SetLastUpdateServerTag(const string& tag) {
   GetMutableLastUpdate()->set_server_defined_unique_tag(tag);
 }
 
-void MockConnectionManager::SetLastUpdateClientTag(const string& tag) {
+void FakeConnectionManager::SetLastUpdateClientTag(const string& tag) {
   GetMutableLastUpdate()->set_client_tag_hash(tag);
 }
 
-void MockConnectionManager::SetNewTimestamp(int ts) {
+void FakeConnectionManager::SetNewTimestamp(int ts) {
   next_token_ = base::StringPrintf("mock connection ts = %d", ts);
   ApplyToken();
 }
 
 sync_pb::DataTypeProgressMarker*
-MockConnectionManager::AddUpdateProgressMarker() {
+FakeConnectionManager::AddUpdateProgressMarker() {
   return GetUpdateResponse()->add_new_progress_marker();
 }
 
-void MockConnectionManager::ApplyToken() {
+void FakeConnectionManager::ApplyToken() {
   if (!update_queue_.empty()) {
     GetUpdateResponse()->clear_new_progress_marker();
     sync_pb::DataTypeProgressMarker* new_marker = AddUpdateProgressMarker();
@@ -432,11 +432,11 @@ void MockConnectionManager::ApplyToken() {
   }
 }
 
-void MockConnectionManager::SetChangesRemaining(int64_t timestamp) {
+void FakeConnectionManager::SetChangesRemaining(int64_t timestamp) {
   GetUpdateResponse()->set_changes_remaining(timestamp);
 }
 
-bool MockConnectionManager::ProcessGetUpdates(
+bool FakeConnectionManager::ProcessGetUpdates(
     sync_pb::ClientToServerMessage* csm,
     sync_pb::ClientToServerResponse* response) {
   if (!csm->has_get_updates()) {
@@ -501,13 +501,13 @@ bool MockConnectionManager::ProcessGetUpdates(
   return true;
 }
 
-void MockConnectionManager::SetKeystoreKey(const std::string& key) {
+void FakeConnectionManager::SetKeystoreKey(const std::string& key) {
   // Note: this is not a thread-safe set, ok for now.  NOT ok if tests
   // run the syncer on the background thread while this method is called.
   keystore_key_ = key;
 }
 
-bool MockConnectionManager::ShouldConflictThisCommit() {
+bool FakeConnectionManager::ShouldConflictThisCommit() {
   bool conflict = false;
   if (conflict_all_commits_) {
     conflict = true;
@@ -518,11 +518,11 @@ bool MockConnectionManager::ShouldConflictThisCommit() {
   return conflict;
 }
 
-bool MockConnectionManager::ShouldTransientErrorThisId(const std::string& id) {
+bool FakeConnectionManager::ShouldTransientErrorThisId(const std::string& id) {
   return std::ranges::contains(transient_error_ids_, id);
 }
 
-bool MockConnectionManager::ProcessCommit(
+bool FakeConnectionManager::ProcessCommit(
     sync_pb::ClientToServerMessage* csm,
     sync_pb::ClientToServerResponse* response_buffer) {
   if (!csm->has_commit()) {
@@ -594,7 +594,7 @@ bool MockConnectionManager::ProcessCommit(
   return true;
 }
 
-bool MockConnectionManager::ProcessClearServerData(
+bool FakeConnectionManager::ProcessClearServerData(
     sync_pb::ClientToServerMessage* csm,
     sync_pb::ClientToServerResponse* response) {
   if (!csm->has_clear_server_data()) {
@@ -609,40 +609,40 @@ bool MockConnectionManager::ProcessClearServerData(
   return true;
 }
 
-sync_pb::SyncEntity* MockConnectionManager::GetMutableLastUpdate() {
+sync_pb::SyncEntity* FakeConnectionManager::GetMutableLastUpdate() {
   sync_pb::GetUpdatesResponse* updates = GetUpdateResponse();
   EXPECT_GT(updates->entries_size(), 0);
   return updates->mutable_entries()->Mutable(updates->entries_size() - 1);
 }
 
-void MockConnectionManager::NextUpdateBatch() {
+void FakeConnectionManager::NextUpdateBatch() {
   update_queue_.push_back(sync_pb::GetUpdatesResponse::default_instance());
   SetChangesRemaining(0);
   ApplyToken();
 }
 
-const CommitMessage& MockConnectionManager::last_sent_commit() const {
+const CommitMessage& FakeConnectionManager::last_sent_commit() const {
   EXPECT_TRUE(!commit_messages_.empty());
   return *commit_messages_.back();
 }
 
-const CommitResponse& MockConnectionManager::last_commit_response() const {
+const CommitResponse& FakeConnectionManager::last_commit_response() const {
   EXPECT_TRUE(!commit_responses_.empty());
   return *commit_responses_.back();
 }
 
-const sync_pb::ClientToServerMessage& MockConnectionManager::last_request()
+const sync_pb::ClientToServerMessage& FakeConnectionManager::last_request()
     const {
   EXPECT_TRUE(!requests_.empty());
   return requests_.back();
 }
 
 const std::vector<sync_pb::ClientToServerMessage>&
-MockConnectionManager::requests() const {
+FakeConnectionManager::requests() const {
   return requests_;
 }
 
-bool MockConnectionManager::IsDataTypePresentInSpecifics(
+bool FakeConnectionManager::IsDataTypePresentInSpecifics(
     const google::protobuf::RepeatedPtrField<sync_pb::DataTypeProgressMarker>&
         filter,
     DataType value) {
@@ -656,7 +656,7 @@ bool MockConnectionManager::IsDataTypePresentInSpecifics(
 }
 
 sync_pb::DataTypeProgressMarker const*
-MockConnectionManager::GetProgressMarkerForType(
+FakeConnectionManager::GetProgressMarkerForType(
     const google::protobuf::RepeatedPtrField<sync_pb::DataTypeProgressMarker>&
         filter,
     DataType value) {
@@ -669,15 +669,15 @@ MockConnectionManager::GetProgressMarkerForType(
   return nullptr;
 }
 
-void MockConnectionManager::SetServerReachable() {
+void FakeConnectionManager::SetServerReachable() {
   server_reachable_ = true;
 }
 
-void MockConnectionManager::SetServerNotReachable() {
+void FakeConnectionManager::SetServerNotReachable() {
   server_reachable_ = false;
 }
 
-void MockConnectionManager::UpdateConnectionStatus() {
+void FakeConnectionManager::UpdateConnectionStatus() {
   SetServerResponse(server_reachable_
                         ? HttpResponse::ForSuccessForTest()
                         : HttpResponse::ForNetError(net::ERR_FAILED));

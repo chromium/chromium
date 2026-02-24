@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_TEST_MOCK_CONNECTION_MANAGER_H_
-#define COMPONENTS_SYNC_TEST_MOCK_CONNECTION_MANAGER_H_
+#ifndef COMPONENTS_SYNC_TEST_FAKE_CONNECTION_MANAGER_H_
+#define COMPONENTS_SYNC_TEST_FAKE_CONNECTION_MANAGER_H_
 
 #include <stdint.h>
 
@@ -37,8 +37,8 @@ class ClientCommand;
 
 namespace syncer {
 
-// Mock ServerConnectionManager class for use in client unit tests.
-class MockConnectionManager : public ServerConnectionManager {
+// Fake ServerConnectionManager class for use in client unit tests.
+class FakeConnectionManager : public ServerConnectionManager {
  public:
   class MidCommitObserver {
    public:
@@ -48,12 +48,12 @@ class MockConnectionManager : public ServerConnectionManager {
     virtual ~MidCommitObserver() = default;
   };
 
-  MockConnectionManager();
+  FakeConnectionManager();
 
-  MockConnectionManager(const MockConnectionManager&) = delete;
-  MockConnectionManager& operator=(const MockConnectionManager&) = delete;
+  FakeConnectionManager(const FakeConnectionManager&) = delete;
+  FakeConnectionManager& operator=(const FakeConnectionManager&) = delete;
 
-  ~MockConnectionManager() override;
+  ~FakeConnectionManager() override;
 
   // Overridden ServerConnectionManager functions.
   HttpResponse PostBuffer(const std::string& buffer_in,
@@ -352,4 +352,4 @@ class MockConnectionManager : public ServerConnectionManager {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_TEST_MOCK_CONNECTION_MANAGER_H_
+#endif  // COMPONENTS_SYNC_TEST_FAKE_CONNECTION_MANAGER_H_
