@@ -194,15 +194,17 @@ void TestUpdateMaps(DomStorageDatabase& database,
   EXPECT_EQ(actual_entries, map2_entries);
 }
 
-void InsertMapEntries(DomStorageDatabase& database,
-                      const DomStorageDatabase::MapLocator& map_locator,
-                      const std::map<DomStorageDatabase::Key,
-                                     DomStorageDatabase::Value>& entries) {
+void InsertMapEntries(
+    DomStorageDatabase& database,
+    const DomStorageDatabase::MapLocator& map_locator,
+    const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>& entries,
+    std::optional<DomStorageDatabase::MapBatchUpdate::Usage> usage_metadata) {
   // Write the `entries` to `database`.
   DomStorageDatabase::MapBatchUpdate map_update(map_locator.Clone());
   for (const auto& entry : entries) {
     map_update.entries_to_add.emplace_back(entry.first, entry.second);
   }
+  map_update.map_usage = std::move(usage_metadata);
 
   std::vector<DomStorageDatabase::MapBatchUpdate> map_updates;
   map_updates.push_back(std::move(map_update));

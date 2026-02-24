@@ -207,6 +207,7 @@ source_set("tests") {
 
   sources = [
     "dom_storage/async_dom_storage_database_unittest.cc",
+    "dom_storage/dom_storage_database_unittest.cc",
     "dom_storage/leveldb/dom_storage_database_leveldb_unittest.cc",
     "dom_storage/leveldb/local_storage_leveldb_unittest.cc",
     "dom_storage/leveldb/session_storage_leveldb_unittest.cc",
