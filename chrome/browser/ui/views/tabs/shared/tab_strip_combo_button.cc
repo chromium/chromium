@@ -294,10 +294,8 @@ void TabStripComboButton::ExecuteCommand(int command_id, int event_flags) {
   std::string_view pref_name;
   if (command_id == IDC_TAB_SEARCH_TOGGLE_PIN) {
     pref_name = prefs::kTabSearchPinnedToTabstrip;
-    if (prefs->GetBoolean(pref_name)) {
-      show_tab_search_ephemerally_ = false;
-      hide_tab_search_timer_.Stop();
-    }
+    show_tab_search_ephemerally_ = false;
+    hide_tab_search_timer_.Stop();
   } else if (command_id == IDC_PROJECTS_PANEL_TOGGLE_PIN) {
     pref_name = prefs::kProjectsPanelPinnedToTabstrip;
   } else if (command_id == IDC_EVERYTHING_MENU_TOGGLE_PIN) {
