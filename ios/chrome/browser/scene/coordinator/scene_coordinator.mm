@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/scene/coordinator/scene_coordinator.h"
 
+#import "base/cancelable_callback.h"
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -195,6 +196,8 @@ void OnListFamilyMembersResponse(
   // Fetches the Family Link member role asynchronously from KidsManagement API.
   std::unique_ptr<supervised_user::ListFamilyMembersFetcher>
       _familyMembersFetcher;
+  // Closure to timeout the request to list family members.
+  base::CancelableOnceClosure _familyMembersTimeoutClosure;
   // Navigation View controller for the settings.
   SettingsNavigationController* _settingsNavigationController;
 }
@@ -1818,60 +1821,36 @@ void OnListFamilyMembersResponse(
         *identity_manager, self.profile->GetSharedURLLoaderFactory(),
         base::BindOnce(&OnListFamilyMembersResponse, primary_account.gaia, data)
             .Then(base::BindOnce(^{
-              [weakSelf
-                  reportAnIssueFamilyMembersListFetchedForBaseViewController:
-                      baseViewController
-                                                            userFeedbackData:
-                                                                data
-                                                                  completion:
-                                                                      completion];
+              [weakSelf presentUserFeedbackViewController:baseViewController
+                                     withUserFeedbackData:data
+                                               completion:completion];
             })));
 
     // Timeout the request to list family members.
+    _familyMembersTimeoutClosure.Reset(base::BindOnce(^{
+      [weakSelf presentUserFeedbackViewController:baseViewController
+                             withUserFeedbackData:data
+                                       completion:completion];
+    }));
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(^{
-          [weakSelf presentUserFeedbackViewController:baseViewController
-                                 withUserFeedbackData:data
-                             cancelFamilyMembersFetch:YES
-                                           completion:completion];
-        }),
-        timeout);
+        FROM_HERE, _familyMembersTimeoutClosure.callback(), timeout);
     return;
   }
 
   [self presentUserFeedbackViewController:baseViewController
                      withUserFeedbackData:data
-                 cancelFamilyMembersFetch:NO
                                completion:completion];
-}
-
-// Callback for when the Family Members list is fetched.
-- (void)
-    reportAnIssueFamilyMembersListFetchedForBaseViewController:
-        (UIViewController*)baseViewController
-                                              userFeedbackData:
-                                                  (UserFeedbackData*)data
-                                                    completion:
-                                                        (UserFeedbackDataCallback)
-                                                            completion {
-  [self presentUserFeedbackViewController:baseViewController
-                     withUserFeedbackData:data
-                 cancelFamilyMembersFetch:NO
-                               completion:completion];
-  // Reset the fetcher now that it has done its job.
-  _familyMembersFetcher.reset();
 }
 
 // Presents the Report an Issue UI using `data`. Cancels the family members
-// fetch if `cancelFamilyMembersFetch` is YES.
+// fetcher, and `_familyMembersTimeoutClosure`.
 - (void)presentUserFeedbackViewController:(UIViewController*)baseViewController
                      withUserFeedbackData:(UserFeedbackData*)data
-                 cancelFamilyMembersFetch:(BOOL)cancelFamilyMembersFetch
                                completion:(UserFeedbackDataCallback)completion {
+  // Cancel any timeout.
+  _familyMembersTimeoutClosure.Cancel();
   // Cancel any list family member requests in progress.
-  if (cancelFamilyMembersFetch) {
-    _familyMembersFetcher.reset();
-  }
+  _familyMembersFetcher.reset();
 
   Browser* browser = _regularBrowser.get();
 
