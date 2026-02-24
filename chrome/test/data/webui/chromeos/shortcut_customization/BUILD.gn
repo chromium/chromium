@@ -5,6 +5,8 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build_webui_tests") {
+  cc_test_files = [ "shortcut_customization_browsertest.cc" ]
+
   ts_path_mappings = [
     "chrome://shortcut-customization/*|" +
         rebase_path(

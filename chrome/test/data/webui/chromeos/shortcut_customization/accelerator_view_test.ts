@@ -503,7 +503,7 @@ suite('acceleratorViewTest', function() {
     const keyIconElement =
         pendingKey.shadowRoot!.querySelector<IronIconElement>('#key-icon');
     assertTrue(!!keyIconElement);
-    assertEquals('shortcut-input-keys:overview', keyIconElement.icon);
+    assertEquals('shortcut-input-keys:overview-refresh', keyIconElement.icon);
 
     // Simulate SHIFT + BRIGHTNESS_UP, expect the key display to be
     // 'BrightnessUp' and the icon to be 'display-brightness-up'.
@@ -523,7 +523,7 @@ suite('acceleratorViewTest', function() {
         pendingKey.shadowRoot!.querySelector<IronIconElement>('#key-icon');
     assertTrue(!!keyIconElement2);
     assertEquals(
-        'shortcut-input-keys:display-brightness-up', keyIconElement2.icon);
+        'shortcut-input-keys:brightness-up-refresh', keyIconElement2.icon);
 
     // Simulate SHIFT + MUTE_MICROPHONE.
     const keyEvent4: KeyEvent = {

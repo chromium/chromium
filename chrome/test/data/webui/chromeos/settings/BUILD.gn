@@ -18,6 +18,11 @@ mojom("test_api_mojom") {
 }
 
 build_webui_tests("build") {
+  cc_test_files = [
+    "os_settings_browsertest.cc",
+    "os_settings_focus_test.cc",
+  ]
+
   files = [
     "fake_canvas_context.ts",
     "fake_in_session_auth.ts",

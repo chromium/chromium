@@ -57,6 +57,11 @@ IN_PROC_BROWSER_TEST_F(ShortcutCustomizationAppBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationAppBrowserTest,
+                       AcceleratorViewTest) {
+  RunTestAtPath("accelerator_view_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(ShortcutCustomizationAppBrowserTest,
                        BottomNavContentTest) {
   RunTestAtPath("bottom_nav_content_test.js");
 }

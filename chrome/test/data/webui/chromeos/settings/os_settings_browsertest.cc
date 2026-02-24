@@ -392,6 +392,14 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DevicePageAudioPage) {
   RunSettingsTest("device_page/audio_page_test.js");
 }
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DevicePageKeyboard) {
+  RunSettingsTest("device_page/keyboard_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DevicePagePointers) {
+  RunSettingsTest("device_page/pointers_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        DevicePageCustomizeButtonDropdownItem) {
   RunSettingsTest("device_page/customize_button_dropdown_item_test.js");
