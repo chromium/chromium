@@ -226,6 +226,8 @@ export class ContextualTasksAppElement extends CrLitElement {
       loadTimeData.getBoolean('enableNativeZeroStateSuggestions');
   protected accessor isGhostLoaderVisible_: boolean = false;
   protected accessor isInputLocked_: boolean = false;
+  // The bounds of the composebox that are forced by the embedded page. These
+  // bounds are relative to the <webview> and not the viewport.
   // <if expr="not is_android">
   protected accessor forcedComposeboxBounds_: Rect|null = null;
   // A list of occluders that are currently visible to the user. An occluder is
@@ -515,6 +517,13 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (!ev.isTopLevel) {
       return;
     }
+    // <if expr="not is_android">
+    // Reset the composebox bounds and the occluders since the embedded page is
+    // reloading.
+    this.forcedComposeboxBounds_ = null;
+    this.occluders_ = null;
+    // </if>
+
     // Set frame loading to true initially to avoid race conditions.
     this.isFrameLoading = true;
     const wasAiPage = this.isAiPage_;
@@ -580,11 +589,56 @@ export class ContextualTasksAppElement extends CrLitElement {
   // <if expr="not is_android">
   private onInputPlateBoundsUpdate_(inputRect?: Rect, occluders?: Rect[]) {
     if (inputRect !== undefined) {
+      const currentHeight = this.$.composebox.offsetHeight;
+      if (currentHeight !== inputRect.height) {
+        // If the height that the client reports for the composebox is different
+        // from the height that the server is reporting, update the server.
+        this.postMessageHandler_.sendObjectMessage({
+          type: 'composebox-height-update',
+          height: currentHeight,
+        });
+      }
       this.forcedComposeboxBounds_ = inputRect;
+      this.forcedComposeboxBounds_.height = currentHeight;
     }
     if (occluders !== undefined) {
       this.occluders_ = occluders;
     }
+  }
+
+  getComposeboxBoundsStyles() {
+    if (this.isZeroState_ || !this.forcedComposeboxBounds_) {
+      return '';
+    }
+
+    // Since this.forcedComposeboxBounds_ is relative to the <webview>, and
+    // the composebox is relative to the viewport, adjust the bounds to be
+    // relative to the viewport.
+    const frameRect = this.$.threadFrame.getBoundingClientRect();
+    const relativeRect = {
+      top: frameRect.top + this.forcedComposeboxBounds_.top,
+      left: frameRect.left + this.forcedComposeboxBounds_.left,
+      width: this.forcedComposeboxBounds_.width,
+      height: this.forcedComposeboxBounds_.height,
+      right: frameRect.left + this.forcedComposeboxBounds_.right,
+      bottom: frameRect.top + this.forcedComposeboxBounds_.bottom,
+    };
+
+    // Do not set height, since the expanding of the composebox is dynamic.
+    // Set the bottom of the rect instead of the top to allow the composebox to
+    // expand upwards.
+    const style: string[] = [
+      `--composebox-margin-bottom: 0;`,  // Need to remove margin on the child
+                                         // container.
+      `position: fixed;`,
+      `bottom: ${window.innerHeight - relativeRect.bottom}px;`,
+      `left: ${relativeRect.left}px;`,
+      `width: ${relativeRect.width}px;`,
+      `margin: 0;`,
+      `max-width: none;`,
+      `min-width: 0;`,
+    ];
+    return style.join(' ');
   }
   // </if>
 
