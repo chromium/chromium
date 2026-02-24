@@ -6,8 +6,7 @@
 #define CHROME_INSTALLER_UTIL_COPY_TREE_WORK_ITEM_H_
 
 #include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/gtest_prod_util.h"
+#include "chrome/installer/util/file_conductor.h"
 #include "chrome/installer/util/work_item.h"
 
 // A WorkItem subclass that recursively copies a file system hierarchy from
@@ -49,24 +48,7 @@ class CopyTreeWorkItem : public WorkItem {
   // Destination path to copy files to.
   base::FilePath dest_path_;
 
-  // Temporary directory that can be used.
-  base::FilePath temp_path_;
-
-  // Whether the source was copied to dest_path_
-  bool copied_to_dest_path_;
-
-  // Whether the original files have been moved to backup path under
-  // temporary directory. If true, moving back is needed during rollback.
-  bool moved_to_backup_;
-
-  // The temporary directory into which the original dest_path_ has been moved.
-  base::ScopedTempDir backup_path_;
-
-  // Whether |backup_path_| was created.
-  bool backup_path_created_;
-
-  FRIEND_TEST_ALL_PREFIXES(CopyTreeWorkItemTest, CopyFileInUse);
-  FRIEND_TEST_ALL_PREFIXES(CopyTreeWorkItemTest, CopyFileAndCleanup);
+  installer::FileConductor file_conductor_;
 };
 
 #endif  // CHROME_INSTALLER_UTIL_COPY_TREE_WORK_ITEM_H_

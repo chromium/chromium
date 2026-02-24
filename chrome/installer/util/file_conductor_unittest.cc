@@ -939,9 +939,295 @@ TEST_P(FileConductorTest, MoveSingleFileCantDeleteSourceLenient) {
     EXPECT_PRED1(base::PathExists, destination);
   }
 
-  // After cleanup following undo.
+  // After cleanup without undo.
   EXPECT_PRED1(base::PathExists, source);
   EXPECT_PRED1(base::PathExists, destination);
+}
+
+// Copy fails on an empty source path
+TEST_P(FileConductorTest, CopyEntryEmpty) {
+  base::FilePath destination =
+      destination_path().Append(FILE_PATH_LITERAL("destination"));
+
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_FALSE(file_conductor.CopyEntry({}, destination));
+    EXPECT_FALSE(base::PathExists(destination));
+  }
+
+  // After cleanup without Undo.
+  EXPECT_FALSE(base::PathExists(destination));
+
+  // Do it again, but now with Undo.
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_FALSE(file_conductor.CopyEntry({}, destination));
+    file_conductor.Undo();
+    EXPECT_FALSE(base::PathExists(destination));
+  }
+
+  // After cleanup following Undo.
+  EXPECT_FALSE(base::PathExists(destination));
+  // Nothing in the backup directory.
+  EXPECT_THAT(GetDirectoryContents(backup_path()), IsEmpty());
+}
+
+// Copy fails on an empty destination path
+TEST_P(FileConductorTest, CopyEntryEmptyDestination) {
+  base::FilePath source = source_path().Append(FILE_PATH_LITERAL("source"));
+  ASSERT_TRUE(base::WriteFile(source, base::as_byte_span(source.value())));
+
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_FALSE(file_conductor.CopyEntry(source, {}));
+    EXPECT_TRUE(base::PathExists(source));
+  }
+
+  // After cleanup without Undo.
+  EXPECT_TRUE(base::PathExists(source));
+
+  // Do it again, but now with Undo.
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_FALSE(file_conductor.CopyEntry(source, {}));
+    file_conductor.Undo();
+    EXPECT_TRUE(base::PathExists(source));
+  }
+
+  // After cleanup following Undo.
+  EXPECT_TRUE(base::PathExists(source));
+  // Nothing in the backup directory.
+  EXPECT_THAT(GetDirectoryContents(backup_path()), IsEmpty());
+}
+
+// Copy fails for a non-existent source.
+TEST_P(FileConductorTest, CopySourceDoesNotExist) {
+  base::FilePath source = source_path().Append(FILE_PATH_LITERAL("source"));
+  base::FilePath destination =
+      destination_path().Append(FILE_PATH_LITERAL("destination"));
+
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_FALSE(file_conductor.CopyEntry(source, destination));
+    EXPECT_FALSE(base::PathExists(source));
+    EXPECT_FALSE(base::PathExists(destination));
+  }
+
+  // After cleanup without Undo.
+  EXPECT_FALSE(base::PathExists(source));
+  EXPECT_FALSE(base::PathExists(destination));
+
+  // Do it again, but now with Undo.
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_FALSE(file_conductor.CopyEntry(source, destination));
+    file_conductor.Undo();
+    EXPECT_FALSE(base::PathExists(source));
+    EXPECT_FALSE(base::PathExists(destination));
+  }
+
+  // After cleanup following Undo.
+  EXPECT_FALSE(base::PathExists(source));
+  EXPECT_FALSE(base::PathExists(destination));
+  // Nothing in the backup directory.
+  EXPECT_THAT(GetDirectoryContents(backup_path()), IsEmpty());
+}
+
+// Tests that a single file can be copied and undone when there are no
+// conflicts.
+TEST_P(FileConductorTest, CopySingleFile) {
+  base::FilePath source = source_path().Append(FILE_PATH_LITERAL("source"));
+  base::FilePath destination =
+      destination_path().Append(FILE_PATH_LITERAL("destination"));
+
+  ASSERT_TRUE(base::WriteFile(source, base::as_byte_span(source.value())));
+
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_TRUE(file_conductor.CopyEntry(source, destination));
+    EXPECT_PRED1(base::PathExists, source);
+    EXPECT_PRED1(base::PathExists, destination);
+  }
+
+  // After cleanup without Undo.
+
+  EXPECT_PRED1(base::PathExists, source);
+  EXPECT_PRED1(base::PathExists, destination);
+  EXPECT_THAT(GetDirectoryContents(backup_path()), IsEmpty());
+
+  // Do it again, but now with Undo.
+  ASSERT_PRED1(base::DeleteFile, destination);
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_TRUE(file_conductor.CopyEntry(source, destination));
+    file_conductor.Undo();
+    EXPECT_PRED1(base::PathExists, source);
+    EXPECT_FALSE(base::PathExists(destination));
+  }
+
+  // After cleanup with Undo.
+  EXPECT_PRED1(base::PathExists, source);
+  EXPECT_FALSE(base::PathExists(destination));
+  EXPECT_THAT(GetDirectoryContents(backup_path()), IsEmpty());
+}
+
+// Copy fails if the destination exists.
+TEST_P(FileConductorTest, CopyDestinationExists) {
+  base::FilePath source = source_path().Append(FILE_PATH_LITERAL("source"));
+  base::FilePath destination =
+      destination_path().Append(FILE_PATH_LITERAL("destination"));
+
+  ASSERT_TRUE(base::WriteFile(source, base::as_byte_span(source.value())));
+  ASSERT_TRUE(base::WriteFile(destination, base::as_byte_span(source.value())));
+
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_FALSE(file_conductor.CopyEntry(source, destination));
+    EXPECT_PRED1(base::PathExists, source);
+    EXPECT_PRED1(base::PathExists, destination);
+  }
+
+  // After cleanup without Undo.
+  EXPECT_PRED1(base::PathExists, source);
+  EXPECT_PRED1(base::PathExists, destination);
+
+  // Do it again, but now with Undo.
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_FALSE(file_conductor.CopyEntry(source, destination));
+    file_conductor.Undo();
+    EXPECT_PRED1(base::PathExists, source);
+    EXPECT_PRED1(base::PathExists, destination);
+  }
+
+  // After cleanup with Undo.
+  EXPECT_PRED1(base::PathExists, source);
+  EXPECT_PRED1(base::PathExists, destination);
+  EXPECT_THAT(GetDirectoryContents(backup_path()), IsEmpty());
+}
+
+// Copy succeeds if the source in in use.
+TEST_P(FileConductorTest, CopyInUse) {
+  base::FilePath source = source_path().Append(FILE_PATH_LITERAL("source"));
+  ASSERT_TRUE(base::WriteFile(source, base::as_byte_span(source.value())));
+  std::optional<base::MemoryMappedFile> mapped_source;
+  ASSERT_TRUE(mapped_source.emplace().Initialize(
+      base::File(source, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                             base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                             base::File::FLAG_WIN_SHARE_DELETE)));
+
+  base::FilePath destination =
+      destination_path().Append(FILE_PATH_LITERAL("destination"));
+
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_TRUE(file_conductor.CopyEntry(source, destination));
+    EXPECT_PRED1(base::PathExists, source);
+    EXPECT_PRED1(base::PathExists, destination);
+  }
+
+  // After cleanup without Undo.
+  EXPECT_PRED1(base::PathExists, source);
+  EXPECT_PRED1(base::PathExists, destination);
+
+  // Do it again, but now with Undo.
+  ASSERT_PRED1(base::DeleteFile, destination);
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_TRUE(file_conductor.CopyEntry(source, destination));
+    file_conductor.Undo();
+    EXPECT_PRED1(base::PathExists, source);
+    EXPECT_FALSE(base::PathExists(destination));
+  }
+
+  // After cleanup with Undo.
+  EXPECT_PRED1(base::PathExists, source);
+  EXPECT_FALSE(base::PathExists(destination));
+  EXPECT_THAT(GetDirectoryContents(backup_path()), IsEmpty());
+}
+
+// Tests that a directory can be copied when there are no conflicts.
+TEST_P(FileConductorTest, CopyDirectoryNoConflict) {
+  base::FilePath source = source_path().Append(FILE_PATH_LITERAL("source"));
+  base::FilePath file1(FILE_PATH_LITERAL("file1"));
+  base::FilePath destination =
+      destination_path().Append(FILE_PATH_LITERAL("destination"));
+
+  ASSERT_PRED1(base::CreateDirectory, source);
+  ASSERT_TRUE(
+      base::WriteFile(source.Append(file1), base::as_byte_span(file1.value())));
+
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_TRUE(file_conductor.CopyEntry(source, destination));
+    EXPECT_PRED1(base::PathExists, source);
+    EXPECT_THAT(GetDirectoryContents(destination),
+                UnorderedElementsAre(file1.BaseName()));
+    EXPECT_THAT(base::ReadFileToBytes(source.Append(file1)),
+                Eq(base::ReadFileToBytes(destination.Append(file1))));
+  }
+
+  // After cleanup without Undo.
+  EXPECT_PRED1(base::PathExists, source);
+  EXPECT_THAT(GetDirectoryContents(destination), UnorderedElementsAre(file1));
+
+  // Do it again, but now with Undo.
+  ASSERT_PRED1(base::DeletePathRecursively, destination);
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_TRUE(file_conductor.CopyEntry(source, destination));
+    file_conductor.Undo();
+    EXPECT_PRED1(base::PathExists, source);
+    EXPECT_FALSE(base::PathExists(destination));
+  }
+
+  EXPECT_THAT(GetDirectoryContents(backup_path()), IsEmpty());
+}
+
+// Tests that a source directory with an in-use file can be copied.
+TEST_P(FileConductorTest, CopyDirectorySourceInUse) {
+  base::FilePath source = source_path().Append(FILE_PATH_LITERAL("source"));
+  base::FilePath file1(FILE_PATH_LITERAL("file1"));
+  base::FilePath destination =
+      destination_path().Append(FILE_PATH_LITERAL("destination"));
+
+  ASSERT_PRED1(base::CreateDirectory, source);
+  ASSERT_TRUE(
+      base::WriteFile(source.Append(file1), base::as_byte_span(file1.value())));
+
+  std::optional<base::MemoryMappedFile> mapped_source;
+  ASSERT_TRUE(mapped_source.emplace().Initialize(base::File(
+      source.Append(file1), base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                base::File::FLAG_WIN_SHARE_DELETE)));
+
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_TRUE(file_conductor.CopyEntry(source, destination));
+    EXPECT_THAT(GetDirectoryContents(destination),
+                UnorderedElementsAre(file1.BaseName()));
+    EXPECT_THAT(base::ReadFileToBytes(source.Append(file1)),
+                Eq(base::ReadFileToBytes(destination.Append(file1))));
+  }
+
+  // After cleanup without Undo.
+  EXPECT_PRED1(base::PathExists, source);
+  EXPECT_THAT(GetDirectoryContents(destination), UnorderedElementsAre(file1));
+
+  // Do it again, but now with Undo, which should recover the directory.
+  ASSERT_PRED1(base::DeletePathRecursively, destination);
+  {
+    FileConductor file_conductor(backup_path());
+    ASSERT_TRUE(file_conductor.CopyEntry(source, destination));
+    file_conductor.Undo();
+    EXPECT_THAT(GetDirectoryContents(source), UnorderedElementsAre(file1));
+    EXPECT_FALSE(base::PathExists(destination));
+  }
+
+  // After cleanup following Undo.
+  EXPECT_THAT(GetDirectoryContents(source), UnorderedElementsAre(file1));
+  EXPECT_FALSE(base::PathExists(destination));
+  EXPECT_THAT(GetDirectoryContents(backup_path()), IsEmpty());
 }
 
 // Run all tests three times -- once with both directories on the same volume,

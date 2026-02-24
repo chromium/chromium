@@ -152,8 +152,6 @@ TEST_F(CopyTreeWorkItemTest, CopyFileAndCleanup) {
   CreateTextFile(file_name_to.value(), text_content_2);
   ASSERT_TRUE(base::PathExists(file_name_to));
 
-  base::FilePath backup_file;
-
   {
     // test Do().
     std::unique_ptr<CopyTreeWorkItem> work_item(
@@ -162,22 +160,11 @@ TEST_F(CopyTreeWorkItemTest, CopyFileAndCleanup) {
 
     EXPECT_TRUE(work_item->Do());
 
-    // Get the path of backup file
-    backup_file = work_item->backup_path_.GetPath();
-    EXPECT_FALSE(backup_file.empty());
-    backup_file = backup_file.AppendASCII("File_To.txt");
-
     EXPECT_TRUE(base::PathExists(file_name_from));
     EXPECT_TRUE(base::PathExists(file_name_to));
     EXPECT_EQ(0, ReadTextFile(file_name_from.value()).compare(text_content_1));
     EXPECT_EQ(0, ReadTextFile(file_name_to.value()).compare(text_content_1));
-    // verify the file is moved to backup place.
-    EXPECT_TRUE(base::PathExists(backup_file));
-    EXPECT_EQ(0, ReadTextFile(backup_file.value()).compare(text_content_2));
   }
-
-  // verify the backup file is cleaned up as well.
-  EXPECT_FALSE(base::PathExists(backup_file));
 }
 
 // Copy one file, with the existing one in destination being used with always
@@ -222,18 +209,10 @@ TEST_F(CopyTreeWorkItemTest, CopyFileInUse) {
 
   EXPECT_TRUE(work_item->Do());
 
-  // Get the path of backup file
-  base::FilePath backup_file(work_item->backup_path_.GetPath());
-  EXPECT_FALSE(backup_file.empty());
-  backup_file = backup_file.AppendASCII("File_To");
-
   EXPECT_TRUE(base::PathExists(file_name_from));
   EXPECT_TRUE(base::PathExists(file_name_to));
   EXPECT_EQ(0, ReadTextFile(file_name_from.value()).compare(text_content_1));
   EXPECT_EQ(0, ReadTextFile(file_name_to.value()).compare(text_content_1));
-  // verify the file in used is moved to backup place.
-  EXPECT_TRUE(base::PathExists(backup_file));
-  EXPECT_TRUE(base::ContentsEqual(exe_full_path, backup_file));
 
   // test rollback()
   work_item->Rollback();
@@ -242,8 +221,6 @@ TEST_F(CopyTreeWorkItemTest, CopyFileInUse) {
   EXPECT_TRUE(base::PathExists(file_name_to));
   EXPECT_EQ(0, ReadTextFile(file_name_from.value()).compare(text_content_1));
   EXPECT_TRUE(base::ContentsEqual(exe_full_path, file_name_to));
-  // the backup file should be gone after rollback
-  EXPECT_FALSE(base::PathExists(backup_file));
 
   TerminateProcess(pi.hProcess, 0);
   // make sure the handle is closed.

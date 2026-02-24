@@ -41,6 +41,11 @@ class FileConductor {
                  const base::FilePath& destination,
                  bool lenient_deletion = false);
 
+  // Copies `source` to `destination` non-destructively (fails if `destination`
+  // exists).
+  bool CopyEntry(const base::FilePath& source,
+                 const base::FilePath& destination);
+
   // Makes a best-effort attempt to reverse all operations performed.
   void Undo();
 
@@ -101,6 +106,10 @@ class FileConductor {
                      const base::FilePath& destination,
                      bool lenient_deletion,
                      bool cleanup);
+
+  // Copies `source` to `destination`
+  bool RobustCopy(const base::FilePath& source,
+                  const base::FilePath& destination);
 
   // Runs `operation` on each file and directory in `source`; providing it with
   // the full path to the entry, the full path to its location under

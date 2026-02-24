@@ -181,6 +181,17 @@ bool FileConductor::MoveEntry(const base::FilePath& source,
          MoveResult::kSucceeded;
 }
 
+bool FileConductor::CopyEntry(const base::FilePath& source,
+                              const base::FilePath& destination) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  if (!source.IsAbsolute() || !destination.IsAbsolute()) {
+    return false;
+  }
+  return RobustCopy(source, destination);
+}
+
 void FileConductor::Undo() {
   // Make a best-effort attempt to undo every operation; continuing in case of
   // any error along the way.
@@ -384,6 +395,28 @@ bool FileConductor::CopyAndDelete(const base::FilePath& source,
       // Failed while recursing.
       return false;
   }
+}
+
+bool FileConductor::RobustCopy(const base::FilePath& source,
+                               const base::FilePath& destination) {
+  if (CopyFileWithRetry(source, destination)) {
+    EntryCopied(destination, /*cleanup=*/false);
+    VLOG(1) << "Copied " << source << " to " << destination;
+    return true;
+  }
+  const auto error = ::GetLastError();
+  if (error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND) {
+    VLOG(1) << "Could not copy " << source << ", as it does not exist";
+    return false;
+  }
+  PLOG(ERROR) << "Failed to copy " << source << " to " << destination;
+  VLOG(1) << "Attempting manual copy of directory " << source << " to "
+          << destination;
+  return ProcessDirectory(source, destination, /*cleanup=*/false,
+                          [this](const base::FilePath& copy_from,
+                                 const base::FilePath& copy_to, bool cleanup) {
+                            return RobustCopy(copy_from, copy_to);
+                          }) == ProcessDirectoryResult::kSucceeded;
 }
 
 FileConductor::ProcessDirectoryResult FileConductor::ProcessDirectory(
