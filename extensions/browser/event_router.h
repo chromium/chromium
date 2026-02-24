@@ -364,6 +364,7 @@ class EventRouter : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest,
                            AddLazyListenerForUnloadedExtension);
   FRIEND_TEST_ALL_PREFIXES(EventRouterTest, MultipleEventRouterObserver);
+  FRIEND_TEST_ALL_PREFIXES(EventRouterTest, DispatchPendingEvent_NullContext);
   FRIEND_TEST_ALL_PREFIXES(EventRouterDispatchTest, TestDispatch);
   FRIEND_TEST_ALL_PREFIXES(EventRouterDispatchTest, TestDispatchCallback);
   FRIEND_TEST_ALL_PREFIXES(EventRouterFilterTest,

@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
@@ -587,6 +588,22 @@ TEST_F(EventRouterTest, TestReportEvent) {
   router.ReportEvent(events::HistogramValue::FOR_TEST,
                      service_worker_extension.get(), true /** did_enqueue */);
   ExpectHistogramCounts(8, 3, 2, 2, 2, 1);
+}
+
+// Tests that when an event is dispatched with a null context,
+// `cannot_dispatch_callback` is still run. Regression test for
+// crbug.com/484218883.
+TEST_F(EventRouterTest, DispatchPendingEvent_NullContext) {
+  EventRouter* router = EventRouter::Get(browser_context());
+  auto event =
+      std::make_unique<Event>(extensions::events::FOR_TEST, "test.event",
+                              base::ListValue(), browser_context());
+  base::RunLoop run_loop;
+  event->cannot_dispatch_callback = run_loop.QuitClosure();
+
+  router->DispatchPendingEvent(std::move(event), nullptr);
+
+  run_loop.Run();
 }
 
 TEST_F(EventRouterTest, AddLazyListenerForUnloadedExtension) {
