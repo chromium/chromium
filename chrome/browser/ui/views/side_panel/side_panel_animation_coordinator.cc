@@ -21,10 +21,7 @@
 
 namespace {
 
-constexpr base::TimeDelta kSidePanelToolbarAnimationDuration =
-    base::Milliseconds(350);
-constexpr base::TimeDelta kSidePanelContentHeightAnimationDuration =
-    base::Milliseconds(450);
+constexpr base::TimeDelta kSidePanelAnimationDuration = base::Milliseconds(350);
 
 // Returns true if the AnimationCoordinator is in an open state.
 bool IsAnimatingOpen(SidePanelAnimationCoordinator ::AnimationType type) {
@@ -92,16 +89,21 @@ SidePanelAnimationCoordinator::SidePanelAnimationCoordinator(
   const bool is_content_height_panel =
       side_panel->type() == SidePanelEntry::PanelType::kContent;
 
-  AnimationSpecification open_animation_specifications = AnimationSpecification(
-      /*tween_type=*/features::UseSidePanelFlyoverAnimation()
-          ? gfx::Tween::Type::ACCEL_80_DECEL_20
+  const base::TimeDelta open_close_animation_duration =
+      !features::UseSidePanelFlyoverAnimation() && is_content_height_panel
+          ? base::Milliseconds(450)
+          : kSidePanelAnimationDuration;
+  const gfx::Tween::Type open_close_animation_tween_type =
+      features::UseSidePanelFlyoverAnimation()
+          ? gfx::Tween::Type::ACCEL_30_DECEL_20_85
           : (is_content_height_panel ? gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED
-                                     : gfx::Tween::Type::ACCEL_45_DECEL_88),
+                                     : gfx::Tween::Type::ACCEL_45_DECEL_88);
+
+  AnimationSpecification open_animation_specifications = AnimationSpecification(
+      /*tween_type=*/open_close_animation_tween_type,
       /*sequences=*/{{.animation_id = kSidePanelBoundsAnimation,
                       .start = base::Milliseconds(0),
-                      .duration = is_content_height_panel
-                                      ? kSidePanelContentHeightAnimationDuration
-                                      : kSidePanelToolbarAnimationDuration}});
+                      .duration = open_close_animation_duration}});
   if (!is_content_height_panel) {
     open_animation_specifications.sequences.push_back(
         {.animation_id = kShadowOverlayOpacityAnimation,
@@ -119,7 +121,7 @@ SidePanelAnimationCoordinator::SidePanelAnimationCoordinator(
                          {.animation_id = kSidePanelContentBottomBoundAnimation,
                           .snap_to_final_value = true},
                          {.animation_id = kSidePanelContentLeftBoundAnimation,
-                          .duration = kSidePanelToolbarAnimationDuration},
+                          .duration = kSidePanelAnimationDuration},
                          {.animation_id = kSidePanelContentWidthBoundAnimation,
                           .duration = base::Milliseconds(200)}});
   if (!is_content_height_panel) {
@@ -131,15 +133,10 @@ SidePanelAnimationCoordinator::SidePanelAnimationCoordinator(
 
   AnimationSpecification close_animation_specifications =
       AnimationSpecification(
-          /*tween_type=*/is_content_height_panel
-              ? gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED
-              : gfx::Tween::Type::ACCEL_45_DECEL_88,
-          /*sequences=*/{
-              {.animation_id = kSidePanelBoundsAnimation,
-               .start = base::Milliseconds(0),
-               .duration = is_content_height_panel
-                               ? kSidePanelContentHeightAnimationDuration
-                               : kSidePanelToolbarAnimationDuration}});
+          /*tween_type=*/open_close_animation_tween_type,
+          /*sequences=*/{{.animation_id = kSidePanelBoundsAnimation,
+                          .start = base::Milliseconds(0),
+                          .duration = open_close_animation_duration}});
   if (!is_content_height_panel) {
     close_animation_specifications.sequences.push_back(
         {.animation_id = kShadowOverlayOpacityAnimation,

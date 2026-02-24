@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/custom_corners_background.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -112,9 +113,13 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   resize_area_ = AddChildView(std::make_unique<views::ResizeArea>(this));
   resize_area_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
-  resize_animation_.SetSlideDuration(
-      gfx::Animation::RichAnimationDuration(base::Milliseconds(450)));
-  resize_animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
+  resize_animation_.SetSlideDuration(gfx::Animation::RichAnimationDuration(
+      features::UseSidePanelFlyoverAnimation() ? base::Milliseconds(350)
+                                               : base::Milliseconds(450)));
+  resize_animation_.SetTweenType(
+      features::UseSidePanelFlyoverAnimation()
+          ? gfx::Tween::Type::ACCEL_30_DECEL_20_85
+          : gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
   resize_animation_.Reset(!state_controller_->IsCollapsed());
 
   target_collapse_state_ = state_controller_->GetState();
