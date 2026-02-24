@@ -95,6 +95,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="CSD and high confidence match"/>
 </enum>
 
+<!-- LINT.IfChange(ClientSideDetectionType) -->
+
 <enum name="ClientSideDetectionType">
   <int value="0" label="CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED"/>
   <int value="1" label="FORCE_REQUEST"/>
@@ -107,7 +109,10 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="CLIPBOARD_COPY_API"/>
   <int value="9" label="CREDIT_CARD_FORM"/>
   <int value="10" label="IMAGE_EMBEDDING_MATCH"/>
+  <int value="11" label="USER_REPORT"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/common/proto/csd.proto:ClientSideDetectionType) -->
 
 <enum name="ClientSidePhishingImageEmbeddingResult">
   <summary>

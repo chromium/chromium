@@ -649,6 +649,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         return "CreditCardForm";
       case safe_browsing::ClientSideDetectionType::IMAGE_EMBEDDING_MATCH:
         return "ImageEmbeddingMatch";
+      case safe_browsing::ClientSideDetectionType::USER_REPORT:
+        return "UserReport";
     }
   }
 

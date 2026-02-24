@@ -22,6 +22,8 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- LINT.IfChange(ClassifierRequestType) -->
+
 <variants name="ClassifierRequestType">
   <variant name="" summary="all request types"/>
   <variant name=".ClipboardCopyApi" summary="Clipboard copy API"/>
@@ -35,8 +37,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".PasswordProtection" summary="Password protection requested"/>
   <variant name=".PointerLockRequested" summary="Pointer lock requested"/>
   <variant name=".TriggerModel" summary="Trigger model"/>
+  <variant name=".UserReport" summary="User report"/>
   <variant name=".VibrationApi" summary="Vibration API"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/safe_browsing/content/common/safe_browsing.mojom:ClientSideDetectionType) -->
 
 <variants name="ClientSideDetectionIntelligentScanRequestType">
   <variant name="" summary="all request types"/>
@@ -44,6 +49,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".ImageEmbeddingMatch" summary="Image embedding matched"/>
   <variant name=".KeyboardLockRequested" summary="Keyboard lock requested"/>
 </variants>
+
+<!-- LINT.IfChange(ClientSideDetectionRequestType) -->
 
 <variants name="ClientSideDetectionRequestType">
   <variant name="" summary="all request types"/>
@@ -58,8 +65,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".PointerLockRequested" summary="Pointer lock requested"/>
   <variant name=".TriggerModel" summary="Trigger model"/>
   <variant name=".Unknown" summary="Unknown"/>
+  <variant name=".UserReport" summary="User report"/>
   <variant name=".VibrationApi" summary="Vibration API"/>
 </variants>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/common/proto/csd.proto:ClientSideDetectionType) -->
 
 <variants name="DownloadDangerTypeForBypassMetrics">
   <variant name="DangerousFileType" summary="dangerous file type"/>

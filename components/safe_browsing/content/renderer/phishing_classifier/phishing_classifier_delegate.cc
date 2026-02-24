@@ -77,6 +77,8 @@ std::string GetRequestTypeName(
       return "CreditCardForm";
     case safe_browsing::mojom::ClientSideDetectionType::kImageEmbeddingMatch:
       return "ImageEmbeddingMatch";
+    case safe_browsing::mojom::ClientSideDetectionType::kUserReport:
+      return "UserReport";
   }
 }
 

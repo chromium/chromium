@@ -134,6 +134,7 @@ enum PhishingDetectorResult {
   CLASSIFICATION_SKIPPED = 11,
 };
 
+// LINT.IfChange(ClientSideDetectionType)
 enum ClientSideDetectionType {
   // Send a CSD request regardless of the client side model's score values.
   kForceRequest,
@@ -157,7 +158,11 @@ enum ClientSideDetectionType {
   kCreditCardForm,
   // Image embedding matched.
   kImageEmbeddingMatch,
+  // User reported an unsafe site.
+  kUserReport,
 };
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/histograms.xml:ClassifierRequestType)
 
 // Interface for starting phishing classification. This is scoped to a
 // particular RenderFrame.
@@ -170,7 +175,7 @@ interface PhishingDetector {
   // `request_type` correlates to the phishing detection request type from the
   // browser process and is only used for logging on the renderer.
   StartPhishingDetection(
-    url.mojom.Url url, ClientSideDetectionType request_type)
+      url.mojom.Url url, ClientSideDetectionType request_type)
       => (PhishingDetectorResult result,
           mojo_base.mojom.ProtoWrapper? request);
 };
@@ -199,10 +204,12 @@ interface PhishingModelSetter {
   // ping to be sent to CSPP for better model training. All else is the same as
   // the SetPhishingFlatBufferModel function. The input width and heights for
   // both TfLite library calls are included in the parameter.
-  SetImageEmbeddingAndPhishingTfLiteModel(int32 classification_input_width,
+  SetImageEmbeddingAndPhishingTfLiteModel(
+      int32 classification_input_width,
       int32 classification_input_height,
       mojo_base.mojom.ReadOnlyFile? classification_model,
-      int32 image_embedding_input_width, int32 image_embedding_input_height,
+      int32 image_embedding_input_width,
+      int32 image_embedding_input_height,
       mojo_base.mojom.ReadOnlyFile? image_embedding_model);
 
   // The image embedding model is a complementary model that is used with the
@@ -220,7 +227,8 @@ interface PhishingModelSetter {
   // classification model metadata version. Input width and height for image
   // embedding are included in the parameter to be used during the embedding
   // renderer process.
-  AttachImageEmbeddingModelAndDimensions(int32 image_embedding_input_width,
+  AttachImageEmbeddingModelAndDimensions(
+      int32 image_embedding_input_width,
       int32 image_embedding_input_height,
       mojo_base.mojom.ReadOnlyFile? image_embedding_model);
 
@@ -241,8 +249,8 @@ interface PhishingModelSetter {
   // to classify the appearance of pages. The dimensions of this model are also
   // passed on for classification.
   SetPhishingTfLiteModel(int32 classification_input_width,
-      int32 classification_input_height,
-      mojo_base.mojom.ReadOnlyFile? classification_model);
+                         int32 classification_input_height,
+                         mojo_base.mojom.ReadOnlyFile? classification_model);
 
   // When OptimizationGuide server sends a null model, this signals there is a
   // bad model on disk. Calling this function clears the current Scorer object

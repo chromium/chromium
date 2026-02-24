@@ -177,6 +177,8 @@ std::string GetRequestTypeName(
       return "CreditCardForm";
     case safe_browsing::ClientSideDetectionType::IMAGE_EMBEDDING_MATCH:
       return "ImageEmbeddingMatch";
+    case safe_browsing::ClientSideDetectionType::USER_REPORT:
+      return "UserReport";
   }
 }
 
@@ -207,6 +209,8 @@ safe_browsing::mojom::ClientSideDetectionType GetClientSideDetectionMojomType(
           kImageEmbeddingMatch;
     case safe_browsing::ClientSideDetectionType::
         CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED:
+    case safe_browsing::ClientSideDetectionType::USER_REPORT:
+      return safe_browsing::mojom::ClientSideDetectionType::kUserReport;
     default:
       NOTREACHED();
   }

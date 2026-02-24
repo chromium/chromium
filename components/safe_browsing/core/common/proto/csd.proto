@@ -771,6 +771,20 @@ message VisualFeatures {
   // Using Rec 2020 color space:
   // https://en.wikipedia.org/wiki/Rec._2020
   optional BlurredImage image = 2;
+
+  // Downsampled if screenshot is larger than 4k (4096x2560px).
+  // There is no immediate plan to give users the ability to redact
+  // parts of the screenshot.
+  // The maximum screenshot size was chosen to match the maximum
+  // screenshot size in the Help>Report an issue... flow in
+  // take_screenshot.ts
+  message Screenshot {
+    optional int32 width = 1;
+    optional int32 height = 2;
+    optional bytes data = 3;
+  }
+
+  optional Screenshot high_res_screenshot = 3;
 }
 
 // This message encapsulates all the DOM features of the current page.
@@ -1354,6 +1368,8 @@ message ReferrerChainEntry {
   // next available tag number: 15.
 }  // End of ReferrerChainEntry
 
+// LINT.IfChange(ClientSideDetectionType)
+
 enum ClientSideDetectionType {
   CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED = 0;
   // Send a CSD request regardless of the client side model's score values.
@@ -1376,7 +1392,11 @@ enum ClientSideDetectionType {
   CREDIT_CARD_FORM = 9;
   // Image embedding matched.
   IMAGE_EMBEDDING_MATCH = 10;
+  // User reported an unsafe site.
+  USER_REPORT = 11;
 }
+
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sb_client/enums.xml:ClientSideDetectionType,/tools/metrics/histograms/metadata/sb_client/histograms.xml:ClientSideDetectionRequestType)
 
 message ClientDownloadResponse {
   enum Verdict {
