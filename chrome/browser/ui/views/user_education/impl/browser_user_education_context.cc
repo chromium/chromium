@@ -124,7 +124,12 @@ void BrowserUserEducationContext::CreateSharedPreconditions(
   CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
             .second);
 
-  // Do not show promos while the actor is actuating the active tab.
+  // Do not show certain promos when in Enterprise no-promos mode.
+  ptr = std::make_unique<EnterprisePolicyNotBlockingPrecondition>();
+  CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))
+            .second);
+
+  // Do not show certain promos while the actor is actuating the active tab.
   ptr = std::make_unique<ActorNotActuatingActiveTabPrecondition>(
       *browser_view_->browser());
   CHECK(shared_preconditions_.emplace(ptr->GetIdentifier(), std::move(ptr))

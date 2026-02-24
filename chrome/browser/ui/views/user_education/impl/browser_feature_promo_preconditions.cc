@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
@@ -49,6 +50,8 @@ DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kNoCriticalNoticeShowingPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kUserNotActivePrecondition);
+DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
+    kEnterprisePolicyNotBlockingPrecondition);
 DEFINE_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(
     kActorNotActuatingActiveTabPrecondition);
 
@@ -251,6 +254,22 @@ void UserNotActivePrecondition::OnViewAddedToWidget(
 
 void UserNotActivePrecondition::OnViewIsDeleting(views::View* observed_view) {
   browser_view_observation_.Reset();
+}
+
+EnterprisePolicyNotBlockingPrecondition::
+    EnterprisePolicyNotBlockingPrecondition()
+    : FeaturePromoPreconditionBase(kEnterprisePolicyNotBlockingPrecondition,
+                                   "Enterprise policy does not block promos") {}
+
+EnterprisePolicyNotBlockingPrecondition::
+    ~EnterprisePolicyNotBlockingPrecondition() = default;
+
+user_education::FeaturePromoResult
+EnterprisePolicyNotBlockingPrecondition::CheckPrecondition(
+    ui::UnownedTypedDataCollection&) const {
+  return DoesEnterprisePolicyBlockPromotions()
+             ? user_education::FeaturePromoResult::kBlockedByContext
+             : user_education::FeaturePromoResult::Success();
 }
 
 ActorNotActuatingActiveTabPrecondition::ActorNotActuatingActiveTabPrecondition(

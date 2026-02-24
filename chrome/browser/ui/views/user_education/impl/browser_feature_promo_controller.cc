@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/user_education_context.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
@@ -69,6 +70,13 @@ void BrowserFeaturePromoController::AddPreconditionProviders(
             preconditions.AddPrecondition(
                 browser_context->GetSharedPrecondition(
                     kActorNotActuatingActiveTabPrecondition));
+          }
+          if (info.priority == Priority::kLow &&
+              spec.promo_type() != user_education::FeaturePromoSpecification::
+                                       PromoType::kToast) {
+            preconditions.AddPrecondition(
+                browser_context->GetSharedPrecondition(
+                    kEnterprisePolicyNotBlockingPrecondition));
           }
           return preconditions;
         },

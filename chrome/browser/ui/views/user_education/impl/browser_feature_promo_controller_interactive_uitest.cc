@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_interface_impl.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -514,6 +516,30 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
       CheckPromoRequested(kCustomUiTestFeature, false),
       CheckMetrics(kCustomUiTestFeature,
                    ExpectedMetrics{.custom_action_count = 1}));
+}
+
+class BrowserFeaturePromoControllerWithFailuresUiTest
+    : public BrowserFeaturePromoControllerUiTest {
+ public:
+  BrowserFeaturePromoControllerWithFailuresUiTest() {
+    feature_promo_test_impl().set_use_shortened_timeouts_for_internal_testing(
+        true);
+  }
+  ~BrowserFeaturePromoControllerWithFailuresUiTest() override = default;
+
+ private:
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerWithFailuresUiTest,
+                       EnterprisePolicyBlocksSomePromos) {
+  g_browser_process->local_state()->SetBoolean(prefs::kPromotionsEnabled,
+                                               false);
+
+  RunTestSequence(
+      MaybeShowPromo(kCustomActionTestFeature,
+                     user_education::FeaturePromoResult::kBlockedByContext),
+      MaybeShowPromo(kToastTestFeature), PressClosePromoButton(),
+      MaybeShowPromo(kLegalNoticeTestFeature));
 }
 
 MATCHER_P(MatchesContext, expected, "Matches the expected context") {
