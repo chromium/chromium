@@ -118,28 +118,13 @@ struct CORE_EXPORT ViewportDescription {
   };
 
   constexpr static float kValueAuto = -1.;
-  constexpr static float kValueDeviceWidth = -2.;
-  constexpr static float kValueDeviceHeight = -3.;
-  constexpr static float kValuePortrait = -4.;
-  constexpr static float kValueLandscape = -5.;
   constexpr static float kValueDeviceDPI = -6.;
   constexpr static float kValueLowDPI = -7.;
   constexpr static float kValueMediumDPI = -8.;
   constexpr static float kValueHighDPI = -9.;
   constexpr static float kValueExtendToZoom = -10.;
 
-  ViewportDescription(Type type = kUserAgentStyleSheet)
-      : type(type),
-        zoom(kValueAuto),
-        min_zoom(kValueAuto),
-        max_zoom(kValueAuto),
-        user_zoom(true),
-        orientation(kValueAuto),
-        deprecated_target_density_dpi(kValueAuto),
-        zoom_is_explicit(false),
-        min_zoom_is_explicit(false),
-        max_zoom_is_explicit(false),
-        user_zoom_is_explicit(false) {}
+  explicit ViewportDescription(Type type = kUserAgentStyleSheet) : type(type) {}
 
   // All arguments are in CSS units.
   PageScaleConstraints Resolve(
@@ -153,19 +138,20 @@ struct CORE_EXPORT ViewportDescription {
   ViewportLength max_width;
   ViewportLength min_height;
   ViewportLength max_height;
-  float zoom;
-  float min_zoom;
-  float max_zoom;
-  bool user_zoom;
-  float orientation;
-  float deprecated_target_density_dpi;  // Only used for Android WebView
+  float zoom = kValueAuto;
+  float min_zoom = kValueAuto;
+  float max_zoom = kValueAuto;
+  bool user_zoom = true;
+  float orientation = kValueAuto;
+  float deprecated_target_density_dpi =
+      kValueAuto;  // Only used for Android WebView
 
   // Whether the computed value was explicitly specified rather than being
   // inferred.
-  bool zoom_is_explicit;
-  bool min_zoom_is_explicit;
-  bool max_zoom_is_explicit;
-  bool user_zoom_is_explicit;
+  bool zoom_is_explicit = false;
+  bool min_zoom_is_explicit = false;
+  bool max_zoom_is_explicit = false;
+  bool user_zoom_is_explicit = false;
 
   mojom::ViewportFit GetViewportFit() const {
     return viewport_fit_.value_or(mojom::ViewportFit::kAuto);
@@ -202,10 +188,8 @@ struct CORE_EXPORT ViewportDescription {
   void ReportMobilePageStats(const LocalFrame*) const;
 
  private:
-  enum class Direction { kHorizontal, kVertical };
   static float ResolveViewportLength(const ViewportLength&,
-                                     const gfx::SizeF& initial_viewport_size,
-                                     Direction);
+                                     const gfx::SizeF& initial_viewport_size);
 
   // Optional is used to identify if |viewport_fit_| has been explicitly set.
   // This is because a Document will have multiple ViewportDescriptions are

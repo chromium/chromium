@@ -61,8 +61,7 @@ static void RecordViewportTypeMetric(
 
 float ViewportDescription::ResolveViewportLength(
     const ViewportLength& length,
-    const gfx::SizeF& initial_viewport_size,
-    Direction direction) {
+    const gfx::SizeF& initial_viewport_size) {
   if (length.IsAuto())
     return ViewportDescription::kValueAuto;
 
@@ -102,16 +101,16 @@ PageScaleConstraints ViewportDescription::Resolve(
     }
   }
 
-  float result_max_width = ResolveViewportLength(
-      copy_max_width, initial_viewport_size, Direction::kHorizontal);
-  float result_min_width = ResolveViewportLength(
-      copy_min_width, initial_viewport_size, Direction::kHorizontal);
+  float result_max_width =
+      ResolveViewportLength(copy_max_width, initial_viewport_size);
+  float result_min_width =
+      ResolveViewportLength(copy_min_width, initial_viewport_size);
 
   float result_height = kValueAuto;
-  float result_max_height = ResolveViewportLength(
-      max_height, initial_viewport_size, Direction::kVertical);
-  float result_min_height = ResolveViewportLength(
-      min_height, initial_viewport_size, Direction::kVertical);
+  float result_max_height =
+      ResolveViewportLength(max_height, initial_viewport_size);
+  float result_min_height =
+      ResolveViewportLength(min_height, initial_viewport_size);
 
   float result_zoom = zoom;
   float result_min_zoom = min_zoom;
