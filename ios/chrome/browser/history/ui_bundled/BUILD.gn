@@ -2,6 +2,36 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/swift_source_set.gni")
+import("//build/config/ios/ios_sdk.gni")
+
+if (enable_swift_cxx_interop) {
+  # TODO(crbug.com/478110569): Remove `if (has_swift_6_3_support)` as soon as
+  # the FYI bots running with enable_swift_cxx_interop = true are updated to
+  # Swift 6.3.
+  if (has_swift_6_3_support) {
+    swift_cxx_import("cxx_imports") {
+      # TODO(crbug.com/451945291): Use a shim layer instead of the direct
+      # dependency to C++ files.
+      sources = [ "//ios/chrome/browser/menu/ui_bundled/menu_histograms.h" ]
+      public_deps = [ "//ios/chrome/browser/menu/ui_bundled:menu_action_type" ]
+    }
+
+    swift_source_set("swift_coordinator") {
+      bridge_header = "bridge_header.h"
+      sources = [ "swift_history_coordinator_impl.swift" ]
+      frameworks = [ "UIKit.framework" ]
+      cxx_import_deps = [ ":cxx_imports" ]
+      deps = [
+        ":coordinator",
+        ":ui",
+        "//base",
+        "//ios/chrome/browser/shared/ui/table_view",
+      ]
+    }
+  }
+}
+
 source_set("coordinator_factory") {
   sources = [
     "history_coordinator_factory.h",
@@ -11,6 +41,32 @@ source_set("coordinator_factory") {
     ":coordinator",
     "//build/config/ios:swift_buildflags",
   ]
+
+  if (enable_swift_cxx_interop) {
+    # TODO(crbug.com/478110569): Remove `if (has_swift_6_3_support)` as soon as
+    # the FYI bots running with enable_swift_cxx_interop = true are updated to
+    # Swift 6.3.
+    if (has_swift_6_3_support) {
+      deps += [
+        ":swift_coordinator",
+        "//ios/chrome/common/swift:features",
+      ]
+
+      # TODO(crbug.com/456806155): Find a better solution to suppress errors from
+      # chromium clang on headers that come from the iOS SDK. Ideally, we'd want
+      # a suppression that is inherited implicitly from swift_source_set
+      # dependencies. Unfortunately, the gn language does not allow child targets
+      # to do things like `invoker.configs -= [...]`. Also, we'd ideally want a
+      # suppression that is scoped to just the SDK headers rather than the entire
+      # target that includes the headers. We can't use the
+      # "build/config/compiler:no_chromium_code" config to solve this problem
+      # because we don't have any build targets that have the SDK headers as direct
+      # sources.
+      if (is_clang) {
+        configs -= [ "//build/config/clang:find_bad_constructs" ]
+      }
+    }
+  }
 }
 
 source_set("coordinator") {

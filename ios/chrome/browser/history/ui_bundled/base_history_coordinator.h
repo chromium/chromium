@@ -19,6 +19,7 @@ enum class UrlLoadStrategy;
 @protocol HistoryPresentationDelegate;
 
 // Coordinator that presents History.
+NS_SWIFT_UI_ACTOR
 @interface BaseHistoryCoordinator : ChromeCoordinator
 
 // Opaque instructions on how to open urls.

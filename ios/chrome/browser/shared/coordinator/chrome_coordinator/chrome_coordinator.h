@@ -16,6 +16,7 @@ typedef NSMutableArray<ChromeCoordinator*> MutableCoordinatorArray;
 
 // A coordinator object that manages view controllers and other coordinators.
 // Members of this class should clean up their own UI when they are deallocated.
+NS_SWIFT_UI_ACTOR
 @interface ChromeCoordinator : NSObject
 
 // Creates a coordinator that uses `viewController` and `browser`.
