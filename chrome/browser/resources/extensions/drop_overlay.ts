@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import {DragWrapper} from 'chrome://resources/js/drag_wrapper.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -34,26 +35,40 @@ export class ExtensionsDropOverlayElement extends CrLitElement {
 
   accessor dragEnabled: boolean = false;
   private dragWrapperHandler_: DragAndDropHandler;
+  private eventTracker_: EventTracker = new EventTracker();
 
   constructor() {
     super();
 
     this.hidden = true;
+    this.dragWrapperHandler_ =
+        new DragAndDropHandler(true, document.documentElement);
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+
     const dragTarget = document.documentElement;
-    this.dragWrapperHandler_ = new DragAndDropHandler(true, dragTarget);
-    // TODO(devlin): All these dragTarget listeners leak (they aren't removed
-    // when the element is). This only matters in tests at the moment, but would
-    // be good to fix.
-    dragTarget.addEventListener('extension-drag-started', () => {
+    this.eventTracker_.add(dragTarget, 'extension-drag-started', () => {
       this.hidden = false;
     });
-    dragTarget.addEventListener('extension-drag-ended', () => {
+
+    this.eventTracker_.add(dragTarget, 'extension-drag-ended', () => {
       this.hidden = true;
     });
-    dragTarget.addEventListener('drag-and-drop-load-error', (e) => {
-      this.fire('load-error', e.detail);
-    });
+
+    this.eventTracker_.add(
+        dragTarget, 'drag-and-drop-load-error', (e: CustomEvent) => {
+          this.fire('load-error', e.detail);
+        });
+
     new DragWrapper(dragTarget, this.dragWrapperHandler_);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    this.eventTracker_.removeAll();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
