@@ -19,8 +19,12 @@ bool IsDefaultBrowserChangedOsNotificationEnabled() {
   return base::FeatureList::IsEnabled(kDefaultBrowserChangedOsNotification);
 }
 
+bool IsDefaultBrowserPromptSurfacesEnabled() {
+  return base::FeatureList::IsEnabled(kDefaultBrowserPromptSurfaces);
+}
+
 DefaultBrowserPromptSurface GetDefaultBrowserPromptSurface() {
-  if (!IsDefaultBrowserFrameworkEnabled()) {
+  if (!IsDefaultBrowserPromptSurfacesEnabled()) {
     return DefaultBrowserPromptSurface::kInfobar;
   }
 
@@ -35,6 +39,10 @@ constexpr inline auto kDefaultBrowserPromptSurfaceOptions =
 
 BASE_FEATURE(kDefaultBrowserFramework, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDefaultBrowserPromptSurfaces,
+             "DefaultBrowserPromptSurfaces",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPerformDefaultBrowserCheckValidations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -43,7 +51,7 @@ BASE_FEATURE(kDefaultBrowserChangedOsNotification,
 
 BASE_FEATURE_ENUM_PARAM(DefaultBrowserPromptSurface,
                         kDefaultBrowserPromptSurfaceParam,
-                        &kDefaultBrowserFramework,
+                        &kDefaultBrowserPromptSurfaces,
                         "prompt_surface",
                         DefaultBrowserPromptSurface::kInfobar,
                         kDefaultBrowserPromptSurfaceOptions);

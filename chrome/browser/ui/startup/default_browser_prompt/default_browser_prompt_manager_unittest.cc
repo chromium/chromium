@@ -209,7 +209,7 @@ constexpr int kFrameworkRepromptDurationDays = 14;
 
 TEST_F(DefaultBrowserPromptManagerTest, FrameworkInfoBarMaxPromptCount) {
   scoped_feature_list_.InitAndEnableFeature(
-      default_browser::kDefaultBrowserFramework);
+      default_browser::kDefaultBrowserPromptSurfaces);
 
   // Show if the declined count is less than the max prompt count.
   TestShouldShowInfoBarPrompt(
@@ -228,7 +228,7 @@ TEST_F(DefaultBrowserPromptManagerTest, FrameworkInfoBarMaxPromptCount) {
 
 TEST_F(DefaultBrowserPromptManagerTest, FrameworkInfoBarRepromptDuration) {
   scoped_feature_list_.InitAndEnableFeature(
-      default_browser::kDefaultBrowserFramework);
+      default_browser::kDefaultBrowserPromptSurfaces);
 
   // After the prompt is declined once, show the prompt again if the time since
   // the last time the prompt was declined is strictly longer than the base
@@ -275,7 +275,7 @@ TEST_F(DefaultBrowserPromptManagerTest, FrameworkInfoBarRepromptDuration) {
 
 TEST_F(DefaultBrowserPromptManagerTest, FrameworkPromptSurfaceBecomesInfoBar) {
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      default_browser::kDefaultBrowserFramework,
+      default_browser::kDefaultBrowserPromptSurfaces,
       {{default_browser::kDefaultBrowserPromptSurfaceParam.name,
         "bubble_dialog"}});
 

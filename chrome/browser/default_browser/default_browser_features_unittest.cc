@@ -22,4 +22,17 @@ TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserFrameworkEnabled) {
   }
 }
 
+TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserPromptSurfacesEnabled) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kDefaultBrowserPromptSurfaces);
+    EXPECT_TRUE(IsDefaultBrowserPromptSurfacesEnabled());
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kDefaultBrowserPromptSurfaces);
+    EXPECT_FALSE(IsDefaultBrowserPromptSurfacesEnabled());
+  }
+}
+
 }  // namespace default_browser

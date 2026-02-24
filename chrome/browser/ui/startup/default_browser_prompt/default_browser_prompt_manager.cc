@@ -45,7 +45,7 @@ bool ShouldShowPrompts() {
   int max_prompt_count = kMaxPromptCount;
   int reprompt_duration_days = kRepromptDurationDays;
 
-  if (default_browser::IsDefaultBrowserFrameworkEnabled()) {
+  if (default_browser::IsDefaultBrowserPromptSurfacesEnabled()) {
     declined_count =
         local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount);
     last_declined_time =
