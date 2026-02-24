@@ -347,7 +347,7 @@ public class SettingsSearchCoordinator
                 EditText queryEdit = mActivity.findViewById(R.id.search_query);
                 if (queryEdit == null) return;
 
-                if (mFragmentState != FS_SETTINGS) {
+                if (mFragmentState == FS_SEARCH) {
                     queryEdit.requestFocus();
                     onQueryUpdated(queryEdit.getText().toString());
                 }
