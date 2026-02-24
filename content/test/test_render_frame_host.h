@@ -301,8 +301,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       blink::mojom::PolicyContainerPtr policy_container) override;
   void SendBeforeUnload(bool is_reload,
                         base::WeakPtr<RenderFrameHostImpl> impl,
-                        bool for_legacy,
-                        const bool is_renderer_initiated_navigation) override;
+                        bool for_legacy) override;
 
  private:
   void SendNavigateWithParameters(int nav_entry_id,
