@@ -631,7 +631,12 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   base::flat_map<aura::Window*, gfx::Rect>
       snapping_window_transformed_bounds_map_;
 
-  base::ObserverList<SplitViewObserver>::Unchecked observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      SplitViewObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observers_;
 
   // Records the presentation time of resize operation in tablet split view
   // mode.

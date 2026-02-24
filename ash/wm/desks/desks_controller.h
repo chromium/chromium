@@ -581,7 +581,12 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // Dedicated controller for the desk bars.
   std::unique_ptr<DeskBarController> desk_bar_controller_;
 
-  base::ObserverList<Observer>::Unchecked observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observers_;
 
   // Scheduler for reporting the weekly active desks metric.
   base::OneShotTimer weekly_active_desks_scheduler_;

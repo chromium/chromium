@@ -516,7 +516,12 @@ class ASH_EXPORT TabletModeController
   // animating window for the duration of the animation.
   std::unique_ptr<ui::Layer> screenshot_layer_;
 
-  base::ObserverList<TabletModeObserver>::Unchecked tablet_mode_observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      TabletModeObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      tablet_mode_observers_;
 
   TabletModeBehavior tablet_mode_behavior_;
 
