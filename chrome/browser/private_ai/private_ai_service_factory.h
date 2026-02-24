@@ -20,17 +20,11 @@ class PrivateAiServiceFactory : public ProfileKeyedServiceFactory {
   static PrivateAiService* GetForProfile(Profile* profile);
   static PrivateAiServiceFactory* GetInstance();
 
-  static ProfileSelections CreateProfileSelectionsForTesting() {
-    return CreateProfileSelections();
-  }
-
   PrivateAiServiceFactory(const PrivateAiServiceFactory&) = delete;
   PrivateAiServiceFactory& operator=(const PrivateAiServiceFactory&) = delete;
 
  private:
   friend base::NoDestructor<PrivateAiServiceFactory>;
-
-  static ProfileSelections CreateProfileSelections();
 
   PrivateAiServiceFactory();
   ~PrivateAiServiceFactory() override;

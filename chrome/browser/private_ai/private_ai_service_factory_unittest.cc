@@ -26,10 +26,6 @@ class PrivateAiServiceFactoryTest : public testing::Test {
     } else {
       scoped_feature_list_.InitAndDisableFeature(kPrivateAi);
     }
-    // ProfileSelections must be created after the feature is initialized.
-    profile_selections_.emplace(
-        PrivateAiServiceFactory::GetInstance(),
-        PrivateAiServiceFactory::CreateProfileSelectionsForTesting());
   }
 
   TestingProfile* profile() {
@@ -43,8 +39,6 @@ class PrivateAiServiceFactoryTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::optional<profiles::testing::ScopedProfileSelectionsForFactoryTesting>
-      profile_selections_;
 
   std::unique_ptr<TestingProfile> profile_;
 };

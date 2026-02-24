@@ -80,7 +80,7 @@ phosphor::TokenManager* PrivateAiService::GetTokenManager() {
 
 Client* PrivateAiService::GetClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
+  CHECK(client_);
   return client_.get();
 }
 

@@ -25,17 +25,9 @@ PrivateAiServiceFactory* PrivateAiServiceFactory::GetInstance() {
   return instance.get();
 }
 
-// static
-ProfileSelections PrivateAiServiceFactory::CreateProfileSelections() {
-  if (!PrivateAiService::CanLegionBeEnabled()) {
-    return ProfileSelections::BuildNoProfilesSelected();
-  }
-  return ProfileSelections::BuildForRegularProfile();
-}
-
 PrivateAiServiceFactory::PrivateAiServiceFactory()
     : ProfileKeyedServiceFactory("private_ai::PrivateAiService",
-                                 CreateProfileSelections()) {
+                                 ProfileSelections::BuildForRegularProfile()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
@@ -44,7 +36,9 @@ PrivateAiServiceFactory::~PrivateAiServiceFactory() = default;
 std::unique_ptr<KeyedService>
 PrivateAiServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  CHECK(PrivateAiService::CanLegionBeEnabled());
+  if (!PrivateAiService::CanLegionBeEnabled()) {
+    return nullptr;
+  }
 
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<PrivateAiService>(

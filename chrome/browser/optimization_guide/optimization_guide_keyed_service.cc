@@ -159,13 +159,12 @@ class FetcherDelegate : public ModelExecutionManager::Delegate {
     private_ai::PrivateAiService* private_ai_service =
         private_ai::PrivateAiServiceFactory::GetForProfile(
             Profile::FromBrowserContext(browser_context_));
-    if (private_ai_service) {
-      if (private_ai::Client* client = private_ai_service->GetClient()) {
-        return std::make_unique<
-            optimization_guide::PrivateAiModelExecutionFetcher>(client);
-      }
-    }
-    return nullptr;
+    // PrivateAiService should always be created since fetching is only done in
+    // regular mode and it always exists in regular mode.
+    CHECK(private_ai_service);
+    private_ai::Client* client = private_ai_service->GetClient();
+    return std::make_unique<optimization_guide::PrivateAiModelExecutionFetcher>(
+        client);
   }
 
  private:

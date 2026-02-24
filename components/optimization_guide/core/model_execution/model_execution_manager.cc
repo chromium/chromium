@@ -220,8 +220,10 @@ void ModelExecutionManager::ExecuteModel(
         feature == ModelBasedCapabilityKey::kZeroStateSuggestions)
       << feature;
   base::TimeTicks start_time = base::TimeTicks::Now();
-  auto fetcher_it = fetchers_for_feature.emplace(
-      fetcher_id, CreateModelExecutionFetcher(service_type));
+  auto fetcher = CreateModelExecutionFetcher(service_type);
+  CHECK(fetcher);
+  auto fetcher_it =
+      fetchers_for_feature.emplace(fetcher_id, std::move(fetcher));
   fetcher_it.first->second->ExecuteModel(
       feature, identity_manager_, request_metadata, timeout,
       base::BindOnce(&ModelExecutionManager::OnModelExecuteResponse,
