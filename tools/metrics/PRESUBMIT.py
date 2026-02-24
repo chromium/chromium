@@ -16,6 +16,7 @@ import setup_modules
 sys.path.pop()
 
 import chromium_src.tools.metrics.python_support.tests_helpers as tests_helpers
+import chromium_src.tools.metrics.python_support.mypy_helpers as mypy_helpers
 
 UKM_XML = 'ukm.xml'
 ENUMS_XML = 'enums.xml'
@@ -55,6 +56,11 @@ def CheckChange(input_api, output_api):
       problems.append(output_api.PresubmitError(
         _FILES_MISSING_IN_BUILD_GN_ERROR_TEMPLATE \
            .format(missing_files_list=missing_files_list)))
+
+  if py_or_build_modified:
+    my_py_issues = mypy_helpers.run_mypy_and_filter_irrelevant(
+        input_api.PresubmitLocalPath())
+    problems.extend(output_api.PresubmitError(i) for i in my_py_issues)
 
   # Early return if the ukm file is changed, then the presubmit script in the
   # ukm directory would run and report the errors.

@@ -1,0 +1,66 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file is .vpython specification for running mypy tests within
+# tools/metrics directory. It's used by mypy_helpers.py and includes
+# the dependencies needed to run mypy module successfully.
+# This is needed at the time of adding as the mypy is not a part of
+# the standard vpython environment in chromium.
+#
+# For the details of .vpython and wheels within chromium as well as
+# instruction on modifying it, listing available packages and adding
+# new ones, see:
+# https://chromium.googlesource.com/infra/infra/+/main/doc/users/vpython.md
+
+python_version: "3.11"
+
+wheel: <
+  name: "infra/python/wheels/mypy-py3"
+  version: "version:1.17.1"
+>
+
+wheel: <
+  name: "infra/python/wheels/parameterized-py2_py3"
+  version: "version:0.7.1"
+>
+
+wheel: <
+  name: "infra/python/wheels/pluggy-py3"
+  version: "version:1.5.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/iniconfig-py3"
+  version: "version:1.1.1"
+>
+
+wheel: <
+  name: "infra/python/wheels/mypy-extensions-py3"
+  version: "version:1.1.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/pathspec-py3"
+  version: "version:0.9.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/typing-extensions-py3"
+  version: "version:4.14.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/packaging-py3"
+  version: "version:24.2"
+>
+
+wheel: <
+  name: "infra/python/wheels/pbr-py2_py3"
+  version: "version:3.0.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/six-py2_py3"
+  version: "version:1.15.0"
+>

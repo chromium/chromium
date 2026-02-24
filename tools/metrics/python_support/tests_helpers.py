@@ -39,7 +39,7 @@ def _find_all_tests_in(directory_path: str) -> Iterable[str]:
 
 def find_all_tests() -> Iterable[str]:
   """Finds all python tests in all directories listed in DIRECTORIES_TO_SCAN"""
-  all_test_files = []
+  all_test_files: List[str] = []
   for dir in TEST_DIRECTORIES_RELATIVE_TO_SRC:
     all_test_files.extend(_find_all_tests_in(dir))
   return all_test_files

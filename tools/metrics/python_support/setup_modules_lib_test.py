@@ -9,9 +9,9 @@ import unittest
 import os
 import importlib.util
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
-from parameterized import parameterized
+from parameterized import parameterized  # type: ignore
 
 _TARGET_DIR = os.path.dirname(os.path.abspath(__file__))
 _IMPORT_BASE = os.path.abspath(os.path.join(_TARGET_DIR, '..', '..'))
@@ -20,7 +20,7 @@ _IMPORT_BASE = os.path.abspath(os.path.join(_TARGET_DIR, '..', '..'))
 _IGNORED_FILES = ['setup_modules.py', os.path.basename(__file__)]
 
 
-def _get_python_files() -> List[str]:
+def _get_python_files() -> List[Tuple[str, str]]:
   """Gets all the python (.py) files within tools/metrics.
 
   It ignores files with name listed in _IGNORED_FILES.
