@@ -778,9 +778,8 @@ TEST_P(PrerenderHostRegistryLimitGroupTest, NonImmediate) {
         WebContents::FromFrameTreeNodeId(prerender_frame_tree_node_id));
     PrerenderHost* prerender_host = nullptr;
     if (web_contents_impl) {
-      prerender_host =
-          web_contents_impl->GetPrerenderHostRegistry()
-              ->FindNonReservedHostById(prerender_frame_tree_node_id);
+      prerender_host = web_contents_impl->GetPrerenderHostRegistry()
+                           ->FindNonReservedHostById(id);
     }
     if (id == started_prerender_ids[0]) {
       // The oldest prerender has been canceled.

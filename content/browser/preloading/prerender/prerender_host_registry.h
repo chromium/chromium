@@ -214,7 +214,6 @@ class CONTENT_EXPORT PrerenderHostRegistry
 
   // Returns the non-reserved host with the given id. Returns nullptr if the id
   // does not match any non-reserved host.
-  PrerenderHost* FindNonReservedHostById(FrameTreeNodeId frame_tree_node_id);
   PrerenderHost* FindNonReservedHostById(PrerenderHostId prerender_host_id);
 
   // Returns true if this registry reserves a host for activation.

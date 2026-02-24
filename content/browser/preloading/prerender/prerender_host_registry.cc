@@ -1320,17 +1320,6 @@ void PrerenderHostRegistry::OnActivationFinished(
 }
 
 PrerenderHost* PrerenderHostRegistry::FindNonReservedHostById(
-    FrameTreeNodeId frame_tree_node_id) {
-  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
-  if (!frame_tree_node) {
-    return nullptr;
-  }
-  PrerenderHostId prerender_host_id =
-      frame_tree_node->frame_tree().delegate()->GetPrerenderHostId();
-  return FindNonReservedHostById(prerender_host_id);
-}
-
-PrerenderHost* PrerenderHostRegistry::FindNonReservedHostById(
     PrerenderHostId prerender_host_id) {
   auto id_iter = prerender_host_by_id_.find(prerender_host_id);
   if (id_iter == prerender_host_by_id_.end()) {

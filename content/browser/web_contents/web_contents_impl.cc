@@ -12297,9 +12297,10 @@ bool WebContentsImpl::CancelPrerendering(FrameTreeNode* frame_tree_node,
     return frame_tree_node->GetParentOrOuterDocumentOrEmbedder()
         ->CancelPrerendering(PrerenderCancellationReason(final_status));
   }
+  PrerenderHostId prerender_host_id =
+      frame_tree_node->frame_tree().delegate()->GetPrerenderHostId();
   PrerenderHost* prerender_host =
-      GetPrerenderHostRegistry()->FindNonReservedHostById(
-          frame_tree_node->frame_tree_node_id());
+      GetPrerenderHostRegistry()->FindNonReservedHostById(prerender_host_id);
   if (!prerender_host) {
     return false;
   }

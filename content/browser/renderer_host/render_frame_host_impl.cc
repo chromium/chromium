@@ -14389,14 +14389,15 @@ bool RenderFrameHostImpl::CancelPrerenderingForLoadingError(
         PrerenderCancellationReason::BuildForLoadingError(loading_error_code));
   }
   FrameTreeNode* outermost_frame = GetPrerenderOuterMostMainFrame();
-
   if (!outermost_frame) {
     return false;
   }
 
+  PrerenderHostId prerender_host_id =
+      outermost_frame->frame_tree().delegate()->GetPrerenderHostId();
   PrerenderHostRegistry* registry = delegate_->GetPrerenderHostRegistry();
   PrerenderHost* prerender_host =
-      registry->FindNonReservedHostById(outermost_frame->frame_tree_node_id());
+      registry->FindNonReservedHostById(prerender_host_id);
   // If the prerender_host is not yet ready for activation, the navigation for
   // the new prerender page is not committed yet. The loading error comes from
   // the previous page in the FrameTree. The page was originated by the reused
@@ -14404,7 +14405,7 @@ bool RenderFrameHostImpl::CancelPrerenderingForLoadingError(
   if (!prerender_host || !prerender_host->is_ready_for_activation()) {
     return false;
   }
-  return delegate_->GetPrerenderHostRegistry()->CancelHost(
+  return registry->CancelHost(
       prerender_host->prerender_host_id(),
       PrerenderCancellationReason::BuildForLoadingError(loading_error_code));
 }
@@ -14412,13 +14413,14 @@ bool RenderFrameHostImpl::CancelPrerenderingForLoadingError(
 bool RenderFrameHostImpl::CancelPrerendering(
     const PrerenderCancellationReason& reason) {
   FrameTreeNode* outermost_frame = GetPrerenderOuterMostMainFrame();
-
   if (!outermost_frame) {
     return false;
   }
+  PrerenderHostId prerender_host_id =
+      outermost_frame->frame_tree().delegate()->GetPrerenderHostId();
   PrerenderHost* prerender_host =
       delegate_->GetPrerenderHostRegistry()->FindNonReservedHostById(
-          outermost_frame->frame_tree_node_id());
+          prerender_host_id);
   if (!prerender_host) {
     return false;
   }
@@ -14433,9 +14435,11 @@ void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(
   // prerender root.
   FrameTreeNode* outermost_frame =
       GetOutermostMainFrameOrEmbedder()->frame_tree_node();
+  PrerenderHostId prerender_host_id =
+      outermost_frame->frame_tree().delegate()->GetPrerenderHostId();
   PrerenderHost* prerender_host =
       delegate_->GetPrerenderHostRegistry()->FindNonReservedHostById(
-          outermost_frame->frame_tree_node_id());
+          prerender_host_id);
   if (!prerender_host) {
     return;
   }

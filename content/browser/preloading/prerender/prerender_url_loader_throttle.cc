@@ -38,8 +38,10 @@ PrerenderURLLoaderThrottle::MaybeCreate(FrameTreeNodeId frame_tree_node_id) {
     return nullptr;
   }
 
+  PrerenderHostId prerender_host_id =
+      frame_tree_node->frame_tree().delegate()->GetPrerenderHostId();
   PrerenderHost* prerender_host =
-      prerender_host_registry->FindNonReservedHostById(frame_tree_node_id);
+      prerender_host_registry->FindNonReservedHostById(prerender_host_id);
   if (!prerender_host) {
     return nullptr;
   }
@@ -83,8 +85,10 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
     return;
   }
 
+  PrerenderHostId prerender_host_id =
+      frame_tree_node->frame_tree().delegate()->GetPrerenderHostId();
   PrerenderHost* prerender_host =
-      prerender_host_registry->FindNonReservedHostById(frame_tree_node_id_);
+      prerender_host_registry->FindNonReservedHostById(prerender_host_id);
   if (!prerender_host) {
     return;
   }
