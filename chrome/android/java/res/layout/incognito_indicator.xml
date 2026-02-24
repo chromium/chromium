@@ -21,12 +21,13 @@ found in the LICENSE file.
       android:paddingStart="@dimen/incognito_indicator_lateral_start_padding"
       android:paddingEnd="@dimen/incognito_indicator_lateral_end_padding"
       android:background="@drawable/incognito_indicator_background"
+      android:duplicateParentState="true"
       tools:ignore="UselessParent">
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/accessibility_incognito_badge"
-        android:src="@drawable/ic_incognito"/>
+        android:src="@drawable/ic_incognito" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

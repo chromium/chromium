@@ -243,6 +243,12 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
                                 new ColorDrawable(Color.TRANSPARENT),
                                 menu::getContentView,
                                 new ViewRectProvider(mIncognitoIndicator))
+                        .addOnDismissListener(
+                                () -> {
+                                    if (mIncognitoIndicator != null) {
+                                        mIncognitoIndicator.setSelected(false);
+                                    }
+                                })
                         .setAnimateFromAnchor(true)
                         .setDismissOnScreenSizeChange(true)
                         .setDismissOnTouchInteraction(true)
@@ -288,6 +294,7 @@ public class IncognitoIndicatorCoordinator extends ToolbarChild
         }
         RecordUserAction.record("MobileIncognitoIndicatorClicked");
         Context context = mIncognitoIndicator.getContext();
+        mIncognitoIndicator.setSelected(true);
         createAndShowMenu(context, buildMenuItems(context));
     }
 
