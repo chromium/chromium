@@ -12,22 +12,24 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --product-logo-size: 4.5rem;
   --card-background-color: var(--google-white);
+  --card-bottom-padding: 1.5rem;
   --card-description-color: var(--cr-secondary-text-color);
   --card-description-font-size: 0.81rem;
-  --card-title-font-size: 1rem;
-  --card-width: 15rem;
-  --disclaimer-border-color: var(--google-grey-200);
-  --disclaimer-color: var(--google-grey-700);
-  --gap-between-cards: 0.5rem;
-  --icon-color: var(--google-blue-600);
-  --icon-container-color: var(--google-grey-100);
-  --card-horizontal-padding: 0;
+  --card-horizontal-padding: 1.5rem;
   --card-horizontal-size:
       calc(var(--card-width) + 2 * var(--card-horizontal-padding));
+  --card-title-font-size: 1rem;
+  --card-top-padding: 1.5rem;
+  --card-width: 11.75rem;
   --content-width:
       calc(3 * var(--card-horizontal-size) + 2 * var(--gap-between-cards));
+  --disclaimer-border-color: var(--google-grey-200);
+  --disclaimer-color: var(--google-grey-700);
+  --gap-between-cards: 0.75rem;
+  --icon-color: var(--google-blue-600);
+  --icon-container-color: var(--google-grey-100);
+  --product-logo-size: 4.5rem;
   align-items: center;
   box-sizing: border-box;
   color: var(--cr-primary-text-color);
@@ -98,7 +100,7 @@ h2 {
   font-size: var(--card-title-font-size);
   font-weight: 500;
   line-height: 22px;
-  margin: 0 0 4px;
+  margin: 0;
 }
 
 .fade-in {
@@ -155,7 +157,9 @@ h2 {
   box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
+  gap: 0.25rem;
+  padding: var(--card-top-padding) var(--card-horizontal-padding)
+      var(--card-bottom-padding);
   width: var(--card-width);
 }
 
@@ -190,8 +194,9 @@ h2 {
   color: var(--disclaimer-color);
   display: flex;
   flex-direction: row;
-  padding-block: 1.5rem;
-  padding-inline-end: 18px;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  max-width: var(--content-width);
 
   font-size: var(--card-description-font-size);
 }
@@ -206,17 +211,15 @@ h2 {
 }
 
 #iconContainer {
-  --icon-container-size: 28px;
-  background-color: var(--icon-container-color);
+  --icon-container-size: 20px;
   border-radius: 50%;
   height: var(--icon-container-size);
-  margin-inline: 16px;
   width: var(--icon-container-size);
 }
 
 #iconContainer cr-icon {
-  --iron-icon-width: 16px;
-  --iron-icon-height: 16px;
+  --iron-icon-width: 20px;
+  --iron-icon-height: 20px;
   top: 50%;
   transform: translateY(-50%);
 }
@@ -240,7 +243,7 @@ h2 {
 
 .cr-icon {
   --cr-icon-size: 36px;
-  margin: 0 0 16px;
+  margin: 0;
 }
 
 /* Prevent the icons from being flipped in RTL mode. */
