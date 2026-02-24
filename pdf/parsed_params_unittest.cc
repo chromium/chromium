@@ -44,7 +44,7 @@ TEST(ParsedParamsTest, ParseWebPluginParamsMinimal) {
   EXPECT_EQ("", result->top_level_url);
   EXPECT_FALSE(result->full_frame);
   EXPECT_EQ(SK_ColorTRANSPARENT, result->background_color);
-  EXPECT_EQ(PDFiumFormFiller::DefaultScriptOption(), result->script_option);
+  EXPECT_EQ(PDFiumFormFiller::ScriptOption::kJavaScript, result->script_option);
   EXPECT_FALSE(result->has_edits);
   EXPECT_FALSE(result->use_skia);
 }
@@ -202,6 +202,48 @@ TEST(ParsedParamsTest, ParseWebPluginParamsWithHasUseSkiaNonEmpty) {
   ASSERT_TRUE(result.has_value());
 
   EXPECT_TRUE(result->use_skia);
+}
+
+TEST(ParsedParamsTest, ParseWebPluginParamsWithHasAllowXfa) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
+  params.attribute_names.emplace_back("javascript");
+  params.attribute_values.emplace_back("allow");
+  params.attribute_names.emplace_back("allow-xfa-forms");
+  params.attribute_values.emplace_back("");
+
+  std::optional<ParsedParams> result = ParseWebPluginParams(params);
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_EQ(PDFiumFormFiller::ScriptOption::kJavaScriptAndXFA,
+            result->script_option);
+}
+
+TEST(ParsedParamsTest, ParseWebPluginParamsWithHasAllowXfaNonEmpty) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
+  params.attribute_names.emplace_back("javascript");
+  params.attribute_values.emplace_back("allow");
+  params.attribute_names.emplace_back("allow-xfa-forms");
+  params.attribute_values.emplace_back("false");
+
+  std::optional<ParsedParams> result = ParseWebPluginParams(params);
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_EQ(PDFiumFormFiller::ScriptOption::kJavaScriptAndXFA,
+            result->script_option);
+}
+
+TEST(ParsedParamsTest, ParseWebPluginParamsWithHasAllowXfaNoJavaScript) {
+  blink::WebPluginParams params = CreateMinimalWebPluginParams();
+  params.attribute_names.emplace_back("javascript");
+  params.attribute_values.emplace_back("");
+  params.attribute_names.emplace_back("allow-xfa-forms");
+  params.attribute_values.emplace_back("");
+
+  std::optional<ParsedParams> result = ParseWebPluginParams(params);
+  ASSERT_TRUE(result.has_value());
+
+  EXPECT_EQ(PDFiumFormFiller::ScriptOption::kNoJavaScript,
+            result->script_option);
 }
 
 }  // namespace chrome_pdf

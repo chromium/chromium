@@ -3288,7 +3288,8 @@ const char kPdfSearchifyDescription[] =
 const char kPdfXfaFormsName[] = "PDF XFA support";
 const char kPdfXfaFormsDescription[] =
     "Enables support for XFA forms in PDFs. "
-    "Has no effect if Chrome was not built with XFA support.";
+    "Has no effect if Chrome was not built with XFA support, or if controlled "
+    "by an enterprise policy.";
 
 const char kAutoWebContentsDarkModeName[] = "Auto Dark Mode for Web Contents";
 const char kAutoWebContentsDarkModeDescription[] =

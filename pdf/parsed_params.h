@@ -40,9 +40,11 @@ struct ParsedParams {
   // The background color for the PDF viewer.
   SkColor background_color = SK_ColorTRANSPARENT;
 
-  // Whether to execute JavaScript and maybe XFA.
+  // Whether to execute JavaScript and maybe XFA. Will be overridden in
+  // ParseWebPluginParams() if JavaScript is blocked, or if XFA forms are
+  // enabled.
   PDFiumFormFiller::ScriptOption script_option =
-      PDFiumFormFiller::DefaultScriptOption();
+      PDFiumFormFiller::ScriptOption::kJavaScript;
 
   // Whether the PDF was edited previously in annotation mode.
   bool has_edits = false;
