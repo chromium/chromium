@@ -6,7 +6,6 @@
 
 #import <Cocoa/Cocoa.h>
 #include <CoreServices/CoreServices.h>
-#include <Foundation/Foundation.h>
 #import <IOKit/IOKitLib.h>
 #include <errno.h>
 #include <stddef.h>
@@ -268,22 +267,9 @@ bool WasLaunchedAsHiddenLoginItem() {
 }
 
 bool RemoveQuarantineAttribute(const FilePath& file_path) {
-  // Before macOS 26.1, attempting to remove a quarantine attribute using
-  // NSURLQuarantinePropertiesKey would fail if the file didn't already have a
-  // quarantine attribute. (See https://crbug.com/41491952.)
-  if (@available(macOS 26.1, *)) {
-    NSURL* file_url = apple::FilePathToNSURL(file_path);
-    NSError* error;
-    BOOL result = [file_url setResourceValue:[NSNull null]
-                                      forKey:NSURLQuarantinePropertiesKey
-                                       error:&error];
-    [file_url removeAllCachedResourceValues];
-    return result;
-  } else {
-    const char kQuarantineAttrName[] = "com.apple.quarantine";
-    int status = removexattr(file_path.value().c_str(), kQuarantineAttrName, 0);
-    return status == 0 || errno == ENOATTR;
-  }
+  const char kQuarantineAttrName[] = "com.apple.quarantine";
+  int status = removexattr(file_path.value().c_str(), kQuarantineAttrName, 0);
+  return status == 0 || errno == ENOATTR;
 }
 
 void SetFileTags(const FilePath& file_path,

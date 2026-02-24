@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include <sys/xattr.h>
 
-#include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
@@ -189,94 +188,48 @@ TEST_F(MacUtilTest, ParseOSProductVersion) {
   EXPECT_DEATH_IF_SUPPORTED(ParseOSProductVersionForTesting("16.0"), "");
 }
 
-// Note: The `com.apple.quarantine` xattr is not API, and may break in future
-// macOS releases, but is used in test code to peek behind the curtain.
-constexpr char quarantine_xattr_name[] = "com.apple.quarantine";
-
-// Sample contents of a quarantine xattr. In reality this would refer to an
-// entry in the quarantine database, but for the purposes of this test, the
-// general shape of this sample is what is important.
-constexpr char quarantine_str[] =
-    "0000;4b392bb2;Chromium;|org.chromium.Chromium";
-constexpr size_t quarantine_str_len = std::size(quarantine_str) - 1;
-
-void VerifyNoQuarantineAttribute(NSURL* url) {
-  NSError* error;
-  id value;
-  EXPECT_TRUE([url getResourceValue:&value
-                             forKey:NSURLQuarantinePropertiesKey
-                              error:&error]);
-  EXPECT_FALSE(value);
-  EXPECT_FALSE(error);
-
-  // Verify that the backing xattr is not present. (This is not API and might
-  // break.)
-
-  EXPECT_EQ(-1, getxattr(url.fileSystemRepresentation, quarantine_xattr_name,
-                         /*value=*/nullptr,
-                         /*size=*/0, /*position=*/0, /*options=*/0));
+TEST_F(MacUtilTest, TestRemoveQuarantineAttribute) {
+  ScopedTempDir temp_dir_;
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  FilePath dummy_folder_path = temp_dir_.GetPath().Append("DummyFolder");
+  ASSERT_TRUE(base::CreateDirectory(dummy_folder_path));
+  constexpr char quarantine_str[] =
+      "0000;4b392bb2;Chromium;|org.chromium.Chromium";
+  constexpr size_t quarantine_str_len = std::size(quarantine_str) - 1;
+  const char* file_path_str = dummy_folder_path.value().c_str();
+  EXPECT_EQ(0, setxattr(file_path_str, "com.apple.quarantine", quarantine_str,
+                        quarantine_str_len, /*position=*/0, /*options=*/0));
+  EXPECT_EQ(static_cast<ssize_t>(quarantine_str_len),
+            getxattr(file_path_str, "com.apple.quarantine", /*value=*/nullptr,
+                     /*size=*/0, /*position=*/0, /*options=*/0));
+  EXPECT_TRUE(RemoveQuarantineAttribute(dummy_folder_path));
+  EXPECT_EQ(-1,
+            getxattr(file_path_str, "com.apple.quarantine", /*value=*/nullptr,
+                     /*size=*/0, /*position=*/0, /*options=*/0));
   EXPECT_EQ(ENOATTR, errno);
 }
 
-TEST_F(MacUtilTest, TestAddThenRemoveQuarantineAttribute) {
+TEST_F(MacUtilTest, TestRemoveQuarantineAttributeTwice) {
   ScopedTempDir temp_dir_;
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  FilePath example_folder_path = temp_dir_.GetPath().Append("ExampleFolder");
-  ASSERT_TRUE(base::CreateDirectory(example_folder_path));
-  NSURL* example_folder = apple::FilePathToNSURL(example_folder_path);
-
-  EXPECT_EQ(0, setxattr(example_folder.fileSystemRepresentation,
-                        quarantine_xattr_name, quarantine_str,
-                        quarantine_str_len, /*position=*/0, /*options=*/0));
-  EXPECT_EQ(static_cast<ssize_t>(quarantine_str_len),
-            getxattr(example_folder.fileSystemRepresentation,
-                     quarantine_xattr_name, /*value=*/nullptr,
+  FilePath dummy_folder_path = temp_dir_.GetPath().Append("DummyFolder");
+  const char* file_path_str = dummy_folder_path.value().c_str();
+  ASSERT_TRUE(base::CreateDirectory(dummy_folder_path));
+  EXPECT_EQ(-1,
+            getxattr(file_path_str, "com.apple.quarantine", /*value=*/nullptr,
                      /*size=*/0, /*position=*/0, /*options=*/0));
-
-  EXPECT_TRUE(RemoveQuarantineAttribute(example_folder_path));
-  VerifyNoQuarantineAttribute(example_folder);
-}
-
-TEST_F(MacUtilTest, TestAddThenRemoveQuarantineAttributeTwice) {
-  ScopedTempDir temp_dir_;
-  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  FilePath example_folder_path = temp_dir_.GetPath().Append("ExampleFolder");
-  ASSERT_TRUE(base::CreateDirectory(example_folder_path));
-  NSURL* example_folder = apple::FilePathToNSURL(example_folder_path);
-
-  EXPECT_EQ(0, setxattr(example_folder.fileSystemRepresentation,
-                        quarantine_xattr_name, quarantine_str,
-                        quarantine_str_len, /*position=*/0, /*options=*/0));
-  EXPECT_EQ(static_cast<ssize_t>(quarantine_str_len),
-            getxattr(example_folder.fileSystemRepresentation,
-                     quarantine_xattr_name, /*value=*/nullptr,
-                     /*size=*/0, /*position=*/0, /*options=*/0));
-
-  // RemoveQuarantineAttribute should succeed twice: the first time at removing
-  // the attribute, and the second time because there is no attribute.
-  EXPECT_TRUE(RemoveQuarantineAttribute(example_folder_path));
-  EXPECT_TRUE(RemoveQuarantineAttribute(example_folder_path));
-  VerifyNoQuarantineAttribute(example_folder);
-}
-
-TEST_F(MacUtilTest, TestRemoveQuarantineAttributeNeverSet) {
-  ScopedTempDir temp_dir_;
-  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  FilePath example_folder_path = temp_dir_.GetPath().Append("ExampleFolder");
-  ASSERT_TRUE(base::CreateDirectory(example_folder_path));
-  NSURL* example_folder = apple::FilePathToNSURL(example_folder_path);
-
-  VerifyNoQuarantineAttribute(example_folder);
-
-  EXPECT_TRUE(RemoveQuarantineAttribute(example_folder_path));
-  VerifyNoQuarantineAttribute(example_folder);
+  // No quarantine attribute to begin with, but RemoveQuarantineAttribute still
+  // succeeds because in the end the folder still doesn't have the quarantine
+  // attribute set.
+  EXPECT_TRUE(RemoveQuarantineAttribute(dummy_folder_path));
+  EXPECT_TRUE(RemoveQuarantineAttribute(dummy_folder_path));
+  EXPECT_EQ(ENOATTR, errno);
 }
 
 TEST_F(MacUtilTest, TestRemoveQuarantineAttributeNonExistentPath) {
   ScopedTempDir temp_dir_;
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  FilePath non_existent_path = temp_dir_.GetPath().Append("ExampleFolder");
-
+  FilePath non_existent_path = temp_dir_.GetPath().Append("DummyPath");
   ASSERT_FALSE(PathExists(non_existent_path));
   EXPECT_FALSE(RemoveQuarantineAttribute(non_existent_path));
 }
