@@ -1209,6 +1209,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/ui/browser_window/internal:junit",
       "//chrome/browser/ui/messages/android:junit",
       "//chrome/browser/ui/plus_addresses/android:junit",
+      "//chrome/browser/ui/side_panel_container/internal:junit",
       "//chrome/browser/ui/side_ui/internal:junit",
       "//chrome/browser/uid/android:junit",
       "//chrome/browser/url_constants/android:junit",

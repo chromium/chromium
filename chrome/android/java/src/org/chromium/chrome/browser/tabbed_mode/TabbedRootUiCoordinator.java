@@ -827,16 +827,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mCrossDeviceSettingImporter.destroy();
         }
 
-        if (mSideUiCoordinator != null) {
-            mSideUiCoordinator.destroy();
-            mSideUiCoordinator = null;
-        }
-
-        if (mSidePanelContainerCoordinator != null) {
-            mSidePanelContainerCoordinator.destroy();
-            mSidePanelContainerCoordinator = null;
-        }
-
         if (mContextualTasksBridge != null) {
             mContextualTasksBridge.destroy();
             mContextualTasksBridge = null;
@@ -846,6 +836,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mActorOverlayCoordinator.destroy();
             mActorOverlayCoordinator = null;
         }
+
+        destroySideUi();
 
         super.onDestroy();
     }
@@ -1117,20 +1109,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarVisibilityObserver);
         }
 
-        ViewStub sideUiStartAnchorContainerStub =
-                mActivity.findViewById(R.id.side_ui_start_anchor_container_stub);
-        ViewStub sideUiEndAnchorContainerStub =
-                mActivity.findViewById(R.id.side_ui_end_anchor_container_stub);
-
-        mSideUiCoordinator =
-                SideUiCoordinatorFactory.create(
-                        sideUiStartAnchorContainerStub, sideUiEndAnchorContainerStub);
-        mSidePanelContainerCoordinator = SidePanelContainerCoordinatorFactory.create();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS)) {
             mContextualTasksBridge = new ContextualTasksBridge();
         }
 
         initiateTabBottomSheetManagers();
+        initializeSideUi();
     }
 
     @Override
@@ -1857,6 +1841,42 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 MultiWindowUtils.launchIntentInMaybeClosedWindow(mActivity, intent, windowId);
             }
         };
+    }
+
+    private void initializeSideUi() {
+        ViewStub sideUiStartAnchorContainerStub =
+                mActivity.findViewById(R.id.side_ui_start_anchor_container_stub);
+        ViewStub sideUiEndAnchorContainerStub =
+                mActivity.findViewById(R.id.side_ui_end_anchor_container_stub);
+        mSideUiCoordinator =
+                SideUiCoordinatorFactory.create(
+                        sideUiStartAnchorContainerStub, sideUiEndAnchorContainerStub);
+        if (mSideUiCoordinator == null) {
+            return;
+        }
+
+        mSidePanelContainerCoordinator =
+                SidePanelContainerCoordinatorFactory.create(mSideUiCoordinator);
+        if (mSidePanelContainerCoordinator != null) {
+            mSidePanelContainerCoordinator.init();
+        }
+    }
+
+    private void destroySideUi() {
+        // The destruction order matters:
+        //
+        // Each SideUiContainer implementation that's registered with SideUiCoordinator should be
+        // destroyed before SideUiCoordinator.
+
+        if (mSidePanelContainerCoordinator != null) {
+            mSidePanelContainerCoordinator.destroy();
+            mSidePanelContainerCoordinator = null;
+        }
+
+        if (mSideUiCoordinator != null) {
+            mSideUiCoordinator.destroy();
+            mSideUiCoordinator = null;
+        }
     }
 
     /** Returns the {@link TabGroupSyncControllerImpl} if it has been created yet. */
