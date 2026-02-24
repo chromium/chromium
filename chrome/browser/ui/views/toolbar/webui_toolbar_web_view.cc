@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
@@ -124,6 +125,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       reload_control_(this),
       split_tabs_control_(this),
       clock_(base::DefaultTickClock::GetInstance()) {
+  base::trace_event::EmitNamedTrigger("webui-toolbar-constructor");
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_)) {
     manager->OnReloadButtonCreated();
   }
