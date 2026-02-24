@@ -6,6 +6,11 @@
 #define CHROME_BROWSER_UI_PROMOS_IOS_PROMO_TRIGGER_SERVICE_H_
 
 #include "base/callback_list.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
@@ -18,7 +23,9 @@ class DeviceInfo;
 
 // Service that acts as a communication bridge between different UI components
 // to manage and trigger iOS promos.
-class IOSPromoTriggerService : public KeyedService {
+class IOSPromoTriggerService : public KeyedService,
+                               public TabStripModelObserver,
+                               public BrowserCollectionObserver {
  public:
   using PromoCallback =
       base::RepeatingCallback<void(desktop_to_mobile_promos::PromoType)>;
@@ -53,6 +60,13 @@ class IOSPromoTriggerService : public KeyedService {
   [[nodiscard]] base::CallbackListSubscription RegisterPromoCallback(
       PromoCallback callback);
 
+  // TabStripModelObserver:
+  void OnTabGroupChanged(const TabGroupChange& change) override;
+
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
+
  private:
   // Returns true if `current_preference` is a more preferred device than
   // `another_device`. Prioritizes iPhones over iPads, and more recently
@@ -68,6 +82,9 @@ class IOSPromoTriggerService : public KeyedService {
   base::RepeatingCallbackList<void(desktop_to_mobile_promos::PromoType)>
       callback_list_;
   raw_ptr<Profile> profile_;
+
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_PROMOS_IOS_PROMO_TRIGGER_SERVICE_H_

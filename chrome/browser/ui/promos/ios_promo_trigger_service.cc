@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/desktop_to_mobile_promos/features.h"
@@ -25,7 +26,16 @@
 constexpr char kCrossPlatformPromosClientId[] = "8";
 
 IOSPromoTriggerService::IOSPromoTriggerService(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  auto* collection = ProfileBrowserCollection::GetForProfile(profile_);
+  browser_collection_observer_.Observe(collection);
+
+  // Register as an observer for all existing browsers in this profile.
+  collection->ForEach([this](BrowserWindowInterface* browser) {
+    OnBrowserCreated(browser);
+    return true;
+  });
+}
 IOSPromoTriggerService::~IOSPromoTriggerService() = default;
 
 void IOSPromoTriggerService::NotifyPromoShouldBeShown(
@@ -66,6 +76,21 @@ const syncer::DeviceInfo* IOSPromoTriggerService::GetIOSDeviceToRemind() {
   }
 
   return preferred_device;
+}
+
+void IOSPromoTriggerService::OnTabGroupChanged(const TabGroupChange& change) {
+  if (MobilePromoOnDesktopTypeEnabled(
+          MobilePromoOnDesktopPromoType::kTabGroups)) {
+    NotifyPromoShouldBeShown(desktop_to_mobile_promos::PromoType::kTabGroups);
+  }
+}
+
+void IOSPromoTriggerService::OnBrowserCreated(BrowserWindowInterface* browser) {
+  browser->GetTabStripModel()->AddObserver(this);
+}
+
+void IOSPromoTriggerService::OnBrowserClosed(BrowserWindowInterface* browser) {
+  browser->GetTabStripModel()->RemoveObserver(this);
 }
 
 bool IOSPromoTriggerService::IsMorePreferredDevice(
