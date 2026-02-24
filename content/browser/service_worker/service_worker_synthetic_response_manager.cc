@@ -84,23 +84,16 @@ bool IsServiceWorkerSyntheticResponseOffMainThread() {
 }
 
 bool IsServiceWorkerSyntheticResponseNetworkService() {
-  bool is_network_service =
-      blink::features::kServiceWorkerSyntheticResponseOffMainThread.Get() ==
-      blink::features::ServiceWorkerSyntheticResponseProcessingMode::
-          kNetworkService;
-  if (!is_network_service) {
-    return false;
-  }
-
   // The `kNetworkService` mode relies on the network service to accept the
   // response body stream provided by the browser process. If
   // `kURLLoaderUseProvidedResponseBodyStream` is disabled, the network service
   // will ignore the provided stream, and the browser process will crash in
   // `OnReceiveResponse()` because the body handle is still valid.
-  CHECK(base::FeatureList::IsEnabled(
-      network::features::kURLLoaderUseProvidedResponseBodyStream));
-
-  return is_network_service;
+  return blink::features::kServiceWorkerSyntheticResponseOffMainThread.Get() ==
+             blink::features::ServiceWorkerSyntheticResponseProcessingMode::
+                 kNetworkService &&
+         base::FeatureList::IsEnabled(
+             network::features::kURLLoaderUseProvidedResponseBodyStream);
 }
 
 bool IsServiceWorkerSyntheticResponseSkipUnnecessaryBuffering() {
