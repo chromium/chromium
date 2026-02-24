@@ -279,7 +279,7 @@ BASE_FEATURE_ENUM_PARAM(FontDataServiceTypefaceType,
                         &font_data_service_typeface);
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kFontDataServiceLinux, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFontDataServiceLinux, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<FontDataServiceTypefaceType>::Option
     font_data_service_typeface[] = {
         {FontDataServiceTypefaceType::kFreetype, "Freetype"},
