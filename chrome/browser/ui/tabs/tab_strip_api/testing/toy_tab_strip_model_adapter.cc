@@ -78,9 +78,11 @@ mojom::ContainerPtr ToyTabStripModelAdapter::GetTabStripTopology(
   mojo_tab_strip->id =
       tabs_api::NodeId(tabs_api::NodeId::Type::kCollection, "0");
 
-  auto root_container = tabs_api::mojom::Container::New();
-  root_container->data = tabs_api::mojom::Data::NewRoot(
-      tabs_api::mojom::Root::New(NodeId::Root()));
+  auto window_container = tabs_api::mojom::Container::New();
+  auto window_data = tabs_api::mojom::Window::New();
+  window_data->id = tabs_api::NodeId(tabs_api::NodeId::Type::kWindow, "1");
+  window_container->data =
+      tabs_api::mojom::Data::NewWindow(std::move(window_data));
 
   auto tab_strip_container = tabs_api::mojom::Container::New();
   tab_strip_container->data =
@@ -95,8 +97,8 @@ mojom::ContainerPtr ToyTabStripModelAdapter::GetTabStripTopology(
     child_container->data = tabs_api::mojom::Data::NewTab(std::move(tab));
     tab_strip_container->children.push_back(std::move(child_container));
   }
-  root_container->children.push_back(std::move(tab_strip_container));
-  return root_container;
+  window_container->children.push_back(std::move(tab_strip_container));
+  return window_container;
 }
 
 std::optional<const tab_groups::TabGroupId>
@@ -144,8 +146,8 @@ tabs_api::Position ToyTabStripModelAdapter::GetPositionForAbsoluteIndex(
 tabs_api::Path ToyTabStripModelAdapter::GetPathForCollection(
     tabs::TabCollectionHandle collection_handle) const {
   std::vector<tabs_api::NodeId> components;
-  components.push_back(NodeId::Root());
-  components.push_back(NodeId::FromTabCollectionHandle(collection_handle));
+  components.emplace_back(tabs_api::NodeId::Type::kWindow, "1");
+  components.emplace_back(NodeId::FromTabCollectionHandle(collection_handle));
   return tabs_api::Path(std::move(components));
 }
 

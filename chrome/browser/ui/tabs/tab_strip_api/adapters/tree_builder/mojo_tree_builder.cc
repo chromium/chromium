@@ -10,21 +10,24 @@
 
 namespace tabs_api {
 
-MojoTreeBuilder::MojoTreeBuilder(const TabStripModel* model) : model_(model) {}
+MojoTreeBuilder::MojoTreeBuilder(const TabStripModel* model,
+                                 std::string window_id)
+    : model_(model), window_id_(std::move(window_id)) {}
 
 mojom::ContainerPtr MojoTreeBuilder::Build(
     tabs::TabCollection::Handle collection_root) const {
   auto factory = WalkerFactory(model_, base::PassKey<MojoTreeBuilder>());
 
-  auto root_container = mojom::Container::New();
-  auto root_data = mojom::Root::New();
-  root_data->id = NodeId::Root();
-  root_container->data = mojom::Data::NewRoot(std::move(root_data));
+  auto window_container = mojom::Container::New();
+  auto window_data = mojom::Window::New();
 
-  root_container->children.emplace_back(
+  window_data->id = NodeId::FromWindowId(window_id_);
+  window_container->data = mojom::Data::NewWindow(std::move(window_data));
+
+  window_container->children.emplace_back(
       factory.WalkerForCollection(collection_root.Get()).Walk());
 
-  return root_container;
+  return window_container;
 }
 
 }  // namespace tabs_api

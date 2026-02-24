@@ -80,7 +80,8 @@ TabStripServiceImpl::TabStripServiceImpl(BrowserWindowInterface* browser,
     : TabStripServiceImpl(
           std::make_unique<tabs_api::BrowserAdapterImpl>(browser),
           std::make_unique<tabs_api::TabStripModelAdapterImpl>(
-              tab_strip_model)) {}
+              tab_strip_model,
+              base::NumberToString(browser->GetSessionID().id()))) {}
 
 TabStripServiceImpl::TabStripServiceImpl(
     std::unique_ptr<BrowserAdapter> browser_adapter,
@@ -153,8 +154,9 @@ mojom::TabStripService::CreateTabAtResult TabStripServiceImpl::CreateTabAt(
 
   if (pos.has_value()) {
     RETURN_IF_ERROR(utils::CheckPath(
-        pos->path(), NodeId::FromTabCollectionHandle(
-                         tab_strip_model_adapter_->GetRoot()->GetHandle())));
+        pos->path(), NodeId::FromWindowId(browser_adapter_->GetWindowId()),
+        NodeId::FromTabCollectionHandle(
+            tab_strip_model_adapter_->GetRoot()->GetHandle())));
   }
 
   GURL target_url;
@@ -284,8 +286,9 @@ mojom::TabStripService::MoveNodeResult TabStripServiceImpl::MoveNode(
   auto session = session_controller_->CreateSession();
 
   RETURN_IF_ERROR(utils::CheckPath(
-      position.path(), NodeId::FromTabCollectionHandle(
-                           tab_strip_model_adapter_->GetRoot()->GetHandle())));
+      position.path(), NodeId::FromWindowId(browser_adapter_->GetWindowId()),
+      NodeId::FromTabCollectionHandle(
+          tab_strip_model_adapter_->GetRoot()->GetHandle())));
 
   if (position.index() >= tab_strip_model_adapter_->GetTabs().size()) {
     return base::unexpected(

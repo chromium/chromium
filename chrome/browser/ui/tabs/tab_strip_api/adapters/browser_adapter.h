@@ -16,6 +16,8 @@ class BrowserAdapter {
  public:
   virtual ~BrowserAdapter() {}
 
+  virtual std::string GetWindowId() const = 0;
+
   // TabHandle could potentially be null to indicate that tab creation.
   virtual tabs::TabHandle AddTabAt(const GURL& url,
                                    std::optional<int> index,

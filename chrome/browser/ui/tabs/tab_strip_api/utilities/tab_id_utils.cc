@@ -9,14 +9,13 @@
 
 namespace tabs_api::utils {
 
-base::expected<void, mojo_base::mojom::ErrorPtr> CheckPath(
-    const Path& path,
-    const NodeId& tab_strip) {
+base::expected<void, mojo_base::mojom::ErrorPtr>
+CheckPath(const Path& path, const NodeId& window_id, const NodeId& tab_strip) {
   if (path.components().empty()) {
     return base::ok();
   }
 
-  if (path.components().size() < 2 || path.components()[0] != NodeId::Root() ||
+  if (path.components().size() < 2 || path.components()[0] != window_id ||
       path.components()[1] != tab_strip) {
     // TODO(crbug.com/439964658) Add path as a str in the error.
     return base::unexpected(mojo_base::mojom::Error::New(

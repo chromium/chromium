@@ -12,9 +12,8 @@
 
 namespace tabs_api::utils {
 
-base::expected<void, mojo_base::mojom::ErrorPtr> CheckPath(
-    const Path& path,
-    const NodeId& tab_strip);
+base::expected<void, mojo_base::mojom::ErrorPtr>
+CheckPath(const Path& path, const NodeId& window_id, const NodeId& tab_strip);
 
 base::expected<void, mojo_base::mojom::ErrorPtr> CheckIsContentType(
     const NodeId& node_id);

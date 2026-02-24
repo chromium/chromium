@@ -59,5 +59,12 @@ TEST(TabStripApiUtilsTest, GetNodeIdFromSplitTab) {
   EXPECT_EQ(GetNodeId(*data), split->id);
 }
 
+TEST(TabStripApiUtilsTest, GetNodeIdFromWindow) {
+  auto window = mojom::Window::New();
+  window->id = CreateTestNodeId(tabs_api::NodeId::Type::kWindow);
+  auto data = mojom::Data::NewWindow(window.Clone());
+  EXPECT_EQ(GetNodeId(*data), window->id);
+}
+
 }  // namespace
 }  // namespace tabs_api::utils

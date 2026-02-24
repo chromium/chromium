@@ -12,8 +12,9 @@ struct NodeId {
     // An unknown type. This will never be returned by the service and usually
     // indicates an invalid argument from the client.
     kUnknown,
-    // A virtual node representing the top-level state of the tree per profile.
-    kRoot,
+    // A browser window. This serves as the top-level container for a single
+    // window's tab collection tree.
+    kWindow,
     // A content tab.
     kContent,
     // A collection of tabs.

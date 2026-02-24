@@ -14,7 +14,7 @@ namespace tabs_api {
 
 class MojoTreeBuilder {
  public:
-  explicit MojoTreeBuilder(const TabStripModel* model);
+  explicit MojoTreeBuilder(const TabStripModel* model, std::string window_id);
   MojoTreeBuilder(const MojoTreeBuilder&&) = delete;
   MojoTreeBuilder& operator=(const MojoTreeBuilder&) = delete;
   ~MojoTreeBuilder() = default;
@@ -23,6 +23,7 @@ class MojoTreeBuilder {
 
  private:
   const raw_ptr<const TabStripModel> model_;
+  const std::string window_id_;
 };
 
 }  // namespace tabs_api

@@ -19,11 +19,12 @@ class ToyTabStripBrowserAdapter : public BrowserAdapter {
       delete;
   ~ToyTabStripBrowserAdapter() = default;
 
-  tabs::TabHandle AddTabAt(
-      const GURL& url,
-      std::optional<int> index,
-      std::optional<tab_groups::TabGroupId> group = std::nullopt,
-      bool pinned = false) override;
+  std::string GetWindowId() const override { return "1"; }
+
+  tabs::TabHandle AddTabAt(const GURL& url,
+                           std::optional<int> index,
+                           std::optional<tab_groups::TabGroupId> group,
+                           bool pinned) override;
 
  private:
   raw_ptr<ToyTabStrip> tab_strip_;

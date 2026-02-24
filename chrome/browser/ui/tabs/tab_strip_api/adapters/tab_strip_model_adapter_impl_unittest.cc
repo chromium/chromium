@@ -29,7 +29,7 @@ class TabStripModelAdapterImplTest : public testing::Test {
 
   void SetUp() override {
     model_ = std::make_unique<TabStripModel>(&delegate_, &profile_);
-    adapter_ = std::make_unique<TabStripModelAdapterImpl>(model_.get());
+    adapter_ = std::make_unique<TabStripModelAdapterImpl>(model_.get(), "1");
   }
 
   void TearDown() override {
@@ -104,9 +104,9 @@ TEST_F(TabStripModelAdapterImplTest, GetPathForCollection) {
       model_->group_model()->GetTabGroup(group_id)->GetCollectionHandle();
 
   Path path = adapter_->GetPathForCollection(group_handle);
-  // Path is: Root -> TabStrip -> Unpinned -> Group
+  // Path is: Window -> TabStrip -> Unpinned -> Group
   ASSERT_GE(path.components().size(), 4u);
-  EXPECT_EQ(path.components()[0], NodeId::Root());
+  EXPECT_EQ(path.components()[0], NodeId::FromWindowId("1"));
   EXPECT_EQ(path.components()[1],
             NodeId::FromTabCollectionHandle(
                 model_->GetRootForTesting()->GetHandle()));

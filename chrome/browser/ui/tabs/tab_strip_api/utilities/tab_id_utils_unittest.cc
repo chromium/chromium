@@ -10,42 +10,47 @@
 namespace tabs_api::utils {
 
 TEST(TabStripApiUtilsTest, CheckPath_Empty) {
-  auto result = CheckPath(Path(), NodeId(NodeId::Type::kCollection, "123"));
+  auto result = CheckPath(Path(), NodeId(NodeId::Type::kWindow, "1"),
+                          NodeId(NodeId::Type::kCollection, "123"));
   ASSERT_TRUE(result.has_value());
 }
 
 TEST(TabStripApiUtilsTest, CheckPath_Valid) {
-  NodeId root_id(NodeId::Type::kCollection, "123");
+  NodeId window_id(NodeId::Type::kWindow, "1");
+  NodeId tab_strip_id(NodeId::Type::kCollection, "123");
   std::vector<NodeId> components;
-  components.emplace_back(NodeId::Root());
-  components.emplace_back(root_id);
+  components.emplace_back(window_id);
+  components.emplace_back(tab_strip_id);
   Path path(std::move(components));
 
-  auto result = CheckPath(path, root_id);
+  auto result = CheckPath(path, window_id, tab_strip_id);
   ASSERT_TRUE(result.has_value());
 }
 
 TEST(TabStripApiUtilsTest, CheckPath_WrongTabStrip) {
-  NodeId root_id(NodeId::Type::kCollection, "123");
-  NodeId other_root_id(NodeId::Type::kCollection, "456");
+  NodeId window_id(NodeId::Type::kWindow, "1");
+  NodeId tab_strip_id(NodeId::Type::kCollection, "123");
+  NodeId other_tab_strip_id(NodeId::Type::kCollection, "456");
   std::vector<NodeId> components;
-  components.emplace_back(NodeId::Root());
-  components.emplace_back(other_root_id);
+  components.emplace_back(window_id);
+  components.emplace_back(other_tab_strip_id);
   Path path(std::move(components));
 
-  auto result = CheckPath(path, root_id);
+  auto result = CheckPath(path, window_id, tab_strip_id);
   ASSERT_FALSE(result.has_value());
   ASSERT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
 }
 
-TEST(TabStripApiUtilsTest, CheckPath_WrongRoot) {
-  NodeId root_id(NodeId::Type::kCollection, "123");
+TEST(TabStripApiUtilsTest, CheckPath_WrongWindow) {
+  NodeId window_id(NodeId::Type::kWindow, "1");
+  NodeId other_window_id(NodeId::Type::kWindow, "2");
+  NodeId tab_strip_id(NodeId::Type::kCollection, "123");
   std::vector<NodeId> components;
-  components.emplace_back(NodeId::Type::kCollection, "root");
-  components.emplace_back(root_id);
+  components.emplace_back(other_window_id);
+  components.emplace_back(tab_strip_id);
   Path path(std::move(components));
 
-  auto result = CheckPath(path, root_id);
+  auto result = CheckPath(path, window_id, tab_strip_id);
   ASSERT_FALSE(result.has_value());
   ASSERT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
 }

@@ -61,9 +61,8 @@ struct Tab {
   bool is_blocked;
 };
 
-// Root is a virtual top-level singleton node that serves as the parent for all
-// tab strips per profile.
-struct Root {
+// Window represents a browser window.
+struct Window {
   NodeId id;
 };
 
@@ -127,7 +126,7 @@ union Data {
   UnpinnedTabs unpinned_tabs;
   TabGroup tab_group;
   SplitTab split_tab;
-  Root root;
+  Window window;
 };
 
 // Container represents a node in the tree hierarchy.

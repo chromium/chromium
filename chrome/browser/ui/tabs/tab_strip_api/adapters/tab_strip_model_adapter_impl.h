@@ -17,8 +17,9 @@ namespace tabs_api {
 // class. It should *only* forward requests to the tab strip model.
 class TabStripModelAdapterImpl : public TabStripModelAdapter {
  public:
-  explicit TabStripModelAdapterImpl(TabStripModel* tab_strip_model)
-      : tab_strip_model_(tab_strip_model) {}
+  explicit TabStripModelAdapterImpl(TabStripModel* tab_strip_model,
+                                    std::string window_id)
+      : tab_strip_model_(tab_strip_model), window_id_(std::move(window_id)) {}
   TabStripModelAdapterImpl(const TabStripModelAdapterImpl&&) = delete;
   TabStripModelAdapterImpl operator=(const TabStripModelAdapterImpl&) = delete;
   ~TabStripModelAdapterImpl() override {}
@@ -74,6 +75,7 @@ class TabStripModelAdapterImpl : public TabStripModelAdapter {
   tabs::TabCollectionHandle GetUnpinnedTabsCollectionHandle() const;
 
   raw_ptr<TabStripModel> tab_strip_model_;
+  std::string window_id_;
 };
 
 }  // namespace tabs_api

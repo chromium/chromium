@@ -94,7 +94,7 @@ class TestTabStripClient : public tabs_api::mojom::TabsObserver {
       case tabs_api::mojom::Data::Tag::kTabStrip:
       case tabs_api::mojom::Data::Tag::kPinnedTabs:
       case tabs_api::mojom::Data::Tag::kUnpinnedTabs:
-      case tabs_api::mojom::Data::Tag::kRoot:
+      case tabs_api::mojom::Data::Tag::kWindow:
         NOTIMPLEMENTED();
         break;
     }
@@ -213,8 +213,8 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
           return data->get_tab_group()->id;
         case tabs_api::mojom::Data::Tag::kSplitTab:
           return data->get_split_tab()->id;
-        case tabs_api::mojom::Data::Tag::kRoot:
-          return data->get_root()->id;
+        case tabs_api::mojom::Data::Tag::kWindow:
+          return data->get_window()->id;
       }
     }
 
@@ -243,8 +243,8 @@ class TabStripServiceImplBrowserTest : public InProcessBrowserTest {
         return data->get_tab_group()->id;
       case tabs_api::mojom::Data::Tag::kSplitTab:
         return data->get_split_tab()->id;
-      case tabs_api::mojom::Data::Tag::kRoot:
-        return data->get_root()->id;
+      case tabs_api::mojom::Data::Tag::kWindow:
+        return data->get_window()->id;
     }
   }
 

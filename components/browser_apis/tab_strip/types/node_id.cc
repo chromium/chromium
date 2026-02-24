@@ -12,10 +12,6 @@ bool operator==(const NodeId& a, const NodeId& b) {
   return a.Type() == b.Type() && a.Id() == b.Id();
 }
 
-NodeId NodeId::Root() {
-  return NodeId(Type::kRoot, "root");
-}
-
 NodeId NodeId::FromTabHandle(const tabs::TabHandle& handle) {
   return NodeId(Type::kContent, base::NumberToString(handle.raw_value()));
 }
@@ -23,6 +19,10 @@ NodeId NodeId::FromTabHandle(const tabs::TabHandle& handle) {
 NodeId NodeId::FromTabCollectionHandle(
     const tabs::TabCollectionHandle& handle) {
   return NodeId(Type::kCollection, base::NumberToString(handle.raw_value()));
+}
+
+NodeId NodeId::FromWindowId(std::string_view window_id) {
+  return NodeId(Type::kWindow, window_id);
 }
 
 std::optional<tabs::TabHandle> NodeId::ToTabHandle() const {

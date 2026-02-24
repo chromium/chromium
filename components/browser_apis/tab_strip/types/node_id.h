@@ -21,7 +21,7 @@ class NodeId {
  public:
   enum class Type {
     kInvalid,
-    kRoot,
+    kWindow,
     // kContent ids are mapped to TabHandle::Handle, which represents an
     // int32_t number.
     kContent,
@@ -32,10 +32,10 @@ class NodeId {
   NodeId(enum Type type, std::string_view id) : type_(type), id_(id) {}
   ~NodeId() = default;
 
-  static NodeId Root();
   static NodeId FromTabHandle(const tabs::TabHandle& handle);
   static NodeId FromTabCollectionHandle(
       const tabs::TabCollectionHandle& handle);
+  static NodeId FromWindowId(std::string_view window_id);
 
   std::optional<tabs::TabHandle> ToTabHandle() const;
   std::optional<tabs::TabCollectionHandle> ToTabCollectionHandle() const;
