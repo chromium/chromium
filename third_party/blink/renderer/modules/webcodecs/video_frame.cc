@@ -371,6 +371,10 @@ class CanvasSnapshotProviderCache
 
     auto provider = CreateSnapshotProviderForVideo(
         required_provider_info, GetRasterContextProvider().get());
+    if (!provider) {
+      return nullptr;
+    }
+
     auto* result = provider.get();
     providers_.emplace_back(std::move(provider));
     return result;
