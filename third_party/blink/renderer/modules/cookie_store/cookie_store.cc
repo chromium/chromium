@@ -254,7 +254,7 @@ KURL CookieUrlForRead(const CookieStoreGetOptions* options,
         default_cookie_url.GetString(),
         To<ServiceWorkerGlobalScope>(context)->serviceWorker()->scriptURL());
 
-    if (!cookie_url.GetString().StartsWith(default_cookie_url.GetString())) {
+    if (!cookie_url.GetString().starts_with(default_cookie_url.GetString())) {
       exception_state.ThrowTypeError("URL must be within Service Worker scope");
       return KURL();
     }

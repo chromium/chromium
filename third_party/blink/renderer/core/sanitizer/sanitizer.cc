@@ -389,7 +389,7 @@ bool Sanitizer::AllowElement(const QualifiedName& name,
         // Step 2.3.1.3: If dataAttributes is true:
         if (data_attrs_ == SanitizerBoolWithAbsence::kTrue) {
           allow_attrs->erase_if([](const QualifiedName& name) {
-            return name.LocalName().StartsWith("data-");
+            return name.LocalName().starts_with("data-");
           });
         }
       }
@@ -574,7 +574,7 @@ bool Sanitizer::AllowAttribute(const QualifiedName& name) {
     // Step 2.1: Comment: If we have a global allow-list, [...]
     // Step 2.2: If configuration["dataAttributes"] is true and [...]
     if (data_attrs_ == SanitizerBoolWithAbsence::kTrue &&
-        name.NamespaceURI().IsNull() && name.LocalName().StartsWith("data-")) {
+        name.NamespaceURI().IsNull() && name.LocalName().starts_with("data-")) {
       return false;
     }
     // Step 2.3: If configuration["attributes"] contains attribute return false.
@@ -734,7 +734,7 @@ void Sanitizer::SanitizeElement(Element* element, Mode safe) const {
     } else if (remove_attrs_ && remove_attrs_->Contains(name)) {
       keep = false;
     } else if (allow_attrs_ && name.NamespaceURI().IsNull() &&
-               name.LocalName().StartsWith("data-")) {
+               name.LocalName().starts_with("data-")) {
       keep = data_attrs_ == SanitizerBoolWithAbsence::kTrue;
     } else {
       keep = !allow_attrs_ && !allow_per_element;
@@ -1227,7 +1227,7 @@ bool Sanitizer::isValid() const {
           // attribute.
           if (allow_attrs_per_element_.Contains(element)) {
             for (const auto& attr : allow_attrs_per_element_.at(element)) {
-              if (attr.LocalName().StartsWith("data-")) {
+              if (attr.LocalName().starts_with("data-")) {
                 return false;
               }
             }
@@ -1240,7 +1240,7 @@ bool Sanitizer::isValid() const {
       // Step 7.2.1: config[attributes] does not contain a custom data
       // attribute.
       for (const auto& attr : *allow_attrs_) {
-        if (attr.LocalName().StartsWith("data-")) {
+        if (attr.LocalName().starts_with("data-")) {
           return false;
         }
       }

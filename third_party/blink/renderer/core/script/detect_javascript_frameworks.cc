@@ -82,7 +82,7 @@ inline void CheckAttributeMatches(const Element& element,
     result.detected_versions[JavaScriptFramework::kReact] =
         kNoFrameworkVersionDetected;
   }
-  if (element.GetClassAttribute().StartsWith(kSvelte)) {
+  if (element.GetClassAttribute().starts_with(kSvelte)) {
     result.detected_versions[JavaScriptFramework::kSvelte] =
         kNoFrameworkVersionDetected;
   }
@@ -129,8 +129,8 @@ inline void CheckPropertyMatches(Element& element,
     } else if (key_value == reactRootContainer_string) {
       result.detected_versions[JavaScriptFramework::kReact] =
           kNoFrameworkVersionDetected;
-    } else if (key_value.StartsWith(reactListening_string) ||
-               key_value.StartsWith(reactFiber_string)) {
+    } else if (key_value.starts_with(reactListening_string) ||
+               key_value.starts_with(reactFiber_string)) {
       result.detected_versions[JavaScriptFramework::kReact] =
           kNoFrameworkVersionDetected;
     }
@@ -300,10 +300,10 @@ void DetectFrameworkVersions(Document& document,
   if (generator_meta) {
     const AtomicString& content = generator_meta->Content();
     if (!content.empty()) {
-      if (content.StartsWith("Wix")) {
+      if (content.starts_with("Wix")) {
         result.detected_versions[JavaScriptFramework::kWix] =
             kNoFrameworkVersionDetected;
-      } else if (content.StartsWith("Joomla")) {
+      } else if (content.starts_with("Joomla")) {
         result.detected_versions[JavaScriptFramework::kJoomla] =
             kNoFrameworkVersionDetected;
       } else {
@@ -311,7 +311,7 @@ void DetectFrameworkVersions(Document& document,
         constexpr size_t wordpress_prefix_length =
             std::char_traits<char>::length(wordpress_prefix);
 
-        if (content.StartsWith(wordpress_prefix)) {
+        if (content.starts_with(wordpress_prefix)) {
           String version_string =
               String(content).Substring(wordpress_prefix_length);
           result.detected_versions[JavaScriptFramework::kWordPress] =
@@ -323,7 +323,7 @@ void DetectFrameworkVersions(Document& document,
         constexpr size_t drupal_prefix_length =
             std::char_traits<char>::length(drupal_prefix);
 
-        if (content.StartsWith(drupal_prefix)) {
+        if (content.starts_with(drupal_prefix)) {
           String version_string =
               String(content).Substring(drupal_prefix_length);
           String trimmed =

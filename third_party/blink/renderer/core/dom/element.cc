@@ -4050,7 +4050,7 @@ void Element::UpdateClassList(const AtomicString& old_class_string,
 
 static inline bool IsEventHandlerAttribute(const Attribute& attribute) {
   return attribute.GetName().NamespaceURI().IsNull() &&
-         attribute.GetName().LocalName().StartsWith("on");
+         attribute.GetName().LocalName().starts_with("on");
 }
 
 bool Element::AttributeValueIsJavaScriptURL(const Attribute& attribute) {
@@ -13017,7 +13017,7 @@ void Element::SetAttributeHinted(AtomicString local_name,
   // This method is probably the most common case for `setAttribute`.
   // For performance reasons, we'll skip the TT check if we can determine it's
   // unnecessary based on a quick heuristic.
-  if (q_name.LocalName().StartsWith("on") ||
+  if (q_name.LocalName().starts_with("on") ||
       !GetCheckedAttributeTypes().empty()) [[unlikely]] {
     value = TrustedTypesCheckForAttribute(q_name, std::move(value),
                                           "setAttribute", exception_state);

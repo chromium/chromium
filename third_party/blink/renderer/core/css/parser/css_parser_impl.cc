@@ -2495,7 +2495,7 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
     return nullptr;  // Parse error.
   }
   AtomicString name = stream.Peek().Value().ToAtomicString();
-  if (!name.StartsWith("--")) {
+  if (!name.starts_with("--")) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleMixin);
     return nullptr;
   }
@@ -2627,7 +2627,7 @@ StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
     return nullptr;  // Parse error.
   }
   AtomicString name = stream.Peek().Value().ToAtomicString();
-  if (!name.StartsWith("--")) {
+  if (!name.starts_with("--")) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleApplyMixin);
     return nullptr;
   }

@@ -35,7 +35,7 @@ CSSUrlData::CSSUrlData(const AtomicString& unresolved_url,
     : relative_url_(unresolved_url),
       absolute_url_(resolved_url.GetString()),
       referrer_(referrer),
-      is_local_(unresolved_url.StartsWith('#')),
+      is_local_(unresolved_url.starts_with('#')),
       is_from_origin_clean_style_sheet_(is_from_origin_clean_style_sheet),
       is_ad_related_(is_ad_related),
       potentially_dangling_markup_(resolved_url.PotentiallyDanglingMarkup()) {}

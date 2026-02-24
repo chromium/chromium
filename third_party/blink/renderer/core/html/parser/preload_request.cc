@@ -47,8 +47,9 @@ bool PreloadRequest::ExclusionInfo::ShouldExclude(
   if (resources_.Contains(url))
     return true;
   for (const auto& scope : scopes_) {
-    if (url.GetString().StartsWith(scope.GetString()))
+    if (url.GetString().starts_with(scope.GetString())) {
       return true;
+    }
   }
   return false;
 }

@@ -1302,7 +1302,7 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
       }
       return case_insensitive
                  ? value.StartsWithIgnoringAsciiCase(selector_value)
-                 : value.StartsWith(selector_value);
+                 : value.starts_with(selector_value);
     case CSSSelector::kAttributeEnd:
       if (selector_value.empty()) {
         return false;
@@ -1314,7 +1314,7 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
         return false;
       }
       if (case_insensitive ? !value.StartsWithIgnoringAsciiCase(selector_value)
-                           : !value.StartsWith(selector_value)) {
+                           : !value.starts_with(selector_value)) {
         return false;
       }
       // It they start the same, check for exact match or following '-':

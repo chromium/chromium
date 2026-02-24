@@ -43,14 +43,14 @@ bool ComputedStylePropertyMap::ComparePropertyNames(
     const CSSPropertyName& name_b) {
   AtomicString a = name_a.ToAtomicString();
   AtomicString b = name_b.ToAtomicString();
-  if (a.StartsWith("--")) {
-    return b.StartsWith("--") && CodeUnitCompareLessThan(a, b);
+  if (a.starts_with("--")) {
+    return b.starts_with("--") && CodeUnitCompareLessThan(a, b);
   }
-  if (a.StartsWith("-")) {
-    return b.StartsWith("--") ||
-           (b.StartsWith("-") && CodeUnitCompareLessThan(a, b));
+  if (a.starts_with("-")) {
+    return b.starts_with("--") ||
+           (b.starts_with("-") && CodeUnitCompareLessThan(a, b));
   }
-  return b.StartsWith("-") || CodeUnitCompareLessThan(a, b);
+  return b.starts_with("-") || CodeUnitCompareLessThan(a, b);
 }
 
 Element* ComputedStylePropertyMap::StyledElement() const {

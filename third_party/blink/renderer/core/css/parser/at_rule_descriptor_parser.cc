@@ -527,7 +527,7 @@ CSSValue* AtRuleDescriptorParser::ParseAtViewTransitionDescriptor(
             CSSParserLocalContext::CreateWithoutPropertyForAtRules();
         CSSCustomIdentValue* ident = css_parsing_utils::ConsumeCustomIdent(
             stream, context, local_context);
-        if (!ident || ident->Value().StartsWith("-ua-")) {
+        if (!ident || ident->Value().starts_with("-ua-")) {
           return nullptr;
         }
         types->Append(*ident);

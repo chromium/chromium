@@ -58,8 +58,8 @@ namespace {
 // 'webkit' or 'Webkit' prefix - both valid as idl names for -webkit- prefixed
 // properties.
 bool HasWebkitPrefix(const AtomicString& property_name) {
-  return property_name.StartsWith("webkit") ||
-         property_name.StartsWith("Webkit");
+  return property_name.starts_with("webkit") ||
+         property_name.starts_with("Webkit");
 }
 
 CSSPropertyID ParseCSSPropertyID(const ExecutionContext* execution_context,

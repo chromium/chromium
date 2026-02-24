@@ -2854,7 +2854,7 @@ CommandEventType HTMLElement::GetCommandEventType(
   }
 
   // Custom Invoke Action
-  if (action.StartsWith("--")) {
+  if (action.starts_with("--")) {
     return CommandEventType::kCustom;
   }
 

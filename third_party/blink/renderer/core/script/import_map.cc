@@ -538,7 +538,7 @@ std::optional<KURL> ImportMap::Resolve(const ParsedSpecifier& parsed_specifier,
     // <spec step="8.1">If scopePrefix is baseURLString, or if scopePrefix ends
     // with U+002F (/) and baseURLString starts with scopePrefix, then:</spec>
     if (scope == base_url.GetString() ||
-        (scope.ends_with('/') && base_url.GetString().StartsWith(scope))) {
+        (scope.ends_with('/') && base_url.GetString().starts_with(scope))) {
       // <spec step="8.1.1">Let scopeImportsMatch be the result of resolving an
       // imports match given normalizedSpecifier and scopeImports.</spec>
       std::optional<KURL> scope_match =
@@ -641,7 +641,7 @@ KURL ImportMap::ResolveImportsMatchInternal(const String& key,
   // serialization of resolutionResult, then throw a TypeError indicating that
   // resolution of normalizedSpecifier was blocked due to it backtracking above
   // its prefix specifierKey.</spec>
-  if (!url.GetString().StartsWith(matched->value.GetString())) {
+  if (!url.GetString().starts_with(matched->value.GetString())) {
     *debug_message =
         StrCat({"Import Map: \"", key, "\" matches with \"", matched->key,
                 "\" but is blocked due to backtracking"});

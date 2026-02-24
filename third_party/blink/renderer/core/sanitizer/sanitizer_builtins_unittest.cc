@@ -105,7 +105,7 @@ void CheckForScriptyStuff(const Sanitizer* sanitizer) {
   CHECK_NOT_CONTAINS(sanitizer->AllowElements(), html_names::kScriptTag);
   CHECK_NOT_CONTAINS(sanitizer->AllowElements(), svg_names::kScriptTag);
   for (const QualifiedName& name : *(sanitizer->AllowAttrs())) {
-    CHECK(!name.LocalName().StartsWith("on")) << "found on*: " << name;
+    CHECK(!name.LocalName().starts_with("on")) << "found on*: " << name;
   }
 }
 

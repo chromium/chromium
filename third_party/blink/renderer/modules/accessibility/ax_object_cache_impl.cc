@@ -4839,7 +4839,7 @@ void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
 void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
                                                Element* element) {
   DCHECK(element);
-  if (attr_name.LocalName().StartsWith("aria-")) {
+  if (attr_name.LocalName().starts_with("aria-")) {
     // Perform updates specific to each attribute.
     if (attr_name == html_names::kAriaActivedescendantAttr) {
       if (relation_cache_) {

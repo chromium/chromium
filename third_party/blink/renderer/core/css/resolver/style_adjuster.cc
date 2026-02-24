@@ -1287,8 +1287,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   AdjustEffectiveTouchAction(builder, parent_style, element,
                              IsOutermostSVGElement(element));
 
-  bool is_media_control =
-      element && element->ShadowPseudoId().StartsWith("-webkit-media-controls");
+  bool is_media_control = element && element->ShadowPseudoId().starts_with(
+                                         "-webkit-media-controls");
   if (is_media_control && !builder.HasEffectiveAppearance()) {
     // For compatibility reasons if the element is a media control and the
     // -webkit-appearance is none then we should clear the background image.

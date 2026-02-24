@@ -136,7 +136,7 @@ bool ScriptWebBundle::CanHandleRequest(const KURL& url) const {
     return false;
   }
 
-  if (!url.GetString().StartsWith(bundle_loader_->url().BaseAsString())) {
+  if (!url.GetString().starts_with(bundle_loader_->url().BaseAsString())) {
     OnWebBundleError(
         StrCat({url.ElidedString(), " cannot be loaded from WebBundle ",
                 bundle_loader_->url().ElidedString(),

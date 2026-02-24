@@ -142,8 +142,9 @@ bool ScriptWebBundleRule::ResourcesOrScopesMatch(const KURL& url) const {
   if (resource_urls_.Contains(url))
     return true;
   for (const auto& scope : scope_urls_) {
-    if (url.GetString().StartsWith(scope.GetString()))
+    if (url.GetString().starts_with(scope.GetString())) {
       return true;
+    }
   }
   return false;
 }

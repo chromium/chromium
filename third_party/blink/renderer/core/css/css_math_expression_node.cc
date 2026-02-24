@@ -5398,7 +5398,7 @@ const CSSPrimitiveValue* RandomValueSharing::GetFixed() const {
 }
 bool RandomValueSharing::IsAuto() const {
   return !std::holds_alternative<NameAndElementShared>(value_) ||
-         !std::get<NameAndElementShared>(value_).name.StartsWith("--");
+         !std::get<NameAndElementShared>(value_).name.starts_with("--");
 }
 const AtomicString& RandomValueSharing::Name() const {
   if (!std::holds_alternative<NameAndElementShared>(value_)) {

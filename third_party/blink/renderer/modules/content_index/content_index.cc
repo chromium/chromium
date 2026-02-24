@@ -59,8 +59,9 @@ String ValidateDescription(const ContentDescription& description,
   if (!security_origin->CanRequest(launch_url))
     return "Service Worker cannot request provided launch URL";
 
-  if (!launch_url.GetString().StartsWith(registration->scope()))
+  if (!launch_url.GetString().starts_with(registration->scope())) {
     return "Launch URL must belong to the Service Worker's scope";
+  }
 
   return String();
 }
