@@ -1386,7 +1386,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Mac.AggregateDeviceIsPrivate{Type}" enum="Boolean"
-    expires_after="2026-02-22">
+    expires_after="2027-02-22">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -1418,7 +1418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Mac.CatapAudioInputStream.FramesMismatch"
-    units="count" expires_after="2026-02-15">
+    units="count" expires_after="2027-02-15">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -1441,7 +1441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Mac.CatapAudioInputStream.IsAlive" enum="Boolean"
-    expires_after="2026-02-15">
+    expires_after="2027-02-15">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
@@ -6611,7 +6611,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.AverageQueueLengthX10"
-    units="frames" expires_after="2026-03-09">
+    units="frames" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -6622,7 +6622,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.DrainedFramesPermille"
-    units="permille" expires_after="2026-03-09">
+    units="permille" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -6633,7 +6633,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.DroppedFramesPermille"
-    units="permille" expires_after="2026-03-09">
+    units="permille" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -6644,7 +6644,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.EnterDrainModeCount"
-    units="count" expires_after="2026-03-09">
+    units="count" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -6654,7 +6654,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.MaxQueueLength"
-    units="frames" expires_after="2026-03-09">
+    units="frames" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -6665,7 +6665,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.MaxSizeDropQueueCount"
-    units="count" expires_after="2026-03-09">
+    units="count" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -6676,7 +6676,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.NoNewFrameToRenderPermille"
-    units="permille" expires_after="2026-03-09">
+    units="permille" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -6687,7 +6687,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.ReduceSteadyStateCount"
-    units="count" expires_after="2026-03-09">
+    units="count" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -6698,7 +6698,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.TotalFrames" units="frames"
-    expires_after="2026-05-11">
+    expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -6709,7 +6709,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RtcLowLatencyVideoRenderer.TryToRenderFrameCount"
-    units="count" expires_after="2026-03-09">
+    units="count" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -6732,7 +6732,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderFallbackReason.{Codecs}"
-    enum="RTCVideoDecoderFallbackReason" expires_after="2026-03-09">
+    enum="RTCVideoDecoderFallbackReason" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -6864,13 +6864,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.ScreenCaptureKit.FullscreenModuleMode"
-    enum="ScreenCaptureKitFullscreenModuleMode" expires_after="2026-01-18">
+    enum="ScreenCaptureKitFullscreenModuleMode" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     Records the mode that is used in the ScreenCaptureKit Fullscreen module if
     the selected window to capture belongs to a supported application. The mode
     is reported once per captured window when the fullscreen module is created.
+    Warning: this histogram was expired from 2026-01 to 2026-03; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -6978,7 +6980,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.ThumbnailCapturerMac.ShareableContentErrorPercentage"
-    units="%" expires_after="2026-03-09">
+    units="%" expires_after="2027-03-09">
   <owner>kron@google.com</owner>
   <owner>eladalon@google.com</owner>
   <summary>
@@ -8520,7 +8522,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebrtcVideoPerfHistory.GetPerfInfoCodecProfile"
-    enum="VideoCodecProfile" expires_after="2026-03-09">
+    enum="VideoCodecProfile" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -8530,7 +8532,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebrtcVideoPerfHistory.SavePerfRecordCodecProfile"
-    enum="VideoCodecProfile" expires_after="2026-03-09">
+    enum="VideoCodecProfile" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -8540,7 +8542,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.WebrtcVideoPerfHistory.SmoothPrediction.{Operation}"
-    units="custom" expires_after="2026-03-09">
+    units="custom" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -8561,7 +8563,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.WebrtcVideoPerfHistory.SmoothVolatility.{Operation}.{Framerate}"
-    enum="SmoothVolatility" expires_after="2026-03-09">
+    enum="SmoothVolatility" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
