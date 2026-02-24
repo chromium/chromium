@@ -10,4 +10,7 @@ invalidScript.js:1 Uncaught SyntaxError: Failed to execute 'importScripts' on 'W
 foo @ importScripts-2.js:3
 (anonymous) @ importScripts-2.js:5
 (anonymous) @ importScripts-1.js:1
+Worker Created
+startWorker @ console-worker-neste…-syntax-error.js:14
+(anonymous) @ console-worker-neste…-syntax-error.js:19
 

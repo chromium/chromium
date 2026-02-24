@@ -18,16 +18,15 @@ import {ConsoleTestRunner} from 'console_test_runner';
       }
   `);
 
-  ConsoleTestRunner.addConsoleViewSniffer(addMessage, true);
   TestRunner.evaluateInPage('loadIframe()');
-  async function addMessage(viewMessage) {
-    await TestRunner.waitForPendingLiveLocationUpdates();
-    if (viewMessage.element().deepTextContent().indexOf('setTimeout') !== -1)
-      ConsoleTestRunner.expandConsoleMessages(onExpanded);
-  }
 
-  async function onExpanded() {
-    await ConsoleTestRunner.dumpConsoleMessages();
-    TestRunner.completeTest();
-  }
+  await new Promise(resolve => {
+    let count = 0;
+    ConsoleTestRunner.addConsoleViewSniffer(() => {
+      if (++count === 3) resolve();
+    }, true);
+  });
+
+  await ConsoleTestRunner.dumpConsoleMessages();
+  TestRunner.completeTest();
 })();

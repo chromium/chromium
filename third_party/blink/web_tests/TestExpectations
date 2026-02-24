@@ -6283,20 +6283,6 @@ crbug.com/1210687 [ Mac ] http/tests/permissions/chromium/test-request-worker.ht
 # TODO(crbug.com/1428895): Re-enable this test
 crbug.com/1210687 external/wpt/html/user-activation/propagation-crossorigin.sub.html [ Failure Pass Timeout ]
 
-# Temporarily disabled to unblock https://crrev.com/c/7566892
-crbug.com/456517732 http/tests/devtools/console/console-call-getter-on-proto.js [ Failure Pass ]
-crbug.com/456517732 http/tests/devtools/console/console-dir-es6.js [ Failure Pass ]
-crbug.com/456517732 http/tests/devtools/console/console-format-array-prototype.js [ Failure Pass ]
-crbug.com/456517732 http/tests/devtools/console/console-format-classes.js [ Failure Pass ]
-crbug.com/456517732 http/tests/devtools/console/console-format-es6-2.js [ Failure Pass ]
-crbug.com/456517732 http/tests/devtools/console/console-format-es6.js [ Failure Pass ]
-crbug.com/456517732 http/tests/devtools/console/console-log-short-hand-method.js [ Failure Pass ]
-crbug.com/456517732 http/tests/devtools/sources/debugger-async/async-callstack-in-console.js [ Failure Pass ]
-crbug.com/456517732 http/tests/devtools/console/console-bad-stacktrace.js [ Failure Pass ]
-crbug.com/456517732 http/tests/devtools/console/console-uncaught-promise-in-worker.js [ Failure Pass ]
-crbug.com/456517732 http/tests/devtools/console/console-worker-nested-imports-syntax-error.js [ Failure Pass ]
-crbug.com/456517732 http/tests/devtools/console/console-uncaught-exception.js [ Failure Pass Timeout ]
-
 # Sheriff 2021-06-03
 crbug.com/1185121 fast/scroll-snap/animate-fling-to-snap-points-1.html [ Failure Pass ]
 crbug.com/1215949 external/wpt/pointerevents/pointerevent_iframe-touch-action-none_touch.html [ Pass Timeout ]
