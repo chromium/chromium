@@ -121,35 +121,34 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
     // TODO(crbug.com/475222200): When in immersive, swapping between tab
     // strip types create duplicate tab strips. Until that is resolved, disable
     // the ability to swap between tab strips while in immersive.
-    if (ImmersiveModeController::From(browser())->IsEnabled()) {
-      return;
-    }
-    model->AddSeparator(ui::NORMAL_SEPARATOR);
-    if (controller->ShouldDisplayVerticalTabs()) {
-      model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
-                                 IDS_SWITCH_TO_HORIZONTAL_TAB);
-    } else {
-      model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
-                                 IDS_SWITCH_TO_VERTICAL_TAB);
-      const bool use_preview_badge =
-          base::FeatureList::IsEnabled(tabs::kVerticalTabsPreviewBadge);
-      const ui::NewBadgeType badge_type = use_preview_badge
-                                              ? ui::NewBadgeType::kPreview
-                                              : ui::NewBadgeType::kNew;
-      const user_education::DisplayNewBadge show_badge =
-          UserEducationService::MaybeShowNewBadge(
-              browser()->GetProfile(), use_preview_badge
-                                           ? tabs::kVerticalTabsPreviewBadge
-                                           : tabs::kVerticalTabsNewBadge);
-      model->SetIsNewFeatureAt(
+    if (!ImmersiveModeController::From(browser())->IsEnabled()) {
+      model->AddSeparator(ui::NORMAL_SEPARATOR);
+      if (controller->ShouldDisplayVerticalTabs()) {
+        model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
+                                   IDS_SWITCH_TO_HORIZONTAL_TAB);
+      } else {
+        model->AddItemWithStringId(IDC_TOGGLE_VERTICAL_TABS,
+                                   IDS_SWITCH_TO_VERTICAL_TAB);
+        const bool use_preview_badge =
+            base::FeatureList::IsEnabled(tabs::kVerticalTabsPreviewBadge);
+        const ui::NewBadgeType badge_type = use_preview_badge
+                                                ? ui::NewBadgeType::kPreview
+                                                : ui::NewBadgeType::kNew;
+        const user_education::DisplayNewBadge show_badge =
+            UserEducationService::MaybeShowNewBadge(
+                browser()->GetProfile(), use_preview_badge
+                                             ? tabs::kVerticalTabsPreviewBadge
+                                             : tabs::kVerticalTabsNewBadge);
+        model->SetIsNewFeatureAt(
+            model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS).value(),
+            show_badge, badge_type);
+      }
+      model->SetElementIdentifierAt(
           model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS).value(),
-          show_badge, badge_type);
+          kToggleVerticalTabsElementId);
+      model->AddItemWithStringId(IDC_VERTICAL_TABS_SEND_FEEDBACK,
+                                 IDS_VERTICAL_TABS_SEND_FEEDBACK);
     }
-    model->SetElementIdentifierAt(
-        model->GetIndexOfCommandId(IDC_TOGGLE_VERTICAL_TABS).value(),
-        kToggleVerticalTabsElementId);
-    model->AddItemWithStringId(IDC_VERTICAL_TABS_SEND_FEEDBACK,
-                               IDS_VERTICAL_TABS_SEND_FEEDBACK);
   }
 
   if (chrome::CanOpenTaskManager()) {
