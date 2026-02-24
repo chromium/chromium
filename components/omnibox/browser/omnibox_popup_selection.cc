@@ -18,6 +18,23 @@ constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 
 constexpr size_t OmniboxPopupSelection::kNoMatch = static_cast<size_t>(-1);
 
+#if DCHECK_ALWAYS_ON
+std::ostream& operator<<(std::ostream& os, const OmniboxPopupSelection& s) {
+  os << '{' << s.line << ',' << s.state << ',' << s.action_index << '}';
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const std::vector<OmniboxPopupSelection>& ss) {
+  os << '[';
+  for (const OmniboxPopupSelection& s : ss) {
+    os << s;
+  }
+  os << ']';
+  return os;
+}
+#endif
+
 bool OmniboxPopupSelection::IsChangeToKeyword(
     OmniboxPopupSelection from) const {
   return state == KEYWORD_MODE && from.state != KEYWORD_MODE;
@@ -85,7 +102,6 @@ OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
   std::vector<OmniboxPopupSelection> all_available_selections =
       GetAllAvailableSelectionsSorted(input, result, template_url_service,
                                       aim_button_visible, step);
-
   if (all_available_selections.empty()) {
     return *this;
   }

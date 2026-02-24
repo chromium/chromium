@@ -660,7 +660,7 @@ void SendToOmniboxAndSubmit(BrowserWindowInterface* browser,
   location_bar->GetOmniboxController()->edit_model()->OnSetFocus(
       /*control_down=*/false);
   omnibox->SetUserText(base::ASCIIToUTF16(input));
-  location_bar->GetOmniboxController()->edit_model()->OpenSelectionForTesting(
+  location_bar->GetOmniboxController()->edit_model()->OpenCurrentSelection(
       match_selection_timestamp);
 
   if (wait_for_autocomplete_done) {

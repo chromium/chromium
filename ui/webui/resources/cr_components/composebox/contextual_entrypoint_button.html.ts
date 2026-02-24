@@ -12,8 +12,7 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
   return html`<!--_html_template_start_-->
 <div id="${this.getWrapperId_()}" class="${this.getWrapperCssClass_()}">
   ${this.showContextMenuDescription ? html`
-    <cr-button id="entrypoint" class="ai-mode-button"
-        part="entrypoint-button"
+    <cr-button id="entrypoint" class="ai-mode-button" part="entrypoint-button"
         @click="${this.onEntrypointClick_}"
         title="${this.i18n('addContextTitle')}"
         ?disabled="${this.uploadButtonDisabled}" noink>

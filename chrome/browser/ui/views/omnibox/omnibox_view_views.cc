@@ -2050,10 +2050,9 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
                                     metric_value);
       if (controller()->IsPopupOpen() && !control) {
         // Normal case of pressing <return> when the popup is open.
-        controller()->edit_model()->OpenSelection(
-            controller()->edit_model()->GetPopupSelection(), event.time_stamp(),
-            disposition,
-            /*via_keyboard=*/true);
+        controller()->edit_model()->OpenCurrentSelection(event.time_stamp(),
+                                                         disposition,
+                                                         /*via_keyboard=*/true);
       } else {
         // There are two cases handled here.
         // 1. The popup is closed and the AIM page action icon has "fake" focus

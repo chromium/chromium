@@ -20,6 +20,7 @@
 #include "realbox_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 
 class MockTabContextualizationController
     : public lens::TabContextualizationController {
@@ -61,6 +62,12 @@ class MockSearchboxPage : public searchbox::mojom::Page {
               UpdateSelection,
               (searchbox::mojom::OmniboxPopupSelectionPtr,
                searchbox::mojom::OmniboxPopupSelectionPtr));
+  MOCK_METHOD(void,
+              StepSelection,
+              (searchbox::mojom::SelectionDirection,
+               searchbox::mojom::SelectionStep));
+  MOCK_METHOD(void, OpenCurrentSelection, (WindowOpenDisposition));
+  MOCK_METHOD(void, SetAimButtonVisible, (bool visible));
   MOCK_METHOD(void, SetKeywordSelected, (bool is_keyword_selected), (override));
   MOCK_METHOD(void, OnShow, ());
   MOCK_METHOD(void, SetInputText, (const std::string& input_text));

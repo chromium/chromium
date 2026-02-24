@@ -989,6 +989,60 @@ void SearchboxHandler::OpenAutocompleteMatch(uint8_t line,
                               disposition);
 }
 
+OmniboxPopupSelection ConvertSelection(
+    searchbox::mojom::OmniboxPopupSelectionPtr selection) {
+  OmniboxPopupSelection::LineState state =
+      OmniboxPopupSelection::LineState::LINE_STATE_MAX_VALUE;
+  switch (selection->state) {
+    case searchbox::mojom::SelectionLineState::kNormal: {
+      state = OmniboxPopupSelection::LineState::NORMAL;
+      break;
+    }
+    case searchbox::mojom::SelectionLineState::kKeywordMode: {
+      state = OmniboxPopupSelection::LineState::KEYWORD_MODE;
+      break;
+    }
+    case searchbox::mojom::SelectionLineState::kFocusedButtonAction: {
+      state = OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION;
+      break;
+    }
+    case searchbox::mojom::SelectionLineState::kFocusedButtonRemoveSuggestion: {
+      state =
+          OmniboxPopupSelection::LineState::FOCUSED_BUTTON_REMOVE_SUGGESTION;
+      break;
+    }
+    case searchbox::mojom::SelectionLineState::kFocusedButtonAim: {
+      state = OmniboxPopupSelection::LineState::FOCUSED_BUTTON_AIM;
+      break;
+    }
+    case searchbox::mojom::SelectionLineState::
+        kFocusedButtonContextEntrypoint: {
+      // Handled directly by webui omnibox popup.
+      NOTREACHED();
+    }
+  }
+  CHECK_NE(state, OmniboxPopupSelection::LineState::LINE_STATE_MAX_VALUE);
+  // Special case line for mojom equivalent of kNoMatch; it is represented
+  // as uint8_t so direct conversion would become a positive out of bounds
+  // index.
+  return OmniboxPopupSelection(selection->line == 255
+                                   ? OmniboxPopupSelection::kNoMatch
+                                   : selection->line,
+                               state, selection->action_index);
+}
+
+void SearchboxHandler::SetPopupSelection(
+    searchbox::mojom::OmniboxPopupSelectionPtr selection) {
+  edit_model()->SetPopupSelection(ConvertSelection(std::move(selection)), false,
+                                  false, false);
+}
+
+void SearchboxHandler::OpenPopupSelection(
+    searchbox::mojom::OmniboxPopupSelectionPtr selection,
+    WindowOpenDisposition disposition) {
+  edit_model()->OpenSelection(ConvertSelection(std::move(selection)));
+}
+
 void SearchboxHandler::OnNavigationLikely(
     uint8_t line,
     const GURL& url,

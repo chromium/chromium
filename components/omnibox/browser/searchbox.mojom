@@ -10,6 +10,7 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "ui/base/mojom/window_open_disposition.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
@@ -211,6 +212,8 @@ enum SelectionLineState {
   kKeywordMode = 2,
   kFocusedButtonAction = 3,
   kFocusedButtonRemoveSuggestion = 4,
+  kFocusedButtonAim = 5,
+  kFocusedButtonContextEntrypoint = 6,
 };
 
 // See components/omnibox/browser/omnibox_popup_selection.h
@@ -218,6 +221,20 @@ struct OmniboxPopupSelection {
   uint8 line;
   SelectionLineState state;
   uint8 action_index;
+};
+
+// Directions for stepping through selections. These may apply for going
+// up/down by lines or cycling left/right through states within a line.
+enum SelectionDirection {
+  kForward = 1,
+  kBackward = 2,
+};
+
+// When changing selections, these are the possible stepping behaviors.
+enum SelectionStep {
+  kWholeLine = 1,
+  kStateOrLine = 2,
+  kAllLines = 3,
 };
 
 // Configuration for the cycling placeholder texts that appear on the searchbox
@@ -259,6 +276,15 @@ interface PageHandler {
                         bool ctrl_key,
                         bool meta_key,
                         bool shift_key);
+
+  // Sets the native OmniboxEditModel popup selection.
+  // TODO(crbug.com/483117840): This drives some omnibox state affecting
+  //  OmniboxViewViews and can be eliminated once we have full webui popup.
+  SetPopupSelection(OmniboxPopupSelection selection);
+
+  // Opens a specified popup selection.
+  OpenPopupSelection(OmniboxPopupSelection selection,
+                     ui.mojom.WindowOpenDisposition disposition);
 
   // Informs the browser that the user has changed the selected suggestion. The
   // new suggestion is located at |line|. |navigation_predictor|
@@ -382,6 +408,21 @@ interface Page {
   // |old_selection|.
   UpdateSelection(
       OmniboxPopupSelection old_selection, OmniboxPopupSelection selection);
+
+  // Signals user intent to change popup selection.
+  // TODO(crbug.com/483117840): This is driven by interaction with
+  //  OmniboxViewViews and can be eliminated once we have full webui popup.
+  StepSelection(SelectionDirection direction, SelectionStep step);
+
+  // Signals user intent to open the current popup selection.
+  // TODO(crbug.com/483117840): This is driven by interaction with
+  //  OmniboxViewViews and can be eliminated once we have full webui popup.
+  OpenCurrentSelection(ui.mojom.WindowOpenDisposition disposition);
+
+  // Updates visibility of the AIM button (on right side of OmniboxViewViews).
+  // TODO(crbug.com/483117840): This is driven by interaction with
+  //  OmniboxViewViews and can be eliminated once we have full webui popup.
+  SetAimButtonVisible(bool visible);
 
   // Called when the keyword mode state changes.
   SetKeywordSelected(bool is_keyword_selected);

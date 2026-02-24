@@ -896,10 +896,18 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
   }
 }
 
-void OmniboxEditModel::OpenSelectionForTesting(
-    base::TimeTicks timestamp,
-    WindowOpenDisposition disposition,
-    bool via_keyboard) {
+void OmniboxEditModel::OpenCurrentSelection(base::TimeTicks timestamp,
+                                            WindowOpenDisposition disposition,
+                                            bool via_keyboard) {
+  if (popup_view_ && popup_view_->IsSelectionPopupControlled()) {
+    // The webui popup handles its own selection state. Opening there might
+    // result in a call back to the native code to open a specified selection
+    // supported by native code. Any others not supported by the host may
+    // be acted on directly in the webui logic.
+    popup_view_->OpenCurrentSelection(disposition);
+    return;
+  }
+
   OpenSelection(popup_selection_, timestamp, disposition, via_keyboard);
 }
 
@@ -1282,6 +1290,15 @@ void OmniboxEditModel::OnPaste() {
 }
 
 void OmniboxEditModel::OnUpOrDownPressed(bool down, bool page) {
+  if (popup_view_ && popup_view_->IsSelectionPopupControlled()) {
+    popup_view_->StepSelection(
+        down ? OmniboxPopupSelection::Direction::kForward
+             : OmniboxPopupSelection::Direction::kBackward,
+        page ? OmniboxPopupSelection::Step::kAllLines
+             : OmniboxPopupSelection::Step::kWholeLine);
+    return;
+  }
+
   const auto direction =
       down ? OmniboxPopupSelection::kForward : OmniboxPopupSelection::kBackward;
   const auto step = page ? OmniboxPopupSelection::kAllLines
@@ -1290,9 +1307,17 @@ void OmniboxEditModel::OnUpOrDownPressed(bool down, bool page) {
 }
 
 void OmniboxEditModel::OnTabPressed(bool shift) {
-  StepPopupSelection(shift ? OmniboxPopupSelection::kBackward
-                           : OmniboxPopupSelection::kForward,
-                     OmniboxPopupSelection::kStateOrLine);
+  OmniboxPopupSelection::Direction direction =
+      shift ? OmniboxPopupSelection::Direction::kBackward
+            : OmniboxPopupSelection::Direction::kForward;
+  OmniboxPopupSelection::Step step = OmniboxPopupSelection::Step::kStateOrLine;
+
+  if (popup_view_ && popup_view_->IsSelectionPopupControlled()) {
+    popup_view_->StepSelection(direction, step);
+    return;
+  }
+
+  StepPopupSelection(direction, step);
 }
 
 bool OmniboxEditModel::OnSpacePressed() {
@@ -1891,15 +1916,22 @@ OmniboxPopupSelection OmniboxEditModel::GetPopupSelection() const {
 
 void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
                                          bool reset_to_default,
-                                         bool force_update_ui) {
+                                         bool force_update_ui,
+                                         bool cancel_autocomplete) {
   DCHECK(popup_view_);
+
+  // Special case for updating the focus ring around the AIM button.
+  view_->ApplyFocusRingToAimButton(new_selection.state ==
+                                   OmniboxPopupSelection::FOCUSED_BUTTON_AIM);
 
   if (autocomplete_controller()->result().empty()) {
     return;
   }
 
-  // Cancel the query so the matches don't change on the user.
-  controller_->StopAutocomplete(/*clear_result=*/false);
+  if (cancel_autocomplete) {
+    // Cancel the query so the matches don't change on the user.
+    controller_->StopAutocomplete(/*clear_result=*/false);
+  }
 
   if (new_selection == popup_selection_ && !force_update_ui) {
     // This occurs when e.g. pressing tab to select an action chip or the x
@@ -1914,17 +1946,10 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   observers_.Notify(&Observer::OnSelectionChanged, old_selection,
                     popup_selection_);
 
-  // Special case for updating the focus ring around the AIM button.
-  bool apply_focus_ring_to_aim_button =
-      popup_selection_.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM;
-  bool remove_focus_ring_from_aim_button =
-      old_selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM;
-  if (apply_focus_ring_to_aim_button || remove_focus_ring_from_aim_button) {
-    view_->ApplyFocusRingToAimButton(apply_focus_ring_to_aim_button);
-  }
-
   const AutocompleteMatch& match =
-      popup_selection_.line == OmniboxPopupSelection::kNoMatch
+      popup_selection_.line == OmniboxPopupSelection::kNoMatch ||
+              popup_selection_.line >=
+                  autocomplete_controller()->result().size()
           ? AutocompleteMatch()
           : autocomplete_controller()->result().match_at(popup_selection_.line);
 
