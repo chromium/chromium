@@ -6,7 +6,10 @@
 
 #include <iterator>
 #include <optional>
+#include <ostream>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -21,6 +24,43 @@
 #include "url/origin.h"
 
 namespace send_tab_to_self {
+
+namespace {
+
+using ExtractorCallback = base::RepeatingCallback<
+    PageContext::FormFieldInfo(autofill::AutofillManager&, const url::Origin&)>;
+
+PageContext ExtractFormFieldsFromWebContentsInternal(
+    content::WebContents* web_contents,
+    ExtractorCallback extractor) {
+  if (!web_contents) {
+    return PageContext();
+  }
+
+  const url::Origin main_origin =
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+
+  PageContext context;
+
+  web_contents->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
+    autofill::ContentAutofillDriver* driver =
+        autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh);
+    if (!driver) {
+      return;
+    }
+
+    PageContext::FormFieldInfo frame_info =
+        extractor.Run(driver->GetAutofillManager(), main_origin);
+    context.form_field_info.fields.insert(
+        context.form_field_info.fields.end(),
+        std::make_move_iterator(frame_info.fields.begin()),
+        std::make_move_iterator(frame_info.fields.end()));
+  });
+
+  return context;
+}
+
+}  // namespace
 
 std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason(
     content::WebContents* web_contents) {
@@ -42,31 +82,22 @@ bool ShouldDisplayEntryPoint(content::WebContents* web_contents) {
 
 PageContext ExtractFormFieldsFromWebContents(
     content::WebContents* web_contents) {
-  if (!web_contents) {
-    return PageContext();
-  }
+  return ExtractFormFieldsFromWebContentsInternal(
+      web_contents, base::BindRepeating(&ExtractOutgoingTabFormFields));
+}
 
-  const url::Origin main_origin =
-      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
-
-  PageContext context;
-
-  web_contents->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
-    autofill::ContentAutofillDriver* driver =
-        autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh);
-    if (!driver) {
-      return;
-    }
-
-    PageContext::FormFieldInfo frame_info =
-        ExtractOutgoingTabFormFields(driver->GetAutofillManager(), main_origin);
-    context.form_field_info.fields.insert(
-        context.form_field_info.fields.end(),
-        std::make_move_iterator(frame_info.fields.begin()),
-        std::make_move_iterator(frame_info.fields.end()));
-  });
-
-  return context;
+PageContext ExtractFormFieldsFromWebContentsForTesting(  // IN-TEST
+    content::WebContents* web_contents,
+    std::ostream& os) {
+  return ExtractFormFieldsFromWebContentsInternal(
+      web_contents,
+      base::BindRepeating(
+          [](std::ostream* os, autofill::AutofillManager& manager,
+             const url::Origin& origin) {
+            return ExtractOutgoingTabFormFieldsForTesting(  // IN-TEST
+                manager, origin, *os);
+          },
+          &os));
 }
 
 void FillWebContents(content::WebContents* web_contents,
