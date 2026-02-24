@@ -36,7 +36,7 @@ def RecordMainAttributes(targets: list[str], gtest_filter: str,
   if not span.is_recording():
     return
 
-  is_gemini_cli = True if os.getenv("GEMINI_CLI") else False
+  is_gemini_cli = os.getenv("GEMINI_CLI", "") == "1"
 
   span.set_attribute('main.is_gemini_cli', is_gemini_cli)
   span.set_attribute('main.targets', str(targets))
