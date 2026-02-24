@@ -1323,6 +1323,13 @@ template("ios_xctest_test") {
         "$ios_sdk_platform_path/Developer/usr/lib/libXCTestSwiftSupport.dylib",
       ]
 
+      if (xcode_version_int >= 2640) {
+        extra_system_frameworks += [
+          "$ios_sdk_platform_path/Developer/Library/Frameworks/Testing.framework",
+          "$ios_sdk_platform_path/Developer/usr/lib/lib_TestingInterop.dylib",
+        ]
+      }
+
       # Xcode 16.3 moved XCUIAutomation.framework
       if (xcode_version_int < 1630) {
         extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUIAutomation.framework" ]
@@ -1332,7 +1339,7 @@ template("ios_xctest_test") {
     }
 
     # XCTestSupport framework is required as of Xcode 14.3 or later.
-    if (xcode_version_int >= 1430) {
+    if (xcode_version_int >= 1430 && xcode_version_int < 2640) {
       extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestSupport.framework" ]
     }
 
@@ -1473,6 +1480,13 @@ template("ios_xcuitest_test_runner_bundle") {
         "$ios_sdk_platform_path/Developer/usr/lib/libXCTestSwiftSupport.dylib",
       ]
 
+      if (xcode_version_int >= 2640) {
+        extra_system_frameworks += [
+          "$ios_sdk_platform_path/Developer/Library/Frameworks/Testing.framework",
+          "$ios_sdk_platform_path/Developer/usr/lib/lib_TestingInterop.dylib",
+        ]
+      }
+
       # Xcode 16.3 moved XCUIAutomation.framework
       if (xcode_version_int < 1630) {
         extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUIAutomation.framework" ]
@@ -1482,7 +1496,7 @@ template("ios_xcuitest_test_runner_bundle") {
     }
 
     # XCTestSupport framework is required as of Xcode 14.3 or later.
-    if (xcode_version_int >= 1430) {
+    if (xcode_version_int >= 1430 && xcode_version_int < 2640) {
       extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestSupport.framework" ]
     }
 

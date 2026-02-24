@@ -275,7 +275,11 @@ config("xctest_config") {
     framework_dirs = [ "$ios_sdk_path/System/Library/SubFrameworks" ]
   }
   if (xcode_version_int >= 2640) {
-    ldflags += [ "-Wl,--ignore-auto-link-option,UIUtilities" ]
+    ldflags += [
+      "-Wl,--ignore-auto-link-option,UIUtilities",
+      "-Wl,-rpath,/Developer/Library/Frameworks",
+      "-Wl,-rpath,/Developer/Library/PrivateFrameworks",
+    ]
   }
 }
 
