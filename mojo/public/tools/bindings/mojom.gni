@@ -1474,8 +1474,6 @@ template("mojom") {
 
     _typemap_config_filename =
         "$target_gen_dir/${target_name}${variant_suffix}.typemap_config"
-    _typemap_stamp_filename = "${_typemap_config_filename}.validated"
-    _typemap_validator_target_name = "${type_mappings_target_name}__validator"
     _rebased_typemap_configs = []
     foreach(config, cpp_typemap_configs) {
       _rebased_config = {
@@ -1495,47 +1493,20 @@ template("mojom") {
     }
     write_file(_typemap_config_filename, _rebased_typemap_configs, "json")
 
-    action(_typemap_validator_target_name) {
-      script = "$mojom_generator_root/validate_typemap_config.py"
-      inputs = [ _typemap_config_filename ]
-      outputs = [ _typemap_stamp_filename ]
-      args = [
-        get_label_info(_mojom_target_name, "label_no_toolchain"),
-        rebase_path(_typemap_config_filename, root_build_dir),
-        rebase_path(_typemap_stamp_filename, root_build_dir),
-      ]
-    }
-
     _ts_typemap_config_filename =
         "$target_gen_dir/${target_name}${variant_suffix}.ts_typemap_config"
-    _ts_typemap_stamp_filename = "${_ts_typemap_config_filename}.validated"
-    _ts_typemap_validator_target_name =
-        "${type_mappings_target_name}_ts__validator"
     write_file(_ts_typemap_config_filename, ts_typemap_configs, "json")
 
-    action(_ts_typemap_validator_target_name) {
-      script = "$mojom_generator_root/validate_ts_typemap_config.py"
-      inputs = [ _ts_typemap_config_filename ]
-      outputs = [ _ts_typemap_stamp_filename ]
-      args = [
-        get_label_info(_mojom_target_name, "label_no_toolchain"),
-        rebase_path(_ts_typemap_config_filename, root_build_dir),
-        rebase_path(_ts_typemap_stamp_filename, root_build_dir),
-      ]
-    }
-
     action(type_mappings_target_name) {
-      inputs =
-          mojom_generator_sources + jinja2_sources + [ _typemap_stamp_filename ]
+      inputs = mojom_generator_sources + jinja2_sources
       outputs = [ type_mappings_path ]
       script = "$mojom_generator_root/generate_type_mappings.py"
-      deps = [
-        ":$_ts_typemap_validator_target_name",
-        ":$_typemap_validator_target_name",
-      ]
+      deps = []
       args = [
         "--output",
         rebase_path(type_mappings_path, root_build_dir),
+        "--target",
+        get_label_info(_mojom_target_name, "label_no_toolchain"),
       ]
 
       sources = []

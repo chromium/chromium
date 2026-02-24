@@ -39,15 +39,6 @@ def __step_config(ctx, step_config):
             "remote_command": "python3",  # only run on Linux worker even for CI Windows.
         },
         {
-            "name": "mojo/validate_typemap_config",
-            "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/validate_typemap_config.py",
-            "remote": remote_run,
-            "timeout": "2m",
-            "output_local": True,
-            "platform_ref": platform_ref,
-            "remote_command": "python3",  # only run on Linux worker even for CI Windows.
-        },
-        {
             "name": "mojo/generate_type_mappings",
             "command_prefix": platform.python_bin + " ../../mojo/public/tools/bindings/generate_type_mappings.py",
             "remote": remote_run,

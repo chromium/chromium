@@ -70,6 +70,73 @@ sys.path.insert(
 
 from mojom.generate.generator import WriteFile
 
+
+def CheckCppTypemapConfigs(target_name, config_filename):
+  _SUPPORTED_CONFIG_KEYS = set([
+      'types', 'traits_headers', 'traits_private_headers', 'traits_sources',
+      'traits_deps', 'traits_public_deps'
+  ])
+  _SUPPORTED_TYPE_KEYS = set([
+      'mojom', 'cpp', 'copyable_pass_by_value', 'force_serialize', 'hashable',
+      'move_only', 'non_const_ref', 'nullable_is_same_type',
+      'forward_declaration', 'default_constructible'
+  ])
+  with open(config_filename, 'r') as f:
+    for config in json.load(f):
+      for key in config.keys():
+        if key not in _SUPPORTED_CONFIG_KEYS:
+          raise ValueError('Invalid typemap property "%s" when processing %s' %
+                           (key, target_name))
+
+      types = config.get('types')
+      if not types:
+        raise ValueError(
+            'Typemap for %s must specify at least one type to map' %
+            target_name)
+
+      for entry in types:
+        for key in entry.keys():
+          if key not in _SUPPORTED_TYPE_KEYS:
+            raise IOError(
+                'Invalid type property "%s" in typemap for "%s" on target %s' %
+                (key, entry.get('mojom', '(unknown)'), target_name))
+
+
+def CheckTsTypemapConfigs(target_name, config_filename):
+  _SUPPORTED_CONFIG_KEYS = set([
+      'source',
+      'types',
+  ])
+  _SUPPORTED_TYPE_KEYS = set([
+      'ts',
+      'ts_import',
+      'converter',
+      'mojom',
+  ])
+  with open(config_filename, 'r') as f:
+    for config in json.load(f):
+      for key in config.keys():
+        if key not in _SUPPORTED_CONFIG_KEYS:
+          raise ValueError('Invalid typemap property "%s" when processing %s' %
+                           (key, target_name))
+
+      if not config.get('source'):
+        raise ValueError('Typemap for %s must specify a source' % target_name)
+
+      types = config.get('types')
+      if not types:
+        raise ValueError(
+            'Typemap for %s must specify at least one type to map' %
+            target_name)
+
+      for entry in types:
+        for key in entry.keys():
+          if key not in _SUPPORTED_TYPE_KEYS:
+            raise IOError(
+                'Invalid type property "%s" in typemap for "%s" on target %s' %
+                (key, entry.get('mojom', '(unknown)'), target_name))
+
+
 def ReadTypemap(path):
   with open(path) as f:
     return json.load(f)['c++']
@@ -138,6 +205,10 @@ def main():
       dest='ts_config_path',
       help=('A path to a single JSON-formatted typemap config as emitted by'
             'GN when processing a mojom_ts_typemap build rule.'))
+  parser.add_argument('--target',
+                      type=str,
+                      default='unknown',
+                      help='The GN target name (for error reporting).')
   parser.add_argument('--output',
                       type=str,
                       required=True,
@@ -156,6 +227,7 @@ def main():
 
   cpp_typemaps = {}
   if params.cpp_config_path:
+    CheckCppTypemapConfigs(params.target, params.cpp_config_path)
     cpp_typemaps = LoadCppTypemapConfig(params.cpp_config_path)
   metadata['module_typemaps']['c++'] = list(cpp_typemaps.keys())
 
@@ -167,6 +239,7 @@ def main():
 
   ts_typemaps = {}
   if params.ts_config_path:
+    CheckTsTypemapConfigs(params.target, params.ts_config_path)
     ts_typemaps = LoadTsTypemapConfig(params.ts_config_path)
   metadata['module_typemaps']['typescript'] = list(ts_typemaps.keys())
 
