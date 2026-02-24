@@ -106,11 +106,16 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchesLocalVisitAfterDelay) {
   AuxiliarySearchDonationService service(page_content_annotations_service(),
                                          mock_ranking_service(),
                                          test_pref_service());
-
-  EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _)).Times(1);
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(*mock_ranking_service(), FetchURLVisitAggregates(_, _))
+      .WillOnce(base::test::InvokeFuture(future));
 
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
-  task_environment().FastForwardBy(service.GetDonationDelay());
+  base::TimeTicks before = task_environment().NowTicks();
+  ASSERT_TRUE(future.Wait()) << "Failed to wait for fetch";
+  base::TimeTicks after = task_environment().NowTicks();
+
+  EXPECT_EQ(after - before, service.GetDonationDelay());
 }
 
 TEST_F(AuxiliarySearchDonationServiceTest,
