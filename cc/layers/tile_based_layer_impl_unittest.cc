@@ -89,7 +89,7 @@ class TestTileBasedLayerImpl : public TileBasedLayerImpl<FakeTiling> {
                          const std::optional<gfx::Rect>& scaled_cull_rect,
                          float max_contents_scale,
                          AppendQuadsCustomSharedData* custom_data) override {
-    return false;
+    return true;
   }
   void ComputeCheckerboardedNeedsRecord(
       AppendQuadsData* append_quads_data) override {}
@@ -429,7 +429,7 @@ class OcclusionTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
         render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
     quad->SetNew(shared_quad_state, gfx::Rect(1, 1), gfx::Rect(1, 1),
                  SkColors::kTransparent, false);
-    return false;
+    return true;
   }
   float GetMaximumContentsScaleForUseInAppendQuads() const override {
     return max_contents_scale_;
@@ -586,7 +586,7 @@ class QuadOffsetTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
         render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
     quad->SetNew(shared_quad_state, gfx::Rect(1, 1), gfx::Rect(1, 1),
                  SkColors::kTransparent, false);
-    return false;
+    return true;
   }
   float GetIdealContentsScaleKey() const override { return 1.f; }
 
@@ -668,7 +668,7 @@ class QuadOffsetOrderTestTileBasedLayerImpl : public TestTileBasedLayerImpl {
         render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
     quad->SetNew(shared_quad_state, gfx::Rect(1, 1), gfx::Rect(1, 1),
                  SkColors::kTransparent, false);
-    return false;
+    return true;
   }
   float GetIdealContentsScaleKey() const override { return 1.f; }
 

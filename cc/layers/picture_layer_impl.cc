@@ -340,7 +340,7 @@ bool PictureLayerImpl::AppendQuadForTile(
   gfx::Rect visible_geometry_rect;
   if (ShouldSkipTile(geometry_rect, shared_data->scaled_recorded_bounds_,
                      scaled_occlusion, visible_geometry_rect)) {
-    return /*tile_missing=*/false;
+    return /*tile_produced=*/true;
   }
 
   gfx::Rect offset_geometry_rect = geometry_rect;
@@ -432,8 +432,8 @@ bool PictureLayerImpl::AppendQuadForTile(
           iter->HasMissingLCPCandidateImages());
     }
 
-    // Report the tile as missing iff it is in the viewport.
-    return geometry_rect.Intersects(
+    // Only report the tile as missing if it's in the viewport.
+    return /*tile_produced=*/!geometry_rect.Intersects(
         shared_data->scaled_viewport_for_tile_priority_);
   }
 
@@ -446,7 +446,7 @@ bool PictureLayerImpl::AppendQuadForTile(
 
   AddScaleToLastAppendQuadsScales(iter.CurrentTiling()->contents_scale_key());
 
-  return /*tile_missing=*/false;
+  return /*tile_produced=*/true;
 }
 
 bool PictureLayerImpl::UpdateTiles() {

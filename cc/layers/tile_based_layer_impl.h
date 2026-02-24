@@ -122,7 +122,7 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
       float max_contents_scale);
 
   // Called for each tile covered by the layer. `quad_offset` is the offset by
-  // which appended quads should be adjusted. The return value is true if the
+  // which appended quads should be adjusted. The return value is false if the
   // tile was determined to be missing.
   // NOTE: `shared_quad_state` is *not* adjusted by `quad_offset` when passed
   // into this method to allow implementations to operate on the original state
@@ -322,11 +322,10 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
   for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
                          max_contents_scale, ideal_scale_key);
        iter; ++iter) {
-    bool missing_tile = AppendQuadForTile(
-        iter, context, render_pass, append_quads_data, shared_quad_state,
-        scaled_occlusion, quad_offset, scaled_cull_rect, max_contents_scale,
-        custom_data.get());
-    if (missing_tile) {
+    if (!AppendQuadForTile(iter, context, render_pass, append_quads_data,
+                           shared_quad_state, scaled_occlusion, quad_offset,
+                           scaled_cull_rect, max_contents_scale,
+                           custom_data.get())) {
       missing_tile_count++;
     }
   }

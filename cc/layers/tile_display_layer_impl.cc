@@ -205,7 +205,7 @@ bool TileDisplayLayerImpl::AppendQuadForTile(
   gfx::Rect visible_geometry_rect;
   if (ShouldSkipTile(geometry_rect, scaled_recorded_bounds, scaled_occlusion,
                      visible_geometry_rect)) {
-    return false;
+    return true;
   }
 
   gfx::Rect offset_geometry_rect = geometry_rect;
@@ -254,11 +254,11 @@ bool TileDisplayLayerImpl::AppendQuadForTile(
     // that info is used only to pass to `checkerboarded_needs_raster` on the
     // client side.  TODO(crbug.com/401566175): Determine if we need to track
     // `checkerboarded_needs_raster` on the Viz side in the longer term.
-    return false;
+    return true;
   }
 
   AddScaleToLastAppendQuadsScales(iter.CurrentTiling()->contents_scale_key());
-  return false;
+  return true;
 }
 
 float TileDisplayLayerImpl::GetMaximumContentsScaleForUseInAppendQuads() const {
