@@ -457,6 +457,16 @@ void MoveTabsToWindowImpl(Browser* source,
   target->window()->Show();
 }
 
+Browser* CreateNewBrowser(Browser* browser, bool user_gesture) {
+  auto params = Browser::CreateParams(browser->profile(), user_gesture);
+  if (auto* controller = tabs::VerticalTabStripStateController::From(browser)) {
+    params.vertical_tab_strip_collapsed = controller->IsCollapsed();
+    params.vertical_tab_strip_uncollapsed_width =
+        controller->GetUncollapsedWidth();
+  }
+  return Browser::Create(params);
+}
+
 }  // namespace
 
 using base::UserMetricsAction;
@@ -1330,8 +1340,7 @@ void MoveGroupToNewWindow(Browser* browser, tab_groups::TabGroupId group) {
     web_app::MaybeAddPinnedHomeTab(new_browser,
                                    new_browser->app_controller()->app_id());
   } else {
-    new_browser =
-        Browser::Create(Browser::CreateParams(browser->profile(), true));
+    new_browser = CreateNewBrowser(browser, true);
   }
 
   MoveGroupToWindowImpl(browser, new_browser, group);
@@ -1352,8 +1361,7 @@ void MoveTabsToNewWindow(Browser* browser,
     web_app::MaybeAddPinnedHomeTab(new_browser,
                                    new_browser->app_controller()->app_id());
   } else {
-    new_browser =
-        Browser::Create(Browser::CreateParams(browser->profile(), true));
+    new_browser = CreateNewBrowser(browser, true);
   }
   if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
     manager->SetWindowCreationInfo(
