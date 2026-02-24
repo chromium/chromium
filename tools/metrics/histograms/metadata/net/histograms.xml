@@ -8884,6 +8884,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.URLLoader.HasHeaderClient" enum="Boolean"
+    expires_after="2026-05-19">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records whether a URLLoader has a TrustedHeaderClient when starting a
+    transaction. Logged before the URLLoader starts a transaction.
+  </summary>
+</histogram>
+
+<histogram name="Net.URLLoader.OnBeforeSendHeadersDuration" units="ms"
+    expires_after="2026-05-19">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Records the duration of the TrustedHeaderClient::OnBeforeSendHeaders IPC
+    call. Logged when the callback for OnBeforeSendHeaders is received in
+    URLLoader::OnBeforeSendHeadersComplete.
+  </summary>
+</histogram>
+
 <histogram name="Net.URLLoader.ProportionOfWritesBlockedByMojo" units="%"
     expires_after="2026-08-16">
   <owner>yoichio@chromium.org</owner>

@@ -678,6 +678,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   LocalNetworkAccessUrlLoaderInterceptor local_network_access_interceptor_;
 
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;
+  // The time when OnBeforeSendHeaders was called to `header_client_`.
+  base::TimeTicks on_before_send_headers_start_time_;
 
   // Handles asynchronously opening files for upload. Holds a reference to the
   // request's URL (from `url_request_`), so `url_request_` must outlive this.
