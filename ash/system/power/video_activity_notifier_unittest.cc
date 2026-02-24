@@ -34,12 +34,12 @@ class VideoActivityNotifierTest : public AshTestBase {
   void TearDown() override {
     notifier_.reset();
     detector_.reset();
+    power_client_ = nullptr;
     AshTestBase::TearDown();
   }
 
  protected:
-  raw_ptr<chromeos::FakePowerManagerClient, DanglingUntriaged>
-      power_client_;  // Not owned.
+  raw_ptr<chromeos::FakePowerManagerClient> power_client_;  // Not owned.
 
   std::unique_ptr<VideoDetector> detector_;
   std::unique_ptr<VideoActivityNotifier> notifier_;
