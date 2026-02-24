@@ -852,7 +852,6 @@ int DownloadProtectionService::GetDownloadAttributionUserGestureLimit(
   return kDownloadAttributionUserGestureLimit;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void DownloadProtectionService::RequestFinished(DeepScanningRequest* request) {
   auto it = std::ranges::find_if(deep_scanning_requests_,
                                  base::MatchesUniquePtr(request));
@@ -867,7 +866,6 @@ DownloadProtectionService::GetBinaryUploadService(
   return enterprise_connectors::GetBinaryUploadServiceForConnector(profile,
                                                                    settings);
 }
-#endif
 
 void DownloadProtectionService::MaybeCheckMetadataAfterDeepScanning(
     download::DownloadItem* item,
