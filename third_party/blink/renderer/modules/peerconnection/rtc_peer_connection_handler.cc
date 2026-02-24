@@ -387,7 +387,7 @@ class RTCPeerConnectionHandler::WebRtcSetDescriptionObserverImpl
                    current_local_description) {
           created_session_description = current_local_description.get();
         }
-        RTC_DCHECK(created_session_description);
+        CHECK(created_session_description);
         std::string sdp;
         created_session_description->ToString(&sdp);
 
@@ -1351,7 +1351,7 @@ void RTCPeerConnectionHandler::EmitCurrentStateForTracker() {
   if (!peer_connection_tracker_) {
     return;
   }
-  RTC_DCHECK(native_peer_connection_);
+  CHECK(native_peer_connection_);
   const webrtc::SessionDescriptionInterface* local_desc =
       native_peer_connection_->local_description();
   // If the local desc is an answer, emit it after the offer.

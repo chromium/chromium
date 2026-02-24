@@ -143,7 +143,7 @@ class FakeRtpTransceiver : public webrtc::RtpTransceiverInterface {
   }
   webrtc::RTCError SetCodecPreferences(
       webrtc::ArrayView<webrtc::RtpCodecCapability>) override {
-    RTC_DCHECK_NOTREACHED() << "Not implemented";
+    NOTREACHED() << "Not implemented";
     return {};
   }
   std::vector<webrtc::RtpHeaderExtensionCapability>

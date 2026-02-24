@@ -232,14 +232,14 @@ scoped_refptr<media::VideoFrame> MaybeConvertAndScaleFrame(
   if (!source_frame)
     return nullptr;
   // Texture frames may be readback in ARGB format.
-  RTC_DCHECK(source_frame->format() == media::PIXEL_FORMAT_I420 ||
-             source_frame->format() == media::PIXEL_FORMAT_I420A ||
-             source_frame->format() == media::PIXEL_FORMAT_NV12 ||
-             source_frame->format() == media::PIXEL_FORMAT_ARGB ||
-             source_frame->format() == media::PIXEL_FORMAT_XRGB ||
-             source_frame->format() == media::PIXEL_FORMAT_ABGR ||
-             source_frame->format() == media::PIXEL_FORMAT_XBGR);
-  RTC_DCHECK(shared_resources);
+  CHECK(source_frame->format() == media::PIXEL_FORMAT_I420 ||
+        source_frame->format() == media::PIXEL_FORMAT_I420A ||
+        source_frame->format() == media::PIXEL_FORMAT_NV12 ||
+        source_frame->format() == media::PIXEL_FORMAT_ARGB ||
+        source_frame->format() == media::PIXEL_FORMAT_XRGB ||
+        source_frame->format() == media::PIXEL_FORMAT_ABGR ||
+        source_frame->format() == media::PIXEL_FORMAT_XBGR);
+  CHECK(shared_resources);
 
   const bool source_is_i420 =
       source_frame->format() == media::PIXEL_FORMAT_I420 ||
@@ -336,7 +336,7 @@ webrtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
 scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
     webrtc::scoped_refptr<webrtc::VideoFrameBuffer> buffer,
     base::TimeDelta timestamp) {
-  RTC_DCHECK(buffer->type() != webrtc::VideoFrameBuffer::Type::kNative);
+  CHECK_NE(buffer->type(), webrtc::VideoFrameBuffer::Type::kNative);
   const gfx::Size size(buffer->width(), buffer->height());
   scoped_refptr<media::VideoFrame> video_frame;
   switch (buffer->type()) {

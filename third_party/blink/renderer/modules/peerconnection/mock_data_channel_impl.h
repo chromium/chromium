@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 
 namespace blink {
@@ -30,7 +31,7 @@ class MockDataChannel : public webrtc::DataChannelInterface {
   // Deprecated method.
   // Reliability is controlled by maxPacketLifetime and maxRetransmits.
   bool reliable() const override {
-    RTC_DCHECK_NOTREACHED();
+    NOTREACHED();
     return false;  // Not all compilers know this is unreachable.
   }
   bool ordered() const override;
