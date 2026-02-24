@@ -188,7 +188,10 @@ INSTANTIATE_TEST_SUITE_P(
           Decision::UseQuietUi(PermissionsAiUiSelector::QuietUiReason::
                                    kServicePredictedVeryUnlikelyGrant,
                                Decision::ShowNoWarning())},
-         {"unlikely", Decision::UseNormalUiAndShowNoWarning()},
+         {"unlikely",
+          Decision::UseQuietUi(PermissionsAiUiSelector::QuietUiReason::
+                                   kServicePredictedVeryUnlikelyGrant,
+                               Decision::ShowNoWarning())},
          {"neutral", Decision::UseNormalUiAndShowNoWarning()},
          {"likely", Decision::UseNormalUiAndShowNoWarning()},
          {"very-likely", Decision::UseNormalUiAndShowNoWarning()}}));
