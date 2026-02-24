@@ -215,6 +215,30 @@ void UpdateContainerPref(Profile* profile,
   }
 }
 
+bool UpdateContainerVmType(Profile* profile,
+                           int vm_type,
+                           std::string_view container_vm_name) {
+  ScopedListPrefUpdate updater(profile->GetPrefs(),
+                               guest_os::prefs::kGuestOsContainers);
+
+  auto it = std::ranges::find_if(*updater, [&](const auto& dict) {
+    const std::string* vm_name =
+        dict.GetDict().FindString(guest_os::prefs::kVmNameKey);
+    return vm_name && *vm_name == container_vm_name;
+  });
+  if (it != updater->end()) {
+    std::optional<int> existing_vm_type =
+        it->GetDict().FindInt(guest_os::prefs::kVmTypeKey);
+    if (existing_vm_type && *existing_vm_type != vm_type) {
+      LOG(WARNING) << "Overwriting " << container_vm_name << " vm_type from "
+                   << *existing_vm_type << " to " << vm_type;
+    }
+    it->GetDict().Set(guest_os::prefs::kVmTypeKey, vm_type);
+    return true;
+  }
+  return false;
+}
+
 void MergeContainerPref(Profile* profile,
                         const GuestId& container_id,
                         const std::string& key,

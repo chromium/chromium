@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
+#include "chrome/browser/ash/dbus/service_util.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -62,16 +63,6 @@ void SendResponse(dbus::MethodCall* method_call,
   std::move(response_sender).Run(std::move(response));
 }
 
-user_manager::User* FindUserByUserIdHash(const std::string& user_id_hash) {
-  for (user_manager::User* user :
-       user_manager::UserManager::Get()->GetLoggedInUsers()) {
-    if (user->username_hash() == user_id_hash) {
-      return user;
-    }
-  }
-  return nullptr;
-}
-
 // TODO(crbug.com/479421366): We should use user_manager::User* for profile
 // prefs.
 Profile* GetSenderProfile(
@@ -89,16 +80,7 @@ Profile* GetSenderProfile(
     return nullptr;
   }
 
-  if (user_id_hash.empty()) {
-    return ProfileManager::GetActiveUserProfile();
-  }
-
-  auto* user = FindUserByUserIdHash(user_id_hash);
-  if (!user) {
-    return nullptr;
-  }
-  return Profile::FromBrowserContext(
-      BrowserContextHelper::Get()->GetBrowserContextByUser(user));
+  return GetProfileFromUserIdHash(user_id_hash);
 }
 
 }  // namespace

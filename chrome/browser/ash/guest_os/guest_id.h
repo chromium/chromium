@@ -82,6 +82,11 @@ void MergeContainerPref(Profile* profile,
 // if field is not present.
 VmType VmTypeFromPref(const base::Value& pref);
 
+// Updates the vm_type for a container with the given vm_name.
+bool UpdateContainerVmType(Profile* profile,
+                           int vm_type,
+                           std::string_view vm_name);
+
 }  // namespace guest_os
 
 #endif  // CHROME_BROWSER_ASH_GUEST_OS_GUEST_ID_H_
