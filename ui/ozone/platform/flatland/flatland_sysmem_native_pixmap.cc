@@ -57,9 +57,6 @@ viz::SharedImageFormat FlatlandSysmemNativePixmap::GetSharedImageFormat()
   return collection_->format();
 }
 
-uint32_t FlatlandSysmemNativePixmap::GetFourCCBufferFormat() const {
-  NOTREACHED();
-}
 gfx::Size FlatlandSysmemNativePixmap::GetBufferSize() const {
   return size_;
 }

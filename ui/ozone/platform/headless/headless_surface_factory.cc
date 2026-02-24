@@ -158,8 +158,6 @@ class TestPixmap : public gfx::NativePixmap {
   viz::SharedImageFormat GetSharedImageFormat() const override {
     return format_;
   }
-
-  uint32_t GetFourCCBufferFormat() const override { return 0; }
   size_t GetNumberOfPlanes() const override { return format_.NumberOfPlanes(); }
   bool SupportsZeroCopyWebGPUImport() const override { return false; }
   gfx::Size GetBufferSize() const override { return gfx::Size(); }

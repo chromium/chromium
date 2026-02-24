@@ -5,13 +5,11 @@
 #include "ui/ozone/platform/drm/gpu/gbm_pixmap.h"
 
 #include <gbm.h>
-
 #include <memory>
 #include <utility>
 
 #include "base/check.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 #include "ui/ozone/platform/drm/gpu/gbm_surface_factory.h"
@@ -64,10 +62,6 @@ uint64_t GbmPixmap::GetFormatModifier() const {
 
 viz::SharedImageFormat GbmPixmap::GetSharedImageFormat() const {
   return buffer_->GetSharedImageFormat();
-}
-
-uint32_t GbmPixmap::GetFourCCBufferFormat() const {
-  return ui::GetFourCCFormatFromSharedImageFormat(GetSharedImageFormat());
 }
 
 gfx::Size GbmPixmap::GetBufferSize() const {
