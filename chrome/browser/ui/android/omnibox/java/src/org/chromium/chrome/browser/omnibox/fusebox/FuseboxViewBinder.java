@@ -208,8 +208,8 @@ class FuseboxViewBinder {
     }
 
     private static void updateToolDrawables(
-            @AutocompleteRequestType int autocompleteRequestType, FuseboxViewHolder views) {
-        Context context = views.parentView.getContext();
+            @AutocompleteRequestType int autocompleteRequestType, FuseboxViewHolder view) {
+        Context context = view.parentView.getContext();
         final Drawable aiModeButtonEndDrawable;
         final Drawable imageGenEndDrawable;
         switch (autocompleteRequestType) {
@@ -231,20 +231,20 @@ class FuseboxViewBinder {
 
         final Drawable aiModeButtonStartDrawable =
                 context.getDrawable(R.drawable.search_spark_black_24dp);
-        views.popup.mAiModeButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+        view.popup.mAiModeButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 aiModeButtonStartDrawable, null, aiModeButtonEndDrawable, null);
 
         // This drawable will be manually tinted with a filter, while all the others in this method
         // will pick up the default from the button.
         final Drawable imageGenStartDrawable =
                 assumeNonNull(context.getDrawable(R.drawable.create_image_24dp)).mutate();
-        views.popup.mCreateImageButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
+        view.popup.mCreateImageButton.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 imageGenStartDrawable, null, imageGenEndDrawable, null);
-        reapplyColorFilter(views.popup.mCreateImageButton);
+        reapplyColorFilter(view.popup.mCreateImageButton);
     }
 
     private static void updateButtonsA11yAnnouncements(
-            PropertyModel model, FuseboxViewHolder views) {
+            PropertyModel model, FuseboxViewHolder view) {
         @StringRes
         int navButtonAccessibilityStringRes = R.string.acc_send_button_search_or_navigate;
         @StringRes
@@ -267,16 +267,16 @@ class FuseboxViewBinder {
                 break;
         }
 
-        var res = views.parentView.getResources();
-        views.navigateButton.setContentDescription(res.getText(navButtonAccessibilityStringRes));
-        views.popup.mAiModeButton.setContentDescription(
+        var res = view.parentView.getResources();
+        view.navigateButton.setContentDescription(res.getText(navButtonAccessibilityStringRes));
+        view.popup.mAiModeButton.setContentDescription(
                 res.getText(aiModeButtonAccessibilityStringRes));
-        views.popup.mCreateImageButton.setContentDescription(
+        view.popup.mCreateImageButton.setContentDescription(
                 res.getText(imageGenButtonAccessibilityStringRes));
     }
 
     private static void updateButtonsVisibilityAndStyling(
-            PropertyModel model, FuseboxViewHolder views) {
+            PropertyModel model, FuseboxViewHolder view) {
         boolean showFuseboxToolbar = model.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE);
         boolean showDedicatedModeButton = model.get(FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON);
         boolean isAiModeUsed =
@@ -288,26 +288,26 @@ class FuseboxViewBinder {
         boolean showTryAiModeHintInDedicatedModeButton =
                 OmniboxFeatures.sShowTryAiModeHintInDedicatedModeButton.getValue();
         @BrandedColorScheme int brandedColorScheme = model.get(FuseboxProperties.COLOR_SCHEME);
-        Context context = views.parentView.getContext();
+        Context context = view.parentView.getContext();
         Resources res = context.getResources();
 
-        ChromeImageView addButton = views.addButton;
+        ChromeImageView addButton = view.addButton;
         addButton.setVisibility(showFuseboxToolbar ? View.VISIBLE : View.GONE);
         addButton.setBackground(
                 OmniboxResourceProvider.getSearchBoxIconBackground(context, brandedColorScheme));
         addButton.setImageTintList(
                 OmniboxResourceProvider.getPrimaryIconTintList(context, brandedColorScheme));
 
-        views.navigateButton
+        view.navigateButton
                 .getDrawable()
                 .setTint(
                         OmniboxResourceProvider.getSendIconContrastColor(
                                 context, brandedColorScheme));
         @ColorInt
         int colorPrimary = OmniboxResourceProvider.getColorPrimary(context, brandedColorScheme);
-        views.navigateButton.getBackground().setTint(colorPrimary);
+        view.navigateButton.getBackground().setTint(colorPrimary);
 
-        ButtonCompat typeButton = views.requestType;
+        ButtonCompat typeButton = view.requestType;
         if (showFuseboxToolbar
                 && (isAiModeUsed || isImageGenerationUsed || showDedicatedModeButton)) {
             final String text;
@@ -400,7 +400,7 @@ class FuseboxViewBinder {
         int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
         ColorStateList iconTint =
                 OmniboxResourceProvider.getPrimaryIconTintList(context, brandedColorScheme);
-        for (Button button : views.popup.mButtons) {
+        for (Button button : view.popup.mButtons) {
             button.setTextAppearance(textAppearance);
             // Color filters applied to drawables will take precedence over this tint.
             button.setCompoundDrawableTintList(iconTint);
@@ -409,13 +409,13 @@ class FuseboxViewBinder {
         @ColorInt
         int dividerLineColor =
                 OmniboxResourceProvider.getPopupDividerLineColor(context, brandedColorScheme);
-        for (View divider : views.popup.mDividers) {
+        for (View divider : view.popup.mDividers) {
             divider.setBackgroundColor(dividerLineColor);
         }
     }
 
     private static void reanchorViewsForCompactFusebox(
-            PropertyModel model, FuseboxViewHolder views) {
+            PropertyModel model, FuseboxViewHolder view) {
         boolean shouldShowCompactUi =
                 model.get(FuseboxProperties.COMPACT_UI)
                         || !model.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE);
@@ -425,9 +425,9 @@ class FuseboxViewBinder {
         int bottomToBottom = shouldShowCompactUi ? ConstraintSet.UNSET : ConstraintSet.PARENT_ID;
 
         var cs = new ConstraintSet();
-        cs.clone(views.parentView);
+        cs.clone(view.parentView);
 
-        int id = views.addButton.getId();
+        int id = view.addButton.getId();
         cs.clear(id, ConstraintSet.TOP);
         cs.clear(id, ConstraintSet.BOTTOM);
         cs.clear(id, ConstraintSet.BASELINE);
@@ -448,7 +448,7 @@ class FuseboxViewBinder {
                 shouldShowCompactUi ? R.id.action_buttons_segment : R.id.delete_button,
                 ConstraintSet.START);
 
-        cs.applyTo(views.parentView);
+        cs.applyTo(view.parentView);
     }
 
     private static void updateForCurrentTabFavicon(Bitmap favicon, FuseboxViewHolder viewHolder) {
