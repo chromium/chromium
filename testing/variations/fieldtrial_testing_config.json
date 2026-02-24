@@ -8372,7 +8372,7 @@
                 {
                     "name": "Enabled_20260223",
                     "enable_features": [
-                        "kDataControlsDragEnforcement"
+                        "DataControlsDragEnforcement"
                     ]
                 }
             ]
