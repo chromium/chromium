@@ -75,7 +75,7 @@ class TargetAutoAttacher {
 
   virtual void UpdateAutoAttach(base::OnceClosure callback);
 
-  void DispatchAutoAttach(DevToolsAgentHost* host, bool waiting_for_debugger);
+  bool DispatchAutoAttach(DevToolsAgentHost* host, bool waiting_for_debugger);
   void DispatchAutoDetach(DevToolsAgentHost* host);
   void DispatchSetAttachedTargetsOfType(
       const base::flat_set<scoped_refptr<DevToolsAgentHost>>& hosts,

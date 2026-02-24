@@ -116,14 +116,21 @@ void TargetAutoAttacher::CreateAndAddNavigationThrottles(
   }
 }
 
-void TargetAutoAttacher::DispatchAutoAttach(DevToolsAgentHost* host,
+bool TargetAutoAttacher::DispatchAutoAttach(DevToolsAgentHost* host,
                                             bool waiting_for_debugger) {
+  bool should_pause = false;
   for (auto& client : clients_) {
-    client.AutoAttach(
-        this, host,
+    bool client_waiting =
         waiting_for_debugger &&
-            clients_requesting_wait_for_debugger_.contains(&client));
+        clients_requesting_wait_for_debugger_.contains(&client);
+    if (client.AutoAttach(this, host, client_waiting) && client_waiting) {
+      should_pause = true;
+    }
   }
+  // Also handle the case where the target was already attached via a different
+  // path (e.g. DevToolsAgentHostCreated). In that case a session exists and
+  // can send Runtime.runIfWaitingForDebugger, so it is safe to pause.
+  return should_pause || (waiting_for_debugger && host->IsAttached());
 }
 
 void TargetAutoAttacher::DispatchAutoDetach(DevToolsAgentHost* host) {

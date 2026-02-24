@@ -80,8 +80,8 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
   // ServiceWorkerDevToolsManager::Observer implementation.
   void WorkerCreated(ServiceWorkerDevToolsAgentHost* host,
                      bool* should_pause_on_start) override {
-    *should_pause_on_start = wait_for_debugger_on_start();
-    DispatchAutoAttach(host, *should_pause_on_start);
+    *should_pause_on_start =
+        DispatchAutoAttach(host, wait_for_debugger_on_start());
   }
 
   void WorkerDestroyed(ServiceWorkerDevToolsAgentHost* host) override {
@@ -91,8 +91,8 @@ class BrowserDevToolsAgentHost::BrowserAutoAttacher final
   // SharedWorkerDevToolsManager::Observer implementation.
   void SharedWorkerCreated(SharedWorkerDevToolsAgentHost* host,
                            bool* should_pause_on_start) override {
-    *should_pause_on_start = wait_for_debugger_on_start();
-    DispatchAutoAttach(host, *should_pause_on_start);
+    *should_pause_on_start =
+        DispatchAutoAttach(host, wait_for_debugger_on_start());
   }
 
   void SharedWorkerDestroyed(SharedWorkerDevToolsAgentHost* host) override {

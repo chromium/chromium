@@ -1,0 +1,3 @@
+Tests that service workers excluded by Target.setAutoAttach filter are NOT paused on start (crbug.com/482620898). Before the fix, the pause decision was made before filters were evaluated, causing a deadlock where the excluded (session-less) worker never received Runtime.runIfWaitingForDebugger.
+DONE
+
