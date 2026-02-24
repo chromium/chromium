@@ -883,6 +883,11 @@
         android:exported="false"
         android:isolatedProcess="true">
     </service>  # DIFF-ANCHOR: 5d82e3ff
+    <service  # DIFF-ANCHOR: 293d124f
+        android:name="org.chromium.chrome.browser.actor.ActorForegroundService"
+        android:exported="false"
+        android:foregroundServiceType="dataSync">
+    </service>  # DIFF-ANCHOR: 293d124f
     <service  # DIFF-ANCHOR: b56e4a55
         android:name="org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService"
         android:exported="false">

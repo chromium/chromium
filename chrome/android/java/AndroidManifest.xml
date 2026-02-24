@@ -916,6 +916,11 @@ by a child template that "extends" this file.
             android:isolatedProcess="true"
             android:process=":decoder_service" />
 
+        <!-- Actor foreground service -->
+        <service android:name="org.chromium.chrome.browser.actor.ActorForegroundService"
+           android:foregroundServiceType="dataSync" android:exported="false">
+        </service>
+
         <!-- Download foreground service -->
         <service android:name="org.chromium.chrome.browser.download.DownloadForegroundService"
            android:foregroundServiceType="dataSync" android:exported="false">
