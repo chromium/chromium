@@ -428,6 +428,7 @@
 <translation id="1664389769577564606">Фотополимер за флексопечат</translation>
 <translation id="1667730174533834274">потвърди самоличността ви, преди да промените настройките</translation>
 <translation id="1668071460721346172">Получаване на имейл</translation>
+<translation id="1670861525135254448">Запазване на превозното средство</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Късата страна напред</translation>
 <translation id="168693727862418163">Стойността на това правило не бе потвърдена спрямо съответната схема и ще бъде пренебрегната.</translation>
@@ -470,6 +471,7 @@
 <translation id="1734878702283171397">Свържете се със системния администратор.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, изтича на <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Компютър</translation>
+<translation id="1739364174357629566">Актуализиране на известния номер на пътника</translation>
 <translation id="1740404923954980840">За да излезете от режима на цял екран, плъзнете от горната част на екрана и докоснете бутона за връщане назад</translation>
 <translation id="1741474054575634405">Управление на картите за лоялност...</translation>
 <translation id="1741613555002899862">Трябва да бъде посочено посредством валиден низ, когато за правилото DnsOverHttpsMode е зададено <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -1060,6 +1062,7 @@
 <translation id="2674524144218093528">Домашни бояджийски и довършителни работи</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> групи раздели вече не са налице</translation>
 <translation id="2677748264148917807">Излизане</translation>
+<translation id="2679659833697380">Информацията ви се запазва на устройството ви</translation>
 <translation id="2683195745483370038">Намерени са други резултати</translation>
 <translation id="2686919536310834199">Изпращане на отзиви за функцията за помощ при писане.</translation>
 <translation id="2687555958734450033">Напасване</translation>
@@ -1318,6 +1321,7 @@
 <translation id="3115363211799416195">{0,plural, =1{Да се изтегли ли поверителният файл?}other{Да се изтеглят ли поверителните файлове?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> изисква да създадете резервно копие на данните си и да върнете това устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Ламиниране</translation>
+<translation id="3116695032231023709">Запазване на документа за самоличност</translation>
 <translation id="3119689199889622589">Органични и естествени храни</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Опитайте да стартирате диагностика на свързаността<ph name="END_LINK" />.</translation>
@@ -1325,6 +1329,7 @@
 <translation id="3121994479408824897">Към <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Показване на резултатите от последните 30 дни</translation>
 <translation id="3126023634486644099">Етикети (постоянни)</translation>
+<translation id="3132345256151444894">Запазване на номера в програмата за обезщетения</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> вече е основната ви търсеща машина</translation>
 <translation id="3134859781443140237">Локална мрежа</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – търсене в(ъв) <ph name="KEYWORD_SHORT_NAME" /></translation>
@@ -1398,6 +1403,7 @@
 <translation id="323585066388831737">Светлочервено</translation>
 <translation id="3235902901585019063">Локалните файлове ще бъдат изтрити на <ph name="DATE_TIME" />. Уверете се, че всички важни бизнес или лични данни се съхраняват извън устройството.</translation>
 <translation id="3236212803136366317">Предимства на картата</translation>
+<translation id="3237427677128462778">Запазването в Google Wallet не бе успешно</translation>
 <translation id="3238395604961564389">Отваряне на връзката в прозорец в режим „инкогнито“</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате облика на браузъра си</translation>
 <translation id="3240791268468473923">Листът за несъответстващи идентификационни данни за сигурни плащания е отворен</translation>
@@ -2042,6 +2048,7 @@
 <translation id="4233220688695460165">Chrome автоматично изтрива темите и сайтовете, които предлагат реклами, в рамките на 30 дни. Можете също да блокирате конкретни теми и сайтове, които не харесвате.</translation>
 <translation id="4235360514405112390">Валиден сертификат</translation>
 <translation id="4239799716689808527">Етикети</translation>
+<translation id="424063167283213501">Запазване на известния номер на пътника</translation>
 <translation id="4241830393007970744">Хакерите, използващи сайта, който опитахте да посетите, може да ви подведат да инсталирате софтуер или да разкриете информация за себе си, като например пароли, телефон или номера на кредитни карти.</translation>
 <translation id="4242380780309416996">Плик (тежка хартия)</translation>
 <translation id="4242981939686657948">За по-мощен начин за търсене в историята на сърфирането включете</translation>
@@ -2304,6 +2311,7 @@
 <translation id="4691093235373904540">Покриви</translation>
 <translation id="4692623383562244444">Търсещи машини</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> – попитайте <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4698308118265482293">Актуализиране на паспорта</translation>
 <translation id="4698692901173737941">Бойни спортове</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Страна</translation>
@@ -2535,6 +2543,7 @@
 <translation id="5045550434625856497">Грешна парола</translation>
 <translation id="5048293684454354469">Рекламните теми са само едно от многото неща, чрез които даден сайт може да персонализира рекламите. Дори и без рекламни теми сайтовете пак могат да ви показват реклами, но е възможно те да не са толкова персонализирани. Научете повече за <ph name="BEGIN_LINK" />управлението на поверителността при рекламите<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />. Натиснете Tab за още преки пътища за търсене, които са налице след това предложение за търсене</translation>
+<translation id="5052488928733955073">При попълването на информацията ви възникна проблем. Проверете връзката си.</translation>
 <translation id="5052517576853118371">Активни теми</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{За да изпратите този файл чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}other{За да изпратите тези файлове чрез „Споделяне наблизо“, освободете място (<ph name="DISK_SPACE_SIZE" />) на устройството си}}</translation>
 <translation id="5056587122125565772">Създаване на изображение</translation>
@@ -2833,6 +2842,7 @@
 <translation id="5521782189689806907">Шкафове</translation>
 <translation id="5523118979700054094">Име на правилото</translation>
 <translation id="5523588073846127669">Търговецът не приема тази виртуална карта</translation>
+<translation id="5524476634211040742">Научете повече за AI и поверителността</translation>
 <translation id="5525755241743357906">Файлът е копиран или преместен</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате инструментите за достъпност в настройките на Chrome OS</translation>
 <translation id="55293785478302737">Зашиване на ръба</translation>
@@ -3270,6 +3280,8 @@
 <translation id="6236290670123303279">Управление на настройките</translation>
 <translation id="623825323736974198">Управление на сайтовете, които винаги ще остават активни и от които няма да освобождава памет</translation>
 <translation id="6240447795304464094">Лого на Google Pay</translation>
+<translation id="6240553182907836376">Актуализиране на документа за самоличност</translation>
+<translation id="6240601837375010619">Запазване на паспорта</translation>
 <translation id="6240964651812394252">За да използвате Google Мениджър на пароли с операционната си система, стартирайте повторно Chrome и разрешете достъпа до мениджъра на паролите на компютъра си. След повторното стартиране разделите ви ще се отворят отново.</translation>
 <translation id="6241121617266208201">Скриване на предложенията</translation>
 <translation id="624499991300733384">Услуга за създаване на PDF файлове</translation>
@@ -3634,6 +3646,7 @@
 <translation id="681021252041861472">Задължително поле</translation>
 <translation id="6810899417690483278">Идент. № на персонализирането</translation>
 <translation id="6816109178681043245">Спортни стоки</translation>
+<translation id="681631578600400068">Запазване на шофьорската книжка</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">серийни портове</translation>
 <translation id="6820686453637990663">Код за сигурност</translation>
@@ -3653,6 +3666,7 @@
 <translation id="6850286078059909152">Цвят на текста</translation>
 <translation id="6852204201400771460">Искате ли да презаредите приложението?</translation>
 <translation id="6854691830678097752">С цел по-бързо плащане запазете този код за проверка в профила си <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="6855951327659224749">Изчистете формуляра, за да използвате опцията за плащане по-късно</translation>
 <translation id="6857776781123259569">Управление на паролите…</translation>
 <translation id="6858034839887287663">A2 x 4</translation>
 <translation id="6860888819347870819">Може да извежда запитвания за преминаване в режим „картина в картината“</translation>
@@ -3845,6 +3859,7 @@
 <translation id="7143668445748322952">файловете от камерата, изтеглянията и екранните снимки</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
+<translation id="7145337554745942724">Актуализиране на шофьорската книжка</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
 <translation id="7152230779180489711">Последно посещение</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и още <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -4038,6 +4053,7 @@
 <translation id="7444176988908839653">{COUNT,plural, =0{„Бисквитките“ ще бъдат блокирани отново днес}=1{„Бисквитките“ ще бъдат блокирани отново утре}other{# дни до повторното блокиране на „бисквитките“}}</translation>
 <translation id="7447234474237738389">Услуги за облекло</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> мм)</translation>
+<translation id="7450486349221991286">Актуализиране на превозното средство</translation>
 <translation id="7450577240311017924">Бутон „Управление на синхронизирането“. Активирайте, за да управлявате данните, които да се синхронизират, в настройките на Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за този проблем.</translation>
 <translation id="745208957946308667">Играта с динозавъра – натиснете интервал, за да играете</translation>
@@ -4885,6 +4901,7 @@
 <translation id="8811725516933141693">Въведете @gemini, за да разговаряте с Gemini</translation>
 <translation id="8813277370772331957">Напомняне по-късно</translation>
 <translation id="8814707942599948500">Плик C8</translation>
+<translation id="881559332211266856">Актуализиране на номера в програмата за обезщетения</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да актуализирате Chrome от настройките</translation>
 <translation id="8819855907485254989">Запазване на билета за транспорт в Wallet</translation>
 <translation id="8820817407110198400">Отметки</translation>

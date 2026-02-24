@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">گروپ کو برقرار رکھیں</translation>
 <translation id="1853692000353488670">نیا پوشیدگی ٹیب</translation>
 <translation id="1854463785401910334">کھلے ٹیبز تلاش کریں</translation>
+<translation id="1860609647735325606">‏‫Gemini کے ساتھ وضاحت کریں</translation>
 <translation id="1861067954551502701">{count,plural, =1{‫{count} پاس ورڈ میں سے {position}}other{‫{count} پاس ورڈز میں سے {position}}}</translation>
 <translation id="1861262398884155592">یہ فولڈر خالی ہے</translation>
 <translation id="1864266050569350424">اس سائٹ پر جہاں آپ نے پاس ورڈ محفوظ کر رکھا ہے، سائن ان پاس ورڈ فیلڈ پر تھپتھپائیں۔</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">تمام کھولیں</translation>
 <translation id="2536991091671391962">‏آپ کسی بھی آلے پر محفوظ کردہ پاس ورڈز استعمال کر سکتے ہیں۔ وہ <ph name="EMAIL" /> کے Google پاس ورڈ مینیجر میں محفوظ ہوتے ہیں۔</translation>
 <translation id="2538103551183528357">مخفی، پاس ورڈ</translation>
+<translation id="2538705697765638552">‏اپنی معلومات محفوظ کریں اور Google پروڈکٹس پر فارمز پُر کرنے جیسے کام تیزی سے کریں۔ آپ <ph name="USER_EMAIL" /> کے لیے Google والٹ میں اپنی معلومات کا نظم کر سکتے ہیں۔</translation>
 <translation id="2539748786028143624">بہتر کردہ حفاظت آن کریں…</translation>
 <translation id="2540111494300686866">ڈائیلاگز کو بند کریں</translation>
 <translation id="2542268842667970959">"سیفٹی چیک" چھپائیں</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{‏آپ کے Google اکاؤنٹ {EMAIL} میں پاس ورڈ محفوظ کیا گیا ہے}other{‏آپ کے Google اکاؤنٹ {EMAIL} میں پاس ورڈز محفوظ کیے گئے ہیں}}</translation>
 <translation id="2791174088547598693">پاس ورڈ شامل کریں…</translation>
 <translation id="2793703503584038325">پاسورڈ منتخب کریں اور "اشتراک کریں" کے آئیکن پر تھپتھپائیں</translation>
+<translation id="2793804887899597849">معلومات صرف آلہ میں محفوظ کی گئی</translation>
 <translation id="2797029671965852011">سرگزشت دکھائیں</translation>
 <translation id="2797302972324086597">ملک کا کوڈ</translation>
 <translation id="2798263827270599246">ڈیفالٹ تھیم</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">لینز کا استعمال کرتے ہوئے تلاش کریں</translation>
 <translation id="3575426792457739946">اس فہرست ميں تمام لوڈ کردہ پروفائلز شامل ہیں۔</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />، آپ کی تنظیم کے زیر انتظام ہے۔</translation>
+<translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> اپ ڈیٹ کریں؟</translation>
 <translation id="3581564640715911333">صفحات کو دیگر زبانوں میں ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="3587482841069643663">سبھی</translation>
 <translation id="3587885837929752825">‏آپ کی تنظیم یہ محدود کرتی ہے کہ آپ اپنے Google اکاؤنٹ میں کیا محفوظ کر سکتے ہیں۔</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">درآمد کریں</translation>
 <translation id="3857113360369572832">‏‫<ph name="BEGIN_BOLD" />Safari کی ترتیبات<ph name="END_BOLD" /> کھولیں</translation>
 <translation id="3858860766373142691">نام</translation>
+<translation id="386224966259596343">اگلی بار جب آپ کوئی متعلقہ فارم پُر کریں گے تو آپ کو اس معلومات کو والٹ میں محفوظ کرنے کا موقع ملے گا۔</translation>
 <translation id="3868495844258915202">‏مکمل URL دکھائیں</translation>
 <translation id="3875783148670536197">مجھے طریقہ دکھائیں</translation>
 <translation id="3878657761594430423">شیٹ گریبر</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">مدد دکھائیں</translation>
 <translation id="4095483462103784441">نیا ٹیب گروپ تخلیق کریں</translation>
 <translation id="4099756562043439968">ایک یاد دہانی سیٹ کریں</translation>
+<translation id="4101867642407836771">‏<ph name="USER_EMAIL" /> کے لیے Google والٹ میں۔</translation>
 <translation id="4108998448622696017">جب خطرناک ایونٹس ہوتے ہیں تو ان کا پتہ لگا کر آپ کو ان کے بارے میں متنبہ کرتا ہے۔</translation>
 <translation id="4111985840824673503">سبھی کو پڑھا ہوا کے بطور نشان زد کریں</translation>
 <translation id="411254640334432676">ڈاؤن لوڈ ناکام ہوگیا۔</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">اپنے پاس ورڈز تبدیل کریں</translation>
 <translation id="4120936477286528673">یہ سائٹ بار بار دوسری ایپلیکیشن کھولنے کی کوشش کر رہی ہے۔</translation>
 <translation id="4121993058175073134">نیٹ برآمد کرنے کا ڈیٹا بھیجنے کیلئے، براہ کرم ترتیبات ایپ میں اپنے ای میل اکاؤنٹ کو کنفیگر کریں۔</translation>
+<translation id="4129768137228347731"><ph name="ENTITY_TYPE" /> محفوظ کریں؟</translation>
 <translation id="4133139945030148655">آپ پوری طرح تیار ہیں</translation>
 <translation id="4133265950310064865">بہتر کردہ حفاظت</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />، <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1237,6 +1244,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5559567453458728487">ویب پر تبدیلی کی پیمائش کے یونٹس ملے</translation>
 <translation id="556042886152191864">بٹن</translation>
 <translation id="5565871407246142825">کریڈٹ کارڈز</translation>
+<translation id="5566623128829375608">آپ کے آلے میں محفوظ ہو جاتا ہے۔</translation>
 <translation id="5567439033041178034">مزید جانیں</translation>
 <translation id="5578795271662203820">اس تصویر کیلئے <ph name="SEARCH_ENGINE" /> تلاش کریں</translation>
 <translation id="5579012242779565775">پڑھنے کی فہرست کو چھپائیں</translation>
@@ -2179,6 +2187,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8829809207373502270">یہ پاس کی اب کام نہیں کرتی۔ اسے <ph name="WEBSITE" /> سے حذف کیا گیا تھا اور جلد ہی یہاں سے حذف کر دیا جائے گا۔ <ph name="BEGIN_LINK" />پاس کیز کے متعلق<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">سبھی غیر فعال بند کریں</translation>
 <translation id="8837654851594567190">ناشر کے لحاظ سے ترتیب دیں</translation>
+<translation id="884351711508006491">آپ کی معلومات آپ کے آلے میں محفوظ ہے</translation>
 <translation id="8844136307393039959">آپ کے ٹریک کردہ پروڈکٹ کی قیمت میں کمی</translation>
 <translation id="8848286253339013170">‏<ph name="USER_EMAIL" /> کے لیے Google تصاویر میں تصویر محفوظ ہو رہی ہے…</translation>
 <translation id="8849001918648564819">پوشیدہ</translation>

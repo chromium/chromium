@@ -246,6 +246,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2047378580182589770">Touchez et maintenez le doigt sur l'icône pour sortir du mode Navigation privée</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Dans la mesure du possible, utilisez le protocole HTTPS et soyez averti avant de charger des sites qui ne le prennent pas en charge. Vous ne pouvez pas modifier ce paramètre, car la protection avancée est activée.</translation>
+<translation id="2052723746739622752">Annuler l'épinglage de Gemini</translation>
 <translation id="2056878612599315956">Site interrompu</translation>
 <translation id="2063047797624276601">Votre organisation a activé la Navigation sécurisée améliorée</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Échec de 1 téléchargement}one{Échec de # téléchargement}other{Échec de # téléchargements}}</translation>
@@ -727,6 +728,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4137746084635924146">Langue actuelle de l'appareil</translation>
 <translation id="414128724510021958">Sites pour ordinateurs demandés par défaut</translation>
 <translation id="4162867837470729563">Liste d'options de partage à pleine hauteur.</translation>
+<translation id="4165077084524712774">Plus d'outils</translation>
 <translation id="4170011742729630528">Le service n'est pas disponible. Veuillez réessayer plus tard.</translation>
 <translation id="4170577491341606575">Récupération de vos données en cours…</translation>
 <translation id="4177222230309051052">Ajoutez tous vos favoris</translation>
@@ -1200,6 +1202,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="610630277578876674">Ouvrez rapidement les liens dans les messages et plus</translation>
 <translation id="6108923351542677676">Configuration en cours...</translation>
 <translation id="6112702117600201073">Actualisation de la page en cours</translation>
+<translation id="612221930823678863">Adresse URL contenant <ph name="QUERY" /> à la place de la requête</translation>
 <translation id="6122831415929794347">Désactiver la navigation sécurisée?</translation>
 <translation id="6124936178263837501">Signaler comme n'étant pas un pourriel</translation>
 <translation id="6125202119952209826">Se joindre au groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /></translation>
@@ -1464,6 +1467,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6980258170429555165">Le menu <ph name="MENU_NAME" /> est mis en évidence.</translation>
 <translation id="6983306615164277634">Vous pouvez également maintenir votre doigt sur la barre d'adresse pour modifier la position.</translation>
 <translation id="6987047470128880212">Cet appareil ne prend pas en charge la navigation privée</translation>
+<translation id="6989358895283601928">Enregistrer et imprimer</translation>
 <translation id="6996145122199359148">Télécharger cette page</translation>
 <translation id="7013762323294215682">Cette clé d'accès sera enregistrée dans votre gestionnaire de mots de passe. Toute personne y ayant accès pourra utiliser cette clé d'accès.</translation>
 <translation id="7020741890149022655">Ajout. à liste lect. <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>

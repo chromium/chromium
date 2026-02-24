@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Manter grupo</translation>
 <translation id="1853692000353488670">Novo separador anónimo</translation>
 <translation id="1854463785401910334">Pesquise nos separadores abertos</translation>
+<translation id="1860609647735325606">Explicar com o Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} de {count} palavra-passe}other{{position} de {count} palavras-passe}}</translation>
 <translation id="1861262398884155592">Esta pasta está vazia</translation>
 <translation id="1864266050569350424">Num site onde guardou uma palavra-passe, toque no campo da palavra-passe de início de sessão.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2536991091671391962">Pode usar palavras-passe guardadas em qualquer dispositivo. São guardadas no Gestor de Palavras-passe da Google de <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Palavra-passe oculta</translation>
+<translation id="2538705697765638552">Guarde as suas informações e realize tarefas mais rapidamente, como preencher formulários nos produtos Google. Pode gerir as suas informações na Carteira do Google de <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Ativar Proteção melhorada…</translation>
 <translation id="2540111494300686866">Suprimir caixas diálogo</translation>
 <translation id="2542268842667970959">Oculte a opção "Verificação de segurança"</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Palavra-passe guardada na sua Conta Google, {EMAIL}}other{Palavras-passe guardadas na sua Conta Google, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Adicionar palavra-passe…</translation>
 <translation id="2793703503584038325">Selecione uma palavra-passe e toque no ícone "Partilhar"</translation>
+<translation id="2793804887899597849">Informações guardadas apenas no dispositivo</translation>
 <translation id="2797029671965852011">Mostrar histórico</translation>
 <translation id="2797302972324086597">Código do país</translation>
 <translation id="2798263827270599246">Tema predefinido</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Pesquisar com o Lens</translation>
 <translation id="3575426792457739946">Esta lista contém todos os perfis carregados.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, gerida pela sua organização.</translation>
+<translation id="3580448612293054698">Atualizar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Proponha a tradução de páginas noutros idiomas</translation>
 <translation id="3587482841069643663">Tudo</translation>
 <translation id="3587885837929752825">A sua organização limita o que pode guardar na sua Conta Google.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Importar</translation>
 <translation id="3857113360369572832">Abra as <ph name="BEGIN_BOLD" />Definições do Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="386224966259596343">Vai ter a oportunidade de guardar estas informações na Carteira da próxima vez que preencher um formulário relevante.</translation>
 <translation id="3868495844258915202">Mostrar URL completo</translation>
 <translation id="3875783148670536197">Mostrar-me como</translation>
 <translation id="3878657761594430423">Controlo da página</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Mostrar ajuda</translation>
 <translation id="4095483462103784441">Criar novo grupo de separadores</translation>
 <translation id="4099756562043439968">Definir lembrete</translation>
+<translation id="4101867642407836771">Na Carteira do Google de <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Deteta e envia-lhe avisos sobre a ocorrência de eventos perigosos.</translation>
 <translation id="4111985840824673503">Marcar tudo como lido</translation>
 <translation id="411254640334432676">A transferência falhou.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Altere as suas palavras-passe</translation>
 <translation id="4120936477286528673">Este site está a tentar repetidamente abrir outra aplicação.</translation>
 <translation id="4121993058175073134">P/enviar dados exp. da Int., config. a conta de email na ap. Definiç.</translation>
+<translation id="4129768137228347731">Guardar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Está tudo pronto para começar</translation>
 <translation id="4133265950310064865">Proteção melhorada</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1237,6 +1244,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5559567453458728487">Converta unidades de medida encontradas na Web</translation>
 <translation id="556042886152191864">Botão</translation>
 <translation id="5565871407246142825">Cartões de crédito</translation>
+<translation id="5566623128829375608">Guarda no seu dispositivo.</translation>
 <translation id="5567439033041178034">SAIBA MAIS</translation>
 <translation id="5578795271662203820">Pesquisar a imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Ocultar Lista de leitura</translation>
@@ -2179,6 +2187,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="8829809207373502270">Esta chave de acesso já não funciona. Foi eliminada de <ph name="WEBSITE" /> e vai ser eliminada daqui em breve. <ph name="BEGIN_LINK" />Acerca das chaves de acesso<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Fechar todos os inativos</translation>
 <translation id="8837654851594567190">Ordenar por publicador</translation>
+<translation id="884351711508006491">As informações são guardadas no seu dispositivo</translation>
 <translation id="8844136307393039959">Queda de preço no produto acompanhado</translation>
 <translation id="8848286253339013170">A guardar a imagem no Google Fotos de <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Oculto</translation>

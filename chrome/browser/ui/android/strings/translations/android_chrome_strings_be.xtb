@@ -246,6 +246,7 @@
 <translation id="2047378580182589770">Націсніце і ўтрымлівайце, каб выйсці з рэжыму інкогніта</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Выкарыстоўваць HTTPS калі магчыма і паказваць папярэджанне перад загрузкай сайтаў, якія не падтрымліваюць гэты пратакол. Паколькі ўключана Палепшаная абарона, вы не можаце змяніць гэту наладу.</translation>
+<translation id="2052723746739622752">Адмацаваць Gemini</translation>
 <translation id="2056878612599315956">Сайт прыпынены</translation>
 <translation id="2063047797624276601">Ваша арганізацыя ўключыла Палепшаны Бяспечны прагляд</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Збой 1 спампоўкі}one{Збой # спампоўкі}few{Збой # спамповак}many{Збой # спамповак}other{Збой # спампоўкі}}</translation>

@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Paturēt grupu</translation>
 <translation id="1853692000353488670">Jauna inkognito cilne</translation>
 <translation id="1854463785401910334">Meklēšana atvērtajās cilnēs</translation>
+<translation id="1860609647735325606">Paskaidrot, izmantojot Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{Parole numur {position}, kopējais skaits ir {count}}zero{Parole numur {position}, kopējais skaits ir {count}}one{Parole numur {position}, kopējais skaits ir {count}}other{Parole numur {position}, kopējais skaits ir {count}}}</translation>
 <translation id="1861262398884155592">Šī mape ir tukša</translation>
 <translation id="1864266050569350424">Vietnē, kurā esat saglabājis paroli, pieskarieties pierakstīšanās paroles laukam.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Atvērt visas</translation>
 <translation id="2536991091671391962">Saglabātās paroles varat izmantot jebkurā ierīcē. Tās ir saglabātas pakalpojumā Google paroļu pārvaldnieks kontam <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Slēpta, parole</translation>
+<translation id="2538705697765638552">Saglabājiet savu informāciju un ātrāk paveiciet darbus, piemēram, aizpildiet veidlapas Google produktos. Varat pārvaldīt savu informāciju lietotnē Google maks, izmantojot <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Ieslēgt uzlabotu aizsardzību…</translation>
 <translation id="2540111494300686866">Nerādīt dialoglodziņus</translation>
 <translation id="2542268842667970959">Paslēpt sadaļu “Drošības pārbaude”</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Parole ir saglabāta jūsu Google kontā ({EMAIL})}zero{Paroles ir saglabātas jūsu Google kontā ({EMAIL})}one{Paroles ir saglabātas jūsu Google kontā ({EMAIL})}other{Paroles ir saglabātas jūsu Google kontā ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Pievienot paroli…</translation>
 <translation id="2793703503584038325">Atlasiet paroli un pieskarieties ikonai “Kopīgot”.</translation>
+<translation id="2793804887899597849">Informācija ir saglabāta tikai ierīcē</translation>
 <translation id="2797029671965852011">Rādīt vēsturi</translation>
 <translation id="2797302972324086597">Valsts kods</translation>
 <translation id="2798263827270599246">Noklusējuma motīvs</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Meklēt ar Lens</translation>
 <translation id="3575426792457739946">Šajā sarakstā ir iekļauti visi ielādētie profili.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" /> (pārvalda jūsu organizācija).</translation>
+<translation id="3580448612293054698">Vai atjaunināt “<ph name="ENTITY_TYPE" />”?</translation>
 <translation id="3581564640715911333">Piedāvāt tulkot lapas citās valodās</translation>
 <translation id="3587482841069643663">Visi</translation>
 <translation id="3587885837929752825">Jūsu organizācija ierobežo to, kādu informāciju varat saglabāt savā Google kontā.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Importēt</translation>
 <translation id="3857113360369572832">Atveriet <ph name="BEGIN_BOLD" />Safari iestatījumus<ph name="END_BOLD" />.</translation>
 <translation id="3858860766373142691">Nosaukums</translation>
+<translation id="386224966259596343">Nākamreiz, kad aizpildīsiet atbilstošu veidlapu, jums būs iespēja saglabāt šo informāciju lietotnē Maks.</translation>
 <translation id="3868495844258915202">Rādīt visu URL</translation>
 <translation id="3875783148670536197">Parādīt, kā</translation>
 <translation id="3878657761594430423">Lapas turētājs</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Rādīt palīdzību</translation>
 <translation id="4095483462103784441">Izveidot jaunu ciļņu grupu</translation>
 <translation id="4099756562043439968">Iestatīt atgādinājumu</translation>
+<translation id="4101867642407836771">Lietotnē Google maks, izmantojot <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Kad atgadās bīstami notikumi, tie tiek noteikti un jūs saņemat brīdinājumus.</translation>
 <translation id="4111985840824673503">Atzīmēt visu kā izlasītu</translation>
 <translation id="411254640334432676">Lejupielāde neizdevās.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Nomainiet paroles</translation>
 <translation id="4120936477286528673">Šī vietne atkārtoti mēģina atvērt citu lietojumprogrammu.</translation>
 <translation id="4121993058175073134">Neto eksporta datu sūtīšanai konfigurējiet e-pasta kontu iestatījumos.</translation>
+<translation id="4129768137228347731">Vai saglabāt failu <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Viss ir iestatīts</translation>
 <translation id="4133265950310064865">Uzlabota aizsardzība</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1237,6 +1244,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5559567453458728487">Pārveidot tīmeklī atrastās mērvienības</translation>
 <translation id="556042886152191864">Poga</translation>
 <translation id="5565871407246142825">Kredītkartes</translation>
+<translation id="5566623128829375608">Informācija tiek saglabāta ierīcē.</translation>
 <translation id="5567439033041178034">UZZINĀT VAIRĀK</translation>
 <translation id="5578795271662203820">Meklēt šo attēlu ar <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Paslēpt vienumu “Lasīšanas saraksts”</translation>
@@ -2179,6 +2187,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="8829809207373502270">Šī piekļuves atslēga vairs nedarbojas. Tā tika dzēsta no vietnes <ph name="WEBSITE" /> un drīzumā tiks dzēsta arī šeit. <ph name="BEGIN_LINK" />Par piekļuves atslēgām<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Visu neaktīvo ciļņu aizvēršana</translation>
 <translation id="8837654851594567190">Kārtot pēc izdevēja</translation>
+<translation id="884351711508006491">Jūsu informācija tiek saglabāta jūsu ierīcē.</translation>
 <translation id="8844136307393039959">Cenas kritums jūsu izsekotajam produktam</translation>
 <translation id="8848286253339013170">Notiek attēla saglabāšana pakalpojuma “Google fotoattēli” kontā <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Paslēpta</translation>

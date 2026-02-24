@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">الاحتفاظ بمجموعة علامات التبويب</translation>
 <translation id="1853692000353488670">علامة تبويب جديدة للتصفح المتخفي</translation>
 <translation id="1854463785401910334">البحث في علامات التبويب المفتوحة</translation>
+<translation id="1860609647735325606">‏شرح المحتوى باستخدام Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{‫{position} من إجمالي كلمة مرور واحدة ({count})}zero{‫{position} من إجمالي {count} كلمة مرور}two{‫{position} من إجمالي كلمتَي مرور ({count})}few{‫{position} من إجمالي {count} كلمات مرور}many{‫{position} من إجمالي {count} كلمة مرور}other{‫{position} من إجمالي {count} كلمة مرور}}</translation>
 <translation id="1861262398884155592">هذا المجلد فارغ</translation>
 <translation id="1864266050569350424">في أحد المواقع الإلكترونية التي حفظت فيها كلمة المرور، انقر على حقل كلمة المرور في صفحة تسجيل الدخول.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">فتح الكل</translation>
 <translation id="2536991091671391962">‏يمكنك استخدام كلمات المرور المحفوظة على أي جهاز. تُحفظ كلمات المرور في "مدير كلمات المرور في Google" لدى <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">كلمة المرور مخفية</translation>
+<translation id="2538705697765638552">‏يمكنك حفظ معلوماتك لإنجاز المهام بشكل أسرع، مثل ملء النماذج في جميع منتجات Google. ويمكنك إدارة بياناتك في حساب <ph name="USER_EMAIL" /> على "محفظة Google".</translation>
 <translation id="2539748786028143624">تفعيل مستوى "الحماية المحسَّنة"…</translation>
 <translation id="2540111494300686866">إيقاف مربعات الحوار</translation>
 <translation id="2542268842667970959">إخفاء ميزة "التحقّق من الأمان"</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{‏تم حفظ كلمة المرور في حسابك على Google، {EMAIL}.}zero{‏تم حفظ كلمات المرور في حسابك على Google، {EMAIL}.}two{‏تم حفظ كلمتَيْ المرور في حسابك على Google، {EMAIL}.}few{‏تم حفظ كلمات المرور في حسابك على Google، {EMAIL}.}many{‏تم حفظ كلمات المرور في حسابك على Google، {EMAIL}.}other{‏تم حفظ كلمات المرور في حسابك على Google، {EMAIL}.}}</translation>
 <translation id="2791174088547598693">إضافة كلمة مرور…</translation>
 <translation id="2793703503584038325">اختيار كلمة مرور والنقر على رمز "المشاركة"</translation>
+<translation id="2793804887899597849">تم حفظ المعلومات على الجهاز فقط</translation>
 <translation id="2797029671965852011">عرض السجلّ</translation>
 <translation id="2797302972324086597">رمز البلد</translation>
 <translation id="2798263827270599246">المظهر التلقائي</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">‏البحث باستخدام "عدسة Google"</translation>
 <translation id="3575426792457739946">تحتوي هذه القائمة على جميع الملفات الشخصية التي تم تحميلها.</translation>
 <translation id="3578866308944526475">تدير مؤسستك حساب <ph name="EMAIL" />.</translation>
+<translation id="3580448612293054698">تعديل بيانات <ph name="ENTITY_TYPE" />؟</translation>
 <translation id="3581564640715911333">اقتراح ترجمة الصفحات المكتوبة بلغات أخرى</translation>
 <translation id="3587482841069643663">الكل</translation>
 <translation id="3587885837929752825">‏تفرض مؤسستك قيودًا على ما يمكنك حفظه في حسابك على Google.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">استيراد</translation>
 <translation id="3857113360369572832">‏افتح <ph name="BEGIN_BOLD" />إعدادات Safari‏<ph name="END_BOLD" /> (Safari Settings)</translation>
 <translation id="3858860766373142691">الاسم</translation>
+<translation id="386224966259596343">‏ستتاح لك فرصة حفظ هذه المعلومات في "محفظة Google" عند ملء نموذج ذي صلة في المرة القادمة.</translation>
 <translation id="3868495844258915202">‏عرض عناوين URL بالكامل</translation>
 <translation id="3875783148670536197">الاطّلاع على الإرشادات</translation>
 <translation id="3878657761594430423">أداة تعديل حجم الورقة</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">عرض معلومات المساعدة</translation>
 <translation id="4095483462103784441">إنشاء مجموعة علامات تبويب جديدة</translation>
 <translation id="4099756562043439968">ضبط تذكير</translation>
+<translation id="4101867642407836771">‏في حساب <ph name="USER_EMAIL" /> على "محفظة Google"</translation>
 <translation id="4108998448622696017">اكتشاف الأحداث الخطيرة عند حدوثها والتحذير منها</translation>
 <translation id="4111985840824673503">وضع علامة "مقروءة" على الكل</translation>
 <translation id="411254640334432676">فشلت عملية التنزيل</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">تغيير كلمات المرور</translation>
 <translation id="4120936477286528673">يحاول هذا الموقع الإلكتروني فتح تطبيق آخر بشكل متكرر.</translation>
 <translation id="4121993058175073134">لإرسال بيانات تصدير الشبكة، يُرجى إعداد حساب بريدك الإلكتروني في التطبيق "الإعدادات".</translation>
+<translation id="4129768137228347731">حفظ بيانات <ph name="ENTITY_TYPE" />؟</translation>
 <translation id="4133139945030148655">اكتملت عملية الإعداد</translation>
 <translation id="4133265950310064865">الحماية المحسَّنة</translation>
 <translation id="4145507240503767005">‫<ph name="SEARCH_ENGINE_NAME" />، <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1235,6 +1242,7 @@
 <translation id="5559567453458728487">تحويل وحدات القياس التي تم العثور عليها على الويب</translation>
 <translation id="556042886152191864">زر</translation>
 <translation id="5565871407246142825">بطاقات ائتمان</translation>
+<translation id="5566623128829375608">يتم الحفظ على جهازك.</translation>
 <translation id="5567439033041178034">معرفة المزيد</translation>
 <translation id="5578795271662203820">البحث في <ph name="SEARCH_ENGINE" /> عن هذه الصورة</translation>
 <translation id="5579012242779565775">إخفاء "قائمة القراءة"</translation>
@@ -2178,6 +2186,7 @@
 <translation id="8829809207373502270">لم يعُد مفتاح المرور هذا صالحًا، حيث تم حذفه من <ph name="WEBSITE" />، وسيتم حذفه من هنا قريبًا. <ph name="BEGIN_LINK" />لمحة عن مفاتيح المرور<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">إغلاق جميع علامات التبويب غير النشطة</translation>
 <translation id="8837654851594567190">الترتيب حسب الناشر</translation>
+<translation id="884351711508006491">يتم حفظ معلوماتك على جهازك.</translation>
 <translation id="8844136307393039959">انخفض سعر المنتج الذي يتم تتبّعه</translation>
 <translation id="8848286253339013170">‏جارٍ حفظ الصورة في "صور Google" للحساب <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">مخفي</translation>

@@ -104,7 +104,7 @@
 <translation id="2025115093177348061">增强现实</translation>
 <translation id="2028449514182362831">所有需要使用移动传感器的功能都将无法正常运行</translation>
 <translation id="2030769033451695672">点按即可返回到 <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
-<translation id="2079545284768500474">撤消</translation>
+<translation id="2079545284768500474">撤销</translation>
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2091887806945687916">声音</translation>
 <translation id="2094208275686143364">主题颜色：浅色</translation>
@@ -193,6 +193,7 @@
 <translation id="2802908157808345702">不允许网站显示弹出式窗口和使用重定向</translation>
 <translation id="2814830417943086299">Chrome 现在会在设备的应用列表和搜索结果中显示您近期打开的标签页。您可以随时在 Chrome 设置中关闭此功能。</translation>
 <translation id="2822354292072154809">确定要重置<ph name="CHOSEN_OBJECT_NAME" />的所有网站权限吗？</translation>
+<translation id="2848335882304088250">现在即可在设备上充分体验 Chrome 的出色功能。</translation>
 <translation id="2850913818900871965">请求使用移动视图</translation>
 <translation id="2870560284913253234">网站</translation>
 <translation id="2874939134665556319">上一首</translation>

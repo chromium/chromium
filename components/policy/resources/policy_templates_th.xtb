@@ -12187,6 +12187,21 @@ https://chromeenterprise.google/policies/url-patterns
 <translation id="9051019223077908578">กำหนดค่ารายชื่อแอปและส่วนขยายที่ติดตั้งไว้ในหน้าจอการเข้าสู่ระบบ</translation>
 <translation id="9053841574218808519">เรียกใช้ปลั๊กอินที่ทันสมัยเสมอ</translation>
 <translation id="9055866143096316150">ลดระดับคำขอ Wake Lock หน้าจอเป็นคำขอ Wake Lock ระบบ</translation>
+<translation id="9056262797461453462">การตั้งค่านโยบาย <ph name="URL_BLOCKLIST_POLICY_NAME" /> จะทำให้ระบบหยุดโหลดหน้าเว็บที่มี URL ต้องห้าม ผู้ดูแลระบบสามารถระบุรายการรูปแบบ URL ที่จะบล็อกได้ หากไม่ได้ตั้งค่า ระบบจะไม่บล็อก URL ในเบราว์เซอร์ คุณกำหนดข้อยกเว้นใน <ph name="URL_ALLOWLIST_POLICY_NAME" /> ได้ไม่เกิน 1,000 รายการ ดูวิธีจัดรูปแบบ URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format )
+
+หมายเหตุ: นโยบายนี้ไม่มีผลกับ URL JavaScript แบบในหน้าเว็บและมีการโหลดข้อมูลแบบไดนามิก หากคุณบล็อก example.com/abc ไว้ example.com จะยังคงโหลดโดยใช้ XMLHTTPRequest ได้ นอกจากนี้ นโยบายไม่ได้ป้องกันไม่ให้หน้าเว็บอัปเดต URL ที่แสดงในแถบอเนกประสงค์เป็น URL ที่ถูกบล็อกโดยใช้ JavaScript History API
+
+เริ่มจาก <ph name="PRODUCT_NAME" /> เวอร์ชัน 73 เป็นต้นไป คุณจะบล็อก URL javascript://* ได้ แต่จะมีผลเฉพาะกับ JavaScript ที่พิมพ์ลงในแถบที่อยู่ (หรือ bookmarklet เป็นต้น)
+
+มีการรองรับนโยบายนี้ในโหมดไม่มีส่วนหัวด้วยใน <ph name="PRODUCT_NAME" /> เวอร์ชัน 92 เป็นต้นไป
+
+หมายเหตุ: การบล็อก chrome://* และ chrome-untrusted://* ซึ่งเป็น URL ภายในอาจทำให้เกิดข้อผิดพลาดที่ไม่คาดคิดหรือระบบอาจหลีกเลี่ยงในบางกรณี ลองดูว่ามีนโยบายเฉพาะเพิ่มเติมหรือไม่แทนการบล็อก URL ภายในบางรายการ ตัวอย่างเช่น
+
+- ใช้ <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" /> แทนการบล็อก chrome://settings/certificates
+
+- ใช้ <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" /> แทนการบล็อก chrome-untrusted://crosh
+
+- ใช้นโยบาย <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> หรือ <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> อย่างใดอย่างหนึ่ง แทนการบล็อก devtools://*</translation>
 <translation id="9057159618445405645">ใช้ลักษณะการทำงานเริ่มต้นของเบราว์เซอร์ Chrome</translation>
 <translation id="9061455386353325110">ระบุว่าผู้ใช้จะอนุญาตให้ <ph name="PRODUCT_NAME" /> ใช้ Generative AI เพื่อทําความเข้าใจแบบฟอร์มได้ดีขึ้นและช่วยกรอกข้อมูลในช่องต่างๆ ได้หรือไม่
 

@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Behold gruppen</translation>
 <translation id="1853692000353488670">Ny inkognitofane</translation>
 <translation id="1854463785401910334">Søg i åbne faner</translation>
+<translation id="1860609647735325606">Forklar med Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} af {count} adgangskode}one{{position} af {count} adgangskode}other{{position} af {count} adgangskoder}}</translation>
 <translation id="1861262398884155592">Denne mappe er tom</translation>
 <translation id="1864266050569350424">På et website, hvor du har gemt en adgangskode, skal du trykke på feltet til login med adgangskode.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Åbn alle</translation>
 <translation id="2536991091671391962">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i Google Adgangs­kode­admin­istrator for <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Skjult, adgangskode</translation>
+<translation id="2538705697765638552">Gem dine oplysninger, og få mere fra hånden hurtigere, f.eks. ved at udfylde formularer i Google-produkter. Du kan administrere dine oplysninger i Google Wallet for <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Aktivér Forbedret beskyttelse…</translation>
 <translation id="2540111494300686866">Skjul dialogbokse</translation>
 <translation id="2542268842667970959">Skjul "Sikkerhedstjek"</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Adgangskoden er gemt på din Google-konto, {EMAIL}}one{Adgangskoden er gemt på din Google-konto, {EMAIL}}other{Adgangskoderne er gemt på din Google-konto, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Tilføj adgangskode…</translation>
 <translation id="2793703503584038325">Vælg en adgangskode, og tryk på delingsikonet</translation>
+<translation id="2793804887899597849">Oplysningerne er kun gemt på enheden</translation>
 <translation id="2797029671965852011">Vis historik</translation>
 <translation id="2797302972324086597">Landekode</translation>
 <translation id="2798263827270599246">Standardtema</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Søg med Lens</translation>
 <translation id="3575426792457739946">Denne liste indeholder alle indlæste profiler.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, som administreres af din organisation.</translation>
+<translation id="3580448612293054698">Vil du opdatere <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Tilbyd at oversætte sider på andre sprog</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587885837929752825">Din organisation begrænser, hvad du kan gemme på din Google-konto.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Importér</translation>
 <translation id="3857113360369572832">Åbn <ph name="BEGIN_BOLD" />Safari-indstillinger<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Navn</translation>
+<translation id="386224966259596343">Du får mulighed for at gemme disse oplysninger i Wallet, næste gang du udfylder en relevant formular.</translation>
 <translation id="3868495844258915202">Vis hele webadressen</translation>
 <translation id="3875783148670536197">Vis mig hvordan</translation>
 <translation id="3878657761594430423">Regnarksværktøj</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Vis Hjælp</translation>
 <translation id="4095483462103784441">Opret ny fanegruppe</translation>
 <translation id="4099756562043439968">Opret en påmindelse</translation>
+<translation id="4101867642407836771">I Google Wallet for <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Registrerer og advarer dig om skadelige hændelser, når de opstår.</translation>
 <translation id="4111985840824673503">Markér alle som læste</translation>
 <translation id="411254640334432676">Download mislykkedes.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Skift dine adgangskoder</translation>
 <translation id="4120936477286528673">Dette website forsøger hele tiden at åbne en anden app.</translation>
 <translation id="4121993058175073134">For at sende oplysninger om nettoeksporten skal du konfigurere din mailkonto i appen Indstillinger.</translation>
+<translation id="4129768137228347731">Vil du gemme <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Du er klar til at gå i gang</translation>
 <translation id="4133265950310064865">Forbedret beskyttelse</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1237,6 +1244,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5559567453458728487">Konvertér måleenheder, du finder på nettet</translation>
 <translation id="556042886152191864">Knap</translation>
 <translation id="5565871407246142825">Kreditkort</translation>
+<translation id="5566623128829375608">Gemmes på din enhed.</translation>
 <translation id="5567439033041178034">FÅ FLERE OPLYSNINGER</translation>
 <translation id="5578795271662203820">Søg efter billedet på <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Skjul læseliste</translation>
@@ -2179,6 +2187,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8829809207373502270">Denne adgangsnøgle virker ikke længere. Den er slettet fra <ph name="WEBSITE" /> og slettes snart herfra også. <ph name="BEGIN_LINK" />Om adgangsnøgler<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Luk alle inaktive faner</translation>
 <translation id="8837654851594567190">Sortér efter udgiver</translation>
+<translation id="884351711508006491">Dine oplysninger gemmes på din enhed.</translation>
 <translation id="8844136307393039959">Prisfald på det produkt, du holder øje med</translation>
 <translation id="8848286253339013170">Gemmer billedet i Google Fotos for <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Skjult</translation>

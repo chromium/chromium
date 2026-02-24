@@ -3360,6 +3360,7 @@
 <translation id="3248902735035392926">భద్రత చాలా ముఖ్యమైనది. <ph name="BEGIN_LINK" />ఇప్పుడే మీ ఎక్స్‌టెన్షన్‌లను చెక్ చేయడానికి<ph name="END_LINK" /> సమయం తీసుకోండి</translation>
 <translation id="3251119461199395237">ఫైల్ సింక్</translation>
 <translation id="3251759466064201842">&lt;సర్టిఫికెట్‌లో భాగం కాదు&gt;</translation>
+<translation id="3252169590975855820">మీరు దీన్ని Google Password Managerలో యాక్సెస్ చేయవచ్చు</translation>
 <translation id="325238099842880997">చిన్నారులు ఆడుకోవడానికి, అన్వేషించడానికి, అలాగే ఇంట్లో పాఠశాల విద్యను అభ్యసించడానికి సహాయపడేలా డిజిటల్ గ్రౌండ్ నియమాలను సెట్ చేయండి</translation>
 <translation id="3253225298092156258">అందుబాటులో లేదు</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{ఈ ఫైల్‌ను కాపీ చేయడానికి <ph name="CLOUD_PROVIDER" />లో స్పేస్‌ను ఖాళీ చేయండి}other{ఈ ఫైల్స్‌ను కాపీ చేయడానికి <ph name="CLOUD_PROVIDER" />లో స్పేస్‌ను ఖాళీ చేయండి}}</translation>
@@ -11664,12 +11665,13 @@
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> కోసం మీ డేటాను బ్యాకప్ చేసి, ఈరోజే ఈ <ph name="DEVICE_TYPE" />ని రిటర్న్ చేయాల్సి ఉంటుంది.}other{<ph name="MANAGER" /> కోసం మీరు మీ డేటాను గడువు తేదీలోపు బ్యాకప్ చేసి, ఈ <ph name="DEVICE_TYPE" />ని రిటర్న్ చేయాల్సి ఉంటుంది.}}</translation>
 <translation id="8902667442496790482">వినడానికి-ఎంచుకోండి ఎంపికలను తెరువు</translation>
 <translation id="8903733144777177139">మైక్రోఫోన్ యాక్సెస్ బ్లాక్ చేయబడింది</translation>
+<translation id="8904787158537906492">లింక్ క్లిప్‌బోర్డ్‌కు కాపీ అయింది</translation>
 <translation id="890518297681039136">తెలియని కారణం వల్ల ఆపరేషన్ విఫలమైంది.</translation>
 <translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" /> ఈ వెబ్‌సైట్‌కు శక్తివంతమైన పాస్‌వర్డ్‌ను క్రియేట్ చేశారు</translation>
 <translation id="890616557918890486">మూలాధారాన్ని మార్చు</translation>
 <translation id="8907701755790961703">దయచేసి దేశాన్ని ఎంచుకోండి</translation>
 <translation id="8908420399006197927">సూచించబడిన గ్రూప్ నుండి ట్యాబ్‌ను మినహాయించండి</translation>
-<translation id="8909298138148012791"><ph name="APP_NAME" /> అన్ఇన్‌స్టాల్ చేయబడింది</translation>
+<translation id="8909298138148012791"><ph name="APP_NAME" /> అన్ఇన్‌స్టాల్ అయింది</translation>
 <translation id="8909833622202089127">సైట్ మీ లొకేషన్‌ను ట్రాక్ చేస్తోంది</translation>
 <translation id="8910222113987937043">మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, ఇతర సెట్టింగ్‌ల‌లో మార్పులు మీ Google ఖాతాకు ఇకపై సింక్ చేయ‌బడవు. అయినప్పటికీ, ఇప్పటికే ఉన్న మీ డేటా Google ఖాతాలో స్టోరేజ్‌ చేయబడుతుంది. <ph name="BEGIN_LINK" />Google డాష్‌బోర్డ్<ph name="END_LINK" />లో నిర్వహించబడుతుంది.</translation>
 <translation id="8910987510378294980">పరికర లిస్ట్‌ను దాచండి</translation>

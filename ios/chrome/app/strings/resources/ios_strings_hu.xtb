@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Csoport megtartása</translation>
 <translation id="1853692000353488670">Új inkognitó lap</translation>
 <translation id="1854463785401910334">Keresés a megnyitott lapokon</translation>
+<translation id="1860609647735325606">Magyarázat a Geminivel</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position}. jelszó, összesen ennyiből: {count}}other{{position}. jelszó, összesen ennyiből: {count}}}</translation>
 <translation id="1861262398884155592">Ez a mappa üres</translation>
 <translation id="1864266050569350424">Egy olyan webhelyen, ahol mentett jelszót, koppintson a bejelentkezési jelszó mezőjére.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Az összes megnyitása</translation>
 <translation id="2536991091671391962">A mentett jelszavakat bármelyik eszközön használhatja. A jelszavakat a Google Jelszókezelő szolgáltatásba menti a rendszer a(z) <ph name="EMAIL" /> fiókhoz.</translation>
 <translation id="2538103551183528357">Rejtett, jelszó</translation>
+<translation id="2538705697765638552">Mentse el adatait, hogy gyorsabban elvégezhesse a feladatait, például az űrlapok kitöltését a Google-termékekben. Az adatait a(z) <ph name="USER_EMAIL" /> fiókhoz tartozó Google Walletben kezelheti.</translation>
 <translation id="2539748786028143624">A Speciális védelem bekapcsolása…</translation>
 <translation id="2540111494300686866">Párbeszédablakok elrejtése</translation>
 <translation id="2542268842667970959">A „Biztonsági ellenőrzés” elrejtése</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Jelszó mentve az Ön Google-fiókjába ({EMAIL})}other{Jelszavak mentve az Ön Google-fiókjába ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Jelszó hozzáadása…</translation>
 <translation id="2793703503584038325">Válassza ki a kívánt jelszót, majd koppintson a „Megosztás” ikonra.</translation>
+<translation id="2793804887899597849">Az információ csak az eszközre lett mentve</translation>
 <translation id="2797029671965852011">Előzmények megjelenítése</translation>
 <translation id="2797302972324086597">Országkód</translation>
 <translation id="2798263827270599246">Alapértelmezett téma</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Keresés a Lens segítségével</translation>
 <translation id="3575426792457739946">Ez a lista az összes betöltött profilt tartalmazza.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, az Ön szervezete kezeli.</translation>
+<translation id="3580448612293054698">Frissíti ezt: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Más nyelvű oldalak fordításának felajánlása</translation>
 <translation id="3587482841069643663">Mind</translation>
 <translation id="3587885837929752825">Szervezete korlátozza, hogy Ön mit menthet Google-fiókjába.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Importálás</translation>
 <translation id="3857113360369572832">Nyissa meg a <ph name="BEGIN_BOLD" />Safari beállításait<ph name="END_BOLD" />.</translation>
 <translation id="3858860766373142691">Név</translation>
+<translation id="386224966259596343">A következő alkalommal, amikor egy releváns űrlapot tölt ki, lehetősége lesz az adatok Walletbe való mentésére.</translation>
 <translation id="3868495844258915202">Teljes URL megjelenítése</translation>
 <translation id="3875783148670536197">Bemutató</translation>
 <translation id="3878657761594430423">Lapösszefogó</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Súgó megjelenítése</translation>
 <translation id="4095483462103784441">Új lapcsoport létrehozása</translation>
 <translation id="4099756562043439968">Emlékeztető beállítása</translation>
+<translation id="4101867642407836771">A(z) <ph name="USER_EMAIL" /> fiókhoz tartozó Google Walletben.</translation>
 <translation id="4108998448622696017">Már a bekövetkezésük idején észleli a veszélyes eseményeket, és figyelmezteti Önt rájuk.</translation>
 <translation id="4111985840824673503">Összes megjelölése olvasottként</translation>
 <translation id="411254640334432676">A letöltés sikertelen.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">A jelszavak módosítása</translation>
 <translation id="4120936477286528673">Ez a webhely folyamatosan próbál megnyitni egy másik alkalmazást.</translation>
 <translation id="4121993058175073134">Net-export adatok küldéséhez, kérjük, konfigurálja e-mail fiókját a Beállítások alkalmazásban.</translation>
+<translation id="4129768137228347731">Menti ezt: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Már mindent beállított!</translation>
 <translation id="4133265950310064865">Speciális védelem</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1237,6 +1244,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5559567453458728487">Az interneten talált mértékegységek konvertálása</translation>
 <translation id="556042886152191864">Gomb</translation>
 <translation id="5565871407246142825">Hitelkártyák</translation>
+<translation id="5566623128829375608">Mentve lesz az eszközére.</translation>
 <translation id="5567439033041178034">TOVÁBBI INFORMÁCIÓ</translation>
 <translation id="5578795271662203820">A kép keresése a(z) <ph name="SEARCH_ENGINE" /> keresővel</translation>
 <translation id="5579012242779565775">Az Olvasólista elrejtése</translation>
@@ -2179,6 +2187,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8829809207373502270">Ez az azonosítókulcs már nem működik. A(z) <ph name="WEBSITE" /> webhelyről már töröltük, és hamarosan innen is töröljük. <ph name="BEGIN_LINK" />Az azonosítókulcsok<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Az összes inaktív lap bezárása</translation>
 <translation id="8837654851594567190">Rendezés közzétevő szerint</translation>
+<translation id="884351711508006491">Adatait az eszközre menti a rendszer.</translation>
 <translation id="8844136307393039959">Árcsökkenés a nyomon követett terméknél</translation>
 <translation id="8848286253339013170">Kép mentése a Google Fotókba a(z) <ph name="USER_EMAIL" /> fiókba…</translation>
 <translation id="8849001918648564819">Rejtett</translation>

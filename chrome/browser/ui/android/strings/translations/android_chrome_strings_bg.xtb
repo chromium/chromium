@@ -246,6 +246,7 @@
 <translation id="2047378580182589770">Докоснете и задръжте, за да излезете от режим „инкогнито“</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /><ph name="SEPARATOR" /><ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Използвайте HTTPS при възможност и получавайте предупреждения, преди да бъдат заредени сайтове, които не поддържат този протокол. Не можете да промените настройката, защото сте активирали „Разширена защита“.</translation>
+<translation id="2052723746739622752">Освобождаване на Gemini</translation>
 <translation id="2056878612599315956">Сайтът е на пауза</translation>
 <translation id="2063047797624276601">Организацията ви включи подобрената защита от Безопасно сърфиране</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 изтегляне не бе успешно}other{# изтегляния не бяха успешни}}</translation>
@@ -1201,6 +1202,7 @@
 <translation id="610630277578876674">Бързо отваряйте връзки в съобщения и др.</translation>
 <translation id="6108923351542677676">Извършва се настройване…</translation>
 <translation id="6112702117600201073">Опресняване на страницата</translation>
+<translation id="612221930823678863">URL адрес с(ъс) <ph name="QUERY" /> вместо заявка</translation>
 <translation id="6122831415929794347">Да се изключи ли „Безопасно сърфиране“?</translation>
 <translation id="6124936178263837501">Подаване на сигнал, че не е спам</translation>
 <translation id="6125202119952209826">Присъединяване към групата раздели с(ъс) <ph name="OWNER_FIRST_NAME" /></translation>

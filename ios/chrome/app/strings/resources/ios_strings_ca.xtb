@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Conserva el grup</translation>
 <translation id="1853692000353488670">Pestanya d'incògnit nova</translation>
 <translation id="1854463785401910334">Cerca a les pestanyes obertes</translation>
+<translation id="1860609647735325606">Explica amb Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} d’{count} contrasenya}other{{position} de {count} contrasenyes}}</translation>
 <translation id="1861262398884155592">Aquesta carpeta és buida</translation>
 <translation id="1864266050569350424">En un lloc web en què hagis desat una contrasenya, toca el camp de la contrasenya d'inici de sessió.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Obre-les totes</translation>
 <translation id="2536991091671391962">Pots utilitzar les contrasenyes desades en qualsevol dispositiu. Es desen al gestor de contrasenyes de Google de <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Contrasenya, amagada</translation>
+<translation id="2538705697765638552">Desa la informació i enllesteix tasques més ràpidament, com ara emplenar formularis en tots els productes de Google. Pots gestionar la teva informació a Google Wallet per a <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Activa la protecció millorada…</translation>
 <translation id="2540111494300686866">Oculta els quadres de diàleg</translation>
 <translation id="2542268842667970959">Amaga Comprovació de seguretat</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Contrasenya desada al teu Compte de Google ({EMAIL})}other{Contrasenyes desades al teu Compte de Google ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Afegeix una contrasenya…</translation>
 <translation id="2793703503584038325">Selecciona una contrasenya i toca la icona de compartir</translation>
+<translation id="2793804887899597849">La informació només es desa al dispositiu</translation>
 <translation id="2797029671965852011">Mostra l'historial</translation>
 <translation id="2797302972324086597">Codi de país</translation>
 <translation id="2798263827270599246">Tema predeterminat</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Cerca amb Lens</translation>
 <translation id="3575426792457739946">Aquesta llista conté tots els perfils carregats.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, gestionat per la teva organització.</translation>
+<translation id="3580448612293054698">Vols actualitzar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Proposa traduir les pàgines en altres idiomes</translation>
 <translation id="3587482841069643663">Tots</translation>
 <translation id="3587885837929752825">La teva organització limita el que pots desar al teu Compte de Google.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Importa</translation>
 <translation id="3857113360369572832">Obre la <ph name="BEGIN_BOLD" />configuració de Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nom</translation>
+<translation id="386224966259596343">Tindràs l'oportunitat de desar aquesta informació a Wallet la propera vegada que emplenis un formulari rellevant.</translation>
 <translation id="3868495844258915202">Mostra l'URL complet</translation>
 <translation id="3875783148670536197">Mostra'm com</translation>
 <translation id="3878657761594430423">Ansa del full</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Mostra l'ajuda</translation>
 <translation id="4095483462103784441">Crea un grup de pestanyes nou</translation>
 <translation id="4099756562043439968">Configura un recordatori</translation>
+<translation id="4101867642407836771">A Google Wallet per a <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Detecta esdeveniments perillosos quan es produeixen i t'hi avisa.</translation>
 <translation id="4111985840824673503">Marca-ho tot com a llegit</translation>
 <translation id="411254640334432676">S'ha produït un error durant la baixada.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Canvia les contrasenyes</translation>
 <translation id="4120936477286528673">Aquest lloc web està provant d'obrir una altra aplicació repetidament.</translation>
 <translation id="4121993058175073134">Definiu el vostre compte de correu electrònic a l'aplicació Configuració per enviar dades d'exportació de xarxa.</translation>
+<translation id="4129768137228347731">Vols desar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Ja estàs a punt</translation>
 <translation id="4133265950310064865">Protecció millorada</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1237,6 +1244,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5559567453458728487">Converteix les unitats de mesura que es trobin al web</translation>
 <translation id="556042886152191864">Botó</translation>
 <translation id="5565871407246142825">Targetes de crèdit</translation>
+<translation id="5566623128829375608">Es desa al dispositiu.</translation>
 <translation id="5567439033041178034">MÉS INFORMACIÓ</translation>
 <translation id="5578795271662203820">Cerca aquesta imatge a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Amaga l'opció Llista de lectura</translation>
@@ -2179,6 +2187,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8829809207373502270">Aquesta clau d'accés ja no funciona. S'ha suprimit de <ph name="WEBSITE" /> i aviat se suprimirà d'aquí. <ph name="BEGIN_LINK" />Sobre les claus d'accés<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Tanca totes les inactives</translation>
 <translation id="8837654851594567190">Ordena per editor</translation>
+<translation id="884351711508006491">La teva informació es desa al dispositiu.</translation>
 <translation id="8844136307393039959">Baixada de preu en el producte que segueixes</translation>
 <translation id="8848286253339013170">S'està desant la imatge de <ph name="USER_EMAIL" /> a Google Fotos…</translation>
 <translation id="8849001918648564819">Amagat</translation>

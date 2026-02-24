@@ -246,6 +246,7 @@
 <translation id="2047378580182589770">Αγγίξτε παρατεταμένα για έξοδο από την ανώνυμη περιήγηση</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">Χρησιμοποιήστε HTTPS όποτε είναι δυνατόν και λάβετε ειδοποίηση πριν από τη φόρτωση ιστοτόπων που δεν το υποστηρίζουν. Δεν μπορείτε να αλλάξετε αυτή τη ρύθμιση, επειδή έχετε ενεργοποιήσει την Ενισχυμένη προστασία.</translation>
+<translation id="2052723746739622752">Ξεκαρφίτσωμα Gemini</translation>
 <translation id="2056878612599315956">Ο ιστότοπος τέθηκε σε παύση</translation>
 <translation id="2063047797624276601">Ο οργανισμός σας ενεργοποίησε τη Βελτιωμένη Ασφαλή περιήγηση</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 λήψη απέτυχε}other{# λήψεις απέτυχαν}}</translation>

@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">保留分组</translation>
 <translation id="1853692000353488670">打开新的无痕式标签页</translation>
 <translation id="1854463785401910334">在打开的标签页中搜索</translation>
+<translation id="1860609647735325606">使用 Gemini 解释</translation>
 <translation id="1861067954551502701">{count,plural, =1{第 {position} 个建议密码，共 {count} 个}other{第 {position} 个建议密码，共 {count} 个}}</translation>
 <translation id="1861262398884155592">此文件夹中没有内容</translation>
 <translation id="1864266050569350424">在您已保存密码的网站上，点按登录密码字段。</translation>
@@ -310,7 +311,7 @@
 <translation id="2074131957428911366">您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
 <translation id="2074599390896964828">精确位置</translation>
 <translation id="2078437078822043850">向右滚动即可在无痕模式下浏览内容。</translation>
-<translation id="2079545284768500474">撤消</translation>
+<translation id="2079545284768500474">撤销</translation>
 <translation id="2085876078937250610">保存…</translation>
 <translation id="2096239473850415494">无法下载</translation>
 <translation id="2096716221239095980">删除所有数据</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">全部打开</translation>
 <translation id="2536991091671391962">您可在任何设备上使用保存的密码。系统会将密码保存到 <ph name="EMAIL" /> 的 Google 密码管理工具中。</translation>
 <translation id="2538103551183528357">目前为隐藏状态的密码</translation>
+<translation id="2538705697765638552">保存信息可以提升操作效率，例如在不同 Google 产品中快速填写表单。您可以在 <ph name="USER_EMAIL" /> 的 Google 钱包中管理自己的信息。</translation>
 <translation id="2539748786028143624">开启增强型保护…</translation>
 <translation id="2540111494300686866">禁止显示对话框</translation>
 <translation id="2542268842667970959">隐藏“安全检查”</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{密码已保存到您的 Google 账号 {EMAIL}}other{密码已保存到您的 Google 账号 {EMAIL}}}</translation>
 <translation id="2791174088547598693">添加密码…</translation>
 <translation id="2793703503584038325">选择一个密码，然后点按“分享”图标</translation>
+<translation id="2793804887899597849">信息仅保存到设备</translation>
 <translation id="2797029671965852011">显示历史记录</translation>
 <translation id="2797302972324086597">国家/地区代码</translation>
 <translation id="2798263827270599246">默认主题</translation>
@@ -686,7 +689,7 @@
 <translation id="3547356470684043247">查看客户对产品、服务或体验的评估结果，以根据评价做出明智决策</translation>
 <translation id="3547933853190131743">使用 AI 模式搜索</translation>
 <translation id="3557336313807607643">添加到通讯录</translation>
-<translation id="355765753469272474">撤消</translation>
+<translation id="355765753469272474">撤销</translation>
 <translation id="3565012355885596568">无法加载图片</translation>
 <translation id="3565930036634619844">标签页。第 <ph name="NUMBER_OF_TABS" /> 个，共 <ph name="TAB_INDEX" /> 个。</translation>
 <translation id="3567168891086460374">换一种方式保存</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">使用智能镜头搜索</translation>
 <translation id="3575426792457739946">此列表包含所有已加载的个人资料。</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />，由组织管理。</translation>
+<translation id="3580448612293054698">更新<ph name="ENTITY_TYPE" />？</translation>
 <translation id="3581564640715911333">询问是否翻译其他语言版本的网页</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587885837929752825">您的组织限制了您可在 Google 账号中保存的内容。</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">导入</translation>
 <translation id="3857113360369572832">打开 <ph name="BEGIN_BOLD" />Safari 设置<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">名称</translation>
+<translation id="386224966259596343">下次您填写相关表单时，可选择将此信息保存到 Google 钱包。</translation>
 <translation id="3868495844258915202">显示完整网址</translation>
 <translation id="3875783148670536197">操作步骤</translation>
 <translation id="3878657761594430423">动作条抓取器</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">显示帮助</translation>
 <translation id="4095483462103784441">创建新标签页分组</translation>
 <translation id="4099756562043439968">设置提醒</translation>
+<translation id="4101867642407836771">这些信息会保存在 <ph name="USER_EMAIL" /> 的 Google 钱包中。</translation>
 <translation id="4108998448622696017">检测危险事件并在此类事件发生时向您发出警告。</translation>
 <translation id="4111985840824673503">全部标为已读</translation>
 <translation id="411254640334432676">下载失败。</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">建议更改密码</translation>
 <translation id="4120936477286528673">此网站正在反复尝试打开另一款应用。</translation>
 <translation id="4121993058175073134">要发送净导出数据，请在“设置”应用中指定您的电子邮件账号。</translation>
+<translation id="4129768137228347731">保存<ph name="ENTITY_TYPE" />？</translation>
 <translation id="4133139945030148655">一切准备就绪</translation>
 <translation id="4133265950310064865">增强型保护</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />，<ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1237,6 +1244,7 @@
 <translation id="5559567453458728487">转换在网上找到的计量单位</translation>
 <translation id="556042886152191864">按钮</translation>
 <translation id="5565871407246142825">信用卡</translation>
+<translation id="5566623128829375608">这些信息会保存在您的设备上。</translation>
 <translation id="5567439033041178034">了解详情</translation>
 <translation id="5578795271662203820">在<ph name="SEARCH_ENGINE" />中搜索此图片</translation>
 <translation id="5579012242779565775">隐藏“阅读清单”</translation>
@@ -2179,6 +2187,7 @@
 <translation id="8829809207373502270">此通行密钥已失效，目前已从 <ph name="WEBSITE" /> 中删除，很快也会从此处删除。<ph name="BEGIN_LINK" />关于通行密钥<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">关闭所有闲置标签页</translation>
 <translation id="8837654851594567190">按发布者排序</translation>
+<translation id="884351711508006491">您的信息会保存到您的设备上。</translation>
 <translation id="8844136307393039959">您跟踪的商品降价了</translation>
 <translation id="8848286253339013170">正在将图片保存到 <ph name="USER_EMAIL" /> 所用的 Google 相册…</translation>
 <translation id="8849001918648564819">已隐藏</translation>

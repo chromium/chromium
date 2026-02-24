@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">குழுவை வைத்திரு</translation>
 <translation id="1853692000353488670">புதிய மறைநிலை தாவல்</translation>
 <translation id="1854463785401910334">திறந்துள்ள பக்கங்களில் தேடுங்கள்</translation>
+<translation id="1860609647735325606">Gemini மூலம் விளக்கு</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count} கடவுச்சொல்லில் {position}வது}other{{count} கடவுச்சொற்களில் {position}வது}}</translation>
 <translation id="1861262398884155592">இந்த ஃபோல்டரில் எதுவுமில்லை</translation>
 <translation id="1864266050569350424">நீங்கள் கடவுச்சொல்லைச் சேமித்துள்ள தளத்தில், உள்நுழைவுக்கான கடவுச்சொல் புலத்தைத் தட்டவும்.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">எல்லாவற்றையும் திற</translation>
 <translation id="2536991091671391962">சேமிக்கப்பட்டுள்ள கடவுச்சொற்களை எந்தச் சாதனத்திலும் பயன்படுத்தலாம். <ph name="EMAIL" /> கணக்கிற்கான Google Password Managerரில் அவை சேமிக்கப்படும்.</translation>
 <translation id="2538103551183528357">மறைக்கப்பட்டுள்ளது, கடவுச்சொல்</translation>
+<translation id="2538705697765638552">உங்கள் தகவல்களைச் சேமித்து Google தயாரிப்புகள் எல்லாவற்றிலும் படிவங்களை நிரப்புவது போன்ற செயல்களை விரைவாக மேற்கொள்ளலாம். <ph name="USER_EMAIL" /> ஈமெயிலுக்கான Google Walletடில் உங்கள் தகவல்களை நிர்வகிக்கலாம்.</translation>
 <translation id="2539748786028143624">மேம்பட்ட பாதுகாப்பை இயக்கு...</translation>
 <translation id="2540111494300686866">தகவல் பெட்டிகளை முடக்கு</translation>
 <translation id="2542268842667970959">"பாதுகாப்புச் சரிபார்ப்பை" மறைக்கும்</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{உங்கள் Google கணக்கில் ({EMAIL}) கடவுச்சொல் சேமிக்கப்பட்டது}other{உங்கள் Google கணக்கில் ({EMAIL}) கடவுச்சொற்கள் சேமிக்கப்பட்டன}}</translation>
 <translation id="2791174088547598693">கடவுச்சொல்லைச் சேர்…</translation>
 <translation id="2793703503584038325">கடவுச்சொல்லைத் தேர்ந்தெடுத்து "பகிர்வதற்கான" ஐகானைத் தட்டவும்</translation>
+<translation id="2793804887899597849">தகவல் சாதனத்தில் மட்டும் சேமிக்கப்பட்டது</translation>
 <translation id="2797029671965852011">பதிவுகளைக் காட்டு</translation>
 <translation id="2797302972324086597">தேசக் குறியீடு</translation>
 <translation id="2798263827270599246">இயல்புத் தீம்</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Lens மூலம் தேடலாம்</translation>
 <translation id="3575426792457739946">ஏற்றப்பட்ட அனைத்து சுயவிவரங்களும் இந்தப் பட்டியலில் உள்ளன.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, உங்கள் நிறுவனத்தால் நிர்வகிக்கப்படுகிறது.</translation>
+<translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> ஐ மாற்றவா?</translation>
 <translation id="3581564640715911333">பக்கங்களைப் பிற மொழிகளில் மொழிபெயர்க்க அனுமதி</translation>
 <translation id="3587482841069643663">அனைத்தும்</translation>
 <translation id="3587885837929752825">நீங்கள் எவற்றையெல்லாம் Google கணக்கில் சேமிக்கலாம் என்பதை உங்கள் நிறுவனம் கட்டுப்படுத்துகிறது.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">இறக்கு</translation>
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari அமைப்புகளைத்<ph name="END_BOLD" /> திறக்கவும்</translation>
 <translation id="3858860766373142691">பெயர்</translation>
+<translation id="386224966259596343">அடுத்த முறை தொடர்புடைய படிவத்தை நிரப்பும்போது இந்தத் தகவலை Walletடில் சேமிப்பதற்கான வாய்ப்பு உங்களுக்குக் கிடைக்கும்.</translation>
 <translation id="3868495844258915202">முழு URLலையும் காட்டும்</translation>
 <translation id="3875783148670536197">எப்படி எனக் காட்டு</translation>
 <translation id="3878657761594430423">ஷீட் கிராபர்</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">உதவியைக் காட்டு</translation>
 <translation id="4095483462103784441">புதிய பக்கக் குழுவை உருவாக்கு</translation>
 <translation id="4099756562043439968">நினைவூட்டலை அமை</translation>
+<translation id="4101867642407836771"><ph name="USER_EMAIL" /> ஈமெயிலுக்கான Google Walletடில்.</translation>
 <translation id="4108998448622696017">ஆபத்தான நிகழ்வுகள் ஏற்படும்போது அவற்றைக் கண்டறிந்து உங்களுக்கு எச்சரிக்கை அனுப்பும்.</translation>
 <translation id="4111985840824673503">எல்லாம் படித்ததாகக் குறி</translation>
 <translation id="411254640334432676">பதிவிறக்கம் தோல்வி.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">உங்கள் கடவுச்சொற்களை மாற்றுங்கள்</translation>
 <translation id="4120936477286528673">இந்தத் தளம் மற்றொரு ஆப்ஸைத் திறப்பதற்கு மீண்டும் மீண்டும் முயல்கிறது.</translation>
 <translation id="4121993058175073134">மொத்த-ஏற்றுமதி தரவை அனுப்புவதற்கு, அமைப்புகளின் ஆப்ஸில் உங்கள் மின்னஞ்சல் கணக்கை உள்ளமைக்கவும்.</translation>
+<translation id="4129768137228347731"><ph name="ENTITY_TYPE" /> ஐச் சேமிக்கவா?</translation>
 <translation id="4133139945030148655">எல்லாம் முடிந்தது</translation>
 <translation id="4133265950310064865">மேம்படுத்தப்பட்ட பாதுகாப்பு</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1237,6 +1244,7 @@
 <translation id="5559567453458728487">இணையத்தில் கண்டறிந்த அளவீட்டு யூனிட்களை மாற்றும்</translation>
 <translation id="556042886152191864">பட்டன்</translation>
 <translation id="5565871407246142825">கிரெடிட் கார்டுகள்</translation>
+<translation id="5566623128829375608">உங்கள் சாதனத்தில் சேமிக்கும்.</translation>
 <translation id="5567439033041178034">மேலும் அறிக</translation>
 <translation id="5578795271662203820">இந்தப் படத்திற்கு <ph name="SEARCH_ENGINE" /> இல் தேடவும்</translation>
 <translation id="5579012242779565775">‘வாசிப்புப் பட்டியல்’ என்பதை மறை</translation>
@@ -2179,6 +2187,7 @@
 <translation id="8829809207373502270">இந்தக் கடவுச்சாவியை இனி பயன்படுத்த முடியாது. <ph name="WEBSITE" /> தளத்தில் இருந்து அது நீக்கப்பட்டது, இங்கிருந்தும் விரைவில் நீக்கப்படும். <ph name="BEGIN_LINK" />கடவுச்சாவிகள் பற்றி<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">செயலில் இல்லாதவற்றை மூடு</translation>
 <translation id="8837654851594567190">வெளியீட்டாளரின்படி வரிசைப்படுத்து</translation>
+<translation id="884351711508006491">உங்கள் தகவல் உங்கள் சாதனத்தில் சேமிக்கப்பட்டது.</translation>
 <translation id="8844136307393039959">நீங்கள் கண்காணிக்கும் தயாரிப்பின் விலை குறைந்துள்ளது</translation>
 <translation id="8848286253339013170"><ph name="USER_EMAIL" /> கணக்கிற்கான Google Photosஸில் படம் சேமிக்கப்படுகிறது…</translation>
 <translation id="8849001918648564819">மறைக்கப்பட்டுள்ளது</translation>

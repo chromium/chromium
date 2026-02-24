@@ -1060,6 +1060,7 @@
 <translation id="2674524144218093528">家居油漆及粉飾</translation>
 <translation id="26774279487328902">無法再存取 <ph name="GROUP_COUNT" /> 個分頁群組</translation>
 <translation id="2677748264148917807">離開</translation>
+<translation id="2679659833697380">你的資料會儲存到裝置</translation>
 <translation id="2683195745483370038">找到其他結果</translation>
 <translation id="2686919536310834199">提供你對「幫我寫」功能的意見。</translation>
 <translation id="2687555958734450033">最適合</translation>
@@ -1398,6 +1399,7 @@
 <translation id="323585066388831737">淺紅色</translation>
 <translation id="3235902901585019063">本機檔案將於<ph name="DATE_TIME" />刪除。請務必將任何重要商家或個人資料儲存至外部位置。</translation>
 <translation id="3236212803136366317">付款卡禮遇</translation>
+<translation id="3237427677128462778">無法儲存至「Google 錢包」</translation>
 <translation id="3238395604961564389">在無痕式視窗中開啟連結</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以自訂瀏覽器外觀</translation>
 <translation id="3240791268468473923">開咗冇相符安全付款憑證工作表</translation>
@@ -2534,6 +2536,7 @@
 <translation id="5045550434625856497">密碼不正確</translation>
 <translation id="5048293684454354469">廣告主題只是網站在放送個人化廣告時的其中一項依據。即使你未開啟此設定，網站仍可放送廣告，但可能會放送較不相關的廣告。進一步瞭解如何<ph name="BEGIN_LINK" />管理廣告私隱權<ph name="LINK_END" />。</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />，㩒 Tab 掣就可以喺搜尋建議後面睇到更多搜尋捷徑</translation>
+<translation id="5052488928733955073">無法填寫資料，請檢查網絡連線。</translation>
 <translation id="5052517576853118371">有效主題</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{如要使用「咫尺共享」傳送此檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}other{如要使用「咫尺共享」傳送這些檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="5056587122125565772">製作圖像</translation>
@@ -2832,6 +2835,7 @@
 <translation id="5521782189689806907">櫥櫃</translation>
 <translation id="5523118979700054094">政策名稱</translation>
 <translation id="5523588073846127669">商家不接受此虛擬卡</translation>
+<translation id="5524476634211040742">進一步瞭解 AI 和私隱權</translation>
 <translation id="5525755241743357906">檔案已複製或移動</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以喺 Chrome OS 設定度個人化您嘅無障礙工具</translation>
 <translation id="55293785478302737">邊緣釘裝</translation>
@@ -3652,6 +3656,7 @@
 <translation id="6850286078059909152">文字顏色</translation>
 <translation id="6852204201400771460">要重新載入應用程式嗎？</translation>
 <translation id="6854691830678097752">在帳戶 <ph name="ACCOUNT_EMAIL" /> 中儲存此 CVC 可加快結帳速度</translation>
+<translation id="6855951327659224749">清除表格以使用「稍後付款」選項</translation>
 <translation id="6857776781123259569">管理密碼…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">可要求進入畫中畫</translation>

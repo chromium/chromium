@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">গ্রুপ রেখে দিন</translation>
 <translation id="1853692000353488670">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="1854463785401910334">খুলে রাখা ট্যাবে সার্চ করুন</translation>
+<translation id="1860609647735325606">Gemini-র সাহায্যে ব্যাখ্যা করুন</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count}টি পাসওয়ার্ডের মধ্যে {position} নম্বর}one{{count}টি পাসওয়ার্ডের মধ্যে {position} নম্বর}other{{count}টি পাসওয়ার্ডের মধ্যে {position} নম্বর}}</translation>
 <translation id="1861262398884155592">ফোল্ডারটি খালি</translation>
 <translation id="1864266050569350424">আপনি পাসওয়ার্ড সেভ করেছেন এমন সাইটে সাইন-ইন পাসওয়ার্ড ফিল্ড ট্যাপ করুন।</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">সবকটি খুলুন</translation>
 <translation id="2536991091671391962">যেকোনও ডিভাইসে আপনি সেভ করা পাসওয়ার্ড ব্যবহার করতে পারবেন। এটি <ph name="EMAIL" />-এর Google পাসওয়ার্ড ম্যানেজার বিকল্পে সেভ করা আছে।</translation>
 <translation id="2538103551183528357">লুকানো আছে, পাসওয়ার্ড</translation>
+<translation id="2538705697765638552">আপনার তথ্য সেভ করুন এবং Google প্রোডাক্ট জুড়ে ফর্ম পূরণ করার মতো কাজগুলি আরও দ্রুত সেরে ফেলুন। আপনি <ph name="USER_EMAIL" />-এর জন্য Google Wallet-এ নিজের তথ্য ম্যানেজ করতে পারবেন।</translation>
 <translation id="2539748786028143624">উন্নত সুরক্ষা চালু করুন…</translation>
 <translation id="2540111494300686866">ডায়ালগ ব্লক করুন</translation>
 <translation id="2542268842667970959">"নিরাপত্তা সংক্রান্ত পরীক্ষা" ফিচার লুকান</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ পাসওয়ার্ড সেভ করা হয়েছে}one{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ পাসওয়ার্ড সেভ করা হয়েছে}other{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ পাসওয়ার্ড সেভ করা হয়েছে}}</translation>
 <translation id="2791174088547598693">পাসওয়ার্ড যোগ করুন…</translation>
 <translation id="2793703503584038325">কোনও পাসওয়ার্ড বেছে নিয়ে “শেয়ার করুন” আইকনে ট্যাপ করুন</translation>
+<translation id="2793804887899597849">তথ্য শুধুমাত্র ডিভাইসে সেভ করা হয়েছে</translation>
 <translation id="2797029671965852011">ইতিহাস দেখান</translation>
 <translation id="2797302972324086597">দেশের কোড</translation>
 <translation id="2798263827270599246">ডিফল্ট থিম</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Lens-এর মাধ্যমে সার্চ করুন</translation>
 <translation id="3575426792457739946">এই তালিকাতে লোড করা সব প্রোফাইল আছে।</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" /> আপনার সংস্থা ম্যানেজ করে।</translation>
+<translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> আপডেট করবেন?</translation>
 <translation id="3581564640715911333">অন্য ভাষাতে পৃষ্ঠা অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="3587482841069643663">সকল</translation>
 <translation id="3587885837929752825">আপনার প্রতিষ্ঠান এটি ম্যানেজ করে যে আপনার কাছে Google অ্যাকাউন্টে কোন ধরনের ডেটা সেভ করার অনুমতি আছে।</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">ইমপোর্ট করুন</translation>
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari সেটিংস<ph name="END_BOLD" /> খুলুন</translation>
 <translation id="3858860766373142691">নাম</translation>
+<translation id="386224966259596343">পরেরবার কোনও প্রাসঙ্গিক ফর্ম পূরণ করার সময়, Wallet-এ এই তথ্য সেভ করার সুযোগ পাবেন।</translation>
 <translation id="3868495844258915202">সম্পূর্ণ URL দেখুন</translation>
 <translation id="3875783148670536197">কীভাবে করতে হবে তা দেখান</translation>
 <translation id="3878657761594430423">শিট গ্র্যাবার</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">সহায়তা দেখান</translation>
 <translation id="4095483462103784441">নতুন ট্যাব গ্রুপ তৈরি করুন</translation>
 <translation id="4099756562043439968">একটি রিমাইন্ডার সেট করুন</translation>
+<translation id="4101867642407836771"><ph name="USER_EMAIL" />-এর Google Wallet-এ।</translation>
 <translation id="4108998448622696017">কোনও ঝুঁকিপূর্ণ ঘটনা ঘটলে সেটি শনাক্ত করে আপনাকে সতর্ক করা হয়।</translation>
 <translation id="4111985840824673503">সব পড়া হয়েছে হিসেবে চিহ্নিত করুন</translation>
 <translation id="411254640334432676">ডাউনলোড করা যায়নি।</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">আপনার পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="4120936477286528673">এই সাইটটি বারংবার অন্য একটি অ্যাপ্লিকেশন খোলার চেষ্টা করছে।</translation>
 <translation id="4121993058175073134">নেট-রপ্তানি ডেটা পাঠানোর জন্য, অনুগ্রহ করে সিস্টেম অ্যাপে আপনার ইমেল অ্যাকাউন্ট কনফিগার করুন৷</translation>
+<translation id="4129768137228347731"><ph name="ENTITY_TYPE" /> সেভ করবেন?</translation>
 <translation id="4133139945030148655">আপনি সবকিছু সেট-আপ করেছেন</translation>
 <translation id="4133265950310064865">উন্নত সুরক্ষা</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1238,6 +1245,7 @@
 <translation id="5559567453458728487">ওয়েবে খুঁজে পাওয়া পরিমাপ করার একক কনভার্ট করুন</translation>
 <translation id="556042886152191864">বোতাম</translation>
 <translation id="5565871407246142825">ক্রেডিট কার্ডসমূহ</translation>
+<translation id="5566623128829375608">এটি আপনার ডিভাইসে সেভ হয়।</translation>
 <translation id="5567439033041178034">আরও জানুন</translation>
 <translation id="5578795271662203820">এই ইমেজটির জন্য <ph name="SEARCH_ENGINE" /> খুঁজুন</translation>
 <translation id="5579012242779565775">'পড়ার তালিকা' লুকান</translation>
@@ -2180,6 +2188,7 @@
 <translation id="8829809207373502270">এই পাসকী আর কাজ করে না। এটি <ph name="WEBSITE" /> থেকে মুছে দেওয়া হয়েছে এবং শীঘ্রই এটি এখান থেকেও মুছে দেওয়া হবে। <ph name="BEGIN_LINK" />পাসকী সম্পর্কে<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">সব ইনঅ্যাক্টিভ ট্যাব বন্ধ করুন</translation>
 <translation id="8837654851594567190">প্রকাশক অনুযায়ী সাজান</translation>
+<translation id="884351711508006491">আপনার তথ্য ডিভাইসে সেভ করা হয়েছে।</translation>
 <translation id="8844136307393039959">আপনার ট্র্যাক করা প্রোডাক্টের দাম কমেছে</translation>
 <translation id="8848286253339013170"><ph name="USER_EMAIL" />-এর জন্য Google Photos-এ ছবি সেভ করা হচ্ছে…</translation>
 <translation id="8849001918648564819">লুকানো আছে</translation>

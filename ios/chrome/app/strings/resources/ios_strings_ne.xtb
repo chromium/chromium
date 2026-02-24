@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">समूह राखिराख्नुहोस्</translation>
 <translation id="1853692000353488670">नयाँ इनकगनिटो ट्याब</translation>
 <translation id="1854463785401910334">खुला ट्याबहरूमा खोज्नुहोस्</translation>
+<translation id="1860609647735325606">Gemini प्रयोग गरी व्याख्या गर्नुहोस्</translation>
 <translation id="1861067954551502701">{count,plural, =1{{count} मध्ये {position} पासवर्ड}other{{count} मध्ये {position} पासवर्ड}}</translation>
 <translation id="1861262398884155592">यो फोल्डर खाली छ</translation>
 <translation id="1864266050569350424">तपाईंले पासवर्ड सेभ गर्नुभएको साइटमा "साइन इन पासवर्ड" फिल्डमा ट्याप गर्नुहोस्।</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">सबै खोल्नुहोस्</translation>
 <translation id="2536991091671391962">तपाईं सेभ गरिएका पासवर्डहरू जुनसुकै डिभाइसमा प्रयोग गर्न सक्नुहुन्छ। ती पासवर्डहरू <ph name="EMAIL" /> को Google पासवर्ड म्यानेजरमा सेभ गरिन्छन्।</translation>
 <translation id="2538103551183528357">लुकाइएको, पासवर्ड</translation>
+<translation id="2538705697765638552">आफ्नो जानकारी सेभ गर्नुहोस् र Google का विभिन्न उत्पादनमा फाराम भर्ने जस्ता कामहरू अझ छिटो पूरा गर्नुहोस्। तपाईं <ph name="USER_EMAIL" /> को आफ्नो जानकारी Google Wallet मा व्यवस्थापन गर्न सक्नुहुन्छ।</translation>
 <translation id="2539748786028143624">उन्नत सुरक्षा अन गर्नुहोस्…</translation>
 <translation id="2540111494300686866">डायलगहरू लुकाउनुहोस्</translation>
 <translation id="2542268842667970959">"सुरक्षा जाँच" लुकाउनुहोस्</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{यो पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएको छ}other{यी पासवर्ड तपाईंको Google खाता {EMAIL} मा सेभ गरिएका छन्}}</translation>
 <translation id="2791174088547598693">पासवर्ड हाल्नुहोस्…</translation>
 <translation id="2793703503584038325">कुनै पासवर्ड चयन गर्नुहोस् र "सेयर गर्नुहोस्" आइकनमा ट्याप गर्नुहोस्</translation>
+<translation id="2793804887899597849">जानकारी डिभाइसमा मात्र सेभ गरिएको छ</translation>
 <translation id="2797029671965852011">इतिहास देखाउनुहोस्</translation>
 <translation id="2797302972324086597">देशको कोड</translation>
 <translation id="2798263827270599246">डिफल्ट थिम</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Google लेन्समार्फत खोज्नुहोस्</translation>
 <translation id="3575426792457739946">यो सूचीमा लोड गरिएका सबै प्रोफाइलहरू समावेश छन्।</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />। यो खाता तपाईंको सङ्गठनले व्यवस्थापन गर्छ।</translation>
+<translation id="3580448612293054698"><ph name="ENTITY_TYPE" /> अपडेट गर्ने हो?</translation>
 <translation id="3581564640715911333">पृष्ठहरू अन्य भाषामा अनुवाद गर्ने प्रस्ताव गर्नुहोस्</translation>
 <translation id="3587482841069643663">सबै</translation>
 <translation id="3587885837929752825">तपाईंको सङ्गठनले तपाईंले आफ्नो Google खातामा सेभ गर्न पाउने कुराहरूका सम्बन्धमा सीमा तोकेको छ।</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">इम्पोर्ट गर्नुहोस्</translation>
 <translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari का सेटिङ<ph name="END_BOLD" /> खोल्नुहोस्</translation>
 <translation id="3858860766373142691">नाम</translation>
+<translation id="386224966259596343">तपाईंले अर्को पटक कुनै सम्बन्धित फाराम भर्दा तपाईं यो जानकारी Wallet मा सेभ गर्न सक्नु हुने छ।</translation>
 <translation id="3868495844258915202">पूरै URL देखाउनुहोस्</translation>
 <translation id="3875783148670536197">यसो गर्ने तरिका देखाउनुहोस्</translation>
 <translation id="3878657761594430423">पाना ग्र्याबर</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">मद्दत केन्द्र देखाउनुहोस्</translation>
 <translation id="4095483462103784441">नयाँ ट्याब समूह बनाउनुहोस्</translation>
 <translation id="4099756562043439968">रिमाइन्डर सेट गर्नुहोस्</translation>
+<translation id="4101867642407836771"><ph name="USER_EMAIL" /> को Google Wallet मा।</translation>
 <translation id="4108998448622696017">खतरनाक गतिविधि हुँदा पत्ता लगाउँछ र तपाईंलाई सोबारे चेतावनी दिन्छ।</translation>
 <translation id="4111985840824673503">सबै सामग्री पढिसकिएको भनी चिन्ह लगाउनुहोस्</translation>
 <translation id="411254640334432676">डाउनलोड असफल भयो।</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">आफ्ना पासवर्डहरू बदल्नुहोस्</translation>
 <translation id="4120936477286528673">यो साइटले बारम्बार अर्को एप खोल्ने प्रयास गरिरहेको छ।</translation>
 <translation id="4121993058175073134">नेट-निर्यात लगत पठाउन, कृपया सेटिङहरूको एपमा तपाइँको इमेल खाता विन्यास गर्नुहोस्।</translation>
+<translation id="4129768137228347731"><ph name="ENTITY_TYPE" /> सेभ गर्ने हो?</translation>
 <translation id="4133139945030148655">तपाईंले सबै कुरा सेटअप गरिसक्नुभएको छ</translation>
 <translation id="4133265950310064865">उन्नत सुरक्षा</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1237,6 +1244,7 @@
 <translation id="5559567453458728487">यसले वेबपेजहरूमा भेट्टिएका मापनका एकाइहरू रूपान्तरण गर्छ</translation>
 <translation id="556042886152191864">बटन</translation>
 <translation id="5565871407246142825">क्रेडिट कार्डहरू</translation>
+<translation id="5566623128829375608">तपाईंको डिभाइसमा सेभ गरिन्छ।</translation>
 <translation id="5567439033041178034">थप जान्नुहोस्</translation>
 <translation id="5578795271662203820">यस छविको लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
 <translation id="5579012242779565775">"रिडिङ लिस्ट" लुकाउनुहोस्</translation>
@@ -2179,6 +2187,7 @@
 <translation id="8829809207373502270">यो पासकीले अब काम गर्दैन। यसलाई <ph name="WEBSITE" /> बाट मेटाइएको छ र यहाँबाट पनि छिटै मेटाइने छ। <ph name="BEGIN_LINK" />पासकीका बारेमा थप जानकारी<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">सबै निष्क्रिय ट्याबहरू बन्द गर्नुहोस्</translation>
 <translation id="8837654851594567190">प्रकाशकअनुसार क्रमबद्ध गर्नुहोस्</translation>
+<translation id="884351711508006491">तपाईंको जानकारी तपाईंको डिभाइसमा सेभ गरिन्छ</translation>
 <translation id="8844136307393039959">तपाईंले ट्र्याक गरेको उत्पादनको मूल्य घटेको छ</translation>
 <translation id="8848286253339013170">यो फोटो <ph name="USER_EMAIL" /> को Google Photos मा सेभ गरिँदै छ…</translation>
 <translation id="8849001918648564819">लुकाइएको</translation>

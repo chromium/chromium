@@ -246,6 +246,7 @@
 <translation id="2047378580182589770">‘ရုပ်ဖျက်’ မှ ထွက်ရန် ထိပြီး ဖိထားပါ</translation>
 <translation id="2049574241039454490"><ph name="FILE_SIZE_OF_TOTAL" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="2051669996101374349">ရနိုင်ချိန်တိုင်း HTTPS ကိုသုံးပြီး ၎င်းက ပံ့ပိုးမထားသော ဝဘ်ဆိုက်များကို မဖွင့်မီ သတိပေးချက်ရယူပါ။ သင့်တွင် ‘အဆင့်မြင့်ကာကွယ်ရေး’ ဖွင့်ထားသောကြောင့် ဤဆက်တင်ကို ပြောင်း၍မရပါ။</translation>
+<translation id="2052723746739622752">Gemini ကို ပင်ဖြုတ်ရန်</translation>
 <translation id="2056878612599315956">ဝဘ်ဆိုက် ခဏရပ်ထားသည်</translation>
 <translation id="2063047797624276601">သင့်အဖွဲ့အစည်းက ‘အရည်အသွေးမြှင့် ဘေးကင်းလုံခြုံသည့် အသုံးပြုမှု’ ကို ဖွင့်ထားသည်</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် ၁ ခု လုပ်၍မရပါ}other{ဒေါင်းလုဒ် # ခု လုပ်၍မရပါ}}</translation>
@@ -727,6 +728,7 @@
 <translation id="4137746084635924146">စက်၏ လက်ရှိဘာသာစကား</translation>
 <translation id="414128724510021958">မူရင်းသတ်မှတ်ချက်အရ ဒက်စ်တော့ဝဘ်ဆိုက်များ တောင်းဆိုထားသည်</translation>
 <translation id="4162867837470729563">မျှဝေရန် ရွေးချယ်စရာစာရင်းကို မြင်ကွင်းအပြည့် ဖွင့်ထားသည်။</translation>
+<translation id="4165077084524712774">နောက်ထပ် တူးလ်များ</translation>
 <translation id="4170011742729630528">ဝန်ဆောင်မှု မရနိုင်ပါ; နောက်မှထပ်မံကြိုးစားပါ။</translation>
 <translation id="4170577491341606575">သင့်ဒေတာများကို ရယူနေသည်\u2026</translation>
 <translation id="4177222230309051052">သင့်လိပ်စာအားလုံး ရယူခြင်း</translation>
@@ -1057,7 +1059,7 @@
 <translation id="5469852975082458401">စာရိုက်သည့်ပုံကာဆာဖြင့် စာမျက်နှာများကို ကြည့်ရှုနိုင်သည်။ ပိတ်ရန် F7 ကို နှိပ်ပါ။</translation>
 <translation id="5471273988133666918"><ph name="TAB_TITLE" /> တဘ်ကို ရွှေ့၍မရပါ</translation>
 <translation id="548278423535722844">မြေပုံအက်ပ်တွင် ဖွင့်ပါ</translation>
-<translation id="5489222148748465285">Chrome ကို ဆက်ရှာခွင့်ပြုမလား။</translation>
+<translation id="5489222148748465285">Chrome ကို ဆက်ရှာခွင့်ပြုမလား</translation>
 <translation id="5494920125229734069">အားလုံး ရွေးရန်</translation>
 <translation id="549660026907543296"><ph name="MEMBER_FULL_NAME" /> အဖြစ် ပါဝင်ရန်</translation>
 <translation id="5517326820028369152">မကြာသေးမီက လုပ်ဆောင်ချက် အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
@@ -1200,6 +1202,7 @@
 <translation id="610630277578876674">မက်ဆေ့ဂျ်စသည်တို့ရှိ လင့်ခ်များ အမြန်ဖွင့်ပေးသည်</translation>
 <translation id="6108923351542677676">စဖွင့် သတ်မှတ်မှု လုပ်ကိုင်…</translation>
 <translation id="6112702117600201073">စာမျက်နှာအား ပြန်လည်စတင်ရန်</translation>
+<translation id="612221930823678863">မေးခွန်းနေရာတွင် <ph name="QUERY" /> ပါသော URL</translation>
 <translation id="6122831415929794347">'ဘေးကင်းစွာ အသုံးပြုခြင်း' ကို ပိတ်လိုသလား။</translation>
 <translation id="6124936178263837501">စပမ်းမဟုတ်ကြောင်း သတင်းပို့ရန်</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> နှင့်အတူ တဘ်အုပ်စုတွင် ပါဝင်ခြင်း</translation>
@@ -1463,6 +1466,7 @@
 <translation id="6980258170429555165"><ph name="MENU_NAME" /> မီနူးကို မြင်သာအောင်လုပ်ထားသည်။</translation>
 <translation id="6983306615164277634">နေရာပြောင်းရန် လိပ်စာဘားကို ထိပြီးဖိထားနိုင်ပါသေးသည်။</translation>
 <translation id="6987047470128880212">ရုပ်ဖျက်တဘ်ကို ဤစက်ပစ္စည်းတွင် အသုံးမပြုနိုင်ပါ။</translation>
+<translation id="6989358895283601928">သိမ်းပြီး ပုံနှိပ်ထုတ်ယူရန်</translation>
 <translation id="6996145122199359148">ဤစာမျက်နှာကို ဒေါင်းလုဒ်လုပ်ရန်</translation>
 <translation id="7013762323294215682">ဤလျှို့ဝှက်ကီးကို သင့် Password Manager သို့ သိမ်းပါမည်။ ၎င်းကိုသုံးနိုင်သူများသည် ဤလျှို့ဝှက်ကီးကိုလည်း သုံးနိုင်ပါမည်။</translation>
 <translation id="7020741890149022655">ဖတ်ရန် စာရင်းသို့ ထည့်ရန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>

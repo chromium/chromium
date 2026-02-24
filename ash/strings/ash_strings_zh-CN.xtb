@@ -189,7 +189,7 @@
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" />键 + 向下键</translation>
 <translation id="1604857178818051494">暂停媒体</translation>
 <translation id="1607312127821884567">取消设置查看手机中的应用</translation>
-<translation id="1610778689852195798">“撤消”</translation>
+<translation id="1610778689852195798">“撤销”</translation>
 <translation id="1611993646327628135">开启</translation>
 <translation id="1612679292338846734">开启这些功能后，系统可能会将输入文本、文档内容和网页网址发送到 Google AI 服务器。系统会根据这些信息生成写作建议、总结内容、回答问题和改进产品，并遵守 <ph name="LINK_TO_SERVICE_TERMS" />。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="1620510694547887537">摄像头</translation>
@@ -314,7 +314,7 @@
 <translation id="2067220651560163985">以摄氏度显示温度</translation>
 <translation id="2067602449040652523">键盘亮度</translation>
 <translation id="2075520525463668108">开启/关闭<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" />已<ph name="CAPTURE_STATE" /></translation>
-<translation id="2079545284768500474">撤消</translation>
+<translation id="2079545284768500474">撤销</translation>
 <translation id="2086334242442703436">打开表情符号选择器</translation>
 <translation id="2088116547584365419">游戏</translation>
 <translation id="2093792000875799555">Chromebook 版 Steam 资讯</translation>

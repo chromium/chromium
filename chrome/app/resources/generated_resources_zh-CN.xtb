@@ -1601,7 +1601,7 @@
 <translation id="2078019350989722914">退出前先发提醒信息 (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">如果您删除了自己的某个证书，则不能再用该证书标识自己的身份。</translation>
 <translation id="2079495302726689071">在新的<ph name="APP" />标签页中打开链接</translation>
-<translation id="2079545284768500474">撤消</translation>
+<translation id="2079545284768500474">撤销</translation>
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2081816110395725788">使用电池时让电源闲置</translation>
 <translation id="2082187087049518845">为标签页建组</translation>
@@ -2153,6 +2153,7 @@
 <translation id="244231003699905658">地址无效。请检查该地址，然后重试。</translation>
 <translation id="2442916515643169563">文字阴影</translation>
 <translation id="2443487764245141020">网站可能还需要使用标识符来识别您的设备</translation>
+<translation id="2444091518615234627">向 Google 发送更少数据（例如网址的部分内容）</translation>
 <translation id="244475495405467108">关闭左侧标签页</translation>
 <translation id="2444874983932528148">无缝延续浏览体验</translation>
 <translation id="2445081178310039857">必须指定扩展程序根目录。</translation>
@@ -3339,6 +3340,7 @@
 <translation id="3248902735035392926">安全至上。请花点时间<ph name="BEGIN_LINK" />立即检查一下您的扩展程序<ph name="END_LINK" />吧</translation>
 <translation id="3251119461199395237">文件同步</translation>
 <translation id="3251759466064201842">&lt;未包含在证书中&gt;</translation>
+<translation id="3252169590975855820">您可以通过 Google 密码管理工具访问该密码。</translation>
 <translation id="325238099842880997">设置数字设备基本使用规则，以方便孩子在家中玩乐、探索和完成学校作业</translation>
 <translation id="3253225298092156258">无法选择</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{请先释放 <ph name="CLOUD_PROVIDER" />中的空间，然后才能复制此文件}other{请先释放 <ph name="CLOUD_PROVIDER" />中的空间，然后才能复制这些文件}}</translation>
@@ -6666,6 +6668,7 @@
 <translation id="5510775624736435856">从 Google 获取图片说明</translation>
 <translation id="5511379779384092781">特小</translation>
 <translation id="5511823366942919280">确定要将此设备设为“Shark”吗？</translation>
+<translation id="5512511240775436189">向 Google 发送更多数据（例如网址、网页内容等）</translation>
 <translation id="5512739112435045339">请先在您的设备上释放空间，再尝试重新下载</translation>
 <translation id="5513807280330619196">计算器</translation>
 <translation id="5514315914873062345">Tab 键</translation>
@@ -6692,6 +6695,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> 想要</translation>
 <translation id="5533343601674003130">PDF 服务</translation>
 <translation id="5535769176698670170">与顶部视图交换</translation>
+<translation id="5537395135310061418">利用 Google 最强大的安全机制保护您在网络上的安全</translation>
 <translation id="5537725057119320332">投放</translation>
 <translation id="5539070192556911367">无法连接到 Google</translation>
 <translation id="5541091577812545428">密码未更改</translation>
@@ -6849,6 +6853,7 @@
 <translation id="5639549361331209298">重新加载此网页，按下可查看更多选项</translation>
 <translation id="5640133431808313291">管理安全密钥</translation>
 <translation id="5640159004008030285">这个密码仅会保存到此设备上。若要在其他设备上使用该密码，请<ph name="BEGIN_LINK" />将它保存到您的 Google 账号<ph name="END_LINK" />。</translation>
+<translation id="5640322514952298438">优先保障网站速度</translation>
 <translation id="5641608986289282154">开始使用 <ph name="DEVICE_OS" /></translation>
 <translation id="5641648607875312660">屏幕截图编辑器</translation>
 <translation id="5641715878999557094">“<ph name="EXTENSION_NAME" />”更改了您点击“主页”按钮后系统显示的页面。</translation>
@@ -8058,6 +8063,7 @@
 <translation id="6494483173119160146">设备遇到了不可恢复的错误。请重置设备（此操作将清空所有用户数据），然后重试。</translation>
 <translation id="6495266441917713704">无法迁移 Wi-Fi</translation>
 <translation id="6495453178162183932">主题已更新为默认 Chrome 主题</translation>
+<translation id="6496542321576111907">提供强大的安全保障。您可以选择开启更多功能。</translation>
 <translation id="6496641546298525838">您的设备</translation>
 <translation id="6497784818439587832">更改显示大小以缩小或放大屏幕上的内容</translation>
 <translation id="6497789971060331894">鼠标反向滚动</translation>
@@ -11495,6 +11501,7 @@
 <translation id="8808686172382650546">猫</translation>
 <translation id="8809147117840417135">浅蓝绿色</translation>
 <translation id="8811862054141704416">Crostini 麦克风使用权限</translation>
+<translation id="8811881249098640048">降低部分陌生网站的加载速度</translation>
 <translation id="8812180570908649670">{PASSWORD_COUNT,plural, =1{有 1 个密码只保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号中。此操作还会清理所有重复项。}other{有 {PASSWORD_COUNT} 个密码只保存到此设备上。若要在其他设备上使用它们，请将它们保存到您的 Google 账号中。此操作还会清理所有重复项。}}</translation>
 <translation id="8813199641941291474">已被禁止对 MIDI 设备进行控制和重新编程</translation>
 <translation id="8813698869395535039">无法登录 <ph name="USERNAME" /></translation>
@@ -11636,6 +11643,7 @@
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您备份自己的数据并在今天退还此 <ph name="DEVICE_TYPE" />。}other{<ph name="MANAGER" /> 要求您备份自己的数据并在截止日期前退还此 <ph name="DEVICE_TYPE" />。}}</translation>
 <translation id="8902667442496790482">打开“随选朗读”设置</translation>
 <translation id="8903733144777177139">已禁止使用麦克风</translation>
+<translation id="8904787158537906492">链接已复制到剪贴板</translation>
 <translation id="890518297681039136">未知原因导致操作失败。</translation>
 <translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" />为此网站创建了一个安全系数高的密码</translation>
 <translation id="890616557918890486">更改来源</translation>

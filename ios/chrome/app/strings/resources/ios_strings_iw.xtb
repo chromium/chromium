@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">שמירת הקבוצה</translation>
 <translation id="1853692000353488670">כרטיסייה אנונימית חדשה</translation>
 <translation id="1854463785401910334">חיפוש בכרטיסיות הפתוחות</translation>
+<translation id="1860609647735325606">‏הסבר בעזרת Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{סיסמה אחת ({position}) מתוך {count}}one{‫{position} מתוך {count} סיסמאות}two{‫{position} מתוך {count} סיסמאות}other{‫{position} מתוך {count} סיסמאות}}</translation>
 <translation id="1861262398884155592">התיקייה הזו ריקה</translation>
 <translation id="1864266050569350424">באתר שבו שמרת סיסמה, לוחצים על שדה הסיסמה לכניסה.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">פתיחת הכול</translation>
 <translation id="2536991091671391962">‏יש לך אפשרות להשתמש בסיסמאות השמורות בכל מכשיר. הן נשמרות ב'מנהל הסיסמאות של Google' לחשבון <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">נסתר, סיסמה</translation>
+<translation id="2538705697765638552">‏אפשר לשמור את הפרטים ולבצע פעולות מהר יותר, כמו מילוי טפסים במוצרי Google. אפשר לערוך את המידע ב-Google Wallet בחשבון <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">הפעלת ההגנה המשופרת…</translation>
 <translation id="2540111494300686866">הסתרת תיבות דו-שיח</translation>
 <translation id="2542268842667970959">הסתרת האפשרות 'בדיקת אבטחה'</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{‏הסיסמה נשמרה בחשבון Google שלך, {EMAIL}}one{‏הסיסמאות נשמרו בחשבון Google שלך, {EMAIL}}two{‏הסיסמאות נשמרו בחשבון Google שלך, {EMAIL}}other{‏הסיסמאות נשמרו בחשבון Google שלך, {EMAIL}}}</translation>
 <translation id="2791174088547598693">הוספת סיסמה…</translation>
 <translation id="2793703503584038325">בוחרים סיסמה ולוחצים על סמל השיתוף</translation>
+<translation id="2793804887899597849">המידע נשמר רק במכשיר</translation>
 <translation id="2797029671965852011">הצגת ההיסטוריה</translation>
 <translation id="2797302972324086597">קוד מדינה</translation>
 <translation id="2798263827270599246">עיצוב ברירת המחדל</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">‏חיפוש באמצעות Lens</translation>
 <translation id="3575426792457739946">הרשימה הזו מכילה את כל הפרופילים שאפשר לעבור אליהם.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, חשבון שמנוהל על-ידי הארגון שלך.</translation>
+<translation id="3580448612293054698">לעדכן את <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">הצעה לתרגם דפים בשפות אחרות</translation>
 <translation id="3587482841069643663">הכול</translation>
 <translation id="3587885837929752825">‏הארגון שלך מגביל את סוגי הנתונים שאפשר לשמור בחשבון Google שלך.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">ייבוא</translation>
 <translation id="3857113360369572832">‏פותחים את <ph name="BEGIN_BOLD" />הגדרות Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">שם</translation>
+<translation id="386224966259596343">‏יש אפשרות לשמור את הפרטים האלה ב-Wallet בפעם הבאה שממלאים טופס רלוונטי.</translation>
 <translation id="3868495844258915202">‏הצגת כתובת ה-URL המלאה</translation>
 <translation id="3875783148670536197">איך עושים זאת?</translation>
 <translation id="3878657761594430423">כלי לאיסוף גיליונות</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">הצגת העזרה</translation>
 <translation id="4095483462103784441">יצירה של קבוצת כרטיסיות חדשה</translation>
 <translation id="4099756562043439968">הגדרת תזכורת</translation>
+<translation id="4101867642407836771">‏ב-Google Wallet של <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">המערכת מזהה אירועים מסוכנים כשהם מתרחשים ומזהירה אותך על כך.</translation>
 <translation id="4111985840824673503">סימון הכול כ'נקרא'</translation>
 <translation id="411254640334432676">ההורדה נכשלה.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">שינוי הסיסמאות</translation>
 <translation id="4120936477286528673">האתר הזה מנסה שוב ושוב לפתוח אפליקציה אחרת.</translation>
 <translation id="4121993058175073134">כדי לשלוח נתוני ייצוא ברשת, יש להגדיר את חשבון האימייל שלך ביישום 'הגדרות'.</translation>
+<translation id="4129768137228347731">לשמור את <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">הכול מוכן</translation>
 <translation id="4133265950310064865">הגנה משופרת</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />,‏ <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1237,6 +1244,7 @@
 <translation id="5559567453458728487">המרה של יחידות מידה שנמצאו באינטרנט</translation>
 <translation id="556042886152191864">כפתור</translation>
 <translation id="5565871407246142825">כרטיסי אשראי</translation>
+<translation id="5566623128829375608">הפרטים נשמרים במכשיר.</translation>
 <translation id="5567439033041178034">למידע נוסף</translation>
 <translation id="5578795271662203820">חיפוש התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">הסתרה של רשימת הקריאה</translation>
@@ -2179,6 +2187,7 @@
 <translation id="8829809207373502270">מפתח הגישה הזה לא עובד יותר. הוא נמחק מ-<ph name="WEBSITE" /> ויוסר מכאן בקרוב. ‫<ph name="BEGIN_LINK" />מידע על מפתחות גישה<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">סגירת כל הכרטיסיות הלא פעילות</translation>
 <translation id="8837654851594567190">מיון לפי המקור</translation>
+<translation id="884351711508006491">הפרטים שלך נשמרו במכשיר.</translation>
 <translation id="8844136307393039959">זוהתה ירידה במחיר של מוצר שנמצא אצלך במעקב</translation>
 <translation id="8848286253339013170">‏התמונה נשמרת ב-Google Photos של <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">מוסתר</translation>

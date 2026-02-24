@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Behåll gruppen</translation>
 <translation id="1853692000353488670">Ny inkognitoflik</translation>
 <translation id="1854463785401910334">Sök på öppna flikar</translation>
+<translation id="1860609647735325606">Förklara med Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} av {count} lösenord}other{{position} av {count} lösenord}}</translation>
 <translation id="1861262398884155592">Mappen är tom</translation>
 <translation id="1864266050569350424">Tryck på fältet för inloggningslösenord på en webbplats där du har sparat ett lösenord.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Öppna alla</translation>
 <translation id="2536991091671391962">Du kan använda sparade lösenord på vilken enhet som helst. De sparas i Google Lösenordshantering för <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Dolt, lösenord</translation>
+<translation id="2538705697765638552">Spara dina uppgifter så att du kan få saker gjorda snabbare, till exempel fylla i formulär i Googles produkter. Du kan hantera dina uppgifter i Google Wallet för <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Aktivera utökat skydd …</translation>
 <translation id="2540111494300686866">Visa inte dialogrutor</translation>
 <translation id="2542268842667970959">Dölj Säkerhetskontroll</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Lösenordet har sparats i Google-kontot {EMAIL}}other{Lösenorden har sparats i Google-kontot {EMAIL}}}</translation>
 <translation id="2791174088547598693">Lägg till lösenord …</translation>
 <translation id="2793703503584038325">Välj ett lösenord och tryck på delningsikonen</translation>
+<translation id="2793804887899597849">Informationen har endast sparats på enheten</translation>
 <translation id="2797029671965852011">Visa historik</translation>
 <translation id="2797302972324086597">Landskod</translation>
 <translation id="2798263827270599246">Standardtema</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Sök med Lens</translation>
 <translation id="3575426792457739946">Listan innehåller alla inlästa profiler.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, hanteras av organisationen.</translation>
+<translation id="3580448612293054698">Vill du uppdatera <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Erbjud översättning av sidor till andra språk</translation>
 <translation id="3587482841069643663">Alla</translation>
 <translation id="3587885837929752825">Din organisation begränsar vad du kan spara på Google-kontot.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Importera</translation>
 <translation id="3857113360369572832">Öppna <ph name="BEGIN_BOLD" />Safari-inställningarna<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Namn</translation>
+<translation id="386224966259596343">Du får möjlighet att spara dessa uppgifter i Wallet nästa gång du fyller i ett relevant formulär.</translation>
 <translation id="3868495844258915202">Visa fullständig webbadress</translation>
 <translation id="3875783148670536197">Visa hur man gör</translation>
 <translation id="3878657761594430423">Arkplockare</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Visa hjälp</translation>
 <translation id="4095483462103784441">Skapa en ny flikgrupp</translation>
 <translation id="4099756562043439968">Ställ in en påminnelse</translation>
+<translation id="4101867642407836771">I Google Wallet för <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Identifierar och varnar dig om farliga händelser som inträffar.</translation>
 <translation id="4111985840824673503">Markera alla som lästa</translation>
 <translation id="411254640334432676">Nedladdningen misslyckades.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Ändra dina lösenord</translation>
 <translation id="4120936477286528673">Webbplatsen försöker öppna ett annat program upprepade gånger.</translation>
 <translation id="4121993058175073134">Ange ett e-postkonto i appen Inställningar om du vill skicka nätverksexportdata.</translation>
+<translation id="4129768137228347731">Vill du spara <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Klart!</translation>
 <translation id="4133265950310064865">Förbättrat skydd</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1237,6 +1244,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5559567453458728487">Konvertera måttenheter som hittas på webben</translation>
 <translation id="556042886152191864">Knapp</translation>
 <translation id="5565871407246142825">Kreditkort</translation>
+<translation id="5566623128829375608">Spara på enheten.</translation>
 <translation id="5567439033041178034">LÄS MER</translation>
 <translation id="5578795271662203820">Sök på <ph name="SEARCH_ENGINE" /> efter denna bild</translation>
 <translation id="5579012242779565775">Dölj Läslista</translation>
@@ -2179,6 +2187,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8829809207373502270">Den här nyckeln fungerar inte längre. Den har raderats från <ph name="WEBSITE" /> och raderas snart härifrån. <ph name="BEGIN_LINK" />Om nycklar<ph name="END_LINK" />.</translation>
 <translation id="8831208860914609320">Stäng alla inaktiva</translation>
 <translation id="8837654851594567190">Sortera efter utgivare</translation>
+<translation id="884351711508006491">Dina uppgifter sparas på enheten.</translation>
 <translation id="8844136307393039959">Prissänkning på din bevakade produkt</translation>
 <translation id="8848286253339013170">Bilden sparas i Google Foto för <ph name="USER_EMAIL" /> …</translation>
 <translation id="8849001918648564819">Dold</translation>

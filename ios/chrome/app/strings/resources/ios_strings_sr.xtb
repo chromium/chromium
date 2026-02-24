@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Задржи групу</translation>
 <translation id="1853692000353488670">Нова картица без архивирања</translation>
 <translation id="1854463785401910334">Претражите отворене картице</translation>
+<translation id="1860609647735325606">Објасни помоћу Gemini-ја</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position}. од {count} лозинке}one{{position}. од {count} лозинке}few{{position}. од {count} лозинке}other{{position}. од {count} лозинки}}</translation>
 <translation id="1861262398884155592">Овај фолдер је празан</translation>
 <translation id="1864266050569350424">На сајту на ком сте сачували лозинку, додирните поље за лозинку за пријављивање.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Отвори све</translation>
 <translation id="2536991091671391962">Можете да користите сачуване лозинке на било ком уређају. Чувају се у Google менаџеру лозинки за <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Скривена лозинка</translation>
+<translation id="2538705697765638552">Сачувајте информације и брже обављајте ствари, попут попуњавања образаца у Google производима. Можете да управљате информацијама у Google новчанику за: <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Укључи Побољшану заштиту…</translation>
 <translation id="2540111494300686866">Спречи дијалоге</translation>
 <translation id="2542268842667970959">Сакриј опцију Провера безбедности</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Лозинка је сачувана на Google налогу, {EMAIL}}one{Лозинке су сачуване на Google налогу, {EMAIL}}few{Лозинке су сачуване на Google налогу, {EMAIL}}other{Лозинке су сачуване на Google налогу, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Додај лозинку…</translation>
 <translation id="2793703503584038325">Изаберите лозинку и додирните икону Дели</translation>
+<translation id="2793804887899597849">Информације су сачуване само на уређају</translation>
 <translation id="2797029671965852011">Прикажи историју</translation>
 <translation id="2797302972324086597">Позивни број за земљу</translation>
 <translation id="2798263827270599246">Подразумевана тема</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Претражујте помоћу Објектива</translation>
 <translation id="3575426792457739946">Ова листа садржи све учитане профиле.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, овим управља организација.</translation>
+<translation id="3580448612293054698">Желите да ажурирате ставку <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Понуди превод страница на другим језицима</translation>
 <translation id="3587482841069643663">Све</translation>
 <translation id="3587885837929752825">Организација ограничава садржај који можете да чувате на Google налогу.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Увeзите</translation>
 <translation id="3857113360369572832">Отворите <ph name="BEGIN_BOLD" />Safari Settings<ph name="END_BOLD" /> (Подешавања Safari-ја)</translation>
 <translation id="3858860766373142691">Назив</translation>
+<translation id="386224966259596343">Моћи ћете да сачувате ове информације у Новчанику следећи пут када попуните одговарајући образац.</translation>
 <translation id="3868495844258915202">Прегледајте комплетан URL</translation>
 <translation id="3875783148670536197">Покажи ми како</translation>
 <translation id="3878657761594430423">Алатка за померање листа</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Приказује помоћ</translation>
 <translation id="4095483462103784441">Направи нову групу картица</translation>
 <translation id="4099756562043439968">Подеси подсетник</translation>
+<translation id="4101867642407836771">У Google новчанику за: <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Открива опасне догађаје када се догоде и упозорава вас на њих.</translation>
 <translation id="4111985840824673503">Означи све као прочитано</translation>
 <translation id="411254640334432676">Преузимање није успело.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Промените лозинке</translation>
 <translation id="4120936477286528673">Овај сајт непрекидно покушава да отвори другу апликацију.</translation>
 <translation id="4121993058175073134">За слање података нето извоза подесите налог е-поште у апликацији Подешавања.</translation>
+<translation id="4129768137228347731">Желите да сачувате ставку <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Спремни сте</translation>
 <translation id="4133265950310064865">Напредна заштита</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1237,6 +1244,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5559567453458728487">Конвертуј мерне јединице које се налазе на вебу</translation>
 <translation id="556042886152191864">Дугме</translation>
 <translation id="5565871407246142825">Кредитне картице</translation>
+<translation id="5566623128829375608">Подаци се чувају на уређају.</translation>
 <translation id="5567439033041178034">САЗНАЈТЕ ВИШЕ</translation>
 <translation id="5578795271662203820">Потражи ову слику на <ph name="SEARCH_ENGINE" />-у</translation>
 <translation id="5579012242779565775">Сакриј опцију Листа за читање</translation>
@@ -2179,6 +2187,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8829809207373502270">Овај приступни кључ више не ради. Избрисан је са <ph name="WEBSITE" /> и ускоро ће бити избрисан и овде. <ph name="BEGIN_LINK" />О приступним кључевима<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Затвори све неактивне</translation>
 <translation id="8837654851594567190">Сортирај према објављивачу</translation>
+<translation id="884351711508006491">Информације се чувају на уређају.</translation>
 <translation id="8844136307393039959">Пад цене производа који пратите</translation>
 <translation id="8848286253339013170">Слика се чува у Google сликама налога <ph name="USER_EMAIL" />…</translation>
 <translation id="8849001918648564819">Скривено</translation>

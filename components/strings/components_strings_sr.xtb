@@ -428,6 +428,7 @@
 <translation id="1664389769577564606">Flexo фотополимер</translation>
 <translation id="1667730174533834274">потврдите да сте то ви пре него што промените подешавања</translation>
 <translation id="1668071460721346172">Примите имејл</translation>
+<translation id="1670861525135254448">Сачувајте возило</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Прво кратка ивица</translation>
 <translation id="168693727862418163">Валидација шеме ове вредности за смернице није успела и занемариће се.</translation>
@@ -470,6 +471,7 @@
 <translation id="1734878702283171397">Покушајте да контактирате администратора система.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, истиче <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Рачунар</translation>
+<translation id="1739364174357629566">Ажурирајте број регистрованог путника</translation>
 <translation id="1740404923954980840">Да бисте изашли из режима целог екрана, превуците од врха и додирните дугме Назад</translation>
 <translation id="1741474054575634405">Управљај картицама лојалности…</translation>
 <translation id="1741613555002899862">Мора да се наведе као важећи низ када је DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -1060,6 +1062,7 @@
 <translation id="2674524144218093528">Кречење и завршни радови</translation>
 <translation id="26774279487328902">Број група картица које више нису доступне је <ph name="GROUP_COUNT" /></translation>
 <translation id="2677748264148917807">Затвори</translation>
+<translation id="2679659833697380">Информације се чувају на уређају</translation>
 <translation id="2683195745483370038">Пронађени су други резултати</translation>
 <translation id="2686919536310834199">Шаљите повратне информације за Помоћ при писању.</translation>
 <translation id="2687555958734450033">Најбоља величина</translation>
@@ -1318,6 +1321,7 @@
 <translation id="3115363211799416195">{0,plural, =1{Желите да преузмете поверљив фајл?}one{Желите да преузмете поверљиве фајлове?}few{Желите да преузмете поверљиве фајлове?}other{Желите да преузмете поверљиве фајлове?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> захтева да направите резервну копију података и да вратите овај <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Ламинирање</translation>
+<translation id="3116695032231023709">Сачувајте идентификациони документ</translation>
 <translation id="3119689199889622589">Органска и природна храна</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Покушајте да покренете дијагностику везе<ph name="END_LINK" />.</translation>
@@ -1325,6 +1329,7 @@
 <translation id="3121994479408824897">Иди на <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Прикажите резултате из последњих 30 дана</translation>
 <translation id="3126023634486644099">Налепнице (трајне)</translation>
+<translation id="3132345256151444894">Сачувајте број обештећења</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> је сада ваш подразумевани претраживач</translation>
 <translation id="3134859781443140237">Локална мрежа</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Претражите ставку <ph name="KEYWORD_SHORT_NAME" /></translation>
@@ -2042,6 +2047,7 @@
 <translation id="4233220688695460165">Chrome аутоматски брише теме и сајтове који предлажу огласе у року од 30 дана. Можете и да блокирате одређене теме и сајтове који вам се не свиђају.</translation>
 <translation id="4235360514405112390">Важећи</translation>
 <translation id="4239799716689808527">Налепнице</translation>
+<translation id="424063167283213501">Сачувајте број регистрованог путника</translation>
 <translation id="4241830393007970744">Нападачи на сајту који сте пробали да посетите могу да вас преваре да инсталирате софтвер или откријете ствари попут лозинки, телефона или бројева кредитних картица.</translation>
 <translation id="4242380780309416996">Коверта (тешка)</translation>
 <translation id="4242981939686657948">Да бисте омогућили ефикаснији начин претраге историје прегледања, укључите</translation>
@@ -2304,6 +2310,7 @@
 <translation id="4691093235373904540">Кровни радови</translation>
 <translation id="4692623383562244444">Претраживачи</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> – Питајте <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4698308118265482293">Ажурирајте пасош</translation>
 <translation id="4698692901173737941">Борилачки спортови</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Страна</translation>
@@ -3269,6 +3276,8 @@
 <translation id="6236290670123303279">Управљајте подешавањима</translation>
 <translation id="623825323736974198">Управљајте сајтовима који ће увек остати активни и који неће бити уклоњени из меморије</translation>
 <translation id="6240447795304464094">Google Pay логотип</translation>
+<translation id="6240553182907836376">Ажурирајте идентификациони документ</translation>
+<translation id="6240601837375010619">Сачувајте пасош</translation>
 <translation id="6240964651812394252">Да бисте користили Google менаџер лозинки са оперативним системом, поново покрените Chrome и дозволите приступ менаџеру лозинки на рачунару. Картице ће се поново отворити после поновног покретања.</translation>
 <translation id="6241121617266208201">Сакриј предлоге</translation>
 <translation id="624499991300733384">Услуга слагања за штампање</translation>
@@ -3633,6 +3642,7 @@
 <translation id="681021252041861472">Обавезно поље</translation>
 <translation id="6810899417690483278">ИД за прилагођавање</translation>
 <translation id="6816109178681043245">Спортска опрема</translation>
+<translation id="681631578600400068">Сачувајте возачку дозволу</translation>
 <translation id="6817217109584391709">javascript</translation>
 <translation id="6820143000046097424">серијски портови</translation>
 <translation id="6820686453637990663">CVC</translation>
@@ -3844,6 +3854,7 @@
 <translation id="7143668445748322952">фајлове камере, преузимања и снимке екрана</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Пробај поново</translation>
+<translation id="7145337554745942724">Ажурирајте возачку дозволу</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
 <translation id="7152230779180489711">Последња посета</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}few{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и још <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -4037,6 +4048,7 @@
 <translation id="7444176988908839653">{COUNT,plural, =0{Колачићи ће данас бити поново блокирани}=1{Колачићи ће сутра бити поново блокирани}one{# дан док се колачићи поново не блокирају}few{# дана док се колачићи поново не блокирају}other{# дана док се колачићи поново не блокирају}}</translation>
 <translation id="7447234474237738389">Конфекцијске услуге</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" />x<ph name="HEIGHT" /> mm)</translation>
+<translation id="7450486349221991286">Ажурирајте возило</translation>
 <translation id="7450577240311017924">Дугме Управљај синхронизацијом, активирајте га да бисте управљали тиме које информације синхронизујете у подешавањима Chrome-а</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />да сазнате више<ph name="END_LINK" /> о овом проблему.</translation>
 <translation id="745208957946308667">Игра са диносаурусом, притискајте тастер за размак да бисте играли</translation>
@@ -4885,6 +4897,7 @@
 <translation id="8811725516933141693">Унесите @gemini да бисте четовали са Gemini-јем</translation>
 <translation id="8813277370772331957">Подсети ме касније</translation>
 <translation id="8814707942599948500">Коверта C8</translation>
+<translation id="881559332211266856">Ажурирајте број обештећења</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте ажурирали Chrome из подешавања Chrome-а</translation>
 <translation id="8819855907485254989">Сачувајте карту за превоз у Новчанику</translation>
 <translation id="8820817407110198400">Обележивачи</translation>

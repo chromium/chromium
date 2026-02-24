@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">保留群組</translation>
 <translation id="1853692000353488670">新增無痕式分頁</translation>
 <translation id="1854463785401910334">在開啟的分頁中搜尋</translation>
+<translation id="1860609647735325606">使用 Gemini 解釋</translation>
 <translation id="1861067954551502701">{count,plural, =1{第 {position} 組密碼，共 {count} 個}other{第 {position} 組密碼，共 {count} 個}}</translation>
 <translation id="1861262398884155592">這個資料夾是空的</translation>
 <translation id="1864266050569350424">在已儲存密碼的網站上，輕觸「登入密碼」欄位。</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">全部開啟</translation>
 <translation id="2536991091671391962">你可以在任何裝置上使用儲存的密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理工具。</translation>
 <translation id="2538103551183528357">目前為隱藏狀態的密碼</translation>
+<translation id="2538705697765638552">儲存資訊可讓你更有效率，例如能更快填妥各項 Google 產品的表單。你可以在 Google 錢包中管理 <ph name="USER_EMAIL" /> 的資訊。</translation>
 <translation id="2539748786028143624">開啟強化防護…</translation>
 <translation id="2540111494300686866">禁止顯示對話方塊</translation>
 <translation id="2542268842667970959">隱藏「安全檢查」</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{密碼已儲存到 Google 帳戶 ({EMAIL})}other{密碼已儲存到 Google 帳戶 ({EMAIL})}}</translation>
 <translation id="2791174088547598693">新增密碼…</translation>
 <translation id="2793703503584038325">選取密碼並輕觸「分享」圖示</translation>
+<translation id="2793804887899597849">資訊僅儲存在裝置上</translation>
 <translation id="2797029671965852011">顯示歷史記錄</translation>
 <translation id="2797302972324086597">國家/地區代碼</translation>
 <translation id="2798263827270599246">預設主題</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">使用智慧鏡頭搜尋</translation>
 <translation id="3575426792457739946">這份清單包含已載入的所有設定檔。</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />，該帳戶由貴機構管理。</translation>
+<translation id="3580448612293054698">要更新「<ph name="ENTITY_TYPE" />」嗎？</translation>
 <translation id="3581564640715911333">詢問是否要將網頁內容翻譯成其他語言</translation>
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587885837929752825">貴機構對你能在 Google 帳戶中儲存的內容設有限制。</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">匯入</translation>
 <translation id="3857113360369572832">開啟「Safari 設定」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">名稱</translation>
+<translation id="386224966259596343">下次填寫相關表單時，系統會詢問你是否要將這項資訊儲存至錢包。</translation>
 <translation id="3868495844258915202">顯示完整網址</translation>
 <translation id="3875783148670536197">顯示操作說明</translation>
 <translation id="3878657761594430423">功能表調整桿</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">顯示說明資訊</translation>
 <translation id="4095483462103784441">建立新分頁群組</translation>
 <translation id="4099756562043439968">設定提醒</translation>
+<translation id="4101867642407836771">位於 <ph name="USER_EMAIL" /> 的 Google 錢包。</translation>
 <translation id="4108998448622696017">可偵測不安全事件，並在這類事件發生時顯示警告訊息。</translation>
 <translation id="4111985840824673503">全部標示為已讀取</translation>
 <translation id="411254640334432676">下載失敗。</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">請變更密碼</translation>
 <translation id="4120936477286528673">這個網站不斷嘗試開啟另一個應用程式。</translation>
 <translation id="4121993058175073134">如要傳送淨匯出資料，請在「設定」應用程式中設定你的電子郵件帳戶。</translation>
+<translation id="4129768137228347731">要儲存「<ph name="ENTITY_TYPE" />」嗎？</translation>
 <translation id="4133139945030148655">設定完成</translation>
 <translation id="4133265950310064865">強化防護</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />，<ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1237,6 +1244,7 @@
 <translation id="5559567453458728487">轉換在網頁上偵測到的計量單位</translation>
 <translation id="556042886152191864">按鈕</translation>
 <translation id="5565871407246142825">信用卡</translation>
+<translation id="5566623128829375608">資訊會儲存在裝置上。</translation>
 <translation id="5567439033041178034">瞭解詳情</translation>
 <translation id="5578795271662203820">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
 <translation id="5579012242779565775">隱藏「閱讀清單」</translation>
@@ -2179,6 +2187,7 @@
 <translation id="8829809207373502270">這個密碼金鑰已失效，目前已從 <ph name="WEBSITE" /> 刪除，很快就會從密碼管理工具中刪除。<ph name="BEGIN_LINK" />關於密碼金鑰<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">關閉所有閒置分頁</translation>
 <translation id="8837654851594567190">依發布者排序</translation>
+<translation id="884351711508006491">資訊已儲存在裝置上。</translation>
 <translation id="8844136307393039959">你追蹤的產品降價了</translation>
 <translation id="8848286253339013170">正在將圖片儲存至 <ph name="USER_EMAIL" /> 的 Google 相簿…</translation>
 <translation id="8849001918648564819">隱藏</translation>

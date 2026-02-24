@@ -244,6 +244,7 @@
 <translation id="1845230888742614096">Conservar grupo</translation>
 <translation id="1853692000353488670">Nueva pestaña de Incógnito</translation>
 <translation id="1854463785401910334">Buscar en pestañas abiertas</translation>
+<translation id="1860609647735325606">Explicar con Gemini</translation>
 <translation id="1861067954551502701">{count,plural, =1{{position} de {count} contraseña}other{{position} de {count} contraseñas}}</translation>
 <translation id="1861262398884155592">Esta carpeta está vacía</translation>
 <translation id="1864266050569350424">En un sitio en el que hayas guardado una contraseña, toca el campo de la contraseña de inicio de sesión.</translation>
@@ -434,6 +435,7 @@
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2536991091671391962">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en el Gestor de contraseñas de Google de <ph name="EMAIL" />.</translation>
 <translation id="2538103551183528357">Contraseña oculta</translation>
+<translation id="2538705697765638552">Guarda tu información y realiza tareas más rápido, como rellenar formularios en los productos de Google. Puedes gestionar tu información en Google Wallet de <ph name="USER_EMAIL" />.</translation>
 <translation id="2539748786028143624">Activar protección mejorada…</translation>
 <translation id="2540111494300686866">Eliminar cuadros de diálogo</translation>
 <translation id="2542268842667970959">Ocultar comprobación de seguridad</translation>
@@ -500,6 +502,7 @@
 <translation id="2789552044937754463">{COUNT,plural, =1{Contraseña guardada en tu cuenta de Google ({EMAIL})}other{Contraseñas guardadas en tu cuenta de Google ({EMAIL})}}</translation>
 <translation id="2791174088547598693">Añadir contraseña…</translation>
 <translation id="2793703503584038325">Selecciona una contraseña y toca el icono para compartir</translation>
+<translation id="2793804887899597849">Información guardada solo en el dispositivo</translation>
 <translation id="2797029671965852011">Mostrar historial</translation>
 <translation id="2797302972324086597">Código de país</translation>
 <translation id="2798263827270599246">Tema predeterminado</translation>
@@ -694,6 +697,7 @@
 <translation id="3575234738189584619">Buscar con Lens</translation>
 <translation id="3575426792457739946">Esta lista contiene todos los perfiles cargados.</translation>
 <translation id="3578866308944526475"><ph name="EMAIL" />, gestionado por tu organización.</translation>
+<translation id="3580448612293054698">¿Actualizar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="3581564640715911333">Ofrece la traducción de páginas que estén en otros idiomas</translation>
 <translation id="3587482841069643663">Todo</translation>
 <translation id="3587885837929752825">Tu organización limita lo que puedes guardar en tu cuenta de Google.</translation>
@@ -758,6 +762,7 @@
 <translation id="3853873210696342070">Importar</translation>
 <translation id="3857113360369572832">Abre la <ph name="BEGIN_BOLD" />configuración de Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nombre</translation>
+<translation id="386224966259596343">Tendrás la oportunidad de guardar esta información en Wallet la próxima vez que rellenes un formulario pertinente.</translation>
 <translation id="3868495844258915202">Mostrar URL completa</translation>
 <translation id="3875783148670536197">Muéstrame cómo</translation>
 <translation id="3878657761594430423">Sujetahojas</translation>
@@ -824,6 +829,7 @@
 <translation id="4092655288299341041">Mostrar ayuda</translation>
 <translation id="4095483462103784441">Crear nuevo grupo de pestañas</translation>
 <translation id="4099756562043439968">Crear recordatorio</translation>
+<translation id="4101867642407836771">En Google Wallet de <ph name="USER_EMAIL" />.</translation>
 <translation id="4108998448622696017">Detecta y te advierte de los eventos peligrosos cuando suceden.</translation>
 <translation id="4111985840824673503">Marcar todo como leído</translation>
 <translation id="411254640334432676">Error de descarga.</translation>
@@ -832,6 +838,7 @@
 <translation id="4113957097611235433">Cambia tus contraseñas</translation>
 <translation id="4120936477286528673">Este sitio está intentando abrir otra aplicación repetidamente.</translation>
 <translation id="4121993058175073134">Configura tu correo en Configuración para enviar datos de exportaciones netas.</translation>
+<translation id="4129768137228347731">¿Guardar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Ya está todo preparado</translation>
 <translation id="4133265950310064865">Protección mejorada</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
@@ -1237,6 +1244,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5559567453458728487">Convierte las unidades de medida que se encuentran en la Web</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5565871407246142825">Tarjetas de crédito</translation>
+<translation id="5566623128829375608">Se guarda en tu dispositivo.</translation>
 <translation id="5567439033041178034">MÁS INFORMACIÓN</translation>
 <translation id="5578795271662203820">Buscar esta imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="5579012242779565775">Ocultar Lista de lectura</translation>
@@ -2179,6 +2187,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8829809207373502270">Esta llave de acceso ya no funciona. Se ha eliminado de <ph name="WEBSITE" /> y pronto se eliminará de aquí. <ph name="BEGIN_LINK" />Información sobre las llaves de acceso<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Cerrar todas las inactivas</translation>
 <translation id="8837654851594567190">Ordenar por editor</translation>
+<translation id="884351711508006491">Tu información se guarda en tu dispositivo.</translation>
 <translation id="8844136307393039959">Bajada de precio en el producto que sigues</translation>
 <translation id="8848286253339013170">Guardando imagen de <ph name="USER_EMAIL" /> en Google Fotos…</translation>
 <translation id="8849001918648564819">Oculto</translation>

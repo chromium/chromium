@@ -1060,6 +1060,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2674524144218093528">Schilderen en afwerken van huizen</translation>
 <translation id="26774279487328902"><ph name="GROUP_COUNT" /> tabbladgroepen zijn niet meer beschikbaar</translation>
 <translation id="2677748264148917807">Verlaten</translation>
+<translation id="2679659833697380">Je informatie wordt opgeslagen op je apparaat</translation>
 <translation id="2683195745483370038">Andere resultaten gevonden</translation>
 <translation id="2686919536310834199">Stuur feedback voor Help me met schrijven.</translation>
 <translation id="2687555958734450033">Best passend</translation>
@@ -1395,6 +1396,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="323585066388831737">Lichtrood</translation>
 <translation id="3235902901585019063">Lokale bestanden worden op <ph name="DATE_TIME" /> verwijderd. Zorg dat belangrijke zakelijke of persoonsgegevens extern worden opgeslagen.</translation>
 <translation id="3236212803136366317">Kaartvoordelen</translation>
+<translation id="3237427677128462778">Kan de kaart niet in Google Wallet opslaan</translation>
 <translation id="3238395604961564389">Link openen in incognitovenster</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om het uiterlijk van je browser aan te passen</translation>
 <translation id="3240791268468473923">Pagina geopend waarop staat dat er geen overeenkomende inloggegevens zijn voor beveiligde betaling</translation>
@@ -2529,6 +2531,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5045550434625856497">Onjuist wachtwoord</translation>
 <translation id="5048293684454354469">Advertentieonderwerpen zijn maar een van de vele factoren die een site kan gebruiken om advertenties te personaliseren. Ook zonder advertentieonderwerpen kunnen sites je nog steeds advertenties tonen, maar die zijn dan misschien minder gepersonaliseerd. Ontdek meer over hoe je <ph name="BEGIN_LINK" />je advertentieprivacy beheert<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, druk op Tab voor meer snelkoppelingen voor zoekopdrachten die beschikbaar zijn na deze zoeksuggestie</translation>
+<translation id="5052488928733955073">Er is een probleem bij het invullen van je gegevens. Check je verbinding.</translation>
 <translation id="5052517576853118371">Actieve onderwerpen</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Als je dit bestand wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}other{Als je deze bestanden wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}}</translation>
 <translation id="5056587122125565772">Afbeelding maken</translation>
@@ -2827,6 +2830,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5521782189689806907">Meubelmakerij</translation>
 <translation id="5523118979700054094">Beleidsnaam</translation>
 <translation id="5523588073846127669">De verkoper accepteert deze virtuele kaart niet</translation>
+<translation id="5524476634211040742">Meer informatie over AI en privacy</translation>
 <translation id="5525755241743357906">Bestand is gekopieerd of verplaatst</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om je toegankelijkheidstools te personaliseren in de Chrome OS-instellingen</translation>
 <translation id="55293785478302737">Inbinden met nietjes</translation>
@@ -3646,6 +3650,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6850286078059909152">Tekstkleur</translation>
 <translation id="6852204201400771460">App opnieuw laden?</translation>
 <translation id="6854691830678097752">Sla deze CVC op in je account, <ph name="ACCOUNT_EMAIL" />, om sneller te betalen</translation>
+<translation id="6855951327659224749">Formulier wissen om de optie voor later betalen te gebruiken</translation>
 <translation id="6857776781123259569">Wachtwoorden beheren…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Kan vragen om scherm-in-scherm te openen</translation>
