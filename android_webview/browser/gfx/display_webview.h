@@ -40,6 +40,8 @@ class DisplayWebView : public viz::Display, public viz::FrameSinkObserver {
   // viz::FrameSinkObserver implenentation:
   void OnFrameSinkDidFinishFrame(const viz::FrameSinkId& frame_sink_id,
                                  const viz::BeginFrameArgs& args) override;
+  void OnDestroyedCompositorFrameSink(
+      const viz::FrameSinkId& frame_sink_id) override;
 
  private:
   DisplayWebView(

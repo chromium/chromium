@@ -12,6 +12,7 @@
 #include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "base/android/android_info.h"
+#include "base/android/device_info.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -771,6 +772,21 @@ void OverlayProcessorWebView::CheckOverlaySupportImpl(
   // Check candidates if they can be used with surface control.
   OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(primary_plane,
                                                           candidates);
+
+  if (!blocked_frame_sink_ids_.empty()) {
+    // If `blocked_frame_sink_ids_` is not empty, that means ScheduleOverlays
+    // were called and we stored resource_provider already.
+    CHECK(resource_provider_);
+    for (auto& candidate : *candidates) {
+      // Prevent blocked framesinks to go to the overlays.
+      if (candidate.overlay_handled &&
+          blocked_frame_sink_ids_.contains(
+              resource_provider_->GetSurfaceId(candidate.resource_id)
+                  .frame_sink_id())) {
+        candidate.overlay_handled = false;
+      }
+    }
+  }
 }
 
 void OverlayProcessorWebView::TakeOverlayCandidates(
@@ -835,8 +851,13 @@ void OverlayProcessorWebView::ScheduleOverlays(
     }
   }
 
+  const bool is_tv = base::android::device_info::is_tv();
   for (auto it = overlays_.begin(); it != overlays_.end();) {
     if (!seen.contains(it->first)) {
+      if (is_tv) {
+        blocked_frame_sink_ids_.insert(it->first);
+      }
+
       render_thread_sequence_->ScheduleGpuTask(
           base::BindOnce(&Manager::RemoveOverlay,
                          base::Unretained(manager_.get()), it->second.id),
@@ -1031,6 +1052,11 @@ bool OverlayProcessorWebView::IsFrameSinkOverlayed(
 
 bool OverlayProcessorWebView::ShouldCreatePrimaryPlane() const {
   return false;
+}
+
+void OverlayProcessorWebView::OnFrameSinkDestroyed(
+    viz::FrameSinkId frame_sink_id) {
+  blocked_frame_sink_ids_.erase(frame_sink_id);
 }
 
 OverlayProcessorWebView::ScopedSurfaceControlAvailable::

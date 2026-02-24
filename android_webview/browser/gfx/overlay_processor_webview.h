@@ -49,6 +49,7 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
   // returns false if it failed to update overlays.
   bool ProcessForFrameSinkId(const viz::FrameSinkId& frame_sink_id,
                              const viz::ResolvedFrameData* frame_data);
+  void OnFrameSinkDestroyed(viz::FrameSinkId frame_sink_id);
   void SetOverlaysEnabledByHWUI(bool enabled);
   void RemoveOverlays();
   std::optional<gfx::SurfaceControl::Transaction> TakeSurfaceTransactionOnRT();
@@ -111,6 +112,10 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
   std::multimap<viz::ResourceId, OverlayResourceLock> locked_resources_;
 
   base::flat_map<viz::FrameSinkId, int> resource_lock_count_;
+
+  // Do not overlay quads from these frame sinks. Used on TVs to prevent
+  // excessive switch between states as it has visual side-effects there.
+  base::flat_set<viz::FrameSinkId> blocked_frame_sink_ids_;
 
   // Overlay candidates for the current frame.
   viz::OverlayCandidateList overlay_candidates_;

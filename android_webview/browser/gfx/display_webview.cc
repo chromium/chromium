@@ -126,6 +126,11 @@ void DisplayWebView::OnFrameSinkDidFinishFrame(
   }
 }
 
+void DisplayWebView::OnDestroyedCompositorFrameSink(
+    const viz::FrameSinkId& frame_sink_id) {
+  overlay_processor_webview_->OnFrameSinkDestroyed(frame_sink_id);
+}
+
 const base::flat_set<viz::SurfaceId>& DisplayWebView::GetContainedSurfaceIds() {
   return aggregator_->previous_contained_surfaces();
 }
