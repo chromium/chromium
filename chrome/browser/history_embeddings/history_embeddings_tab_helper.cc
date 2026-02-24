@@ -112,10 +112,18 @@ void OnGotInnerText(mojo::Remote<blink::mojom::InnerTextAgent> remote,
 }  // namespace
 
 HistoryEmbeddingsTabHelper::HistoryEmbeddingsTabHelper(
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    HistoryTabHelper* history_tab_helper)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<HistoryEmbeddingsTabHelper>(*web_contents) {
   resource_coordinator::TabLoadTracker::Get()->AddObserver(this);
+  if (history_tab_helper) {
+    history_tab_helper_subscription_ =
+        history_tab_helper->RegisterOnUpdatedHistoryForNavigationCallback(
+            base::BindRepeating(
+                &HistoryEmbeddingsTabHelper::OnUpdatedHistoryForNavigation,
+                weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 HistoryEmbeddingsTabHelper::~HistoryEmbeddingsTabHelper() {
@@ -123,10 +131,11 @@ HistoryEmbeddingsTabHelper::~HistoryEmbeddingsTabHelper() {
 }
 
 void HistoryEmbeddingsTabHelper::OnUpdatedHistoryForNavigation(
-    content::NavigationHandle* navigation_handle,
-    base::Time visit_time,
+    int64_t navigation_id,
+    bool is_in_primary_main_frame,
+    base::Time timestamp,
     const GURL& url) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
+  if (!is_in_primary_main_frame ||
       !history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
           Profile::FromBrowserContext(web_contents()->GetBrowserContext())) ||
       !GetHistoryEmbeddingsService() || !GetPassageEmbedderModelObserver()) {
@@ -139,7 +148,7 @@ void HistoryEmbeddingsTabHelper::OnUpdatedHistoryForNavigation(
   CancelExtraction();
 
   // Save data for later use in `DidFinishLoad`.
-  history_visit_time_ = visit_time;
+  history_visit_time_ = timestamp;
   history_url_ = url;
 }
 
@@ -196,7 +205,8 @@ bool HistoryEmbeddingsTabHelper::ScheduleExtraction(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&HistoryEmbeddingsTabHelper::ExtractPassages,
-                     weak_ptr_factory_.GetWeakPtr(), weak_render_frame_host),
+                     extraction_weak_ptr_factory_.GetWeakPtr(),
+                     weak_render_frame_host),
       base::Milliseconds(
           history_embeddings::GetFeatureParameters().passage_extraction_delay));
   return true;
@@ -234,7 +244,7 @@ void HistoryEmbeddingsTabHelper::ExtractPassages(
         history_url_.value(), 1, history::VisitQuery404sPolicy::kExclude404s,
         base::BindOnce(
             &HistoryEmbeddingsTabHelper::ExtractPassagesWithHistoryData,
-            weak_ptr_factory_.GetWeakPtr(), weak_render_frame_host),
+            extraction_weak_ptr_factory_.GetWeakPtr(), weak_render_frame_host),
         &task_tracker_);
   }
 }
@@ -326,7 +336,7 @@ void HistoryEmbeddingsTabHelper::RetrievePassages(
 }
 
 void HistoryEmbeddingsTabHelper::CancelExtraction() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  extraction_weak_ptr_factory_.InvalidateWeakPtrs();
   task_tracker_.TryCancelAll();
 }
 

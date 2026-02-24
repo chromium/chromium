@@ -442,9 +442,14 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       download::NavigationMonitorFactory::GetForKey(profile->GetProfileKey()));
   history::WebContentsTopSitesObserver::CreateForWebContents(
       web_contents, TopSitesFactory::GetForProfile(profile).get());
-  HistoryTabHelper::CreateForWebContents(web_contents);
-  HistoryClustersTabHelper::CreateForWebContents(web_contents);
-  HistoryEmbeddingsTabHelper::CreateForWebContents(web_contents);
+  {
+    auto* history_tab_helper =
+        HistoryTabHelper::GetOrCreateForWebContents(web_contents);
+    HistoryClustersTabHelper::CreateForWebContents(web_contents,
+                                                   history_tab_helper);
+    HistoryEmbeddingsTabHelper::CreateForWebContents(web_contents,
+                                                     history_tab_helper);
+  }
   HttpsOnlyModeTabHelper::CreateForWebContents(web_contents);
   webapps::InstallableManager::CreateForWebContents(web_contents);
   login_detection::LoginDetectionTabHelper::MaybeCreateForWebContents(

@@ -7,10 +7,12 @@
 
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "components/history/core/browser/history_types.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -28,7 +30,6 @@ class PassageEmbedderModelObserver;
 }
 
 namespace content {
-class NavigationHandle;
 class WeakDocumentPtr;
 }
 
@@ -43,14 +44,14 @@ class HistoryEmbeddingsTabHelper
   HistoryEmbeddingsTabHelper& operator=(const HistoryEmbeddingsTabHelper&) =
       delete;
 
-  // Called by `HistoryTabHelper` right after submitting a new navigation for
-  // `web_contents()` to HistoryService. We need close coordination with
-  // History's conception of the visit lifetime.
+  // Called right after submitting a new navigation for `web_contents()` to
+  // HistoryService. Allows close coordination with History's conception of the
+  // visit lifetime.
   // Virtual for testing.
-  virtual void OnUpdatedHistoryForNavigation(
-      content::NavigationHandle* navigation_handle,
-      base::Time timestamp,
-      const GURL& url);
+  virtual void OnUpdatedHistoryForNavigation(int64_t navigation_id,
+                                             bool is_in_primary_main_frame,
+                                             base::Time timestamp,
+                                             const GURL& url);
 
   // content::WebContentsObserver:
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
@@ -69,8 +70,8 @@ class HistoryEmbeddingsTabHelper
       content::WeakDocumentPtr weak_render_frame_host);
 
  protected:
-  // `protected` instead of `private` for mocking in tests.
-  explicit HistoryEmbeddingsTabHelper(content::WebContents* web_contents);
+  HistoryEmbeddingsTabHelper(content::WebContents* web_contents,
+                             HistoryTabHelper* history_tab_helper);
 
  private:
   friend class content::WebContentsUserData<HistoryEmbeddingsTabHelper>;
@@ -120,8 +121,14 @@ class HistoryEmbeddingsTabHelper
   // Task tracker for calls for the history service.
   base::CancelableTaskTracker task_tracker_;
 
+  base::CallbackListSubscription history_tab_helper_subscription_;
+
   // This factory frequently invalidates existing weak pointers to cancel
   // delayed passage extraction.
+  base::WeakPtrFactory<HistoryEmbeddingsTabHelper> extraction_weak_ptr_factory_{
+      this};
+
+  // A standard WeakPtrFactory with lifetime equal to the object itself.
   base::WeakPtrFactory<HistoryEmbeddingsTabHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

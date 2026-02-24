@@ -75,25 +75,27 @@ namespace {
 
 class MockHistoryEmbeddingsTabHelper : public HistoryEmbeddingsTabHelper {
  public:
-  explicit MockHistoryEmbeddingsTabHelper(content::WebContents* web_contents)
-      : HistoryEmbeddingsTabHelper(web_contents) {}
+  explicit MockHistoryEmbeddingsTabHelper(content::WebContents* web_contents,
+                                          HistoryTabHelper* history_tab_helper)
+      : HistoryEmbeddingsTabHelper(web_contents, history_tab_helper) {}
   ~MockHistoryEmbeddingsTabHelper() override = default;
 
   MOCK_METHOD(void,
               OnUpdatedHistoryForNavigation,
-              (content::NavigationHandle*, base::Time, const GURL&),
+              (int64_t, bool, base::Time, const GURL&),
               (override));
 };
 
 class MockHistoryClustersTabHelper : public HistoryClustersTabHelper {
  public:
-  explicit MockHistoryClustersTabHelper(content::WebContents* web_contents)
-      : HistoryClustersTabHelper(web_contents) {}
+  explicit MockHistoryClustersTabHelper(content::WebContents* web_contents,
+                                        HistoryTabHelper* history_tab_helper)
+      : HistoryClustersTabHelper(web_contents, history_tab_helper) {}
   ~MockHistoryClustersTabHelper() override = default;
 
   MOCK_METHOD(void,
               OnUpdatedHistoryForNavigation,
-              (int64_t navigation_id, base::Time timestamp, const GURL& url),
+              (int64_t, bool, base::Time, const GURL&),
               (override));
 };
 
@@ -1435,8 +1437,8 @@ IN_PROC_BROWSER_TEST_P(History404BrowserTest,
   // The HistoryEmbeddingsTabHelper is created in ChromeContentBrowserClient, so
   // it already exists in web_contents.
   web_contents->RemoveUserData(HistoryEmbeddingsTabHelper::UserDataKey());
-  auto mock_helper =
-      std::make_unique<MockHistoryEmbeddingsTabHelper>(web_contents);
+  auto mock_helper = std::make_unique<MockHistoryEmbeddingsTabHelper>(
+      web_contents, HistoryTabHelper::FromWebContents(web_contents));
   MockHistoryEmbeddingsTabHelper* mock_helper_ptr = mock_helper.get();
   web_contents->SetUserData(HistoryEmbeddingsTabHelper::UserDataKey(),
                             std::move(mock_helper));
@@ -1449,14 +1451,14 @@ IN_PROC_BROWSER_TEST_P(History404BrowserTest,
   // Regardless of whether the feature is enabled, HistoryEmbeddings shouldn't
   // be notified on a 404 visit...
   GURL url404 = embedded_https_test_server().GetURL("/page404.html");
-  EXPECT_CALL(*mock_helper_ptr, OnUpdatedHistoryForNavigation(_, _, url404))
+  EXPECT_CALL(*mock_helper_ptr, OnUpdatedHistoryForNavigation(_, _, _, url404))
       .Times(0);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url404));
 
   // ... but a non-404 visit should
   GURL url_non_404 = embedded_https_test_server().GetURL("/title1.html");
   EXPECT_CALL(*mock_helper_ptr,
-              OnUpdatedHistoryForNavigation(_, _, url_non_404))
+              OnUpdatedHistoryForNavigation(_, _, _, url_non_404))
       .Times(1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_non_404));
 }
@@ -1469,8 +1471,8 @@ IN_PROC_BROWSER_TEST_P(History404BrowserTest,
   // The HistoryClustersTabHelper is created in ChromeContentBrowserClient, so
   // it already exists in web_contents.
   web_contents->RemoveUserData(HistoryClustersTabHelper::UserDataKey());
-  auto mock_helper =
-      std::make_unique<MockHistoryClustersTabHelper>(web_contents);
+  auto mock_helper = std::make_unique<MockHistoryClustersTabHelper>(
+      web_contents, HistoryTabHelper::FromWebContents(web_contents));
   MockHistoryClustersTabHelper* mock_helper_ptr = mock_helper.get();
   web_contents->SetUserData(HistoryClustersTabHelper::UserDataKey(),
                             std::move(mock_helper));
@@ -1483,14 +1485,14 @@ IN_PROC_BROWSER_TEST_P(History404BrowserTest,
   // Regardless of whether the feature is enabled, HistoryClusters shouldn't
   // be notified on a 404 visit...
   GURL url404 = embedded_https_test_server().GetURL("/page404.html");
-  EXPECT_CALL(*mock_helper_ptr, OnUpdatedHistoryForNavigation(_, _, url404))
+  EXPECT_CALL(*mock_helper_ptr, OnUpdatedHistoryForNavigation(_, _, _, url404))
       .Times(0);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url404));
 
   // ... but a non-404 visit should
   GURL url_non_404 = embedded_https_test_server().GetURL("/title1.html");
   EXPECT_CALL(*mock_helper_ptr,
-              OnUpdatedHistoryForNavigation(_, _, url_non_404))
+              OnUpdatedHistoryForNavigation(_, _, _, url_non_404))
       .Times(1);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_non_404));
 }

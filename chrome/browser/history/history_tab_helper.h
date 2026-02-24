@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_HISTORY_HISTORY_TAB_HELPER_H_
 
 #include <optional>
+#include <string>
 
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -30,10 +32,19 @@ class HistoryTabHelper
       public history::HistoryServiceObserver,
       public content::WebContentsUserData<HistoryTabHelper> {
  public:
+  using OnUpdatedHistoryForNavigationCallbackList =
+      base::RepeatingCallbackList<void(int64_t navigation_id,
+                                       bool is_in_primary_main_frame,
+                                       base::Time timestamp,
+                                       const GURL& url)>;
+
   HistoryTabHelper(const HistoryTabHelper&) = delete;
   HistoryTabHelper& operator=(const HistoryTabHelper&) = delete;
 
   ~HistoryTabHelper() override;
+
+  base::CallbackListSubscription RegisterOnUpdatedHistoryForNavigationCallback(
+      OnUpdatedHistoryForNavigationCallbackList::CallbackType callback);
 
   // Returns the history::HistoryAddPageArgs to use for adding a page to
   // history.
@@ -149,6 +160,9 @@ class HistoryTabHelper
   // remove HistoryTabHelper object from the observer list in the destructor
   // where |GetHistoryService()| doesn't work any longer.
   raw_ptr<history::HistoryService> history_service_;
+
+  OnUpdatedHistoryForNavigationCallbackList
+      on_updated_history_for_navigation_callbacks_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

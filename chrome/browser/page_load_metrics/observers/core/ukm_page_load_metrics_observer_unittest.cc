@@ -146,7 +146,9 @@ class UkmPageLoadMetricsObserverTest
     HistoryTabHelper::FromWebContents(web_contents())
         ->SetForceEligibleTabForTesting(true);
 
-    HistoryClustersTabHelper::CreateForWebContents(web_contents());
+    HistoryTabHelper::CreateForWebContents(web_contents());
+    HistoryClustersTabHelper::CreateForWebContents(
+        web_contents(), HistoryTabHelper::FromWebContents(web_contents()));
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {

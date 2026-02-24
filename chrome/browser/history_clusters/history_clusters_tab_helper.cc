@@ -90,9 +90,18 @@ bool IsHistoryPage(GURL url, const GURL& history_url) {
 }  // namespace
 
 HistoryClustersTabHelper::HistoryClustersTabHelper(
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    HistoryTabHelper* history_tab_helper)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<HistoryClustersTabHelper>(*web_contents) {}
+      content::WebContentsUserData<HistoryClustersTabHelper>(*web_contents) {
+  if (history_tab_helper) {
+    history_tab_helper_subscription_ =
+        history_tab_helper->RegisterOnUpdatedHistoryForNavigationCallback(
+            base::BindRepeating(
+                &HistoryClustersTabHelper::OnUpdatedHistoryForNavigation,
+                weak_factory_.GetWeakPtr()));
+  }
+}
 
 HistoryClustersTabHelper::~HistoryClustersTabHelper() = default;
 
@@ -125,6 +134,7 @@ void HistoryClustersTabHelper::OnOmniboxUrlShared() {
 
 void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
     int64_t navigation_id,
+    bool is_in_primary_main_frame,
     base::Time timestamp,
     const GURL& url) {
   auto* history_clusters_service = GetHistoryClustersService();
