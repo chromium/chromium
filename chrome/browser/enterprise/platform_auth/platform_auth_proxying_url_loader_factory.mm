@@ -24,6 +24,7 @@
 #include "components/enterprise/platform_auth/url_session_url_loader.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -75,8 +76,10 @@ ProxyingURLLoaderFactory::ProxyingURLLoaderFactory(
 void ProxyingURLLoaderFactory::MaybeProxyRequest(
     const url::Origin& request_initiator,
     ChromeContentBrowserClient::URLLoaderFactoryType type,
+    content::BrowserContext* context,
     network::URLLoaderFactoryBuilder& factory_builder) {
-  if (enterprise_auth::PlatformAuthProviderManager::GetInstance().IsEnabled() &&
+  if (!context->IsOffTheRecord() &&
+      enterprise_auth::PlatformAuthProviderManager::GetInstance().IsEnabled() &&
       request_initiator.scheme() == url::kHttpsScheme &&
       type == ChromeContentBrowserClient::URLLoaderFactoryType::
                   kDocumentSubResource &&

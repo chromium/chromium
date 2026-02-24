@@ -6438,7 +6438,7 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
     // WARNING: This factory blocks certain requests from going out via the
     // final network bound factory.
     enterprise_auth::ProxyingURLLoaderFactory::MaybeProxyRequest(
-        request_initiator, type, factory_builder);
+        request_initiator, type, browser_context, factory_builder);
   }
 #endif
 

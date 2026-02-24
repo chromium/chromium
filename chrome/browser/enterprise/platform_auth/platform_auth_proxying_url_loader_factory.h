@@ -9,6 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -39,6 +40,7 @@ class ProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
   static void MaybeProxyRequest(
       const url::Origin& request_initiator,
       ChromeContentBrowserClient::URLLoaderFactoryType type,
+      content::BrowserContext* context,
       network::URLLoaderFactoryBuilder& factory_builder);
 
   // While alive all requests executed by
