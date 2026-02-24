@@ -17,7 +17,7 @@
 #include "components/user_education/common/user_education_context.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-class BrowserFeaturePromoControllerBase;
+class BrowserFeaturePromoController;
 class BrowserView;
 class BrowserWindowInterface;
 class NewTabPageUI;
@@ -55,7 +55,7 @@ class BrowserUserEducationInterface {
   // Only a limited number of non-test classes are allowed direct access to the
   // `UserEducationContext`.
   template <typename T>
-    requires std::same_as<T, BrowserFeaturePromoControllerBase> ||
+    requires std::same_as<T, BrowserFeaturePromoController> ||
              std::same_as<T, UserEducationInternalsPageHandlerImpl> ||
              std::same_as<T, NtpPromoHandler> || std::same_as<T, NewTabPageUI>
 

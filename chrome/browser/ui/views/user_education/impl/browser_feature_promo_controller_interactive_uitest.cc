@@ -102,13 +102,13 @@ BASE_FEATURE(kCustomUiTestFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
-class BrowserFeaturePromoController25UiTestBase
+class BrowserFeaturePromoControllerUiTestBase
     : public InteractiveFeaturePromoTest {
  public:
-  explicit BrowserFeaturePromoController25UiTestBase(
+  explicit BrowserFeaturePromoControllerUiTestBase(
       ClockMode clock_mode = ClockMode::kUseDefaultClock)
       : InteractiveFeaturePromoTest(UseMockTracker(), clock_mode) {}
-  ~BrowserFeaturePromoController25UiTestBase() override = default;
+  ~BrowserFeaturePromoControllerUiTestBase() override = default;
 
   void OnCustomUiCustomAction(
       const user_education::UserEducationContextPtr& context,
@@ -248,11 +248,11 @@ class BrowserFeaturePromoController25UiTestBase
   user_education::FeaturePromoHandle continued_promo_handle_;
 };
 
-class BrowserFeaturePromoController25UiTest
-    : public BrowserFeaturePromoController25UiTestBase {
+class BrowserFeaturePromoControllerUiTest
+    : public BrowserFeaturePromoControllerUiTestBase {
  public:
-  BrowserFeaturePromoController25UiTest() = default;
-  ~BrowserFeaturePromoController25UiTest() override = default;
+  BrowserFeaturePromoControllerUiTest() = default;
+  ~BrowserFeaturePromoControllerUiTest() override = default;
 
   void SetUpOnMainThread() override {
     InteractiveFeaturePromoTest::SetUpOnMainThread();
@@ -302,7 +302,7 @@ class BrowserFeaturePromoController25UiTest
                           user_education::HelpBubbleViews::TranslateArrow(
                               build_params.arrow));
                     })),
-            base::BindRepeating(&BrowserFeaturePromoController25UiTestBase::
+            base::BindRepeating(&BrowserFeaturePromoControllerUiTestBase::
                                     OnCustomUiCustomAction,
                                 weak_ptr_factory_.GetWeakPtr())));
   }
@@ -311,18 +311,17 @@ class BrowserFeaturePromoController25UiTest
       custom_action_callback_;
 
  private:
-  base::WeakPtrFactory<BrowserFeaturePromoController25UiTest> weak_ptr_factory_{
+  base::WeakPtrFactory<BrowserFeaturePromoControllerUiTest> weak_ptr_factory_{
       this};
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
-                       LogsAbortMetrics) {
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest, LogsAbortMetrics) {
   RunTestSequence(
       MaybeShowPromo(kToastTestFeature), AbortPromo(kToastTestFeature),
       CheckMetrics(kToastTestFeature, ExpectedMetrics{.abort_count = 1}));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        LogsEngagedMetrics) {
   RunTestSequence(MaybeShowPromo(kToastTestFeature),
                   UseFeature(kToastTestFeature),
@@ -330,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
                                ExpectedMetrics{.feature_engaged_count = 1}));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        LogsCustomActionMetrics) {
   EXPECT_CALL(custom_action_callback_, Run).Times(1);
   RunTestSequence(MaybeShowPromo(kCustomActionTestFeature),
@@ -339,7 +338,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
                                ExpectedMetrics{.custom_action_count = 1}));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        LogsCancelOnEscPressed) {
   RunTestSequence(
       MaybeShowPromo(kCustomActionTestFeature),
@@ -349,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
                    ExpectedMetrics{.cancel_count = 1}));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        CanShowPromoReturnsExpectedValue) {
   RunTestSequence(
       QueryIPH(kToastTestFeature,
@@ -362,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
                user_education::FeaturePromoResult::kPermanentlyDismissed));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        CallbackHappensAfterCancel) {
   bool called = false;
   FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
@@ -385,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
       CheckVariable(close_reason, FeaturePromoClosedReason::kCancel));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        CallbackHappensAfterConfirm) {
   bool called = false;
   FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
@@ -407,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
       CheckVariable(close_reason, FeaturePromoClosedReason::kDismiss));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        CallbackHappensAfterCustomAction) {
   bool called = false;
   FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
@@ -429,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
       CheckVariable(close_reason, FeaturePromoClosedReason::kAction));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        ShowCustomHelpBubble) {
   const auto kBubbleId =
       user_education::test::TestCustomHelpBubbleView::kBubbleId;
@@ -453,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
           1));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        ShowCustomHelpBubble_Dismiss) {
   const auto kBubbleId =
       user_education::test::TestCustomHelpBubbleView::kBubbleId;
@@ -465,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
       CheckMetrics(kCustomUiTestFeature, ExpectedMetrics{.dismiss_count = 1}));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        ShowCustomHelpBubble_Snooze) {
   const auto kBubbleId =
       user_education::test::TestCustomHelpBubbleView::kBubbleId;
@@ -477,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
       CheckMetrics(kCustomUiTestFeature, ExpectedMetrics{.snooze_count = 1}));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        ShowCustomHelpBubble_Cancel) {
   const auto kBubbleId =
       user_education::test::TestCustomHelpBubbleView::kBubbleId;
@@ -489,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
       CheckMetrics(kCustomUiTestFeature, ExpectedMetrics{.cancel_count = 1}));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        ShowCustomHelpBubble_PressEsc) {
   const auto kBubbleId =
       user_education::test::TestCustomHelpBubbleView::kBubbleId;
@@ -499,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
       CheckMetrics(kCustomUiTestFeature, ExpectedMetrics{.cancel_count = 1}));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        ShowCustomHelpBubble_Action) {
   const auto kBubbleId =
       user_education::test::TestCustomHelpBubbleView::kBubbleId;
@@ -521,7 +520,7 @@ MATCHER_P(MatchesContext, expected, "Matches the expected context") {
   return arg.get() == expected.get();
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        CustomActionCallbackInSecondWindow) {
   // Create a second browser.
   Browser* const other = CreateBrowser(browser()->profile());
@@ -550,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
       PressNonDefaultPromoButton()));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        CustomActionCallbackInSecondWindowAfterFirstCloses) {
   // Create a second browser.
   Browser* const other = CreateBrowser(browser()->profile());
@@ -575,32 +574,31 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25UiTest,
       PressNonDefaultPromoButton()));
 }
 
-class BrowserFeaturePromoController25LiveTrackerUiTest
+class BrowserFeaturePromoControllerLiveTrackerUiTest
     : public InteractiveFeaturePromoTest {
  public:
   static const base::Feature& kFeature;
 
-  BrowserFeaturePromoController25LiveTrackerUiTest()
+  BrowserFeaturePromoControllerLiveTrackerUiTest()
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos({kFeature}),
                                     ClockMode::kUseDefaultClock) {}
 
-  ~BrowserFeaturePromoController25LiveTrackerUiTest() override = default;
+  ~BrowserFeaturePromoControllerLiveTrackerUiTest() override = default;
 
-  BrowserFeaturePromoController25LiveTrackerUiTest(
-      const BrowserFeaturePromoController25LiveTrackerUiTest&) = delete;
-  BrowserFeaturePromoController25LiveTrackerUiTest& operator=(
-      const BrowserFeaturePromoController25LiveTrackerUiTest&) = delete;
+  BrowserFeaturePromoControllerLiveTrackerUiTest(
+      const BrowserFeaturePromoControllerLiveTrackerUiTest&) = delete;
+  BrowserFeaturePromoControllerLiveTrackerUiTest& operator=(
+      const BrowserFeaturePromoControllerLiveTrackerUiTest&) = delete;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-const base::Feature&
-    BrowserFeaturePromoController25LiveTrackerUiTest::kFeature =
-        feature_engagement::kIPHBackNavigationMenuFeature;
+const base::Feature& BrowserFeaturePromoControllerLiveTrackerUiTest::kFeature =
+    feature_engagement::kIPHBackNavigationMenuFeature;
 
 // Regression test with live tracker for https://crbug.com/396344371
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25LiveTrackerUiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerLiveTrackerUiTest,
                        ShowPromoTwice) {
   RunTestSequence(
       WithView(kBrowserViewElementId,
@@ -630,17 +628,17 @@ BASE_FEATURE(kIPHExemptFromToolbarNotCollapsedFeature,
 
 }  // namespace
 
-class BrowserFeaturePromoController25WithPromosUiTest
-    : public BrowserFeaturePromoController25UiTestBase {
+class BrowserFeaturePromoControllerWithPromosUiTest
+    : public BrowserFeaturePromoControllerUiTestBase {
  public:
-  BrowserFeaturePromoController25WithPromosUiTest() {
+  BrowserFeaturePromoControllerWithPromosUiTest() {
     feature_promo_test_impl().set_use_shortened_timeouts_for_internal_testing(
         true);
   }
-  ~BrowserFeaturePromoController25WithPromosUiTest() override = default;
+  ~BrowserFeaturePromoControllerWithPromosUiTest() override = default;
 
   void SetUpOnMainThread() override {
-    BrowserFeaturePromoController25UiTestBase::SetUpOnMainThread();
+    BrowserFeaturePromoControllerUiTestBase::SetUpOnMainThread();
 
     auto spec = FeaturePromoSpecification::CreateForSnoozePromo(
         kIPHExemptFromOmniboxFeature, kToolbarAppMenuButtonElementId,
@@ -670,7 +668,7 @@ class BrowserFeaturePromoController25WithPromosUiTest
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25WithPromosUiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerWithPromosUiTest,
                        PromoExemptFromOmniboxNotOpenPrecondition) {
   RunTestSequence(
       WithView(
@@ -689,7 +687,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25WithPromosUiTest,
       MaybeShowPromo(kIPHExemptFromOmniboxFeature));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25WithPromosUiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerWithPromosUiTest,
                        PromoExemptFromUserNotActivePrecondition) {
   RunTestSequence(
       WaitForShow(kBrowserViewElementId), Check([this]() {
@@ -705,17 +703,17 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25WithPromosUiTest,
       MaybeShowPromo(kIPHExemptFromUserNotActiveFeature));
 }
 
-class BrowserFeaturePromoController25OverflowUiTest
-    : public BrowserFeaturePromoController25WithPromosUiTest {
+class BrowserFeaturePromoControllerOverflowUiTest
+    : public BrowserFeaturePromoControllerWithPromosUiTest {
  public:
-  BrowserFeaturePromoController25OverflowUiTest() {
+  BrowserFeaturePromoControllerOverflowUiTest() {
     // This has to be called before the browser is created.
     ToolbarControllerUtil::SetPreventOverflowForTesting(false);
   }
-  ~BrowserFeaturePromoController25OverflowUiTest() override = default;
+  ~BrowserFeaturePromoControllerOverflowUiTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25OverflowUiTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerOverflowUiTest,
                        PromoExemptFromToolbarNotCollapsed) {
   RunTestSequence(
       WaitForShow(kBrowserViewElementId),
@@ -788,7 +786,7 @@ class BrowserUserEducationInterfaceWithStartupPromo
 
 // Regression test for startup promo issues on User Education 2.5.
 // See https://crbug.com/439030167 for more information.
-class BrowserFeaturePromoController25LiveStartupTest
+class BrowserFeaturePromoControllerLiveStartupTest
     : public InteractiveFeaturePromoTest {
  public:
   // This will be the feature to use for startup tests below.
@@ -798,18 +796,18 @@ class BrowserFeaturePromoController25LiveStartupTest
     return feature_engagement::kIPHReadingListDiscoveryFeature;
   }
 
-  BrowserFeaturePromoController25LiveStartupTest()
+  BrowserFeaturePromoControllerLiveStartupTest()
       : InteractiveFeaturePromoTest(
             UseDefaultTrackerAllowingPromos({GetStartupTestFeature()}),
             ClockMode::kUseDefaultClock,
             InitialSessionState::kInsideGracePeriod) {}
-  ~BrowserFeaturePromoController25LiveStartupTest() override = default;
+  ~BrowserFeaturePromoControllerLiveStartupTest() override = default;
 
   void SetUp() override {
     user_ed_override_ =
         BrowserWindowFeatures::GetUserDataFactoryForTesting()
             .AddOverrideForTesting(base::BindRepeating(
-                &BrowserFeaturePromoController25LiveStartupTest::CreateUserEd,
+                &BrowserFeaturePromoControllerLiveStartupTest::CreateUserEd,
                 base::Unretained(this)));
     InteractiveFeaturePromoTest::SetUp();
   }
@@ -826,7 +824,7 @@ class BrowserFeaturePromoController25LiveStartupTest
       BrowserWindowInterface& browser) {
     user_education::FeaturePromoParams params(GetStartupTestFeature());
     params.show_promo_result_callback = base::BindOnce(
-        &BrowserFeaturePromoController25LiveStartupTest::OnShowPromoResult,
+        &BrowserFeaturePromoControllerLiveStartupTest::OnShowPromoResult,
         base::Unretained(this));
     return std::make_unique<BrowserUserEducationInterfaceWithStartupPromo>(
         &browser, std::move(params));
@@ -845,7 +843,7 @@ class BrowserFeaturePromoController25LiveStartupTest
   ui::UserDataFactory::ScopedOverride user_ed_override_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoController25LiveStartupTest,
+IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerLiveStartupTest,
                        CheckStartupPromo) {
   WaitForPromo();
 }

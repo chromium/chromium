@@ -26,7 +26,7 @@
 #include "components/user_education/common/user_education_storage_service.h"
 
 // Declaring these in the global namespace for testing purposes.
-class BrowserFeaturePromoController25TestBase;
+class BrowserFeaturePromoControllerTestBase;
 class BrowserFeaturePromoControllerTestHelper;
 class FeaturePromoLifecycleUiTest;
 
@@ -254,7 +254,7 @@ class FeaturePromoControllerImpl : public FeaturePromoController {
       bool required);
 
  private:
-  friend BrowserFeaturePromoController25TestBase;
+  friend BrowserFeaturePromoControllerTestBase;
   friend BrowserFeaturePromoControllerTestHelper;
   friend FeaturePromoLifecycleUiTest;
 

@@ -156,8 +156,7 @@ bool FloatingWebUIHelpBubbleFactoryBrowser::CanBuildBubbleForTrackedElement(
 // static
 void BrowserHelpBubble::MaybeCloseOverlappingHelpBubbles(
     const views::View* view) {
-  auto* const browser =
-      BrowserFeaturePromoControllerBase::GetBrowserForView(view);
+  auto* const browser = BrowserFeaturePromoController::GetBrowserForView(view);
   if (!browser) {
     return;
   }
