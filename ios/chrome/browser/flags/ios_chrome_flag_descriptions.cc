@@ -491,6 +491,13 @@ const char kDisableShareButtonName[] = "Disable Share Button in Toolbar";
 const char kDisableShareButtonDescription[] =
     "Hides the share button in toolbar.";
 
+const char kDisableU18FeedbackIosName[] = "DisableU18FeedbackIos";
+const char kDisableU18FeedbackIosDescription[] =
+    "When enabled, the primary identity is set to the feedback UI when opened. "
+    "The user is free add it to the feedback or not. Also the feedback cannot "
+    "be sent if the primary user is under 18. When disabled, the feedback is "
+    "anoymous";
+
 const char kDownloadAutoDeletionClearFilesOnEveryStartupName[] =
     "Enable Download Auto-Deletion Testing Mode";
 const char kDownloadAutoDeletionClearFilesOnEveryStartupDescription[] =

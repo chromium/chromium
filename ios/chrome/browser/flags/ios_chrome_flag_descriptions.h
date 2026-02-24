@@ -300,6 +300,9 @@ extern const char kDisableLensCameraDescription[];
 extern const char kDisableShareButtonName[];
 extern const char kDisableShareButtonDescription[];
 
+extern const char kDisableU18FeedbackIosName[];
+extern const char kDisableU18FeedbackIosDescription[];
+
 extern const char kDownloadAutoDeletionClearFilesOnEveryStartupName[];
 extern const char kDownloadAutoDeletionClearFilesOnEveryStartupDescription[];
 

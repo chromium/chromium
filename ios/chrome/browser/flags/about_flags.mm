@@ -2757,6 +2757,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"sync-themes-ios", flag_descriptions::kSyncThemesIosName,
      flag_descriptions::kSyncThemesIosDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(syncer::kSyncThemesIos)},
+    {"disable-u18-feedback-ios", flag_descriptions::kDisableU18FeedbackIosName,
+     flag_descriptions::kDisableU18FeedbackIosDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDisableU18FeedbackIos)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

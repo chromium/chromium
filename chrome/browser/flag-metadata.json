@@ -2368,6 +2368,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "disable-u18-feedback-ios",
+    "owners": [ "jlebel@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "disable-virtual-keyboard",
     "owners": [ "dvallet@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 116

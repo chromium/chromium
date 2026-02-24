@@ -958,4 +958,10 @@ BASE_DECLARE_FEATURE(kAimCobrowse);
 // Returns true if the AimCobrowse feature is enabled.
 bool IsAimCobrowseEnabled();
 
+// Enables the DisableU18FeedbackIos feature.
+BASE_DECLARE_FEATURE(kDisableU18FeedbackIos);
+
+// Returns true if the DisableU18FeedbackIos feature is enabled.
+bool IsDisableU18FeedbackIosEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

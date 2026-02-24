@@ -1144,3 +1144,9 @@ BASE_FEATURE(kAimCobrowse, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAimCobrowseEnabled() {
   return base::FeatureList::IsEnabled(kAimCobrowse);
 }
+
+BASE_FEATURE(kDisableU18FeedbackIos, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDisableU18FeedbackIosEnabled() {
+  return base::FeatureList::IsEnabled(kDisableU18FeedbackIos);
+}
