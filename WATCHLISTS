@@ -487,6 +487,11 @@
       'filepath': 'third_party/blink/renderer/core/html/' \
                   '|third_party/blink/renderer/core/mathml/'
     },
+    'blink_html_menu': {
+      'filepath': 'third_party/blink/renderer/core/html/html_menu_.*[.](cc|h|idl)' \
+                  '|third_party/blink/renderer/core/html/menu_.*[.](cc|h)' \
+                  '|third_party/blink/web_tests/external/wpt/html/semantics/menu/'
+    },
     'blink_htmlparser': {
       'filepath': 'third_party/blink/renderer/core/html/parser/'
     },
@@ -2735,6 +2740,8 @@
                    'kouhei+heap@chromium.org',
                    'oilpan-reviews+blink@chromium.org'],
     'blink_html': ['blink-reviews-html@chromium.org'],
+    'blink_html_menu': ['dbaron+menu@chromium.org',
+                        'dgrogan+menu@chromium.org'],
     'blink_htmlparser': ['kinuko+watch@chromium.org',
                          'loading-reviews+parser@chromium.org'],
     'blink_image_codecs': ['cblume+imagecodecs@chromium.org',
