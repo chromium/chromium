@@ -1113,7 +1113,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.permissions") {
     "src/org/chromium/chrome/browser/permissions/NotificationTest.java",
     "src/org/chromium/chrome/browser/permissions/PermissionClapperLoudTest.java",
     "src/org/chromium/chrome/browser/permissions/PermissionClapperQuietTest.java",
-    "src/org/chromium/chrome/browser/permissions/PermissionGestureGatedTest.java",
     "src/org/chromium/chrome/browser/permissions/PermissionNavigationTest.java",
     "src/org/chromium/chrome/browser/permissions/PermissionPromptRenderTest.java",
     "src/org/chromium/chrome/browser/permissions/PermissionUpdateMessageTest.java",

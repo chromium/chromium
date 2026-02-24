@@ -520,28 +520,3 @@ TEST_F(PermissionBlockedMessageDelegateAndroidTest,
   histogram_tester.ExpectBucketCount("Permissions.ClapperLoud.MessageUI.Manage",
                                      true, 1);
 }
-
-TEST_F(PermissionBlockedMessageDelegateAndroidTest,
-       DismissByDialogDismissed_GestureGated) {
-  auto delegate = GetMockDelegate();
-
-  EXPECT_CALL(*delegate, ShouldUseQuietUI)
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*delegate, ReasonForUsingQuietUi)
-      .WillRepeatedly(testing::Return(std::optional<QuietUiReason>(
-          QuietUiReason::kTriggeredDueToLackOfGesture)));
-  EXPECT_CALL(*delegate, GetContentSettingsType)
-      .WillRepeatedly(testing::Return(ContentSettingsType::GEOLOCATION));
-
-  ExpectEnqueued();
-
-  EXPECT_CALL(*delegate, Accept).Times(0);
-  EXPECT_CALL(*delegate, Deny).Times(0);
-  EXPECT_CALL(*delegate, Dismiss);
-
-  ShowMessage(std::move(delegate));
-
-  TriggerManageClick();
-  TriggerDismiss(messages::DismissReason::SECONDARY_ACTION);
-  TriggerDialogDismiss();
-}

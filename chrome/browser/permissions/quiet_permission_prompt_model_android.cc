@@ -42,11 +42,7 @@ std::u16string GetGeolocationBlockedUIDescription(QuietUiReason reason) {
     case QuietUiReason::kTriggeredDueToLackOfGesture:
       return l10n_util::GetStringUTF16(
           IDS_LOCATION_QUIET_PERMISSION_MESSAGE_UI_PREDICTION_SERVICE);
-    // These reasons apply only for Notifications:
-    case QuietUiReason::kTriggeredByCrowdDeny:
-    case QuietUiReason::kTriggeredDueToAbusiveRequests:
-    case QuietUiReason::kTriggeredDueToAbusiveContent:
-    case QuietUiReason::kTriggeredDueToDisruptiveBehavior:
+    default:
       NOTREACHED();
   }
 }
