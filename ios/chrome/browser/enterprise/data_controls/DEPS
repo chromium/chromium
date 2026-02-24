@@ -5,6 +5,7 @@
 include_rules = [
   # keep-sorted start
     "+ios/chrome/browser/browser_content/model/edit_menu_builder.h",
+    "+ios/chrome/browser/signin/model/identity_manager_factory.h",
     "+ios/components/enterprise/data_controls",
   # keep-sorted end
 ]
