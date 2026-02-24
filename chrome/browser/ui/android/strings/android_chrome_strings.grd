@@ -524,7 +524,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_SITE_SEARCH_ADDITIONAL_SITES_BUTTON_LABEL" desc="Label for the 'Additional sites' button.">
         Additional sites
       </message>
-
+      <message name="IDS_SITE_SEARCH_DIALOG_TITLE_EDIT" desc="Title for the Edit Site Search dialog.">
+        Edit site search
+      </message>
       <message name="IDS_SITE_SEARCH_DIALOG_HINT_NAME" desc="Hint for the name field in the Edit Site Search dialog.">
         Name
       </message>
@@ -534,6 +536,13 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_SITE_SEARCH_DIALOG_HINT_URL" desc="Hint for the URL field in the Edit Site Search dialog.">
         URL with <ph name="QUERY">%s</ph> in place of query
       </message>
+      <message name="IDS_SITE_SEARCH_DIALOG_SAVE" desc="Button label to save the changes in the Edit Site Search dialog.">
+        Save
+      </message>
+      <message name="IDS_SITE_SEARCH_DIALOG_CANCEL" desc="Button label to cancel the changes in the Edit Site Search dialog.">
+        Cancel
+      </message>
+
 
 
       <!-- Add Message -->

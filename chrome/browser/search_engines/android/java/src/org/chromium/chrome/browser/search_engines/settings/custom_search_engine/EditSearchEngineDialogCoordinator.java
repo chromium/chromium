@@ -65,16 +65,17 @@ public class EditSearchEngineDialogCoordinator {
                     }
                 };
 
+        String dialogTitle = mContext.getString(R.string.site_search_dialog_title_edit);
+        String saveText = mContext.getString(R.string.site_search_dialog_save);
+        String cancelText = mContext.getString(R.string.site_search_dialog_cancel);
+
         mDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, controller)
-                        // TODO: Replace with Android strings.grd
-                        .with(ModalDialogProperties.TITLE, "Edit site search")
+                        .with(ModalDialogProperties.TITLE, dialogTitle)
                         .with(ModalDialogProperties.CUSTOM_VIEW, view)
-                        // TODO: Replace with Android strings.grd
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, "Save")
-                        // TODO: Replace with Android strings.grd
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, "Cancel")
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, saveText)
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, cancelText)
                         .build();
 
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
