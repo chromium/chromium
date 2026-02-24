@@ -94,6 +94,13 @@ class TabRestorer {
         void onFinished(boolean incognito);
 
         /**
+         * Called when the active tab has been restored.
+         *
+         * @param incognito Whether the active tab is incognito.
+         */
+        void onActiveTabRestored(boolean incognito);
+
+        /**
          * Called when the details of a tab have been read {@see
          * TabPersistentStoreObserver#onDetailsRead}.
          */
@@ -404,11 +411,24 @@ class TabRestorer {
         if (!isActiveTab && shouldSkipTab(tabState)) {
             mRestoreFilteredTabCount++;
             return null;
-        } else if (isActiveTab && tabState.contentsState == null && tabState.url != null) {
-            // Use fallback url if no contents state is available.
-            return mTabCreator.createNewTab(
-                    new LoadUrlParams(tabState.url), TabLaunchType.FROM_RESTORE, null, index);
         }
-        return mTabCreator.createFrozenTab(tabState, tabId, index);
+
+        @Nullable Tab tab = null;
+        if (isActiveTab && tabState.contentsState == null && tabState.url != null) {
+            // Use fallback url if no contents state is available.
+            tab =
+                    mTabCreator.createNewTab(
+                            new LoadUrlParams(tabState.url),
+                            TabLaunchType.FROM_RESTORE,
+                            null,
+                            index);
+        } else {
+            tab = mTabCreator.createFrozenTab(tabState, tabId, index);
+        }
+
+        if (isActiveTab && tab != null) {
+            mDelegate.onActiveTabRestored(mIncognito);
+        }
+        return tab;
     }
 }

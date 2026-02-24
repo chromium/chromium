@@ -112,6 +112,13 @@ public class TabStateStore implements TabPersistentStore {
                 }
 
                 @Override
+                public void onActiveTabRestored(boolean incognito) {
+                    for (TabPersistentStoreObserver observer : mObservers) {
+                        observer.onActiveTabLoaded(incognito);
+                    }
+                }
+
+                @Override
                 public void onRestoreFinished() {
                     onFinishedCreatingAllTabs();
                 }

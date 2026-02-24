@@ -37,6 +37,13 @@ class CombinedTabRestorer {
         /** Called once both the regular and incognito tab restorer have been cancelled. */
         default void onCancelled() {}
 
+        /**
+         * Called once the active tab has been restored.
+         *
+         * @param incognito Whether the active tab is incognito.
+         */
+        default void onActiveTabRestored(boolean incognito) {}
+
         /** Called once both the regular and incognito tab restorer have been finished. */
         default void onRestoreFinished() {}
 
@@ -144,6 +151,11 @@ class CombinedTabRestorer {
             // If only one of the tab restorers is cancelled it is a successful load. Either send
             // the finished signal or start the remaining tab restorer.
             sendOnFinishedOrStartRemainingTabRestorer();
+        }
+
+        @Override
+        public void onActiveTabRestored(boolean incognito) {
+            mOrchestratorDelegate.onActiveTabRestored(incognito);
         }
 
         @Override

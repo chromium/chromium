@@ -3058,6 +3058,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Tabs.TabPersistentStore.ActiveTabLoaded.{ActiveTabType}"
+    units="ms" expires_after="2026-08-23">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the time elapsed since TabModelOrchestrator initialization until the
+    active {ActiveTabType} tab is loaded.
+  </summary>
+  <token key="ActiveTabType">
+    <variant name="Incognito" summary="Incognito"/>
+    <variant name="Regular" summary="Regular"/>
+  </token>
+</histogram>
+
+<histogram name="Tabs.TabPersistentStore.Initialized" units="ms"
+    expires_after="2026-08-23">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the time elapsed since TabModelOrchestrator initialization until the
+    TabPersistentStore is initialized (metadata read).
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabPersistentStore.StateLoaded" units="ms"
+    expires_after="2026-08-23">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the time elapsed since TabModelOrchestrator initialization until the
+    tab state is fully loaded.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabRestoreMethod" enum="TabRestoreMethod"
     expires_after="2026-07-19">
   <owner>davidjm@chromium.org</owner>

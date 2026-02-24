@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import static org.chromium.base.TimeUtils.uptimeMillis;
+
 import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.metrics.RecordHistogram;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -34,6 +38,7 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
  */
 @NullMarked
 public class TabModelOrchestrator {
+    private final long mInitializationTime = uptimeMillis();
     protected @MonotonicNonNull TabPersistentStore mTabPersistentStore;
     protected @MonotonicNonNull TabModelSelectorBase mTabModelSelector;
     protected @MonotonicNonNull TabPersistencePolicy mTabPersistencePolicy;
@@ -331,6 +336,7 @@ public class TabModelOrchestrator {
                     @Override
                     public void onStateLoaded() {
                         mTabModelSelector.markTabStateInitialized();
+                        recordTimeHistogram("Tabs.TabPersistentStore.StateLoaded");
                     }
 
                     @Override
@@ -364,9 +370,17 @@ public class TabModelOrchestrator {
                     }
 
                     @Override
+                    public void onActiveTabLoaded(boolean incognito) {
+                        recordTimeHistogram(
+                                "Tabs.TabPersistentStore.ActiveTabLoaded."
+                                        + (incognito ? "Incognito" : "Regular"));
+                    }
+
+                    @Override
                     public void onInitialized(int tabCountAtStartup) {
                         // Resets the callback once the read of the Tab state file is completed.
                         mOnStandardActiveIndexRead = null;
+                        recordTimeHistogram("Tabs.TabPersistentStore.Initialized");
                     }
                 });
     }
@@ -394,5 +408,9 @@ public class TabModelOrchestrator {
         mTabPersistentStore = tabPersistentStore;
         mTabPersistencePolicy = tabPersistencePolicy;
         mShadowTabPersistentStore = shadowPersistentStore;
+    }
+
+    private void recordTimeHistogram(String histogramName) {
+        RecordHistogram.recordTimesHistogram(histogramName, uptimeMillis() - mInitializationTime);
     }
 }
