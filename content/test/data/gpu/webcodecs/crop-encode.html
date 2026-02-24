@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--
+Crop a frame by wrapping it in another frame and then encode-decode it to see
+if cropping was respected.
+-->
+<html>
+
+<head>
+  <title>Crop, encode, decode, render test</title>
+  <script src="webcodecs_common.js"></script>
+  <script src="crop-encode.js"></script>
+  <script type="text/javascript">
+    'use strict';
+    addManualTestButton([{
+      'source_type': 'offscreen',
+      'codec': 'avc1.42001E',
+      'acceleration':'prefer-software'
+    },
+    {
+      'source_type': 'offscreen',
+      'codec': 'avc1.42001E',
+      'acceleration':'prefer-hardware'
+    }]);
+  </script>
+</head>
+
+<body>
+  <canvas id="cnv" ></canvas>
+</body>
+
+</html>

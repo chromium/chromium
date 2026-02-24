@@ -7659,6 +7659,8 @@ data/gpu/webcodecs/buffer-read-and-reply-worker.js
 data/gpu/webcodecs/convert-to-rgb.html
 data/gpu/webcodecs/convert-to-rgb.js
 data/gpu/webcodecs/copyTo.html
+data/gpu/webcodecs/crop-encode.html
+data/gpu/webcodecs/crop-encode.js
 data/gpu/webcodecs/draw-image.html
 data/gpu/webcodecs/encode-color-space.html
 data/gpu/webcodecs/encode-color-space.js

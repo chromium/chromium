@@ -101,6 +101,17 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               'source_type': source_type,
           }],
       )
+    for source_type in ['offscreen', 'hw_decoder', 'sw_decoder']:
+      for acc in accelerations:
+        yield (
+            f'WebCodecs_cropEncode_{source_type}_{acc}',
+            'crop-encode.html',
+            [{
+                'source_type': source_type,
+                'codec': 'avc1.42001E',
+                'acceleration': acc,
+            }],
+        )
     for source_type in hbd_frame_sources:
       yield (
           f'WebCodecs_DrawImage_{source_type}',
