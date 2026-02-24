@@ -60,6 +60,12 @@ class TipsNotificationPresenter {
   // Shows the Lens Overlay promo.
   void ShowLensOverlayPromo();
 
+  // Shows the Tab Groups promo.
+  void ShowTabGroupsPromo();
+
+  // Shows the Price Tracking promo.
+  void ShowPriceTrackingPromo();
+
   // Returns true if there are any identities on the device.
   bool HasIdentitiesOnDevice();
 

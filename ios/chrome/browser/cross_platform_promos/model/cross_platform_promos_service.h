@@ -43,6 +43,12 @@ class CrossPlatformPromosService : public KeyedService {
   // Shows the CPE promo.
   virtual void ShowCPEPromo(Browser* browser);
 
+  // Shows the Tab Groups promo.
+  virtual void ShowTabGroupsPromo(Browser* browser);
+
+  // Shows the Price Tracking promo.
+  virtual void ShowPriceTrackingPromo(Browser* browser);
+
   // Evaluates synced prefs to see whether a promo should be shown.
   void MaybeShowPromo();
 

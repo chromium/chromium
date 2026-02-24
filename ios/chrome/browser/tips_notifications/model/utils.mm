@@ -247,6 +247,11 @@ ContentIDs ContentIDsForType(TipsNotificationType type) {
       return {IDS_IOS_NOTIFICATIONS_TIPS_TRUSTED_VAULT_KEY_RETRIVAL_TITLE,
               IDS_IOS_NOTIFICATIONS_TIPS_TRUSTED_VAULT_KEY_RETRIVAL_BODY};
     case TipsNotificationType::kIncognitoLock:
+    case TipsNotificationType::kTabGroups:
+    case TipsNotificationType::kPriceTracking:
+      // kTabGroups and kPriceTracking are triggered by cross platform push
+      // notifications, so the title and string do not need to be configured.
+      NOTREACHED();
     case TipsNotificationType::kError:
       NOTREACHED();
   }
@@ -475,6 +480,10 @@ NotificationType NotificationTypeForTipsNotificationType(
       return NotificationType::kTipsIncognitoLock;
     case TipsNotificationType::kTrustedVaultKeyRetrieval:
       return NotificationType::kTipsTrustedVaultKeyRetrieval;
+    case TipsNotificationType::kTabGroups:
+      return NotificationType::kCrossPlatformPromoTabGroups;
+    case TipsNotificationType::kPriceTracking:
+      return NotificationType::kCrossPlatformPromoPriceTracking;
     case TipsNotificationType::kError:
       NOTREACHED();
   }

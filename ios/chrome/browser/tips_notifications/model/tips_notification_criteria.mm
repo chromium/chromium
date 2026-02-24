@@ -104,6 +104,11 @@ bool TipsNotificationCriteria::ShouldSendNotification(
       return ShouldSendLensOverlay();
     case TipsNotificationType::kTrustedVaultKeyRetrieval:
       return ShouldSendTrustedVaultKeyRetrieval();
+    case TipsNotificationType::kTabGroups:
+    case TipsNotificationType::kPriceTracking:
+      // kTabGroups and kPriceTracking are triggered by cross platform push
+      // notifications, so they don't go through the local scheduling.
+      NOTREACHED();
     case TipsNotificationType::kIncognitoLock:
     case TipsNotificationType::kError:
       NOTREACHED();

@@ -1819,6 +1819,8 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="CPE"/>
   <int value="11" label="Incognito Lock"/>
   <int value="12" label="Trusted Vault Key Retrieval"/>
+  <int value="13" label="Tab Groups"/>
+  <int value="14" label="Price Tracking"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/tips_notifications/model/utils.h:TipsNotificationType) -->
@@ -2006,6 +2008,8 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Passwords [Cross Platform Promos]"/>
   <int value="21" label="Safe Browsing [Cross Platform Promos]"/>
   <int value="22" label="Lens [Cross Platform Promos]"/>
+  <int value="23" label="Tab Groups [Cross Platform Promos]"/>
+  <int value="24" label="Price Tracking [Cross Platform Promos]"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:NotificationType) -->

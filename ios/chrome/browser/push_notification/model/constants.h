@@ -38,7 +38,9 @@ enum class NotificationType {
   kCrossPlatformPromoPasswords = 20,
   kCrossPlatformPromoESB = 21,
   kCrossPlatformPromoLens = 22,
-  kMaxValue = kCrossPlatformPromoLens,
+  kCrossPlatformPromoTabGroups = 23,
+  kCrossPlatformPromoPriceTracking = 24,
+  kMaxValue = kCrossPlatformPromoPriceTracking,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

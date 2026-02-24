@@ -85,6 +85,16 @@ void CrossPlatformPromosService::ShowCPEPromo(Browser* browser) {
                                      TipsNotificationType::kCPE);
 }
 
+void CrossPlatformPromosService::ShowTabGroupsPromo(Browser* browser) {
+  TipsNotificationPresenter::Present(browser->AsWeakPtr(),
+                                     TipsNotificationType::kTabGroups);
+}
+
+void CrossPlatformPromosService::ShowPriceTrackingPromo(Browser* browser) {
+  TipsNotificationPresenter::Present(browser->AsWeakPtr(),
+                                     TipsNotificationType::kPriceTracking);
+}
+
 void CrossPlatformPromosService::MaybeShowPromo() {
   Browser* browser = GetActiveBrowser();
   if (!browser) {
