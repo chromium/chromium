@@ -102,6 +102,7 @@ static int attrKeyWrite(off_t offset, BTKey* toWrite, io_func* io) {
 
 	keyLength = toWrite->keyLength + sizeof(uint16_t);
 	key = (HFSPlusAttrKey*) malloc(keyLength);
+	ASSERT(key, "attrKeyWrite OOM");
 	memcpy(key, toWrite, keyLength);
 
 	nodeNameLength = key->name.length;
@@ -115,11 +116,12 @@ static int attrKeyWrite(off_t offset, BTKey* toWrite, io_func* io) {
 		FLIPENDIAN(key->name.unicode[i]);
 	}
 
-	if(!WRITE(io, offset, keyLength, key))
+	if(!WRITE(io, offset, keyLength, key)) {
+		free(key);
 		return FALSE;
+	}
 
 	free(key);
-
 	return TRUE;
 }
 
@@ -190,8 +192,8 @@ static BTKey* attrDataRead(off_t offset, io_func* io) {
 }
 
 static int updateAttributes(Volume* volume, HFSPlusAttrKey* skey, HFSPlusAttrRecord* srecord) {
-	HFSPlusAttrKey key;
-	int exact;
+	HFSPlusAttrKey key = {0};
+	int exact = 0;
 
 	// Must copy the leading `keyLength` field itself.
 	memcpy(&key, skey, skey->keyLength + sizeof(uint16_t));
@@ -200,6 +202,7 @@ static int updateAttributes(Volume* volume, HFSPlusAttrKey* skey, HFSPlusAttrRec
 		(HFSPlusAttrRecord*) search(volume->attrTree, (BTKey*)(&key), &exact, NULL, NULL);
 
 	if(exact && foundRecord) {
+		printf("updateAttributes: removing existing attribute record\n");
 		free(foundRecord);
 		foundRecord = NULL;
 		removeFromBTree(volume->attrTree, (BTKey*)(&key));
@@ -207,7 +210,7 @@ static int updateAttributes(Volume* volume, HFSPlusAttrKey* skey, HFSPlusAttrRec
 
 	switch(srecord->recordType) {
 		case kHFSPlusAttrInlineData: {
-			int len = srecord->attrData.size + sizeof(HFSPlusAttrData);
+			size_t len = srecord->attrData.size + sizeof(HFSPlusAttrData);
 			HFSPlusAttrData* dataRecord = malloc(len);
 			ASSERT(dataRecord, "updateAttributes (AttrInlineData) OOM");
 			memcpy(dataRecord, srecord, len);
@@ -282,25 +285,26 @@ size_t getAttribute(Volume* volume, uint32_t fileID, const char* name, uint8_t**
 }
 
 int setAttribute(Volume* volume, uint32_t fileID, const char* name, uint8_t* data, size_t size) {
-	HFSPlusAttrKey key;
-	HFSPlusAttrData* record;
+	HFSPlusAttrKey key = {0};
 	int ret, exact;
 
-	if(!volume->attrTree)
+	if(!volume->attrTree) {
+		fprintf(stderr, "setAttribute: no attribute tree in volume\n");
 		return FALSE;
+	}
 
-	memset(&key, 0 , sizeof(HFSPlusAttrKey));
 	key.fileID = fileID;
 	key.startBlock = 0;
 	ASCIIToUnicode(name, &key.name);
 	key.keyLength = sizeof(HFSPlusAttrKey) - sizeof(uint16_t) - sizeof(HFSUniStr255) + sizeof(key.name.length) + (sizeof(uint16_t) * key.name.length);
 
-	record = (HFSPlusAttrData*) malloc(sizeof(HFSPlusAttrData) + size);
-	memset(record, 0, sizeof(HFSPlusAttrData));
-
+	size_t recordSize = sizeof(HFSPlusAttrData) + size;
+	HFSPlusAttrData* record = calloc(1, recordSize);
+	ASSERT(record, "setAttribute couldn't calloc record");
 	record->recordType = kHFSPlusAttrInlineData;
 	record->size = size;
 	memcpy(record->data, data, size);
+	printf("setAttribute allocated %zu bytes for record\n", recordSize);
 
 	ret = updateAttributes(volume, &key, (HFSPlusAttrRecord*) record);
 

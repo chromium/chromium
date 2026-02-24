@@ -1,0 +1,253 @@
+diff --git a/third_party/libdmg-hfsplus/src/common/omaha_tag_format.c b/third_party/libdmg-hfsplus/src/common/omaha_tag_format.c
+new file mode 100644
+index 0000000000000..65514dd28994e
+--- /dev/null
++++ b/third_party/libdmg-hfsplus/src/common/omaha_tag_format.c
+@@ -0,0 +1,37 @@
++#include <stdint.h>
++#include <string.h>
++
++#include "omaha_tag_format.h"
++
++#include "common.h"
++#include "sizedbuf.h"
++
++// See Chromium's /src/chrome/updater/tag.h for documentation on the Omaha 4
++// tag data format.
++
++const char kOmahaTagSignature[] = "Gact2.0Omaha";
++const size_t kOmahaTagSignatureSize = sizeof(kOmahaTagSignature) - 1;
++
++const size_t kOmahaTagDataSize = 8192;
++
++const size_t kOmahaFullTagZoneSize = kOmahaTagSignatureSize + 2 + kOmahaTagDataSize;
++
++SizedBuf* ParseOmahaTagZone (const char* arg) {
++    size_t tag_len = strlen(arg);
++    ASSERT(tag_len <= kOmahaTagDataSize, "Omaha tag data size exceeded");
++    SizedBuf* ret = ZAllocBuf(kOmahaFullTagZoneSize);
++    uint8_t* target = ret->data;
++
++    memcpy(target, kOmahaTagSignature, kOmahaTagSignatureSize);
++    target += kOmahaTagSignatureSize;
++
++    // Omaha's max tag size should have already enforced this, might as well check
++    ASSERT(tag_len == (size_t)(uint16_t)tag_len, "tag data size does not fit in uint16");
++    // Omaha tag size is big-endian.
++    *target++ = (uint8_t)((tag_len & (size_t)0xFF00) >> 8);
++    *target++ = (uint8_t)(tag_len & (size_t)0xFF);
++
++    memcpy(target, arg, tag_len);
++
++    return ret;
++}
+diff --git a/third_party/libdmg-hfsplus/src/common/parse_data_param.c b/third_party/libdmg-hfsplus/src/common/parse_data_param.c
+index 93facc069ade9..4e15d42159e96 100644
+--- a/third_party/libdmg-hfsplus/src/common/parse_data_param.c
++++ b/third_party/libdmg-hfsplus/src/common/parse_data_param.c
+@@ -6,10 +6,12 @@
+ #include <string.h>
+ 
+ #include "common.h"
++#include "omaha_tag_format.h"
+ #include "sizedbuf.h"
+ 
+ const DataParamParseFormat kParseFormats[] = {
+-    {.name = "literal", .parser = AllocBufCopyString}};
++    {.name = "literal", .parser = AllocBufCopyString},
++    {.name = "omaha-tag-zone", .parser = ParseOmahaTagZone}};
+ 
+ DataParamParserPtr dataParamParserForFormat(const char* format_flag) {
+   size_t format_count =
+diff --git a/third_party/libdmg-hfsplus/src/dmg/attribution.c b/third_party/libdmg-hfsplus/src/dmg/attribution.c
+index a51884293deaa..e525832b6dbf4 100644
+--- a/third_party/libdmg-hfsplus/src/dmg/attribution.c
++++ b/third_party/libdmg-hfsplus/src/dmg/attribution.c
+@@ -37,7 +37,7 @@ enum ShouldKeepRaw sentinelShouldKeepRaw(AbstractAttribution* attribution, const
+ 
+   // If we didn't find it in the data, check if it spans data + nextData
+   if (nextLen > 0) {
+-    char* combinedData = malloc(len + nextLen);
++    uint8_t* combinedData = malloc(len + nextLen);
+     memcpy(combinedData, data, len);
+     memcpy(combinedData + len, nextData, nextLen);
+     if (NULL != memmem((const uint8_t*)combinedData, len + nextLen, sentinelBuf->data, sentinelBuf->len)) {
+diff --git a/third_party/libdmg-hfsplus/src/hfs/btree.c b/third_party/libdmg-hfsplus/src/hfs/btree.c
+index a54a5b058c2e2..6c4318593def9 100644
+--- a/third_party/libdmg-hfsplus/src/hfs/btree.c
++++ b/third_party/libdmg-hfsplus/src/hfs/btree.c
+@@ -1,3 +1,4 @@
++#include <stdint.h>
+ #include <stdlib.h>
+ #include <hfs/hfsplus.h>
+ 
+@@ -1413,6 +1414,9 @@ int addToBTree(BTree* tree, BTKey* searchKey, size_t length, unsigned char* cont
+ 
+     // Make sure data won't run off the end of the node; leave room for stored offsets
+     size_t bigFreeOffset = offset + sizeof(searchKey->keyLength) + searchKey->keyLength + length;
++    // Assuming size_t is at least uint32_t, uint16_t + uint16_t + 2 + size_t
++    // cannot "double overflow" size_t, so a simple wraparound check will do.
++    ASSERT(bigFreeOffset > length, "addToBTree: size_t overflow calculating free offset");
+     size_t maxOffset = (size_t)(tree->headerRec->nodeSize) - (sizeof(uint16_t)*2);
+     if (bigFreeOffset > maxOffset) {
+       fprintf(stderr, "addToBTree: cannot create first leaf with full record size %zu -- cap is %zu\n", bigFreeOffset - offset, maxOffset - offset);
+diff --git a/third_party/libdmg-hfsplus/src/hfs/catalog.c b/third_party/libdmg-hfsplus/src/hfs/catalog.c
+index 7844761b1bea0..f7068313df0fa 100644
+--- a/third_party/libdmg-hfsplus/src/hfs/catalog.c
++++ b/third_party/libdmg-hfsplus/src/hfs/catalog.c
+@@ -324,9 +324,10 @@ static BTKey* catalogDataRead(off_t offset, io_func* io) {
+ 
+ void ASCIIToUnicode(const char* ascii, HFSUniStr255* unistr) {
+   int count;
+-
+   count = 0;
++
+   while(ascii[count] != '\0') {
++    ASSERT(count <  255, "ASCIIToUnicode: string too long for HFSUniStr255");
+     unistr->unicode[count] = ascii[count];
+     count++;
+   }
+diff --git a/third_party/libdmg-hfsplus/src/hfs/hfs.c b/third_party/libdmg-hfsplus/src/hfs/hfs.c
+index 4da9fab6b3304..249c1445c6d18 100644
+--- a/third_party/libdmg-hfsplus/src/hfs/hfs.c
++++ b/third_party/libdmg-hfsplus/src/hfs/hfs.c
+@@ -256,7 +256,7 @@ void cmd_setattr(Volume* volume, DataParamParserPtr data_param_parser, int argc,
+ 	HFSPlusCatalogRecord* record;
+ 
+ 	if (argc < 4) {
+-		fprintf(stderr, "Not enough arguments: setattr <path> <attribute-name> <attribute-value>");
++		fprintf(stderr, "Not enough arguments: setattr <path> <attribute-name> <attribute-value>\n");
+ 		exit(2);
+ 	}
+ 
+@@ -323,7 +323,7 @@ void usage(const char* name) {
+ 	char dataFormats[256] = {0};
+ 	size_t needed = dataParamFormats(dataFormats, 256);
+ 	if (needed > 256) {
+-		fprintf(stderr, "warning: data format list truncated, needed %zu bytes",
++		fprintf(stderr, "warning: data format list truncated, needed %zu bytes\n",
+ 			    needed);
+ 	}
+ 	printf("usage: %s <image-file> <ls|cat|mv|mkdir|add|rm|chmod|extract|extractall|rmall|addall|attr|setattr|debug> <arguments>\n", name);
+@@ -381,7 +381,7 @@ int main(int argc, char *argv[]) {
+ 
+ 	TestByteOrder();
+ 
+-	const char *optstring = "s:m:";
++	const char* optstring = "s:m:d:";
+ 	const struct option longopts[] = {
+ 		{"symlinks", required_argument, NULL, 's'},
+ 		{"special-modes", required_argument, NULL, 'm'},
+diff --git a/third_party/libdmg-hfsplus/src/hfs/xattr.c b/third_party/libdmg-hfsplus/src/hfs/xattr.c
+index 402decb2f4ee2..f3e7ed59cfd9d 100644
+--- a/third_party/libdmg-hfsplus/src/hfs/xattr.c
++++ b/third_party/libdmg-hfsplus/src/hfs/xattr.c
+@@ -102,6 +102,7 @@ static int attrKeyWrite(off_t offset, BTKey* toWrite, io_func* io) {
+ 
+ 	keyLength = toWrite->keyLength + sizeof(uint16_t);
+ 	key = (HFSPlusAttrKey*) malloc(keyLength);
++	ASSERT(key, "attrKeyWrite OOM");
+ 	memcpy(key, toWrite, keyLength);
+ 
+ 	nodeNameLength = key->name.length;
+@@ -115,11 +116,12 @@ static int attrKeyWrite(off_t offset, BTKey* toWrite, io_func* io) {
+ 		FLIPENDIAN(key->name.unicode[i]);
+ 	}
+ 
+-	if(!WRITE(io, offset, keyLength, key))
++	if(!WRITE(io, offset, keyLength, key)) {
++		free(key);
+ 		return FALSE;
++	}
+ 
+ 	free(key);
+-
+ 	return TRUE;
+ }
+ 
+@@ -190,8 +192,8 @@ static BTKey* attrDataRead(off_t offset, io_func* io) {
+ }
+ 
+ static int updateAttributes(Volume* volume, HFSPlusAttrKey* skey, HFSPlusAttrRecord* srecord) {
+-	HFSPlusAttrKey key;
+-	int exact;
++	HFSPlusAttrKey key = {0};
++	int exact = 0;
+ 
+ 	// Must copy the leading `keyLength` field itself.
+ 	memcpy(&key, skey, skey->keyLength + sizeof(uint16_t));
+@@ -200,6 +202,7 @@ static int updateAttributes(Volume* volume, HFSPlusAttrKey* skey, HFSPlusAttrRec
+ 		(HFSPlusAttrRecord*) search(volume->attrTree, (BTKey*)(&key), &exact, NULL, NULL);
+ 
+ 	if(exact && foundRecord) {
++		printf("updateAttributes: removing existing attribute record\n");
+ 		free(foundRecord);
+ 		foundRecord = NULL;
+ 		removeFromBTree(volume->attrTree, (BTKey*)(&key));
+@@ -207,7 +210,7 @@ static int updateAttributes(Volume* volume, HFSPlusAttrKey* skey, HFSPlusAttrRec
+ 
+ 	switch(srecord->recordType) {
+ 		case kHFSPlusAttrInlineData: {
+-			int len = srecord->attrData.size + sizeof(HFSPlusAttrData);
++			size_t len = srecord->attrData.size + sizeof(HFSPlusAttrData);
+ 			HFSPlusAttrData* dataRecord = malloc(len);
+ 			ASSERT(dataRecord, "updateAttributes (AttrInlineData) OOM");
+ 			memcpy(dataRecord, srecord, len);
+@@ -282,25 +285,26 @@ size_t getAttribute(Volume* volume, uint32_t fileID, const char* name, uint8_t**
+ }
+ 
+ int setAttribute(Volume* volume, uint32_t fileID, const char* name, uint8_t* data, size_t size) {
+-	HFSPlusAttrKey key;
+-	HFSPlusAttrData* record;
++	HFSPlusAttrKey key = {0};
+ 	int ret, exact;
+ 
+-	if(!volume->attrTree)
++	if(!volume->attrTree) {
++		fprintf(stderr, "setAttribute: no attribute tree in volume\n");
+ 		return FALSE;
++	}
+ 
+-	memset(&key, 0 , sizeof(HFSPlusAttrKey));
+ 	key.fileID = fileID;
+ 	key.startBlock = 0;
+ 	ASCIIToUnicode(name, &key.name);
+ 	key.keyLength = sizeof(HFSPlusAttrKey) - sizeof(uint16_t) - sizeof(HFSUniStr255) + sizeof(key.name.length) + (sizeof(uint16_t) * key.name.length);
+ 
+-	record = (HFSPlusAttrData*) malloc(sizeof(HFSPlusAttrData) + size);
+-	memset(record, 0, sizeof(HFSPlusAttrData));
+-
++	size_t recordSize = sizeof(HFSPlusAttrData) + size;
++	HFSPlusAttrData* record = calloc(1, recordSize);
++	ASSERT(record, "setAttribute couldn't calloc record");
+ 	record->recordType = kHFSPlusAttrInlineData;
+ 	record->size = size;
+ 	memcpy(record->data, data, size);
++	printf("setAttribute allocated %zu bytes for record\n", recordSize);
+ 
+ 	ret = updateAttributes(volume, &key, (HFSPlusAttrRecord*) record);
+ 
+diff --git a/third_party/libdmg-hfsplus/src/includes/omaha_tag_format.h b/third_party/libdmg-hfsplus/src/includes/omaha_tag_format.h
+new file mode 100644
+index 0000000000000..f51f16a981a30
+--- /dev/null
++++ b/third_party/libdmg-hfsplus/src/includes/omaha_tag_format.h
+@@ -0,0 +1,18 @@
++#ifndef __LIBDMG_HFSPLUS_OMAHA_TAG_DATA_FORMAT_H
++#define __LIBDMG_HFSPLUS_OMAHA_TAG_DATA_FORMAT_H
++
++#include "sizedbuf.h"
++
++// Returns a SizedBuf* containing the binary-format Omaha tag containing the
++// provided string, zero-padded to the maximum Omaha tag size (to allow space
++// for future re-tagging). Terminates the program with a nonzero exit code if
++// `arg` is too long to store in an Omaha tag. `arg` may be the empty string,
++// producing an Omaha tag encoding no data.
++//
++// Ownership of the returned SizedBuf* is transfered to the caller.
++//
++// This function is intended for parsing command line arguments. See
++// parse_data_param.h.
++SizedBuf* ParseOmahaTagZone(const char* arg);
++
++#endif  // __LIBDMG_HFSPLUS_OMAHA_TAG_DATA_FORMAT_H

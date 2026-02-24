@@ -324,9 +324,10 @@ static BTKey* catalogDataRead(off_t offset, io_func* io) {
 
 void ASCIIToUnicode(const char* ascii, HFSUniStr255* unistr) {
   int count;
-
   count = 0;
+
   while(ascii[count] != '\0') {
+    ASSERT(count <  255, "ASCIIToUnicode: string too long for HFSUniStr255");
     unistr->unicode[count] = ascii[count];
     count++;
   }

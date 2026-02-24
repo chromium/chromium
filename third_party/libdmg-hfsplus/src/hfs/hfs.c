@@ -256,7 +256,7 @@ void cmd_setattr(Volume* volume, DataParamParserPtr data_param_parser, int argc,
 	HFSPlusCatalogRecord* record;
 
 	if (argc < 4) {
-		fprintf(stderr, "Not enough arguments: setattr <path> <attribute-name> <attribute-value>");
+		fprintf(stderr, "Not enough arguments: setattr <path> <attribute-name> <attribute-value>\n");
 		exit(2);
 	}
 
@@ -323,7 +323,7 @@ void usage(const char* name) {
 	char dataFormats[256] = {0};
 	size_t needed = dataParamFormats(dataFormats, 256);
 	if (needed > 256) {
-		fprintf(stderr, "warning: data format list truncated, needed %zu bytes",
+		fprintf(stderr, "warning: data format list truncated, needed %zu bytes\n",
 			    needed);
 	}
 	printf("usage: %s <image-file> <ls|cat|mv|mkdir|add|rm|chmod|extract|extractall|rmall|addall|attr|setattr|debug> <arguments>\n", name);
@@ -381,7 +381,7 @@ int main(int argc, char *argv[]) {
 
 	TestByteOrder();
 
-	const char *optstring = "s:m:";
+	const char* optstring = "s:m:d:";
 	const struct option longopts[] = {
 		{"symlinks", required_argument, NULL, 's'},
 		{"special-modes", required_argument, NULL, 'm'},

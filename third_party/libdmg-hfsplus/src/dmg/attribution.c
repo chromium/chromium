@@ -37,7 +37,7 @@ enum ShouldKeepRaw sentinelShouldKeepRaw(AbstractAttribution* attribution, const
 
   // If we didn't find it in the data, check if it spans data + nextData
   if (nextLen > 0) {
-    char* combinedData = malloc(len + nextLen);
+    uint8_t* combinedData = malloc(len + nextLen);
     memcpy(combinedData, data, len);
     memcpy(combinedData + len, nextData, nextLen);
     if (NULL != memmem((const uint8_t*)combinedData, len + nextLen, sentinelBuf->data, sentinelBuf->len)) {

@@ -114,8 +114,21 @@ Local modifications:
       a data param parser for the value to be written into the attribute.
     * The extended attribute logic was already ready to handle NUL bytes.
     * Fixes SizedBuf types and adds ReallocBuf.
-  * patches/2026-02-23-btree-fixes.patch
+  * patches/2026-02-23a-btree-fixes.patch
     * Refuses to insert a record that does not fit into a btree node, instead
       of silently creating a corrupt filesystem.
     * Correctly handles attempting to remove a nonexistent record that would,
       if it existed, be the greatest record in a specific leaf node.
+  * patches/2026-02-23b-omaha-data-format-and-cleanups.patch
+    * Adds `--data-format=omaha_tag_zone` to create an Omaha tag with data
+      equal to the provided string, padding up to the full 8K max tag size,
+      prefixing with an Omaha 4 tag header (including data size)
+    * Scattered include cleanups, extra assertions, and extra debugging
+    * Note: A default-formatted HFS+ file system cannot support an 8K Omaha
+      tag using libdmg-hfsplus because libdmg-hfsplus only writes "inline"
+      extended attributes (they are written directly into the file system's
+      attribute B-tree rather than as a file-like object referenced from it).
+      To support 8K Omaha tags, the HFS+ volume must be created with a larger
+      attribute B-tree node size. `newfs_hfs -n a=16384 ...` does this;
+      `hdiutil create -fsargs "-n a=16384 -fs HFS+ ..." causes hdiutil to
+      propagate this flag when it creates the file system.

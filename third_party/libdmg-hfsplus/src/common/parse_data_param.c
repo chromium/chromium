@@ -6,10 +6,12 @@
 #include <string.h>
 
 #include "common.h"
+#include "omaha_tag_format.h"
 #include "sizedbuf.h"
 
 const DataParamParseFormat kParseFormats[] = {
-    {.name = "literal", .parser = AllocBufCopyString}};
+    {.name = "literal", .parser = AllocBufCopyString},
+    {.name = "omaha-tag-zone", .parser = ParseOmahaTagZone}};
 
 DataParamParserPtr dataParamParserForFormat(const char* format_flag) {
   size_t format_count =

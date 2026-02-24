@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdlib.h>
 #include <hfs/hfsplus.h>
 
@@ -1413,6 +1414,9 @@ int addToBTree(BTree* tree, BTKey* searchKey, size_t length, unsigned char* cont
 
     // Make sure data won't run off the end of the node; leave room for stored offsets
     size_t bigFreeOffset = offset + sizeof(searchKey->keyLength) + searchKey->keyLength + length;
+    // Assuming size_t is at least uint32_t, uint16_t + uint16_t + 2 + size_t
+    // cannot "double overflow" size_t, so a simple wraparound check will do.
+    ASSERT(bigFreeOffset > length, "addToBTree: size_t overflow calculating free offset");
     size_t maxOffset = (size_t)(tree->headerRec->nodeSize) - (sizeof(uint16_t)*2);
     if (bigFreeOffset > maxOffset) {
       fprintf(stderr, "addToBTree: cannot create first leaf with full record size %zu -- cap is %zu\n", bigFreeOffset - offset, maxOffset - offset);
