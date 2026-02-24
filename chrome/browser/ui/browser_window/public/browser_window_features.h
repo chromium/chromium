@@ -92,6 +92,7 @@ class ToastController;
 class ToastService;
 class TranslateBubbleController;
 class UpgradeNotificationController;
+class VerticalTabIphController;
 class WebUIBrowserExclusiveAccessContext;
 class WebUIBrowserSidePanelUI;
 class ZoomBubbleCoordinator;
@@ -792,6 +793,8 @@ class BrowserWindowFeatures {
       split_tab_highlight_controller_;
 
   std::unique_ptr<SplitViewIphController> split_view_iph_controller_;
+
+  std::unique_ptr<VerticalTabIphController> vertical_tab_iph_controller_;
 
   std::unique_ptr<RecentActivityBubbleCoordinator>
       recent_activity_bubble_coordinator_;

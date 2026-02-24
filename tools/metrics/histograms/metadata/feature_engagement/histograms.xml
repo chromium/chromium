@@ -673,6 +673,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_TranslateMenuButton" summary="translate menu button"/>
   <variant name="IPH_UpdatedConnectionSecurityIndicators"
       summary="updated omnibox connection security indicators"/>
+  <variant name="IPH_VerticalTabstripTutorialFeature"
+      summary="The vertical tabstrip IPH"/>
   <variant name="IPH_VideoTutorial_NTP_ChromeIntro"
       summary="Video tutorial card on NTP about introduction to chrome"/>
   <variant name="IPH_VideoTutorial_NTP_Download"

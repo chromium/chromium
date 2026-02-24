@@ -76,6 +76,7 @@
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_mojo_handler.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
+#include "chrome/browser/ui/tabs/vertical_tab_iph_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
@@ -598,6 +599,13 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       split_view_iph_controller_ =
           GetUserDataFactory().CreateInstance<SplitViewIphController>(*browser,
                                                                       browser);
+    }
+
+    if (base::FeatureList::IsEnabled(
+            feature_engagement::kIPHVerticalTabstripTutorialFeature)) {
+      vertical_tab_iph_controller_ =
+          GetUserDataFactory().CreateInstance<VerticalTabIphController>(
+              *browser, browser);
     }
   }
 

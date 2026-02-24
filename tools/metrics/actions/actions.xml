@@ -778,6 +778,9 @@ should be able to be added at any place in this file.
   <variant name="_TranslateMenuButton" summary="For translate menu button."/>
   <variant name="_UpdatedConnectionSecurityIndicators"
       summary="For updated omnibox connection security indicators."/>
+  <variant name="_VerticalTabstripTutorialFeature"
+      summary="For showing the vertical tabs feature when the horizontal
+               tabstrip is crowded."/>
   <variant name="_VideoTutorial_NTP_ChromeIntro"
       summary="For Chrome intro video tutorial."/>
   <variant name="_VideoTutorial_NTP_Download"
