@@ -19,8 +19,11 @@ class ActorOverlayViewBinder {
      * @param key The property key that changed.
      */
     public static void bind(PropertyModel model, ActorOverlayView view, PropertyKey key) {
-        if (key == ActorOverlayProperties.VISIBLE) {
-            view.setVisible(model.get(ActorOverlayProperties.VISIBLE));
+        if (key == ActorOverlayProperties.VISIBLE || key == ActorOverlayProperties.CAN_SHOW) {
+            boolean visible =
+                    model.get(ActorOverlayProperties.VISIBLE)
+                            && model.get(ActorOverlayProperties.CAN_SHOW);
+            view.setVisible(visible);
         }
     }
 }

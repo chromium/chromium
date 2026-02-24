@@ -14,6 +14,9 @@ class ActorOverlayProperties {
     /** Whether the overlay is currently visible. */
     public static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
 
+    /** Whether the overlay is allowed to show (e.g., not hidden by a tab switch). */
+    public static final WritableBooleanPropertyKey CAN_SHOW = new WritableBooleanPropertyKey();
+
     /** All keys for the property model. */
-    public static final PropertyKey[] ALL_KEYS = {VISIBLE};
+    public static final PropertyKey[] ALL_KEYS = {VISIBLE, CAN_SHOW};
 }

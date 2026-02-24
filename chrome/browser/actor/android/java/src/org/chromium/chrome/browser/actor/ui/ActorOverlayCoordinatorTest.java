@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.actor.ui;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import android.view.ViewStub;
@@ -12,12 +13,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 
 /** Tests for {@link ActorOverlayCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -25,15 +32,21 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class ActorOverlayCoordinatorTest {
     @Mock private ViewStub mViewStub;
     @Mock private ActorOverlayView mView;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private Tab mTab;
 
     private ActorOverlayCoordinator mCoordinator;
+    private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         Mockito.when(mViewStub.inflate()).thenReturn(mView);
 
-        mCoordinator = new ActorOverlayCoordinator(mViewStub);
+        mCurrentTabSupplier = ObservableSuppliers.createNullable();
+        Mockito.when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
+
+        mCoordinator = new ActorOverlayCoordinator(mViewStub, mTabModelSelector);
     }
 
     @Test
@@ -41,15 +54,58 @@ public class ActorOverlayCoordinatorTest {
         Assert.assertNotNull(mCoordinator.getMediator());
         Assert.assertEquals(mView, mCoordinator.getView());
         verify(mViewStub).inflate();
+        verify(mTabModelSelector).addObserver(any(TabModelSelectorObserver.class));
     }
 
     @Test
     public void testVisibility() {
+        Mockito.clearInvocations(mView);
+
         ActorOverlayMediator mediator = mCoordinator.getMediator();
         mediator.setOverlayVisible(true);
+        // CAN_SHOW is true by default from Coordinator init, so VISIBLE=true makes view visible.
         verify(mView).setVisible(true);
 
         mediator.setOverlayVisible(false);
         verify(mView).setVisible(false);
+    }
+
+    @Test
+    public void testHideOnTabHidden() {
+        ArgumentCaptor<TabModelSelectorObserver> observerCaptor =
+                ArgumentCaptor.forClass(TabModelSelectorObserver.class);
+        verify(mTabModelSelector).addObserver(observerCaptor.capture());
+
+        Mockito.clearInvocations(mView);
+
+        ActorOverlayMediator mediator = mCoordinator.getMediator();
+        mediator.setOverlayVisible(true);
+        verify(mView).setVisible(true);
+
+        observerCaptor.getValue().onTabHidden(mTab);
+        verify(mView).setVisible(false);
+    }
+
+    @Test
+    public void testUpdateCanShowOverlayOnTabShown() {
+        Mockito.clearInvocations(mView);
+
+        ActorOverlayMediator mediator = mCoordinator.getMediator();
+        mediator.setOverlayVisible(true);
+        verify(mView).setVisible(true);
+
+        // Simulate a new tab showing. This should trigger updateCanShowOverlay, which currently
+        // sets CAN_SHOW to false for native pages.
+        Mockito.when(mTab.isNativePage()).thenReturn(true);
+        mCurrentTabSupplier.set(mTab);
+
+        verify(mView).setVisible(false);
+    }
+
+    @Test
+    public void testDestroy() {
+        mCoordinator.destroy();
+        verify(mTabModelSelector).removeObserver(any(TabModelSelectorObserver.class));
+        Assert.assertFalse(mCurrentTabSupplier.hasObservers());
     }
 }
