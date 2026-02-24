@@ -12,6 +12,7 @@
 #include "arc_policy_util.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -307,9 +308,7 @@ void ReplaceManagedConfigurationVariables(const Profile* profile,
   }
 }
 
-void FilterAppsOnReven(
-    base::DictValue* arc_policy,
-    const std::unordered_set<std::string>& allowed_packages) {
+void FilterAppsOnReven(base::DictValue* arc_policy) {
   base::ListValue* applications =
       arc_policy->FindList(policy_util::kArcPolicyKeyApplications);
 
@@ -317,7 +316,7 @@ void FilterAppsOnReven(
     return;
   }
 
-  applications->EraseIf([&allowed_packages](const base::Value& val) {
+  applications->EraseIf([](const base::Value& val) {
     const base::DictValue& application = val.GetDict();
     const std::string* package_name =
         application.FindString(ArcPolicyBridge::kPackageName);
@@ -325,8 +324,22 @@ void FilterAppsOnReven(
       return true;
     }
 
-    bool is_allowed = allowed_packages.contains(*package_name);
-    bool is_zscaler = package_name->find("zscaler.com.") == 0;
+    // Define a set of certified package names for Android VPN apps on Reven.
+    static constexpr auto kAllowedPackages =
+        base::MakeFixedFlatSet<std::string_view>({
+            "com.paloaltonetworks.globalprotect",
+            "com.cisco.anyconnect.vpn.android.avf",
+            "zscaler.com.zschromeosapp",
+            "com.f5.edge.client_ics",
+            "com.netskope.netskopeclient",
+            "com.zimperium.zips",
+            "com.fortinet.forticlient_vpn",
+            "com.fortinet.forticlient_fa",
+            "com.forcepoint.sslvpn",
+        });
+
+    bool is_allowed = kAllowedPackages.contains(*package_name);
+    bool is_zscaler = package_name->starts_with("zscaler.com.");
     return !is_allowed && !is_zscaler;
   });
 }
@@ -337,19 +350,7 @@ void ConfigureRevenPolicies(base::DictValue* arc_policy) {
   arc_policy->Set(policy_util::kArcPolicyKeyPlayStoreMode,
                   kPolicyPlayStoreModeAllowList);
 
-  // Define a set of certified package names for Android VPN apps on Reven.
-  const std::unordered_set<std::string> allowed_packages = {
-      "com.paloaltonetworks.globalprotect",
-      "com.cisco.anyconnect.vpn.android.avf",
-      "zscaler.com.zschromeosapp",
-      "com.f5.edge.client_ics",
-      "com.netskope.netskopeclient",
-      "com.zimperium.zips",
-      "com.fortinet.forticlient_vpn",
-      "com.fortinet.forticlient_fa",
-      "com.forcepoint.sslvpn"};
-
-  FilterAppsOnReven(arc_policy, allowed_packages);
+  FilterAppsOnReven(arc_policy);
 }
 
 base::DictValue ParseArcPoliciesToDict(const policy::PolicyMap& policy_map) {
