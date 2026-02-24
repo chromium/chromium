@@ -216,7 +216,7 @@ export class ReloadButtonAppElement extends CrLitElement {
     }
 
     // Handle the visible state changes only for left-click.
-    if (e.button === BUTTON_LEFT) {
+    if (e.button === BUTTON_LEFT && !e.metaKey) {
       this.metricsRecorder_.onChangeVisibleMode(
           MetricsRecorder.getVisibleMode(this.isLoading_),
           MetricsRecorder.getVisibleMode(!this.isLoading_));
@@ -233,7 +233,7 @@ export class ReloadButtonAppElement extends CrLitElement {
           /*bypass_cache=*/ e.shiftKey || e.ctrlKey, this.generateFlags(e));
     }
 
-    if (e.button === BUTTON_LEFT) {
+    if (e.button === BUTTON_LEFT && !e.metaKey) {
       // Update the renderer in advance to avoid the delay.
       this.isLoading_ = !this.isLoading_;
     }
