@@ -4,6 +4,8 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 
+#include <optional>
+
 #include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -385,18 +387,14 @@ void ContextualTasksUiService::RunPendingAccessTokenCallbacks(
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/483442073): Remove TabStripModel once we add missing APIs to
-// TabListInterface.
 tabs::TabInterface* ContextualTasksUiService::MaybeFocusExistingOpenTab(
     const GURL& url,
-    TabStripModel* tab_strip_model,
+    TabListInterface* tab_list,
     const base::Uuid& task_id) {
   GURL url_no_fragments =
       shared_highlighting::RemoveFragmentSelectorDirectives(url);
-  for (int i = 0; i < tab_strip_model->count(); ++i) {
-    content::WebContents* web_contents =
-        tab_strip_model->GetTabAtIndex(i)->GetContents();
+  for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+    content::WebContents* web_contents = tab_list->GetTab(i)->GetContents();
     std::optional<ContextualTask> task =
         contextual_tasks_service_->GetContextualTaskForTab(
             SessionTabHelper::IdForTab(web_contents));
@@ -408,13 +406,12 @@ tabs::TabInterface* ContextualTasksUiService::MaybeFocusExistingOpenTab(
             web_contents->GetLastCommittedURL());
     if (tab_url_no_fragments == url_no_fragments && task &&
         task->GetTaskId() == task_id) {
-      tab_strip_model->ActivateTabAt(i);
-      return tab_strip_model->GetTabAtIndex(i);
+      tab_list->ActivateTab(tab_list->GetTab(i)->GetHandle());
+      return tab_list->GetTab(i);
     }
   }
   return nullptr;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ContextualTasksUiService::OnThreadLinkClicked(
     const GURL& url,
@@ -447,9 +444,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   new_contents->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(url));
 
-#if !BUILDFLAG(IS_ANDROID)
-  TabStripModel* tab_strip_model = browser->GetTabStripModel();
-#endif
+  TabListInterface* tab_list = TabListInterface::From(browser.get());
 
   // If the source contents is the panel, open the AI page in a new foreground
   // tab.
@@ -457,23 +452,31 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   if (!tab) {
     // Attempt to focus an existing tab prior to creating a new one.
     tabs::TabInterface* existing_tab = nullptr;
-#if !BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/483442073): Remove TabStripModel once we add missing APIs
-    // to TabListInterface.
-    existing_tab = MaybeFocusExistingOpenTab(url, tab_strip_model, task_id);
-#endif
+    existing_tab = MaybeFocusExistingOpenTab(url, tab_list, task_id);
     if (!existing_tab) {
-#if !BUILDFLAG(IS_ANDROID)
-      // Creates the Tab so session ID is created for the WebContents.
-      auto tab_to_insert = std::make_unique<tabs::TabModel>(
-          std::move(new_contents), tab_strip_model);
       if (task_id.is_valid()) {
         AssociateWebContentsToTask(new_contents_ptr, task_id);
       }
+#if BUILDFLAG(IS_ANDROID)
+      // Insert the WebContents after the current active.
+      int active_tab_index = tab_list->GetActiveIndex();
+      tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+      tabs::TabInterface* new_tab = tab_list->InsertWebContentsAt(
+          active_tab_index + 1, std::move(new_contents),
+          /*should_pin=*/false,
+          /*group=*/active_tab->GetGroup());
+      tab_list->SetOpenerForTab(new_tab->GetHandle(), active_tab->GetHandle());
+      tab_list->ActivateTab(new_tab->GetHandle());
+#else
+      // TODO(crbug.com/483442073): Remove TabStripModel once we address the
+      // loss of ui::PAGE_TRANSITION_LINK upon migrating from
+      // TabStripModel::AddTab() to TabListInterface::InsertWebContentsAt().
+      TabStripModel* tab_strip_model = browser->GetTabStripModel();
+      // Creates the Tab so session ID is created for the WebContents.
+      auto tab_to_insert = std::make_unique<tabs::TabModel>(
+          std::move(new_contents), tab_strip_model);
       // Insert the WebContents after the current active.
       int active_tab_index = tab_strip_model->active_index();
-      // TODO(crbug.com/483442073): Remove TabStripModel once we add missing
-      // APIs to TabListInterface.
       tab_strip_model->AddTab(std::move(tab_to_insert), active_tab_index + 1,
                               ui::PAGE_TRANSITION_LINK,
                               AddTabTypes::ADD_ACTIVE);
@@ -505,28 +508,21 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     return;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   // Get the index of the web contents.
-  // TODO(crbug.com/483442073): Remove TabStripModel once we add missing
-  // APIs to TabListInterface.
-  const int current_index = tab_strip_model->GetIndexOfTab(tab.get());
+  const int current_index = tab_list->GetIndexOfTab(tab.get()->GetHandle());
 
   // Open the linked page in a tab directly after this one.
   // To prevent side panel to close and reopen again, add the new tab, associate
   // with task and then activate it.
-  tab_strip_model->InsertWebContentsAt(current_index + 1,
-                                       std::move(new_contents),
-                                       AddTabTypes::ADD_NONE, tab->GetGroup());
-#endif
+  tabs::TabInterface* new_tab =
+      tab_list->InsertWebContentsAt(current_index + 1, std::move(new_contents),
+                                    /*should_pin=*/false, tab->GetGroup());
 
   AssociateWebContentsToTask(new_contents_ptr, task_id);
 
-#if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/483442073): Remove TabStripModel once we add missing
-  // APIs to TabListInterface.
-  tab_strip_model->ActivateTabAt(current_index + 1);
-  CHECK(new_contents_ptr == tab_strip_model->GetActiveWebContents());
-#endif
+  DCHECK(new_tab);
+  tab_list->ActivateTab(new_tab->GetHandle());
+  CHECK(new_contents_ptr == tab_list->GetActiveTab()->GetContents());
 
   // Do not open side panel if kOpenSidePanelOnLinkClicked is not set.
   if (!kOpenSidePanelOnLinkClicked.Get()) {
@@ -539,7 +535,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
   // TODO(crbug.com/483442073): Remove TabStripModel once we add missing
   // APIs to TabListInterface.
   std::unique_ptr<content::WebContents> contextual_task_contents =
-      tab_strip_model->DetachWebContentsAtForInsertion(
+      browser->GetTabStripModel()->DetachWebContentsAtForInsertion(
           current_index, TabRemovedReason::kInsertedIntoSidePanel);
   contextual_task_contents_ptr = contextual_task_contents.get();
 
@@ -586,10 +582,6 @@ void ContextualTasksUiService::OnTextFinderLookupComplete(
   if (!tab || !all_text_found) {
     // If the tab went away or the text wasn't found on the page, open a new
     // tab.
-#if !BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/483442073): Remove TabStripModel once we add missing
-    // APIs to TabListInterface.
-    TabStripModel* tab_strip_model = browser->GetTabStripModel();
     std::unique_ptr<content::WebContents> new_contents =
         content::WebContents::Create(
             content::WebContents::CreateParams(profile_));
@@ -598,10 +590,25 @@ void ContextualTasksUiService::OnTextFinderLookupComplete(
     new_contents->GetController().LoadURLWithParams(
         content::NavigationController::LoadURLParams(url));
 
-    auto tab_to_insert = std::make_unique<tabs::TabModel>(
-        std::move(new_contents), tab_strip_model);
     AssociateWebContentsToTask(new_contents_ptr, task_id);
 
+#if BUILDFLAG(IS_ANDROID)
+    TabListInterface* tab_list = TabListInterface::From(browser.get());
+    // Insert the WebContents after the current active.
+    int active_tab_index = tab_list->GetActiveIndex();
+    tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+    tabs::TabInterface* new_tab = tab_list->InsertWebContentsAt(
+        active_tab_index + 1, std::move(new_contents),
+        /*should_pin=*/false, /*group=*/active_tab->GetGroup());
+    tab_list->SetOpenerForTab(new_tab->GetHandle(), active_tab->GetHandle());
+    tab_list->ActivateTab(new_tab->GetHandle());
+#else
+    // TODO(crbug.com/483442073): Remove TabStripModel once we address the loss
+    // of ui::PAGE_TRANSITION_LINK upon migrating from TabStripModel::AddTab()
+    // to TabListInterface::InsertWebContentsAt().
+    TabStripModel* tab_strip_model = browser->GetTabStripModel();
+    auto tab_to_insert = std::make_unique<tabs::TabModel>(
+        std::move(new_contents), tab_strip_model);
     // Insert the WebContents after the current active.
     int active_tab_index = tab_strip_model->active_index();
     tab_strip_model->AddTab(std::move(tab_to_insert), active_tab_index + 1,
@@ -1231,7 +1238,7 @@ void ContextualTasksUiService::OnTabClickedFromSourcesMenu(
         tabs::TabInterface::GetFromContents(web_contents);
     if (tab_interface && tab_interface->GetHandle().raw_value() == tab_id &&
         web_contents->GetLastCommittedURL() == url) {
-      tab_list->ActivateTab(tab_list->GetTab(i)->GetHandle());
+      tab_list->ActivateTab(tab_interface->GetHandle());
       return;
     }
   }
@@ -1239,9 +1246,9 @@ void ContextualTasksUiService::OnTabClickedFromSourcesMenu(
   // The tab with the given ID and URL wasn't found. Next, try finding a tab
   // that matches the URL. If found, switch to it.
   for (int i = 0; i < tab_list->GetTabCount(); ++i) {
-    content::WebContents* web_contents = tab_list->GetTab(i)->GetContents();
-    if (web_contents->GetLastCommittedURL() == url) {
-      tab_list->ActivateTab(tab_list->GetTab(i)->GetHandle());
+    tabs::TabInterface* tab_interface = tab_list->GetTab(i);
+    if (tab_interface->GetContents()->GetLastCommittedURL() == url) {
+      tab_list->ActivateTab(tab_interface->GetHandle());
       return;
     }
   }
