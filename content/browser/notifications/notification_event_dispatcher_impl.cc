@@ -537,9 +537,7 @@ void NotificationEventDispatcherImpl::RegisterNonPersistentNotificationListener(
   // receives a show event.
   DispatchNonPersistentCloseEvent(notification_id, base::DoNothing());
 
-  if (non_persistent_notification_listeners_.count(notification_id)) {
-    non_persistent_notification_listeners_.erase(notification_id);
-  }
+  non_persistent_notification_listeners_.erase(notification_id);
   non_persistent_notification_listeners_.emplace(
       std::piecewise_construct, std::forward_as_tuple(notification_id),
       std::forward_as_tuple(std::move(bound_remote), event_document_ptr,
