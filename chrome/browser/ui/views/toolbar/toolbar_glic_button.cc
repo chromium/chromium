@@ -42,6 +42,11 @@ ToolbarGlicButton::ToolbarGlicButton(
 
 ToolbarGlicButton::~ToolbarGlicButton() = default;
 
+void ToolbarGlicButton::AddedToWidget() {
+  SetDefaultBackgroundColorId(kColorToolbarGlicButtonBackgroundDefault);
+  GlicButton<ToolbarButton>::AddedToWidget();
+}
+
 bool ToolbarGlicButton::IsWidgetAlive() const {
   const views::Widget* widget = GetWidget();
   return widget && !widget->IsClosed();

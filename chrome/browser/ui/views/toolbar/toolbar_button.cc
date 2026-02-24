@@ -169,6 +169,10 @@ float ToolbarButton::GetCornerRadiusFor(ToolbarButton::Edge edge) const {
   return GetRoundedCornerRadius();
 }
 
+void ToolbarButton::SetDefaultBackgroundColorId(ChromeColorIds color_id) {
+  default_background_color_id_ = color_id;
+}
+
 void ToolbarButton::UpdateColorsAndInsets() {
   // First, calculate new border insets assuming CalculatePreferredSize()
   // accurately reflects the desired content size.
@@ -196,6 +200,12 @@ void ToolbarButton::UpdateColorsAndInsets() {
     SetBackground(nullptr);
     const auto* cp = GetColorProvider();
     if (cp) {
+      if (default_background_color_id_ != kChromeColorsStart) {
+        SetBackground(views::CreateBackgroundFromPainter(
+            views::Painter::CreateSolidRoundRectPainter(
+                cp->GetColor(default_background_color_id_), highlight_radius,
+                paint_insets)));
+      }
       label()->SetBackgroundColor(cp->GetColor(kColorToolbar));
     }
   }

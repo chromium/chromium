@@ -30,6 +30,7 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton> {
       views::View::FocusBehavior focus_behavior) override;
 
   bool IsWidgetAlive() const;
+  void AddedToWidget() override;
   void UpdateColors() override;
   void SetWidthFactor(float factor);
   void AddCloseButton(PressedCallback pressed_callback);

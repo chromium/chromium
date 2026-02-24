@@ -829,6 +829,8 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       kColorTabBackgroundInactiveFrameActive};
   mixer[kColorToolbarExtensionSeparatorDisabled] = {
       kColorToolbarButtonIconInactive};
+  mixer[kColorToolbarGlicButtonBackgroundDefault] = {
+      ui::kColorSysBaseContainer};
   mixer[kColorToolbarSeparator] = {kColorToolbarSeparatorDefault};
   mixer[kColorToolbarActionItemEngaged] = {
       ui::PickGoogleColor(ui::kColorSysPrimary, kColorToolbar,
