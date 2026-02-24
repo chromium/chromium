@@ -53,7 +53,8 @@ var TestRunner = class {
       'parentFrameId',
       'issueId',
       'initiatingFrameId',
-      'pipelineId'
+      'pipelineId',
+      'debuggerId'
     ];
   }
 

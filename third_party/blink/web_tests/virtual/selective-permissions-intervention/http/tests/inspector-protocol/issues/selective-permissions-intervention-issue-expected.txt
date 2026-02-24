@@ -1,0 +1,41 @@
+Verify that Selective Permissions Intervention issue is generated.
+
+Inspector issue: {
+    issue : {
+        code : SelectivePermissionsInterventionIssue
+        details : {
+            selectivePermissionsInterventionIssueDetails : {
+                adAncestry : {
+                    adAncestryChain : [
+                        [0] : {
+                            debuggerId : <string>
+                            name : .../issues/resources/trigger-geo.js
+                            scriptId : <string>
+                        }
+                    ]
+                    rootScriptFilterlistRule : trigger-geo.js|
+                }
+                apiName : geolocation
+                stackTrace : {
+                    callFrames : [
+                        [0] : {
+                            columnNumber : 24
+                            functionName : callGeo
+                            lineNumber : 1
+                            scriptId : <string>
+                            url : .../issues/resources/trigger-geo.js
+                        }
+                        [1] : {
+                            columnNumber : 0
+                            functionName :
+                            lineNumber : 4
+                            scriptId : <string>
+                            url : .../issues/resources/trigger-geo.js
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+

@@ -7,6 +7,7 @@
 # Audits domain allows investigation of page violations and possible improvements.
 experimental domain Audits
   depends on Network
+  depends on Runtime
 
   # Information about a cookie that is affected by an inspector issue.
   type AffectedCookie extends object
@@ -696,6 +697,41 @@ experimental domain Audits
       # Used for messages about activation disabled reason
       optional string disableReason
 
+  # Metadata about the ad script that was on the stack that caused the current
+  # script in the `AdAncestry` to be considered ad related.
+  type AdScriptIdentifier extends object
+    properties
+      # The script's v8 identifier.
+      Runtime.ScriptId scriptId
+      # v8's debugging id for the v8::Context.
+      Runtime.UniqueDebuggerId debuggerId
+      # The script's url (or generated name based on id if inline script).
+      string name
+
+  # Providence about how an ad script was determined to be such. It is an ad
+  # because its url matched a filterlist rule, or because some other ad script
+  # was on the stack when this script was loaded.
+  type AdAncestry extends object
+    properties
+      # The ad-script in the stack when the offending script was loaded. This is
+      # recursive down to the root script that was tagged due to the filterlist
+      # rule.
+      array of AdScriptIdentifier adAncestryChain
+      # The filterlist rule that caused the root (last) script in
+      # `adAncestry` to be ad-tagged.
+      optional string rootScriptFilterlistRule
+
+  # The issue warns about blocked calls to privacy sensitive APIs via the
+  # Selective Permissions Intervention.
+  type SelectivePermissionsInterventionIssueDetails extends object
+    properties
+      # Which API was intervened on.
+      string apiName
+      # Why the ad script using the API is considered an ad.
+      AdAncestry adAncestry
+      # The stack trace at the time of the intervention.
+      optional Runtime.StackTrace stackTrace
+
   # A unique identifier for the type of issue. Each type may use one of the
   # optional fields in InspectorIssueDetails to convey more specific
   # information about the kind of issue.
@@ -731,6 +767,7 @@ experimental domain Audits
       UserReidentificationIssue
       PermissionElementIssue
       PerformanceIssue
+      SelectivePermissionsInterventionIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -766,6 +803,7 @@ experimental domain Audits
       optional UserReidentificationIssueDetails userReidentificationIssueDetails
       optional PermissionElementIssueDetails permissionElementIssueDetails
       optional PerformanceIssueDetails performanceIssueDetails
+      optional SelectivePermissionsInterventionIssueDetails selectivePermissionsInterventionIssueDetails
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.
   # exceptions, CDP message, console messages, etc.) to reference an issue.

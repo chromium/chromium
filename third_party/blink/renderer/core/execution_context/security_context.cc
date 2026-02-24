@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 
+#include "base/check_deref.h"
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -36,10 +37,12 @@
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/frame/intervention.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -49,23 +52,14 @@ namespace blink {
 
 namespace {
 
-String SelectivePermissionInterventionMessage(
-    network::mojom::PermissionsPolicyFeature feature) {
-  // Get the feature's name.
-  String feature_name;
+String GetFeatureName(network::mojom::PermissionsPolicyFeature feature) {
   for (const auto& entry :
        GetDefaultFeatureNameMap(/*is_isolated_context=*/false)) {
     if (entry.value == feature) {
-      feature_name = entry.key;
-      break;
+      return entry.key;
     }
   }
-  DCHECK(!feature_name.empty());
-
-  return StrCat({"Blocked call to ", feature_name,
-                 " because ad-script was in the JavaScript stack at the time "
-                 "of the call. See http://crbug.com/435223477 for more "
-                 "information about this intervention."});
+  NOTREACHED();
 }
 
 }  // namespace
@@ -224,8 +218,12 @@ SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
                   SelectivePermissionsInterventionEnabled()) {
             permissions_policy_result = false;
 
-            String intervention_message =
-                SelectivePermissionInterventionMessage(feature);
+            String feature_name = GetFeatureName(feature);
+            String intervention_message = StrCat(
+                {"Blocked call to ", feature_name,
+                 " because ad-script was in the JavaScript stack at the time "
+                 "of the call. See http://crbug.com/435223477 for more "
+                 "information about this intervention."});
 
             // Add debugging cross-site data to the devtools console that
             // shouldn't be in the intervention report.
@@ -233,6 +231,10 @@ SecurityContext::FeatureStatus SecurityContext::IsFeatureEnabled(
                 StrCat({intervention_message, " ", ad_ancestry.ToString()});
             Intervention::GenerateReport(frame, "SelectivePermissions",
                                          intervention_message, console_message);
+
+            AuditsIssue::ReportSelectivePermissionsInterventionIssue(
+                execution_context_.Get(), feature_name, ad_ancestry,
+                CHECK_DEREF(SourceLocation::CaptureWithFullStackTrace()));
           }
         }
       }
