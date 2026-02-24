@@ -2251,6 +2251,7 @@ CreateInputDataFromAnnotatedPageContent(
   }
   _isMultiline = sender.numberOfLines > 1;
   [self commitUIUpdates];
+  [self.consumer updatePreferredContentSizeForNewTextFieldHeight];
 }
 
 #pragma mark - ComposeboxInputItemCollectionDelegate

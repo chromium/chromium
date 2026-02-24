@@ -106,6 +106,9 @@ enum class ComposeboxModelOption;
 // Called when the model option is updated.
 - (void)setModelOption:(ComposeboxModelOption)modelOption;
 
+// Called when the text field height changes.
+- (void)updatePreferredContentSizeForNewTextFieldHeight;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_CONSUMER_H_
