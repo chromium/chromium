@@ -26,13 +26,13 @@ export PATH="$HELPER_PKGS_PATH/bin:$PATH"
 export PKG_CONFIG_PATH="$DEPS_PREFIX/lib64/pkgconfig:$PKG_CONFIG_PATH"
 
 meson --buildtype=plain --prefix="$PREFIX" . build  \
-      -D docs=disabled -D man=disabled -D gstreamer=disabled -D systemd=disabled \
-      -D gstreamer-device-provider=disabled -D sdl2=disabled -D audiotestsrc=disabled \
-      -D videotestsrc=disabled -D volume=disabled -D bluez5-codec-aptx=disabled \
-      -D roc=disabled -D bluez5-codec-lc3plus=disabled -D 'session-managers=[]' \
-      -D jack-devel=false -D vulkan=disabled -D libcamera=disabled -D libcanberra=disabled \
-      -D pipewire-alsa=disabled -D alsa=disabled -D avb=disabled -D pipewire-v4l2=disabled \
-      -D v4l2=disabled -D pipewire-jack=disabled
+      -D docs=disabled -D man=disabled -D gstreamer=disabled -D gstreamer-device-provider=disabled \
+      -D sdl2=disabled -D audiotestsrc=disabled -D videotestsrc=disabled -D volume=disabled \
+      -D  bluez5-codec-aptx=disabled -D roc=disabled -D bluez5-codec-lc3plus=disabled \
+      -D 'session-managers=[]' -D jack-devel=false -D vulkan=disabled -D libcamera=disabled \
+      -D libcanberra=disabled -D pipewire-alsa=disabled -D alsa=disabled -D avb=disabled  \
+      -D pipewire-v4l2=disabled -D v4l2=disabled -D pipewire-jack=disabled -D examples=disabled \
+      -D libsystemd=disabled -D systemd-system-service=disabled -D systemd-user-service=disabled
 
 meson compile -C build --verbose
 meson install -C build --no-rebuild
