@@ -60,7 +60,6 @@
   DriveFilePickerTableViewController* _viewController;
   // WebState for which the Drive file picker is presented.
   base::WeakPtr<web::WebState> _webState;
-  raw_ptr<AuthenticationService> _authenticationService;
   id<SystemIdentity> _currentIdentity;
   // A child `BrowseDriveFilePickerCoordinator` created and started to browse an
   // drive folder.
@@ -91,11 +90,18 @@
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_mediator, base::NotFatalUntil::M155);
+}
+
+#pragma mark - ChromeCoordinator
+
 - (void)start {
   ProfileIOS* profile = self.profile->GetOriginalProfile();
-  _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(profile);
   _currentIdentity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   _imageFetcher = std::make_unique<DriveFilePickerImageFetcher>(
       profile->GetSharedURLLoaderFactory());
   _metricsHelper = [[DriveFilePickerMetricsHelper alloc] init];
@@ -111,7 +117,7 @@
                  collection:DriveFilePickerCollection::GetRoot(_currentIdentity)
                     options:DriveFilePickerOptions::Default()
             identityManager:IdentityManagerFactory::GetForProfile(profile)
-      authenticationService:_authenticationService];
+      authenticationService:authenticationService];
   _mediator.delegate = self;
   _mediator.driveFilePickerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
@@ -170,11 +176,12 @@
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:nil];
-  [_childBrowseCoordinator stop];
-  _childBrowseCoordinator = nil;
+  [self stopChildBrowseCoordinator];
+  _navigationController.presentationController.delegate = nil;
   _navigationController = nil;
+  _viewController.driveFilePickerHandler = nil;
+  _viewController.mutator = nil;
   _viewController = nil;
-  _authenticationService = nil;
 }
 
 - (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
@@ -221,6 +228,11 @@
                                    (std::unique_ptr<DriveFilePickerCollection>)
                                        collection
                                   options:(DriveFilePickerOptions)options {
+  if (_childBrowseCoordinator) {
+    // This can occurs if the user tap on the button before the previous child
+    // is stoped.
+    return;
+  }
   [_mediator setActive:NO];
   _childBrowseCoordinator = [[BrowseDriveFilePickerCoordinator alloc]
       initWithBaseNavigationViewController:_navigationController
@@ -266,8 +278,7 @@
 
 - (void)coordinatorShouldStop:(ChromeCoordinator*)coordinator {
   CHECK(coordinator == _childBrowseCoordinator);
-  [_childBrowseCoordinator stop];
-  _childBrowseCoordinator = nil;
+  [self stopChildBrowseCoordinator];
   [_mediator setActive:YES];
 }
 
@@ -295,6 +306,12 @@
 }
 
 #pragma mark - Private
+
+- (void)stopChildBrowseCoordinator {
+  [_childBrowseCoordinator stop];
+  _childBrowseCoordinator.delegate = nil;
+  _childBrowseCoordinator = nil;
+}
 
 - (void)stopSigninCoordinator {
   [_signinCoordinator stop];
@@ -404,8 +421,7 @@
   _currentIdentity = identity;
   CHECK(identity);
   [_navigationController popToRootViewControllerAnimated:YES];
-  [_childBrowseCoordinator stop];
-  _childBrowseCoordinator = nil;
+  [self stopChildBrowseCoordinator];
   [_mediator setCollection:DriveFilePickerCollection::GetRoot(identity)];
 }
 
