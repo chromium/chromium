@@ -46,7 +46,21 @@ bool ListItemOrdinal::IsListItem(const Node& node) {
 bool ListItemOrdinal::IsInReversedOrderedList(const Node& node) {
   const Node* list = EnclosingList(&node);
   auto* olist = DynamicTo<HTMLOListElement>(list);
-  return olist && olist->IsReversed();
+  if (olist && olist->IsReversed()) {
+    return true;
+  }
+  if (RuntimeEnabledFeatures::CSSListCounterAccountingEnabled()) {
+    if (const Element* element = DynamicTo<Element>(list)) {
+      if (const ComputedStyle* style = element->GetComputedStyle()) {
+        const CounterDirectives directives =
+            style->GetCounterDirectives(AtomicString("list-item"));
+        if (directives.IsResetReversed()) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 ListItemOrdinal* ListItemOrdinal::Get(const Node& item_node) {
@@ -71,12 +85,24 @@ Node* ListItemOrdinal::EnclosingList(const Node* list_item_node) {
   if (!list_item_node)
     return nullptr;
   Node* first_node = nullptr;
+  const AtomicString list_item_identifier("list-item");
   // We use parentNode because the enclosing list could be a ShadowRoot that's
   // not Element.
   for (Node* parent = FlatTreeTraversal::Parent(*list_item_node); parent;
        parent = FlatTreeTraversal::Parent(*parent)) {
     if (IsListOwner(*parent)) {
       return parent;
+    }
+    if (RuntimeEnabledFeatures::CSSListCounterAccountingEnabled()) {
+      if (const Element* element = DynamicTo<Element>(parent)) {
+        if (const ComputedStyle* style = element->GetComputedStyle()) {
+          const CounterDirectives directives =
+              style->GetCounterDirectives(list_item_identifier);
+          if (directives.IsReset()) {
+            return parent;
+          }
+        }
+      }
     }
     if (!first_node)
       first_node = parent;
@@ -180,13 +206,32 @@ std::optional<int> ListItemOrdinal::ExplicitValue() const {
 
 int ListItemOrdinal::CalcValue(const Node& item_node) const {
   DCHECK_EQ(Type(), kNeedsUpdate);
+  const AtomicString list_item_identifier("list-item");
   Node* list = EnclosingList(&item_node);
-  auto* o_list_element = DynamicTo<HTMLOListElement>(list);
-  const bool is_reversed = o_list_element && o_list_element->IsReversed();
+  std::optional<int64_t> initial_counter;
+  bool is_reversed = false;
+  if (const auto* o_list_element = DynamicTo<HTMLOListElement>(list)) {
+    initial_counter = o_list_element->InitialCounter();
+    is_reversed = o_list_element->IsReversed();
+  } else if (RuntimeEnabledFeatures::CSSCounterResetReversedEnabled()) {
+    if (const Element* element = DynamicTo<Element>(list)) {
+      if (const ComputedStyle* style = element->GetComputedStyle()) {
+        const CounterDirectives directives =
+            style->GetCounterDirectives(list_item_identifier);
+        if (directives.IsReset()) {
+          initial_counter =
+              directives.IsContentBasedReset()
+                  ? CountersAttachmentContext::CalculateInitialValueForReversed(
+                        *list, list_item_identifier, directives)
+                  : directives.ResetValueInt64();
+          is_reversed = directives.IsResetReversed();
+        }
+      }
+    }
+  }
   int value_step = is_reversed ? -1 : 1;
   if (const auto* style = To<Element>(item_node).GetComputedStyle()) {
-    const auto directives =
-        style->GetCounterDirectives(AtomicString("list-item"));
+    const auto directives = style->GetCounterDirectives(list_item_identifier);
     if (directives.HasSet()) {
       return directives.CombinedValue();
     }
@@ -211,14 +256,14 @@ int ListItemOrdinal::CalcValue(const Node& item_node) const {
       if (!previous.counter_set_seen) {
         base_value += previous.ordinal->Value(*previous.node);
       }
-    } else if (o_list_element) {
-      base_value += o_list_element->InitialCounter();
+    } else if (initial_counter.has_value()) {
+      base_value += initial_counter.value();
     }
   } else {
     if (NodeAndOrdinal previous = PreviousListItem(list, &item_node)) {
       base_value = previous.ordinal->Value(*previous.node);
-    } else if (o_list_element) {
-      base_value = o_list_element->InitialCounter();
+    } else if (initial_counter.has_value()) {
+      base_value = initial_counter.value();
       base_value += (is_reversed ? 1 : -1);
     }
   }
@@ -339,6 +384,7 @@ int ListItemOrdinal::InitialCounterForReversedOrderedList(
       continue;
     }
 
+    // TODO(crbug.com/40682542): Update the link once the spec is landed.
     // https://github.com/w3c/csswg-drafts/issues/6797
     //
     // 1. Let |increment_negated| to el’s counter-increment integer value for

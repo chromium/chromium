@@ -68,6 +68,9 @@ class CounterDirectives {
   std::optional<int64_t> ResetValueInt64() const { return reset_value_; }
   void SetResetValue(int64_t value) { reset_value_ = value; }
   bool IsResetReversed() const { return is_reset_reversed_; }
+  bool IsContentBasedReset() const {
+    return is_reset_reversed_ && !reset_value_.has_value();
+  }
   void SetIsResetReversed() { is_reset_reversed_ = true; }
   void ClearReset() {
     reset_value_.reset();

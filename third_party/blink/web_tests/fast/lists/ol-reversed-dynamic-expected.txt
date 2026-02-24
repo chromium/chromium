@@ -9,11 +9,11 @@ This tests that changing the value of an item updates markers accordingly.
 
 This tests that resetting the value of an item updates markers accordingly.
 
-22 Twenty Two
-21 Twenty One
-20 Twenty
-19 Nineteen
-18 Eighteen
+22 Five
+21 Four
+20 Three
+19 Two
+18 One
 
 
 This tests that changing the start value of the list updates markers accordingly.

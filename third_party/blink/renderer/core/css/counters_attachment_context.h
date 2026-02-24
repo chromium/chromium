@@ -14,8 +14,10 @@
 
 namespace blink {
 
+class CounterDirectives;
 class Element;
 class LayoutObject;
+class Node;
 
 // This class is used to keep track of the current counter values for a
 // document.
@@ -74,6 +76,11 @@ class CORE_EXPORT CountersAttachmentContext {
     return attachment_root_is_document_element_;
   }
   static bool ElementGeneratesListItemCounter(const Element& element);
+
+  static int CalculateInitialValueForReversed(
+      const Node& node,
+      const AtomicString& counter_name,
+      const CounterDirectives& directives);
 
  private:
   // The default copy constructor can be used to create shallow copies.
