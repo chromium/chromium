@@ -14,24 +14,19 @@
             "description": "beta/stable",
             "gardener_rotation": "chrome_browser_release"
         },
+        "cros-lts": {
+            "description": "CrOS LTS"
+        },
         "fuchsia": {
-            "description": "beta/stable",
-            "gardener_rotation": "chrome_browser_release"
-        },
-        "ios": {
-            "description": "beta/stable",
-            "gardener_rotation": "chrome_browser_release"
-        },
-        "linux": {
-            "description": "beta/stable",
+            "description": "beta/stable/extended stable",
             "gardener_rotation": "chrome_browser_release"
         },
         "mac": {
-            "description": "beta/stable",
+            "description": "beta/stable/extended stable",
             "gardener_rotation": "chrome_browser_release"
         },
         "windows": {
-            "description": "beta/stable",
+            "description": "beta/stable/extended stable",
             "gardener_rotation": "chrome_browser_release"
         }
     }

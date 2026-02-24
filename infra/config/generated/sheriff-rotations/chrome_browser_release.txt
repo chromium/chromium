@@ -5,11 +5,7 @@ ci/Android arm64 Builder (dbg)
 ci/Android arm64 Builder All Targets (dbg)
 ci/Android x64 Builder All Targets (dbg)
 ci/Android x86 Builder (dbg)
-ci/Centipede Upload Linux ASan
 ci/Dawn Chromium Presubmit
-ci/Dawn Linux x64 DEPS Builder
-ci/Dawn Linux x64 DEPS Release (Intel UHD 630)
-ci/Dawn Linux x64 DEPS Release (NVIDIA)
 ci/Dawn Mac arm64 DEPS Builder
 ci/Dawn Mac arm64 DEPS Release (Apple M2)
 ci/Dawn Mac x64 DEPS Builder
@@ -23,21 +19,9 @@ ci/Dawn Win10 x86 DEPS Release (Intel)
 ci/Dawn Win10 x86 DEPS Release (NVIDIA)
 ci/Dawn Win11 arm64 DEPS Builder
 ci/GPU FYI Android arm64 Builder
-ci/GPU Linux Builder
 ci/GPU Mac Builder
 ci/GPU Win x64 Builder
-ci/Libfuzzer Upload Linux ASan
 ci/Libfuzzer Upload Windows ASan
-ci/Linux ASan LSan Builder
-ci/Linux ASan LSan Tests (1)
-ci/Linux Builder
-ci/Linux Builder (Wayland)
-ci/Linux Builder (dbg)
-ci/Linux Release (NVIDIA)
-ci/Linux TSan Builder
-ci/Linux TSan Tests
-ci/Linux Tests
-ci/Linux Tests (dbg)(1)
 ci/Mac Builder
 ci/Mac Builder (dbg)
 ci/Mac Release (Intel)
@@ -80,17 +64,8 @@ ci/chromeos-octopus-rel
 ci/fuchsia-arm64-cast-receiver-rel
 ci/fuchsia-x64-cast-receiver-dbg
 ci/fuchsia-x64-cast-receiver-rel
-ci/ios-simulator
-ci/ios-simulator-full-configs
-ci/linux-cast-arm-rel
-ci/linux-cast-arm64-rel
-ci/linux-cast-x64-dbg
-ci/linux-cast-x64-rel
 ci/linux-chromeos-dbg
 ci/linux-chromeos-rel
-ci/linux-official
-ci/linux-wayland-mutter-rel-tests
-ci/linux-wayland-weston-rel-tests
 ci/mac-arm64-dbg
 ci/mac-arm64-rel
 ci/mac-official
