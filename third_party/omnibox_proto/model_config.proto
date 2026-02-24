@@ -17,6 +17,7 @@ import "url_param.proto";
 
 // Configuration for a model mode.
 // Next ID: 7
+// LINT.IfChange(ModelConfig)
 message ModelConfig {
   // The model mode.
   ModelMode model = 1;
@@ -31,3 +32,4 @@ message ModelConfig {
   // The icon for the model.
   optional Icon icon = 6;
 }
+// LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ModelConfig)

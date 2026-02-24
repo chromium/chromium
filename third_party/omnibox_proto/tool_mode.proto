@@ -15,6 +15,7 @@ package omnibox;
 // specific mode. For example, some modes include "deep search", "create
 // images", and "canvas".
 // Next ID: 11
+// LINT.IfChange(ToolMode)
 enum ToolMode {
   TOOL_MODE_UNSPECIFIED = 0;
   TOOL_MODE_DEEP_SEARCH = 1;
@@ -28,3 +29,4 @@ enum ToolMode {
   TOOL_MODE_AIM = 9;
   TOOL_MODE_AIM_GEN_PROMPT = 10;
 }
+// LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ToolMode)

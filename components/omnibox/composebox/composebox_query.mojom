@@ -65,7 +65,7 @@ enum ModelMode {
   // Uses Gemini Pro Model without generative UI.
   kGeminiProNoGenUi = 4,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchAimModel)
+// LINT.ThenChange(//third_party/omnibox_proto/model_mode.proto:ModelMode)
 
 // The AIM tool mode.
 // LINT.IfChange(ToolMode)
@@ -93,9 +93,10 @@ enum ToolMode {
   // Enables AIM Gen Prompt mode.
   kAimGenPrompt = 10,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchAimTool)
+// LINT.ThenChange(//third_party/omnibox_proto/tool_mode.proto:ToolMode)
 
 // The AIM input type.
+// LINT.IfChange(InputType)
 enum InputType {
   // Input is unspecified.
   kUnspecified = 0,
@@ -106,14 +107,18 @@ enum InputType {
   // Input is a browser tab.
   kBrowserTab = 3,
 };
+// LINT.ThenChange(//third_party/omnibox_proto/input_type.proto:InputType)
 
 // Configuration for an input type.
+// LINT.IfChange(InputTypeConfig)
 struct InputTypeConfig {
   InputType input_type;
   string menu_label;
 };
+// LINT.ThenChange(//third_party/omnibox_proto/input_type_config.proto:InputTypeConfig)
 
 // Configuration for a tool.
+// LINT.IfChange(ToolConfig)
 struct ToolConfig {
   ToolMode tool;
   bool disable_active_model_selection;
@@ -122,19 +127,24 @@ struct ToolConfig {
   string hint_text;
   array<AimUrlParam> aim_url_params;
 };
+// LINT.ThenChange(//third_party/omnibox_proto/tool_config.proto:ToolConfig)
 
 // Configuration for a model.
+// LINT.IfChange(ModelConfig)
 struct ModelConfig {
   ModelMode model;
   string menu_label;
   string hint_text;
   array<AimUrlParam> aim_url_params;
 };
+// LINT.ThenChange(//third_party/omnibox_proto/model_config.proto:ModelConfig)
 
 // Configuration for a section.
+// LINT.IfChange(SectionConfig)
 struct SectionConfig {
   string header;
 };
+// LINT.ThenChange(//third_party/omnibox_proto/section_config.proto:SectionConfig)
 
 // Represents the current state of inputs, models, and tools within AIM.
 // This struct is only ever sent from the browser to WebUI.

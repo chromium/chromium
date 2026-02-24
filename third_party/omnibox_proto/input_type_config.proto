@@ -16,6 +16,7 @@ import "input_type_rule.proto";
 
 // Configuration for an input type.
 // Next ID: 5
+// LINT.IfChange(InputTypeConfig)
 message InputTypeConfig {
   // The input type.
   optional InputType input_type = 1;
@@ -26,3 +27,4 @@ message InputTypeConfig {
   // The icon for the input type.
   optional Icon icon = 4;
 }
+// LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:InputTypeConfig)
