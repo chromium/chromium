@@ -200,6 +200,7 @@ NSString* GetErrorMessage(PinnedSiteMutationResult result) {
       cell.textField.text = _name;
       cell.textField.placeholder = l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_FORM_NAME);
+      cell.textField.autocapitalizationType = UITextAutocapitalizationTypeWords;
       [cell.textField addTarget:self
                          action:@selector(nameDidChange:)
                forControlEvents:UIControlEventEditingChanged];
@@ -211,6 +212,7 @@ NSString* GetErrorMessage(PinnedSiteMutationResult result) {
       cell.textField.text = _URL;
       cell.textField.placeholder = @"https://example.com";
       cell.textField.keyboardType = UIKeyboardTypeURL;
+      cell.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
       [cell.textField addTarget:self
                          action:@selector(URLDidChange:)
                forControlEvents:UIControlEventEditingChanged];
