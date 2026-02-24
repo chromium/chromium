@@ -165,7 +165,10 @@ class FuseboxViewBinder {
                     view.popup.mCreateImageButton,
                     model.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
         } else if (propertyKey == FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE) {
-            updateButtonsVisibilityAndStyling(model, view);
+            view.popup.mCreateImageButton.setVisibility(
+                    model.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
         } else if (propertyKey == FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON) {
             updateButtonsVisibilityAndStyling(model, view);
         }
@@ -392,11 +395,6 @@ class FuseboxViewBinder {
         } else {
             typeButton.setVisibility(View.GONE);
         }
-
-        boolean isCreateImageButtonVisible =
-                model.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE);
-        views.popup.mCreateImageButton.setVisibility(
-                isCreateImageButtonVisible ? View.VISIBLE : View.GONE);
 
         @StyleRes
         int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);
