@@ -55,7 +55,9 @@ WebGPUCommandBufferStub::WebGPUCommandBufferStub(
 
 WebGPUCommandBufferStub::~WebGPUCommandBufferStub() {
   // Must run before memory_tracker_ is destroyed.
-  decoder_context()->Destroy(false);
+  if (decoder_context()) {
+    decoder_context()->Destroy(false);
+  }
 
   memory_tracker_ = nullptr;
 }
