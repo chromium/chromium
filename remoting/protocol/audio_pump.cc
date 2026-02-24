@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
@@ -33,10 +34,8 @@ std::unique_ptr<media::AudioBus> AudioPacketToAudioBus(
   DCHECK_GT(frame_count, 0);
   std::unique_ptr<media::AudioBus> result =
       media::AudioBus::Create(packet.channels(), frame_count);
-  result->FromInterleaved<media::SignedInt16SampleTypeTraits>(
-      // TODO(crbug.com/428945428): Fix unsafe uses of std::string::data().
-      UNSAFE_TODO(reinterpret_cast<const int16_t*>(packet.data(0).data())),
-      frame_count);
+  result->FromInterleavedBytes<media::SignedInt16SampleTypeTraits>(
+      base::as_byte_span(packet.data(0)));
   return result;
 }
 
@@ -46,9 +45,8 @@ std::unique_ptr<remoting::AudioPacket> AudioBusToAudioPacket(
       std::make_unique<remoting::AudioPacket>();
   result->add_data()->resize(packet.channels() * packet.frames() *
                              sizeof(int16_t));
-  packet.ToInterleaved<media::SignedInt16SampleTypeTraits>(
-      packet.frames(),
-      reinterpret_cast<int16_t*>(&(result->mutable_data(0)->at(0))));
+  packet.ToInterleavedBytes<media::SignedInt16SampleTypeTraits>(
+      base::as_writable_byte_span(*result->mutable_data(0)));
   result->set_encoding(remoting::AudioPacket::ENCODING_RAW);
   result->set_channels(
       static_cast<remoting::AudioPacket::Channels>(packet.channels()));

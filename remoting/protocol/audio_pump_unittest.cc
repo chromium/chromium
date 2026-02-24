@@ -28,8 +28,8 @@ namespace {
 
 // Creates a dummy packet with 1k data.
 std::unique_ptr<AudioPacket> MakeAudioPacket(int channel_count = 2) {
-  std::unique_ptr<AudioPacket> packet(new AudioPacket);
-  packet->add_data()->resize(1024);
+  auto packet = std::make_unique<AudioPacket>();
+  packet->add_data()->resize(512 * channel_count);
   packet->set_encoding(AudioPacket::ENCODING_RAW);
   packet->set_sampling_rate(AudioPacket::SAMPLING_RATE_44100);
   packet->set_bytes_per_sample(AudioPacket::BYTES_PER_SAMPLE_2);
