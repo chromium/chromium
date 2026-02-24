@@ -75,6 +75,7 @@ struct Shipment {
   std::string delivery_address;
   std::string carrier_name;
   GURL carrier_domain;
+  base::Time estimated_delivery_date;
 };
 
 struct DriverLicense {

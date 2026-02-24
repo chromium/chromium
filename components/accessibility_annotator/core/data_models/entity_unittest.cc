@@ -63,6 +63,9 @@ TEST(EntityTest, Shipment) {
   shipment.delivery_address = "1600 Amphitheatre Parkway, Mountain View, CA";
   shipment.carrier_name = "UPS";
   shipment.carrier_domain = GURL("https://ups.com");
+  base::Time delivery_date;
+  ASSERT_TRUE(base::Time::FromString("2026-02-15T10:00:00Z", &delivery_date));
+  shipment.estimated_delivery_date = delivery_date;
 
   ASSERT_EQ(entity.GetType(), EntityType::kShipment);
   EXPECT_EQ(shipment.tracking_number, "TRACK123");
@@ -71,6 +74,7 @@ TEST(EntityTest, Shipment) {
             "1600 Amphitheatre Parkway, Mountain View, CA");
   EXPECT_EQ(shipment.carrier_name, "UPS");
   EXPECT_EQ(shipment.carrier_domain, GURL("https://ups.com"));
+  EXPECT_EQ(shipment.estimated_delivery_date, delivery_date);
 }
 
 TEST(EntityTest, DriverLicense) {
