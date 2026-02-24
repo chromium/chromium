@@ -27405,7 +27405,9 @@ should be able to be added at any place in this file.
 <action name="MobileGeminiSettingsOpened">
   <owner>joemerramos@google.com</owner>
   <owner>bling-alchemy@google.com</owner>
-  <description>TODO(crbug.com/483963272): Write the description.</description>
+  <description>
+    Reported when the Gemini Settings UI is opened. iOS only.
+  </description>
 </action>
 
 <action name="MobileGeminiURLOpened">
