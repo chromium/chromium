@@ -248,7 +248,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Clipboard.Read" enum="ClipboardFormatRead"
-    expires_after="2026-05-24">
+    expires_after="2026-08-23">
   <owner>huangdarwin@chromium.org</owner>
   <owner>src/ui/base/clipboard/OWNERS</owner>
   <summary>
@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Clipboard.Write" enum="ClipboardFormatWrite"
-    expires_after="2026-05-24">
+    expires_after="2026-08-23">
   <owner>huangdarwin@chromium.org</owner>
   <owner>src/ui/base/clipboard/OWNERS</owner>
   <summary>
@@ -1164,7 +1164,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.Blob.BuildFromStreamResult2"
-    enum="BlobBuildFromStreamResult" expires_after="M150">
+    enum="BlobBuildFromStreamResult" expires_after="2026-08-23">
   <owner>horo@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

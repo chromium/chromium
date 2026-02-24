@@ -2507,7 +2507,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.SharedDictionary.EncodingType"
-    enum="SharedDictionaryEncodingType" expires_after="2026-06-21">
+    enum="SharedDictionaryEncodingType" expires_after="2026-08-23">
   <owner>nidhijaju@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -5146,7 +5146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.GrantAccessToDataPathError.{Directory}.Windows"
-    enum="WinGetLastError" expires_after="2026-06-21">
+    enum="WinGetLastError" expires_after="2026-08-23">
   <owner>ricea@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
