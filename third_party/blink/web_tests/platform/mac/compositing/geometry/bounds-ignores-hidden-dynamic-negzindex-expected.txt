@@ -11,7 +11,7 @@
       "bounds": [150, 150]
     },
     {
-      "name": "LayoutImage (positioned, block) IMG class='to-visible'",
+      "name": "LayoutImage (positioned, block, relayout-boundary) IMG class='to-visible'",
       "position": [400, 150],
       "bounds": [100, 100],
       "contentsOpaque": true,

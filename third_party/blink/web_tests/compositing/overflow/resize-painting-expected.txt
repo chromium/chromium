@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow DIV class='resizable composited box'",
+      "name": "LayoutBlockFlow (relayout-boundary) DIV class='resizable composited box'",
       "bounds": [100, 100],
       "transform": 1
     }
