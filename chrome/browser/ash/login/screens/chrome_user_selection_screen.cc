@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "components/account_id/account_id.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/policy_map.h"
@@ -38,8 +39,11 @@ namespace ash {
 
 ChromeUserSelectionScreen::ChromeUserSelectionScreen(
     PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
     DisplayedScreen display_type)
-    : UserSelectionScreen(local_state, display_type) {
+    : UserSelectionScreen(local_state,
+                          application_locale_storage,
+                          display_type) {
   device_local_account_policy_service_ =
       g_browser_process->platform_part()
           ->browser_policy_connector_ash()
@@ -176,16 +180,15 @@ void ChromeUserSelectionScreen::SetPublicSessionLocales(
 
   // Construct the list of available locales. This list consists of the
   // recommended locales, followed by all others.
-  // TODO(crbug.com/404133029): Remove g_browser_process usage.
   base::ListValue available_locales = GetUILanguageList(
-      g_browser_process->GetApplicationLocale(), &recommended_locales,
-      std::string(), input_method::InputMethodManager::Get());
+      application_locale_storage_->Get(), &recommended_locales, std::string(),
+      input_method::InputMethodManager::Get());
 
   // Set the initially selected locale to the first recommended locale that is
   // actually available or the current UI locale if none of them are available.
   const std::string default_locale =
       FindMostRelevantLocale(recommended_locales, available_locales,
-                             g_browser_process->GetApplicationLocale());
+                             application_locale_storage_->Get());
 
   // Set a flag to indicate whether the list of recommended locales contains at
   // least two entries. This is used to decide whether the public session pod

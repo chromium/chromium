@@ -22,9 +22,12 @@ class ChromeUserSelectionScreen
     : public UserSelectionScreen,
       public policy::DeviceLocalAccountPolicyService::Observer {
  public:
-  // `local_state` must be non-null and must outlive `this`.
-  ChromeUserSelectionScreen(PrefService* local_state,
-                            DisplayedScreen display_type);
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
+  ChromeUserSelectionScreen(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage,
+      DisplayedScreen display_type);
 
   ChromeUserSelectionScreen(const ChromeUserSelectionScreen&) = delete;
   ChromeUserSelectionScreen& operator=(const ChromeUserSelectionScreen&) =

@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
@@ -53,8 +54,10 @@ ViewsScreenLocker::ViewsScreenLocker()
 
   // TODO(crbug.com/404133029): Avoid using g_browser_process.
   PrefService* local_state = g_browser_process->local_state();
+  ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
   user_selection_screen_ = std::make_unique<ChromeUserSelectionScreen>(
-      local_state, DisplayedScreen::LOCK_SCREEN);
+      local_state, application_locale_storage, DisplayedScreen::LOCK_SCREEN);
 }
 
 ViewsScreenLocker::~ViewsScreenLocker() {

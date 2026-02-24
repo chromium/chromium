@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/token_handle_store.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -26,6 +27,7 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 
 class AccountId;
+class ApplicationLocaleStorage;
 class PrefService;
 
 namespace ash {
@@ -43,8 +45,12 @@ class UserSelectionScreen
       public PasswordSyncTokenLoginChecker::Observer,
       public UserOnlineSigninNotifier::Observer {
  public:
-  // `local_state` must be non-null and must outlive `this`.
-  UserSelectionScreen(PrefService* local_state, DisplayedScreen display_type);
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
+  UserSelectionScreen(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage,
+      DisplayedScreen display_type);
 
   UserSelectionScreen(const UserSelectionScreen&) = delete;
   UserSelectionScreen& operator=(const UserSelectionScreen&) = delete;
@@ -102,6 +108,7 @@ class UserSelectionScreen
 
  protected:
   const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   raw_ptr<UserBoardView> view_ = nullptr;
 

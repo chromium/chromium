@@ -194,6 +194,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
       user_selection_screen_(std::make_unique<ChromeUserSelectionScreen>(
           // TODO(crbug.com/404133029): Avoid using g_browser_process.
           g_browser_process->local_state(),
+          g_browser_process->GetFeatures()->application_locale_storage(),
           displayed_screen)),
       auth_performer_(UserDataAuthClient::Get()),
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {

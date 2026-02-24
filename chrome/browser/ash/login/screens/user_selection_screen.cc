@@ -62,6 +62,7 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/account_id/account_id.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
@@ -113,6 +114,7 @@ bool GetDeviceManager(std::string* out_manager) {
 // `out_multiple_locales`: Output value indicates whether we have multiple
 // recommended locales.
 base::ListValue GetPublicSessionLocales(
+    const std::string& application_locale,
     const std::vector<std::string>* public_session_recommended_locales,
     std::string* out_selected_locale,
     bool* out_multiple_locales) {
@@ -123,16 +125,14 @@ base::ListValue GetPublicSessionLocales(
 
   // Construct the list of available locales. This list consists of the
   // recommended locales, followed by all others.
-  // TODO(crbug.com/404133029): Remove g_browser_process usage.
-  auto available_locales = GetUILanguageList(
-      g_browser_process->GetApplicationLocale(), &recommended_locales,
-      std::string(), input_method::InputMethodManager::Get());
+  auto available_locales =
+      GetUILanguageList(application_locale, &recommended_locales, std::string(),
+                        input_method::InputMethodManager::Get());
 
   // Select the the first recommended locale that is actually available or the
   // current UI locale if none of them are available.
-  *out_selected_locale =
-      FindMostRelevantLocale(recommended_locales, available_locales,
-                             g_browser_process->GetApplicationLocale());
+  *out_selected_locale = FindMostRelevantLocale(
+      recommended_locales, available_locales, application_locale);
 
   *out_multiple_locales = recommended_locales.size() >= 2;
   return available_locales;
@@ -484,9 +484,13 @@ class UserSelectionScreen::TpmLockedChecker {
   base::WeakPtrFactory<TpmLockedChecker> weak_ptr_factory_{this};
 };
 
-UserSelectionScreen::UserSelectionScreen(PrefService* local_state,
-                                         DisplayedScreen display_type)
-    : local_state_(CHECK_DEREF(local_state)), display_type_(display_type) {
+UserSelectionScreen::UserSelectionScreen(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage,
+    DisplayedScreen display_type)
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      display_type_(display_type) {
   session_manager::SessionManager::Get()->AddObserver(this);
   if (display_type_ != DisplayedScreen::SIGN_IN_SCREEN) {
     return;
@@ -886,7 +890,8 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
       std::string selected_locale;
       bool has_multiple_locales;
       auto available_locales =
-          GetPublicSessionLocales(public_session_recommended_locales,
+          GetPublicSessionLocales(application_locale_storage_->Get(),
+                                  public_session_recommended_locales,
                                   &selected_locale, &has_multiple_locales);
       user_info.public_account_info->available_locales =
           lock_screen_utils::FromListValueToLocaleItem(
