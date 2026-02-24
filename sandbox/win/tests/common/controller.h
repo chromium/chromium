@@ -5,14 +5,16 @@
 #ifndef SANDBOX_WIN_TESTS_COMMON_CONTROLLER_H_
 #define SANDBOX_WIN_TESTS_COMMON_CONTROLLER_H_
 
-#include <windows.h>
-
 #include <string>
 #include <string_view>
 
+#include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
+#include "base/process/process.h"
 #include "base/time/time.h"
+#include "base/win/windows_types.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/win_utils.h"
 
@@ -105,15 +107,15 @@ class TestRunner {
   // Adds a filesystem rules with the path of a file in system32. The function
   // appends "pattern" to "system32" and then call AddRule. Return true if the
   // function succeeds.
-  bool AddRuleSys32(FileSemantics semantics, const wchar_t* pattern);
+  bool AddRuleSys32(FileSemantics semantics, std::wstring_view pattern);
 
   // Adds a filesystem rules to the policy. Returns true if the functions
   // succeeds.
-  bool AllowFileAccess(FileSemantics semantics, const wchar_t* pattern);
+  bool AllowFileAccess(FileSemantics semantics, std::wstring_view pattern);
 
-  // Starts a child process in the sandbox and ask it to run |command|. Returns
-  // a SboxTestResult. By default, the test runs AFTER_REVERT.
-  int RunTest(const wchar_t* command);
+  // Starts a child process in the sandbox and ask it to run `command`.
+  // Return a SboxTestResult.
+  int RunTest(std::wstring_view command);
 
   // Sets the timeout value for the child to run the command and return.
   void SetTimeout(DWORD timeout_ms);
@@ -130,7 +132,7 @@ class TestRunner {
   void SetDisableCsrss(bool disable_csrss) { disable_csrss_ = disable_csrss; }
 
   // Sets the desired state for the test to run.
-  void SetTestState(SboxTestsState desired_state);
+  void SetTestState(SboxTestsState desired_state) { state_ = desired_state; }
 
   // Sets a flag whether the process should be killed when the TestRunner is
   // destroyed.
@@ -143,48 +145,44 @@ class TestRunner {
   BrokerServices* broker() { return broker_; }
 
   // Returns the process handle for an asynchronous test.
-  HANDLE process() { return target_process_.get(); }
+  base::ProcessHandle process() { return target_process_.Handle(); }
 
   // Returns the process ID for an asynchronous test.
-  DWORD process_id() { return target_process_id_; }
+  base::ProcessId process_id() { return target_process_.Pid(); }
 
   // Blocks until the number of tracked processes returns to zero.
   bool WaitForAllTargets();
 
  private:
-
-  // The actual runner.
-  int InternalRunTest(const wchar_t* command);
   DWORD timeout_ms();
+  int RunTestInternal(std::string_view command,
+                      base::span<const std::string> args);
+  base::Process LaunchSandboxProcess(const base::CommandLine& cmd_line);
 
   raw_ptr<BrokerServices> broker_;
   std::unique_ptr<TargetPolicy> policy_;
   base::TimeDelta timeout_;
-  SboxTestsState state_;
-  bool is_init_;
-  bool is_async_;
-  bool no_sandbox_;
-  bool disable_csrss_;
-  bool kill_on_destruction_;
-  base::win::ScopedHandle target_process_;
-  DWORD target_process_id_;
+  SboxTestsState state_ = AFTER_REVERT;
+  bool is_init_ = false;
+  bool is_async_ = false;
+  bool no_sandbox_ = false;
+  bool disable_csrss_ = true;
+  bool kill_on_destruction_ = true;
+  base::Process target_process_;
 };
 
 // Returns the broker services.
 BrokerServices* GetBroker();
 
-// Constructs a full path to a file inside the system32 folder.
-std::wstring MakePathToSys32(const wchar_t* name, bool is_obj_man_path);
-
-// Constructs a full path to a file inside the syswow64 folder.
-std::wstring MakePathToSysWow64(const wchar_t* name, bool is_obj_man_path);
-
 // Constructs a full path to a file inside the system32 (or syswow64) folder
 // depending on whether process is running in wow64 or not.
-std::wstring MakePathToSys(const wchar_t* name, bool is_obj_man_path);
+std::wstring MakePathToSys(std::wstring_view name, bool is_obj_man_path);
+
+// Check if this is a child process for a test.
+bool IsChildProcessForTesting();
 
 // Runs the given test on the target process.
-int DispatchCall(int argc, wchar_t **argv);
+int DispatchCall();
 
 // Create a command line object for directly calling `SpawnTargetAsync`.
 base::CommandLine CreateCommandLineForTesting(std::string_view command);
