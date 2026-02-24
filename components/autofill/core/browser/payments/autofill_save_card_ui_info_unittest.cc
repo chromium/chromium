@@ -28,6 +28,7 @@ namespace autofill {
 namespace {
 
 using CardSaveType = payments::PaymentsAutofillClient::CardSaveType;
+using SourceFeature = payments::PaymentsAutofillClient::SourceFeature;
 
 MATCHER_P(HasLegalMessageLineText, text, "A LegalMessageLine that has text.") {
   return base::UTF16ToUTF8(arg.text()) == text;
@@ -94,6 +95,20 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave, VerifyCommonAttributes) {
 }
 
 #if BUILDFLAG(IS_IOS)
+// Tests that the bottom sheet is shown for scan card flow.
+TEST(AutofillSaveCardUiInfoTestForLocalSave,
+     ShouldShowBottomSheetForScanCardFlow) {
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options;
+  // Set num_strikes to ensure bottom sheet is shown because of its
+  // scan save and fill source feature, not because of the 0 strike count
+  // and other default options that would lead to bottom sheet surfacing.
+  options.num_strikes = 1;
+  options.source_feature = SourceFeature::kScanCardSaveAndFill;
+  AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
+      options, test::GetCreditCard());
+  EXPECT_TRUE(ui_info.is_for_bottom_sheet);
+}
+
 // Only applicable for local save bottomsheet since AutofillSaveCardUiInfo's
 // `confirm_text` is not used by local save card infobar.
 
@@ -360,6 +375,20 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave, VerifyCommonAttributes) {
 }
 
 #if BUILDFLAG(IS_IOS)
+// Tests that the bottom sheet is shown for scan card flow.
+TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
+       ShouldShowBottomSheetForScanCardFlow) {
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options;
+  // Set num_strikes to ensure bottom sheet is shown because of its
+  // scan save and fill source feature, not because of the 0 strike count
+  // and other default options that would lead to bottom sheet surfacing.
+  options.num_strikes = 1;
+  options.source_feature = SourceFeature::kScanCardSaveAndFill;
+  AutofillSaveCardUiInfo ui_info =
+      AutofillSaveCardUiInfoForUploadSaveForTest(options, is_chrome_branded());
+  EXPECT_TRUE(ui_info.is_for_bottom_sheet);
+}
+
 // Verify that AutofillSaveCardUiInfo attributes are correctly set for the
 // upload-card-only-save bottomsheet.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,

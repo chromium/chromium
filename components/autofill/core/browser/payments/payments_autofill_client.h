@@ -157,6 +157,13 @@ class PaymentsAutofillClient : public RiskDataLoader {
     kCvcSaveOnly = 2,
   };
 
+  enum class SourceFeature {
+    // Default behavior for standard upload or local save.
+    kOfferSaveAfterFormSubmit,
+    // Triggered from the "Scan Card" flow.
+    kScanCardSaveAndFill,
+  };
+
   // Used for options of upload prompt.
   struct SaveCreditCardOptions {
     SaveCreditCardOptions& with_should_request_name_from_user(bool b) {
@@ -196,6 +203,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
       return *this;
     }
 
+    SaveCreditCardOptions& with_source_feature(SourceFeature feature) {
+      source_feature = feature;
+      return *this;
+    }
+
     bool should_request_name_from_user = false;
     bool should_request_expiration_date_from_user = false;
     bool show_prompt = false;
@@ -204,6 +216,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
         false;
     std::optional<int> num_strikes;
     CardSaveType card_save_type = CardSaveType::kCardSaveOnly;
+    SourceFeature source_feature = SourceFeature::kOfferSaveAfterFormSubmit;
   };
 
   enum class SaveCardOfferUserDecision {

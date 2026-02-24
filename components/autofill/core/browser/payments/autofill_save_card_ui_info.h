@@ -96,6 +96,7 @@ struct AutofillSaveCardUiInfo {
 // against the card, and no fix flows are required.
 bool ShouldShowSaveCardBottomSheet(
     payments::PaymentsAutofillClient::CardSaveType card_save_type,
+    payments::PaymentsAutofillClient::SourceFeature source_feature,
     int num_strikes,
     bool should_request_name_from_user,
     bool should_request_expiration_date_from_user);

@@ -148,7 +148,8 @@ void LogSaveCardPromptOfferMetricIos(
   std::string base_histogram_name =
       base::StrCat({"Autofill.SaveCreditCardPromptOffer.IOS", destination,
                     autofill::ShouldShowSaveCardBottomSheet(
-                        options.card_save_type, options.num_strikes.value_or(0),
+                        options.card_save_type, options.source_feature,
+                        options.num_strikes.value_or(0),
                         options.should_request_name_from_user,
                         options.should_request_expiration_date_from_user)
                         ? ".BottomSheet"
@@ -1669,6 +1670,8 @@ bool CreditCardSaveManager::ShouldRequestCvcInclusiveLegalMessage() const {
   // the save type is kCardSaveOnly.
   return !autofill::ShouldShowSaveCardBottomSheet(
       payments::PaymentsAutofillClient::CardSaveType::kCardSaveOnly,
+      payments::PaymentsAutofillClient::SourceFeature::
+          kOfferSaveAfterFormSubmit,
       num_strikes, should_request_name_from_user_,
       should_request_expiration_date_from_user_);
 #else
