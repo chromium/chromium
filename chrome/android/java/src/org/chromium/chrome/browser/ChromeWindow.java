@@ -14,7 +14,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTrackerFactory;
-import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.insets.InsetObserver;
@@ -51,6 +50,7 @@ public class ChromeWindow extends ActivityWindowAndroid {
      * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
      * @param manualFillingComponentSupplier Supplies the {@link ManualFillingComponent}.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
+     * @param insetObserver Observes window insets to track keyboard and layout changes.
      */
     public ChromeWindow(
             Activity activity,
@@ -59,39 +59,12 @@ public class ChromeWindow extends ActivityWindowAndroid {
             Supplier<ManualFillingComponent> manualFillingComponentSupplier,
             IntentRequestTracker intentRequestTracker,
             InsetObserver insetObserver) {
-        this(
-                activity,
-                compositorViewHolderSupplier,
-                modalDialogManagerSupplier,
-                sKeyboardVisibilityDelegateFactory.create(
-                        new WeakReference<>(activity), manualFillingComponentSupplier),
-                /* activityTopResumedSupported= */ true,
-                intentRequestTracker,
-                insetObserver);
-    }
-
-    /**
-     * Creates Chrome specific ActivityWindowAndroid.
-     *
-     * @param activity The activity that owns the ChromeWindow.
-     * @param compositorViewHolderSupplier Supplies the {@link CompositorViewHolder}.
-     * @param modalDialogManagerSupplier Supplies the {@link ModalDialogManager}.
-     * @param activityKeyboardVisibilityDelegate Delegate to handle keyboard visibility.
-     * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
-     */
-    public ChromeWindow(
-            Activity activity,
-            Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier,
-            Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate,
-            boolean activityTopResumedSupported,
-            IntentRequestTracker intentRequestTracker,
-            InsetObserver insetObserver) {
         super(
                 activity,
                 /* listenToActivityState= */ true,
-                activityKeyboardVisibilityDelegate,
-                activityTopResumedSupported,
+                sKeyboardVisibilityDelegateFactory.create(
+                        new WeakReference<>(activity), manualFillingComponentSupplier),
+                /* activityTopResumedSupported= */ true,
                 intentRequestTracker,
                 insetObserver,
                 /* trackOcclusion= */ true);
