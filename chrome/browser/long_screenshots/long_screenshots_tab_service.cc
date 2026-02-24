@@ -12,8 +12,6 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_monitor.h"
 #include "components/google/core/common/google_util.h"
 #include "components/paint_preview/browser/file_manager.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
@@ -66,7 +64,10 @@ LongScreenshotsTabService::LongScreenshotsTabService(
                               is_off_the_record),
       google_amp_cache_path_regex_(kGoogleAmpCachePathPattern),
       google_amp_viewer_path_regex_(kGoogleAmpViewerPathPattern),
-      google_news_path_regex_(kGoogleNewsPathPattern) {
+      google_news_path_regex_(kGoogleNewsPathPattern),
+      memory_pressure_listener_registration_(
+          base::MemoryPressureListenerTag::kLongScreenshotsTabService,
+          this) {
   DCHECK(google_amp_cache_path_regex_.ok());
   DCHECK(google_amp_viewer_path_regex_.ok());
   DCHECK(google_news_path_regex_.ok());
@@ -99,11 +100,7 @@ void LongScreenshotsTabService::CaptureTab(
     paint_preview::mojom::ClipCoordOverride clip_x_coord_override,
     paint_preview::mojom::ClipCoordOverride clip_y_coord_override) {
   // If the system is under memory pressure don't try to capture.
-  auto* memory_monitor = base::MemoryPressureMonitor::Get();
-  if (memory_monitor &&
-      memory_monitor->GetCurrentPressureLevel(
-          base::MemoryPressureMonitorTag::kLongScreenshotsTabService) >=
-          base::MEMORY_PRESSURE_LEVEL_MODERATE) {
+  if (memory_pressure_level() >= base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_LongScreenshotsTabService_processCaptureTabStatus(
         env, java_ref_, Status::kLowMemoryDetected);

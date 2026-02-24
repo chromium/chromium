@@ -101,6 +101,7 @@ enum class MemoryPressureListenerTag {
   kBackForwardCacheImpl = 67,
   kGrShaderCache = 68,
   kMemoryPressureListenerPolicy = 69,
+  kLongScreenshotsTabService = 70,
 };
 
 // base::MemoryPressureListener is deprecated. Use base::MemoryConsumer instead.
