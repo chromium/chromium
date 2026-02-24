@@ -761,12 +761,18 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     public void requestPointerLock(
             WebContents webContents, boolean userGesture, boolean lastUnlockedByTarget) {
         assert mExclusiveAccessManager != null;
+        if (mExclusiveAccessManager == null) {
+            return;
+        }
         mExclusiveAccessManager.requestPointerLock(webContents, userGesture, lastUnlockedByTarget);
     }
 
     @Override
     public void lostPointerLock() {
         assert mExclusiveAccessManager != null;
+        if (mExclusiveAccessManager == null) {
+            return;
+        }
         mExclusiveAccessManager.lostPointerLock();
     }
 
