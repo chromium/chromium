@@ -431,8 +431,7 @@ public class SigninManagerIntegrationTest {
         mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         // Blocks updated the accounts list and ensures that {@link #getAccounts} returns an
         // unfulfilled promise.
-        FakeAccountManagerFacade.UpdateBlocker blocker =
-                mSigninTestRule.blockGetAccountsUpdate(/* populateCache= */ false);
+        FakeAccountManagerFacade.UpdateBlocker blocker = mSigninTestRule.blockGetAccountsUpdate();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

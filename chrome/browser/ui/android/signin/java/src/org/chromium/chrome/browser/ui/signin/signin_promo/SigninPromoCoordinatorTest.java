@@ -236,7 +236,7 @@ public class SigninPromoCoordinatorTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
     public void testPromoNotShownWhenAccountsNotAvailable(@SigninAccessPoint int accessPoint) {
-        try (var unused = mSigninTestRule.blockGetAccountsUpdate(false)) {
+        try (var unused = mSigninTestRule.blockGetAccountsUpdate()) {
             setUpSignInPromo(accessPoint);
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {

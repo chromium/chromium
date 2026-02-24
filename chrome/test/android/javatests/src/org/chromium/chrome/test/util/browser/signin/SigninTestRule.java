@@ -125,6 +125,8 @@ public class SigninTestRule implements TestRule {
      */
     @Deprecated
     public FakeAccountManagerFacade.UpdateBlocker blockGetAccountsUpdate(boolean populateCache) {
+        // TODO(crbug.com/484956351): Remove this method when all callers have been updated to use
+        // blockGetAccountsUpdate/blockGetAccountsUpdateAndPopulateCache.
         return mFakeAccountManagerFacade.blockGetAccounts(populateCache);
     }
 
