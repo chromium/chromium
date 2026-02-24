@@ -34,6 +34,7 @@ class COMPONENT_EXPORT(GFX) NativePixmapDmaBuf : public gfx::NativePixmap {
   size_t GetDmaBufPlaneSize(size_t plane) const override;
   uint64_t GetFormatModifier() const override;
   viz::SharedImageFormat GetSharedImageFormat() const override;
+  uint32_t GetFourCCBufferFormat() const override;
   size_t GetNumberOfPlanes() const override;
   bool SupportsZeroCopyWebGPUImport() const override;
   gfx::Size GetBufferSize() const override;

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/posix/eintr_wrapper.h"
+#include "ui/gfx/linux/drm_util_linux.h"
 
 namespace gfx {
 
@@ -54,6 +55,10 @@ uint64_t NativePixmapDmaBuf::GetFormatModifier() const {
 
 viz::SharedImageFormat NativePixmapDmaBuf::GetSharedImageFormat() const {
   return format_;
+}
+
+uint32_t NativePixmapDmaBuf::GetFourCCBufferFormat() const {
+  return ui::GetFourCCFormatFromSharedImageFormat(GetSharedImageFormat());
 }
 
 size_t NativePixmapDmaBuf::GetNumberOfPlanes() const {

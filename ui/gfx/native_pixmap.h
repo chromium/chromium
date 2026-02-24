@@ -5,6 +5,8 @@
 #ifndef UI_GFX_NATIVE_PIXMAP_H_
 #define UI_GFX_NATIVE_PIXMAP_H_
 
+#include <cstdint>
+
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -40,7 +42,11 @@ class COMPONENT_EXPORT(GFX) NativePixmap
   // The following methods return format, modifier and size of the buffer,
   // respectively.
   virtual viz::SharedImageFormat GetSharedImageFormat() const = 0;
+
   virtual uint64_t GetFormatModifier() const = 0;
+
+  virtual uint32_t GetFourCCBufferFormat() const = 0;
+
   virtual gfx::Size GetBufferSize() const = 0;
 
   // Return an id that is guaranteed to be unique and equal for all instances

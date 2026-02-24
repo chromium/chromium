@@ -31,6 +31,7 @@ class FlatlandSysmemNativePixmap : public gfx::NativePixmap {
   bool SupportsZeroCopyWebGPUImport() const override;
   uint64_t GetFormatModifier() const override;
   viz::SharedImageFormat GetSharedImageFormat() const override;
+  uint32_t GetFourCCBufferFormat() const override;
   gfx::Size GetBufferSize() const override;
   uint32_t GetUniqueId() const override;
   bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,

@@ -166,6 +166,9 @@ viz::SharedImageFormat GbmPixmapWayland::GetSharedImageFormat() const {
   return gbm_bo_->GetSharedImageFormat();
 }
 
+uint32_t GbmPixmapWayland::GetFourCCBufferFormat() const {
+  return ui::GetFourCCFormatFromSharedImageFormat(GetSharedImageFormat());
+}
 gfx::Size GbmPixmapWayland::GetBufferSize() const {
   return gbm_bo_->GetSize();
 }
