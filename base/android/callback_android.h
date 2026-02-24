@@ -21,37 +21,179 @@
 // specified argument.
 namespace base::android {
 
-void BASE_EXPORT RunObjectCallbackAndroid(const JavaRef<jobject>& callback,
+using JniOnceWrappedCallbackType =
+    base::OnceCallback<void(const jni_zero::JavaRef<jobject>&)>;
+using JniRepeatingWrappedCallbackType =
+    base::RepeatingCallback<void(const jni_zero::JavaRef<jobject>&)>;
+using JniOnceWrappedCallback2Type =
+    base::OnceCallback<void(const jni_zero::JavaRef<jobject>&,
+                            const jni_zero::JavaRef<jobject>&)>;
+using JniRepeatingWrappedCallback2Type =
+    base::RepeatingCallback<void(const jni_zero::JavaRef<jobject>&,
+                                 const jni_zero::JavaRef<jobject>&)>;
+
+BASE_EXPORT void RunObjectCallbackAndroid(const JavaRef<jobject>& callback,
                                           const JavaRef<jobject>& arg);
 
-void BASE_EXPORT RunObjectCallbackAndroid2(const JavaRef<jobject>& callback,
+BASE_EXPORT void RunObjectCallbackAndroid2(const JavaRef<jobject>& callback,
                                            const JavaRef<jobject>& arg1,
                                            const JavaRef<jobject>& arg2);
 
-void BASE_EXPORT RunBooleanCallbackAndroid(const JavaRef<jobject>& callback,
+BASE_EXPORT void RunBooleanCallbackAndroid(const JavaRef<jobject>& callback,
                                            bool arg);
 
-void BASE_EXPORT RunIntCallbackAndroid(const JavaRef<jobject>& callback,
+BASE_EXPORT void RunIntCallbackAndroid(const JavaRef<jobject>& callback,
                                        int32_t arg);
 
-void BASE_EXPORT RunLongCallbackAndroid(const JavaRef<jobject>& callback,
+BASE_EXPORT void RunLongCallbackAndroid(const JavaRef<jobject>& callback,
                                         int64_t arg);
 
-void BASE_EXPORT RunTimeCallbackAndroid(const JavaRef<jobject>& callback,
+BASE_EXPORT void RunTimeCallbackAndroid(const JavaRef<jobject>& callback,
                                         base::Time time);
 
-void BASE_EXPORT RunStringCallbackAndroid(const JavaRef<jobject>& callback,
+BASE_EXPORT void RunStringCallbackAndroid(const JavaRef<jobject>& callback,
                                           const std::string& arg);
 
-void BASE_EXPORT RunOptionalStringCallbackAndroid(
+BASE_EXPORT void RunOptionalStringCallbackAndroid(
     const JavaRef<jobject>& callback,
     base::optional_ref<const std::string> optional_string_arg);
 
-void BASE_EXPORT RunByteArrayCallbackAndroid(const JavaRef<jobject>& callback,
+BASE_EXPORT void RunByteArrayCallbackAndroid(const JavaRef<jobject>& callback,
                                              const std::vector<uint8_t>& arg);
+
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    JniOnceWrappedCallbackType&& callback);
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    JniRepeatingWrappedCallbackType&& callback);
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    const JniRepeatingWrappedCallbackType& callback);
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    JniOnceWrappedCallback2Type&& callback);
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    JniRepeatingWrappedCallback2Type&& callback);
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    const JniRepeatingWrappedCallback2Type& callback);
+// Overloads that accept no parameter.
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    base::OnceCallback<void()>&& callback);
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    const base::RepeatingCallback<void()>& callback);
+
+// Java Callbacks don't return a value so any return value by the passed in
+// callback will be ignored.
+template <typename R, typename Arg1, typename Arg2>
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    base::OnceCallback<R(Arg1, Arg2)>&& callback) {
+  return ToJniCallback(
+      env, base::BindOnce(
+               [](base::OnceCallback<R(Arg1, Arg2)> captured_callback,
+                  const jni_zero::JavaRef<jobject>& j_result1,
+                  const jni_zero::JavaRef<jobject>& j_result2) {
+                 std::move(captured_callback)
+                     .Run(jni_zero::FromJniType<std::decay_t<Arg1>>(
+                              jni_zero::AttachCurrentThread(), j_result1),
+                          jni_zero::FromJniType<std::decay_t<Arg2>>(
+                              jni_zero::AttachCurrentThread(), j_result2));
+               },
+               std::move(callback)));
+}
+
+// Java Callbacks don't return a value so any return value by the passed in
+// callback will be ignored.
+template <typename R, typename Arg1, typename Arg2>
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    const base::RepeatingCallback<R(Arg1, Arg2)>& callback) {
+  return ToJniCallback(
+      env,
+      base::BindRepeating(
+          [](const base::RepeatingCallback<R(Arg1, Arg2)>& captured_callback,
+             const jni_zero::JavaRef<jobject>& j_result1,
+             const jni_zero::JavaRef<jobject>& j_result2) {
+            captured_callback.Run(
+                jni_zero::FromJniType<std::decay_t<Arg1>>(
+                    jni_zero::AttachCurrentThread(), j_result1),
+                jni_zero::FromJniType<std::decay_t<Arg2>>(
+                    jni_zero::AttachCurrentThread(), j_result2));
+          },
+          callback));
+}
+
+// Java Callbacks don't return a value so any return value by the passed in
+// callback will be ignored.
+template <typename R, typename Arg>
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    base::OnceCallback<R(Arg)>&& callback) {
+  return ToJniCallback(
+      env, base::BindOnce(
+               [](base::OnceCallback<R(Arg)> captured_callback,
+                  const jni_zero::JavaRef<jobject>& j_result) {
+                 auto result = jni_zero::FromJniType<std::decay_t<Arg>>(
+                     jni_zero::AttachCurrentThread(), j_result);
+                 std::move(captured_callback).Run(std::move(result));
+               },
+               std::move(callback)));
+}
+
+// Java Callbacks don't return a value so any return value by the passed in
+// callback will be ignored.
+template <typename R>
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    base::OnceCallback<R()>&& callback) {
+  return ToJniCallback(env, base::BindOnce(
+                                [](base::OnceCallback<R()> captured_callback,
+                                   const jni_zero::JavaRef<jobject>& j_result) {
+                                  std::move(captured_callback).Run();
+                                },
+                                std::move(callback)));
+}
+
+// Java Callbacks don't return a value so any return value by the passed in
+// callback will be ignored.
+template <typename R, typename Arg>
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    const base::RepeatingCallback<R(Arg)>& callback) {
+  return ToJniCallback(
+      env, base::BindRepeating(
+               [](const base::RepeatingCallback<R(Arg)>& captured_callback,
+                  const jni_zero::JavaRef<jobject>& j_result) {
+                 Arg result = jni_zero::FromJniType<Arg>(
+                     jni_zero::AttachCurrentThread(), j_result);
+                 captured_callback.Run(std::move(result));
+               },
+               callback));
+}
+
+// Java Callbacks don't return a value so any return value by the passed in
+// callback will be ignored.
+template <typename R>
+BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
+    JNIEnv* env,
+    const base::RepeatingCallback<R()>& callback) {
+  return ToJniCallback(
+      env, base::BindRepeating(
+               [](const base::RepeatingCallback<R()>& captured_callback,
+                  const jni_zero::JavaRef<jobject>& j_result) {
+                 captured_callback.Run();
+               },
+               callback));
+}
 }  // namespace base::android
 
 namespace base::android::internal {
+
 template <typename T>
 struct IsOnceCallback : std::false_type {};
 
@@ -177,6 +319,21 @@ inline T FromJniType(JNIEnv* env, const JavaRef<jobject>& obj) {
     using Arg2Type = typename internal::IsRepeatingCallback<T>::Arg2Type;
     return base::BindRepeating(&internal::RunJavaCallback2<Arg1Type, Arg2Type>,
                                ScopedJavaGlobalRef<jobject>(env, obj));
+  }
+}
+
+template <typename T>
+concept IsJniCallback =
+    base::android::internal::IsOnceCallback<std::remove_cvref_t<T>>::value ||
+    base::android::internal::IsRepeatingCallback<std::remove_cvref_t<T>>::value;
+
+template <IsJniCallback T>
+inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env, T&& callback) {
+  if constexpr (base::android::internal::IsOnceCallback<
+                    std::remove_cvref_t<T>>::value) {
+    return base::android::ToJniCallback(env, std::move(callback));
+  } else {
+    return base::android::ToJniCallback(env, std::forward<T>(callback));
   }
 }
 

@@ -53,7 +53,7 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/jni_callback.h"
+#include "base/android/callback_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/android/tab_android.h"

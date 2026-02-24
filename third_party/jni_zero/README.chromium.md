@@ -126,7 +126,7 @@ Runnable getClosure();
 
 **C++:**
 ```c++
-#include "base/android/jni_callback.h"
+#include "base/android/callback_android.h"
 #include "path/to/generated_jni/MyClass_jni.h"
 
 void Finish(JNIEnv* env, base::OnceCallback<void(std::string)> callback) {
@@ -140,7 +140,7 @@ base::OnceClosure JNI_MyClass_GetClosure(JNIEnv* env) {
 }
 ```
 
-**Header:** `#include "base/android/jni_callback.h"`
+**Header:** `#include "base/android/callback_android.h"`
 
 **Important:** For the `Once*` variants, you must call `destroy()` on the Java
 callback if it is never run to avoid leaking the native object.

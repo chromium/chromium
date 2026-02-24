@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/android/jni_callback.h"
+#include "base/android/callback_android.h"
 #include "chrome/android/chrome_jni_headers/GestureNavigationUtils_jni.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 

@@ -4,9 +4,9 @@
 
 #include "components/browser_ui/device_lock/android/device_lock_bridge.h"
 
+#include "base/android/callback_android.h"
 #include "base/android/device_info.h"
 #include "base/android/jni_android.h"
-#include "base/android/jni_callback.h"
 #include "base/android/scoped_java_ref.h"
 #include "ui/android/window_android.h"
 

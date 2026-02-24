@@ -4,7 +4,7 @@
 
 #include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 
-#include "base/android/jni_callback.h"
+#include "base/android/callback_android.h"
 #include "base/auto_reset.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"

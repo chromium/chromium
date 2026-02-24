@@ -4,8 +4,8 @@
 
 #include "chrome/browser/download/android/download_message_bridge.h"
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
-#include "base/android/jni_callback.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 

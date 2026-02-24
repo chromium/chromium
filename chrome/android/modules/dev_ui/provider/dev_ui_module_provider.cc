@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
-#include "base/android/jni_callback.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/modules/dev_ui/provider/jni_headers/DevUiModuleProvider_jni.h"

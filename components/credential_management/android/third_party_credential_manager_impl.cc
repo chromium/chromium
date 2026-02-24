@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 #include "components/credential_management/android/third_party_credential_manager_impl.h"
 
-#include "base/android/jni_callback.h"
+#include "base/android/callback_android.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"

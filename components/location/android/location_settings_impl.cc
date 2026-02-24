@@ -4,8 +4,8 @@
 
 #include "components/location/android/location_settings_impl.h"
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
-#include "base/android/jni_callback.h"
 #include "base/functional/bind.h"
 #include "components/location/android/location_settings_dialog_outcome.h"
 #include "ui/android/window_android.h"
