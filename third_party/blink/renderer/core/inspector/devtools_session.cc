@@ -397,6 +397,7 @@ void DevToolsSession::FlushProtocolNotifications() {
 }
 
 void DevToolsSession::Trace(Visitor* visitor) const {
+  v8_inspector::V8Inspector::ManagedChannel::Trace(visitor);
   visitor->Trace(receiver_);
   visitor->Trace(host_remote_);
   visitor->Trace(agent_);
