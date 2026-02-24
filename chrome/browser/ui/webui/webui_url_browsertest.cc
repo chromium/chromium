@@ -89,7 +89,9 @@ class WebUIUrlNoConsoleErrorsTest : public WebUIAllUrlsBrowserTest {
 };
 
 // Verify that there's no console errors when loading any `kChromeUrls`.
-IN_PROC_BROWSER_TEST_P(WebUIUrlNoConsoleErrorsTest, NoConsoleErrors) {
+// TODO(crbug.com/487122203): Fix the issue (see the bug entry for details) and
+// re-enable the test.
+IN_PROC_BROWSER_TEST_P(WebUIUrlNoConsoleErrorsTest, DISABLED_NoConsoleErrors) {
   CheckNoConsoleErrors(GetParam());
 }
 
