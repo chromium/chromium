@@ -108,6 +108,8 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.SPECULATIVE_LOADING,
                 Features.BACK_FORWARD_CACHE,
                 Features.PREFETCH_WITH_URL,
+                Features.PREFETCH_CACHE + Features.DEV_SUFFIX,
+                Features.SET_MAX_PRERENDERS + Features.DEV_SUFFIX,
                 Features.DEFAULT_TRAFFICSTATS_TAGGING,
                 Features.ASYNC_WEBVIEW_STARTUP,
                 Features.PRERENDER_WITH_URL,
@@ -325,6 +327,9 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.ADD_WEB_MESSAGE_LISTENER_WITH_WORLD,
         ApiCall.REMOVE_WEB_MESSAGE_LISTENER_WITH_WORLD,
         ApiCall.GET_JAVA_SCRIPT_WORLD,
+        ApiCall.SET_MAX_PRERENDERS,
+        ApiCall.SET_MAX_PREFETCHES,
+        ApiCall.SET_PREFETCH_TTL_SECONDS,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -512,8 +517,11 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int ADD_WEB_MESSAGE_LISTENER_WITH_WORLD = 176;
         int REMOVE_WEB_MESSAGE_LISTENER_WITH_WORLD = 177;
         int GET_JAVA_SCRIPT_WORLD = 178;
+        int SET_MAX_PRERENDERS = 179;
+        int SET_MAX_PREFETCHES = 180;
+        int SET_PREFETCH_TTL_SECONDS = 181;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 179;
+        int COUNT = 182;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

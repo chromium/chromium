@@ -734,6 +734,9 @@ chromium-metrics-reviews@google.com.
   <int value="176" label="WebViewCompat.addWebMessageListener (with world)"/>
   <int value="177" label="WebViewCompat.removeWebMessageListener (with world)"/>
   <int value="178" label="WebViewCompat.getJavaScriptWorld"/>
+  <int value="179" label="WebSettingsCompat.setMaxPrerenders"/>
+  <int value="180" label="WebSettingsCompat.setMaxPrefetches"/>
+  <int value="181" label="WebSettingsCompat.setPrefetchTtlSeconds"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>
