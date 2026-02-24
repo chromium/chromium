@@ -390,7 +390,8 @@ class SaveCardOfferObserver
                    ->GetAutofillManager()
                    .client()
                    .GetFormDataImporter()
-                   ->GetCreditCardSaveManager();
+                   ->GetPaymentsFormDataImporter()
+                   .GetCreditCardSaveManager();
     manager_->SetEventObserverForTesting(this);
   }
 

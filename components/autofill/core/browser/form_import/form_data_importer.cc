@@ -62,8 +62,6 @@ FormDataImporter::ExtractedFormData::~ExtractedFormData() = default;
 FormDataImporter::FormDataImporter(AutofillClient* client,
                                    history::HistoryService* history_service)
     : client_(CHECK_DEREF(client)),
-      credit_card_save_manager_(
-          std::make_unique<CreditCardSaveManager>(client)),
       address_form_data_importer_(client),
       payments_form_data_importer_(client) {
   if (history_service) {
@@ -89,8 +87,15 @@ void FormDataImporter::ImportAndProcessFormData(
   for (const auto& candidate : extracted_data.extracted_address_profiles) {
     preliminary_imported_address_profiles.push_back(candidate.profile);
   }
-  credit_card_save_manager_->SetPreliminarilyImportedAutofillProfile(
-      preliminary_imported_address_profiles);
+
+  // TODO(crbug.com/481379161): Figure out a way to move this into
+  // PaymentsFormDataImporter (potentially by passing
+  // `preliminary_imported_address_profiles` into
+  // PaymentsFormDataImporter::ProcessExtractedCreditCard()).
+  GetPaymentsFormDataImporter()
+      .GetCreditCardSaveManager()
+      ->SetPreliminarilyImportedAutofillProfile(
+          preliminary_imported_address_profiles);
 
   bool payments_prompt_potentially_shown = false;
   if (GetPaymentsFormDataImporter().ShouldProcessExtractedCreditCard()) {
@@ -98,8 +103,12 @@ void FormDataImporter::ImportAndProcessFormData(
     // processing of the extracted credit card are true, in order to prevent
     // the metrics it logs from being diluted by cases where extracted credit
     // cards should not be processed or there was no credit card to process.
-    bool credit_card_upload_enabled =
-        credit_card_save_manager_->IsCreditCardUploadEnabled();
+    // TODO(crbug.com/481379161): Figure out a way to do this in
+    // PaymentsFormDataImporter (potentially by moving it into
+    // PaymentsFormDataImporter::ProcessExtractedCreditCard()).
+    bool credit_card_upload_enabled = GetPaymentsFormDataImporter()
+                                          .GetCreditCardSaveManager()
+                                          ->IsCreditCardUploadEnabled();
     payments_prompt_potentially_shown =
         GetPaymentsFormDataImporter().ProcessExtractedCreditCard(
             submitted_form, extracted_data.extracted_credit_card,
@@ -174,7 +183,9 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
   // Reset `credit_card_import_type_` every time we extract
   // data from form no matter whether `ExtractCreditCard()` is
   // called or not.
-  credit_card_import_type_ =
+  // TODO(crbug.com/481379161): See if this can be moved into
+  // PaymentsFormDataImporter::ExtractCreditCard().
+  GetPaymentsFormDataImporter().credit_card_import_type_ =
       payments::PaymentsFormDataImporter::CreditCardImportType::kNoCard;
   if (payment_methods_autofill_enabled) {
     extracted_form_data.extracted_credit_card =
@@ -250,13 +261,15 @@ std::optional<CreditCard> FormDataImporter::TryMatchingExistingServerCard(
       // If `credit_card_import_type_` was local card, then a local card was
       // extracted from the form. If a server card is now also extracted from
       // the form, the duplicate local and server card case is detected.
-      if (credit_card_import_type_ == payments::PaymentsFormDataImporter::
-                                          CreditCardImportType::kLocalCard) {
-        credit_card_import_type_ = payments::PaymentsFormDataImporter::
-            CreditCardImportType::kDuplicateLocalServerCard;
+      if (GetPaymentsFormDataImporter().credit_card_import_type_ ==
+          payments::PaymentsFormDataImporter::CreditCardImportType::
+              kLocalCard) {
+        GetPaymentsFormDataImporter().credit_card_import_type_ =
+            payments::PaymentsFormDataImporter::CreditCardImportType::
+                kDuplicateLocalServerCard;
       } else {
-        credit_card_import_type_ = payments::PaymentsFormDataImporter::
-            CreditCardImportType::kServerCard;
+        GetPaymentsFormDataImporter().credit_card_import_type_ = payments::
+            PaymentsFormDataImporter::CreditCardImportType::kServerCard;
       }
       return server_card_with_cvc;
     } else {

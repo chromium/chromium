@@ -16,6 +16,7 @@
 namespace autofill {
 
 class AutofillClient;
+class CreditCardSaveManager;
 class FormDataImporter;
 class FormDataImporterTestApi;
 class FormStructure;
@@ -117,6 +118,10 @@ class PaymentsFormDataImporter {
   // otherwise.
   bool ShouldProcessExtractedCreditCard();
 
+  CreditCardSaveManager* GetCreditCardSaveManager() {
+    return credit_card_save_manager_.get();
+  }
+
  private:
   friend class PaymentsFormDataImporterTestApi;
   // TODO(crbug.com/481379161): Remove `FormDataImporter` and
@@ -176,8 +181,19 @@ class PaymentsFormDataImporter {
   // when a new fetch starts.
   FetchedPaymentsDataContext fetched_payments_data_context_;
 
+  // Responsible for managing credit card save flows (local or upload).
+  std::unique_ptr<CreditCardSaveManager> credit_card_save_manager_;
+
   // Responsible for managing IBAN save flows.
   std::unique_ptr<IbanSaveManager> iban_save_manager_;
+
+  // Represents the type of the credit card import candidate from the submitted
+  // form. It will be used to determine whether to offer upload save or not.
+  // Will be passed to `credit_card_save_manager_` for metrics. If no credit
+  // card was found in the form, the type will be `kNoCard`.
+  payments::PaymentsFormDataImporter::CreditCardImportType
+      credit_card_import_type_ =
+          payments::PaymentsFormDataImporter::CreditCardImportType::kNoCard;
 
   // If the most recent payments autofill flow had a non-interactive
   // authentication,

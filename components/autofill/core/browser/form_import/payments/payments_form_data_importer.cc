@@ -24,7 +24,8 @@
 namespace autofill::payments {
 
 PaymentsFormDataImporter::PaymentsFormDataImporter(AutofillClient* client)
-    : client_(CHECK_DEREF(client))
+    : client_(CHECK_DEREF(client)),
+      credit_card_save_manager_(std::make_unique<CreditCardSaveManager>(client))
 #if !BUILDFLAG(IS_IOS)
       ,
       iban_save_manager_(std::make_unique<IbanSaveManager>(client))
@@ -200,7 +201,7 @@ bool PaymentsFormDataImporter::ShouldProcessExtractedCreditCard() {
 
   // If there is no `credit_card_import_type_` from form extraction, the
   // extracted card is not a viable candidate for processing.
-  if (client_->GetFormDataImporter()->credit_card_import_type_ ==
+  if (credit_card_import_type_ ==
       PaymentsFormDataImporter::CreditCardImportType::kNoCard) {
     return false;
   }
@@ -256,15 +257,13 @@ std::optional<CreditCard> PaymentsFormDataImporter::ExtractCreditCard(
 
   // If the extracted card is a known virtual card, return the extracted card.
   if (fetched_virtual_cards_.contains(candidate.LastFourDigits())) {
-    client_->GetFormDataImporter()->credit_card_import_type_ =
-        CreditCardImportType::kVirtualCard;
+    credit_card_import_type_ = CreditCardImportType::kVirtualCard;
     return candidate;
   }
 
   // Can import one valid card per form. Start by treating it as kNewCard, but
   // overwrite this type if we discover it is already a local or server card.
-  client_->GetFormDataImporter()->credit_card_import_type_ =
-      CreditCardImportType::kNewCard;
+  credit_card_import_type_ = CreditCardImportType::kNewCard;
 
   // Attempt to merge with an existing local credit card without presenting a
   // prompt.
@@ -276,8 +275,7 @@ std::optional<CreditCard> PaymentsFormDataImporter::ExtractCreditCard(
     if (maybe_updated_card.UpdateFromImportedCard(candidate,
                                                   client_->GetAppLocale())) {
       payments_data_manager().UpdateCreditCard(maybe_updated_card);
-      client_->GetFormDataImporter()->credit_card_import_type_ =
-          CreditCardImportType::kLocalCard;
+      credit_card_import_type_ = CreditCardImportType::kLocalCard;
       // Update `candidate` to reflect all the details of the updated card.
       // `UpdateFromImportedCard` has updated all values except for the
       // extracted CVC, as we will not update that until later after prompting
@@ -314,7 +312,7 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
   // virtual cards beyond this point. If
   // `kAutofillPrioritizeSaveCardOverMandatoryReauth` is enabled, try to offer
   // mandatory re-auth before returning.
-  if (client_->GetFormDataImporter()->credit_card_import_type_ ==
+  if (credit_card_import_type_ ==
       PaymentsFormDataImporter::CreditCardImportType::kVirtualCard) {
     return base::FeatureList::IsEnabled(
                features::kAutofillPrioritizeSaveCardOverMandatoryReauth) &&
@@ -343,11 +341,9 @@ bool PaymentsFormDataImporter::ProcessExtractedCreditCard(
   }
 
   // Proceed with card or CVC saving if applicable.
-  if (client_->GetFormDataImporter()
-          ->credit_card_save_manager_->ProceedWithSavingIfApplicable(
-              submitted_form, *extracted_credit_card,
-              client_->GetFormDataImporter()->credit_card_import_type_,
-              is_credit_card_upstream_enabled, ukm_source_id)) {
+  if (credit_card_save_manager_->ProceedWithSavingIfApplicable(
+          submitted_form, *extracted_credit_card, credit_card_import_type_,
+          is_credit_card_upstream_enabled, ukm_source_id)) {
     return true;
   }
 
@@ -369,8 +365,7 @@ bool PaymentsFormDataImporter::
   if (auto* mandatory_reauth_manager =
           client_->GetPaymentsAutofillClient()
               ->GetOrCreatePaymentsMandatoryReauthManager();
-      client_->GetFormDataImporter()->credit_card_import_type_ !=
-          CreditCardImportType::kNewCard &&
+      credit_card_import_type_ != CreditCardImportType::kNewCard &&
       mandatory_reauth_manager &&
       mandatory_reauth_manager->ShouldOfferOptin(
           payment_method_type_if_non_interactive_authentication_flow_completed_)) {

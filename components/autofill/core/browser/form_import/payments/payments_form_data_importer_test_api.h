@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_PAYMENTS_PAYMENTS_FORM_DATA_IMPORTER_TEST_API_H_
 
 #include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
+#include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 
 namespace autofill::payments {
@@ -43,6 +44,22 @@ class PaymentsFormDataImporterTestApi {
     return payments_fdi_->ProcessExtractedCreditCard(
         submitted_form, credit_card_import_candidate,
         is_credit_card_upstream_enabled, ukm_source_id);
+  }
+
+  void set_credit_card_save_manager(
+      std::unique_ptr<CreditCardSaveManager> ccsm) {
+    payments_fdi_->credit_card_save_manager_ = std::move(ccsm);
+  }
+
+  payments::PaymentsFormDataImporter::CreditCardImportType
+  credit_card_import_type() const {
+    return payments_fdi_->credit_card_import_type_;
+  }
+
+  void set_credit_card_import_type(
+      payments::PaymentsFormDataImporter::CreditCardImportType
+          credit_card_import_type) {
+    payments_fdi_->credit_card_import_type_ = credit_card_import_type;
   }
 
  private:

@@ -808,7 +808,7 @@ class MockAutofillClient : public TestAutofillClient {
         std::make_unique<NiceMock<MockPasswordManagerDelegate>>());
     test_api(GetPersonalDataManager().address_data_manager())
         .set_auto_accept_address_imports(true);
-    test_api(*GetFormDataImporter())
+    test_api(GetFormDataImporter()->GetPaymentsFormDataImporter())
         .set_credit_card_save_manager(create_credit_card_save_manager());
     test_api(GetFormDataImporter()->GetPaymentsFormDataImporter())
         .set_iban_save_manager(std::make_unique<IbanSaveManager>(this));

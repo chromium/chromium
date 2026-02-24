@@ -39,6 +39,8 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
+#include "components/autofill/core/browser/form_import/payments/payments_form_data_importer_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
@@ -343,7 +345,8 @@ class CreditCardSaveManagerTest
     auto credit_card_save_manager =
         std::make_unique<TestCreditCardSaveManager>(&autofill_client());
     credit_card_save_manager->SetCreditCardUploadEnabled(true);
-    test_api(*autofill_client().GetFormDataImporter())
+    test_api(
+        autofill_client().GetFormDataImporter()->GetPaymentsFormDataImporter())
         .set_credit_card_save_manager(std::move(credit_card_save_manager));
     autofill_client().GetStrikeDatabase();
     autofill_client().GetVotesUploader().set_expected_observed_submission(true);
@@ -360,7 +363,10 @@ class CreditCardSaveManagerTest
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
   TestCreditCardSaveManager& credit_card_save_manager() {
     return static_cast<TestCreditCardSaveManager&>(
-        *autofill_client().GetFormDataImporter()->GetCreditCardSaveManager());
+        *autofill_client()
+             .GetFormDataImporter()
+             ->GetPaymentsFormDataImporter()
+             .GetCreditCardSaveManager());
   }
 
   void FormsSeen(const std::vector<FormData>& forms) {

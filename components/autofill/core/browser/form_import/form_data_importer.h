@@ -24,7 +24,6 @@ class HistoryService;
 namespace autofill {
 
 class AutofillClient;
-class CreditCardSaveManager;
 class PaymentsDataManager;
 class SourceId;
 
@@ -50,10 +49,6 @@ class FormDataImporter : public history::HistoryServiceObserver {
                                 bool payment_methods_autofill_enabled,
                                 ukm::SourceId ukm_source_id);
 
-  CreditCardSaveManager* GetCreditCardSaveManager() {
-    return credit_card_save_manager_.get();
-  }
-
   // history::HistoryServiceObserver
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
@@ -63,7 +58,6 @@ class FormDataImporter : public history::HistoryServiceObserver {
       FormSignature form_signature) const {
     return form_associator_.GetFormAssociations(form_signature);
   }
-
 
   // Gets the AddressFormDataImporter owned by `this`.
   AddressFormDataImporter& GetAddressFormDataImporter();
@@ -121,19 +115,8 @@ class FormDataImporter : public history::HistoryServiceObserver {
   // The associated autofill client.
   const raw_ref<AutofillClient> client_;
 
-  // Responsible for managing credit card save flows (local or upload).
-  std::unique_ptr<CreditCardSaveManager> credit_card_save_manager_;
-
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
-
-  // Represents the type of the credit card import candidate from the submitted
-  // form. It will be used to determine whether to offer upload save or not.
-  // Will be passed to `credit_card_save_manager_` for metrics. If no credit
-  // card was found in the form, the type will be `kNoCard`.
-  payments::PaymentsFormDataImporter::CreditCardImportType
-      credit_card_import_type_ =
-          payments::PaymentsFormDataImporter::CreditCardImportType::kNoCard;
 
   // Enables associating recently submitted forms with each other.
   FormAssociator form_associator_;

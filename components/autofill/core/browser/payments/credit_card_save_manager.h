@@ -39,7 +39,7 @@ inline constexpr base::TimeDelta kVirtualCardEnrollDelaySec = base::Seconds(3);
 
 // Manages logic for determining whether upload credit card save to Google
 // Payments is available as well as actioning both local and upload credit card
-// save logic.  Owned by FormDataImporter.
+// save logic. Owned by PaymentsFormDataImporter.
 class CreditCardSaveManager {
  public:
   // Possible fields and values detected during credit card form submission, to

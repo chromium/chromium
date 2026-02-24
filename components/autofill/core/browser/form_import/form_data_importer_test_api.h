@@ -5,15 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_TEST_API_H_
 
-#include <string>
-#include <vector>
-
-#include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_import/addresses/address_form_data_importer.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
-#include "components/autofill/core/browser/payments/credit_card_save_manager.h"
-#include "components/autofill/core/browser/payments/iban_save_manager.h"
 
 namespace autofill {
 
@@ -26,22 +20,6 @@ class FormDataImporterTestApi {
   using ExtractedFormData = FormDataImporter::ExtractedFormData;
 
   explicit FormDataImporterTestApi(FormDataImporter* fdi) : fdi_(*fdi) {}
-
-  void set_credit_card_save_manager(
-      std::unique_ptr<CreditCardSaveManager> ccsm) {
-    fdi_->credit_card_save_manager_ = std::move(ccsm);
-  }
-
-  payments::PaymentsFormDataImporter::CreditCardImportType
-  credit_card_import_type() const {
-    return fdi_->credit_card_import_type_;
-  }
-
-  void set_credit_card_import_type(
-      payments::PaymentsFormDataImporter::CreditCardImportType
-          credit_card_import_type) {
-    fdi_->credit_card_import_type_ = credit_card_import_type;
-  }
 
   ExtractedFormData ExtractFormData(const FormStructure& form,
                                     bool profile_autofill_enabled,
