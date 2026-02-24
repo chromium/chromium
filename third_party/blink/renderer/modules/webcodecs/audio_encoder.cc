@@ -331,6 +331,7 @@ bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
                                    js_error_message)) {
           return false;
         }
+#if BUILDFLAG(IS_WIN)
         if (config->options.bitrate.has_value()) {
           if (!VerifyParameterValues(
                   config->options.bitrate.value(), "Unsupported bitrate.",
@@ -338,6 +339,10 @@ bool VerifyCodecSupportStatic(AudioEncoderTraits::ParsedConfig* config,
             return false;
           }
         }
+#else
+        // Other platforms vary in their bitrate support, so we can't provide
+        // an accurate answer here.
+#endif
         if (!VerifyParameterValues(config->options.sample_rate,
                                    "Unsupported sample rate.", {44100, 48000},
                                    js_error_message)) {
