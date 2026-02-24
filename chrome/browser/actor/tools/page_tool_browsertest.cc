@@ -17,6 +17,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -54,12 +55,33 @@ class ActorPageToolBrowserTest : public ActorToolsTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ActorPageToolBrowserTest, RemovedElement) {
+class ActorPageToolMagicCursorTest : public ActorPageToolBrowserTest,
+                                     public testing::WithParamInterface<bool> {
+ public:
+  ActorPageToolMagicCursorTest() {
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          {features::kGlicActorSplitValidateAndExecute,
+           features::kGlicActorUiOverlayMagicCursor},
+          {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {features::kGlicActorSplitValidateAndExecute,
+               features::kGlicActorUiOverlayMagicCursor});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ActorPageToolMagicCursorTest, RemovedElement) {
   const GURL url = embedded_test_server()->GetURL("/actor/link.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#link");
   ASSERT_TRUE(input_id);
+  base::HistogramTester histogram_tester;
   {
     // Click initially works.
     ActResultFuture result;
@@ -67,6 +89,9 @@ IN_PROC_BROWSER_TEST_F(ActorPageToolBrowserTest, RemovedElement) {
         MakeClickRequest(*main_frame(), input_id.value());
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
+
+    histogram_tester.ExpectBucketCount(
+        "Actor.PageTool.TimeOfUseObservationSuccess", true, 1);
   }
   ASSERT_TRUE(content::EvalJs(web_contents(), R"(
     let el = document.querySelector('#link');
@@ -82,6 +107,8 @@ IN_PROC_BROWSER_TEST_F(ActorPageToolBrowserTest, RemovedElement) {
     ExpectErrorResult(result, mojom::ActionResultCode::kInvalidDomNodeId);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All, ActorPageToolMagicCursorTest, testing::Bool());
 
 class ActorPageToolTimeoutBrowserTest : public ActorPageToolBrowserTest {
  public:
@@ -347,6 +374,41 @@ IN_PROC_BROWSER_TEST_F(ActorPageToolLongKeyDownDelayBrowserTest, CancelTyping) {
     EXPECT_EQ("keydown[INPUT#input],input[INPUT#input],keyup[INPUT#input]",
               events_obj.ExtractString());
   }
+}
+
+class ActorPageToolMagicCursorRendererResolvedTest
+    : public ActorPageToolBrowserTest {
+ public:
+  ActorPageToolMagicCursorRendererResolvedTest() {
+    feature_list_.InitWithFeatures({features::kGlicActorSplitValidateAndExecute,
+                                    features::kGlicActorUiOverlayMagicCursor},
+                                   {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ActorPageToolMagicCursorRendererResolvedTest,
+                       RecordsMatchOnSuccess) {
+  const GURL url = embedded_test_server()->GetURL("/actor/link.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::optional<int> input_id = GetDOMNodeId(*main_frame(), "#link");
+  ASSERT_TRUE(input_id);
+
+  base::HistogramTester histogram_tester;
+
+  ActResultFuture result;
+  std::unique_ptr<ToolRequest> action =
+      MakeClickRequest(*main_frame(), input_id.value());
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+
+  ExpectOkResult(result);
+
+  histogram_tester.ExpectUniqueSample(
+      "Actor.PageTool.SplitModeTimeOfUseFrameStatus",
+      SplitModeTimeOfUseFrameStatus::kMatch, 1);
 }
 
 }  // namespace

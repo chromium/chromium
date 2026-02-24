@@ -406,6 +406,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.PageTool.SplitModeTimeOfUseFrameStatus"
+    enum="SplitModeTimeOfUseFrameStatus" expires_after="2027-02-11">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the frame status when TimeOfUseValidation is invoked in PageTool.
+    When the split execution flow is active (requires both the renderer resolved
+    target and magic cursor features to be enabled), the the target frame is
+    resolved and its document is stored earlier during the Validate step. During
+    TimeOfUseValidation, we verify that the current target frame matches the one
+    originally stored. If they are not equivalent, the enum captures whether the
+    original document was destroyed or if the frames simply mismatched.
+  </summary>
+</histogram>
+
+<histogram name="Actor.PageTool.TimeOfUseObservationSuccess" enum="Boolean"
+    expires_after="2027-02-11">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records whether ComputeObservedTargetAndValidateFrame succeeds during
+    TimeOfUseValidation. We can compare the success rates, to determine if
+    computing the observation earlier in the Validate step leads to a higher
+    rate of target invalidation due to the page changing during the initialize
+    and execution gap.
+  </summary>
+</histogram>
+
 <histogram name="Actor.RendererPageStability.Outcome"
     enum="PageStabilityOutcome" expires_after="2026-08-11">
   <owner>linnan@google.com</owner>

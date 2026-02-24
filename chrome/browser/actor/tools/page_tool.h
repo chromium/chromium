@@ -69,6 +69,16 @@ class PageTool : public Tool {
 
   content::RenderFrameHost* GetFrame() const;
 
+  void OnInitializeToolComplete(ToolCallback callback,
+                                mojom::InitializeToolResultPtr result);
+
+  mojom::ToolInvocationPtr CreateToolInvocation(
+      content::RenderFrameHost& frame);
+
+  mojom::ActionResultPtr ComputeObservedTargetAndValidateFrame(
+      const optimization_guide::proto::AnnotatedPageContent* last_observation,
+      content::RenderFrameHost* frame);
+
   ToolCallback invoke_callback_;
   std::unique_ptr<PageToolRequest> request_;
 
@@ -79,7 +89,13 @@ class PageTool : public Tool {
   // after this has happened.
   bool has_completed_time_of_use_ = false;
 
-  // Set during TimeOfUseValidation.
+  // Tracks whether the tool has been initialized in the renderer. This is used
+  // to assert that validation completed successfully before calling
+  // ExecuteTool.
+  bool has_tool_been_initialized_ = false;
+
+  // Set during Validate (if GlicActorSplitValidateAndExecute enabled) or
+  // TimeOfUseValidation.
   content::WeakDocumentPtr target_document_;
 
   // Set during TimeOfUseValidation. Contains the hit test result against

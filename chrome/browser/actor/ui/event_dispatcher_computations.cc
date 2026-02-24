@@ -22,7 +22,8 @@ AsyncUiEvent ComputedMouseMove(tabs::TabInterface::Handle tab,
                                const PageTarget& target) {
   ActorTabData* actor_tab_data = ActorTabData::From(tab.Get());
   if (base::FeatureList::IsEnabled(
-          features::kGlicActorSplitValidateAndExecute)) {
+          features::kGlicActorSplitValidateAndExecute) &&
+      base::FeatureList::IsEnabled(features::kGlicActorUiOverlayMagicCursor)) {
     if (actor_tab_data == nullptr) {
       VLOG(4) << "ComputedMouseMove (GlicActorSplitValidateAndExecute): No "
                  "ActorTabData available for tab "

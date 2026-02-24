@@ -124,5 +124,22 @@ enum class ActorTabObservationResult {
   kMaxValue = kApcAndScreenshotNotOk,
 };
 
+// LINT.IfChange(SplitModeTimeOfUseFrameStatus)
+enum class SplitModeTimeOfUseFrameStatus {
+  kMatch = 0,
+  kInitializedFrameDestroyed = 1,
+  kFrameMismatch = 2,
+  kMaxValue = kFrameMismatch,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:SplitModeTimeOfUseFrameStatus)
+
+// Records whether the target frame changed or was destroyed between the
+// Validate and Invoke steps when the renderer resolved target feature is
+// enabled.
+void RecordSplitModeTimeOfUseFrameStatus(SplitModeTimeOfUseFrameStatus status);
+
+// Records whether target observation succeeded during TimeOfUseValidation.
+void RecordTimeOfUseObservationSuccess(bool success);
+
 }  // namespace actor
 #endif  // CHROME_BROWSER_ACTOR_ACTOR_METRICS_H_

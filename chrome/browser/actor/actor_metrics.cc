@@ -273,4 +273,14 @@ void RecordTabObservationResultHistogram(
   }
 }
 
+void RecordSplitModeTimeOfUseFrameStatus(SplitModeTimeOfUseFrameStatus status) {
+  base::UmaHistogramEnumeration("Actor.PageTool.SplitModeTimeOfUseFrameStatus",
+                                status);
+}
+
+void RecordTimeOfUseObservationSuccess(bool success) {
+  base::UmaHistogramBoolean("Actor.PageTool.TimeOfUseObservationSuccess",
+                            success);
+}
+
 }  // namespace actor
