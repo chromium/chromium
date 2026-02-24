@@ -39,6 +39,7 @@ class WebContents;
 
 namespace web_app {
 
+struct FetchManifestAndUpdateCompletionInfo;
 struct ManifestSilentUpdateCompletionInfo;
 class WebAppProvider;
 class WebAppTabHelper;
@@ -166,6 +167,10 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
       base::WeakPtr<content::WebContents> contents,
       const webapps::AppId& app_id,
       ManifestSilentUpdateCompletionInfo completion_info);
+
+  void OnMigrationFetchManifestAndUpdateComplete(
+      const webapps::AppId& app_id,
+      FetchManifestAndUpdateCompletionInfo completion_info);
 
   void OnManifestCheckAwaitAppWindowClose(
       base::WeakPtr<content::WebContents> contents,

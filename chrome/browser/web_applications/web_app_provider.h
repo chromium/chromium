@@ -61,7 +61,7 @@ class WebAppTranslationManager;
 class WebAppUiManager;
 class WebContentsManager;
 class WebAppProfileDeletionManager;
-enum class FetchManifestAndUpdateResult;
+struct FetchManifestAndUpdateCompletionInfo;
 
 #if BUILDFLAG(IS_CHROMEOS)
 class WebAppRunOnOsLoginManager;
@@ -283,8 +283,9 @@ class WebAppProvider : public KeyedService {
 
   void DoDelayedPostStartupWork();
 
-  void OnDefaultAppUpdateComplete(const webapps::AppId& app_id,
-                                  FetchManifestAndUpdateResult result);
+  void OnDefaultAppUpdateComplete(
+      const webapps::AppId& app_id,
+      FetchManifestAndUpdateCompletionInfo completion_info);
 
   std::unique_ptr<AbstractWebAppDatabaseFactory> database_factory_;
   std::unique_ptr<WebAppRegistrarMutable> registrar_;

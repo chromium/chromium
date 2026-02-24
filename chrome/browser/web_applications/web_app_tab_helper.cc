@@ -443,9 +443,10 @@ void WebAppTabHelper::MaybeSchedulePreinstallUpdate() {
   if (in_scope_app == window_app_id()) {
     return;
   }
-  provider_->scheduler().FetchManifestAndUpdate(app_for_updating->install_url,
-                                                app_for_updating->manifest_id,
-                                                base::DoNothing());
+  provider_->scheduler().FetchManifestAndUpdate(
+      app_for_updating->install_url, app_for_updating->manifest_id,
+      /*previous_time_for_silent_icon_update=*/std::nullopt,
+      /*force_trusted_silent_update=*/true, base::DoNothing());
 }
 
 void WebAppTabHelper::MaybeRecordManifestAppliedUseCounter() {

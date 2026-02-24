@@ -575,6 +575,8 @@ void WebAppProvider::DoDelayedPostStartupWork() {
                                       WebAppFilter::InstalledInChrome())) {
       scheduler().FetchManifestAndUpdate(
           install_url, app_to_update->manifest_id,
+          /*previous_time_for_silent_icon_update=*/std::nullopt,
+          /*force_trusted_silent_update=*/true,
           base::BindOnce(&WebAppProvider::OnDefaultAppUpdateComplete,
                          weak_ptr_factory_.GetWeakPtr(), preinstalled_app_id));
     }
@@ -610,8 +612,9 @@ void WebAppProvider::DoDelayedPostStartupWork() {
 
 void WebAppProvider::OnDefaultAppUpdateComplete(
     const webapps::AppId& app_id,
-    FetchManifestAndUpdateResult result) {
-  base::UmaHistogramEnumeration("WebApp.Preinstalled.UpdateOnStartup", result);
+    FetchManifestAndUpdateCompletionInfo completion_info) {
+  base::UmaHistogramEnumeration("WebApp.Preinstalled.UpdateOnStartup",
+                                completion_info.result);
   WebAppPrefGuardrails guardrails =
       WebAppPrefGuardrails::GetForDefaultAppUpdateOnStartup(
           *profile_->GetPrefs());

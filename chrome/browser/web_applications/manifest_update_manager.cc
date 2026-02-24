@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -246,6 +247,27 @@ void ManifestUpdateManager::OnManifestSeenOnPrimaryPage(
     if (!manifest->migrate_from.empty()) {
       provider_->scheduler().ScheduleWebAppInstallFromMigrateFromField(
           web_contents.GetWeakPtr(), manifest.Clone(), base::DoNothing());
+
+      WebAppTabHelper* tab_helper =
+          WebAppTabHelper::FromWebContents(&web_contents);
+      if (tab_helper && tab_helper->window_app_id().has_value()) {
+        const webapps::AppId& window_app_id = *tab_helper->window_app_id();
+        for (const auto& migrate_from : manifest->migrate_from) {
+          if (GenerateAppIdFromManifestId(migrate_from->id) == window_app_id &&
+              migrate_from->install_url.has_value()) {
+            std::optional<base::Time> previous_time_for_silent_icon_update =
+                base::OptionalFromPtr(base::FindOrNull(
+                    update_check_for_silent_updates_, window_app_id));
+            provider_->scheduler().FetchManifestAndUpdate(
+                *migrate_from->install_url, migrate_from->id,
+                previous_time_for_silent_icon_update,
+                /*force_trusted_silent_update=*/false,
+                base::BindOnce(&ManifestUpdateManager::
+                                   OnMigrationFetchManifestAndUpdateComplete,
+                               weak_factory_.GetWeakPtr(), window_app_id));
+          }
+        }
+      }
     }
     if (manifest->migrate_to) {
       provider_->scheduler().ScheduleInstallMigrateToApp(
@@ -432,6 +454,15 @@ void ManifestUpdateManager::OnManifestSilentUpdateComplete(
 
   // Track time for throttling future silent icon updates if the current update
   // triggered a silent icon update.
+  if (completion_info.time_for_icon_diff_check.has_value()) {
+    update_check_for_silent_updates_[app_id] =
+        *completion_info.time_for_icon_diff_check;
+  }
+}
+
+void ManifestUpdateManager::OnMigrationFetchManifestAndUpdateComplete(
+    const webapps::AppId& app_id,
+    FetchManifestAndUpdateCompletionInfo completion_info) {
   if (completion_info.time_for_icon_diff_check.has_value()) {
     update_check_for_silent_updates_[app_id] =
         *completion_info.time_for_icon_diff_check;

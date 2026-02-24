@@ -75,15 +75,16 @@ class FetchManifestAndUpdateTest : public WebAppTest {
   }
 
   std::optional<FetchManifestAndUpdateResult> RunUpdate() {
-    base::test::TestFuture<FetchManifestAndUpdateResult> future;
+    base::test::TestFuture<FetchManifestAndUpdateCompletionInfo> future;
     provider().scheduler().FetchManifestAndUpdate(
         GURL(kInstallUrl), GenerateManifestIdFromStartUrlOnly(GURL(kStartUrl)),
-        future.GetCallback());
+        /*previous_time_for_silent_icon_update=*/std::nullopt,
+        /*force_trusted_silent_update=*/true, future.GetCallback());
     EXPECT_TRUE(future.Wait());
     if (!future.IsReady()) {
       return std::nullopt;
     }
-    return future.Get();
+    return future.Get().result;
   }
 
  protected:

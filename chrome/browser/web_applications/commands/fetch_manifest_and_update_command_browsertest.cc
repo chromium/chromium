@@ -4,15 +4,30 @@
 
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_command.h"
 
+#include "base/strings/string_util.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
+#include "chrome/browser/web_applications/manifest_update_manager.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace web_app {
 
@@ -34,15 +49,175 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandTest, BasicUpdate) {
   EXPECT_EQ("Basic web app",
             provider().registrar_unsafe().GetAppShortName(app_id));
 
-  base::test::TestFuture<FetchManifestAndUpdateResult> future;
+  base::test::TestFuture<FetchManifestAndUpdateCompletionInfo> future;
   provider().scheduler().FetchManifestAndUpdate(
       embedded_https_test_server().GetURL(
           "/web_apps/get_manifest.html?basic_new_name.json"),
-      manifest_id, future.GetCallback());
+      manifest_id, /*previous_time_for_silent_icon_update=*/std::nullopt,
+      /*force_trusted_silent_update=*/true, future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(FetchManifestAndUpdateResult::kSuccess, future.Get());
+  EXPECT_EQ(FetchManifestAndUpdateResult::kSuccess, future.Get().result);
   EXPECT_EQ("Basic web app 2",
             provider().registrar_unsafe().GetAppShortName(app_id));
+}
+
+class FetchManifestAndUpdateCommandMigrationTest
+    : public FetchManifestAndUpdateCommandTest {
+ public:
+  FetchManifestAndUpdateCommandMigrationTest() {
+    feature_list_.InitWithFeatures({blink::features::kWebAppMigrationApi,
+                                    features::kWebAppPredictableAppUpdating,
+                                    features::kWebAppUsePrimaryIcon},
+                                   {});
+  }
+
+  void SetUp() override {
+    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
+        &FetchManifestAndUpdateCommandMigrationTest::HandleRequest,
+        base::Unretained(this)));
+    FetchManifestAndUpdateCommandTest::SetUp();
+  }
+
+  void SetRequestOverride(
+      base::RepeatingCallback<std::unique_ptr<net::test_server::HttpResponse>(
+          const net::test_server::HttpRequest& request)> handler) {
+    request_override_ = std::move(handler);
+  }
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request_override_) {
+      return request_override_.Run(request);
+    }
+    return nullptr;
+  }
+
+  base::RepeatingCallback<std::unique_ptr<net::test_server::HttpResponse>(
+      const net::test_server::HttpRequest& request)>
+      request_override_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandMigrationTest,
+                       CheckMigrateFromTriggersUpdate) {
+  webapps::AppId app_a_id = InstallWebAppFromPageAndCloseAppBrowser(
+      browser(), embedded_https_test_server().GetURL("/web_apps/basic.html"));
+  webapps::ManifestId app_a_manifest_id =
+      provider().registrar_unsafe().GetAppManifestId(app_a_id);
+
+  Browser* app_browser = LaunchWebAppBrowser(app_a_id);
+
+  GURL app_b_manifest_url =
+      embedded_https_test_server().GetURL("/banners/manifest_b.json");
+  GURL app_b_url = embedded_https_test_server().GetURL(
+      "/banners/manifest_test_page.html?manifest=manifest_b.json");
+
+  std::string manifest_b_content = R"(
+        {
+          "name": "App B",
+          "start_url": "manifest_test_page.html",
+          "display": "standalone",
+          "migrate_from": [{ "id": "/web_apps/basic.html",
+                             "install_url": "/web_apps/basic.html" }]
+        }
+      )";
+
+  SetRequestOverride(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.GetURL() == app_b_manifest_url) {
+          auto http_response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          http_response->set_code(net::HTTP_OK);
+          http_response->set_content(manifest_b_content);
+          return http_response;
+        }
+        return nullptr;
+      }));
+
+  base::HistogramTester histogram_tester;
+
+  base::test::TestFuture<void> manifest_seen_future;
+  provider().manifest_update_manager().SetLoadFinishedCallbackForTesting(
+      manifest_seen_future.GetCallback());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, app_b_url));
+
+  EXPECT_TRUE(manifest_seen_future.Wait());
+
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  // We expect success (no update detected, as App A hasn't changed).
+  histogram_tester.ExpectBucketCount(
+      "WebApp.FetchManifestAndUpdate.Result",
+      FetchManifestAndUpdateResult::kSuccessNoUpdateDetected, 1);
+
+  const WebApp* app_a = provider().registrar_unsafe().GetAppById(app_a_id);
+  EXPECT_FALSE(app_a->pending_update_info().has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandMigrationTest,
+                       CheckMigrateFromTriggersUpdate_WithUpdate) {
+  webapps::AppId app_a_id = InstallWebAppFromPageAndCloseAppBrowser(
+      browser(), embedded_https_test_server().GetURL("/web_apps/basic.html"));
+  webapps::ManifestId app_a_manifest_id =
+      provider().registrar_unsafe().GetAppManifestId(app_a_id);
+
+  Browser* app_browser = LaunchWebAppBrowser(app_a_id);
+
+  GURL app_b_manifest_url =
+      embedded_https_test_server().GetURL("/banners/manifest_b.json");
+  GURL app_b_url = embedded_https_test_server().GetURL(
+      "/banners/manifest_test_page.html?manifest=manifest_b.json");
+
+  std::string manifest_b_content = R"(
+        {
+          "name": "App B",
+          "start_url": "manifest_test_page.html",
+          "display": "standalone",
+          "migrate_from": [{ "id": "/web_apps/basic.html",
+                             "install_url":
+                                 "/web_apps/get_manifest.html?basic_new_name.json" }]
+        }
+      )";
+
+  SetRequestOverride(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.GetURL() == app_b_manifest_url) {
+          auto http_response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          http_response->set_code(net::HTTP_OK);
+          http_response->set_content(manifest_b_content);
+          return http_response;
+        }
+        return nullptr;
+      }));
+
+  base::HistogramTester histogram_tester;
+
+  base::test::TestFuture<void> manifest_seen_future;
+  provider().manifest_update_manager().SetLoadFinishedCallbackForTesting(
+      manifest_seen_future.GetCallback());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, app_b_url));
+
+  EXPECT_TRUE(manifest_seen_future.Wait());
+
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  // We expect success. Since force_trusted_silent_update is false, the identity
+  // change (name change) should be recorded as a pending update instead of
+  // being applied immediately.
+  histogram_tester.ExpectBucketCount("WebApp.FetchManifestAndUpdate.Result",
+                                     FetchManifestAndUpdateResult::kSuccess, 1);
+
+  EXPECT_EQ("Basic web app",
+            provider().registrar_unsafe().GetAppShortName(app_a_id));
+  const WebApp* app_a = provider().registrar_unsafe().GetAppById(app_a_id);
+  ASSERT_TRUE(app_a->pending_update_info().has_value());
+  EXPECT_EQ(app_a->pending_update_info()->name(), "Basic web app 2");
 }
 
 }  // namespace web_app

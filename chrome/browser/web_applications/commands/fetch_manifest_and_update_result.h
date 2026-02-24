@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_COMMANDS_FETCH_MANIFEST_AND_UPDATE_RESULT_H_
 
 #include <iosfwd>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 
 namespace web_app {
 
@@ -31,8 +33,13 @@ enum class FetchManifestAndUpdateResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:FetchManifestAndUpdateResult)
 
+struct FetchManifestAndUpdateCompletionInfo {
+  FetchManifestAndUpdateResult result = FetchManifestAndUpdateResult::kSuccess;
+  std::optional<base::Time> time_for_icon_diff_check;
+};
+
 using FetchManifestAndUpdateCallback =
-    base::OnceCallback<void(FetchManifestAndUpdateResult)>;
+    base::OnceCallback<void(FetchManifestAndUpdateCompletionInfo)>;
 
 std::ostream& operator<<(std::ostream& os, FetchManifestAndUpdateResult);
 

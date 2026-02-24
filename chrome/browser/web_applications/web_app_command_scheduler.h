@@ -12,6 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "base/types/expected.h"
+#include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
 #include "chrome/browser/web_applications/commands/internal/callback_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
@@ -90,7 +91,6 @@ struct IsolatedWebAppUpdatePrepareAndStoreCommandSuccess;
 struct SynchronizeOsOptions;
 struct WebAppIconDiagnosticResult;
 struct WebAppInstallInfo;
-enum class FetchManifestAndUpdateResult;
 
 namespace proto {
 enum WebAppMigrationBehavior : int;
@@ -681,10 +681,17 @@ class WebAppCommandScheduler {
                          WebInstallFromUrlCommandCallback installed_callback,
                          const base::Location& location = FROM_HERE);
 
-  // Feches the install_url, validates that an installable manifest with a
-  // manifest id exists and matches the given one. Then, locks the app lock for
-  // the app and and updates the app if it is installed. This assumes it is a
-  // trusted update, so trusted icons are copied from all manifest icons.
+  // Fetches the `install_url`, validates that an installable manifest with a
+  // manifest ID exists and matches the given one. Then, locks the app lock for
+  // the app and updates the app if it is installed.
+  //
+  // If `force_trusted_silent_update` is true, the update is assumed to be for
+  // a trusted manifest (e.g. policy, preinstalled), and all manifest icons
+  // will be saved as trusted icons. Identity changes will be applied silently.
+  //
+  // If `force_trusted_silent_update` is false, the update is treated as a
+  // normal user-installed app update. Identity changes will be recorded as
+  // pending updates.
   //
   // Note: Callers may want to check if the app is installed first before
   // calling this to not waste resources loading the install url in the
@@ -692,7 +699,9 @@ class WebAppCommandScheduler {
   void FetchManifestAndUpdate(
       const GURL& install_url,
       const webapps::ManifestId& manifest_id,
-      base::OnceCallback<void(FetchManifestAndUpdateResult)> callback,
+      std::optional<base::Time> previous_time_for_silent_icon_update,
+      bool force_trusted_silent_update,
+      FetchManifestAndUpdateCallback callback,
       const base::Location& location = FROM_HERE);
 
   base::WeakPtr<WebAppCommandScheduler> GetWeakPtr();

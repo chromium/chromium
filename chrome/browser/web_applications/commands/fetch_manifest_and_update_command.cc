@@ -38,18 +38,27 @@ FetchManifestAndUpdateCommand::~FetchManifestAndUpdateCommand() = default;
 FetchManifestAndUpdateCommand::FetchManifestAndUpdateCommand(
     const GURL& install_url,
     const webapps::ManifestId& expected_manifest_id,
+    std::optional<base::Time> previous_time_for_silent_icon_update,
+    bool force_trusted_silent_update,
     FetchManifestAndUpdateCallback callback)
-    : WebAppCommand<SharedWebContentsLock, FetchManifestAndUpdateResult>(
+    : WebAppCommand<SharedWebContentsLock,
+                    FetchManifestAndUpdateCompletionInfo>(
           "FetchManifestAndUpdateCommand",
           SharedWebContentsLockDescription(),
-          base::BindOnce([](FetchManifestAndUpdateResult result) {
+          base::BindOnce([](FetchManifestAndUpdateCompletionInfo info) {
             base::UmaHistogramEnumeration(
-                "WebApp.FetchManifestAndUpdate.Result", result);
-            return result;
+                "WebApp.FetchManifestAndUpdate.Result", info.result);
+            return info;
           }).Then(std::move(callback)),
-          /*args_for_shutdown=*/FetchManifestAndUpdateResult::kShutdown),
+          /*args_for_shutdown=*/
+          FetchManifestAndUpdateCompletionInfo(
+              FetchManifestAndUpdateResult::kShutdown,
+              std::nullopt)),
       install_url_(install_url),
-      expected_manifest_id_(expected_manifest_id) {
+      expected_manifest_id_(expected_manifest_id),
+      previous_time_for_silent_icon_update_(
+          previous_time_for_silent_icon_update),
+      force_trusted_silent_update_(force_trusted_silent_update) {
   GetMutableDebugValue().Set("install_url",
                              install_url.possibly_invalid_spec());
   GetMutableDebugValue().Set("expected_manifest_id",
@@ -78,8 +87,10 @@ void FetchManifestAndUpdateCommand::OnUrlLoaded(
     case webapps::WebAppUrlLoaderResult::kFailedPageTookTooLong:
     case webapps::WebAppUrlLoaderResult::kFailedWebContentsDestroyed:
     case webapps::WebAppUrlLoaderResult::kFailedErrorPageLoaded:
-      CompleteAndSelfDestruct(CommandResult::kSuccess,
-                              FetchManifestAndUpdateResult::kUrlLoadingError);
+      CompleteAndSelfDestruct(
+          CommandResult::kSuccess,
+          FetchManifestAndUpdateCompletionInfo(
+              FetchManifestAndUpdateResult::kUrlLoadingError));
       return;
   }
   data_retriever_ =
@@ -103,7 +114,8 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
     }
     CompleteAndSelfDestruct(
         CommandResult::kSuccess,
-        FetchManifestAndUpdateResult::kManifestRetrievalError);
+        FetchManifestAndUpdateCompletionInfo(
+            FetchManifestAndUpdateResult::kManifestRetrievalError));
     return;
   }
   CHECK(result.value());
@@ -111,8 +123,10 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
   blink::mojom::ManifestPtr manifest = result.value()->Clone();
   if (blink::IsEmptyManifest(*manifest)) {
     GetMutableDebugValue().Set("manifest_error", "empty");
-    CompleteAndSelfDestruct(CommandResult::kSuccess,
-                            FetchManifestAndUpdateResult::kInvalidManifest);
+    CompleteAndSelfDestruct(
+        CommandResult::kSuccess,
+        FetchManifestAndUpdateCompletionInfo(
+            FetchManifestAndUpdateResult::kInvalidManifest));
     return;
   }
 
@@ -120,15 +134,19 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
     GetMutableDebugValue().Set("foundmanifest_id",
                                manifest->id.possibly_invalid_spec());
     GetMutableDebugValue().Set("manifest_error", "manifest_id_mismatch");
-    CompleteAndSelfDestruct(CommandResult::kSuccess,
-                            FetchManifestAndUpdateResult::kInvalidManifest);
+    CompleteAndSelfDestruct(
+        CommandResult::kSuccess,
+        FetchManifestAndUpdateCompletionInfo(
+            FetchManifestAndUpdateResult::kInvalidManifest));
     return;
   }
 
   if (!manifest->has_valid_specified_start_url) {
     GetMutableDebugValue().Set("manifest_error", "no_specified_start_url");
-    CompleteAndSelfDestruct(CommandResult::kSuccess,
-                            FetchManifestAndUpdateResult::kInvalidManifest);
+    CompleteAndSelfDestruct(
+        CommandResult::kSuccess,
+        FetchManifestAndUpdateCompletionInfo(
+            FetchManifestAndUpdateResult::kInvalidManifest));
     return;
   }
 
@@ -142,8 +160,10 @@ void FetchManifestAndUpdateCommand::OnManifestRetrieved(
   }
   if (!has_any_icon) {
     GetMutableDebugValue().Set("manifest_error", "no_any_icon");
-    CompleteAndSelfDestruct(CommandResult::kFailure,
-                            FetchManifestAndUpdateResult::kInvalidManifest);
+    CompleteAndSelfDestruct(
+        CommandResult::kFailure,
+        FetchManifestAndUpdateCompletionInfo(
+            FetchManifestAndUpdateResult::kInvalidManifest));
     return;
   }
 
@@ -160,16 +180,20 @@ void FetchManifestAndUpdateCommand::OnAppLockAcquired(
   if (!app_lock_->registrar().AppMatches(
           GenerateAppIdFromManifestId(expected_manifest_id_),
           WebAppFilter::InstalledInChrome())) {
-    CompleteAndSelfDestruct(CommandResult::kSuccess,
-                            FetchManifestAndUpdateResult::kAppNotInstalled);
+    CompleteAndSelfDestruct(
+        CommandResult::kSuccess,
+        FetchManifestAndUpdateCompletionInfo(
+            FetchManifestAndUpdateResult::kAppNotInstalled));
     return;
   }
 
   ManifestUpdateJob::Options options;
-  options.force_silent_update_identity = true;
+  options.previous_time_for_silent_icon_update =
+      previous_time_for_silent_icon_update_;
+  options.force_silent_update_identity = force_trusted_silent_update_;
   options.bypass_icon_generation_if_no_url = true;
   options.fail_if_any_icon_download_fails = true;
-  options.use_manifest_icons_as_trusted = true;
+  options.use_manifest_icons_as_trusted = force_trusted_silent_update_;
 
   manifest_update_job_ = ManifestUpdateJob::CreateAndStart(
       app_lock_.get(), &app_lock_->shared_web_contents(),
@@ -200,9 +224,9 @@ void FetchManifestAndUpdateCommand::OnUpdateJobCompleted(
         kPendingUpdateRecorded_AppHasSecurityUpdateDueToThrottle:
     case ManifestUpdateJobResult::
         kPendingUpdateRecorded_AppHasNonSecurityAndSecurityChanges:
-      // These results should not be possible as `force_silent_update_identity`
-      // was set to true.
-      NOTREACHED();
+      result = FetchManifestAndUpdateResult::kSuccess;
+      command_result = CommandResult::kSuccess;
+      break;
     case ManifestUpdateJobResult::kIconDownloadFailed:
       result = FetchManifestAndUpdateResult::kIconDownloadError;
       command_result = CommandResult::kSuccess;
@@ -237,7 +261,9 @@ void FetchManifestAndUpdateCommand::OnUpdateJobCompleted(
       break;
   }
 
-  CompleteAndSelfDestruct(command_result, result);
+  CompleteAndSelfDestruct(command_result,
+                          FetchManifestAndUpdateCompletionInfo(
+                              result, result_info.time_for_icon_diff_check()));
 }
 
 }  // namespace web_app
