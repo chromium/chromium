@@ -195,7 +195,7 @@ const base::FeatureParam<base::TimeDelta> kGetAIPageContentSubframeTimeoutParam{
     &kGetAIPageContentSubframeTimeoutEnabled, "timeout", base::Seconds(10)};
 
 // Controls whether to enforce a timeout for main frame page content extraction.
-// If enabled, defaults to 10 seconds. If disabled, wait indefinitely for the
+// If enabled, defaults to 30 seconds. If disabled, wait indefinitely for the
 // main frame to respond.
 BASE_FEATURE(kGetAIPageContentMainFrameTimeoutEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
