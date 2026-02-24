@@ -17,7 +17,6 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/ble_adapter_manager.h"
-#include "device/fido/cable/fido_cable_discovery.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/public/cable_discovery_data.h"
 #include "device/fido/public/fido_constants.h"
@@ -84,14 +83,12 @@ TransactionImpl::TransactionImpl(
     return;
   }
 
-  auto v1_discovery = std::make_unique<device::FidoCableDiscovery>(
-      std::vector<device::CableDiscoveryData>());
   auto v2_discovery = std::make_unique<device::cablev2::Discovery>(
       // This request type argument is unused. It only applies to the payload
       // sent for state-assisted transactions, but those aren't supported for
       // digital credentials.
       device::FidoRequestType::kGetAssertion, network_context_factory,
-      qr_generator_key, v1_discovery->GetV2AdvertStream(),
+      qr_generator_key,
       /*contact_device_stream=*/nullptr,
       std::vector<device::CableDiscoveryData>(),
       /*pairing_callback=*/std::nullopt,
@@ -100,8 +97,7 @@ TransactionImpl::TransactionImpl(
                           weak_ptr_factory_.GetWeakPtr()),
       /*must_support_ctap=*/false);
   dispatcher_ = std::make_unique<RequestDispatcher>(
-      std::move(v1_discovery), std::move(v2_discovery),
-      std::move(request_info_),
+      std::move(v2_discovery), std::move(request_info_),
       base::BindOnce(&TransactionImpl::OnHaveResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 

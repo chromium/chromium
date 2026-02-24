@@ -174,12 +174,7 @@ test("device_unittests") {
       "fido/auth_token_requester_unittest.cc",
       "fido/bio/enrollment_handler_unittest.cc",
       "fido/ble_adapter_manager_unittest.cc",
-      "fido/cable/fido_ble_connection_unittest.cc",
-      "fido/cable/fido_ble_frames_unittest.cc",
-      "fido/cable/fido_ble_transaction_unittest.cc",
-      "fido/cable/fido_cable_device_unittest.cc",
-      "fido/cable/fido_cable_discovery_unittest.cc",
-      "fido/cable/fido_cable_handshake_handler_unittest.cc",
+      "fido/cable/v2_discovery_unittest.cc",
       "fido/cable/v2_handshake_unittest.cc",
       "fido/cbor_extract_unittest.cc",
       "fido/credential_management_handler_unittest.cc",
@@ -211,8 +206,10 @@ test("device_unittests") {
 
     deps += [
       "//components/sync/protocol",
+      "//device/fido:cablev2_test_util",
       "//device/fido:mocks",
       "//services/data_decoder/public/cpp:test_support",
+      "//services/network:test_support",
     ]
 
     if (is_mac) {

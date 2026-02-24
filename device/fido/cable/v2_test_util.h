@@ -22,6 +22,8 @@ class VirtualCtap2Device;
 
 namespace cablev2 {
 
+class CableMockBluetoothAdapter;
+
 // ContactCallback is called when a mock tunnel server (see
 // |NewMockTunnelServer|) is asked to contact a phone. This simulates a tunnel
 // server using a cloud messaging solution to wake a device.
@@ -57,9 +59,11 @@ class Observer {
 // forwarded to |ble_advert_callback|. |observer| may be |nullptr| but, if not,
 // then corresponding calls to the mock `Platform` are forwarded to the
 // observer.
+// `mock_adapter` needs to have been set for return by the
+// `BluetoothAdapterFactory`.
 std::unique_ptr<Platform> NewMockPlatform(
-    Discovery::AdvertEventStream::Callback ble_advert_callback,
     device::VirtualCtap2Device* ctap2_device,
+    scoped_refptr<CableMockBluetoothAdapter> mock_adapter,
     Observer* observer);
 
 // NewLateLinkingDevice returns a caBLEv2 device that fails all CTAP requests

@@ -112,20 +112,8 @@ component("fido") {
         "bio/enrollment_handler.h",
         "ble_adapter_manager.cc",
         "ble_adapter_manager.h",
-        "cable/fido_ble_connection.cc",
-        "cable/fido_ble_connection.h",
-        "cable/fido_ble_frames.cc",
-        "cable/fido_ble_frames.h",
-        "cable/fido_ble_transaction.cc",
-        "cable/fido_ble_transaction.h",
         "cable/fido_ble_uuids.cc",
         "cable/fido_ble_uuids.h",
-        "cable/fido_cable_device.cc",
-        "cable/fido_cable_device.h",
-        "cable/fido_cable_discovery.cc",
-        "cable/fido_cable_discovery.h",
-        "cable/fido_cable_handshake_handler.cc",
-        "cable/fido_cable_handshake_handler.h",
         "cable/fido_tunnel_device.cc",
         "cable/fido_tunnel_device.h",
         "cable/v2_discovery.cc",
@@ -357,11 +345,14 @@ if (use_blink) {
     deps = [
       ":cablev2_authenticator",
       ":fido",
+      ":mocks",
       "//components/cbor",
       "//crypto",
       "//net/traffic_annotation:test_support",
       "//services/network:test_support",
       "//services/network/public/mojom",
+      "//testing/gmock",
+      "//testing/gtest",
       "//third_party/blink/public/mojom:authenticator_mojo_bindings",
     ]
   }
@@ -370,8 +361,8 @@ if (use_blink) {
     testonly = true
 
     sources = [
-      "cable/mock_fido_ble_connection.cc",
-      "cable/mock_fido_ble_connection.h",
+      "cable/cable_mock_bluetooth_adapter.cc",
+      "cable/cable_mock_bluetooth_adapter.h",
       "mock_fido_device.cc",
       "mock_fido_device.h",
       "mock_fido_discovery_observer.cc",
@@ -383,6 +374,7 @@ if (use_blink) {
       "//base",
       "//components/apdu",
       "//components/cbor",
+      "//device/bluetooth:mocks",
       "//testing/gmock",
     ]
   }
@@ -398,12 +390,6 @@ if (use_blink) {
       libfuzzer_options = [ "max_len=2048" ]
     }
 
-    fuzzer_test("fido_ble_frames_fuzzer") {
-      sources = [ "cable/fido_ble_frames_fuzzer.cc" ]
-      deps = [ ":fido" ]
-      libfuzzer_options = [ "max_len=65535" ]
-    }
-
     fuzzer_test("ctap_response_fuzzer") {
       sources = [ "ctap_response_fuzzer.cc" ]
       deps = [
@@ -415,19 +401,6 @@ if (use_blink) {
       ]
       seed_corpus = "response_data_fuzzer_corpus/"
       libfuzzer_options = [ "max_len=65537" ]
-    }
-
-    fuzzer_test("fido_cable_handshake_handler_fuzzer") {
-      sources = [ "cable/fido_cable_handshake_handler_fuzzer.cc" ]
-      deps = [
-        ":fido",
-        "//base",
-        "//base/test:test_support",
-        "//device/bluetooth:mocks",
-        "//testing/gmock",
-        "//testing/gtest",
-      ]
-      libfuzzer_options = [ "max_len=2048" ]
     }
   }
 
