@@ -57,8 +57,8 @@ public class TabCreationDelegateImpl implements TabCreationDelegate {
         if (!isForegroundTab) {
             // Set the URL and title on the tab. But defer the navigation until the tab becomes
             // active.
-            LogUtils.log(TAG, "freezeAndAppendPendingNavigation, url = " + url);
-            tab.freezeAndAppendPendingNavigation(loadUrlParams, title);
+            LogUtils.log(TAG, "discardAndAppendPendingNavigation, url = " + url);
+            tab.discardAndAppendPendingNavigation(loadUrlParams, title);
         } else {
             LogUtils.log(TAG, "tab.loadUrl, url = " + url);
             tab.loadUrl(loadUrlParams);

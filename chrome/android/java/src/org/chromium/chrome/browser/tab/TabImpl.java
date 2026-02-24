@@ -863,7 +863,7 @@ class TabImpl implements Tab {
     }
 
     @Override
-    public void freeze() {
+    public void discard() {
         discardInternal(DiscardReason.ON_DEMAND);
     }
 
@@ -899,11 +899,7 @@ class TabImpl implements Tab {
     }
 
     @Override
-    public void freezeAndAppendPendingNavigation(LoadUrlParams params, @Nullable String title) {
-        discardAndAppendPendingNavigation(params, title);
-    }
-
-    private void discardAndAppendPendingNavigation(LoadUrlParams params, @Nullable String title) {
+    public void discardAndAppendPendingNavigation(LoadUrlParams params, @Nullable String title) {
         assert isHidden() : "Should only discard and append a navigation to a tab that is hidden.";
 
         if (mWebContents == null && mWebContentsState == null && mPendingLoadParams != null) {

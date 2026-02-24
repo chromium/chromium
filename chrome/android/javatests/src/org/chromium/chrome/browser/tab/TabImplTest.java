@@ -160,7 +160,7 @@ public class TabImplTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
-    public void testFreeze_withDiscard() {
+    public void testDiscard() {
         final TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
 
         // Open a new tab to hide the initial tab. The new tab becomes active.
@@ -178,7 +178,7 @@ public class TabImplTest {
 
         CriteriaHelper.pollUiThread(() -> Criteria.checkThat(tab.isHidden(), Matchers.is(true)));
 
-        ThreadUtils.runOnUiThreadBlocking(tab::freeze);
+        ThreadUtils.runOnUiThreadBlocking(tab::discard);
 
         assertFalse("Tab should not be frozen", tab.isFrozen());
         assertNotNull("WebContents should not be null after discard", tab.getWebContents());
@@ -187,7 +187,7 @@ public class TabImplTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
-    public void testFreezeAndAppendPendingNavigation_withDiscard() {
+    public void testDiscardAndAppendPendingNavigation() {
         final TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
 
         // Open a new tab to hide the initial tab. The new tab becomes active.
@@ -207,7 +207,7 @@ public class TabImplTest {
 
         String url = mActivityTestRule.getTestServer().getURL(TEST_PATH);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> tab.freezeAndAppendPendingNavigation(new LoadUrlParams(url), "title"));
+                () -> tab.discardAndAppendPendingNavigation(new LoadUrlParams(url), "title"));
 
         assertFalse("Tab should not be frozen", tab.isFrozen());
         assertNotNull("WebContents should not be null", tab.getWebContents());
@@ -223,7 +223,7 @@ public class TabImplTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
-    public void testFreezeAndAppendPendingNavigation_withDiscard_loadUrlDiscardsPendingLoad() {
+    public void testDiscardAndAppendPendingNavigation_loadUrlDiscardsPendingLoad() {
         final TabImpl tab = (TabImpl) mActivityTestRule.getActivityTab();
 
         // Open a new tab to hide the initial tab. The new tab becomes active.
@@ -243,7 +243,7 @@ public class TabImplTest {
 
         String url1 = mActivityTestRule.getTestServer().getURL(TEST_PATH);
         ThreadUtils.runOnUiThreadBlocking(
-                () -> tab.freezeAndAppendPendingNavigation(new LoadUrlParams(url1), "title1"));
+                () -> tab.discardAndAppendPendingNavigation(new LoadUrlParams(url1), "title1"));
 
         assertNotNull("Pending load params should not be null", tab.getPendingLoadParams());
         assertEquals(

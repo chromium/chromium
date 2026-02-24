@@ -62,7 +62,7 @@ public class TabCreationDelegateImplUnitTest {
         mTabCreationDelegate = new TabCreationDelegateImpl(mTabCreator, mNavigationTracker);
         mTabCreationDelegate.navigateToUrl(
                 mTab1, TEST_URL, TEST_TITLE, /* isForegroundTab= */ false);
-        verify(mTab1).freezeAndAppendPendingNavigation(any(), eq(TEST_TITLE));
+        verify(mTab1).discardAndAppendPendingNavigation(any(), eq(TEST_TITLE));
     }
 
     @Test

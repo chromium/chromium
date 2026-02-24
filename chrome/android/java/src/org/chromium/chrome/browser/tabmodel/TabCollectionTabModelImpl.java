@@ -2066,8 +2066,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         if (pauseMedia) {
             for (Tab tab : tabsToRemove) {
                 if (!TabUtils.isCapturingForMedia(tab)) continue;
-                // If media is being captured freeze the tab to disconnect it.
-                tab.freeze();
+                // If media is being captured discard the tab to disconnect it.
+                tab.discard();
             }
         }
 

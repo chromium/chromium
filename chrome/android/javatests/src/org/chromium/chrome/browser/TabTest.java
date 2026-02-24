@@ -286,12 +286,12 @@ public class TabTest {
     @SmallTest
     @Feature({"Tab"})
     @DisableFeatures({ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP})
-    public void testFreezeAndAppendPendingNavigation_AlreadyFrozen() {
+    public void testDiscardAndAppendPendingNavigation_AlreadyFrozen() {
         String firstUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
         String secondUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
-        checkFreezingAndAppendingPendingNavigation(
+        checkDiscardingAndAppendingPendingNavigation(
                 this::createSecondFrozenTab, firstUrl, secondUrl, "MyFrozenTitle");
     }
 
@@ -299,24 +299,24 @@ public class TabTest {
     @SmallTest
     @Feature({"Tab"})
     @DisableFeatures({ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP})
-    public void testFreezeAndAppendPendingNavigation_LazyBackground() {
+    public void testDiscardAndAppendPendingNavigation_LazyBackground() {
         String firstUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
         String secondUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
-        checkFreezingAndAppendingPendingNavigation(
+        checkDiscardingAndAppendingPendingNavigation(
                 this::createLazyTab, firstUrl, secondUrl, "MyLazyTitle");
     }
 
     @Test
     @SmallTest
     @Feature({"Tab"})
-    public void testFreezeAndAppendPendingNavigation_LiveBackground() {
+    public void testDiscardAndAppendPendingNavigation_LiveBackground() {
         String firstUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
         String secondUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
-        checkFreezingAndAppendingPendingNavigation(
+        checkDiscardingAndAppendingPendingNavigation(
                 url -> {
                     Tab tab = mActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
                     ThreadUtils.runOnUiThreadBlocking(
@@ -335,11 +335,11 @@ public class TabTest {
     @Test
     @SmallTest
     @Feature({"Tab"})
-    public void testFreezeAndAppendPendingNavigation_LiveBackground_NativePage() {
+    public void testDiscardAndAppendPendingNavigation_LiveBackground_NativePage() {
         String firstUrl = getOriginalNativeNtpUrl();
         String secondUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
-        checkFreezingAndAppendingPendingNavigation(
+        checkDiscardingAndAppendingPendingNavigation(
                 url -> {
                     Tab tab = mActivityTestRule.loadUrlInNewTab(url, /* incognito= */ false);
                     ThreadUtils.runOnUiThreadBlocking(
@@ -360,16 +360,16 @@ public class TabTest {
     @SmallTest
     @Feature({"Tab"})
     @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
-    public void testFreezeAndAppendPendingNavigation_NullTitle() {
+    public void testDiscardAndAppendPendingNavigation_NullTitle() {
         String firstUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
         String secondUrl =
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
-        checkFreezingAndAppendingPendingNavigation(
+        checkDiscardingAndAppendingPendingNavigation(
                 this::createSecondFrozenTab, firstUrl, secondUrl, "");
     }
 
-    private void checkFreezingAndAppendingPendingNavigation(
+    private void checkDiscardingAndAppendingPendingNavigation(
             TestTabCreator tabCreator, String firstUrl, String secondUrl, String secondTitle) {
         TabObserver observer = Mockito.mock(TabObserver.class);
         Tab bgTab = tabCreator.createTab(firstUrl);
@@ -379,7 +379,7 @@ public class TabTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     bgTab.addObserver(observer);
-                    bgTab.freezeAndAppendPendingNavigation(
+                    bgTab.discardAndAppendPendingNavigation(
                             new LoadUrlParams(secondUrl), secondTitle);
                     assertEquals(wasFrozen, bgTab.isFrozen());
                 });
