@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/string_search.h"
@@ -691,37 +690,36 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetBoundingRectangles(
   AXRangePhysicalPixelRectDelegate rect_delegate(this);
   std::vector<gfx::Rect> rects = range.GetRects(&rect_delegate);
 
+  size_t num_safe_array_elems = rects.size() * 4;
   // 4 array items per rect: left, top, width, height
-  SAFEARRAY* safe_array = SafeArrayCreateVector(
-      VT_R8 /* element type */, 0 /* lower bound */, rects.size() * 4);
+  base::win::ScopedSafearray safe_array(::SafeArrayCreateVector(
+      /*element_type=*/VT_R8, /*lower bound=*/0, num_safe_array_elems));
 
-  if (!safe_array)
+  if (!safe_array.Get()) {
     return E_OUTOFMEMORY;
+  }
 
   if (rects.size() > 0) {
-    double* double_array = nullptr;
-    HRESULT hr = SafeArrayAccessData(safe_array,
-                                     reinterpret_cast<void**>(&double_array));
+    auto locked_array = safe_array.CreateLockScope<VT_R8>();
 
-    if (SUCCEEDED(hr)) {
+    if (locked_array) {
+      auto double_span = base::span(*locked_array);
+
       for (size_t rect_index = 0; rect_index < rects.size(); rect_index++) {
         const gfx::Rect& rect = rects[rect_index];
-        UNSAFE_TODO(double_array[rect_index * 4]) = rect.x();
-        UNSAFE_TODO(double_array[rect_index * 4 + 1]) = rect.y();
-        UNSAFE_TODO(double_array[rect_index * 4 + 2]) = rect.width();
-        UNSAFE_TODO(double_array[rect_index * 4 + 3]) = rect.height();
-      }
-      hr = SafeArrayUnaccessData(safe_array);
-    }
+        size_t base_idx = rect_index * 4;
 
-    if (FAILED(hr)) {
-      DCHECK(safe_array);
-      SafeArrayDestroy(safe_array);
+        double_span[base_idx] = rect.x();
+        double_span[base_idx + 1] = rect.y();
+        double_span[base_idx + 2] = rect.width();
+        double_span[base_idx + 3] = rect.height();
+      }
+    } else {
       return E_FAIL;
     }
   }
 
-  *screen_physical_pixel_rectangles = safe_array;
+  *screen_physical_pixel_rectangles = safe_array.Release();
   return S_OK;
 }
 
@@ -1181,27 +1179,26 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetChildren(SAFEARRAY** children) {
   descendants = common_delegate->GetUIADirectChildrenInRange(start_delegate,
                                                              end_delegate);
 
-  SAFEARRAY* safe_array =
-      SafeArrayCreateVector(VT_UNKNOWN, 0, descendants.size());
+  base::win::ScopedSafearray safe_array(
+      ::SafeArrayCreateVector(VT_UNKNOWN, 0, descendants.size()));
 
-  if (!safe_array)
-    return E_OUTOFMEMORY;
-
-  if (safe_array->rgsabound->cElements != descendants.size()) {
-    DCHECK(safe_array);
-    SafeArrayDestroy(safe_array);
+  if (!safe_array.Get()) {
     return E_OUTOFMEMORY;
   }
 
+  auto locked_array = safe_array.CreateLockScope<VT_UNKNOWN>();
+  if (!locked_array) {
+    return E_FAIL;
+  }
+  auto locked_span = base::span(*locked_array);
   LONG i = 0;
   for (const gfx::NativeViewAccessible& descendant : descendants) {
     Microsoft::WRL::ComPtr<IRawElementProviderSimple> raw_provider;
     descendant->QueryInterface(IID_PPV_ARGS(&raw_provider));
-    SafeArrayPutElement(safe_array, &i, raw_provider.Get());
-    ++i;
+    locked_span[i++] = raw_provider.Detach();
   }
 
-  *children = safe_array;
+  *children = safe_array.Release();
   return S_OK;
 }
 

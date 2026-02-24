@@ -573,20 +573,21 @@ SAFEARRAY* AXPlatformNodeWin::CreateUIAElementsArrayForReverseRelation(
 }
 
 SAFEARRAY* AXPlatformNodeWin::CreateClickablePointArray() {
-  SAFEARRAY* clickable_point_array = SafeArrayCreateVector(VT_R8, 0, 2);
+  base::win::ScopedSafearray clickable_point_array(
+      ::SafeArrayCreateVector(VT_R8, 0, 2));
   gfx::Point center = GetDelegate()
                           ->GetBoundsRect(AXCoordinateSystem::kScreenDIPs,
                                           AXClippingBehavior::kUnclipped)
                           .CenterPoint();
+  auto locked_array = clickable_point_array.CreateLockScope<VT_R8>();
+  if (!locked_array) {
+    return nullptr;
+  }
+  auto double_span = base::span(*locked_array);
+  double_span[0] = center.x();
+  double_span[1] = center.y();
 
-  double* double_array;
-  SafeArrayAccessData(clickable_point_array,
-                      reinterpret_cast<void**>(&double_array));
-  double_array[0] = center.x();
-  UNSAFE_TODO(double_array[1]) = center.y();
-  SafeArrayUnaccessData(clickable_point_array);
-
-  return clickable_point_array;
+  return clickable_point_array.Release();
 }
 
 gfx::Vector2d AXPlatformNodeWin::CalculateUIAScrollPoint(
@@ -2135,10 +2136,14 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relationTargetsOfType(BSTR type_bstr,
 
     // Allocate COM memory for the result array and populate it.
     *targets =
-        static_cast<IUnknown**>(CoTaskMemAlloc(count * sizeof(IUnknown*)));
+        static_cast<IUnknown**>(::CoTaskMemAlloc(count * sizeof(IUnknown*)));
+    // SAFETY: Trust CoTaskMemAlloc allocated space for `count` IUnknown*'s.
+    auto target_span =
+        UNSAFE_BUFFERS(base::span(*targets, static_cast<size_t>(count)));
     for (LONG i = 0; i < count; ++i) {
-      UNSAFE_TODO((*targets)[i]) = static_cast<IAccessible*>(alert_targets[i]);
-      UNSAFE_TODO((*targets)[i]->AddRef());
+      IAccessible* accessible = alert_targets[i];
+      accessible->AddRef();
+      target_span[i] = accessible;
     }
     return S_OK;
   }
@@ -2157,13 +2162,18 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relationTargetsOfType(BSTR type_bstr,
     count = max_targets;
 
   // Allocate COM memory for the result array and populate it.
-  *targets = static_cast<IUnknown**>(CoTaskMemAlloc(count * sizeof(IUnknown*)));
+  *targets =
+      static_cast<IUnknown**>(::CoTaskMemAlloc(count * sizeof(IUnknown*)));
+  // SAFETY: Trust CoTaskMemAlloc allocated space for `count` IUnknown*'s.
+  auto target_span =
+      UNSAFE_BUFFERS(base::span(*targets, static_cast<size_t>(count)));
   int index = 0;
   for (AXPlatformNode* target : enumerated_targets) {
     if (target) {
       AXPlatformNodeWin* win_target = static_cast<AXPlatformNodeWin*>(target);
-      UNSAFE_TODO((*targets)[index]) = static_cast<IAccessible*>(win_target);
-      UNSAFE_TODO((*targets)[index]->AddRef());
+      IAccessible* accessible = win_target;
+      accessible->AddRef();
+      target_span[index] = accessible;
       if (++index >= count) {
         break;
       }
@@ -2258,9 +2268,12 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relations(LONG max_relations,
   if (!SUCCEEDED(hr))
     return hr;
   count = std::min(count, max_relations);
+  // SAFETY: Trust that get_nRelations returns the right count.
+  auto relations_span =
+      UNSAFE_BUFFERS(base::span(relations, base::checked_cast<size_t>(count)));
   *n_relations = count;
   for (LONG i = 0; i < count; i++) {
-    hr = get_relation(i, &UNSAFE_TODO(relations[i]));
+    hr = get_relation(i, &relations_span[i]);
     if (!SUCCEEDED(hr))
       return hr;
   }
@@ -4196,11 +4209,12 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectedCells(IUnknown*** cells,
 
   *n_selected_cells = static_cast<LONG>(selected.size());
   *cells = static_cast<IUnknown**>(
-      CoTaskMemAlloc(selected.size() * sizeof(IUnknown*)));
-
+      ::CoTaskMemAlloc(selected.size() * sizeof(IUnknown*)));
+  // Safety: Trust CoTaskMemAlloc allocated the requested number of bytes.
+  auto cell_span = UNSAFE_BUFFERS(base::span(*cells, selected.size()));
   for (size_t i = 0; i < selected.size(); ++i) {
     auto* node_win = static_cast<AXPlatformNodeWin*>(selected[i]);
-    node_win->QueryInterface(IID_PPV_ARGS(&UNSAFE_TODO((*cells)[i])));
+    node_win->QueryInterface(IID_PPV_ARGS(&cell_span[i]));
   }
   return S_OK;
 }
@@ -4246,14 +4260,16 @@ IFACEMETHODIMP AXPlatformNodeWin::get_columnHeaderCells(
   std::vector<int32_t> column_header_ids =
       GetDelegate()->GetColHeaderNodeIds(*column);
   *cell_accessibles = static_cast<IUnknown**>(
-      CoTaskMemAlloc(column_header_ids.size() * sizeof(IUnknown*)));
+      ::CoTaskMemAlloc(column_header_ids.size() * sizeof(IUnknown*)));
+  // SAFETY: Trust CoTaskMemAlloc allocated the requested number of bytes.
+  auto cell_span =
+      UNSAFE_BUFFERS(base::span(*cell_accessibles, column_header_ids.size()));
   int index = 0;
   for (int32_t node_id : column_header_ids) {
     AXPlatformNodeWin* node_win =
         static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(node_id));
     if (node_win) {
-      node_win->QueryInterface(
-          IID_PPV_ARGS(&UNSAFE_TODO((*cell_accessibles)[index])));
+      node_win->QueryInterface(IID_PPV_ARGS(&cell_span[index]));
       ++index;
     }
   }
@@ -4300,14 +4316,16 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowHeaderCells(
   std::vector<int32_t> row_header_ids =
       GetDelegate()->GetRowHeaderNodeIds(*row);
   *cell_accessibles = static_cast<IUnknown**>(
-      CoTaskMemAlloc(row_header_ids.size() * sizeof(IUnknown*)));
+      ::CoTaskMemAlloc(row_header_ids.size() * sizeof(IUnknown*)));
+  // SAFETY: Trust CoTaskMemAlloc allocated the requested number of bytes.
+  auto cell_span =
+      UNSAFE_BUFFERS(base::span(*cell_accessibles, row_header_ids.size()));
   int index = 0;
   for (int32_t node_id : row_header_ids) {
     AXPlatformNodeWin* node_win =
         static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(node_id));
     if (node_win) {
-      node_win->QueryInterface(
-          IID_PPV_ARGS(&UNSAFE_TODO((*cell_accessibles)[index])));
+      node_win->QueryInterface(IID_PPV_ARGS(&(cell_span[index])));
       ++index;
     }
   }
@@ -8352,10 +8370,12 @@ HRESULT AXPlatformNodeWin::AllocateComArrayFromVector(
 
   auto count = std::min((LONG)results.size(), max);
   *n_selected = count;
-  *selected = static_cast<LONG*>(CoTaskMemAlloc(sizeof(LONG) * count));
+  *selected = static_cast<LONG*>(::CoTaskMemAlloc(sizeof(LONG) * count));
 
-  for (LONG i = 0; i < count; i++)
-    UNSAFE_TODO((*selected)[i]) = results[i];
+  // SAFETY: Trust that CoTaskMemAlloc allocated `count` LONGs.
+  auto selected_span =
+      UNSAFE_BUFFERS(base::span(*selected, static_cast<size_t>(count)));
+  std::ranges::copy_n(results.begin(), count, selected_span.begin());
   return S_OK;
 }
 

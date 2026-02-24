@@ -104,16 +104,16 @@ HRESULT AXPlatformNodeTextProviderWin::GetSelection(SAFEARRAY** selection) {
 
   // Since we don't support disjoint text ranges, the SAFEARRAY returned
   // will always have one element
-  base::win::ScopedSafearray selections_to_return(
-      SafeArrayCreateVector(/* element type */ VT_UNKNOWN, /* lower bound */ 0,
-                            /* number of elements */ 1));
+  base::win::ScopedSafearray selections_to_return(::SafeArrayCreateVector(
+      /* element type */ VT_UNKNOWN, /* lower bound */ 0,
+      /* number of elements */ 1));
 
   if (!selections_to_return.Get())
     return E_OUTOFMEMORY;
 
   LONG index = 0;
-  HRESULT hr = SafeArrayPutElement(selections_to_return.Get(), &index,
-                                   text_range_provider.Get());
+  HRESULT hr = ::SafeArrayPutElement(selections_to_return.Get(), &index,
+                                     text_range_provider.Get());
   DCHECK(SUCCEEDED(hr));
 
   // Since DCHECK only happens in debug builds, return immediately to ensure
@@ -188,25 +188,21 @@ HRESULT AXPlatformNodeTextProviderWin::GetVisibleRanges(
          AXBoundaryDetection::kDontCheckInitialPosition});
   }
 
-  base::win::ScopedSafearray scoped_visible_ranges(
-      SafeArrayCreateVector(/* element type */ VT_UNKNOWN, /* lower bound */ 0,
-                            /* number of elements */ ranges.size()));
+  base::win::ScopedSafearray scoped_visible_ranges(::SafeArrayCreateVector(
+      /* element type */ VT_UNKNOWN, /* lower bound */ 0,
+      /* number of elements */ ranges.size()));
 
   if (!scoped_visible_ranges.Get())
     return E_OUTOFMEMORY;
 
+  auto locked_ranges = scoped_visible_ranges.CreateLockScope<VT_UNKNOWN>();
+  if (!locked_ranges) {
+    return E_OUTOFMEMORY;
+  }
+  auto ranges_span = base::span(*locked_ranges);
   LONG index = 0;
   for (Microsoft::WRL::ComPtr<ITextRangeProvider>& current_provider : ranges) {
-    HRESULT hr = SafeArrayPutElement(scoped_visible_ranges.Get(), &index,
-                                     current_provider.Get());
-    DCHECK(SUCCEEDED(hr));
-
-    // Since DCHECK only happens in debug builds, return immediately to ensure
-    // that we're not leaking the SAFEARRAY on release builds.
-    if (FAILED(hr))
-      return E_FAIL;
-
-    ++index;
+    ranges_span[index++] = current_provider.Detach();
   }
 
   *visible_ranges = scoped_visible_ranges.Release();

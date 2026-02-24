@@ -15,7 +15,7 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -65,53 +65,35 @@ void GetUIARuntimeId(IUIAutomationElement* first_child,
     // GetRuntimeId.
     base::win::ScopedSafearray start_fragment_runtime_id;
     start_fragment->GetRuntimeId(start_fragment_runtime_id.Receive());
-    LONG lower_bound = 0;
-    HRESULT hr =
-        ::SafeArrayGetLBound(start_fragment_runtime_id.Get(), 1, &lower_bound);
-    CHECK(SUCCEEDED(hr));
-    LONG upper_bound = 0;
-    hr = ::SafeArrayGetUBound(start_fragment_runtime_id.Get(), 1, &upper_bound);
-    CHECK(SUCCEEDED(hr));
-    CHECK(lower_bound >= 0);
-    LONG fragment_id_length = (upper_bound - lower_bound) + 1;
-    CHECK(fragment_id_length == 4);
-
-    int32_t* fragment_id_array = nullptr;
-    ::SafeArrayAccessData(start_fragment_runtime_id.Get(),
-                          reinterpret_cast<void**>(&fragment_id_array));
-    CHECK(fragment_id_array);
+    auto locked_fragment_ids =
+        start_fragment_runtime_id.CreateLockScope<VT_I4>();
+    CHECK(locked_fragment_ids.has_value());
+    const auto fragment_id_span = base::span(*locked_fragment_ids);
+    CHECK_EQ(fragment_id_span.size(), 4U);
     // Grab out the last three ints from the internal runtime id. This should
     // correspond with the frame tree id and DOM id.
-    internal_id = {UNSAFE_TODO(fragment_id_array[1]),
-                   UNSAFE_TODO(fragment_id_array[2]),
-                   UNSAFE_TODO(fragment_id_array[3])};
-
-    ::SafeArrayUnaccessData(start_fragment_runtime_id.Get());
+    internal_id = {fragment_id_span[1], fragment_id_span[2],
+                   fragment_id_span[3]};
   }
 
   base::win::ScopedSafearray runtime_id;
   first_child->GetRuntimeId(runtime_id.Receive());
   CHECK(runtime_id.Get());
-  LONG lower_bound = 0;
-  HRESULT hr = ::SafeArrayGetLBound(runtime_id.Get(), 1, &lower_bound);
-  CHECK(SUCCEEDED(hr));
   LONG upper_bound = 0;
-  hr = ::SafeArrayGetUBound(runtime_id.Get(), 1, &upper_bound);
+  HRESULT hr = ::SafeArrayGetUBound(runtime_id.Get(), 1, &upper_bound);
   CHECK(SUCCEEDED(hr));
-  LONG runtime_id_length = upper_bound - lower_bound + 1;
-  CHECK(runtime_id_length >= 4);
   {
-    int32_t* runtime_id_array = nullptr;
-    ::SafeArrayAccessData(runtime_id.Get(),
-                          reinterpret_cast<void**>(&runtime_id_array));
-    CHECK(runtime_id_array);
+    auto locked_runtime_ids = runtime_id.CreateLockScope<VT_I4>();
+    CHECK(locked_runtime_ids.has_value());
 
+    // SAFETY: Trust SafeArray functions returned the correct bounds.
+    auto runtime_id_span = base::span(*locked_runtime_ids);
+    CHECK_GE(runtime_id_span.size(), 4U);
     // Stuff the internal id values in the last three spots in the grabbed
     // UIA-based runtime id.
-    UNSAFE_TODO(runtime_id_array[upper_bound - 2]) = internal_id[0];
-    UNSAFE_TODO(runtime_id_array[upper_bound - 1]) = internal_id[1];
-    UNSAFE_TODO(runtime_id_array[upper_bound]) = internal_id[2];
-    ::SafeArrayUnaccessData(runtime_id.Get());
+    runtime_id_span[upper_bound - 2] = internal_id[0];
+    runtime_id_span[upper_bound - 1] = internal_id[1];
+    runtime_id_span[upper_bound] = internal_id[2];
   }
 
   *runtime_id_out = runtime_id.Release();
@@ -1074,17 +1056,22 @@ void AXTreeFormatterUia::WriteRectangleProperty(long propertyId,
                                                 base::DictValue* dict) const {
   CHECK(value.vt == (VT_ARRAY | VT_R8));
 
-  double* data = nullptr;
-  SafeArrayAccessData(value.parray, reinterpret_cast<void**>(&data));
+  // Note that `value` owns `parray`, so call `Release` on `safe_array` before
+  // it goes out of scope.
+  base::win::ScopedSafearray safe_array(value.parray);
 
+  auto lock_data = safe_array.CreateLockScope<VT_R8>();
+  CHECK(lock_data.has_value());
+  const auto data_span = base::span(*lock_data);
   base::DictValue rectangle;
-  rectangle.Set("left", static_cast<int>(data[0] - root_x));
-  rectangle.Set("top", static_cast<int>(UNSAFE_TODO(data[1] - root_y)));
-  rectangle.Set("width", static_cast<int>(UNSAFE_TODO(data[2])));
-  rectangle.Set("height", static_cast<int>(UNSAFE_TODO(data[3])));
-  dict->SetByDottedPath(GetPropertyName(propertyId), std::move(rectangle));
+  rectangle.Set("left", static_cast<int>(data_span[0] - root_x));
+  rectangle.Set("top", static_cast<int>(data_span[1] - root_y));
+  rectangle.Set("width", static_cast<int>(data_span[2]));
+  rectangle.Set("height", static_cast<int>(data_span[3]));
 
-  SafeArrayUnaccessData(value.parray);
+  safe_array.Release();
+
+  dict->SetByDottedPath(GetPropertyName(propertyId), std::move(rectangle));
 }
 
 void AXTreeFormatterUia::WriteElementArray(long propertyId,

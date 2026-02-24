@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
@@ -104,7 +103,7 @@ TEST_F(AXPlatformNodeTextProviderTest, CreateDegenerateRangeFromStart) {
   base::win::ScopedBstr text_content;
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
-  EXPECT_EQ(0, UNSAFE_TODO(wcscmp(text_content.Get(), L"")));
+  EXPECT_STREQ(text_content.Get(), L"");
 
   ComPtr<AXPlatformNodeTextRangeProviderWin> actual_range;
   text_range_provider->QueryInterface(IID_PPV_ARGS(&actual_range));
@@ -122,7 +121,7 @@ TEST_F(AXPlatformNodeTextProviderTest, CreateDegenerateRangeFromStart) {
   SetOwner(owner, text_range_provider.Get());
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
-  EXPECT_EQ(0, UNSAFE_TODO(wcscmp(text_content.Get(), L"")));
+  EXPECT_STREQ(text_content.Get(), L"");
   text_range_provider->QueryInterface(IID_PPV_ARGS(&actual_range));
   EXPECT_EQ(*GetStart(actual_range.Get()), *expected_start);
   EXPECT_EQ(*GetEnd(actual_range.Get()), *expected_end);
@@ -135,7 +134,7 @@ TEST_F(AXPlatformNodeTextProviderTest, CreateDegenerateRangeFromStart) {
   SetOwner(owner, text_range_provider.Get());
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
-  EXPECT_EQ(0, UNSAFE_TODO(wcscmp(text_content.Get(), L"")));
+  EXPECT_STREQ(text_content.Get(), L"");
   text_range_provider->QueryInterface(IID_PPV_ARGS(&actual_range));
   expected_start = text2_platform_node->GetDelegate()->CreateTextPositionAt(0);
   expected_end = expected_start->Clone();
@@ -180,7 +179,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderRangeFromChild) {
   base::win::ScopedBstr text_content;
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
-  EXPECT_EQ(0, UNSAFE_TODO(wcscmp(text_content.Get(), L"some-text")));
+  EXPECT_STREQ(text_content.Get(), L"some-text");
 
   // Now test that the reverse relation doesn't return a valid
   // ITextRangeProvider, and instead returns E_INVALIDARG.
@@ -201,7 +200,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderRangeFromChild) {
   base::win::ScopedBstr empty_text_content;
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, empty_text_content.Receive()));
-  EXPECT_EQ(0, UNSAFE_TODO(wcscmp(empty_text_content.Get(), L"")));
+  EXPECT_STREQ(empty_text_content.Get(), L"");
 
   // Test that passing in an object from a different instance of
   // IRawElementProviderSimple than that of the valid text provider
@@ -520,7 +519,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   base::win::ScopedBstr text_content;
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
-  EXPECT_EQ(0, UNSAFE_TODO(wcscmp(text_content.Get(), L"some")));
+  EXPECT_STREQ(text_content.Get(), L"some");
   text_content.Reset();
   selections.Reset();
   text_range_provider.Reset();
@@ -546,7 +545,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
 
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
-  EXPECT_EQ(0, UNSAFE_TODO(wcscmp(text_content.Get(), L"some")));
+  EXPECT_STREQ(text_content.Get(), L"some");
   text_content.Reset();
   selections.Reset();
   text_range_provider.Reset();
@@ -609,8 +608,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   SetOwner(owner, text_range_provider.Get());
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
-  EXPECT_EQ(0,
-            UNSAFE_TODO(wcscmp(text_content.Get(), L"some texttextbox text")));
+  EXPECT_STREQ(text_content.Get(), L"some texttextbox text");
   text_content.Reset();
   selections.Reset();
   text_range_provider.Reset();
@@ -635,7 +633,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   SetOwner(owner, text_range_provider.Get());
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
-  EXPECT_EQ(0, UNSAFE_TODO(wcscmp(text_content.Get(), L"")));
+  EXPECT_STREQ(text_content.Get(), L"");
   text_content.Reset();
   selections.Reset();
   text_range_provider.Reset();
@@ -659,7 +657,7 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
   SetOwner(owner, text_range_provider.Get());
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
-  EXPECT_EQ(0, UNSAFE_TODO(wcscmp(text_content.Get(), L"text")));
+  EXPECT_STREQ(text_content.Get(), L"text");
   text_content.Reset();
   selections.Reset();
   text_range_provider.Reset();
@@ -758,7 +756,7 @@ TEST_F(AXPlatformNodeTextProviderTest,
   base::win::ScopedBstr text_content;
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
-  EXPECT_EQ(0, UNSAFE_TODO(wcscmp(text_content.Get(), L"aaa")));
+  EXPECT_STREQ(text_content.Get(), L"aaa");
 
   selections.Reset();
   text_range_provider.Reset();
@@ -781,7 +779,7 @@ TEST_F(AXPlatformNodeTextProviderTest,
 
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetText(-1, text_content.Receive()));
-  EXPECT_EQ(0, UNSAFE_TODO(wcscmp(text_content.Get(), L"aa")));
+  EXPECT_STREQ(text_content.Get(), L"aa");
 }
 
 TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetActiveComposition) {

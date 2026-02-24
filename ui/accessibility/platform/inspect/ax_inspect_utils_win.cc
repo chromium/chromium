@@ -35,11 +35,9 @@ struct PlatformConstantToNameEntry {
 };
 
 std::wstring GetNameForPlatformConstant(
-    const PlatformConstantToNameEntry table[],
-    size_t table_size,
+    base::span<const PlatformConstantToNameEntry> table,
     int32_t value) {
-  for (size_t i = 0; i < table_size; ++i) {
-    auto& entry = UNSAFE_TODO(table[i]);
+  for (const auto& entry : table) {
     if (entry.value == value)
       return base::ASCIIToWide(entry.name);
   }
@@ -107,7 +105,7 @@ std::wstring IAccessibleRoleToString(int32_t ia_role) {
       QUOTE(ROLE_SYSTEM_WHITESPACE),     QUOTE(ROLE_SYSTEM_WINDOW),
   };
 
-  return GetNameForPlatformConstant(ia_table, std::size(ia_table), ia_role);
+  return GetNameForPlatformConstant(ia_table, ia_role);
 }
 
 COMPONENT_EXPORT(AX_PLATFORM)
@@ -172,7 +170,7 @@ std::wstring IAccessible2RoleToString(int32_t ia2_role) {
       QUOTE(IA2_ROLE_COMMENT),
   };
 
-  return GetNameForPlatformConstant(ia2_table, std::size(ia2_table), ia2_role);
+  return GetNameForPlatformConstant(ia2_table, ia2_role);
 }
 
 COMPONENT_EXPORT(AX_PLATFORM)
@@ -250,7 +248,7 @@ std::wstring AccessibilityEventToString(int32_t event) {
       QUOTE(IA2_EVENT_ROLE_CHANGED),
   };
 
-  return GetNameForPlatformConstant(event_table, std::size(event_table), event);
+  return GetNameForPlatformConstant(event_table, event);
 }
 
 void IAccessibleStateToStringVector(int32_t ia_state,
@@ -674,7 +672,7 @@ std::wstring UiaIdentifierToString(int32_t identifier) {
       QUOTE(UIA_AppBarControlTypeId),
   };
 
-  return GetNameForPlatformConstant(id_table, std::size(id_table), identifier);
+  return GetNameForPlatformConstant(id_table, identifier);
 }
 
 COMPONENT_EXPORT(AX_PLATFORM)
@@ -682,7 +680,7 @@ std::wstring UiaOrientationToString(int32_t identifier) {
   static const PlatformConstantToNameEntry id_table[] = {
       QUOTE(OrientationType_None), QUOTE(OrientationType_Horizontal),
       QUOTE(OrientationType_Vertical)};
-  return GetNameForPlatformConstant(id_table, std::size(id_table), identifier);
+  return GetNameForPlatformConstant(id_table, identifier);
 }
 
 COMPONENT_EXPORT(AX_PLATFORM)
@@ -690,7 +688,7 @@ std::wstring UiaLiveSettingToString(int32_t identifier) {
   static const PlatformConstantToNameEntry id_table[] = {
       QUOTE(LiveSetting::Off), QUOTE(LiveSetting::Polite),
       QUOTE(LiveSetting::Assertive)};
-  return GetNameForPlatformConstant(id_table, std::size(id_table), identifier);
+  return GetNameForPlatformConstant(id_table, identifier);
 }
 
 COMPONENT_EXPORT(AX_PLATFORM) std::string BstrToUTF8(BSTR bstr) {
