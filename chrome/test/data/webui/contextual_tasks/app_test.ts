@@ -745,9 +745,7 @@ suite('ContextualTasksAppTest', function() {
     await microtasksFinished();
 
     const composebox = appElement.$.composebox;
-    const crComposebox =
-        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
-    assertTrue(!!crComposebox);
+    assertTrue(!!composebox);
 
     const rect = {
       top: 10,
@@ -762,33 +760,44 @@ suite('ContextualTasksAppTest', function() {
     (appElement as any).forcedComposeboxBounds_ = rect;
     await microtasksFinished();
 
+    const frameRect = appElement.$.threadFrame.getBoundingClientRect();
+
     // Verify styles applied
-    assertEquals('fixed', crComposebox.style.position);
+    assertEquals('fixed', composebox.style.position);
     assertEquals(
-        `${window.innerHeight - rect.bottom}px`, crComposebox.style.bottom);
-    assertEquals('20px', crComposebox.style.left);
-    assertEquals('100px', crComposebox.style.width);
-    assertEquals('', crComposebox.style.height);
+        `${window.innerHeight - (frameRect.top + rect.bottom)}px`,
+        composebox.style.bottom);
+    assertEquals(`${frameRect.left + rect.left}px`, composebox.style.left);
+    assertEquals(`${rect.width}px`, composebox.style.width);
+    assertEquals('', composebox.style.height);
 
     // Verify zero state clears styles
     (appElement as any).isZeroState_ = true;
     await microtasksFinished();
 
-    assertEquals('', crComposebox.style.position);
-    assertEquals('', crComposebox.style.top);
-    assertEquals('', crComposebox.style.left);
-    assertEquals('', crComposebox.style.width);
-    assertEquals('', crComposebox.style.height);
+    assertEquals('', composebox.style.position);
+    assertEquals('', composebox.style.top);
+    assertEquals('', composebox.style.left);
+    assertEquals('', composebox.style.width);
+    assertEquals('', composebox.style.height);
   });
 
   test('updates clip path on post message', async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
 
+    // Create a promise to wait for the loadstart handler to finish. Without
+    // this, forcedComposeboxBounds_ might get reset to null before the test
+    // accesses it.
+    const {promise, resolve} = Promise.withResolvers<void>();
     const appElement = document.createElement('contextual-tasks-app');
+    appElement.setOnLoadStartFinishedCallbackForTesting(resolve);
+
+    // Add the app element to the DOM.
     document.body.appendChild(appElement);
     await microtasksFinished();
 
+    // Get the webview element.
     const webview = appElement.shadowRoot.querySelector<HTMLElement>('webview');
     assertTrue(!!webview);
 
@@ -797,6 +806,12 @@ suite('ContextualTasksAppTest', function() {
     Object.assign(loadCommitEvent, {isTopLevel: true, url: fixtureUrl});
     webview.dispatchEvent(loadCommitEvent);
 
+    // Wait for the loadstart handler to finish to avoid a race condition
+    // between the post message setting the forcedComposeboxBounds_ and the
+    // loadstart handler resetting it.
+    await promise;
+
+    // Simulate an input plate bounds update message.
     const rect = {
       top: 0,
       left: 0,
@@ -818,7 +833,6 @@ suite('ContextualTasksAppTest', function() {
       'bounds-rect': rect,
       occluders: [occluder],
     };
-
     window.dispatchEvent(new MessageEvent('message', {
       data: message,
       origin: new URL(fixtureUrl).origin,
@@ -878,7 +892,7 @@ suite('ContextualTasksAppTest', function() {
     document.body.appendChild(appElement);
     await microtasksFinished();
 
-      // Remove the thread frame to prevent unwanted loadstart events.
+    // Remove the thread frame to prevent unwanted loadstart events.
     const threadFrame = appElement.shadowRoot.querySelector('#threadFrame');
     assertTrue(!!threadFrame);
     appElement.shadowRoot.removeChild(threadFrame);
