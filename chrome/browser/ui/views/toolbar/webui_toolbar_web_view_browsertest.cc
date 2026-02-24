@@ -76,6 +76,7 @@ constexpr base::TimeDelta kRecoveryResetInterval = base::Seconds(10);
 constexpr base::TimeDelta kRecoveryRetryInterval = base::Seconds(20);
 
 constexpr char kSplitTabsSelector[] = "split-tabs-button-app";
+constexpr char kReloadButtonSelector[] = "reload-button-app";
 
 std::string GetButtonAppJS(const std::string& selector) {
   return base::StringPrintf(
@@ -832,6 +833,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   content::WebContents* web_contents = web_view->GetWebContents();
 
   PinSplitTabsButton(browser(), web_view);
+  ASSERT_TRUE(WaitForButtonVisible(web_contents, kReloadButtonSelector));
   ASSERT_TRUE(WaitForButtonVisible(web_contents, kSplitTabsSelector));
 
   // Initial state: Standard (Touch disabled).
@@ -842,6 +844,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
   EXPECT_EQ("20px",
             content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
                                               "--toolbar-button-icon-size"))
+                .ExtractString());
+  EXPECT_EQ("2px",
+            content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
+                                              "--toolbar-icon-default-margin"))
                 .ExtractString());
   EXPECT_EQ("1px", content::EvalJs(web_contents,
                                    GetValueForCSSProperty(
@@ -871,6 +877,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
               content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
                                                 "--toolbar-button-icon-size"))
                   .ExtractString());
+    EXPECT_EQ("0px", content::EvalJs(web_contents,
+                                     GetValueForToolbarAppCSSProperty(
+                                         "--toolbar-icon-default-margin"))
+                         .ExtractString());
     EXPECT_EQ(
         "9px",
         content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
@@ -882,6 +892,10 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
                                              "--toolbar-button-height"))
                .ExtractString() == "34px";
   }));
+  EXPECT_EQ("2px",
+            content::EvalJs(web_contents, GetValueForToolbarAppCSSProperty(
+                                              "--toolbar-icon-default-margin"))
+                .ExtractString());
   EXPECT_EQ(
       "4px",
       content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());

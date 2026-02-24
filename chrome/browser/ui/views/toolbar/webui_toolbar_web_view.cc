@@ -123,6 +123,7 @@ browser_controls_api::mojom::LayoutConstantsPtr GetLayoutConstantsStruct() {
   return browser_controls_api::mojom::LayoutConstants::New(
       GetLayoutConstant(LayoutConstant::kToolbarButtonHeight),
       GetLayoutConstant(LayoutConstant::kToolbarButtonIconSize),
+      GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin),
       GetLayoutConstant(LayoutConstant::kLocationBarHeight),
       GetLayoutConstant(LayoutConstant::kLocationBarMargin));
 }

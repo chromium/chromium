@@ -42,6 +42,7 @@ enum ToolbarButtonType {
 struct LayoutConstants {
   int32 toolbar_button_height;
   int32 toolbar_button_icon_size;
+  int32 toolbar_icon_default_margin;
   int32 location_bar_height;
   int32 location_bar_margin;
 };

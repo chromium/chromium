@@ -62,6 +62,7 @@ export class ToolbarAppElement extends CrLitElement {
     layoutConstants: {
       toolbarButtonHeight: 34,
       toolbarButtonIconSize: 20,
+      toolbarIconDefaultMargin: 2,
       locationBarHeight: 34,
       locationBarMargin: 9,
     },
@@ -179,6 +180,9 @@ export class ToolbarAppElement extends CrLitElement {
         '--toolbar-button-height', `${constants.toolbarButtonHeight}px`);
     this.style.setProperty(
         '--toolbar-button-icon-size', `${constants.toolbarButtonIconSize}px`);
+    this.style.setProperty(
+        '--toolbar-icon-default-margin',
+        `${constants.toolbarIconDefaultMargin}px`);
     this.style.setProperty(
         '--location-bar-height', `${constants.locationBarHeight}px`);
     this.style.setProperty(
