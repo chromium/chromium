@@ -14,6 +14,7 @@
 #import "base/strings/escape.h"
 #import "base/strings/strcat.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/system/sys_info.h"
 #import "build/branding_buildflags.h"
@@ -182,21 +183,40 @@ void WebJsErrorReportProcessor::ReportJavaScriptError(
   report.stack_trace = details.stack;
   report.page_url = details.url.GetWithEmptyPath().spec();
 
+  std::string filename = details.url.ExtractFileName();
+  if (filename.length()) {
+    std::optional<std::pair<std::string_view, std::string_view>> parts =
+        base::RSplitStringOnce(filename, '.');
+    if (parts.has_value()) {
+      report.page_url_file_extension = std::string(parts->second);
+    }
+  }
+
   SendErrorReport(std::move(report));
 }
 
 void WebJsErrorReportProcessor::ReportJavaScriptExecutionFailed(
     std::string api,
     url::Origin origin,
-    std::string error,
+    NSError* error,
     bool from_main_frame) {
   IOSJavaScriptErrorReport report;
   report.source_system =
       IOSJavaScriptErrorReport::SourceSystem::kNativeScriptExecutionFailed;
   report.api = api;
   report.from_main_frame = from_main_frame;
-  report.error_message = error;
   report.page_url = origin.Serialize();
+
+  std::string exception =
+      base::SysNSStringToUTF8(error.userInfo[@"WKJavaScriptExceptionMessage"]);
+  if (!exception.empty()) {
+    report.error_message = exception;
+  } else {
+    report.error_message =
+        base::SysNSStringToUTF8(error.userInfo[NSLocalizedDescriptionKey]);
+  }
+  report.error_domain = base::SysNSStringToUTF8(error.domain);
+  report.error_code = error.code;
 
   SendErrorReport(std::move(report));
 }
@@ -241,10 +261,23 @@ void WebJsErrorReportProcessor::SendErrorReport(
       break;
   }
 
-  if (error_report.page_url &&
-      web::GetWebClient()->GetJSErrorReportLoggingLevel(browser_state_) ==
-          JSErrorReportLoggingLevel::FULL) {
-    params["url"] = error_report.page_url.value();
+  if (web::GetWebClient()->GetJSErrorReportLoggingLevel(browser_state_) ==
+      JSErrorReportLoggingLevel::FULL) {
+    if (error_report.page_url) {
+      params["page_url"] = error_report.page_url.value();
+    }
+    if (error_report.page_url_file_extension) {
+      params["page_url_file_extension"] =
+          error_report.page_url_file_extension.value();
+    }
+  }
+
+  if (error_report.error_domain) {
+    params["error_domain"] = error_report.error_domain.value();
+  }
+  if (error_report.error_code) {
+    params["error_code"] =
+        base::NumberToString(error_report.error_code.value());
   }
 
   AddExperimentIds(params);

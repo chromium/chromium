@@ -45,7 +45,7 @@ class WebJsErrorReportProcessor : public base::SupportsUserData::Data {
   // Reports `error` for `api`, occurring on `origin`.
   void ReportJavaScriptExecutionFailed(std::string api,
                                        url::Origin origin,
-                                       std::string error,
+                                       NSError* error,
                                        bool from_main_frame);
 
  private:

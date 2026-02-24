@@ -31,6 +31,12 @@ struct IOSJavaScriptErrorReport {
   // The error message. Required.
   std::string error_message;
 
+  // The NSError domain associated with the error.
+  std::optional<std::string> error_domain;
+
+  // The NSError code associated with the error.
+  std::optional<int> error_code;
+
   // Whether or not the error originated from the main frame. Required.
   bool from_main_frame;
 
@@ -51,6 +57,11 @@ struct IOSJavaScriptErrorReport {
   // protocol (e.g. http://www.example.com) but not query, fragment, or other
   // privacy-sensitive details we don't want to send.
   std::optional<std::string> page_url;
+
+  // The filename extension of the URL the user was on when the error occurred.
+  // This can be important information for debugging since the full URL is not
+  // available in `page_url`
+  std::optional<std::string> page_url_file_extension;
 };
 
 #endif  // IOS_WEB_JS_FEATURES_WINDOW_ERROR_IOS_JAVASCRIPT_ERROR_REPORT_H_

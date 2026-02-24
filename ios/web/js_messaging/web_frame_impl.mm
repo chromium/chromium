@@ -81,15 +81,18 @@ void LogScriptResultError(base::WeakPtr<web::WebState> web_state,
                           url::Origin security_origin,
                           bool is_main_frame,
                           NSError* error) {
-  std::string executed_script = base::SysNSStringToUTF8(script);
-  std::string error_string =
-      base::SysNSStringToUTF8(error.userInfo[NSLocalizedDescriptionKey]);
   NSString* ns_exception = error.userInfo[@"WKJavaScriptExceptionMessage"];
-  std::string exception = base::SysNSStringToUTF8(ns_exception);
 
-  DLOG(WARNING) << "Script execution of:" << executed_script
-                << "\nfailed with error: " << error_string
-                << "\nand exception: " << exception;
+  if (DLOG_IS_ON(WARNING)) {
+    std::string executed_script = base::SysNSStringToUTF8(script);
+    std::string error_string =
+        base::SysNSStringToUTF8(error.userInfo[NSLocalizedDescriptionKey]);
+    std::string exception = base::SysNSStringToUTF8(ns_exception);
+
+    DLOG(WARNING) << "Script execution of:" << executed_script
+                  << "\nfailed with error: " << error_string
+                  << "\nand exception: " << exception;
+  }
 
   if (base::FeatureList::IsEnabled(web::features::kAssertOnJavaScriptErrors)) {
     CHECK(false)
@@ -133,13 +136,7 @@ void LogScriptResultError(base::WeakPtr<web::WebState> web_state,
     return;
   }
 
-  std::string err;
-  if (!exception.empty()) {
-    err = exception;
-  } else {
-    err = error_string;
-  }
-  report_processor->ReportJavaScriptExecutionFailed(api, security_origin, err,
+  report_processor->ReportJavaScriptExecutionFailed(api, security_origin, error,
                                                     is_main_frame);
 }
 
