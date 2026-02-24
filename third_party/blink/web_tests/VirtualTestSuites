@@ -449,25 +449,6 @@
     ]
   },
   {
-    "prefix": "css-anchor-update-disabled",
-    "owners": [
-      "ikilpatrick@chromium.org",
-      "rendering-core-dev@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/css/css-anchor-position"
-    ],
-    "args": [
-      "--disable-blink-features=CSSAnchorUpdate"
-    ],
-    "expires": "Aug 13, 2026"
-  },
-  {
     "prefix": "css-gap-decorations-disabled",
     "platforms": ["Linux"],
     "bases": [

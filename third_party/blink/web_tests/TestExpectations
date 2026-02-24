@@ -736,28 +736,6 @@ crbug.com/40550039 external/wpt/svg/styling/use-element-transitions-dom-mutation
 crbug.com/386610909 external/wpt/svg/styling/use-element-non-rendered-has-selector.html [ Failure ]
 crbug.com/386610909 external/wpt/svg/styling/use-element-non-rendered-sibling-selector.html [ Failure ]
 
-# CSS Anchor Positioning Update failures.
-# New tests which fail without the flag enabled.
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/anchor-scroll-chained-002.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/anchor-scroll-chained-004.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/last-successful-animation.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/last-successful-basic.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/last-successful-change-fallbacks.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/last-successful-change-try-rule.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/last-successful-iframe.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/last-successful-intermediate-ignored.html [ Failure ]
-crbug.com/450513405 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/position-area-overflow-icb-001.html [ Failure ]
-crbug.com/450513405 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/position-area-overflow-icb-002.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/position-area-scrolling-001.tentative.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/position-area-scrolling-003.tentative.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/position-area-scrolling-006.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/position-area-scrolling-007.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/position-try-fallbacks-003.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/position-area-self-alignment-overflow.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/position-visibility-remove-no-overflow.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/scrollable-containing-block-position-area.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/scrollable-containing-block-size.html [ Failure ]
-crbug.com/438515315 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/scrollable-containing-block-validity.html [ Failure ]
 # This test is invalid, due to alignment safety anchor1 *always* overflows.
 crbug.com/438515315 external/wpt/css/css-anchor-position/position-visibility-no-overflow-scroll-002.html [ Failure ]
 
@@ -2889,7 +2867,6 @@ crbug.com/483173722 external/wpt/webdriver/tests/classic/take_element_screenshot
 crbug.com/483173722 [ Android ] external/wpt/webdriver/tests/classic/take_screenshot/screenshot.py [ Failure Timeout ]
 crbug.com/483370597 [ Win ] external/wpt/webrtc-stats/RTCDataChannel-stats.html [ Pass Timeout ]
 crbug.com/483370597 [ Mac ] external/wpt/webrtc-stats/RTCDataChannel-stats.html [ Skip Timeout ]
-crbug.com/483370598 virtual/css-anchor-update-disabled/external/wpt/css/css-anchor-position/position-area-overflow-icb-004.html [ Failure ]
 crbug.com/483370598 virtual/run-snapshot-post-layout/external/wpt/css/css-anchor-position/position-area-overflow-icb-004.html [ Failure ]
 crbug.com/479873900 [ Win ] external/wpt/content-security-policy/generic/only-valid-whitespaces-are-allowed.html [ Pass Timeout ]
 crbug.com/479872440 external/wpt/webdriver/tests/classic/execute_async_script/promise.py [ Failure ]
