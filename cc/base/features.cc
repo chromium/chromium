@@ -277,8 +277,6 @@ BASE_FEATURE(kBrowserControlsSmoothScroll, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kBrowserControlsHeightChangeCancelAnimations,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Killswitch for disabling Headless scheduler state machine.
-BASE_FEATURE(kHeadlessSchedulerStateMachine, base::FEATURE_ENABLED_BY_DEFAULT);
 // Killswitch for disabling Webview scheduler state machine.
 BASE_FEATURE(kWebviewSchedulerStateMachine, base::FEATURE_ENABLED_BY_DEFAULT);
 

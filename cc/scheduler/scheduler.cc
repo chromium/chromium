@@ -59,8 +59,7 @@ Scheduler::Scheduler(
       compositor_frame_reporting_controller_(
           compositor_frame_reporting_controller),
       begin_impl_frame_tracker_(FROM_HERE) {
-  if (settings.wait_for_all_pipeline_stages_before_draw &&
-      base::FeatureList::IsEnabled(features::kHeadlessSchedulerStateMachine)) {
+  if (settings.wait_for_all_pipeline_stages_before_draw) {
     state_machine_ = std::make_unique<HeadlessSchedulerStateMachine>(settings);
   } else if (settings.using_synchronous_renderer_compositor &&
              base::FeatureList::IsEnabled(

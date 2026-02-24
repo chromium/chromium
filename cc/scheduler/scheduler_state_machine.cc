@@ -399,9 +399,7 @@ bool SchedulerStateMachine::CheckShouldDraw() const {
   // Wait for ready to draw in full-pipeline mode or the browser compositor's
   // commit-to-active-tree mode.
   // When
-  return ((settings_.wait_for_all_pipeline_stages_before_draw ||
-           settings_.commit_to_active_tree) &&
-          !active_tree_is_ready_to_draw_);
+  return (settings_.commit_to_active_tree && !active_tree_is_ready_to_draw_);
 }
 
 bool SchedulerStateMachine::ShouldDraw() const {
@@ -762,11 +760,6 @@ void SchedulerStateMachine::DidPostCommit() {
 }
 
 bool SchedulerStateMachine::ShouldPrepareTiles() const {
-  // In full-pipeline mode, we need to prepare tiles ASAP to ensure that we
-  // don't get stuck.
-  if (settings_.wait_for_all_pipeline_stages_before_draw)
-    return needs_prepare_tiles_;
-
   // Do not prepare tiles if we've already done so in commit or impl side
   // invalidation.
   if (did_prepare_tiles_)
@@ -1002,8 +995,7 @@ void SchedulerStateMachine::WillNotifyBeginMainFrameNotExpectedSoon() {
 }
 
 bool SchedulerStateMachine::CheckWillCommit() const {
-  return (!active_tree_needs_first_draw_ ||
-          !settings_.wait_for_all_pipeline_stages_before_draw);
+  return true;
 }
 
 void SchedulerStateMachine::WillCommit(bool commit_has_no_updates) {
@@ -1265,14 +1257,6 @@ bool SchedulerStateMachine::ShouldSubscribeToBeginFrames() const {
   if (!HasInitializedLayerTreeFrameSink())
     return false;
 
-  // The propagation of the needsBeginFrame signal to viz is inherently racy
-  // with issuing the next BeginFrame. In full-pipe mode, it is important we
-  // don't miss a BeginFrame because our needsBeginFrames signal propagated to
-  // viz too slowly. To avoid the race, we simply always request BeginFrames
-  // from viz.
-  if (settings_.wait_for_all_pipeline_stages_before_draw)
-    return true;
-
   // If we are not visible, we don't need BeginFrame messages.
   if (!visible_)
     return false;
@@ -1490,11 +1474,6 @@ bool SchedulerStateMachine::ShouldTriggerBeginImplFrameDeadlineImmediately()
   if (processing_animation_worklets_for_active_tree_)
     return false;
 
-  // In full-pipe mode, we just gave all pipeline stages a chance to contribute.
-  // We shouldn't wait any longer in any case - even if there are no updates.
-  if (settings_.wait_for_all_pipeline_stages_before_draw)
-    return true;
-
   if (active_tree_needs_first_draw_)
     return true;
 
@@ -1531,8 +1510,7 @@ bool SchedulerStateMachine::ShouldTriggerBeginImplFrameDeadlineImmediately()
 }
 
 bool SchedulerStateMachine::CheckShouldBlockDeadlineIndefinitely() const {
-  return (!settings_.wait_for_all_pipeline_stages_before_draw &&
-          !settings_.commit_to_active_tree);
+  return !settings_.commit_to_active_tree;
 }
 
 bool SchedulerStateMachine::ShouldBlockDeadlineIndefinitely() const {
@@ -1547,14 +1525,6 @@ bool SchedulerStateMachine::ShouldBlockDeadlineIndefinitely() const {
 
   if (!visible_)
     return false;
-
-  // Do not wait for main frame to be ready for commits if in full-pipe mode,
-  // if we're deferring commits, as the main thread may be blocked on paused
-  // virtual time, causing deadlock against external frame control.
-  if (defer_begin_main_frame_ &&
-      settings_.wait_for_all_pipeline_stages_before_draw) {
-    return false;
-  }
 
   // Wait for main frame if one is in progress or about to be started.
   if (ShouldSendBeginMainFrame())
