@@ -28,4 +28,8 @@ bool IsDefaultBrowserPictureInPictureEnabled();
 // Returns the default browser promo Picture in Picture param.
 std::string DefaultBrowserPictureInPictureParam();
 
+// Returns true if the default browser promo destination for Picture in
+// Picture flow is default apps.
+bool IsDefaultAppsPictureInPictureVariant();
+
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_PROMO_PUBLIC_FEATURES_H_

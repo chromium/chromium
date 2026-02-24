@@ -16,8 +16,6 @@
 #import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/default_browser/promo/ui/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
-#import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_constants.h"
 #import "ios/chrome/browser/promos_manager/coordinator/promos_manager_ui_handler.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
@@ -27,9 +25,6 @@
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
-#import "ios/chrome/grit/ios_branded_strings.h"
-#import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/l10n/l10n_util.h"
 
 using base::RecordAction;
 using base::UserMetricsAction;
@@ -37,9 +32,9 @@ using base::UserMetricsAction;
 namespace {
 // The video name for the settings destination.
 NSString* kDefaultBrowserPromoSettingsDestinationVideo =
-    @"default_browser_promo_settings_destination";
+    @"app_specific_settings_instructions_video";
 NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
-    @"default_browser_promo_default_apps_destination";
+    @"default_apps_settings_instructions_video";
 }  // namespace
 
 @interface DefaultBrowserGenericPromoCoordinator () <
@@ -58,6 +53,9 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
   BOOL _firstInteractionRecorded;
   // The timestamp of the first primary button tap.
   base::Time _acceptanceTimestamp;
+  // Whether the promo destination is the default apps for
+  // Picture-in-Picture.
+  BOOL _defaultAppsDestinationForPictureInPicture;
 }
 
 #pragma mark - ChromeCoordinator
@@ -68,6 +66,13 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
 
   _tracker = feature_engagement::TrackerFactory::GetForProfile(self.profile);
   _mediator = [[DefaultBrowserGenericPromoMediator alloc] init];
+
+  if (IsDefaultBrowserPictureInPictureEnabled() &&
+      IsDefaultAppsPictureInPictureVariant()) {
+    // Both Picture-in-Picture variants (`EnabledDefaultApps` and
+    // `DisabledDefaultApps`) use the "Default Apps" video.
+    _defaultAppsDestinationForPictureInPicture = YES;
+  }
 
   [self showPromo];
 }
@@ -100,21 +105,11 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
 - (void)confirmationAlertPrimaryAction {
   if (IsDefaultBrowserPictureInPictureEnabled()) {
     [_handler hidePromo];
-    PictureInPictureConfiguration* config =
-        [[PictureInPictureConfiguration alloc] init];
-    NSString* viewSource = _promoWasFromOffCycleTrigger
-                               ? kDefaultBrowserPromoDefaultAppsDestinationVideo
-                               : kDefaultBrowserPromoSettingsDestinationVideo;
-    config.videoURL = [[NSBundle mainBundle] URLForResource:viewSource
-                                              withExtension:@"mp4"];
-    config.title = l10n_util::GetNSString(
-        IDS_IOS_DEFAULT_BROWSER_PICTURE_IN_PICTURE_TITLE_TEXT);
-    config.primaryButtonTitle = l10n_util::GetNSString(
-        IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT);
-    config.feature = PictureInPictureFeature::kDefaultBrowser;
     id<PictureInPictureCommands> pipHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), PictureInPictureCommands);
-    [pipHandler showPictureInPictureWithConfig:config];
+    OpenIOSDefaultBrowserSettingsPage(
+        _defaultAppsDestinationForPictureInPicture,
+        /*ui_application_to_use=*/nil, /*pip_handler=*/pipHandler);
     return;
   }
 
@@ -223,7 +218,8 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
   _viewController = [[DefaultBrowserInstructionsViewController alloc]
           initWithDismissButton:YES
                hasRemindMeLater:hasRemindMeLater
-      useDefaultAppsDestination:_promoWasFromOffCycleTrigger
+      useDefaultAppsDestination:_promoWasFromOffCycleTrigger ||
+                                _defaultAppsDestinationForPictureInPicture
                        hasSteps:NO
                   actionHandler:self
                       titleText:nil];

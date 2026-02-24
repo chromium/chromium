@@ -11,6 +11,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/default_browser/promo/public:features",
     "//ios/chrome/browser/picture_in_picture/public",
     "//ios/chrome/browser/picture_in_picture/ui",
     "//ios/chrome/browser/promos_manager/coordinator:promos",

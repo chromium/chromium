@@ -20,10 +20,17 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
+#import "ios/chrome/browser/default_browser/promo/public/features.h"
+#import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
+#import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 // Key in NSUserDefaults containing an NSDictionary used to store all the
 // information.
@@ -44,6 +51,16 @@ NSString* const kLastSignificantUserEventMadeForIOS =
 // an all tabs event of interest for Default Browser Promo modals.
 NSString* const kLastSignificantUserEventAllTabs =
     @"lastSignificantUserEventAllTabs";
+
+// The video file to use for the picture-in-picture default browser video
+// instructions for the app-specific settings screen.
+NSString* kAppSpecificSettingsInstructionsVideo =
+    @"app_specific_settings_instructions_video";
+
+// The video file to use for the picture-in-picture default browser video
+// instructions for the default apps destination.
+NSString* kDefaultAppsSettingsInstructionsVideo =
+    @"default_apps_settings_instructions_video";
 
 // Maximum number of past event timestamps to record.
 const size_t kMaxPastTimestampsToRecord = 10;
@@ -257,6 +274,31 @@ int NumDaysSincePromoInteraction() {
   }
 
   return days;
+}
+
+// Shows the default browser Picture-in-Picture.
+void showDefaultBrowserPictureInPictureInstructions(
+    id<PictureInPictureCommands> handler) {
+  const std::string pip_param = DefaultBrowserPictureInPictureParam();
+  if (pip_param == kDefaultBrowserPictureInPictureParamDisabledDefaultApps) {
+    OpenIOSDefaultBrowserSettingsPage(true);
+    return;
+  }
+
+  PictureInPictureConfiguration* config =
+      [[PictureInPictureConfiguration alloc] init];
+  NSString* view_source =
+      pip_param == kDefaultBrowserPictureInPictureParamEnabledDefaultApps
+          ? kDefaultAppsSettingsInstructionsVideo
+          : kAppSpecificSettingsInstructionsVideo;
+  config.videoURL = [[NSBundle mainBundle] URLForResource:view_source
+                                            withExtension:@"mp4"];
+  config.title = l10n_util::GetNSString(
+      IDS_IOS_DEFAULT_BROWSER_PICTURE_IN_PICTURE_TITLE_TEXT);
+  config.primaryButtonTitle =
+      l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_PROMO_PRIMARY_BUTTON_TEXT);
+  config.feature = PictureInPictureFeature::kDefaultBrowser;
+  [handler showPictureInPictureWithConfig:config];
 }
 
 }  // namespace
@@ -754,8 +796,15 @@ NSDate* LastTimeUserInteractedWithNonModalPromo() {
       kLastTimeUserInteractedWithNonModalPromo);
 }
 
-void OpenIOSDefaultBrowserSettingsPage(bool force_default_apps_if_available,
-                                       UIApplication* ui_application_to_use) {
+void OpenIOSDefaultBrowserSettingsPage(
+    bool force_default_apps_if_available,
+    UIApplication* ui_application_to_use,
+    id<PictureInPictureCommands> pip_handler) {
+  if (pip_handler && IsDefaultBrowserPictureInPictureEnabled()) {
+    showDefaultBrowserPictureInPictureInstructions(pip_handler);
+    return;
+  }
+
   NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
   if (@available(iOS 18.3, *)) {
     if (IsDefaultAppsDestinationAvailable() &&

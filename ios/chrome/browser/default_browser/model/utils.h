@@ -16,6 +16,7 @@ namespace base {
 class Time;
 class TimeDelta;
 }  // namespace base
+@protocol PictureInPictureCommands;
 
 // Enum for the different types of default browser modal promo. These are stored
 // as values, if adding a new one, make sure to add it at the end.
@@ -387,9 +388,11 @@ std::optional<IOSDefaultBrowserPromoAction> DefaultBrowserPromoLastAction();
 // `force_default_apps_if_available` is set to true, the new Default Apps page
 // will be used as the destination if the device supports it. Otherwise, the
 // Chromium settings will be used. The second parameter is to facilitate mocking
-// in unit testing.
+// in unit testing. The third parameter is to trigger the Picture-in-Picture
+// promo if enabled.
 void OpenIOSDefaultBrowserSettingsPage(
     bool force_default_apps_if_available = false,
-    UIApplication* ui_application_to_use = nil);
+    UIApplication* ui_application_to_use = nil,
+    id<PictureInPictureCommands> pip_handler = nil);
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_UTILS_H_
