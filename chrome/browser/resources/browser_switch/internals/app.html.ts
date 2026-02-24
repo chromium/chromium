@@ -9,15 +9,16 @@ import type {AppElement} from './app.js';
 export function getHtml(this: AppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<cr-toolbar
-    page-name="$i18n{switchInternalTitle}"
-    clear-label="clear"
-    role="banner"
-    show-search="${this.showSearch_}">
-  <cr-button @click="${this.onExportToJsonClick_}">
-    $i18n{exportToJsonButton}
-  </cr-button>
-</cr-toolbar>
+<header>
+  <div class="header-left">
+    <h1>$i18n{switchInternalTitle}</h1>
+  </div>
+  <div class="header-right">
+    <cr-button @click="${this.onExportToJsonClick_}">
+      $i18n{exportToJsonButton}
+    </cr-button>
+  </div>
+</header>
 
 <div class="container">
   <div class="card">
