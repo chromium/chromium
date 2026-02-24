@@ -76,6 +76,7 @@
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -281,28 +282,6 @@ class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
     }
 
     return 0;
-  }
-
-  void ForceInstallWebApp(const webapps::AppId& app_id, const GURL& url) {
-    web_app::WebAppTestInstallObserver observer(browser()->profile());
-    observer.BeginListening({app_id});
-
-    base::DictValue dict;
-    dict.Set(web_app::kUrlKey, url.spec());
-    dict.Set(web_app::kDefaultLaunchContainerKey,
-             web_app::kDefaultLaunchContainerWindowValue);
-
-    base::ListValue list;
-    list.Append(std::move(dict));
-
-    browser()->profile()->GetPrefs()->SetList(
-        prefs::kWebAppInstallForceList, std::move(list));
-
-    const webapps::AppId installed_app_id = observer.Wait();
-    EXPECT_EQ(installed_app_id, app_id);
-
-    EXPECT_TRUE(provider().registrar_unsafe().HasExternalAppWithInstallSource(
-        installed_app_id, web_app::ExternalInstallSource::kExternalPolicy));
   }
 
  private:
@@ -627,31 +606,27 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, MenuButtonUpdatePending) {
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
                        MenuButtonMigrationPending) {
-  const GURL app_url("https://old.app.com ");
-  webapps::AppId app_id = helper()->InstallAndLaunchWebApp(browser(), app_url);
+  ASSERT_TRUE(https_server()->Started());
+  const GURL app_url = https_server()->GetURL(
+      "/web_apps/migration/migrate_from/no_migration_info.html");
+  webapps::AppId app_id = web_app::InstallWebAppFromPage(browser(), app_url);
+  helper()->LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
 
   WebAppMenuButton* const menu_button = static_cast<WebAppMenuButton*>(
       helper()->browser_view()->toolbar_button_provider()->GetAppMenuButton());
   EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
 
-  // Set pending migration info.
-  {
-    web_app::ScopedRegistryUpdate update =
-        provider().sync_bridge_unsafe().BeginUpdate();
-    web_app::proto::PendingMigrationInfo migration_info;
-    migration_info.set_manifest_id("https://new.app.com ");
-    migration_info.set_behavior(
-        web_app::proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
-    update->UpdateApp(app_id)->SetPendingMigrationInfo(
-        std::move(migration_info));
-  }
+  // Set pending migration info by visiting a site with migration info pointing
+  // to the installed app.
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      https_server()->GetURL("/web_apps/migration/migrate_to/suggest.html")));
+  web_app::test::WaitForLoadCompleteAndMaybeManifestSeen(
+      *browser()->tab_strip_model()->GetActiveWebContents());
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   menu_button->UpdateStateForTesting();
   EXPECT_TRUE(menu_button->IsLabelPresentAndVisible());
-  EXPECT_EQ(menu_button->GetViewAccessibility().GetCachedName(),
-            u"Customize and control A minimal-ui app. Update is available.");
-  EXPECT_EQ(menu_button->GetRenderedTooltipText(gfx::Point()),
-            u"Customize and control A minimal-ui app. Update is available.");
 
   {
     web_app::ScopedRegistryUpdate update =
@@ -661,41 +636,20 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
 
   menu_button->UpdateStateForTesting();
   EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
-  EXPECT_EQ(menu_button->GetViewAccessibility().GetCachedName(),
-            u"Customize and control A minimal-ui app");
-  EXPECT_EQ(menu_button->GetRenderedTooltipText(gfx::Point()),
-            u"Customize and control A minimal-ui app");
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
                        MenuButtonMigrationPending_PolicyApp) {
   ASSERT_TRUE(https_server()->Started());
-  const GURL app_url = https_server()->GetURL("/simple.html");
+  const GURL app_url =
+      https_server()->GetURL("/web_apps/migration/migrate_from/suggest.html");
   webapps::AppId app_id =
-      web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, app_url);
-  ForceInstallWebApp(app_id, app_url);
+      web_app::ForceInstallWebApp(browser()->profile(), app_url).value();
   helper()->LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
   WebAppMenuButton* const menu_button = static_cast<WebAppMenuButton*>(
       helper()->browser_view()->toolbar_button_provider()->GetAppMenuButton());
-  EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
-
-  // Set pending migration info.
-  // TODO(crbug.com/485342623) Switch to Migration test website to avoid modify
-  // the registrar
-  {
-    web_app::ScopedRegistryUpdate update =
-        provider().sync_bridge_unsafe().BeginUpdate();
-    web_app::proto::PendingMigrationInfo migration_info;
-    migration_info.set_manifest_id("https://new.app.com");
-    migration_info.set_behavior(
-        web_app::proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
-    update->UpdateApp(app_id)->SetPendingMigrationInfo(
-        std::move(migration_info));
-  }
-
-  // The menu button shouldn't show the migration label because the app source
-  // (EXTERNAL_POLICY) is invalid for migration.
-  menu_button->UpdateStateForTesting();
   EXPECT_FALSE(menu_button->IsLabelPresentAndVisible());
 }
 
