@@ -437,6 +437,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreMostRecentlyClosedWindow) {
   EXPECT_FALSE(tab_list3->GetTab(1)->IsActivated());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/405219627): Port to desktop Android once we support restoring
+// windows (which store their info on the Java side) via session ID. This will
+// require a stable identifier we can use to look up closed windows.
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreWindowBySessionId) {
   // Open a second window.
   BrowserWindowInterface* browser2 =
@@ -501,6 +505,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreWindowBySessionId) {
   EXPECT_EQ(GURL("chrome://version/"),
             tab_list3->GetTab(0)->GetContents()->GetVisibleURL());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionWindow) {
   CreateSessionModels();

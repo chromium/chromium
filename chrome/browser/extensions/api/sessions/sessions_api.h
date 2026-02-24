@@ -116,8 +116,8 @@ class SessionsRestoreFunction : public ExtensionFunction {
   ResponseValue GetRestoredTabResult(content::WebContents* contents);
   ResponseValue GetRestoredWindowResult(int window_id);
   ResponseAction RestoreMostRecentlyClosed(BrowserWindowInterface* browser);
-  ResponseAction RestoreLocalSession(const SessionId& session_id,
-                                     BrowserWindowInterface* browser);
+  ResponseValue RestoreLocalSession(const SessionId& session_id,
+                                    BrowserWindowInterface* browser);
   ResponseAction RestoreForeignSession(const SessionId& session_id,
                                        BrowserWindowInterface* browser);
   void OnRestoreForeignSessionWindows(
@@ -125,9 +125,8 @@ class SessionsRestoreFunction : public ExtensionFunction {
 
 #if BUILDFLAG(IS_ANDROID)
   // Uses JNI to query Java `RecentlyClosedEntitiesManager` for recently closed
-  // windows. If instance_id is kInvalidWindowId it returns the most closed.
-  // Otherwise it only returns a window with a matching instance id.
-  ResponseAction QueryRecentlyClosedEntitiesManager(int instance_id);
+  // windows.
+  ResponseAction QueryRecentlyClosedEntitiesManager();
 
   // Callback for `QueryRecentlyClosedEntitiesManager()`.
   void OnGetRecentlyClosedWindow(

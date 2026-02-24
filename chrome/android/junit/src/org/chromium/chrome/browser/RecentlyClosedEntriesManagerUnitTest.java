@@ -46,7 +46,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerImpl;
-import org.chromium.chrome.browser.RecentlyClosedWindowMetadata;
+import org.chromium.chrome.browser.TabModelAndTimestamp;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
@@ -1066,9 +1066,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
 
         // Get the timestamp for the closed window entry.
         RecentlyClosedEntry entry = mRecentlyClosedEntriesManager.getRecentlyClosedEntries().get(0);
-        RecentlyClosedWindow window = (RecentlyClosedWindow) entry;
-        long timestamp = window.getDate().getTime();
-        int instanceId = window.getInstanceId();
+        long timestamp = entry.getDate().getTime();
 
         // Mock out our dependencies. Always return mTabModelSelector.
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
@@ -1098,71 +1096,19 @@ public class RecentlyClosedEntriesManagerUnitTest {
         when(mTabWindowManager.getTabModelSelectorById(anyInt())).thenReturn(mTabModelSelector);
 
         // Invoke the getRecentlyClosed() method with a callback.
-        JniOnceCallback<RecentlyClosedWindowMetadata> callback = mock();
-        mRecentlyClosedEntriesManager.getRecentlyClosedWindowInternal(
-                TabWindowManager.INVALID_WINDOW_ID, callback);
+        JniOnceCallback<TabModelAndTimestamp> callback = mock();
+        mRecentlyClosedEntriesManager.getRecentlyClosedWindowInternal(callback);
 
         // Set up the expected callback result.
-        RecentlyClosedWindowMetadata result = new RecentlyClosedWindowMetadata();
+        TabModelAndTimestamp result = new TabModelAndTimestamp();
         result.tabModel = mTabModel;
         result.timestamp = timestamp;
-        result.instanceId = instanceId;
 
         // The callback is invoked via task with the appropriate tab model.
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     verify(callback).onResult(result);
-                });
-    }
-
-    @Test
-    public void testGetRecentlyClosedWindowInternal_UnknownInstanceId() {
-        // Set up test with a single closed window.
-        createRecentlyClosedWindows(/* numOfWindows= */ 1);
-        mRecentlyClosedEntriesManager.updateRecentlyClosedEntries();
-
-        // Make up a window instance ID that doesn't match this window.
-        RecentlyClosedEntry entry = mRecentlyClosedEntriesManager.getRecentlyClosedEntries().get(0);
-        RecentlyClosedWindow window = (RecentlyClosedWindow) entry;
-        int badInstanceId = window.getInstanceId() + 1000;
-
-        // Mock out our dependencies. Always return mTabModelSelector.
-        TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
-                new TabModelSelectorFactory() {
-                    @Override
-                    public TabModelSelector buildTabbedSelector(
-                            Context context,
-                            ModalDialogManager modalDialogManager,
-                            OneshotSupplier<ProfileProvider> profileProviderSupplier,
-                            TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier,
-                            MultiInstanceManager multiInstanceManager) {
-                        return mTabModelSelector;
-                    }
-
-                    @Override
-                    public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
-                            @WindowId int windowId, Profile profile) {
-                        return Pair.create(null, null);
-                    }
-                });
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-
-        // Always return mTabWindowManager.
-        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-        when(mTabWindowManager.getTabModelSelectorById(anyInt())).thenReturn(mTabModelSelector);
-
-        // Invoke the getRecentlyClosed() method with the bad instance ID.
-        JniOnceCallback<RecentlyClosedWindowMetadata> callback = mock();
-        mRecentlyClosedEntriesManager.getRecentlyClosedWindowInternal(badInstanceId, callback);
-
-        // The callback is invoked with null because no window with the instance ID was found.
-        PostTask.postTask(
-                TaskTraits.UI_DEFAULT,
-                () -> {
-                    verify(callback).onResult(null);
                 });
     }
 
