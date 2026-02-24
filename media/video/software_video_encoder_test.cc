@@ -75,7 +75,6 @@ class SoftwareVideoEncoderTest
   SoftwareVideoEncoderTest() = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(kStandardizeVP9AndAV1Quantizer);
     auto args = GetParam();
     profile_ = args.profile;
     pixel_format_ = args.pixel_format;
@@ -268,10 +267,7 @@ class SoftwareVideoEncoderTest
     switch (codec) {
       case media::VideoCodec::kAV1:
       case media::VideoCodec::kVP9:
-        if (base::FeatureList::IsEnabled(kStandardizeVP9AndAV1Quantizer)) {
-          return {0, 255};
-        }
-        return {0, 63};
+        return {0, 255};
       default:
         return {0, 0};
     }
@@ -316,7 +312,6 @@ class SoftwareVideoEncoderTest
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<VideoEncoder> encoder_;
   std::unique_ptr<VideoDecoder> decoder_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class H264VideoEncoderTest : public SoftwareVideoEncoderTest {};

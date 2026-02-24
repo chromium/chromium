@@ -13,7 +13,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_encoder.h"
 #include "media/gpu/windows/d3d12_video_helpers.h"
 #include "media/gpu/windows/format_utils.h"
@@ -919,14 +918,7 @@ void D3D12VideoEncodeAV1Delegate::FillPictureControlParams(
     software_brc_->ComputeQP(frame_params);
     qindex = software_brc_->GetQP();
   } else if (options.quantizer.has_value()) {
-    int q_val = options.quantizer.value();
-    if (base::FeatureList::IsEnabled(kStandardizeVP9AndAV1Quantizer)) {
-      qindex = q_val;
-    } else {
-      qindex = QuantizerToQIndex(
-          VideoCodec::kAV1, std::clamp(static_cast<uint8_t>(q_val),
-                                       kAV1MinQuantizer, kAV1MaxQuantizer));
-    }
+    qindex = options.quantizer.value();
   }
   const int base_q_idx = std::clamp(
       qindex.value_or(QuantizerToQIndex(VideoCodec::kAV1, kAV1MaxQuantizer)), 0,
