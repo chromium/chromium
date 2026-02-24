@@ -39,16 +39,14 @@ class FormDataAndroid {
   // Updates `form_` with state from Java side.
   void UpdateFromJava();
 
-  // Gets the index of a given field. It returns `true` and sets the `index` if
-  // `field` is found.
-  bool GetFieldIndex(const FormFieldData& field, size_t* index);
-
-  // Gets the index of a given field. It returns `true` and sets the `index` if
-  // a similar field is found. This method compares fewer attributes than
-  // `GetFieldIndex()` does, and should be used when the field could be changed
+  // Gets the index of a given field based on similarity checks instead of
+  // `FieldGlobalId`-check. It returns `true` and sets the `index` if a similar
+  // field is found. This method should be used when the field could be changed
   // dynamically, but the change has no impact on autofill purpose. Examples are
   // CSS style changes - see `FormFieldDataAndroid::SimilarFieldAs()` for
   // details.
+  // TODO(crbug.com/456526604): Consider removing and compare only by
+  // `FieldGlobalId` instead.
   bool GetSimilarFieldIndex(const FormFieldData& field, size_t* index);
 
   // Returns true if this form is similar to the given form.

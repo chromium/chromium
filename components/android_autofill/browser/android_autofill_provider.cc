@@ -13,6 +13,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/android_autofill_features.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
@@ -274,14 +275,10 @@ void AndroidAutofillProvider::StartNewSession(AndroidAutofillManager* manager,
   // - The cached form is similar to the current form.
   const bool use_cached_form =
       is_similar_to_cached_form && !has_used_cached_form_;
+
+  // Note that beyond this point `form == session_state_->form.form()`.
   session_state_->form = std::make_unique<FormDataAndroid>(
       form, use_cached_form ? cached_form->session_id() : CreateSessionId());
-  FieldInfo field_info;
-  if (!session_state_->form->GetFieldIndex(field, &field_info.index)) {
-    Reset();
-    return;
-  }
-
   session_state_->manager = manager->GetWeakPtrToLeafClass();
 
   // Set the field type predictions in `session_state_->form`.
@@ -295,6 +292,18 @@ void AndroidAutofillProvider::StartNewSession(AndroidAutofillManager* manager,
           cached_data_->password_parser_overrides.ToFieldTypeMap());
     }
   }
+
+  FieldInfo field_info;
+  field_info.index = [&] {
+    for (size_t i = 0; i < form.fields().size(); ++i) {
+      if (field.global_id() == form.fields()[i].global_id()) {
+        return i;
+      }
+    }
+    NOTREACHED() << "It is assumed in this function that `field` belongs to "
+                    "`form`. Not finding `field`'s index in the list of fields "
+                    "in `form` means that this assumption was violated.";
+  }();
   field_info.bounds = ToClientAreaBound(field.bounds());
 
   [&] {
@@ -625,12 +634,12 @@ void AndroidAutofillProvider::OnManagerResetOrDestroyed(
 
 bool AndroidAutofillProvider::GetCachedIsAutofilled(
     const FormFieldData& field) const {
-  size_t field_index = 0u;
-  return session_state_ && session_state_->form &&
-         session_state_->form->GetFieldIndex(field, &field_index) &&
-         session_state_->form->form()
-             .fields()[field_index]
-             .is_autofilled_according_to_renderer();
+  if (!session_state_ || !session_state_->form) {
+    return false;
+  }
+  const FormFieldData* cached_field =
+      session_state_->form->form().FindFieldByGlobalId(field.global_id());
+  return cached_field && cached_field->is_autofilled_according_to_renderer();
 }
 
 bool AndroidAutofillProvider::IntendsToShowBottomSheet(

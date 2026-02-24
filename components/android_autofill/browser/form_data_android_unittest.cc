@@ -196,21 +196,6 @@ TEST_F(FormDataAndroidTest, SimilarFormAs_Fields) {
   EXPECT_FALSE(af.SimilarFormAs(f));
 }
 
-TEST_F(FormDataAndroidTest, GetFieldIndex) {
-  FormData f = CreateTestForm();
-  f.set_fields({CreateTestField(u"name1"), CreateTestField(u"name2")});
-  FormDataAndroid af(f, kSampleSessionId);
-
-  size_t index = 100;
-  EXPECT_TRUE(af.GetFieldIndex(f.fields()[1], &index));
-  EXPECT_EQ(index, 1u);
-
-  // As updates in `f` are not propagated to the Android version `af`, the
-  // lookup fails.
-  test_api(f).field(1).set_name(u"name3");
-  EXPECT_FALSE(af.GetFieldIndex(f.fields()[1], &index));
-}
-
 // Tests that `GetSimilarFieldIndex` only checks field similarity.
 TEST_F(FormDataAndroidTest, GetSimilarFieldIndex) {
   FormData f = CreateTestForm();
