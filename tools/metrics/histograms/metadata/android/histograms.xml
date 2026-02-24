@@ -523,6 +523,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.AppLaunchDrawBlocker.ActiveTabAvailable" units="ms"
+    expires_after="2026-07-05">
+  <owner>mfiaz@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <summary>
+    Records the time taken for ActiveTabAvailable() to be called after the app
+    is launched.
+  </summary>
+</histogram>
+
 <histogram
     name="Android.ApplicationState.TimeInBackgroundBeforeForegroundedAgain"
     units="ms" expires_after="2026-07-05">
