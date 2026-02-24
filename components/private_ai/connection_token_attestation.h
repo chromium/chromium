@@ -16,6 +16,8 @@
 
 namespace private_ai {
 
+class PrivateAiLogger;
+
 namespace phosphor {
 class TokenManager;
 }
@@ -31,6 +33,7 @@ class ConnectionTokenAttestation : public Connection {
   // fail immediately without attempting to send a request over the wire.
   ConnectionTokenAttestation(std::unique_ptr<Connection> inner_connection,
                              phosphor::TokenManager* token_manager,
+                             PrivateAiLogger* logger,
                              base::OnceCallback<void(ErrorCode)> on_disconnect);
   ~ConnectionTokenAttestation() override;
 
@@ -75,6 +78,7 @@ class ConnectionTokenAttestation : public Connection {
 
   const std::unique_ptr<Connection> inner_connection_;
   const raw_ptr<phosphor::TokenManager> token_manager_;
+  const raw_ptr<PrivateAiLogger> logger_;
   base::OnceCallback<void(ErrorCode)> on_disconnect_;
 
   AttestationState attestation_state_ = AttestationState::kFetchingToken;

@@ -47,7 +47,7 @@ std::unique_ptr<Connection> CreateConnectionStack(
 
   if (token_manager) {
     connection = std::make_unique<ConnectionTokenAttestation>(
-        std::move(connection), token_manager,
+        std::move(connection), token_manager, logger,
         std::move(split_on_disconnect.second));
   }
 
