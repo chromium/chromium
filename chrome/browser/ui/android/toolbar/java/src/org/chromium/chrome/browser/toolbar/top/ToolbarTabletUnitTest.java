@@ -361,7 +361,7 @@ public final class ToolbarTabletUnitTest {
                 mReloadButtonCoordinator,
                 mBackButtonCoordinator,
                 mForwardButtonCoordinator,
-                /* homeButtonDisplay= */ null,
+                mHomeButtonCoordinator,
                 mThemeColorProvider,
                 mIncognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ () -> 1);
@@ -465,7 +465,7 @@ public final class ToolbarTabletUnitTest {
                 mReloadButtonCoordinator,
                 mBackButtonCoordinator,
                 mForwardButtonCoordinator,
-                /* homeButtonDisplay= */ null,
+                mHomeButtonCoordinator,
                 mThemeColorProvider,
                 mIncognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ () -> 1);
@@ -582,7 +582,7 @@ public final class ToolbarTabletUnitTest {
                 mReloadButtonCoordinator,
                 mBackButtonCoordinator,
                 mForwardButtonCoordinator,
-                /* homeButtonDisplay= */ null,
+                mHomeButtonCoordinator,
                 mThemeColorProvider,
                 mIncognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ () -> 1);

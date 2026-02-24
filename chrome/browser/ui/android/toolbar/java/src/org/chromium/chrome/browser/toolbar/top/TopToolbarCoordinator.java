@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataProvider;
@@ -176,8 +177,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
      *     TabStripTransitionDelegate}.
      * @param tabStripTransitionHandler TabStripTransitionHandler instance.
      * @param onLongClickListener OnLongClickListener for the toolbar.
-     * @param homeButtonDisplay The {@link HomeButtonDisplay} to manage the display and behavior of
-     *     home button(s). Should be null on custom tabs.
+     * @param homeButtonCoordinator The {@link HomeButtonCoordinator} to manage the display and
+     *     behavior of the home button.
      * @param topControlsStacker The TopControlsStacker for child objects to check state from.
      * @param browserControlsVisibilityManager BrowserControlsStateProvider instance.
      */
@@ -214,7 +215,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             NonNullObservableSupplier<Boolean> toolbarNavControlsEnabledSupplier,
             @Nullable BackButtonCoordinator backButtonCoordinator,
             @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
-            @Nullable HomeButtonDisplay homeButtonDisplay,
+            HomeButtonCoordinator homeButtonCoordinator,
             TopControlsStacker topControlsStacker,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             Supplier<Integer> incognitoWindowCountSupplier,
@@ -292,7 +293,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                 mReloadButtonCoordinator,
                 mBackButtonCoordinator,
                 forwardButtonCoordinator,
-                homeButtonDisplay,
+                homeButtonCoordinator,
                 normalThemeColorProvider,
                 incognitoStateProvider,
                 incognitoWindowCountSupplier);

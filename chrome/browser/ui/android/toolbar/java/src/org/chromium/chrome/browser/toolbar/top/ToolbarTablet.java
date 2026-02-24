@@ -390,7 +390,7 @@ public class ToolbarTablet extends ToolbarLayout {
             @Nullable ReloadButtonCoordinator reloadButtonCoordinator,
             @Nullable BackButtonCoordinator backButtonCoordinator,
             @Nullable ForwardButtonCoordinator forwardButtonCoordinator,
-            @Nullable HomeButtonDisplay homeButtonDisplay,
+            HomeButtonCoordinator homeButtonCoordinator,
             ThemeColorProvider themeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             @Nullable Supplier<Integer> incognitoWindowCountSupplier) {
@@ -407,7 +407,7 @@ public class ToolbarTablet extends ToolbarLayout {
                 reloadButtonCoordinator,
                 backButtonCoordinator,
                 forwardButtonCoordinator,
-                homeButtonDisplay,
+                homeButtonCoordinator,
                 themeColorProvider,
                 incognitoStateProvider,
                 incognitoWindowCountSupplier);
@@ -425,10 +425,7 @@ public class ToolbarTablet extends ToolbarLayout {
                         incognitoWindowCountSupplier,
                         mToolbarButtonsVisible);
 
-        if (homeButtonDisplay instanceof ToolbarWidthConsumer) {
-            mToolbarWidthConsumers[ToolbarComponentId.HOME] =
-                    (HomeButtonCoordinator) homeButtonDisplay;
-        }
+        mToolbarWidthConsumers[ToolbarComponentId.HOME] = homeButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.BACK] = mBackButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.FORWARD] = mForwardButtonCoordinator;
         mToolbarWidthConsumers[ToolbarComponentId.RELOAD] = mReloadButtonCoordinator;

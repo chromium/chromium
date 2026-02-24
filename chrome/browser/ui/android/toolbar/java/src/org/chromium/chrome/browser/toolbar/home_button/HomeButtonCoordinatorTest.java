@@ -15,8 +15,6 @@ import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.DrawableRes;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,7 +28,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
-import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** Unit tests for HomeButtonCoordinator. */
@@ -41,7 +38,6 @@ public class HomeButtonCoordinatorTest {
     @Mock private Context mContext;
     @Mock private HomeButton mHomeButton;
     @Mock private android.content.res.Resources mResources;
-    @Mock private View.OnKeyListener mOnKeyListener;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private ColorStateList mColorStateList;
@@ -85,90 +81,9 @@ public class HomeButtonCoordinatorTest {
     }
 
     @Test
-    public void testGetView() {
-        assertEquals(mHomeButton, mHomeButtonCoordinator.getView());
-    }
-
-    @Test
-    public void testSetVisibility() {
-        mHomeButtonCoordinator.setVisibility(View.GONE);
-        verify(mHomeButton).setVisibility(View.GONE);
-
-        mHomeButtonCoordinator.setVisibility(View.VISIBLE);
-        verify(mHomeButton).setVisibility(View.VISIBLE);
-    }
-
-    @Test
-    public void testGetVisibility() {
-        when(mHomeButton.getVisibility()).thenReturn(View.INVISIBLE);
-        assertEquals(View.INVISIBLE, mHomeButtonCoordinator.getVisibility());
-    }
-
-    @Test
     public void testOnTintChanged() {
         mHomeButtonCoordinator.onTintChanged(
                 mColorStateList, mColorStateList, BrandedColorScheme.APP_DEFAULT);
         verify(mHomeButton).setImageTintList(eq(mColorStateList));
-    }
-
-    @Test
-    public void testSetBackgroundResource() {
-        @DrawableRes int testResId = R.drawable.default_icon_background_baseline;
-        mHomeButtonCoordinator.setBackgroundResource(testResId);
-        verify(mHomeButton).setBackgroundResource(testResId);
-    }
-
-    @Test
-    public void testGetMeasuredWidth() {
-        int expectedWidth = 100;
-        when(mHomeButton.getMeasuredWidth()).thenReturn(expectedWidth);
-        assertEquals(expectedWidth, mHomeButtonCoordinator.getMeasuredWidth());
-    }
-
-    @Test
-    public void testUpdateState() {
-        mHomeButtonCoordinator.updateState(
-                /* isHomeButtonEnabled= */ true, /* urlHasFocus= */ false);
-        verify(mHomeButton).setVisibility(View.VISIBLE);
-
-        mHomeButtonCoordinator.updateState(
-                /* isHomeButtonEnabled= */ true, /* urlHasFocus= */ true);
-        verify(mHomeButton).setVisibility(View.INVISIBLE);
-
-        mHomeButtonCoordinator.updateState(
-                /* isHomeButtonEnabled= */ false, /* urlHasFocus= */ false);
-        verify(mHomeButton).setVisibility(View.GONE);
-    }
-
-    @Test
-    public void testSetAccessibilityTraversalBefore() {
-        int testViewId = R.id.url_bar;
-        mHomeButtonCoordinator.setAccessibilityTraversalBefore(testViewId);
-        verify(mHomeButton).setAccessibilityTraversalBefore(testViewId);
-    }
-
-    @Test
-    public void testSetTranslationY() {
-        float testTranslationY = 50.0f;
-        mHomeButtonCoordinator.setTranslationY(testTranslationY);
-        verify(mHomeButton).setTranslationY(testTranslationY);
-    }
-
-    @Test
-    public void testSetClickable() {
-        mHomeButtonCoordinator.setClickable(true);
-        verify(mHomeButton).setClickable(true);
-
-        mHomeButtonCoordinator.setClickable(false);
-        verify(mHomeButton).setClickable(false);
-    }
-
-    @Test
-    public void testSetOnKeyListener() {
-        mHomeButtonCoordinator.setOnKeyListener(mOnKeyListener);
-        verify(mHomeButton).setOnKeyListener(mOnKeyListener);
-
-        mHomeButtonCoordinator.setOnKeyListener(null);
-        verify(mHomeButton).setOnKeyListener(null);
     }
 }

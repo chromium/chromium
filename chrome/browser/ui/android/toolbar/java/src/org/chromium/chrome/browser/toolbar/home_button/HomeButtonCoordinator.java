@@ -9,8 +9,6 @@ import android.content.res.ColorStateList;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import androidx.annotation.DrawableRes;
-import androidx.annotation.IdRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.widget.ImageViewCompat;
 
@@ -19,9 +17,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.top.HomeButtonDisplay;
 import org.chromium.chrome.browser.toolbar.top.ToolbarChildButton;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
@@ -39,7 +37,7 @@ import java.util.function.Supplier;
  */
 // TODO(crbug.com/40676825): Fix the visibility bug on NTP.
 @NullMarked
-public class HomeButtonCoordinator extends ToolbarChildButton implements HomeButtonDisplay {
+public class HomeButtonCoordinator extends ToolbarChildButton implements TintObserver {
     private static final int ID_SETTINGS = 0;
 
     private final Context mContext;
@@ -112,18 +110,6 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements HomeBut
         return true;
     }
 
-    // {@link HomeButtonDisplay} implementation.
-
-    @Override
-    public View getView() {
-        return mHomeButton;
-    }
-
-    @Override
-    public void setVisibility(int visibility) {
-        mHomeButton.setVisibility(visibility);
-    }
-
     @Override
     public void setHasSpaceToShow(boolean hasSpaceToShow) {
         mHomeButton.setHasSpaceToShow(hasSpaceToShow);
@@ -131,12 +117,7 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements HomeBut
 
     @Override
     public boolean isVisible() {
-        return getVisibility() == View.VISIBLE;
-    }
-
-    @Override
-    public int getVisibility() {
-        return mHomeButton.getVisibility();
+        return mHomeButton.getVisibility() == View.VISIBLE;
     }
 
     @Override
@@ -145,52 +126,6 @@ public class HomeButtonCoordinator extends ToolbarChildButton implements HomeBut
             @Nullable ColorStateList activityFocusTint,
             int brandedColorScheme) {
         ImageViewCompat.setImageTintList(mHomeButton, tint);
-    }
-
-    @Nullable
-    @Override
-    public ColorStateList getForegroundColor() {
-        return ImageViewCompat.getImageTintList(mHomeButton);
-    }
-
-    @Override
-    public void setBackgroundResource(@DrawableRes int resId) {
-        mHomeButton.setBackgroundResource(resId);
-    }
-
-    @Override
-    public int getMeasuredWidth() {
-        return mHomeButton.getMeasuredWidth();
-    }
-
-    @Override
-    public void updateState(boolean isHomeButtonEnabled, boolean urlHasFocus) {
-        boolean hideHomeButton = !isHomeButtonEnabled;
-        if (hideHomeButton) {
-            mHomeButton.setVisibility(View.GONE);
-        } else {
-            mHomeButton.setVisibility(urlHasFocus ? View.INVISIBLE : View.VISIBLE);
-        }
-    }
-
-    @Override
-    public void setAccessibilityTraversalBefore(@IdRes int viewId) {
-        mHomeButton.setAccessibilityTraversalBefore(viewId);
-    }
-
-    @Override
-    public void setTranslationY(float translationY) {
-        mHomeButton.setTranslationY(translationY);
-    }
-
-    @Override
-    public void setClickable(boolean clickable) {
-        mHomeButton.setClickable(clickable);
-    }
-
-    @Override
-    public void setOnKeyListener(View.OnKeyListener listener) {
-        mHomeButton.setOnKeyListener(listener);
     }
 
     public MVCListAdapter.@Nullable ModelList getMenuForTesting() {

@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarHairlineView;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
@@ -120,7 +121,7 @@ public class ToolbarControlContainerTest {
     @Mock private ReloadButtonCoordinator mReloadButtonCoordinator;
     @Mock private BackButtonCoordinator mBackButtonCoordinator;
     @Mock private ForwardButtonCoordinator mForwardButtonCoordinator;
-    @Mock private HomeButtonDisplay mHomeButtonDisplay;
+    @Mock private HomeButtonCoordinator mHomeButtonCoordinator;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
@@ -653,7 +654,7 @@ public class ToolbarControlContainerTest {
                 mReloadButtonCoordinator,
                 mBackButtonCoordinator,
                 mForwardButtonCoordinator,
-                mHomeButtonDisplay,
+                mHomeButtonCoordinator,
                 mThemeColorProvider,
                 mIncognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ null);

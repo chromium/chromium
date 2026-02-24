@@ -108,7 +108,6 @@ android_library("core_java") {
     "java/src/org/chromium/chrome/browser/toolbar/signin_button/SigninButtonViewBinder.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ActionModeController.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/CaptureReadinessResult.java",
-    "java/src/org/chromium/chrome/browser/toolbar/top/HomeButtonDisplay.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/NavigationPopup.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/OptionalBrowsingModeButtonController.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/PhoneCaptureStateToken.java",
