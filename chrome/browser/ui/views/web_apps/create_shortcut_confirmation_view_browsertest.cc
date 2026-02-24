@@ -28,7 +28,6 @@
 enum CreateShortcutViewParams {
   kTabStripEnabled = 0,
   kTabStripDisabled = 1,
-  kCreateShortcutCreatesDiy = 2,
 };
 
 std::string ParamsToString(
@@ -38,8 +37,6 @@ std::string ParamsToString(
       return "TabStripEnabled";
     case kTabStripDisabled:
       return "TabStripDisabled";
-    case kCreateShortcutCreatesDiy:
-      return "CreateShortcutCreatesDiy";
   }
 }
 
@@ -92,24 +89,15 @@ class CreateShortcutConfirmationViewBrowserTest
       case CreateShortcutViewParams::kTabStripEnabled:
         features.insert({blink::features::kDesktopPWAsTabStrip, true});
         features.insert({features::kDesktopPWAsTabStripSettings, true});
-        features.insert({features::kDisableShortcutsEnableDiy, false});
         break;
       case CreateShortcutViewParams::kTabStripDisabled:
         features.insert({blink::features::kDesktopPWAsTabStrip, false});
         features.insert({features::kDesktopPWAsTabStripSettings, false});
-        features.insert({features::kDisableShortcutsEnableDiy, false});
-        break;
-      case CreateShortcutViewParams::kCreateShortcutCreatesDiy:
-        features.insert({features::kDisableShortcutsEnableDiy, true});
         break;
     }
 
     feature_list.InitWithFeatureStates(features);
     DialogBrowserTest::SetUp();
-  }
-
-  bool ShouldCreateDiyAppsForShortcutApps() {
-    return GetParam() == CreateShortcutViewParams::kCreateShortcutCreatesDiy;
   }
 
  private:
@@ -147,7 +135,7 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
 
   EXPECT_EQ(install_info->user_display_mode,
             web_app::mojom::UserDisplayMode::kStandalone);
-  EXPECT_EQ(install_info->is_diy_app, ShouldCreateDiyAppsForShortcutApps());
+  EXPECT_TRUE(install_info->is_diy_app);
 }
 
 IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
@@ -185,9 +173,8 @@ IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
   EXPECT_EQ(install_result.Get<std::unique_ptr<web_app::WebAppInstallInfo>>()
                 ->user_display_mode,
             web_app::mojom::UserDisplayMode::kBrowser);
-  EXPECT_EQ(install_result.Get<std::unique_ptr<web_app::WebAppInstallInfo>>()
-                ->is_diy_app,
-            ShouldCreateDiyAppsForShortcutApps());
+  EXPECT_TRUE(install_result.Get<std::unique_ptr<web_app::WebAppInstallInfo>>()
+                  ->is_diy_app);
 }
 
 IN_PROC_BROWSER_TEST_P(CreateShortcutConfirmationViewBrowserTest,
@@ -278,6 +265,5 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     CreateShortcutConfirmationViewBrowserTest,
     ::testing::Values(CreateShortcutViewParams::kTabStripDisabled,
-                      CreateShortcutViewParams::kTabStripEnabled,
-                      CreateShortcutViewParams::kCreateShortcutCreatesDiy),
+                      CreateShortcutViewParams::kTabStripEnabled),
     ParamsToString);

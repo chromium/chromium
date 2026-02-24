@@ -252,10 +252,8 @@ void CreateShortcutConfirmationView::OnAccept() {
             : web_app::mojom::UserDisplayMode::kBrowser;
   }
 
-  if (base::FeatureList::IsEnabled(features::kDisableShortcutsEnableDiy)) {
-    web_app_info_->is_diy_app = true;
-  }
-
+  // Shortcut apps are currently installed as DIY apps as of M133.
+  web_app_info_->is_diy_app = true;
   install_tracker_->ReportResult(webapps::MlInstallUserResponse::kAccepted);
   // Some tests repeatedly create this class, and it's not guaranteed this class
   // is destroyed for subsequent calls. So reset the tracker manually here.
