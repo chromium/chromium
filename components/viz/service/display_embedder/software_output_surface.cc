@@ -119,8 +119,9 @@ void SoftwareOutputSurface::SwapBuffersCallback(base::TimeTicks swap_time,
   if (needs_swap_size_notifications_)
     client_->DidSwapWithSize(pixel_size);
 #endif
-  client_->DidReceivePresentationFeedback(
-      gfx::PresentationFeedback(now, interval_to_next_refresh, 0u));
+  gfx::PresentationFeedback feedback(now, interval_to_next_refresh, 0u);
+  feedback.display_trace_id = swap_trace_id;
+  client_->DidReceivePresentationFeedback(feedback);
 }
 
 void SoftwareOutputSurface::UpdateVSyncParameters(base::TimeTicks timebase,

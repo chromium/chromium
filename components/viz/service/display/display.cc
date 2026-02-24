@@ -189,20 +189,6 @@ void IssueDisplayRenderingStatsEvent() {
       TRACE_EVENT_SCOPE_THREAD, "data", std::move(record_data));
 }
 
-int64_t PopFrontDisplayTraceId(std::deque<int64_t>& deque) {
-  CHECK(!deque.empty());
-  int64_t display_trace_id = deque.front();
-  deque.pop_front();
-  return display_trace_id;
-}
-
-void PopBackExpectedDisplayTraceId(std::deque<int64_t>& deque,
-                                   int64_t expected_display_trace_id) {
-  CHECK(!deque.empty());
-  CHECK_EQ(deque.back(), expected_display_trace_id);
-  deque.pop_back();
-}
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -258,6 +244,7 @@ void Display::PresentationGroupTiming::OnDraw(
     base::flat_set<base::PlatformThreadId> renderer_main_thread_ids,
     HintSession::BoostType boost_type,
     int64_t choreographer_vsync_id,
+    int64_t swap_trace_id,
     std::optional<PossibleDeadline> deadline,
     std::optional<PossibleDeadline> preferred,
     base::TimeTicks throttled_adjusted_frame_time) {
@@ -268,6 +255,7 @@ void Display::PresentationGroupTiming::OnDraw(
   renderer_main_thread_ids_ = std::move(renderer_main_thread_ids);
   boost_type_ = boost_type;
   choreographer_vsync_id_ = choreographer_vsync_id;
+  swap_trace_id_ = swap_trace_id;
   deadline_ = std::move(deadline);
   preferred_ = std::move(preferred);
   throttled_adjusted_frame_time_ = throttled_adjusted_frame_time;
@@ -816,8 +804,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
   }
 
   int64_t display_trace_id = base::trace_event::GetNextGlobalTraceId();
-  pending_presented_trace_ids_.push_back(display_trace_id);
-  pending_swap_ack_trace_ids_.push_back(display_trace_id);
   TRACE_EVENT(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(display_trace_id),
@@ -1081,8 +1067,9 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         draw_timer->start_time(), std::move(animation_thread_ids),
         std::move(renderer_main_thread_ids),
         /*boost_type=*/HintSession::BoostType::kDefault,
-        params.choreographer_vsync_id.value_or(0), params.deadline,
-        params.preferred_deadline, params.throttled_adjusted_frame_time);
+        params.choreographer_vsync_id.value_or(0), display_trace_id,
+        params.deadline, params.preferred_deadline,
+        params.throttled_adjusted_frame_time);
 
     bool has_interactive_frame = false;
     bool has_animated_frame = false;
@@ -1177,10 +1164,6 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         "viz,benchmark",
         /* Graphics.Pipeline.DrawAndSwap */ perfetto::Track(display_trace_id),
         "status", "canceled");
-    PopBackExpectedDisplayTraceId(pending_swap_ack_trace_ids_,
-                                  display_trace_id);
-    PopBackExpectedDisplayTraceId(pending_presented_trace_ids_,
-                                  display_trace_id);
     if (scheduler_) {
       scheduler_->DidSwapBuffers();
       scheduler_->DidReceiveSwapBuffersAck();
@@ -1224,12 +1207,11 @@ void Display::DidReceiveSwapBuffersAck(
   }
 
   const gfx::SwapTimings& timings = params.swap_response.timings;
-  int64_t swap_ack_trace_id =
-      PopFrontDisplayTraceId(pending_swap_ack_trace_ids_);
   TRACE_EVENT_INSTANT("viz,benchmark", "Swap",
-                      perfetto::Track(swap_ack_trace_id), timings.swap_start);
+                      perfetto::Track(params.swap_trace_id),
+                      timings.swap_start);
   TRACE_EVENT_INSTANT("viz,benchmark", "WaitForPresentation",
-                      perfetto::Track(swap_ack_trace_id), timings.swap_end);
+                      perfetto::Track(params.swap_trace_id), timings.swap_end);
 
   if (overlay_processor_)
     overlay_processor_->OverlayPresentationComplete();
@@ -1247,18 +1229,29 @@ void Display::DidReceiveSwapBuffersAck(
     std::move(no_pending_swaps_callback_).Run();
 
   // It's possible to receive multiple calls to DidReceiveSwapBuffersAck()
-  // before DidReceivePresentationFeedback(). Ensure that we're not setting
-  // |swap_timings_| for the same PresentationGroupTiming multiple times.
+  // before DidReceivePresentationFeedback(). Ensure that we're matching
+  // the correct PresentationGroupTiming using the swap_trace_id.
   base::TimeTicks draw_start_timestamp;
-  for (auto& group_timing : pending_presentation_group_timings_) {
-    if (!group_timing.HasSwapped()) {
-      group_timing.OnSwap(timings, scheduler_.get());
-      draw_start_timestamp = group_timing.draw_start_timestamp();
-      break;
+  // Can be unset in tests.
+  if (params.swap_trace_id != -1) {
+    for (auto& group_timing : pending_presentation_group_timings_) {
+      if (group_timing.swap_trace_id() == params.swap_trace_id) {
+        group_timing.OnSwap(timings, scheduler_.get());
+        draw_start_timestamp = group_timing.draw_start_timestamp();
+        break;
+      }
+    }
+  } else {
+    for (auto& group_timing : pending_presentation_group_timings_) {
+      if (!group_timing.HasSwapped()) {
+        group_timing.OnSwap(timings, scheduler_.get());
+        draw_start_timestamp = group_timing.draw_start_timestamp();
+        break;
+      }
     }
   }
 
-  // We should have at least one group that hasn't received a SwapBuffersAck
+  // We should have at least one group that matches the swap_trace_id.
   DCHECK(!draw_start_timestamp.is_null());
 
   // Check that the swap timings correspond with the timestamp from when
@@ -1338,11 +1331,23 @@ void Display::DidReceivePresentationFeedback(
     DLOG(ERROR) << "Received unexpected PresentationFeedback";
     return;
   }
-  auto& presentation_group_timing = pending_presentation_group_timings_.front();
+
+  auto group_it = pending_presentation_group_timings_.begin();
+  // Can be unset in tests
+  if (feedback.display_trace_id.has_value()) {
+    group_it =
+        std::find_if(pending_presentation_group_timings_.begin(),
+                     pending_presentation_group_timings_.end(),
+                     [&feedback](const PresentationGroupTiming& t) {
+                       return t.swap_trace_id() == *feedback.display_trace_id;
+                     });
+  }
+
+  auto& presentation_group_timing = *group_it;
   auto copy_feedback = SanitizePresentationFeedback(
       feedback, presentation_group_timing.draw_start_timestamp());
-  int64_t presented_trace_id =
-      PopFrontDisplayTraceId(pending_presented_trace_ids_);
+
+  int64_t presented_trace_id = presentation_group_timing.swap_trace_id();
   copy_feedback.display_trace_id = presented_trace_id;
   TRACE_EVENT_END(
       "viz,benchmark",
@@ -1370,7 +1375,7 @@ void Display::DidReceivePresentationFeedback(
         presentation_group_timing.deadline(),
         presentation_group_timing.preferred());
   }
-  pending_presentation_group_timings_.pop_front();
+  pending_presentation_group_timings_.erase(group_it);
 }
 
 void Display::DidReceiveReleasedOverlays(
