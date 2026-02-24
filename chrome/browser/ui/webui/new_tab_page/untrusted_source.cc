@@ -90,14 +90,14 @@ std::string AsyncParamDataAsCSV(
 std::map<std::string, std::string> ExtractQueryParams(
     std::string_view query_params) {
   std::map<std::string, std::string> params;
-  url::Component query(0, query_params.length());
+  url::Component query(query_params);
   url::Component key, value;
   while (url::ExtractQueryKeyValue(query_params, &query, &key, &value)) {
     url::RawCanonOutputW<kMaxUriDecodeLen> output;
-    url::DecodeURLEscapeSequences(query_params.substr(value.begin, value.len),
-                                  url::DecodeURLMode::kUTF8OrIsomorphic,
+    url::DecodeUrlEscapeSequences(value.AsViewOn(query_params),
+                                  url::DecodeUrlMode::kUtf8OrIsomorphic,
                                   &output);
-    params.insert({std::string(query_params.substr(key.begin, key.len)),
+    params.insert({std::string(key.AsViewOn(query_params)),
                    base::UTF16ToUTF8(output.view())});
   }
 

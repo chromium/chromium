@@ -328,8 +328,8 @@ void ImageDocument::UpdateTitle() {
     return;
   // Compute the title, we use the decoded filename of the resource, falling
   // back on the (decoded) hostname if there is no path.
-  String file_name = DecodeURLEscapeSequences(Url().LastPathComponent(),
-                                              DecodeURLMode::kUTF8OrIsomorphic);
+  String file_name = DecodeUrlEscapeSequences(Url().LastPathComponent(),
+                                              DecodeUrlMode::kUtf8OrIsomorphic);
   if (file_name.empty()) {
     file_name = Url().Host().ToString();
   }

@@ -110,8 +110,8 @@ bool SVGURLReferenceResolver::IsLocal() const {
 AtomicString SVGURLReferenceResolver::FragmentIdentifier() const {
   // Use KURL's FragmentIdentifier to ensure that we're handling the
   // fragment in a consistent manner.
-  return AtomicString(DecodeURLEscapeSequences(
-      AbsoluteUrl().FragmentIdentifier(), DecodeURLMode::kUTF8OrIsomorphic));
+  return AtomicString(DecodeUrlEscapeSequences(
+      AbsoluteUrl().FragmentIdentifier(), DecodeUrlMode::kUtf8OrIsomorphic));
 }
 
 AtomicString SVGURIReference::FragmentIdentifierFromIRIString(

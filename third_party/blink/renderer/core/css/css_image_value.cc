@@ -160,9 +160,9 @@ bool CSSImageValue::IsLocal(const Document& document) const {
 AtomicString CSSImageValue::NormalizedFragmentIdentifier() const {
   // Always use KURL's FragmentIdentifier to ensure that we're handling the
   // fragment in a consistent manner.
-  return AtomicString(DecodeURLEscapeSequences(
+  return AtomicString(DecodeUrlEscapeSequences(
       KURL(UrlData().ResolvedUrl()).FragmentIdentifier(),
-      DecodeURLMode::kUTF8OrIsomorphic));
+      DecodeUrlMode::kUtf8OrIsomorphic));
 }
 
 void CSSImageValue::ReResolveURL(const Document& document) const {

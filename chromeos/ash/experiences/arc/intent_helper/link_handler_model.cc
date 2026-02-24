@@ -29,7 +29,7 @@ bool GetQueryValue(const GURL& url,
                    std::u16string* out) {
   const std::string_view str = url.query();
 
-  url::Component query(0, str.length());
+  url::Component query(str);
   url::Component key;
   url::Component value;
 
@@ -37,14 +37,13 @@ bool GetQueryValue(const GURL& url,
     if (value.is_empty()) {
       continue;
     }
-    if (str.substr(key.begin, key.len) == key_to_find) {
+    if (key.AsViewOn(str) == key_to_find) {
       if (value.len >= kMaxValueLen) {
         return false;
       }
       url::RawCanonOutputW<kMaxValueLen> output;
-      url::DecodeURLEscapeSequences(str.substr(value.begin, value.len),
-                                    url::DecodeURLMode::kUTF8OrIsomorphic,
-                                    &output);
+      url::DecodeUrlEscapeSequences(
+          value.AsViewOn(str), url::DecodeUrlMode::kUtf8OrIsomorphic, &output);
       *out = std::u16string(output.view());
       return true;
     }

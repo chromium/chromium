@@ -329,8 +329,8 @@ void SVGUseElement::ClearResourceReference() {
 }
 
 Element* SVGUseElement::ResolveTargetElement() {
-  AtomicString element_identifier(DecodeURLEscapeSequences(
-      element_url_.FragmentIdentifier(), DecodeURLMode::kUTF8OrIsomorphic));
+  AtomicString element_identifier(DecodeUrlEscapeSequences(
+      element_url_.FragmentIdentifier(), DecodeUrlMode::kUtf8OrIsomorphic));
 
   if (!IsStructurallyExternal()) {
     if (!element_url_.HasFragmentIdentifier()) {

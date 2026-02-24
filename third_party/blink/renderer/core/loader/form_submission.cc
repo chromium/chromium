@@ -81,9 +81,9 @@ static void AppendMailtoPostFormDataToURL(KURL& url,
   if (EqualIgnoringASCIICase(encoding_type, "text/plain")) {
     // Convention seems to be to decode, and s/&/\r\n/. Also, spaces are encoded
     // as %20.
-    body = DecodeURLEscapeSequences(
+    body = DecodeUrlEscapeSequences(
         StrCat({body.Replace('&', "\r\n").Replace('+', ' '), "\r\n"}),
-        DecodeURLMode::kUTF8OrIsomorphic);
+        DecodeUrlMode::kUtf8OrIsomorphic);
   }
 
   Vector<char> body_data;

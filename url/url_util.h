@@ -272,18 +272,18 @@ bool ReplaceComponents(std::string_view spec,
 
 // String helper functions -----------------------------------------------------
 
-enum class DecodeURLMode {
+enum class DecodeUrlMode {
   // UTF-8 decode only. Invalid byte sequences are replaced with U+FFFD.
-  kUTF8,
+  kUtf8,
   // Try UTF-8 decoding. If the input contains byte sequences invalid
   // for UTF-8, apply byte to Unicode mapping.
-  kUTF8OrIsomorphic,
+  kUtf8OrIsomorphic,
 };
 
 // Unescapes the given string using URL escaping rules.
 COMPONENT_EXPORT(URL)
-void DecodeURLEscapeSequences(std::string_view input,
-                              DecodeURLMode mode,
+void DecodeUrlEscapeSequences(std::string_view input,
+                              DecodeUrlMode mode,
                               CanonOutputW* output);
 
 // Escapes the given string as defined by the JS method encodeURIComponent. See

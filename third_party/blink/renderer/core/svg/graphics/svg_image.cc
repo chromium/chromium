@@ -197,7 +197,7 @@ const SVGImageViewInfo* SVGImage::CreateViewInfo(const String& fragment) const {
     return nullptr;
   }
   String decoded_fragment =
-      DecodeURLEscapeSequences(fragment, DecodeURLMode::kUTF8);
+      DecodeUrlEscapeSequences(fragment, DecodeUrlMode::kUtf8);
   Element* target = DynamicTo<Element>(
       root_element->GetDocument().FindAnchor(decoded_fragment));
   const SVGViewSpec* view_spec =

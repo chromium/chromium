@@ -162,8 +162,8 @@ File* DataObjectItem::GetAsFile() const {
     const uint64_t length = data->length();
     auto blob = BlobDataHandle::Create(std::move(data), length);
     return MakeGarbageCollected<File>(
-        DecodeURLEscapeSequences(base_url_.LastPathComponent(),
-                                 DecodeURLMode::kUTF8OrIsomorphic),
+        DecodeUrlEscapeSequences(base_url_.LastPathComponent(),
+                                 DecodeUrlMode::kUtf8OrIsomorphic),
         base::Time::Now(), std::move(blob));
   }
 

@@ -572,7 +572,7 @@ Node* TreeScope::FindAnchor(const String& fragment) {
 
   // 4. Let fragmentBytes be the percent-decoded fragment.
   // 5. Let decodedFragment be the UTF-8 decode without BOM of fragmentBytes.
-  String name = DecodeURLEscapeSequences(fragment, DecodeURLMode::kUTF8);
+  String name = DecodeUrlEscapeSequences(fragment, DecodeUrlMode::kUtf8);
   // 6. Try decodedFragment.
   anchor = FindAnchorWithName(name);
   if (anchor)

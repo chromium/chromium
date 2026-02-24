@@ -2044,8 +2044,8 @@ bool internal::MatchesCommand(const std::string& method,
       name.erase(0, 1);
       CHECK(name.length());
       url::RawCanonOutputT<char16_t> output;
-      url::DecodeURLEscapeSequences(
-          path_parts[i], url::DecodeURLMode::kUTF8OrIsomorphic, &output);
+      url::DecodeUrlEscapeSequences(
+          path_parts[i], url::DecodeUrlMode::kUtf8OrIsomorphic, &output);
       std::string decoded = base::UTF16ToASCII(output.view());
       // Due to crbug.com/40082880, the url decoding libraries decodes all of
       // the % escape sequences except for %%. We need to handle this case

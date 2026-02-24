@@ -39,9 +39,9 @@ bool ParseCssSelectorDirective(const StringView& directive_string,
       // ambiguous case, can't have two value= parts
       if (parsed_value)
         return false;
-      value = DecodeURLEscapeSequences(
+      value = DecodeUrlEscapeSequences(
           part.substr(shared_highlighting::kSelectorDirectiveValuePrefixLength),
-          DecodeURLMode::kUTF8);
+          DecodeUrlMode::kUtf8);
       parsed_value = true;
     } else if (part.starts_with(
                    shared_highlighting::kSelectorDirectiveTypePrefix)) {

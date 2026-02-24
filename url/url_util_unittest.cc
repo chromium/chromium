@@ -299,12 +299,12 @@ TEST_F(URLUtilTest, DecodeURLEscapeSequences) {
 
   for (const auto& decode_case : decode_cases) {
     RawCanonOutputT<char16_t> output;
-    DecodeURLEscapeSequences(decode_case.input,
-                             DecodeURLMode::kUTF8OrIsomorphic, &output);
+    DecodeUrlEscapeSequences(decode_case.input,
+                             DecodeUrlMode::kUtf8OrIsomorphic, &output);
     EXPECT_EQ(decode_case.output, base::UTF16ToUTF8(output.view()));
 
     RawCanonOutputT<char16_t> output_utf8;
-    DecodeURLEscapeSequences(decode_case.input, DecodeURLMode::kUTF8,
+    DecodeUrlEscapeSequences(decode_case.input, DecodeUrlMode::kUtf8,
                              &output_utf8);
     EXPECT_EQ(decode_case.output, base::UTF16ToUTF8(output_utf8.view()));
   }
@@ -312,7 +312,7 @@ TEST_F(URLUtilTest, DecodeURLEscapeSequences) {
   // Our decode should decode %00
   const char zero_input[] = "%00";
   RawCanonOutputT<char16_t> zero_output;
-  DecodeURLEscapeSequences(zero_input, DecodeURLMode::kUTF8, &zero_output);
+  DecodeUrlEscapeSequences(zero_input, DecodeUrlMode::kUtf8, &zero_output);
   EXPECT_NE("%00", base::UTF16ToUTF8(zero_output.view()));
 
   // Test the error behavior for invalid UTF-8.
@@ -335,13 +335,13 @@ TEST_F(URLUtilTest, DecodeURLEscapeSequences) {
 
   for (const auto& utf8_decode_case : utf8_decode_cases) {
     RawCanonOutputT<char16_t> output_iso;
-    DecodeURLEscapeSequences(utf8_decode_case.input,
-                             DecodeURLMode::kUTF8OrIsomorphic, &output_iso);
+    DecodeUrlEscapeSequences(utf8_decode_case.input,
+                             DecodeUrlMode::kUtf8OrIsomorphic, &output_iso);
     EXPECT_EQ(std::u16string(utf8_decode_case.expected_iso.data()),
               output_iso.view());
 
     RawCanonOutputT<char16_t> output_utf8;
-    DecodeURLEscapeSequences(utf8_decode_case.input, DecodeURLMode::kUTF8,
+    DecodeUrlEscapeSequences(utf8_decode_case.input, DecodeUrlMode::kUtf8,
                              &output_utf8);
     EXPECT_EQ(std::u16string(utf8_decode_case.expected_utf8.data()),
               output_utf8.view());

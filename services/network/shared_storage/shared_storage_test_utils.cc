@@ -225,7 +225,7 @@ HandleSharedStorageRequestMultiple(
   if (base::StartsWith(path, MakeSharedStorageRedirectPrefix()) &&
       !query.empty()) {
     url::RawCanonOutputT<char16_t> decode_output;
-    url::DecodeURLEscapeSequences(query, url::DecodeURLMode::kUTF8,
+    url::DecodeUrlEscapeSequences(query, url::DecodeUrlMode::kUtf8,
                                   &decode_output);
     location = base::UTF16ToUTF8(decode_output.view());
   }

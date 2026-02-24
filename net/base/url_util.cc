@@ -598,7 +598,7 @@ std::string UnescapePercentEncodedUrl(std::string_view input) {
   }
   // Run UTF-8 decoding without BOM on the percent-decoding.
   url::RawCanonOutputT<char16_t> canon_output;
-  url::DecodeURLEscapeSequences(result, url::DecodeURLMode::kUTF8,
+  url::DecodeUrlEscapeSequences(result, url::DecodeUrlMode::kUtf8,
                                 &canon_output);
   return base::UTF16ToUTF8(canon_output.view());
 }

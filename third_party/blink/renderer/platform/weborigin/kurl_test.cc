@@ -261,28 +261,25 @@ TEST(KURLTest, DecodeURLEscapeSequences) {
       {"%e4%bd%a0%e5%a5%bd", "\xe4\xbd\xa0\xe5\xa5\xbd"},
   });
 
-  for (size_t i = 0; i < std::size(decode_cases); i++) {
-    String input(decode_cases[i].input);
-    String str =
-        DecodeURLEscapeSequences(input, DecodeURLMode::kUTF8OrIsomorphic);
-    EXPECT_EQ(decode_cases[i].output, str.Utf8());
+  constexpr auto kMode = DecodeUrlMode::kUtf8OrIsomorphic;
+  for (const auto& decode_case : decode_cases) {
+    String input(decode_case.input);
+    String str = DecodeUrlEscapeSequences(input, kMode);
+    EXPECT_EQ(decode_case.output, str.Utf8());
   }
 
   // Our decode should decode %00
-  String zero =
-      DecodeURLEscapeSequences("%00", DecodeURLMode::kUTF8OrIsomorphic);
+  String zero = DecodeUrlEscapeSequences("%00", kMode);
   EXPECT_NE("%00", zero.Utf8());
 
   // Decode UTF-8.
-  String decoded = DecodeURLEscapeSequences("%e6%bc%a2%e5%ad%97",
-                                            DecodeURLMode::kUTF8OrIsomorphic);
+  String decoded = DecodeUrlEscapeSequences("%e6%bc%a2%e5%ad%97", kMode);
   const UChar kDecodedExpected[] = {0x6F22, 0x5b57};
   EXPECT_EQ(String(base::span(kDecodedExpected)), decoded);
 
   // Test the error behavior for invalid UTF-8 (we differ from WebKit here).
   // %e4 %a0 are invalid for UTF-8, but %e5%a5%bd is valid.
-  String invalid = DecodeURLEscapeSequences("%e4%a0%e5%a5%bd",
-                                            DecodeURLMode::kUTF8OrIsomorphic);
+  String invalid = DecodeUrlEscapeSequences("%e4%a0%e5%a5%bd", kMode);
   UChar invalid_expected_helper[] = {0x00e4, 0x00a0, 0x00e5, 0x00a5, 0x00bd};
   String invalid_expected{base::span(invalid_expected_helper)};
   EXPECT_EQ(invalid_expected, invalid);

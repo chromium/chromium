@@ -314,8 +314,8 @@ Element* ExternalSVGResourceDocumentContent::ResolveTarget() {
   Document* external_document = document_content_->GetDocument();
   if (!external_document)
     return nullptr;
-  AtomicString decoded_fragment(DecodeURLEscapeSequences(
-      url_.FragmentIdentifier(), DecodeURLMode::kUTF8OrIsomorphic));
+  AtomicString decoded_fragment(DecodeUrlEscapeSequences(
+      url_.FragmentIdentifier(), DecodeUrlMode::kUtf8OrIsomorphic));
   return external_document->getElementById(decoded_fragment);
 }
 
@@ -352,7 +352,7 @@ Element* ExternalSVGResourceImageContent::ResolveTarget() {
     return nullptr;
   }
   AtomicString decoded_fragment(
-      DecodeURLEscapeSequences(fragment_, DecodeURLMode::kUTF8OrIsomorphic));
+      DecodeUrlEscapeSequences(fragment_, DecodeUrlMode::kUtf8OrIsomorphic));
   return svg_image->GetResourceElement(decoded_fragment);
 }
 

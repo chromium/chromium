@@ -838,8 +838,8 @@ bool ReplaceComponents(std::string_view spec,
                              output, out_parsed);
 }
 
-void DecodeURLEscapeSequences(std::string_view input,
-                              DecodeURLMode mode,
+void DecodeUrlEscapeSequences(std::string_view input,
+                              DecodeUrlMode mode,
                               CanonOutputW* output) {
   if (input.empty()) {
     return;
@@ -880,7 +880,7 @@ void DecodeURLEscapeSequences(std::string_view input,
         // Valid UTF-8 character, convert to UTF-16.
         AppendUtf16Value(code_point, output);
         i = next_character;
-      } else if (mode == DecodeURLMode::kUTF8) {
+      } else if (mode == DecodeUrlMode::kUtf8) {
         DCHECK_EQ(code_point, 0xFFFD);
         AppendUtf16Value(code_point, output);
         i = next_character;

@@ -102,11 +102,11 @@ TextFragmentSelector TextFragmentSelector::FromTextDirective(
 
   DCHECK(terms.empty());
 
-  return TextFragmentSelector(
-      type, DecodeURLEscapeSequences(start, DecodeURLMode::kUTF8),
-      DecodeURLEscapeSequences(end, DecodeURLMode::kUTF8),
-      DecodeURLEscapeSequences(prefix, DecodeURLMode::kUTF8),
-      DecodeURLEscapeSequences(suffix, DecodeURLMode::kUTF8));
+  constexpr auto kMode = DecodeUrlMode::kUtf8;
+  return TextFragmentSelector(type, DecodeUrlEscapeSequences(start, kMode),
+                              DecodeUrlEscapeSequences(end, kMode),
+                              DecodeUrlEscapeSequences(prefix, kMode),
+                              DecodeUrlEscapeSequences(suffix, kMode));
 }
 
 TextFragmentSelector::TextFragmentSelector(SelectorType type,

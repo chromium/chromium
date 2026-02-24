@@ -43,7 +43,7 @@ bool ExpandURITemplateImpl(
 
 std::optional<std::string> AsciiUrlDecodeImpl(std::string_view input) {
   url::RawCanonOutputW<1024> canon_output;
-  url::DecodeURLEscapeSequences(input, url::DecodeURLMode::kUTF8,
+  url::DecodeUrlEscapeSequences(input, url::DecodeUrlMode::kUtf8,
                                 &canon_output);
   std::string output;
   output.reserve(canon_output.length());

@@ -772,10 +772,10 @@ void KURL::SetPath(const String& input) {
   ReplaceComponents(replacements);
 }
 
-String DecodeURLEscapeSequences(const StringView& string, DecodeURLMode mode) {
+String DecodeUrlEscapeSequences(const StringView& string, DecodeUrlMode mode) {
   StringUtf8Adaptor string_utf8(string);
   url::RawCanonOutputT<char16_t> unescaped;
-  url::DecodeURLEscapeSequences(string_utf8.AsStringView(), mode, &unescaped);
+  url::DecodeUrlEscapeSequences(string_utf8.AsStringView(), mode, &unescaped);
   return StringImpl::Create8BitIfPossible(unescaped.view());
 }
 

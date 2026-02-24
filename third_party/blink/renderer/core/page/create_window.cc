@@ -230,8 +230,8 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
 
         // attributionsrc values are encoded in order to support embedded
         // special characters, such as '='.
-        window_features.attribution_srcs->emplace_back(DecodeURLEscapeSequences(
-            original_case_value_string, DecodeURLMode::kUTF8));
+        window_features.attribution_srcs->emplace_back(DecodeUrlEscapeSequences(
+            original_case_value_string, DecodeUrlMode::kUtf8));
       }
     }
   }
