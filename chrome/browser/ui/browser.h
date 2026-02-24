@@ -1071,11 +1071,8 @@ class Browser : public TabStripModelObserver,
   void OnTabClosing(content::WebContents* contents);
   void OnTabDetached(content::WebContents* contents, bool was_active);
   void OnTabDeactivated(content::WebContents* contents);
-  void OnActiveTabChanged(content::WebContents* old_contents,
-                          content::WebContents* new_contents,
-                          int index,
-                          bool tab_removed_for_deletion,
-                          int reason);
+  void OnActiveTabChanged(const TabStripModelChange& change,
+                          const TabStripSelectionChange& selection);
   void OnTabMoved(int from_index, int to_index);
   void OnTabReplacedAt(content::WebContents* old_contents,
                        content::WebContents* new_contents,
