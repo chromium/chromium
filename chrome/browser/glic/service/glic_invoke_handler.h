@@ -33,11 +33,13 @@ class GlicInvokeHandler {
   // Kicks off the invocation process.
   void Invoke();
 
+  // Ends the invocation process with the given error.
+  void OnError(GlicInvokeError error);
+
  private:
   void SendToClient();
   mojom::InvokeOptionsPtr CreateMojoOptions();
   void OnSuccess();
-  void OnError(GlicInvokeError error);
 
   const base::raw_ref<GlicInstanceImpl> instance_;
   GlicInvokeOptions options_;
