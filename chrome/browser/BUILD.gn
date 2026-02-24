@@ -503,10 +503,6 @@ static_library("browser") {
     "geolocation/geolocation_permission_context_extensions.cc",
     "geolocation/geolocation_permission_context_extensions.h",
     "global_features.cc",
-    "gpu/chrome_browser_main_extra_parts_gpu.cc",
-    "gpu/chrome_browser_main_extra_parts_gpu.h",
-    "gpu/gpu_mode_manager.cc",
-    "gpu/gpu_mode_manager.h",
     "heavy_ad_intervention/heavy_ad_service_factory.cc",
     "heavy_ad_intervention/heavy_ad_service_factory.h",
     "history/chrome_history_backend_client.cc",
@@ -1535,6 +1531,10 @@ static_library("browser") {
     "//chrome/browser/feedback:feedback_impl",
     "//chrome/browser/file_system_access:impl",
     "//chrome/browser/google",
+
+    # TODO(crbug.com/486309771): Remove this circular dependency when
+    # chrome_metrics_service_accessor.h gets extracted into its own target.
+    "//chrome/browser/gpu:impl",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/navigation_predictor:impl",
 
@@ -1822,6 +1822,8 @@ static_library("browser") {
     "//chrome/browser/file_system_access:impl",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/gcm",
+    "//chrome/browser/gpu",
+    "//chrome/browser/gpu:impl",
     "//chrome/browser/hang_monitor",
     "//chrome/browser/history",
     "//chrome/browser/image_decoder",

@@ -65,6 +65,7 @@ source_set("impl") {
     "//chrome/browser/contextual_cueing",
     "//chrome/browser/devtools",
     "//chrome/browser/gcm",
+    "//chrome/browser/gpu",
     "//chrome/browser/media/prefs",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",

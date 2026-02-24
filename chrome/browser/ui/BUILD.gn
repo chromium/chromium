@@ -301,6 +301,7 @@ static_library("ui") {
     "//chrome/browser/file_system_access",
     "//chrome/browser/gcm",
     "//chrome/browser/google",
+    "//chrome/browser/gpu",
     "//chrome/browser/hang_monitor",
     "//chrome/browser/history",
     "//chrome/browser/image_decoder",
