@@ -390,7 +390,7 @@
   </message>
   <if expr="not use_titlecase">
     <message name="IDS_BOOKMARK_MANAGER" desc="The label of the menu item that shows the bookmark manager">
-      &amp;Bookmark manager
+      &amp;Open Bookmarks Manager
     </message>
     <message name="IDS_BOOKMARK_MANAGER_ORGANIZE_MENU" desc="Title of the organize menu in the bookmark manager.">
       Organize
@@ -401,7 +401,7 @@
   </if>
   <if expr="use_titlecase">
     <message name="IDS_BOOKMARK_MANAGER" desc="In Title Case: The label of the menu item that shows the bookmark manager">
-      &amp;Bookmark Manager
+      &amp;Open Bookmarks Manager
     </message>
     <message name="IDS_BOOKMARK_MANAGER_ORGANIZE_MENU" desc="In Title Case: Title of the organize menu in the bookmark manager.">
       Organize
@@ -581,12 +581,12 @@
   </if>
   <if expr="not use_titlecase">
     <message name="IDS_SHOW_BOOKMARK_SIDE_PANEL" desc="Title of the menu item that opens the bookmark side panel.">
-      Show all bookmarks
+      Show bookmarks in side panel
     </message>
   </if>
   <if expr="use_titlecase">
     <message name="IDS_SHOW_BOOKMARK_SIDE_PANEL" desc="Title of the menu item that opens the bookmark side panel.">
-      Show All Bookmarks
+      Show Bookmarks in Side Panel
     </message>
   </if>
   <if expr="not use_titlecase">

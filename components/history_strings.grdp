@@ -124,12 +124,12 @@
   </message>
   <if expr="not use_titlecase">
     <message name="IDS_HISTORY_SHOW_HISTORY" desc="The show history menu in the app menu">
-      &amp;History
+      &amp;Open history page
     </message>
   </if>
   <if expr="use_titlecase">
     <message name="IDS_HISTORY_SHOW_HISTORY" desc="In Title Case: The show history menu in the app menu">
-      &amp;History
+      &amp;Open History Page
     </message>
   </if>
   <message name="IDS_HISTORY_SHOW_SIDE_PANEL" desc="Label of the item in drop-down menu that allows user to open the history in the side panel.">
