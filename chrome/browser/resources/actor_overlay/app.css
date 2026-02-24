@@ -84,8 +84,8 @@
 }
 
 #cursorImage {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   background-image: url('magic_cursor.svg');
   background-size: contain;
   background-repeat: no-repeat;
