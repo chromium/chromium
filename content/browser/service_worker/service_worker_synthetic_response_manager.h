@@ -89,6 +89,8 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
   static bool IsDryRunModeEnabledForTesting();
 
  private:
+  friend class ServiceWorkerSyntheticResponseManagerTest;
+
   class SyntheticResponseURLLoaderClient;
 
   void StartRequest(int request_id,

@@ -2702,12 +2702,14 @@ void URLLoader::PerformSyntheticResponseFallback() {
 
   auto [result, written_bytes] =
       WriteSyntheticResponseFallbackBody(response_body_stream_);
-  CHECK_EQ(result, MOJO_RESULT_OK);
-  CHECK_GT(written_bytes, 0u);
-  total_written_bytes_ += written_bytes;
-
-  SendResponseToClient();
-  NotifyCompleted(net::OK);
+  if (result == MOJO_RESULT_OK) {
+    CHECK_GT(written_bytes, 0u);
+    total_written_bytes_ += written_bytes;
+    SendResponseToClient();
+    NotifyCompleted(net::OK);
+  } else {
+    NotifyCompleted(net::ERR_INSUFFICIENT_RESOURCES);
+  }
 }
 
 }  // namespace network
