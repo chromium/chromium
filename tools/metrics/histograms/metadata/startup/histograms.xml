@@ -94,6 +94,62 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Startup.Android.Cold.ExperimentalProcessStart.TimeToFirstContentfulPaint.{StartActivityType}"
+    units="ms" expires_after="2026-08-12">
+  <owner>nafisabedin@google.com</owner>
+  <owner>pasko@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time from process creation to FirstContentfulPaint happening in this
+    activity. Cold start is determined by whether the process creation reason is
+    Activity. This also filters out non-Activity launches.
+
+    Recorded only for tabbed activity and on cold starts. Therefore it cannot be
+    recorded more than once in the application lifetime.
+
+    Preserves the same recording semantics as
+    Startup.Android.Cold.TimeToFirstContentfulPaint3.{StartActivityType}.
+  </summary>
+</histogram>
+
+<histogram
+    name="Startup.Android.Cold.ExperimentalProcessStart.TimeToFirstNavigationCommit.{StartActivityType}"
+    units="ms" expires_after="2026-08-12">
+  <owner>nafisabedin@google.com</owner>
+  <owner>pasko@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time from process start to the FirstNavigationCommit happening for a
+    particular {StartActivityType}. Cold start is determined by whether the
+    process creation reason is Activity. This also filters out non-Activity
+    launches.
+
+    Recorded for both Tabbed Activities and WebApks only during cold starts.
+
+    Preserves the same recording semantics as
+    Startup.Android.Cold.TimeToFirstNavigationCommit3.{StartActivityType}.
+  </summary>
+</histogram>
+
+<histogram
+    name="Startup.Android.Cold.ExperimentalProcessStart.TimeToFirstVisibleContent"
+    units="ms" expires_after="2026-08-12">
+  <owner>nafisabedin@google.com</owner>
+  <owner>pasko@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The time from process start to the moment Chrome first appears ready to the
+    user. Cold start is determined by whether the process creation reason is
+    Activity. This also filters out non-Activity launches.
+
+    Recorded once per application launch and only during cold starts.
+
+    Preserves the same recording semantics as
+    Startup.Android.Cold.TimeToFirstVisibleContent4.
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.Cold.FirstPaintOccurredPreForeground"
     enum="Boolean" expires_after="2026-07-26">
   <owner>blundell@chromium.org</owner>

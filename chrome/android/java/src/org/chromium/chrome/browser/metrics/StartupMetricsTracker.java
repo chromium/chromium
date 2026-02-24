@@ -8,6 +8,7 @@ import android.app.ActivityManager;
 import android.app.ApplicationStartInfo;
 import android.content.Context;
 import android.os.Build;
+import android.os.Process;
 import android.os.SystemClock;
 import android.view.View;
 
@@ -62,6 +63,10 @@ public class StartupMetricsTracker {
             "Startup.Android.Cold.TimeToFirstFrame";
     private static final String COLD_START_MISMATCH_HISTOGRAM =
             "Startup.Android.Cold.TemperatureMismatch";
+    private static final String COLD_START_EXPERIMENTAL_FCP_TABBED_HISTOGRAM =
+            "Startup.Android.Cold.ExperimentalProcessStart.TimeToFirstContentfulPaint.Tabbed";
+    private static final String COLD_START_EXPERIMENTAL_FIRST_VISIBLE_CONTENT_HISTOGRAM =
+            "Startup.Android.Cold.ExperimentalProcessStart.TimeToFirstVisibleContent";
     private boolean mFirstNavigationCommitted;
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -147,7 +152,7 @@ public class StartupMetricsTracker {
                 destroy();
             } else {
                 mFirstNavigationCommitted = true;
-                recordNavigationCommitMetrics(SystemClock.uptimeMillis() - mActivityStartTimeMs);
+                recordNavigationCommitMetrics();
             }
         }
     }
@@ -188,6 +193,9 @@ public class StartupMetricsTracker {
     // The time of the activity onCreate(). All metrics (such as time to first visible content) are
     // reported in uptimeMillis relative to this value.
     private final long mActivityStartTimeMs;
+    // The {@link SystemClock#uptimeMillis()} at which this process was started, but before any of
+    // the application was executed.
+    private final long mProcessStartTimeMs;
     private Supplier<Boolean> mIsRestoringPersistentStateSupplier;
     private boolean mFirstVisibleContentRecorded;
     private boolean mTimeToStartupFcpOrPaintPreviewRecorded;
@@ -210,6 +218,7 @@ public class StartupMetricsTracker {
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<Boolean> isRestoringPersistentStateSupplier) {
         mActivityStartTimeMs = SystemClock.uptimeMillis();
+        mProcessStartTimeMs = Process.getStartUptimeMillis();
         mIsRestoringPersistentStateSupplier = isRestoringPersistentStateSupplier;
         tabModelSelectorSupplier.addSyncObserverAndPostIfNonNull(this::registerObservers);
         SafeBrowsingApiBridge.setOneTimeSafeBrowsingApiUrlCheckObserver(
@@ -374,16 +383,23 @@ public class StartupMetricsTracker {
                 "Startup.Android.Cold." + variant + ".TotalBinderTransactions", binderCallCount);
     }
 
-    private void recordNavigationCommitMetrics(long firstCommitMs) {
+    private void recordNavigationCommitMetrics() {
+        long currentTimeMs = SystemClock.uptimeMillis();
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
+            long activityDurationMs = currentTimeMs - mActivityStartTimeMs;
             RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstNavigationCommit3"
                             + activityTypeToSuffix(mHistogramSuffix),
-                    firstCommitMs);
+                    activityDurationMs);
+            long processDurationMs = currentTimeMs - mProcessStartTimeMs;
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Startup.Android.Cold.ExperimentalProcessStart.TimeToFirstNavigationCommit"
+                            + activityTypeToSuffix(mHistogramSuffix),
+                    processDurationMs);
             if (mHistogramSuffix == ActivityType.TABBED) {
                 recordFirstSafeBrowsingResponseTime();
-                recordTimeToFirstVisibleContent(firstCommitMs);
+                recordTimeToFirstVisibleContent(activityDurationMs);
             }
         }
     }
@@ -400,6 +416,9 @@ public class StartupMetricsTracker {
             } else {
                 RecordHistogram.deprecatedRecordMediumTimesHistogram(
                         "Startup.Android.Cold.TimeToFirstContentfulPaint3.Tabbed", firstFcpMs);
+                RecordHistogram.recordMediumTimesHistogram(
+                        COLD_START_EXPERIMENTAL_FCP_TABBED_HISTOGRAM,
+                        firstFcpMs + (mActivityStartTimeMs - mProcessStartTimeMs));
             }
             recordTimeToStartupFcpOrPaintPreview(firstFcpMs);
         }
@@ -417,6 +436,9 @@ public class StartupMetricsTracker {
         } else {
             RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstVisibleContent4", durationMs);
+            RecordHistogram.recordMediumTimesHistogram(
+                    COLD_START_EXPERIMENTAL_FIRST_VISIBLE_CONTENT_HISTOGRAM,
+                    durationMs + (mActivityStartTimeMs - mProcessStartTimeMs));
         }
     }
 
