@@ -34,6 +34,7 @@
 #include "remoting/signaling/jingle_message_xml_converter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace remoting::protocol {
 

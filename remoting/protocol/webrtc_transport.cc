@@ -45,6 +45,7 @@
 #include "third_party/webrtc/api/enable_media.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/api/rtc_event_log/rtc_event_log_factory.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/video_codecs/builtin_video_decoder_factory.h"
 #include "third_party/webrtc_overrides/environment.h"
 

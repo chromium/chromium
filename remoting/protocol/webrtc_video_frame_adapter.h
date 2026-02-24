@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "remoting/codec/webrtc_video_encoder.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/video/video_frame.h"
 #include "third_party/webrtc/api/video/video_frame_buffer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"

@@ -22,6 +22,7 @@
 #include "remoting/protocol/webrtc_transport.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 

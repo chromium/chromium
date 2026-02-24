@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace remoting::protocol {
 

@@ -33,6 +33,7 @@
 #include "remoting/protocol/webrtc_event_log_data.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 
 namespace base {

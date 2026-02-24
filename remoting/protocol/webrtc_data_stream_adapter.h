@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/message_pipe.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/rtc_base/ref_count.h"
 
 namespace remoting::protocol {

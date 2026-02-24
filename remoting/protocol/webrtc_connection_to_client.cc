@@ -33,6 +33,7 @@
 #include "remoting/protocol/webrtc_video_stream.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/sctp_transport_interface.h"
 
 namespace remoting::protocol {

@@ -19,6 +19,7 @@
 #include "remoting/protocol/host_video_stats_dispatcher.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/webrtc_transport.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace remoting::protocol {
 
