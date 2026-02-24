@@ -149,6 +149,11 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED) {
             view.popup.mTabButton.setEnabled(
                     model.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
+        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE) {
+            view.popup.mTabButton.setVisibility(
+                    model.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
         } else if (propertyKey == FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED) {
             view.popup.mAiModeButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED).run());

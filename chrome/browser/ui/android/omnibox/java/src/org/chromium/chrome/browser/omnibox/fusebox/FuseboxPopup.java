@@ -13,7 +13,6 @@ import android.widget.Button;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
@@ -54,9 +53,6 @@ class FuseboxPopup {
         mPopupWindow.setHorizontalOverlapAnchor(true);
         mPopupWindow.setVerticalOverlapAnchor(true);
         mTabButton = contentView.findViewById(R.id.fusebox_pick_tabs_button);
-        if (ChromeFeatureList.sChromeItemPickerUi.isEnabled()) {
-            mTabButton.setVisibility(View.VISIBLE);
-        }
         mViewGroup = contentView.findViewById(R.id.fusebox_view_group);
         mCameraButton = contentView.findViewById(R.id.fusebox_camera_button);
         mGalleryButton = contentView.findViewById(R.id.fusebox_pick_picture_button);

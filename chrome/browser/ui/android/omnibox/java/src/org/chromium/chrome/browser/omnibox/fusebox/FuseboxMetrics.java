@@ -11,7 +11,6 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -195,7 +194,7 @@ public class FuseboxMetrics {
         return switch (attachmentType) {
             case FuseboxAttachmentButtonType.CAMERA, FuseboxAttachmentButtonType.GALLERY -> true;
             case FuseboxAttachmentButtonType.TAB_PICKER ->
-                    ChromeFeatureList.sChromeItemPickerUi.isEnabled();
+                    model.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE);
             case FuseboxAttachmentButtonType.CURRENT_TAB ->
                     model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE);
             case FuseboxAttachmentButtonType.CLIPBOARD ->
