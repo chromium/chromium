@@ -92,6 +92,10 @@ class AutofillOptionsViewBinder {
             if (aiCategory != null) {
                 aiCategory.setVisible(enabled);
             }
+            Preference serviceProviderTitlePreference = view.getAutofillServiceProviderCategory();
+            if (serviceProviderTitlePreference != null) {
+                serviceProviderTitlePreference.setVisible(enabled);
+            }
         } else {
             assert false : "Unhandled property: " + key;
         }

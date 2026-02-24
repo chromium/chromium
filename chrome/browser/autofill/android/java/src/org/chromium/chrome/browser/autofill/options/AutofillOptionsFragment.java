@@ -48,6 +48,8 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     public static final String PREF_AUTOFILL_AI_AUTHENTICATION_SWITCH =
             "autofill_ai_authentication_switch";
     public static final String PREF_AUTOFILL_AI_CATEGORY = "autofill_ai_category";
+    public static final String PREF_AUTOFILL_SERVICE_PROVIDER_CETEGORY =
+            "autofill_service_provider_category";
 
     private @AutofillOptionsReferrer int mReferrer;
 
@@ -115,6 +117,10 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
 
     @Nullable Preference getAutofillAiCategory() {
         return findPreference(PREF_AUTOFILL_AI_CATEGORY);
+    }
+
+    @Nullable Preference getAutofillServiceProviderCategory() {
+        return findPreference(PREF_AUTOFILL_SERVICE_PROVIDER_CETEGORY);
     }
 
     @Override
@@ -224,6 +230,7 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
                     if (!isAutofillAiEnabled()) {
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_AI_SWITCH));
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_AI_AUTHENTICATION_SWITCH));
+                        indexData.removeEntry(getUniqueId(PREF_AUTOFILL_SERVICE_PROVIDER_CETEGORY));
                     }
                 }
             };

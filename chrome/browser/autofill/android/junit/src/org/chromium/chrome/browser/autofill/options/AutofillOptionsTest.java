@@ -497,6 +497,7 @@ public class AutofillOptionsTest {
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
         assertTrue(mFragment.getAutofillAiCategory().isVisible());
+        assertTrue(mFragment.getAutofillServiceProviderCategory().isVisible());
     }
 
     @Test
@@ -578,6 +579,7 @@ public class AutofillOptionsTest {
         new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
                 .initializeNow();
         assertFalse(mFragment.getAutofillAiCategory().isVisible());
+        assertFalse(mFragment.getAutofillServiceProviderCategory().isVisible());
     }
 
     @Test
