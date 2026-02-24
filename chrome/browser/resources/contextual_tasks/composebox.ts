@@ -185,12 +185,15 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
         this.clearInputAndFocus(/* querySubmitted= */ true);
       });
       this.eventTracker_.add(
-          composebox, 'composebox-resize', (e: CustomEvent) => {
-            if (e.detail.carouselHeight !== undefined) {
+          composebox, 'carousel-resize', (e: CustomEvent) => {
+            if (e.detail.height !== undefined) {
               composebox.style.setProperty(
-                  '--carousel-height', `${e.detail.carouselHeight}px`);
+                  '--carousel-height', `${e.detail.height}px`);
               this.updateTooltipVisibility_();
             }
+          });
+      this.eventTracker_.add(
+          composebox, 'composebox-resize', (e: CustomEvent) => {
             if (e.detail.height !== undefined) {
               this.composeboxHeight_ = e.detail.height;
             }
