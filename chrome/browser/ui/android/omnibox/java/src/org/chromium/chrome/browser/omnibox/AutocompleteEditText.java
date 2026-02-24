@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -399,5 +400,17 @@ public class AutocompleteEditText extends EditTextWithLeading
 
     /* package */ @Nullable AutocompleteEditTextModelBase getModelForTesting() {
         return mModel;
+    }
+
+    @Override
+    public void setSiteSearchChip(@Nullable String keyword) {
+        SiteSearchChipDrawable drawable = null;
+        if (keyword != null) {
+            // TODO(crbug.com/459590224): convert keyword to templateUrl.FullName() or equivalent.
+            drawable = new SiteSearchChipDrawable(getContext(), keyword);
+            drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        }
+        Drawable[] drawables = getCompoundDrawablesRelative();
+        setCompoundDrawablesRelative(drawable, drawables[1], drawables[2], drawables[3]);
     }
 }

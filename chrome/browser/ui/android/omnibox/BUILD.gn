@@ -49,6 +49,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/OverrideUrlLoadingDelegate.java",
     "java/src/org/chromium/chrome/browser/omnibox/OverrideUrlLoadingDelegateImpl.java",
     "java/src/org/chromium/chrome/browser/omnibox/SearchEngineUtils.java",
+    "java/src/org/chromium/chrome/browser/omnibox/SiteSearchChipDrawable.java",
     "java/src/org/chromium/chrome/browser/omnibox/SpanCursorController.java",
     "java/src/org/chromium/chrome/browser/omnibox/SpannableAutocompleteEditTextModel.java",
     "java/src/org/chromium/chrome/browser/omnibox/UrlBar.java",

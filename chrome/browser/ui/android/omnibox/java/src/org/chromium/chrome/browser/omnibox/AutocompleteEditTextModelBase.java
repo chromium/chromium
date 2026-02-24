@@ -114,6 +114,13 @@ public interface AutocompleteEditTextModelBase {
 
         /** Specifies whether the current user input should be shown as multi-line. */
         void setInputIsMultilineEligible(boolean isMultilineEligible);
+
+        /**
+         * Sets or removes the site search chip displayed inside the omnibox.
+         *
+         * @param siteSearchLabel The label to display, or null/empty to remove the chip.
+         */
+        void setSiteSearchChip(@Nullable String siteSearchLabel);
     }
 
     /**

@@ -234,7 +234,7 @@ public class UrlBarCoordinator
 
     @Override
     public void setSiteSearchChip(@Nullable String keyword) {
-        // TODO(crbug.com/459590224): Trigger site search chip.
+        mUrlBar.setSiteSearchChip(keyword);
     }
 
     /** Returns the {@link ViewRectProvider} for the UrlBar. */
