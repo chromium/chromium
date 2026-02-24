@@ -1185,78 +1185,14 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
   }
 }
 
-PrefetchServableState PrefetchContainer::GetServableState() const {
-  return GetServableStateInternal(PrefetchCacheableDuration());
-}
-
-PrefetchServableState PrefetchContainer::GetServableStateForTesting(  // IN-TEST
-    base::TimeDelta cacheable_duration) const {
-  return GetServableStateInternal(cacheable_duration);
-}
-
-PrefetchServableState PrefetchContainer::GetServableStateInternal(
-    base::TimeDelta cacheable_duration) const {
-  PrefetchServableState servable_state =
-      GetServableStateInternal2(cacheable_duration);
-  PrefetchMatchResolverAction match_resolver_action =
-      GetMatchResolverActionInternal(cacheable_duration);
-
-  if (servable_state != match_resolver_action.ToServableState()) {
-    // We are going to switch from the old implementation
-    // (`GetServableStateInternal2()`) to the new one
-    // (`match_resolver_action.ToServableState()`), and check the behavior
-    // difference, if any.
-    SCOPED_CRASH_KEY_NUMBER(
-        "PrefetchContainer", "GSS_ssma",
-        GetCodeOfPrefetchServableStateAndPrefetchMatchResolverActionForDebug(
-            servable_state, match_resolver_action));
-    DUMP_WILL_BE_NOTREACHED();
-  }
-
-  return servable_state;
-}
-
-PrefetchServableState PrefetchContainer::GetServableStateInternal2(
-    base::TimeDelta cacheable_duration) const {
-  // Servable if the non-redirect response (either fully or partially
-  // received body) is servable.
-  if (GetNonRedirectResponseReader() &&
-      GetNonRedirectResponseReader()->Servable(cacheable_duration)) {
-    return PrefetchServableState::kServable;
-  }
-
-  DVLOG(1) << *this << "(GetServableState)"
-           << "(streaming_loader=" << GetStreamingURLLoader().get()
-           << ", LoadState=" << load_state_ << ")";
-  // Can only block until head if the request has been started using a
-  // streaming URL loader and head/failure/redirect hasn't been received yet.
-  if (GetStreamingURLLoader() &&
-      redirect_chain_.back()->response_reader().IsWaitingForResponse()) {
-    return PrefetchServableState::kShouldBlockUntilHeadReceived;
-  }
-
-  if (features::UsePrefetchPrerenderIntegration()) {
-    switch (load_state_) {
-      case LoadState::kNotStarted:
-      case LoadState::kEligible:
-        return PrefetchServableState::kShouldBlockUntilEligibilityGot;
-      case LoadState::kFailedIneligible:
-      case LoadState::kStarted:
-      case LoadState::kDeterminedHead:
-      case LoadState::kFailedDeterminedHead:
-      case LoadState::kCompleted:
-      case LoadState::kFailed:
-      case LoadState::kFailedHeldback:
-        // nop
-        break;
-    }
-  }
-
-  return PrefetchServableState::kNotServable;
-}
-
 PrefetchMatchResolverAction PrefetchContainer::GetMatchResolverAction() const {
   return GetMatchResolverActionInternal(PrefetchCacheableDuration());
+}
+
+PrefetchMatchResolverAction
+PrefetchContainer::GetMatchResolverActionForTesting(  // IN-TEST
+    base::TimeDelta cacheable_duration) const {
+  return GetMatchResolverActionInternal(cacheable_duration);
 }
 
 PrefetchMatchResolverAction PrefetchContainer::GetMatchResolverActionInternal(

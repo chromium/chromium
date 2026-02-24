@@ -1095,8 +1095,10 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     EXPECT_TRUE(serving_handle.HasPrefetchStatus());
     EXPECT_EQ(serving_handle.GetPrefetchStatus(),
               PrefetchStatus::kPrefetchSuccessful);
-    EXPECT_EQ(serving_handle.GetServableStateForTesting(base::TimeDelta::Max()),
-              PrefetchServableState::kServable);
+    EXPECT_EQ(
+        serving_handle.GetMatchResolverActionForTesting(base::TimeDelta::Max())
+            .ToServableState(),
+        PrefetchServableState::kServable);
     ASSERT_TRUE(serving_handle.GetPrefetchContainer()->GetNonRedirectHead());
     EXPECT_TRUE(serving_handle.GetPrefetchContainer()
                     ->GetNonRedirectHead()
@@ -3212,8 +3214,10 @@ TEST_P(PrefetchServiceTest, DISABLED_CHROMEOS(StreamingURLLoaderSuccessCase)) {
   EXPECT_TRUE(serving_handle.HasPrefetchStatus());
   EXPECT_EQ(serving_handle.GetPrefetchStatus(),
             PrefetchStatus::kPrefetchNotFinishedInTime);
-  EXPECT_EQ(serving_handle.GetServableStateForTesting(base::TimeDelta::Max()),
-            PrefetchServableState::kServable);
+  EXPECT_EQ(
+      serving_handle.GetMatchResolverActionForTesting(base::TimeDelta::Max())
+          .ToServableState(),
+      PrefetchServableState::kServable);
   EXPECT_TRUE(serving_handle.GetPrefetchContainer()->GetNonRedirectHead());
   EXPECT_TRUE(serving_handle.GetPrefetchContainer()
                   ->GetNonRedirectHead()
@@ -7444,9 +7448,10 @@ TEST_P(
 
   // Now `PrefetchServableState` should be `kNotServable` since we don't
   // have a non-redirect response but `PrefetchStreamingURLLoader` is gone.
-  EXPECT_EQ(
-      prefetch_container->GetServableStateForTesting(base::TimeDelta::Max()),
-      PrefetchServableState::kNotServable);
+  EXPECT_EQ(prefetch_container
+                ->GetMatchResolverActionForTesting(base::TimeDelta::Max())
+                .ToServableState(),
+            PrefetchServableState::kNotServable);
 
   // Start a navigation. The prefetch should not be served.
   std::unique_ptr<NavigationResult> navigation_result =

@@ -17,6 +17,7 @@ class GURL;
 namespace content {
 
 class PrefetchContainer;
+class PrefetchMatchResolverAction;
 class PrefetchResponseReader;
 class PrefetchSingleRedirectHop;
 class ServiceWorkerClient;
@@ -62,9 +63,10 @@ class CONTENT_EXPORT PrefetchServingHandle final {
   explicit operator bool() const { return IsValid(); }
 
   // Methods redirecting to `GetPrefetchContainer()`.
-  PrefetchServableState GetServableState() const;
+  PrefetchMatchResolverAction GetMatchResolverAction() const;
+
   // Allows to pass `cacheable_duration` for testing.
-  PrefetchServableState GetServableStateForTesting(
+  PrefetchMatchResolverAction GetMatchResolverActionForTesting(
       base::TimeDelta cacheable_duration) const;
   bool HasPrefetchStatus() const;
   PrefetchStatus GetPrefetchStatus() const;

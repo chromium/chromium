@@ -413,7 +413,7 @@ base::WeakPtr<PrefetchContainer> PrefetchService::AddPrefetchRequestInternal(
       return Action::kReplaceOldWithNew;
     }
 
-    switch (prefetch_container_old.GetServableState()) {
+    switch (prefetch_container_old.GetMatchResolverAction().ToServableState()) {
       case PrefetchServableState::kNotServable:
         return Action::kReplaceOldWithNew;
       case PrefetchServableState::kShouldBlockUntilEligibilityGot:
@@ -583,27 +583,9 @@ bool PrefetchService::IsPrefetchStale(
     return true;
   }
 
-  // `PrefetchContainer::LoadState` check.
-  switch (prefetch_container->GetLoadState()) {
-    case PrefetchContainer::LoadState::kFailedIneligible:
-    case PrefetchContainer::LoadState::kFailedHeldback:
-      return true;
-    case PrefetchContainer::LoadState::kNotStarted:
-    case PrefetchContainer::LoadState::kEligible:
-    case PrefetchContainer::LoadState::kStarted:
-    case PrefetchContainer::LoadState::kDeterminedHead:
-    case PrefetchContainer::LoadState::kFailedDeterminedHead:
-    case PrefetchContainer::LoadState::kCompleted:
-    case PrefetchContainer::LoadState::kFailed:
-      break;
-  }
-
-  // `PrefetchServableState` check.
-  PrefetchServableState servable_state = prefetch_container->GetServableState();
-  if (servable_state == PrefetchServableState::kNotServable) {
-    return true;
-  }
-  return false;
+  PrefetchServableState servable_state =
+      prefetch_container->GetMatchResolverAction().ToServableState();
+  return servable_state == PrefetchServableState::kNotServable;
 }
 
 // Parameter class used during eligibility check and `OnGotEligibility*` methods

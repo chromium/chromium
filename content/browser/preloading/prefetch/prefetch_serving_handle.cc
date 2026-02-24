@@ -246,14 +246,15 @@ PrefetchServingHandle::GetCurrentResponseReaderToServeForTesting() {
   return GetCurrentSingleRedirectHopToServe().response_reader().GetWeakPtr();
 }
 
-PrefetchServableState PrefetchServingHandle::GetServableState() const {
-  return GetPrefetchContainer()->GetServableState();
+PrefetchMatchResolverAction PrefetchServingHandle::GetMatchResolverAction()
+    const {
+  return GetPrefetchContainer()->GetMatchResolverAction();
 }
 
-PrefetchServableState
-PrefetchServingHandle::GetServableStateForTesting(  // IN-TEST
+PrefetchMatchResolverAction
+PrefetchServingHandle::GetMatchResolverActionForTesting(  // IN-TEST
     base::TimeDelta cacheable_duration) const {
-  return GetPrefetchContainer()->GetServableStateForTesting(  // IN-TEST
+  return GetPrefetchContainer()->GetMatchResolverActionForTesting(  // IN-TEST
       cacheable_duration);
 }
 
@@ -400,7 +401,7 @@ void PrefetchServingHandle::ContinueOnGotPrefetchToServe(
     return;
   }
 
-  switch (GetServableState()) {
+  switch (GetMatchResolverAction().ToServableState()) {
     case PrefetchServableState::kNotServable:
     case PrefetchServableState::kShouldBlockUntilEligibilityGot:
     case PrefetchServableState::kShouldBlockUntilHeadReceived:
@@ -535,7 +536,7 @@ void PrefetchServingHandle::OnGotPrefetchToServe(
     return;
   }
 
-  switch (GetServableState()) {
+  switch (GetMatchResolverAction().ToServableState()) {
     case PrefetchServableState::kNotServable:
     case PrefetchServableState::kShouldBlockUntilEligibilityGot:
     case PrefetchServableState::kShouldBlockUntilHeadReceived:
