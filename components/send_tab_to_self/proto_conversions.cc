@@ -16,7 +16,6 @@ sync_pb::FormField FormFieldToProto(const PageContext::FormField& field) {
   sync_pb::FormField pb_field;
   pb_field.set_id_attribute(base::UTF16ToUTF8(field.id_attribute));
   pb_field.set_name_attribute(base::UTF16ToUTF8(field.name_attribute));
-  pb_field.set_label(base::UTF16ToUTF8(field.label));
   pb_field.set_form_control_type(field.form_control_type);
   pb_field.set_value(base::UTF16ToUTF8(field.value));
   return pb_field;
@@ -26,7 +25,6 @@ PageContext::FormField FormFieldFromProto(const sync_pb::FormField& pb_field) {
   PageContext::FormField field;
   field.id_attribute = base::UTF8ToUTF16(pb_field.id_attribute());
   field.name_attribute = base::UTF8ToUTF16(pb_field.name_attribute());
-  field.label = base::UTF8ToUTF16(pb_field.label());
   field.form_control_type = pb_field.form_control_type();
   field.value = base::UTF8ToUTF16(pb_field.value());
   return field;

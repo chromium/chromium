@@ -29,10 +29,9 @@ using ::testing::Not;
 using ::testing::Pointee;
 using ::testing::Property;
 
-MATCHER_P5(MatchesFormField,
+MATCHER_P4(MatchesFormField,
            id_attribute,
            name_attribute,
-           label,
            form_control_type,
            value,
            "") {
@@ -44,9 +43,6 @@ MATCHER_P5(MatchesFormField,
              Field("name_attribute", &PageContext::FormField::name_attribute,
                    name_attribute),
              arg, result_listener) &&
-         testing::ExplainMatchResult(
-             Field("label", &PageContext::FormField::label, label), arg,
-             result_listener) &&
          testing::ExplainMatchResult(
              Field("form_control_type",
                    &PageContext::FormField::form_control_type,
@@ -253,8 +249,8 @@ TEST(SendTabToSelfEntry, PageContextRoundTrip) {
       SendTabToSelfEntry::FromProto(local_proto.specifics(),
                                     base::Time::FromTimeT(10)),
       Pointee(MatchesEntry(_, _, _, _, _,
-                           MatchesPageContext(ElementsAre(MatchesFormField(
-                               u"id1", _, _, _, u"value1"))))));
+                           MatchesPageContext(ElementsAre(
+                               MatchesFormField(u"id1", _, _, u"value1"))))));
 }
 
 TEST(SendTabToSelfEntry, PageContextSizeLimit) {

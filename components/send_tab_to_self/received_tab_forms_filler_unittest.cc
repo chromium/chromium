@@ -42,13 +42,11 @@ using ::testing::Test;
 
 PageContext::FormField MakeFormField(std::u16string id_attribute,
                                      std::u16string name_attribute,
-                                     std::u16string label,
                                      std::string form_control_type,
                                      std::u16string value) {
   PageContext::FormField field;
   field.id_attribute = std::move(id_attribute);
   field.name_attribute = std::move(name_attribute);
-  field.label = std::move(label);
   field.form_control_type = std::move(form_control_type);
   field.value = std::move(value);
   return field;
@@ -95,7 +93,7 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldFillMatchingFields) {
   const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
   PageContext::FormFieldInfo form_field_info;
   form_field_info.fields.push_back(
-      MakeFormField(u"id1", u"name1", u"label1", "text", u"shared_value"));
+      MakeFormField(u"id1", u"name1", "text", u"shared_value"));
 
   const FormData form = autofill::test::GetFormData(
       {.fields = {{.renderer_id = autofill::FieldRendererId(1),
@@ -122,8 +120,7 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldFillMatchingFields) {
 
 TEST_F(ReceivedTabFormsFillerTest, ShouldStopOnManagerDestruction) {
   PageContext::FormFieldInfo form_field_info;
-  form_field_info.fields.push_back(
-      MakeFormField(u"id1", u"", u"", "text", u"val"));
+  form_field_info.fields.push_back(MakeFormField(u"id1", u"", "text", u"val"));
 
   EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
 
@@ -145,8 +142,7 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldStopOnManagerDestruction) {
 
 TEST_F(ReceivedTabFormsFillerTest, ShouldStopOnTimeout) {
   PageContext::FormFieldInfo form_field_info;
-  form_field_info.fields.push_back(
-      MakeFormField(u"id1", u"", u"", "text", u"val"));
+  form_field_info.fields.push_back(MakeFormField(u"id1", u"", "text", u"val"));
 
   base::MockCallback<base::OnceClosure> completion_callback;
   ReceivedTabFormsFiller::Start(
@@ -169,7 +165,7 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldNotFillFieldsWithDifferentOrigin) {
       url::Origin::Create(GURL("https://other.com"));
   PageContext::FormFieldInfo form_field_info;
   form_field_info.fields.push_back(
-      MakeFormField(u"id1", u"name1", u"label1", "text", u"shared_value"));
+      MakeFormField(u"id1", u"name1", "text", u"shared_value"));
 
   const FormData form = autofill::test::GetFormData(
       {.fields = {{.renderer_id = autofill::FieldRendererId(1),

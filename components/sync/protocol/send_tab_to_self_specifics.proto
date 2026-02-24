@@ -60,7 +60,7 @@ message FormFieldInfo {
 message FormField {
   optional string id_attribute = 1;
   optional string name_attribute = 2;
-  optional string label = 3;
+  reserved 3;
   optional string form_control_type = 4;
   optional string value = 5;
 }

@@ -41,10 +41,9 @@ using ::testing::Not;
 using ::testing::SizeIs;
 using ::testing::Test;
 
-MATCHER_P5(MatchesFormField,
+MATCHER_P4(MatchesFormField,
            id_attribute,
            name_attribute,
-           label,
            form_control_type,
            value,
            "") {
@@ -57,9 +56,6 @@ MATCHER_P5(MatchesFormField,
              testing::Field("name_attribute",
                             &PageContext::FormField::name_attribute,
                             name_attribute),
-             arg, result_listener) &&
-         testing::ExplainMatchResult(
-             testing::Field("label", &PageContext::FormField::label, label),
              arg, result_listener) &&
          testing::ExplainMatchResult(
              testing::Field("form_control_type",
@@ -119,8 +115,8 @@ TEST_F(OutgoingTabFormFieldExtractorTest, ShouldExtractFields) {
   EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
                                            url::Origin::Create(kUrl))
                   .fields,
-              ElementsAre(MatchesFormField(u"id1", _, _, _, u"value1"),
-                          MatchesFormField(u"id2", _, _, _, u"value2")));
+              ElementsAre(MatchesFormField(u"id1", _, _, u"value1"),
+                          MatchesFormField(u"id2", _, _, u"value2")));
 }
 
 TEST_F(OutgoingTabFormFieldExtractorTest, ShouldFilterUninteractedFields) {
@@ -144,7 +140,7 @@ TEST_F(OutgoingTabFormFieldExtractorTest, ShouldFilterUninteractedFields) {
   EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
                                            url::Origin::Create(kUrl))
                   .fields,
-              ElementsAre(MatchesFormField(u"id1", _, _, _, _)));
+              ElementsAre(MatchesFormField(u"id1", _, _, _)));
 }
 
 TEST_F(OutgoingTabFormFieldExtractorTest, ShouldFilterEmptyFields) {
@@ -242,7 +238,7 @@ TEST_F(OutgoingTabFormFieldExtractorTest,
   EXPECT_THAT(ExtractOutgoingTabFormFields(autofill_manager(),
                                            url::Origin::Create(kUrl))
                   .fields,
-              ElementsAre(MatchesFormField(u"id1", _, _, _, _)));
+              ElementsAre(MatchesFormField(u"id1", _, _, _)));
 }
 
 }  // namespace

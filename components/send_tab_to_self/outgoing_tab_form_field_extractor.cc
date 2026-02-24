@@ -79,7 +79,6 @@ PageContext::FormFieldInfo ExtractOutgoingTabFormFields(
       PageContext::FormField field_data;
       field_data.id_attribute = field->id_attribute();
       field_data.name_attribute = field->name_attribute();
-      field_data.label = field->label();
       field_data.form_control_type = std::string(
           autofill::FormControlTypeToString(field->form_control_type()));
       field_data.value = field->value();

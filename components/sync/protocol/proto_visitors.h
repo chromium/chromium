@@ -1400,7 +1400,6 @@ VISIT_PROTO_FIELDS(const sync_pb::FormFieldInfo& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::FormField& proto) {
   VISIT(id_attribute);
   VISIT(name_attribute);
-  VISIT(label);
   VISIT(form_control_type);
   VISIT(value);
 }

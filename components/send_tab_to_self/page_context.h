@@ -72,7 +72,6 @@ struct PageContext {
 
     std::u16string id_attribute;
     std::u16string name_attribute;
-    std::u16string label;
     std::string form_control_type;
     std::u16string value;
 
