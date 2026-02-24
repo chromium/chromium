@@ -35,6 +35,7 @@ TEST_F(CSSStyleSheetTest,
       MakeGarbageCollected<V8UnionMediaListOrString>("screen, print"));
   init->setAlternate(true);
   init->setDisabled(true);
+  init->setBaseURL("https://example.com/custom/");
   CSSStyleSheet* sheet =
       CSSStyleSheet::Create(GetDocument(), init, exception_state);
   ASSERT_FALSE(exception_state.HadException());
@@ -46,6 +47,7 @@ TEST_F(CSSStyleSheetTest,
   EXPECT_EQ(sheet->media()->mediaText(nullptr), init->media()->GetAsString());
   EXPECT_TRUE(sheet->AlternateFromConstructor());
   EXPECT_TRUE(sheet->disabled());
+  EXPECT_EQ(sheet->BaseURL().GetString(), "https://example.com/custom/");
   EXPECT_EQ(sheet->cssRules(exception_state)->length(), 0U);
   ASSERT_FALSE(exception_state.HadException());
 }

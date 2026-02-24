@@ -103,8 +103,20 @@ const Document* CSSStyleSheet::SingleOwnerDocument(
 CSSStyleSheet* CSSStyleSheet::Create(Document& document,
                                      const CSSStyleSheetInit* options,
                                      ExceptionState& exception_state) {
-  return CSSStyleSheet::Create(document, document.BaseURL(), options,
-                               exception_state);
+  if (!RuntimeEnabledFeatures::CSSStyleSheetInitBaseURLEnabled() ||
+      options->baseURL().IsNull()) {
+    return CSSStyleSheet::Create(document, document.BaseURL(), options,
+                                 exception_state);
+  }
+
+  KURL baseUrl = KURL(document.BaseURL(), options->baseURL());
+  if (!baseUrl.IsValid()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "The 'baseURL' provided in CSSStyleSheetInit is invalid.");
+    return nullptr;
+  }
+  return CSSStyleSheet::Create(document, baseUrl, options, exception_state);
 }
 
 CSSStyleSheet* CSSStyleSheet::Create(Document& document,

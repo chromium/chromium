@@ -1765,6 +1765,11 @@
       base_feature: "CssSelectorFragmentAnchor",
     },
     {
+      // https://drafts.csswg.org/cssom-1/#dom-cssstylesheetinit-baseurl
+      name: "CSSStyleSheetInitBaseURL",
+      status: "experimental",
+    },
+    {
       name: "CSSSupportsAtRuleFunction",
       status: "experimental",
     },
