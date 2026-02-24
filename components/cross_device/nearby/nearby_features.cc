@@ -18,11 +18,6 @@ BASE_FEATURE(kEnableNearbyBleV2, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableNearbyBleV2ExtendedAdvertising,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the use of GATT server from within the implementation of BLE
-// V2, for incremental testing purposes. Assumes that the caller will also check
-// if the hardware supports the GATT server dual role.
-BASE_FEATURE(kEnableNearbyBleV2GattServer, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the use of Bluetooth Classic advertising from within the
 // implementation of Nearby Connections, for incremental testing purposes.
 BASE_FEATURE(kEnableNearbyBluetoothClassicAdvertising,
@@ -51,10 +46,6 @@ bool IsNearbyBleV2Enabled() {
 
 bool IsNearbyBleV2ExtendedAdvertisingEnabled() {
   return base::FeatureList::IsEnabled(kEnableNearbyBleV2ExtendedAdvertising);
-}
-
-bool IsNearbyBleV2GattServerEnabled() {
-  return base::FeatureList::IsEnabled(kEnableNearbyBleV2GattServer);
 }
 
 bool IsNearbyBluetoothClassicAdvertisingEnabled() {

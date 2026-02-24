@@ -721,22 +721,10 @@ TEST_F(BleV2MediumTest, IsExtendedAdvertisementsAvailable_FlagEnabled) {
   EXPECT_FALSE(ble_v2_medium_->IsExtendedAdvertisementsAvailable());
 }
 
-TEST_F(BleV2MediumTest, StartGattServer_DualRoleSupported_FlagDisabled) {
+TEST_F(BleV2MediumTest, StartGattServer_DualRoleSupported) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{::features::kEnableNearbyBleV2},
-      /*disabled_features=*/{::features::kEnableNearbyBleV2GattServer});
-
-  fake_adapter_->is_dual_role_supported_ = true;
-  auto gatt_server = ble_v2_medium_->StartGattServer({});
-  EXPECT_FALSE(gatt_server);
-}
-
-TEST_F(BleV2MediumTest, StartGattServer_DualRoleSupported_FlagEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kEnableNearbyBleV2,
-                            ::features::kEnableNearbyBleV2GattServer},
       /*disabled_features=*/{});
 
   fake_adapter_->is_dual_role_supported_ = true;
@@ -753,8 +741,7 @@ TEST_F(BleV2MediumTest, StartGattServer_DualRoleSupported_FlagEnabled) {
 TEST_F(BleV2MediumTest, StartGattServer_DualRoleNotSupported) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kEnableNearbyBleV2,
-                            ::features::kEnableNearbyBleV2GattServer},
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
       /*disabled_features=*/{});
 
   fake_adapter_->is_dual_role_supported_ = false;
@@ -768,8 +755,7 @@ TEST_F(BleV2MediumTest, StartGattServer_DualRoleNotSupported) {
 TEST_F(BleV2MediumTest, StartAdvertising_RegisterGattServer_Success) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kEnableNearbyBleV2,
-                            ::features::kEnableNearbyBleV2GattServer},
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
       /*disabled_features=*/{});
 
   SetUpGattServerForAdvertising(/*should_register_succeed=*/true);
@@ -793,8 +779,7 @@ TEST_F(BleV2MediumTest, StartAdvertising_RegisterGattServer_Success) {
 TEST_F(BleV2MediumTest, StartAdvertising_RegisterGattServer_Failure) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kEnableNearbyBleV2,
-                            ::features::kEnableNearbyBleV2GattServer},
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
       /*disabled_features=*/{});
 
   SetUpGattServerForAdvertising(/*should_register_succeed=*/false);
@@ -1003,8 +988,7 @@ TEST_F(BleV2MediumTest, AdvertisementsAreConnectable_ExtendedAdvertisement) {
 TEST_F(BleV2MediumTest, AdvertisementsAreConnectable_GattAdvertisement) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kEnableNearbyBleV2,
-                            ::features::kEnableNearbyBleV2GattServer},
+      /*enabled_features=*/{::features::kEnableNearbyBleV2},
       /*disabled_features=*/{});
 
   SetUpGattServerForAdvertising(/*should_register_succeed=*/true);

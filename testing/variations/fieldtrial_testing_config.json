@@ -17418,21 +17418,6 @@
             ]
         }
     ],
-    "NearbyBleV2GattServer": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableNearbyBleV2GattServer"
-                    ]
-                }
-            ]
-        }
-    ],
     "NearbyMdns": [
         {
             "platforms": [

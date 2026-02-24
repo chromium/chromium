@@ -11,13 +11,11 @@ namespace features {
 
 BASE_DECLARE_FEATURE(kEnableNearbyBleV2);
 BASE_DECLARE_FEATURE(kEnableNearbyBleV2ExtendedAdvertising);
-BASE_DECLARE_FEATURE(kEnableNearbyBleV2GattServer);
 BASE_DECLARE_FEATURE(kEnableNearbyBluetoothClassicAdvertising);
 BASE_DECLARE_FEATURE(kEnableNearbyBluetoothClassicScanning);
 BASE_DECLARE_FEATURE(kEnableNearbyMdns);
 bool IsNearbyBleV2Enabled();
 bool IsNearbyBleV2ExtendedAdvertisingEnabled();
-bool IsNearbyBleV2GattServerEnabled();
 bool IsNearbyBluetoothClassicAdvertisingEnabled();
 bool IsNearbyBluetoothClassicScanningEnabled();
 bool IsNearbyMdnsEnabled();

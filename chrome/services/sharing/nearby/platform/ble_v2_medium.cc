@@ -487,10 +487,6 @@ std::unique_ptr<api::ble_v2::GattServer> BleV2Medium::StartGattServer(
     return nullptr;
   }
 
-  if (!features::IsNearbyBleV2GattServerEnabled()) {
-    return nullptr;
-  }
-
   bool is_dual_role_supported;
   adapter_->IsLeScatternetDualRoleSupported(&is_dual_role_supported);
   metrics::RecordGattServerScatternetDualRoleSupported(is_dual_role_supported);
