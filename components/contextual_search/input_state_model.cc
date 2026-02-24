@@ -135,6 +135,10 @@ InputStateModel::InputStateModel(
     for (const auto& model_config : mutable_config.model_configs()) {
       state_.model_configs.push_back(model_config);
     }
+    state_.input_type_configs.reserve(mutable_config.input_type_configs_size());
+    for (const auto& input_type_config : mutable_config.input_type_configs()) {
+      state_.input_type_configs.push_back(input_type_config);
+    }
     if (mutable_config.has_tools_section_config()) {
       state_.tools_section_config = mutable_config.tools_section_config();
     }
