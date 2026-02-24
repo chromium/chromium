@@ -132,10 +132,9 @@ int TcpConnectJob::Connector::DoObtainIPEndPoint() {
 
     // The parent class handles DNS errors itself, so this currently can only be
     // ERR_IO_PENDING or ERR_NAME_NOT_RESOLVED. ERR_NAME_NOT_RESOLVED means no
-    // more IPs are incoming. Return the last connection error, if available, or
-    // ERR_NAME_NOT_RESOLVED / the error from GetNextIPEndPoint(), otherwise.
+    // more IPs are incoming.
     CHECK_EQ(endpoint_info.error(), ERR_NAME_NOT_RESOLVED);
-    return last_error_.value_or(endpoint_info.error());
+    return endpoint_info.error();
   }
 
   current_address_ = std::move(endpoint_info).value();
@@ -224,6 +223,14 @@ int TcpConnectJob::Connector::OnEndpointFailed(int error) {
   parent_->prefer_ipv6_ =
       (current_address_->GetFamily() != ADDRESS_FAMILY_IPV6);
 
+  // If this isn't an IsIPEndPointUsable() error, record the failed connection
+  // attempt. IsIPEndPointUsable() aren't connection errors, and are potentially
+  // less interesting than connection errors, though we don't actually know if
+  // the older error is from a usable endpoint or not.
+  if (error != ERR_NAME_NOT_RESOLVED) {
+    parent_->connection_attempts_.emplace_back(CurrentAddress(), error);
+  }
+
   // Drop the socket to release the endpoint lock, if there is one.
   transport_socket_.reset();
   current_address_.reset();
@@ -236,11 +243,6 @@ int TcpConnectJob::Connector::OnEndpointFailed(int error) {
 
   // Try falling back to the next address in the list.
   next_state_ = State::kObtainIPEndPoint;
-  // Don't overwrite uninteresting errors - this is mostly so failures in
-  // IsIPEndPointUsable() can reuse this code without overwriting old results.
-  if (error != ERR_NAME_NOT_RESOLVED) {
-    last_error_ = error;
-  }
   return OK;
 }
 

@@ -150,7 +150,11 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   void OnServiceEndpointsUpdated() override;
   void OnServiceEndpointRequestFinished(int rv) override;
 
-  // Called back from a Connector when it completes.
+  // Called back from a Connector when it completes. On failure, the last error
+  // of `connection_attempts_` will be preferred over `result`, if there are any
+  // errors there, since the error here will generally be ERR_NAME_NOT_RESOLVED
+  // due to exhausting all provided IP addresses, rather than a connection
+  // error.
   void OnConnectorComplete(int result);
 
   // Returns the next `IPEndPoint` that the Connector should connect to, and
@@ -184,12 +188,17 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // available.
   void UpdateSvcbOptional();
 
-  // Sets `is_done_` to true, and destroys all Connectors. Should only be called
+  // Sets `is_done_` to true, and destroys all connectors. Should only be called
   // when the entire TcpConnectJob is complete - either we've successfully
   // connected to an endpoint and ServiceEndpointRequest is crypto ready, or
-  // we've given up on establishing a connection. Returns the passed in result.
+  // we've given up on establishing a connection.
+  //
   // On success, takes the connected socket from the Connector and calls
-  // SetSocket().
+  // SetSocket(). On failure, returns the error from the last entry in
+  // `connection_attempts_`. If the array is empty, adds an entry in
+  // `connection_attempts_` with an empty IP and `result`, and then return
+  // `result`. That can happen if there's a DNS error, or there are no usable
+  // ServiceEndpoints.
   int SetDone(int result);
 
   // These wrap the corresponding methods in `dns_request_`. They pull results
@@ -229,6 +238,14 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // to. No address will ever br tried twice, even if it appears in multiple
   // ServiceEndpoints.
   std::set<IPEndPoint> attempted_addresses_;
+
+  // IPs are only added to this list once connecting to them fails, so this is a
+  // strict superset of `attempted_addresses_`, except when there are no usable
+  // IPs, in which case an empty attempt is added. The final successful attempt
+  // is not included, nor are any cancelled attempts. May include connection
+  // errors from IPs that connection attempts were made to before learning they
+  // were not usable.
+  ConnectionAttempts connection_attempts_;
 
   // This is updated as DNS results come in, and then will be applied again to
   // the address of any connected socket before use, in case it changes.

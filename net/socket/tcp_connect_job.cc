@@ -87,8 +87,7 @@ bool TcpConnectJob::HasEstablishedConnection() const {
 }
 
 ConnectionAttempts TcpConnectJob::GetConnectionAttempts() const {
-  // TODO(https://crbug.com/484073410): Implement this.
-  return ConnectionAttempts();
+  return connection_attempts_;
 }
 
 ResolveErrorInfo TcpConnectJob::GetResolveErrorInfo() const {
@@ -172,6 +171,11 @@ int TcpConnectJob::DoServiceEndpointsUpdated(
   if (did_fail) {
     resolve_error_info_ = dns_request_->GetResolveErrorInfo();
 
+    // If hostname resolution failed, clear any recorded connection attempts
+    // record. SetDone() will create a new entry containing
+    // `dns_request_final_result` and no IP, as fatal DNS errors takes
+    // precedence over any earlier connection failures.
+    connection_attempts_.clear();
     return SetDone(*dns_request_final_result);
   }
 
@@ -346,6 +350,20 @@ int TcpConnectJob::SetDone(int result) {
     SetSocket(connector_->PassSocket(), GetDnsAliasResults());
     final_address_ = connector_->CurrentAddress();
   } else {
+    // If there were no attempts, there were no usable addresses. Use `result`
+    // in that case.
+    if (connection_attempts_.empty()) {
+      connection_attempts_.emplace_back(IPEndPoint(), result);
+    }
+
+    // Pulling from `connection_attempts_` is the simplest way to get the most
+    // recent error. If there are two Connectors, and they've both failed at
+    // once when we learn there are no more IP addresses to try, it's difficult
+    // to determine which one's error to use. Pulling the last error
+    // `connection_attempts_`, conveniently, avoids that issue, since it's in
+    // chronological order.
+    result = connection_attempts_.back().result;
+
     // On success, may still need the DNS result, but don't need it on failure.
     dns_request_.reset();
   }

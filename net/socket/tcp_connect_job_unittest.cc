@@ -25,6 +25,7 @@
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log.h"
 #include "net/socket/connect_job_test_util.h"
+#include "net/socket/connection_attempts.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/transport_client_socket_pool_test_util.h"
 #include "net/ssl/ssl_config_service.h"
@@ -135,22 +136,55 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
 
   // Combines InitConnectJob() and test_delegate_->StartJobExpectingResult(),
   // expecting an error.
-  void InitRunAndExpectError(Error expected_result, bool expect_sync_result) {
+  void InitRunAndExpectError(
+      Error expected_result,
+      bool expect_sync_result,
+      const std::vector<ConnectionAttempt>& expected_connection_attempts) {
     DCHECK_NE(expected_result, OK);
     InitConnectJob();
     test_delegate_->StartJobExpectingResult(connect_job_.get(), expected_result,
                                             expect_sync_result);
+    EXPECT_EQ(expected_connection_attempts,
+              connect_job_->GetConnectionAttempts());
+  }
+
+  // Waits for `test_delegate_` to see a failure in an already started
+  // TcpConnectJob, performing the same checks on the results as
+  // InitRunAndExpectError().
+  void WaitForError(
+      Error expected_result,
+      const std::vector<ConnectionAttempt>& expected_connection_attempts) {
+    EXPECT_THAT(test_delegate_->WaitForResult(), IsError(expected_result));
+    EXPECT_EQ(expected_connection_attempts,
+              connect_job_->GetConnectionAttempts());
   }
 
   // Combines InitConnectJob() and test_delegate_->StartJobExpectingResult(),
   // expecting success.
-  void InitRunAndExpectSuccess(const IPEndPoint& expected_ip_endpoint,
-                               const ServiceEndpoint& expected_service_endpoint,
-                               bool expect_sync_result) {
+  void InitRunAndExpectSuccess(
+      const IPEndPoint& expected_ip_endpoint,
+      const ServiceEndpoint& expected_service_endpoint,
+      bool expect_sync_result,
+      const std::vector<ConnectionAttempt>& expected_connection_attempts = {}) {
     InitConnectJob();
     test_delegate_->StartJobExpectingResult(connect_job_.get(), OK,
                                             expect_sync_result);
     CheckConnection(expected_ip_endpoint, expected_service_endpoint);
+    EXPECT_EQ(expected_connection_attempts,
+              connect_job_->GetConnectionAttempts());
+  }
+
+  // Waits for `test_delegate_` to see a success in an already started
+  // TcpConnectJob, performing the same checks on the results as
+  // InitRunAndExpectSuccess().
+  void WaitForSuccess(
+      const IPEndPoint& expected_ip_endpoint,
+      const ServiceEndpoint& expected_service_endpoint,
+      const std::vector<ConnectionAttempt>& expected_connection_attempts = {}) {
+    EXPECT_THAT(test_delegate_->WaitForResult(), IsOk());
+    CheckConnection(expected_ip_endpoint, expected_service_endpoint);
+    EXPECT_THAT(connect_job_->GetConnectionAttempts(),
+                testing::ElementsAreArray(expected_connection_attempts));
   }
 
   // Checks that there's a socket, and it's connected to the specified
@@ -246,7 +280,9 @@ TEST_F(TcpConnectJobTest, DnsErrorSync) {
   host_resolver_.ConfigureDefaultResolution()
       .CompleteStartSynchronously(ERR_FAILED)
       .set_resolve_error_info(kResolveErrorInfo);
-  InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/true);
+  InitRunAndExpectError(
+      ERR_FAILED, /*expect_sync_result=*/true,
+      /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
   EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
 }
 
@@ -256,7 +292,9 @@ TEST_F(TcpConnectJobTest, DnsErrorAsync) {
   host_resolver_.AddFakeRequest()
       ->set_resolve_error_info(kResolveErrorInfo)
       .CompleteStartAsynchronously(ERR_FAILED);
-  InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/false);
+  InitRunAndExpectError(
+      ERR_FAILED, /*expect_sync_result=*/false,
+      /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
   EXPECT_FALSE(connect_job_->HasEstablishedConnection());
   EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
 }
@@ -275,7 +313,9 @@ TEST_F(TcpConnectJobTest, DnsErrorDuringConnect) {
       request->set_resolve_error_info(kResolveErrorInfo)
           .CallOnServiceEndpointRequestFinished(ERR_FAILED);
     }));
-    InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/false);
+    InitRunAndExpectError(
+        ERR_FAILED, /*expect_sync_result=*/false,
+        /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
     EXPECT_FALSE(connect_job_->HasEstablishedConnection());
     EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
   }
@@ -300,7 +340,9 @@ TEST_F(TcpConnectJobTest, DnsErrorAfterConnectStart) {
           .CallOnServiceEndpointRequestFinished(ERR_FAILED);
       EXPECT_FALSE(connect_job_->HasEstablishedConnection());
     }));
-    InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/false);
+    InitRunAndExpectError(
+        ERR_FAILED, /*expect_sync_result=*/false,
+        /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
     EXPECT_FALSE(connect_job_->HasEstablishedConnection());
     EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
   }
@@ -322,8 +364,33 @@ TEST_F(TcpConnectJobTest, DnsErrorAfterConnectComplete) {
     request->set_resolve_error_info(kResolveErrorInfo)
         .CallOnServiceEndpointRequestFinished(ERR_FAILED);
   }));
-  InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/false);
+  InitRunAndExpectError(
+      ERR_FAILED, /*expect_sync_result=*/false,
+      /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
   EXPECT_TRUE(connect_job_->HasEstablishedConnection());
+  EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
+}
+
+// Test the case where there's a DNS error after a connection error. The DNS
+// error should be the only error in ConnectionAttempts, and should be what the
+// ConnectJob fails with.
+TEST_F(TcpConnectJobTest, DnsErrorAfterConnectErrpr) {
+  MockConnectCompleter connect_completer;
+  AddConnect(MockConnect(&connect_completer), kIpV4Endpoint1);
+  auto request = host_resolver_.AddFakeRequest();
+  request->set_start_callback(base::BindLambdaForTesting([&]() {
+    request->set_crypto_ready(false)
+        .add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
+        .CallOnServiceEndpointsUpdated();
+    connect_completer.WaitForConnectAndComplete(ERR_UNEXPECTED);
+    EXPECT_FALSE(connect_job_->HasEstablishedConnection());
+    request->set_resolve_error_info(kResolveErrorInfo)
+        .CallOnServiceEndpointRequestFinished(ERR_FAILED);
+  }));
+  InitRunAndExpectError(
+      ERR_FAILED, /*expect_sync_result=*/false,
+      /*expected_connection_attempts=*/{{IPEndPoint(), ERR_FAILED}});
+  EXPECT_FALSE(connect_job_->HasEstablishedConnection());
   EXPECT_EQ(connect_job_->GetResolveErrorInfo(), kResolveErrorInfo);
 }
 
@@ -345,7 +412,9 @@ TEST_F(TcpConnectJobTest, ConnectionErrorSyncDnsSyncConnect) {
       .add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
       .CompleteStartSynchronously(OK);
   AddConnect(MockConnect(SYNCHRONOUS, ERR_FAILED), kIpV4Endpoint1);
-  InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/true);
+  InitRunAndExpectError(
+      ERR_FAILED, /*expect_sync_result=*/true,
+      /*expected_connection_attempts=*/{{kIpV4Endpoint1, ERR_FAILED}});
   EXPECT_FALSE(connect_job_->HasEstablishedConnection());
 }
 
@@ -367,7 +436,9 @@ TEST_F(TcpConnectJobTest, ConnectionErrorSyncDnsAsyncConnect) {
       .add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
       .CompleteStartSynchronously(OK);
   AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV4Endpoint1);
-  InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/false);
+  InitRunAndExpectError(
+      ERR_FAILED, /*expect_sync_result=*/false,
+      /*expected_connection_attempts=*/{{kIpV4Endpoint1, ERR_FAILED}});
   EXPECT_FALSE(connect_job_->HasEstablishedConnection());
 }
 
@@ -389,7 +460,9 @@ TEST_F(TcpConnectJobTest, ConnectionErrorAsyncDnsSyncConnect) {
       ->add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
       .CompleteStartAsynchronously(OK);
   AddConnect(MockConnect(SYNCHRONOUS, ERR_FAILED), kIpV4Endpoint1);
-  InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/false);
+  InitRunAndExpectError(
+      ERR_FAILED, /*expect_sync_result=*/false,
+      /*expected_connection_attempts=*/{{kIpV4Endpoint1, ERR_FAILED}});
   EXPECT_FALSE(connect_job_->HasEstablishedConnection());
 }
 
@@ -411,7 +484,9 @@ TEST_F(TcpConnectJobTest, ConnectionErrorAsyncDnsAsyncConnect) {
       ->add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
       .CompleteStartAsynchronously(OK);
   AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV4Endpoint1);
-  InitRunAndExpectError(ERR_FAILED, /*expect_sync_result=*/false);
+  InitRunAndExpectError(
+      ERR_FAILED, /*expect_sync_result=*/false,
+      /*expected_connection_attempts=*/{{kIpV4Endpoint1, ERR_FAILED}});
   EXPECT_FALSE(connect_job_->HasEstablishedConnection());
 }
 
@@ -544,10 +619,15 @@ TEST_F(TcpConnectJobTest, TwoIpsFirstIpFails) {
                      kIpV6Endpoint2);
           if (second_connect_result == OK) {
             InitRunAndExpectSuccess(kIpV6Endpoint2, service_endpoint,
-                                    /*expect_sync_result=*/everything_sync);
+                                    /*expect_sync_result=*/everything_sync,
+                                    /*expected_connection_attempts=*/
+                                    {{kIpV6Endpoint1, ERR_FAILED}});
           } else {
             InitRunAndExpectError(second_connect_result,
-                                  /*expect_sync_result=*/everything_sync);
+                                  /*expect_sync_result=*/everything_sync,
+                                  /*expected_connection_attempts=*/
+                                  {{kIpV6Endpoint1, ERR_FAILED},
+                                   {kIpV6Endpoint2, second_connect_result}});
           }
           ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
         }
@@ -578,7 +658,9 @@ TEST_F(TcpConnectJobTest, NetworkIoSuspendedFailsInstantly) {
                              ERR_NETWORK_IO_SUSPENDED),
                  kIpV6Endpoint1);
       InitRunAndExpectError(ERR_NETWORK_IO_SUSPENDED,
-                            /*expect_sync_result=*/everything_sync);
+                            /*expect_sync_result=*/everything_sync,
+                            /*expected_connection_attempts=*/
+                            {{kIpV6Endpoint1, ERR_NETWORK_IO_SUSPENDED}});
     }
   }
 }
@@ -754,7 +836,9 @@ TEST_F(TcpConnectJobTest, FirstAttemptedIPEndPoint) {
             /*expect_sync_result=*/false);
       } else {
         InitRunAndExpectError(ERR_NAME_NOT_RESOLVED,
-                              /*expect_sync_result=*/false);
+                              /*expect_sync_result=*/false,
+                              /*expected_connection_attempts=*/
+                              {{IPEndPoint(), ERR_NAME_NOT_RESOLVED}});
       }
     }
   }
@@ -770,7 +854,9 @@ TEST_F(TcpConnectJobTest, H2Disabled) {
   host_resolver_.ConfigureDefaultResolution()
       .add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}, {"h2"}))
       .CompleteStartSynchronously(OK);
-  InitRunAndExpectError(ERR_NAME_NOT_RESOLVED, /*expect_sync_result=*/true);
+  InitRunAndExpectError(
+      ERR_NAME_NOT_RESOLVED, /*expect_sync_result=*/true,
+      /*expected_connection_attempts=*/{{IPEndPoint(), ERR_NAME_NOT_RESOLVED}});
 
   // Ech will still disable non-svcb records.
   host_resolver_.ConfigureDefaultResolution()
@@ -778,7 +864,9 @@ TEST_F(TcpConnectJobTest, H2Disabled) {
           CreateServiceEndpoint({kIpV4Endpoint1}, {"h2"}, /*ech=*/true))
       .add_endpoint(CreateServiceEndpoint({kIpV6Endpoint1}))
       .CompleteStartSynchronously(OK);
-  InitRunAndExpectError(ERR_NAME_NOT_RESOLVED, /*expect_sync_result=*/true);
+  InitRunAndExpectError(
+      ERR_NAME_NOT_RESOLVED, /*expect_sync_result=*/true,
+      /*expected_connection_attempts=*/{{IPEndPoint(), ERR_NAME_NOT_RESOLVED}});
 
   // Fallback to non-svcb records still happens without ECH.
   host_resolver_.ConfigureDefaultResolution()
@@ -801,7 +889,9 @@ TEST_F(TcpConnectJobTest, EchDisabled) {
   host_resolver_.ConfigureDefaultResolution()
       .add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}, {"h3"}))
       .CompleteStartSynchronously(OK);
-  InitRunAndExpectError(ERR_NAME_NOT_RESOLVED, /*expect_sync_result=*/true);
+  InitRunAndExpectError(
+      ERR_NAME_NOT_RESOLVED, /*expect_sync_result=*/true,
+      /*expected_connection_attempts=*/{{IPEndPoint(), ERR_NAME_NOT_RESOLVED}});
 
   // Ech will no longer disable non-svcb records.
   host_resolver_.ConfigureDefaultResolution()
@@ -838,19 +928,34 @@ TEST_F(TcpConnectJobTest, FallbackOrderOneConnectorNoAlpn) {
     host_resolver_.AddFakeRequest()
         ->set_endpoints(service_endpoints)
         .CompleteStartAsynchronously(OK);
+    std::vector<ConnectionAttempt> expected_connection_attempts;
     AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV6Endpoint1);
-    AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV4Endpoint1);
-    AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV6Endpoint2);
-    AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV4Endpoint2);
+    expected_connection_attempts.emplace_back(kIpV6Endpoint1, ERR_FAILED);
+    AddConnect(MockConnect(ASYNC, ERR_INVALID_ARGUMENT), kIpV4Endpoint1);
+    expected_connection_attempts.emplace_back(kIpV4Endpoint1,
+                                              ERR_INVALID_ARGUMENT);
+    AddConnect(MockConnect(ASYNC, ERR_INVALID_ARGUMENT), kIpV6Endpoint2);
+    expected_connection_attempts.emplace_back(kIpV6Endpoint2,
+                                              ERR_INVALID_ARGUMENT);
+    AddConnect(MockConnect(ASYNC, ERR_ACCESS_DENIED), kIpV4Endpoint2);
+    expected_connection_attempts.emplace_back(kIpV4Endpoint2,
+                                              ERR_ACCESS_DENIED);
     AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV6Endpoint3);
+    expected_connection_attempts.emplace_back(kIpV6Endpoint3, ERR_FAILED);
     AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV4Endpoint3);
+    expected_connection_attempts.emplace_back(kIpV4Endpoint3, ERR_FAILED);
     AddConnect(MockConnect(ASYNC, final_connect_result), kIpV6Endpoint4);
+
     if (final_connect_result == OK) {
       InitRunAndExpectSuccess(kIpV6Endpoint4, service_endpoints.back(),
-                              /*expect_sync_result=*/false);
+                              /*expect_sync_result=*/false,
+                              expected_connection_attempts);
     } else {
+      expected_connection_attempts.emplace_back(kIpV6Endpoint4,
+                                                final_connect_result);
       InitRunAndExpectError(final_connect_result,
-                            /*expect_sync_result=*/false);
+                            /*expect_sync_result=*/false,
+                            expected_connection_attempts);
     }
     ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
   }
@@ -884,19 +989,34 @@ TEST_F(TcpConnectJobTest, FallbackOrderOneConnectorWithAlpn) {
     host_resolver_.AddFakeRequest()
         ->set_endpoints(service_endpoints)
         .CompleteStartAsynchronously(OK);
+    std::vector<ConnectionAttempt> expected_connection_attempts;
     AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV6Endpoint1);
-    AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV4Endpoint1);
-    AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV6Endpoint2);
-    AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV4Endpoint2);
-    AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV6Endpoint4);
+    expected_connection_attempts.emplace_back(kIpV6Endpoint1, ERR_FAILED);
+    AddConnect(MockConnect(ASYNC, ERR_ACCESS_DENIED), kIpV4Endpoint1);
+    expected_connection_attempts.emplace_back(kIpV4Endpoint1,
+                                              ERR_ACCESS_DENIED);
+    AddConnect(MockConnect(ASYNC, ERR_INVALID_ARGUMENT), kIpV6Endpoint2);
+    expected_connection_attempts.emplace_back(kIpV6Endpoint2,
+                                              ERR_INVALID_ARGUMENT);
+    AddConnect(MockConnect(ASYNC, ERR_ACCESS_DENIED), kIpV4Endpoint2);
+    expected_connection_attempts.emplace_back(kIpV4Endpoint2,
+                                              ERR_ACCESS_DENIED);
+    AddConnect(MockConnect(ASYNC, ERR_INVALID_ARGUMENT), kIpV6Endpoint4);
+    expected_connection_attempts.emplace_back(kIpV6Endpoint4,
+                                              ERR_INVALID_ARGUMENT);
     AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV4Endpoint4);
+    expected_connection_attempts.emplace_back(kIpV4Endpoint4, ERR_FAILED);
     AddConnect(MockConnect(ASYNC, final_connect_result), kIpV4Endpoint3);
     if (final_connect_result == OK) {
       InitRunAndExpectSuccess(kIpV4Endpoint3, service_endpoints.back(),
-                              /*expect_sync_result=*/false);
+                              /*expect_sync_result=*/false,
+                              expected_connection_attempts);
     } else {
+      expected_connection_attempts.emplace_back(kIpV4Endpoint3,
+                                                final_connect_result);
       InitRunAndExpectError(final_connect_result,
-                            /*expect_sync_result=*/false);
+                            /*expect_sync_result=*/false,
+                            expected_connection_attempts);
     }
     ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
   }
@@ -952,8 +1072,8 @@ TEST_F(TcpConnectJobTest, CryptoReadyAfterConnectStartNoUsableIps) {
 
     // It is a little weird to fail with this error when we actually did get
     // some IP addresses, but this is what we currently do.
-    EXPECT_THAT(test_delegate_->WaitForResult(),
-                IsError(ERR_NAME_NOT_RESOLVED));
+    WaitForError(ERR_NAME_NOT_RESOLVED, /*expected_connection_attempts=*/{
+                     {IPEndPoint(), ERR_NAME_NOT_RESOLVED}});
     EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
   }
@@ -1009,8 +1129,7 @@ TEST_F(TcpConnectJobTest, CryptoReadyAfterConnectStartDifferentUsableIp) {
       EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     }
 
-    EXPECT_THAT(test_delegate_->WaitForResult(), IsOk());
-    CheckConnection(kIpV6Endpoint1, service_endpoint_https);
+    WaitForSuccess(kIpV6Endpoint1, service_endpoint_https);
     EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
   }
@@ -1064,8 +1183,7 @@ TEST_F(TcpConnectJobTest, CryptoReadyAfterConnectStartSameUsableIp) {
       EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     }
 
-    EXPECT_THAT(test_delegate_->WaitForResult(), IsOk());
-    CheckConnection(kIpV6Endpoint1, service_endpoint_https);
+    WaitForSuccess(kIpV6Endpoint1, service_endpoint_https);
     EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
   }
@@ -1119,8 +1237,7 @@ TEST_F(TcpConnectJobTest, CryptoReadyAfterConnectStartSameUsableIpNoEch) {
       EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     }
 
-    EXPECT_THAT(test_delegate_->WaitForResult(), IsOk());
-    CheckConnection(kIpV6Endpoint1, service_endpoint_https);
+    WaitForSuccess(kIpV6Endpoint1, service_endpoint_https);
     EXPECT_TRUE(connect_job_->HasEstablishedConnection());
     ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
   }
@@ -1180,10 +1297,14 @@ TEST_F(TcpConnectJobTest, ConnectsStallForDns) {
       EXPECT_EQ(connect_job_->HasEstablishedConnection(),
                 final_connect_result == OK);
 
-      EXPECT_THAT(test_delegate_->WaitForResult(),
-                  IsError(final_connect_result));
       if (final_connect_result == OK) {
-        CheckConnection(kIpV4Endpoint1, service_endpoint2);
+        WaitForSuccess(
+            kIpV4Endpoint1, service_endpoint2,
+            /*expected_connection_attempts=*/{{kIpV6Endpoint1, ERR_FAILED}});
+      } else {
+        WaitForError(final_connect_result, /*expected_connection_attempts=*/{
+                         {kIpV6Endpoint1, ERR_FAILED},
+                         {kIpV4Endpoint1, final_connect_result}});
       }
       ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
     }
@@ -1215,24 +1336,32 @@ TEST_F(TcpConnectJobTest, HigherPriorityIpsReceivedLast) {
           .CallOnServiceEndpointsUpdated();
     }));
 
+    std::vector<ConnectionAttempt> expected_connection_attempts;
     // Connect to the first IPv6 record from `service_endpoint3`.
     MockConnectCompleter connect_completer1;
     AddConnect(MockConnect(&connect_completer1), kIpV6Endpoint3);
+    expected_connection_attempts.emplace_back(kIpV6Endpoint3, ERR_FAILED);
     // Connect to the IPv4 record from `service_endpoint2`, which will be
     // received during the first connection attempt.
     MockConnectCompleter connect_completer2;
     AddConnect(MockConnect(&connect_completer2), kIpV4Endpoint2);
+    expected_connection_attempts.emplace_back(kIpV4Endpoint2, ERR_FAILED);
     // Connect order for the records in `service_endpoint1`, starting with the
     // first IPv6 record, and skipping over the last IPv6 record, which was
     // already tried. The SYNC/ASYNC choices are random. Note that
     // kIpV4Endpoint2 and kIpV6Endpoint3 have already been tried.
     AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV6Endpoint1);
+    expected_connection_attempts.emplace_back(kIpV6Endpoint1, ERR_FAILED);
     AddConnect(MockConnect(SYNCHRONOUS, ERR_FAILED), kIpV4Endpoint1);
+    expected_connection_attempts.emplace_back(kIpV4Endpoint1, ERR_FAILED);
     AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV6Endpoint2);
+    expected_connection_attempts.emplace_back(kIpV6Endpoint2, ERR_FAILED);
     // Back to the untried entries from `service_endpoint3`, skipping over
     // `service_endpoint2`, as it has no usable records.
     AddConnect(MockConnect(SYNCHRONOUS, ERR_FAILED), kIpV4Endpoint3);
+    expected_connection_attempts.emplace_back(kIpV4Endpoint3, ERR_FAILED);
     AddConnect(MockConnect(SYNCHRONOUS, ERR_FAILED), kIpV6Endpoint4);
+    expected_connection_attempts.emplace_back(kIpV6Endpoint4, ERR_FAILED);
     AddConnect(MockConnect(ASYNC, final_connect_result), kIpV4Endpoint4);
 
     EXPECT_THAT(InitAndStart(), IsError(ERR_IO_PENDING));
@@ -1255,9 +1384,13 @@ TEST_F(TcpConnectJobTest, HigherPriorityIpsReceivedLast) {
 
     connect_completer2.Complete(ERR_FAILED);
 
-    EXPECT_THAT(test_delegate_->WaitForResult(), IsError(final_connect_result));
     if (final_connect_result == OK) {
-      CheckConnection(kIpV4Endpoint4, service_endpoint3);
+      WaitForSuccess(kIpV4Endpoint4, service_endpoint3,
+                     expected_connection_attempts);
+    } else {
+      expected_connection_attempts.emplace_back(kIpV4Endpoint4,
+                                                final_connect_result);
+      WaitForError(final_connect_result, expected_connection_attempts);
     }
     ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
   }
@@ -1275,17 +1408,25 @@ TEST_F(TcpConnectJobTest, ServiceEndpointOverride) {
     for (Error final_connect_result : {OK, ERR_UNEXPECTED}) {
       SCOPED_TRACE(final_connect_result);
 
+      std::vector<ConnectionAttempt> expected_connection_attempts;
       AddConnect(MockConnect(io_mode, ERR_FAILED), kIpV6Endpoint1);
+      expected_connection_attempts.emplace_back(kIpV6Endpoint1, ERR_FAILED);
       AddConnect(MockConnect(io_mode, ERR_FAILED), kIpV4Endpoint1);
+      expected_connection_attempts.emplace_back(kIpV4Endpoint1, ERR_FAILED);
       AddConnect(MockConnect(io_mode, ERR_FAILED), kIpV6Endpoint2);
+      expected_connection_attempts.emplace_back(kIpV6Endpoint2, ERR_FAILED);
       AddConnect(MockConnect(io_mode, final_connect_result), kIpV4Endpoint2);
 
       if (final_connect_result == OK) {
         InitRunAndExpectSuccess(kIpV4Endpoint2, service_endpoint,
-                                io_mode == SYNCHRONOUS);
+                                io_mode == SYNCHRONOUS,
+                                expected_connection_attempts);
         EXPECT_EQ(kDnsAliases, test_delegate_->socket()->GetDnsAliases());
       } else {
-        InitRunAndExpectError(ERR_UNEXPECTED, io_mode == SYNCHRONOUS);
+        expected_connection_attempts.emplace_back(kIpV4Endpoint2,
+                                                  ERR_UNEXPECTED);
+        InitRunAndExpectError(ERR_UNEXPECTED, io_mode == SYNCHRONOUS,
+                              expected_connection_attempts);
       }
       ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
     }

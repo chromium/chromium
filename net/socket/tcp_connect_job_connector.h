@@ -46,7 +46,9 @@ class TcpConnectJob::Connector {
   // Called when there may be ServiceEndpoint data available for the connector
   // to advance. If `next_state_` is one of the two waiting state, updates
   // `next_state_` and runs DoLoop(). Otherwise, returns ERR_IO_PENDING, since
-  // busy with something else. Must not be called if already done.
+  // busy with something else. Must not be called if already done. On error,
+  // may return ERR_NAME_NOT_RESOLVED, if all IPs have been exhausted, rather
+  // than the error from the most recent connection attempt.
   int OnEndpointDataAvailable();
 
   LoadState GetLoadState() const;
@@ -109,10 +111,6 @@ class TcpConnectJob::Connector {
   std::optional<IPEndPoint> current_address_;
 
   State next_state_ = State::kWaitForIPEndPoint;
-
-  // Error from the last attempted connection, if any. Cached in case we learn
-  // late that there are no more IPs to try.
-  std::optional<int> last_error_;
 
   std::unique_ptr<StreamSocket> transport_socket_;
 };
