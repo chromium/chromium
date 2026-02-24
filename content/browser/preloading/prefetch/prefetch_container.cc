@@ -1186,17 +1186,8 @@ void PrefetchContainer::UpdatePrefetchRequestMetrics(
 }
 
 PrefetchMatchResolverAction PrefetchContainer::GetMatchResolverAction() const {
-  return GetMatchResolverActionInternal(PrefetchCacheableDuration());
-}
+  const base::TimeDelta cacheable_duration = PrefetchCacheableDuration();
 
-PrefetchMatchResolverAction
-PrefetchContainer::GetMatchResolverActionForTesting(  // IN-TEST
-    base::TimeDelta cacheable_duration) const {
-  return GetMatchResolverActionInternal(cacheable_duration);
-}
-
-PrefetchMatchResolverAction PrefetchContainer::GetMatchResolverActionInternal(
-    base::TimeDelta cacheable_duration) const {
   switch (load_state_) {
     case LoadState::kNotStarted:
       if (features::UsePrefetchPrerenderIntegration()) {

@@ -400,16 +400,15 @@ TEST_P(PrefetchContainerTest, Servable) {
                                         network::mojom::URLResponseHead::New(),
                                         "test body");
 
-  task_environment()->FastForwardBy(base::Minutes(2));
+  task_environment()->FastForwardBy(PrefetchCacheableDuration() -
+                                    base::Seconds(10));
+  EXPECT_EQ(prefetch_container->GetMatchResolverAction().ToServableState(),
+            PrefetchServableState::kServable);
+  // PrefetchCacheableDuration() + base::Seconds(10)
+  task_environment()->FastForwardBy(base::Seconds(20));
+  EXPECT_NE(prefetch_container->GetMatchResolverAction().ToServableState(),
+            PrefetchServableState::kServable);
 
-  EXPECT_NE(
-      prefetch_container->GetMatchResolverActionForTesting(base::Minutes(1))
-          .ToServableState(),
-      PrefetchServableState::kServable);
-  EXPECT_EQ(
-      prefetch_container->GetMatchResolverActionForTesting(base::Minutes(3))
-          .ToServableState(),
-      PrefetchServableState::kServable);
   EXPECT_TRUE(prefetch_container->GetNonRedirectHead());
 }
 
@@ -1366,18 +1365,14 @@ TEST_P(PrefetchContainerTest, MultipleStreamingURLLoaders) {
 
   EXPECT_FALSE(prefetch_container->GetStreamingURLLoader());
 
-  EXPECT_NE(prefetch_container
-                ->GetMatchResolverActionForTesting(base::TimeDelta::Max())
-                .ToServableState(),
+  EXPECT_NE(prefetch_container->GetMatchResolverAction().ToServableState(),
             PrefetchServableState::kServable);
   EXPECT_FALSE(prefetch_container->GetNonRedirectHead());
 
   prefetch_container->SimulatePrefetchEligibleForTest();
   MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       prefetch_container.get(), kTestUrl1, kTestUrl2);
-  EXPECT_EQ(prefetch_container
-                ->GetMatchResolverActionForTesting(base::TimeDelta::Max())
-                .ToServableState(),
+  EXPECT_EQ(prefetch_container->GetMatchResolverAction().ToServableState(),
             PrefetchServableState::kServable);
   EXPECT_TRUE(prefetch_container->GetNonRedirectHead());
 
@@ -1403,9 +1398,7 @@ TEST_P(PrefetchContainerTest, MultipleStreamingURLLoaders) {
 
   // `CreateRequestHandler()` itself doesn't make the PrefetchContainer
   // non-servable.
-  EXPECT_EQ(prefetch_container
-                ->GetMatchResolverActionForTesting(base::TimeDelta::Max())
-                .ToServableState(),
+  EXPECT_EQ(prefetch_container->GetMatchResolverAction().ToServableState(),
             PrefetchServableState::kServable);
   EXPECT_TRUE(prefetch_container->GetNonRedirectHead());
 
@@ -1480,9 +1473,7 @@ TEST_P(PrefetchContainerTest, CancelAndClearStreamingLoader) {
   ASSERT_TRUE(prefetch_container->GetStreamingURLLoader());
   base::WeakPtr<PrefetchStreamingURLLoader> streaming_loader =
       prefetch_container->GetStreamingURLLoader();
-  EXPECT_EQ(prefetch_container
-                ->GetMatchResolverActionForTesting(base::TimeDelta::Max())
-                .ToServableState(),
+  EXPECT_EQ(prefetch_container->GetMatchResolverAction().ToServableState(),
             PrefetchServableState::kServable);
 
   prefetch_container->CancelStreamingURLLoaderIfNotServing();
@@ -1491,18 +1482,14 @@ TEST_P(PrefetchContainerTest, CancelAndClearStreamingLoader) {
   // `PrefetchContainer` is notified of a failure (prefetch cancellation).
   EXPECT_FALSE(prefetch_container->GetStreamingURLLoader());
   EXPECT_TRUE(streaming_loader);
-  EXPECT_EQ(prefetch_container
-                ->GetMatchResolverActionForTesting(base::TimeDelta::Max())
-                .ToServableState(),
+  EXPECT_EQ(prefetch_container->GetMatchResolverAction().ToServableState(),
             PrefetchServableState::kNotServable);
 
   task_environment()->RunUntilIdle();
 
   // `streaming_loader` itself is destroyed asynchronously.
   EXPECT_FALSE(streaming_loader);
-  EXPECT_EQ(prefetch_container
-                ->GetMatchResolverActionForTesting(base::TimeDelta::Max())
-                .ToServableState(),
+  EXPECT_EQ(prefetch_container->GetMatchResolverAction().ToServableState(),
             PrefetchServableState::kNotServable);
 }
 
@@ -1638,9 +1625,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
                             std::move(producer), &producer_completed));
   }
 
-  EXPECT_NE(prefetch_container
-                ->GetMatchResolverActionForTesting(base::TimeDelta::Max())
-                .ToServableState(),
+  EXPECT_NE(prefetch_container->GetMatchResolverAction().ToServableState(),
             PrefetchServableState::kServable);
   EXPECT_FALSE(prefetch_container->GetNonRedirectHead());
 
@@ -1649,9 +1634,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
       std::nullopt);
   task_environment()->RunUntilIdle();
 
-  EXPECT_EQ(prefetch_container
-                ->GetMatchResolverActionForTesting(base::TimeDelta::Max())
-                .ToServableState(),
+  EXPECT_EQ(prefetch_container->GetMatchResolverAction().ToServableState(),
             PrefetchServableState::kServable);
   EXPECT_TRUE(prefetch_container->GetNonRedirectHead());
 
@@ -1691,10 +1674,9 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
       case Event::kCreateRequestHandler:
         ASSERT_FALSE(request_handler);
         ASSERT_TRUE(prefetch_container);
-        EXPECT_EQ(prefetch_container
-                      ->GetMatchResolverActionForTesting(base::TimeDelta::Max())
-                      .ToServableState(),
-                  PrefetchServableState::kServable);
+        EXPECT_EQ(
+            prefetch_container->GetMatchResolverAction().ToServableState(),
+            PrefetchServableState::kServable);
         request_handler = serving_handle.CreateRequestHandler().first;
         ASSERT_TRUE(request_handler);
         break;
@@ -1741,10 +1723,9 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
 
       case Event::kSecondClient:
         ASSERT_TRUE(prefetch_container);
-        EXPECT_EQ(prefetch_container
-                      ->GetMatchResolverActionForTesting(base::TimeDelta::Max())
-                      .ToServableState(),
-                  PrefetchServableState::kServable);
+        EXPECT_EQ(
+            prefetch_container->GetMatchResolverAction().ToServableState(),
+            PrefetchServableState::kServable);
 
         // The second request is servable if the body data pipe is finished and
         // the whole body fits within the data pipe tee size limit.

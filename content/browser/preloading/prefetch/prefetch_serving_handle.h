@@ -65,9 +65,6 @@ class CONTENT_EXPORT PrefetchServingHandle final {
   // Methods redirecting to `GetPrefetchContainer()`.
   PrefetchMatchResolverAction GetMatchResolverAction() const;
 
-  // Allows to pass `cacheable_duration` for testing.
-  PrefetchMatchResolverAction GetMatchResolverActionForTesting(
-      base::TimeDelta cacheable_duration) const;
   bool HasPrefetchStatus() const;
   PrefetchStatus GetPrefetchStatus() const;
 

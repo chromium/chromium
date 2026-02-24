@@ -1418,9 +1418,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   SimulateCookieCopyProcess(*prefetch_container);
 
-  ASSERT_EQ(prefetch_container
-                ->GetMatchResolverActionForTesting(base::TimeDelta::Max())
-                .ToServableState(),
+  ASSERT_EQ(prefetch_container->GetMatchResolverAction().ToServableState(),
             PrefetchServableState::kServable);
 
   CreateInterceptor(MainDocumentToken());
@@ -1489,9 +1487,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   SimulateCookieCopyProcess(*prefetch_container);
 
-  ASSERT_EQ(prefetch_container
-                ->GetMatchResolverActionForTesting(base::TimeDelta::Max())
-                .ToServableState(),
+  ASSERT_EQ(prefetch_container->GetMatchResolverAction().ToServableState(),
             PrefetchServableState::kServable);
 
   CreateInterceptor(MainDocumentToken());

@@ -251,13 +251,6 @@ PrefetchMatchResolverAction PrefetchServingHandle::GetMatchResolverAction()
   return GetPrefetchContainer()->GetMatchResolverAction();
 }
 
-PrefetchMatchResolverAction
-PrefetchServingHandle::GetMatchResolverActionForTesting(  // IN-TEST
-    base::TimeDelta cacheable_duration) const {
-  return GetPrefetchContainer()->GetMatchResolverActionForTesting(  // IN-TEST
-      cacheable_duration);
-}
-
 bool PrefetchServingHandle::HasPrefetchStatus() const {
   return GetPrefetchContainer()->HasPrefetchStatus();
 }
