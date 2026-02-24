@@ -11,58 +11,34 @@
 
 #include "ash/public/cpp/media_controller.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/extensions/media_player_api.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/user_manager/fake_user_manager.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "media/capture/video/video_capture_device_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 
 // Gmock matchers and actions that are used below.
 using ::testing::AnyOf;
 
 namespace {
-
-class TestMediaController : public ash::MediaController {
- public:
-  TestMediaController() = default;
-
-  TestMediaController(const TestMediaController&) = delete;
-  TestMediaController& operator=(const TestMediaController&) = delete;
-
-  ~TestMediaController() override = default;
-
-  // ash::MediaController:
-  void SetClient(ash::MediaClient* client) override {}
-  void SetForceMediaClientKeyHandling(bool enabled) override {
-    force_media_client_key_handling_ = enabled;
-  }
-  void NotifyCaptureState(
-      const base::flat_map<AccountId, ash::MediaCaptureState>& capture_states)
-      override {}
-
-  void NotifyVmMediaNotificationState(bool camera,
-                                      bool mic,
-                                      bool camera_and_mic) override {}
-
-  bool force_media_client_key_handling() const {
-    return force_media_client_key_handling_;
-  }
-
- private:
-  bool force_media_client_key_handling_ = false;
-};
 
 class TestMediaKeysDelegate : public ui::MediaKeysListener::Delegate {
  public:
@@ -147,19 +123,23 @@ class FakeNotificationDisplayService : public NotificationDisplayService {
   size_t show_called_times_ = 0;
 };
 
-class MockNewWindowDelegate
-    : public testing::NiceMock<ash::TestNewWindowDelegate> {
- public:
-  // TestNewWindowDelegate:
-  MOCK_METHOD(void,
-              OpenUrl,
-              (const GURL& url, OpenUrlFrom from, Disposition disposition),
-              (override));
-};
+// TODO(crbug.com/480103891): We should not be faking browser activation state
+// via indirect means (such as direct calls to `DidBecomeActive()`). We should
+// instead convert this to an interactive browser test and directly activate
+// the browser's backing ui::BaseWindow.
+void ActivateBrowser(BrowserWindowInterface* browser) {
+  // We must fake deactivation the previously activated browser first.
+  GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+      ->GetBrowserForMigrationOnly()
+      ->DidBecomeInactive();
+
+  // Simulate activation of `browser`.
+  browser->GetBrowserForMigrationOnly()->DidBecomeActive();
+}
 
 }  // namespace
 
-class MediaClientTest : public BrowserWithTestWindowTest {
+class MediaClientTest : public InProcessBrowserTest {
  public:
   MediaClientTest() = default;
 
@@ -168,86 +148,61 @@ class MediaClientTest : public BrowserWithTestWindowTest {
 
   ~MediaClientTest() override = default;
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    browser_controller_.emplace();
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
 
-    alt_browser_ = CreateBrowser(alt_profile(), Browser::TYPE_NORMAL, false);
-
-    extensions::MediaPlayerAPI::Get(profile());
-
+    alt_browser_ = CreateBrowser(alt_profile());
+    extensions::MediaPlayerAPI::Get(browser()->GetProfile());
     test_delegate_ = std::make_unique<TestMediaKeysDelegate>();
 
-    media_controller_resetter_ =
-        std::make_unique<ash::MediaController::ScopedResetterForTest>();
-    test_media_controller_ = std::make_unique<TestMediaController>();
+    ActivateBrowser(browser());
 
-    media_client_ = std::make_unique<MediaClientImpl>();
-    media_client_->InitForTesting(test_media_controller_.get());
-
-    BrowserList::SetLastActive(browser());
-
-    ASSERT_FALSE(test_media_controller_->force_media_client_key_handling());
     ASSERT_EQ(std::nullopt, delegate()->ConsumeLastMediaKey());
   }
 
-  void TearDown() override {
-    media_client_.reset();
-    test_media_controller_.reset();
-    media_controller_resetter_.reset();
+  void TearDownOnMainThread() override {
     test_delegate_.reset();
-
-    alt_browser_->tab_strip_model()->CloseAllTabs();
-    alt_browser_.reset();
-    alt_window_.reset();
-
-    browser_controller_.reset();
-    BrowserWithTestWindowTest::TearDown();
+    CloseBrowserSynchronously(alt_browser_.ExtractAsDangling());
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
-  MediaClientImpl* client() { return media_client_.get(); }
-
-  TestMediaController* controller() { return test_media_controller_.get(); }
+  MediaClientImpl* client() { return MediaClientImpl::Get(); }
 
   Profile* alt_profile() {
-    return profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    return browser()->GetProfile()->GetPrimaryOTRProfile(
+        /*create_if_needed=*/true);
   }
 
-  Browser* alt_browser() { return alt_browser_.get(); }
+  BrowserWindowInterface* alt_browser() { return alt_browser_; }
 
   TestMediaKeysDelegate* delegate() { return test_delegate_.get(); }
 
  private:
-  std::optional<ash::BrowserControllerImpl> browser_controller_;
   std::unique_ptr<TestMediaKeysDelegate> test_delegate_;
-  std::unique_ptr<ash::MediaController::ScopedResetterForTest>
-      media_controller_resetter_;
-  std::unique_ptr<TestMediaController> test_media_controller_;
-  std::unique_ptr<MediaClientImpl> media_client_;
-  std::unique_ptr<Browser> alt_browser_;
-  std::unique_ptr<BrowserWindow> alt_window_;
+  raw_ptr<BrowserWindowInterface> alt_browser_ = nullptr;
 };
 
-class MediaClientAppUsingCameraTest : public testing::Test {
+class MediaClientAppUsingCameraTest : public InProcessBrowserTest {
  public:
   MediaClientAppUsingCameraTest() = default;
 
+  MediaClientImpl* client() { return MediaClientImpl::Get(); }
+
   void LaunchAppUsingCamera(int active_client_count) {
-    media_client_.active_camera_client_count_ = active_client_count;
+    client()->active_camera_client_count_ = active_client_count;
   }
 
   void SetCameraHWPrivacySwitchState(
       const std::string& device_id,
       cros::mojom::CameraPrivacySwitchState state) {
-    media_client_.device_id_to_camera_privacy_switch_state_[device_id] = state;
+    client()->device_id_to_camera_privacy_switch_state_[device_id] = state;
   }
 
   // Adds the device with id `device_id` to the map of active devices. To
   // display hardware switch notifications associated to this device, the device
   // needs to be active.
   void MakeDeviceActive(const std::string& device_id) {
-    media_client_
-        .devices_used_by_client_[cros::mojom::CameraClientType::CHROME] = {
+    client()->devices_used_by_client_[cros::mojom::CameraClientType::CHROME] = {
         device_id};
   }
 
@@ -255,11 +210,10 @@ class MediaClientAppUsingCameraTest : public testing::Test {
       cros::mojom::CameraClientType type,
       const base::flat_set<std::string>& active_device_ids,
       int active_client_count) {
-    media_client_.devices_used_by_client_.insert_or_assign(type,
-                                                           active_device_ids);
-    media_client_.active_camera_client_count_ = active_client_count;
+    client()->devices_used_by_client_.insert_or_assign(type, active_device_ids);
+    client()->active_camera_client_count_ = active_client_count;
 
-    media_client_.OnGetSourceInfosByActiveClientChanged(
+    client()->OnGetSourceInfosByActiveClientChanged(
         active_device_ids,
         video_capture::mojom::VideoSourceProvider::GetSourceInfosResult::
             kSuccess,
@@ -279,7 +233,7 @@ class MediaClientAppUsingCameraTest : public testing::Test {
 
   void ShowCameraOffNotification(const std::string& device_id,
                                  const std::string& device_name) {
-    media_client_.ShowCameraOffNotification(device_id, device_name);
+    client()->ShowCameraOffNotification(device_id, device_name);
   }
 
   FakeNotificationDisplayService* SetSystemNotificationService() const {
@@ -295,18 +249,10 @@ class MediaClientAppUsingCameraTest : public testing::Test {
   }
 
  protected:
-  // Has to be the first member as others are CHECKing the environment in their
-  // constructors.
-  content::BrowserTaskEnvironment task_environment_;
-
-  ash::BrowserControllerImpl browser_controller_;
-  MediaClientImpl media_client_;
-  SystemNotificationHelper system_notification_helper_;
-  MockNewWindowDelegate new_window_delegate_;
   std::vector<media::VideoCaptureDeviceInfo> video_capture_devices_;
 };
 
-TEST_F(MediaClientTest, HandleMediaAccelerators) {
+IN_PROC_BROWSER_TEST_F(MediaClientTest, HandleMediaAccelerators) {
   const struct {
     ui::Accelerator accelerator;
     base::RepeatingClosure client_handler;
@@ -342,24 +288,21 @@ TEST_F(MediaClientTest, HandleMediaAccelerators) {
 
     // Enable custom media key handling for the current browser. Ensure that
     // the client set the override on the controller.
-    client()->EnableCustomMediaKeyHandler(profile(), delegate());
-    EXPECT_TRUE(controller()->force_media_client_key_handling());
+    client()->EnableCustomMediaKeyHandler(browser()->GetProfile(), delegate());
 
     // Simulate the media key and check that the delegate received it.
     test.client_handler.Run();
     EXPECT_EQ(test.accelerator, delegate()->ConsumeLastMediaKey());
 
     // Change the active browser and ensure the override was disabled.
-    BrowserList::SetLastActive(alt_browser());
-    EXPECT_FALSE(controller()->force_media_client_key_handling());
+    ActivateBrowser(alt_browser());
 
     // Simulate the media key and check that the delegate did not receive it.
     test.client_handler.Run();
     EXPECT_EQ(std::nullopt, delegate()->ConsumeLastMediaKey());
 
     // Change the active browser back and ensure the override was enabled.
-    BrowserList::SetLastActive(browser());
-    EXPECT_TRUE(controller()->force_media_client_key_handling());
+    ActivateBrowser(browser());
 
     // Simulate the media key and check the delegate received it.
     test.client_handler.Run();
@@ -367,8 +310,7 @@ TEST_F(MediaClientTest, HandleMediaAccelerators) {
 
     // Disable custom media key handling for the current browser and ensure
     // the override was disabled.
-    client()->DisableCustomMediaKeyHandler(profile(), delegate());
-    EXPECT_FALSE(controller()->force_media_client_key_handling());
+    client()->DisableCustomMediaKeyHandler(browser()->GetProfile(), delegate());
 
     // Simulate the media key and check the delegate did not receive it.
     test.client_handler.Run();
@@ -376,8 +318,8 @@ TEST_F(MediaClientTest, HandleMediaAccelerators) {
   }
 }
 
-TEST_F(MediaClientAppUsingCameraTest,
-       NotificationRemovedWhenSWSwitchChangedToON) {
+IN_PROC_BROWSER_TEST_F(MediaClientAppUsingCameraTest,
+                       NotificationRemovedWhenSWSwitchChangedToON) {
   const FakeNotificationDisplayService* notification_display_service =
       SetSystemNotificationService();
 
@@ -398,12 +340,13 @@ TEST_F(MediaClientAppUsingCameraTest,
 
   // Setting the software privacy switch to ON. The existing hardware switch
   // notification should be removed.
-  media_client_.OnCameraSWPrivacySwitchStateChanged(
+  client()->OnCameraSWPrivacySwitchStateChanged(
       cros::mojom::CameraPrivacySwitchState::ON);
   EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
 }
 
-TEST_F(MediaClientAppUsingCameraTest, LearnMoreButtonInteraction) {
+IN_PROC_BROWSER_TEST_F(MediaClientAppUsingCameraTest,
+                       LearnMoreButtonInteraction) {
   FakeNotificationDisplayService* notification_display_service =
       SetSystemNotificationService();
 
@@ -419,7 +362,6 @@ TEST_F(MediaClientAppUsingCameraTest, LearnMoreButtonInteraction) {
   ShowCameraOffNotification("device_id", "device_name");
 
   EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
-  EXPECT_CALL(new_window_delegate_, OpenUrl).Times(1);
 
   notification_display_service->SimulateClick(
       "ash.media.camera.activity_with_privacy_switch_on.device_id", 0);
@@ -427,8 +369,8 @@ TEST_F(MediaClientAppUsingCameraTest, LearnMoreButtonInteraction) {
   EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 0u);
 }
 
-TEST_F(MediaClientAppUsingCameraTest,
-       NotificationRemovedWhenCameraDetachedOrInactive) {
+IN_PROC_BROWSER_TEST_F(MediaClientAppUsingCameraTest,
+                       NotificationRemovedWhenCameraDetachedOrInactive) {
   FakeNotificationDisplayService* notification_display_service =
       SetSystemNotificationService();
 

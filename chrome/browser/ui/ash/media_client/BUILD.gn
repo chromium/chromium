@@ -48,10 +48,12 @@ static_library("media_client") {
   allow_circular_includes_from = [ "//chrome/browser/ash/login/session" ]
 }
 
-source_set("unit_tests") {
+source_set("browser_tests") {
   testonly = true
 
-  sources = [ "media_client_impl_unittest.cc" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "media_client_impl_browsertest.cc" ]
 
   deps = [
     ":media_client",
@@ -64,9 +66,11 @@ source_set("unit_tests") {
     "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
     "//components/account_id",
     "//components/services/app_service",
     "//components/user_manager:test_support",
+    "//content/test:test_support",
     "//media/capture:capture_base",
     "//testing/gmock",
     "//ui/base",
