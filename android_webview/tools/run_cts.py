@@ -68,7 +68,7 @@ SDK_PLATFORM_DICT = {
     version_codes.TIRAMISU: 'T',
     version_codes.UPSIDE_DOWN_CAKE: 'U',
     version_codes.VANILLA_ICE_CREAM: 'V',
-    # TODO: crbug.com/420976165 - Update cts-release arg once 'B' is added.
+    version_codes.BAKLAVA: 'B',
 }
 
 # The test apks are apparently compatible across all architectures, the
@@ -518,8 +518,7 @@ def main():
       '--cts-release',
       # TODO(aluo): --platform is deprecated (the meaning is unclear).
       '--platform',
-      # TODO: crbug.com/420976165 - Remove 'B' once added to SDK_PLATFORM_DICT.
-      choices=sorted(set(SDK_PLATFORM_DICT.values()) | {'B'}),
+      choices=sorted(set(SDK_PLATFORM_DICT.values())),
       required=False,
       default=None,
       help='Which CTS release to use for the run. This should generally be <= '

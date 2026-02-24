@@ -1185,7 +1185,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/android_webview/tools/cts_archive',
-              'version': '8BpUBTnmt5bH3GiqPKpmTWTP-Ie2X1TuUgf4F0IsgVgC',
+              'version': 'oW6-jyOPGwPJeLlaldYwrxZoYqzXpjO1OZUdyF3Qq7sC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
@@ -1626,7 +1626,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'cafc7054fba2682cd54d2ca63da029323623301f',
+    '5b56bb36fe2467af967f78a9b34e7c7895f69e35',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
