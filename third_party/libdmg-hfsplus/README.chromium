@@ -114,3 +114,8 @@ Local modifications:
       a data param parser for the value to be written into the attribute.
     * The extended attribute logic was already ready to handle NUL bytes.
     * Fixes SizedBuf types and adds ReallocBuf.
+  * patches/2026-02-23-btree-fixes.patch
+    * Refuses to insert a record that does not fit into a btree node, instead
+      of silently creating a corrupt filesystem.
+    * Correctly handles attempting to remove a nonexistent record that would,
+      if it existed, be the greatest record in a specific leaf node.
