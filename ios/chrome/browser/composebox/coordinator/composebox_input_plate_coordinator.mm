@@ -261,6 +261,8 @@ const CGFloat kSnackbarBottomMargin = 10;
 - (void)composeboxViewController:
             (ComposeboxInputPlateViewController*)composeboxViewController
                  didTapMicButton:(UIButton*)micButton {
+  [_metricsRecorder recordVoiceSearchButtonUsed];
+
   WebStateList* webStateList = self.browser->GetWebStateList();
   if (!webStateList) {
     return;
@@ -281,6 +283,8 @@ const CGFloat kSnackbarBottomMargin = 10;
 - (void)composeboxViewController:
             (ComposeboxInputPlateViewController*)composeboxViewController
                 didTapLensButton:(UIButton*)lensButton {
+  [_metricsRecorder recordLensSearchButtonUsed];
+
   OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
       alloc]
           initWithEntryPoint:LensEntrypoint::Composebox
@@ -298,6 +302,8 @@ const CGFloat kSnackbarBottomMargin = 10;
 - (void)composeboxViewController:
             (ComposeboxInputPlateViewController*)composeboxViewController
            didTapQRScannerButton:(UIButton*)button {
+  [_metricsRecorder recordQRScannerButtonUsed];
+
   __weak id<QRScannerCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), QRScannerCommands);
   [self.baseViewController dismissViewControllerAnimated:YES
