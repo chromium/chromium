@@ -11,8 +11,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/network/autofill_ai/fake_wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager_impl.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/wallet/core/browser/network/wallet_http_client_impl.h"
@@ -52,6 +54,12 @@ WalletPassAccessManagerFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   EntityDataManager* data_manager =
       AutofillEntityDataManagerFactory::GetForProfile(profile);
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::debug::kFakeWalletApiResponses)) {
+    return std::make_unique<FakeWalletPassAccessManager>(data_manager);
+  }
+
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   return std::make_unique<WalletPassAccessManagerImpl>(

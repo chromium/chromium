@@ -155,6 +155,25 @@ BASE_FEATURE(kAutofillUnionTypesSingleTypeInAutofillInformation,
 // to be launched.
 BASE_FEATURE(kAutofillUploadThrottling, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the fake Wallet HTTP client for testing.
+BASE_FEATURE(kFakeWalletApiResponses, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The simulated network delay in milliseconds for the fake wallet HTTP client
+// to respond. Default is 1 second delay.
+BASE_FEATURE_PARAM(int,
+                   kFakeWalletApiResponsesDelayMs,
+                   &kFakeWalletApiResponses,
+                   "delay_ms",
+                   1000);
+
+// If true, forces the fake wallet HTTP client requests to fail. Default is
+// success.
+BASE_FEATURE_PARAM(bool,
+                   kFakeWalletApiResponsesSimulateFailure,
+                   &kFakeWalletApiResponses,
+                   "simulate_failure",
+                   false);
+
 // Enables showing DOM Node ID of elements.
 BASE_FEATURE(kShowDomNodeIDs, base::FEATURE_DISABLED_BY_DEFAULT);
 

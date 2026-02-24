@@ -54,6 +54,11 @@ BASE_DECLARE_FEATURE(kAutofillSkipDeduplicationRequirements);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillUnionTypesSingleTypeInAutofillInformation);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillUploadThrottling);
+COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kFakeWalletApiResponses);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE_PARAM(int, kFakeWalletApiResponsesDelayMs);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE_PARAM(bool, kFakeWalletApiResponsesSimulateFailure);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kShowDomNodeIDs);
 
 }  // namespace autofill::features::debug
