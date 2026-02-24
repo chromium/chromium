@@ -131,7 +131,10 @@ if (is_linux || is_chromeos) {
 }
 
 source_set("constants") {
-  sources = [ "base/trace_constants.h" ]
+  sources = [
+    "base/registry_controlled_domain_constants.h",
+    "base/trace_constants.h",
+  ]
   deps = [ "//base" ]
 }
 
@@ -3241,6 +3244,7 @@ target(_test_target_type, "net_unittests") {
     "//components/network_time/time_tracker",
     "//crypto",
     "//crypto:test_support",
+    "//net:constants",
     "//net/base/registry_controlled_domains",
     "//net/base/registry_controlled_domains:lookup_strings_test_sets",
     "//net/base/registry_controlled_domains:registry_controlled_domains_test_dafsas",

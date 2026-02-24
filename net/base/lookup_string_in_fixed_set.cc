@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "net/base/registry_controlled_domain_constants.h"
 
 namespace net {
 

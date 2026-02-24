@@ -18,15 +18,6 @@
 
 namespace net {
 
-enum {
-  kDafsaFound = 0,  // key is in set
-  // The following return values are used by the implementation of
-  // GetDomainAndRegistry() and are probably not generally useful.
-  kDafsaExceptionRule = 1,  // key excluded from set via exception
-  kDafsaWildcardRule = 2,   // key matched a wildcard rule
-  kDafsaPrivateRule = 4,    // key matched a private rule
-};
-
 // Looks up the string `key` with in a fixed set of strings. The set of strings
 // must be known at compile time. It is converted to a graph structure named a
 // DAFSA (Deterministic Acyclic Finite State Automaton) by the script

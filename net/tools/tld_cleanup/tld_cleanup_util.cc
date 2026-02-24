@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "net/base/lookup_string_in_fixed_set.h"
+#include "net/base/registry_controlled_domain_constants.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 

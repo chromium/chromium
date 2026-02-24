@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "net/base/registry_controlled_domain_constants.h"
 #include "net/base/registry_controlled_domains/effective_tld_names_unittest1-inc.cc"
 #include "net/base/registry_controlled_domains/effective_tld_names_unittest3-inc.cc"
 #include "net/base/registry_controlled_domains/effective_tld_names_unittest4-inc.cc"

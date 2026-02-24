@@ -5,7 +5,7 @@
 #include "net/tools/tld_cleanup/tld_cleanup_util.h"
 
 #include "base/files/file_path.h"
-#include "net/base/lookup_string_in_fixed_set.h"
+#include "net/base/registry_controlled_domain_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
