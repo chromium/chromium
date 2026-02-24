@@ -640,9 +640,9 @@ suite('EventListItemElement', () => {
     };
     item.event = event;
     await microtasksFinished();
-    const appSpan = item.shadowRoot.querySelector('.event-app');
-    assertTrue(!!appSpan);
-    assertEquals('Chrome', appSpan.textContent.trim());
+    const appColumn = item.shadowRoot.querySelector('.event-app-column');
+    assertTrue(!!appColumn);
+    assertEquals('Chrome', appColumn.textContent.trim());
   });
 
   test('displays app id for unknown app', async () => {
@@ -674,9 +674,9 @@ suite('EventListItemElement', () => {
     };
     item.event = event;
     await microtasksFinished();
-    const appSpan = item.shadowRoot.querySelector('.event-app');
-    assertTrue(!!appSpan);
-    assertEquals('{UNKNOWN-APP}', appSpan.textContent.trim());
+    const appColumn = item.shadowRoot.querySelector('.event-app-column');
+    assertTrue(!!appColumn);
+    assertEquals('{UNKNOWN-APP}', appColumn.textContent.trim());
   });
 
   test('displays scope icon', () => {
