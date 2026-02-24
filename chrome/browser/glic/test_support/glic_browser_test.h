@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_BROWSER_TEST_H_
 
 #include <map>
+#include <memory>
 #include <sstream>
 #include <string_view>
 
@@ -89,10 +90,16 @@ class GlicBrowserTestMixin : public T {
 
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
+    browser_activator_ = std::make_unique<BrowserActivator>();
 
     CHECK(glic_test_environment_.SetupEmbeddedTestServers(
         T::embedded_test_server(), &T::embedded_https_test_server()));
     LOG(INFO) << "GlicBrowserTest: done setting up";
+  }
+
+  void TearDownOnMainThread() override {
+    browser_activator_.reset();
+    T::TearDownOnMainThread();
   }
 
   // Toggles the Glic UI.
@@ -232,6 +239,8 @@ class GlicBrowserTestMixin : public T {
     glic_test_environment_.SetGlicFreUrlOverride(url);
   }
 
+  BrowserActivator* browser_activator() { return browser_activator_.get(); }
+
  protected:
   GlicTestEnvironment& glic_test_environment() {
     return glic_test_environment_;
@@ -240,6 +249,7 @@ class GlicBrowserTestMixin : public T {
  private:
   GlicTestEnvironment glic_test_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<BrowserActivator> browser_activator_;
 };
 
 using GlicBrowserTest = GlicBrowserTestMixin<PlatformBrowserTest>;
