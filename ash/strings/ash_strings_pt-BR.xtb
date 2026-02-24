@@ -221,7 +221,7 @@
 <translation id="1720011244392820496">Ativar o Sincronizar Wi-Fi</translation>
 <translation id="1720230731642245863">O ponto de acesso está desativado</translation>
 <translation id="1731815243805539470">Mudar para o usuário anterior</translation>
-<translation id="1733996486177697563">Escolha entre o tema claro ou escuro. Toque na área de trabalho e a mantenha pressionada. Depois, selecione a opção "Plano de fundo e estilo".</translation>
+<translation id="1733996486177697563">Escolha entre o tema claro ou escuro. Toque e mantenha pressionada a área de trabalho. Depois, selecione a opção "Plano de fundo e estilo".</translation>
 <translation id="1735992454301033090">Área selecionada, use as teclas de seta para mover</translation>
 <translation id="1736898441010944794">"<ph name="NAME" />" visível para dispositivos Bluetooth.</translation>
 <translation id="1737078180382804488">Dispensar configuração de visualização de notificações do smartphone</translation>
@@ -831,7 +831,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="3822403841174077928">Não foi possível copiar com a formatação</translation>
 <translation id="3824784079442479685">Essa ação libera o acesso à câmera para <ph name="APP_NAME" /> e todos os apps e sites com essa permissão. Talvez seja necessário atualizar a página da Web ou reiniciar o app.</translation>
 <translation id="3826099427150913765">Usar senha</translation>
-<translation id="383058930331066723">Modo de Economia de bateria ativado</translation>
+<translation id="383058930331066723">Modo de economia de bateria ativado</translation>
 <translation id="3831226344927851293">Sair da visualização do tutorial</translation>
 <translation id="383629559565718788">Mostrar configurações do teclado</translation>
 <translation id="384082539148746321">Excluir modelo?</translation>
@@ -1904,7 +1904,7 @@ Nova instalação</translation>
 <translation id="7352651011704765696">Algo deu errado</translation>
 <translation id="735745346212279324">VPN desconectada</translation>
 <translation id="7360036564632145207">Mudar sua configuração de proteção de acesso a dados para periféricos pode otimizar o desempenho</translation>
-<translation id="736045644501761622">Definir Estilo e fundo de tela</translation>
+<translation id="736045644501761622">Definir plano de fundo e estilo</translation>
 <translation id="7368041336688136012">Você precisa ter pelo menos 18 anos para usar os recursos Me ajude a ler, Me ajude a escrever e criar imagens com a IA.</translation>
 <translation id="7371404428569700291">Gravar janela</translation>
 <translation id="7372069265635026568">Memória disponível: <ph name="AVAILABLE_MEMORY" /> de um total de <ph name="TOTAL_MEMORY" /></translation>
@@ -1914,7 +1914,7 @@ Nova instalação</translation>
 <translation id="7377481913241237033">Conectar com um código</translation>
 <translation id="7378203170292176219">Arraste para selecionar uma área para a gravação</translation>
 <translation id="7378594059915113390">Controles de mídia</translation>
-<translation id="7378889811480108604">Modo de Economia de bateria desativado</translation>
+<translation id="7378889811480108604">Modo de economia de bateria desativado</translation>
 <translation id="7382680553121047388">Ativar</translation>
 <translation id="7384028040782072252">Clique com o botão direito do mouse em qualquer lugar para reordenar os apps</translation>
 <translation id="7386767620098596324">Alternar conexão de rede. <ph name="STATE_TEXT" />.</translation>

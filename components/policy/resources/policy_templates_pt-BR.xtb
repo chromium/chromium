@@ -612,7 +612,7 @@ https://support.google.com/chrome/a/?p=extended_updates_support.</translation>
       No ChromeOS, essa configuração faz com que o frame rate e a frequência da CPU sejam limitados, as luzes de fundo fiquem esmaecidas e o Android seja colocado no modo de economia de bateria. Em dispositivos com várias CPUs, algumas delas serão desativadas.
       Os diferentes níveis são:
       <ph name="BATTERY_SAVER_MODE_DISABLED" /> (0): o modo de economia de bateria será desativado.
-      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): o modo economia de bateria será ativado quando o dispositivo estiver usando a energia da bateria e o nível dela estiver baixo.
+      <ph name="BATTERY_SAVER_MODE_ENABLED_BELOW_THRESHOLD" /> (1): o modo de economia de bateria será ativado quando o dispositivo estiver usando a energia da bateria e o nível dela estiver baixo.
       <ph name="BATTERY_SAVER_MODE_ENABLED_ON_BATTERY" /> (2): esse valor foi descontinuado na versão M121. Na versão M121 e mais recentes, os valores serão tratados como EnabledBelowThreshold.
       </translation>
 <translation id="1434300053894025056">Desativar verificação ortográfica</translation>
@@ -4429,7 +4429,7 @@ enviar relatórios corporativos.
       Se a política for definida como falsa, o preenchimento automático nunca fará sugestões ou preencherá informações de cartão de crédito nem salvará outros dados desse tipo que os usuários enviarem ao navegar na Web.</translation>
 <translation id="3989635538409502728">Sair</translation>
 <translation id="3989829840000169163">Bloquear pontos de extensão legados do navegador</translation>
-<translation id="3990391739475801018">O modo Economia de bateria vai ser desativado.</translation>
+<translation id="3990391739475801018">O modo de economia de bateria vai ser desativado.</translation>
 <translation id="3990834929384096140">Não aplicar o cancelamento de eco do áudio do sistema</translation>
 <translation id="3994043824457743421">Mostrar o aviso abaixo da caixa de pesquisa na página "Nova guia"</translation>
 <translation id="399433537808390819">Não disponibilizar o Modo área de trabalho unificada para o usuário</translation>
@@ -10104,7 +10104,7 @@ Se ela for definida como falsa, o comportamento antigo será ativado.</translati
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, a previsão de rede será ativada, mas os usuários poderão mudar a configuração.</translation>
 <translation id="7408815947231046196">Permitir o backup de dados do <ph name="PRODUCT_NAME" /></translation>
-<translation id="740885188496462583">Ativar o modo Economia de bateria</translation>
+<translation id="740885188496462583">Ativar o modo de economia de bateria</translation>
 <translation id="7410074797376205571">Permitir que a <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> execute solicitações de API do WebAuthn transmitidas por proxy de um host remoto.</translation>
 <translation id="7412456346709338637">Ativar acesso a dados de periféricos Thunderbolt/USB4</translation>
 <translation id="7414890119082492552">Não tenho preferência.</translation>
@@ -11315,7 +11315,7 @@ Mais informações sobre tecnologias legadas podem ser encontradas em https://ch
 <translation id="8284621384813278750">Definir se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para temas de anúncios pode ser desativada</translation>
 <translation id="8285435910062771358">Lupa de tela inteira ativada</translation>
 <translation id="8288199156259560552">Ativar o Serviço de Localização do Google para Android</translation>
-<translation id="8289824033213234651">O modo Economia de bateria vai ser ativado quando o dispositivo estiver usando a energia da bateria e o nível dela estiver baixo.</translation>
+<translation id="8289824033213234651">O modo de economia de bateria vai ser ativado quando o dispositivo estiver usando a energia da bateria e o nível dela estiver baixo.</translation>
 <translation id="8290875622178450531">Ativar o recurso de acessibilidade de ditado.
 
           Se esta política for definida como ativada, o ditado ficará sempre ativado.

@@ -570,11 +570,11 @@ Cette règle ne s'applique pas au mode navigation privée et ne fonctionne pas d
 
 Si cette règle est désactivée, l'appli n'utilisera pas les notifications temporaires.</translation>
 <translation id="142346659686073702">Autoriser les utilisateurs non affiliés à utiliser Crostini</translation>
-<translation id="1423900783955065155">Cette règle détermine si une page avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> peut être stockée dans le cache amélioré. Le paramètre de site Web défini pour cet en-tête ne prévoit peut-être pas que la page soit restaurée à partir du cache amélioré, car certaines informations sensibles peuvent rester affichées après la restauration, même si elles ne sont plus accessibles.
+<translation id="1423900783955065155">Cette règle détermine si une page avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> peut être stockée dans le cache back/forward. Le paramètre de site Web défini pour cet en-tête ne prévoit peut-être pas que la page soit restaurée à partir du cache back/forward, car certaines informations sensibles peuvent rester affichées après la restauration, même si elles ne sont plus accessibles.
 
-Si cette règle est activée ou n'est pas configurée, la page avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> pourrait être restaurée à partir du cache amélioré, sauf si l'éviction du cache est déclenchée (par exemple, en cas de modification du cookie HttpOnly sur le site).
+Si cette règle est activée ou n'est pas configurée, la page avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> pourrait être restaurée à partir du cache back/forward, sauf si l'éviction du cache est déclenchée (par exemple, en cas de modification du cookie HttpOnly sur le site).
 
-Si cette règle est désactivée, la page avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> ne sera pas stockée dans le cache amélioré.</translation>
+Si cette règle est désactivée, la page avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> ne sera pas stockée dans le cache back/forward.</translation>
 <translation id="1425551776320718592">Empêche les utilisateurs de cet appareil de recourir au téléchargement indépendant adb, mais sans imposer la réinitialisation Powerwash. Cela peut remettre en question la sécurité de l'appareil.</translation>
 <translation id="1426170570389588560">Définir un délai en jours pour le stockage des métadonnées liées aux tâches d'impression</translation>
 <translation id="1426410128494586442">Oui</translation>
@@ -3005,7 +3005,7 @@ Le rapport contient l'état du profil ainsi que des informations sur l'utilisati
 Cette règle ne peut être configurée que comme règle relative aux utilisateurs du cloud.</translation>
 <translation id="3062559845875011810">Ne pas autoriser la fonctionnalité</translation>
 <translation id="3063302084011279315">Désactiver l'enregistreur d'écran</translation>
-<translation id="3063307261083019730">Interdire le stockage des pages avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> dans le cache amélioré.</translation>
+<translation id="3063307261083019730">Interdire le stockage des pages avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> dans le cache back/forward.</translation>
 <translation id="3064530882228745118">Utiliser la consultation CNAME lors de l'authentification Kerberos</translation>
 <translation id="3066446511111537292">Permet aux utilisateurs affiliés de cet appareil d'utiliser le téléchargement indépendant adb</translation>
 <translation id="3067462824622454143">Laisser l'utilisateur décider si l'appareil doit se verrouiller quand il est arrêté provisoirement ou que son écran est rabattu</translation>
@@ -10603,7 +10603,7 @@ Cette règle n'a aucune incidence lorsque la règle <ph name="SCREENSAVER_LOCK_S
 
       Si cette règle est activée ou si elle n'est pas configurée, les sites Web sont autorisés à vérifier si l'utilisateur possède des modes de paiement enregistrés.</translation>
 <translation id="8118665053362250806">Définir la taille du cache disque de support</translation>
-<translation id="8123648898339555150">Autoriser le stockage des pages avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> dans le cache amélioré.</translation>
+<translation id="8123648898339555150">Autoriser le stockage des pages avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> dans le cache back/forward.</translation>
 <translation id="812369175049698774">Autoriser les utilisateurs à lancer des mises à jour du micrologiciel</translation>
 <translation id="8124468781472887384">Règle d'accès à la configuration des imprimantes d'appareils.</translation>
 <translation id="8128192446158421884">URL pour lesquelles la règle AutoOpenFileTypes peut s'appliquer</translation>
