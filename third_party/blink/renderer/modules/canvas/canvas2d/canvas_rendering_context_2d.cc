@@ -1396,15 +1396,10 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kCPU,
           shared_image_usage_flags, canvas());
     }
-  }
-
-  // If either of the other modes failed and / or it was not possible to do, we
-  // will backup with a software SharedImage, and if that was not possible with
-  // a Bitmap provider.
-  if (!provider && !is_gpu_compositing_enabled) {
-    // In this case, we are using CPU raster and CPU compositing. Create a
-    // CanvasResourceProvider that uses a SharedImage backed by a shared-memory
-    // buffer that can be written by canvas raster and read by the compositor.
+  } else {  // SW compositing
+    // Create a CanvasResourceProvider that uses a SharedImage backed by a
+    // shared-memory buffer that can be written by canvas SW raster and read by
+    // the SW compositor.
     provider = Canvas2DResourceProviderSharedImage::
         CreateWithClearForSoftwareCompositor(
             canvas()->Size(), format, alpha_type, color_space,
