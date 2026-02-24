@@ -20,6 +20,9 @@ namespace autofill {
 // The behavior of the fake responses can be configured via feature params:
 // - `delay_ms`: To simulate network latency.
 // - `simulate_failure`: To force all responses to fail.
+//
+// Note: This fake only supports unmasking entities that were previously
+// upserted during the current session.
 class FakeWalletPassAccessManager : public WalletPassAccessManager {
  public:
   explicit FakeWalletPassAccessManager(EntityDataManager* data_manager);
@@ -44,6 +47,11 @@ class FakeWalletPassAccessManager : public WalletPassAccessManager {
                                                   bool is_save);
   std::optional<EntityInstance> RunGetUnmaskedCallback(
       EntityInstance::EntityId entity_id);
+
+  // Cache to store the unmasked state of upserted entities. This allows us to
+  // unmask Chrome-upserted passes to their upserted unmasked value.
+  absl::flat_hash_map<EntityInstance::EntityId, EntityInstance>
+      upserted_unmasked_entities_;
 
   const raw_ref<EntityDataManager> data_manager_;
   base::WeakPtrFactory<FakeWalletPassAccessManager> weak_ptr_factory_{this};

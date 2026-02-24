@@ -7,10 +7,12 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 
 namespace autofill {
@@ -93,8 +95,32 @@ std::optional<EntityInstance> FakeWalletPassAccessManager::RunUpsertCallback(
         base::Uuid::GenerateRandomV4().AsLowercaseString()));
   }
 
-  // TODO(crbug.com/478783796): Should return a masked entity.
-  return entity;
+  upserted_unmasked_entities_.insert_or_assign(entity.guid(), entity);
+
+  EntityInstance masked_entity = entity;
+  for (const AttributeInstance& attr : entity.attributes()) {
+    if (!attr.type().is_obfuscated()) {
+      continue;
+    }
+
+    AttributeInstance masked_attr = attr;
+    const FieldType field_type = masked_attr.type().field_type();
+    const std::u16string full_value = masked_attr.GetInfo(
+        field_type, "en-US", /*format_string=*/std::nullopt);
+    const size_t masked_length = std::min<size_t>(full_value.size(), 4);
+    masked_attr.SetInfo(
+        masked_attr.type().field_type(),
+        /*value=*/full_value.substr(full_value.size() - masked_length),
+        /*app_locale=*/"en-US",
+        /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
+
+    masked_attr.mark_as_masked({});
+
+    masked_entity =
+        masked_entity.CopyWithUpdatedAttribute(std::move(masked_attr));
+  }
+
+  return masked_entity;
 }
 
 std::optional<EntityInstance>
@@ -104,16 +130,13 @@ FakeWalletPassAccessManager::RunGetUnmaskedCallback(
     return std::nullopt;
   }
 
-  base::optional_ref<const EntityInstance> masked_entity =
-      data_manager_->GetEntityInstance(entity_id);
-
-  if (!masked_entity) {
-    return std::nullopt;
+  auto it = upserted_unmasked_entities_.find(entity_id);
+  if (it != upserted_unmasked_entities_.end()) {
+    return it->second;
   }
 
-  EntityInstance unmasked_entity = *masked_entity;
-  // TODO(crbug.com/478783796): Unmask attributes.
-  return unmasked_entity;
+  NOTIMPLEMENTED();
+  return std::nullopt;
 }
 
 }  // namespace autofill
