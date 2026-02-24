@@ -93,13 +93,17 @@ const NSDirectionalEdgeInsets kInputPlatePadding = {.leading = 8.0,
                                                     .trailing = 5.0};
 /// The spacing added after the Lens and Voice buttons in compact mode.
 const CGFloat kShortcutsTrailingPaddingCompact = 3.0f;
-/// The padding of the toolbar and carousel elements.
+/// The padding of the toolbar.
 ///
 /// Note: While padding is offset to visually align the clear button's visual
 /// bounding box, all other UI elements maintain symmetrical centering.
 const UIEdgeInsets kToolbarPadding = {.left = kInputPlatePadding.leading,
                                       .right = kInputPlatePadding.leading};
-const UIEdgeInsets kCarouselPadding = kToolbarPadding;
+/// The padding of the carousel. Same as
+/// `kInputPlateStackViewExpandedWithAttachmentsTopPadding` to keep symmetry.
+const UIEdgeInsets kCarouselPadding = {
+    .left = kInputPlateStackViewExpandedWithAttachmentsTopPadding,
+    .right = kInputPlateStackViewExpandedWithAttachmentsTopPadding};
 
 /// The font size for the AIM mode button title.
 const CGFloat kAIMButtonFontSize = 14.0f;
