@@ -11314,6 +11314,7 @@ from previous Chrome versions.
   <int value="-1068197506" label="EnhancedNetworkVoices:enabled"/>
   <int value="-1068084507" label="ShareSheetCustomActionsPolish:enabled"/>
   <int value="-1067635248" label="SpeculativeResourcePrefetching:disabled"/>
+  <int value="-1067228430" label="BrowserWindowInterfaceMobile:disabled"/>
   <int value="-1066675514" label="TabCollectionAndroid:disabled"/>
   <int value="-1065887406" label="PictureInPictureV2:disabled"/>
   <int value="-1065697407" label="PriceInsights:enabled"/>
@@ -12076,6 +12077,7 @@ from previous Chrome versions.
   <int value="-802348444" label="disable-site-engagement-service"/>
   <int value="-802309777" label="ChromeTipsInMainMenu:disabled"/>
   <int value="-801556765" label="ReportOmniboxAutofocusHeader:enabled"/>
+  <int value="-801022306" label="BrowserWindowInterfaceMobile:enabled"/>
   <int value="-800565336" label="ArcInstantResponseWindowOpen:disabled"/>
   <int value="-800464360" label="ContextualPageActions:enabled"/>
   <int value="-800364245" label="DevToolsPwaHandler:enabled"/>

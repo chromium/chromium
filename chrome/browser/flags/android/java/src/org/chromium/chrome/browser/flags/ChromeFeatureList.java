@@ -303,6 +303,7 @@ public abstract class ChromeFeatureList {
     public static final String BROWSER_CONTROLS_PERSISTS_ON_CVH = "BrowserControlsPersistsOnCvh";
     public static final String BROWSER_CONTROLS_RENDER_DRIVEN_SHOW_CONSTRAINT =
             "BrowserControlsRenderDrivenShowConstraint";
+    public static final String BROWSER_WINDOW_INTERFACE_MOBILE = "BrowserWindowInterfaceMobile";
     public static final String BROWSING_DATA_MODEL = "BrowsingDataModel";
     public static final String CACHE_ACTIVITY_TASKID = "CacheActivityTaskID";
     public static final String CACHE_IS_MULTI_INSTANCE_API_31_ENABLED =
@@ -1310,6 +1311,8 @@ public abstract class ChromeFeatureList {
     // Default to false. The logic behind the flag is not relevant when native is not initialized.
     public static final MutableFlagWithSafeDefault sBrowserControlsRenderDrivenShowConstraint =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_RENDER_DRIVEN_SHOW_CONSTRAINT, false);
+    public static final MutableFlagWithSafeDefault sBrowserWindowInterfaceMobile =
+            newMutableFlagWithSafeDefault(BROWSER_WINDOW_INTERFACE_MOBILE, false);
     public static final MutableFlagWithSafeDefault sControlsVisibilityFromNavigations =
             newMutableFlagWithSafeDefault(CONTROLS_VISIBILITY_FROM_NAVIGATIONS, true);
     // Defaulted to true in native, but since it is being used as a kill switch set the default
