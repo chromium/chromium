@@ -1011,7 +1011,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.SavedTabGroupLifespan" units="minutes"
-    expires_after="2026-04-05">
+    expires_after="2026-07-19">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -1789,7 +1789,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.UnsavedTabGroupCount" units="groups"
-    expires_after="2026-04-05">
+    expires_after="2026-07-19">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -1800,7 +1800,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.UnsavedTabGroupTabCount" units="tabs"
-    expires_after="2026-04-05">
+    expires_after="2026-07-19">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
