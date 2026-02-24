@@ -1,14 +1,14 @@
 caption: List of URL patterns for which <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> are blocked
 desc: |-
-  URL patterns are matched against the URL of the page being inspected. If a match is found, the <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> are blocked. For information on the URL format, see https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+  This policy can be used to block <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> on specific URLs. For information on the URL format, see https://support.google.com/chrome/a?p=url_blocklist_filter_format.
 
-  If the <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME">DeveloperToolsAvailabilityAllowlist</ph> policy is set and this policy is not, any URL not on the allowlist will be blocked.
+  URL patterns are matched against the URL of every frame on the page being inspected. The resulting behavior depends on whether the <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME">DeveloperToolsAvailabilityAllowlist</ph> policy is also set.
 
-  If both this and the <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME">DeveloperToolsAvailabilityAllowlist</ph> are set, the allowlist takes precedence. If a URL matches a pattern on the allowlist, it will be allowed. If it matches a pattern on this blocklist (but not the allowlist), it will be blocked. If a URL matches neither, the <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME">DeveloperToolsAvailability</ph> policy will be used as a fallback.
+  If this policy is set and <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME">DeveloperToolsAvailabilityAllowlist</ph> is not, any frame's URL matching a pattern on this blocklist will block <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> for the entire page. If a frame's URL doesn't match any pattern, the availability is determined by the <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME">DeveloperToolsAvailability</ph> policy.
 
-  If neither policy is set, the availability is determined by the <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME">DeveloperToolsAvailability</ph> policy.
+  If both this and the <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME">DeveloperToolsAvailabilityAllowlist</ph> policies are set, the allowlist takes precedence. If a frame's URL matches a pattern on the allowlist, it will be allowed, even if it also matches a pattern in this blocklist. If a URL matches a pattern on this blocklist (but not the allowlist), it will be blocked. If a URL matches neither, the <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME">DeveloperToolsAvailability</ph> policy will be used as a fallback.
 
-  This policy also applies to <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> opened for extensions and web applications.
+  If this policy is not set, the availability of <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> is determined by the <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME">DeveloperToolsAvailabilityAllowlist</ph> and <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME">DeveloperToolsAvailability</ph> policies.
 
   This policy is limited to 1,000 entries.
 

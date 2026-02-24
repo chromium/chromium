@@ -2210,11 +2210,9 @@ void DevToolsWindow::OnInfoBarRemoved(infobars::InfoBar* infobar,
 void DevToolsWindow::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument() ||
-      !navigation_handle->IsInPrimaryMainFrame()) {
+      navigation_handle->IsSameDocument()) {
     return;
   }
-
   if (!AllowDevToolsFor(profile_, web_contents())) {
     main_web_contents_->ClosePage();
   }

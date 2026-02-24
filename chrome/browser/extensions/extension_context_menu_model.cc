@@ -126,9 +126,18 @@ bool IsExtensionInspectionAllowed(const Extension& extension,
   policy::DeveloperToolsPolicyChecker* checker =
       policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(profile);
   if (checker) {
-    if (auto url_check =
-            checker->CheckDevToolsAvailabilityForUrl(extension.url())) {
-      return *url_check;
+    auto url_availability =
+        checker->GetDevToolsAvailabilityForUrl(extension.url());
+    switch (url_availability) {
+      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::kAllowed:
+        return true;
+      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::
+          kDisallowed:
+        return false;
+      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::kNotSet:
+        // The URL is not covered by the URL-based policies, so we fall back to
+        // the general enum-based policy.
+        break;
     }
   }
   using Availability = policy::DeveloperToolsPolicyHandler::Availability;

@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -65,9 +66,31 @@ bool IsInspectionAllowed(Profile* profile, content::WebContents* web_contents) {
   policy::DeveloperToolsPolicyChecker* checker =
       policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(profile);
   if (checker) {
-    if (auto url_check =
-            checker->CheckDevToolsAvailabilityForUrl(web_contents->GetURL())) {
-      return *url_check;
+    bool is_blocked = false;
+    web_contents->ForEachRenderFrameHost([&](content::RenderFrameHost* frame) {
+      auto frame_availability =
+          checker->GetDevToolsAvailabilityForUrl(frame->GetLastCommittedURL());
+      if (frame_availability == policy::DeveloperToolsPolicyChecker::
+                                    DevToolsAvailability::kDisallowed) {
+        is_blocked = true;
+      }
+    });
+    if (is_blocked) {
+      return false;
+    }
+
+    auto url_availability =
+        checker->GetDevToolsAvailabilityForUrl(web_contents->GetURL());
+    switch (url_availability) {
+      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::kAllowed:
+        return true;
+      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::
+          kDisallowed:
+        return false;
+      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::kNotSet:
+        // The URL is not covered by the URL-based policies, so we fall back to
+        // the general enum-based policy.
+        break;
     }
   }
   // Now check the enum policy
@@ -126,9 +149,18 @@ bool IsInspectionAllowed(Profile* profile,
     policy::DeveloperToolsPolicyChecker* checker =
         policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(
             profile);
-    if (auto url_check =
-            checker->CheckDevToolsAvailabilityForUrl(extension->url())) {
-      return *url_check;
+    auto url_availability =
+        checker->GetDevToolsAvailabilityForUrl(extension->url());
+    switch (url_availability) {
+      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::kAllowed:
+        return true;
+      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::
+          kDisallowed:
+        return false;
+      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::kNotSet:
+        // The URL is not covered by the URL-based policies, so we fall back to
+        // the general enum-based policy.
+        break;
     }
   }
 #endif
@@ -184,9 +216,18 @@ bool IsInspectionAllowed(Profile* profile, const web_app::WebApp* web_app) {
     policy::DeveloperToolsPolicyChecker* checker =
         policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(
             profile);
-    if (auto url_check =
-            checker->CheckDevToolsAvailabilityForUrl(web_app->start_url())) {
-      return *url_check;
+    auto url_availability =
+        checker->GetDevToolsAvailabilityForUrl(web_app->start_url());
+    switch (url_availability) {
+      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::kAllowed:
+        return true;
+      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::
+          kDisallowed:
+        return false;
+      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::kNotSet:
+        // The URL is not covered by the URL-based policies, so we fall back to
+        // the general enum-based policy.
+        break;
     }
   }
   using Availability = policy::DeveloperToolsPolicyHandler::Availability;
@@ -218,8 +259,17 @@ bool IsInspectionAllowed(Profile* profile, const GURL& url) {
   policy::DeveloperToolsPolicyChecker* checker =
       policy::DeveloperToolsPolicyCheckerFactory::GetForBrowserContext(profile);
   if (checker) {
-    if (auto url_check = checker->CheckDevToolsAvailabilityForUrl(url)) {
-      return *url_check;
+    auto url_availability = checker->GetDevToolsAvailabilityForUrl(url);
+    switch (url_availability) {
+      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::kAllowed:
+        return true;
+      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::
+          kDisallowed:
+        return false;
+      case policy::DeveloperToolsPolicyChecker::DevToolsAvailability::kNotSet:
+        // The URL is not covered by the URL-based policies, so we fall back to
+        // the general enum-based policy.
+        break;
     }
   }
   // If the URL-based policy doesn't have a rule for this URL, we fall back to

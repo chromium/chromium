@@ -36,13 +36,13 @@ base::CallbackListSubscription DeveloperToolsPolicyChecker::AddObserver(
   return url_blocklist_manager_.AddObserver(std::move(callback));
 }
 
-std::optional<bool>
-DeveloperToolsPolicyChecker::CheckDevToolsAvailabilityForUrl(
+DeveloperToolsPolicyChecker::DevToolsAvailability
+DeveloperToolsPolicyChecker::GetDevToolsAvailabilityForUrl(
     const GURL& url) const {
   URLBlocklist::URLBlocklistState url_state =
       url_blocklist_manager_.GetURLBlocklistState(url);
   if (url_state == URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST) {
-    return true;
+    return DevToolsAvailability::kAllowed;
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -50,14 +50,14 @@ DeveloperToolsPolicyChecker::CheckDevToolsAvailabilityForUrl(
            .empty() &&
       pref_service_->GetList(prefs::kDeveloperToolsAvailabilityBlocklist)
           .empty()) {
-    return false;
+    return DevToolsAvailability::kDisallowed;
   }
 #endif
 
   if (url_state == URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
-    return false;
+    return DevToolsAvailability::kDisallowed;
   }
-  return std::nullopt;
+  return DevToolsAvailability::kNotSet;
 }
 
 }  // namespace policy
