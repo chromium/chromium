@@ -70,6 +70,7 @@ void GrabWindowSnapshotAndScale(gfx::NativeWindow window,
                          GrabSnapshotImageCallback callback, gfx::Image image) {
     if (image.IsEmpty()) {
       std::move(callback).Run(image);
+      return;
     }
 
     base::ThreadPool::PostTaskAndReplyWithResult(
