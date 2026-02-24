@@ -136,7 +136,7 @@ public class PdfCoordinator implements PdfActionsDelegate {
         mFragmentContainerViewId = View.generateViewId();
         fragmentContainerView.setId(mFragmentContainerViewId);
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
-        // TODO(b/360717802): Reuse fragment from savedInstance.
+        // TODO(crbug.com/360717802): Reuse fragment from savedInstance.
         Fragment fragment = mFragmentManager.findFragmentByTag(mTabId);
         if (fragment != null) {
             mFragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
@@ -300,29 +300,30 @@ public class PdfCoordinator implements PdfActionsDelegate {
         }
         mUri = PdfUtils.getUriFromFilePath(mPdfFilePath);
         if (mUri != null) {
-            // TODO(crbug.com/418075119): Minimize the try catch block.
-            try {
-                if (!sSkipLoadPdfForTesting) {
-                    // Committing the fragment
-                    // TODO(crbug.com/360717802): Reuse fragment from savedInstance.
-                    FragmentTransaction transaction = mFragmentManager.beginTransaction();
-                    transaction.add(mFragmentContainerViewId, mChromePdfViewerFragment, mTabId);
-                    transaction.commitAllowingStateLoss();
-                    mFragmentManager.executePendingTransactions();
-                    PdfUtils.recordPdfLoad();
-                    long currentTime = SystemClock.elapsedRealtime();
-                    mChromePdfViewerFragment.mDocumentLoadStartTimestamp = currentTime;
-                    if (sLastPdfLoadTimestamp > 0) {
-                        PdfUtils.recordPdfLoadInterval(currentTime - sLastPdfLoadTimestamp);
-                    }
-                    sLastPdfLoadTimestamp = currentTime;
-                    mProgressBar.setVisibility(View.GONE);
-                    mChromePdfViewerFragment.setDocumentUri(mUri);
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Load pdf fails.", e);
-            } finally {
+            if (sSkipLoadPdfForTesting) {
                 mIsPdfLoaded = true;
+            } else {
+                // Committing the fragment
+                // TODO(crbug.com/360717802): Reuse fragment from savedInstance.
+                FragmentTransaction transaction = mFragmentManager.beginTransaction();
+                transaction.add(mFragmentContainerViewId, mChromePdfViewerFragment, mTabId);
+                transaction.commitAllowingStateLoss();
+                mFragmentManager.executePendingTransactions();
+                PdfUtils.recordPdfLoad();
+                long currentTime = SystemClock.elapsedRealtime();
+                mChromePdfViewerFragment.mDocumentLoadStartTimestamp = currentTime;
+                if (sLastPdfLoadTimestamp > 0) {
+                    PdfUtils.recordPdfLoadInterval(currentTime - sLastPdfLoadTimestamp);
+                }
+                sLastPdfLoadTimestamp = currentTime;
+                mProgressBar.setVisibility(View.GONE);
+                try {
+                    mChromePdfViewerFragment.setDocumentUri(mUri);
+                } catch (IllegalArgumentException e) {
+                    Log.e(TAG, "Load pdf fails due to invalid uri.", e);
+                } finally {
+                    mIsPdfLoaded = true;
+                }
             }
         } else {
             // TODO(crbug.com/348712628): show some error UI when content URI is null.
