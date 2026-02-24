@@ -153,20 +153,24 @@ passed to a compromised renderer via IPC ([469151](https://crbug.com/469151)).
   user interaction ([1255332](https://crbug.com/1255332)).
 * An HSTS bypass ([461481](https://crbug.com/461481)).
 * A bypass of the same origin policy for pages that meet several preconditions
-([419383](https://crbug.com/419383)).
+  ([419383](https://crbug.com/419383)).
 * A bug that allows web content to tamper with trusted browser UI
-([550047](https://crbug.com/550047)).
+  ([550047](https://crbug.com/550047)).
 * A bug that reduces the effectiveness of the sandbox
-([338538](https://crbug.com/338538)).
+  ([338538](https://crbug.com/338538)).
 * A bug that allows arbitrary pages to bypass security interstitials
-([540949](https://crbug.com/540949)).
+  ([540949](https://crbug.com/540949)).
 * A bug that allows an attacker to reliably read or infer browsing history
-([381808](https://crbug.com/381808)).
+  ([381808](https://crbug.com/381808)).
 * An address bar spoof where only certain URLs can be displayed, or with other
-mitigating factors ([265221](https://crbug.com/265221)).
+  mitigating factors ([265221](https://crbug.com/265221)).
 * Memory corruption in a renderer process that requires specific user
-interaction, such as dragging an object ([303772](https://crbug.com/303772)).
-
+  interaction, such as dragging an object ([303772](https://crbug.com/303772)).
+* A clickjacking bug that does **not** require convincing the user to do
+  something unusual (click repeated and quickly, hold down Enter, similar)
+  ([364508693](https://issues.chromium.org/issues/364508693))
+* A UI spoof on primary security UI surfaces other than the address bar
+  (permission prompts, site info dialog) ([418214610](https://issues.chromium.org/issues/418214610))
 
 ## Low severity (S3) {#TOC-Low-severity}
 
@@ -195,7 +199,11 @@ Example bugs:
 * Partial CSP bypass ([534570](https://crbug.com/534570)).
 * A limited extension permission bypass ([169632](https://crbug.com/169632)).
 * An uncontrolled single-byte out-of-bounds read
-([128163](https://crbug.com/128163)).
+  ([128163](https://crbug.com/128163)).
+* A UI spoof on a surface that isn't primary security UI
+  ([421690383](https://issues.chromium.org/issues/421690383))
+* Clickjacking bugs that require unusual user behavior (rapid clicks, holding
+  down a key, etc) ([400923](https://issues.chromium.org/issues/40092362))
 
 ## Priority for in the wild vulnerabilities {#TOC-itw-pri}
 
