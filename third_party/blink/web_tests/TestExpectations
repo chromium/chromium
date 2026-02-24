@@ -2838,7 +2838,6 @@ crbug.com/485394851 external/wpt/navigation-api/navigate-event/traverseTo-detach
 crbug.com/484675900 [ Android ] external/wpt/webdriver/tests/classic/new_session/unhandled_prompt_behavior.py [ Timeout ]
 crbug.com/484398834 [ Win ] external/wpt/css/css-typed-om/the-stylepropertymap/properties/gap.html [ Pass Timeout ]
 crbug.com/484393255 external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/window_open.py [ Failure ]
-crbug.com/484353746 [ Win ] external/wpt/html/semantics/embedded-content/the-audio-element/audio-loading-attr-default.tentative.html [ Pass Timeout ]
 crbug.com/484258336 external/wpt/mediacapture-fromelement/capture-audio-unaffected-volume.html [ Timeout ]
 crbug.com/484258336 external/wpt/mediacapture-fromelement/restart-after-ended.html [ Timeout ]
 crbug.com/484353698 external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/user_contexts.py [ Failure ]
@@ -9621,9 +9620,7 @@ crbug.com/477241796 http/tests/devtools/elements/styles-4/styles-update-links-2.
 # Intentionally slow SVG test became slower with Rust for SVG parsing.
 crbug.com/466303347 [ Win ] http/tests/misc/object-embedding-svg-delayed-size-negotiation-2.htm [ Timeout Pass ]
 crbug.com/466303347 [ Linux ] http/tests/misc/object-embedding-svg-delayed-size-negotiation-2.htm [ Timeout Pass ]
-# Gardener 2026-02-16
-crbug.com/484566429 [ Linux ] external/wpt/html/semantics/embedded-content/the-audio-element/audio-loading-lazy-autoplay-when-visible.tentative.html [ Failure Pass ]
-crbug.com/484566429 [ Linux ] external/wpt/html/semantics/embedded-content/the-video-element/video-loading-lazy-autoplay-when-visible.tentative.html [ Failure Pass ]
+
 
 # Flaky from 2026-02-12
 crbug.com/485066960 [ Linux ] external/wpt/html/dom/partial-updates/tentative/template-for-mutation-records.html [ Failure Pass ]
