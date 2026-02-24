@@ -105,27 +105,6 @@ enum class StorageAccessStatusOutcome {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// The values of this enum correspond to possible reasons the
-// `Sec-Fetch-Storage-Access` header may be omitted from a request, as well as
-// the possible values of the header when it is included.
-enum class SecFetchStorageAccessOutcome {
-  // The request's storage access status is nullopt.
-  kOmittedStatusMissing = 0,
-  // The request's credentials mode is not "include".
-  kOmittedRequestOmitsCredentials = 1,
-  // The `Sec-Fetch-Storage-Access` header is included and has the value `none`.
-  kValueNone = 2,
-  // The `Sec-Fetch-Storage-Access` header is included and has the value
-  // `inactive`.
-  kValueInactive = 3,
-  // The `Sec-Fetch-Storage-Access` header is included and has the value
-  // `active`.
-  kValueActive = 4,
-  kMaxValue = kValueActive
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
 // The values of this enum correspond to the possible outcomes of a call to
 // URLRequest::ShouldSetLoadWithStorageAccess().
 //

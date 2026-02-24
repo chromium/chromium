@@ -430,14 +430,6 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Rejected due to invalid origin"/>
 </enum>
 
-<enum name="SecFetchStorageAccessOutcome">
-  <int value="0" label="Omitted: storage access status missing"/>
-  <int value="1" label="Omitted: request credentials mode is not 'include'"/>
-  <int value="2" label="Value: none"/>
-  <int value="3" label="Value: inactive"/>
-  <int value="4" label="Value: active"/>
-</enum>
-
 <enum name="SharedStorageHeaderObserverPermissionsPolicyDoubleCheckStatus">
   <int value="0" label="SubresourceSourceNoRFH">
     The RenderFrameHost was null, so no double check was run. Any previous

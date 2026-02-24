@@ -170,19 +170,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="API.StorageAccessHeader.SecFetchStorageAccessOutcome"
-    enum="SecFetchStorageAccessOutcome" expires_after="2026-03-22">
-  <owner>sledoux@chromium.org</owner>
-  <owner>cfredric@chromium.org</owner>
-  <summary>
-    Records the outcome of appending the Sec-Fetch-Storage-Access header to an
-    outgoing network request. If no header was appended, this records the reason
-    why not; if a header was appended, this records the value that was appended.
-
-    Recorded whenever an HTTP request is sent to a potentially trustworthy URL.
-  </summary>
-</histogram>
-
 <histogram name="API.StorageAccessHeader.StorageAccessStatusOutcome"
     enum="StorageAccessStatusOutcome" expires_after="2026-05-24">
   <owner>sledoux@chromium.org</owner>

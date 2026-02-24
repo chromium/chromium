@@ -233,8 +233,6 @@ constexpr char kFrameOriginForFetchRequest[] = "https://xyz.com";
 constexpr char kSecFetchStorageAccess[] = "Sec-Fetch-Storage-Access";
 constexpr char kStorageAccessStatusHistogram[] =
     "API.StorageAccessHeader.StorageAccessStatusOutcome";
-constexpr char kSecFetchStorageAccessHistogram[] =
-    "API.StorageAccessHeader.SecFetchStorageAccessOutcome";
 
 #if BUILDFLAG(ENABLE_REPORTING)
 const base::FilePath::CharType kFilename[] =
@@ -12003,10 +12001,6 @@ TEST_F(StorageAccessHeaderNetworkContextTest,
       kStorageAccessStatusHistogram, /*sample=*/
       net::cookie_util::StorageAccessStatusOutcome::kOmittedSameSite,
       /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      kSecFetchStorageAccessHistogram, /*sample=*/
-      net::cookie_util::SecFetchStorageAccessOutcome::kOmittedStatusMissing,
-      /*expected_bucket_count=*/1);
 }
 
 TEST_F(StorageAccessHeaderNetworkContextTest,
@@ -12038,12 +12032,6 @@ TEST_F(StorageAccessHeaderNetworkContextTest,
   // Since credentials are blocked, no header should be attached.
   EXPECT_THAT(most_recent_request_headers(),
               ElementsAre(Not(Contains(Key(kSecFetchStorageAccess)))));
-
-  histogram_tester.ExpectUniqueSample(
-      kSecFetchStorageAccessHistogram, /*sample=*/
-      net::cookie_util::SecFetchStorageAccessOutcome::
-          kOmittedRequestOmitsCredentials,
-      /*expected_bucket_count=*/1);
 }
 
 TEST_F(StorageAccessHeaderNetworkContextTest, RequestHeader_None) {
@@ -12076,10 +12064,6 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RequestHeader_None) {
       kStorageAccessStatusHistogram,
       /*sample=*/
       net::cookie_util::StorageAccessStatusOutcome::kValueNone,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      kSecFetchStorageAccessHistogram, /*sample=*/
-      net::cookie_util::SecFetchStorageAccessOutcome::kValueNone,
       /*expected_bucket_count=*/1);
 }
 
@@ -12128,10 +12112,6 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
         /*sample=*/
         net::cookie_util::StorageAccessStatusOutcome::kValueInactive,
         /*expected_bucket_count=*/1);
-    histogram_tester.ExpectUniqueSample(
-        kSecFetchStorageAccessHistogram, /*sample=*/
-        net::cookie_util::SecFetchStorageAccessOutcome::kValueInactive,
-        /*expected_bucket_count=*/1);
   } else {
     EXPECT_THAT(most_recent_request_headers(),
                 ElementsAre(Contains(Pair(kSecFetchStorageAccess, "none"))));
@@ -12139,10 +12119,6 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
         kStorageAccessStatusHistogram,
         /*sample=*/
         net::cookie_util::StorageAccessStatusOutcome::kValueNone,
-        /*expected_bucket_count=*/1);
-    histogram_tester.ExpectUniqueSample(
-        kSecFetchStorageAccessHistogram, /*sample=*/
-        net::cookie_util::SecFetchStorageAccessOutcome::kValueNone,
         /*expected_bucket_count=*/1);
   }
 }
@@ -12188,10 +12164,6 @@ TEST_F(StorageAccessHeaderNetworkContextTest, RequestHeader_Active) {
       kStorageAccessStatusHistogram,
       /*sample=*/
       net::cookie_util::StorageAccessStatusOutcome::kValueActive,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      kSecFetchStorageAccessHistogram, /*sample=*/
-      net::cookie_util::SecFetchStorageAccessOutcome::kValueActive,
       /*expected_bucket_count=*/1);
 }
 
@@ -12265,14 +12237,6 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, RetryAfterInactive) {
         /*sample=*/
         net::cookie_util::StorageAccessStatusOutcome::kValueActive,
         /*expected_count=*/1);
-    histogram_tester.ExpectBucketCount(
-        kSecFetchStorageAccessHistogram, /*sample=*/
-        net::cookie_util::SecFetchStorageAccessOutcome::kValueInactive,
-        /*expected_count=*/1);
-    histogram_tester.ExpectBucketCount(
-        kSecFetchStorageAccessHistogram, /*sample=*/
-        net::cookie_util::SecFetchStorageAccessOutcome::kValueActive,
-        /*expected_count=*/1);
   } else {
     EXPECT_THAT(most_recent_request_headers(),
                 ElementsAre(Contains(Pair(kSecFetchStorageAccess, "none"))));
@@ -12282,10 +12246,6 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, RetryAfterInactive) {
         kStorageAccessStatusHistogram,
         /*sample=*/
         net::cookie_util::StorageAccessStatusOutcome::kValueNone,
-        /*expected_count=*/1);
-    histogram_tester.ExpectBucketCount(
-        kSecFetchStorageAccessHistogram, /*sample=*/
-        net::cookie_util::SecFetchStorageAccessOutcome::kValueNone,
         /*expected_count=*/1);
   }
 }
