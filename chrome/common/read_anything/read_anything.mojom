@@ -99,9 +99,9 @@ enum Colors {
   kYellow = 3,
   [MinVersion=1] kBlue = 4,
   [MinVersion=2] kHighContrast = 5,
-  [MinVersion=2] kLowContrast = 6,
-  [MinVersion=2] kSepiaLight = 7,
-  [MinVersion=2] kSepiaDark = 8,
+  [MinVersion=2] kLowContrastDeprecated = 6,
+  [MinVersion=2] kLowContrastLight = 7,
+  [MinVersion=2] kLowContrastDark = 8,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingColor)
 

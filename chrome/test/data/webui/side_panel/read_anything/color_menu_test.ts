@@ -41,7 +41,7 @@ suite('ColorMenuElement', () => {
   });
 
   test('theme change', async () => {
-    const numberOfThemes = 7;
+    const numberOfThemes = 6;
     let closeAllMenusCount = 0;
     document.addEventListener(
         ToolbarEvent.CLOSE_ALL_MENUS, () => closeAllMenusCount += 1);
@@ -66,17 +66,12 @@ suite('ColorMenuElement', () => {
         new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme4}}));
     assertEquals(theme4, chrome.readingMode.colorTheme);
 
-    const theme5 = chrome.readingMode.lowContrastTheme;
-    colorMenu.$.menu.dispatchEvent(
-        new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme5}}));
-    assertEquals(theme5, chrome.readingMode.colorTheme);
-
-    const theme6 = chrome.readingMode.sepiaLightTheme;
+    const theme6 = chrome.readingMode.lowContrastLightTheme;
     colorMenu.$.menu.dispatchEvent(
         new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme6}}));
     assertEquals(theme6, chrome.readingMode.colorTheme);
 
-    const theme7 = chrome.readingMode.sepiaDarkTheme;
+    const theme7 = chrome.readingMode.lowContrastDarkTheme;
     colorMenu.$.menu.dispatchEvent(
         new CustomEvent(ToolbarEvent.THEME, {detail: {data: theme7}}));
     assertEquals(theme7, chrome.readingMode.colorTheme);

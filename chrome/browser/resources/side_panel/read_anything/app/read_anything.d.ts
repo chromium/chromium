@@ -73,9 +73,8 @@ declare namespace chrome {
     let yellowTheme: number;
     let blueTheme: number;
     let highContrastTheme: number;
-    let lowContrastTheme: number;
-    let sepiaLightTheme: number;
-    let sepiaDarkTheme: number;
+    let lowContrastLightTheme: number;
+    let lowContrastDarkTheme: number;
     let undefinedPresentationState: number;
     let inHiddenPresentationState: number;
     let inSidePanelPresentationState: number;

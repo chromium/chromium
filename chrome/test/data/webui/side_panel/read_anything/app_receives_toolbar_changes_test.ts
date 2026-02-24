@@ -146,11 +146,11 @@ suite('AppReceivesToolbarChanges', () => {
       app.style.setProperty(
           '--color-read-anything-background-high-contrast', 'HighContrast');
       app.style.setProperty(
-          '--color-read-anything-background-low-contrast', 'LowContrast');
+          '--color-read-anything-background-low-contrast-light',
+          'LowContrastLight');
       app.style.setProperty(
-          '--color-read-anything-background-sepia-light', 'SepiaLight');
-      app.style.setProperty(
-          '--color-read-anything-background-sepia-dark', 'SepiaDark');
+          '--color-read-anything-background-low-contrast-dark',
+          'LowContrastDark');
 
       emitColorTheme(chrome.readingMode.darkTheme);
       assertTrue(
@@ -169,15 +169,13 @@ suite('AppReceivesToolbarChanges', () => {
       assertTrue(
           hasStyle(app.$.container, '--background-color', 'HighContrast'));
 
-      emitColorTheme(chrome.readingMode.lowContrastTheme);
+      emitColorTheme(chrome.readingMode.lowContrastLightTheme);
       assertTrue(
-          hasStyle(app.$.container, '--background-color', 'LowContrast'));
+          hasStyle(app.$.container, '--background-color', 'LowContrastLight'));
 
-      emitColorTheme(chrome.readingMode.sepiaLightTheme);
-      assertTrue(hasStyle(app.$.container, '--background-color', 'SepiaLight'));
-
-      emitColorTheme(chrome.readingMode.sepiaDarkTheme);
-      assertTrue(hasStyle(app.$.container, '--background-color', 'SepiaDark'));
+      emitColorTheme(chrome.readingMode.lowContrastDarkTheme);
+      assertTrue(
+          hasStyle(app.$.container, '--background-color', 'LowContrastDark'));
     });
 
     test('default theme uses default colors', () => {
