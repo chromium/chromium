@@ -7,10 +7,22 @@
 <input type='color' value='#ff0000' list>
 
 <script>
-  window.onload = openPickerAppearanceOnly(document.querySelector('input'),() => {
+  const input = document.querySelector('input');
+
+  function waitForPickerClosed() {
+    function waitFrame() {
+      if (!internals.pagePopupWindow)
+        return Promise.resolve();
+      return requestAnimationFramePromise().then(waitFrame);
+    }
+    return waitFrame();
+  }
+
+  window.onload = openPickerAppearanceOnly(input,() => {
     // The color suggestion picker popup should close when the input type changes.
-    document.querySelector('input').type = 'text';
-    return requestAnimationFramePromise()
+    input.type = 'text';
+    return waitForPickerClosed()
+      .then(() => requestAnimationFramePromise())
       .then(() => requestAnimationFramePromise());
   });
 </script>
