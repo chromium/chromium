@@ -2217,6 +2217,42 @@ TEST_P(InteractionIdTest, ContextMenu) {
   CheckUKMValues({{5, UserInteractionType::kTapOrClick}});
 }
 
+// Regression test for crbug.com/487091601.
+TEST_P(InteractionIdTest, FirstInputInteractionIdCrash) {
+  // 1. Pointerdown with pointerId 4
+  base::TimeTicks start_time1 = GetTimeStamp(0);
+  base::TimeTicks processing_start1 = GetTimeStamp(1);
+  base::TimeTicks processing_end1 = GetTimeStamp(2);
+  RegisterPointerEvent(event_type_names::kPointerdown, start_time1,
+                       processing_start1, processing_end1, 4);
+  SimulateAllRenderingStages(GetTimeStamp(3));
+
+  // 2. Pointerdown with pointerId 5
+  base::TimeTicks start_time2 = GetTimeStamp(10);
+  base::TimeTicks processing_start2 = GetTimeStamp(11);
+  base::TimeTicks processing_end2 = GetTimeStamp(12);
+  RegisterPointerEvent(event_type_names::kPointerdown, start_time2,
+                       processing_start2, processing_end2, 5);
+  SimulateAllRenderingStages(GetTimeStamp(13));
+
+  // 3. Pointerup with pointerId 4
+  base::TimeTicks start_time3 = GetTimeStamp(20);
+  base::TimeTicks processing_start3 = GetTimeStamp(21);
+  base::TimeTicks processing_end3 = GetTimeStamp(22);
+  RegisterPointerEvent(event_type_names::kPointerup, start_time3,
+                       processing_start3, processing_end3, 4);
+  SimulateAllRenderingStages(GetTimeStamp(23));
+
+  PerformanceEntryVector firstInputs =
+      performance_->getEntriesByType(performance_entry_names::kFirstInput);
+  ASSERT_EQ(1u, firstInputs.size());
+
+  PerformanceEventTiming* firstInput =
+      static_cast<PerformanceEventTiming*>(firstInputs[0].Get());
+  // This should NOT crash, and should have a valid interactionId.
+  EXPECT_GT(firstInput->interactionId(), 0u);
+}
+
 INSTANTIATE_TEST_SUITE_P(All, InteractionIdTest, ::testing::Bool());
 
 class WindowPerformanceNavigationIdTest : public testing::Test {

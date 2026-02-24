@@ -1400,21 +1400,38 @@ void WindowPerformance::TryReportAsFirstInputTiming(
 
   PerformanceEventTiming* first_input_entry = nullptr;
 
-  if (event_timing_entry->name() == event_type_names::kPointerdown) {
-    first_pointer_down_event_timing_ = event_timing_entry;
-  } else if (event_timing_entry->name() == event_type_names::kPointerup &&
-             first_pointer_down_event_timing_) {
-    // Use the old buffered pointerdown when we see pointerup.
-    first_input_entry = PerformanceEventTiming::CreateFirstInputTiming(
-        first_pointer_down_event_timing_);
-  } else if (event_timing_entry->name() == event_type_names::kPointercancel) {
-    first_pointer_down_event_timing_ = nullptr;
-  } else if ((event_timing_entry->name() == event_type_names::kMousedown ||
-              event_timing_entry->name() == event_type_names::kClick ||
-              event_timing_entry->name() == event_type_names::kKeydown) &&
-             !first_pointer_down_event_timing_) {
-    first_input_entry =
-        PerformanceEventTiming::CreateFirstInputTiming(event_timing_entry);
+  // TODO(crbug.com/487091601): Sequential pointer interactions are not
+  // guaranteed to have the same pointerid in multi-touch use cases.  Thus, a
+  // pending pointerdown may not match a pointerup or pointercancel signal. This
+  // little state machine tries not to overwrite or emit the very first
+  // pointerdown until it can or has to-- but may drop the "second" input to
+  // do so.  If the first pending pointerdown ends up cancelled, this can lead
+  // to inaccurate FID reporting-- which has always been true for mouse and
+  // keydown already.
+  // This will all be fixed with crbug.com/331806288!
+  if (first_pointer_down_event_timing_) {
+    if (event_timing_entry->name() == event_type_names::kPointercancel) {
+      first_pointer_down_event_timing_ = nullptr;
+      return;
+    }
+
+    if (event_timing_entry->name() == event_type_names::kPointerup &&
+        first_pointer_down_event_timing_->HasKnownInteractionID()) {
+      first_input_entry = PerformanceEventTiming::CreateFirstInputTiming(
+          first_pointer_down_event_timing_);
+    }
+  } else {
+    if (event_timing_entry->name() == event_type_names::kPointerdown) {
+      first_pointer_down_event_timing_ = event_timing_entry;
+      return;
+    }
+
+    if (event_timing_entry->name() == event_type_names::kMousedown ||
+        event_timing_entry->name() == event_type_names::kClick ||
+        event_timing_entry->name() == event_type_names::kKeydown) {
+      first_input_entry =
+          PerformanceEventTiming::CreateFirstInputTiming(event_timing_entry);
+    }
   }
 
   if (!first_input_entry) {
@@ -1430,7 +1447,6 @@ void WindowPerformance::TryReportAsFirstInputTiming(
     NotifyObserversOfEntry(*first_input_entry);
   }
 
-  CHECK(!first_input_timing_);
   first_input_timing_ = first_input_entry;
 }
 
