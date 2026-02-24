@@ -905,6 +905,8 @@ void RequestService::OnAccountsResultsReceived(
 
     // Success
     CHECK(result.accounts.has_value());
+    idp_filtered_accounts_[result.idp_config_url] =
+        std::move(result.filtered_accounts);
     OnFetchDataForIdpSucceeded(std::move(*result.accounts),
                                std::move(result.idp_info));
   }
@@ -974,6 +976,10 @@ void RequestService::OnFetchDataForIdpSucceeded(
   // This can happen with the 'use other account' feature.
   if (idp_infos_.find(idp_config_url) != idp_infos_.end()) {
     std::erase_if(accounts_, [&idp_config_url](const auto& account) {
+      return account->identity_provider->idp_metadata.config_url ==
+             idp_config_url;
+    });
+    std::erase_if(filtered_accounts_, [&idp_config_url](const auto& account) {
       return account->identity_provider->idp_metadata.config_url ==
              idp_config_url;
     });
@@ -1060,6 +1066,7 @@ void RequestService::MaybeShowAccountsDialog() {
   // This map may have contents already if we came here through the "Add
   // Account" flow or the IDP login mismatch in multiple IDP case.
   idp_data_for_display_.clear();
+  filtered_accounts_.clear();
 
   for (const auto& idp : idp_order_) {
     auto idp_info_it = idp_infos_.find(idp);
@@ -1073,8 +1080,16 @@ void RequestService::MaybeShowAccountsDialog() {
                        std::make_move_iterator(accounts_it->second.begin()),
                        std::make_move_iterator(accounts_it->second.end()));
     }
+    auto filtered_it = idp_filtered_accounts_.find(idp);
+    if (filtered_it != idp_filtered_accounts_.end()) {
+      filtered_accounts_.insert(
+          filtered_accounts_.end(),
+          std::make_move_iterator(filtered_it->second.begin()),
+          std::make_move_iterator(filtered_it->second.end()));
+    }
   }
   idp_accounts_.clear();
+  idp_filtered_accounts_.clear();
 
   std::stable_sort(
       accounts_.begin(), accounts_.end(),
@@ -1295,7 +1310,7 @@ void RequestService::MaybeShowAccountsDialog() {
   } else {
     if (!request_dialog_controller_->ShowAccountsDialog(
             CreateRpData(/*client_metadata_received=*/true),
-            idp_data_for_display_, accounts_, rp_mode_,
+            idp_data_for_display_, accounts_, filtered_accounts_, rp_mode_,
             base::BindOnce(&RequestService::OnAccountSelected,
                            weak_ptr_factory_.GetWeakPtr()),
             base::BindRepeating(&RequestService::LoginToIdP,
@@ -1401,7 +1416,8 @@ void RequestService::NotifyAutofillSuggestionAccepted(
   }
   if (!request_dialog_controller_->ShowAccountsDialog(
           CreateRpData(/*client_metadata_received=*/true),
-          idp_data_for_display_, selected, blink::mojom::RpMode::kActive,
+          idp_data_for_display_, selected, filtered_accounts_,
+          blink::mojom::RpMode::kActive,
           base::BindOnce(&RequestService::OnAccountSelected,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&RequestService::LoginToIdP,

@@ -189,6 +189,7 @@ class TestDialogController
       content::RelyingPartyData rp_data,
       const std::vector<IdentityProviderDataPtr>& idp_list,
       const std::vector<IdentityRequestAccountPtr>& accounts,
+      const std::vector<IdentityRequestAccountPtr>& filtered_accounts,
       blink::mojom::RpMode rp_mode,
       IdentityRequestDialogController::AccountSelectionCallback on_selected,
       IdentityRequestDialogController::LoginToIdPCallback on_add_account,

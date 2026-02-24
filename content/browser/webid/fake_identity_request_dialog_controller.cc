@@ -27,6 +27,7 @@ bool FakeIdentityRequestDialogController::ShowAccountsDialog(
     content::RelyingPartyData rp_data,
     const std::vector<IdentityProviderDataPtr>& idp_list,
     const std::vector<IdentityRequestAccountPtr>& accounts,
+    const std::vector<IdentityRequestAccountPtr>& filtered_accounts,
     blink::mojom::RpMode rp_mode,
     AccountSelectionCallback on_selected,
     LoginToIdPCallback on_add_account,

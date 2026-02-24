@@ -78,6 +78,8 @@ bool IdentityRequestDialogController::ShowAccountsDialog(
     content::RelyingPartyData rp_data,
     const std::vector<scoped_refptr<content::IdentityProviderData>>& idp_list,
     const std::vector<scoped_refptr<content::IdentityRequestAccount>>& accounts,
+    const std::vector<scoped_refptr<content::IdentityRequestAccount>>&
+        filtered_accounts,
     blink::mojom::RpMode rp_mode,
     AccountSelectionCallback on_selected,
     LoginToIdPCallback on_add_account,

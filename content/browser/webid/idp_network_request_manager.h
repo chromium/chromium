@@ -157,6 +157,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager : public NetworkRequestManager {
     std::vector<IdentityRequestAccountPtr> PotentialAccountsForSite(
         const std::string& site) const;
 
+    // The list of all accounts to be shown in the UI.
     std::vector<IdentityRequestAccountPtr> accounts;
     // A salt used to compute hashes of the RP site (eTLD+1) to check against
     // potentially_approved_site_hashes in each account. This allows the browser

@@ -336,17 +336,24 @@ void AccountsFetcher::OnAccountsResponseReceived(
         AccountParseStatusToRequestResultAndTokenStatus(status.parse_status);
     HandleAccountsFetchFailure(
         std::move(idp_info), old_idp_signin_status, resultAndTokenStatus.first,
-        resultAndTokenStatus.second, status, accounts_fetched_time);
+        resultAndTokenStatus.second, status,
+        std::vector<IdentityRequestAccountPtr>(), accounts_fetched_time);
     return;
   }
   RecordRawAccountsSize(accounts.accounts.size());
   RecordAccountFieldsType(accounts.accounts);
-  FilterAccountsWithLabel(idp_info->metadata.requested_label,
-                          accounts.accounts);
-  FilterAccountsWithLoginHint(idp_info->provider->login_hint,
-                              accounts.accounts);
-  FilterAccountsWithDomainHint(idp_info->provider->domain_hint,
-                               accounts.accounts);
+  MarkAccountsWithLabel(idp_info->metadata.requested_label, accounts.accounts);
+  MarkAccountsWithLoginHint(idp_info->provider->login_hint, accounts.accounts);
+  MarkAccountsWithDomainHint(idp_info->provider->domain_hint,
+                             accounts.accounts);
+
+  std::vector<IdentityRequestAccountPtr> filtered_accounts;
+  for (const auto& account : accounts.accounts) {
+    if (account->is_filtered_out) {
+      filtered_accounts.push_back(account);
+    }
+  }
+
   filter_accounts_callback_.Run(
       idp_config_url, idp_info->metadata.idp_login_url, accounts.accounts);
 
@@ -362,6 +369,7 @@ void AccountsFetcher::OnAccountsResponseReceived(
     HandleAccountsFetchFailure(std::move(idp_info), old_idp_signin_status,
                                FederatedAuthRequestResult::kAccountsListEmpty,
                                TokenStatus::kAccountsListEmpty, status,
+                               std::move(filtered_accounts),
                                accounts_fetched_time);
     return;
   }
@@ -371,13 +379,14 @@ void AccountsFetcher::OnAccountsResponseReceived(
                        accounts.accounts);
 
   OnAccountsFetchSucceeded(std::move(idp_info), status, std::move(accounts),
-                           accounts_fetched_time);
+                           std::move(filtered_accounts), accounts_fetched_time);
 }
 
 void AccountsFetcher::OnAccountsFetchSucceeded(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     FetchStatus status,
     IdpNetworkRequestManager::AccountsResponse accounts,
+    std::vector<IdentityRequestAccountPtr> filtered_accounts,
     base::TimeTicks accounts_fetched_time) {
   // For cross-site iframes, we need to fetch client metadata in case the
   // IDP sends `client_is_third_party_to_top_frame_origin: true`.
@@ -411,7 +420,8 @@ void AccountsFetcher::OnAccountsFetchSucceeded(
         params_.icon_minimum_size,
         base::BindOnce(&AccountsFetcher::OnClientMetadataResponseReceived,
                        weak_ptr_factory_.GetWeakPtr(), std::move(idp_info),
-                       std::move(accounts), accounts_fetched_time));
+                       std::move(accounts), std::move(filtered_accounts),
+                       accounts_fetched_time));
   } else {
     GURL idp_brand_icon_url = idp_info->metadata.brand_icon_url;
     network_manager_->FetchAccountPicturesAndBrandIcons(
@@ -420,13 +430,15 @@ void AccountsFetcher::OnAccountsFetchSucceeded(
         base::BindOnce(&AccountsFetcher::OnFetchDataForIdpSucceeded,
                        weak_ptr_factory_.GetWeakPtr(),
                        IdpNetworkRequestManager::ClientMetadata(),
-                       accounts_fetched_time, base::TimeTicks()));
+                       std::move(filtered_accounts), accounts_fetched_time,
+                       base::TimeTicks()));
   }
 }
 
 void AccountsFetcher::OnClientMetadataResponseReceived(
     std::unique_ptr<IdentityProviderInfo> idp_info,
     IdpNetworkRequestManager::AccountsResponse&& accounts,
+    std::vector<IdentityRequestAccountPtr> filtered_accounts,
     base::TimeTicks accounts_fetched_time,
     FetchStatus status,
     IdpNetworkRequestManager::ClientMetadata client_metadata) {
@@ -440,11 +452,13 @@ void AccountsFetcher::OnClientMetadataResponseReceived(
       std::move(accounts), std::move(idp_info), rp_brand_icon_url,
       base::BindOnce(&AccountsFetcher::OnFetchDataForIdpSucceeded,
                      weak_ptr_factory_.GetWeakPtr(), std::move(client_metadata),
-                     accounts_fetched_time, client_metadata_fetched_time));
+                     std::move(filtered_accounts), accounts_fetched_time,
+                     client_metadata_fetched_time));
 }
 
 void AccountsFetcher::OnFetchDataForIdpSucceeded(
     const IdpNetworkRequestManager::ClientMetadata& client_metadata,
+    std::vector<IdentityRequestAccountPtr> filtered_accounts,
     base::TimeTicks accounts_fetched_time,
     base::TimeTicks client_metadata_fetched_time,
     IdpNetworkRequestManager::AccountsResponse accounts,
@@ -468,17 +482,21 @@ void AccountsFetcher::OnFetchDataForIdpSucceeded(
   for (auto& account : accounts.accounts) {
     account->identity_provider = idp_info->data;
   }
+  for (auto& account : filtered_accounts) {
+    account->identity_provider = idp_info->data;
+  }
 
   Result result;
   result.idp_config_url = idp_config_url;
   result.idp_info = std::move(idp_info);
   result.accounts = std::move(accounts);
+  result.filtered_accounts = std::move(filtered_accounts);
   result.accounts_fetched_time = accounts_fetched_time;
   result.client_metadata_fetched_time = client_metadata_fetched_time;
   AddResult(std::move(result));
 }
 
-void AccountsFetcher::FilterAccountsWithLabel(
+void AccountsFetcher::MarkAccountsWithLabel(
     const std::string& label,
     std::vector<IdentityRequestAccountPtr>& accounts) {
   if (label.empty()) {
@@ -500,7 +518,7 @@ void AccountsFetcher::FilterAccountsWithLabel(
   fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "AccountLabel");
 }
 
-void AccountsFetcher::FilterAccountsWithLoginHint(
+void AccountsFetcher::MarkAccountsWithLoginHint(
     const std::string& login_hint,
     std::vector<IdentityRequestAccountPtr>& accounts) {
   if (login_hint.empty()) {
@@ -525,7 +543,7 @@ void AccountsFetcher::FilterAccountsWithLoginHint(
   fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "LoginHint");
 }
 
-void AccountsFetcher::FilterAccountsWithDomainHint(
+void AccountsFetcher::MarkAccountsWithDomainHint(
     const std::string& domain_hint,
     std::vector<IdentityRequestAccountPtr>& accounts) {
   if (domain_hint.empty()) {
@@ -598,6 +616,7 @@ void AccountsFetcher::HandleAccountsFetchFailure(
     blink::mojom::FederatedAuthRequestResult result,
     std::optional<TokenStatus> token_status,
     const FetchStatus& status,
+    std::vector<IdentityRequestAccountPtr> filtered_accounts,
     base::TimeTicks accounts_fetched_time) {
   if (status.parse_status != ParseStatus::kSuccess) {
     webid::MaybeAddResponseCodeToConsole(
@@ -609,6 +628,7 @@ void AccountsFetcher::HandleAccountsFetchFailure(
       res.idp_config_url = idp_info->provider->config->config_url;
       res.show_active_mode_modal_dialog = true;
       res.idp_info = std::move(idp_info);
+      res.filtered_accounts = std::move(filtered_accounts);
       AddResult(std::move(res));
       return;
     }
@@ -619,6 +639,7 @@ void AccountsFetcher::HandleAccountsFetchFailure(
     res.error = result;
     res.token_status = token_status;
     res.should_delay_callback = true;
+    res.filtered_accounts = std::move(filtered_accounts);
     res.accounts_fetched_time = accounts_fetched_time;
     AddResult(std::move(res));
     return;
@@ -631,6 +652,7 @@ void AccountsFetcher::HandleAccountsFetchFailure(
     res.error = FederatedAuthRequestResult::kRpPageNotVisible;
     res.token_status = TokenStatus::kRpPageNotVisible;
     res.should_delay_callback = true;
+    res.filtered_accounts = std::move(filtered_accounts);
     res.accounts_fetched_time = accounts_fetched_time;
     AddResult(std::move(res));
     return;
@@ -647,6 +669,7 @@ void AccountsFetcher::HandleAccountsFetchFailure(
     res.error = FederatedAuthRequestResult::kSilentMediationFailure;
     res.token_status = TokenStatus::kSilentMediationFailure;
     res.should_delay_callback = true;
+    res.filtered_accounts = std::move(filtered_accounts);
     res.accounts_fetched_time = accounts_fetched_time;
     AddResult(std::move(res));
     return;

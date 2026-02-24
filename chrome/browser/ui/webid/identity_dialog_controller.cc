@@ -146,6 +146,7 @@ bool IdentityDialogController::ShowAccountsDialog(
     content::RelyingPartyData rp_data,
     const std::vector<IdentityProviderDataPtr>& identity_provider_data,
     const std::vector<IdentityRequestAccountPtr>& accounts,
+    const std::vector<IdentityRequestAccountPtr>& filtered_accounts,
     blink::mojom::RpMode rp_mode,
     AccountSelectionCallback on_selected,
     LoginToIdPCallback on_add_account,
@@ -190,6 +191,22 @@ bool IdentityDialogController::ShowAccountsDialog(
         return false;
       }
     }
+
+    // If the account is not available in the accounts list, check the
+    // filtered_accounts list. The current FedCM flow could have filtered out
+    // the account despite it being displayed in the initial account chooser
+    // from the actor.
+    for (const auto& account : filtered_accounts) {
+      if (account->id == account_id &&
+          url::Origin::Create(
+              account->identity_provider->idp_metadata.config_url) ==
+              idp_origin) {
+        actor_login_request->OnFederatedResultReceived(
+            content::webid::FederatedLoginResult::kAccountNotAvailable);
+        return false;
+      }
+    }
+
     // The selected account was not found in the list of accounts fetched from
     // the IdP.
     actor_login_request->OnFederatedResultReceived(

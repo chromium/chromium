@@ -15,6 +15,7 @@
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 namespace content::webid {
+
 DOCUMENT_USER_DATA_KEY_IMPL(IdentityCredentialSourceImpl);
 
 IdentityCredentialSourceImpl::IdentityCredentialSourceImpl(RenderFrameHost* rfh)
@@ -47,14 +48,16 @@ void IdentityCredentialSourceImpl::GetIdentityCredentialSuggestions(
   if (page_data && page_data->PendingWebIdentityRequest()) {
     RequestService* request_service = page_data->PendingWebIdentityRequest();
     // These are the accounts that would be displayed in the UI, so filters such
-    // as login hint have been applied already.
+    // as login hint have been applied already. But they may be in the accounts
+    // in edge cases where they will be shown in the UI.
     const std::vector<IdentityRequestAccountPtr>& request_accounts =
         request_service->GetAccounts();
     std::vector<IdentityRequestAccountPtr> signin_accounts;
     for (const auto& account : request_accounts) {
-      if (account->idp_claimed_login_state.value_or(
+      if (!account->is_filtered_out &&
+          account->idp_claimed_login_state.value_or(
               account->browser_trusted_login_state) ==
-          IdentityRequestAccount::LoginState::kSignIn) {
+              IdentityRequestAccount::LoginState::kSignIn) {
         signin_accounts.push_back(account);
       }
     }
@@ -140,7 +143,7 @@ bool IdentityCredentialSourceImpl::SelectAccount(
   for (const auto& account : accounts) {
     const GURL& idp_config_url =
         account->identity_provider->idp_metadata.config_url;
-    if (account->id == account_id &&
+    if (!account->is_filtered_out && account->id == account_id &&
         idp_origin == url::Origin::Create(idp_config_url)) {
       CHECK_EQ(account->idp_claimed_login_state.value_or(
                    account->browser_trusted_login_state),
@@ -150,6 +153,7 @@ bool IdentityCredentialSourceImpl::SelectAccount(
       return true;
     }
   }
+
   // Account not found
   return false;
 }

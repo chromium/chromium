@@ -204,7 +204,8 @@ class IdentityDialogControllerTest : public ChromeRenderViewHostTestHarness {
     controller->ShowAccountsDialog(
         content::RelyingPartyData(kTopFrameEtldPlusOne,
                                   /*iframe_for_display=*/u""),
-        {idp_data}, accounts_, rp_mode, /*on_selected=*/base::DoNothing(),
+        {idp_data}, accounts_, /*filtered_accounts=*/{}, rp_mode,
+        /*on_selected=*/base::DoNothing(),
         /*on_add_account=*/base::DoNothing(), std::move(dismiss_callback),
         /*accounts_displayed_callback=*/base::DoNothing());
   }
@@ -676,7 +677,8 @@ TEST_F(IdentityDialogControllerTest,
   EXPECT_TRUE(controller->ShowAccountsDialog(
       content::RelyingPartyData(kTopFrameEtldPlusOne,
                                 /*iframe_for_display=*/u""),
-      {idp_data}, accounts, blink::mojom::RpMode::kActive, on_selected.Get(),
+      {idp_data}, accounts, /*filtered_accounts=*/{},
+      blink::mojom::RpMode::kActive, on_selected.Get(),
       /*on_add_account=*/base::DoNothing(),
       /*dismiss_callback=*/base::DoNothing(),
       /*accounts_displayed_callback=*/base::DoNothing()));
@@ -712,7 +714,8 @@ TEST_F(IdentityDialogControllerTest,
     EXPECT_FALSE(controller->ShowAccountsDialog(
         content::RelyingPartyData(kTopFrameEtldPlusOne,
                                   /*iframe_for_display=*/u""),
-        {idp_data}, accounts, blink::mojom::RpMode::kActive,
+        {idp_data}, accounts, /*filtered_accounts=*/{},
+        blink::mojom::RpMode::kActive,
         /*on_selected=*/base::DoNothing(),
         /*on_add_account=*/base::DoNothing(),
         /*dismiss_callback=*/base::DoNothing(),
@@ -744,7 +747,41 @@ TEST_F(IdentityDialogControllerTest,
     EXPECT_FALSE(controller->ShowAccountsDialog(
         content::RelyingPartyData(kTopFrameEtldPlusOne,
                                   /*iframe_for_display=*/u""),
-        {idp_data}, accounts, blink::mojom::RpMode::kActive,
+        {idp_data}, accounts, /*filtered_accounts=*/{},
+        blink::mojom::RpMode::kActive,
+        /*on_selected=*/base::DoNothing(),
+        /*on_add_account=*/base::DoNothing(),
+        /*dismiss_callback=*/base::DoNothing(),
+        /*accounts_displayed_callback=*/base::DoNothing()));
+  }
+
+  // Case 3: Account is filtered out.
+  {
+    base::MockCallback<OnFederatedResultReceivedCallback> result_callback;
+    EXPECT_CALL(result_callback,
+                Run(content::webid::FederatedLoginResult::kAccountNotAvailable))
+        .Times(1);
+
+    FederatedActorLoginRequest::Set(web_contents(), idp_origin, account_id,
+                                    result_callback.Get());
+
+    // Create an account with matching ID but in filtered_accounts list.
+    std::vector<IdentityRequestAccountPtr> filtered_accounts = CreateAccount();
+    filtered_accounts[0]->id = account_id;
+    filtered_accounts[0]->idp_claimed_login_state =
+        content::IdentityRequestAccount::LoginState::kSignIn;
+    filtered_accounts[0]->browser_trusted_login_state =
+        content::IdentityRequestAccount::LoginState::kSignIn;
+
+    IdentityProviderDataPtr idp_data =
+        CreateIdentityProviderData(filtered_accounts);
+    idp_data->idp_metadata.config_url = idp_url;
+
+    EXPECT_FALSE(controller->ShowAccountsDialog(
+        content::RelyingPartyData(kTopFrameEtldPlusOne,
+                                  /*iframe_for_display=*/u""),
+        {idp_data}, /*accounts=*/{}, filtered_accounts,
+        blink::mojom::RpMode::kActive,
         /*on_selected=*/base::DoNothing(),
         /*on_add_account=*/base::DoNothing(),
         /*dismiss_callback=*/base::DoNothing(),

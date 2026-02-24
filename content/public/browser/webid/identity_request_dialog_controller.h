@@ -227,11 +227,15 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // Returns true if the method successfully showed UI. When false, the caller
   // should assume that the API invocation was terminated and the cleanup
   // methods invoked. `rp_data` may be modified by this method, such as by
-  // setting the RP icon.
+  // setting the RP icon. `accounts` are the accounts which are displayed, while
+  // `filtered_accounts` are the accounts that are not available for selection
+  // due to filters such as login hint.
   virtual bool ShowAccountsDialog(
       RelyingPartyData rp_data,
       const std::vector<scoped_refptr<IdentityProviderData>>& idp_list,
       const std::vector<scoped_refptr<IdentityRequestAccount>>& accounts,
+      const std::vector<scoped_refptr<IdentityRequestAccount>>&
+          filtered_accounts,
       blink::mojom::RpMode rp_mode,
       AccountSelectionCallback on_selected,
       LoginToIdPCallback on_add_account,

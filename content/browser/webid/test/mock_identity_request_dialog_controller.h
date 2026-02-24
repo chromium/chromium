@@ -33,6 +33,7 @@ class MockIdentityRequestDialogController
               (content::RelyingPartyData,
                const std::vector<IdentityProviderDataPtr>&,
                const std::vector<IdentityRequestAccountPtr>&,
+               const std::vector<IdentityRequestAccountPtr>&,
                blink::mojom::RpMode,
                AccountSelectionCallback,
                LoginToIdPCallback,

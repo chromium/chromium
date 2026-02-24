@@ -531,8 +531,12 @@ class CONTENT_EXPORT RequestService
   // IDP. Used to later set accounts_ in the order in which the IDPs are
   // requested.
   base::flat_map<GURL, std::vector<IdentityRequestAccountPtr>> idp_accounts_;
+  base::flat_map<GURL, std::vector<IdentityRequestAccountPtr>>
+      idp_filtered_accounts_;
   // The accounts to be displayed by the UI.
   std::vector<IdentityRequestAccountPtr> accounts_;
+  // The accounts that were filtered out during fetching.
+  std::vector<IdentityRequestAccountPtr> filtered_accounts_;
 
   // Contains the set of account IDs of an IDP before a login URL is displayed
   // to the user. Used to compute the account ID of the account that the user
