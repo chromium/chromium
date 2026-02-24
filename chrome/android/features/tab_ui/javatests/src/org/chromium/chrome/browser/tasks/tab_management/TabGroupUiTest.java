@@ -75,6 +75,7 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.UiSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -114,7 +115,8 @@ public class TabGroupUiTest {
 
     @Test
     @MediumTest
-    public void testStripShownOnGroupTabPage() {
+    @CommandLineFlags.Add(UiSwitches.ENABLE_EDGE_TO_EDGE_DEBUG_LAYERS)
+    public void testStripShownOnGroupTabPage_JavaViews() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
@@ -433,8 +435,8 @@ public class TabGroupUiTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
-    public void testStripShownOnGroupTabPage_EdgeToEdgeWithoutBottomChin() throws Exception {
+    @CommandLineFlags.Add(UiSwitches.ENABLE_EDGE_TO_EDGE_DEBUG_LAYERS)
+    public void testStripShownOnGroupTabPage_BottomControlsSceneLayer() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile =

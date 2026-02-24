@@ -332,6 +332,7 @@ class BottomControlsMediator
 
     void simulateEdgeToEdgeChangeForTesting(
             int bottomInset, boolean isDrawingToEdge, boolean isPageOptedIntoEdgeToEdge) {
+        mModel.set(BottomControlsProperties.ANDROID_VIEW_HEIGHT, bottomInset);
         onEdgeToEdgeChanged(bottomInset, isDrawingToEdge, isPageOptedIntoEdgeToEdge);
     }
 }
