@@ -10,7 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/private_ai/error_code.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 
 namespace private_ai {
 
@@ -35,7 +35,7 @@ FakeConnection::~FakeConnection() {
   }
 }
 
-void FakeConnection::Send(proto::LegionRequest request,
+void FakeConnection::Send(proto::PrivateAiRequest request,
                           base::TimeDelta timeout,
                           OnRequestCallback callback) {
   CHECK(callback);

@@ -10,7 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "components/private_ai/phosphor/data_types.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 
 namespace private_ai::phosphor {
 

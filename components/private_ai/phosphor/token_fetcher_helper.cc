@@ -18,7 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/private_ai/phosphor/data_types.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/blind_sign_auth_options.pb.h"

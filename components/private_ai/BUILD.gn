@@ -10,7 +10,7 @@ proto_library("proto") {
   proto_in_dir = "//"
   sources = [
     "proto/google_rpc_code.proto",
-    "proto/legion.proto",
+    "proto/private_ai.proto",
   ]
 
   deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
@@ -20,7 +20,7 @@ proto_library("proto") {
 proto_extras("proto_extras") {
   sources = [
     "proto/google_rpc_code.proto",
-    "proto/legion.proto",
+    "proto/private_ai.proto",
   ]
 
   deps = [ ":proto" ]

@@ -13,7 +13,7 @@
 #include "base/types/expected.h"
 #include "components/private_ai/error_code.h"
 #include "components/private_ai/phosphor/token_manager.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "url/gurl.h"
 

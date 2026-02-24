@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/private_ai/error_code.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 
 namespace private_ai {
 
@@ -24,7 +24,7 @@ namespace private_ai {
 class Connection {
  public:
   using OnRequestCallback = base::OnceCallback<void(
-      base::expected<proto::LegionResponse, ErrorCode> result)>;
+      base::expected<proto::PrivateAiResponse, ErrorCode> result)>;
 
   virtual ~Connection() = default;
 
@@ -33,7 +33,7 @@ class Connection {
   //
   // `timeout` is a hint of how much time a caller is willing to wait for
   // a response.
-  virtual void Send(proto::LegionRequest request,
+  virtual void Send(proto::PrivateAiRequest request,
                     base::TimeDelta timeout,
                     OnRequestCallback callback) = 0;
 

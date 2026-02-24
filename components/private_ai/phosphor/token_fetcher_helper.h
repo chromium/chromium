@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/private_ai/phosphor/data_types.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 

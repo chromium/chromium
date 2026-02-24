@@ -12,7 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/private_ai/error_code.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/testing/fake_connection.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,7 +43,7 @@ class ConnectionMetricsTest : public testing::Test {
 
 TEST_F(ConnectionMetricsTest, Success) {
   // Prepare request.
-  proto::LegionRequest request;
+  proto::PrivateAiRequest request;
   request.set_feature_name(
       proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT);
   request.mutable_generate_content_request()->set_model("test-model");
@@ -51,13 +51,13 @@ TEST_F(ConnectionMetricsTest, Success) {
   const size_t request_size = request.ByteSizeLong();
 
   // Send request.
-  base::test::TestFuture<base::expected<proto::LegionResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
       future;
   connection_metrics_->Send(std::move(request), base::Seconds(10),
                             future.GetCallback());
 
   // Prepare response.
-  proto::LegionResponse response;
+  proto::PrivateAiResponse response;
   response.set_request_id(123);
   const size_t response_size = response.ByteSizeLong();
 
@@ -90,9 +90,9 @@ TEST_F(ConnectionMetricsTest, Success) {
 
 TEST_F(ConnectionMetricsTest, Timeout) {
   // Send request.
-  base::test::TestFuture<base::expected<proto::LegionResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
       future;
-  connection_metrics_->Send(proto::LegionRequest(), base::Seconds(10),
+  connection_metrics_->Send(proto::PrivateAiRequest(), base::Seconds(10),
                             future.GetCallback());
 
   // Send response.
@@ -118,9 +118,9 @@ TEST_F(ConnectionMetricsTest, Timeout) {
 
 TEST_F(ConnectionMetricsTest, Error) {
   // Send request.
-  base::test::TestFuture<base::expected<proto::LegionResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
       future;
-  connection_metrics_->Send(proto::LegionRequest(), base::Seconds(10),
+  connection_metrics_->Send(proto::PrivateAiRequest(), base::Seconds(10),
                             future.GetCallback());
 
   // Send response.

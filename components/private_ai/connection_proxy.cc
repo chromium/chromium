@@ -36,7 +36,7 @@ network::mojom::CustomProxyConfigPtr CreateCustomProxyConfig(
 
 }  // namespace
 
-ConnectionProxy::PendingRequest::PendingRequest(proto::LegionRequest request,
+ConnectionProxy::PendingRequest::PendingRequest(proto::PrivateAiRequest request,
                                                 base::TimeDelta timeout,
                                                 OnRequestCallback callback)
     : request(std::move(request)),
@@ -73,7 +73,7 @@ ConnectionProxy::ConnectionProxy(
 
 ConnectionProxy::~ConnectionProxy() = default;
 
-void ConnectionProxy::Send(proto::LegionRequest request,
+void ConnectionProxy::Send(proto::PrivateAiRequest request,
                            base::TimeDelta timeout,
                            OnRequestCallback callback) {
   if (is_initializing_) {

@@ -12,7 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "components/private_ai/connection.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 
 namespace private_ai {
 
@@ -30,7 +30,7 @@ ConnectionBasic::ConnectionBasic(
 
 ConnectionBasic::~ConnectionBasic() = default;
 
-void ConnectionBasic::Send(proto::LegionRequest request,
+void ConnectionBasic::Send(proto::PrivateAiRequest request,
                            base::TimeDelta timeout,
                            OnRequestCallback callback) {
   // Indicates that `secure_channel_` is already closed.
@@ -70,9 +70,9 @@ void ConnectionBasic::OnResponseReceived(
     return;
   }
 
-  proto::LegionResponse legion_response;
+  proto::PrivateAiResponse legion_response;
   if (!legion_response.ParseFromArray(result->data(), result->size())) {
-    LOG(ERROR) << "Failed to parse LegionResponse";
+    LOG(ERROR) << "Failed to parse PrivateAiResponse";
     // This is a protocol error. We don't know which request this response was
     // for, so we fail all of them.
     CallOnDisconnect(ErrorCode::kResponseParseError);
@@ -81,7 +81,7 @@ void ConnectionBasic::OnResponseReceived(
 
   auto it = pending_request_callbacks_.find(legion_response.request_id());
   if (it == pending_request_callbacks_.end()) {
-    LOG(ERROR) << "Received LegionResponse for unknown request_id: "
+    LOG(ERROR) << "Received PrivateAiResponse for unknown request_id: "
                << legion_response.request_id();
     return;
   }

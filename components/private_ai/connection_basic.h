@@ -37,7 +37,7 @@ class ConnectionBasic : public Connection {
   // Sends requests to the Legion server.
   //
   // `timeout` is not handled in `ConnectionBasic`.
-  void Send(proto::LegionRequest request,
+  void Send(proto::PrivateAiRequest request,
             base::TimeDelta timeout,
             OnRequestCallback callback) override;
 

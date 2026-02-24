@@ -20,7 +20,7 @@
 #include "components/private_ai/attestation/handler.h"
 #include "components/private_ai/attestation/handler_impl.h"
 #include "components/private_ai/private_ai_common.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/proto_utils/attestation_evidence_utils.h"
 #include "components/private_ai/secure_session.h"
 #include "components/private_ai/secure_session_async_impl.h"

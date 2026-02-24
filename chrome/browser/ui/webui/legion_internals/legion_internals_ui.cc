@@ -17,7 +17,7 @@
 #include "chrome/grit/legion_internals_resources.h"
 #include "chrome/grit/legion_internals_resources_map.h"
 #include "components/private_ai/features.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/internal_webui_config.h"
 #include "content/public/browser/storage_partition.h"

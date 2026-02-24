@@ -12,7 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/private_ai/error_code.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/testing/fake_connection.h"
 #include "components/private_ai/testing/fake_token_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,9 +59,9 @@ TEST_F(ConnectionTokenAttestationTest, Success) {
   EXPECT_EQ(fake_connection_->pending_requests().size(), 0u);
 
   // Buffer a request.
-  base::test::TestFuture<base::expected<proto::LegionResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
       future;
-  proto::LegionRequest request;
+  proto::PrivateAiRequest request;
   request.set_request_id(123);
   connection_attestation_->Send(std::move(request), base::Seconds(1),
                                 future.GetCallback());
@@ -83,7 +83,7 @@ TEST_F(ConnectionTokenAttestationTest, Success) {
   }
 
   // Respond to the attestation request.
-  proto::LegionResponse attestation_response;
+  proto::PrivateAiResponse attestation_response;
   std::move(fake_connection_->pending_requests()[0].callback)
       .Run(std::move(attestation_response));
 
@@ -92,7 +92,7 @@ TEST_F(ConnectionTokenAttestationTest, Success) {
   EXPECT_EQ(fake_connection_->pending_requests()[1].request.request_id(), 123);
 
   // Respond to the original request.
-  proto::LegionResponse response;
+  proto::PrivateAiResponse response;
   response.set_request_id(123);
   std::move(fake_connection_->pending_requests()[1].callback)
       .Run(std::move(response));
@@ -108,9 +108,9 @@ TEST_F(ConnectionTokenAttestationTest, NoToken) {
   token_manager_.SetReturnToken(false);
   CreateConnectionAttestation();
 
-  base::test::TestFuture<base::expected<proto::LegionResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
       future;
-  connection_attestation_->Send(proto::LegionRequest(), base::Seconds(1),
+  connection_attestation_->Send(proto::PrivateAiRequest(), base::Seconds(1),
                                 future.GetCallback());
 
   // No requests sent.
@@ -145,9 +145,9 @@ TEST_F(ConnectionTokenAttestationTest, AttestationFailed) {
   auto requests = std::move(fake_connection_->pending_requests());
   std::move(requests[0].callback).Run(base::unexpected(ErrorCode::kError));
 
-  base::test::TestFuture<base::expected<proto::LegionResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
       future;
-  connection_attestation_->Send(proto::LegionRequest(), base::Seconds(1),
+  connection_attestation_->Send(proto::PrivateAiRequest(), base::Seconds(1),
                                 future.GetCallback());
 
   auto result = future.Get();

@@ -16,7 +16,7 @@
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/connection.h"
 #include "components/private_ai/error_code.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/testing/fake_connection.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,7 +65,7 @@ class FakeConnectionFactory : public ConnectionFactory {
 
 void ResolvePendingRequest(
     FakeConnection* connection,
-    base::expected<proto::LegionResponse, ErrorCode> result) {
+    base::expected<proto::PrivateAiResponse, ErrorCode> result) {
   CHECK(connection);
   CHECK(!connection->pending_requests().empty());
   auto pending_request = std::move(connection->pending_requests().front());
@@ -98,7 +98,7 @@ class ClientImplTest : public ::testing::Test {
 TEST_F(ClientImplTest, SendTextRequestSuccess) {
   const std::string kExpectedResponseText = "response text";
 
-  proto::LegionResponse legion_response;
+  proto::PrivateAiResponse legion_response;
   {
     auto* generate_content_response =
         legion_response.mutable_generate_content_response();
@@ -122,7 +122,7 @@ TEST_F(ClientImplTest, SendTextRequestSuccess) {
 
 // Test the successful request flow for paic requests.
 TEST_F(ClientImplTest, SendPaicRequestSuccess) {
-  proto::LegionResponse legion_response;
+  proto::PrivateAiResponse legion_response;
   legion_response.mutable_paic_response();
 
   base::test::TestFuture<base::expected<proto::PaicMessage, ErrorCode>> future;
@@ -153,7 +153,7 @@ TEST_F(ClientImplTest, ConnectionRecreation) {
 
   // A subsequent request should succeed on the new connection.
   const std::string kExpectedResponseText = "response text";
-  proto::LegionResponse legion_response;
+  proto::PrivateAiResponse legion_response;
   legion_response.mutable_generate_content_response()
       ->add_candidates()
       ->mutable_content()
@@ -192,7 +192,7 @@ TEST_F(ClientImplTest, SendTextRequestTimeout) {
 
 // Test that an empty response from the server is handled correctly.
 TEST_F(ClientImplTest, SendTextRequestEmptyResponse) {
-  proto::LegionResponse legion_response;
+  proto::PrivateAiResponse legion_response;
   legion_response.mutable_generate_content_response();
 
   base::test::TestFuture<base::expected<std::string, ErrorCode>> future;
@@ -217,7 +217,7 @@ TEST_F(ClientImplTest, SendGenerateContentRequestMalformedResponse) {
 
   // Response missing GenerateContentResponse.
   ResolvePendingRequest(factory_->last_connection(),
-                        base::ok(proto::LegionResponse()));
+                        base::ok(proto::PrivateAiResponse()));
 
   const auto& result = future.Get();
   ASSERT_FALSE(result.has_value());

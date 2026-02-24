@@ -16,7 +16,7 @@
 #include "components/private_ai/connection.h"
 #include "components/private_ai/connection_factory.h"
 #include "components/private_ai/private_ai_common.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 
 namespace private_ai {
 
@@ -56,20 +56,20 @@ class ClientImpl : public Client {
   // If the operation is successful, the result will contain the server's
   // response. Otherwise, it will contain an `ErrorCode` error.
   using OnRequestCompletedCallback = base::OnceCallback<void(
-      base::expected<proto::LegionResponse, ErrorCode> result)>;
+      base::expected<proto::PrivateAiResponse, ErrorCode> result)>;
 
   // Returns the existing connection or creates a new one if it doesn't
   // exist.
   Connection* GetOrCreateConnection();
 
   void SendRequest(proto::FeatureName feature_name,
-                   proto::LegionRequest legion_request,
+                   proto::PrivateAiRequest legion_request,
                    OnRequestCompletedCallback callback,
                    const RequestOptions& options);
 
   void OnReponseReceived(
       OnRequestCompletedCallback cb,
-      base::expected<proto::LegionResponse, ErrorCode> legion_response);
+      base::expected<proto::PrivateAiResponse, ErrorCode> legion_response);
 
   void OnConnectionDisconnected(ErrorCode error_code);
 

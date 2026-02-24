@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "components/private_ai/connection.h"
 #include "components/private_ai/error_code.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 
 namespace private_ai {
 
@@ -29,7 +29,7 @@ class FakeConnection : public Connection {
 
     ~PendingRequest();
 
-    proto::LegionRequest request;
+    proto::PrivateAiRequest request;
     base::TimeDelta timeout;
     OnRequestCallback callback;
   };
@@ -39,7 +39,7 @@ class FakeConnection : public Connection {
   ~FakeConnection() override;
 
   // Connection implementation:
-  void Send(proto::LegionRequest request,
+  void Send(proto::PrivateAiRequest request,
             base::TimeDelta timeout,
             OnRequestCallback callback) override;
 

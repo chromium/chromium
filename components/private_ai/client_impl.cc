@@ -14,7 +14,7 @@
 #include "base/strings/to_string.h"
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/connection.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/proto_utils/generate_content_response_utils.h"
 
 namespace private_ai {
@@ -41,14 +41,14 @@ void ReceiveTextRequest(
 
 void ReceiveGenerateContentResponse(
     Client::OnGenerateContentRequestCompletedCallback cb,
-    base::expected<proto::LegionResponse, ErrorCode> legion_response) {
+    base::expected<proto::PrivateAiResponse, ErrorCode> legion_response) {
   if (!legion_response.has_value()) {
     std::move(cb).Run(base::unexpected(legion_response.error()));
     return;
   }
 
   if (!legion_response->has_generate_content_response()) {
-    LOG(ERROR) << "LegionResponse did not contain a "
+    LOG(ERROR) << "PrivateAiResponse did not contain a "
                   "generate_content_response";
     std::move(cb).Run(base::unexpected(ErrorCode::kNoResponse));
     return;
@@ -58,14 +58,14 @@ void ReceiveGenerateContentResponse(
 
 void ReceivePaicMessage(
     Client::OnPaicMessageRequestCompletedCallback cb,
-    base::expected<proto::LegionResponse, ErrorCode> legion_response) {
+    base::expected<proto::PrivateAiResponse, ErrorCode> legion_response) {
   if (!legion_response.has_value()) {
     std::move(cb).Run(base::unexpected(legion_response.error()));
     return;
   }
 
   if (!legion_response->has_paic_response()) {
-    LOG(ERROR) << "LegionResponse did not contain a "
+    LOG(ERROR) << "PrivateAiResponse did not contain a "
                   "paic_response";
     std::move(cb).Run(base::unexpected(ErrorCode::kNoResponse));
     return;
@@ -130,7 +130,7 @@ void ClientImpl::SendGenerateContentRequest(
     const proto::GenerateContentRequest& request,
     OnGenerateContentRequestCompletedCallback callback,
     const RequestOptions& options) {
-  proto::LegionRequest request_proto;
+  proto::PrivateAiRequest request_proto;
   *request_proto.mutable_generate_content_request() = request;
 
   auto response_callback =
@@ -144,7 +144,7 @@ void ClientImpl::SendPaicRequest(proto::FeatureName feature_name,
                                  const proto::PaicMessage& request,
                                  OnPaicMessageRequestCompletedCallback callback,
                                  const RequestOptions& options) {
-  proto::LegionRequest legion_request;
+  proto::PrivateAiRequest legion_request;
   *legion_request.mutable_paic_request() = request;
 
   auto response_callback =
@@ -155,7 +155,7 @@ void ClientImpl::SendPaicRequest(proto::FeatureName feature_name,
 }
 
 void ClientImpl::SendRequest(proto::FeatureName feature_name,
-                             proto::LegionRequest legion_request,
+                             proto::PrivateAiRequest legion_request,
                              OnRequestCompletedCallback callback,
                              const RequestOptions& options) {
   logger_->LogInfo(FROM_HERE, "SendRequest started.");
@@ -170,7 +170,7 @@ void ClientImpl::SendRequest(proto::FeatureName feature_name,
 
 void ClientImpl::OnReponseReceived(
     OnRequestCompletedCallback cb,
-    base::expected<proto::LegionResponse, ErrorCode> legion_response) {
+    base::expected<proto::PrivateAiResponse, ErrorCode> legion_response) {
   if (legion_response.has_value()) {
     logger_->LogInfo(FROM_HERE, "Response received.");
   } else {

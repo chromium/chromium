@@ -86,9 +86,9 @@ TEST_F(ConnectionProxyTest, Success) {
   ASSERT_EQ(token_manager_.GetPendingProxyCallbackCount(), 1u);
 
   // Send a request. It should be buffered.
-  base::test::TestFuture<base::expected<proto::LegionResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
       future;
-  proto::LegionRequest request;
+  proto::PrivateAiRequest request;
   request.set_request_id(1);
   connection_proxy_->Send(std::move(request), base::Seconds(10),
                           future.GetCallback());
@@ -108,7 +108,7 @@ TEST_F(ConnectionProxyTest, Success) {
   EXPECT_EQ(inner_connection_->pending_requests()[0].request.request_id(), 1);
 
   // Respond to request.
-  proto::LegionResponse response;
+  proto::PrivateAiResponse response;
   response.set_request_id(1);
   std::move(inner_connection_->pending_requests()[0].callback)
       .Run(std::move(response));
@@ -130,9 +130,9 @@ TEST_F(ConnectionProxyTest, SendAfterInitialization) {
   ASSERT_TRUE(inner_connection_);
 
   // Send a request. It should be sent directly.
-  base::test::TestFuture<base::expected<proto::LegionResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
       future;
-  proto::LegionRequest request;
+  proto::PrivateAiRequest request;
   request.set_request_id(1);
   connection_proxy_->Send(std::move(request), base::Seconds(10),
                           future.GetCallback());
@@ -141,7 +141,7 @@ TEST_F(ConnectionProxyTest, SendAfterInitialization) {
   EXPECT_EQ(inner_connection_->pending_requests()[0].request.request_id(), 1);
 
   // Respond to request.
-  proto::LegionResponse response;
+  proto::PrivateAiResponse response;
   response.set_request_id(1);
   std::move(inner_connection_->pending_requests()[0].callback)
       .Run(std::move(response));
@@ -163,9 +163,9 @@ TEST_F(ConnectionProxyTest, ProxyTokenFailure) {
   CreateConnectionProxy();
   ASSERT_EQ(token_manager_.GetPendingProxyCallbackCount(), 1u);
 
-  base::test::TestFuture<base::expected<proto::LegionResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
       future;
-  connection_proxy_->Send(proto::LegionRequest(), base::Seconds(10),
+  connection_proxy_->Send(proto::PrivateAiRequest(), base::Seconds(10),
                           future.GetCallback());
 
   // Fail token fetch.
@@ -179,9 +179,9 @@ TEST_F(ConnectionProxyTest, ProxyTokenFailure) {
   EXPECT_EQ(result.error(), ErrorCode::kError);
 
   // A subsequent request should also fail.
-  base::test::TestFuture<base::expected<proto::LegionResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
       future2;
-  connection_proxy_->Send(proto::LegionRequest(), base::Seconds(10),
+  connection_proxy_->Send(proto::PrivateAiRequest(), base::Seconds(10),
                           future2.GetCallback());
   auto result2 = future2.Get();
   EXPECT_FALSE(result2.has_value());

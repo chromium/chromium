@@ -17,7 +17,7 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/private_ai/client.h"
 #include "components/private_ai/error_code.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 
 namespace optimization_guide {
 namespace {

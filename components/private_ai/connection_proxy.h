@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "components/private_ai/connection.h"
 #include "components/private_ai/phosphor/data_types.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
@@ -53,7 +53,7 @@ class ConnectionProxy : public Connection {
   ConnectionProxy& operator=(const ConnectionProxy&) = delete;
 
   // Connection override:
-  void Send(proto::LegionRequest request,
+  void Send(proto::PrivateAiRequest request,
             base::TimeDelta timeout,
             OnRequestCallback callback) override;
 
@@ -61,7 +61,7 @@ class ConnectionProxy : public Connection {
 
  private:
   struct PendingRequest {
-    PendingRequest(proto::LegionRequest request,
+    PendingRequest(proto::PrivateAiRequest request,
                    base::TimeDelta timeout,
                    OnRequestCallback callback);
     ~PendingRequest();
@@ -69,7 +69,7 @@ class ConnectionProxy : public Connection {
     PendingRequest(PendingRequest&&);
     PendingRequest& operator=(PendingRequest&&);
 
-    proto::LegionRequest request;
+    proto::PrivateAiRequest request;
     base::TimeDelta timeout;
     OnRequestCallback callback;
   };

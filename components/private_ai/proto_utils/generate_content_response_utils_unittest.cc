@@ -7,7 +7,7 @@
 #include <optional>
 #include <string>
 
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace private_ai {

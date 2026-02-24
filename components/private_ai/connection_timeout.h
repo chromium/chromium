@@ -27,7 +27,7 @@ class ConnectionTimeout : public Connection {
   ConnectionTimeout& operator=(const ConnectionTimeout&) = delete;
 
   // Connection override:
-  void Send(proto::LegionRequest request,
+  void Send(proto::PrivateAiRequest request,
             base::TimeDelta timeout,
             OnRequestCallback callback) override;
 
@@ -35,7 +35,7 @@ class ConnectionTimeout : public Connection {
 
  private:
   void OnResponse(int32_t internal_request_id,
-                  base::expected<proto::LegionResponse, ErrorCode> result);
+                  base::expected<proto::PrivateAiResponse, ErrorCode> result);
 
   std::unique_ptr<Connection> inner_connection_;
 

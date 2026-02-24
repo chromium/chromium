@@ -39,7 +39,7 @@ class ConnectionTokenAttestation : public Connection {
       delete;
 
   // Connection override:
-  void Send(proto::LegionRequest request,
+  void Send(proto::PrivateAiRequest request,
             base::TimeDelta timeout,
             OnRequestCallback callback) override;
 
@@ -47,7 +47,7 @@ class ConnectionTokenAttestation : public Connection {
 
  private:
   struct PendingRequest {
-    PendingRequest(proto::LegionRequest request,
+    PendingRequest(proto::PrivateAiRequest request,
                    base::TimeDelta timeout,
                    OnRequestCallback callback);
     ~PendingRequest();
@@ -55,7 +55,7 @@ class ConnectionTokenAttestation : public Connection {
     PendingRequest(PendingRequest&&);
     PendingRequest& operator=(PendingRequest&&);
 
-    proto::LegionRequest request;
+    proto::PrivateAiRequest request;
     base::TimeDelta timeout;
     OnRequestCallback callback;
   };
@@ -70,7 +70,7 @@ class ConnectionTokenAttestation : public Connection {
   void FetchToken();
   void OnTokenFetched(std::optional<phosphor::BlindSignedAuthToken> auth_token);
   void OnAttestationResponse(
-      base::expected<proto::LegionResponse, ErrorCode> result);
+      base::expected<proto::PrivateAiResponse, ErrorCode> result);
   void CallOnDisconnect(ErrorCode error_code);
 
   const std::unique_ptr<Connection> inner_connection_;

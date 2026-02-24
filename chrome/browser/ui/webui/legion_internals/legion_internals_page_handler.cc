@@ -18,7 +18,7 @@
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/phosphor/token_manager.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 #include "content/public/browser/network_service_instance.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/network_context.mojom.h"

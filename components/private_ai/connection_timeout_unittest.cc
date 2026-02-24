@@ -12,7 +12,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/private_ai/error_code.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/testing/fake_connection.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,26 +40,26 @@ class ConnectionTimeoutTest : public testing::Test {
 };
 
 TEST_F(ConnectionTimeoutTest, Success) {
-  base::test::TestFuture<base::expected<proto::LegionResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
       future;
 
-  connection_timeout_->Send(proto::LegionRequest(), base::Seconds(10),
+  connection_timeout_->Send(proto::PrivateAiRequest(), base::Seconds(10),
                             future.GetCallback());
 
   ASSERT_EQ(fake_connection_->pending_requests().size(), 1u);
 
   std::move(fake_connection_->pending_requests()[0].callback)
-      .Run(proto::LegionResponse());
+      .Run(proto::PrivateAiResponse());
 
   auto result = future.Get();
   EXPECT_TRUE(result.has_value());
 }
 
 TEST_F(ConnectionTimeoutTest, Timeout) {
-  base::test::TestFuture<base::expected<proto::LegionResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
       future;
 
-  proto::LegionRequest request;
+  proto::PrivateAiRequest request;
   connection_timeout_->Send(std::move(request), base::Seconds(10),
                             future.GetCallback());
 
@@ -74,18 +74,18 @@ TEST_F(ConnectionTimeoutTest, Timeout) {
 
   // Ensure that late response is ignored.
   std::move(fake_connection_->pending_requests()[0].callback)
-      .Run(proto::LegionResponse());
+      .Run(proto::PrivateAiResponse());
 }
 
 // Tests that multiple requests are handled correctly, including timeout for one
 // request and successful response for another one.
 TEST_F(ConnectionTimeoutTest, MultipleRequests) {
-  base::test::TestFuture<base::expected<proto::LegionResponse, ErrorCode>>
+  base::test::TestFuture<base::expected<proto::PrivateAiResponse, ErrorCode>>
       future1, future2;
 
-  connection_timeout_->Send(proto::LegionRequest(), base::Seconds(10),
+  connection_timeout_->Send(proto::PrivateAiRequest(), base::Seconds(10),
                             future1.GetCallback());
-  connection_timeout_->Send(proto::LegionRequest(), base::Seconds(20),
+  connection_timeout_->Send(proto::PrivateAiRequest(), base::Seconds(20),
                             future2.GetCallback());
 
   ASSERT_EQ(fake_connection_->pending_requests().size(), 2u);
@@ -101,7 +101,7 @@ TEST_F(ConnectionTimeoutTest, MultipleRequests) {
   ASSERT_FALSE(future2.IsReady());
 
   // Resolve second request successfully.
-  proto::LegionResponse response2;
+  proto::PrivateAiResponse response2;
   response2.set_request_id(2);
   std::move(fake_connection_->pending_requests()[1].callback)
       .Run(std::move(response2));

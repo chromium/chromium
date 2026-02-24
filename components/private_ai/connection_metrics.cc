@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/private_ai/connection.h"
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 
 namespace private_ai {
 
@@ -22,7 +22,7 @@ ConnectionMetrics::ConnectionMetrics(
 
 ConnectionMetrics::~ConnectionMetrics() = default;
 
-void ConnectionMetrics::Send(proto::LegionRequest request,
+void ConnectionMetrics::Send(proto::PrivateAiRequest request,
                              base::TimeDelta timeout,
                              OnRequestCallback callback) {
   base::UmaHistogramCounts1M("Legion.Client.RequestSize",
@@ -43,7 +43,7 @@ void ConnectionMetrics::OnDestroy(ErrorCode error) {
 void ConnectionMetrics::OnResponse(
     base::TimeTicks start_time,
     OnRequestCallback callback,
-    base::expected<proto::LegionResponse, ErrorCode> result) {
+    base::expected<proto::PrivateAiResponse, ErrorCode> result) {
   const auto latency = base::TimeTicks::Now() - start_time;
 
   if (result.has_value()) {

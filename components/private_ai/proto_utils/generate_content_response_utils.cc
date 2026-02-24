@@ -4,7 +4,7 @@
 
 #include "components/private_ai/proto_utils/generate_content_response_utils.h"
 
-#include "components/private_ai/proto/legion.pb.h"
+#include "components/private_ai/proto/private_ai.pb.h"
 
 namespace private_ai {
 

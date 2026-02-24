@@ -25,7 +25,7 @@ ConnectionTimeout::ConnectionTimeout(
 
 ConnectionTimeout::~ConnectionTimeout() = default;
 
-void ConnectionTimeout::Send(proto::LegionRequest request,
+void ConnectionTimeout::Send(proto::PrivateAiRequest request,
                              base::TimeDelta timeout,
                              OnRequestCallback callback) {
   const int32_t internal_request_id = next_internal_request_id_++;
@@ -54,7 +54,7 @@ void ConnectionTimeout::OnDestroy(ErrorCode error) {
 
 void ConnectionTimeout::OnResponse(
     int32_t internal_request_id,
-    base::expected<proto::LegionResponse, ErrorCode> result) {
+    base::expected<proto::PrivateAiResponse, ErrorCode> result) {
   auto it = pending_callbacks_.find(internal_request_id);
   if (it == pending_callbacks_.end()) {
     return;
