@@ -319,9 +319,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kRevokeMediaSourceObjectURLOnAttach);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kSymphoniaAudioDecoding);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kSymphoniaMp3Decoding);
 #endif
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kShareThisTabInsteadButtonGetDisplayMedia);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(
-    kShareThisTabInsteadButtonGetDisplayMediaAudio);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kSpeakerChangeDetection);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kSpecCompliantCanPlayThrough);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kSuspendMediaForFrozenFrames);

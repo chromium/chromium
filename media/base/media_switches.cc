@@ -824,22 +824,6 @@ BASE_FEATURE(kLogSodaLoadFailures,
 BASE_FEATURE(kGetDisplayMediaConfersActivation,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether a "Share this tab instead" button should be shown for
-// getDisplayMedia captures. Note: This flag does not control if the "Share this
-// tab instead" button is shown for chrome.desktopCapture captures.
-BASE_FEATURE(kShareThisTabInsteadButtonGetDisplayMedia,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If kShareThisTabInsteadButtonGetDisplayMedia is ENABLED, this flag controls
-// whether a "Share this tab instead" button should be enabled for
-// getDisplayMedia captures with audio.
-// If kShareThisTabInsteadButtonGetDisplayMedia is DISABLED, this flag has no
-// effect.
-// Note: This flag does not control if the "Share this tab instead" button is
-// shown for chrome.desktopCapture captures.
-BASE_FEATURE(kShareThisTabInsteadButtonGetDisplayMediaAudio,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable the Speaker Change Detection feature, which inserts a line break when
 // the Speech On-Device API (SODA) detects a speaker change.
 BASE_FEATURE(kSpeakerChangeDetection, base::FEATURE_DISABLED_BY_DEFAULT);

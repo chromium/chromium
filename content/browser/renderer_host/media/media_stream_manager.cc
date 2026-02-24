@@ -446,11 +446,6 @@ bool ChangeSourceSupported(const MediaStreamDevices& devices) {
     }
   }
 
-  if (!base::FeatureList::IsEnabled(
-          media::kShareThisTabInsteadButtonGetDisplayMedia)) {
-    return false;  // Killswitch engaged.
-  }
-
   if (!std::ranges::contains(devices, MediaStreamType::DISPLAY_VIDEO_CAPTURE,
                              &MediaStreamDevice::type) &&
       !std::ranges::contains(devices,
@@ -459,16 +454,7 @@ bool ChangeSourceSupported(const MediaStreamDevices& devices) {
     return false;  // Not an API call that supports share-this-tab-instead.
   }
 
-  if (!base::FeatureList::IsEnabled(
-          media::kShareThisTabInsteadButtonGetDisplayMediaAudio) &&
-      std::ranges::contains(devices, MediaStreamType::DISPLAY_AUDIO_CAPTURE,
-                            &MediaStreamDevice::type)) {
-    // The user chose to capture audio, but the killswitch against
-    // share-this-tab-instead with audio is engaged.
-    return false;
-  }
-
-  return true;  // getDisplayMedia() and killswitches did not trigger.
+  return true;  // getDisplayMedia() now supported by default.
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

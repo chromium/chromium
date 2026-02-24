@@ -1181,20 +1181,18 @@ INSTANTIATE_TEST_SUITE_P(
 
 class GetDisplayMediaChangeSourceBrowserTest
     : public WebRtcTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   GetDisplayMediaChangeSourceBrowserTest()
       : dynamic_surface_switching_requested_(std::get<0>(GetParam())),
-        feature_enabled_(std::get<1>(GetParam())),
-        user_shared_audio_(std::get<2>(GetParam())) {}
+        user_shared_audio_(std::get<1>(GetParam())) {}
   ~GetDisplayMediaChangeSourceBrowserTest() override = default;
 
   void SetUp() override {
     // TODO(crbug.com/40245399): Fix GetDisplayMediaChangeSourceBrowserTest with
     // audio requested on ChromeOS
 #if BUILDFLAG(IS_CHROMEOS)
-    if (dynamic_surface_switching_requested_ && feature_enabled_ &&
-        user_shared_audio_) {
+    if (dynamic_surface_switching_requested_ && user_shared_audio_) {
       GTEST_SKIP();
     }
 #endif
@@ -1202,9 +1200,6 @@ class GetDisplayMediaChangeSourceBrowserTest
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    feature_list_.InitWithFeatureState(
-        media::kShareThisTabInsteadButtonGetDisplayMedia, feature_enabled_);
-
     WebRtcTestBase::SetUpInProcessBrowserTestFixture();
 
     DetectErrorsInJavaScript();
@@ -1233,28 +1228,24 @@ class GetDisplayMediaChangeSourceBrowserTest
   }
 
   bool ShouldShowShareThisTabInsteadButton() const {
-    return dynamic_surface_switching_requested_ && feature_enabled_;
+    return dynamic_surface_switching_requested_;
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   const bool dynamic_surface_switching_requested_;
-  const bool feature_enabled_;
   const bool user_shared_audio_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     GetDisplayMediaChangeSourceBrowserTest,
-    Combine(Bool(), Bool(), Bool()),
+    Combine(Bool(), Bool()),
     [](const testing::TestParamInfo<
         GetDisplayMediaChangeSourceBrowserTest::ParamType>& info) {
       return base::JoinString(
           {
               std::get<0>(info.param) ? "Dynamic" : "Static",
-              std::get<1>(info.param) ? "ShareThisTabInsteadButtonEnabled"
-                                      : "ShareThisTabInsteadButtonDisabled",
-              std::get<2>(info.param) ? "UserSharedAudio"
+              std::get<1>(info.param) ? "UserSharedAudio"
                                       : "UserDidNotShareAudio",
           },
           "_");
@@ -2156,10 +2147,6 @@ class CapturedSurfaceControlTest : public WebRtcTestBase {
   ~CapturedSurfaceControlTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{media::kShareThisTabInsteadButtonGetDisplayMedia},
-        /*disabled_features=*/{});
-
     WebRtcTestBase::SetUpInProcessBrowserTestFixture();
 
     DetectErrorsInJavaScript();
@@ -2204,9 +2191,6 @@ class CapturedSurfaceControlTest : public WebRtcTestBase {
         /*other_tab=*/(OpenTestPageInNewTab(kMainHtmlPage)),
         /*capturing_tab=*/(OpenTestPageInNewTab(kMainHtmlPage)));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 using CscAction = CapturedSurfaceControlTest::Action;
