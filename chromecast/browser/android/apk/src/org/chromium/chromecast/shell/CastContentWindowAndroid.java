@@ -123,6 +123,7 @@ public class CastContentWindowAndroid
 
         Log.d(TAG, "Native window destroyed: sessionId=" + mSessionId);
         mComponent.stop();
+        mComponent.destroy();
     }
 
     @Override

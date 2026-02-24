@@ -775,6 +775,51 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
+    public void testBroadcastActivityStartByCastCoreOnCreation() {
+        BroadcastReceiver mockReceiver = mock(BroadcastReceiver.class);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(CastWebContentsIntentUtils.ACTION_ON_ACTIVITY_STARTED_BY_CAST_CORE);
+        LocalBroadcastManager.getInstance(RuntimeEnvironment.application)
+                .registerReceiver(mockReceiver, filter);
+        Intent intent = new Intent(RuntimeEnvironment.application, CastWebContentsActivity.class);
+        intent.putExtra(CastWebContentsIntentUtils.INTENT_EXTRA_FROM_CAST_CORE, true);
+        mActivityLifecycle = Robolectric.buildActivity(CastWebContentsActivity.class, intent);
+        mActivity = mActivityLifecycle.get();
+        mActivityLifecycle.create();
+        Shadows.shadowOf(getMainLooper()).idle();
+        verify(mockReceiver, times(1)).onReceive(any(Context.class), mIntentCaptor.capture());
+        Intent broadcastIntent = mIntentCaptor.getValue();
+        assertEquals(
+                CastWebContentsIntentUtils.ACTION_ON_ACTIVITY_STARTED_BY_CAST_CORE,
+                broadcastIntent.getAction());
+    }
+
+    @Test
+    public void testBroadcastActivityStartByCastCoreOnNewIntentFromCastCoreOnly() {
+        BroadcastReceiver mockReceiver = mock(BroadcastReceiver.class);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(CastWebContentsIntentUtils.ACTION_ON_ACTIVITY_STARTED_BY_CAST_CORE);
+        LocalBroadcastManager.getInstance(RuntimeEnvironment.application)
+                .registerReceiver(mockReceiver, filter);
+        mActivityLifecycle.create().start().resume();
+
+        Intent defaultIntent = defaultIntentForCastWebContentsActivity(mWebContents);
+        mActivityLifecycle.newIntent(defaultIntent);
+        Shadows.shadowOf(getMainLooper()).idle();
+        verify(mockReceiver, times(0)).onReceive(any(Context.class), any(Intent.class));
+
+        Intent castCoreIntent =
+                new Intent(RuntimeEnvironment.application, CastWebContentsActivity.class);
+        castCoreIntent.putExtra(CastWebContentsIntentUtils.INTENT_EXTRA_FROM_CAST_CORE, true);
+        mActivityLifecycle.newIntent(castCoreIntent);
+        verify(mockReceiver, times(1)).onReceive(any(Context.class), mIntentCaptor.capture());
+        Intent broadcastIntent = mIntentCaptor.getValue();
+        assertEquals(
+                CastWebContentsIntentUtils.ACTION_ON_ACTIVITY_STARTED_BY_CAST_CORE,
+                broadcastIntent.getAction());
+    }
+
+    @Test
     public void testTaskRemovedMonitorServiceStartedOnCreation() {
         mActivityLifecycle =
                 Robolectric.buildActivity(

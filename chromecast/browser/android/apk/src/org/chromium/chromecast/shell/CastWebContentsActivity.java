@@ -375,6 +375,7 @@ public class CastWebContentsActivity extends Activity {
                                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        notifyIfActivityStartedByCastCore(getIntent());
     }
 
     @Override
@@ -382,6 +383,7 @@ public class CastWebContentsActivity extends Activity {
         Log.d(TAG, "onNewIntent");
         setIntent(intent);
         mGotIntentState.set(intent);
+        notifyIfActivityStartedByCastCore(intent);
     }
 
     @Override
@@ -524,6 +526,16 @@ public class CastWebContentsActivity extends Activity {
         Context ctx = getApplicationContext();
         Intent event = CastWebContentsIntentUtils.onVisibilityChange(sessionId, visibilityType);
         LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(event);
+    }
+
+    private void notifyIfActivityStartedByCastCore(Intent in) {
+        if (!CastWebContentsIntentUtils.isIntentFromCastCore(in)) {
+            return;
+        }
+        Log.d(TAG, "Notifying activity started by cast_core.");
+        Context ctx = getApplicationContext();
+        Intent intent = CastWebContentsIntentUtils.onActivityStartedByCastCore();
+        LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(intent);
     }
 
     public void finishForTesting() {

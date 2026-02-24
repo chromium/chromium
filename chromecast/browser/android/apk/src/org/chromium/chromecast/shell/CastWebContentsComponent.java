@@ -14,10 +14,15 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chromecast.base.Controller;
+import org.chromium.chromecast.base.Observable;
+import org.chromium.chromecast.base.Observer;
+import org.chromium.chromecast.base.OwnedScope;
 import org.chromium.content_public.browser.WebContents;
 
 /**
  * A layer of indirection between CastContentWindowAndroid and CastWebContents(Activity|Service).
+ * CastWebContentsActivity is expected to be created by cast_core, CastWebContentsComponent can only
+ * send updates after the activity is created.
  */
 public class CastWebContentsComponent {
     /**
@@ -91,6 +96,8 @@ public class CastWebContentsComponent {
     private final String mSessionId;
     private final SurfaceEventHandler mSurfaceEventHandler;
     private final Controller<WebContents> mHasWebContentsState = new Controller<>();
+    private final Controller<StartParams> mStartParams = new Controller<>();
+    private final OwnedScope mSubscription = new OwnedScope();
     private boolean mStarted;
     private boolean mEnableTouchInput;
     private final boolean mTurnOnScreen;
@@ -119,17 +126,28 @@ public class CastWebContentsComponent {
         mTurnOnScreen = turnOnScreen;
         mKeepScreenOn = keepScreenOn;
 
-        mHasWebContentsState.subscribe(
-                x -> {
-                    final IntentFilter filter = new IntentFilter();
-                    Uri instanceUri = CastWebContentsIntentUtils.getInstanceUri(sessionId);
-                    filter.addDataScheme(instanceUri.getScheme());
-                    filter.addDataAuthority(instanceUri.getAuthority(), null);
-                    filter.addDataPath(instanceUri.getPath(), PatternMatcher.PATTERN_LITERAL);
-                    filter.addAction(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED);
-                    filter.addAction(CastWebContentsIntentUtils.ACTION_ON_VISIBILITY_CHANGE);
-                    return new LocalBroadcastReceiverScope(filter, this::onReceiveIntent);
-                });
+        mSubscription.set(
+                mHasWebContentsState
+                        .subscribe(
+                                x -> {
+                                    final IntentFilter filter = new IntentFilter();
+                                    Uri instanceUri =
+                                            CastWebContentsIntentUtils.getInstanceUri(sessionId);
+                                    filter.addDataScheme(instanceUri.getScheme());
+                                    filter.addDataAuthority(instanceUri.getAuthority(), null);
+                                    filter.addDataPath(
+                                            instanceUri.getPath(), PatternMatcher.PATTERN_LITERAL);
+                                    filter.addAction(
+                                            CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED);
+                                    filter.addAction(
+                                            CastWebContentsIntentUtils.ACTION_ON_VISIBILITY_CHANGE);
+                                    return new LocalBroadcastReceiverScope(
+                                            filter, this::onReceiveIntent);
+                                })
+                        .and(
+                                observeActivityStarted()
+                                        .ignoreAnd(mStartParams)
+                                        .subscribe(Observer.onOpen(this::startInternal))));
     }
 
     private void onReceiveIntent(Intent intent) {
@@ -151,12 +169,27 @@ public class CastWebContentsComponent {
         }
     }
 
+    private Observable<?> observeActivityStarted() {
+        return observer -> {
+            Controller<Intent> controller = new Controller<>();
+            final IntentFilter filter = new IntentFilter();
+            filter.addAction(CastWebContentsIntentUtils.ACTION_ON_ACTIVITY_STARTED_BY_CAST_CORE);
+            return controller
+                    .subscribe(observer)
+                    .and(new LocalBroadcastReceiverScope(filter, controller::set));
+        };
+    }
+
     @VisibleForTesting
     boolean isStarted() {
         return mStarted;
     }
 
     public void start(StartParams params) {
+        mStartParams.set(params);
+    }
+
+    private void startInternal(StartParams params) {
         Log.d(
                 TAG,
                 "Starting Cast activity: sessionId=%s, audioFocus=%b",
@@ -178,9 +211,15 @@ public class CastWebContentsComponent {
         }
 
         Log.d(TAG, "Stopping WebContents: sessionId" + mSessionId);
+        mStartParams.reset();
         mHasWebContentsState.reset();
         sendStopWebContentEvent();
         mStarted = false;
+    }
+
+    public void destroy() {
+        mSubscription.close();
+        Log.d(TAG, "CastWebContentsComponent destroyed.");
     }
 
     public void enableTouchInput(boolean enabled) {
