@@ -33,6 +33,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -107,25 +108,26 @@ class FuseboxViewBinder {
             view.popup.mClipboardButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_CLICKED).run());
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE) {
-            view.popup.mClipboardButton.setVisibility(
-                    model.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE)
-                            ? View.VISIBLE
-                            : View.GONE);
+            updateButtonVisibility(
+                    model,
+                    FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE,
+                    view.popup.mClipboardButton);
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED) {
             view.popup.mAddCurrentTab.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_CLICKED).run());
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED) {
             setIsEnabledAndReapplyColorFilter(
-                    view.popup.mAddCurrentTab,
-                    model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
+                    model,
+                    FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED,
+                    view.popup.mAddCurrentTab);
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON) {
             updateForCurrentTabFavicon(
                     model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_FAVICON), view);
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE) {
-            view.popup.mAddCurrentTab.setVisibility(
-                    model.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE)
-                            ? View.VISIBLE
-                            : View.GONE);
+            updateButtonVisibility(
+                    model,
+                    FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE,
+                    view.popup.mAddCurrentTab);
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_FILE_CLICKED) {
             view.popup.mFileButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED).run());
@@ -133,10 +135,8 @@ class FuseboxViewBinder {
             view.popup.mFileButton.setEnabled(
                     model.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE) {
-            view.popup.mFileButton.setVisibility(
-                    model.get(FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE)
-                            ? View.VISIBLE
-                            : View.GONE);
+            updateButtonVisibility(
+                    model, FuseboxProperties.POPUP_ATTACH_FILE_VISIBLE, view.popup.mFileButton);
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED) {
             view.popup.mGalleryButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_ATTACH_GALLERY_CLICKED).run());
@@ -150,10 +150,10 @@ class FuseboxViewBinder {
             view.popup.mTabButton.setEnabled(
                     model.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_ENABLED));
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE) {
-            view.popup.mTabButton.setVisibility(
-                    model.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE)
-                            ? View.VISIBLE
-                            : View.GONE);
+            updateButtonVisibility(
+                    model,
+                    FuseboxProperties.POPUP_ATTACH_TAB_PICKER_VISIBLE,
+                    view.popup.mTabButton);
         } else if (propertyKey == FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED) {
             view.popup.mAiModeButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_TOOL_AI_MODE_CLICKED).run());
@@ -162,20 +162,29 @@ class FuseboxViewBinder {
                     v -> model.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_CLICKED).run());
         } else if (propertyKey == FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED) {
             setIsEnabledAndReapplyColorFilter(
-                    view.popup.mCreateImageButton,
-                    model.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
+                    model,
+                    FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED,
+                    view.popup.mCreateImageButton);
         } else if (propertyKey == FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE) {
-            view.popup.mCreateImageButton.setVisibility(
-                    model.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE)
-                            ? View.VISIBLE
-                            : View.GONE);
+            updateButtonVisibility(
+                    model,
+                    FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE,
+                    view.popup.mCreateImageButton);
         } else if (propertyKey == FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON) {
             updateButtonsVisibilityAndStyling(model, view);
         }
         // go/keep-sorted end
     }
 
-    private static void setIsEnabledAndReapplyColorFilter(Button button, boolean isEnabled) {
+    private static void updateButtonVisibility(
+            PropertyModel model, ReadableBooleanPropertyKey key, Button button) {
+        boolean isVisible = model.get(key);
+        button.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    private static void setIsEnabledAndReapplyColorFilter(
+            PropertyModel model, ReadableBooleanPropertyKey key, Button button) {
+        boolean isEnabled = model.get(key);
         button.setEnabled(isEnabled);
         reapplyColorFilter(button);
     }
