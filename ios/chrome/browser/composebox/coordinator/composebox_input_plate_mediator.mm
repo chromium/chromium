@@ -79,6 +79,7 @@
 #import "mojo/public/cpp/base/big_buffer.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
+#import "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #import "third_party/omnibox_proto/model_mode.pb.h"
 #import "third_party/omnibox_proto/searchbox_config.pb.h"
 #import "third_party/omnibox_proto/tool_mode.pb.h"
@@ -407,6 +408,8 @@ CreateInputDataFromAnnotatedPageContent(
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
   search_url_request_info->query_text = base::SysNSStringToUTF8(text);
   search_url_request_info->query_start_time = base::Time::Now();
+  search_url_request_info->aim_entry_point =
+      omnibox::IOS_CHROME_FUSEBOX_ENTRY_POINT;
   search_url_request_info->additional_params = additionalParams;
 
   __weak __typeof(self) weakSelf = self;
