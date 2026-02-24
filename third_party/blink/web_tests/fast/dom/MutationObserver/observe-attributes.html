@@ -248,53 +248,6 @@ function testPropertyAccess() {
     start();
 }
 
-function testOrderingWrtDOMSubtreeModified() {
-    var div, div2, subDiv;
-    var observer;
-    var listener;
-
-    function start() {
-        debug('Testing mutation records are enqueued for attributes before DOMSubtreeModified is dispatched.');
-
-        mutations = null;
-        div = document.body.appendChild(document.createElement('div'));
-        div2 = document.body.appendChild(document.createElement('div'));
-
-        subDiv = div.appendChild(document.createElement('div'));
-
-        observer = new MutationObserver(function(m) {
-            mutations = m;
-        });
-
-        listener = function(e) {
-            div2.setAttribute('baz', 'bat');
-        }
-
-        div.addEventListener('DOMSubtreeModified', listener);
-        observer.observe(subDiv, { attributes: true });
-        observer.observe(div2, { attributes: true });
-
-        subDiv.setAttribute('foo', 'bar');
-
-        setTimeout(finish, 0);
-    }
-
-    function finish() {
-        shouldBe('mutations.length', '2');
-        shouldBe('mutations[0].type', '"attributes"');
-        shouldBe('mutations[0].attributeName', '"foo"');
-        shouldBe('mutations[1].type', '"attributes"');
-        shouldBe('mutations[1].attributeName', '"baz"');
-        div.removeEventListener('DOMSubtreeModified', listener);
-        document.body.removeChild(div);
-        observer.disconnect();
-        debug('');
-        runNextTest();
-    }
-
-    start();
-}
-
 function testOldValue() {
     var div;
     var observer;
@@ -304,7 +257,7 @@ function testOldValue() {
         mutations = null;
         div = document.createElement('div');
         div.setAttribute('bar', 'boo');
-        
+
         observer = new MutationObserver(function(mutations) {
             window.mutations = mutations;
         });
@@ -936,7 +889,6 @@ var tests = [
     testMultipleObservers,
     testNamespaceURI,
     testPropertyAccess,
-    testOrderingWrtDOMSubtreeModified,
     testOldValue,
     testOldValueAsRequested,
     testOldValueUnionMultipleObservations,

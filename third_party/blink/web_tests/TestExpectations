@@ -216,10 +216,6 @@ crbug.com/1446498 dom/node/replace_child_recheck.html [ Failure Pass ]
 crbug.com/1446498 editing/execCommand/crash-inserting-list.html [ Failure Pass ]
 crbug.com/1446498 editing/execCommand/replaceSelectorCommand-crash.html [ Pass Timeout ]
 crbug.com/1446498 fast/dom/move-nodes-across-documents.html [ Failure Pass ]
-crbug.com/1446498 fast/dom/replaceChild-domsubtreemodified.html [ Failure Pass ]
-crbug.com/1446498 fast/dom/HTMLElement/set-inner-outer-optimization.html [ Failure Pass ]
-crbug.com/1446498 fast/dom/MutationObserver/observe-attributes.html [ Failure Pass ]
-crbug.com/1446498 fast/dom/MutationObserver/observe-characterdata.html [ Failure Pass ]
 # ====== Mutation Events tests to here ========================
 
 

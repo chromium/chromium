@@ -145,53 +145,6 @@ function testMultipleObservers() {
     start();
 }
 
-function testOrderingWrtDOMSubtreeModified() {
-    var div, div2, subDiv;
-    var observer;
-    var listener;
-
-    function start() {
-        debug('Testing mutation records are enqueued for characterData before DOMSubtreeModified is dispatched.');
-
-        mutations = null;
-        div = document.body.appendChild(document.createElement('div'));
-        div2 = document.body.appendChild(document.createElement('div'));
-
-        subDiv = div.appendChild(document.createElement('div'));
-        subDiv.textContent = 'foo';
-        charDataNode = subDiv.firstChild;
-
-        observer = new MutationObserver(function(m) {
-            mutations = m;
-        });
-
-        listener = function(e) {
-            div2.setAttribute('baz', 'bat');
-        }
-
-        div.addEventListener('DOMSubtreeModified', listener);
-        observer.observe(charDataNode, {characterData: true});
-        observer.observe(div2, {attributes: true});
-
-        charDataNode.textContent = 'bar';
-
-        setTimeout(finish, 0);
-    }
-
-    function finish() {
-        shouldBe('mutations.length', '2');
-        shouldBe('mutations[0].type', '"characterData"');
-        shouldBe('mutations[1].type', '"attributes"');
-        div.removeEventListener('DOMSubtreeModified', listener);
-        document.body.removeChild(div);
-        observer.disconnect();
-        debug('');
-        runNextTest();
-    }
-
-    start();
-}
-
 function testOldValue() {
     var div;
     var observer;
@@ -302,7 +255,6 @@ var tests = [
     testBasic,
     testWrongType,
     testMultipleObservers,
-    testOrderingWrtDOMSubtreeModified,
     testOldValue,
     testOldValueAsRequested,
     testOldValueUnionMultipleObservations

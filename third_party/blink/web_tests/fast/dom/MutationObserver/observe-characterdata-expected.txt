@@ -1,4 +1,3 @@
-CONSOLE WARNING: Listener added for a synchronous 'DOMSubtreeModified' DOM Mutation Event. This event type is deprecated (https://w3c.github.io/uievents/#legacy-event-types) and work is underway to remove it from this browser. Usage of this event listener will cause performance issues today, and represents a risk of future incompatibility. Consider using MutationObserver instead.
 Test WebKitMutationObserver.observe on CharacterData nodes
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
@@ -29,12 +28,6 @@ PASS mutations[0].target is charDataNode
 PASS mutations2.length is 1
 PASS mutations2[0].type is "characterData"
 PASS mutations2[0].target is charDataNode
-
-
-Testing mutation records are enqueued for characterData before DOMSubtreeModified is dispatched.
-PASS mutations.length is 2
-PASS mutations[0].type is "characterData"
-PASS mutations[1].type is "attributes"
 
 
 Testing that oldValue is returned when requested.

@@ -9,11 +9,6 @@ var oldElement;
 var oldContent;
 var failureCount = 0;
 
-function setModifiedFlag()
-{
-    modified = true;
-}
-
 function print(message)
 {
     var div = document.createElement("div");
@@ -40,7 +35,16 @@ function runTest(markup, propertyName, newValue, expectedResult)
     modified = false;
     oldElement = parent.firstChild;
     oldContent = parent.firstChild.firstChild;
+    var observer = new MutationObserver(function(){});
+    observer.observe(parent, {
+        subtree: true,
+        childList: true,
+        attributes: true,
+        characterData: true
+    });
     parent.firstChild[propertyName] = newValue;
+    modified = observer.takeRecords().length > 0;
+    observer.disconnect();
     var resultValue;
     if (propertyName == "outerHTML")
         resultValue = parent.innerHTML;
@@ -64,9 +68,6 @@ function test()
 {
     if (window.testRunner)
         testRunner.dumpAsText();
-
-    var parent = document.getElementById("parent");
-    parent.addEventListener("DOMSubtreeModified", setModifiedFlag, true);
 
     runTest('', 'innerHTML', '', 'not modified');
     runTest('', 'innerHTML', 'text', 'modified');
