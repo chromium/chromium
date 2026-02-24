@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_CRX_INSTALLER_H_
-#define CHROME_BROWSER_EXTENSIONS_CRX_INSTALLER_H_
+#ifndef EXTENSIONS_BROWSER_CRX_INSTALLER_H_
+#define EXTENSIONS_BROWSER_CRX_INSTALLER_H_
 
 #include <memory>
 #include <optional>
@@ -18,7 +18,6 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "components/sync/model/string_ordinal.h"
 #include "extensions/browser/extension_install_prompt_client.h"
 #include "extensions/browser/extension_system.h"
@@ -33,7 +32,6 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class ExtensionInstallPrompt;
 class SkBitmap;
 
 namespace base {
@@ -116,13 +114,13 @@ class CrxInstaller : public SandboxedUnpackerClient {
   // Same as above, but use `client` to generate a confirmation prompt.
   static scoped_refptr<CrxInstaller> Create(
       content::BrowserContext* context,
-      std::unique_ptr<ExtensionInstallPrompt> client);
+      std::unique_ptr<ExtensionInstallPromptClient> client);
 
   // Same as the previous method, except use the `approval` to bypass the
   // prompt. Note that the caller retains ownership of `approval`.
   static scoped_refptr<CrxInstaller> Create(
       content::BrowserContext* context,
-      std::unique_ptr<ExtensionInstallPrompt> client,
+      std::unique_ptr<ExtensionInstallPromptClient> client,
       const InstallApproval* approval);
 
   // Install the crx in `source_file`. The file must be a CRX3. A publisher
@@ -584,4 +582,4 @@ class CrxInstaller : public SandboxedUnpackerClient {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_CRX_INSTALLER_H_
+#endif  // EXTENSIONS_BROWSER_CRX_INSTALLER_H_

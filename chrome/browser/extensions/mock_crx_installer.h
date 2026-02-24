@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_MOCK_CRX_INSTALLER_H_
 #define CHROME_BROWSER_EXTENSIONS_MOCK_CRX_INSTALLER_H_
 
-#include "chrome/browser/extensions/crx_installer.h"
+#include "extensions/browser/crx_installer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace content {

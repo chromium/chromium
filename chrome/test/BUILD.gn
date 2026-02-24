@@ -379,6 +379,7 @@ static_library("test_support") {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//components/feed:feature_list",
+      "//extensions/browser:crx_installer",
     ]
   }
 
@@ -1762,6 +1763,7 @@ source_set("platform_browser_tests") {
       "//components/web_package/test_support",
       "//content/test:browsertest_support",
       "//extensions:test_support",
+      "//extensions/browser:crx_installer",
       "//extensions/browser/updater",
       "//extensions/strings",
       "//ui/base:ozone_buildflags",
@@ -5185,6 +5187,7 @@ if (!is_android) {
         "//components/wallet/core/common:features",
         "//components/wallet/core/common:prefs",
         "//components/web_package",
+        "//extensions/browser:crx_installer",
         "//extensions/browser:test_support",
         "//extensions/browser/api:extensions_api_client",
         "//extensions/browser/api/storage:settings_namespace",
@@ -9704,6 +9707,7 @@ test("unit_tests") {
       "//components/crx_file",
       "//components/themes:prefs",
       "//components/value_store:test_support",
+      "//extensions/browser:crx_installer",
       "//extensions/browser/api/content_settings",
       "//extensions/browser/forced_extensions",
       "//extensions/browser/updater",
@@ -11946,6 +11950,7 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/exclusive_access:test_support",
         "//chrome/browser/ui/omnibox",
         "//components/feed:feature_list",
+        "//extensions/browser:crx_installer",
         "//extensions/browser/api:extensions_api_client",
       ]
 

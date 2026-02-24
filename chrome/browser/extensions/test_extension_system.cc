@@ -13,7 +13,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist_factory.h"
 #include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
-#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/extension_error_controller.h"

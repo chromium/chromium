@@ -18,6 +18,7 @@ include_rules = [
   "+components/supervised_user",
   "+components/sync_preferences",
   "+components/update_client",
+  "+components/user_manager",
   "+components/value_store",
   "+components/variations",
   "+components/vector_icons",
@@ -65,7 +66,6 @@ specific_include_rules = {
 
     "+components/account_id",
     "+components/javascript_dialogs",
-    "+components/user_manager",
     "+components/user_prefs",
 
     "+storage/browser/test",

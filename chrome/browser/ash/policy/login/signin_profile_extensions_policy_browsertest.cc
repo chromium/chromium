@@ -18,7 +18,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/ash/policy/login/signin_profile_extensions_policy_test_base.h"
-#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/policy/extension_force_install_mixin.h"

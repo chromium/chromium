@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/test_extension_service.h"
 
-#include "chrome/browser/extensions/crx_installer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extensions::Extension;

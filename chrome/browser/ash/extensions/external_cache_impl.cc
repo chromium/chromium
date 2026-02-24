@@ -23,7 +23,6 @@
 #include "base/version.h"
 #include "chrome/browser/ash/extensions/external_cache_delegate.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/updater/chrome_extension_downloader_factory.h"

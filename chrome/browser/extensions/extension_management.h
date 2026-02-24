@@ -94,6 +94,7 @@ class ExtensionManagement : public KeyedService,
       const Extension* extension) override;
   bool UsesDefaultPolicyHostRestrictions(const Extension* extension) override;
   bool BlocklistedByDefault() const override;
+  GURL GetEffectiveUpdateURL(const Extension& extension) override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -134,10 +135,6 @@ class ExtensionManagement : public KeyedService,
   // Returns if an extension with `id` is force installed and the update URL is
   // overridden by policy.
   bool IsUpdateUrlOverridden(const ExtensionId& id);
-
-  // Get the effective update URL for the extension. Normally this URL comes
-  // from the extension manifest, but may be overridden by policies.
-  GURL GetEffectiveUpdateURL(const Extension& extension);
 
   // Returns if an extension with id `id` is explicitly blocked by enterprise
   // policy or not.

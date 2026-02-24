@@ -40,7 +40,6 @@ InstallTrackerFactory::InstallTrackerFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
-  DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(ExtensionPrefsFactory::GetInstance());
 }
 

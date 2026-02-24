@@ -318,4 +318,19 @@ ExtensionAssetsManager* ExtensionsBrowserClient::GetAssetsManager() {
   return assets_manager_.get();
 }
 
+Blocklist* ExtensionsBrowserClient::GetBlocklist(
+    content::BrowserContext* context) {
+  return nullptr;
+}
+
+InstallStageTracker* ExtensionsBrowserClient::GetInstallStageTracker(
+    content::BrowserContext* context) {
+  return nullptr;
+}
+
+InstallTracker* ExtensionsBrowserClient::GetInstallTracker(
+    content::BrowserContext* context) {
+  return nullptr;
+}
+
 }  // namespace extensions

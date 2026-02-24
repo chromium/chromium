@@ -33,6 +33,7 @@
 #include "chrome/browser/extensions/api/preference/protected_content_enabled_transformer.h"
 #include "chrome/browser/extensions/api/proxy/proxy_pref_transformer.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
+#include "chrome/browser/extensions/blocklist_factory.h"
 #include "chrome/browser/extensions/chrome_component_extension_resource_manager.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/chrome_extension_host_delegate.h"
@@ -48,6 +49,8 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/favicon/favicon_util.h"
+#include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
+#include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/pref_mapping.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/updater/chrome_update_client_config.h"
@@ -1118,6 +1121,21 @@ ExtensionAssetsManager* ChromeExtensionsBrowserClient::GetAssetsManager() {
   // If not Chrome OS, use trivial implementation that doesn't share anything.
   return ExtensionsBrowserClient::GetAssetsManager();
 #endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+Blocklist* ChromeExtensionsBrowserClient::GetBlocklist(
+    content::BrowserContext* context) {
+  return BlocklistFactory::GetForBrowserContext(context);
+}
+
+InstallStageTracker* ChromeExtensionsBrowserClient::GetInstallStageTracker(
+    content::BrowserContext* context) {
+  return InstallStageTrackerFactory::GetForBrowserContext(context);
+}
+
+InstallTracker* ChromeExtensionsBrowserClient::GetInstallTracker(
+    content::BrowserContext* context) {
+  return InstallTrackerFactory::GetForBrowserContext(context);
 }
 
 }  // namespace extensions

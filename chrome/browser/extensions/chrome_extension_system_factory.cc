@@ -7,6 +7,7 @@
 #include "chrome/browser/extensions/blocklist_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
+#include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -75,6 +76,7 @@ ChromeExtensionSystemSharedFactory::ChromeExtensionSystemSharedFactory()
   // IdentityManager for webstore authentication.
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(InstallStageTrackerFactory::GetInstance());
+  DependsOn(InstallTrackerFactory::GetInstance());
   // ExtensionService (owned by the ExtensionSystem) depends on
   // ExtensionHostRegistry.
   DependsOn(ExtensionHostRegistry::GetFactory());

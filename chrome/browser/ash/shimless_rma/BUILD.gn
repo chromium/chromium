@@ -46,6 +46,7 @@ static_library("shimless_rma") {
     "//components/web_package",
     "//content/public/browser",
     "//extensions/browser",
+    "//extensions/browser:crx_installer",
     "//skia",
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/mojom:mojom_platform",

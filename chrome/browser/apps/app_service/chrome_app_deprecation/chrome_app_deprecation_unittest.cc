@@ -17,7 +17,6 @@
 #include "base/version.h"
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/proto/chrome_app_deprecation.pb.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/common/pref_names.h"
 #include "extensions/browser/extension_registrar.h"
@@ -27,7 +26,6 @@
 #include "extensions/test/test_extension_dir.h"
 
 using extensions::ChromeTestExtensionLoader;
-using extensions::CrxInstaller;
 using extensions::Extension;
 using extensions::ExtensionBuilder;
 using extensions::ExtensionRegistry;

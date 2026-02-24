@@ -7643,6 +7643,7 @@ static_library("browser") {
       # This dependency should be removed when //chrome/browser/notifications
       # is modularized.
       "//chrome/browser/extensions/api/notifications",
+      "//extensions/browser:crx_installer",
       "//extensions/browser/updater",
       "//extensions/strings",
     ]

@@ -443,6 +443,7 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
+      "//extensions/browser:crx_installer",
       "//extensions/browser/forced_extensions",
     ]
 

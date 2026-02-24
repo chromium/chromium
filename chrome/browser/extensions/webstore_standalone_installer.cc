@@ -13,7 +13,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "chrome/browser/extensions/webstore_data_fetcher.h"

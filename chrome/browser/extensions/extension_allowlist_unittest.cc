@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/extension_allowlist.h"
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -15,6 +14,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
+#include "extensions/browser/crx_installer.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"

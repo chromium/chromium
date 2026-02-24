@@ -78,6 +78,7 @@ source_set("core_keyed_service_factories") {
   deps = [
     "//components/guest_view/buildflags",
     "//extensions/browser:browser_sources",
+    "//extensions/browser:crx_installer",
     "//extensions/browser/updater",
     "//extensions/buildflags",
   ]
@@ -838,6 +839,30 @@ source_set("keepalive") {
     "scoped_extension_keep_alive.cc",
     "scoped_extension_keep_alive.h",
   ]
+}
+
+source_set("crx_installer") {
+  sources = [
+    "crx_installer.cc",
+    "crx_installer.h",
+  ]
+
+  deps = [
+    ":browser_sources",
+    "//build:chromeos_buildflags",
+    "//components/keyed_service/content",
+    "//components/sync/model",
+    "//content/public/browser",
+    "//extensions/browser:keepalive",
+    "//extensions/browser/forced_extensions",
+    "//extensions/buildflags",
+    "//extensions/common",
+    "//extensions/strings",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//components/user_manager" ]
+  }
 }
 
 source_set("test_support") {

@@ -84,6 +84,7 @@ static_library("extensions") {
     "//components/prefs",
     "//content/public/browser",
     "//extensions/browser",
+    "//extensions/browser:crx_installer",
     "//extensions/browser/updater",
     "//extensions/common",
     "//ui/aura",
@@ -151,6 +152,7 @@ source_set("unit_tests") {
     "//components/version_info",
     "//content/test:test_support",
     "//extensions/browser",
+    "//extensions/browser:crx_installer",
     "//extensions/common",
     "//testing/gtest",
   ]
