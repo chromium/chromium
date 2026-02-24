@@ -32,7 +32,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -60,7 +59,6 @@ import java.util.Collection;
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.PAUSED)
 @Batch(UNIT_TESTS)
 public class IncognitoReauthCoordinatorFactoryTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();

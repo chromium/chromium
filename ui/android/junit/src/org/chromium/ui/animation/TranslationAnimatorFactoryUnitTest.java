@@ -12,7 +12,6 @@ import android.os.Looper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -20,7 +19,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for {@link TranslationAnimatorFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class TranslationAnimatorFactoryUnitTest {
     private static final long DURATION_MS = 3000L;
     private static final int[] NUMBERS_LIST = new int[] {321, 4142, 2311, 23, 0, 9456, 65464};

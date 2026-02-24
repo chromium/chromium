@@ -13,7 +13,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
-import static org.robolectric.annotation.LooperMode.Mode.PAUSED;
 
 import android.animation.Animator;
 import android.content.res.Resources;
@@ -29,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -43,7 +41,6 @@ import java.util.function.Supplier;
 /** Unit tests for {@link MessageBannerMediator}. */
 @SmallTest
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(PAUSED)
 @Features.EnableFeatures({MessageFeatureList.MESSAGES_CLOSE_BUTTON})
 public class MessageBannerMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

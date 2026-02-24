@@ -27,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -37,7 +36,6 @@ import java.util.function.DoubleConsumer;
 
 /** Unit tests for {@link FadeHubLayoutAnimationFactoryImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class FadeHubLayoutAnimationFactoryImplUnitTest {
     private static final long DURATION_MS = 500L;
     private static final long TIMEOUT_MS = 100L;

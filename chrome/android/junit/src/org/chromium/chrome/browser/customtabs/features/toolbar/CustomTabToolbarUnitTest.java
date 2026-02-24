@@ -64,8 +64,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -129,7 +127,6 @@ import java.util.function.BooleanSupplier;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowLooper.class})
-@LooperMode(Mode.PAUSED)
 @DisableFeatures(ChromeFeatureList.CCT_TOOLBAR_REFACTOR)
 public class CustomTabToolbarUnitTest {
     private static final GURL TEST_URL = JUnitTestGURLs.INITIAL_URL;

@@ -37,8 +37,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -65,7 +63,6 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 /** Robolectric tests for {@link IncognitoReauthPromoMessageService}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = VERSION_CODES.R)
-@LooperMode(Mode.PAUSED)
 public class IncognitoReauthPromoMessageServiceUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

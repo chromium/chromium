@@ -34,8 +34,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -62,7 +60,6 @@ import java.util.function.Supplier;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowSystemClock.class})
-@LooperMode(Mode.PAUSED)
 public class AppLaunchDrawBlockerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

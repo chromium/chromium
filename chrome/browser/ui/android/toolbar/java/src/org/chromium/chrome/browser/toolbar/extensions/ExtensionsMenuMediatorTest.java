@@ -29,7 +29,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -61,7 +60,6 @@ import java.util.List;
 
 /** Tests for {@link ExtensionsMenuMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class ExtensionsMenuMediatorTest {
     // Constants identifying the tabs and pointers used in the test environment.
     private static final int TAB_ID = 111;

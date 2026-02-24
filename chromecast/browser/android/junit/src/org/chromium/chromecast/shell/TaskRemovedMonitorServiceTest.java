@@ -35,8 +35,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.android.controller.ServiceController;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -44,7 +42,6 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Tests for TaskRemovedMonitorService */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(Mode.PAUSED)
 public class TaskRemovedMonitorServiceTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 

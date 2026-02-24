@@ -19,8 +19,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 
@@ -45,7 +43,6 @@ import java.util.concurrent.TimeUnit;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowSystemClock.class})
-@LooperMode(Mode.PAUSED)
 public class TabStateBrowserControlsVisibilityDelegateTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

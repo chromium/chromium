@@ -43,8 +43,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -72,7 +70,6 @@ import java.util.List;
 /** Unit test for {@link AppHeaderCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30)
-@LooperMode(Mode.PAUSED)
 public class AppHeaderCoordinatorUnitTest {
     private static final int WINDOW_WIDTH = 600;
     private static final int WINDOW_HEIGHT = 800;

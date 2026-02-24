@@ -15,7 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -25,7 +24,6 @@ import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class WebappIntentDataProviderTest {
 
     private Intent mIntent;

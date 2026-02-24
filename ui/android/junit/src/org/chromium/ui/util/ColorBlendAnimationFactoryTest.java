@@ -19,7 +19,6 @@ import androidx.annotation.ColorInt;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -28,7 +27,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for {@link ColorBlendAnimationFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class ColorBlendAnimationFactoryTest {
     private static final int[] COLORS_ALPHA_OVER_ZERO = {
         Color.parseColor("#FF000000"),

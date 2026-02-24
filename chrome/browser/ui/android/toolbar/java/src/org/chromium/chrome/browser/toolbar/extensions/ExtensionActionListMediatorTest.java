@@ -35,7 +35,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -60,7 +59,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class ExtensionActionListMediatorTest {
 
     /** An representation of an extension action. */

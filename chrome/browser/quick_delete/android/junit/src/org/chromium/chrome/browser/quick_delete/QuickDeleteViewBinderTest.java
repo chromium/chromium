@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -34,7 +33,6 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
 /** Robolectric tests for {@link QuickDeleteViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.PAUSED)
 @Batch(Batch.UNIT_TESTS)
 public class QuickDeleteViewBinderTest {
     private Activity mActivity;

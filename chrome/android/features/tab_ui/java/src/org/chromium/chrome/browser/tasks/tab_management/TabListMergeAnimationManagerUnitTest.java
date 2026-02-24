@@ -32,7 +32,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Holder;
@@ -44,7 +43,6 @@ import java.util.List;
 
 /** Unit tests for {@link TabListMergeAnimationManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class TabListMergeAnimationManagerUnitTest {
     private static final int FULL_HEIGHT = 100;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -48,7 +47,6 @@ import java.util.List;
 /** Robolectric tests for {@link QuickDeleteTabsFilter}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class QuickDeleteTabsFilterTest {
     private static final long INITIAL_TIME_IN_MS = 1000;
     private static final Token TAB_GROUP_ID = new Token(3748L, 3483L);

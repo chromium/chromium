@@ -35,8 +35,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -47,7 +45,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Tests for {@link RunOnNextLayoutDelegate}. */
 // TODO(crbug.com/40286625): Move to hub/internal/ once TabSwitcherLayout no longer depends on this.
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(Mode.PAUSED)
 public class ShrinkExpandImageViewUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -23,7 +23,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -40,7 +39,6 @@ import java.util.List;
 /** Robolectric tests for {@link QuickDeleteMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.PAUSED)
 @Batch(Batch.UNIT_TESTS)
 public class QuickDeleteMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

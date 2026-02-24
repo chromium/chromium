@@ -16,7 +16,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.android.util.concurrent.PausedExecutorService;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.util.TempDirectory;
 
 import org.chromium.base.task.PostTask;
@@ -33,7 +32,6 @@ import java.util.concurrent.TimeoutException;
 
 /** Test for {@link CustomTabCookiesFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class CustomTabCookiesFetcherUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

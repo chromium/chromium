@@ -37,7 +37,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.ContextUtils;
@@ -60,7 +59,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link AuthTabVerifier}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.PAUSED)
 @Config(shadows = {ShadowSystemClock.class})
 public class AuthTabVerifierTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

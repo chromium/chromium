@@ -30,7 +30,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -54,7 +53,6 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.styles.ChromeColors;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class BrowserServicesThemeColorProviderUnitTest {
     private static final int LIGHT_COLOR = Color.GREEN;
     private static final int DARK_COLOR = Color.BLACK;

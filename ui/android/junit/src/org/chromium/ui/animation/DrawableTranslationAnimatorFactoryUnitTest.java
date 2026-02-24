@@ -26,13 +26,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link TranslationAnimatorFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class DrawableTranslationAnimatorFactoryUnitTest {
     private static final long DURATION_MS = 10L;
     private static final int[] NUMBERS_LIST = new int[] {321, 4142, 2311, 23, 9456, 65464};

@@ -66,7 +66,6 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -121,7 +120,6 @@ import java.util.List;
 import java.util.Set;
 
 /** Unit tests for @{@link ToolbarTablet} */
-@LooperMode(LooperMode.Mode.PAUSED)
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
 public final class ToolbarTabletUnitTest {

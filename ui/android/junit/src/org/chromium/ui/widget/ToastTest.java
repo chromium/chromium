@@ -13,8 +13,6 @@ import androidx.test.core.app.ApplicationProvider;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.R;
@@ -23,7 +21,6 @@ import org.chromium.ui.widget.Toast.ToastPriority;
 /** Tests for {@link ToastManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(Mode.PAUSED)
 public class ToastTest {
     private Context mContext;
 

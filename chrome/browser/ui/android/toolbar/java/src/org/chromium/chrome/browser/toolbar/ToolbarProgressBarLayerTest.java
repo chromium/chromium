@@ -24,7 +24,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -40,7 +39,6 @@ import org.chromium.ui.base.TestActivity;
 /** Unit tests for {@link ToolbarProgressBarLayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class ToolbarProgressBarLayerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

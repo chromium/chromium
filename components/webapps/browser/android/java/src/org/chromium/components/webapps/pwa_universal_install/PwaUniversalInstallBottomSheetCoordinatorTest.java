@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -32,7 +31,6 @@ import org.chromium.url.GURL;
 
 /** Instrumentation tests for PWA Universal Install bottom sheet. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class PwaUniversalInstallBottomSheetCoordinatorTest {
     Activity mActivity;
 

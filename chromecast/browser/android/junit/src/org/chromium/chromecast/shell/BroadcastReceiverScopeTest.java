@@ -21,8 +21,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -32,7 +30,6 @@ import java.util.List;
 /** Tests for BroadcastReceiverScope. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(Mode.PAUSED)
 public class BroadcastReceiverScopeTest {
     private Context mContext;
 

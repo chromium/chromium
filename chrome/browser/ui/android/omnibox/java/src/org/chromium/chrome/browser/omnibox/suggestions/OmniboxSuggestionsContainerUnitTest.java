@@ -31,8 +31,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -285,7 +283,6 @@ public class OmniboxSuggestionsContainerUnitTest {
     }
 
     @Test
-    @LooperMode(Mode.PAUSED)
     public void testAlignmentProvider_changeDuringlayout() {
         mContainer.setEmbedder(mEmbedder);
         mContainer.onOmniboxSessionStateChange(true);

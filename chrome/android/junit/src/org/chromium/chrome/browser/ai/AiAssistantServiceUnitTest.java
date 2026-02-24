@@ -47,8 +47,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.android.util.concurrent.PausedExecutorService;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowToast;
 
@@ -89,7 +87,6 @@ import java.util.HashMap;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowToast.class})
-@LooperMode(Mode.PAUSED)
 @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY})
 public class AiAssistantServiceUnitTest {
 

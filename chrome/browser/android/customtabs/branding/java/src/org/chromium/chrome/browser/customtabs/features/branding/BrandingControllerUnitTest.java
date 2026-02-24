@@ -37,8 +37,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowSystemClock;
 import org.robolectric.shadows.ShadowToast;
 
@@ -59,7 +57,6 @@ import java.util.concurrent.TimeUnit;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowSystemClock.class, ShadowToast.class})
-@LooperMode(Mode.PAUSED)
 public class BrandingControllerUnitTest {
     @Rule public MockitoRule mTestRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();

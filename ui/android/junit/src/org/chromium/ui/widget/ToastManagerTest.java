@@ -24,8 +24,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 /** Tests for {@link ToastManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(Mode.PAUSED)
 public class ToastManagerTest {
     @Mock Toast mToast;
     @Mock Toast mToastNext;

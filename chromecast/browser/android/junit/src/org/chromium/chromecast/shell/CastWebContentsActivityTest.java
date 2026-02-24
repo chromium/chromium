@@ -60,8 +60,6 @@ import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowActivityManager;
@@ -86,7 +84,6 @@ import org.chromium.content_public.browser.WebContentsObserver;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(Mode.PAUSED)
 public class CastWebContentsActivityTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

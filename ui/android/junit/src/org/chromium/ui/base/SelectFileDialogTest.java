@@ -43,7 +43,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Shadows;
 import org.robolectric.android.util.concurrent.PausedExecutorService;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowMimeTypeMap;
 
 import org.chromium.base.ContextUtils;
@@ -77,7 +76,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
     UiAndroidFeatures.SELECT_FILE_OPEN_DOCUMENT
 })
 @EnableFeatures({UiAndroidFeatures.DISABLE_PHOTO_PICKER_FOR_VIDEO_CAPTURE})
-@LooperMode(LooperMode.Mode.PAUSED)
 public class SelectFileDialogTest {
     // A callback that fires when the file selection pipeline shuts down as a result of an action.
     public final CallbackHelper mOnActionCallback = new CallbackHelper();

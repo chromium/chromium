@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -23,7 +22,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Unit tests for {@link PwaRestoreBottomSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.PAUSED)
 public final class PwaRestoreBottomSheetContentTest {
     private Activity mActivity;
 

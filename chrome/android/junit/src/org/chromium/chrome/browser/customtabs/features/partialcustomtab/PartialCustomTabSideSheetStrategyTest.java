@@ -47,8 +47,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -63,7 +61,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /** Tests for {@link PartialCustomTabSideSheetStrategy}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(Mode.PAUSED)
 public class PartialCustomTabSideSheetStrategyTest {
     private static final float MINIMAL_WIDTH_RATIO_EXPANDED = 0.33f;
     private static final float MINIMAL_WIDTH_RATIO_MEDIUM = 0.5f;

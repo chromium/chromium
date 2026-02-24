@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -23,7 +22,6 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link ComposedBrowserControlsVisibilityDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class ComposedBrowserControlsVisibilityDelegateTest {
     private ComposedBrowserControlsVisibilityDelegate mComposedDelegate;
     private BrowserControlsVisibilityDelegate mDelegate1;

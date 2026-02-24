@@ -28,7 +28,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -42,7 +41,6 @@ import java.util.List;
 /** Instrumentation tests for PWA Restore bottom sheet. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.PAUSED)
 public class PwaRestoreBottomSheetCoordinatorTest {
     Activity mActivity;
 
