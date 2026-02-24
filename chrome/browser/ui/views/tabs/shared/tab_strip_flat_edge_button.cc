@@ -16,6 +16,7 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/actions/action_view_interface.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -141,6 +142,9 @@ void TabStripFlatEdgeButton::SetFlatEdgeFactor(float factor) {
   SetProperty(views::kHighlightPathGeneratorKey,
               std::make_unique<views::RoundRectHighlightPathGenerator>(
                   GetToolbarInkDropInsets(this), GetButtonCornerRadii()));
+  // The ink drop doesn't automatically pick up on rounded corner changes, so │
+  // we need to manually notify it here.
+  views::InkDrop::Get(this)->GetInkDrop()->HostSizeChanged(size());
 
   SchedulePaint();
 }
