@@ -51,6 +51,9 @@ namespace base::android::internal {
 template <typename T>
 struct IsOnceCallback : std::false_type {};
 
+template <>
+struct IsOnceCallback<base::OnceCallback<void()>> : std::true_type {};
+
 template <typename T>
 struct IsOnceCallback<base::OnceCallback<void(T)>> : std::true_type {
   using ArgType = T;
@@ -58,6 +61,9 @@ struct IsOnceCallback<base::OnceCallback<void(T)>> : std::true_type {
 
 template <typename T>
 struct IsRepeatingCallback : std::false_type {};
+
+template <>
+struct IsRepeatingCallback<base::RepeatingCallback<void()>> : std::true_type {};
 
 template <typename T>
 struct IsRepeatingCallback<base::RepeatingCallback<void(T)>> : std::true_type {
@@ -84,32 +90,19 @@ void RunJavaCallback(const jni_zero::ScopedJavaGlobalRef<jobject>& callback,
 
 namespace jni_zero {
 
-// @JniType("base::OnceClosure") Runnable
-template <>
-inline base::OnceClosure FromJniType<base::OnceClosure>(
-    JNIEnv* env,
-    const JavaRef<jobject>& obj) {
-  return base::BindOnce(&jni_zero::RunRunnable,
-                        jni_zero::ScopedJavaGlobalRef<>(env, obj));
-}
-
-// @JniType("base::RepeatingClosure") Runnable
-template <>
-inline base::RepeatingClosure FromJniType<base::RepeatingClosure>(
-    JNIEnv* env,
-    const JavaRef<jobject>& obj) {
-  return base::BindRepeating(&jni_zero::RunRunnable,
-                             jni_zero::ScopedJavaGlobalRef<>(env, obj));
-}
-
 // @JniType("base::OnceCallback<void(NativeFoo)>") Callback<JavaFoo>
 template <typename T>
   requires(base::android::internal::IsOnceCallback<T>::value)
 inline T FromJniType(JNIEnv* env, const JavaRef<jobject>& obj) {
   namespace internal = base::android::internal;
-  using ArgType = typename internal::IsOnceCallback<T>::ArgType;
-  return base::BindOnce(&internal::RunJavaCallback<ArgType>,
-                        ScopedJavaGlobalRef<jobject>(env, obj));
+  if constexpr (std::same_as<std::remove_cvref_t<T>, base::OnceClosure>) {
+    return base::BindOnce(&jni_zero::RunRunnable,
+                          jni_zero::ScopedJavaGlobalRef<jobject>(env, obj));
+  } else {
+    using ArgType = typename internal::IsOnceCallback<T>::ArgType;
+    return base::BindOnce(&internal::RunJavaCallback<ArgType>,
+                          ScopedJavaGlobalRef<jobject>(env, obj));
+  }
 }
 
 // @JniType("base::RepeatingCallback<void(NativeFoo)>") Callback<JavaFoo>
@@ -117,9 +110,15 @@ template <typename T>
   requires(base::android::internal::IsRepeatingCallback<T>::value)
 inline T FromJniType(JNIEnv* env, const JavaRef<jobject>& obj) {
   namespace internal = base::android::internal;
-  using ArgType = typename internal::IsRepeatingCallback<T>::ArgType;
-  return base::BindRepeating(&internal::RunJavaCallback<ArgType>,
-                             ScopedJavaGlobalRef<jobject>(env, obj));
+  if constexpr (std::same_as<std::remove_cvref_t<T>, base::RepeatingClosure>) {
+    return base::BindRepeating(
+        &jni_zero::RunRunnable,
+        jni_zero::ScopedJavaGlobalRef<jobject>(env, obj));
+  } else {
+    using ArgType = typename internal::IsRepeatingCallback<T>::ArgType;
+    return base::BindRepeating(&internal::RunJavaCallback<ArgType>,
+                               ScopedJavaGlobalRef<jobject>(env, obj));
+  }
 }
 
 }  // namespace jni_zero

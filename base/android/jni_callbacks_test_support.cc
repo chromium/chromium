@@ -28,41 +28,34 @@ static void JNI_JniCallbacksTest_ResetCounters(JNIEnv* env) {
   g_repeating_callback_result_count = 0;
 }
 
-static ScopedJavaLocalRef<jobject> JNI_JniCallbacksTest_GetOnceClosure(
-    JNIEnv* env) {
-  return ToJniCallback(env,
-                       base::BindOnce([]() { g_once_closure_run_count++; }));
+static base::OnceClosure JNI_JniCallbacksTest_GetOnceClosure() {
+  return base::BindOnce([]() { g_once_closure_run_count++; });
 }
 
 static jint JNI_JniCallbacksTest_GetOnceClosureRunCount() {
   return g_once_closure_run_count;
 }
 
-static ScopedJavaLocalRef<jobject> JNI_JniCallbacksTest_GetOnceCallback(
-    JNIEnv* env) {
-  return ToJniCallback(
-      env, base::BindOnce([](bool r) { g_once_callback_result = r; }));
+static base::OnceCallback<void(bool)> JNI_JniCallbacksTest_GetOnceCallback() {
+  return base::BindOnce([](bool r) { g_once_callback_result = r; });
 }
 
 static jboolean JNI_JniCallbacksTest_GetOnceCallbackResult() {
   return g_once_callback_result;
 }
 
-static ScopedJavaLocalRef<jobject> JNI_JniCallbacksTest_GetRepeatingClosure(
-    JNIEnv* env) {
-  return ToJniCallback(
-      env, base::BindRepeating([]() { g_repeating_closure_run_count++; }));
+static base::RepeatingClosure JNI_JniCallbacksTest_GetRepeatingClosure() {
+  return base::BindRepeating([]() { g_repeating_closure_run_count++; });
 }
 
 static jint JNI_JniCallbacksTest_GetRepeatingClosureRunCount() {
   return g_repeating_closure_run_count;
 }
 
-static ScopedJavaLocalRef<jobject> JNI_JniCallbacksTest_GetRepeatingCallback(
-    JNIEnv* env) {
-  return ToJniCallback(env, base::BindRepeating([](bool r) {
-                         g_repeating_callback_result_count++;
-                       }));
+static base::RepeatingCallback<void(bool)>
+JNI_JniCallbacksTest_GetRepeatingCallback() {
+  return base::BindRepeating(
+      [](bool r) { g_repeating_callback_result_count++; });
 }
 
 static jint JNI_JniCallbacksTest_GetRepeatingCallbackResultCount() {

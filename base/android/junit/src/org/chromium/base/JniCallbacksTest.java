@@ -88,18 +88,22 @@ public class JniCallbacksTest {
     interface Natives {
         void resetCounters();
 
+        @JniType("base::OnceClosure")
         Runnable getOnceClosure();
 
         int getOnceClosureRunCount();
 
+        @JniType("base::OnceCallback<void(bool)>")
         Callback<Boolean> getOnceCallback();
 
         boolean getOnceCallbackResult();
 
+        @JniType("base::RepeatingClosure")
         JniRepeatingRunnable getRepeatingClosure();
 
         int getRepeatingClosureRunCount();
 
+        @JniType("base::RepeatingCallback<void(bool)>")
         JniRepeatingCallback<Boolean> getRepeatingCallback();
 
         int getRepeatingCallbackResultCount();

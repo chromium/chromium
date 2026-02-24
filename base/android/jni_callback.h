@@ -9,6 +9,7 @@
 
 #include <type_traits>
 
+#include "base/android/callback_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/base_export.h"
 #include "base/functional/callback_forward.h"
@@ -102,5 +103,24 @@ BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
                callback));
 }
 }  // namespace base::android
+
+namespace jni_zero {
+
+template <typename T>
+concept IsJniCallback =
+    base::android::internal::IsOnceCallback<std::remove_cvref_t<T>>::value ||
+    base::android::internal::IsRepeatingCallback<std::remove_cvref_t<T>>::value;
+
+template <IsJniCallback T>
+inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env, T&& callback) {
+  if constexpr (base::android::internal::IsOnceCallback<
+                    std::remove_cvref_t<T>>::value) {
+    return base::android::ToJniCallback(env, std::move(callback));
+  } else {
+    return base::android::ToJniCallback(env, std::forward<T>(callback));
+  }
+}
+
+}  // namespace jni_zero
 
 #endif  // BASE_ANDROID_JNI_CALLBACK_H_
