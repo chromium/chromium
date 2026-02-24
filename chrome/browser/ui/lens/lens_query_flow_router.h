@@ -129,6 +129,9 @@ class LensQueryFlowRouter
       std::optional<lens::ImageCrop> image_crop,
       lens::LensOverlayInteractionResponse interaction_response);
 
+  // Removes the contextual search context if no region selection was made.
+  void RemoveContextualSearchContextIfNecessary(bool has_region_selection);
+
   void reset_file_upload_status_observation() {
     file_upload_status_observation_.Reset();
   }
