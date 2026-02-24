@@ -87,8 +87,8 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
     /** Duration of the animation to hide the UI. */
     private static final int DIALOG_EXIT_ANIMATION_MS = 195;
 
-    private static final String PROFILE_DELETION_CONFIRMATION_DIALOG_SHOWN_HISTOGRAM =
-            "Autofill.ProfileDeletion.Settings.ConfirmationDialogShown";
+    private static final String DELETION_CONFIRMATION_DIALOG_SHOWN_HISTOGRAM =
+            "Autofill.Deletion.Settings.ConfirmationDialogShown";
 
     protected @Nullable static EditorObserverForTest sObserverForTest;
 
@@ -606,7 +606,7 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
             String confirmationTitle, CharSequence confirmationText, int primaryButtonText) {
         boolean canShowConfirmation = mActivity instanceof ModalDialogManagerHolder;
         RecordHistogram.recordBooleanHistogram(
-                PROFILE_DELETION_CONFIRMATION_DIALOG_SHOWN_HISTOGRAM, canShowConfirmation);
+                DELETION_CONFIRMATION_DIALOG_SHOWN_HISTOGRAM, canShowConfirmation);
         if (!canShowConfirmation) return;
 
         ModalDialogManager modalDialogManager =
