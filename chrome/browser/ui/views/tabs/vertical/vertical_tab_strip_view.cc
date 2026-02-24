@@ -78,9 +78,20 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
       GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapsedPadding);
 
   int y = 0;
-  const bool should_show_separator =
-      pinned_tabs_container_view_ &&
-      !pinned_tabs_container_view_->children().empty() && is_collapsed_;
+
+  // Determine container preferred heights.
+  views::SizeBounds pinned_tab_container_size_bounds =
+      size_bounds.Inset(gfx::Insets::TLBR(0, region_horizontal_padding, 0, 0));
+  const int pinned_preferred_height =
+      pinned_tabs_scroll_view_
+          ->GetPreferredSize(pinned_tab_container_size_bounds)
+          .height();
+  const int unpinned_preferred_height =
+      unpinned_tabs_scroll_view_->GetPreferredSize(size_bounds).height();
+
+  const bool should_show_separator = pinned_preferred_height != 0 &&
+                                     unpinned_preferred_height != 0 &&
+                                     is_collapsed_;
 
   // If the height is bounded, calculate the available space for laying out the
   // pinned and unpinned containers.
@@ -98,16 +109,6 @@ views::ProposedLayout VerticalTabStripView::CalculateProposedLayout(
     // Clamp the remaining height to 0 if we have less space.
     remaining_height = std::max(remaining_height, 0);
   }
-
-  // Determine container preferred heights.
-  views::SizeBounds pinned_tab_container_size_bounds =
-      size_bounds.Inset(gfx::Insets::TLBR(0, region_horizontal_padding, 0, 0));
-  const int pinned_preferred_height =
-      pinned_tabs_scroll_view_
-          ->GetPreferredSize(pinned_tab_container_size_bounds)
-          .height();
-  const int unpinned_preferred_height =
-      unpinned_tabs_scroll_view_->GetPreferredSize(size_bounds).height();
 
   // Place the pinned container.
   int pinned_container_height = pinned_preferred_height;
