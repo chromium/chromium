@@ -103,7 +103,7 @@ void MobileDataNotifications::OnSessionStateChanged() {
 }
 
 void MobileDataNotifications::ShowOptionalMobileDataNotification() {
-  if (SessionManager::Get()->IsUserSessionBlocked()) {
+  if (SessionManager::Get()->IsUserSessionBlocked() || !NetworkHandler::IsInitialized()) {
     return;
   }
 
