@@ -7090,6 +7090,7 @@ test("unit_tests") {
     "//chrome/browser:font_pref",
     "//chrome/browser:global_features",
     "//chrome/browser:primitives",
+    "//chrome/browser/accessibility_annotator:unit_tests",
     "//chrome/browser/actor/ui:unit_tests",
     "//chrome/browser/ai",
     "//chrome/browser/ai:test_support",

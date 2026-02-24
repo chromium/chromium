@@ -274,6 +274,7 @@ source_set("profiles_extra_parts_impl") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser:font_pref",
+    "//chrome/browser/accessibility_annotator:accessibility_annotator",
     "//chrome/browser/affiliations",
     "//chrome/browser/ai",
     "//chrome/browser/autocomplete",

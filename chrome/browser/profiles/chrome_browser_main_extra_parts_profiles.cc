@@ -12,6 +12,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/accessibility/page_colors_controller_factory.h"
+#include "chrome/browser/accessibility_annotator/accessibility_annotator_data_provider_factory.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -664,6 +665,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   AboutSigninInternalsFactory::GetInstance();
   AboutThisSiteServiceFactory::GetInstance();
   AcceptLanguagesServiceFactory::GetInstance();
+  AccessibilityAnnotatorDataProviderFactory::GetInstance();
   AccessibilityLabelsServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   accessibility_annotator::ContentAnnotatorServiceFactory::GetInstance();
