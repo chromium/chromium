@@ -494,6 +494,13 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Dismiss via No Thanks"/>
 </enum>
 
+<enum name="IOSDockingPromoEligibility">
+  <int value="0" label="Ineligible"/>
+  <int value="1" label="Low Engagement User"/>
+  <int value="2" label="No Recent Icon Launches"/>
+  <int value="3" label="Low Engagement User with No Recent Icon Launches"/>
+</enum>
+
 <enum name="IOSEditMenuActions">
   <int value="0" label="Invalid"/>
   <int value="1" label="NativeCut"/>

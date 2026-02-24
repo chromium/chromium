@@ -12,6 +12,7 @@ source_set("ui") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/docking_promo/model:utils",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/animated_promo",
     "//ios/chrome/browser/shared/ui/animated_promo:utils",

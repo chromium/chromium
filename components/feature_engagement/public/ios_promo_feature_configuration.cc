@@ -247,8 +247,9 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
                     feature_engagement::kMaxStoragePeriod);
 
     //  L7 days active.
-    config.event_configs.insert(EventConfig(
-        feature_engagement::events::kChromeOpened, Comparator(ANY, 0), 7, 365));
+    config.event_configs.insert(
+        EventConfig(feature_engagement::events::kChromeActiveSessionDay,
+                    Comparator(ANY, 0), 7, 365));
 
     // L7 app icon launches.
     config.event_configs.insert(
