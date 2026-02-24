@@ -7,12 +7,14 @@
 #include <windows.h>
 
 #include <optional>
+#include <unordered_map>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
+#include "base/pickle.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -23,6 +25,7 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+#include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
@@ -141,7 +144,19 @@ TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
                                 &html, &src_url, &start, &end);
   ASSERT_EQ(data_changed_count(), 0);
 
+  base::test::TestFuture<std::u16string> svg_future;
+  clipboard->ReadSvg(ClipboardBuffer::kCopyPaste, std::nullopt,
+                     svg_future.GetCallback());
+  ASSERT_TRUE(svg_future.Wait());
+  ASSERT_EQ(data_changed_count(), 0);
+
   clipboard_test_util::ReadSvg(clipboard, ClipboardBuffer::kCopyPaste, nullptr);
+  ASSERT_EQ(data_changed_count(), 0);
+
+  base::test::TestFuture<std::string> rtf_future;
+  clipboard->ReadRTF(ClipboardBuffer::kCopyPaste, std::nullopt,
+                     rtf_future.GetCallback());
+  ASSERT_TRUE(rtf_future.Wait());
   ASSERT_EQ(data_changed_count(), 0);
 
   clipboard_test_util::ReadRTF(clipboard, ClipboardBuffer::kCopyPaste, nullptr);
@@ -151,6 +166,13 @@ TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
   clipboard->ReadPng(ClipboardBuffer::kCopyPaste, std::nullopt,
                      png_future.GetCallback());
   ASSERT_TRUE(png_future.Wait());
+  ASSERT_EQ(data_changed_count(), 0);
+
+  base::test::TestFuture<std::u16string> custom_data_future;
+  clipboard->ReadDataTransferCustomData(ClipboardBuffer::kCopyPaste,
+                                        u"text/plain", std::nullopt,
+                                        custom_data_future.GetCallback());
+  ASSERT_TRUE(custom_data_future.Wait());
   ASSERT_EQ(data_changed_count(), 0);
 
   clipboard_test_util::ReadDataTransferCustomData(
@@ -170,6 +192,12 @@ TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
   std::u16string title;
   std::string bookmark_url;
   clipboard_test_util::ReadBookmark(clipboard, nullptr, &title, &bookmark_url);
+  ASSERT_EQ(data_changed_count(), 0);
+
+  base::test::TestFuture<std::string> data_future;
+  clipboard->ReadData(ClipboardFormatType::PlainTextType(), std::nullopt,
+                      data_future.GetCallback());
+  ASSERT_TRUE(data_future.Wait());
   ASSERT_EQ(data_changed_count(), 0);
 
   clipboard_test_util::ReadData(clipboard, ClipboardFormatType::PlainTextType(),
@@ -474,6 +502,115 @@ TEST_F(ClipboardWinTest, ReadPngAsyncEmptyClipboard) {
                      png_future.GetCallback());
   ASSERT_TRUE(png_future.Wait());
   EXPECT_TRUE(png_future.Get().empty());
+}
+
+TEST_F(ClipboardWinTest, ReadSvgAsyncReturnsWrittenData) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteSvg(u"svg_test");
+  }
+
+  base::test::TestFuture<std::u16string> svg_future;
+  clipboard->ReadSvg(ClipboardBuffer::kCopyPaste, std::nullopt,
+                     svg_future.GetCallback());
+  ASSERT_TRUE(svg_future.Wait());
+  EXPECT_EQ(svg_future.Get(), u"svg_test");
+}
+
+TEST_F(ClipboardWinTest, ReadSvgAsyncEmptyClipboard) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  clipboard->Clear(ClipboardBuffer::kCopyPaste);
+
+  base::test::TestFuture<std::u16string> svg_future;
+  clipboard->ReadSvg(ClipboardBuffer::kCopyPaste, std::nullopt,
+                     svg_future.GetCallback());
+  ASSERT_TRUE(svg_future.Wait());
+  EXPECT_TRUE(svg_future.Get().empty());
+}
+
+TEST_F(ClipboardWinTest, ReadRTFAsyncReturnsWrittenData) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WriteRTF("rtf_test");
+  }
+
+  base::test::TestFuture<std::string> rtf_future;
+  clipboard->ReadRTF(ClipboardBuffer::kCopyPaste, std::nullopt,
+                     rtf_future.GetCallback());
+  ASSERT_TRUE(rtf_future.Wait());
+  EXPECT_EQ(rtf_future.Get(), "rtf_test");
+}
+
+TEST_F(ClipboardWinTest, ReadRTFAsyncEmptyClipboard) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  clipboard->Clear(ClipboardBuffer::kCopyPaste);
+
+  base::test::TestFuture<std::string> rtf_future;
+  clipboard->ReadRTF(ClipboardBuffer::kCopyPaste, std::nullopt,
+                     rtf_future.GetCallback());
+  ASSERT_TRUE(rtf_future.Wait());
+  EXPECT_TRUE(rtf_future.Get().empty());
+}
+
+TEST_F(ClipboardWinTest, ReadDataTransferCustomDataAsyncReturnsWrittenData) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  {
+    std::unordered_map<std::u16string, std::u16string> custom_data = {
+        {u"text/plain", u"custom_data"}};
+    base::Pickle pickle;
+    WriteCustomDataToPickle(custom_data, &pickle);
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WritePickledData(pickle,
+                            ClipboardFormatType::DataTransferCustomType());
+  }
+
+  base::test::TestFuture<std::u16string> custom_data_future;
+  clipboard->ReadDataTransferCustomData(ClipboardBuffer::kCopyPaste,
+                                        u"text/plain", std::nullopt,
+                                        custom_data_future.GetCallback());
+  ASSERT_TRUE(custom_data_future.Wait());
+  EXPECT_EQ(custom_data_future.Get(), u"custom_data");
+}
+
+TEST_F(ClipboardWinTest, ReadDataTransferCustomDataAsyncEmptyClipboard) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  clipboard->Clear(ClipboardBuffer::kCopyPaste);
+
+  base::test::TestFuture<std::u16string> custom_data_future;
+  clipboard->ReadDataTransferCustomData(ClipboardBuffer::kCopyPaste,
+                                        u"text/plain", std::nullopt,
+                                        custom_data_future.GetCallback());
+  ASSERT_TRUE(custom_data_future.Wait());
+  EXPECT_TRUE(custom_data_future.Get().empty());
+}
+
+TEST_F(ClipboardWinTest, ReadDataAsyncReturnsWrittenData) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  const auto format =
+      ClipboardFormatType::CustomPlatformType("chromium-raw-test");
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    std::vector<uint8_t> data = {'d', 'a', 't', 'a'};
+    writer.WriteRawDataForTest(format, std::move(data));
+  }
+
+  base::test::TestFuture<std::string> data_future;
+  clipboard->ReadData(format, std::nullopt, data_future.GetCallback());
+  ASSERT_TRUE(data_future.Wait());
+  EXPECT_EQ(data_future.Get(), "data");
+}
+
+TEST_F(ClipboardWinTest, ReadDataAsyncEmptyClipboard) {
+  auto* clipboard = Clipboard::GetForCurrentThread();
+  clipboard->Clear(ClipboardBuffer::kCopyPaste);
+
+  base::test::TestFuture<std::string> data_future;
+  clipboard->ReadData(ClipboardFormatType::PlainTextType(), std::nullopt,
+                      data_future.GetCallback());
+  ASSERT_TRUE(data_future.Wait());
+  EXPECT_TRUE(data_future.Get().empty());
 }
 
 }  // namespace ui
