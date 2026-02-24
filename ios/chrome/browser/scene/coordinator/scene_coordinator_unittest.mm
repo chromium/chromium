@@ -16,6 +16,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_util_test_support.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -210,6 +211,17 @@ TEST_F(SceneCoordinatorTest, TestReportAnIssueViewControllerForSignedOutUser) {
                                  timeout:base::Seconds(1)
                               completion:std::move(completion)];
   run_loop.Run();
+}
+
+// Tests that scene coordinator updates scene state's incognitoContentVisible
+// when the relevant scene commands is called.
+TEST_F(SceneCoordinatorTest, UpdatesIncognitoContentVisibility) {
+  [coordinator_ setIncognitoContentVisible:NO];
+  EXPECT_FALSE(scene_state_.incognitoState.incognitoContentVisible);
+  [coordinator_ setIncognitoContentVisible:YES];
+  EXPECT_TRUE(scene_state_.incognitoState.incognitoContentVisible);
+  [coordinator_ setIncognitoContentVisible:NO];
+  EXPECT_FALSE(scene_state_.incognitoState.incognitoContentVisible);
 }
 
 }  // namespace

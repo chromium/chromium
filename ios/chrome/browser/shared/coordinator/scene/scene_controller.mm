@@ -207,7 +207,7 @@ bool IsSigninForcedByPolicy() {
 
 @interface SceneController () <AuthenticationServiceObserving,
                                ProfileStateObserver,
-                               SceneCoordinatorDelegate,
+                               SceneUIHandler,
                                SceneUIProvider,
                                SceneURLLoadingServiceDelegate,
                                TabGridCoordinatorDelegate> {
@@ -957,7 +957,7 @@ bool IsSigninForcedByPolicy() {
   _mainCoordinator =
       [[SceneCoordinator alloc] initWithSceneCommandsEndpoint:self
                                                     tabOpener:self];
-  _mainCoordinator.delegate = self;
+  _mainCoordinator.UIHandler = self;
   _mainCoordinator.tabGridDelegate = self;
   _mainCoordinator.sceneURLLoadingService = _sceneURLLoadingService.get();
 
@@ -1524,12 +1524,7 @@ bool IsSigninForcedByPolicy() {
 }
 
 - (void)prepareTabSwitcher {
-  web::WebState* currentWebState =
-      self.currentInterface.browser->GetWebStateList()->GetActiveWebState();
-  if (currentWebState) {
-    SnapshotTabHelper::FromWebState(currentWebState)
-        ->UpdateSnapshotWithCallback(nil);
-  }
+  [self.mainCoordinator prepareTabSwitcher];
 }
 
 - (void)displayTabGridInMode:(TabGridOpeningMode)mode {
@@ -1590,8 +1585,7 @@ bool IsSigninForcedByPolicy() {
 }
 
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
-  self.sceneState.incognitoState.incognitoContentVisible =
-      incognitoContentVisible;
+  [self.mainCoordinator setIncognitoContentVisible:incognitoContentVisible];
 }
 
 - (void)stopAllVoiceSearch {
@@ -1627,22 +1621,9 @@ bool IsSigninForcedByPolicy() {
 
 - (void)prepareToPresentModalWithSnackbarDismissal:(BOOL)dismissSnackbars
                                         completion:(ProceduralBlock)completion {
-  __weak __typeof(self) weakSelf = self;
-  ProceduralBlock ensureNTP = ^{
-    [weakSelf ensureNTP];
-    completion();
-  };
-  if (self.mainCoordinator.isTabGridActive ||
-      (self.currentInterface.incognito && ![self isIncognitoForced])) {
-    [self closePresentedViews:YES
-                   completion:^{
-                     [weakSelf openNonIncognitoTab:ensureNTP];
-                   }];
-    return;
-  }
-  [self dismissModalDialogsWithCompletion:ensureNTP
-                           dismissOmnibox:YES
-                         dismissSnackbars:dismissSnackbars];
+  [self.mainCoordinator
+      prepareToPresentModalWithSnackbarDismissal:dismissSnackbars
+                                      completion:completion];
 }
 
 // Returns YES if the current Tab is available to present a view controller.
@@ -2033,7 +2014,7 @@ bool IsSigninForcedByPolicy() {
   };
 
   if (self.currentInterface.incognito) {
-    [self openNonIncognitoTab:openQuickDeleteBlock];
+    [self.mainCoordinator openNonIncognitoTab:openQuickDeleteBlock];
   } else {
     openQuickDeleteBlock();
   }
@@ -2488,11 +2469,34 @@ bool IsSigninForcedByPolicy() {
   }
 }
 
-// Checks the target BVC's current tab's URL. If `urlLoadParams` has an empty
-// URL, no new tab will be opened and `tabOpenedCompletion` will be run. If this
-// URL is chrome://newtab, loads `urlLoadParams` in this tab. Otherwise, open
-// `urlLoadParams` in a new tab in the target BVC. `tabOpenedCompletion` will be
-// called on the new tab (if not nil).
+// Displays current (incognito/normal) BVC and optionally focuses the omnibox.
+- (void)displayCurrentBVCAndFocusOmnibox:(BOOL)focusOmnibox {
+  ProceduralBlock completion = nil;
+  if (focusOmnibox) {
+    id<BrowserCoordinatorCommands> browserCoordinatorHandler =
+        HandlerForProtocol(
+            self.currentInterface.browser->GetCommandDispatcher(),
+            BrowserCoordinatorCommands);
+    completion = ^{
+      [browserCoordinatorHandler showComposebox];
+    };
+  }
+  [self displayCurrentBVC:completion];
+}
+
+#pragma mark - SceneUIHandler
+
+- (void)displayCurrentBVC:(ProceduralBlock)completion {
+  [self.mainCoordinator
+      showBrowserLayoutViewController:self.currentInterface
+                                          .browserLayoutViewController
+                            incognito:self.currentInterface.incognito
+                           completion:completion];
+  [HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
+                      SceneCommands)
+      setIncognitoContentVisible:self.currentInterface.incognito];
+}
+
 - (void)openOrReuseTabInMode:(ApplicationMode)targetMode
            withUrlLoadParams:(const UrlLoadParams&)urlLoadParams
          tabOpenedCompletion:(ProceduralBlock)tabOpenedCompletion {
@@ -2601,28 +2605,6 @@ bool IsSigninForcedByPolicy() {
   }
 }
 
-// Displays current (incognito/normal) BVC and optionally focuses the omnibox.
-- (void)displayCurrentBVCAndFocusOmnibox:(BOOL)focusOmnibox {
-  ProceduralBlock completion = nil;
-  if (focusOmnibox) {
-    id<BrowserCoordinatorCommands> browserCoordinatorHandler =
-        HandlerForProtocol(
-            self.currentInterface.browser->GetCommandDispatcher(),
-            BrowserCoordinatorCommands);
-    completion = ^{
-      [browserCoordinatorHandler showComposebox];
-    };
-  }
-  [self.mainCoordinator
-      showBrowserLayoutViewController:self.currentInterface
-                                          .browserLayoutViewController
-                            incognito:self.currentInterface.incognito
-                           completion:completion];
-  [HandlerForProtocol(self.currentInterface.browser->GetCommandDispatcher(),
-                      SceneCommands)
-      setIncognitoContentVisible:self.currentInterface.incognito];
-}
-
 #pragma mark - Sign In UI presentation
 
 // Close Settings, or Signin or the 3rd-party intents Incognito interstitial.
@@ -2704,53 +2686,6 @@ bool IsSigninForcedByPolicy() {
   } else if (webStateList == self.mainInterface.browser->GetWebStateList()) {
     [self lastRegularTabClosed];
   }
-}
-
-// Open a non-incognito tab, if one exists. If one doesn't exist, open a new
-// one. If incognito is forced, an incognito tab will be opened.
-- (void)openNonIncognitoTab:(ProceduralBlock)completion {
-  if (self.mainInterface.browser->GetWebStateList()->GetActiveWebState()) {
-    // Reuse an existing tab, if one exists.
-    ApplicationMode mode = [self isIncognitoForced] ? ApplicationMode::INCOGNITO
-                                                    : ApplicationMode::NORMAL;
-    [self setCurrentInterfaceForMode:mode];
-    if (self.mainCoordinator.isTabGridActive) {
-      [self.mainCoordinator
-          showBrowserLayoutViewController:self.currentInterface
-                                              .browserLayoutViewController
-                                incognito:self.currentInterface.incognito
-                               completion:completion];
-      [self setIncognitoContentVisible:self.currentInterface.incognito];
-    } else {
-      if (completion) {
-        completion();
-      }
-    }
-  } else {
-    // Open a new NTP.
-    UrlLoadParams params = UrlLoadParams::InNewTab(GURL(kChromeUINewTabURL));
-    params.web_params.transition_type = ui::PAGE_TRANSITION_TYPED;
-    ApplicationModeForTabOpening mode =
-        [self isIncognitoForced] ? ApplicationModeForTabOpening::INCOGNITO
-                                 : ApplicationModeForTabOpening::NORMAL;
-    [self dismissModalsAndMaybeOpenSelectedTabInMode:mode
-                                   withUrlLoadParams:params
-                                      dismissOmnibox:YES
-                                          completion:completion];
-  }
-}
-
-// Ensures that a non-incognito NTP tab is open. If incognito is forced, then
-// it will ensure an incognito NTP tab is open.
-- (void)ensureNTP {
-  // If the tab does not exist, open a new tab.
-  UrlLoadParams params = UrlLoadParams::InCurrentTab(GURL(kChromeUINewTabURL));
-  ApplicationMode mode = self.currentInterface.incognito
-                             ? ApplicationMode::INCOGNITO
-                             : ApplicationMode::NORMAL;
-  [self openOrReuseTabInMode:mode
-           withUrlLoadParams:params
-         tabOpenedCompletion:nil];
 }
 
 // Returns the condition to check in order to show the `IncognitoIntertitial`

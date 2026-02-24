@@ -235,17 +235,6 @@ class SceneControllerTest : public PlatformTest {
 // default when the new window opening request is external to chrome and
 // unknown.
 
-// Tests that scene controller updates scene state's incognitoContentVisible
-// when the relevant scene commands is called.
-TEST_F(SceneControllerTest, UpdatesIncognitoContentVisibility) {
-  [scene_controller_ setIncognitoContentVisible:NO];
-  EXPECT_FALSE(scene_state_.incognitoState.incognitoContentVisible);
-  [scene_controller_ setIncognitoContentVisible:YES];
-  EXPECT_TRUE(scene_state_.incognitoState.incognitoContentVisible);
-  [scene_controller_ setIncognitoContentVisible:NO];
-  EXPECT_FALSE(scene_state_.incognitoState.incognitoContentVisible);
-}
-
 // Tests that scene controller correctly handles an external intent to
 // OpenIncognitoSearch.
 TEST_F(SceneControllerTest, TestOpenIncognitoSearchForShortcutItem) {

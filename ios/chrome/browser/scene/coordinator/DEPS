@@ -18,6 +18,7 @@ include_rules = [
   "+ios/chrome/browser/safari_data_import/public",
   "+ios/chrome/browser/settings/ui_bundled",
   "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/snapshots/model",
   "+ios/chrome/browser/tab_switcher/ui_bundled",
   "+ios/chrome/browser/window_activities/model",
   "+ios/chrome/browser/youtube_incognito/coordinator",
