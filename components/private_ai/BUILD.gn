@@ -104,7 +104,7 @@ source_set("testing") {
     "testing/fake_connection.h",
     "testing/fake_token_manager.cc",
     "testing/fake_token_manager.h",
-    "testing/mock_legion_client.h",
+    "testing/mock_private_ai_client.h",
   ]
   public_deps = [
     ":private_ai",

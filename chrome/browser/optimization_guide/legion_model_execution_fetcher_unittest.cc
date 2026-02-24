@@ -11,7 +11,7 @@
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/zero_state_suggestions.pb.h"
 #include "components/private_ai/proto/private_ai.pb.h"
-#include "components/private_ai/testing/mock_legion_client.h"
+#include "components/private_ai/testing/mock_private_ai_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,12 +21,12 @@ class LegionModelExecutionFetcherTest : public testing::Test {
  public:
   void SetUp() override {
     fetcher_ =
-        std::make_unique<LegionModelExecutionFetcher>(&mock_legion_client_);
+        std::make_unique<LegionModelExecutionFetcher>(&mock_private_ai_client_);
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  private_ai::MockLegionClient mock_legion_client_;
+  private_ai::MockPrivateAiClient mock_private_ai_client_;
   std::unique_ptr<LegionModelExecutionFetcher> fetcher_;
 };
 
@@ -36,7 +36,7 @@ TEST_F(LegionModelExecutionFetcherTest, ConvertsZeroStateSuggestionsRequest) {
   request.mutable_page_context()->set_title("Hello");
 
   EXPECT_CALL(
-      mock_legion_client_,
+      mock_private_ai_client_,
       SendPaicRequest(
           testing::Eq(
               private_ai::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),
@@ -73,7 +73,7 @@ TEST_F(LegionModelExecutionFetcherTest,
   context2->set_title("你好");
 
   EXPECT_CALL(
-      mock_legion_client_,
+      mock_private_ai_client_,
       SendPaicRequest(
           testing::Eq(
               private_ai::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),
@@ -108,7 +108,7 @@ TEST_F(LegionModelExecutionFetcherTest,
 
 TEST_F(LegionModelExecutionFetcherTest, ConvertsZeroStateSuggestionsResponse) {
   EXPECT_CALL(
-      mock_legion_client_,
+      mock_private_ai_client_,
       SendPaicRequest(
           testing::Eq(
               private_ai::proto::FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION),

@@ -74,7 +74,7 @@
 #include "chrome/browser/private_ai/private_ai_service_factory.h"
 #include "components/private_ai/client.h"
 #include "components/private_ai/features.h"
-#include "components/private_ai/testing/mock_legion_client.h"
+#include "components/private_ai/testing/mock_private_ai_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -605,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerLegionBrowserTest,
       browser()->GetProfile());
   ASSERT_TRUE(legion_service);
   auto mock_client =
-      std::make_unique<testing::StrictMock<private_ai::MockLegionClient>>();
+      std::make_unique<testing::StrictMock<private_ai::MockPrivateAiClient>>();
   auto* mock_client_ptr = mock_client.get();
   legion_service->SetClientForTesting(std::move(mock_client));
 
