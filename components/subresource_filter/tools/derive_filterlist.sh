@@ -241,6 +241,9 @@ main() {
   grep ^@@ easylist.txt >> smaller_list.txt
   grep ^@@ easyprivacy.txt >> smaller_list.txt
 
+  info "Appending ever-present rule used for demo/testing purposes..."
+  echo "^ad_filterlist_demo_param=1^" >> smaller_list.txt
+
   info "Creating final sorted, unique list..."
   sort -u smaller_list.txt > final_list.txt
 
