@@ -240,7 +240,8 @@ class FuseboxViewBinder {
         reapplyColorFilter(views.popup.mCreateImageButton);
     }
 
-    static void updateButtonsA11yAnnouncements(PropertyModel model, FuseboxViewHolder views) {
+    private static void updateButtonsA11yAnnouncements(
+            PropertyModel model, FuseboxViewHolder views) {
         @StringRes
         int navButtonAccessibilityStringRes = R.string.acc_send_button_search_or_navigate;
         @StringRes
@@ -271,7 +272,8 @@ class FuseboxViewBinder {
                 res.getText(imageGenButtonAccessibilityStringRes));
     }
 
-    static void updateButtonsVisibilityAndStyling(PropertyModel model, FuseboxViewHolder views) {
+    private static void updateButtonsVisibilityAndStyling(
+            PropertyModel model, FuseboxViewHolder views) {
         boolean showFuseboxToolbar = model.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE);
         boolean showDedicatedModeButton = model.get(FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON);
         boolean isAiModeUsed =
@@ -414,7 +416,8 @@ class FuseboxViewBinder {
         }
     }
 
-    static void reanchorViewsForCompactFusebox(PropertyModel model, FuseboxViewHolder views) {
+    private static void reanchorViewsForCompactFusebox(
+            PropertyModel model, FuseboxViewHolder views) {
         boolean shouldShowCompactUi =
                 model.get(FuseboxProperties.COMPACT_UI)
                         || !model.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE);

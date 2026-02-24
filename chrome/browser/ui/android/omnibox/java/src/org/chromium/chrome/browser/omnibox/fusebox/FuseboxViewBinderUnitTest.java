@@ -208,17 +208,12 @@ public class FuseboxViewBinderUnitTest {
     @Test
     public void updateButtonsVisibility_AndStyling_noParams() {
         configureFusebox(Variant.DEFAULT, AutocompleteRequestType.SEARCH);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-
-        // No button.
         assertEquals(View.GONE, mViewHolder.requestType.getVisibility());
     }
 
     @Test
     public void updateButtonsVisibility_AndStyling_dedicatedButton() {
         configureFusebox(Variant.DEDICATED_BUTTON, AutocompleteRequestType.SEARCH);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-
         assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
         assertEquals("AI Mode", mViewHolder.requestType.getText());
     }
@@ -226,8 +221,6 @@ public class FuseboxViewBinderUnitTest {
     @Test
     public void updateModeSelectorVisibility_dedicatedButtonWithHint_searchModeAndStyling() {
         configureFusebox(Variant.DEDICATED_BUTTON_WITH_HINT, AutocompleteRequestType.SEARCH);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-
         assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
         assertEquals("Try AI Mode", mViewHolder.requestType.getText());
     }
@@ -235,8 +228,6 @@ public class FuseboxViewBinderUnitTest {
     @Test
     public void updateModeSelectorVisibility_dedicatedButtonWithHint_aiModeAndStyling() {
         configureFusebox(Variant.DEDICATED_BUTTON_WITH_HINT, AutocompleteRequestType.AI_MODE);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
-
         assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
         assertEquals("AI Mode", mViewHolder.requestType.getText());
     }
@@ -244,7 +235,6 @@ public class FuseboxViewBinderUnitTest {
     @Test
     public void reanchorViewsForCompactFusebox_compactModeSearch() {
         configureFusebox(Variant.COMPACT, AutocompleteRequestType.SEARCH);
-        FuseboxViewBinder.reanchorViewsForCompactFusebox(mModel, mViewHolder);
 
         var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
         assertEquals(R.id.url_bar, lp.topToTop);
@@ -255,7 +245,6 @@ public class FuseboxViewBinderUnitTest {
     @Test
     public void reanchorViewsForCompactFusebox_notCompactMode() {
         configureFusebox(Variant.DEFAULT, AutocompleteRequestType.SEARCH);
-        FuseboxViewBinder.reanchorViewsForCompactFusebox(mModel, mViewHolder);
 
         var lp = (ConstraintLayout.LayoutParams) mViewHolder.addButton.getLayoutParams();
         assertEquals(ConstraintSet.UNSET, lp.topToTop);
@@ -319,7 +308,6 @@ public class FuseboxViewBinderUnitTest {
         assertEquals(View.GONE, mPopup.mCreateImageButton.getVisibility());
 
         mModel.set(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_VISIBLE, true);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
         assertEquals(View.VISIBLE, mPopup.mCreateImageButton.getVisibility());
     }
 
@@ -336,14 +324,12 @@ public class FuseboxViewBinderUnitTest {
         mModel.set(
                 FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
                 AutocompleteRequestType.IMAGE_GENERATION);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[0]);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[3]);
 
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.AI_MODE);
-        FuseboxViewBinder.updateButtonsVisibilityAndStyling(mModel, mViewHolder);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[0]);
         assertNull(mViewHolder.requestType.getCompoundDrawablesRelative()[1]);
         assertNotNull(mViewHolder.requestType.getCompoundDrawablesRelative()[2]);
