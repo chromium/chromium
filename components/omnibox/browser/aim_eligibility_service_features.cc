@@ -16,13 +16,13 @@ BASE_FEATURE(kAimCoBrowseEligibilityCheckEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAimCoBrowseAutomatedFetchRequestEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAimServerEligibilitySendCoBrowseUserAgentSuffixEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAimServerEligibilitySendFullVersionListEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAimServerEligibilityCustomRetryPolicyEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
