@@ -90,24 +90,17 @@ std::map<std::string, std::string> GetParametersMapWithoutQuery(
     const GURL& url);
 
 // Returns a map of all the common search query parameters required to enable
-// the lens overlay results in the side panel. If |country_code| is nullopt,
-// the entry will not be included in the map.
+// the lens overlay results in the side panel.
 std::map<std::string, std::string> GetCommonSearchParametersMap(
-    const std::optional<std::string>& country_code,
+    const std::string& country_code,
     bool use_dark_mode,
     bool is_side_panel);
 
 // Returns |url_to_modify| with all the common search query parameters required
-// to enable the lens overlay results in the side panel. If |country_code| is
-// nullopt, the param will not be attached to the url.
-GURL AppendCommonSearchParametersToURL(
-    const GURL& url_to_modify,
-    const std::optional<std::string>& country_code,
-    bool use_dark_mode);
-
-// Returns whether the given |url| contains the query params required to shown
-// a search query in a side panel.
-bool HasSidePanelSearchQueryParameters(const GURL& url);
+// to enable the lens overlay results in the side panel.
+GURL AppendCommonSearchParametersToURL(const GURL& url_to_modify,
+                                       const std::string& country_code,
+                                       bool use_dark_mode);
 
 // Returns whether the given |url| contains all the common search query
 // parameters required to properly enable the lens overlay results in the side

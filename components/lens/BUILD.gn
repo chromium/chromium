@@ -152,7 +152,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/base32",
-    "//net",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/lens_server_proto:lens_overlay_proto",

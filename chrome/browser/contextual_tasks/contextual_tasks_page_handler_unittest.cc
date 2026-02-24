@@ -629,6 +629,7 @@ TEST_F(ContextualTasksPageHandlerTest, GetCommonSearchParams) {
         /*is_dark_mode=*/false, /*is_side_panel=*/true,
         base::BindLambdaForTesting(
             [&](const base::flat_map<std::string, std::string>& params) {
+              EXPECT_EQ(params.at(lens::kLanguageCodeParameterKey), "en-US");
               EXPECT_EQ(params.at(lens::kDarkModeParameterKey),
                         lens::kDarkModeParameterLightValue);
               EXPECT_EQ(params.at(lens::kChromeSidePanelParameterKey), "2");
@@ -644,6 +645,7 @@ TEST_F(ContextualTasksPageHandlerTest, GetCommonSearchParams) {
         /*is_dark_mode=*/true, /*is_side_panel=*/false,
         base::BindLambdaForTesting(
             [&](const base::flat_map<std::string, std::string>& params) {
+              EXPECT_EQ(params.at(lens::kLanguageCodeParameterKey), "en-US");
               EXPECT_EQ(params.at(lens::kDarkModeParameterKey),
                         lens::kDarkModeParameterDarkValue);
               EXPECT_EQ(params.at(lens::kChromeSidePanelParameterKey), "");
@@ -663,6 +665,7 @@ TEST_F(ContextualTasksPageHandlerTest, GetCommonSearchParams) {
         /*is_dark_mode=*/false, /*is_side_panel=*/true,
         base::BindLambdaForTesting(
             [&](const base::flat_map<std::string, std::string>& params) {
+              EXPECT_EQ(params.at(lens::kLanguageCodeParameterKey), "US");
               EXPECT_EQ(params.at("gl"), "us");
               run_loop.Quit();
             }));

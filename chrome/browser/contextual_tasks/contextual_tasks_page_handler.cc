@@ -379,7 +379,7 @@ void ContextualTasksPageHandler::GetCommonSearchParams(
     country_code = "US";
   }
 
-  auto params = lens::GetCommonSearchParametersMap(std::nullopt, is_dark_mode,
+  auto params = lens::GetCommonSearchParametersMap(country_code, is_dark_mode,
                                                    is_side_panel);
   if (contextual_tasks::ShouldForceCountryCodeUS()) {
     params["gl"] = "us";
