@@ -128,6 +128,7 @@ struct ActionChipFields {
   std::string subtitle;
   std::string suggestion;
   ChipType type = ChipType::kRecentTab;
+  IconType icon_type = IconType::kIconTypeUnspecified;
   std::optional<TabInfoFields> tab;
 };
 
@@ -143,9 +144,9 @@ ActionChipPtr MakeActionChip(const ActionChipFields& fields) {
     tab = TabInfo::New(tab_fields.tab_id, tab_fields.title, tab_fields.url,
                        tab_fields.last_active_time);
   }
-  return ActionChip::New(fields.title, fields.subtitle, fields.suggestion,
-                         fields.type, SuggestTemplateInfo::New(),
-                         std::move(tab));
+  return ActionChip::New(
+      fields.title, fields.subtitle, fields.suggestion, fields.type,
+      SuggestTemplateInfo::New(fields.icon_type), std::move(tab));
 }
 
 ActionChipFields CreateStaticRecentTabChip(const TabInfoFields tab) {
@@ -153,6 +154,7 @@ ActionChipFields CreateStaticRecentTabChip(const TabInfoFields tab) {
           .subtitle = "Ask about this tab",
           .suggestion = "",
           .type = ChipType::kRecentTab,
+          .icon_type = IconType::kFavicon,
           .tab = std::move(tab)};
 }
 
@@ -160,14 +162,16 @@ ActionChipFields CreateStaticDeepSearchChip() {
   return {.title = "Research a topic",
           .subtitle = "Dive deep into something new",
           .suggestion = "",
-          .type = ChipType::kDeepSearch};
+          .type = ChipType::kDeepSearch,
+          .icon_type = IconType::kGlobeWithSearchLoop};
 }
 
 ActionChipFields CreateStaticImageGenerationChip() {
   return {.title = "Create image",
           .subtitle = "Add an image and reimagine it",
           .suggestion = "",
-          .type = ChipType::kImage};
+          .type = ChipType::kImage,
+          .icon_type = IconType::kBanana};
 }
 
 void CallWithStaticChips(
@@ -417,7 +421,7 @@ TEST_P(ActionChipsHandlerTabSelectionTest,
   // Arrange
   std::vector<ActionChipPtr> actual_chips;
   base::RunLoop run_loop;
-  std::unordered_map<ChipType, int32_t> expected_chip_counts;
+  std::unordered_map<IconType, int32_t> expected_chip_counts;
   const size_t expected_call_count = GetParam().expected_call_count;
 
   size_t total_call_count = 0;
@@ -427,7 +431,7 @@ TEST_P(ActionChipsHandlerTabSelectionTest,
           [expected_call_count, &total_call_count, &actual_chips, &run_loop,
            &expected_chip_counts](std::vector<ActionChipPtr> action_chips) {
             for (const ActionChipPtr& chip : action_chips) {
-              expected_chip_counts[chip->type]++;
+              expected_chip_counts[chip->suggest_template_info->type_icon]++;
             }
             total_call_count += 1;
             if (total_call_count == expected_call_count) {
@@ -464,7 +468,7 @@ TEST_P(ActionChipsHandlerTabSelectionTest,
   }
 
   EXPECT_THAT(actual_chips, ElementsAreArray(matchers));
-  EXPECT_THAT(histogram_tester_.GetAllSamples("NewTabPage.ActionChips.Shown"),
+  EXPECT_THAT(histogram_tester_.GetAllSamples("NewTabPage.ActionChips.Shown2"),
               BucketsAreArray(expected_buckets));
   histogram_tester_.ExpectTotalCount(
       "NewTabPage.ActionChips.Handler.ActionChipsRetrievalLatency",

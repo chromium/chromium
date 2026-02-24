@@ -120,7 +120,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.ActionChips.Click" enum="ChipType"
+<histogram name="NewTabPage.ActionChips.Click2" enum="ActionChipIconType"
     expires_after="2026-07-05">
   <owner>giannich@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -174,7 +174,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.ActionChips.Shown" enum="ChipType"
+<histogram name="NewTabPage.ActionChips.Shown2" enum="ActionChipIconType"
     expires_after="2026-07-05">
   <owner>giannich@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

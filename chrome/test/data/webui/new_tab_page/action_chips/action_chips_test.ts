@@ -221,9 +221,9 @@ suite('NewTabPageActionChipsTest', () => {
       const event = await whenActionChipClicked;
 
       assertEquals('Suggestion for image', event.detail.searchboxText);
-      assertEquals(1, metrics.count('NewTabPage.ActionChips.Click'));
+      assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
-          1, metrics.count('NewTabPage.ActionChips.Click', ChipType.kImage));
+          1, metrics.count('NewTabPage.ActionChips.Click2', IconType.kBanana));
     });
 
     test('deep search chip triggers chip click event', async () => {
@@ -239,10 +239,11 @@ suite('NewTabPageActionChipsTest', () => {
       const event = await whenActionChipClicked;
 
       assertEquals('Suggestion for deep search', event.detail.searchboxText);
-      assertEquals(1, metrics.count('NewTabPage.ActionChips.Click'));
+      assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
           1,
-          metrics.count('NewTabPage.ActionChips.Click', ChipType.kDeepSearch));
+          metrics.count(
+              'NewTabPage.ActionChips.Click2', IconType.kGlobeWithSearchLoop));
     });
 
     test('tab context chip triggers chip click event', async () => {
@@ -258,10 +259,9 @@ suite('NewTabPageActionChipsTest', () => {
       const event = await whenActionChipClicked;
 
       assertEquals('Suggestion for recent tab', event.detail.searchboxText);
-      assertEquals(1, metrics.count('NewTabPage.ActionChips.Click'));
+      assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
-          1,
-          metrics.count('NewTabPage.ActionChips.Click', ChipType.kRecentTab));
+          1, metrics.count('NewTabPage.ActionChips.Click2', IconType.kFavicon));
     });
 
     test('deep dive chip triggers chip click event', async () => {
@@ -295,9 +295,11 @@ suite('NewTabPageActionChipsTest', () => {
       const event = await whenActionChipClicked;
 
       assertEquals('Suggestion for deep dive', event.detail.searchboxText);
-      assertEquals(1, metrics.count('NewTabPage.ActionChips.Click'));
+      assertEquals(1, metrics.count('NewTabPage.ActionChips.Click2'));
       assertEquals(
-          1, metrics.count('NewTabPage.ActionChips.Click', ChipType.kDeepDive));
+          1,
+          metrics.count(
+              'NewTabPage.ActionChips.Click2', IconType.kSubArrowRight));
     });
   });
 
