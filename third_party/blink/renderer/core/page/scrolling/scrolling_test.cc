@@ -3702,7 +3702,7 @@ TEST_F(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
       static_cast<cc::AnimationHost*>(GetLayerTreeHostImpl()->mutator_host());
 
   // First frame: Initial commit creates the cc::Animation etc.
-  Compositor().BeginFrame();
+  Compositor().BeginFrame(0.016, /*raster=*/true);
 
   blink::Animation* animation =
       GetDocument().getElementById(AtomicString("align"))->getAnimations()[0];
@@ -3728,7 +3728,7 @@ TEST_F(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
   // Second frame: LTHI::Animate transitions to RunState::STARTING. Pass
   // raster=true to also reach LTHI::UpdateAnimationState, which transitions
   // STARTING -> RUNNING.
-  Compositor().BeginFrame(0.016, /* raster */ true);
+  Compositor().BeginFrame(0.016, /*raster=*/true);
   EXPECT_EQ(gfx::KeyframeModel::RUNNING, keyframe_model_impl->run_state());
 
   // Scroll to the end.
@@ -3737,7 +3737,7 @@ TEST_F(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
   // Third frame: LayerTreeHost::ApplyMutatorEvents dispatches
   // AnimationEvent::STARTED and resets
   // KeyframeModel::needs_synchronized_start_time_.
-  Compositor().BeginFrame();
+  Compositor().BeginFrame(0.016, /*raster=*/true);
   EXPECT_EQ(gfx::KeyframeModel::RUNNING, keyframe_model_impl->run_state());
 
   // Verify that KeyframeModel::CalculatePhase returns ACTIVE for the case of
@@ -3750,8 +3750,8 @@ TEST_F(ScrollingSimTest, ScrollTimelineActiveAtBoundary) {
   // local_time == before_active_boundary_time.
   animation->setPlaybackRate(-1);
   GetDocument().getElementById(AtomicString("s"))->setScrollTop(0);
-  Compositor().BeginFrame(0.016, /* raster */ true);
-  Compositor().BeginFrame();
+  Compositor().BeginFrame(0.016, /*raster=*/true);
+  Compositor().BeginFrame(0.016, /*raster=*/true);
 
   cc_animation = animation->GetCompositorAnimation()->CcAnimation();
   keyframe_model_main =
