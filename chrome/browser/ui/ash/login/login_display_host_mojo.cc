@@ -23,6 +23,7 @@
 #include "ash/system/model/enterprise_domain_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -517,7 +518,10 @@ void LoginDisplayHostMojo::OnStartSignInScreen() {
 
   OnStartSignInScreenCommon();
 
-  login::SecurityTokenSessionController::MaybeDisplayLoginScreenNotification();
+  // TODO(crbug.com/404133029): Avoid using g_browser_process.
+  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
+  login::SecurityTokenSessionController::MaybeDisplayLoginScreenNotification(
+      local_state);
 }
 
 void LoginDisplayHostMojo::ScheduleStartAuthHubInLoginMode() {

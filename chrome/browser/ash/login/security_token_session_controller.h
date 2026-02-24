@@ -73,7 +73,7 @@ class SecurityTokenSessionController
   // If this controller logged the user out just before, display a notification
   // explaining why this happened. This is only done the first time this
   // happens for a user on a device.
-  static void MaybeDisplayLoginScreenNotification();
+  static void MaybeDisplayLoginScreenNotification(PrefService& local_state);
 
   // Informs the controller that there are new challenge response keys stored
   // in known_user. This will not immediately check that all required

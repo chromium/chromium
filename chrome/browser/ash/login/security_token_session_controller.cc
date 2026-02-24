@@ -346,10 +346,10 @@ void SecurityTokenSessionController::RegisterLocalStatePrefs(
 }
 
 // static
-void SecurityTokenSessionController::MaybeDisplayLoginScreenNotification() {
-  PrefService* local_state = g_browser_process->local_state();
+void SecurityTokenSessionController::MaybeDisplayLoginScreenNotification(
+    PrefService& local_state) {
   const PrefService::Preference* scheduled_notification_domain =
-      local_state->FindPreference(
+      local_state.FindPreference(
           prefs::kSecurityTokenSessionNotificationScheduledDomain);
   if (!scheduled_notification_domain ||
       scheduled_notification_domain->IsDefaultValue() ||
@@ -360,7 +360,7 @@ void SecurityTokenSessionController::MaybeDisplayLoginScreenNotification() {
   // Sanitize `scheduled_notification_domain`, as values coming from local state
   // are not trusted.
   std::string domain = scheduled_notification_domain->GetValue()->GetString();
-  local_state->ClearPref(
+  local_state.ClearPref(
       prefs::kSecurityTokenSessionNotificationScheduledDomain);
   std::string sanitized_domain;
   if (!SanitizeDomain(domain, sanitized_domain)) {
