@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "ash/constants/url_constants.h"
 #include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/date_time_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/system_settings_provider.h"
@@ -135,13 +135,14 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddString("systemGeolocationDialogLearnMoreUrl",
-                         chrome::kPrivacyHubGeolocationLearnMoreURL);
+  html_source->AddString(
+      "systemGeolocationDialogLearnMoreUrl",
+      ash::external_urls::kPrivacyHubGeolocationLearnMoreURL);
 
   html_source->AddString(
       "timeZoneSettingsLearnMoreURL",
       base::ASCIIToUTF16(base::StringPrintf(
-          chrome::kTimeZoneSettingsLearnMoreURL,
+          ash::external_urls::kTimeZoneSettingsLearnMoreURL,
           g_browser_process->GetApplicationLocale().c_str())));
 
   // Set the initial time zone to show.

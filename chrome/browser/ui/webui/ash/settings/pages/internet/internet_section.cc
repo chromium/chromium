@@ -8,6 +8,7 @@
 #include <array>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/url_constants.h"
 #include "ash/public/cpp/hotspot_config_service.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/webui/network_ui/network_health_resource_provider.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/extension_control_handler.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
@@ -1124,39 +1124,41 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       ash::features::IsTrafficCountersForWiFiTestingEnabled());
 
   html_source->AddString("networkGoogleNameserversLearnMoreUrl",
-                         chrome::kGoogleNameserversLearnMoreURL);
+                         ash::external_urls::kGoogleNameserversLearnMoreURL);
 
   html_source->AddString("wifiHiddenNetworkLearnMoreUrl",
-                         chrome::kWifiHiddenNetworkURL);
+                         ash::external_urls::kWifiHiddenNetworkURL);
 
   html_source->AddString("wifiPasspointLearnMoreUrl",
-                         chrome::kWifiPasspointURL);
+                         ash::external_urls::kWifiPasspointURL);
 
   html_source->AddString(
       "networkNotSynced",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_NETWORK_NOT_SYNCED,
-          GetHelpUrlWithBoard(chrome::kWifiSyncLearnMoreURL)));
+          GetHelpUrlWithBoard(ash::external_urls::kWifiSyncLearnMoreURL)));
   html_source->AddString(
       "networkSyncedUser",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_NETWORK_SYNCED_USER,
-          GetHelpUrlWithBoard(chrome::kWifiSyncLearnMoreURL)));
+          GetHelpUrlWithBoard(ash::external_urls::kWifiSyncLearnMoreURL)));
   html_source->AddString(
       "networkSyncedDevice",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_NETWORK_SYNCED_DEVICE,
-          GetHelpUrlWithBoard(chrome::kWifiSyncLearnMoreURL)));
+          GetHelpUrlWithBoard(ash::external_urls::kWifiSyncLearnMoreURL)));
   html_source->AddString(
       "internetNoNetworksMobileData",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_LOOKING_FOR_MOBILE_NETWORK,
-          GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
+          GetHelpUrlWithBoard(
+              ash::external_urls::kInstantTetheringLearnMoreURL)));
   html_source->AddString(
       "tetherNetworkNotSetup",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_TETHER_NOT_SETUP_WITH_LEARN_MORE_LINK,
-          GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
+          GetHelpUrlWithBoard(
+              ash::external_urls::kInstantTetheringLearnMoreURL)));
   // TODO(b/259623645): Replace learn more link with hotspot url once it is
   // ready.
   html_source->AddString(
@@ -1164,17 +1166,20 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_HOTSPOT_SUBTITLE_WITH_LEARN_MORE_LINK,
           ui::GetChromeOSDeviceName(),
-          GetHelpUrlWithBoard(chrome::kChromebookHotspotLearnMoreURL)));
+          GetHelpUrlWithBoard(
+              ash::external_urls::kChromebookHotspotLearnMoreURL)));
   html_source->AddString(
       "hotspotMobileDataNotSupportedSublabelWithLink",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_HOTSPOT_MOBILE_DATA_NOT_SUPPORTED_SUBLABEL_WITH_LEARN_MORE_LINK,
-          GetHelpUrlWithBoard(chrome::kChromebookHotspotLearnMoreURL)));
+          GetHelpUrlWithBoard(
+              ash::external_urls::kChromebookHotspotLearnMoreURL)));
   html_source->AddString(
       "hotspotNoMobileDataSublabelWithLink",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_HOTSPOT_NO_MOBILE_DATA_SUBLABEL_WITH_LEARN_MORE_LINK,
-          GetHelpUrlWithBoard(chrome::kChromebookHotspotLearnMoreURL)));
+          GetHelpUrlWithBoard(
+              ash::external_urls::kChromebookHotspotLearnMoreURL)));
   html_source->AddString(
       "hotspotSettingsTitle",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_TITLE,
@@ -1184,19 +1189,22 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_SUBTITLE_WITH_LEARN_MORE_LINK,
           ui::GetChromeOSDeviceName(),
-          GetHelpUrlWithBoard(chrome::kChromebookHotspotLearnMoreURL)));
+          GetHelpUrlWithBoard(
+              ash::external_urls::kChromebookHotspotLearnMoreURL)));
 
   html_source->AddString(
       "cellularSubpageSubtitle",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_CELLULAR_SUBTITLE_WITH_LEARN_MORE_LINK,
-          GetHelpUrlWithBoard(chrome::kCellularCarrierLockLearnMoreURL)));
+          GetHelpUrlWithBoard(
+              ash::external_urls::kCellularCarrierLockLearnMoreURL)));
 
   html_source->AddString(
       "networkCarrierLocked",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_NETWORK_CARRIER_LOCKED_WITH_LEARN_MORE_LINK,
-          GetHelpUrlWithBoard(chrome::kCellularCarrierLockLearnMoreURL)));
+          GetHelpUrlWithBoard(
+              ash::external_urls::kCellularCarrierLockLearnMoreURL)));
 
   html_source->AddBoolean("isUserLoggedIn", IsUserLoggedIn());
 }

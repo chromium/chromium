@@ -7,10 +7,12 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
@@ -18,7 +20,6 @@
 #include "chrome/browser/ash/crostini/crostini_installer_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_page_handler.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/crostini_installer_resources.h"
 #include "chrome/grit/crostini_installer_resources_map.h"
@@ -103,8 +104,8 @@ void AddStringResources(content::WebUIDataSource* source) {
                                 crostini::disk::kDownloadSizeBytes)),
                             ui::DataUnits::kMebibyte, /*show_units=*/true)));
   source->AddString("learnMoreUrl",
-                    std::string{chrome::kLinuxAppsLearnMoreURL} +
-                        "&b=" + base::SysInfo::GetLsbReleaseBoard());
+                    base::StrCat({ash::external_urls::kLinuxAppsLearnMoreURL,
+                                  "&b=", base::SysInfo::GetLsbReleaseBoard()}));
 
   source->AddString(
       "minimumFreeSpaceUnmetError",

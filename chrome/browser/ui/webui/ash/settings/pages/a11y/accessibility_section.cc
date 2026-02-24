@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/webui/settings/captions_handler.h"
 #include "chrome/browser/ui/webui/settings/font_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/live_caption/caption_util.h"
 #include "components/prefs/pref_service.h"
@@ -1562,7 +1561,7 @@ void AccessibilitySection::AddLoadTimeData(
                          ash::external_urls::kAccessibilityHelpURL);
 
   html_source->AddString("selectToSpeakLearnMoreUrl",
-                         chrome::kSelectToSpeakLearnMoreURL);
+                         ash::external_urls::kSelectToSpeakLearnMoreURL);
 
   html_source->AddString(
       "displayAndMagnificationLinkDescription",
@@ -1588,7 +1587,7 @@ void AccessibilitySection::AddLoadTimeData(
                           AreTabletNavigationButtonsAllowed());
 
   html_source->AddString("tabletModeShelfNavigationButtonsLearnMoreUrl",
-                         chrome::kTabletModeGesturesLearnMoreURL);
+                         ash::external_urls::kTabletModeGesturesLearnMoreURL);
 
   html_source->AddBoolean("isAccessibilityReducedAnimationsEnabled",
                           IsAccessibilityReducedAnimationsEnabled());
@@ -1596,7 +1595,8 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityMagnifierFollowsChromeVoxEnabled",
                           IsAccessibilityMagnifierFollowsChromeVoxEnabled());
 
-  html_source->AddString("faceGazeLearnMoreUrl", chrome::kFaceGazeLearnMoreURL);
+  html_source->AddString("faceGazeLearnMoreUrl",
+                         ash::external_urls::kFaceGazeLearnMoreURL);
 
   html_source->AddBoolean("isAccessibilityDisableTouchpadEnabled",
                           IsAccessibilityDisableTouchpadEnabled());

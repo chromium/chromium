@@ -6,11 +6,11 @@
 
 #include <array>
 
+#include "ash/constants/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/containers/span.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/cups_printers_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -309,11 +309,12 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddString("printingCUPSPrintLearnMoreUrl",
-                         GetHelpUrlWithBoard(chrome::kCupsPrintLearnMoreURL));
+  html_source->AddString(
+      "printingCUPSPrintLearnMoreUrl",
+      GetHelpUrlWithBoard(ash::external_urls::kCupsPrintLearnMoreURL));
   html_source->AddString(
       "printingCUPSPrintPpdLearnMoreUrl",
-      GetHelpUrlWithBoard(chrome::kCupsPrintPPDLearnMoreURL));
+      GetHelpUrlWithBoard(ash::external_urls::kCupsPrintPPDLearnMoreURL));
 }
 
 void PrintingSection::AddHandlers(content::WebUI* web_ui) {

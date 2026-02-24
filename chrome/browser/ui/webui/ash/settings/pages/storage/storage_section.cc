@@ -6,11 +6,11 @@
 
 #include <array>
 
+#include "ash/constants/url_constants.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -112,7 +112,7 @@ void StorageSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "storageAndroidAppsExternalDrivesNote",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_STORAGE_ANDROID_APPS_ACCESS_EXTERNAL_DRIVES_NOTE,
-          chrome::kArcExternalStorageLearnMoreURL));
+          ash::external_urls::kArcExternalStorageLearnMoreURL));
 
   html_source->AddString(
       "storageItemBrowsingData",

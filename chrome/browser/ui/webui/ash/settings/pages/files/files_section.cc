@@ -7,6 +7,7 @@
 #include <array>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/url_constants.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_handler.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_shares_localized_strings_provider.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -258,16 +258,18 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   smb_dialog::AddLocalizedStrings(html_source);
 
-  html_source->AddString("smbSharesLearnMoreURL",
-                         GetHelpUrlWithBoard(chrome::kSmbSharesLearnMoreURL));
+  html_source->AddString(
+      "smbSharesLearnMoreURL",
+      GetHelpUrlWithBoard(ash::external_urls::kSmbSharesLearnMoreURL));
 
   html_source->AddString(
       "googleDriveCleanUpStorageLearnMoreLink",
-      GetHelpUrlWithBoard(chrome::kGoogleDriveCleanUpStorageLearnMoreURL));
+      GetHelpUrlWithBoard(
+          ash::external_urls::kGoogleDriveCleanUpStorageLearnMoreURL));
 
   html_source->AddString(
       "googleDriveFileSyncLearnMoreLink",
-      GetHelpUrlWithBoard(chrome::kGoogleDriveOfflineLearnMoreURL));
+      GetHelpUrlWithBoard(ash::external_urls::kGoogleDriveOfflineLearnMoreURL));
 
   html_source->AddBoolean(
       "showOneDriveSettings",

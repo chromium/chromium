@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_shared_load_time_data_provider.h"
 
+#include "ash/constants/url_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -69,8 +69,9 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddString(
       "bluetoothPairingLearnMoreLabel",
-      l10n_util::GetStringFUTF16(IDS_BLUETOOTH_PAIRING_LEARN_MORE,
-                                 chrome::kBluetoothPairingLearnMoreUrl));
+      l10n_util::GetStringFUTF16(
+          IDS_BLUETOOTH_PAIRING_LEARN_MORE,
+          ash::external_urls::kBluetoothPairingLearnMoreUrl));
 }
 
 void AddLoadTimeData(content::WebUIDataSource* html_source) {

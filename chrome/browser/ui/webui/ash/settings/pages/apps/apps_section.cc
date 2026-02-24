@@ -7,6 +7,7 @@
 #include <array>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/url_constants.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -465,13 +466,14 @@ void AddAppParentalControlsStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("appParentalControlsLearnMoreUrl",
-                         chrome::kAppParentalControlsLearnMoreUrl);
+                         ash::external_urls::kAppParentalControlsLearnMoreUrl);
 
   html_source->AddString(
       "appParentalControlsSubtitle",
-      l10n_util::GetStringFUTF16(IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SUBLABEL,
-                                 ui::GetChromeOSDeviceName(),
-                                 chrome::kAppParentalControlsLearnMoreUrl));
+      l10n_util::GetStringFUTF16(
+          IDS_OS_SETTINGS_APP_PARENTAL_CONTROLS_SUBLABEL,
+          ui::GetChromeOSDeviceName(),
+          ash::external_urls::kAppParentalControlsLearnMoreUrl));
   html_source->AddString(
       "appParentalControlsSubtitleDescription",
       l10n_util::GetStringFUTF16(
@@ -632,10 +634,10 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("showManageIsolatedWebAppsRow",
                           web_app::IsIwaUnmanagedInstallEnabled(profile()));
-  html_source->AddString(
-      "isolatedWebAppsDescription",
-      l10n_util::GetStringFUTF16(IDS_SETTINGS_ISOLATED_WEB_APPS_DESCRIPTION,
-                                 chrome::kIsolatedWebAppsLearnMoreUrl));
+  html_source->AddString("isolatedWebAppsDescription",
+                         l10n_util::GetStringFUTF16(
+                             IDS_SETTINGS_ISOLATED_WEB_APPS_DESCRIPTION,
+                             ash::external_urls::kIsolatedWebAppsLearnMoreUrl));
 
   html_source->AddBoolean("privacyHubLocationAccessControlEnabled",
                           ash::features::IsCrosPrivacyHubLocationEnabled());
@@ -832,7 +834,7 @@ void AppsSection::AddAndroidAppStrings(content::WebUIDataSource* html_source) {
       "androidAppsSubtext",
       l10n_util::GetStringFUTF16(
           IDS_OS_SETTINGS_ANDROID_APPS_SUBTEXT,
-          GetHelpUrlWithBoard(chrome::kAndroidAppsLearnMoreURL)));
+          GetHelpUrlWithBoard(ash::external_urls::kAndroidAppsLearnMoreURL)));
   html_source->AddLocalizedString(
       "androidAppsSubtextDescription",
       IDS_OS_SETTINGS_ANDROID_APPS_SUBTEXT_DESCRIPTION);

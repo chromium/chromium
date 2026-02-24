@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/floating_workspace_resources.h"
 #include "chrome/grit/floating_workspace_resources_map.h"
 #include "chrome/grit/generated_resources.h"

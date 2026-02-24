@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/url_constants.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -176,9 +176,10 @@ void AddKerberosAccountsPageStrings(content::WebUIDataSource* html_source) {
   // Kerberos accounts page with "Learn more" link.
   html_source->AddString(
       "kerberosAccountsDescription",
-      l10n_util::GetStringFUTF16(IDS_SETTINGS_KERBEROS_ACCOUNTS_DESCRIPTION,
-                                 OsSettingsSection::GetHelpUrlWithBoard(
-                                     chrome::kKerberosAccountsLearnMoreURL)));
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_KERBEROS_ACCOUNTS_DESCRIPTION,
+          OsSettingsSection::GetHelpUrlWithBoard(
+              ash::external_urls::kKerberosAccountsLearnMoreURL)));
 }
 
 }  // namespace

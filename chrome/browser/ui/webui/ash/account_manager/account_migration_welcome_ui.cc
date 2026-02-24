@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -14,7 +15,6 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
@@ -102,7 +102,7 @@ AccountMigrationWelcomeUI::AccountMigrationWelcomeUI(content::WebUI* web_ui)
   html_source->AddLocalizedString("migrateButton",
                                   IDS_ACCOUNT_MIGRATION_UPDATE_BUTTON);
   html_source->AddString("accountManagerLearnMoreUrl",
-                         chrome::kAccountManagerLearnMoreURL);
+                         ash::external_urls::kAccountManagerLearnMoreURL);
 
   // Add required resources.
   html_source->AddResourcePath("account_migration_welcome_app.js",

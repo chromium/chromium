@@ -7,6 +7,7 @@
 #include <array>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/byte_count.h"
 #include "base/byte_size.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/crostini/crostini_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/crostini/guest_os_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -402,13 +402,13 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "crostiniSubtext",
       l10n_util::GetStringFUTF16(
           IDS_OS_SETTINGS_CROSTINI_SUBTEXT,
-          GetHelpUrlWithBoard(chrome::kLinuxAppsLearnMoreURL)));
+          GetHelpUrlWithBoard(ash::external_urls::kLinuxAppsLearnMoreURL)));
   html_source->AddString(
       "crostiniSubtextNotSupported",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_CROSTINI_SUBTEXT_NOT_SUPPORTED,
           ui::GetChromeOSDeviceName(),
-          GetHelpUrlWithBoard(chrome::kLinuxAppsLearnMoreURL)));
+          GetHelpUrlWithBoard(ash::external_urls::kLinuxAppsLearnMoreURL)));
   html_source->AddString(
       "crostiniSharedPathsInstructionsLocate",
       l10n_util::GetStringFUTF16(

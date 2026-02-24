@@ -635,19 +635,19 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       ui::SubstituteChromeOSDeviceType(IDS_OS_SETTINGS_SMART_PRIVACY_DESC));
 
   html_source->AddString("smartPrivacyLearnMoreURL",
-                         chrome::kSmartPrivacySettingsLearnMoreURL);
+                         ash::external_urls::kSmartPrivacySettingsLearnMoreURL);
 
   html_source->AddString("suggestedContentLearnMoreURL",
-                         chrome::kSuggestedContentLearnMoreURL);
+                         ash::external_urls::kSuggestedContentLearnMoreURL);
 
   html_source->AddString("syncAndGoogleServicesLearnMoreURL",
                          chrome::kSyncAndGoogleServicesLearnMoreURL);
 
   html_source->AddString("peripheralDataAccessLearnMoreURL",
-                         chrome::kPeripheralDataAccessHelpURL);
+                         ash::external_urls::kPeripheralDataAccessHelpURL);
 
   html_source->AddString("speakOnMuteDetectionLearnMoreURL",
-                         chrome::kSpeakOnMuteDetectionLearnMoreURL);
+                         ash::external_urls::kSpeakOnMuteDetectionLearnMoreURL);
 
   html_source->AddString(
       "geolocationAccuracyLearnMoreUrl",
