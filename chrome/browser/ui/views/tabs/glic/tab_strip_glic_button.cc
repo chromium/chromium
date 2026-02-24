@@ -105,8 +105,10 @@ std::u16string GetLabelText() {
 }
 
 bool ShouldUseAltIcon() {
+  // LINT.IfChange(ShouldUseAltIcon)
   return EntrypointVariationsEnabled() &&
          features::kGlicEntrypointVariationsAltIcon.Get();
+  // LINT.ThenChange(//chrome/browser/ui/views/tabs/glic/glic_actor_task_icon.cc:ShouldUseGlicButtonAltIconBackgroundColor)
 }
 
 bool HighlightNudgeEnabled() {

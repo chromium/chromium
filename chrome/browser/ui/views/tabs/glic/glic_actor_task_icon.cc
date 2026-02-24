@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/ui/browser.h"
@@ -28,6 +29,9 @@
 #endif
 
 namespace glic {
+
+BASE_FEATURE(kGlicActorTaskIconUseGlicButtonAltIconBackgroundColor,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const gfx::VectorIcon& GetTaskIcon() {
 #if BUILDFLAG(ENABLE_GLIC)
@@ -118,9 +122,15 @@ void GlicActorTaskIcon::SetIsShowingNudge(bool is_showing) {
 }
 
 void GlicActorTaskIcon::SetDefaultColors() {
-  SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
+  if (ShouldUseGlicButtonAltIconBackgroundColor()) {
+    SetForegroundFrameActiveColorId(ui::kColorSysOnSurface);
+    SetBackgroundFrameActiveColorId(ui::kColorSysBase);
+    SetTextColor(STATE_DISABLED, ui::kColorLabelForegroundDisabled);
+  } else {
+    SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
+    SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
+  }
   SetForegroundFrameInactiveColorId(kColorNewTabButtonForegroundFrameInactive);
-  SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
   SetBackgroundFrameInactiveColorId(
       kColorNewTabButtonCRBackgroundFrameInactive);
 }
@@ -199,6 +209,15 @@ gfx::Rect GlicActorTaskIcon::GetAnchorBoundsInScreen() const {
   gfx::Rect bounds = GetBoundsInScreen();
   bounds.Inset(GetInsets());
   return bounds;
+}
+
+bool GlicActorTaskIcon::ShouldUseGlicButtonAltIconBackgroundColor() {
+  // LINT.IfChange(ShouldUseGlicButtonAltIconBackgroundColor)
+  return base::FeatureList::IsEnabled(
+             kGlicActorTaskIconUseGlicButtonAltIconBackgroundColor) &&
+         base::FeatureList::IsEnabled(features::kGlicEntrypointVariations) &&
+         features::kGlicEntrypointVariationsAltIcon.Get();
+  // LINT.ThenChange(//chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.cc:ShouldUseAltIcon)
 }
 
 GlicActorTaskIcon::~GlicActorTaskIcon() = default;
