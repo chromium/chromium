@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "ui/display/display.h"
+#include "ui/display/headless/headless_screen_manager.h"
 #include "ui/display/mojom/screen_orientation.mojom-shared.h"
 #include "ui/display/screen_base.h"
 #include "ui/gfx/geometry/rect.h"
@@ -16,7 +17,8 @@
 
 namespace headless {
 
-class HeadlessScreen : public display::ScreenBase {
+class HeadlessScreen : public display::ScreenBase,
+                       public display::HeadlessScreenManager::Delegate {
  public:
   static HeadlessScreen* Create(const gfx::Size& window_size,
                                 std::string_view screen_info_spec);
@@ -31,12 +33,9 @@ class HeadlessScreen : public display::ScreenBase {
       int64_t display_id,
       display::mojom::ScreenOrientation screen_orientation);
 
-  // Adds a new display. Returns newly added display id.
-  static int64_t AddDisplay(const display::Display& display);
-
-  // Removes the specified display. This will crash if |display_id| refers to
-  // the primary display which is not the only display in the system.
-  static void RemoveDisplay(int64_t display_id);
+  // display::HeadlessScreenManager::Delegate overrides:
+  int64_t AddDisplay(const display::Display& display) override;
+  void RemoveDisplay(int64_t display_id) override;
 
   // display::Screen overrides:
   gfx::Point GetCursorScreenPoint() override;
@@ -55,6 +54,9 @@ class HeadlessScreen : public display::ScreenBase {
  protected:
   HeadlessScreen(const gfx::Size& window_size,
                  std::string_view screen_info_spec);
+
+  void CreateDisplayList(const gfx::Size& window_size,
+                         std::string_view screen_info_spec);
 
   void UpdateScreenSizeForScreenOrientationImpl(
       int64_t display_id,

@@ -7,9 +7,9 @@
 #include <optional>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "headless/lib/browser/headless_screen.h"
 #include "ui/display/display.h"
 #include "ui/display/display_util.h"
 #include "ui/display/headless/headless_screen_manager.h"
@@ -29,10 +29,8 @@ const std::vector<display::Display>& GetAllDisplays() {
   // Web Platform we only have a collection of screens. So the protocol screen
   // is referring to Chrome's display. This is consistent with
   // window.getScreenDetails() API naming conventions.
-  display::Screen* screen = display::Screen::Get();
-  CHECK(screen);
-
-  return screen->GetAllDisplays();
+  display::Screen& screen = CHECK_DEREF(display::Screen::Get());
+  return screen.GetAllDisplays();
 }
 
 std::optional<display::Display> GetDisplay(int64_t display_id) {
@@ -46,10 +44,8 @@ std::optional<display::Display> GetDisplay(int64_t display_id) {
 }
 
 bool IsPrimaryDisplay(int64_t display_id) {
-  display::Screen* screen = display::Screen::Get();
-  CHECK(screen);
-
-  return screen->GetPrimaryDisplay().id() == display_id;
+  display::Screen& screen = CHECK_DEREF(display::Screen::Get());
+  return screen.GetPrimaryDisplay().id() == display_id;
 }
 
 std::string GetProtocolScreenOrientation(
@@ -167,7 +163,8 @@ Response EmulationHandler::AddScreen(
   display.set_color_depth(color_depth.value_or(24));
   display.set_label(label.value_or(""));
 
-  int64_t display_id = HeadlessScreen::AddDisplay(display);
+  int64_t display_id =
+      display::HeadlessScreenManager::Get()->AddDisplay(display);
 
   auto new_display = GetDisplay(display_id);
   if (!new_display) {
@@ -207,7 +204,7 @@ Response EmulationHandler::RemoveScreen(const String& screen_id) {
     return Response::InvalidParams("Cannot remove the primary screen");
   }
 
-  HeadlessScreen::RemoveDisplay(display_id);
+  display::HeadlessScreenManager::Get()->RemoveDisplay(display_id);
 
   return Response::Success();
 }
