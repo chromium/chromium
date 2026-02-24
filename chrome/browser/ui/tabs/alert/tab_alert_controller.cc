@@ -13,6 +13,8 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -230,6 +232,38 @@ int TabAlertController::GetAccessibleAlertStringId(const TabAlert alert_state) {
     case TabAlert::kGlicSharing:
       return IDS_TAB_AX_LABEL_GLIC_SHARING;
 #endif
+  }
+}
+
+// static:
+void TabAlertController::RecordCloseTabMetrics(const TabAlert alert_state) {
+  switch (alert_state) {
+    case TabAlert::kAudioPlaying:
+      base::RecordAction(base::UserMetricsAction("CloseTab_AudioIndicator"));
+      break;
+    case TabAlert::kMediaRecording:
+    case TabAlert::kAudioRecording:
+    case TabAlert::kVideoRecording:
+      base::RecordAction(
+          base::UserMetricsAction("CloseTab_RecordingIndicator"));
+      break;
+    case TabAlert::kAudioMuting:
+    case TabAlert::kDesktopCapturing:
+    case TabAlert::kTabCapturing:
+    case TabAlert::kBluetoothConnected:
+    case TabAlert::kBluetoothScanActive:
+    case TabAlert::kUsbConnected:
+    case TabAlert::kHidConnected:
+    case TabAlert::kSerialConnected:
+    case TabAlert::kPipPlaying:
+    case TabAlert::kVrPresentingInHeadset:
+    case TabAlert::kActorWaitingOnUser:
+    case TabAlert::kActorAccessing:
+#if BUILDFLAG(ENABLE_GLIC)
+    case TabAlert::kGlicAccessing:
+    case TabAlert::kGlicSharing:
+#endif
+      break;
   }
 }
 

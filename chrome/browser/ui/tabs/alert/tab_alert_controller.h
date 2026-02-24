@@ -63,6 +63,9 @@ class TabAlertController : public tabs::ContentsObservingTabFeature,
   // Returns the corresponding string id for `alert_state`.
   static int GetAccessibleAlertStringId(const TabAlert alert_state);
 
+  // Records metrics for when a tab is closed.
+  static void RecordCloseTabMetrics(const TabAlert alert_state);
+
   using AlertToShowChangedCallback =
       base::RepeatingCallback<void(std::optional<TabAlert>)>;
   base::CallbackListSubscription AddAlertToShowChangedCallback(

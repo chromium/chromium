@@ -1286,11 +1286,10 @@ void Tab::CloseButtonPressed(const ui::Event& event) {
 
   if (!alert_indicator_button_ || !alert_indicator_button_->GetVisible()) {
     base::RecordAction(UserMetricsAction("CloseTab_NoAlertIndicator"));
-  } else if (tabs::TabAlertController::GetAlertStateToShow(data_.alert_state) ==
-             tabs::TabAlert::kAudioPlaying) {
-    base::RecordAction(UserMetricsAction("CloseTab_AudioIndicator"));
-  } else {
-    base::RecordAction(UserMetricsAction("CloseTab_RecordingIndicator"));
+  } else if (auto alert_state = tabs::TabAlertController::GetAlertStateToShow(
+                 data_.alert_state);
+             alert_state.has_value()) {
+    tabs::TabAlertController::RecordCloseTabMetrics(alert_state.value());
   }
 
   const std::vector<Tab*>& tabs_in_split = controller()->GetTabsInSplit(this);

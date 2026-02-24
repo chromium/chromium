@@ -964,14 +964,7 @@ void VerticalTabView::CloseButtonPressed(const ui::Event& event) {
   } else if (auto alert_state = tabs::TabAlertController::GetAlertStateToShow(
                  tab_data_.alert_state);
              alert_state.has_value()) {
-    if (alert_state.value() == tabs::TabAlert::kAudioPlaying) {
-      base::RecordAction(base::UserMetricsAction("CloseTab_AudioIndicator"));
-    } else if (alert_state.value() == tabs::TabAlert::kAudioRecording ||
-               alert_state.value() == tabs::TabAlert::kVideoRecording ||
-               alert_state.value() == tabs::TabAlert::kMediaRecording) {
-      base::RecordAction(
-          base::UserMetricsAction("CloseTab_RecordingIndicator"));
-    }
+    tabs::TabAlertController::RecordCloseTabMetrics(alert_state.value());
   }
 
   if (split_) {
