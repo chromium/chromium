@@ -555,8 +555,7 @@ void WebUIBrowserWindow::LoadAccelerators() {
       browser_->profile()->IsOffTheRecord() &&
       browser_->profile()->GetOTRProfileID().IsCaptivePortal();
 #endif
-  const std::vector<AcceleratorMapping> accelerator_list(GetAcceleratorList());
-  for (const auto& entry : accelerator_list) {
+  for (const auto& entry : GetAcceleratorList()) {
     // In app mode, only allow accelerators of allowlisted commands to pass
     // through.
     if (is_app_mode && !IsCommandAllowedInAppMode(entry.command_id,
