@@ -227,21 +227,21 @@ void PasswordFactorEditor::UpdatePasswordWithContext(
     const std::string& new_password,
     const cryptohome::KeyLabel& label,
     base::OnceCallback<void(mojom::ConfigureResult)> callback,
-    std::unique_ptr<UserContext> user_context) {
-  if (!user_context) {
+    std::unique_ptr<UserContext> context) {
+  if (!context) {
     LOG(ERROR) << "Invalid auth token";
     std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
     return;
   }
 
   const cryptohome::AuthFactor* password_factor =
-      user_context->GetAuthFactorsConfiguration().FindFactorByType(
+      context->GetAuthFactorsConfiguration().FindFactorByType(
           cryptohome::AuthFactorType::kPassword);
   if (!password_factor) {
     // The user doesn't have a password yet (neither Gaia nor local).
     LOG(ERROR) << "No existing password, will not update password";
     auth_factor_config_->NotifyFactorObserversAfterFailure(
-        auth_token, std::move(user_context),
+        auth_token, std::move(context),
         base::BindOnce(std::move(callback),
                        mojom::ConfigureResult::kFatalError));
     return;
@@ -258,7 +258,7 @@ void PasswordFactorEditor::UpdatePasswordWithContext(
         !features::IsManagedLocalPinAndPasswordEnabled() ||
         AuthParts::Get()
                 ->GetAuthPolicyConnector()
-                ->AllowedLocalAuthFactors(user_context->GetAccountId())
+                ->AllowedLocalAuthFactors(context->GetAccountId())
                 ->size() > 0;
     // Only allow switching from local password to online password if the policy
     // doesn't allow local auth factors anymore. Note: For unmanaged user there
@@ -266,7 +266,7 @@ void PasswordFactorEditor::UpdatePasswordWithContext(
     if (!is_new_password_local && policy_does_not_force_online_password) {
       LOG(ERROR) << "Switching from local to online password is not supported";
       auth_factor_config_->NotifyFactorObserversAfterFailure(
-          auth_token, std::move(user_context),
+          auth_token, std::move(context),
           base::BindOnce(std::move(callback),
                          mojom::ConfigureResult::kFatalError));
       return;
@@ -277,7 +277,7 @@ void PasswordFactorEditor::UpdatePasswordWithContext(
                                              ? kCryptohomeLocalPasswordKeyLabel
                                              : kCryptohomeGaiaKeyLabel};
     auth_factor_editor_.ReplacePasswordFactor(
-        std::move(user_context),
+        std::move(context),
         /*old_label=*/password_factor->ref().label(),
         cryptohome::RawPassword(new_password), new_label,
         base::BindOnce(&PasswordFactorEditor::OnPasswordConfigured,
@@ -287,7 +287,7 @@ void PasswordFactorEditor::UpdatePasswordWithContext(
     // Note that old online factors might have label "legacy-0" instead of
     // "gaia", so we use password_factor->ref().label() here.
     auth_factor_editor_.UpdatePasswordFactor(
-        std::move(user_context), cryptohome::RawPassword(new_password),
+        std::move(context), cryptohome::RawPassword(new_password),
         password_factor->ref().label(),
         base::BindOnce(&PasswordFactorEditor::OnPasswordConfigured,
                        weak_factory_.GetWeakPtr(), std::move(callback),
@@ -324,29 +324,29 @@ void PasswordFactorEditor::SetPasswordWithContext(
     const std::string& new_password,
     const cryptohome::KeyLabel& label,
     base::OnceCallback<void(mojom::ConfigureResult)> callback,
-    std::unique_ptr<UserContext> user_context) {
-  if (!user_context) {
+    std::unique_ptr<UserContext> context) {
+  if (!context) {
     LOG(ERROR) << "Invalid auth token";
     std::move(callback).Run(mojom::ConfigureResult::kInvalidTokenError);
     return;
   }
 
   const cryptohome::AuthFactor* password_factor =
-      user_context->GetAuthFactorsConfiguration().FindFactorByType(
+      context->GetAuthFactorsConfiguration().FindFactorByType(
           cryptohome::AuthFactorType::kPassword);
   if (password_factor) {
     // The user already has a password factor.
     LOG(ERROR)
         << "Password factor already exists, will not add online password";
     auth_factor_config_->NotifyFactorObserversAfterFailure(
-        auth_token, std::move(user_context),
+        auth_token, std::move(context),
         base::BindOnce(std::move(callback),
                        mojom::ConfigureResult::kFatalError));
     return;
   }
 
   auth_factor_editor_.SetPasswordFactor(
-      std::move(user_context), cryptohome::RawPassword(new_password),
+      std::move(context), cryptohome::RawPassword(new_password),
       std::move(label),
       base::BindOnce(&PasswordFactorEditor::OnPasswordConfigured,
                      weak_factory_.GetWeakPtr(), std::move(callback),
