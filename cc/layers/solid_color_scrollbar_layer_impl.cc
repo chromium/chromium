@@ -56,7 +56,6 @@ SolidColorScrollbarLayerImpl::SolidColorScrollbarLayerImpl(
 
 void SolidColorScrollbarLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   ScrollbarLayerImplBase::PushPropertiesTo(layer);
-  CHECK(!layer->HitTestable());
   static_cast<SolidColorScrollbarLayerImpl*>(layer)->set_color(color_);
 }
 

@@ -736,7 +736,8 @@ void VisualViewport::UpdateScrollbarLayer(ScrollbarOrientation orientation) {
 }
 
 bool VisualViewport::VisualViewportSuppliesScrollbars() const {
-  return IsActiveViewport() && GetPage().GetSettings().GetViewportEnabled();
+  return IsActiveViewport() && GetPage().GetSettings().GetViewportEnabled() &&
+         !ScrollbarTheme::DesktopAndroidScrollbarsEnabled();
 }
 
 const Document* VisualViewport::GetDocument() const {

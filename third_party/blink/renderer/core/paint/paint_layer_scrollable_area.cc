@@ -2822,8 +2822,10 @@ bool PaintLayerScrollableArea::VisualViewportSuppliesScrollbars() const {
     return false;
 
   // On desktop, we always use the layout viewport's scrollbars.
-  if (!frame->GetSettings()->GetViewportEnabled())
+  if (!frame->GetSettings()->GetViewportEnabled() ||
+      ScrollbarTheme::DesktopAndroidScrollbarsEnabled()) {
     return false;
+  }
 
   const TopDocumentRootScrollerController& controller =
       GetLayoutBox()->GetDocument().GetPage()->GlobalRootScrollerController();
