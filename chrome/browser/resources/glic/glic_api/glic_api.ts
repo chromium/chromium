@@ -1572,6 +1572,8 @@ export declare interface MetaTag {
 export declare interface FrameMetadata {
   url: string;
   metaTags: MetaTag[];
+  /** Whether chrome has audio/video transcripts for this frame. */
+  hasMediaTranscripts?: boolean;
 }
 
 /** Metadata about the page.  Includes URL and meta tags for each frame. */
