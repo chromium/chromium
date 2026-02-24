@@ -801,10 +801,11 @@ public class SettingsSearchCoordinator
         if (mUseMultiColumn) {
             View searchBox = mActivity.findViewById(R.id.search_box);
             View query = mActivity.findViewById(R.id.search_query_container);
-            if (searchBox == null || query == null) return;
+            View detailPane = mActivity.findViewById(R.id.preferences_detail);
+            if (searchBox == null || query == null || detailPane == null) return;
 
             int settingsMargin = getPixelSize(R.dimen.settings_item_margin);
-            int detailPaneWidth = mActivity.findViewById(R.id.preferences_detail).getWidth();
+            int detailPaneWidth = detailPane.getWidth();
             if (detailPaneWidth == 0 || getHelpMenuView() == null) {
                 mHandler.post(this::updateSearchUiWidth);
                 return;
@@ -1419,7 +1420,7 @@ public class SettingsSearchCoordinator
         outState.putBoolean(KEY_RESULT_UPDATED, mResultUpdated);
         outState.putBoolean(KEY_SEARCH_COMPLETED, mSearchCompleted);
         EditText queryEdit = mActivity.findViewById(R.id.search_query);
-        String queryText = queryEdit.getText().toString();
+        String queryText = queryEdit != null ? queryEdit.getText().toString() : null;
         if (!TextUtils.isEmpty(queryText)) {
             outState.putString(KEY_QUERY, queryText);
             outState.putInt(KEY_SELECTION_START, queryEdit.getSelectionStart());
