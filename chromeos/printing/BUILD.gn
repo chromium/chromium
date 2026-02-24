@@ -37,7 +37,6 @@ component("printing") {
     "ppd_metadata_parser.h",
     "ppd_provider.cc",
     "ppd_provider.h",
-    "ppd_provider.h",
     "printer_config_cache.cc",
     "printer_config_cache.h",
     "printer_configuration.cc",
@@ -82,19 +81,6 @@ source_set("unit_tests") {
     "uri_unittest.h",
     "uri_unittest_consistency.cc",
     "usb_printer_id_unittest.cc",
-  ]
-}
-
-source_set("test_support") {
-  testonly = true
-  deps = [
-    "//chromeos/crosapi/mojom",
-    "//components/printing/common",
-    "//printing/mojom",
-  ]
-  sources = [
-    "print_settings_test_util.cc",
-    "print_settings_test_util.h",
   ]
 }
 

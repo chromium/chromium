@@ -126,11 +126,6 @@ void PrintViewManagerCros::HandlePrintPreviewRemoved() {
   }
 }
 
-void PrintViewManagerCros::HandleGeneratePrintPreview(
-    const base::DictValue& settings) {
-  ui_wrapper_->GeneratePrintPreview(settings.Clone());
-}
-
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PrintViewManagerCros);
 
 }  // namespace chromeos

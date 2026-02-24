@@ -7,23 +7,19 @@
 
 #include <memory>
 
-#include "ash/public/cpp/print_preview_delegate.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/printing/print_preview/print_preview_dialog_controller_cros.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_preview_cros_client.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_preview_cros_delegate.h"
-#include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
 #include "components/printing/common/print.mojom-forward.h"
 
 namespace ash::printing {
 
-// Implements the PrintPreviewDelegate to handle calls from the browser.
-// This class is also the adapter to facilitate calls from browser to chromeos
+// This class is the adapter to facilitate calls from browser to chromeos
 // print system.
 class PrintPreviewWebcontentsAdapterAsh
-    : public PrintPreviewDelegate,
-      public chromeos::PrintPreviewCrosDelegate,
+    : public chromeos::PrintPreviewCrosDelegate,
       public PrintPreviewDialogControllerCros::DialogControllerObserver {
  public:
   PrintPreviewWebcontentsAdapterAsh();
@@ -41,11 +37,6 @@ class PrintPreviewWebcontentsAdapterAsh
   // The initiator source is no longer available, close the print dialog.
   void PrintPreviewDone(const base::UnguessableToken& token,
                         PrintPreviewDoneCallback callback) override;
-
-  // PrintPreviewDelegate::
-  void StartGetPreview(const base::UnguessableToken& token,
-                       crosapi::mojom::PrintSettingsPtr settings,
-                       base::OnceCallback<void(bool)> callback) override;
 
   // PrintPreviewDialogControllerCros::DialogControllerObserver:
   void OnDialogClosed(const base::UnguessableToken& token) override;

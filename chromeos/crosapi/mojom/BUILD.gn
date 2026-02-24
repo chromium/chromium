@@ -14,7 +14,6 @@ mojom("mojom") {
     "launcher_search.mojom",
     "local_printer.mojom",
     "nullable_primitives.mojom",
-    "print_preview_cros.mojom",
     "probe_service.mojom",
     "telemetry_diagnostic_routine_service.mojom",
     "telemetry_event_service.mojom",

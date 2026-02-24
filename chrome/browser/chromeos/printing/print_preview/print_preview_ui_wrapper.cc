@@ -91,15 +91,6 @@ bool PrintPreviewUiWrapper::ShouldCancelRequest(
   return it == map.end() || request_id != it->second;
 }
 
-void PrintPreviewUiWrapper::GeneratePrintPreview(base::DictValue settings) {
-  CHECK(print_render_frame_.is_bound());
-  // TODO(jimmyxgong): Store settings for sticky settings support.
-  // Store the request ID.
-  const int request_id = settings.FindInt(printing::kPreviewRequestID).value();
-  GetPrintPreviewRequestIdMap()[*id_] = request_id;
-  print_render_frame_->PrintPreview(settings.Clone());
-}
-
 // TODO(jimmyxgong): Implement stub.
 void PrintPreviewUiWrapper::SetOptionsFromDocument(
     ::printing::mojom::OptionsFromDocumentParamsPtr params,

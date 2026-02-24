@@ -12,7 +12,6 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_preview_cros_client.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_preview_cros_delegate.h"
-#include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "content/public/browser/web_contents.h"
 
@@ -49,9 +48,6 @@ class PrintPreviewWebcontentsManager : public chromeos::PrintPreviewCrosClient {
   void PrintPreviewDone(const base::UnguessableToken& token);
 
   // chromeos::PrintPreviewCrosClient:
-  void GeneratePrintPreview(const base::UnguessableToken& token,
-                            crosapi::mojom::PrintSettingsPtr settings,
-                            GeneratePrintPreviewCallback callback) override;
   // Handles ash -> chrome requests when the print dialog is closed.
   void HandleDialogClosed(const base::UnguessableToken& token,
                           HandleDialogClosedCallback callback) override;

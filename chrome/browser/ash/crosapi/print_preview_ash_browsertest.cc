@@ -16,8 +16,6 @@
 #include "chrome/browser/chromeos/printing/print_preview/print_preview_cros_client.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
-#include "chromeos/printing/print_settings_test_util.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "printing/mojom/print.mojom.h"
@@ -36,13 +34,7 @@ class FakePrintPreviewBrowserAshClient
       const FakePrintPreviewBrowserAshClient&) = delete;
   ~FakePrintPreviewBrowserAshClient() override = default;
 
-  // chromeos::PrintPreviewCrosClient overrides
-  void GeneratePrintPreview(const base::UnguessableToken& /*token*/,
-                            crosapi::mojom::PrintSettingsPtr /*settings*/,
-                            GeneratePrintPreviewCallback callback) override {
-    std::move(callback).Run(/*success=*/true);
-  }
-
+  // chromeos::PrintPreviewCrosClient overrides:
   void HandleDialogClosed(const base::UnguessableToken& /*token*/,
                           HandleDialogClosedCallback callback) override {
     std::move(callback).Run(/*success=*/true);
@@ -121,13 +113,6 @@ class PrintPreviewAshBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(PrintPreviewAshBrowserTest, ApiCalls) {
   // No crashes.
   CallPrintPreviewBrowserDelegateMethods(print_preview_cros_adapter_);
-
-  // Via ash client directly.
-  base::test::TestFuture<bool> future;
-  print_preview_cros_adapter_->StartGetPreview(
-      base::UnguessableToken::Create(),
-      chromeos::CreatePrintSettings(/*preview_id=*/0), future.GetCallback());
-  EXPECT_TRUE(future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewAshBrowserTest, HandleDialogClosed) {

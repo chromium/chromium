@@ -9,9 +9,6 @@
 
 #include <optional>
 
-#include "base/memory/raw_ptr.h"
-#include "base/unguessable_token.h"
-#include "base/values.h"
 #include "components/printing/common/print.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -37,10 +34,6 @@ class PrintPreviewUiWrapper : public ::printing::mojom::PrintPreviewUI {
 
   // Establish the renderer bindings.
   void BindPrintPreviewUI(content::RenderFrameHost* rfh);
-
-  // Start the process for generating a print preview. Preview generation is
-  // done asynchronously, updates are provided via mojom::PrintPreviewUI.
-  void GeneratePrintPreview(base::DictValue settings);
 
   // mojom::PrintPreviewUI::
   void SetOptionsFromDocument(

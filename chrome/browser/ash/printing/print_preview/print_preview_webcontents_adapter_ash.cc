@@ -10,7 +10,6 @@
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/printing/print_preview/print_preview_dialog_controller_cros.h"
-#include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/printing/common/print.mojom.h"
 
@@ -45,14 +44,6 @@ void PrintPreviewWebcontentsAdapterAsh::PrintPreviewDone(
     PrintPreviewDoneCallback callback) {
   dialog_controller_->OnDialogClosed(token);
   std::move(callback).Run(/*success=*/true);
-}
-
-void PrintPreviewWebcontentsAdapterAsh::StartGetPreview(
-    const base::UnguessableToken& token,
-    crosapi::mojom::PrintSettingsPtr settings,
-    base::OnceCallback<void(bool)> callback) {
-  ash_client_->GeneratePrintPreview(token, std::move(settings),
-                                    std::move(callback));
 }
 
 void PrintPreviewWebcontentsAdapterAsh::OnDialogClosed(

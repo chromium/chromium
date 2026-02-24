@@ -23,7 +23,6 @@ static_library("print_preview") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/chromeos/printing/print_preview:interfaces",
     "//chrome/browser/ui/webui/ash/print_preview_cros",
-    "//chromeos/crosapi/mojom",
     "//components/printing/common:mojo_interfaces",
     "//mojo/public/cpp/bindings",
 

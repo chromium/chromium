@@ -10,9 +10,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
-#include "chrome/browser/chromeos/printing/print_preview/print_settings_converter.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_view_manager_cros.h"
-#include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -70,31 +68,6 @@ void PrintPreviewWebcontentsManager::Initialize() {
         ->print_preview_webcontents_adapter_ash()
         ->RegisterAshClient(this);
   }
-}
-
-void PrintPreviewWebcontentsManager::GeneratePrintPreview(
-    const base::UnguessableToken& token,
-    crosapi::mojom::PrintSettingsPtr settings,
-    GeneratePrintPreviewCallback callback) {
-  const auto found_content_iter = token_to_webcontents_.find(token);
-  if (found_content_iter == token_to_webcontents_.end()) {
-    PRINTER_LOG(ERROR)
-        << "Bad token, can only be called by a valid print preview instance.";
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
-  PrintViewManagerCros* view_manager =
-      PrintViewManagerCros::FromWebContents(found_content_iter->second);
-  if (!view_manager) {
-    PRINTER_LOG(ERROR) << "Failed to start generating a print preview.";
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
-  view_manager->HandleGeneratePrintPreview(
-      SerializePrintSettings(std::move(settings)));
-  std::move(callback).Run(/*success=*/true);
 }
 
 void PrintPreviewWebcontentsManager::HandleDialogClosed(

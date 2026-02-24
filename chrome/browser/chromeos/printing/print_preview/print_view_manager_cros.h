@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CHROMEOS_PRINTING_PRINT_PREVIEW_PRINT_VIEW_MANAGER_CROS_H_
 
 #include "base/unguessable_token.h"
-#include "base/values.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_preview_ui_wrapper.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_view_manager_cros_base.h"
 #include "components/printing/common/print.mojom-forward.h"
@@ -59,8 +58,6 @@ class PrintViewManagerCros
   bool PrintPreviewNow(content::RenderFrameHost* rfh, bool has_selection);
   void PrintPreviewDone();
 
-  // Start the print preview generation.
-  void HandleGeneratePrintPreview(const base::DictValue& settings);
   // Inform the PrintRenderFrame that the dialog has been removed and clears out
   // the render frame host associated with this instance.
   void HandlePrintPreviewRemoved();
