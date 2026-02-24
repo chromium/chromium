@@ -22,13 +22,18 @@ namespace {
 void registerContextSnapshotAndroid(
     std::map<std::string, std::variant<base::FilePath, base::ScopedFD>>&
         files) {
-#ifdef __LP64__
-  files[kV8ContextSnapshot64DataDescriptor] =
-#else
-  files[kV8ContextSnapshot32DataDescriptor] =
-#endif  // __LP64__
+  auto path =
       base::FilePath(FILE_PATH_LITERAL("assets"))
           .Append(FILE_PATH_LITERAL(BUILDFLAG(V8_CONTEXT_SNAPSHOT_FILENAME)));
+  // In 64/32-bit multilib environments, WebView renderers and the browser
+  // process operate in different bitness. Therefore, we need to store both
+  // snapshots in such scenario.
+#if BUILDFLAG(ANDROID_IS_MULTILIB) || defined(__LP64__)
+  files[kV8ContextSnapshot64DataDescriptor] = path;
+#endif
+#if BUILDFLAG(ANDROID_IS_MULTILIB) || !defined(__LP64__)
+  files[kV8ContextSnapshot32DataDescriptor] = path;
+#endif
 }
 }  // namespace
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -52,13 +57,17 @@ GetV8SnapshotFilesToPreload(base::CommandLine& process_command_line) {
     registerContextSnapshotAndroid(files);
   }
 #endif  // BUILDFLAG(INCLUDE_BOTH_V8_SNAPSHOTS)
-#ifdef __LP64__
+  // In 64/32-bit multilib environments, WebView renderers and the browser
+  // process operate in different bitness. Therefore, we need to store both
+  // snapshots in such scenario.
+#if BUILDFLAG(ANDROID_IS_MULTILIB) || defined(__LP64__)
   files[kV8Snapshot64DataDescriptor] =
       base::FilePath(FILE_PATH_LITERAL("assets/snapshot_blob_64.bin"));
-#else
+#endif
+#if BUILDFLAG(ANDROID_IS_MULTILIB) || !defined(__LP64__)
   files[kV8Snapshot32DataDescriptor] =
       base::FilePath(FILE_PATH_LITERAL("assets/snapshot_blob_32.bin"));
-#endif  // __LP64__
+#endif
 #elif BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT)
   registerContextSnapshotAndroid(files);
 #endif  // !BUILDFLAG(USE_V8_CONTEXT_SNAPSHOT) ||

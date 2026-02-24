@@ -29,10 +29,12 @@ group("v8_context_snapshot") {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
+  _android_is_multilib = defined(android_app_secondary_abi)
   flags = [
     "USE_V8_CONTEXT_SNAPSHOT=$use_v8_context_snapshot",
     "INCLUDE_BOTH_V8_SNAPSHOTS=$include_both_v8_snapshots",
     "V8_CONTEXT_SNAPSHOT_FILENAME=\"$v8_context_snapshot_filename\"",
+    "ANDROID_IS_MULTILIB=$_android_is_multilib",
   ]
 }
 
