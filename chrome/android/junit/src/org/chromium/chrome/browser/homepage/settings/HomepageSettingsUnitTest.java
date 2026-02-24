@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
@@ -1082,7 +1083,7 @@ public class HomepageSettingsUnitTest {
 
         // Act: Click the NTP radio button.
         checkRadioButtonAndWait(mChromeNtpRadioButton);
-        ShadowLooper.idleMainLooper(); // Ensure any pending tasks are run.
+        RobolectricUtil.runAllBackgroundAndUi(); // Ensure any pending tasks are run.
 
         // Assert: The HomepageManager should reflect the change to NTP immediately,
         // even though finishSettingsActivity() has not been called.
@@ -1170,7 +1171,7 @@ public class HomepageSettingsUnitTest {
 
     private void checkRadioButtonAndWait(RadioButtonWithDescription radioButton) {
         TouchCommon.singleClickView(radioButton, 5, 5);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertTrue("RadioButton is not checked.", radioButton.isChecked());
     }
 

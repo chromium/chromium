@@ -25,7 +25,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -33,6 +32,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -138,7 +138,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
         when(mTabGroupModelFilter.isTabInTabGroup(mTab)).thenReturn(true);
         mTabObserverCaptor.getValue().onTabGroupIdChanged(mTab, null);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTabManagementDelegate)
                 .createTabGroupUi(
@@ -170,7 +170,7 @@ public class TabGroupUiOneshotSupplierUnitTest {
         verifyNoInteractions(mTabManagementDelegate);
         assertNull(mTabGroupUiOneshotSupplier.get());
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTabManagementDelegate)
                 .createTabGroupUi(

@@ -34,12 +34,12 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -85,7 +85,7 @@ public class TabListItemAnimatorUnitTest {
 
     private void runAnimationToCompletion() {
         mItemAnimator.runPendingAnimations();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
 
     private void animateAddWithCompletionTrigger(Callback<ViewHolder> completionTrigger) {
@@ -457,7 +457,7 @@ public class TabListItemAnimatorUnitTest {
         mItemAnimator.animateAdd(removedHolder);
 
         mItemAnimator.runPendingAnimations();
-        ShadowLooper.shadowMainLooper().idle();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(List.of(true, false), mIsAnimatorRunningValues);
     }
@@ -468,7 +468,7 @@ public class TabListItemAnimatorUnitTest {
         mItemAnimator.animateAdd(removedHolder);
 
         mItemAnimator.endAnimations();
-        ShadowLooper.shadowMainLooper().idle();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(List.of(true, false), mIsAnimatorRunningValues);
     }

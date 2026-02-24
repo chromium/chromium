@@ -29,11 +29,11 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -86,7 +86,7 @@ public class TabSwitcherPaneDrawableMediatorUnitTest {
         assertTrue(mTabCountSupplier.hasObservers());
         assertTrue(mNotificationDotSupplier.hasObservers());
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(mTabCountSupplier.get().intValue(), mModel.get(TAB_COUNT));
         assertFalse(mModel.get(SHOW_NOTIFICATION_DOT));
@@ -113,7 +113,7 @@ public class TabSwitcherPaneDrawableMediatorUnitTest {
         assertTrue(mTabCountSupplier.hasObservers());
         verify(mTabModelSelector).removeObserver(any());
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(mTabCountSupplier.get().intValue(), mModel.get(TAB_COUNT));
 

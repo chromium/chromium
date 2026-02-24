@@ -37,11 +37,10 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSurfaceView;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 
 import java.util.Set;
@@ -49,7 +48,6 @@ import java.util.Set;
 /** Unit tests for the CompositorSurfaceManagerImpl. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class CompositorSurfaceManagerImplTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private CompositorSurfaceManager.SurfaceManagerCallbackTarget mCallback;
@@ -129,11 +127,12 @@ public class CompositorSurfaceManagerImplTest {
     public void beforeTest() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         mLayout = new FrameLayout(activity);
+        activity.setContentView(mLayout);
         mManager = new CompositorSurfaceManagerImpl(mLayout, mCallback);
     }
 
     private void runDelayedTasks() {
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
 
     /** Return the callback for |view|, or null.  Will get mad if there's more than one. */
@@ -405,6 +404,7 @@ public class CompositorSurfaceManagerImplTest {
         // We should be notified that the surface was destroyed via synthetic callback, and the
         // surface should be detached.
         mManager.recreateSurface();
+        runDelayedTasks();
         verify(mCallback, times(1)).surfaceCreated(opaque.getHolder().getSurface());
         verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface(), true);
         assertEquals(0, mLayout.getChildCount());
@@ -412,6 +412,7 @@ public class CompositorSurfaceManagerImplTest {
         // When the surface really is destroyed, it should be re-attached.  We should not be
         // notified again, though.
         callbackFor(opaque).surfaceDestroyed(opaque.getHolder());
+        runDelayedTasks();
         verify(mCallback, times(1)).surfaceCreated(opaque.getHolder().getSurface());
         verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface(), true);
         assertEquals(1, mLayout.getChildCount());
@@ -432,6 +433,7 @@ public class CompositorSurfaceManagerImplTest {
         SurfaceView opaque = requestThenCreateSurface(PixelFormat.OPAQUE);
         SurfaceView translucent = requestThenCreateSurface(PixelFormat.TRANSLUCENT);
         mManager.doneWithUnownedSurface();
+        runDelayedTasks();
 
         // The transparent surface should be attached, and the opaque one detached.
         assertEquals(1, mLayout.getChildCount());
@@ -447,6 +449,7 @@ public class CompositorSurfaceManagerImplTest {
         // have arrived yet, except for initial creation and (synthetic) destroyed when we got the
         // translucent surface.
         callbackFor(opaque).surfaceDestroyed(opaque.getHolder());
+        runDelayedTasks();
         assertEquals(2, mLayout.getChildCount());
         verify(mCallback, times(1)).surfaceCreated(opaque.getHolder().getSurface());
         verify(mCallback, times(1)).surfaceDestroyed(opaque.getHolder().getSurface(), false);

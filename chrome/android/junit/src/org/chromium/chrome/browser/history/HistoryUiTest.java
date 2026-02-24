@@ -57,12 +57,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -251,7 +251,7 @@ public class HistoryUiTest {
         itemView.getRemoveButtonForTests().performClick();
 
         // Check that one item was removed.
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertEquals(1, mHistoryProvider.markItemForRemovalCallback.getCallCount());
         Assert.assertEquals(1, mHistoryProvider.removeItemsCallback.getCallCount());
         Assert.assertEquals(3, mAdapter.getItemCount());
@@ -725,7 +725,7 @@ public class HistoryUiTest {
         toolbar.onSignInStateChange();
         mAdapter.onSignInStateChange();
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         DateDividedAdapter.ItemGroup firstGroup = mAdapter.getFirstGroupForTests();
         Assert.assertTrue(infoMenuItem.isVisible());
         Assert.assertTrue(mAdapter.hasListHeader());
@@ -734,7 +734,7 @@ public class HistoryUiTest {
         // Enter search mode
         performMenuAction(R.id.search_menu_id);
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         firstGroup = mAdapter.getFirstGroupForTests();
         assertFalse(infoMenuItem.isVisible());
         // The first group should be the history item group from SetUp()
@@ -776,7 +776,7 @@ public class HistoryUiTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         setHasOtherFormsOfBrowsingData(true);
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         DateDividedAdapter.ItemGroup firstGroup = mAdapter.getFirstGroupForTests();
         Assert.assertNull(toolbar.getItemById(R.id.search_menu_id));
         Assert.assertTrue(mAdapter.hasListHeader());

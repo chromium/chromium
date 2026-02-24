@@ -39,7 +39,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.UserDataHost;
@@ -47,6 +46,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
@@ -357,7 +357,7 @@ public class NewTabAnimationLayoutUnitTest {
         assertTrue(mNewTabAnimationLayout.isRunningAnimations());
         verify(mAnimationHostView, times(1)).addView(any(NewForegroundTabAnimationHostView.class));
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertFalse(mNewTabAnimationLayout.isRunningAnimations());
         verify(mAnimationHostView, times(1))
@@ -417,7 +417,7 @@ public class NewTabAnimationLayoutUnitTest {
         assertThat(mBrowserVisibilityDelegate.get()).isEqualTo(BrowserControlsState.SHOWN);
         verify(mAnimationHostView, times(1)).addView(any(NewBackgroundTabAnimationHostView.class));
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mAnimationHostView, times(1))
                 .removeView(any(NewBackgroundTabAnimationHostView.class));
@@ -468,7 +468,7 @@ public class NewTabAnimationLayoutUnitTest {
                 /* originX= */ 0f,
                 /* originY= */ 0f);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertThat(mBrowserVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
     }
@@ -500,7 +500,7 @@ public class NewTabAnimationLayoutUnitTest {
 
         assertThat(mBrowserVisibilityDelegate.get()).isEqualTo(BrowserControlsState.SHOWN);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertThat(mBrowserVisibilityDelegate.get()).isEqualTo(BrowserControlsState.BOTH);
     }

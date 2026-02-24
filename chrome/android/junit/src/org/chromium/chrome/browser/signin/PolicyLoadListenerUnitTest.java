@@ -21,13 +21,12 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowProcess;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.components.policy.PolicyService;
 
 /** Unit tests for PolicyLoadListener. */
@@ -36,7 +35,6 @@ import org.chromium.components.policy.PolicyService;
         manifest = Config.NONE,
         shadows = {ShadowProcess.class})
 // TODO(crbug.com/40182398): Change to use paused loop. See crbug for details.
-@LooperMode(LooperMode.Mode.LEGACY)
 public class PolicyLoadListenerUnitTest {
     private static final String LOADED_POLICY_READY = "Policy service should be ready to read.";
     private static final String LOADED_NO_POLICY = "Policy should not exist.";
@@ -79,6 +77,7 @@ public class PolicyLoadListenerUnitTest {
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.onAvailable(mListener));
 
         mAppRestrictionsCallback.onResult(false);
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertFalse(LOADED_NO_POLICY, mPolicyLoadListener.get());
         Mockito.verify(mListener).onResult(false);
     }
@@ -88,14 +87,17 @@ public class PolicyLoadListenerUnitTest {
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.onAvailable(mListener));
 
         mAppRestrictionsCallback.onResult(true);
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
         Mockito.verify(mListener, never()).onResult(any());
 
         mTestPolicyServiceSupplier.set(mPolicyService);
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
         Mockito.verify(mListener, never()).onResult(any());
 
         setPolicyServiceInitialized();
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertTrue(LOADED_POLICY_READY, mPolicyLoadListener.get());
         Mockito.verify(mListener).onResult(true);
     }
@@ -105,14 +107,17 @@ public class PolicyLoadListenerUnitTest {
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.onAvailable(mListener));
 
         mTestPolicyServiceSupplier.set(mPolicyService);
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
         Mockito.verify(mListener, never()).onResult(any());
 
         setPolicyServiceInitialized();
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertTrue(LOADED_POLICY_READY, mPolicyLoadListener.get());
         Mockito.verify(mListener).onResult(true);
 
         mAppRestrictionsCallback.onResult(true);
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertTrue(
                 "App restriction arrives after policy initialized should be ignored.",
                 mPolicyLoadListener.get());
@@ -122,18 +127,22 @@ public class PolicyLoadListenerUnitTest {
     @Test
     public void testPolicyInitializedBeforeSupplied() {
         setPolicyServiceInitialized();
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
 
         mTestPolicyServiceSupplier.set(mPolicyService);
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertTrue(LOADED_POLICY_READY, mPolicyLoadListener.get());
     }
 
     @Test
     public void testAddListenerAfterFinished() {
         mAppRestrictionsCallback.onResult(false);
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertFalse(LOADED_NO_POLICY, mPolicyLoadListener.get());
 
         Assert.assertFalse(LOADED_NO_POLICY, mPolicyLoadListener.onAvailable(mListener));
+        RobolectricUtil.runAllBackgroundAndUi();
         Mockito.verify(mListener).onResult(false);
     }
 
@@ -171,17 +180,15 @@ public class PolicyLoadListenerUnitTest {
     public void testDestroyAfterStart_PolicyInitializedInterleaved() {
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.onAvailable(mListener));
 
-        // OneshotSupplierImpl will post to a Handler when it runs callbacks. By pausing the main
-        // looper, we temporarily stop these from being run. Otherwise Robolectric will run them
-        // synchronously.
-        ShadowLooper.pauseMainLooper();
+        // OneshotSupplierImpl will post to a Handler when it runs callbacks.
         mAppRestrictionsCallback.onResult(false);
         Assert.assertFalse(LOADED_NO_POLICY, mPolicyLoadListener.get());
 
-        // Because #destroy() is called before mListener has been notified, the notification should
-        // dropped.
+        // Because #destroy() is called before mListener has been notified (it is posted),
+        // the notification should be dropped.
         mPolicyLoadListener.destroy();
-        ShadowLooper.unPauseMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
+
         Mockito.verify(mListener, never()).onResult(anyBoolean());
     }
 

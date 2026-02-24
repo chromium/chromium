@@ -28,9 +28,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.url.GURL;
@@ -39,7 +39,6 @@ import org.chromium.url.JUnitTestGURLs;
 /** Tests for {@link InstalledWebappGeolocationBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class InstalledWebappGeolocationBridgeTest {
     private static final long NATIVE_POINTER = 12;
 
@@ -157,6 +156,7 @@ public class InstalledWebappGeolocationBridgeTest {
 
     // Verify native gets location update with correct value.
     private void verifyGetLocationUpdate() {
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mNativeMock)
                 .onNewLocationAvailable(
                         eq(NATIVE_POINTER),
@@ -174,10 +174,12 @@ public class InstalledWebappGeolocationBridgeTest {
     }
 
     private void verifyGetLocationError() {
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mNativeMock).onNewErrorAvailable(eq(NATIVE_POINTER), anyString());
     }
 
     private void verifyNoLocationUpdate() {
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mNativeMock, never())
                 .onNewLocationAvailable(
                         anyInt(),

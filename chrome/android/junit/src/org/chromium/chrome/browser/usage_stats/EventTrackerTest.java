@@ -21,11 +21,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +33,6 @@ import java.util.List;
 /** Unit tests for EventTracker. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class EventTrackerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private UsageStatsBridge mBridge;
@@ -93,6 +91,7 @@ public class EventTrackerTest {
                         (result) -> {
                             assertEquals(49, result.size());
                         });
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test
@@ -110,9 +109,11 @@ public class EventTrackerTest {
                                                 assertEquals(0, result.size());
                                             });
                         });
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mBridge, times(1)).deleteAllEvents(mDeleteCallbackCaptor.capture());
         resolveDeleteCallback();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test
@@ -136,10 +137,12 @@ public class EventTrackerTest {
                                                 assertEquals(50, result.size());
                                             });
                         });
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mBridge, times(1))
                 .deleteEventsInRange(eq(0L), eq(50L), mDeleteCallbackCaptor.capture());
         resolveDeleteCallback();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test
@@ -174,20 +177,23 @@ public class EventTrackerTest {
                                                 assertEquals(20, result.size());
                                             });
                         });
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mBridge, times(1))
                 .deleteEventsWithMatchingDomains(
                         mDeletedDomainsListCaptor.capture(), mDeleteCallbackCaptor.capture());
         resolveDeleteCallback();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(Arrays.asList(mDeletedDomainsListCaptor.getValue()), deletedDomains);
     }
 
     private void addEntries(int quantity, long stepSize, long startTime, String fqdn) {
         for (int i = 0; i < quantity; i++) {
-            Promise<Void> writePromise =
-                    mEventTracker.addWebsiteEvent(
-                            new WebsiteEvent(startTime, fqdn, WebsiteEvent.EventType.START));
+            mEventTracker.addWebsiteEvent(
+                    new WebsiteEvent(startTime, fqdn, WebsiteEvent.EventType.START));
+            RobolectricUtil.runAllBackgroundAndUi();
             verify(mBridge, atLeast(1)).addEvents(any(), mWriteCallbackCaptor.capture());
+
             resolveWriteCallback();
             startTime += stepSize;
         }
@@ -195,13 +201,16 @@ public class EventTrackerTest {
 
     private void resolveLoadCallback() {
         mLoadCallbackCaptor.getValue().onResult(new ArrayList<>());
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     private void resolveWriteCallback() {
         mWriteCallbackCaptor.getValue().onResult(true);
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     private void resolveDeleteCallback() {
         mDeleteCallbackCaptor.getValue().onResult(true);
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 }

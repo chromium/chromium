@@ -49,7 +49,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
@@ -59,6 +58,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -300,7 +300,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     public void tearDown() {
         mCoordinator.destroy();
         // Force animation to complete.
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(mDestroyed);
         mOverlayViewManager.destroy();
     }
@@ -594,7 +594,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         mHubSearchBoxVisibilitySupplier.set(true);
 
         mTabModelObserver.didChangePinState(tab);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertTrue(mHubSearchBoxVisibilitySupplier.get());
     }
 
@@ -606,7 +606,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         doReturn(1).when(mTabModel).getPinnedTabsCount();
 
         mTabModelObserver.didChangePinState(tab);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertFalse(mHubSearchBoxVisibilitySupplier.get());
     }
 

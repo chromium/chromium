@@ -33,7 +33,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -60,7 +59,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 // IconSpecs)} after refactor.
 /** Unit tests for {@link AutofillImageFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.LEGACY)
 @EnableFeatures(ChromeFeatureList.AUTOFILL_RETRY_IMAGE_FETCH_ON_FAILURE)
 public class AutofillImageFetcherTest {
     private static final GURL TEST_IMAGE_URL = new GURL("https://www.google.com/test-image-url");

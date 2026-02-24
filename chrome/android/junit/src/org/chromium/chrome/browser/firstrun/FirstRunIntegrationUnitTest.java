@@ -31,9 +31,9 @@ import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -133,7 +133,7 @@ public final class FirstRunIntegrationUnitTest {
         activityController.create();
         T activity = activityController.get();
         mActivityControllerList.add(activityController);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         return activity;
     }
 
@@ -264,8 +264,11 @@ public final class FirstRunIntegrationUnitTest {
     /**
      * Test that {@link WebappLauncherActivity} shows the regular full first run experience when it
      * is launched with an intent which both:
+     *
+     * <pre>
      * - Has a WebAPK package extra which meets the lightweight first run activity requirements
      * - Refers to an invalid WebAPK
+     * </pre>
      */
     @Test
     public void testFullFreIfWebApkInvalid() {

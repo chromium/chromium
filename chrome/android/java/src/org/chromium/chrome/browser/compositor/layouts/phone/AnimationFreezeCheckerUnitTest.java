@@ -8,9 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.compositor.layouts.phone.AnimationFreezeChecker.AnimationState;
 
@@ -39,7 +39,7 @@ public class AnimationFreezeCheckerUnitTest {
         mAnimationFreezeChecker.onAnimationEnd();
 
         // Timeout should not do anything.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         watcher.assertExpected();
     }
@@ -56,7 +56,7 @@ public class AnimationFreezeCheckerUnitTest {
         mAnimationFreezeChecker.onAnimationCancel();
 
         // Timeout should not do anything.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         watcher.assertExpected();
     }
@@ -73,7 +73,7 @@ public class AnimationFreezeCheckerUnitTest {
 
         mAnimationFreezeChecker.onAnimationStart();
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         mAnimationFreezeChecker.onAnimationEnd();
 
@@ -92,7 +92,7 @@ public class AnimationFreezeCheckerUnitTest {
 
         mAnimationFreezeChecker.onAnimationStart();
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         mAnimationFreezeChecker.onAnimationCancel();
 

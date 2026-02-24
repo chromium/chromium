@@ -44,7 +44,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -54,6 +53,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -217,7 +217,7 @@ public class TabSwitcherPaneMediatorUnitTest {
         mTabListEditorControllerSupplier.set(mTabListEditorController);
 
         mTabGridDialogControllerSupplier.get();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(mDialogBackPressChangedSupplier.hasObservers());
 
         verify(mOnTabSwitcherShownRunnable, never()).run();
@@ -299,7 +299,7 @@ public class TabSwitcherPaneMediatorUnitTest {
                         mBottomSheetController,
                         mAllOnLayoutChangedAfterInitialScrollListener,
                         mHubSearchBoxVisibilitySupplier);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mIsVisibleSupplier.set(true);
 

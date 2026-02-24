@@ -27,7 +27,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
@@ -37,6 +36,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -156,7 +156,7 @@ public class HubProviderUnitTest {
         PaneManager paneManager = hubManager.getPaneManager();
         assertNotNull(paneManager);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         when(mTabModelSelector.isIncognitoSelected()).thenReturn(false);
 
         paneManager.focusPane(PaneId.TAB_SWITCHER);
@@ -218,7 +218,7 @@ public class HubProviderUnitTest {
         // This shouldn't crash.
         mHubProvider.destroy();
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test
@@ -241,7 +241,7 @@ public class HubProviderUnitTest {
 
         assertFalse(hubManagerSupplier.hasValue());
         mHubProvider.destroy();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertFalse(hubManagerSupplier.hasValue());
         verify(mHubManagerCallback, never()).onResult(any());

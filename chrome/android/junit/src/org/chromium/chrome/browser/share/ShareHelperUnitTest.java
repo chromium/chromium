@@ -29,12 +29,12 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPendingIntent;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DestroyableHolder;
 import org.chromium.base.test.util.Matchers;
@@ -87,8 +87,8 @@ public class ShareHelperUnitTest {
 
     @After
     public void tearDown() {
-        ShadowLooper.idleMainLooper();
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
+        RobolectricUtil.runAllBackgroundAndUi();
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SHARING_LAST_SHARED_COMPONENT_NAME);
         mWindowDestroyRef.destroy();
@@ -368,7 +368,7 @@ public class ShareHelperUnitTest {
                 sendBackIntent,
                 null,
                 null);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     private void selectCustomActionFromChooserIntent(Intent chooserIntent, String action)
@@ -386,7 +386,7 @@ public class ShareHelperUnitTest {
                 sendBackIntent,
                 null,
                 null);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     private void assertLastComponentNameRecorded(ComponentName name) {

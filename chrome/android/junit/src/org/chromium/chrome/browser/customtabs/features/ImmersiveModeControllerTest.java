@@ -26,10 +26,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -87,7 +87,7 @@ public class ImmersiveModeControllerTest {
     @Test
     public void enterImmersiveMode() {
         mController.enterImmersiveMode(LAYOUT, NOT_STICKY);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         if (isUsingWindowInsetsController()) {
             verify(mInsetsController).hide(anyInt());
             verify(mInsetsController)
@@ -102,7 +102,7 @@ public class ImmersiveModeControllerTest {
     @Test
     public void enterImmersiveMode_sticky() {
         mController.enterImmersiveMode(LAYOUT, STICKY);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         if (isUsingWindowInsetsController()) {
             verify(mInsetsController).hide(anyInt());
             verify(mInsetsController)
@@ -124,7 +124,7 @@ public class ImmersiveModeControllerTest {
     @Test
     public void exitImmersiveMode() {
         mController.enterImmersiveMode(LAYOUT, NOT_STICKY);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         mController.exitImmersiveMode();
         if (isUsingWindowInsetsController()) {
             verify(mInsetsController).show(anyInt());
@@ -137,7 +137,7 @@ public class ImmersiveModeControllerTest {
     @Test
     public void exitImmersiveMode_sticky() {
         mController.enterImmersiveMode(LAYOUT, STICKY);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         mController.exitImmersiveMode();
         if (isUsingWindowInsetsController()) {
             verify(mInsetsController).show(anyInt());

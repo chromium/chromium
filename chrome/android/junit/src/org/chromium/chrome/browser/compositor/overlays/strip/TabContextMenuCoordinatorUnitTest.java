@@ -50,11 +50,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -1701,7 +1701,7 @@ public class TabContextMenuCoordinatorUnitTest {
         var addToGroupItem = modelList.get(0);
         addToGroupItem.model.get(CLICK_LISTENER).onClick(mView);
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         // Verify that the top item of the submenu is selected.
         ListView listView =
                 mTabContextMenuCoordinator
@@ -1715,7 +1715,7 @@ public class TabContextMenuCoordinatorUnitTest {
         // Click back to parent menu.
         var headerItem = modelList.get(0);
         headerItem.model.get(CLICK_LISTENER).onClick(mView);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify that the top item of the parent menu is selected.
         assertEquals(

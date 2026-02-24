@@ -35,10 +35,10 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowActivity.IntentForResult;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPendingIntent;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -70,7 +70,7 @@ public class ShareHelperMultiInstanceUnitTest {
 
     @After
     public void tearDown() {
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         mWindowBar.closeWindow();
         mWindowFoo.closeWindow();
         ChromeSharedPreferences.getInstance()
@@ -213,7 +213,7 @@ public class ShareHelperMultiInstanceUnitTest {
 
         public SingleWindowTestInstance startShare() {
             ShareHelper.shareWithSystemShareSheetUi(getTextParams(), null, true);
-            ShadowLooper.idleMainLooper();
+            RobolectricUtil.runAllBackgroundAndUi();
 
             mShareIntent = Shadows.shadowOf(mActivity).peekNextStartedActivityForResult();
             assertNotNull("Share activity is not launched.", mShareIntent);
@@ -236,7 +236,7 @@ public class ShareHelperMultiInstanceUnitTest {
                     sendBackIntent,
                     null,
                     null);
-            ShadowLooper.idleMainLooper();
+            RobolectricUtil.runAllBackgroundAndUi();
             return this;
         }
 
@@ -245,7 +245,7 @@ public class ShareHelperMultiInstanceUnitTest {
 
             mIntentRequestTracker.onActivityResult(
                     mShareIntent.requestCode, Activity.RESULT_CANCELED, null);
-            ShadowLooper.idleMainLooper();
+            RobolectricUtil.runAllBackgroundAndUi();
             return this;
         }
 

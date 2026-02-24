@@ -25,11 +25,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.overlays.strip.TestTabModel;
@@ -89,7 +89,7 @@ public class UndoRefocusHelperTest {
         mUndoRefocusHelper =
                 new UndoRefocusHelper(mTabModelSelector, mLayoutManagerObservableSupplier, true);
         verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mLayoutManagerImpl).addObserver(mLayoutStateObserverCaptor.capture());
 
         when(mLayoutManagerImpl.isLayoutVisible(LayoutType.TAB_SWITCHER)).thenReturn(false);

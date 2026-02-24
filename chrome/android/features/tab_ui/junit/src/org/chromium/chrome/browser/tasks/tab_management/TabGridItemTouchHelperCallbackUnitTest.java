@@ -47,7 +47,6 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
@@ -55,6 +54,7 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -725,7 +725,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     @Test
     public void onDraggingAnimationEnd_Stale() {
         clearViewBeforePost();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mGridLayoutManager).removeView(mItemView1);
     }
@@ -736,7 +736,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         when(mItemView1.getParent()).thenReturn(null);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mGridLayoutManager, never()).removeView(mItemView1);
     }
@@ -747,7 +747,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         when(mRecyclerView.getLayoutManager()).thenReturn(null);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mGridLayoutManager, never()).removeView(mItemView1);
     }
@@ -758,7 +758,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         when(mRecyclerView.getChildCount()).thenReturn(0);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mGridLayoutManager, never()).removeView(mItemView1);
     }
@@ -769,7 +769,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         when(mAdapter.getItemCount()).thenReturn(1);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mGridLayoutManager, never()).removeView(mItemView1);
     }
@@ -780,7 +780,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         when(mRecyclerView.getAdapter()).thenReturn(null);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mGridLayoutManager, never()).removeView(mItemView1);
     }

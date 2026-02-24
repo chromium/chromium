@@ -24,7 +24,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowKeyguardManager;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowNotification;
 
 import org.chromium.base.ContextUtils;
@@ -181,7 +180,7 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase
         mShadowKeyguardManager.setKeyguardLocked(true);
         ContextUtils.getApplicationContext().sendBroadcast(new Intent(Intent.ACTION_SCREEN_OFF));
         Shadows.shadowOf(Looper.getMainLooper()).runToEndOfTasks();
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test

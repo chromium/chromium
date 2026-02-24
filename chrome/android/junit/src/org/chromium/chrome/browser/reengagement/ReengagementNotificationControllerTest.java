@@ -26,13 +26,13 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowNotificationManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -50,7 +50,6 @@ import org.chromium.components.feature_engagement.Tracker;
     ChromeFeatureList.REENGAGEMENT_NOTIFICATION
 })
 @Config(shadows = {ShadowNotificationManager.class})
-@LooperMode(LooperMode.Mode.LEGACY)
 public class ReengagementNotificationControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -194,12 +193,8 @@ public class ReengagementNotificationControllerTest {
                 .when(mTracker)
                 .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
         controller.tryToReengageTheUser();
-        new Handler()
-                .post(
-                        () ->
-                                Assert.assertEquals(
-                                        0,
-                                        mShadowNotificationManager.getAllNotifications().size()));
+        RobolectricUtil.runAllBackgroundAndUi();
+        Assert.assertEquals(0, mShadowNotificationManager.getAllNotifications().size());
     }
 
     @Test
@@ -222,6 +217,7 @@ public class ReengagementNotificationControllerTest {
     }
 
     private void testFeatureShowed(String feature) {
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -231,22 +227,12 @@ public class ReengagementNotificationControllerTest {
         verify(mTracker, times(1)).dismissed(feature);
         Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
 
-        new Handler()
-                .post(
-                        () -> {
-                            Assert.assertEquals(
-                                    getNotificationTitle(feature),
-                                    notification
-                                            .extras
-                                            .getCharSequence(Notification.EXTRA_TITLE)
-                                            .toString());
-                            Assert.assertEquals(
-                                    getNotificationDescription(feature),
-                                    notification
-                                            .extras
-                                            .getCharSequence(Notification.EXTRA_TEXT)
-                                            .toString());
-                        });
+        Assert.assertEquals(
+                getNotificationTitle(feature),
+                notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString());
+        Assert.assertEquals(
+                getNotificationDescription(feature),
+                notification.extras.getCharSequence(Notification.EXTRA_TEXT).toString());
     }
 
     private @NotificationUmaTracker.SystemNotificationType int getNotificationType(String feature) {

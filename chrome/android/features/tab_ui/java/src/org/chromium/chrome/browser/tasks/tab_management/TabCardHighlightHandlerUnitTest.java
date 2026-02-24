@@ -21,9 +21,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabCardHighlightState;
 
 /** Unit tests for {@link TabCardHighlightHandler}. */
@@ -57,7 +57,7 @@ public class TabCardHighlightHandlerUnitTest {
         mManager.maybeAnimateForHighlightState(
                 TabCardHighlightState.TO_BE_HIGHLIGHTED, /* isIncognito= */ false);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mCardWrapper).setBackground(any());
     }
@@ -67,7 +67,7 @@ public class TabCardHighlightHandlerUnitTest {
         mManager.maybeAnimateForHighlightState(
                 TabCardHighlightState.NOT_HIGHLIGHTED, /* isIncognito= */ false);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mCardWrapper).setBackground(null);
         verify(mCardWrapper, atLeastOnce()).setAlpha(1f);

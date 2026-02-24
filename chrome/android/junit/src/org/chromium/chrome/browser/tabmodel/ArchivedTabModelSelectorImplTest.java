@@ -27,11 +27,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -140,7 +140,7 @@ public class ArchivedTabModelSelectorImplTest {
         assertEquals(
                 mTabModelSelector.getModel(false),
                 mTabModelSelector.getCurrentTabGroupModelFilter().getTabModel());
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabSupplierObserverMock).onResult(eq(normalTab));
         mTabModelSelector.getCurrentTabSupplier().removeObserver(mTabSupplierObserverMock);
     }
@@ -151,7 +151,7 @@ public class ArchivedTabModelSelectorImplTest {
                 .getCurrentModelTabCountSupplier()
                 .addSyncObserverAndPostIfNonNull(mTabCountSupplierObserverMock);
         assertEquals(0, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabCountSupplierObserverMock).onResult(0);
 
         MockTab normalTab1 = new MockTab(1, mProfile);
@@ -162,7 +162,7 @@ public class ArchivedTabModelSelectorImplTest {
                         0,
                         TabLaunchType.FROM_CHROME_UI,
                         TabCreationState.LIVE_IN_FOREGROUND);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabCountSupplierObserverMock).onResult(1);
         assertEquals(1, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
 
@@ -174,13 +174,13 @@ public class ArchivedTabModelSelectorImplTest {
                         0,
                         TabLaunchType.FROM_CHROME_UI,
                         TabCreationState.LIVE_IN_FOREGROUND);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabCountSupplierObserverMock).onResult(2);
         assertEquals(2, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
 
         ((MockTabModel) mTabModelSelector.getModel(false)).removeTab(normalTab1);
         ((MockTabModel) mTabModelSelector.getModel(false)).removeTab(normalTab2);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(0, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
         verify(mTabCountSupplierObserverMock, times(2)).onResult(0);
 

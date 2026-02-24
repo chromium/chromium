@@ -31,7 +31,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -39,6 +38,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -97,7 +97,6 @@ import java.util.List;
 
 /** Unit tests for {@link AppMenuPropertiesDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.LEGACY)
 @DisableFeatures({
     ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_PAGE_SUMMARY,
     DomDistillerFeatures.READER_MODE_IMPROVEMENTS
@@ -194,30 +193,33 @@ public class AppMenuPropertiesDelegateUnitTest {
         mBookmarkModelSupplier.set(mBookmarkModel);
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
         PowerBookmarkUtils.setPowerBookmarkMetaForTesting(PowerBookmarkMeta.newBuilder().build());
-        mAppMenuPropertiesDelegate =
-                Mockito.spy(
-                        new AppMenuPropertiesDelegateImpl(
-                                context,
-                                mActivityTabProvider,
-                                mMultiWindowModeStateDispatcher,
-                                mTabModelSelector,
-                                mToolbarManager,
-                                mDecorView,
-                                mLayoutStateProviderSupplier,
-                                mBookmarkModelSupplier,
-                                mReadAloudControllerSupplier,
-                                /* openInAppMenuItemProvider= */ null) {
-                            @Override
-                            public MVCListAdapter.ModelList buildMenuModelList() {
-                                return new MVCListAdapter.ModelList();
-                            }
-                        });
+
+        AppMenuPropertiesDelegateImpl realDelegate =
+                new AppMenuPropertiesDelegateImpl(
+                        context,
+                        mActivityTabProvider,
+                        mMultiWindowModeStateDispatcher,
+                        mTabModelSelector,
+                        mToolbarManager,
+                        mDecorView,
+                        mLayoutStateProviderSupplier,
+                        mBookmarkModelSupplier,
+                        mReadAloudControllerSupplier,
+                        /* openInAppMenuItemProvider= */ null) {
+                    @Override
+                    public MVCListAdapter.ModelList buildMenuModelList() {
+                        return new MVCListAdapter.ModelList();
+                    }
+                };
+        RobolectricUtil.runAllBackgroundAndUi();
+        mAppMenuPropertiesDelegate = Mockito.spy(realDelegate);
 
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
         ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
         doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
 
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     private void setupFeatureDefaults() {

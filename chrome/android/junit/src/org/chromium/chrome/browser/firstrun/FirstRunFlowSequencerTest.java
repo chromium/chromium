@@ -24,11 +24,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -51,7 +51,6 @@ import org.chromium.components.sync.SyncService;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class FirstRunFlowSequencerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -152,6 +151,7 @@ public class FirstRunFlowSequencerTest {
         TestFirstRunFlowSequencer sequencer =
                 new TestFirstRunFlowSequencer(mActivity, mProfileSupplier);
         sequencer.start();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         numberOfAccountsHistogram.assertExpected();
         assertTrue(sequencer.calledOnFlowIsKnown);
@@ -175,6 +175,7 @@ public class FirstRunFlowSequencerTest {
         TestFirstRunFlowSequencer sequencer =
                 new TestFirstRunFlowSequencer(mActivity, mProfileSupplier);
         sequencer.start();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         numberOfAccountsHistogram.assertExpected();
         assertTrue(sequencer.calledOnFlowIsKnown);
@@ -196,6 +197,7 @@ public class FirstRunFlowSequencerTest {
         TestFirstRunFlowSequencer sequencer =
                 new TestFirstRunFlowSequencer(mActivity, mProfileSupplier);
         sequencer.start();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         numberOfAccountsHistogram.assertExpected();
         assertTrue(sequencer.calledOnFlowIsKnown);
@@ -217,6 +219,7 @@ public class FirstRunFlowSequencerTest {
         TestFirstRunFlowSequencer sequencer =
                 new TestFirstRunFlowSequencer(mActivity, mProfileSupplier);
         sequencer.start();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         numberOfAccountsHistogram.assertExpected();
         assertTrue(sequencer.calledOnFlowIsKnown);
@@ -239,6 +242,7 @@ public class FirstRunFlowSequencerTest {
         TestFirstRunFlowSequencer sequencer =
                 new TestFirstRunFlowSequencer(mActivity, mProfileSupplier);
         sequencer.start();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         numberOfAccountsHistogram.assertExpected();
         assertTrue(sequencer.calledOnFlowIsKnown);
@@ -262,6 +266,7 @@ public class FirstRunFlowSequencerTest {
         TestFirstRunFlowSequencer sequencer =
                 new TestFirstRunFlowSequencer(mActivity, mProfileSupplier);
         sequencer.start();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         numberOfAccountsHistogram.assertExpected();
         assertTrue(sequencer.calledOnFlowIsKnown);
@@ -285,6 +290,7 @@ public class FirstRunFlowSequencerTest {
         TestFirstRunFlowSequencer sequencer =
                 new TestFirstRunFlowSequencer(mActivity, mProfileSupplier);
         sequencer.start();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         numberOfAccountsHistogram.assertExpected();
         assertTrue(sequencer.calledOnFlowIsKnown);

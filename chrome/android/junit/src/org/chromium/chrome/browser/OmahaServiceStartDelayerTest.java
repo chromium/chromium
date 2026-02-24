@@ -26,12 +26,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPowerManager;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
@@ -98,7 +98,7 @@ public class OmahaServiceStartDelayerTest {
     public void testRunnableRunsWithScreenOn() {
         startSession();
         verifyTaskScheduled();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         verify(mRunnable, times(1)).run();
         verifyNoTaskScheduled();
@@ -115,7 +115,7 @@ public class OmahaServiceStartDelayerTest {
         // Stop happened before the runnable has a chance to run.
         stopSession();
         verifyNoTaskScheduled();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Since the session was stopped before executing the task, the runnable should not have
         // been executed.
@@ -136,7 +136,7 @@ public class OmahaServiceStartDelayerTest {
         verifyNoTaskScheduled();
         startSession();
         verifyTaskScheduled();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // There should in total only be a single execution.
         verify(mRunnable, times(1)).run();
@@ -151,7 +151,7 @@ public class OmahaServiceStartDelayerTest {
 
         // Because the screen is off, nothing should happen.
         startSession();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         verify(mRunnable, times(0)).run();
         verifyNoTaskScheduled();
@@ -160,7 +160,7 @@ public class OmahaServiceStartDelayerTest {
         // the task.
         setInteractive();
         startSession();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         verify(mRunnable, times(1)).run();
         verifyNoTaskScheduled();
@@ -175,7 +175,7 @@ public class OmahaServiceStartDelayerTest {
 
         // Turn screen off without stopping before task is executed.
         setNonInteractive();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Since the screen was off when trying to execute the task, the runnable should not have
         // been executed.
@@ -195,7 +195,7 @@ public class OmahaServiceStartDelayerTest {
         startSession();
 
         // Now execute the tasks. The runnable should still only be invoked once.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         verify(mRunnable, times(1)).run();
         verifyNoTaskScheduled();

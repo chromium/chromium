@@ -48,11 +48,11 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
@@ -296,7 +296,7 @@ public class TabGroupListMediatorUnitTest {
         mTabGroupSyncObserverCaptor
                 .getValue()
                 .onTabGroupRemoved(SYNC_GROUP_ID1, TriggerSource.LOCAL);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(0, mModelList.size());
     }
@@ -315,7 +315,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.isTabInTabGroup(mTab1)).thenReturn(true);
         verify(mTabGroupModelFilter).addObserver(mTabModelObserver.capture());
         mTabModelObserver.getValue().tabClosureUndone(mTab1);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(0, mModelList.size());
     }
@@ -412,7 +412,7 @@ public class TabGroupListMediatorUnitTest {
                 .when(mTabGroupUiActionHandler)
                 .openTabGroup(SYNC_GROUP_ID2);
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         PropertyModel model2 = mModelList.get(1).model;
         model2.get(OPEN_RUNNABLE).run();
@@ -610,7 +610,7 @@ public class TabGroupListMediatorUnitTest {
         mTabGroupSyncObserverCaptor
                 .getValue()
                 .onTabGroupRemoved(SYNC_GROUP_ID1, TriggerSource.LOCAL);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertFalse(mPropertyModel.get(TabGroupListProperties.EMPTY_STATE_VISIBLE));
     }
 
@@ -637,7 +637,7 @@ public class TabGroupListMediatorUnitTest {
         verify(mTabGroupSyncService).addObserver(mTabGroupSyncObserverCaptor.capture());
         reset(mTabGroupSyncService);
         mTabGroupSyncObserverCaptor.getValue().onTabGroupAdded(null, 0);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabGroupSyncService, never()).getAllGroupIds();
 
         verify(mMessagingBackendService)
@@ -987,7 +987,7 @@ public class TabGroupListMediatorUnitTest {
         verify(mMessagingBackendService)
                 .addPersistentMessageObserver(mPersistentMessageObserverCaptor.capture());
         mPersistentMessageObserverCaptor.getValue().displayPersistentMessage(newMessageCard);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(1, mModelList.size());
 

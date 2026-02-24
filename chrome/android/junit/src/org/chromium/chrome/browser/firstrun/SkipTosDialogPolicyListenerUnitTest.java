@@ -22,13 +22,12 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo.OwnedState;
@@ -45,7 +44,6 @@ import org.chromium.components.policy.PolicyService;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 // TODO(crbug.com/40182398): Rewrite using paused loop. See crbug for details.
-@LooperMode(LooperMode.Mode.LEGACY)
 public class SkipTosDialogPolicyListenerUnitTest {
     private static final String HIST_IS_DEVICE_OWNED_DETECTED =
             "histogramRecorded.OnIsDeviceOwnedDetected";
@@ -227,7 +225,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
         // While #onResult would normally result in the #onAvailable callback being run, the
         // callback is actually posted to a Handler and run asynchronously. Robolectric typically
         // runs all callbacks synchronously, so pause the ShadowLooper to stop this.
-        ShadowLooper.pauseMainLooper();
+
         mPolicyLoadListenerCallback.onResult(false);
         Assert.assertEquals(0, onAvailabileCallbackHelper.getCallCount());
 
@@ -235,7 +233,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
         // callers assume/depend. #unPauseMainLooper() will cause anything posted to Handlers to be
         // run synchronously, after which it is safe for us to check/assert.
         mSkipTosDialogPolicyListener.destroy();
-        ShadowLooper.unPauseMainLooper();
+
         Assert.assertEquals(0, onAvailabileCallbackHelper.getCallCount());
     }
 
@@ -372,11 +370,13 @@ public class SkipTosDialogPolicyListenerUnitTest {
     }
 
     private void assertTosDialogEnabled() {
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertFalse("ToS dialog should be enabled.", mSkipTosDialogPolicyListener.get());
         Mockito.verify(mTosDialogCallback).onResult(false);
     }
 
     private void assertTosDialogSkipped() {
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertTrue(
                 "ToS dialog should be skipped according to device and enterprise setting.",
                 mSkipTosDialogPolicyListener.get());
@@ -384,6 +384,7 @@ public class SkipTosDialogPolicyListenerUnitTest {
     }
 
     private void assertPolicyCheckNotComplete() {
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertNull(
                 "Whether ToS policy might take effect should not be decided yet.",
                 mSkipTosDialogPolicyListener.get());

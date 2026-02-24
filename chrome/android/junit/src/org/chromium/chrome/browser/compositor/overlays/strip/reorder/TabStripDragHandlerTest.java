@@ -54,7 +54,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowToast;
 import org.robolectric.util.ReflectionHelpers;
 
@@ -65,6 +64,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -1877,7 +1877,7 @@ public class TabStripDragHandlerTest {
                         .getShadowShownForTesting());
 
         // Verify the drag shadow is visible after the runnable completes.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertTrue(
                 "Drag shadow should now be visible.",
                 ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
@@ -1919,7 +1919,7 @@ public class TabStripDragHandlerTest {
                         POS_X,
                         mPosY,
                         isGroupDrag ? DragType.TAB_GROUP : DragType.SINGLE_TAB));
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertFalse(
                 "Drag shadow should still not visible.",
                 ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())

@@ -92,7 +92,6 @@ import org.mockito.quality.Strictness;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
@@ -104,6 +103,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.BuildConfig;
@@ -224,7 +224,6 @@ import java.util.function.Supplier;
         instrumentedPackages = {
             "androidx.recyclerview.widget.RecyclerView" // required to mock final
         })
-@LooperMode(LooperMode.Mode.LEGACY)
 @DisableFeatures({
     ChromeFeatureList.DATA_SHARING,
     ChromeFeatureList.DATA_SHARING_JOIN_ONLY,
@@ -3598,6 +3597,7 @@ public class TabListMediatorUnitTest {
         ShoppingPersistedTabDataFetcher fetcher =
                 new ShoppingPersistedTabDataFetcher(mTab1, () -> mPriceWelcomeMessageController);
         fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mPriceWelcomeMessageController, times(1)).showPriceWelcomeMessage(mPriceTabData);
     }
 
@@ -3612,6 +3612,7 @@ public class TabListMediatorUnitTest {
         assertThat(
                 PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile), equalTo(false));
         fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
     }
 
@@ -3645,6 +3646,7 @@ public class TabListMediatorUnitTest {
 
         doReturn(null).when(mShoppingPersistedTabData).getPriceDrop();
         fetcher.maybeShowPriceWelcomeMessage(mShoppingPersistedTabData);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mPriceWelcomeMessageController, times(0)).showPriceWelcomeMessage(mPriceTabData);
     }
 

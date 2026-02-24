@@ -30,7 +30,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.FeatureOverrides;
@@ -49,7 +48,6 @@ import java.util.Collection;
 /** Tests for {@link LocationPermissionUpdater}. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class LocationPermissionUpdaterTest {
 
     @ParameterizedRobolectricTestRunner.Parameters

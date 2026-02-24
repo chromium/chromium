@@ -35,13 +35,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -56,7 +55,6 @@ import java.util.Map;
 /** Test for {@link ChromeFeedbackCollector}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class ChromeFeedbackCollectorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Activity mActivity;
@@ -303,7 +301,7 @@ public class ChromeFeedbackCollectorUnitTest {
                         null,
                         (result) -> callback.onResult(result));
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(callback, times(1)).onResult(any());
 
         assertEquals(
@@ -330,7 +328,7 @@ public class ChromeFeedbackCollectorUnitTest {
                         null,
                         (result) -> callback.onResult(result));
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(callback, times(1)).onResult(any());
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -367,7 +365,7 @@ public class ChromeFeedbackCollectorUnitTest {
                     }
                 };
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(callback, times(1)).onResult(collector);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -412,7 +410,7 @@ public class ChromeFeedbackCollectorUnitTest {
                     }
                 };
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(callback, times(1)).onResult(collector);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -450,7 +448,7 @@ public class ChromeFeedbackCollectorUnitTest {
                     }
                 };
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(callback, times(1)).onResult(collector);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -499,7 +497,7 @@ public class ChromeFeedbackCollectorUnitTest {
                 };
 
         sources.forEach(source -> ((MockAsyncFeedbackSource) source).triggerDone());
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(callback, times(1)).onResult(collector);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -544,7 +542,7 @@ public class ChromeFeedbackCollectorUnitTest {
                 };
 
         sources.forEach(source -> ((MockAsyncFeedbackSource) source).triggerDone());
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(callback, times(1)).onResult(collector);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -587,7 +585,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
         // Do not trigger done.  The collector should respond back anyway and still try to build the
         // logs and feedback report.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(callback, times(1)).onResult(collector);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -623,7 +621,7 @@ public class ChromeFeedbackCollectorUnitTest {
         Bitmap bitmap = createBitmap();
         mockScreenshotSource.triggerDone(bitmap);
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(callback, times(1)).onResult(collector);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -657,7 +655,7 @@ public class ChromeFeedbackCollectorUnitTest {
                         mockScreenshotSource,
                         (result) -> callback.onResult(result));
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         // We should not get a callback until the screenshot task finishes, even if that extends
         // beyond our internal timeouts.
         verify(callback, times(0)).onResult(collector);
@@ -665,7 +663,7 @@ public class ChromeFeedbackCollectorUnitTest {
         Bitmap bitmap = createBitmap();
         mockScreenshotSource.triggerDone(bitmap);
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(callback, times(1)).onResult(collector);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -698,7 +696,7 @@ public class ChromeFeedbackCollectorUnitTest {
                         new MockScreenshotSource(),
                         (result) -> callback.onResult(result));
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // We should not get a callback until the screenshot task finishes, even if that extends
         // beyond our internal timeouts.
@@ -707,7 +705,7 @@ public class ChromeFeedbackCollectorUnitTest {
         ThreadUtils.runOnUiThreadBlocking(() -> assertNull(collector.getScreenshot()));
         ThreadUtils.runOnUiThreadBlocking(() -> collector.setScreenshot(null));
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(callback, times(1)).onResult(collector);
 
         ThreadUtils.runOnUiThreadBlocking(() -> assertNull(collector.getScreenshot()));
@@ -734,7 +732,7 @@ public class ChromeFeedbackCollectorUnitTest {
                         mockScreenshotSource,
                         (result) -> callback.onResult(result));
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // We should not get a callback until the screenshot task finishes, even if that extends
         // beyond our internal timeouts.
@@ -745,7 +743,7 @@ public class ChromeFeedbackCollectorUnitTest {
         ThreadUtils.runOnUiThreadBlocking(() -> collector.setScreenshot(bitmap));
 
         mockScreenshotSource.triggerDone(null);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(callback, times(1)).onResult(collector);
 
         ThreadUtils.runOnUiThreadBlocking(() -> assertEquals(bitmap, collector.getScreenshot()));
@@ -774,7 +772,7 @@ public class ChromeFeedbackCollectorUnitTest {
         Bitmap bitmap = createBitmap();
         ThreadUtils.runOnUiThreadBlocking(() -> collector.setScreenshot(bitmap));
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         verify(callback, times(1)).onResult(collector);
         ThreadUtils.runOnUiThreadBlocking(() -> assertEquals(bitmap, collector.getScreenshot()));
@@ -803,7 +801,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
         {
             mockScreenshotSource.triggerDone(null);
-            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+            RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
             verify(callback, times(1)).onResult(collector);
         }
@@ -817,7 +815,7 @@ public class ChromeFeedbackCollectorUnitTest {
                     assertEquals(bitmap, collector.getScreenshot());
                 });
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         ThreadUtils.runOnUiThreadBlocking(() -> assertEquals(bitmap, collector.getScreenshot()));
 
         // If we have already gotten a callback, we should not get another one.
@@ -846,7 +844,7 @@ public class ChromeFeedbackCollectorUnitTest {
                         mockScreenshotSource,
                         (result) -> callback.onResult(result));
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // We should not get a callback until the screenshot task finishes, even if that extends
         // beyond our internal timeouts.
@@ -858,7 +856,7 @@ public class ChromeFeedbackCollectorUnitTest {
 
         Bitmap bitmap2 = createBitmap();
         mockScreenshotSource.triggerDone(bitmap2);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(callback, times(1)).onResult(collector);
 
         ThreadUtils.runOnUiThreadBlocking(() -> assertEquals(bitmap, collector.getScreenshot()));

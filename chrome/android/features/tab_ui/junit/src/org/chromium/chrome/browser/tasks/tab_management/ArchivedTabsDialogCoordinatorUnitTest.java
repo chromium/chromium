@@ -37,7 +37,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -48,6 +47,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
@@ -262,7 +262,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         mTabCountSupplier.set(0);
 
         // Allow animations to finish.
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTabListEditorController).hide();
     }
@@ -272,7 +272,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         mCoordinator.show(mOnTabSelectingListener);
         mCoordinator.getTabListEditorLifecycleObserver().willHide();
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mRootView).removeView(any());
 
         mCoordinator.getTabListEditorLifecycleObserver().didHide();
@@ -287,7 +287,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         mCoordinator.destroy();
 
         // Allow animations to finish.
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mRootView, atLeastOnce()).removeView(any());
         verify(mTabListEditorController).setLifecycleObserver(null);
@@ -345,7 +345,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         verify(mTabGroupUiActionHandler).openTabGroup(TAB_GROUP_ID_STRING);
 
         // Assert the dialog is hidden and destroyed.
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mRootView, atLeastOnce()).removeView(any());
         verify(mTabListEditorController).setLifecycleObserver(null);

@@ -33,13 +33,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -183,7 +183,7 @@ public class TabModelSelectorImplTest {
         assertEquals(
                 mTabModelSelector.getModel(false),
                 mTabModelSelector.getCurrentTabGroupModelFilter().getTabModel());
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabSupplierObserverMock).onResult(eq(normalTab));
 
         MockTab incognitoTab = new MockTab(2, mIncognitoProfile);
@@ -205,7 +205,7 @@ public class TabModelSelectorImplTest {
         assertEquals(
                 mTabModelSelector.getModel(true),
                 mTabModelSelector.getCurrentTabGroupModelFilter().getTabModel());
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabSupplierObserverMock).onResult(eq(incognitoTab));
 
         mTabModelSelector.selectModel(false);
@@ -213,7 +213,7 @@ public class TabModelSelectorImplTest {
         assertEquals(
                 mTabModelSelector.getModel(false),
                 mTabModelSelector.getCurrentTabGroupModelFilter().getTabModel());
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabSupplierObserverMock, times(2)).onResult(eq(normalTab));
 
         mTabModelSelector.getCurrentTabSupplier().removeObserver(mTabSupplierObserverMock);
@@ -225,7 +225,7 @@ public class TabModelSelectorImplTest {
                 .getCurrentModelTabCountSupplier()
                 .addSyncObserverAndPostIfNonNull(mTabCountSupplierObserverMock);
         assertEquals(0, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabCountSupplierObserverMock).onResult(0);
 
         MockTab normalTab1 = new MockTab(1, mProfile);
@@ -236,7 +236,7 @@ public class TabModelSelectorImplTest {
                         0,
                         TabLaunchType.FROM_CHROME_UI,
                         TabCreationState.LIVE_IN_FOREGROUND);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabCountSupplierObserverMock).onResult(1);
         assertEquals(1, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
 
@@ -248,7 +248,7 @@ public class TabModelSelectorImplTest {
                         0,
                         TabLaunchType.FROM_CHROME_UI,
                         TabCreationState.LIVE_IN_FOREGROUND);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabCountSupplierObserverMock).onResult(2);
         assertEquals(2, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
 
@@ -260,12 +260,12 @@ public class TabModelSelectorImplTest {
                         0,
                         TabLaunchType.FROM_CHROME_UI,
                         TabCreationState.LIVE_IN_FOREGROUND);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabCountSupplierObserverMock).onResult(2);
         assertEquals(2, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
 
         mTabModelSelector.selectModel(true);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabCountSupplierObserverMock, times(2)).onResult(1);
         assertEquals(1, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
 
@@ -275,7 +275,7 @@ public class TabModelSelectorImplTest {
         verify(mTabCountSupplierObserverMock, times(2)).onResult(1);
 
         mTabModelSelector.selectModel(false);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(0, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
         verify(mTabCountSupplierObserverMock, times(2)).onResult(0);
 
@@ -348,7 +348,7 @@ public class TabModelSelectorImplTest {
         mTabModelSelector
                 .getCurrentTabModelSupplier()
                 .addSyncObserverAndPostIfNonNull(mTabModelSupplierObserverMock);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabModelSupplierObserverMock).onResult(any());
 
         InOrder order =
@@ -378,7 +378,7 @@ public class TabModelSelectorImplTest {
         // The above calls posts a tasks which can get executed after we add
         // mTabModelSelectorObserverMock below and interfering with the verify onChange test below.
         // Therefore execute that task immediately now.
-        ShadowLooper.shadowMainLooper().idle();
+        RobolectricUtil.runAllBackgroundAndUi();
         // Add the observers now to prevent any firing from the previous selectModel which is
         // separate from the actual test.
         mTabModelSelector.setIncognitoReauthDialogDelegate(mIncognitoReauthDialogDelegateMock);
@@ -387,7 +387,7 @@ public class TabModelSelectorImplTest {
         mTabModelSelector
                 .getCurrentTabModelSupplier()
                 .addSyncObserverAndPostIfNonNull(mTabModelSupplierObserverMock);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabModelSupplierObserverMock).onResult(any());
 
         doNothing().when(mIncognitoReauthDialogDelegateMock).onAfterRegularTabModelChanged();
@@ -400,7 +400,7 @@ public class TabModelSelectorImplTest {
 
         // The onChange method below is posted as a task to the main looper, and therefore we need
         // to wait until it gets executed.
-        ShadowLooper.shadowMainLooper().idle();
+        RobolectricUtil.runAllBackgroundAndUi();
         order.verify(mTabModelSelectorObserverMock).onChange();
         order.verify(mIncognitoReauthDialogDelegateMock).onAfterRegularTabModelChanged();
 
