@@ -33,32 +33,26 @@ uint32_t GetTopK(std::optional<uint32_t> top_k) {
 }  // namespace
 
 // Wrapper for the ChromeMLCancel object.
-class SessionAccessor::Canceler
-    : public base::RefCountedDeleteOnSequence<Canceler> {
+class SessionAccessor::Canceler : public base::RefCountedThreadSafe<Canceler> {
  public:
   Canceler(const ChromeML& chrome_ml,
            scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : base::RefCountedDeleteOnSequence<Canceler>(task_runner),
-        chrome_ml_(chrome_ml),
-        task_runner_(task_runner) {
-    // `Canceler` is deleted on `task_runner_` so `base::Unretained` is safe.
+      : chrome_ml_(chrome_ml), task_runner_(task_runner) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&SessionAccessor::Canceler::CreateInternal,
-                                  base::Unretained(this)));
+                                  base::RetainedRef(this)));
   }
 
   void Cancel() {
-    // `Canceler` is deleted on `task_runner_` so `base::Unretained` is safe.
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&SessionAccessor::Canceler::CancelInternal,
-                                  base::Unretained(this)));
+                                  base::RetainedRef(this)));
   }
 
   ChromeMLCancel get() const { return cancel_; }
 
  private:
-  friend class base::RefCountedDeleteOnSequence<Canceler>;
-  friend class base::DeleteHelper<Canceler>;
+  friend class base::RefCountedThreadSafe<Canceler>;
 
   DISABLE_CFI_DLSYM
   virtual ~Canceler() { chrome_ml_->api().DestroyCancel(cancel_); }
