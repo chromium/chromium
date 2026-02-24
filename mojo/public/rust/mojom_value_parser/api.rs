@@ -38,9 +38,7 @@ pub fn deserialize_exact<T: MojomParse>(
             remaining_bytes.len(),
         ));
     }
-    // Convert the parsed MojomValue to a T. This conversion should never fail,
-    // since we passed T's wire type to the parser.
-    Ok(parsed_value.try_into().unwrap())
+    Ok(parsed_value)
 }
 
 /// Serialize a Rust struct into a Mojom message.

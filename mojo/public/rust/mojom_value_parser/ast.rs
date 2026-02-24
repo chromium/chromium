@@ -249,7 +249,7 @@ impl MojomWireType {
                 PackedLeafType::Int32 | PackedLeafType::UInt32 | PackedLeafType::Float32 => 4,
                 PackedLeafType::Int64 | PackedLeafType::UInt64 | PackedLeafType::Float64 => 8,
                 PackedLeafType::Enum { .. } => 4,
-                PackedLeafType::Handle { .. } => 4,
+                PackedLeafType::Handle => 4,
             },
             MojomWireType::Pointer { .. } => 8,
             MojomWireType::Union { .. } => 16,

@@ -41,6 +41,12 @@ impl From<RawMojoMessage> for MessageHandle {
     }
 }
 
+impl Default for RawMojoMessage {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl RawMojoMessage {
     /// Construct an empty RawMojoMessage
     pub fn new() -> Self {
@@ -221,11 +227,29 @@ impl RawMojoMessage {
     /// To make it harder to forget to do so, this function will always return
     /// an error result so the compiler will warn if you try to treat it like a
     /// panic and ignore its return value.
-    pub fn report_bad_message(&self, error_msg: &str) -> Result<(), ()> {
+    pub fn report_bad_message(&self, error_msg: &str) -> Result<(), BadMessageError> {
         // Ignore the MojoError; this can only fail if the message_handle is invalid,
         // and we guarantee that it's valid as part of this type.
         // SAFETY: We guarantee that our contained handle is alive.
         message::MojoNotifyBadMessage(&self.message_handle, error_msg);
-        Err(())
+        Err(BadMessageError)
     }
 }
+
+/// Error that is always returned from [`report_bad_message`], to encourage
+/// the caller to stop any further processing and propagate the error up.
+#[derive(Debug)]
+pub struct BadMessageError;
+
+impl std::fmt::Display for BadMessageError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
+        write!(
+            f,
+            "This error is a reminder to the programmer to stop processing \
+             after calling `report_bad_message`"
+        )?;
+        Ok(())
+    }
+}
+
+impl std::error::Error for BadMessageError {}

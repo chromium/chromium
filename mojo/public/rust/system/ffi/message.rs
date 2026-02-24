@@ -130,7 +130,7 @@ pub fn MojoAppendMessageData(
 
     // `MojoAppendMessageData` copies the handles for us, but returns a pointer to
     // its buffer that we need to write to ourselves.
-    if bytes.len() > 0 {
+    if !bytes.is_empty() {
         // Will not panic if usize has at least 32 bits, which is true for Chromium
         // targets
         let buffer_size: usize = buffer_size.try_into().unwrap();

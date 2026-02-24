@@ -930,7 +930,7 @@ fn test_string_parsing() -> anyhow::Result<()> {
     )?;
 
     validate_parsing::<HashMap<String, i16>>(
-        [("three".to_string().into(), 3), ("four".to_string().into(), 4)].into(),
+        [("three".to_string(), 3), ("four".to_string(), 4)].into(),
         &format!(
             "{} {} {} {} {} {} {} {} {}",
             "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",

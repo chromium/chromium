@@ -1664,8 +1664,8 @@ fn test_maps() {
 
     let float_map_data = [(1.1.into(), 10), (2.2.into(), 20)];
     MAP_FLOAT_I32_TY.validate_mojomparse::<HashMap<OrderedFloat<f32>, i32>>(
-        float_map_data.clone().into(),
-        map_float_i32_mojom(float_map_data.clone().into()),
+        float_map_data.into(),
+        map_float_i32_mojom(float_map_data.into()),
     );
 
     MAPS_TY.validate_mojomparse(
@@ -1676,7 +1676,7 @@ fn test_maps() {
             to_struct: to_struct_data.clone().into(),
             to_union: to_union_data.clone().into(),
             to_map: to_map_data.clone().into(),
-            float_map: float_map_data.clone().into(),
+            float_map: float_map_data.into(),
         },
         maps_mojom(
             eights_data.into(),
@@ -1982,6 +1982,7 @@ static NULLABLE_BASICS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
     ),
 });
 
+#[allow(clippy::too_many_arguments)]
 fn nullable_basics_mojom(
     b: Option<bool>,
     n1: Option<u16>,

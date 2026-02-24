@@ -50,6 +50,9 @@ but ultimately we trust the judgement of Chromium engineers.
   [@chrome-rust](https://groups.google.com/a/google.com/g/chrome-rust)
   if you find yourself oftentimes disabling a particular lint.
 
+For a list of Clippy lints that apply by default to Chromium targets please
+see the `//build/config/compiler:default_clippy_lints` target.
+
 ## Known issues
 
 * https://crbug.com/472338477: Can't invoke Clippy on a proc-macro crate

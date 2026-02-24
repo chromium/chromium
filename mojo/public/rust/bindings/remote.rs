@@ -211,7 +211,7 @@ where
                 .lock()
                 .expect("Mutex should never be poisoned")
                 .insert(self.next_request_id, callback);
-            if !matches!(old_entry, None) {
+            if old_entry.is_some() {
                 // This is technically possible...if we wrap all the way around with request IDs
                 panic!("send_message_internal: Tried to insert duplicate response!")
             }

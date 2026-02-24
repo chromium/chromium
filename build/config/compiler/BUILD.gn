@@ -2308,7 +2308,20 @@ config("default_warnings") {
     ldflags += [ "-Wl,-no_warn_duplicate_libraries" ]
   }
 
-  rustflags = [ "-Dclippy::all" ]
+  configs = [ ":default_clippy_lints" ]
+}
+
+# default_clippy_lints --------------------------------------------------------
+
+config("default_clippy_lints") {
+  rustflags = [
+    # Treat all default Clippy lints as errors.
+    "-Dclippy::all",
+
+    # Lints disabled during the initial rollout period (when any objection
+    # coming from a Chromium engineer would get a lint disabled):
+    "-Aclippy::needless_return",
+  ]
 }
 
 # prevent_unsafe_narrowing ----------------------------------------------------

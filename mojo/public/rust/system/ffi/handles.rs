@@ -57,7 +57,9 @@ pub struct UntypedHandle {
 
 impl UntypedHandle {
     /// Create a new UntypedHandle from a raw value.
-    /// SAFETY: The value must represent a live, unonwned handle.
+    ///
+    /// # Safety
+    /// The value must represent a live, unonwned handle.
     pub unsafe fn wrap_raw_value(raw_value: raw_ffi::MojoHandle) -> Self {
         // FOR_RELEASE: There are apparently other types of handle ("Pseudohandles")
         // that should not be representable by this type. Look into these and check for
@@ -133,7 +135,9 @@ pub struct MessageHandle {
 
 impl MessageHandle {
     /// Create a new MessageHandle from a raw value.
-    /// SAFETY: The value must represent a live, unonwned handle.
+    ///
+    /// # Safety
+    /// The value must represent a live, unonwned handle.
     pub unsafe fn wrap_raw_value(raw_value: raw_ffi::MojoHandle) -> Self {
         Self {
             handle_value: raw_value.try_into().unwrap(),

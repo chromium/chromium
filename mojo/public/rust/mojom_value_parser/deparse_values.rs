@@ -14,6 +14,12 @@ pub struct DeparsedData {
     handles: Vec<UntypedHandle>,
 }
 
+impl Default for DeparsedData {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DeparsedData {
     pub fn new() -> Self {
         DeparsedData { bytes: vec![], handles: vec![] }

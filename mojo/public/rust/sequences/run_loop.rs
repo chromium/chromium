@@ -14,6 +14,12 @@ pub struct RunLoop {
     run_loop: Arc<UniquePtr<CxxRunLoop>>,
 }
 
+impl Default for RunLoop {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl RunLoop {
     // Create a new RunLoop object.
     pub fn new() -> Self {
@@ -33,7 +39,9 @@ impl RunLoop {
     pub fn get_quit_closure(&self) -> impl Fn() + Send + 'static {
         let self_weak = Arc::downgrade(&self.run_loop);
         move || {
-            self_weak.upgrade().map(|run_loop| QuitRunLoop(&run_loop));
+            if let Some(run_loop) = self_weak.upgrade() {
+                QuitRunLoop(&run_loop)
+            }
         }
     }
 }
