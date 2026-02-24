@@ -497,6 +497,13 @@
     --color-searchbox-results-icon-focused-outline: Highlight;
     --select-color_: Highlight;
   }
+
+  #composebox::part(context-menu-entrypoint-icon),
+  #composebox::part(cancel-icon),
+  #composebox::part(lens-icon),
+  #composebox::part(voice-icon) {
+    --cr-icon-button-fill-color: ButtonText;
+  }
 }
 
 :host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-icon-container) {
