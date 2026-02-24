@@ -79,7 +79,18 @@ public class CronetLibraryLoader {
      * that this will be dead code in Chromium but it will be used in AOSP.
      */
     public static void preload() {
+        preload(/* executeSelfTests= */ false);
+    }
+
+    /**
+     * This method will be called by the Zygote pre-fork to preload the native code. Which means
+     * that this will be dead code in Chromium but it will be used in AOSP.
+     */
+    public static void preload(boolean executeSelfTests) {
         loadLibrary();
+        if (executeSelfTests) {
+            CronetLibraryLoaderJni.get().executeSelfTests();
+        }
     }
 
     @VisibleForTesting
@@ -380,5 +391,7 @@ public class CronetLibraryLoader {
         String getCronetVersion();
 
         void setMinLogLevel(int loggingLevel);
+
+        void executeSelfTests();
     }
 }

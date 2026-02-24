@@ -196,6 +196,7 @@ source_set("cronet_static") {
     "//net",
     "//third_party/zlib",
     "//url",
+    "//third_party/boringssl"
   ]
   sources = [
     "//components/cronet/android/completion_once_callback_adapter.cc",

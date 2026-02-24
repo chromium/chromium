@@ -3,4 +3,5 @@ include_rules = [
   "+crypto",
   "+jni",
   "+third_party/protobuf",
+  "+third_party/boringssl",
 ]

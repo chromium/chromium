@@ -2369,6 +2369,12 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
+    public void testExecutingBoringSSLSelfTestShouldNotCrash() {
+        CronetLibraryLoader.preload(/* executeSelfTests= */ true);
+    }
+
+    @Test
+    @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
             reason = "JSON experimental options are supported only by the native implementation")
