@@ -79,10 +79,12 @@ public class ToastManager {
 
     /**
      * Request to show a toast.
+     *
      * @param toast {@link Toast} object to show.
      */
     public void requestShow(Toast toast) {
         if (toast == null || isDuplicatedToast(toast)) return;
+        ResettersForTesting.register(this::resetInternalForTesting);
 
         mToastQueue.add(toast);
 
@@ -212,6 +214,7 @@ public class ToastManager {
     private void resetInternalForTesting() {
         mToastQueue.clear();
         if (mToast != null) cancel(mToast);
+        mHandler.removeCallbacksAndMessages(null);
     }
 
     boolean isShowingForTesting() {

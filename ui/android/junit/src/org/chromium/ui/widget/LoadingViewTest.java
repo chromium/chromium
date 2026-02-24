@@ -10,27 +10,24 @@ import android.widget.FrameLayout;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
-
-import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link LoadingView}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowView.class})
-@LooperMode(LooperMode.Mode.LEGACY)
 public class LoadingViewTest {
     static class TestObserver implements LoadingView.Observer {
         public final CallbackHelper showLoadingCallback = new CallbackHelper();
@@ -54,7 +51,8 @@ public class LoadingViewTest {
 
     @Before
     public void setUpTest() throws Exception {
-        mActivity = Robolectric.buildActivity(Activity.class).create().get();
+        mActivity =
+                Robolectric.buildActivity(Activity.class).create().start().resume().visible().get();
 
         FrameLayout content = new FrameLayout(mActivity);
         mActivity.setContentView(content);
@@ -65,6 +63,11 @@ public class LoadingViewTest {
 
         mLoadingView.addObserver(mTestObserver1);
         mLoadingView.addObserver(mTestObserver2);
+    }
+
+    @After
+    public void tearDown() {
+        mLoadingView.destroy();
     }
 
     @Test
@@ -80,7 +83,7 @@ public class LoadingViewTest {
                 0,
                 mTestObserver2.showLoadingCallback.getCallCount());
 
-        ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertEquals(
                 "Progress bar should be hidden before 500ms.",
                 View.GONE,
@@ -110,7 +113,6 @@ public class LoadingViewTest {
     @Test
     @SmallTest
     public void testLoadingSlow() {
-        long sleepTime = 500;
         mLoadingView.showLoadingUi();
         Assert.assertEquals(
                 "showLoadingCallback1 should not be executed as soon as showLoadingUi is called.",
@@ -121,7 +123,7 @@ public class LoadingViewTest {
                 0,
                 mTestObserver2.showLoadingCallback.getCallCount());
 
-        ShadowLooper.idleMainLooper(sleepTime, TimeUnit.MILLISECONDS);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         Assert.assertEquals(
                 "Progress bar should be visible after 500ms.",
                 View.VISIBLE,
@@ -150,7 +152,7 @@ public class LoadingViewTest {
                 mTestObserver2.hideLoadingCallback.getCallCount());
 
         // The spinner should be displayed for at least 500ms.
-        ShadowLooper.idleMainLooper(sleepTime, TimeUnit.MILLISECONDS);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         Assert.assertEquals(
                 "Progress bar should be hidden after 500ms.",
                 View.GONE,
