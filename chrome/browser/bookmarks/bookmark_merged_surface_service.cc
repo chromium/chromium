@@ -15,7 +15,6 @@
 #include "base/uuid.h"
 #include "chrome/browser/bookmarks/bookmark_parent_folder_children.h"
 #include "chrome/browser/bookmarks/permanent_folder_ordering_tracker.h"
-#include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_move_dialog.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -308,16 +307,10 @@ void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
     return;
   }
 
-  if (show_move_storage_dialog_for_testing_) {
-    show_move_storage_dialog_for_testing_.Run(
-        browser, node, new_parent.as_non_permanent_folder(), index);
-    return;
-  }
-
   // This will show a dialog which asks the user to confirm whether they would
   // like to move their bookmark to a different storage.
-  CHECK(browser);
-  ShowBookmarkAccountStorageMoveDialog(
+  CHECK(show_move_storage_dialog_callback_);
+  show_move_storage_dialog_callback_.Run(
       browser, node, new_parent.as_non_permanent_folder(), index);
 }
 
@@ -327,11 +320,9 @@ void BookmarkMergedSurfaceService::LoadForTesting(
   OnLoadOrderingComplete(std::move(result));
 }
 
-void BookmarkMergedSurfaceService::SetShowMoveStorageDialogCallbackForTesting(
-    ShowMoveStorageDialogCallback show_move_storage_dialog_for_testing) {
-  CHECK_IS_TEST();
-  show_move_storage_dialog_for_testing_ =
-      std::move(show_move_storage_dialog_for_testing);
+void BookmarkMergedSurfaceService::SetShowMoveStorageDialogCallback(
+    ShowMoveStorageDialogCallback callback) {
+  show_move_storage_dialog_callback_ = std::move(callback);
 }
 
 void BookmarkMergedSurfaceService::AddNodesAsCopiesOfNodeData(

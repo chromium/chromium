@@ -157,8 +157,7 @@ class BookmarkMergedSurfaceService
                                    const bookmarks::BookmarkNode* node,
                                    const bookmarks::BookmarkNode* target_node,
                                    size_t index)>;
-  void SetShowMoveStorageDialogCallbackForTesting(
-      ShowMoveStorageDialogCallback show_move_storage_dialog_for_testing);
+  void SetShowMoveStorageDialogCallback(ShowMoveStorageDialogCallback callback);
 
   void AddObserver(BookmarkMergedSurfaceServiceObserver* observer);
   void RemoveObserver(BookmarkMergedSurfaceServiceObserver* observer);
@@ -238,7 +237,7 @@ class BookmarkMergedSurfaceService
 
   std::unique_ptr<BookmarkMergedSurfaceOrderingStorage> storage_;
 
-  ShowMoveStorageDialogCallback show_move_storage_dialog_for_testing_;
+  ShowMoveStorageDialogCallback show_move_storage_dialog_callback_;
 
   // Non-empty in the middle of moving a bookmark node.
   // It is set in `OnWillMoveBookmarkNode()` and cleared in
