@@ -12,6 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -21,12 +22,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class EditSearchEngineDialogCoordinator {
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
+    private final TemplateUrlService mTemplateUrlService;
     @Nullable private PropertyModel mDialogModel;
 
     public EditSearchEngineDialogCoordinator(
-            Context context, ModalDialogManager modalDialogManager) {
+            Context context,
+            ModalDialogManager modalDialogManager,
+            TemplateUrlService templateUrlService) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
+        mTemplateUrlService = templateUrlService;
     }
 
     public void show(TemplateUrl templateUrl) {
@@ -49,8 +54,12 @@ public class EditSearchEngineDialogCoordinator {
                     @Override
                     public void onClick(PropertyModel model, int buttonType) {
                         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-                            // TODO: save changes via TemplateUrlService using templateUrl
-
+                            String keyword = templateUrl.getKeyword();
+                            String name = nameInput.getText().toString();
+                            String newKeyword = shortcutInput.getText().toString();
+                            String url = urlInput.getText().toString();
+                            // TODO: handle user input validation
+                            mTemplateUrlService.editSearchEngine(keyword, name, newKeyword, url);
                             mModalDialogManager.dismissDialog(
                                     model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                         } else {

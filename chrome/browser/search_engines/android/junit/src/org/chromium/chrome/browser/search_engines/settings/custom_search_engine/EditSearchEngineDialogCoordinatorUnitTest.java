@@ -30,6 +30,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -42,6 +43,7 @@ public class EditSearchEngineDialogCoordinatorUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock private TemplateUrl mTemplateUrl;
+    @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private ModalDialogManager mModalDialogManager;
 
     private Context mContext;
@@ -52,7 +54,9 @@ public class EditSearchEngineDialogCoordinatorUnitTest {
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
-        mCoordinator = new EditSearchEngineDialogCoordinator(mContext, mModalDialogManager);
+        mCoordinator =
+                new EditSearchEngineDialogCoordinator(
+                        mContext, mModalDialogManager, mTemplateUrlService);
 
         when(mTemplateUrl.getShortName()).thenReturn("name");
         when(mTemplateUrl.getKeyword()).thenReturn("keyword");
@@ -102,12 +106,19 @@ public class EditSearchEngineDialogCoordinatorUnitTest {
         ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mModalDialogManager).showDialog(modelCaptor.capture(), any(Integer.class));
         PropertyModel model = modelCaptor.getValue();
+
+        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
+        EditText nameInput = customView.findViewById(R.id.name_input);
+        nameInput.setText("new name");
+
         ModalDialogProperties.Controller controller = model.get(ModalDialogProperties.CONTROLLER);
 
         controller.onClick(model, ModalDialogProperties.ButtonType.POSITIVE);
+        verify(mTemplateUrlService)
+                .editSearchEngine(
+                        "keyword", "new name", "keyword", "https://example.com/search?q=%s");
         verify(mModalDialogManager)
                 .dismissDialog(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
-        // TODO: verify template url after the service is brought up
     }
 
     @Test
