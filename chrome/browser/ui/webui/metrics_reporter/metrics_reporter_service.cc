@@ -22,13 +22,7 @@ MetricsReporterService::~MetricsReporterService() = default;
 // static
 MetricsReporterService* MetricsReporterService::GetFromWebContents(
     content::WebContents* web_contents) {
-  MetricsReporterService* service =
-      MetricsReporterService::FromWebContents(web_contents);
-  if (!service) {
-    MetricsReporterService::CreateForWebContents(web_contents);
-    service = MetricsReporterService::FromWebContents(web_contents);
-  }
-  return service;
+  return GetOrCreateForWebContents(web_contents);
 }
 
 void MetricsReporterService::BindReceiver(
