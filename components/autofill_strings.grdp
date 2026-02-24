@@ -16,6 +16,11 @@
   <message name="IDS_AUTOFILL_WARNING_MIXED_FORM" desc="Warning text shown when autofill is disabled due to a form on a secure site being submitted over an insecure connection.">
     This form is not secure. Autofill has been turned off.
   </message>
+  <if expr="is_ios">
+    <message name="IDS_AUTOFILL_AI_FILLING_REAUTH" desc="Message shown to the user when they need to authenticate to fill an Autofill AI form.">
+      Chrome is trying to fill your sensitive info on <ph name="APP_NAME">$1<ex>google.com</ex></ph>.
+    </message>
+  </if>
   <if expr="is_chromeos">
     <message name="IDS_AUTOFILL_AI_FILLING_REAUTH" desc="Message shown to the user when they need to authenticate to fill an Autofill AI form.">
       Chrome browser is trying to fill your sensitive info on <ph name="APP_NAME">$1<ex>google.com</ex></ph>.

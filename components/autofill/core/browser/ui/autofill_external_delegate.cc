@@ -1428,11 +1428,13 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
 
   // Authenticate and fill on success.
   std::u16string message;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_IOS)
   const std::u16string origin =
       base::UTF8ToUTF16(autofill_field->origin().host());
   message = l10n_util::GetStringFUTF16(IDS_AUTOFILL_AI_FILLING_REAUTH, origin);
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_IOS)
   base::OnceCallback<std::optional<EntityInstance>(bool)>
       convert_auth_response = base::BindOnce(
           [](EntityInstance masked_entity, bool auth_succeeded) {
