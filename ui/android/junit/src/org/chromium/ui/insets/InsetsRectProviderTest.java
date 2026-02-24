@@ -24,12 +24,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsCompat.Type.InsetsType;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
@@ -48,6 +49,8 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30)
 public class InsetsRectProviderTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final int WINDOW_WIDTH = 600;
     private static final int WINDOW_HEIGHT = 800;
     private static final Size INSETS_FRAME_SIZE = new Size(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -70,11 +73,6 @@ public class InsetsRectProviderTest {
                 doReturn(insets).when(newWindowInsetsCompat).getInsets(eq(insetsType));
                 return newWindowInsetsCompat;
             };
-
-    @Before
-    public void setup() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void testInitialization() {

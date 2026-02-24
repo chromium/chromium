@@ -33,13 +33,15 @@ import android.webkit.MimeTypeMap;
 import androidx.core.content.ContextCompat;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.android.util.concurrent.PausedExecutorService;
 import org.robolectric.annotation.Config;
@@ -77,6 +79,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 })
 @EnableFeatures({UiAndroidFeatures.DISABLE_PHOTO_PICKER_FOR_VIDEO_CAPTURE})
 public class SelectFileDialogTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     // A callback that fires when the file selection pipeline shuts down as a result of an action.
     public final CallbackHelper mOnActionCallback = new CallbackHelper();
 
@@ -87,7 +91,6 @@ public class SelectFileDialogTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         PostTask.setPrenativeThreadPoolExecutorForTesting(mExecutor);
     }
 

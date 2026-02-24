@@ -11,10 +11,12 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -22,19 +24,20 @@ import java.io.FileNotFoundException;
 
 /**
  * Test basic functionality of {@link DropDataContentProvider}.
- * <p>
- * The content provider acts as a wrapper for the impl class {@link DropDataProviderImpl} so the
+ *
+ * <p>The content provider acts as a wrapper for the impl class {@link DropDataProviderImpl} so the
  * tests will verify the wiring is correct.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DropDataContentProviderTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private DropDataContentProvider mDropDataContentProvider;
 
     @Mock public DropDataProviderImpl mDropDataProviderImplMock;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mDropDataContentProvider = new DropDataContentProvider();
         mDropDataContentProvider.setDropDataProviderImpl(mDropDataProviderImplMock);
     }

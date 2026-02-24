@@ -34,10 +34,12 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -53,6 +55,8 @@ import java.util.Collections;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class InsetObserverTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     /** The rect values if the display cutout is present. */
     private static final Rect DISPLAY_CUTOUT_RECT = new Rect(1, 1, 1, 1);
 
@@ -109,7 +113,6 @@ public class InsetObserverTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(mNonCompatInsets).when(mInsets).toWindowInsets();
         doReturn(mModifiedNonCompatInsets).when(mModifiedInsets).toWindowInsets();
         doReturn(WindowInsetsCompat.CONSUMED.toWindowInsets())
