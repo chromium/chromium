@@ -1399,12 +1399,6 @@ static_library("browser") {
     "tpcd/metadata/devtools_observer.h",
     "tpcd/metadata/manager_factory.cc",
     "tpcd/metadata/manager_factory.h",
-    "tracing/chrome_background_tracing_metrics_provider.cc",
-    "tracing/chrome_background_tracing_metrics_provider.h",
-    "tracing/chrome_tracing_delegate.cc",
-    "tracing/chrome_tracing_delegate.h",
-    "tracing/tracing_features.cc",
-    "tracing/tracing_features.h",
     "transition_manager/full_browser_transition_manager.cc",
     "transition_manager/full_browser_transition_manager.h",
     "translate/chrome_translate_client.cc",
@@ -1673,6 +1667,13 @@ static_library("browser") {
     # TODO(crbug.com/430804948): Remove this circular dependency when profiles/profile_manager.h
     # gets componentized.
     "//chrome/browser/subscription_eligibility",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency when the following headers get componentized:
+    # - c/b/metrics/accessibility_state_provider.h
+    # - c/b/metrics/chromeos_system_profile_provider.h
+    # - c/b/metrics/chromeos_metrics_provider.h
+    # - c/b/metrics/network_quality_estimator_provider_impl.h
+    "//chrome/browser/tracing:impl",
   ]
 
   public_deps = [
@@ -1918,6 +1919,8 @@ static_library("browser") {
     "//chrome/browser/thumbnail",
     "//chrome/browser/top_level_storage_access_api:permissions",
     "//chrome/browser/touch_to_fill/password_manager",
+    "//chrome/browser/tracing",
+    "//chrome/browser/tracing:impl",
     "//chrome/browser/translate",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
@@ -6342,9 +6345,6 @@ static_library("browser") {
       "shell_integration_win.cc",
       "taskbar/taskbar_decorator_win.cc",
       "taskbar/taskbar_decorator_win.h",
-      "tracing/windows_system_tracing_client_impl_win.cc",
-      "tracing/windows_system_tracing_client_impl_win.h",
-      "tracing/windows_system_tracing_client_win.h",
       "webshare/win/share_operation.cc",
       "webshare/win/share_operation.h",
       "webshare/win/show_share_ui_for_window_operation.cc",

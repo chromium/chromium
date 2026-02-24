@@ -1,0 +1,119 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tracing") {
+  sources = [
+    "chrome_background_tracing_metrics_provider.h",
+    "chrome_tracing_delegate.h",
+    "tracing_features.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/tracing:tracing_metrics",
+    "//content/public/browser",
+  ]
+
+  if (is_win) {
+    sources += [
+      "windows_system_tracing_client_impl_win.h",
+      "windows_system_tracing_client_win.h",
+    ]
+    public_deps += [
+      "//chrome/windows_services/elevated_tracing_service:tracing_service_idl",
+    ]
+  }
+
+  if (!is_android) {
+    public_deps += [ "//chrome/browser/ui:browser_list" ]
+  } else {
+    public_deps += [ "//chrome/browser/ui/android/tab_model" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "chrome_background_tracing_metrics_provider.cc",
+    "chrome_tracing_delegate.cc",
+    "tracing_features.cc",
+  ]
+  deps = [
+    ":tracing",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/common:channel_info",
+    "//chrome/common:constants",
+    "//components/metrics",
+    "//components/metrics:metrics_pref_names",
+    "//components/metrics:net",
+    "//components/prefs",
+    "//components/tracing:background_tracing_utils",
+    "//components/variations",
+    "//components/version_info",
+  ]
+
+  if (is_win) {
+    sources += [ "windows_system_tracing_client_impl_win.cc" ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//ash/constants" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chrome_background_tracing_metrics_provider_unittest.cc" ]
+  deps = [
+    ":tracing",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//services/tracing/public/cpp",
+    "//testing/gtest",
+    "//third_party/metrics_proto",
+    "//third_party/zlib/google:compression_utils",
+  ]
+
+  if (is_win) {
+    sources += [ "windows_system_tracing_client_impl_unittest_win.cc" ]
+    deps += [
+      "//chrome/windows_services/elevated_tracing_service:tracing_service_idl",
+    ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/login/demo_mode",
+      "//chromeos/ash/components/login/login_state",
+      "//chromeos/ash/components/system",
+      "//chromeos/dbus/power",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "chrome_tracing_delegate_browsertest.cc" ]
+    deps = [
+      ":tracing",
+      "//base/test:proto_test_support",
+      "//base/test:test_support",
+      "//chrome/app:command_ids",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/common:constants",
+      "//chrome/test:test_support_ui",
+      "//components/metrics:metrics_pref_names",
+      "//components/prefs",
+      "//content/test:test_support",
+    ]
+  }
+}
