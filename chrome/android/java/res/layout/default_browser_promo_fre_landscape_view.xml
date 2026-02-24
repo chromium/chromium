@@ -17,12 +17,11 @@ found in the LICENSE file.
   <!-- Left part of the view -->
   <ImageView
       android:id="@+id/fre_icon"
-      android:layout_width="300dp"
+      android:layout_width="220dp"
       android:layout_height="match_parent"
       android:layout_alignParentStart="true"
       android:layout_centerVertical="true"
       android:scaleType="fitCenter"
-      android:adjustViewBounds="true"
       android:src="@drawable/default_browser_promo_fre_logo_illustration"
       android:importantForAccessibility="no" />
 
@@ -32,7 +31,6 @@ found in the LICENSE file.
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_toEndOf="@id/fre_icon"
-      android:layout_marginEnd="24dp"
       android:fadeScrollbars="false"
       android:fillViewport="true">
 
@@ -66,6 +64,7 @@ found in the LICENSE file.
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginTop="24dp"
+          android:layout_marginEnd="26dp"
           android:orientation="vertical">
 
         <org.chromium.ui.widget.ButtonCompat
