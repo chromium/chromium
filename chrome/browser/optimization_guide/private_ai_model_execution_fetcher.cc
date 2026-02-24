@@ -21,6 +21,10 @@
 
 namespace optimization_guide {
 namespace {
+
+using ModelExecutionError =
+    OptimizationGuideModelExecutionError::ModelExecutionError;
+
 private_ai::proto::FeatureName ToLegionFeatureName(
     ModelBasedCapabilityKey feature) {
   switch (feature) {
@@ -34,9 +38,21 @@ private_ai::proto::FeatureName ToLegionFeatureName(
 
 OptimizationGuideModelExecutionError ToModelExecutionError(
     private_ai::ErrorCode error) {
-  // TODO(crbug.com/460052805): Figure out how to store legion errors.
-  return OptimizationGuideModelExecutionError::FromModelExecutionError(
-      OptimizationGuideModelExecutionError::ModelExecutionError::kUnknown);
+  switch (error) {
+    case private_ai::ErrorCode::kAuthenticationFailed:
+    case private_ai::ErrorCode::kClientAttestationFailed:
+      return OptimizationGuideModelExecutionError::FromModelExecutionError(
+          ModelExecutionError::kPermissionDenied);
+    case private_ai::ErrorCode::kTimeout:
+      return OptimizationGuideModelExecutionError::FromModelExecutionError(
+          ModelExecutionError::kRetryableError);
+    case private_ai::ErrorCode::kDestroyed:
+      return OptimizationGuideModelExecutionError::FromModelExecutionError(
+          ModelExecutionError::kCancelled);
+    default:
+      return OptimizationGuideModelExecutionError::FromModelExecutionError(
+          ModelExecutionError::kUnknown);
+  }
 }
 
 }  // namespace
@@ -75,19 +91,24 @@ void PrivateAiModelExecutionFetcher::ExecuteModel(
              base::expected<private_ai::proto::PaicMessage,
                             private_ai::ErrorCode> result) {
             if (!result.has_value()) {
+              RecordRequestStatusHistogram(
+                  feature, FetcherRequestStatus::kResponseError);
               std::move(callback).Run(
                   base::unexpected(ToModelExecutionError(result.error())));
               return;
             }
 
             if (!result->has_execute_response_ext()) {
+              RecordRequestStatusHistogram(
+                  feature, FetcherRequestStatus::kResponseError);
               std::move(callback).Run(base::unexpected(
                   OptimizationGuideModelExecutionError::FromModelExecutionError(
-                      OptimizationGuideModelExecutionError::
-                          ModelExecutionError::kUnknown)));
+                      ModelExecutionError::kUnknown)));
               return;
             }
 
+            RecordRequestStatusHistogram(feature,
+                                         FetcherRequestStatus::kSuccess);
             std::move(callback).Run(base::ok(result->execute_response_ext()));
           },
           feature, std::move(callback)),

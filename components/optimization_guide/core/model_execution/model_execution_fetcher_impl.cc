@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 #include "components/optimization_guide/core/access_token_helper.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
@@ -435,14 +434,6 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
       }
     })");
   }
-}
-
-void RecordRequestStatusHistogram(ModelBasedCapabilityKey feature,
-                                  FetcherRequestStatus status) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"OptimizationGuide.ModelExecutionFetcher.RequestStatus.",
-                    GetStringNameForModelExecutionFeature(feature)}),
-      status);
 }
 
 // Appends headers as specified by the command line arguments.

@@ -4,13 +4,27 @@
 
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
 constexpr char kGoogleAPITypeName[] = "type.googleapis.com/";
 
 namespace optimization_guide {
 
+// static
+void ModelExecutionFetcher::RecordRequestStatusHistogram(
+    ModelBasedCapabilityKey feature,
+    FetcherRequestStatus status) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"OptimizationGuide.ModelExecutionFetcher.RequestStatus.",
+                    GetStringNameForModelExecutionFeature(feature)}),
+      status);
+}
+
+// static
 proto::ExecuteRequest ModelExecutionFetcher::ToExecuteRequest(
     ModelBasedCapabilityKey feature,
     const google::protobuf::MessageLite& request_metadata) {

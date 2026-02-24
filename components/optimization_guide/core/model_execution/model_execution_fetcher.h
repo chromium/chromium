@@ -12,6 +12,7 @@
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
 namespace signin {
@@ -41,7 +42,10 @@ class ModelExecutionFetcher {
       ModelExecuteResponseCallback callback) = 0;
 
  protected:
-  proto::ExecuteRequest ToExecuteRequest(
+  // Records the request status histogram for the given `feature`.
+  static void RecordRequestStatusHistogram(ModelBasedCapabilityKey feature,
+                                           FetcherRequestStatus status);
+  static proto::ExecuteRequest ToExecuteRequest(
       ModelBasedCapabilityKey feature,
       const google::protobuf::MessageLite& request_metadata);
 };
