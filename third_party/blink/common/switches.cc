@@ -92,6 +92,11 @@ const char kEnableZeroCopy[] = "enable-zero-copy";
 // cc.
 const char kForceGpuMemAvailableMb[] = "force-gpu-mem-available-mb";
 
+// Disables the GpuMemoryBufferReadbackFromTexture codepath for debugging
+// purposes.
+const char kGpuMemoryBufferReadbackFromTextureForceDisabledForDebugging[] =
+    "gmb-readback-from-texture-disabled-for-debugging";
+
 // The number of multisample antialiasing samples for GPU rasterization.
 // Requires MSAA support on GPU to have an effect. 0 disables MSAA.
 const char kGpuRasterizationMSAASampleCount[] =

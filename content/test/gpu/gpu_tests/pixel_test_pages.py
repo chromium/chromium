@@ -1774,7 +1774,7 @@ class PixelTestPages():
             '_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture',
             crop_action=standard_crop,
             browser_args=[
-                '--disable-features=GpuMemoryBufferReadbackFromTexture'
+                '--gmb-readback-from-texture-disabled-for-debugging',
             ],
             matching_algorithm=match_algo,
             timeout=timeout),

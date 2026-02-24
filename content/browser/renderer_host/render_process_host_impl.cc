@@ -3774,6 +3774,8 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       blink::switches::kEnableRGBA4444Textures,
       blink::switches::kEnableRasterSideDarkModeForImages,
       blink::switches::kForceGpuMemAvailableMb,
+      blink::switches::
+          kGpuMemoryBufferReadbackFromTextureForceDisabledForDebugging,
       blink::switches::kMinHeightForGpuRasterTile,
       blink::switches::kMaxUntiledLayerWidth,
       blink::switches::kMaxUntiledLayerHeight,

@@ -184,6 +184,8 @@ void DeriveCommandLine(const GURL& start_url,
       blink::switches::kEnableRasterSideDarkModeForImages,
       blink::switches::kEnableZeroCopy,
       blink::switches::kForceGpuMemAvailableMb,
+      blink::switches::
+          kGpuMemoryBufferReadbackFromTextureForceDisabledForDebugging,
       blink::switches::kGpuRasterizationMSAASampleCount,
       switches::kAshPowerButtonPosition,
       switches::kAshSideVolumeButtonPosition,

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
 
+#include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -25,6 +26,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/renderable_mappable_shared_image_video_frame_pool.h"
 #include "perfetto/tracing/track_event_args.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
@@ -337,14 +339,6 @@ void ApplyMetadataAndRunCallback(
   std::move(orig_callback).Run(std::move(wrapped));
 }
 
-BASE_FEATURE(kGpuMemoryBufferReadbackFromTexture,
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_LINUX)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
 }  // namespace
 
 bool WebGraphicsContext3DVideoFramePool::ConvertVideoFrame(
@@ -369,7 +363,13 @@ bool WebGraphicsContext3DVideoFramePool::ConvertVideoFrame(
 // static
 bool WebGraphicsContext3DVideoFramePool::
     IsGpuMemoryBufferReadbackFromTextureEnabled() {
-  return base::FeatureList::IsEnabled(kGpuMemoryBufferReadbackFromTexture);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX)
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kGpuMemoryBufferReadbackFromTextureForceDisabledForDebugging);
+#else
+  return false;
+#endif
 }
 
 }  // namespace blink
