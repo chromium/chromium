@@ -680,6 +680,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.NumPendingConnections.RequestQueueSize"
+    units="connections" expires_after="2026-08-02">
+  <owner>etienneb@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Number of content::indexed_db::PendingConnection objects pending in the
+    ConnectionCoordinator request queue. Will be used to diagnose
+    crbug.com/381086791.
+  </summary>
+</histogram>
+
 <histogram
     name="IndexedDB.NumTransactionsInIDBDatabaseOnTransactionCreated.10kTransactions"
     units="transactions" expires_after="2026-08-02">

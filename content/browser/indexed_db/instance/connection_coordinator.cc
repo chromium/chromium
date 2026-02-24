@@ -25,9 +25,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
@@ -634,6 +636,19 @@ void ConnectionCoordinator::ScheduleOpenConnection(
       *bucket_context_, db_, std::move(connection), synchronous_duration,
       this));
   bucket_context_->QueueRunTasks();
+
+  // Reports metrics on pending connections.
+  // TODO(crbug.com/381086791): Remove after the bug is understood.
+  const size_t request_size = request_queue_.size();
+  if (base::ShouldRecordSubsampledMetric(0.0001)) {
+    base::UmaHistogramCounts100000(
+        "IndexedDB.NumPendingConnections.RequestQueueSize", request_size);
+  }
+  if (request_size > 1000) {
+    TRACE_EVENT_INSTANT(
+        "IndexedDB",
+        "ConnectionCoordinator::ScheduleOpenConnection - overflow");
+  }
 }
 
 void ConnectionCoordinator::ScheduleDeleteDatabase(
