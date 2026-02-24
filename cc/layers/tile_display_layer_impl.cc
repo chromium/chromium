@@ -196,7 +196,8 @@ int TileDisplayLayerImpl::AppendQuadsSpecialization(
     const Occlusion& scaled_occlusion,
     const gfx::Vector2d& quad_offset,
     const std::optional<gfx::Rect>& scaled_cull_rect,
-    float max_contents_scale) {
+    float max_contents_scale,
+    std::unique_ptr<AppendQuadsCustomSharedData> custom_data) {
   const float ideal_scale_key = GetIdealContentsScaleKey();
 
   // Append quads for the tiles in this layer.

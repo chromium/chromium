@@ -396,7 +396,8 @@ class CC_EXPORT PictureLayerImpl
 
  private:
   // TileBasedLayerImpl:
-  void WillAppendQuads() override;
+  std::unique_ptr<AppendQuadsCustomSharedData> WillAppendQuads(
+      float max_contents_scale) override;
   int AppendQuadsSpecialization(
       const AppendQuadsContext& context,
       viz::CompositorRenderPass* render_pass,
@@ -405,7 +406,8 @@ class CC_EXPORT PictureLayerImpl
       const Occlusion& scaled_occlusion,
       const gfx::Vector2d& quad_offset,
       const std::optional<gfx::Rect>& scaled_cull_rect,
-      float max_contents_scale) override;
+      float max_contents_scale,
+      std::unique_ptr<AppendQuadsCustomSharedData> custom_data) override;
   float GetMaximumContentsScaleForUseInAppendQuads() const override;
   void AppendQuadsForResourcelessSoftwareDraw(
       const AppendQuadsContext& context,

@@ -309,8 +309,10 @@ void PictureLayerImpl::ComputeCheckerboardedNeedsRecord(
   }
 }
 
-void PictureLayerImpl::WillAppendQuads() {
+std::unique_ptr<AppendQuadsCustomSharedData> PictureLayerImpl::WillAppendQuads(
+    float max_contents_scale) {
   produced_tile_last_append_quads_ = false;
+  return nullptr;
 }
 
 int PictureLayerImpl::AppendQuadsSpecialization(
@@ -321,7 +323,8 @@ int PictureLayerImpl::AppendQuadsSpecialization(
     const Occlusion& scaled_occlusion,
     const gfx::Vector2d& quad_offset,
     const std::optional<gfx::Rect>& scaled_cull_rect,
-    float max_contents_scale) {
+    float max_contents_scale,
+    std::unique_ptr<AppendQuadsCustomSharedData> custom_data) {
   // Ignore missing tiles outside of viewport for tile priority. This is
   // normally the same as draw viewport but can be independently overridden by
   // embedders like Android WebView with SetExternalTilePriorityConstraints.
