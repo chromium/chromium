@@ -109,15 +109,18 @@ enum SharedImageUsage : uint32_t {
   // Image will be written by WebNN.
   SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE = 1 << 27,
 
+  // Image will be read by a hardware video encoder.
+  SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR = 1u << 28,
+
   // Start service side only usage flags after this entry. They must be larger
   // than `LAST_CLIENT_USAGE`.
-  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE,
+  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR,
 
   // Image will have pixels uploaded from CPU. The backing must implement
   // `UploadFromMemory()` if it supports this usage. Clients should specify
   // SHARED_IMAGE_USAGE_CPU_WRITE_ONLY if they need to write pixels to the
   // image.
-  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1u << 28,
+  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1u << 29,
 
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };

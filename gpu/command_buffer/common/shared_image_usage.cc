@@ -60,6 +60,7 @@ std::string CreateLabelForSharedImageUsage(SharedImageUsageSet usage) {
       {SHARED_IMAGE_USAGE_CPU_READ, "CpuRead"},
       {SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ, "WebnnSharedTensorRead"},
       {SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE, "WebnnSharedTensorWrite"},
+      {SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR, "VideoEncodeAccelerator"},
   };
 
   std::string label;
