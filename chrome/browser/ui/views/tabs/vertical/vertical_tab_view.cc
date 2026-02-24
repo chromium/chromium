@@ -321,7 +321,9 @@ bool VerticalTabView::OnKeyReleased(const ui::KeyEvent& event) {
 }
 
 bool VerticalTabView::OnMousePressed(const ui::MouseEvent& event) {
-  CHECK(collection_node_);
+  if (!collection_node_) {
+    return false;
+  }
 
   auto* controller = collection_node_->GetController();
   shift_pressed_on_mouse_down_ = event.IsShiftDown();
@@ -352,7 +354,9 @@ bool VerticalTabView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void VerticalTabView::OnMouseReleased(const ui::MouseEvent& event) {
-  CHECK(collection_node_);
+  if (!collection_node_) {
+    return;
+  }
 
   auto* controller = collection_node_->GetController();
   base::WeakPtr<VerticalTabView> self = weak_ptr_factory_.GetWeakPtr();
@@ -385,7 +389,9 @@ void VerticalTabView::OnMouseMoved(const ui::MouseEvent& event) {
 }
 
 void VerticalTabView::OnMouseEntered(const ui::MouseEvent& event) {
-  CHECK(collection_node_);
+  if (!collection_node_) {
+    return;
+  }
   UpdateHoverCard(this, TabSlotController::HoverCardUpdateType::kHover);
 
   // Hover state is handled by the parent if it is split.
@@ -397,7 +403,9 @@ void VerticalTabView::OnMouseEntered(const ui::MouseEvent& event) {
 }
 
 void VerticalTabView::OnMouseExited(const ui::MouseEvent& event) {
-  CHECK(collection_node_);
+  if (!collection_node_) {
+    return;
+  }
 
   // Hover state is handled by the parent if it is split.
   if (split_) {
@@ -420,18 +428,24 @@ bool VerticalTabView::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void VerticalTabView::OnGestureEvent(ui::GestureEvent* event) {
-  CHECK(collection_node_);
+  // Protect against key presses when the tab is animating out.
+  if (!collection_node_) {
+    return;
+  }
+
+  auto* controller = collection_node_->GetController();
+  CHECK(controller);
   UpdateHoverCard(nullptr, TabSlotController::HoverCardUpdateType::kEvent);
 
   switch (event->type()) {
     case ui::EventType::kGestureTapDown: {
-      auto* controller = collection_node_->GetController();
-      CHECK(controller);
       // TAP_DOWN is only dispatched for the first touch point.
       CHECK_EQ(1, event->details().touch_points());
+
       if (!selected_) {
         controller->SelectTab(GetTabInterface(), GetGestureDetail(*event));
       }
+
       event->SetHandled();
       break;
     }
