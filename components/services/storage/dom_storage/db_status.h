@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/types/expected.h"
 
@@ -38,43 +39,45 @@ class DbStatus {
   bool ok() const;
   bool IsNotFound() const;
   bool IsCorruption() const;
-  bool IsNotSupported() const;
-  bool IsIOError() const;
-  bool IsInvalidArgument() const;
-  bool IsDatabaseEngineCode() const;
 
   // Return a string representation of this status suitable for printing.
   // Returns the string "OK" for success.
   std::string ToString() const;
 
-  // Returns null unless `type_` is `kDatabaseEngineCode`.
-  std::optional<int> database_engine_code() const {
-    return database_engine_code_;
-  }
+  // Logs the Type of this status to the given histogram name with the
+  // appropriate suffix based on whether the database is in-memory or on-disk.
+  void Log(std::string_view histogram_base, bool in_memory) const;
 
  private:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(DomStorageDbStatusType)
   enum class Type {
     kOk = 0,
 
     // Something wasn't found.
-    kNotFound,
+    kNotFound = 1,
 
     // The database is in an inconsistent state.
-    kCorruption,
+    kCorruption = 2,
 
-    kNotSupported,
+    kNotSupported = 3,
 
     // Generally speaking, indicates a programming error or unexpected state in
     // Chromium. For example, an invalid object store ID is sent as a parameter
     // over IPC.
-    kInvalidArgument,
+    kInvalidArgument = 4,
 
     // Possibly transient read or write error.
-    kIoError,
+    kIoError = 5,
 
     // An error reported by the database engine like SQLite.
-    kDatabaseEngineCode,
+    kDatabaseEngineCode = 6,
+
+    kMaxValue = kDatabaseEngineCode,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:DomStorageDbStatusType)
 
   // Initializes `database_engine_code_`.  Sets `type_` to
   // `kDatabaseEngineCode`.

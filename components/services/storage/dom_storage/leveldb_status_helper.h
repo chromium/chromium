@@ -10,17 +10,10 @@
 namespace storage {
 
 class DbStatus;
-// A set of helpers to convert between `storage::DbStatus` and
-// `leveldb::Status`, and to access some leveldb::Status utilities with a
-// `storage::DbStatus`.
+
+// Creates a `storage::DbStatus` using the leveldb::Status's type and error
+// message.
 DbStatus FromLevelDBStatus(const leveldb::Status& status);
-
-leveldb::Status ToLevelDBStatus(const DbStatus& status);
-
-void LogLevelDBStatusHistogram(std::string_view histogram_name,
-                               const DbStatus& status);
-
-bool IndicatesDiskFull(const DbStatus& status);
 
 }  // namespace storage
 

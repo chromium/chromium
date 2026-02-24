@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
 #include "base/uuid.h"
@@ -160,6 +161,8 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 TEST_P(SessionStorageImplTest, StartupShutdownSave) {
+  base::HistogramTester histograms;
+
   std::string namespace_id1 =
       base::Uuid::GenerateRandomV4().AsLowercaseString();
   blink::StorageKey storage_key1 =
@@ -212,6 +215,11 @@ TEST_P(SessionStorageImplTest, StartupShutdownSave) {
   // The data from before should not be here.
   data = test::GetAllSync(area_n1.get());
   EXPECT_EQ(0ul, data.size());
+
+  // Sample value of 0 denotes DbStatus::Type::kOk. The database was opened 3
+  // times: initial open, after first shutdown, and after second shutdown.
+  histograms.ExpectUniqueSample("Storage.SessionStorage.OpenDatabase.OnDisk",
+                                /*sample=*/0, 3);
 }
 
 TEST_P(SessionStorageImplTest, CloneBeforeBrowserClone) {
@@ -517,6 +525,8 @@ TEST_P(SessionStorageImplTest, WrongVersionOnDisk) {
 }
 
 TEST_P(SessionStorageImplTest, CorruptionOnDisk) {
+  base::HistogramTester histograms;
+
   std::string namespace_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
@@ -561,6 +571,12 @@ TEST_P(SessionStorageImplTest, CorruptionOnDisk) {
   ASSERT_TRUE(opt_value);
   EXPECT_EQ(StringViewToUint8Vector("value"), opt_value.value());
   ShutDownSessionStorage();
+
+  // LevelDB reports corruption as an IO error. The SQLiteResultCode maps to a
+  // DbStatus::Type::kCorruption error.
+  uint8_t sample = IsSqliteEnabled() ? /*kCorruption=*/2 : /*kIoError=*/5;
+  histograms.ExpectBucketCount("Storage.SessionStorage.OpenDatabase.OnDisk",
+                               sample, 1);
 }
 
 TEST_P(SessionStorageImplTest, RecreateOnCommitFailure) {

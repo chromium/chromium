@@ -1086,9 +1086,9 @@ TEST_P(LocalStorageImplTest, OnDisk) {
   InitializeStorage(storage_path());
   EXPECT_TRUE(DoTestGet(key, &result));
   EXPECT_EQ(value, result);
-  histograms.ExpectUniqueSample(
-      "LocalStorage.DatabaseOpen",
-      leveldb_env::LevelDBStatusValue::LEVELDB_STATUS_OK, 2);
+  // Sample value of 0 denotes DbStatus::Type::kOk.
+  histograms.ExpectUniqueSample("Storage.LocalStorage.OpenDatabase.OnDisk",
+                                /*sample=*/0, 2);
 }
 
 TEST_P(LocalStorageImplTest, InvalidVersionOnDisk) {
@@ -1175,12 +1175,11 @@ TEST_P(LocalStorageImplTest, CorruptionOnDisk) {
   EXPECT_TRUE(DoTestGet(key, &result));
   EXPECT_EQ(value, result);
 
-  if (!IsSqliteEnabled()) {
-    // TODO(crbug.com/377242771): Add histograms to SQLite implementation.
-    histograms.ExpectBucketCount(
-        "LocalStorage.DatabaseOpen",
-        leveldb_env::LevelDBStatusValue::LEVELDB_STATUS_IO_ERROR, 1);
-  }
+  // LevelDB reports corruption as an IO error. The SQLiteResultCode maps to a
+  // DbStatus::Type::kCorruption error.
+  uint8_t sample = IsSqliteEnabled() ? /*kCorruption=*/2 : /*kIoError=*/5;
+  histograms.ExpectBucketCount("Storage.LocalStorage.OpenDatabase.OnDisk",
+                               sample, 1);
 }
 
 TEST_P(LocalStorageImplTest, RecreateOnCommitFailure) {

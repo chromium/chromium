@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 
 namespace storage {
 
@@ -82,24 +83,14 @@ bool DbStatus::IsCorruption() const {
   return type_ == Type::kCorruption;
 }
 
-bool DbStatus::IsNotSupported() const {
-  return type_ == Type::kNotSupported;
-}
-
-bool DbStatus::IsIOError() const {
-  return type_ == Type::kIoError;
-}
-
-bool DbStatus::IsInvalidArgument() const {
-  return type_ == Type::kInvalidArgument;
-}
-
-bool DbStatus::IsDatabaseEngineCode() const {
-  return type_ == Type::kDatabaseEngineCode;
-}
-
 std::string DbStatus::ToString() const {
   return msg_;
+}
+
+void DbStatus::Log(std::string_view histogram_base, bool in_memory) const {
+  base::UmaHistogramEnumeration(
+      base::StrCat({histogram_base, in_memory ? ".InMemory" : ".OnDisk"}),
+      type_);
 }
 
 }  // namespace storage
