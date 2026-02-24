@@ -35,6 +35,9 @@ class BrowserUserEducationContext
   ui::ElementContext GetElementContext() const override;
   const ui::AcceleratorProvider* GetAcceleratorProvider() const override;
 
+  // Retrieves the browser window interface. Requires that `IsValid()` is true.
+  BrowserWindowInterface* GetBrowser() const;
+
   // Retrieves the browser view. Requires that `IsValid()` is true.
   BrowserView& GetBrowserView() const;
 

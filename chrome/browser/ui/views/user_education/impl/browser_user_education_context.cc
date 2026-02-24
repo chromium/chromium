@@ -76,6 +76,11 @@ void BrowserUserEducationContext::Invalidate(
   browser_view_ = nullptr;
 }
 
+BrowserWindowInterface* BrowserUserEducationContext::GetBrowser() const {
+  CHECK(IsValid());
+  return browser_view_->browser();
+}
+
 BrowserView& BrowserUserEducationContext::GetBrowserView() const {
   CHECK(IsValid());
   return *browser_view_;
