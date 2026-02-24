@@ -155,8 +155,6 @@ source_set("audio") {
     sources += [
       "apple/audio_auhal.cc",
       "apple/audio_auhal.h",
-      "apple/audio_input.cc",
-      "apple/audio_input.h",
       "apple/audio_low_latency_input.cc",
       "apple/audio_low_latency_input.h",
       "apple/audio_manager_apple.cc",

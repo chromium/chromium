@@ -26,6 +26,7 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/free_deleter.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/strings/string_split.h"
@@ -35,7 +36,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/audio/apple/audio_auhal.h"
-#include "media/audio/apple/audio_input.h"
 #include "media/audio/apple/audio_low_latency_input.h"
 #include "media/audio/apple/scoped_audio_unit.h"
 #include "media/audio/audio_device_description.h"
@@ -877,11 +877,8 @@ AudioInputStream* AudioManagerMac::MakeLinearInputStream(
     const AudioParameters& params,
     const std::string& device_id,
     const LogCallback& log_callback) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  DCHECK_EQ(AudioParameters::AUDIO_PCM_LINEAR, params.format());
-  AudioInputStream* stream = new PCMQueueInAudioInputStream(this, params);
-  basic_input_streams_.insert(stream);
-  return stream;
+  DUMP_WILL_BE_NOTREACHED();
+  return nullptr;
 }
 
 AudioInputStream* AudioManagerMac::MakeLowLatencyInputStream(

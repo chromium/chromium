@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/notimplemented.h"
-#include "media/audio/apple/audio_input.h"
+#include "base/notreached.h"
 #include "media/audio/apple/audio_low_latency_input.h"
 #include "media/audio/apple/audio_manager_apple.h"
 #include "media/audio/ios/audio_session_manager_ios.h"
@@ -102,9 +102,8 @@ AudioInputStream* AudioManagerIOS::MakeLinearInputStream(
     const AudioParameters& params,
     const std::string& device_id,
     const LogCallback& log_callback) {
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  AudioInputStream* stream = new PCMQueueInAudioInputStream(this, params);
-  return stream;
+  DUMP_WILL_BE_NOTREACHED();
+  return nullptr;
 }
 
 AudioInputStream* AudioManagerIOS::MakeLowLatencyInputStream(
