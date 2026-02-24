@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_UTIL_H_
 #define CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_UTIL_H_
 
+#include <iosfwd>
 #include <optional>
 
 #include "components/send_tab_to_self/entry_point_display_reason.h"
@@ -31,6 +32,12 @@ bool ShouldDisplayEntryPoint(content::WebContents* web_contents);
 // from all frames.
 PageContext ExtractFormFieldsFromWebContents(
     content::WebContents* web_contents);
+
+// Similar to ExtractFormFieldsFromWebContents, but allows injecting an ostream
+// for detailed insights of the extraction process.
+PageContext ExtractFormFieldsFromWebContentsForTesting(
+    content::WebContents* web_contents,
+    std::ostream& os);
 
 // Fills form fields in `web_contents` from `page_context` if the field's origin
 // matches `origin`.
