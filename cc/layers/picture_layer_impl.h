@@ -395,6 +395,18 @@ class CC_EXPORT PictureLayerImpl
   gfx::Rect damage_rect_;
 
  private:
+  class AppendQuadsCustomSharedDataImpl : public AppendQuadsCustomSharedData {
+   public:
+    ~AppendQuadsCustomSharedDataImpl() override = default;
+
+    // Used to ignore missing tiles outside of viewport for tile priority. This
+    // is normally the same as draw viewport but can be independently overridden
+    // by embedders like Android WebView with
+    // SetExternalTilePriorityConstraints.
+    gfx::Rect scaled_viewport_for_tile_priority_;
+    gfx::Rect scaled_recorded_bounds_;
+  };
+
   // TileBasedLayerImpl:
   std::unique_ptr<AppendQuadsCustomSharedData> WillAppendQuads(
       float max_contents_scale) override;

@@ -312,7 +312,14 @@ void PictureLayerImpl::ComputeCheckerboardedNeedsRecord(
 std::unique_ptr<AppendQuadsCustomSharedData> PictureLayerImpl::WillAppendQuads(
     float max_contents_scale) {
   produced_tile_last_append_quads_ = false;
-  return nullptr;
+
+  auto custom_data = std::make_unique<AppendQuadsCustomSharedDataImpl>();
+  custom_data->scaled_viewport_for_tile_priority_ = gfx::ScaleToEnclosingRect(
+      viewport_rect_for_tile_priority_in_content_space_, max_contents_scale);
+  custom_data->scaled_recorded_bounds_ = gfx::ScaleToEnclosingRect(
+      raster_source_->recorded_bounds(), max_contents_scale);
+
+  return std::move(custom_data);
 }
 
 int PictureLayerImpl::AppendQuadsSpecialization(
@@ -325,23 +332,18 @@ int PictureLayerImpl::AppendQuadsSpecialization(
     const std::optional<gfx::Rect>& scaled_cull_rect,
     float max_contents_scale,
     std::unique_ptr<AppendQuadsCustomSharedData> custom_data) {
-  // Ignore missing tiles outside of viewport for tile priority. This is
-  // normally the same as draw viewport but can be independently overridden by
-  // embedders like Android WebView with SetExternalTilePriorityConstraints.
-  gfx::Rect scaled_viewport_for_tile_priority = gfx::ScaleToEnclosingRect(
-      viewport_rect_for_tile_priority_in_content_space_, max_contents_scale);
-
-  gfx::Rect scaled_recorded_bounds = gfx::ScaleToEnclosingRect(
-      raster_source_->recorded_bounds(), max_contents_scale);
-
   int missing_tile_count = 0;
+  auto* shared_data =
+      static_cast<AppendQuadsCustomSharedDataImpl*>(custom_data.get());
+  DCHECK(shared_data);
   for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
                          max_contents_scale, GetIdealContentsScaleKey());
        iter; ++iter) {
     bool missing_tile = AppendQuadForTile(
         iter, context, render_pass, append_quads_data, shared_quad_state,
-        scaled_occlusion, quad_offset, scaled_viewport_for_tile_priority,
-        scaled_cull_rect, scaled_recorded_bounds);
+        scaled_occlusion, quad_offset,
+        shared_data->scaled_viewport_for_tile_priority_, scaled_cull_rect,
+        shared_data->scaled_recorded_bounds_);
     if (missing_tile) {
       ++missing_tile_count;
     }
