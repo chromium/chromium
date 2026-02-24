@@ -263,11 +263,10 @@ void ContextualTasksComposeboxHandler::SubmitQuery(
 
 void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     const std::string& query) {
-  bool is_overlay_open_on_submit = web_ui_interface_->IsLensOverlayShowing();
-
   // Retrieve the overlay token before closing the overlay, as the controller
   // might be destroyed or reset during closure.
   std::optional<base::UnguessableToken> overlay_token = GetLensOverlayToken();
+  bool has_visual_selection = overlay_token.has_value();
 
   // Every time a query is submitted, close the Lens overlay if it's open.
   CloseLensOverlay(
@@ -275,7 +274,7 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   std::optional<base::Uuid> task_id = web_ui_interface_->GetTaskId();
   auto* contextual_tasks_service = GetContextualTasksService();
   if (!task_id.has_value() || !contextual_tasks_service ||
-      (is_overlay_open_on_submit && !IsAnyContextUploading())) {
+      (has_visual_selection && !IsAnyContextUploading())) {
     ContinueCreateAndSendQueryMessage(query, task_id, overlay_token);
     return;
   }
@@ -322,7 +321,9 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
       base::BindOnce(&ContextualTasksComposeboxHandler::OnContextRetrieved,
                      weak_factory_.GetWeakPtr(), query, active_tab_handle,
                      /*task_id=*/task_id,
-                     is_overlay_open_on_submit ? overlay_token : std::nullopt));
+                     has_visual_selection
+                         ? overlay_token
+                         : std::nullopt));
 }
 
 contextual_tasks::ContextualTasksService*
@@ -998,16 +999,26 @@ void ContextualTasksComposeboxHandler::OnLensThumbnailCreated(
   }
 
   // Lens will handle the creation of the interaction request needed for this
-  // context. Add the visual selection to the composebox UI.
+  // context. Add the visual selection to the composebox UI. The overlay token is
+  // needed to ensure that the visual selection is associated with the correct
+  // viewport upload.
+  auto* controller = GetLensSearchController();
+  CHECK(controller);
+  CHECK(controller->query_router());
+  CHECK(
+      controller->query_router()->overlay_tab_context_file_token().has_value());
+  base::UnguessableToken overlay_token =
+      controller->query_router()->overlay_tab_context_file_token().value();
   AddFileContextFromBrowser(
       std::move(file_info),
       base::BindOnce(&ContextualTasksComposeboxHandler::OnVisualSelectionAdded,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), overlay_token));
 }
 
 // Only runs for non-delayed context. DeleteContext here runs
 // ComposeboxHandler::DeleteContext.
 void ContextualTasksComposeboxHandler::OnVisualSelectionAdded(
+    base::UnguessableToken overlay_token,
     base::expected<base::UnguessableToken,
                    contextual_search::FileUploadErrorType> token) {
   // Remove old visual selection if it exists.
@@ -1018,8 +1029,13 @@ void ContextualTasksComposeboxHandler::OnVisualSelectionAdded(
   // Replace the visual selection token with the new one.
   if (token.has_value()) {
     visual_selection_token_ = token.value();
+    // The overlay token needs to be stored along with the visual selection
+    // token so that it can be used for the query even if the overlay is closed
+    // and reopened.
+    visual_selection_overlay_token_ = overlay_token;
   } else {
     visual_selection_token_ = std::nullopt;
+    visual_selection_overlay_token_ = std::nullopt;
   }
 }
 
@@ -1057,6 +1073,7 @@ void ContextualTasksComposeboxHandler::DeleteContext(
   // Clear the visual selection token if it matches the deleted token.
   if (visual_selection_token_ && *visual_selection_token_ == file_token) {
     visual_selection_token_ = std::nullopt;
+    visual_selection_overlay_token_ = std::nullopt;
     // If the user explicitly deleted the context (not from automatic chip),
     // close the Lens Overlay.
     if (!from_automatic_chip) {
@@ -1151,6 +1168,14 @@ ContextualTasksComposeboxHandler::GetLensSearchController() const {
 
 std::optional<base::UnguessableToken>
 ContextualTasksComposeboxHandler::GetLensOverlayToken() {
+  // If there is a visual selection token in the composebox, then the overlay
+  // token should be returned to ensure the AIM request is correctly
+  // constructed with the overlay context.
+  if (visual_selection_token_.has_value()) {
+    visual_selection_token_.reset();
+    return visual_selection_overlay_token_;
+  }
+
   if (auto* controller = GetLensSearchController()) {
     // If there is no region selection, then do not return the overlay token.
     // This is needed to prevent the token from being used in the client to aim

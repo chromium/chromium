@@ -2206,7 +2206,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_OverlayOpen) {
+       CreateAndSendQueryMessage_WithVisualSelection) {
   std::string kQuery = "overlay query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   base::UnguessableToken overlay_token = base::UnguessableToken::Create();
@@ -2215,10 +2215,6 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_CALL(*mock_ui_, GetTaskId())
       .WillRepeatedly(
           testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
-
-  // Mock IsLensOverlayShowing to return true.
-  EXPECT_CALL(*mock_ui_, IsLensOverlayShowing())
-      .WillRepeatedly(testing::Return(true));
 
   // Mock GetLensOverlayToken to return a token.
   EXPECT_CALL(*handler_, GetLensOverlayToken())
@@ -2252,7 +2248,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_OverlayOpen_WithUpload) {
+       CreateAndSendQueryMessage_WithVisualSelection_AndUpload) {
   std::string kQuery = "overlay query with upload";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   base::UnguessableToken overlay_token = base::UnguessableToken::Create();
@@ -2280,9 +2276,6 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
   EXPECT_CALL(*mock_ui_, GetTaskId())
       .WillRepeatedly(
           testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
-
-  EXPECT_CALL(*mock_ui_, IsLensOverlayShowing())
-      .WillRepeatedly(testing::Return(true));
 
   EXPECT_CALL(*handler_, GetLensOverlayToken())
       .WillOnce(testing::Return(overlay_token));
@@ -2327,7 +2320,7 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
 }
 
 TEST_F(ContextualTasksComposeboxHandlerTest,
-       CreateAndSendQueryMessage_OverlayClosed) {
+       CreateAndSendQueryMessage_NoVisualSelection) {
   std::string kQuery = "normal query";
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   // Token that exists but should not be used.
@@ -2337,13 +2330,9 @@ TEST_F(ContextualTasksComposeboxHandlerTest,
       .WillRepeatedly(
           testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
 
-  // Mock IsLensOverlayShowing to return false.
-  EXPECT_CALL(*mock_ui_, IsLensOverlayShowing())
-      .WillRepeatedly(testing::Return(false));
-
-  // Even if token is available, it should not be used if overlay is closed.
+  // Mock GetLensOverlayToken to return nullopt.
   EXPECT_CALL(*handler_, GetLensOverlayToken())
-      .WillOnce(testing::Return(overlay_token));
+      .WillOnce(testing::Return(std::nullopt));
 
   // Expect CloseLensSync to be called (it's always called).
   EXPECT_CALL(
