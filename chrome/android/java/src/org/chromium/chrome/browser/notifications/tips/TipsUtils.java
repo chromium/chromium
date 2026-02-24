@@ -194,7 +194,7 @@ public class TipsUtils {
                         R.string.tips_promo_bottom_sheet_positive_button_text_try_now;
                 mainPageTitleRes = R.string.educational_tip_tab_group_title;
                 mainPageDescriptionRes = R.string.educational_tip_tab_group_description;
-                mainPageLogoViewRes = R.drawable.tips_promo_signin_logo;
+                mainPageLogoViewRes = R.drawable.tips_promo_create_tab_groups_logo;
                 detailPageTitleRes = R.string.educational_tip_tab_group_title;
                 detailPageSteps.add(
                         context.getString(
