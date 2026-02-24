@@ -39,7 +39,8 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
-import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.infobars.InfoBar;
@@ -381,9 +382,8 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     public void resetNotificationsSettingsForTest(boolean enableQuietUi) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    WebsitePreferenceBridgeJni.get()
-                            .resetNotificationsSettingsForTest(
-                                    ProfileManager.getLastUsedRegularProfile());
+                    WebsitePreferenceBridge.resetNotificationsSettingsForTest(
+                            ProfileManager.getLastUsedRegularProfile());
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .setBoolean(
                                     "profile.content_settings.enable_quiet_permission_ui.notifications",
@@ -404,14 +404,12 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
             @ContentSettingsType.EnumType int contentSettingsType) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    WebsitePreferenceBridgeJni.get()
-                            .setPermissionSettingForOrigin(
-                                    /* browserContextHandle= */ ProfileManager
-                                            .getLastUsedRegularProfile(),
-                                    contentSettingsType,
-                                    /* origin= */ url,
-                                    /* embedder= */ url,
-                                    setting);
+                    WebsitePreferenceBridge.setPermissionSettingForOrigin(
+                            /* browserContextHandle= */ ProfileManager.getLastUsedRegularProfile(),
+                            contentSettingsType,
+                            /* origin= */ url,
+                            /* embedder= */ url,
+                            setting);
                 });
     }
 
@@ -426,13 +424,28 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
         String url = getURL(pageUrl);
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    return WebsitePreferenceBridgeJni.get()
-                            .getPermissionSettingForOrigin(
-                                    /* browserContextHandle= */ ProfileManager
-                                            .getLastUsedRegularProfile(),
-                                    /* contentSettingsType= */ contentSettingsType,
-                                    /* origin= */ url,
-                                    /* embedder= */ url);
+                    return WebsitePreferenceBridge.getPermissionSettingForOrigin(
+                            /* browserContextHandle= */ ProfileManager.getLastUsedRegularProfile(),
+                            /* contentSettingsType= */ contentSettingsType,
+                            /* origin= */ url,
+                            /* embedder= */ url);
+                });
+    }
+
+    /**
+     * Returns the geolocation permission setting for the given origin.
+     *
+     * @param pageUrl The origin URL of the page.
+     */
+    public GeolocationSetting getGeolocationSettingForOrigin(String pageUrl) {
+        String url = getURL(pageUrl);
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    return WebsitePreferenceBridge.getGeolocationSettingForOrigin(
+                            /* browserContextHandle= */ ProfileManager.getLastUsedRegularProfile(),
+                            /* contentSettingsType= */ ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
+                            /* origin= */ url,
+                            /* embedder= */ url);
                 });
     }
 
@@ -458,6 +471,26 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /**
+     * Checks the geolocation permission setting for the given origin.
+     *
+     * @param usePrecise If true, use precise location, otherwise approximate.
+     * @param expectedSetting The expected content setting.
+     * @param pageUrl The origin URL of the page.
+     */
+    public void checkGeolocationSettingForOrigin(
+            boolean usePrecise, @ContentSetting int expectedSetting, String pageUrl) {
+        GeolocationSetting currentSetting = getGeolocationSettingForOrigin(pageUrl);
+        Assert.assertNotNull("Geolocation setting is null", currentSetting);
+        if (usePrecise) {
+            Assert.assertEquals(
+                    "Precise setting mismatch", expectedSetting, currentSetting.mPrecise);
+        } else {
+            Assert.assertEquals(
+                    "Approximate setting mismatch", expectedSetting, currentSetting.mApproximate);
+        }
+    }
+
+    /**
      * Wait for the permission setting for the given origin to change to the expected setting.
      *
      * @param contentSettingsType The ContentSettingsType to wait for.
@@ -473,6 +506,26 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
                     try {
                         checkPermissionSettingForOrigin(
                                 contentSettingsType, expectedSetting, pageUrl);
+                    } catch (AssertionError e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                });
+    }
+
+    /**
+     * Wait for the geolocation permission setting for the given origin to change to the expected
+     * setting.
+     *
+     * @param usePrecise If true, use precise location, otherwise approximate.
+     * @param expectedSetting The expected content setting.
+     * @param pageUrl The origin URL of the page.
+     */
+    public void waitForGeolocationSettingForOrigin(
+            boolean usePrecise, @ContentSetting int expectedSetting, String pageUrl) {
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        checkGeolocationSettingForOrigin(usePrecise, expectedSetting, pageUrl);
                     } catch (AssertionError e) {
                         throw new CriteriaNotSatisfiedException(e);
                     }
