@@ -465,11 +465,13 @@ NSString* GetFallbackDetailTextForLocalProfile(
 - (void)populateVerificationAndWalletSections {
   TableViewModel* model = self.tableViewModel;
 
-  [model addSectionWithIdentifier:SectionIdentifierVerificationSwitch];
-  [model addItem:[self verificationSwitchItem]
-      toSectionWithIdentifier:SectionIdentifierVerificationSwitch];
-  [model setFooter:[self verificationFooter]
-      forSectionWithIdentifier:SectionIdentifierVerificationSwitch];
+  if ([self shouldShowVerificationSwitch]) {
+    [model addSectionWithIdentifier:SectionIdentifierVerificationSwitch];
+    [model addItem:[self verificationSwitchItem]
+        toSectionWithIdentifier:SectionIdentifierVerificationSwitch];
+    [model setFooter:[self verificationFooter]
+        forSectionWithIdentifier:SectionIdentifierVerificationSwitch];
+  }
 
   if ([self shouldShowWalletPromo]) {
     [model addSectionWithIdentifier:SectionIdentifierWalletPromo];
@@ -478,6 +480,13 @@ NSString* GetFallbackDetailTextForLocalProfile(
     [model addItem:[self walletPromoButtonItem]
         toSectionWithIdentifier:SectionIdentifierWalletPromo];
   }
+}
+
+// Returns whether to show the Enhanced Autofill toggle to enable
+// reauthentication before filling sensitive information.
+- (BOOL)shouldShowVerificationSwitch {
+  return base::FeatureList::IsEnabled(
+      autofill::features::kAutofillAiReauthRequired);
 }
 
 // Returns YES if the Google Wallet promotion should be shown.
@@ -493,7 +502,8 @@ NSString* GetFallbackDetailTextForLocalProfile(
       [[TableViewSwitchItem alloc] initWithType:ItemTypeVerificationSwitch];
   switchItem.text =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_VERIFICATION_INFO_LABEL);
-  switchItem.on = YES;
+  switchItem.on = autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(
+      _browser->GetProfile()->GetPrefs());
   switchItem.target = self;
   switchItem.selector = @selector(verificationSwitchChanged:);
   return switchItem;
@@ -839,7 +849,8 @@ NSString* GetFallbackDetailTextForLocalProfile(
 - (void)verificationSwitchChanged:(UISwitch*)switchView {
   BOOL switchOn = [switchView isOn];
   [self setSwitchItemOn:switchOn itemType:ItemTypeVerificationSwitch];
-  // TODO(crbug.com/480934103): Update the verification status.
+  autofill::prefs::SetAutofillAiReauthBeforeFillingEnabled(
+      _browser->GetProfile()->GetPrefs(), switchOn);
 }
 
 #pragma mark - Switch Helpers
