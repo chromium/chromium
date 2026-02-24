@@ -250,6 +250,22 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         enabled,
       };
     });
+
+    // There should be a separator between the menu items and the toggle items.
+    // The base combination is on the Links toggle, but that's not
+    // always the first toggle.
+    this.options_.forEach(option => {
+      if (option.itemType === SettingsItemType.TOGGLE) {
+        option.showSeparator = false;
+      }
+    });
+
+    // Add the separator to the first toggle.
+    const firstToggle =
+        this.options_.find(item => item.itemType === SettingsItemType.TOGGLE);
+    if (firstToggle) {
+      firstToggle.showSeparator = true;
+    }
   }
 
   private getLinkItemLabels() {
