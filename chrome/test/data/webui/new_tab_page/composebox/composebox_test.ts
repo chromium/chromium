@@ -2150,7 +2150,7 @@ suite('NewTabPageComposeboxTest', () => {
     // Check whether the right error would show up.
     const errorEvent = await errorEventPromise;
     assertEquals(
-        loadTimeData.getString('maxFilesReachedError'),
+        loadTimeData.getString('maxImagesReachedError'),
         errorEvent.detail.errorMessage);
   });
 
@@ -2312,7 +2312,7 @@ suite('NewTabPageComposeboxTest', () => {
 
     const errorEvent = await errorEventPromise;
     assertEquals(
-        loadTimeData.getString('maxFilesReachedError'),
+        loadTimeData.getString('maxImagesReachedError'),
         errorEvent.detail.errorMessage);
 
     assertEquals(

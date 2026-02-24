@@ -461,18 +461,16 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
           IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR,
           max_files > 0 ? max_files
                         : composebox_config.composebox().max_num_files()));
-  // TODO(crbug.com/483852166): Update the error messages to be more specific to
-  // the input type.
   source->AddString(
       "maxImagesReachedError",
       l10n_util::GetPluralStringFUTF16(
-          IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR,
+          IDS_NTP_COMPOSE_MAX_IMAGES_REACHED_ERROR,
           max_images > 0 ? max_images
                          : composebox_config.composebox().max_num_files()));
   source->AddString(
       "maxPdfsReachedError",
       l10n_util::GetPluralStringFUTF16(
-          IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR,
+          IDS_NTP_COMPOSE_MAX_PDFS_REACHED_ERROR,
           max_pdfs > 0 ? max_pdfs
                        : composebox_config.composebox().max_num_files()));
   source->AddBoolean(
