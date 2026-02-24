@@ -11,7 +11,7 @@ import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertGE, assertLE, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {assertNotStyle, assertStyle, createTheme, installMock, keydown} from './test_support.js';
 
@@ -134,8 +134,6 @@ suite('NewTabPageLogoTest', () => {
       assertNotStyle($$(logo, '#shareButton')!, 'display', 'none');
       assertEquals(32, $$<HTMLElement>(logo, '#shareButton')!.offsetWidth);
       assertEquals(32, $$<HTMLElement>(logo, '#shareButton')!.offsetHeight);
-      assertStyle($$(logo, '#animation')!, 'display', 'none');
-      assertFalse(!!$$(logo, '#iframe'));
     });
   });
 
@@ -238,70 +236,6 @@ suite('NewTabPageLogoTest', () => {
     assertEquals($$<IframeElement>(logo, '#image')!.src, 'data:foo');
     assertNotStyle($$(logo, '#image')!, 'display', 'none');
     assertStyle($$(logo, '#animation')!, 'display', 'none');
-    assertFalse(!!$$(logo, '#iframe'));
-  });
-
-  test('setting interactive doodle shows iframe', async () => {
-    // Act.
-    const logo = await createLogo(
-        {
-          interactive: {
-            url: 'https://foo.com',
-            width: 200,
-            height: 100,
-          },
-          description: '',
-          image: null,
-        },
-        createTheme({isDark: false, backgroundColor: WHITE_COLOR}));
-    await microtasksFinished();
-
-    // Assert.
-    assertNotStyle($$(logo, '#doodle')!, 'display', 'none');
-    assertEquals($$(logo, '#logo'), null);
-    assertNotStyle($$(logo, '#iframe')!, 'display', 'none');
-    assertStyle($$(logo, '#iframe')!, 'width', '200px');
-    assertStyle($$(logo, '#iframe')!, 'height', '100px');
-    assertStyle($$(logo, '#imageDoodle')!, 'display', 'none');
-    assertEquals(
-        $$<IframeElement>(logo, '#iframe')!.src,
-        'https://foo.com/?theme_messages=0');
-    assertEquals(1, windowProxy.getCallCount('postMessage'));
-    const [iframe, {cmd, dark}, origin] =
-        await windowProxy.whenCalled('postMessage');
-    assertEquals($$($$(logo, '#iframe')!, '#iframe'), iframe);
-    assertEquals('changeMode', cmd);
-    assertFalse(dark);
-    assertEquals('https://foo.com', origin);
-  });
-
-  test('message only after mode has been set', async () => {
-    // Act (no mode).
-    const logo = await createLogo({
-      interactive: {
-        url: 'https://foo.com',
-        width: 200,
-        height: 100,
-      },
-      description: '',
-      image: null,
-    });
-
-    // Assert (no mode).
-    assertEquals(0, windowProxy.getCallCount('postMessage'));
-
-    // Act (setting mode).
-    logo.theme = createTheme({isDark: true});
-    await microtasksFinished();
-
-    // Assert (setting mode).
-    assertEquals(1, windowProxy.getCallCount('postMessage'));
-    const [iframe, {cmd, dark}, origin] =
-        await windowProxy.whenCalled('postMessage');
-    assertEquals($$($$(logo, '#iframe')!, '#iframe'), iframe);
-    assertEquals('changeMode', cmd);
-    assertTrue(dark);
-    assertEquals('https://foo.com', origin);
   });
 
   test('before doodle loaded shows nothing', () => {
@@ -365,128 +299,6 @@ suite('NewTabPageLogoTest', () => {
     // Assert.
     const pos = getRelativePosition($$(logo, '#doodle')!, logo);
     assertEquals(0, pos.bottom);
-  });
-
-  test('too large interactive doodle sized correctly', async () => {
-    // Arrange.
-    const logo = await createLogo({
-      interactive: {
-        url: 'https://foo.com',
-        width: 1000,
-        height: 500,
-      },
-      description: '',
-      image: null,
-    });
-
-    // Assert.
-    assertEquals(imageOffsetHeight, logo.offsetHeight);
-    assertEquals(
-        imageOffsetHeight, $$<HTMLElement>(logo, '#iframe')!.offsetHeight);
-    const pos = getRelativePosition($$(logo, '#doodle')!, logo);
-    assertEquals(0, pos.bottom);
-  });
-
-  test('receiving resize message resizes doodle', async () => {
-    // Arrange.
-    const logo = await createLogo({
-      interactive: {
-        url: 'https://foo.com',
-        width: 200,
-        height: 100,
-      },
-      description: '',
-      image: null,
-    });
-
-    // Wait for one frame, to ensure the transition starts after the iframe has
-    // been rendered.
-    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
-
-    const transitionend = eventToPromise('transitionend', $$(logo, '#iframe')!);
-    // Act.
-    window.postMessage(
-        {
-          cmd: 'resizeDoodle',
-          duration: '500ms',
-          height: '500px',
-          width: '700px',
-        },
-        '*');
-    await transitionend;
-
-    // Assert.
-    const transitionedProperties = window.getComputedStyle($$(logo, '#iframe')!)
-                                       .getPropertyValue('transition-property')
-                                       .trim()
-                                       .split(',')
-                                       .map(s => s.trim());
-    assertStyle($$(logo, '#iframe')!, 'transition-duration', '0.5s');
-    assertTrue(transitionedProperties.includes('height'));
-    assertTrue(transitionedProperties.includes('width'));
-    assertEquals($$<HTMLElement>(logo, '#iframe')!.offsetHeight, 500);
-    assertEquals($$<HTMLElement>(logo, '#iframe')!.offsetWidth, 700);
-    assertGE(logo.offsetHeight, 500);
-    assertGE(logo.offsetWidth, 700);
-  });
-
-  test('receiving other message does not resize doodle', async () => {
-    // Arrange.
-    const logo = await createLogo({
-      interactive: {
-        url: 'https://foo.com',
-        width: 200,
-        height: 100,
-      },
-      description: '',
-      image: null,
-    });
-    const height = $$<HTMLElement>(logo, '#iframe')!.offsetHeight;
-    const width = $$<HTMLElement>(logo, '#iframe')!.offsetWidth;
-
-    // Act.
-    window.postMessage(
-        {
-          cmd: 'foo',
-          duration: '500ms',
-          height: '500px',
-          width: '700px',
-        },
-        '*');
-    await microtasksFinished();
-
-    // Assert.
-    assertEquals($$<HTMLElement>(logo, '#iframe')!.offsetHeight, height);
-    assertEquals($$<HTMLElement>(logo, '#iframe')!.offsetWidth, width);
-  });
-
-  test('receiving mode message sends mode', async () => {
-    // Arrange.
-    await createLogo(
-        {
-          interactive: {
-            url: 'https://foo.com',
-            width: 200,
-            height: 100,
-          },
-          description: '',
-          image: null,
-        },
-        createTheme({isDark: false}));
-    await microtasksFinished();
-    windowProxy.resetResolver('postMessage');
-
-    // Act.
-    window.postMessage({cmd: 'sendMode'}, '*');
-    await microtasksFinished();
-
-    // Assert.
-    assertEquals(1, windowProxy.getCallCount('postMessage'));
-    const [_, {cmd, dark}, origin] =
-        await windowProxy.whenCalled('postMessage');
-    assertEquals('changeMode', cmd);
-    assertEquals(false, dark);
-    assertEquals('https://foo.com', origin);
   });
 
   [true, false].forEach(hasUrl => {

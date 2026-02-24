@@ -20,11 +20,6 @@ ${this.showDoodle_ ? html`
         <div id="shareButtonIcon"></div>
       </cr-button>
     </div>
-    ${this.iframeUrl_ ? html`
-      <ntp-iframe id="iframe" src="${this.iframeUrl_}" ?expanded="${this.expanded_}"
-          allow="autoplay; clipboard-write">
-      </ntp-iframe>
-    ` : ''}
   </div>
 ` : ''}
 ${this.showShareDialog_ ? html`

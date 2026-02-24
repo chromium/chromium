@@ -112,15 +112,3 @@
   mask-image: url(chrome://new-tab-page/icons/share_unfilled.svg);
   background-color: var(--color-new-tab-page-doodle-share-button-icon, none);
 }
-
-#iframe {
-  border: none;
-  height: var(--height, var(--ntp-logo-height));
-  transition-duration: var(--duration, 100ms);
-  transition-property: height, width;
-  width: var(--width, 100%);
-}
-
-#iframe:not([expanded]) {
-  max-height: var(--ntp-logo-height);
-}
