@@ -104,13 +104,13 @@ bool IsValidExternalType(const String& input) {
     return false;
 
   // Validates the domain (the part before ':').
-  String domain = input.Left(colon_index);
+  StringView domain(input, 0, colon_index);
   if (domain.empty())
     return false;
   // TODO(https://crbug.com/520391): Validate |domain|.
 
   // Validates the type (the part after ':').
-  String type = input.Substring(colon_index + 1);
+  StringView type(input, colon_index + 1);
   if (type.empty())
     return false;
 
