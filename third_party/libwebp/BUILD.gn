@@ -35,13 +35,15 @@ config("libwebp_config") {
   }
 }
 
-set_opt_level = !is_debug && (is_posix || is_fuchsia || is_win) &&
-                (current_cpu == "arm" || current_cpu == "arm64")
+set_opt_level =
+    !is_debug && (is_posix || is_fuchsia || is_win) &&
+    (current_cpu == "arm" || current_cpu == "arm64" || current_cpu == "arm64e")
 
 # webp's dsp code can be built for all configurations. Skipping it when both
 # arm_use_neon and arm_optionally_use_neon are false will result in link errors
 # for its dsp init functions.
-use_dsp_neon = current_cpu == "arm64" || current_cpu == "arm"
+use_dsp_neon =
+    current_cpu == "arm64" || current_cpu == "arm64e" || current_cpu == "arm"
 
 source_set("libwebp_webp") {
   visibility += allowed_visibility

@@ -104,7 +104,8 @@ source_set("cpu_specific") {
     ]
   }
 
-  if (current_cpu == "arm" || current_cpu == "arm64") {
+  if (current_cpu == "arm" || current_cpu == "arm64" ||
+      current_cpu == "arm64e") {
     sources = [
       "src/src/arm/cache.c",
       "src/src/arm/uarch.c",
@@ -202,7 +203,7 @@ source_set("cpu_and_os_specific") {
       "src/src/arm/linux/midr.c",
     ]
 
-    if (current_cpu == "arm64") {
+    if (current_cpu == "arm64" || current_cpu == "arm64e") {
       sources += [ "src/src/arm/linux/aarch64-isa.c" ]
     } else {
       sources += [ "src/src/arm/linux/aarch32-isa.c" ]
@@ -231,7 +232,8 @@ source_set("cpu_and_os_specific") {
     sources = [ "src/src/x86/mach/init.c" ]
   }
 
-  if ((is_mac || is_ios) && (current_cpu == "arm" || current_cpu == "arm64")) {
+  if ((is_mac || is_ios) && (current_cpu == "arm" || current_cpu == "arm64" ||
+                             current_cpu == "arm64e")) {
     sources = [ "src/src/arm/mach/init.c" ]
   }
 

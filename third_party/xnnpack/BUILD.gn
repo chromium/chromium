@@ -1098,7 +1098,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":xx-transposev_x64_standalone",
     ]
   }
-} else if (current_cpu == "arm64") {
+} else if (current_cpu == "arm64" || current_cpu == "arm64e") {
   if (build_with_chromium) {
     xnnpack_deps = [
       ":configs_arm64",
@@ -35239,7 +35239,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   }
 }
 
-if (current_cpu == "arm64") {
+if (current_cpu == "arm64" || current_cpu == "arm64e") {
   if (build_with_chromium) {
     source_set("configs_arm64") {
       cflags = []
