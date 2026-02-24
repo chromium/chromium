@@ -86,6 +86,7 @@ class SkillsUiTabControllerTest : public ChromeViewsTestBase {
   }
 
  protected:
+  base::HistogramTester histogram_tester_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 
@@ -133,10 +134,11 @@ TEST_F(SkillsUiTabControllerTest, InvokeSkill_Timeout_GivesUp) {
   controller_->InvokeSkill(kTestSkillId);
 
   task_environment()->FastForwardBy(base::Seconds(61));
+  histogram_tester_.ExpectUniqueSample("Skills.Invoke.Result",
+                                       skills::SkillsInvokeResult::kTimeout, 1);
 }
 
 TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsUserCreatedInvokeMetrics) {
-  base::HistogramTester histogram_tester;
   TestingProfile* profile =
       profile_manager_->CreateTestingProfile("test_profile");
   std::unique_ptr<content::WebContents> web_contents =
@@ -162,12 +164,13 @@ TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsUserCreatedInvokeMetrics) {
   controller_->InvokeSkill(kTestSkillId);
 
   // Verify Metrics
-  histogram_tester.ExpectBucketCount("Skills.Invoke.Action",
-                                     SkillsInvokeAction::kUserCreated, 1);
+  histogram_tester_.ExpectBucketCount("Skills.Invoke.Action",
+                                      SkillsInvokeAction::kUserCreated, 1);
+  histogram_tester_.ExpectUniqueSample("Skills.Invoke.Result",
+                                       SkillsInvokeResult::kSuccess, 1);
 }
 
 TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsFirstPartyInvokeMetrics) {
-  base::HistogramTester histogram_tester;
   TestingProfile* profile =
       profile_manager_->CreateTestingProfile("test_profile");
   std::unique_ptr<content::WebContents> web_contents =
@@ -190,9 +193,29 @@ TEST_F(SkillsUiTabControllerTest, InvokeSkill_LogsFirstPartyInvokeMetrics) {
   controller_->InvokeSkill(kTestSkillId);
 
   // Verify Metrics
-  histogram_tester.ExpectBucketCount("Skills.Invoke.Action",
-                                     SkillsInvokeAction::kFirstParty, 1);
-  histogram_tester.ExpectBucketCount("Skills.Invoke.Action",
-                                     SkillsInvokeAction::kUserCreated, 0);
+  histogram_tester_.ExpectBucketCount("Skills.Invoke.Action",
+                                      SkillsInvokeAction::kFirstParty, 1);
+  histogram_tester_.ExpectBucketCount("Skills.Invoke.Action",
+                                      SkillsInvokeAction::kUserCreated, 0);
+  histogram_tester_.ExpectUniqueSample("Skills.Invoke.Result",
+                                       SkillsInvokeResult::kSuccess, 1);
+}
+
+TEST_F(SkillsUiTabControllerTest, InvokeSkill_SkillNotFound_LogsMetric) {
+  // Force the client to be ready so it immediately tries to invoke
+  EXPECT_CALL(*controller_, IsClientReady()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*controller_, ShowGlicPanel()).Times(1);
+
+  // Allow the real notification method to run
+  EXPECT_CALL(*controller_, NotifySkillToInvokeChanged()).WillOnce([this]() {
+    controller_->CallRealNotifySkillToInvokeChanged();
+  });
+
+  // Pass an ID that the mock GetSkill() doesn't recognize
+  controller_->InvokeSkill("some_deleted_skill_id");
+
+  // Assert the error metric fired safely
+  histogram_tester_.ExpectUniqueSample(
+      "Skills.Invoke.Result", skills::SkillsInvokeResult::kSkillNotFound, 1);
 }
 }  // namespace skills

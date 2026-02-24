@@ -8,6 +8,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/types/expected.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
 #include "chrome/test/base/testing_profile.h"
@@ -68,6 +69,56 @@ class SkillsDialogHandlerTest : public testing::Test {
         &mock_opt_guide_service_, mock_skill_, mock_delegate_.GetWeakPtr());
   }
 
+  // Helper to mock the Optimization Guide server response
+  void SetModelResponse(
+      std::optional<std::string> serialized_any_value,
+      const std::string& type_url = "type.googleapis.com/SkillsResponse") {
+    EXPECT_CALL(mock_opt_guide_service_, ExecuteModel(_, _, _, _))
+        .WillOnce([serialized_any_value, type_url](
+                      auto capability,
+                      const google::protobuf::MessageLite& request,
+                      std::optional<optimization_guide::ModelExecutionOptions>
+                          options,
+                      optimization_guide::
+                          OptimizationGuideModelExecutionResultCallback cb) {
+          if (!serialized_any_value) {
+            auto error = optimization_guide::
+                OptimizationGuideModelExecutionError::FromModelExecutionError(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        ModelExecutionError::kGenericFailure);
+
+            std::move(cb).Run(
+                optimization_guide::OptimizationGuideModelExecutionResult(
+                    base::unexpected(error), nullptr),
+                nullptr);
+            return;
+          }
+
+          // Simulate a successful response with the provided payload
+          optimization_guide::proto::Any any;
+          any.set_type_url(type_url);
+          any.set_value(*serialized_any_value);
+          std::move(cb).Run(
+              optimization_guide::OptimizationGuideModelExecutionResult(
+                  std::move(any), nullptr),
+              nullptr);
+        });
+  }
+
+  // Helper to run the method and assert the metric
+  void RunRefineSkillAndExpectError(SkillsDialogHandler* handler,
+                                    const std::string& prompt,
+                                    skills::SkillsRefineResult expected_error) {
+    skills::Skill skill;
+    skill.prompt = prompt;
+    base::MockCallback<mojom::DialogHandler::RefineSkillCallback> callback;
+
+    handler->RefineSkill(std::move(skill), callback.Get());
+
+    histogram_tester_.ExpectUniqueSample("Skills.Refine.Result", expected_error,
+                                         1);
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
@@ -83,34 +134,17 @@ class SkillsDialogHandlerTest : public testing::Test {
 
 // Tests that a successful response from MES is correctly mapped to Mojo.
 TEST_F(SkillsDialogHandlerTest, RefineSkillSuccess) {
+  optimization_guide::proto::SkillsResponse response;
+  auto* suggestion = response.add_suggestions();
+  suggestion->set_prompt("refined prompt");
+  suggestion->set_name("suggested name");
+  suggestion->set_icon("🤖");
+
+  SetModelResponse(response.SerializeAsString());
+
   skills::Skill skill;
   skill.prompt = "test prompt";
   base::MockCallback<mojom::DialogHandler::RefineSkillCallback> callback;
-
-  EXPECT_CALL(mock_opt_guide_service_, ExecuteModel(_, _, _, _))
-      .WillOnce(
-          [](auto capability, const google::protobuf::MessageLite& request,
-             std::optional<optimization_guide::ModelExecutionOptions> options,
-             optimization_guide::OptimizationGuideModelExecutionResultCallback
-                 cb) {
-            // Simulate the server returning one suggestion.
-            optimization_guide::proto::SkillsResponse response;
-            auto* suggestion = response.add_suggestions();
-            suggestion->set_prompt("refined prompt");
-            suggestion->set_name("suggested name");
-            suggestion->set_icon("🤖");
-
-            std::string serialized;
-            response.SerializeToString(&serialized);
-            optimization_guide::proto::Any any;
-            any.set_type_url("type.googleapis.com/SkillsResponse");
-            any.set_value(serialized);
-
-            std::move(cb).Run(
-                optimization_guide::OptimizationGuideModelExecutionResult(
-                    std::move(any), /*execution_info=*/nullptr),
-                nullptr);
-          });
 
   EXPECT_CALL(
       callback,
@@ -119,6 +153,49 @@ TEST_F(SkillsDialogHandlerTest, RefineSkillSuccess) {
                          Field(&skills::Skill::icon, "🤖")))));
 
   handler_->RefineSkill(std::move(skill), callback.Get());
+
+  histogram_tester_.ExpectUniqueSample("Skills.Refine.Result",
+                                       skills::SkillsRefineResult::kSuccess, 1);
+}
+
+TEST_F(SkillsDialogHandlerTest, RefineSkill_EmptyPrompt_LogsInvalidRequest) {
+  RunRefineSkillAndExpectError(handler_.get(), "",
+                               skills::SkillsRefineResult::kInvalidRequest);
+}
+
+TEST_F(SkillsDialogHandlerTest, RefineSkill_NoService_LogsServiceUnavailable) {
+  // Disconnect the pipe from Setup().
+  receiver_.reset();
+  // Create a handler with a nullptr for Optimization Guide
+  auto orphan_handler = std::make_unique<TestSkillsDialogHandler>(
+      receiver_.BindNewPipeAndPassReceiver(), web_contents_.get(), nullptr,
+      mock_skill_, mock_delegate_.GetWeakPtr());
+
+  RunRefineSkillAndExpectError(orphan_handler.get(), "test prompt",
+                               skills::SkillsRefineResult::kServiceUnavailable);
+}
+
+TEST_F(SkillsDialogHandlerTest,
+       RefineSkill_ModelFails_LogsModelExecutionFailed) {
+  SetModelResponse(std::nullopt);  // Force a total server failure
+  RunRefineSkillAndExpectError(
+      handler_.get(), "test prompt",
+      skills::SkillsRefineResult::kModelExecutionFailed);
+}
+
+TEST_F(SkillsDialogHandlerTest, RefineSkill_BadProto_LogsParseError) {
+  SetModelResponse("garbage data", "type.googleapis.com/WrongType");
+  RunRefineSkillAndExpectError(handler_.get(), "test prompt",
+                               skills::SkillsRefineResult::kParseError);
+}
+
+TEST_F(SkillsDialogHandlerTest,
+       RefineSkill_EmptySuggestions_LogsNoSuggestions) {
+  optimization_guide::proto::SkillsResponse response;  // Valid, but empty
+  SetModelResponse(response.SerializeAsString());
+
+  RunRefineSkillAndExpectError(handler_.get(), "test prompt",
+                               skills::SkillsRefineResult::kNoSuggestions);
 }
 
 TEST_F(SkillsDialogHandlerTest, CloseDialog_LogsCancelled) {
@@ -141,7 +218,7 @@ TEST_F(SkillsDialogHandlerTest, RefineSkill_LogsMetric) {
                                       SkillsDialogAction::kRefined, 1);
 }
 
-TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsSaved) {
+TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsSavedAndSuccess) {
   skills::Skill skill;
   skill.name = "Test Skill";
   skill.prompt = "Test Prompt";
@@ -154,6 +231,29 @@ TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsSaved) {
   // Metric Check
   histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
                                       SkillsDialogAction::kSaved, 1);
+  histogram_tester_.ExpectUniqueSample("Skills.Save.Result",
+                                       skills::SkillsSaveResult::kSuccess, 1);
+}
+
+TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsUiContextLostWhenDialogClosed) {
+  skills::Skill skill;
+  skill.name = "Test Skill";
+  base::MockCallback<mojom::DialogHandler::SubmitSkillCallback> callback;
+
+  // Disconnect the pipe from the Setup().
+  receiver_.reset();
+  // Create a new handler but pass an empty WeakPtr for the delegate
+  auto orphan_handler = std::make_unique<TestSkillsDialogHandler>(
+      receiver_.BindNewPipeAndPassReceiver(), web_contents_.get(),
+      &mock_opt_guide_service_, mock_skill_,
+      base::WeakPtr<MockSkillsDialogDelegate>());
+
+  // Attempt to submit the skill.
+  orphan_handler->SubmitSkill(skill, callback.Get());
+
+  // Assert that it safely bailed out and logged the error.
+  histogram_tester_.ExpectUniqueSample(
+      "Skills.Save.Result", skills::SkillsSaveResult::kUiContextLost, 1);
 }
 
 // Tests that GetInitialSkill returns the skill passed in during construction.

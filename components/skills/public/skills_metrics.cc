@@ -20,6 +20,18 @@ void RecordSkillsInvokeAction(SkillsInvokeAction action) {
   base::UmaHistogramEnumeration("Skills.Invoke.Action", action);
 }
 
+void RecordSkillsInvokeResult(SkillsInvokeResult result) {
+  base::UmaHistogramEnumeration("Skills.Invoke.Result", result);
+}
+
+void RecordSkillsSaveResult(SkillsSaveResult result) {
+  base::UmaHistogramEnumeration("Skills.Save.Result", result);
+}
+
+void RecordSkillsRefineResult(SkillsRefineResult result) {
+  base::UmaHistogramEnumeration("Skills.Refine.Result", result);
+}
+
 void RecordUserSkillCount(size_t skill_count) {
   base::UmaHistogramCounts1000("Skills.UserSkills.Count",
                                base::checked_cast<int>(skill_count));

@@ -62,6 +62,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Skills.Invoke.Result" enum="SkillsInvokeResult"
+    expires_after="2027-02-01">
+  <owner>michelleabreo@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records the terminal outcome (success or specific error state) of invoking a
+    Skill via the Glic panel. This metric is used to calculate availability and
+    reliability SLOs. Specific failure states include panel timeouts and
+    requests for skills that no longer exist (e.g., deleted via sync).
+  </summary>
+</histogram>
+
+<histogram name="Skills.Refine.Result" enum="SkillsRefineResult"
+    expires_after="2027-02-01">
+  <owner>michelleabreo@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records the terminal outcome of refining a Skill prompt using a server-side
+    ML model. Tracks successful execution, model failures, protobuf parse
+    errors, and cases where the model returns an empty suggestion list. Used to
+    monitor feature health and model reliability.
+  </summary>
+</histogram>
+
+<histogram name="Skills.Save.Result" enum="SkillsSaveResult"
+    expires_after="2027-02-01">
+  <owner>michelleabreo@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records the terminal outcome of saving a new Skill or updating an existing
+    one. Failure states differentiate between database/sync errors,
+    initialization states (service not ready), and cases where the UI context is
+    lost (dialog closed) before the save operation completes.
+  </summary>
+</histogram>
+
 <histogram name="Skills.UserSkills.Count" units="skills"
     expires_after="2027-02-01">
   <owner>michelleabreo@google.com</owner>

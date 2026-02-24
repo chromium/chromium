@@ -57,6 +57,42 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsInvokeAction) -->
 
+<!-- LINT.IfChange(SkillsInvokeResult) -->
+
+<enum name="SkillsInvokeResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Skill Not Found"/>
+  <int value="2" label="Timeout"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsInvokeResult) -->
+
+<!-- LINT.IfChange(SkillsRefineResult) -->
+
+<enum name="SkillsRefineResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Model Execution Failed"/>
+  <int value="2" label="Parse Error"/>
+  <int value="3" label="No Suggestions"/>
+  <int value="4" label="Service Unavailable"/>
+  <int value="5" label="Invalid Request"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsRefineResult) -->
+
+<!-- LINT.IfChange(SkillsSaveResult) -->
+
+<enum name="SkillsSaveResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="UI Context Lost"/>
+  <int value="2" label="Skill Not Found"/>
+  <int value="3" label="Write Failed"/>
+  <int value="4" label="Service Not Found"/>
+  <int value="5" label="Service Not Ready"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsSaveResult) -->
+
 </enums>
 
 </histogram-configuration>

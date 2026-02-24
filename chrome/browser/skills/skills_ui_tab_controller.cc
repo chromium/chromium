@@ -208,13 +208,10 @@ void SkillsUiTabController::ShowGlicPanel() {
 
 void SkillsUiTabController::NotifySkillToInvokeChangedWhenReady() {
   if (IsClientReady()) {
-    // TODO(https://crbug.com/475549806): Add metrics for successful skill
-    // invocation.
     NotifySkillToInvokeChanged();
   } else if (base::TimeTicks::Now() - glic_panel_open_time_ >
              kNotifyTimeoutSeconds) {
-    // TODO(https://crbug.com/475549806): Add metrics for skill invocation
-    // timeout and provide user feedback.
+    RecordSkillsInvokeResult(SkillsInvokeResult::kTimeout);
     Reset();
   } else if (!glic_panel_ready_timer_.IsRunning()) {
     glic_panel_ready_timer_.Start(
@@ -246,11 +243,12 @@ void SkillsUiTabController::NotifySkillToInvokeChanged() {
   const skills::Skill* skill = GetSkill(skill_id_to_invoke);
 
   if (!skill) {
-    // TODO(https://crbug.com/475549806): Add metrics for skill invocation
-    // failure and provide user feedback.
+    // TODO(https://crbug.com/475549806): provide user feedback.
+    RecordSkillsInvokeResult(SkillsInvokeResult::kSkillNotFound);
     return;
   }
 
+  RecordSkillsInvokeResult(SkillsInvokeResult::kSuccess);
   switch (skill->source) {
     case sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY:
       RecordSkillsInvokeAction(SkillsInvokeAction::kFirstParty);
@@ -262,7 +260,7 @@ void SkillsUiTabController::NotifySkillToInvokeChanged() {
       RecordSkillsInvokeAction(SkillsInvokeAction::kDerivedFromFirstParty);
       break;
     default:
-      break;
+      NOTREACHED();
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
