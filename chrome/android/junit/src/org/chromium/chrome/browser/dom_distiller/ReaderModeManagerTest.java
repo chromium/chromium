@@ -305,6 +305,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
+    @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testUi_notTriggered_contextualPageActionUiEnabled_exceptOnIncognitoTabs() {
         when(mTab.isIncognito()).thenReturn(true);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
@@ -647,6 +648,7 @@ public class ReaderModeManagerTest {
     @Test
     @Feature("ReaderMode")
     @EnableFeatures(ChromeFeatureList.CCT_ADAPTIVE_BUTTON)
+    @DisableFeatures(DomDistillerFeatures.READER_MODE_DISTILL_IN_APP)
     public void testTryShowingPrompt_CctCpaOn_Incognito_ShouldShowPromptIfApplicable() {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.isIncognito()).thenReturn(true);

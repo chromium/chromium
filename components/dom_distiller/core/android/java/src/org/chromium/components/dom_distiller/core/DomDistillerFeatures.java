@@ -57,7 +57,7 @@ public class DomDistillerFeatures {
             newMutableFlagWithSafeDefault(
                     READER_MODE_DELAY_BOTTOM_SHEET_PEEK, /* defaultValue= */ false);
     public static final MutableFlagWithSafeDefault sReaderModeDistillInApp =
-            newMutableFlagWithSafeDefault(READER_MODE_DISTILL_IN_APP, /* defaultValue= */ false);
+            newMutableFlagWithSafeDefault(READER_MODE_DISTILL_IN_APP, /* defaultValue= */ true);
     public static final MutableFlagWithSafeDefault sReaderModeImprovements =
             newMutableFlagWithSafeDefault(READER_MODE_IMPROVEMENTS, /* defaultValue= */ false);
     public static final MutableFlagWithSafeDefault sReaderModeSupportNewFonts =
@@ -65,7 +65,7 @@ public class DomDistillerFeatures {
     public static final MutableFlagWithSafeDefault sReaderModeToggleLinks =
             newMutableFlagWithSafeDefault(READER_MODE_TOGGLE_LINKS, /* defaultValue= */ false);
     public static final MutableFlagWithSafeDefault sReaderModeUseReadability =
-            newMutableFlagWithSafeDefault(READER_MODE_USE_READABILITY, /* defaultValue= */ false);
+            newMutableFlagWithSafeDefault(READER_MODE_USE_READABILITY, /* defaultValue= */ true);
 
     // Feature params -- alphabetical ordering.
 

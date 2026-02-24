@@ -30,22 +30,12 @@ bool ShouldStartDistillabilityService() {
       switches::kEnableDistillabilityService);
 }
 
-BASE_FEATURE(kReaderModeUseReadability,
-// iOS enabled by default as part of a launch.
-// Desktop enabled by default as part of a dogfood, it will be controlled by a
-// separate feature flag on it's launch.
-#if !BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kReaderModeUseReadability, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_IOS)
 constexpr base::FeatureParam<bool> kReaderModeUseReadabilityUseDistiller{
     &kReaderModeUseReadability, /*name=*/"use_distiller",
-    /*default_value=*/false};
+    /*default_value=*/true};
 #endif
 constexpr base::FeatureParam<int> kReaderModeUseReadabilityHeuristicMinScore{
     &kReaderModeUseReadability, /*name=*/"heuristic_min_score",
@@ -108,7 +98,7 @@ BASE_FEATURE(kReaderModeBlurTransitionAnimation,
 BASE_FEATURE(kReaderModeDelayBottomSheetPeek,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kReaderModeDistillInApp, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReaderModeDistillInApp, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReaderModeImprovements, base::FEATURE_DISABLED_BY_DEFAULT);
 
