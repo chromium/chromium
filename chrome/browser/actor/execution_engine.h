@@ -292,10 +292,10 @@ class ExecutionEngine : public ToolDelegate {
   size_t InProgressActionIndex() const;
   const ToolRequest& GetInProgressAction() const;
 
-  void LogNavigationGating(
-      base::optional_ref<const url::Origin> initiator_origin,
-      const url::Origin& navigation_origin,
-      bool applied_gate) const;
+  void LogNavigationGating(const url::Origin& source,
+                           base::optional_ref<const url::Origin> initiator,
+                           const url::Origin& destination,
+                           bool applied_gate) const;
 
   // Returns the highest-priority navigation gating decision. Prioritizes
   // blocking navigations over allowing (except on same origin navigations).
@@ -303,14 +303,16 @@ class ExecutionEngine : public ToolDelegate {
                                          const GURL& destination_url) const;
 
   void CheckNavigationSensitiveUrlList(
-      base::optional_ref<const url::Origin> initiator_origin,
-      const GURL& navigation_url,
+      const url::Origin& source,
+      const std::optional<url::Origin>& initiator,
+      const GURL& destination_url,
       bool skip_prompt,
       base::ScopedUmaHistogramTimer timer,
       NavigationDecisionCallback callback);
   void OnNavigationSensitiveUrlListChecked(
-      base::optional_ref<const url::Origin> initiator_origin,
-      const url::Origin& navigation_origin,
+      const url::Origin& source,
+      const std::optional<url::Origin>& initiator,
+      const url::Origin& destination,
       bool skip_prompt,
       base::ScopedUmaHistogramTimer timer,
       NavigationDecisionCallback callback,
@@ -319,33 +321,33 @@ class ExecutionEngine : public ToolDelegate {
   // Called when the browser detects the actor needs to confirm a
   // client-side-initiated navigation to a novel origin.
   void HandleNavigationToNewOrigin(
-      const url::Origin& navigation_origin,
+      const url::Origin& destination,
       base::ScopedUmaHistogramTimer timer,
       ExecutionEngine::NavigationDecisionCallback callback);
 
-  void SendNavigationConfirmationRequest(const url::Origin& navigation_origin,
+  void SendNavigationConfirmationRequest(const url::Origin& destination,
                                          base::ScopedUmaHistogramTimer timer,
                                          NavigationDecisionCallback callback);
   void OnNavigationConfirmationDecision(
-      const url::Origin& navigation_origin,
+      const url::Origin& destination,
       base::ScopedUmaHistogramTimer timer,
       NavigationDecisionCallback callback,
       webui::mojom::NavigationConfirmationResponsePtr response);
 
   void MaybeRecordNavigationConfirmationMetrics(
       ExecutionEngine::State state_for_metrics,
-      const url::Origin& navigation_origin,
+      const url::Origin& destination,
       bool is_pre_approved);
 
   // Makes the web client confirm with the user that the actor is allowed to
   // navigate to this origin.
   void SendUserConfirmationDialogRequest(
-      const url::Origin& navigation_origin,
+      const url::Origin& destination,
       bool for_sensitive_origin,
       std::optional<base::ScopedUmaHistogramTimer> timer,
       NavigationDecisionCallback callback);
   void OnPromptUserToConfirmNavigationDecision(
-      url::Origin navigation_origin,
+      const url::Origin& destination,
       NavigationDecisionCallback callback,
       webui::mojom::UserConfirmationDialogResponsePtr response);
 

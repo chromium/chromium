@@ -5,6 +5,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -79,10 +80,14 @@ constexpr char kHandleNavigationConfirmationTempl[] =
   })();
 )js";
 
-constexpr std::string_view kCrossOriginHistogram =
-    "Actor.NavigationGating.CrossOrigin2";
-constexpr std::string_view kCrossSiteHistogram =
-    "Actor.NavigationGating.CrossSite2";
+constexpr std::string_view kSameOriginSourceHistogram =
+    "Actor.NavigationGating.SameOriginSource";
+constexpr std::string_view kSameSiteSourceHistogram =
+    "Actor.NavigationGating.SameSiteSource";
+constexpr std::string_view kSameOriginInitiatorHistogram =
+    "Actor.NavigationGating.SameOriginInitiator";
+constexpr std::string_view kSameSiteInitiatorHistogram =
+    "Actor.NavigationGating.SameSiteInitiator";
 
 }  // namespace
 
@@ -315,12 +320,20 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "Actor.NavigationGating.AppliedGate", false, 1);
   histogram_tester_for_init_.ExpectBucketCount(
       "Actor.NavigationGating.AppliedGate", true, 1);
-  // Should log that there was a cross-origin navigation and a cross-site
-  // navigation.
-  histogram_tester_for_init_.ExpectBucketCount(kCrossOriginHistogram, false, 1);
-  histogram_tester_for_init_.ExpectBucketCount(kCrossOriginHistogram, true, 1);
-  histogram_tester_for_init_.ExpectBucketCount(kCrossSiteHistogram, false, 1);
-  histogram_tester_for_init_.ExpectBucketCount(kCrossSiteHistogram, true, 1);
+
+  EXPECT_THAT(
+      histogram_tester_for_init_.GetAllSamples(kSameOriginSourceHistogram),
+      base::BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+  EXPECT_THAT(
+      histogram_tester_for_init_.GetAllSamples(kSameSiteSourceHistogram),
+      base::BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+  EXPECT_THAT(
+      histogram_tester_for_init_.GetAllSamples(kSameOriginInitiatorHistogram),
+      base::BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+  EXPECT_THAT(
+      histogram_tester_for_init_.GetAllSamples(kSameSiteInitiatorHistogram),
+      base::BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+
   // Should log that permission was *granted* once.
   histogram_tester_for_init_.ExpectBucketCount(
       "Actor.NavigationGating.PermissionGranted", true, 1);
@@ -389,11 +402,17 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "Actor.NavigationGating.AppliedGate", false, 1);
   histogram_tester_for_init_.ExpectBucketCount(
       "Actor.NavigationGating.AppliedGate", true, 1);
-  // Should log that there was a cross-origin navigation and a cross-site
-  // navigation.
-  histogram_tester_for_init_.ExpectBucketCount(kCrossOriginHistogram, false, 1);
-  histogram_tester_for_init_.ExpectBucketCount(kCrossOriginHistogram, true, 1);
-  histogram_tester_for_init_.ExpectBucketCount(kCrossSiteHistogram, false, 2);
+
+  EXPECT_THAT(
+      histogram_tester_for_init_.GetAllSamples(kSameOriginSourceHistogram),
+      base::BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+  histogram_tester_for_init_.ExpectUniqueSample(kSameSiteSourceHistogram, true,
+                                                2);
+  EXPECT_THAT(
+      histogram_tester_for_init_.GetAllSamples(kSameOriginInitiatorHistogram),
+      base::BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+  histogram_tester_for_init_.ExpectUniqueSample(kSameSiteInitiatorHistogram,
+                                                true, 2);
   // Should log that permission was *granted* once.
   histogram_tester_for_init_.ExpectBucketCount(
       "Actor.NavigationGating.PermissionGranted", true, 1);
@@ -801,9 +820,15 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   // list.
   histogram_tester_for_init_.ExpectUniqueSample(
       "Actor.NavigationGating.AppliedGate", false, 1);
-  // Should log that there was one same-site navigation and one cross-site
-  // navigation.
-  histogram_tester_for_init_.ExpectUniqueSample(kCrossSiteHistogram, true, 1);
+
+  histogram_tester_for_init_.ExpectUniqueSample(kSameOriginSourceHistogram,
+                                                false, 1);
+  histogram_tester_for_init_.ExpectUniqueSample(kSameSiteSourceHistogram, false,
+                                                1);
+  histogram_tester_for_init_.ExpectUniqueSample(kSameOriginInitiatorHistogram,
+                                                false, 1);
+  histogram_tester_for_init_.ExpectUniqueSample(kSameSiteInitiatorHistogram,
+                                                false, 1);
   // Should not log permission granted since the static list was used.
   histogram_tester_for_init_.ExpectTotalCount(
       "Actor.NavigationGating.PermissionGranted", 0);
@@ -950,7 +975,14 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       ExecutionEngine::GatingDecision::kAllowByStaticList, 1);
   histogram_tester_for_init_.ExpectBucketCount(
       "Actor.NavigationGating.AppliedGate", false, 1);
-  histogram_tester_for_init_.ExpectBucketCount(kCrossSiteHistogram, true, 1);
+  histogram_tester_for_init_.ExpectUniqueSample(kSameOriginSourceHistogram,
+                                                false, 1);
+  histogram_tester_for_init_.ExpectUniqueSample(kSameSiteSourceHistogram, false,
+                                                1);
+  histogram_tester_for_init_.ExpectUniqueSample(kSameOriginInitiatorHistogram,
+                                                false, 1);
+  histogram_tester_for_init_.ExpectUniqueSample(kSameSiteInitiatorHistogram,
+                                                false, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,

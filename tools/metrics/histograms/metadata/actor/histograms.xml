@@ -251,27 +251,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Actor.NavigationGating.CrossOrigin2" enum="Boolean"
-    expires_after="2026-08-23">
-  <owner>dylancutler@google.com</owner>
-  <owner>johannhof@google.com</owner>
-  <summary>
-    Records when actor navigation gating is applied to a cross-origin
-    navigation. Recorded when the actor navigates the main frame and origin
-    gating applies.
-  </summary>
-</histogram>
-
-<histogram name="Actor.NavigationGating.CrossSite2" enum="Boolean"
-    expires_after="2026-05-31">
-  <owner>dylancutler@google.com</owner>
-  <owner>johannhof@google.com</owner>
-  <summary>
-    Records when actor navigation gating is applied to a cross-site navigation.
-    Recorded when the actor navigates the main frame and origin gating applies.
-  </summary>
-</histogram>
-
 <histogram name="Actor.NavigationGating.GatingDecision" enum="GatingDecision"
     expires_after="2026-08-23">
   <owner>tquintanilla@google.com</owner>
@@ -292,6 +271,27 @@ chromium-metrics-reviews@google.com.
     navigation gating has already applied. Recorded when the browser receives
     the response from its confirmation request.
   </summary>
+</histogram>
+
+<histogram name="Actor.NavigationGating.Same{Scope}{Origin}"
+    enum="BooleanMatched" expires_after="2026-08-23">
+  <owner>dylancutler@google.com</owner>
+  <owner>johannhof@google.com</owner>
+  <owner>cfredric@chromium.org</owner>
+  <summary>
+    Records whether actor navigation gating is used to evaluate a navigation for
+    which the destination origin and {Origin} origin are same-{Scope}. Recorded
+    when the actor navigates the main frame and origin gating is active,
+    regardless of whether the navigation is allowed or blocked.
+  </summary>
+  <token key="Scope">
+    <variant name="Origin"/>
+    <variant name="Site"/>
+  </token>
+  <token key="Origin">
+    <variant name="Initiator"/>
+    <variant name="Source"/>
+  </token>
 </histogram>
 
 <histogram name="Actor.NavigationGating.TimeElapsedForGating2" units="ms"
