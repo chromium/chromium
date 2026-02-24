@@ -1372,6 +1372,7 @@ if (_is_default_toolchain) {
     testonly = true
 
     deps = [
+      "javatests:chrome_unit_test_java_org.chromium.chrome.browser.actor",
       "javatests:chrome_unit_test_java_org.chromium.chrome.browser.compositor",
       "javatests:chrome_unit_test_java_org.chromium.chrome.browser.contextmenu",
       "javatests:chrome_unit_test_java_org.chromium.chrome.browser.customtabs",

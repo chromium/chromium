@@ -1790,6 +1790,16 @@ java_group("common_unit_test_deps_java") {
 }
 
 # Partition tests into one target per-package to keep incremental build times down.
+android_library("chrome_unit_test_java_org.chromium.chrome.browser.actor") {
+  resources_package = "org.chromium.chrome"
+
+  sources = [
+    "src/org/chromium/chrome/browser/actor/ActorForegroundServiceTest.java",
+  ]
+
+  deps = [ ":common_unit_test_deps_java" ]
+}
+
 android_library(
     "chrome_unit_test_java_org.chromium.chrome.browser.compositor") {
   resources_package = "org.chromium.chrome"
