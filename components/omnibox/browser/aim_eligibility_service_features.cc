@@ -67,4 +67,8 @@ const base::FeatureParam<AimServerEligibilityIncludeClientLocaleMode>
 
 BASE_FEATURE(kAimEligibilityServiceOauth, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAimEligibilityServiceDebounce, base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta> kAimEligibilityServiceDebounceDelay{
+    &kAimEligibilityServiceDebounce, "delay", base::Milliseconds(100)};
+
 }  // namespace omnibox

@@ -472,6 +472,22 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram
+    name="Omnibox.AimEligibility.EligibilityRequestDebounced{RequestSource}"
+    enum="Boolean" expires_after="2026-08-05">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>avivkiss@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The AIM Eligibility service makes HTTP requests to determine which AIM
+    features the user is eligible for. This metric logs whether the request was
+    debounced (i.e., a new request is scheduled while a timer for a previous
+    request is already running), sliced by request source. This metric is logged
+    every time a request is attempted.
+  </summary>
+  <token key="RequestSource" variants="AimEligibilityRequestSource"/>
+</histogram>
+
+<histogram
     name="Omnibox.AimEligibility.EligibilityRequestOAuthFallback{RequestSource}"
     enum="Boolean" expires_after="2026-08-05">
   <owner>mahmadi@chromium.org</owner>
