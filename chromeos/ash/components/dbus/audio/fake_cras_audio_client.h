@@ -246,7 +246,12 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   int32_t number_arc_streams_ = 0;
   std::string audio_effect_dlcs_;
 
-  base::ObserverList<Observer> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   base::WeakPtrFactory<FakeCrasAudioClient> weak_ptr_factory_{this};
 };

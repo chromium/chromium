@@ -176,7 +176,12 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FakeCrosDisksClient
                 chromeos::VoidDBusMethodCallback callback,
                 MountError mount_error);
 
-  base::ObserverList<Observer> observer_list_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observer_list_;
   int unmount_call_count_ = 0;
   std::string last_unmount_device_path_;
   MountError unmount_error_ = MountError::kSuccess;

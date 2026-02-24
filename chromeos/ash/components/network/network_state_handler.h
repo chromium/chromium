@@ -527,7 +527,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   void InitShillPropertyHandler();
 
   // Observer list
-  base::ObserverList<Observer, true>::Unchecked observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observers_;
 
  private:
   typedef std::map<std::string, std::string> SpecifierGuidMap;
