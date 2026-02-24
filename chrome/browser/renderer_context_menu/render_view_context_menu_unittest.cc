@@ -1368,11 +1368,12 @@ TEST_F(RenderViewContextMenuPrefsTest, TranslateContextMenuHasIcon) {
                                  params);
   menu.SetBrowser(GetBrowser());
   menu.Init();
-  size_t index = 0;
-  raw_ptr<ui::MenuModel> model = nullptr;
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_TRANSLATE));
-  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_TRANSLATE,
-                                            &model, &index));
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu.GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_TRANSLATE);
+  ASSERT_TRUE(model_and_index);
+  ui::MenuModel* model = model_and_index->first;
+  size_t index = model_and_index->second;
 // Context menu items typically do not have icons on Mac.
 #if BUILDFLAG(IS_MAC)
   EXPECT_TRUE(model->GetIconAt(index).IsEmpty());
@@ -1398,11 +1399,9 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.SetBrowser(GetBrowser());
   menu.Init();
 
-  size_t index = 0;
-  raw_ptr<ui::MenuModel> model = nullptr;
-
-  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
-      IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu.GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE);
+  ASSERT_TRUE(model_and_index);
 
   base::RunLoop run_loop;
   preresolved_finished_closure() = run_loop.QuitClosure();
@@ -1427,11 +1426,9 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.SetBrowser(GetBrowser());
   menu.Init();
 
-  size_t index = 0;
-  raw_ptr<ui::MenuModel> model = nullptr;
-
-  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
-      IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu.GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH);
+  ASSERT_TRUE(model_and_index);
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 
   base::RunLoop run_loop;
@@ -1457,10 +1454,9 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchIssuesProcessPrewarming) {
   menu.SetBrowser(GetBrowser());
   menu.Init();
 
-  size_t index = 0;
-  raw_ptr<ui::MenuModel> model = nullptr;
-  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
-      IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu.GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE);
+  ASSERT_TRUE(model_and_index);
 
   ASSERT_EQ(initial_num_processes + 1,
             mock_rph_factory().GetProcesses()->size());
@@ -1483,10 +1479,9 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.SetBrowser(GetBrowser());
   menu.Init();
 
-  size_t index = 0;
-  raw_ptr<ui::MenuModel> model = nullptr;
-  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
-      IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu.GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH);
+  ASSERT_TRUE(model_and_index);
 
   ASSERT_EQ(initial_num_processes + 1,
             mock_rph_factory().GetProcesses()->size());
@@ -1529,10 +1524,9 @@ TEST_F(RenderViewContextMenuPrefsTest,
   menu.SetBrowser(GetBrowser());
   menu.Init();
 
-  size_t index = 0;
-  raw_ptr<ui::MenuModel> model = nullptr;
-  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
-      IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu.GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE);
+  ASSERT_TRUE(model_and_index);
 
   ASSERT_EQ(initial_num_processes, mock_rph_factory().GetProcesses()->size());
 }

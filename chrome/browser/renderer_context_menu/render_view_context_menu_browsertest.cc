@@ -2255,10 +2255,10 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenLinkInProfileEntryPresent) {
     ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW));
     ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKLOCATION));
     // With at least two secondary profiles, they are displayed in a submenu.
-    raw_ptr<ui::MenuModel> model = nullptr;
-    size_t index = 0;
-    ASSERT_TRUE(menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST,
-                                               &model, &index));
+    std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+        menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST);
+    ASSERT_TRUE(model_and_index);
+    ui::MenuModel* model = model_and_index->first;
     ASSERT_EQ(2u, model->GetItemCount());
     ASSERT_FALSE(menu->IsItemInRangePresent(IDC_OPEN_LINK_IN_PROFILE_FIRST,
                                             IDC_OPEN_LINK_IN_PROFILE_LAST));
@@ -2331,10 +2331,10 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
       CreateContextMenuMediaTypeNone(url, url));
 
   // Verify that the size of the menu is correct.
-  raw_ptr<ui::MenuModel> model = nullptr;
-  size_t index = 0;
-  ASSERT_TRUE(menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST,
-                                             &model, &index));
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST);
+  ASSERT_TRUE(model_and_index);
+  ui::MenuModel* model = model_and_index->first;
   ASSERT_EQ(profiles_in_menu.size(), model->GetItemCount());
 
   // Open the menu items. They should match their corresponding profiles in
@@ -2389,10 +2389,9 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenProfileNoneReferrer) {
   auto menu = CreateContextMenuFromParams(params);
 
   // Verify that the Open in Profile option is shown.
-  raw_ptr<ui::MenuModel> model = nullptr;
-  size_t index = 0;
-  ASSERT_TRUE(menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST,
-                                             &model, &index));
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu->GetMenuModelAndItemIndex(IDC_OPEN_LINK_IN_PROFILE_FIRST);
+  ASSERT_TRUE(model_and_index);
 
   ui_test_utils::AllBrowserTabAddedWaiter add_tab;
   int command_id = menu->GetCommandIDByProfilePath(profile->GetPath());
@@ -3774,10 +3773,12 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenLinkInExistingSplitTab) {
       CreateContextMenuMediaTypeNone(test_url, test_url);
 
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW));
-  size_t index = 0;
-  raw_ptr<ui::MenuModel> model = nullptr;
-  ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
-      IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, &model, &index));
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW);
+  ASSERT_TRUE(model_and_index);
+  ui::MenuModel* model = model_and_index->first;
+  size_t index = model_and_index->second;
+
   EXPECT_EQ(model->GetLabelAt(index),
             l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_OPENLINKRIGHTVIEW));
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, 0);
@@ -3800,10 +3801,11 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, OpenLinkInExistingSplitTabRTL) {
   std::unique_ptr<TestRenderViewContextMenu> menu =
       CreateContextMenuMediaTypeNone(test_url, test_url);
 
-  size_t index = 0;
-  raw_ptr<ui::MenuModel> model = nullptr;
-  ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
-      IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, &model, &index));
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu->GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW);
+  ASSERT_TRUE(model_and_index);
+  ui::MenuModel* model = model_and_index->first;
+  size_t index = model_and_index->second;
   EXPECT_EQ(model->GetLabelAt(index),
             l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_OPENLINKLEFTVIEW));
 }

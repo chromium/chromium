@@ -5,12 +5,19 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_TEST_EXTENSION_MENU_MODEL_ANDROID_H_
 #define CHROME_BROWSER_EXTENSIONS_TEST_EXTENSION_MENU_MODEL_ANDROID_H_
 
+#include <optional>
+#include <utility>
+
 #include "chrome/browser/extensions/extension_menu_model_android.h"
 
 namespace content {
 struct ContextMenuParams;
 class RenderFrameHost;
 }  // namespace content
+
+namespace ui {
+class MenuModel;
+}  // namespace ui
 
 namespace extensions {
 
@@ -31,13 +38,10 @@ class TestExtensionMenuModel : public ExtensionMenuModel {
   TestExtensionMenuModel& operator=(const TestExtensionMenuModel&) = delete;
   ~TestExtensionMenuModel() override = default;
 
-  // Searches for an menu item with `command_id`. If it's found, the return
-  // value is true and the model and index where it appears in that model are
-  // returned in `found_model` and `found_index`. Otherwise returns false.
-  // TODO(crbug.com/484409663): Fix to not take a raw_ptr<>.
-  bool GetMenuModelAndItemIndex(int command_id,
-                                raw_ptr<ui::MenuModel>* found_model,
-                                size_t* found_index);
+  // Searches for a menu item with `command_id`. If it's found, returns the pair
+  // (model, index). Otherwise returns std::nullopt.
+  std::optional<std::pair<ui::MenuModel*, size_t>> GetMenuModelAndItemIndex(
+      int command_id);
 
   // Named to match `TestRenderViewContextMenu`.
   ContextMenuMatcher& extension_items() { return matcher_; }

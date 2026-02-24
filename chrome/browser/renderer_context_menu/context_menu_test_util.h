@@ -7,6 +7,9 @@
 
 #include <stddef.h>
 
+#include <optional>
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 
 namespace ui {
@@ -18,16 +21,11 @@ class MenuModel;
 
 namespace context_menu_test_util {
 
-// Searches `search_model` for an menu item with `command_id`. If it's found,
-// the return value is true and the model and index where it appears in that
-// model are returned in `found_model` and `found_index`. `found_model` may be a
-// submenu. Otherwise returns false.
-// TODO(crbug.com/484409663): Fix to not take a raw_ptr<>. It does so for
-// compatibility with existing code.
-bool GetMenuModelAndItemIndex(ui::MenuModel* search_model,
-                              int command_id,
-                              raw_ptr<ui::MenuModel>* found_model,
-                              size_t* found_index);
+// Searches `search_model` for a menu item with `command_id`. If it's found,
+// returns the pair (model, index). Otherwise returns std::nullopt.
+std::optional<std::pair<ui::MenuModel*, size_t>> GetMenuModelAndItemIndex(
+    ui::MenuModel* search_model,
+    int command_id);
 
 }  // namespace context_menu_test_util
 

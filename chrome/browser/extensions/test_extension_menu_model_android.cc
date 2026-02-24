@@ -13,12 +13,9 @@ TestExtensionMenuModel::TestExtensionMenuModel(
     const content::ContextMenuParams& params)
     : ExtensionMenuModel(frame, params) {}
 
-bool TestExtensionMenuModel::GetMenuModelAndItemIndex(
-    int command_id,
-    raw_ptr<MenuModel>* found_model,
-    size_t* found_index) {
-  return context_menu_test_util::GetMenuModelAndItemIndex(
-      this, command_id, found_model, found_index);
+std::optional<std::pair<ui::MenuModel*, size_t>>
+TestExtensionMenuModel::GetMenuModelAndItemIndex(int command_id) {
+  return context_menu_test_util::GetMenuModelAndItemIndex(this, command_id);
 }
 
 }  // namespace extensions

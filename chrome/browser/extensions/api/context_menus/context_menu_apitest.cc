@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -190,10 +192,16 @@ class ExtensionContextMenuVisibilityApiTest
     menu_->Init();
 
     // Get menu model.
-    bool valid_setup = menu_->GetMenuModelAndItemIndex(
-        menu_->extension_items().ConvertToExtensionsCustomCommandId(0),
-        &top_level_model_, &top_level_index_);
+    std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+        menu_->GetMenuModelAndItemIndex(
+            menu_->extension_items().ConvertToExtensionsCustomCommandId(0));
+    CHECK(model_and_index);
+    top_level_model_ = model_and_index->first;
+    top_level_index_ = model_and_index->second;
+    EXPECT_TRUE(top_level_model_);
     EXPECT_GT(top_level_index(), 0u);
+    // TODO: Eliminate this variable.
+    bool valid_setup = true;
 #endif  // BUILDFLAG(IS_ANDROID)
 
     return valid_setup;

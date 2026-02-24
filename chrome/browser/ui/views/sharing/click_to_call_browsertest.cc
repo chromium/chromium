@@ -213,10 +213,12 @@ IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest,
   ASSERT_TRUE(menu->IsItemPresent(
       IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
 
-  raw_ptr<ui::MenuModel> sub_menu_model = nullptr;
-  size_t device_id = 0;
-  ASSERT_TRUE(menu->GetMenuModelAndItemIndex(kSubMenuFirstDeviceCommandId,
-                                             &sub_menu_model, &device_id));
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu->GetMenuModelAndItemIndex(kSubMenuFirstDeviceCommandId);
+  ASSERT_TRUE(model_and_index);
+  ui::MenuModel* sub_menu_model = model_and_index->first;
+  size_t device_id = model_and_index->second;
+  ASSERT_TRUE(sub_menu_model);
   EXPECT_EQ(2u, sub_menu_model->GetItemCount());
   EXPECT_EQ(0u, device_id);
 
@@ -246,10 +248,12 @@ IN_PROC_BROWSER_TEST_P(ClickToCallBrowserTest,
   ASSERT_TRUE(menu->IsItemPresent(
       IDC_CONTENT_CONTEXT_SHARING_CLICK_TO_CALL_MULTIPLE_DEVICES));
 
-  raw_ptr<ui::MenuModel> sub_menu_model = nullptr;
-  size_t device_id = 0;
-  ASSERT_TRUE(menu->GetMenuModelAndItemIndex(kSubMenuFirstDeviceCommandId,
-                                             &sub_menu_model, &device_id));
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu->GetMenuModelAndItemIndex(kSubMenuFirstDeviceCommandId);
+  ASSERT_TRUE(model_and_index);
+  ui::MenuModel* sub_menu_model = model_and_index->first;
+  size_t device_id = model_and_index->second;
+  ASSERT_TRUE(sub_menu_model);
   EXPECT_EQ(2u, sub_menu_model->GetItemCount());
   EXPECT_EQ(0u, device_id);
 

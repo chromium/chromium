@@ -20,8 +20,6 @@
 #include "chrome/browser/compose/chrome_compose_client.h"
 #endif
 
-using ui::MenuModel;
-
 TestRenderViewContextMenu::TestRenderViewContextMenu(
     content::RenderFrameHost& render_frame_host,
     content::ContextMenuParams params)
@@ -84,12 +82,10 @@ bool TestRenderViewContextMenu::IsItemInRangePresent(
   return false;
 }
 
-bool TestRenderViewContextMenu::GetMenuModelAndItemIndex(
-    int command_id,
-    raw_ptr<MenuModel>* found_model,
-    size_t* found_index) {
-  return context_menu_test_util::GetMenuModelAndItemIndex(
-      &menu_model_, command_id, found_model, found_index);
+std::optional<std::pair<ui::MenuModel*, size_t>>
+TestRenderViewContextMenu::GetMenuModelAndItemIndex(int command_id) {
+  return context_menu_test_util::GetMenuModelAndItemIndex(&menu_model_,
+                                                          command_id);
 }
 
 int TestRenderViewContextMenu::GetCommandIDByProfilePath(

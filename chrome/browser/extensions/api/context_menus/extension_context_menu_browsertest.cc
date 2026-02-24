@@ -5,9 +5,11 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string_view>
 #include <tuple>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -221,11 +223,13 @@ class ExtensionContextMenuBrowserTest : public ExtensionBrowserTest {
     if (!FindCommandId(menu, id, &command_id))
       return false;
 
-    raw_ptr<MenuModel> model = nullptr;
-    size_t index = 0;
-    if (!menu->GetMenuModelAndItemIndex(command_id, &model, &index)) {
+    std::optional<std::pair<MenuModel*, size_t>> model_and_index =
+        menu->GetMenuModelAndItemIndex(command_id);
+    if (!model_and_index) {
       return false;
     }
+    MenuModel* model = model_and_index->first;
+    size_t index = model_and_index->second;
     *result = model->GetLabelAt(index);
     return true;
   }
@@ -648,12 +652,12 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, TopLevel) {
   std::unique_ptr<PlatformContextMenu> menu =
       CreateContextMenu(GetActiveWebContents(), url);
 
-  size_t index = 0;
-  raw_ptr<MenuModel> model = nullptr;
-
-  ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
-      ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0), &model,
-      &index));
+  std::optional<std::pair<MenuModel*, size_t>> model_and_index =
+      menu->GetMenuModelAndItemIndex(
+          ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0));
+  ASSERT_TRUE(model_and_index);
+  MenuModel* model = model_and_index->first;
+  size_t index = model_and_index->second;
   EXPECT_EQ(u"An Extension with multiple Context Menus",
             model->GetLabelAt(index++));
   EXPECT_EQ(u"Context Menu #1 - Extension #2", model->GetLabelAt(index++));
@@ -738,12 +742,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
 
   // The top-level item should be an "automagic parent" with the extension's
   // name.
-  raw_ptr<MenuModel> model = nullptr;
-  size_t index = 0;
-  std::u16string label;
-  ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
-      ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0), &model,
-      &index));
+  std::optional<std::pair<MenuModel*, size_t>> model_and_index =
+      menu->GetMenuModelAndItemIndex(
+          ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0));
+  ASSERT_TRUE(model_and_index);
+  MenuModel* model = model_and_index->first;
+  size_t index = model_and_index->second;
   EXPECT_EQ(base::UTF8ToUTF16(extension->name()), model->GetLabelAt(index));
   ASSERT_EQ(MenuModel::TYPE_SUBMENU, model->GetTypeAt(index));
 
@@ -761,9 +765,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionContextMenuPersistentTest, Separators) {
                             GURL(extension->GetResourceURL("test2.html"))));
   EXPECT_TRUE(listener2.WaitUntilSatisfied());
   menu = CreateContextMenu(GetActiveWebContents(), url);
-  ASSERT_TRUE(menu->GetMenuModelAndItemIndex(
-      ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0), &model,
-      &index));
+  model_and_index = menu->GetMenuModelAndItemIndex(
+      ContextMenuMatcher::ConvertToExtensionsCustomCommandId(0));
+  ASSERT_TRUE(model_and_index);
+  model = model_and_index->first;
+  index = model_and_index->second;
   EXPECT_EQ(u"parent", model->GetLabelAt(index));
   submenu = model->GetSubmenuModelAt(index);
   ASSERT_TRUE(submenu);
