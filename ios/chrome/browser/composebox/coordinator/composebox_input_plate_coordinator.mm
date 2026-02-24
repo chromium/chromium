@@ -243,6 +243,7 @@ const CGFloat kSnackbarBottomMargin = 10;
   _snackbarPresenter = nil;
   if (_tabPickerCoordinator.started) {
     [_tabPickerCoordinator stop];
+    _tabPickerCoordinator = nil;
   }
   [_metricsRecorder recordAttachmentButtonsUsageInSession];
 
@@ -258,6 +259,13 @@ const CGFloat kSnackbarBottomMargin = 10;
   [_omniboxCoordinator stop];
   _omniboxCoordinator = nil;
   _metricsRecorder = nil;
+  _theme = nil;
+  _modeHolder = nil;
+  _contextualService = nullptr;
+
+  _locationBar = nullptr;
+  _locationBarModel = nullptr;
+  _locationBarModelDelegate = nullptr;
 }
 
 - (UIViewController*)inputViewController {

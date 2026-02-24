@@ -192,6 +192,7 @@
 
   [_navigationMediator disconnect];
   _navigationMediator = nil;
+  _modeHolder = nil;
 }
 
 - (BOOL)isPresented {
