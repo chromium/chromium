@@ -14,7 +14,8 @@ enum class GetDomNodeResult {
   kNodeNotFoundInApc = 2,
   kNoGeometry = 3,
   kOffScreen = 4,
-  kMaxValue = kOffScreen,
+  kEmptyBoundingBox = 5,
+  kMaxValue = kEmptyBoundingBox,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:GetDomNodeResult)
 

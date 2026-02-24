@@ -35,6 +35,28 @@
       width: 20%;
       float: right;
     }
+    /* Invisible elements for bounding box error testing */
+    #f {
+      width: 0px;
+      height: 0px;
+      position: absolute;
+      overflow: hidden;
+      opacity: 0;
+    }
+    #g {
+      width: 0px;
+      height: 10px;
+      position: absolute;
+      overflow: hidden;
+      opacity: 0;
+    }
+    #h {
+      width: 10px;
+      height: 0px;
+      position: absolute;
+      overflow: hidden;
+      opacity: 0;
+    }
   </style>
   <script>
     window.isIframeLoaded = false;
@@ -108,5 +130,8 @@
       <strong>D</strong>
     </div>
   </center>
+  <div id="f" aria-label="f_div">F</div>
+  <div id="g" aria-label="g_div">G</div>
+  <div id="h" aria-label="h_div">H</div>
 </body>
 </html>

@@ -270,6 +270,28 @@ IN_PROC_BROWSER_TEST_P(ActorUiDomNodeGeometryBrowserTest,
   SkiaWebContentsDiff();
 }
 
+IN_PROC_BROWSER_TEST_P(ActorUiDomNodeGeometryBrowserTest,
+                       EmptyBoundingBox_Rejected) {
+  LoadPage(embedded_test_server()->GetURL("/actor/dom_node_geometry.html"));
+  GetPageApc();
+  auto* geom = tab_data_->GetLastObservedDomNodeGeometry();
+
+  auto node_both = GetDomNodeForAriaLabel("f_div");
+  auto result_both = geom->GetDomNode(node_both);
+  EXPECT_FALSE(result_both.has_value());
+  EXPECT_EQ(result_both.error(), GetDomNodeResult::kEmptyBoundingBox);
+
+  auto node_width = GetDomNodeForAriaLabel("g_div");
+  auto result_width = geom->GetDomNode(node_width);
+  EXPECT_FALSE(result_width.has_value());
+  EXPECT_EQ(result_width.error(), GetDomNodeResult::kEmptyBoundingBox);
+
+  auto node_height = GetDomNodeForAriaLabel("h_div");
+  auto result_height = geom->GetDomNode(node_height);
+  EXPECT_FALSE(result_height.has_value());
+  EXPECT_EQ(result_height.error(), GetDomNodeResult::kEmptyBoundingBox);
+}
+
 // Run with 0.5 (Low DPI), 1.0 (Standard), and 1.5 (High DPI).
 INSTANTIATE_TEST_SUITE_P(All,
                          ActorUiDomNodeGeometryBrowserTest,
