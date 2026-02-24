@@ -2700,8 +2700,9 @@ void URLLoader::PerformSyntheticResponseFallback() {
   response_->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n");
 
-  size_t written_bytes =
+  auto [result, written_bytes] =
       WriteSyntheticResponseFallbackBody(response_body_stream_);
+  CHECK_EQ(result, MOJO_RESULT_OK);
   CHECK_GT(written_bytes, 0u);
   total_written_bytes_ += written_bytes;
 

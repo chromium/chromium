@@ -80,7 +80,9 @@ TEST_F(SyntheticResponseTest, WriteSyntheticResponseFallbackBody) {
   ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
             MOJO_RESULT_OK);
 
-  size_t written_bytes = WriteSyntheticResponseFallbackBody(producer_handle);
+  auto [result, written_bytes] =
+      WriteSyntheticResponseFallbackBody(producer_handle);
+  ASSERT_EQ(result, MOJO_RESULT_OK);
   ASSERT_GE(written_bytes, 0u);
 
   std::string buffer(written_bytes, '\0');
