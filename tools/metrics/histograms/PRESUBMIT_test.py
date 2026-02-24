@@ -5,7 +5,6 @@
 import os.path
 import tempfile
 import unittest
-from typing import Tuple
 
 import setup_modules
 
@@ -22,8 +21,11 @@ _INITIAL_HISTOGRAMS_CONTENT = '<histogram name="Foo" enum="Boolean" />'
 _MODIFIED_HISTOGRAMS_CONTENT = '<histogram name="Foo" units="Boolean" />'
 
 
-def _TempCacheDir():
-  return tempfile.mkdtemp()
+def _TempCacheFile():
+  file_handle, file_path = tempfile.mkstemp(suffix='.json', text=True)
+  os.close(file_handle)
+  return file_path
+
 
 def _PrepareTestWorkingDirectory():
   test_dir = tempfile.mkdtemp()
@@ -33,7 +35,7 @@ def _PrepareTestWorkingDirectory():
   return test_dir, histograms_path
 
 
-def _MockInputFromTestFile(relative_path: str) -> Tuple[MockInputApi, str]:
+def _MockInputFromTestFile(relative_path: str) -> (MockInputApi, str):
   """ Returns a MockInputApi that list a file relative to test_data/ as changed.
 
   The provided file is read and its contents are provided to the MockInputApi.
@@ -198,7 +200,7 @@ class MetricsPresubmitTest(unittest.TestCase):
 
   def testSecondCheckOnTheSameDataReturnsSameResult(self):
     test_dir_path, _ = _PrepareTestWorkingDirectory()
-    test_cache_file = _TempCacheDir()
+    test_cache_file = _TempCacheFile()
 
     mock_input_api = _MockInputFromString(
         'histograms.xml', '<histogram name="Foo" units="Boolean" />',
@@ -232,7 +234,7 @@ class MetricsPresubmitTest(unittest.TestCase):
 
   def testSecondCheckOnTheSameDataReturnsSameEmptyResult(self):
     test_dir_path, _ = _PrepareTestWorkingDirectory()
-    test_cache_file = _TempCacheDir()
+    test_cache_file = _TempCacheFile()
 
     mock_input_api = _MockInputFromString(
         'histograms.xml', '<histogram name="Foo" enum="Boolean" />',
@@ -262,7 +264,7 @@ class MetricsPresubmitTest(unittest.TestCase):
   def testFailureInModifiedFileIsDetected(self):
     test_dir_path, histograms_path = _PrepareTestWorkingDirectory()
 
-    test_cache_file = _TempCacheDir()
+    test_cache_file = _TempCacheFile()
     mock_input_api = MockInputApi()
     mock_input_api.presubmit_local_path = test_dir_path
     mock_input_api.files = [
