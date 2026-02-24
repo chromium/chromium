@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/form_predictions_tracker.h"
 
 #include "base/feature_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -49,7 +50,8 @@ void FormPredictionsTracker::Wait(base::OnceClosure callback,
                                   base::TimeDelta timeout) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillDelayApcForPredictions)) {
-    std::move(callback).Run();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
     return;
   }
   callbacks_.push_back(WrapAsTimeoutCallback(std::move(callback), timeout));
@@ -72,7 +74,8 @@ void FormPredictionsTracker::MaybeNotifyWaitingCallbacks() {
       });
   if (all_forms_parsed) {
     for (base::OnceClosure& callback : std::exchange(callbacks_, {})) {
-      std::move(callback).Run();
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(callback));
     }
   }
 }
