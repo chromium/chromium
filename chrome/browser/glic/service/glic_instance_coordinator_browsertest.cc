@@ -292,7 +292,6 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        TabContentsDaisyChaining) {
   // SKIP_NEEDS_ANDROID_IMPL removed
-  browser_activator()->SetMode(BrowserActivator::Mode::kFirst);
 
   auto* instance = OpenGlicForActiveTab();
   ASSERT_TRUE(instance);
@@ -326,7 +325,6 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
     tabs::TabInterface* tab3 = waiter.Wait();
     auto* new_window = tab3->GetBrowserWindowInterface();
-    browser_activator()->SetActive(new_window);
 
     EXPECT_EQ(instance, coordinator().GetInstanceForTab(tab3));
     EXPECT_EQ(TabListInterface::From(new_window)->GetActiveTab(), tab3);
@@ -338,7 +336,6 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   // Case 3: Ctrl+Shift+Click (Foreground Tab)
   {
     GlicTestTabAddedWaiter waiter(GetProfile());
-    browser_activator()->SetActive(tab1->GetBrowserWindowInterface());
     GetTabListInterface()->ActivateTab(tab1->GetHandle());
     SimulateLinkClick(tab1, /*ctrl_key=*/true, /*shift_key=*/true);
     tabs::TabInterface* tab4 = waiter.Wait();
