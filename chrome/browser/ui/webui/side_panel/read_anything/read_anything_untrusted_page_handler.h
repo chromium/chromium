@@ -419,10 +419,14 @@ class ReadAnythingUntrustedPageHandler :
                           ui::AXActionHandlerObserver>
       ax_action_handler_observer_{this};
 
-  // Whether the currently distilled page is recognized as a pdf. This allows
-  // the page handler to trigger distillation if the page would now be
-  // recognized as a pdf after it finishes loading.
-  bool is_pdf_ = false;
+  // Whether the currently distilled page is recognized as a pdf and the pdf
+  // frame has loaded. This allows the page handler to trigger distillation if
+  // the page would now be recognized as a pdf after it finishes loading.
+  bool is_pdf_with_frame_ = false;
+  // When the current distilled page is recognized as a pdf, the pdf frame
+  // itself has not necessarily loaded in yet, so wait for that frame before
+  // notifying of the new tree using the info from the pdf frame itself.
+  bool is_waiting_for_pdf_frame_ = false;
 
   // This manages the life cycle of the pinned toolbar observer. We observe
   // the pinned toolbar to ensure capture user pin changes in the toolbar ui.
