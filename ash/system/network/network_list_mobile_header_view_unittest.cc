@@ -58,6 +58,7 @@ class NetworkListMobileHeaderViewTest : public AshTestBase {
   }
 
   void TearDown() override {
+    network_list_mobile_header_view_ = nullptr;
     widget_.reset();
 
     AshTestBase::TearDown();
@@ -109,8 +110,7 @@ class NetworkListMobileHeaderViewTest : public AshTestBase {
   network_config::CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
-  raw_ptr<NetworkListMobileHeaderView, DanglingUntriaged>
-      network_list_mobile_header_view_;
+  raw_ptr<NetworkListMobileHeaderView> network_list_mobile_header_view_;
 };
 
 TEST_F(NetworkListMobileHeaderViewTest, MobileToggleButtonStates) {
