@@ -1,0 +1,10 @@
+Test that processing instructions can be read and modified.
+{
+    localName :
+    nodeName : instruction
+    nodeType : 7
+    nodeValue : attribute="value"
+}
+<?instruction newAttribute="newValue"?>
+<?marker newAttribute="newValue"?>
+

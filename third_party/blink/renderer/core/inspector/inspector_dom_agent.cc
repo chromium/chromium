@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
+#include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
@@ -1092,8 +1093,9 @@ protocol::Response InspectorDOMAgent::setAttributesAsText(
     std::optional<String> name) {
   Element* element = nullptr;
   protocol::Response response = AssertEditableElement(element_id, element);
-  if (!response.IsSuccess())
+  if (!response.IsSuccess()) {
     return response;
+  }
 
   bool is_html_document = IsA<HTMLDocument>(element->GetDocument());
 
@@ -1199,39 +1201,64 @@ protocol::Response InspectorDOMAgent::setNodeName(int node_id,
                                                   int* new_id) {
   *new_id = 0;
 
-  Element* old_element = nullptr;
-  protocol::Response response = AssertElement(node_id, old_element);
+  Node* old_node = nullptr;
+  protocol::Response response = AssertNode(node_id, old_node);
   if (!response.IsSuccess())
     return response;
 
   DummyExceptionStateForTesting exception_state;
-  Element* new_elem = old_element->GetDocument().CreateElementForBinding(
-      AtomicString(tag_name), exception_state);
-  if (exception_state.HadException())
-    return ToResponse(exception_state);
+  Node* new_node;
+  switch (old_node->getNodeType()) {
+    case Node::kElementNode: {
+      Element* old_element = To<Element>(old_node);
+      if (!old_element) {
+        return protocol::Response::ServerError("Not an element");
+      }
+      Element* new_elem = old_element->GetDocument().CreateElementForBinding(
+          AtomicString(tag_name), exception_state);
+      if (exception_state.HadException()) {
+        return ToResponse(exception_state);
+      }
 
-  // Copy over the original node's attributes.
-  new_elem->CloneAttributesFrom(*old_element);
+      // Copy over the original node's attributes.
+      new_elem->CloneAttributesFrom(*old_element);
 
-  // Copy over the original node's children.
-  for (Node* child = old_element->firstChild(); child;
-       child = old_element->firstChild()) {
-    response = dom_editor_->InsertBefore(new_elem, child, nullptr);
-    if (!response.IsSuccess())
-      return response;
+      // Copy over the original node's children.
+      for (Node* child = old_element->firstChild(); child;
+           child = old_element->firstChild()) {
+        response = dom_editor_->InsertBefore(new_elem, child, nullptr);
+        if (!response.IsSuccess()) {
+          return response;
+        }
+      }
+      new_node = new_elem;
+      break;
+    }
+    case Node::kProcessingInstructionNode: {
+      ProcessingInstruction* pi =
+          old_node->ownerDocument()->createProcessingInstruction(
+              AtomicString(tag_name), old_node->nodeValue(), exception_state);
+      if (exception_state.HadException()) {
+        return ToResponse(exception_state);
+      }
+      new_node = pi;
+      break;
+    }
+    default:
+      return protocol::Response::ServerError("Not an element");
   }
 
   // Replace the old node with the new node
-  ContainerNode* parent = old_element->parentNode();
+  ContainerNode* parent = old_node->parentNode();
   response =
-      dom_editor_->InsertBefore(parent, new_elem, old_element->nextSibling());
+      dom_editor_->InsertBefore(parent, new_node, old_node->nextSibling());
   if (!response.IsSuccess())
     return response;
-  response = dom_editor_->RemoveChild(parent, old_element);
+  response = dom_editor_->RemoveChild(parent, old_node);
   if (!response.IsSuccess())
     return response;
 
-  *new_id = PushNodePathToFrontend(new_elem);
+  *new_id = PushNodePathToFrontend(new_node);
   if (children_requested_.Contains(node_id))
     PushChildNodesToFrontend(*new_id);
   return protocol::Response::Success();
@@ -1305,8 +1332,11 @@ protocol::Response InspectorDOMAgent::setNodeValue(int node_id,
   if (!response.IsSuccess())
     return response;
 
-  if (node->getNodeType() != Node::kTextNode)
-    return protocol::Response::ServerError("Can only set value of text nodes");
+  if (node->getNodeType() != Node::kTextNode &&
+      node->getNodeType() != Node::kProcessingInstructionNode) {
+    return protocol::Response::ServerError(
+        "Can only set value of text nodes or processing instructions");
+  }
 
   return dom_editor_->SetNodeValue(node, value);
 }
@@ -2212,6 +2242,7 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
     case Node::kTextNode:
     case Node::kCommentNode:
     case Node::kCdataSectionNode:
+    case Node::kProcessingInstructionNode:
       node_value = node->nodeValue();
       if (node_value.length() > kMaxTextSize) {
         node_value =
@@ -2832,9 +2863,10 @@ void InspectorDOMAgent::WillPopShadowRoot(Element* host, ShadowRoot* root) {
 void InspectorDOMAgent::DidPerformSlotDistribution(
     HTMLSlotElement* slot_element) {
   int insertion_point_id = BoundNodeId(slot_element);
-  if (insertion_point_id)
+  if (insertion_point_id) {
     GetFrontend()->distributedNodesUpdated(
         insertion_point_id, BuildDistributedNodesForSlot(slot_element));
+  }
 }
 
 void InspectorDOMAgent::FrameDocumentUpdated(LocalFrame* frame) {
