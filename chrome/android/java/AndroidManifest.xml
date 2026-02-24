@@ -1282,6 +1282,10 @@ by a child template that "extends" this file.
 
       <!-- NOTE: If you change the value of "android:process" for the below services,
            you also need to update kHelperProcessExecutableName in chrome_constants.cc. -->
+      <!-- NOTE: num_sandboxed_services is simply the number of name slots available,
+           and not a limit on the number of sandboxed processes that can be created.
+           In practice, many fewer slots are used, and process names are often reused,
+           such as many processes named with the suffix ":sandboxed_process0". -->
       {% set num_sandboxed_services = 40 %}
       <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES"
           android:value="{{ num_sandboxed_services }}"/>
