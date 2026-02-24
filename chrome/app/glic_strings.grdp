@@ -174,13 +174,13 @@
   <message name="IDS_SETTINGS_GLIC_KEEP_SIDEPANEL_OPEN_ON_NEW_TABS" desc="Name of the daisy chain new tabs setting.">
     Keep the Gemini sidebar open when you open a new tab
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE" desc="Name of the location sharing setting.">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE" desc="Name of the location sharing setting." formatter_data="android_java">
     Precise Location
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL" desc="Sublabel describing that this setting will share location data with Gemini for location-aware answers">
     When you share your precise location, Gemini can answer your questions more accurately
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will share location data with Gemini for location-aware answers, but the user's data is not used to improve the model">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will share location data with Gemini for location-aware answers, but the user's data is not used to improve the model" formatter_data="android_java">
     When you share your precise location, Gemini can answer your questions more accurately. Your data is not used to improve generative AI models.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_MICROPHONE_TOGGLE" desc="Name of the microphone setting.">

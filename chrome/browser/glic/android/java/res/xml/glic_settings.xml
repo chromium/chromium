@@ -22,6 +22,12 @@ found in the LICENSE file.
         android:key="glic_permissions_section"
         android:title="@string/settings_glic_permissions_section" />
 
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="permissions_location"
+        android:title="@string/settings_glic_permissions_location_toggle"
+        android:summary="@string/settings_glic_permissions_location_toggle_sublabel_data_protected"
+        android:defaultValue="false" />
+
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="glic_permissions_activity"
         android:title="@string/settings_glic_permissions_activity_button"
