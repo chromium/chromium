@@ -7,11 +7,11 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
@@ -47,18 +47,13 @@ bool IsEphemeralOrMGS() {
   return chrome_user_manager_util::IsManagedGuestSessionOrEphemeralLogin();
 }
 
-bool IsFirstOnboarding() {
-  // OOBE start time is cleared after the completion of the first onboarding.
-  base::Time oobe_time =
-      g_browser_process->local_state()->GetTime(prefs::kOobeStartTime);
-  return !oobe_time.is_null();
-}
-
 namespace cros_events = metrics::structured::events::v2::cr_os_events;
 }  // namespace
 
 OobeCrosEventsMetrics::OobeCrosEventsMetrics(
-    OobeMetricsHelper* oobe_metrics_helper) {
+    const PrefService* local_state,
+    OobeMetricsHelper* oobe_metrics_helper)
+    : local_state_(CHECK_DEREF(local_state)) {
   oobe_metrics_helper->AddObserver(this);
 }
 
@@ -224,6 +219,12 @@ void OobeCrosEventsMetrics::OnChoobeResumed() {
           .SetIsEphemeralOrMGS(IsEphemeralOrMGS())
           .SetIsFirstOnboarding(IsFirstOnboarding())
           .SetChromeMilestone(version_info::GetMajorVersionNumberAsInt())));
+}
+
+bool OobeCrosEventsMetrics::IsFirstOnboarding() const {
+  // OOBE start time is cleared after the completion of the first onboarding.
+  base::Time oobe_time = local_state_->GetTime(prefs::kOobeStartTime);
+  return !oobe_time.is_null();
 }
 
 }  // namespace ash

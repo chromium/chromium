@@ -246,8 +246,10 @@ LoginDisplayHostCommon::LoginDisplayHostCommon(
           base::BindRepeating(
               []() { return g_browser_process->metrics_service(); }))) {
   if (features::IsOobeCrosEventsEnabled()) {
-    oobe_cros_events_metrics_ =
-        std::make_unique<OobeCrosEventsMetrics>(oobe_metrics_helper_.get());
+    // TODO(crbug.com/404133029): Avoid using g_browser_process.
+    const PrefService* local_state = g_browser_process->local_state();
+    oobe_cros_events_metrics_ = std::make_unique<OobeCrosEventsMetrics>(
+        local_state, oobe_metrics_helper_.get());
   }
 
   browser_controller_observation_.Observe(BrowserController::GetInstance());

@@ -5,16 +5,21 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_OOBE_CROS_EVENTS_METRICS_H_
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_CROS_EVENTS_METRICS_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/oobe_metrics_helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 
+class PrefService;
+
 namespace ash {
 
 class OobeCrosEventsMetrics : public OobeMetricsHelper::Observer {
  public:
-  explicit OobeCrosEventsMetrics(OobeMetricsHelper* oobe_metrics_helper);
+  // `local_state` must be non-null and must outlive `this`.
+  OobeCrosEventsMetrics(const PrefService* local_state,
+                        OobeMetricsHelper* oobe_metrics_helper);
   ~OobeCrosEventsMetrics() override;
   OobeCrosEventsMetrics(const OobeCrosEventsMetrics& other) = delete;
   OobeCrosEventsMetrics& operator=(const OobeCrosEventsMetrics&) = delete;
@@ -35,6 +40,11 @@ class OobeCrosEventsMetrics : public OobeMetricsHelper::Observer {
   void OnPreLoginOobeResumed(OobeScreenId screen) override;
   void OnOnboardingResumed(OobeScreenId screen) override;
   void OnChoobeResumed() override;
+
+ private:
+  bool IsFirstOnboarding() const;
+
+  const raw_ref<const PrefService> local_state_;
 };
 
 }  // namespace ash
