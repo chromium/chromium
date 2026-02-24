@@ -63,7 +63,11 @@ class COMPONENTS_PREFS_EXPORT PrefNotifierImpl : public PrefNotifier {
   // A map from pref names to a list of observers. Observers get fired in the
   // order they are added. These should only be accessed externally for unit
   // testing.
-  using PrefObserverList = base::ObserverList<PrefObserver, true>;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  using PrefObserverList = base::ObserverList<
+      PrefObserver,
+      true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>;
   using PrefObserverMap = absl::node_hash_map<std::string, PrefObserverList>;
   using PrefInitObserverList = std::list<base::OnceCallback<void(bool)>>;
 
