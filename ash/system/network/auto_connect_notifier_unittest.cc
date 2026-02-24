@@ -73,6 +73,8 @@ class AutoConnectNotifierTest : public AshTestBase {
   }
 
   void TearDown() override {
+    mock_notification_timer_ = nullptr;
+    toast_manager_ = nullptr;
     AshTestBase::TearDown();
     network_config_helper_.reset();
     network_handler_test_helper_.reset();
@@ -110,13 +112,13 @@ class AutoConnectNotifierTest : public AshTestBase {
   }
 
   // Ownership passed to Shell owned AutoConnectNotifier instance.
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_notification_timer_;
+  raw_ptr<base::MockOneShotTimer> mock_notification_timer_;
 
  private:
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
       network_config_helper_;
-  raw_ptr<ToastManagerImpl, DanglingUntriaged> toast_manager_ = nullptr;
+  raw_ptr<ToastManagerImpl> toast_manager_ = nullptr;
 };
 
 TEST_F(AutoConnectNotifierTest, NoExplicitConnectionRequested) {
