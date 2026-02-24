@@ -83,7 +83,7 @@ void UserPolicySigninService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   if (IsSignoutEvent(event)) {
     ShutdownCloudPolicyManager();
-  } else if (AreSeparateProfilesForManagedAccountsEnabled()) {
+  } else {
     TryInitialize();
   }
 }

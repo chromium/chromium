@@ -108,16 +108,9 @@ NSString* GetManagementDescription(ManagementState management_state) {
   if (!management_state.is_managed()) {
     return nil;
   }
-  if (AreSeparateProfilesForManagedAccountsEnabled()) {
-    if (management_state.is_profile_managed() &&
-        !management_state.is_managed_by_same_entity()) {
-      return l10n_util::GetNSString(IDS_IOS_ENTERPRISE_ACCOUNT_MANAGED);
-    }
-    return l10n_util::GetNSString(IDS_IOS_ENTERPRISE_BROWSER_MANAGED);
+  if (management_state.is_profile_managed() &&
+      !management_state.is_managed_by_same_entity()) {
+    return l10n_util::GetNSString(IDS_IOS_ENTERPRISE_ACCOUNT_MANAGED);
   }
-
-  return management_state.is_profile_managed()
-             ? l10n_util::GetNSString(
-                   IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION)
-             : nil;
+  return l10n_util::GetNSString(IDS_IOS_ENTERPRISE_BROWSER_MANAGED);
 }
