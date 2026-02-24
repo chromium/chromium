@@ -28,7 +28,7 @@
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
-#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents_observer.h"

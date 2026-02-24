@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/content/browser/integrators/glic/autofill_annotations_provider_impl.h"
+#include "components/autofill/content/browser/integrators/actor/autofill_annotations_provider_impl.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"

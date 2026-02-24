@@ -9,7 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
 #include "chrome/browser/autofill/actor/actor_form_filling_service.h"
-#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {

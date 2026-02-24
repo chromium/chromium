@@ -30,7 +30,7 @@
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
-#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_process_host.h"

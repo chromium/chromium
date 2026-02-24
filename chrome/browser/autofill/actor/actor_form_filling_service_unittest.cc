@@ -24,7 +24,7 @@
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"

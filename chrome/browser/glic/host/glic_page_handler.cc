@@ -82,7 +82,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feedback/content/content_tracing_manager.h"

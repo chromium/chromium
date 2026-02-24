@@ -32,7 +32,7 @@
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
 
 #if !BUILDFLAG(IS_ANDROID)

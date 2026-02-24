@@ -15,7 +15,7 @@
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
-#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/tabs/public/tab_interface.h"

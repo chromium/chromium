@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "url/origin.h"
 
 namespace actor {

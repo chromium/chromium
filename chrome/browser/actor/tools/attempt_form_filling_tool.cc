@@ -21,7 +21,7 @@
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/actor_webui.mojom.h"
-#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "content/public/browser/render_frame_host.h"

@@ -14,7 +14,7 @@
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/buildflags.h"
-#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "url/gurl.h"
 

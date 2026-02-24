@@ -10,7 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
-#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace tabs {

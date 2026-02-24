@@ -24,7 +24,7 @@ static_library("actor") {
   public_deps = [
     "//base",
     "//components/autofill/core/browser",
-    "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+    "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
     "//components/autofill/core/common",
   ]
 }

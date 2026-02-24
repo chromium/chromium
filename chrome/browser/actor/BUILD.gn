@@ -68,7 +68,7 @@ source_set("actor") {
     "//chrome/browser/subscription_eligibility",
     "//chrome/common",
     "//chrome/common:actor_webui_mojom",
-    "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+    "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
     "//components/download/content/public",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -192,7 +192,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
     "//components/affiliations/core/browser:affiliations",
-    "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+    "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
     "//components/content_settings/core/common",
     "//components/favicon/core",
     "//components/lookalikes/core",
@@ -281,7 +281,7 @@ source_set("types") {
   ]
   deps = [
     "//chrome/common",
-    "//components/autofill/core/browser/integrators/glic:actor_form_filling_types",
+    "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
     "//components/password_manager/core/browser/actor_login:common",
     "//components/tabs:public",
     "//third_party/abseil-cpp:absl",

@@ -15,7 +15,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
-#include "components/autofill/core/browser/integrators/glic/actor_form_filling_types.h"
+#include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
