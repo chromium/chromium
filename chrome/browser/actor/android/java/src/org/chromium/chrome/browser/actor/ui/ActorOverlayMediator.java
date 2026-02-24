@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.actor.ui;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -19,14 +21,21 @@ class ActorOverlayMediator {
     private final TabModelSelector mTabModelSelector;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
     private final Callback<@Nullable Tab> mCurrentTabObserver;
+    private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
 
     /**
      * @param model The PropertyModel to modify.
      * @param tabModelSelector The TabModelSelector to observe.
+     * @param browserControlsVisibilityManager The BrowserControlsVisibilityManager to observe.
      */
-    public ActorOverlayMediator(PropertyModel model, TabModelSelector tabModelSelector) {
+    public ActorOverlayMediator(
+            PropertyModel model,
+            TabModelSelector tabModelSelector,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager) {
         mModel = model;
         mTabModelSelector = tabModelSelector;
+        mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
 
         mTabModelSelectorObserver =
                 new TabModelSelectorObserver() {
@@ -46,6 +55,28 @@ class ActorOverlayMediator {
         mTabModelSelector
                 .getCurrentTabSupplier()
                 .addSyncObserverAndCallIfNonNull(mCurrentTabObserver);
+
+        mBrowserControlsObserver =
+                new BrowserControlsStateProvider.Observer() {
+                    @Override
+                    public void onTopControlsHeightChanged(
+                            int topControlsHeight, int topControlsMinHeight) {
+                        mModel.set(ActorOverlayProperties.TOP_MARGIN, topControlsHeight);
+                    }
+
+                    @Override
+                    public void onBottomControlsHeightChanged(
+                            int bottomControlsHeight, int bottomControlsMinHeight) {
+                        mModel.set(ActorOverlayProperties.BOTTOM_MARGIN, bottomControlsHeight);
+                    }
+                };
+        mBrowserControlsVisibilityManager.addObserver(mBrowserControlsObserver);
+        mModel.set(
+                ActorOverlayProperties.TOP_MARGIN,
+                mBrowserControlsVisibilityManager.getTopControlsHeight());
+        mModel.set(
+                ActorOverlayProperties.BOTTOM_MARGIN,
+                mBrowserControlsVisibilityManager.getBottomControlsHeight());
     }
 
     private void updateCanShowOverlay(@Nullable Tab tab) {
@@ -71,5 +102,6 @@ class ActorOverlayMediator {
     public void destroy() {
         mTabModelSelector.getCurrentTabSupplier().removeObserver(mCurrentTabObserver);
         mTabModelSelector.removeObserver(mTabModelSelectorObserver);
+        mBrowserControlsVisibilityManager.removeObserver(mBrowserControlsObserver);
     }
 }

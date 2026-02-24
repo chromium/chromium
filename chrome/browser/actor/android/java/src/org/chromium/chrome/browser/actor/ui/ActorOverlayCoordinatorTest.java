@@ -22,6 +22,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -33,6 +35,7 @@ public class ActorOverlayCoordinatorTest {
     @Mock private ViewStub mViewStub;
     @Mock private ActorOverlayView mView;
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private Tab mTab;
 
     private ActorOverlayCoordinator mCoordinator;
@@ -46,7 +49,9 @@ public class ActorOverlayCoordinatorTest {
         mCurrentTabSupplier = ObservableSuppliers.createNullable();
         Mockito.when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
 
-        mCoordinator = new ActorOverlayCoordinator(mViewStub, mTabModelSelector);
+        mCoordinator =
+                new ActorOverlayCoordinator(
+                        mViewStub, mTabModelSelector, mBrowserControlsVisibilityManager);
     }
 
     @Test
@@ -55,6 +60,7 @@ public class ActorOverlayCoordinatorTest {
         Assert.assertEquals(mView, mCoordinator.getView());
         verify(mViewStub).inflate();
         verify(mTabModelSelector).addObserver(any(TabModelSelectorObserver.class));
+        verify(mBrowserControlsVisibilityManager).addObserver(any());
     }
 
     @Test
@@ -103,9 +109,23 @@ public class ActorOverlayCoordinatorTest {
     }
 
     @Test
+    public void testMargins() {
+        ArgumentCaptor<BrowserControlsStateProvider.Observer> observerCaptor =
+                ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
+        verify(mBrowserControlsVisibilityManager).addObserver(observerCaptor.capture());
+
+        observerCaptor.getValue().onTopControlsHeightChanged(100, 0);
+        verify(mView).setMargins(100, 0);
+
+        observerCaptor.getValue().onBottomControlsHeightChanged(50, 0);
+        verify(mView).setMargins(100, 50);
+    }
+
+    @Test
     public void testDestroy() {
         mCoordinator.destroy();
         verify(mTabModelSelector).removeObserver(any(TabModelSelectorObserver.class));
+        verify(mBrowserControlsVisibilityManager).removeObserver(any());
         Assert.assertFalse(mCurrentTabSupplier.hasObservers());
     }
 }

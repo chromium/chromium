@@ -24,6 +24,11 @@ class ActorOverlayViewBinder {
                     model.get(ActorOverlayProperties.VISIBLE)
                             && model.get(ActorOverlayProperties.CAN_SHOW);
             view.setVisible(visible);
+        } else if (key == ActorOverlayProperties.TOP_MARGIN
+                || key == ActorOverlayProperties.BOTTOM_MARGIN) {
+            view.setMargins(
+                    model.get(ActorOverlayProperties.TOP_MARGIN),
+                    model.get(ActorOverlayProperties.BOTTOM_MARGIN));
         }
     }
 }

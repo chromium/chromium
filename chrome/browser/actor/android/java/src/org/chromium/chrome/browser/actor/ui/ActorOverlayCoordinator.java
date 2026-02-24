@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewStub;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -25,19 +26,27 @@ public class ActorOverlayCoordinator {
      *
      * @param viewStub The ViewStub to inflate the overlay into.
      * @param tabModelSelector The TabModelSelector to observe.
+     * @param browserControlsVisibilityManager The BrowserControlsVisibilityManager to observe.
      */
-    public ActorOverlayCoordinator(ViewStub viewStub, TabModelSelector tabModelSelector) {
+    public ActorOverlayCoordinator(
+            ViewStub viewStub,
+            TabModelSelector tabModelSelector,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager) {
         mView = (ActorOverlayView) viewStub.inflate();
 
         mModel =
                 new PropertyModel.Builder(ActorOverlayProperties.ALL_KEYS)
                         .with(ActorOverlayProperties.VISIBLE, false)
                         .with(ActorOverlayProperties.CAN_SHOW, true)
+                        .with(ActorOverlayProperties.TOP_MARGIN, 0)
+                        .with(ActorOverlayProperties.BOTTOM_MARGIN, 0)
                         .build();
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(mModel, mView, ActorOverlayViewBinder::bind);
 
-        mMediator = new ActorOverlayMediator(mModel, tabModelSelector);
+        mMediator =
+                new ActorOverlayMediator(
+                        mModel, tabModelSelector, browserControlsVisibilityManager);
     }
 
     /** Returns the root view of the overlay. */

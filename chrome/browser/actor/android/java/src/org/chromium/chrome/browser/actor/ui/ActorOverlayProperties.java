@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.actor.ui;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
 /** Properties defined for the Actor Overlay model. */
 @NullMarked
@@ -17,6 +18,12 @@ class ActorOverlayProperties {
     /** Whether the overlay is allowed to show (e.g., not hidden by a tab switch). */
     public static final WritableBooleanPropertyKey CAN_SHOW = new WritableBooleanPropertyKey();
 
+    /** The top margin of the overlay. */
+    public static final WritableIntPropertyKey TOP_MARGIN = new WritableIntPropertyKey();
+
+    /** The bottom margin of the overlay. */
+    public static final WritableIntPropertyKey BOTTOM_MARGIN = new WritableIntPropertyKey();
+
     /** All keys for the property model. */
-    public static final PropertyKey[] ALL_KEYS = {VISIBLE, CAN_SHOW};
+    public static final PropertyKey[] ALL_KEYS = {VISIBLE, CAN_SHOW, TOP_MARGIN, BOTTOM_MARGIN};
 }

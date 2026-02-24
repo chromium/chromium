@@ -979,7 +979,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             ViewStub stub = mActivity.findViewById(R.id.actor_overlay_stub);
             mActorOverlayCoordinator =
                     new ActorOverlayCoordinator(
-                            stub, assumeNonNull(mTabModelSelectorSupplier.get()));
+                            stub,
+                            assumeNonNull(mTabModelSelectorSupplier.get()),
+                            mBrowserControlsManager);
         }
     }
 
