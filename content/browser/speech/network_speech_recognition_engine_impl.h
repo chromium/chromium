@@ -192,7 +192,7 @@ class CONTENT_EXPORT NetworkSpeechRecognitionEngineImpl
 
   // Upload a single chunk of audio data. Handles both unframed and framed
   // upload formats, and uses the appropriate one.
-  void UploadAudioChunk(const std::string& data, FrameType type, bool is_final);
+  void UploadAudioChunk(std::string_view data, FrameType type, bool is_final);
 
   // The total audio duration of the upstream request.
   base::TimeDelta upstream_audio_duration_;

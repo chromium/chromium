@@ -80,7 +80,7 @@ void UpstreamLoader::SendData() {
     upload_pipe_watcher_->ArmOrNotify();
 }
 
-void UpstreamLoader::AppendChunkToUpload(const std::string& data,
+void UpstreamLoader::AppendChunkToUpload(std::string_view data,
                                          bool is_last_chunk) {
   DCHECK(!has_last_chunk_);
 

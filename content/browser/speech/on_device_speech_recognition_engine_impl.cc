@@ -74,7 +74,7 @@ void OnDeviceSpeechRecognitionEngine::TakeAudioChunk(const AudioChunk& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   const size_t num_samples = data.NumSamples() * audio_parameters_.channels();
   std::vector<int16_t> pcm_data_vector(num_samples);
-  auto source_bytes = base::as_bytes(base::span(data.AsString()));
+  auto source_bytes = data.data();
   auto dest_bytes = base::as_writable_bytes(base::span(pcm_data_vector));
   CHECK_EQ(source_bytes.size(), dest_bytes.size());
   dest_bytes.copy_from(source_bytes);
