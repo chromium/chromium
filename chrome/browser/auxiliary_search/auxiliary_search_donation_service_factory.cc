@@ -54,7 +54,8 @@ AuxiliarySearchDonationServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<AuxiliarySearchDonationService>(
       PageContentAnnotationsServiceFactory::GetForProfile(profile),
       visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
-          profile));
+          profile),
+      profile->GetPrefs());
 }
 
 bool AuxiliarySearchDonationServiceFactory::ServiceIsCreatedWithBrowserContext()

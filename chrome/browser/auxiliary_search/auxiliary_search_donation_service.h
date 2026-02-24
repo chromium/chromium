@@ -15,6 +15,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 
+class PrefService;
+class PrefRegistrySimple;
 namespace page_content_annotations {
 class PageContentAnnotationsResult;
 }
@@ -33,8 +35,11 @@ class AuxiliarySearchDonationService
   explicit AuxiliarySearchDonationService(
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
-      visited_url_ranking::VisitedURLRankingService* ranking_service);
+      visited_url_ranking::VisitedURLRankingService* ranking_service,
+      PrefService* pref_service);
   ~AuxiliarySearchDonationService() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // page_content_annotations
   //     ::PageContentAnnotationsService
@@ -61,7 +66,7 @@ class AuxiliarySearchDonationService
   raw_ptr<page_content_annotations::PageContentAnnotationsService>
       page_content_annotations_service_;
   raw_ptr<visited_url_ranking::VisitedURLRankingService> ranking_service_;
-  std::optional<base::Time> last_donated_history_entry_visit_time_;
+  raw_ptr<PrefService> pref_service_;
   std::unique_ptr<base::android::ApplicationStatusListener>
       application_status_listener_;
   base::OneShotTimer donation_timer_;

@@ -4,13 +4,19 @@
 
 #include "chrome/browser/auxiliary_search/auxiliary_search_donation_service.h"
 
+#include <algorithm>
+
 #include "base/android/application_status_listener.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/auxiliary_search/fetch_and_rank_helper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/common/pref_names.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
 namespace {
@@ -23,9 +29,11 @@ constexpr base::TimeDelta kHistoryAgeThreshold = base::Hours(24);
 AuxiliarySearchDonationService::AuxiliarySearchDonationService(
     page_content_annotations::PageContentAnnotationsService*
         page_content_annotations_service,
-    visited_url_ranking::VisitedURLRankingService* ranking_service)
+    visited_url_ranking::VisitedURLRankingService* ranking_service,
+    PrefService* pref_service)
     : page_content_annotations_service_(page_content_annotations_service),
       ranking_service_(ranking_service),
+      pref_service_(pref_service),
       application_status_listener_(
           base::android::ApplicationStatusListener::New(base::BindRepeating(
               &AuxiliarySearchDonationService::OnApplicationStateChanged,
@@ -41,6 +49,12 @@ AuxiliarySearchDonationService::AuxiliarySearchDonationService(
 AuxiliarySearchDonationService::~AuxiliarySearchDonationService() {
   page_content_annotations_service_->RemoveObserver(
       page_content_annotations::AnnotationType::kContentVisibility, this);
+}
+
+void AuxiliarySearchDonationService::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterTimePref(
+      prefs::kAuxiliarySearchLastDonatedHistoryEntryVisitTime, base::Time());
 }
 
 void AuxiliarySearchDonationService::OnPageContentAnnotated(
@@ -76,9 +90,9 @@ void AuxiliarySearchDonationService::FetchHistoryAndDonate() {
   // then start from `kHistoryAgeThreshold`.
   const base::Time threshold_time = base::Time::Now() - kHistoryAgeThreshold;
   const base::Time begin_time =
-      last_donated_history_entry_visit_time_.has_value()
-          ? std::max(*last_donated_history_entry_visit_time_, threshold_time)
-          : threshold_time;
+      std::max(pref_service_->GetTime(
+                   prefs::kAuxiliarySearchLastDonatedHistoryEntryVisitTime),
+               threshold_time);
 
   scoped_refptr<FetchAndRankHelper> helper =
       base::MakeRefCounted<FetchAndRankHelper>(
@@ -95,17 +109,15 @@ void AuxiliarySearchDonationService::DonateHistoryEntries(
     const visited_url_ranking::URLVisitsMetadata& metadata) {
   // TODO: https://crbug.com/432359106 - Use AuxiliarySearchDonor to donate the
   // entries.
-  // TODO: https://crbug.com/432359106 - Write the visit time to prefs so it
-  // persists across sessions.
   if (!metadata.most_recent_timestamp.has_value()) {
     return;
   }
 
-  last_donated_history_entry_visit_time_ =
-      last_donated_history_entry_visit_time_.has_value()
-          ? std::max(*last_donated_history_entry_visit_time_,
-                     *metadata.most_recent_timestamp)
-          : *metadata.most_recent_timestamp;
+  pref_service_->SetTime(
+      prefs::kAuxiliarySearchLastDonatedHistoryEntryVisitTime,
+      std::max(pref_service_->GetTime(
+                   prefs::kAuxiliarySearchLastDonatedHistoryEntryVisitTime),
+               *metadata.most_recent_timestamp));
 }
 
 void AuxiliarySearchDonationService::OnApplicationStateChanged(
