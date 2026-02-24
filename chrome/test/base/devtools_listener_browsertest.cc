@@ -46,6 +46,10 @@ class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
         host->GetType() != content::DevToolsAgentHost::kTypeFrame) {
       return;
     }
+    // Skip `WebUI` hosts like for the omnibox.
+    if (host->GetWebContents()->GetWebUI()) {
+      return;
+    }
     CHECK(devtools_agent_.find(host) == devtools_agent_.end());
     devtools_agent_[host] =
         std::make_unique<DevToolsListener>(host, process_id_);
