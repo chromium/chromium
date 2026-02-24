@@ -54,6 +54,7 @@ source_set("impl") {
     ":lookalikes",
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
     "//components/lookalikes/core",

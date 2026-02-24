@@ -323,6 +323,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/plus_addresses",
     "//chrome/browser/prefs",
     "//chrome/browser/preloading",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/preloading/search_preload",
     "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/privacy_sandbox/notice:factory",

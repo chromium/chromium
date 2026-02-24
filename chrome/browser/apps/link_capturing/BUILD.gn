@@ -27,6 +27,7 @@ source_set("link_capturing") {
 
   deps = [
     "//base",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:features",

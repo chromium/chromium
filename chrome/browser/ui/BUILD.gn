@@ -326,6 +326,7 @@ static_library("ui") {
     "//chrome/browser/prefs:impl",
     "//chrome/browser/preloading",
     "//chrome/browser/preloading:prefs",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",

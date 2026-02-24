@@ -31,6 +31,7 @@ source_set("impl") {
 
   deps = [
     ":login",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
     "//components/autofill/core/browser",
     "//components/no_state_prefetch/browser",
     "//components/strings:components_strings",

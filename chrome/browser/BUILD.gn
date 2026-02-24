@@ -1080,18 +1080,6 @@ static_library("browser") {
     "preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h",
     "preloading/prefetch/chrome_prefetch_manager.cc",
     "preloading/prefetch/chrome_prefetch_manager.h",
-    "preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.cc",
-    "preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h",
-    "preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_manager_delegate.cc",
-    "preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_manager_delegate.h",
-    "preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_processor_impl_delegate.cc",
-    "preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_processor_impl_delegate.h",
-    "preloading/prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.cc",
-    "preloading/prefetch/no_state_prefetch/no_state_prefetch_link_manager_factory.h",
-    "preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.cc",
-    "preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h",
-    "preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.cc",
-    "preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h",
     "preloading/prefetch/prefetch_service/chrome_prefetch_service_delegate.cc",
     "preloading/prefetch/prefetch_service/chrome_prefetch_service_delegate.h",
     "preloading/prefetch/prefetch_service/prefetch_origin_decider.cc",
@@ -1590,10 +1578,12 @@ static_library("browser") {
 
     # TODO(crbug.com/373646571): Remove this circular dependency when the following
     # directories get modularized:
-    # - c/b/preloading/prefetch/no_state_prefetch/
     # - c/b/password_manager/
     # - c/b/tab_contents/
     "//chrome/browser/ui/login:impl",
+
+    # TODO(crbug.com/486498788): Remove when c/b/predictors get modularized.
+    "//chrome/browser/preloading/prefetch/no_state_prefetch:impl",
 
     # TODO(crbug.com/): This is needed because tab_contents code
     # includes c/b/enterprise/connectors/analysis/content_analysis_delegate.h
@@ -1864,6 +1854,8 @@ static_library("browser") {
     "//chrome/browser/preloading",
     "//chrome/browser/preloading:impl",
     "//chrome/browser/preloading:prefs",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch:impl",
     "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
     "//chrome/browser/preloading/search_preload",
     "//chrome/browser/privacy_sandbox",

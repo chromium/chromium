@@ -10,7 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_tab_data.h"
-#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"  // nogncheck https://crbug.com/1474116
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"  // nogncheck https://crbug.com/1474116
 #include "chrome/browser/profiles/profile.h"

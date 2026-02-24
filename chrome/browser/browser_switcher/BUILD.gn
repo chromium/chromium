@@ -61,6 +61,7 @@ source_set("impl") {
       "ieem_sitelist_parser.cc",
     ]
     deps += [
+      "//chrome/browser/preloading/prefetch/no_state_prefetch",
       "//chrome/common",
       "//components/navigation_interception",
       "//components/no_state_prefetch/browser",
