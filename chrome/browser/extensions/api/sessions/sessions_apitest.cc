@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/browser_closed_waiter.h"
 #include "chrome/test/base/browser_created_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -86,48 +87,6 @@ constexpr std::array kSessionTags = {"tag0", "tag1", "tag2", "tag3", "tag4"};
 constexpr auto kTabIDs = std::to_array<SessionID::id_type>({5, 10, 13, 17});
 constexpr int kActiveTabIndex = 2;
 constexpr int kActiveTabId = kTabIDs[kActiveTabIndex];
-
-// Observes the global list of BrowserWindowInterfaces and waits for a specified
-// browser to close.
-// TODO(crbug.com/405219627): Move this to its own file.
-class BrowserCloseWaiter : public BrowserCollectionObserver {
- public:
-  explicit BrowserCloseWaiter(BrowserWindowInterface* browser)
-      : browser_(browser) {
-    observation_.Observe(GlobalBrowserCollection::GetInstance());
-  }
-
-  BrowserCloseWaiter(const BrowserCloseWaiter&) = delete;
-  BrowserCloseWaiter& operator=(const BrowserCloseWaiter&) = delete;
-
-  ~BrowserCloseWaiter() override = default;
-
-  void Wait() {
-    if (closed_) {
-      return;
-    }
-    run_loop_.Run();
-  }
-
- protected:
-  // BrowserCollectionObserver:
-  void OnBrowserClosed(BrowserWindowInterface* browser) override {
-    if (browser == browser_) {
-      browser_ = nullptr;
-      closed_ = true;
-      if (run_loop_.running()) {
-        run_loop_.Quit();
-      }
-    }
-  }
-
- private:
-  raw_ptr<BrowserWindowInterface> browser_;
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
-      observation_{this};
-  bool closed_ = false;
-  base::RunLoop run_loop_;
-};
 
 // Helps with line wrapping.
 int NowSeconds() {
@@ -409,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreMostRecentlyClosedWindow) {
   ASSERT_TRUE(NavigateToURL(contents1, GURL("chrome://credits/")));
 
   // Close the second window and wait for it to close.
-  BrowserCloseWaiter close_waiter(browser2);
+  BrowserClosedWaiter close_waiter(browser2);
   browser2->GetWindow()->Close();
   close_waiter.Wait();
 
@@ -499,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreWindowBySessionId) {
   ASSERT_TRUE(NavigateToURL(contents0, GURL("chrome://version/")));
 
   // Close the second window and wait for it to close.
-  BrowserCloseWaiter close_waiter(browser2);
+  BrowserClosedWaiter close_waiter(browser2);
   browser2->GetWindow()->Close();
   close_waiter.Wait();
 
@@ -643,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedWindow) {
   ASSERT_TRUE(NavigateToURL(contents1, GURL("chrome://credits/")));
 
   // Close the second window and wait for it to close.
-  BrowserCloseWaiter waiter(browser2);
+  BrowserClosedWaiter waiter(browser2);
   browser2->GetWindow()->Close();
   waiter.Wait();
 
@@ -820,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest,
   ASSERT_TRUE(NavigateToURL(contents0, GURL("chrome://version/")));
 
   // Close the second window and wait for it to close.
-  BrowserCloseWaiter close_waiter(browser2);
+  BrowserClosedWaiter close_waiter(browser2);
   browser2->GetWindow()->Close();
   close_waiter.Wait();
 
