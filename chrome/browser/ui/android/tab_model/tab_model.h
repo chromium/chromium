@@ -308,6 +308,8 @@ class TabModel : public TabListInterface {
   chrome::android::ActivityType activity_type() const { return activity_type_; }
   TabModelType GetTabModelType() const { return tab_model_type_; }
 
+  static bool EnableBrowserWindowInterfaceMobile();
+
  protected:
   TabModel(Profile* profile,
            chrome::android::ActivityType activity_type,
@@ -320,17 +322,12 @@ class TabModel : public TabListInterface {
 
   LocationBarModel* GetLocationBarModel();
 
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-  // Sets the |SessionID|.
+  // Sets the `SessionID`.
   //
-  // This is only needed on desktop Android, where |BrowserWindowInterface|
-  // should be the source of truth for |SessionID|. This function will be
-  // called when |TabModel| is associated with a |BrowserWindowInterface|.
-  //
-  // TODO(http://crbug.com/444518651): remove the if-def when
-  // |BrowserWindowInterface| is compiled into all Android builds.
+  // `BrowserWindowInterface` is the source of truth for `SessionID`. This
+  // method will be called when the `TabModel` becomes associated or dissociated
+  // with a `BrowserWindowInterface`.
   void SetSessionId(SessionID sessionId);
-#endif
 
  private:
   raw_ptr<Profile, DanglingUntriaged> profile_;

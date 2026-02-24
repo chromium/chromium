@@ -222,6 +222,7 @@ if (is_android) {
       "//build/android:build_java",
       "//chrome/browser/android/customtabs:java",
       "//chrome/browser/android/lifecycle:java",
+      "//chrome/browser/flags:java",
       "//chrome/browser/incognito:incognito_utils_java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",

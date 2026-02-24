@@ -9,6 +9,7 @@
 #include "build/android_buildflags.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/glue/synced_window_delegate_android.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
@@ -32,26 +33,13 @@ sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate(Profile* profile) {
   return service->GetOpenTabsUIDelegate();
 }
 
-// Returns the initial |SessionID| for |TabModel|.
-//
-// On desktop Android, |BrowserWindowInterface| should be the source of truth
-// for |SessionID|, so we use the invalid value as the initial |SessionID| and
-// set a valid |SessionID| during
-// |TabModelJniBridge::AssociateWithBrowserWindow|. This aligns with the
-// implementation on other desktop platforms.
-//
-// On other Android platforms, there is no |BrowserWindowInterface|, and
-// |TabModel| has been the source of truth for |SessionID|, so we can use
-// |SessionID:NewUnique|.
-//
-// TODO(http://crbug.com/444518651): remove the if-def when
-// |BrowserWindowInterface| is compiled and running on all Android builds.
+// Returns the initial |SessionID| for |TabModel|. Currently behind a runtime
+// flag until support stabilizes on other platforms.
 SessionID GetInitialSessionId() {
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  if (!TabModel::EnableBrowserWindowInterfaceMobile()) {
+    return SessionID::NewUnique();
+  }
   return SessionID::InvalidValue();
-#else
-  return SessionID::NewUnique();
-#endif
 }
 }  // namespace
 
@@ -155,13 +143,13 @@ void TabModel::RecordActualSyncedTabsHistogram() {
                                percent_synced);
 }
 
-// TODO(http://crbug.com/444518651): remove the if-def when
-// |BrowserWindowInterface| is compiled and running on all Android builds.
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
 void TabModel::SetSessionId(SessionID session_id) {
+  if (!TabModel::EnableBrowserWindowInterfaceMobile()) {
+    LOG(ERROR) << "Setting session ID is not supported yet.";
+    return;
+  }
   session_id_ = session_id;
 }
-#endif
 
 // static
 // From //chrome/browser/tab_list/tab_list_interface.h
@@ -178,4 +166,14 @@ bool TabListInterface::CanEditTabList(Profile& profile) {
   }
 
   return true;
+}
+
+// static
+bool TabModel::EnableBrowserWindowInterfaceMobile() {
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  return true;
+#else   // !BUILDFLAG(IS_DESKTOP_ANDROID)
+  return base::FeatureList::IsEnabled(
+      chrome::android::kBrowserWindowInterfaceMobile);
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
 }
