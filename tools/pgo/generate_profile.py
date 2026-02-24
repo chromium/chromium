@@ -189,6 +189,14 @@ def parse_args():
         help='Only run benchmarks that do not require any special access. See '
         'https://www.chromium.org/developers/telemetry/upload_to_cloud_storage/#request-access-for-google-partners '
         'for more information.')
+    # TODO(crbug.com/479547498): Remove this option and run
+    # jetstream3.crossbench by default after we finish testing.
+    parser.add_argument(
+        '--run-jetstream3',
+        '--run-js3',
+        action='store_true',
+        default=False,
+        help='Include JetStream 3 benchmark (using crossbench)')
     parser.add_argument(
         '--temporal-trace-length',
         type=int,
@@ -309,6 +317,8 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
     '''Puts profdata in {profiledir}/{args[0]}.profdata'''
     global _android_browser_installed
 
+    is_crossbench = benchmark.name.endswith('.crossbench')
+
     disabled_features = [
         # Disabling spare renderer features when profiling prevent dumping
         # profile data too early during benchmarks which would result in
@@ -353,15 +363,23 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
         _LOGGER.debug("Set environment variable "
                       f"LLVM_PROFILE_FILE={env['LLVM_PROFILE_FILE']}")
 
-    cmd = ['vpython3', 'tools/perf/run_benchmark'] + benchmark_args + [
-        f'--chromium-output-directory={args.builddir}',
-        '--assert-gpu-compositing',
-        f'--pageset-repeat={benchmark.pageset_repeat}',
-        # Abort immediately when any story fails, since a failed story fails to
-        # produce valid profdata. Fail fast and rely on repeats to get a valid
-        # profdata.
-        '--max-failures=0'
-    ]
+    if is_crossbench:
+        cmd = ['vpython3', 'third_party/crossbench/cb.py'] + benchmark_args + [
+            '-r',
+            str(benchmark.pageset_repeat),
+            '--no-splash',
+            '--fast',
+        ]
+    else:
+        cmd = ['vpython3', 'tools/perf/run_benchmark'] + benchmark_args + [
+            f'--chromium-output-directory={args.builddir}',
+            '--assert-gpu-compositing',
+            f'--pageset-repeat={benchmark.pageset_repeat}',
+            # Abort immediately when any story fails, since a failed story fails
+            # to produce valid profdata. Fail fast and rely on repeats to get a
+            # valid profdata.
+            '--max-failures=0'
+        ]
 
     # Add N copies of verbose/quiet flag
     cmd += ['-v'] * args.verbose + ['-q'] * args.quiet
@@ -392,10 +410,14 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
             exe_path = f'{args.builddir}/Chromium.app/Contents/MacOS/Chromium'
         else:
             exe_path = f'{args.builddir}/chrome' + _EXE_EXT
-        cmd += [
-            '--browser=exact',
-            f'--browser-executable={exe_path}',
-        ]
+        if is_crossbench:
+            driver_path = f'{args.builddir}/chromedriver' + _EXE_EXT
+            cmd += ['-b', exe_path, '--driver-path', driver_path]
+        else:
+            cmd += [
+                '--browser=exact',
+                f'--browser-executable={exe_path}',
+            ]
 
         _LOGGER.debug(
             f"Running benchmark locally with command: {' '.join(cmd)}")
@@ -563,6 +585,9 @@ def main():
         Benchmark('speedometer3', ['speedometer3']),
         Benchmark('jetstream2', ['jetstream2']),
     ]
+
+    if args.run_jetstream3:
+        benchmarks.append(Benchmark('jetstream3.crossbench', ['jetstream3']))
 
     # These benchmarks require special access permissions:
     # https://www.chromium.org/developers/telemetry/upload_to_cloud_storage/#request-access-for-google-partners
