@@ -7,10 +7,9 @@
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
-import type {ActorTaskState as ActorTaskStateMojo, AdditionalContext as AdditionalContextMojo, FocusedTabData as FocusedTabDataMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, Skill as SkillMojo, SkillPreview as SkillPreviewMojo, TabData as TabDataMojo, ViewChangeRequest as ViewChangeRequestMojo, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
+import type {ActorTaskState as ActorTaskStateMojo, AdditionalContext as AdditionalContextMojo, FocusedTabData as FocusedTabDataMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, Skill as SkillMojo, SkillPreview as SkillPreviewMojo, TabData as TabDataMojo, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
 import type * as api from '../../glic_api/glic_api.js';
-import {ClientView} from '../../glic_api/glic_api.js';
-import type {SkillSource, ViewChangeRequest} from '../../glic_api/glic_api.js';
+import type {SkillSource} from '../../glic_api/glic_api.js';
 
 import type {NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo} from './../../actor_webui.mojom-webui.js';
 import {ResponseExtras} from './../post_message_transport.js';
@@ -260,19 +259,6 @@ export class WebClientImpl implements WebClientInterface {
     this.sender.requestNoResponse(
         'glicWebClientNotifyActorTaskStateChanged',
         {taskId, state: clientState});
-  }
-
-  requestViewChange(requestMojo: ViewChangeRequestMojo): void {
-    let request: ViewChangeRequest|undefined;
-    if (requestMojo.details.actuation) {
-      request = {desiredView: ClientView.ACTUATION};
-    } else if (requestMojo.details.conversation) {
-      request = {desiredView: ClientView.CONVERSATION};
-    }
-    if (!request) {
-      return;
-    }
-    this.sender.requestNoResponse('glicWebClientRequestViewChange', {request});
   }
 
   notifyPageMetadataChanged(tabId: number, metadata: PageMetadataMojo|null):

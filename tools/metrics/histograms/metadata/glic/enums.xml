@@ -350,7 +350,7 @@ chromium-metrics-reviews@google.com.
   <int value="59" label="OnClosedCaptionsShown"/>
   <int value="60" label="CreateTask"/>
   <int value="61" label="PerformActions"/>
-  <int value="62" label="OnViewChanged"/>
+  <int value="62" label="(Obsolete) OnViewChanged"/>
   <int value="63" label="SubscribeToPageMetadata"/>
   <int value="64" label="SwitchConversation"/>
   <int value="65" label="RegisterConversation"/>

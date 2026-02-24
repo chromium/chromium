@@ -14,7 +14,6 @@ import './sections/apc.js';
 import './sections/autofill_dialog.js';
 import './sections/multi_tab.js';
 import './sections/page_metadata.js';
-import './sections/view.js';
 import './sections/additional_context.js';
 import './sections/interaction.js';
 import './sections/skills.js';

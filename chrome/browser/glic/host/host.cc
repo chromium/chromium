@@ -654,24 +654,9 @@ content::RenderProcessHost* Host::GetWebClientRenderProcessHost() const {
   return nullptr;
 }
 
-void Host::OnViewChanged(GlicWebClientAccess* client,
-                         mojom::CurrentView new_view) {
-  if (client != GetPrimaryWebClient()) {
-    return;
-  }
-  if (primary_current_view_ != new_view) {
-    primary_current_view_ = new_view;
-    observers_.Notify(&Observer::OnViewChanged, primary_current_view_);
-  }
-}
-
 void Host::OnInteractionModeChange(GlicPageHandler* page_handler,
                                    mojom::WebClientMode new_mode) {
   instance_delegate_->OnInteractionModeChange(new_mode);
-}
-
-mojom::CurrentView Host::GetPrimaryCurrentView() {
-  return primary_current_view_;
 }
 
 void Host::ResizePanel(GlicPageHandler* page_handler,

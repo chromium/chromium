@@ -1863,10 +1863,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                                                std::move(observer));
   }
 
-  void OnViewChanged(mojom::ViewChangedNotificationPtr notification) override {
-    host().OnViewChanged(this, notification->current_view);
-  }
-
   void SetOnboardingCompleted() override {
     glic_service_->metrics()->OnTrustFirstOnboardingAccept();
     pref_service_->SetInteger(prefs::kGlicCompletedFre,
@@ -1930,10 +1926,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void ManualResizeChanged(bool resizing) override {
     web_client_->NotifyManualResizeChanged(resizing);
-  }
-
-  void RequestViewChange(mojom::ViewChangeRequestPtr request) override {
-    web_client_->RequestViewChange(std::move(request));
   }
 
   void NotifyAdditionalContext(mojom::AdditionalContextPtr context) override {

@@ -891,22 +891,6 @@ export declare interface GlicBrowserHost {
   getHostCapabilities?(): Set<HostCapability>;
 
   /**
-   * Emits when the browser wants the web client to change its view to match
-   * a requested change (e.g., because the user clicked a UI element to toggle
-   * to a different view).
-   *
-   * The web client should update its view to match the requested change.
-   */
-  getViewChangeRequests?(): Observable<ViewChangeRequest>;
-
-  /**
-   * Notifies the browser that the web client has changed the view shown to the
-   * user. This is used to trigger updates to browser UI which shows the current
-   * state of the web client, such as toggle controls.
-   */
-  onViewChanged?(notification: ViewChangedNotification): void;
-
-  /**
    * Returns an observable that emits when PageMetadata for the given tab
    * changes. Only meta tags which are direct children of the head element and
    * match one of the names provided in the names parameter will be
@@ -1949,46 +1933,6 @@ export declare interface DraggableArea {
 }
 
 /**
- * Top-level views of the glic web client.
- */
-export enum ClientView {
-  ACTUATION = 'actuation',
-  CONVERSATION = 'conversation',
-}
-
-/**
- * A request to change the glic web client to a view suitable for tracking the
- * progress of actuation, if possible.
- */
-export declare interface ViewChangeRequestActuation {
-  readonly desiredView: ClientView.ACTUATION;
-}
-
-/**
- * A request to change the glic web client to a view which shows a
- * conversational interface of some type (whether textual, aural or other).
- */
-export declare interface ViewChangeRequestConversation {
-  readonly desiredView: ClientView.CONVERSATION;
-}
-
-/**
- * A request to change the glic web client to a view of some type. These all
- * specify what the desired view is, but some may carry additional information
- * about the request.
- */
-export declare type ViewChangeRequest =
-    ViewChangeRequestActuation | ViewChangeRequestConversation;
-
-/**
- * A notification that the view has changed to the specified view.
- */
-export declare interface ViewChangedNotification {
-  /** The view that was changed to. */
-  currentView: ClientView;
-}
-
-/**
  * A generic interface for observing a stream of values.
  *
  * Subscriptions should be kept only while necessary, as they incur some cost.
@@ -2390,7 +2334,6 @@ export interface ClosedEnums {
   webClientModel: typeof WebClientModel;
   skillSource: typeof SkillSource;
   switchConversationErrorReason: typeof SwitchConversationErrorReason;
-  clientView: typeof ClientView;
   pinTrigger: typeof PinTrigger;
   registerConversationErrorReason: typeof RegisterConversationErrorReason;
   metricUserInputReactionType: typeof MetricUserInputReactionType;

@@ -46,11 +46,6 @@ class GlicWebClientAccess {
   // the panel.
   virtual void ManualResizeChanged(bool resizing) = 0;
 
-  // Called when the browser wants the web client to change its view to match
-  // the requested change (e.g., because the user clicked a UI element to toggle
-  // to a different view).
-  virtual void RequestViewChange(mojom::ViewChangeRequestPtr request) = 0;
-
   // Informs the web client that additional context is available.
   virtual void NotifyAdditionalContext(mojom::AdditionalContextPtr context) = 0;
 

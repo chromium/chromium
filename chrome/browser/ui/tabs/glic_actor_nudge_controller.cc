@@ -27,7 +27,6 @@ using glic::GlicInstance;
 using glic::GlicKeyedService;
 using glic::GlicWindowController;
 using glic::Host;
-using glic::mojom::CurrentView;
 
 DEFINE_USER_DATA(GlicActorNudgeController);
 GlicActorNudgeController::GlicActorNudgeController(

@@ -262,7 +262,6 @@ class GlicWindowControllerImpl
   void WebClientInitializeFailed() override;
   void LoginPageCommitted() override;
   void ClientReadyToShow(const mojom::OpenPanelInfo& open_info) override;
-  void OnViewChanged(mojom::CurrentView view) override;
   void ContextAccessIndicatorChanged(bool enabled) override;
 
   // Called once glic is completely loaded and any animations have finished.
@@ -329,8 +328,7 @@ class GlicWindowControllerImpl
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
-  using StateChangeCallbackList =
-      base::RepeatingCallbackList<void(bool, mojom::CurrentView view)>;
+  using StateChangeCallbackList = base::RepeatingCallbackList<void(bool)>;
   StateChangeCallbackList state_change_callback_list_;
 
   // Observes the glic widget.

@@ -60,8 +60,7 @@ class UIDelegate {
   virtual mojom::PanelState GetPanelState() = 0;
 
   // Register for this callback to detect UI changes to the instance.
-  using StateChangeCallback =
-      base::RepeatingCallback<void(bool, mojom::CurrentView view)>;
+  using StateChangeCallback = base::RepeatingCallback<void(bool)>;
   virtual base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) = 0;
 };

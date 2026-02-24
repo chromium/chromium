@@ -168,8 +168,6 @@ class Host : public GlicSharingManagerProvider {
     // If the glic WebUI is destroyed, the webUI state is returned to
     // kUninitialized.
     virtual void WebUiStateChanged(mojom::WebUiState state) {}
-    // Called when the current view changes in the glic WebUI.
-    virtual void OnViewChanged(mojom::CurrentView view) {}
     virtual void ContextAccessIndicatorChanged(bool enabled) {}
   };
 
@@ -315,9 +313,6 @@ class Host : public GlicSharingManagerProvider {
   // Returns the RenderProcessHost for the WebClient, or nullptr if none.
   content::RenderProcessHost* GetWebClientRenderProcessHost() const;
 
-  // Returns the current view (conversation or actuation) in the floaty.
-  mojom::CurrentView GetPrimaryCurrentView();
-
   // Returns the page handler that owns the WebUI web contents.
   GlicPageHandler* FindPageHandlerForWebUiContents(
       const content::WebContents* webui_contents);
@@ -342,9 +337,6 @@ class Host : public GlicSharingManagerProvider {
   // Informs the host that the WebUi state has changed.
   void WebUiStateChanged(GlicPageHandler* page_handler,
                          mojom::WebUiState new_state);
-
-  // Called when the current view changes in the glic webUI to update the state.
-  void OnViewChanged(GlicWebClientAccess* client, mojom::CurrentView new_view);
 
   // Called when the web client changes its mode.
   void OnInteractionModeChange(GlicPageHandler* page_handler,
@@ -490,9 +482,6 @@ class Host : public GlicSharingManagerProvider {
 
   // Responsible for skill update logic.
   std::unique_ptr<GlicSkillsManager> skills_manager_;
-
-  // The current view in the primary page handler.
-  mojom::CurrentView primary_current_view_ = mojom::CurrentView::kConversation;
 
   base::WeakPtr<content::WebContents> web_client_contents_;
 
