@@ -28088,6 +28088,27 @@
             ]
         }
     ],
+    "V8Turbolev": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8Flag_turbolev"
+                    ],
+                    "disable_benchmarking": "true"
+                }
+            ]
+        }
+    ],
     "VSyncDecoding": [
         {
             "platforms": [
