@@ -23,6 +23,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
+#import "base/test/gtest_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -3322,6 +3323,17 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Text_Size) {
                                    .text_style()
                                    .text_size()));
   }
+}
+
+// Tests that attempting to trigger two extractions on one wrapper fails.
+TEST_P(PageContextWrapperTest, EnforcesOneTimeUse_Populate) {
+  PageContextWrapper* wrapper =
+      [[PageContextWrapper alloc] initWithWebState:web_state()
+                                completionCallback:base::DoNothing()];
+
+  [wrapper populatePageContextFieldsAsync];
+
+  EXPECT_CHECK_DEATH([wrapper populatePageContextFieldsAsync]);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

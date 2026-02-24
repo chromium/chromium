@@ -239,6 +239,9 @@ result.links = linksArray;
 
   // Whether the registration wait has completed or timed out.
   BOOL _registrationCompletedOrTimedOut;
+
+  // Enforces that execution only happens once.
+  BOOL _executionStarted;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
@@ -288,6 +291,9 @@ result.links = linksArray;
 }
 
 - (void)populatePageContextFieldsAsyncWithTimeout:(base::TimeDelta)timeout {
+  CHECK(!_executionStarted) << "A PageContextWrapper should only be used once.";
+  _executionStarted = YES;
+
   if (_isLowPriorityExtraction) {
     __weak PageContextWrapper* weakSelf = self;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
