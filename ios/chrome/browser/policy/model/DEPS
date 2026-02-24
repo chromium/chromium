@@ -5,6 +5,7 @@ include_rules = [
   "+components/contextual_search/search_content_sharing_policy_handler.h",
   "+components/lens",
   "+components/themes",
+  "+ios/chrome/browser/enterprise/client_certificates",
   "+ios/chrome/browser/enterprise/identifiers",
   "+ios/chrome/browser/policy_url_blocking/model",
   "+ios/chrome/browser/signin/model",

@@ -110,6 +110,7 @@ source_set("model") {
     "//components/version_info",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/enterprise/client_certificates:util",
     "//ios/chrome/browser/enterprise/identifiers:profile_id_service_factory",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
@@ -239,6 +240,7 @@ source_set("unit_tests") {
   sources = [
     "browser_dm_token_storage_ios_unittest.mm",
     "browser_signin_policy_handler_unittest.mm",
+    "chrome_browser_cloud_management_controller_ios_unittest.mm",
     "client_data_delegate_ios_unittest.cc",
     "cloud/user_policy_signin_service_unittest.mm",
     "new_tab_page_location_policy_handler_unittest.cc",
@@ -265,6 +267,7 @@ source_set("unit_tests") {
     "//components/enterprise",
     "//components/enterprise:test_support",
     "//components/enterprise/browser/identifiers",
+    "//components/enterprise/client_certificates/core",
     "//components/policy/core/browser:pref_mapping_test_support",
     "//components/policy/core/browser:test_support",
     "//components/policy/core/common",

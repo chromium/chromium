@@ -11,8 +11,14 @@
 #import "base/task/task_traits.h"
 #import "components/enterprise/browser/reporting/report_generator.h"
 #import "components/enterprise/browser/reporting/report_scheduler.h"
+#import "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
+#import "components/enterprise/client_certificates/core/certificate_store.h"
+#import "components/enterprise/client_certificates/core/features.h"
+#import "components/enterprise/client_certificates/core/prefs_certificate_store.h"
+#import "components/enterprise/client_certificates/ios/certificate_provisioning_service_ios.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/features.h"
+#import "ios/chrome/browser/enterprise/client_certificates/cert_utils.h"
 #import "ios/chrome/browser/policy/model/browser_dm_token_storage_ios.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/client_data_delegate_ios.h"
@@ -132,6 +138,26 @@ bool ChromeBrowserCloudManagementControllerIOS::ReadyToInit() {
 std::unique_ptr<ClientDataDelegate>
 ChromeBrowserCloudManagementControllerIOS::CreateClientDataDelegate() {
   return std::make_unique<ClientDataDelegateIos>();
+}
+
+std::unique_ptr<client_certificates::CertificateProvisioningService>
+ChromeBrowserCloudManagementControllerIOS::
+    CreateCertificateProvisioningService() {
+  if (!client_certificates::features::
+          IsClientCertificateProvisioningOnIOSEnabled()) {
+    return nullptr;
+  }
+
+  if (!certificate_store_) {
+    certificate_store_ =
+        std::make_unique<client_certificates::PrefsCertificateStore>(
+            GetApplicationContext()->GetLocalState(),
+            client_certificates::CreatePrivateKeyFactory());
+  }
+
+  return client_certificates::CreateBrowserCertificateProvisioningService(
+      GetApplicationContext()->GetLocalState(), certificate_store_.get(),
+      GetDeviceManagementService(), GetSharedURLLoaderFactory());
 }
 
 }  // namespace policy
