@@ -95,11 +95,10 @@ promise_test(async t => {
   ]);
 }, 'Calling LanguageDetector.destroy() aborts calls to detect and measureInputUsage.');
 
-promise_test(async t => {
+promise_test(async () => {
   const detector = await createLanguageDetector();
   detector.destroy();
-  await promise_rejects_dom(
-      t, 'InvalidStateError', detector.detect(kTestPrompt));
+  assert_throws_dom('InvalidStateError', () => detector.detect(kTestPrompt));
 }, 'LanguageDetector.detect() throws after destroy.');
 
 promise_test(async t => {
