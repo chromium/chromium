@@ -5,25 +5,35 @@
 assert(!is_android, "JS optimization actions are for desktop platforms only")
 
 source_set("js_optimization") {
-  sources = [ "js_optimizations_page_action_controller.h" ]
+  sources = [
+    "js_optimizations_infobar_delegate.h",
+    "js_optimizations_page_action_controller.h",
+  ]
 
   public_deps = [
     "//chrome/browser/ui/tabs",
+    "//components/infobars/core",
     "//components/tabs:public",
   ]
 }
 
 source_set("impl") {
-  sources = [ "js_optimizations_page_action_controller.cc" ]
+  sources = [
+    "js_optimizations_infobar_delegate.cc",
+    "js_optimizations_page_action_controller.cc",
+  ]
 
   public_deps = [
     ":js_optimization",
     "//chrome/browser:primitives",
+    "//chrome/browser/infobars",
     "//chrome/browser/site_protection",
     "//chrome/browser/site_protection:utils",
     "//chrome/browser/ui/actions",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/views",
     "//chrome/browser/ui/views/page_action",
+    "//components/infobars/content",
+    "//components/infobars/core",
   ]
 }

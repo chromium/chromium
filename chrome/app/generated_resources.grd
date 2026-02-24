@@ -4211,6 +4211,14 @@ are declared in tools/grit/grit_args.gni.
       </message>
     </if>
 
+      <!-- JS optimizations reload infobar -->
+      <message name="IDS_JS_OPTIMIZATION_SITE_RELOAD_TEXT" desc="Label displayed in an infobar when user has chosen to re-enable JS Optimizations. Tells user that in order to apply the new setting, they need to reload the page.">
+        Reload this page to apply your updated settings on this site
+      </message>
+      <message name="IDS_JS_OPTIMIZATION_SITE_RELOAD_BUTTON" desc="The text of the button to proceed with the page reload for enabling JS Optimizations">
+        Reload
+      </message>
+
       <!-- Win certificate selector dialog strings.  -->
       <if expr="toolkit_views">
         <message name="IDS_CERT_SELECTOR_SUBJECT_COLUMN" desc="The text of the header for the certificate subject column in the certificate selector dialog.">

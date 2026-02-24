@@ -14,6 +14,9 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/site_protection/site_familiarity_fetcher.h"
 #include "chrome/browser/site_protection/site_familiarity_utils.h"
+#include "chrome/browser/ui/views/infobars/confirm_infobar.h"
+#include "chrome/browser/ui/views/js_optimization/js_optimizations_infobar_delegate.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
@@ -62,6 +65,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
 typedef site_protection::SiteFamiliarityFetcher::Verdict FamiliarityVerdict;
@@ -1488,6 +1492,11 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerBubbleBrowserTest,
       browser(), embedded_https_test_server().GetURL("/simple.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  // TODO: crbug.com/457420369 - Use reload functionality to check settings
+  // application instead of opening a new tab
+  // RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+  //                 PressButton(ConfirmInfoBar::kOkButtonElementId),
+  //                 WaitForHide(ConfirmInfoBar::kInfoBarElementId));
   // Assert that the icon is not visible.
   ASSERT_FALSE(AreV8OptimizationsDisabledOnActiveWebContents());
   ASSERT_FALSE(IsOmnibarIconVisible());
@@ -1588,6 +1597,28 @@ IN_PROC_BROWSER_TEST_F(JavascriptOptimizerUiTest, BubbleWithPolicyPixelTest) {
           JsOptimizationsPageActionController::kBubbleBodyElementId,
           /*screenshot_name=*/"js_no_opt_bubble_dialog_with_policy",
           /*baseline_cl=*/kScreenshotBaselineCL));
+}
+
+IN_PROC_BROWSER_TEST_F(JavascriptOptimizerUiTest, ReloadInfoBarPixelTest) {
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT_OPTIMIZER,
+                                ContentSetting::CONTENT_SETTING_BLOCK);
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_https_test_server().GetURL("/simple.html")));
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSkipPixelTestsReason),
+      // Click on icon
+      PressButton(kJsOptimizationsIconElementId),
+      // Click on button
+      PressButton(JsOptimizationsPageActionController::kBubbleButtonElementId),
+      // Wait for reload infobar to show
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
+      // Grab screenshot of reload infobar
+      Screenshot(ConfirmInfoBar::kInfoBarElementId,
+                 /*screenshot_name=*/"js_no_opt_reload_infobar",
+                 /*baseline_cl=*/kScreenshotBaselineCL));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -11,9 +11,11 @@
 #include "chrome/browser/site_protection/site_familiarity_utils.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/views/js_optimization/js_optimizations_infobar_delegate.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -142,4 +144,11 @@ void JsOptimizationsPageActionController::EnableV8Optimizations() {
   // TODO(crbug.com/457420369): Something may need to be done here to cause
   // the updated content setting to take effect in the existing tab. Currently
   // it only takes effect in subsequently opened tabs.
+
+  // Display a prompt to the user to reload the page
+  infobars::ContentInfoBarManager* const infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents());
+  if (infobar_manager) {
+    JsOptimizationsInfoBarDelegate::Create(infobar_manager);
+  }
 }
