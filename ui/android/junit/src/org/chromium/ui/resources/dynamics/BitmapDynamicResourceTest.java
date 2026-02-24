@@ -7,16 +7,18 @@ package org.chromium.ui.resources.dynamics;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected;
 
 import android.graphics.Bitmap;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -31,12 +33,12 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BitmapDynamicResourceTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private BitmapDynamicResource mResource;
     @Mock private ResourceFactory.Natives mResourceFactoryJni;
 
     @Before
     public void setup() {
-        initMocks(this);
         ResourceFactoryJni.setInstanceForTesting(mResourceFactoryJni);
         mResource = new BitmapDynamicResource(1);
     }

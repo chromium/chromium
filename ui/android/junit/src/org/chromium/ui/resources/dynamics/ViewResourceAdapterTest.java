@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import static org.chromium.base.GarbageCollectionTestUtils.canBeGarbageCollected;
 
@@ -19,9 +18,12 @@ import android.graphics.Rect;
 import android.view.View;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -37,6 +39,7 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ViewResourceAdapterTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private int mViewWidth;
     private int mViewHeight;
     @Mock private ResourceFactory.Natives mResourceFactoryJni;
@@ -46,7 +49,6 @@ public class ViewResourceAdapterTest {
 
     @Before
     public void setup() {
-        initMocks(this);
         ResourceFactoryJni.setInstanceForTesting(mResourceFactoryJni);
         CaptureUtils.setCaptureCommonHookForTesting(() -> true);
 

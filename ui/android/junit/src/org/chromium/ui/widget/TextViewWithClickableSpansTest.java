@@ -20,10 +20,12 @@ import android.view.KeyEvent;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -34,6 +36,7 @@ import org.chromium.ui.text.ChromeClickableSpan;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TextViewWithClickableSpansTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Canvas mCanvas;
     @Mock private SpanBackgroundHelper mSpanBackgroundHelper;
 
@@ -43,7 +46,6 @@ public class TextViewWithClickableSpansTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.openMocks(this);
         mContext = ApplicationProvider.getApplicationContext();
         mView = new TextViewWithClickableSpans(mContext, /* attrs= */ null, mSpanBackgroundHelper);
     }
