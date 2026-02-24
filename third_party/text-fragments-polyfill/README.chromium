@@ -1,7 +1,8 @@
 Name: Text Fragments Polyfill
 Short Name: text-fragments-polyfill
 URL: https://github.com/GoogleChromeLabs/text-fragments-polyfill
-Version: 0.0.7
+Version: N/A
+Revision: c036420683f672d685e27415de0a5f5e85bdc23f
 Update Mechanism: Manual
 License: Apache-2.0
 License File: ./LICENSE
