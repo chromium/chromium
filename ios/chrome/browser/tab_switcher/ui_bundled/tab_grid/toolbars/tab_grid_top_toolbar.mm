@@ -233,18 +233,18 @@ CGFloat HorizontalMargin() {
 
 - (void)hide {
   if (@available(iOS 26, *)) {
-  } else {
-    self.backgroundColor = UIColor.blackColor;
+    return;
   }
+  self.backgroundColor = UIColor.blackColor;
 
   self.pageControl.alpha = 0.0;
 }
 
 - (void)show {
   if (@available(iOS 26, *)) {
-  } else {
-    self.backgroundColor = UIColor.clearColor;
+    return;
   }
+  self.backgroundColor = UIColor.clearColor;
 
   self.pageControl.alpha = 1.0;
 }
@@ -488,9 +488,9 @@ CGFloat HorizontalMargin() {
   [self setStandardAppearance:appearance];
 
   self.translatesAutoresizingMaskIntoConstraints = NO;
+  self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
   if (@available(iOS 26, *)) {
   } else {
-    self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
     [self createScrolledBackgrounds];
     [self setShadowImage:[[UIImage alloc] init]
         forToolbarPosition:UIBarPositionAny];
