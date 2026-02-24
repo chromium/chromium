@@ -1868,6 +1868,10 @@ void ChromeBrowserMainPartsAsh::PostDestroyThreads() {
   // (ComponentUpdaterServiceProvider).
   g_browser_process->platform_part()->ShutdownComponentManager();
 
+  // BrowserController depends on GlobalFeatures and must be destroyed before
+  // GlobalFeatures.
+  browser_controller_.reset();
+
   ShutdownDBus();
 
   // Destroy the SystemTokenCertDbStorage global instance which should outlive

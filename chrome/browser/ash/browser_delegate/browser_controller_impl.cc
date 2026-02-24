@@ -57,7 +57,7 @@ bool BrowserMatches(BrowserWindowInterface* browser,
 namespace ash {
 
 BrowserControllerImpl::BrowserControllerImpl() {
-  observation_.Observe(BrowserList::GetInstance());
+  observation_.Observe(GlobalBrowserCollection::GetInstance());
 }
 
 BrowserControllerImpl::~BrowserControllerImpl() = default;
@@ -268,21 +268,22 @@ void BrowserControllerImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void BrowserControllerImpl::OnBrowserAdded(Browser* browser) {
+void BrowserControllerImpl::OnBrowserCreated(BrowserWindowInterface* browser) {
   ash::BrowserDelegate* browser_delegate = GetDelegate(browser);
   for (auto& observer : observers_) {
     observer.OnBrowserCreated(browser_delegate);
   }
 }
 
-void BrowserControllerImpl::OnBrowserSetLastActive(Browser* browser) {
+void BrowserControllerImpl::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
   ash::BrowserDelegate* browser_delegate = GetDelegate(browser);
   for (auto& observer : observers_) {
     observer.OnBrowserActivated(browser_delegate);
   }
 }
 
-void BrowserControllerImpl::OnBrowserRemoved(Browser* browser) {
+void BrowserControllerImpl::OnBrowserClosed(BrowserWindowInterface* browser) {
   ash::BrowserDelegate* browser_delegate = GetDelegate(browser);
   for (auto& observer : observers_) {
     observer.OnBrowserClosed(browser_delegate);

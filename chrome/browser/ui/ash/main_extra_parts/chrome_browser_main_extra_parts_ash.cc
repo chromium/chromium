@@ -602,6 +602,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
 
   wallpaper_controller_client_.reset();
   vpn_list_forwarder_.reset();
+  tablet_mode_page_behavior_.reset();
 
   tab_cluster_ui_client_.reset();
 

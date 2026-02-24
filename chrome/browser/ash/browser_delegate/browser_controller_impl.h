@@ -10,11 +10,10 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
-class Browser;
-class BrowserList;
 class BrowserWindowInterface;
 
 namespace ash {
@@ -23,7 +22,7 @@ class BrowserDelegate;
 class BrowserDelegateImpl;
 
 class BrowserControllerImpl : public BrowserController,
-                              public BrowserListObserver {
+                              public BrowserCollectionObserver {
  public:
   BrowserControllerImpl();
   ~BrowserControllerImpl() override;
@@ -61,16 +60,17 @@ class BrowserControllerImpl : public BrowserController,
   void RemoveObserver(Observer* observer) override;
 
   // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserSetLastActive(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
 
  private:
   absl::flat_hash_map<BrowserWindowInterface*,
                       std::unique_ptr<BrowserDelegateImpl>>
       browsers_;
   base::ObserverList<Observer> observers_;
-  base::ScopedObservation<BrowserList, BrowserListObserver> observation_{this};
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      observation_{this};
 };
 
 }  // namespace ash

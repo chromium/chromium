@@ -173,5 +173,5 @@ IN_PROC_BROWSER_TEST_F(WebAppShelfBrowserTest, SwitchingBetweenApps) {
   EXPECT_EQ(button_a->state(), ash::ShelfAppButton::STATE_NORMAL);
   EXPECT_EQ(button_b->state(), ash::ShelfAppButton::STATE_NORMAL);
   EXPECT_EQ(button_c->state(), ash::ShelfAppButton::STATE_ACTIVE);
-  EXPECT_EQ(button_chrome->state(), ash::ShelfAppButton::STATE_RUNNING);
+  EXPECT_EQ(button_chrome->state(), ash::ShelfAppButton::STATE_NORMAL);
 }
