@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<title>CSS Values and Units Test: random() in container queries</title>
+<link rel="help" href="https://drafts.csswg.org/css-values-5/#random">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/10982">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/css-conditional/container-queries/support/cq-testcommon.js"></script>
+<div style="container-name:name">
+  <main id="cq-main"></main>
+</div>
+<script>
+  test_cq_condition_unknown("(width: random(element-shared, 10px, 30px))");
+  test_cq_condition_unknown("(height: random(10px, 30px))");
+</script>
