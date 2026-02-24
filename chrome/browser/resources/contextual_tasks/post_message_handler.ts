@@ -41,7 +41,7 @@ export class PostMessageHandler {
   private pendingMessages_: Array<Uint8Array|object> = [];
   private handshakeMessage_: Uint8Array|null = null;
   private onInputPlateBoundsUpdate_:
-      ((rect: Rect, occluders: Rect[]) => void)|null = null;
+      ((rect?: Rect, occluders?: Rect[]) => void)|null = null;
 
   constructor(
       webview: chrome.webviewTag.WebView, browserProxy: BrowserProxy,
@@ -204,7 +204,7 @@ export class PostMessageHandler {
   }
 
   setInputPlateBoundsUpdateCallback(
-      callback: (rect: Rect, occluders: Rect[]) => void) {
+      callback: (rect?: Rect, occluders?: Rect[]) => void) {
     this.onInputPlateBoundsUpdate_ = callback;
   }
 

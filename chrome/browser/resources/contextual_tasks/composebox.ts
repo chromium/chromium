@@ -273,10 +273,12 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
       return '';
     }
     // Do not set height, since the expanding of the composebox is dynamic.
+    // Set the bottom of the rect instead of the top to allow the composebox to
+    // expand upwards.
     const rect = this.forcedComposeboxBounds;
     const style: string[] = [
       `position: fixed;`,
-      `top: ${rect.top}px;`,
+      `bottom: ${window.innerHeight - rect.bottom}px;`,
       `left: ${rect.left}px;`,
       `width: ${rect.width}px;`,
       `margin: 0;`,
