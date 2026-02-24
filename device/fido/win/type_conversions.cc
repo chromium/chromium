@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -414,6 +415,76 @@ std::vector<const wchar_t*> ToWinCredentialHints(
     }
   }
   return ret;
+}
+
+base::span<const uint8_t> ToAuthenticatorDataSpan(
+    const WEBAUTHN_ASSERTION& in) {
+  // SAFETY: The size of `in.pbAuthenticatorData` must be
+  // `in.cbAuthenticatorData`.
+  return UNSAFE_BUFFERS(base::span<const uint8_t>(in.pbAuthenticatorData,
+                                                  in.cbAuthenticatorData));
+}
+
+base::span<const uint8_t> ToAuthenticatorDataSpan(
+    const WEBAUTHN_CREDENTIAL_ATTESTATION& in) {
+  // SAFETY: The size of `in.pbAuthenticatorData` must be
+  // `in.cbAuthenticatorData`.
+  return UNSAFE_BUFFERS(base::span<const uint8_t>(in.pbAuthenticatorData,
+                                                  in.cbAuthenticatorData));
+}
+
+base::span<const uint8_t> ToUserIdSpan(const WEBAUTHN_ASSERTION& in) {
+  // SAFETY: The size of `in.pbUserId` must be `in.cbUserId`.
+  return UNSAFE_BUFFERS(base::span<const uint8_t>(in.pbUserId, in.cbUserId));
+}
+
+base::span<const uint8_t> ToCredentialIdSpan(
+    const WEBAUTHN_CREDENTIAL_ATTESTATION& in) {
+  // SAFETY: The size of `in.pbCredentialId` must be `in.cbCredentialId`.
+  return UNSAFE_BUFFERS(
+      base::span<const uint8_t>(in.pbCredentialId, in.cbCredentialId));
+}
+
+base::span<const uint8_t> ToAttestationSpan(
+    const WEBAUTHN_CREDENTIAL_ATTESTATION& in) {
+  // SAFETY: The size of `in.pbAttestation` must be `in.cbAttestation`.
+  return UNSAFE_BUFFERS(
+      base::span<const uint8_t>(in.pbAttestation, in.cbAttestation));
+}
+
+base::span<const uint8_t> ToAttestationObjectSpan(
+    const WEBAUTHN_CREDENTIAL_ATTESTATION& in) {
+  // SAFETY: The size of `in.pbAttestationObject` must be
+  // `in.cbAttestationObject`.
+  return UNSAFE_BUFFERS(base::span<const uint8_t>(in.pbAttestationObject,
+                                                  in.cbAttestationObject));
+}
+
+base::span<const uint8_t> ToIdSpan(const WEBAUTHN_CREDENTIAL& in) {
+  // SAFETY: The size of `in.pbId` must be `in.cbId`.
+  return UNSAFE_BUFFERS(base::span<const uint8_t>(in.pbId, in.cbId));
+}
+
+base::span<const uint8_t> ToIdSpan(const WEBAUTHN_CREDENTIAL_EX& in) {
+  // SAFETY: The size of `in.pbId` must be `in.cbId`.
+  return UNSAFE_BUFFERS(base::span<const uint8_t>(in.pbId, in.cbId));
+}
+
+base::span<const uint8_t> ToIdSpan(const WEBAUTHN_USER_ENTITY_INFORMATION& in) {
+  // SAFETY: The size of `in.pbId` must be `in.cbId`.
+  return UNSAFE_BUFFERS(base::span<const uint8_t>(in.pbId, in.cbId));
+}
+
+base::span<const uint8_t> ToExtensionSpan(const WEBAUTHN_EXTENSION& in) {
+  // SAFETY: The size of `in.pvExtension` must be `in.cbExtension`.
+  return UNSAFE_BUFFERS(base::span<const uint8_t>(
+      reinterpret_cast<const uint8_t*>(in.pvExtension), in.cbExtension));
+}
+
+base::span<const uint8_t> ToCredIdSpan(
+    const WEBAUTHN_CRED_WITH_HMAC_SECRET_SALT& in) {
+  // SAFETY: The size of `in.pbCredID` must be `in.cbCredID`.
+  return UNSAFE_BUFFERS(base::span<const uint8_t>(in.pbCredID, in.cbCredID));
 }
 
 }  // namespace device

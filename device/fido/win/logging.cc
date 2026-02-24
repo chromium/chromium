@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/device_event_log/device_event_log.h"
+#include "device/fido/win/type_conversions.h"
 
 namespace {
 
@@ -47,9 +48,10 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out,
                          const WEBAUTHN_USER_ENTITY_INFORMATION& in) {
-  return out << "{" << in.dwVersion << kSep << base::HexEncode(in.pbId, in.cbId)
-             << kSep << Quoted(in.pwszName) << kSep
-             << Quoted(in.pwszDisplayName) << "}";
+  return out << "{" << in.dwVersion << kSep
+             << base::HexEncode(device::ToIdSpan(in)) << kSep
+             << Quoted(in.pwszName) << kSep << Quoted(in.pwszDisplayName)
+             << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -75,8 +77,9 @@ std::ostream& operator<<(std::ostream& out, const WEBAUTHN_CLIENT_DATA& in) {
 }
 
 std::ostream& operator<<(std::ostream& out, const WEBAUTHN_CREDENTIAL& in) {
-  return out << "{" << in.dwVersion << kSep << base::HexEncode(in.pbId, in.cbId)
-             << kSep << Quoted(in.pwszCredentialType) << "}";
+  return out << "{" << in.dwVersion << kSep
+             << base::HexEncode(device::ToIdSpan(in)) << kSep
+             << Quoted(in.pwszCredentialType) << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, const WEBAUTHN_CREDENTIALS& in) {
@@ -88,9 +91,9 @@ std::ostream& operator<<(std::ostream& out, const WEBAUTHN_CREDENTIALS& in) {
 }
 
 std::ostream& operator<<(std::ostream& out, const WEBAUTHN_CREDENTIAL_EX& in) {
-  return out << "{" << in.dwVersion << kSep << base::HexEncode(in.pbId, in.cbId)
-             << kSep << Quoted(in.pwszCredentialType) << kSep << in.dwTransports
-             << "}";
+  return out << "{" << in.dwVersion << kSep
+             << base::HexEncode(device::ToIdSpan(in)) << kSep
+             << Quoted(in.pwszCredentialType) << kSep << in.dwTransports << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -108,7 +111,7 @@ std::ostream& operator<<(std::ostream& out, const WEBAUTHN_EXTENSION& in) {
   if (std::ranges::contains(kRedactedExtensions, in.pwszExtensionIdentifier)) {
     out << "[redacted]";
   } else {
-    out << base::HexEncode(in.pvExtension, in.cbExtension);
+    out << base::HexEncode(device::ToExtensionSpan(in));
   }
   return out << "}";
 }
@@ -130,7 +133,7 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out,
                          const WEBAUTHN_CRED_WITH_HMAC_SECRET_SALT& in) {
-  return out << "{" << base::HexEncode(in.pbCredID, in.cbCredID) << kSep << "&"
+  return out << "{" << base::HexEncode(device::ToCredIdSpan(in)) << kSep << "&"
              << *in.pHmacSecretSalt << "}";
 }
 
@@ -235,11 +238,11 @@ std::ostream& operator<<(
 std::ostream& operator<<(std::ostream& out,
                          const WEBAUTHN_CREDENTIAL_ATTESTATION& in) {
   out << "{" << in.dwVersion << kSep << Quoted(in.pwszFormatType) << kSep
-      << base::HexEncode(in.pbAuthenticatorData, in.cbAuthenticatorData) << kSep
-      << base::HexEncode(in.pbAttestation, in.cbAttestation) << kSep
+      << base::HexEncode(device::ToAuthenticatorDataSpan(in)) << kSep
+      << base::HexEncode(device::ToAttestationSpan(in)) << kSep
       << in.dwAttestationDecodeType << kSep
-      << base::HexEncode(in.pbAttestationObject, in.cbAttestationObject) << kSep
-      << base::HexEncode(in.pbCredentialId, in.cbCredentialId);
+      << base::HexEncode(device::ToAttestationObjectSpan(in)) << kSep
+      << base::HexEncode(device::ToCredentialIdSpan(in));
   if (in.dwVersion < WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_2) {
     return out << "}";
   }
@@ -269,9 +272,9 @@ std::ostream& operator<<(std::ostream& out,
 
 std::ostream& operator<<(std::ostream& out, const WEBAUTHN_ASSERTION& in) {
   out << "{" << in.dwVersion << kSep
-      << base::HexEncode(in.pbAuthenticatorData, in.cbAuthenticatorData) << kSep
+      << base::HexEncode(device::ToAuthenticatorDataSpan(in)) << kSep
       << "[redacted signature]" << kSep << in.Credential << kSep
-      << base::HexEncode(in.pbUserId, in.cbUserId);
+      << base::HexEncode(device::ToUserIdSpan(in));
   if (in.dwVersion < WEBAUTHN_ASSERTION_VERSION_2) {
     return out << "}";
   }
