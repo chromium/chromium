@@ -659,6 +659,11 @@ void Host::OnInteractionModeChange(GlicPageHandler* page_handler,
   instance_delegate_->OnInteractionModeChange(new_mode);
 }
 
+void Host::OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) {
+  microphone_status_ = status;
+  delegate_->OnMicrophoneStatusChanged(status);
+}
+
 void Host::ResizePanel(GlicPageHandler* page_handler,
                        const gfx::Size& size,
                        base::TimeDelta duration,

@@ -439,6 +439,11 @@ class ApiTests extends ApiTestFixtureBase {
     assertFalse(await activeSequence.next());
   }
 
+  async testPanelActiveWithMicrophone() {
+    await this.advanceToNextStep();
+    await this.advanceToNextStep();
+  }
+
   async testIsBrowserOpen() {
     assertDefined(this.host.isBrowserOpen);
     // This test closes the browser, so we need to detach the side panel to

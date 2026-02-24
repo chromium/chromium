@@ -158,6 +158,7 @@ class GlicWindowControllerImpl
   void Detach() override;
   void ClosePanel() override;
   void OnReload() override;
+  void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override {}
   void SetMinimumWidgetSize(const gfx::Size& size) override;
   bool IsShowing() const override;
   void SwitchConversation(

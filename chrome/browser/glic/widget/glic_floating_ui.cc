@@ -342,6 +342,16 @@ void GlicFloatingUi::OnReload() {
   }
 }
 
+void GlicFloatingUi::MaybeNotifyActivationChanged(bool window_active) {
+  bool active = window_active || (delegate_->host().microphone_status() ==
+                                  mojom::MicrophoneStatus::kListening);
+  delegate_->OnEmbedderWindowActivationChanged(active);
+}
+
+void GlicFloatingUi::OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) {
+  MaybeNotifyActivationChanged(HasFocus());
+}
+
 void GlicFloatingUi::Focus() {
   if (!IsShowing()) {
     return;
@@ -354,7 +364,7 @@ void GlicFloatingUi::Focus() {
 
 void GlicFloatingUi::OnWidgetActivationChanged(views::Widget* widget,
                                                bool active) {
-  delegate_->OnEmbedderWindowActivationChanged(active);
+  MaybeNotifyActivationChanged(active);
 }
 
 void GlicFloatingUi::OnWidgetDestroyed(views::Widget* widget) {

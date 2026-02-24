@@ -59,6 +59,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_coordinator_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
@@ -66,6 +67,7 @@
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/glic/test_support/non_interactive_glic_test.h"
+#include "chrome/browser/glic/widget/glic_floating_ui.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/media/audio_ducker.h"
 #include "chrome/browser/permissions/system/mock_platform_handle.h"
@@ -1725,6 +1727,44 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testPanelActive) {
   params.disposition = WindowOpenDisposition::NEW_WINDOW;
   base::WeakPtr<content::NavigationHandle> navigation_handle =
       Navigate(&params);
+
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelActiveWithMicrophone) {
+  if (!GetParam().multi_instance) {
+    GTEST_SKIP()
+        << "Live Mode Floaty is only tested for focus in multi-instance mode";
+  }
+  TrackFloatingGlicInstance();
+  // Add another tab and open Floaty.
+  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
+
+  RunTestSequence(InstrumentTab(kFirstTab),
+                  NavigateWebContents(kFirstTab, page_url()),
+                  OpenGlicFloatingWindow(GlicInstrumentMode::kHostAndContents));
+
+  ExecuteJsTest();
+
+  GetHost()->OnMicrophoneStatusChanged(mojom::MicrophoneStatus::kListening);
+
+  // Activating the other tab should take focus away from Floaty. Floaty should
+  // still remain active.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->window()->Activate();
+
+  EXPECT_TRUE(GetGlicInstance()->IsActive());
+
+  ContinueJsTest();
+
+  // Pause the microphone and focus on the window. Floaty should not be
+  // considered active.
+  GetHost()->OnMicrophoneStatusChanged(mojom::MicrophoneStatus::kNotListening);
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  browser()->window()->Activate();
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !GetGlicInstance()->IsActive(); }));
 
   ContinueJsTest();
 }

@@ -82,6 +82,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
       override;
   void ClosePanel() override;
   void OnReload() override;
+  void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override;
 
   // GlicWindowEventObserver::Delegate:
   GlicWindowAnimator* window_animator() override;
@@ -124,6 +125,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
   void OnSourceTabDestroyed(tabs::TabInterface* tab);
   void FloatingPanelCanAttachChanged(bool can_attach);
   void ConfigureWebContentsModalDialogs();
+  void MaybeNotifyActivationChanged(bool window_active);
 
   // Whether the widget should be user resizable, kept here in case it's
   // specified before the widget is created.

@@ -1163,7 +1163,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OnMicrophoneStatusChange(glic::mojom::MicrophoneStatus status) override {
-    // TODO(crbug.com/472338366): Plumb microphone status to the Glic Instance.
+    host().OnMicrophoneStatusChanged(status);
   }
 
   void ResizeWidget(const gfx::Size& size,

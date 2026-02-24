@@ -76,6 +76,7 @@ class GlicSidePanelUi
   bool IsShowing() const override;
   void ClosePanel() override;
   void OnReload() override;
+  void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override {}
 
   void SidePanelStateChanged(GlicSidePanelCoordinator::State state);
 

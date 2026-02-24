@@ -66,6 +66,7 @@ class GlicSidePanelUi : public GlicUiEmbedder,
   bool IsShowing() const override;
   void ClosePanel() override;
   void OnReload() override;
+  void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override {}
 
   // BrowserCollectionObserver
   void OnBrowserActivated(BrowserWindowInterface* browser) override;
