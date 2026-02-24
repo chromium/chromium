@@ -727,8 +727,14 @@ void PageContextFetcher::RunCallbackIfComplete() {
   base::UmaHistogramTimes("Glic.PageContextFetcher.Total",
                           elapsed_timer_.Elapsed());
 
-  if (primary_page_changed_ || !web_contents() ||
-      !web_contents()->GetPrimaryMainFrame()) {
+  if (!web_contents() || !web_contents()->GetPrimaryMainFrame()) {
+    std::move(callback_).Run(base::unexpected(FetchPageContextErrorDetails{
+        FetchPageContextError::kWebContentsWentAway,
+        "web contents went away"}));
+    return;
+  }
+
+  if (primary_page_changed_) {
     std::move(callback_).Run(base::unexpected(FetchPageContextErrorDetails{
         FetchPageContextError::kWebContentsChanged, "web contents changed"}));
     return;
@@ -749,6 +755,8 @@ std::string ToString(FetchPageContextError error) {
       return "kWebContentsChanged";
     case FetchPageContextError::kPageContextNotEligible:
       return "kPageContextNotEligible";
+    case FetchPageContextError::kWebContentsWentAway:
+      return "kWebContentsWentAway";
   }
 }
 

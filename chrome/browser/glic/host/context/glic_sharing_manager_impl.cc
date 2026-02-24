@@ -61,6 +61,9 @@ GlicGetContextResult TransformFetcherResult(
         kPageContextNotEligible:
       glic_error_code = GlicGetContextFromTabError::kPageContextNotEligible;
       break;
+    case page_content_annotations::FetchPageContextError::kWebContentsWentAway:
+      glic_error_code = GlicGetContextFromTabError::kTabNotFound;
+      break;
   }
   return base::unexpected(
       GlicGetContextError{glic_error_code, result.error().message});

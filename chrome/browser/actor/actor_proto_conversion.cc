@@ -890,7 +890,8 @@ apc::TabObservation::TabObservationResult ToTabObservationResult(
       return apc::TabObservation::TAB_OBSERVATION_WEB_CONTENTS_CHANGED;
     case FetchPageContextError::kPageContextNotEligible:
       return apc::TabObservation::TAB_OBSERVATION_PAGE_CONTEXT_NOT_ELIGIBLE;
-      ;
+    case FetchPageContextError::kWebContentsWentAway:
+      return apc::TabObservation::TAB_OBSERVATION_TAB_WENT_AWAY;
   }
 }
 

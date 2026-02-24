@@ -170,6 +170,7 @@ enum class FetchPageContextError {
   kWebContentsChanged,
   // The context is not eligible for sharing.
   kPageContextNotEligible,
+  kWebContentsWentAway,
 };
 
 std::string ToString(FetchPageContextError error);
