@@ -420,7 +420,8 @@ void SVGElementResourceClient::InvalidateFilterData() {
 
 void SVGElementResourceClient::MarkFilterDataDirty() {
   DCHECK(element_->GetLayoutObject());
-  DCHECK(element_->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  DCHECK(element_->GetLayoutObject()->NeedsPaintPropertyUpdate() ||
+         !element_->GetDocument().IsActive());
   filter_data_dirty_ = true;
 }
 
