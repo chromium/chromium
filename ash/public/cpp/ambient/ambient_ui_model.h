@@ -167,7 +167,7 @@ class ASH_PUBLIC_EXPORT AmbientUiModel {
 
   std::optional<AmbientJitterConfig> jitter_config_for_testing_;
 
-  base::ObserverList<AmbientUiModelObserver> observers_;
+  base::ReentrantObserverList<AmbientUiModelObserver> observers_;
 };
 
 ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& out,
