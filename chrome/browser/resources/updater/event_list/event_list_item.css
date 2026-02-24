@@ -11,7 +11,6 @@
 
 :host {
   --event-type-background-color: var(--google-blue-50);
-  --event-success-background-color: color-mix(in srgb, var(--google-green-500) 4%, white);
 
   border-bottom: 1px solid var(--cr-scrollable-border-color);
   display: block;
@@ -20,7 +19,6 @@
 @media (prefers-color-scheme: dark) {
   :host {
     --event-type-background-color: var(--google-blue-900);
-    --event-success-background-color: color-mix(in srgb, var(--google-green-500) 10%, black);
   }
 }
 
@@ -29,7 +27,7 @@
 }
 
 :host([status=success]) {
-  background-color: var(--event-success-background-color);
+  background-color: var(--success-background-color);
 }
 
 cr-expand-button {
