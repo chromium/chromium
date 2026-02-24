@@ -6275,6 +6275,12 @@ void WebGLRenderingContextBase::TexImageHelperVideoFrame(
                                 nullptr);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Killswitch guarding GPU upload being allowed for kTexSubImage2D on Android.
+BASE_FEATURE(kAllowGpuUploadForTexSubImageOnAndroid,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     TexImageParams params,
     WebGLTexture* texture,
@@ -6400,12 +6406,16 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   // unmultiply has been requested or we need to never premultiply for Image
   // creation from a VideoFrame.
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/1175907): Only TexImage2D seems to work with the GPU path on
   // Android M -- appears to work fine on R, but to avoid regressions in <video>
   // limit to TexImage2D only for now. Fails conformance test on Nexus 5X:
   // conformance/textures/misc/texture-corner-case-videos.html
-  //
+  const bool function_supports_gpu_teximage =
+      params.function_id == kTexImage2D ||
+      (params.function_id == kTexSubImage2D &&
+       base::FeatureList::IsEnabled(kAllowGpuUploadForTexSubImageOnAndroid));
+#elif BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/1181562): TexSubImage2D via the GPU path performs poorly on
   // Linux when used with frames backed by SharedImages holding shared memory.
   // We don't have a way to differentiate this case from that of true texture
