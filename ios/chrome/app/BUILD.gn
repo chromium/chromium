@@ -90,6 +90,13 @@ source_set("tasks_handling") {
   sources = [
     "task_orchestrator.mm",
     "task_request.mm",
+    "task_request_private.h",
+    "task_request_shortcut_item.h",
+    "task_request_shortcut_item.mm",
+    "task_request_url_context.h",
+    "task_request_url_context.mm",
+    "task_request_user_activity.h",
+    "task_request_user_activity.mm",
   ]
 
   public_deps = [ ":tasks_handling_header" ]

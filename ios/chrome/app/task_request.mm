@@ -7,24 +7,17 @@
 #import <UIKit/UIKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/ios/block_types.h"
-#import "components/prefs/pref_service.h"
-#import "ios/chrome/app/application_delegate/url_opener.h"
-#import "ios/chrome/app/application_delegate/url_opener_params.h"
-#import "ios/chrome/app/profile/profile_state.h"
+#import "base/notreached.h"
 #import "ios/chrome/app/task_request+testing.h"
-#import "ios/chrome/browser/intents/model/user_activity_browser_agent.h"
-#import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/app/task_request_private.h"
+#import "ios/chrome/app/task_request_shortcut_item.h"
+#import "ios/chrome/app/task_request_url_context.h"
+#import "ios/chrome/app/task_request_user_activity.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 
 @interface TaskRequestForTesting : TaskRequest
 @end
@@ -37,7 +30,7 @@
                    executeBlock:(ProceduralBlock)executeBlock {
   if ((self = [super initWithSceneID:sceneID])) {
     CHECK(executeBlock);
-    _executeBlock = executeBlock;
+    _executeBlock = [executeBlock copy];
   }
   return self;
 }
@@ -50,20 +43,9 @@
 
 @interface TaskRequest () {
   std::string _sceneSessionID;
+  BOOL _isColdStart;
+  __weak SceneState* _sceneState;
 }
-
-@property(nonatomic, assign) TaskSource source;
-
-// Properties needed to handle a shortcut item.
-@property(nonatomic, copy) ShortcutCompletionHandler shortcutHandler;
-@property(nonatomic, strong) UIApplicationShortcutItem* shortcutItem;
-
-// Properties needed to handle a NSUserActivity item.
-@property(nonatomic, strong) NSUserActivity* userActivity;
-
-// Property needed to handle a URL context.
-@property(nonatomic, strong) UIOpenURLContext* URLContext;
-
 @end
 
 @implementation TaskRequest
@@ -74,49 +56,51 @@
   return _sceneSessionID;
 }
 
-- (instancetype)initWithURLContext:(UIOpenURLContext*)URLContext
-                        sceneState:(SceneState*)sceneState
-                        taskSource:(TaskSource)taskSource {
++ (instancetype)taskForURLContext:(UIOpenURLContext*)URLContext
+                       sceneState:(SceneState*)sceneState
+                      isColdStart:(BOOL)isColdStart {
+  return [[TaskRequestForURLContext alloc] initWithURLContext:URLContext
+                                                   sceneState:sceneState
+                                                  isColdStart:isColdStart];
+}
+
++ (instancetype)taskForUserActivity:(NSUserActivity*)userActivity
+                         sceneState:(SceneState*)sceneState
+                        isColdStart:(BOOL)isColdStart {
+  return [[TaskRequestForUserActivity alloc] initWithUserActivity:userActivity
+                                                       sceneState:sceneState
+                                                      isColdStart:isColdStart];
+}
+
++ (instancetype)taskForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
+                         sceneState:(SceneState*)sceneState
+                            handler:(ShortcutCompletionHandler)handler
+                        isColdStart:(BOOL)isColdStart {
+  return [[TaskRequestForShortcutItem alloc] initWithShortcutItem:shortcutItem
+                                                       sceneState:sceneState
+                                                          handler:handler
+                                                      isColdStart:isColdStart];
+}
+
+// Factory used for tests.
++ (instancetype)taskForTestingWithSceneID:(std::string_view)sceneID
+                             executeBlock:(ProceduralBlock)block {
+  return [[TaskRequestForTesting alloc] initWithSceneID:sceneID
+                                           executeBlock:block];
+}
+
+- (instancetype)initWithSceneState:(SceneState*)sceneState
+                       isColdStart:(BOOL)isColdStart {
   self = [super init];
   if (self) {
-    // TODO(crbug.com/462018636): Minimum stage can be different in this case,
+    CHECK(IsEnableNewStartupFlowEnabled());
+    _sceneState = sceneState;
+    _sceneSessionID = sceneState.sceneSessionID;
+    _isColdStart = isColdStart;
+    // TODO(crbug.com/462018636): Minimum stage can be different in some cases,
     // handle all scenarios based on the received options (check bookmarks
     // feature).
-    CHECK(IsEnableNewStartupFlowEnabled());
-    _source = taskSource;
     _minimumStage = TaskExecutionStage::TaskExecutionUIReady;
-    _sceneSessionID = sceneState.sceneSessionID;
-    _URLContext = URLContext;
-  }
-  return self;
-}
-
-- (instancetype)initWithUserActivity:(NSUserActivity*)userActivity
-                          sceneState:(SceneState*)sceneState
-                          taskSource:(TaskSource)taskSource {
-  self = [super init];
-  if (self) {
-    CHECK(IsEnableNewStartupFlowEnabled());
-    _source = taskSource;
-    _minimumStage = TaskExecutionStage::TaskExecutionUIReady;
-    _sceneSessionID = sceneState.sceneSessionID;
-    _userActivity = userActivity;
-  }
-  return self;
-}
-
-- (instancetype)initWithShortcutItem:(UIApplicationShortcutItem*)shortcutItem
-                          sceneState:(SceneState*)sceneState
-                          taskSource:(TaskSource)taskSource
-                             handler:(ShortcutCompletionHandler)handler {
-  self = [super init];
-  if (self) {
-    CHECK(IsEnableNewStartupFlowEnabled());
-    _source = taskSource;
-    _minimumStage = TaskExecutionStage::TaskExecutionUIReady;
-    _sceneSessionID = sceneState.sceneSessionID;
-    _shortcutItem = shortcutItem;
-    _shortcutHandler = [handler copy];
   }
   return self;
 }
@@ -129,130 +113,27 @@
   return self;
 }
 
-// Factory used for tests.
-+ (instancetype)taskForTestingWithSceneID:(std::string_view)sceneID
-                             executeBlock:(ProceduralBlock)block {
-  return [[TaskRequestForTesting alloc] initWithSceneID:sceneID
-                                           executeBlock:block];
-}
-
 - (void)execute {
-  switch (_source) {
-    case TaskSource::TaskSourceColdStart:
-      [self executeColdStart];
-      break;
-    case TaskSource::TaskSourceContextURL:
-      [self executeContextURL];
-      break;
-    case TaskSource::TaskSourceUserActivity:
-      [self executeUserActivity];
-      break;
-    case TaskSource::TaskSourceQuickAction:
-      [self executeShortcutItem];
-      break;
-  }
+  NOTREACHED();
 }
 
-#pragma mark - Private
+#pragma mark - Protected
 
-// TODO(crbug.com/462018636): Find a better solution to get the SceneState from
-// the sceneSessionID.
 - (SceneState*)sceneStateFromSessionID {
+  if (_sceneState && _sceneState.sceneSessionID == _sceneSessionID) {
+    return _sceneState;
+  }
+
   for (UIScene* scene in UIApplication.sharedApplication.connectedScenes) {
     SceneDelegate* sceneDelegate =
         base::apple::ObjCCast<SceneDelegate>(scene.delegate);
     if (sceneDelegate &&
         sceneDelegate.sceneState.sceneSessionID == _sceneSessionID) {
-      return sceneDelegate.sceneState;
+      _sceneState = sceneDelegate.sceneState;
+      return _sceneState;
     }
   }
-  return nil;
+  NOTREACHED();
 }
 
-- (void)executeColdStart {
-  if (self.shortcutItem) {
-    [self executeShortcutItem];
-  } else if (self.userActivity) {
-    // TODO(crbug.com/462018636): Handle cold start with userActivity.
-  } else if (self.URLContext) {
-    [self executeContextURLFromColdStart];
-  }
-}
-
-- (void)executeShortcutItem {
-  SceneState* sceneState = [self sceneStateFromSessionID];
-  CHECK(sceneState);
-  Browser* browser =
-      sceneState.browserProviderInterface.currentBrowserProvider.browser;
-  CHECK(browser);
-
-  UserActivityBrowserAgent* userActivityBrowserAgent =
-      UserActivityBrowserAgent::FromBrowser(browser);
-  BOOL handledShortcutItem =
-      userActivityBrowserAgent->Handle3DTouchApplicationShortcuts(
-          self.shortcutItem);
-  if (_shortcutHandler) {
-    _shortcutHandler(handledShortcutItem);
-  }
-}
-
-- (void)executeUserActivity {
-  SceneState* sceneState = [self sceneStateFromSessionID];
-  CHECK(sceneState);
-  Browser* browser =
-      sceneState.browserProviderInterface.currentBrowserProvider.browser;
-  CHECK(browser);
-
-  PrefService* prefs = sceneState.profileState.profile->GetPrefs();
-  UserActivityBrowserAgent* userActivityBrowserAgent =
-      UserActivityBrowserAgent::FromBrowser(browser);
-  if (IsIncognitoPolicyApplied(prefs) &&
-      !userActivityBrowserAgent->ProceedWithUserActivity(self.userActivity)) {
-    // TODO(crbug.com/462018636): Find a centralized solution to handle toasts
-    // for all intent types.
-    userActivityBrowserAgent->ShowToastWhenOpenExternalIntentInUnexpectedMode();
-  } else {
-    userActivityBrowserAgent->ContinueUserActivity(self.userActivity, YES);
-  }
-}
-
-- (void)executeContextURL {
-  SceneState* sceneState = [self sceneStateFromSessionID];
-  CHECK(sceneState);
-
-  NSSet* URLContextSet = [NSSet setWithObject:self.URLContext];
-  // If the SystemIdentityManager handles the URL context, return early to avoid
-  // opening the URL twice.
-  if (GetApplicationContext()
-          ->GetSystemIdentityManager()
-          ->HandleSessionOpenURLContexts(sceneState.scene, URLContextSet)) {
-    return;
-  }
-  ProfileState* profileState = sceneState.profileState;
-  URLOpenerParams* options =
-      [[URLOpenerParams alloc] initWithUIOpenURLContext:self.URLContext];
-  [URLOpener openURL:options
-          applicationActive:YES
-                  tabOpener:sceneState.controller
-      connectionInformation:sceneState.controller
-         startupInformation:profileState.startupInformation
-                prefService:profileState.profile->GetPrefs()
-                  initStage:profileState.initStage];
-}
-
-- (void)executeContextURLFromColdStart {
-  SceneState* sceneState = [self sceneStateFromSessionID];
-  CHECK(sceneState);
-
-  URLOpenerParams* options =
-      [[URLOpenerParams alloc] initWithUIOpenURLContext:self.URLContext];
-  ProfileState* profileState = sceneState.profileState;
-
-  [URLOpener handleLaunchOptions:options
-                       tabOpener:sceneState.controller
-           connectionInformation:sceneState.controller
-              startupInformation:profileState.startupInformation
-                     prefService:profileState.profile->GetPrefs()
-                       initStage:profileState.initStage];
-}
 @end

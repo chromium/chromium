@@ -98,19 +98,17 @@ void SyncBreadcrumbsLog() {
   if (IsEnableNewStartupFlowEnabled()) {
     if (connectionOptions.shortcutItem) {
       [self addTaskRequestForShortcutItem:connectionOptions.shortcutItem
-                               taskSource:TaskSource::TaskSourceColdStart
+                              isColdStart:YES
                                   handler:nil];
     }
     if (connectionOptions.URLContexts.count != 0) {
       for (UIOpenURLContext* URLContext in connectionOptions.URLContexts) {
-        [self addTaskRequestForURLContext:URLContext
-                               taskSource:TaskSource::TaskSourceColdStart];
+        [self addTaskRequestForURLContext:URLContext isColdStart:YES];
       }
     }
     if (connectionOptions.userActivities.count != 0) {
       for (NSUserActivity* userActivity in connectionOptions.userActivities) {
-        [self addTaskRequestForUserActivity:userActivity
-                                 taskSource:TaskSource::TaskSourceColdStart];
+        [self addTaskRequestForUserActivity:userActivity isColdStart:YES];
       }
     }
   } else {
@@ -193,8 +191,7 @@ void SyncBreadcrumbsLog() {
   _sceneState.startupHadExternalIntent = YES;
   if (IsEnableNewStartupFlowEnabled()) {
     for (UIOpenURLContext* URLContext in URLContexts) {
-      [self addTaskRequestForURLContext:URLContext
-                             taskSource:TaskSource::TaskSourceContextURL];
+      [self addTaskRequestForURLContext:URLContext isColdStart:NO];
     }
   } else {
     _sceneState.URLContextsToOpen = URLContexts;
@@ -207,7 +204,7 @@ void SyncBreadcrumbsLog() {
   _sceneState.startupHadExternalIntent = YES;
   if (IsEnableNewStartupFlowEnabled()) {
     [self addTaskRequestForShortcutItem:shortcutItem
-                             taskSource:TaskSource::TaskSourceQuickAction
+                            isColdStart:NO
                                 handler:completionHandler];
   } else {
     [_sceneController performActionForShortcutItem:shortcutItem
@@ -219,8 +216,7 @@ void SyncBreadcrumbsLog() {
     continueUserActivity:(NSUserActivity*)userActivity {
   _sceneState.startupHadExternalIntent = YES;
   if (IsEnableNewStartupFlowEnabled()) {
-    [self addTaskRequestForUserActivity:userActivity
-                             taskSource:TaskSource::TaskSourceUserActivity];
+    [self addTaskRequestForUserActivity:userActivity isColdStart:NO];
   } else {
     _sceneState.pendingUserActivity = userActivity;
   }
@@ -229,13 +225,12 @@ void SyncBreadcrumbsLog() {
 #pragma mark - Task Helpers
 
 - (void)addTaskRequestForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
-                           taskSource:(TaskSource)taskSource
+                          isColdStart:(BOOL)isColdStart
                               handler:(void (^)(BOOL))completionHandler {
-  TaskRequest* request =
-      [[TaskRequest alloc] initWithShortcutItem:shortcutItem
-                                     sceneState:_sceneState
-                                     taskSource:taskSource
-                                        handler:completionHandler];
+  TaskRequest* request = [TaskRequest taskForShortcutItem:shortcutItem
+                                               sceneState:_sceneState
+                                                  handler:completionHandler
+                                              isColdStart:isColdStart];
   MainApplicationDelegate* appDelegate =
       base::apple::ObjCCastStrict<MainApplicationDelegate>(
           UIApplication.sharedApplication.delegate);
@@ -244,10 +239,10 @@ void SyncBreadcrumbsLog() {
 }
 
 - (void)addTaskRequestForURLContext:(UIOpenURLContext*)URLContext
-                         taskSource:(TaskSource)taskSource {
-  TaskRequest* request = [[TaskRequest alloc] initWithURLContext:URLContext
-                                                      sceneState:_sceneState
-                                                      taskSource:taskSource];
+                        isColdStart:(BOOL)isColdStart {
+  TaskRequest* request = [TaskRequest taskForURLContext:URLContext
+                                             sceneState:_sceneState
+                                            isColdStart:isColdStart];
   MainApplicationDelegate* appDelegate =
       base::apple::ObjCCastStrict<MainApplicationDelegate>(
           UIApplication.sharedApplication.delegate);
@@ -256,10 +251,10 @@ void SyncBreadcrumbsLog() {
 }
 
 - (void)addTaskRequestForUserActivity:(NSUserActivity*)userActivity
-                           taskSource:(TaskSource)taskSource {
-  TaskRequest* request = [[TaskRequest alloc] initWithUserActivity:userActivity
-                                                        sceneState:_sceneState
-                                                        taskSource:taskSource];
+                          isColdStart:(BOOL)isColdStart {
+  TaskRequest* request = [TaskRequest taskForUserActivity:userActivity
+                                               sceneState:_sceneState
+                                              isColdStart:isColdStart];
   MainApplicationDelegate* appDelegate =
       base::apple::ObjCCastStrict<MainApplicationDelegate>(
           UIApplication.sharedApplication.delegate);

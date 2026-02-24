@@ -12,15 +12,7 @@
 @class UIOpenURLContext;
 @class NSUserActivity;
 @class UIApplicationShortcutItem;
-@class UISceneConnectionOptions;
 @class SceneState;
-
-enum class TaskSource {
-  TaskSourceColdStart,
-  TaskSourceContextURL,
-  TaskSourceUserActivity,
-  TaskSourceQuickAction,
-};
 
 // Defines the point at which a task can be executed. These stages should be
 // specific to a scene.
@@ -49,19 +41,22 @@ using ShortcutCompletionHandler = void (^)(BOOL succeeded);
 // Scene session ID on which the task should be executed.
 @property(nonatomic, readonly) std::string_view sceneSessionID;
 
-// Initializers for the OS calls.
-- (instancetype)initWithURLContext:(UIOpenURLContext*)URLContext
-                        sceneState:(SceneState*)sceneState
-                        taskSource:(TaskSource)taskSource;
+// True if the task was created during a cold start.
+@property(nonatomic, readonly) BOOL isColdStart;
 
-- (instancetype)initWithUserActivity:(NSUserActivity*)userActivity
-                          sceneState:(SceneState*)sceneState
-                          taskSource:(TaskSource)taskSource;
+// Factory methods for the different task types.
++ (instancetype)taskForURLContext:(UIOpenURLContext*)URLContext
+                       sceneState:(SceneState*)sceneState
+                      isColdStart:(BOOL)isColdStart;
 
-- (instancetype)initWithShortcutItem:(UIApplicationShortcutItem*)shortcutItem
-                          sceneState:(SceneState*)sceneState
-                          taskSource:(TaskSource)taskSource
-                             handler:(ShortcutCompletionHandler)handler;
++ (instancetype)taskForUserActivity:(NSUserActivity*)userActivity
+                         sceneState:(SceneState*)sceneState
+                        isColdStart:(BOOL)isColdStart;
+
++ (instancetype)taskForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
+                         sceneState:(SceneState*)sceneState
+                            handler:(ShortcutCompletionHandler)handler
+                        isColdStart:(BOOL)isColdStart;
 
 // Executes the task.
 - (void)execute;
