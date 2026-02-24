@@ -93,4 +93,34 @@ suite('FilterDialogElement', () => {
     assertEquals('344px', dialog.style.top);  // 300 + 40 + 4
     assertEquals('300px', dialog.style.left);
   });
+
+  test('repositions dialog on scroll', async () => {
+    const anchor = document.createElement('div');
+    anchor.style.position = 'absolute';
+    anchor.style.top = '200px';
+    anchor.style.left = '200px';
+    anchor.style.width = '50px';
+    anchor.style.height = '50px';
+    document.body.appendChild(anchor);
+
+    filterDialog = new FilterDialogElement();
+    filterDialog.anchorElement = anchor;
+    document.body.appendChild(filterDialog);
+
+    await microtasksFinished();
+
+    const dialog = filterDialog.$.dialog;
+    assertEquals('254px', dialog.style.top);
+    assertEquals('200px', dialog.style.left);
+
+    // Simulate scroll by moving the anchor and firing a scroll event.
+    anchor.style.top = '100px';
+    window.dispatchEvent(
+        new CustomEvent('scroll', {bubbles: true, composed: true}));
+
+    await microtasksFinished();
+
+    assertEquals('154px', dialog.style.top);
+    assertEquals('200px', dialog.style.left);
+  });
 });
