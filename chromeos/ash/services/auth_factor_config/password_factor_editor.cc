@@ -271,31 +271,18 @@ void PasswordFactorEditor::UpdatePasswordWithContext(
                          mojom::ConfigureResult::kFatalError));
       return;
     }
-    // Atomically replace the Gaia password factor with a local password
-    // factor or a local password with a Gaia password.
-    if (is_new_password_local) {
-      auth_factor_editor_.ReplacePasswordFactor(
-          std::move(user_context),
-          /*old_label=*/
-          password_factor->ref().label(), cryptohome::RawPassword(new_password),
-          /*new_label=*/
-          cryptohome::KeyLabel{kCryptohomeLocalPasswordKeyLabel},
-          base::BindOnce(&PasswordFactorEditor::OnPasswordConfigured,
-                         weak_factory_.GetWeakPtr(), std::move(callback),
-                         auth_token));
-    } else {
-      // Going from local password to Gaia password
-      auth_factor_editor_.ReplacePasswordFactor(
-          std::move(user_context),
-          /*old_label=*/
-          password_factor->ref().label(), cryptohome::RawPassword(new_password),
-          /*new_label=*/
-          cryptohome::KeyLabel{kCryptohomeGaiaKeyLabel},
-          base::BindOnce(&PasswordFactorEditor::OnPasswordConfigured,
-                         weak_factory_.GetWeakPtr(), std::move(callback),
-                         auth_token));
-    }
-
+    // Atomically replace the Gaia password factor with a local password factor
+    // or a local password with a Gaia password.
+    const cryptohome::KeyLabel new_label{is_new_password_local
+                                             ? kCryptohomeLocalPasswordKeyLabel
+                                             : kCryptohomeGaiaKeyLabel};
+    auth_factor_editor_.ReplacePasswordFactor(
+        std::move(user_context),
+        /*old_label=*/password_factor->ref().label(),
+        cryptohome::RawPassword(new_password), new_label,
+        base::BindOnce(&PasswordFactorEditor::OnPasswordConfigured,
+                       weak_factory_.GetWeakPtr(), std::move(callback),
+                       auth_token));
   } else {
     // Note that old online factors might have label "legacy-0" instead of
     // "gaia", so we use password_factor->ref().label() here.
