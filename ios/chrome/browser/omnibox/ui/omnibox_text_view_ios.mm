@@ -1171,6 +1171,7 @@ const CGFloat kVerticalOffset = 1;
   self.placeholderLabel.font = self.font;
   [self setAttributedText:self.attributedText];
   [self updateOmniboxTypingAttributes];
+  [self.heightDelegate textViewContentChanged:self];
 }
 
 - (void)updateTextContainerInset {
