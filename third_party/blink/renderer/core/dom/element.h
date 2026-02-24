@@ -33,6 +33,7 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -2174,9 +2175,11 @@ class CORE_EXPORT Element : public ContainerNode {
   // containment by modifying the box tree outside the container during layout.
   bool HasSiblingBoxPseudoElements() const;
 
-  bool ScrollLayoutBoxBy(const ScrollToOptions*);
+  bool ScrollLayoutBoxBy(const ScrollToOptions*,
+                         ScriptPromiseResolver<IDLUndefined>*);
   bool ScrollLayoutBoxTo(const ScrollToOptions*);
-  bool ScrollFrameBy(const ScrollToOptions*);
+  bool ScrollFrameBy(const ScrollToOptions*,
+                     ScriptPromiseResolver<IDLUndefined>*);
   bool ScrollFrameTo(const ScrollToOptions*);
 
   bool HasElementFlag(ElementFlags mask) const;

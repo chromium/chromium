@@ -4325,6 +4325,7 @@
     // https://crbug.com/41406914
     {
       name: "ProgrammaticScrollPromise",
+      status: "experimental",
     },
     {
       // When enabled, setting progress.max enforces a >0 constraint.

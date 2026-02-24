@@ -1,27 +1,8 @@
 This is a testharness.js-based test.
-[FAIL] Window.scroll(auto): return type
-  assert_true: expected true got false
-[FAIL] Window.scroll(instant): return type
-  assert_true: expected true got false
-[FAIL] Window.scroll(smooth): return type
-  assert_true: expected true got false
 [FAIL] Window.scroll(smooth): promise behavior
   assert_equals: Position after await expected 5000 but got 0
-[FAIL] Window.scrollTo(auto): return type
-  assert_true: expected true got false
-[FAIL] Window.scrollTo(instant): return type
-  assert_true: expected true got false
-[FAIL] Window.scrollTo(smooth): return type
-  assert_true: expected true got false
 [FAIL] Window.scrollTo(smooth): promise behavior
   assert_equals: Position after await expected 5000 but got 0
-[FAIL] Window.scrollBy(auto): return type
-  assert_true: expected true got false
-[FAIL] Window.scrollBy(instant): return type
-  assert_true: expected true got false
-[FAIL] Window.scrollBy(smooth): return type
-  assert_true: expected true got false
 [FAIL] Window.scrollBy(smooth): promise behavior
   assert_equals: Position after await expected 5000 but got 0
 Harness: the test ran to completion.
-

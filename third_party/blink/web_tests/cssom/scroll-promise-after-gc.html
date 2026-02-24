@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<title>Scroll promise handling after garbage collection</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<style>
+  .filler { height: 6000px }
+
+  #scroller {
+    overflow: scroll;
+    width: 100px;
+    height: 100px;
+  }
+</style>
+<div id="scroller">
+  <div class="filler"></div>
+</div>
+<script>
+  "use strict";
+
+  promise_test(async () => {
+    const scroller = document.getElementById("scroller");
+
+    const offset = 5000;
+
+    let promise = scroller.scrollBy({ top: offset, behavior: "smooth" });
+    assert_true(scroller.scrollTop < offset,
+          "Smooth scroll continues before gc");
+
+    window.gc();
+    assert_true(scroller.scrollTop < offset,
+          "Smooth scroll continues after gc");
+
+    await promise;
+    assert_equals(scroller.scrollTop, offset,
+          "Smooth scroll ends through await");
+  }, "Scroll promise handling after garbage collection");
+</script>

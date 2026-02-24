@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -124,11 +125,16 @@ ScrollableArea::ScrollableArea(
 ScrollableArea::~ScrollableArea() = default;
 
 void ScrollableArea::Dispose() {
-  if (HasBeenDisposed())
+  if (HasBeenDisposed()) {
     return;
+  }
   DisposeImpl();
   fade_overlay_scrollbars_timer_ = nullptr;
   has_been_disposed_ = true;
+  if (promise_resolver_) {
+    promise_resolver_->Resolve();
+    promise_resolver_ = nullptr;
+  }
 }
 
 void ScrollableArea::ClearScrollableArea() {
@@ -301,6 +307,15 @@ bool ScrollableArea::SetScrollOffsetInternal(
     return false;
   }
 
+  // TODO(https://crbug.com/40712058): We should interrupt scroll promises here
+  // by calling `SettlePendingPromiseHandler()` correctly. We know that we will
+  // need to skip this call for ScrollType::kNone (because in this case we don't
+  // have a latched scroller, implying this is not the direct result of a user
+  // scroll). The main challenge is that a single programmatic scroll request
+  // results in multiple calls to that method (apparently one per frame) with
+  // ScrollType::kCompositor, and we currently have no way to isolate those
+  // calls!
+
   // If this was not a targeted scroll, the associated scroll-marker-group
   // should stop pinning its selected scroll-marker.
   if (!targeted_scroll) {
@@ -390,6 +405,17 @@ bool ScrollableArea::SetScrollOffsetInternal(
   UpdateScrollMarkers();
 
   return true;
+}
+
+bool ScrollableArea::SetProgrammaticScrollOffset(
+    const ScrollOffset& offset,
+    cc::ScrollSourceType source_type,
+    mojom::blink::ScrollBehavior behavior,
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
+  RegisterPromiseResolver(resolver);
+  return SetScrollOffsetInternal(offset,
+                                 mojom::blink::ScrollType::kProgrammatic,
+                                 source_type, behavior, false);
 }
 
 const LayoutObject* ScrollableArea::GetScrollInitialTarget() const {
@@ -628,6 +654,20 @@ mojom::blink::ScrollBehavior ScrollableArea::V8EnumToScrollBehavior(
       return mojom::blink::ScrollBehavior::kSmooth;
   }
   NOTREACHED();
+}
+
+void ScrollableArea::RegisterPromiseResolver(
+    ScriptPromiseResolver<IDLUndefined>* resolver) {
+  if (promise_resolver_) {
+    promise_resolver_->Resolve();
+  }
+  promise_resolver_ = resolver;
+}
+
+void ScrollableArea::SettlePendingPromiseResolver(ScrollCompletionMode mode) {
+  if (promise_resolver_) {
+    promise_resolver_->Resolve();
+  }
 }
 
 void ScrollableArea::MouseEnteredScrollbar(Scrollbar& scrollbar) {
@@ -1094,28 +1134,33 @@ CompositorElementId ScrollableArea::GetScrollbarElementId(
 }
 
 void ScrollableArea::OnScrollFinished(bool scroll_did_end) {
-  if (GetLayoutBox()) {
-    if (scroll_did_end) {
-      active_smooth_scroll_type_.reset();
-      UpdateSnappedTargetsAndEnqueueScrollSnapChange();
-      if (Node* node = EventTargetNode()) {
-        if (auto* viewport_position_tracker =
-                AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(
-                    node->GetDocument())) {
-          viewport_position_tracker->OnScrollEnd();
-        }
-        // TODO(https://crbug.com/41406914): This is temporary. Remove once we
-        // start to migrate to scroll-promises.
-        node->GetDocument().Markers().StartGlicMarkerAnimationIfNeeded();
-        node->GetDocument().EnqueueScrollEndEventForNode(node);
-      }
-    }
-    GetLayoutBox()
-        ->GetFrame()
-        ->LocalFrameRoot()
-        .GetEventHandler()
-        .MarkHoverStateDirty();
+  if (!GetLayoutBox()) {
+    return;
   }
+
+  if (scroll_did_end) {
+    active_smooth_scroll_type_.reset();
+    UpdateSnappedTargetsAndEnqueueScrollSnapChange();
+    if (Node* node = EventTargetNode()) {
+      if (auto* viewport_position_tracker =
+              AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(
+                  node->GetDocument())) {
+        viewport_position_tracker->OnScrollEnd();
+      }
+      // TODO(https://crbug.com/41406914): This is temporary. Remove once we
+      // start to migrate to scroll-promises.
+      node->GetDocument().Markers().StartGlicMarkerAnimationIfNeeded();
+      node->GetDocument().EnqueueScrollEndEventForNode(node);
+    }
+  }
+
+  SettlePendingPromiseResolver(ScrollCompletionMode::kFinished);
+
+  GetLayoutBox()
+      ->GetFrame()
+      ->LocalFrameRoot()
+      .GetEventHandler()
+      .MarkHoverStateDirty();
 }
 
 void ScrollableArea::SnapAfterScrollbarScrolling(
@@ -1287,6 +1332,7 @@ void ScrollableArea::Trace(Visitor* visitor) const {
   visitor->Trace(programmatic_scroll_animator_);
   visitor->Trace(fade_overlay_scrollbars_timer_);
   visitor->Trace(text_overflow_snapshot_);
+  visitor->Trace(promise_resolver_);
 }
 
 void ScrollableArea::InjectScrollbarGestureScroll(
