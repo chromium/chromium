@@ -67,6 +67,7 @@ class VerticalTabView : public views::View,
 
   void StepLoadingAnimation(const base::TimeDelta& elapsed_time);
   void UpdateHovered(bool hovered);
+  bool IsHoverAnimationActive() const;
 
   std::optional<SkColor> GetBackgroundColor();
   SkPath GetPath() const;
@@ -176,7 +177,6 @@ class VerticalTabView : public views::View,
   void UpdateHoverCard(HoverCardAnchorTarget* target,
                        int hover_card_update_type);
 
-  bool IsHoverAnimationActive() const;
   double GetHoverAnimationValue() const;
   float GetHoverOpacity() const;
 

@@ -397,6 +397,29 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonPressed) {
   EXPECT_EQ(1, tab_strip_model()->count());
 }
 
+IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, RenderInactiveWhenClosing) {
+  // Add a second tab.
+  AppendTab();
+  ASSERT_EQ(2, tab_strip_model()->count());
+
+  // The second tab is active.
+  TabCollectionNode* tab_node = unpinned_collection_node()->children()[1].get();
+  VerticalTabView* tab_view =
+      views::AsViewClass<VerticalTabView>(tab_node->view());
+  tab_view->UpdateHovered(true);
+
+  ASSERT_TRUE(tab_view->IsActive());
+  EXPECT_TRUE(tab_view->IsHoverAnimationActive());
+
+  // Close the tab.
+  tab_strip_model()->CloseWebContentsAt(1, TabCloseTypes::CLOSE_USER_GESTURE);
+
+  // The tab_view should now be inactive despite being the active tab
+  // just before closing.
+  EXPECT_FALSE(tab_view->IsActive());
+  EXPECT_TRUE(tab_view->IsHoverAnimationActive());
+}
+
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, PinnedTabsHideCloseButton) {
   AppendPinnedTab();
 
