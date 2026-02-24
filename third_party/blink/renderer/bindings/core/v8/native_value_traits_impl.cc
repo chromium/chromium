@@ -94,20 +94,4 @@ EventListener* NativeValueTraits<IDLOnErrorEventHandler>::NativeValue(
       value, JSEventHandler::HandlerType::kOnErrorEventHandler);
 }
 
-namespace bindings::internal {
-
-ByteSpanWithInlineStorage& ByteSpanWithInlineStorage::operator=(
-    const ByteSpanWithInlineStorage& r) {
-  if (r.span_.data() == r.inline_storage_) {
-    auto span = base::span(inline_storage_);
-    span.copy_from(base::span(r.inline_storage_));
-    span_ = span.first(r.span_.size());
-  } else {
-    span_ = r.span_;
-  }
-  return *this;
-}
-
-}  // namespace bindings::internal
-
 }  // namespace blink

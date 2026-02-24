@@ -15,6 +15,7 @@ namespace blink {
 
 namespace bindings::internal {
 
+template <bool kSupportReentry>
 class CORE_EXPORT ByteSpanWithInlineStorage {
   STACK_ALLOCATED();
 
@@ -24,10 +25,28 @@ class CORE_EXPORT ByteSpanWithInlineStorage {
   ByteSpanWithInlineStorage() = default;
   ByteSpanWithInlineStorage(const ByteSpanWithInlineStorage& r) { *this = r; }
 
-  ByteSpanWithInlineStorage& operator=(const ByteSpanWithInlineStorage& r);
+  ByteSpanWithInlineStorage& operator=(const ByteSpanWithInlineStorage& r) {
+    if (r.span_.data() == r.inline_storage_) {
+      auto span = base::span(inline_storage_);
+      span.copy_from(base::span(r.inline_storage_));
+      span_ = span.first(r.span_.size());
+    } else {
+      span_ = r.span_;
+      backing_store_ = r.backing_store_;
+    }
+    return *this;
+  }
 
   void Assign(base::span<const uint8_t> span) { span_ = span; }
   void Assign(v8::MemorySpan<const uint8_t> span) { span_ = span; }
+  void MaybeSetBackingStore(v8::Local<v8::ArrayBuffer> array_buffer) {
+    if constexpr (kSupportReentry) {
+      if (array_buffer->IsDetachable()) {
+        backing_store_ = array_buffer->GetBackingStore();
+      }
+    }
+  }
+
   // This class allows implicit conversion to span, because it's an internal
   // class tightly coupled to the bindings generator that knows how to use it.
   // Note rvalue conversion is explicitly disabled.
@@ -41,6 +60,9 @@ class CORE_EXPORT ByteSpanWithInlineStorage {
  private:
   base::span<const uint8_t> span_;
   uint8_t inline_storage_[kInlineStorageSize];
+  struct Void {};
+  std::conditional_t<kSupportReentry, std::shared_ptr<v8::BackingStore>, Void>
+      backing_store_;
 };
 
 template <typename T>
@@ -50,7 +72,7 @@ v8::MemorySpan<const uint8_t> GetArrayData(v8::Local<T> array) {
       static_cast<const uint8_t*>(array->Data()), array->ByteLength());
 }
 
-template <typename T>
+template <typename T, bool kSupportReentry>
 class SpanWithInlineStorage {
   STACK_ALLOCATED();
 
@@ -68,16 +90,19 @@ class SpanWithInlineStorage {
                                      bytes.size() / sizeof(T)));
   }
 
+  void MaybeSetBackingStore(v8::Local<v8::ArrayBuffer> array_buffer) {
+    bytes_.MaybeSetBackingStore(array_buffer);
+  }
   void Assign(base::span<const uint8_t> span) { bytes_.Assign(span); }
   v8::MemorySpan<uint8_t> GetInlineStorage() {
     return bytes_.GetInlineStorage();
   }
 
  private:
-  ByteSpanWithInlineStorage bytes_;
+  ByteSpanWithInlineStorage<kSupportReentry> bytes_;
 };
 
-template <typename T>
+template <typename T, bool kSupportReentry>
 class SpanOrVector {
   STACK_ALLOCATED();
 
@@ -89,6 +114,9 @@ class SpanOrVector {
   operator base::span<const T>() const&& = delete;
   const base::span<const T> as_span() const { return span_.as_span(); }
 
+  void MaybeSetBackingStore(v8::Local<v8::ArrayBuffer> array_buffer) {
+    span_.MaybeSetBackingStore(array_buffer);
+  }
   void Assign(base::span<const uint8_t> span) { span_.Assign(span); }
   void Assign(Vector<T> vec) {
     vector_ = std::move(vec);
@@ -107,7 +135,7 @@ class SpanOrVector {
   }
 
  private:
-  SpanWithInlineStorage<T> span_;
+  SpanWithInlineStorage<T, kSupportReentry> span_;
   Vector<T> vector_;
 };
 
@@ -167,6 +195,7 @@ struct PassAsSpanMarkerBase {
     kNone,
     kAllowShared = 1 << 0,
     kAllowSequence = 1 << 1,
+    kSupportReentry = 1 << 2,
   };
 };
 
@@ -182,6 +211,8 @@ template <PassAsSpanMarkerBase::Flags flags =
 struct PassAsSpan : public PassAsSpanMarkerBase {
   static constexpr bool allow_shared = flags & Flags::kAllowShared;
   static constexpr bool allow_sequence = flags & Flags::kAllowSequence;
+  static constexpr bool support_reentry = flags & Flags::kSupportReentry;
+
   static constexpr bool is_typed = !std::is_same_v<T, void>;
 
   static_assert(is_typed || !allow_sequence);
@@ -189,10 +220,11 @@ struct PassAsSpan : public PassAsSpanMarkerBase {
   using ElementType = T;
   using ReturnType = std::conditional_t<
       allow_sequence,
-      bindings::internal::SpanOrVector<T>,
-      std::conditional_t<is_typed,
-                         bindings::internal::SpanWithInlineStorage<T>,
-                         bindings::internal::ByteSpanWithInlineStorage>>;
+      bindings::internal::SpanOrVector<T, support_reentry>,
+      std::conditional_t<
+          is_typed,
+          bindings::internal::SpanWithInlineStorage<T, support_reentry>,
+          bindings::internal::ByteSpanWithInlineStorage<support_reentry>>>;
 };
 
 }  // namespace blink
