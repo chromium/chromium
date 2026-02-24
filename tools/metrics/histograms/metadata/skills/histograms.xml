@@ -74,6 +74,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Skills.Management.Error" enum="SkillsManagementError"
+    expires_after="2027-02-01">
+  <owner>aashnas@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records errors encountered during skills management operations (e.g.,
+    service not ready, skill not found).
+  </summary>
+</histogram>
+
+<histogram name="Skills.Management.FirstParty.DownloadRequestStatus"
+    enum="SkillsDownloadRequestStatus" expires_after="2027-02-01">
+  <owner>aashnas@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records the status of a skills download request (success, already running,
+    timeout).
+  </summary>
+</histogram>
+
 <histogram name="Skills.Refine.Result" enum="SkillsRefineResult"
     expires_after="2027-02-01">
   <owner>michelleabreo@google.com</owner>

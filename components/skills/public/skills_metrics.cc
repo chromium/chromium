@@ -47,4 +47,13 @@ void RecordSkillsHttpCode(int http_code) {
                            http_code);
 }
 
+void RecordSkillsDownloadRequestStatus(SkillsDownloadRequestStatus status) {
+  base::UmaHistogramEnumeration(
+      "Skills.Management.FirstParty.DownloadRequestStatus", status);
+}
+
+void RecordSkillsManagementError(SkillsManagementError error) {
+  base::UmaHistogramEnumeration("Skills.Management.Error", error);
+}
+
 }  // namespace skills

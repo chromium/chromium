@@ -35,6 +35,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsDialogAction) -->
 
+<!-- LINT.IfChange(SkillsDownloadRequestStatus) -->
+
+<enum name="SkillsDownloadRequestStatus">
+  <int value="0" label="Download Request Sent"/>
+  <int value="1" label="Download Response Received"/>
+  <int value="2" label="Download Already Running"/>
+  <int value="3" label="Download Timed Out"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsDownloadRequestStatus) -->
+
 <!-- LINT.IfChange(SkillsFetchResult) -->
 
 <enum name="SkillsFetchResult">
@@ -66,6 +77,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsInvokeResult) -->
+
+<!-- LINT.IfChange(SkillsManagementError) -->
+
+<enum name="SkillsManagementError">
+  <int value="0" label="Tab Controller Does Not Exist"/>
+  <int value="1" label="Skills Service Not Ready"/>
+  <int value="2" label="1P Skill Does Not Exist"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/skills/public/skills_metrics.h:SkillsManagementError) -->
 
 <!-- LINT.IfChange(SkillsRefineResult) -->
 

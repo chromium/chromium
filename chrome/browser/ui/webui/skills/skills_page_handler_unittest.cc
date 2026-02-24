@@ -10,6 +10,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +21,7 @@
 #include "components/skills/mocks/mock_skills_service.h"
 #include "components/skills/proto/skill.pb.h"
 #include "components/skills/public/skill.mojom.h"
+#include "components/skills/public/skills_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -82,6 +84,7 @@ class SkillsPageHandlerTest : public testing::Test {
   mojo::Remote<skills::mojom::PageHandler> page_handler_;
   StrictMock<MockSkillsPage> mock_page_;
   std::unique_ptr<SkillsPageHandler> handler_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(SkillsPageHandlerTest, OnDiscoverySkillsUpdated) {
@@ -133,6 +136,12 @@ TEST_F(SkillsPageHandlerTest, MaybeSave1PSkill_Success) {
   handler_->OnDiscoverySkillsUpdated(&skills_map);
   EXPECT_TRUE(future.Get());
   EXPECT_FALSE(handler_->Is1PDownloadTimerRunning());
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Management.FirstParty.DownloadRequestStatus",
+      SkillsDownloadRequestStatus::kSent, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Management.FirstParty.DownloadRequestStatus",
+      SkillsDownloadRequestStatus::kResponseReceived, 1);
 }
 
 TEST_F(SkillsPageHandlerTest, MaybeSave1PSkill_NotFound) {
@@ -147,6 +156,8 @@ TEST_F(SkillsPageHandlerTest, MaybeSave1PSkill_NotFound) {
   handler_->OnDiscoverySkillsUpdated(&skills_map);
   EXPECT_FALSE(future.Get());
   EXPECT_FALSE(handler_->Is1PDownloadTimerRunning());
+  histogram_tester_.ExpectUniqueSample("Skills.Management.Error",
+                                       SkillsManagementError::k1pSkillDNE, 1);
 }
 
 TEST_F(SkillsPageHandlerTest, MaybeSave1PSkill_Timeout) {
@@ -156,6 +167,39 @@ TEST_F(SkillsPageHandlerTest, MaybeSave1PSkill_Timeout) {
   task_environment_.FastForwardBy(base::Seconds(30));
   EXPECT_FALSE(future.Get());
   EXPECT_FALSE(handler_->Is1PDownloadTimerRunning());
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Management.FirstParty.DownloadRequestStatus",
+      SkillsDownloadRequestStatus::kTimedOut, 1);
+}
+
+TEST_F(SkillsPageHandlerTest, GetInitialUserSkills_ServiceNotReady) {
+  // Mock service check to fail
+  EXPECT_CALL(*static_cast<MockSkillsService*>(
+                  SkillsServiceFactory::GetForProfile(&profile_)),
+              GetServiceStatus())
+      .WillRepeatedly(
+          testing::Return(SkillsService::ServiceStatus::kNotInitialized));
+
+  base::test::TestFuture<std::vector<skills::Skill>> future;
+  handler_->GetInitialUserSkills(base::BindLambdaForTesting(
+      [&future](const std::vector<skills::Skill>& skills) {
+        future.SetValue(skills);
+      }));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Skills.Management.Error", SkillsManagementError::kSkillsServiceNotReady,
+      1);
+}
+
+TEST_F(SkillsPageHandlerTest, Request1PSkills_DownloadAlreadyRunning) {
+  handler_->Request1PSkills();
+  EXPECT_TRUE(handler_->Is1PDownloadTimerRunning());
+
+  // Second request should log kAlreadyRunning
+  handler_->Request1PSkills();
+  histogram_tester_.ExpectBucketCount(
+      "Skills.Management.FirstParty.DownloadRequestStatus",
+      SkillsDownloadRequestStatus::kAlreadyRunning, 1);
 }
 
 }  // namespace

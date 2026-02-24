@@ -85,6 +85,24 @@ enum class SkillsRefineResult {
   kMaxValue = kInvalidRequest,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsRefineResult)
+// LINT.IfChange(SkillsDownloadRequestStatus)
+enum class SkillsDownloadRequestStatus {
+  kSent = 0,
+  kResponseReceived = 1,
+  kAlreadyRunning = 2,
+  kTimedOut = 3,
+  kMaxValue = kTimedOut,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsDownloadRequestStatus)
+
+// LINT.IfChange(SkillsManagementError)
+enum class SkillsManagementError {
+  kTabControllerDNE = 0,
+  kSkillsServiceNotReady = 1,
+  k1pSkillDNE = 2,
+  kMaxValue = k1pSkillDNE,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsManagementError)
 
 // TODO(crbug.com/477385216): Update to use an enum for creation mode.
 // Records user interactions within the Skills Creation or Edit dialogs
@@ -119,6 +137,12 @@ void RecordSkillsFetchResult(SkillsFetchResult result);
 
 // Records the HTTP response code received when downloading skills.
 void RecordSkillsHttpCode(int http_code);
+
+// Records the status of a skills download request.
+void RecordSkillsDownloadRequestStatus(SkillsDownloadRequestStatus status);
+
+// Records errors encountered during skills management operations.
+void RecordSkillsManagementError(SkillsManagementError error);
 
 }  // namespace skills
 
