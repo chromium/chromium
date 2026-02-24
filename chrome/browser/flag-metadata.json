@@ -6740,8 +6740,11 @@
   },
   {
     "name": "notification-collision-management",
-    "owners": [ "thegreenfrog@chromium.org", "bling-gsu-pod@google.com" ],
-    "expiry_milestone": 145
+    "owners": [
+      "gujen@google.com",
+      "bling-mony-pod@google.com"
+    ],
+    "expiry_milestone": 154
   },
   {
     "name": "notification-one-tap-unsubscribe-on-desktop",
