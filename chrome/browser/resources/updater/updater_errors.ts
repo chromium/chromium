@@ -8,23 +8,28 @@ import {loadTimeData} from './i18n_setup.js';
 export function getUpdaterErrorDescription(error: UpdaterError): string {
   switch (error.category) {
     case 1:
-      return getDownloadErrorDescription(error.code);
+      return getDownloadErrorDescription(error.code) ??
+          loadTimeData.getString('updaterError-download');
     case 2:
-      return getUnpackErrorDescription(error.code);
+      return getUnpackErrorDescription(error.code) ??
+          loadTimeData.getString('updaterError-unpack');
     case 3:
-      return getInstallErrorDescription(error.code);
+      return getInstallErrorDescription(error.code) ??
+          loadTimeData.getString('updaterError-install');
     case 4:
-      return getServiceErrorDescription(error.code);
+      return getServiceErrorDescription(error.code) ??
+          loadTimeData.getString('updaterError-unknown');
     case 5:
-      return getUpdateCheckErrorDescription(error.code);
+      return getUpdateCheckErrorDescription(error.code) ??
+          loadTimeData.getString('updaterError-updateCheck');
     case 7:
-      return getInstallerErrorDescription(error.code);
+      return loadTimeData.getString('updaterError-installerFailed');
     default:
       return loadTimeData.getString('updaterError-unknown');
   }
 }
 
-function getDownloadErrorDescription(code: number): string {
+function getDownloadErrorDescription(code: number): string|undefined {
   switch (code) {
     case 0x80072EE2:  // ERROR_WINHTTP_TIMEOUT
     case 0x80072EE7:  // ERROR_WINHTTP_NAME_NOT_RESOLVED
@@ -44,44 +49,40 @@ function getDownloadErrorDescription(code: number): string {
     case 407:
       return loadTimeData.getString('updaterError-accessDenied');
     default:
-      return loadTimeData.getString('updaterError-download');
+      return undefined;
   }
 }
 
-function getUnpackErrorDescription(code: number): string {
+function getUnpackErrorDescription(code: number): string|undefined {
   switch (code) {
     case 2:
     case 4:
       return loadTimeData.getString('updaterError-corrupt');
     default:
-      return loadTimeData.getString('updaterError-unpack');
+      return undefined;
   }
 }
 
-function getInstallErrorDescription(code: number): string {
+function getInstallErrorDescription(code: number): string|undefined {
   switch (code) {
     case 0x80040901:  // GOOPDATEINSTALL_E_INSTALLER_FAILED_START
     case 103:
       return loadTimeData.getString('updaterError-installerFailed');
     default:
-      return loadTimeData.getString('updaterError-install');
+      return undefined;
   }
 }
 
-function getServiceErrorDescription(code: number): string {
+function getServiceErrorDescription(code: number): string|undefined {
   switch (code) {
     case 2:
       return loadTimeData.getString('updaterError-disabled');
     default:
-      return loadTimeData.getString('updaterError-unknown');
+      return undefined;
   }
 }
 
-function getInstallerErrorDescription(_code: number): string {
-  return loadTimeData.getString('updaterError-installerFailed');
-}
-
-function getUpdateCheckErrorDescription(code: number): string {
+function getUpdateCheckErrorDescription(code: number): string|undefined {
   switch (code) {
     case -100:
     case -137:
@@ -89,6 +90,10 @@ function getUpdateCheckErrorDescription(code: number): string {
     case -10007:
       return loadTimeData.getString('updaterError-restricted');
     default:
-      return loadTimeData.getString('updaterError-updateCheck');
+      // Some downloader errors are presented in the updater error check
+      // category if they occurred during the update check instead of the
+      // download. If a more specific update check error could not be
+      // determined, try interpreting the code as a download error.
+      return getDownloadErrorDescription(code);
   }
 }
