@@ -29,7 +29,7 @@
 // This will typecast `dispatcher` to an id<SomeProtocol> (for compile-time
 // type checking), and verify that `dispatcher` is currently dispatching
 // for `protocol` (for run-time verification). If `dispatcher` isn't dispatching
-// for `protocol`, HandlerForProtocol() returns nil and DCHECKs.
+// for `protocol`, HandlerForProtocol() CHECKs.
 //
 #define HandlerForProtocol(Dispatcher, ProtocolName) \
   static_cast<id<ProtocolName>>(                     \
