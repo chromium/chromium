@@ -16,7 +16,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
@@ -30,6 +31,8 @@ import java.util.Collection;
 
 @RunWith(ParameterizedRobolectricTestRunner.class)
 public class BarrierTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @IntDef({ApiCallType.NONE, ApiCallType.CRED_MAN, ApiCallType.FIDO_2_API})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ApiCallType {
@@ -209,7 +212,6 @@ public class BarrierTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.openMocks(this);
         when(mAuthenticationContextProvider.getRequestCallback()).thenReturn(mRequestCallback);
     }
 

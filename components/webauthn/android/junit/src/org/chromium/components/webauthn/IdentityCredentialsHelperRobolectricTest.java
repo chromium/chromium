@@ -17,10 +17,12 @@ import com.google.android.gms.identitycredentials.CreateCredentialRequest;
 import com.google.android.gms.identitycredentials.SignalCredentialStateRequest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.blink.mojom.AllAcceptedCredentialsOptions;
@@ -31,6 +33,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class IdentityCredentialsHelperRobolectricTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final String ORIGIN_STRING = "https://subdomain.coolwebsitekayserispor.com";
     private static final byte[] CLIENT_DATA_HASH = new byte[] {1, 2, 3};
     private static final String REQUEST_JSON = "{\"a\":\"bc\"}";
@@ -43,7 +46,6 @@ public class IdentityCredentialsHelperRobolectricTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.openMocks(this);
 
         Fido2ApiTestHelper.mockFido2CredentialRequestJni();
         Fido2ApiTestHelper.mockClientDataJson(REQUEST_JSON);

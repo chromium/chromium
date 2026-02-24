@@ -34,12 +34,14 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
 
@@ -93,6 +95,7 @@ import org.chromium.mojo_base.mojom.String16;
     WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE
 })
 public class CredManHelperRobolectricTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private CredManHelper mCredManHelper;
     private PublicKeyCredentialCreationOptions mCreationOptions;
     private GetCredentialOptions mRequestOptions;
@@ -127,7 +130,6 @@ public class CredManHelperRobolectricTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.openMocks(this);
         WebContentsStatics.setWebContentsForTesting(null);
 
         mCreationOptions = Fido2ApiTestHelper.createDefaultMakeCredentialOptions();

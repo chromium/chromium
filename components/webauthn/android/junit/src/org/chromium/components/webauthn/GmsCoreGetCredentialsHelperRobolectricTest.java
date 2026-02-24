@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -54,7 +53,7 @@ public class GmsCoreGetCredentialsHelperRobolectricTest {
     @Before
     public void setUp() {
         GmsCoreUtils.setGmsCoreVersionForTesting(244400000);
-        MockitoAnnotations.initMocks(this);
+
         Fido2ApiCallHelper.overrideInstanceForTesting(mFido2ApiCallHelperMock);
         mHelper = GmsCoreGetCredentialsHelper.getInstance();
         mCredentials = new ArrayList<>();
