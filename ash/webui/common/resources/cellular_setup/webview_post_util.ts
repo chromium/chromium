@@ -14,10 +14,7 @@ declare global {
   }
 }
 
-interface CommitEvent extends Event {
-  isTopLevel: boolean;
-  url: string;
-}
+type CommitEvent = chrome.webviewTag.LoadCommitEvent;
 
 /**
  * The script executed in the webview that is expected to be initialized

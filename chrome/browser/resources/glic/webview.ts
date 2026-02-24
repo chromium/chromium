@@ -174,7 +174,7 @@ export class WebviewController {
         this.webview, 'permissionrequest', this.onPermissionRequest.bind(this));
     this.eventTracker.add(
         this.webview, 'unresponsive', this.onUnresponsive.bind(this));
-    this.eventTracker.add(this.webview, 'exit', this.onExit.bind(this) as any);
+    this.eventTracker.add(this.webview, 'exit', this.onExit.bind(this));
 
     this.webview.src = this.persistentState.useLoadUrl();
 
@@ -243,7 +243,7 @@ export class WebviewController {
     }
   }
 
-  private onLoadCommit(e: any): void {
+  private onLoadCommit(e: chrome.webviewTag.LoadCommitEvent): void {
     this.loadCommit(e.url, e.isTopLevel);
   }
 
@@ -251,11 +251,12 @@ export class WebviewController {
     this.webview.focus();
   }
 
-  private onNewWindow(e: Event): void {
-    this.onNewWindowEvent(e as chrome.webviewTag.NewWindowEvent);
+  private onNewWindow(e: chrome.webviewTag.NewWindowEvent): void {
+    this.onNewWindowEvent(e);
   }
 
-  private async onPermissionRequest(e: any): Promise<void> {
+  private async onPermissionRequest(
+      e: chrome.webviewTag.PermissionRequestEvent): Promise<void> {
     e.preventDefault();
     if (!this.host) {
       e.request.deny();
@@ -289,19 +290,18 @@ export class WebviewController {
     this.delegate.webviewUnresponsive();
   }
 
-  private onExit: ChromeEventFunctionType<typeof chrome.webviewTag.exit> =
-      (event) => {
-        chrome.metricsPrivate.recordEnumerationValue(
-            'Glic.Session.WebClientCrash.ExitReason',
-            webviewExitReasonStringToEnum(event.reason),
-            Object.keys(WEBVIEW_EXIT_REASON_MAP).length);
-        if (event.reason !== 'normal') {
-          this.destroyHost(WebClientState.ERROR);
-          chrome.metricsPrivate.recordUserAction('GlicSessionWebClientCrash');
-          console.warn(`webview exit. processID: ${event.processID}, reason: ${
-              event.reason}`);
-        }
-      };
+  private onExit(event: chrome.webviewTag.ExitEvent): void {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Glic.Session.WebClientCrash.ExitReason',
+        webviewExitReasonStringToEnum(event.reason),
+        Object.keys(WEBVIEW_EXIT_REASON_MAP).length);
+    if (event.reason !== 'normal') {
+      this.destroyHost(WebClientState.ERROR);
+      chrome.metricsPrivate.recordUserAction('GlicSessionWebClientCrash');
+      console.warn(`webview exit. processId: ${event.processId}, reason: ${
+          event.reason}`);
+    }
+  }
 
   private loadCommit(url: string, isTopLevel: boolean) {
     if (!isTopLevel) {

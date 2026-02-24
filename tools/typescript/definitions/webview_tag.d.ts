@@ -145,6 +145,8 @@ declare global {
       }
 
       // Manually added to match the webview_tag.js Closure externs file.
+      // The generator produces types that look like typical extension events,
+      // but webview events are exposed differently.
       export interface NewWindowEvent extends Event {
         window: NewWindow;
         targetUrl: string;
@@ -152,6 +154,43 @@ declare global {
         initialHeight: number;
         name: string;
         windowOpenDisposition: string;
+      }
+
+      export interface LoadStartEvent extends Event {
+        url: string;
+        isTopLevel: boolean;
+      }
+
+      export interface LoadCommitEvent extends Event {
+        url: string;
+        isTopLevel: boolean;
+      }
+
+      export interface LoadAbortEvent extends Event {
+        url: string;
+        isTopLevel: boolean;
+        code: number;
+        reason: string;
+      }
+
+      export interface ExitEvent extends Event {
+        processId: number;
+        reason: ExitReason;
+      }
+
+      export interface SizeChangedEvent extends Event {
+        oldHeight: number;
+        oldWidth: number;
+        newHeight: number;
+        newWidth: number;
+      }
+
+      export interface PermissionRequestEvent extends Event {
+        permission: PermissionType;
+        request: MediaPermissionRequest|GeolocationPermissionRequest|
+            PointerLockPermissionRequest|DownloadPermissionRequest|
+            FileSystemPermissionRequest|FullscreenPermissionRequest|
+            LoadPluginPermissionRequest|HidPermissionRequest;
       }
 
       export interface MediaPermissionRequest {
@@ -376,6 +415,8 @@ declare global {
 
       export function terminate(): void;
 
+      // Note that these auto-generated events are incorrect. See the manually
+      // defined events above.
       export const close: ChromeEvent<() => void>;
 
       export const consolemessage: ChromeEvent<

@@ -28,7 +28,9 @@ import {getNonOccludedClipPath} from './utils/clip_path.js';
 
 declare global {
   interface HTMLElementEventMap {
+    'loadstart': chrome.webviewTag.LoadStartEvent;
     'newwindow': chrome.webviewTag.NewWindowEvent;
+    'permissionrequest': chrome.webviewTag.PermissionRequestEvent;
   }
 }
 
@@ -422,17 +424,18 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.isFrameLoading = false;
         this.setIsGhostLoaderVisible(false);
       });
-      this.$.threadFrame.addEventListener('loadstart', async (ev: any) => {
-        if (!ev.isTopLevel) {
-          return;
-        }
-        this.isFrameLoading = true;
-        const {isAiPage} =
-            await this.browserProxy_.handler.isAiPage(ev.url as string);
-        if (this.isFrameLoading && !isAiPage) {
-          this.setIsGhostLoaderVisible(true);
-        }
-      });
+      this.$.threadFrame.addEventListener(
+          'loadstart', async (ev: chrome.webviewTag.LoadStartEvent) => {
+            if (!ev.isTopLevel) {
+              return;
+            }
+            this.isFrameLoading = true;
+            const {isAiPage} =
+                await this.browserProxy_.handler.isAiPage(ev.url);
+            if (this.isFrameLoading && !isAiPage) {
+              this.setIsGhostLoaderVisible(true);
+            }
+          });
     }
 
     // Setup the webview request overrides before loading the first URL.
@@ -639,11 +642,12 @@ export class ContextualTasksAppElement extends CrLitElement {
 
     // Allow downloading files. This is necessary since aim can generate images
     // for download.
-    this.$.threadFrame.addEventListener('permissionrequest', (e: any) => {
-      if (e.permission === 'download') {
-        e.request.allow();
-      }
-    });
+    this.$.threadFrame.addEventListener(
+        'permissionrequest', (e: chrome.webviewTag.PermissionRequestEvent) => {
+          if (e.permission === 'download') {
+            e.request.allow();
+          }
+        });
 
     // Sets the user agent to the default user agent + the contextual tasks
     // custom suffix.
