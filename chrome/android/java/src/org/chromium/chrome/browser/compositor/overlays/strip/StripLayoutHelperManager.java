@@ -1934,51 +1934,53 @@ public class StripLayoutHelperManager
     }
 
     private void updateStripButtons() {
-        boolean isGlicVisible = false;
-        if (mGlicButton != null && !mIsIncognito) {
-            isGlicVisible =
-                    ChromeSharedPreferences.getInstance()
-                            .readBoolean(
-                                    ChromePreferenceKeys.GLIC_BUTTON_PINNED,
-                                    /* defaultValue= */ true);
-        }
+        // Use helper methods to calculate new visibility of strip buttons.
+        boolean newGlicVisibility = shouldGlicBeVisible();
+        boolean newMsbVisibility = shouldMsbBeVisible();
 
-        boolean isMsbVisible = false;
-        if (mModelSelectorButton != null) {
-            mModelSelectorButton.setIncognito(mIsIncognito);
-            if (mTabModelSelector != null) {
-                isMsbVisible = mTabModelSelector.getModel(true).getCount() != 0;
-            }
-        }
-
-        boolean glicChanged = (mGlicButton != null && mGlicButton.isVisible() != isGlicVisible);
+        // Early exit if visibility of both buttons hasn't changed.
+        boolean glicChanged = mGlicButton != null && mGlicButton.isVisible() != newGlicVisibility;
         boolean msbChanged =
-                (mModelSelectorButton != null && mModelSelectorButton.isVisible() != isMsbVisible);
-
+                mModelSelectorButton != null
+                        && mModelSelectorButton.isVisible() != newMsbVisibility;
         if (!glicChanged && !msbChanged) return;
 
-        if (mGlicButton != null) mGlicButton.setVisible(isGlicVisible);
-        if (mModelSelectorButton != null) mModelSelectorButton.setVisible(isMsbVisible);
+        // Set updated visibilities (of both buttons for simplicity).
+        if (mGlicButton != null) mGlicButton.setVisible(newGlicVisibility);
+        if (mModelSelectorButton != null) mModelSelectorButton.setVisible(newMsbVisibility);
 
-        float glicTouchTargetSize = 0.0f;
-        if (isGlicVisible) {
-            // calculated with the same logic as msbTouchTargetSize
-            glicTouchTargetSize =
-                    getGlicButtonWidthWithEndPadding() + getGlicButtonStartPaddingForTouchTarget();
-        }
+        // Calculate layout sizes and update margins. We use (width + end padding + start spacing)
+        // to create a larger gap between buttons to meet touch target size requirements.
+        float glicTouchTargetSize =
+                newGlicVisibility
+                        ? (getGlicButtonWidthWithEndPadding()
+                                + getGlicButtonStartPaddingForTouchTarget())
+                        : 0.0f;
+        float msbTouchTargetSize =
+                newMsbVisibility
+                        ? (getModelSelectorButtonWidthWithEndPadding()
+                                + getMsbStartPaddingForTouchTarget())
+                        : 0.0f;
 
-        float msbTouchTargetSize = 0.0f;
-        if (isMsbVisible) {
-            // msbTouchTargetSize = msbEndPadding(8dp) + msbWidth(32dp) + msbStartPadding(8dp to
-            // create more gap between MSB and NTB so there is enough space for touch target).
-            msbTouchTargetSize =
-                    getModelSelectorButtonWidthWithEndPadding()
-                            + getMsbStartPaddingForTouchTarget();
-        }
-
+        // In Incognito, glic is always hidden so use touch target size of 0.
         mNormalHelper.updateEndMarginForStripButtons(glicTouchTargetSize, msbTouchTargetSize);
         mIncognitoHelper.updateEndMarginForStripButtons(
-                /* glicTouchTargetSize= */ 0, msbTouchTargetSize);
+                /* glicTouchTargetSize= */ 0.0f, msbTouchTargetSize);
+    }
+
+    private boolean shouldGlicBeVisible() {
+        if (mGlicButton == null || mIsIncognito) return false;
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.GLIC_BUTTON_PINNED, true);
+    }
+
+    private boolean shouldMsbBeVisible() {
+        if (mModelSelectorButton == null) return false;
+
+        // Sync the incognito state whenever the button exists
+        mModelSelectorButton.setIncognito(mIsIncognito);
+
+        return mTabModelSelector != null && mTabModelSelector.getModel(true).getCount() != 0;
     }
 
     /**
