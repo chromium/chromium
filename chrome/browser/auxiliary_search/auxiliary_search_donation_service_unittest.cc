@@ -170,7 +170,8 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchUsesLastTime) {
           RunOnceCallback<2>(ResultStatus::kSuccess, CreateVisitAggregates()));
 
   // First fetch returns the fake visit time as metadata. The second fetch
-  // should use the provided fake visit time.
+  // should use the provided fake visit time (plus 1us to ensure that the same
+  // entry isn't fetched twice).
   const base::Time fake_visit_time = base::Time::Now() - base::Hours(1);
   base::Time begin_time;
   {
@@ -191,7 +192,7 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchUsesLastTime) {
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
   task_environment().FastForwardBy(service.GetDonationDelay());
 
-  EXPECT_EQ(begin_time, fake_visit_time);
+  EXPECT_EQ(begin_time, fake_visit_time + base::Microseconds(1));
 }
 
 TEST_F(AuxiliarySearchDonationServiceTest, FetchDoesNotFetchTooFarBack) {
@@ -238,7 +239,7 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchDoesNotUpdateBeginTimeOnError) {
 
   // First fetch returns the fake visit time as metadata. The second fetch
   // returns an error. The third fetch should still use the fake visit time
-  // from the first fetch.
+  // from the first fetch (plus 1us).
   const base::Time fake_visit_time = base::Time::Now() - base::Hours(1);
   base::Time begin_time;
   {
@@ -265,7 +266,7 @@ TEST_F(AuxiliarySearchDonationServiceTest, FetchDoesNotUpdateBeginTimeOnError) {
   service.OnPageContentAnnotated(CreateLocalVisit(), CreateAnnotationsResult());
   task_environment().FastForwardBy(service.GetDonationDelay());
 
-  EXPECT_EQ(begin_time, fake_visit_time);
+  EXPECT_EQ(begin_time, fake_visit_time + base::Microseconds(1));
 }
 
 TEST_F(AuxiliarySearchDonationServiceTest, LastFetchTimePersistsInPrefs) {
@@ -274,7 +275,7 @@ TEST_F(AuxiliarySearchDonationServiceTest, LastFetchTimePersistsInPrefs) {
           RunOnceCallback<2>(ResultStatus::kSuccess, CreateVisitAggregates()));
 
   // First fetch returns the fake visit time as metadata. The second fetch
-  // should use the provided fake visit time.
+  // should use the provided fake visit time (plus 1us).
   const base::Time fake_visit_time = base::Time::Now() - base::Hours(1);
   base::Time begin_time;
   {
@@ -307,7 +308,7 @@ TEST_F(AuxiliarySearchDonationServiceTest, LastFetchTimePersistsInPrefs) {
     task_environment().FastForwardBy(service.GetDonationDelay());
   }
 
-  EXPECT_EQ(begin_time, fake_visit_time);
+  EXPECT_EQ(begin_time, fake_visit_time + base::Microseconds(1));
 }
 
 TEST_F(AuxiliarySearchDonationServiceTest,

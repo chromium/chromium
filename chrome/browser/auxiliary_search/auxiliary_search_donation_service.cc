@@ -85,13 +85,17 @@ AuxiliarySearchDonationService::GetHistoryAgeThresholdForTesting() const {
 }
 
 void AuxiliarySearchDonationService::FetchHistoryAndDonate() {
-  // Only fetch history entries newer than the most recent visit from the
-  // previous fetch. If that is too old (more than `kHistoryAgeThreshold` ago),
-  // then start from `kHistoryAgeThreshold`.
+  // Only fetch history entries strictly newer than the most recent visit from
+  // the previous fetch. If that is too old (more than `kHistoryAgeThreshold`
+  // ago), then start from `kHistoryAgeThreshold`.
   const base::Time threshold_time = base::Time::Now() - kHistoryAgeThreshold;
+  // `FetchAndRankHelper` treats `begin_time` as inclusive, so add the smallest
+  // possible time unit (1us) to the previous donation time to ensure we don't
+  // fetch the same entry twice.
   const base::Time begin_time =
       std::max(pref_service_->GetTime(
-                   prefs::kAuxiliarySearchLastDonatedHistoryEntryVisitTime),
+                   prefs::kAuxiliarySearchLastDonatedHistoryEntryVisitTime) +
+                   base::Microseconds(1),
                threshold_time);
 
   scoped_refptr<FetchAndRankHelper> helper =
