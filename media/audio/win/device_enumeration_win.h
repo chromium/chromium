@@ -8,6 +8,7 @@
 #include <string>
 
 #include "media/audio/audio_device_name.h"
+#include "media/audio/audio_manager.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -19,8 +20,14 @@ namespace media {
 // - device_name: "Microphone (Realtek High Definition Audio)".
 // - unique_id: "{0.0.1.00000000}.{8db6020f-18e3-4f25-b6f5-7726c9122574}"
 // This method must be called from a COM thread using MTA.
-bool GetInputDeviceNamesWin(media::AudioDeviceNames* device_names);
-bool GetOutputDeviceNamesWin(media::AudioDeviceNames* device_names);
+bool GetInputDeviceNamesWin(
+    media::AudioDeviceNames* device_names,
+    const media::AudioManager::LogCallback& log_callback =
+        media::AudioManager::LogCallback());
+bool GetOutputDeviceNamesWin(
+    media::AudioDeviceNames* device_names,
+    const media::AudioManager::LogCallback& log_callback =
+        media::AudioManager::LogCallback());
 
 // Returns a list of audio output device structures (name and
 // unique device ID) using the WaveIn API which is supported on

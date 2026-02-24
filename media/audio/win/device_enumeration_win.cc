@@ -15,6 +15,8 @@
 #include <wrl/client.h>
 
 #include "base/logging.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_co_mem.h"
@@ -76,16 +78,32 @@ std::string GetDeviceInstanceId(IMMDevice* audio_device,
   return base::WideToUTF8(instance_id.get().pwszVal);
 }
 
+// Converts a COM error into a human-readable string.
+std::string ErrorToString(HRESULT hresult) {
+  return CoreAudioUtil::ErrorToString(hresult);
+}
+
 }  // namespace
 
-static bool GetDeviceNamesWinImpl(EDataFlow data_flow,
-                                  AudioDeviceNames* device_names) {
+static bool GetDeviceNamesWinImpl(
+    EDataFlow data_flow,
+    AudioDeviceNames* device_names,
+    const media::AudioManager::LogCallback& log_callback) {
+  const char* func_name = __func__;
+  auto send_log = [&](const std::string& message) {
+    if (!log_callback.is_null()) {
+      log_callback.Run(base::StrCat({func_name, message}));
+    }
+  };
+
   // It is assumed that this method is called from a COM thread, i.e.,
   // CoInitializeEx() is not called here again to avoid STA/MTA conflicts.
   Microsoft::WRL::ComPtr<IMMDeviceEnumerator> enumerator =
       CoreAudioUtil::CreateDeviceEnumerator();
   if (!enumerator) {
-    LOG(WARNING) << "Failed to create IMMDeviceEnumerator: ";
+    send_log(
+        " => (ERROR: CreateDeviceEnumerator=[Failed to create "
+        "IMMDeviceEnumerator])");
     return false;
   }
 
@@ -94,30 +112,45 @@ static bool GetDeviceNamesWinImpl(EDataFlow data_flow,
   Microsoft::WRL::ComPtr<IMMDeviceCollection> collection;
   HRESULT hr = enumerator->EnumAudioEndpoints(data_flow, DEVICE_STATE_ACTIVE,
                                               &collection);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
+    send_log(
+        base::StrCat({" => (ERROR: IMMDeviceCollection::EnumAudioEndpoints=[",
+                      ErrorToString(hr), "])"}));
     return false;
+  }
 
   // Retrieve the number of active devices.
   UINT number_of_active_devices = 0;
   collection->GetCount(&number_of_active_devices);
-  if (number_of_active_devices == 0)
+  if (number_of_active_devices == 0) {
+    send_log(" => (WARNING: no active devices are found)");
     return true;
+  }
 
   AudioDeviceName device;
 
-  // Loop over all active devices and add friendly name and
-  // unique ID to the |device_names| list.
+  // Loop over all active devices and add friendly name and unique ID to the
+  // |device_names| list. We only add the device if both the unique ID and the
+  // friendly name can be successfully retrieved.
   for (UINT i = 0; i < number_of_active_devices; ++i) {
     // Retrieve unique name of endpoint device.
     // Example: "{0.0.1.00000000}.{8db6020f-18e3-4f25-b6f5-7726c9122574}".
     Microsoft::WRL::ComPtr<IMMDevice> audio_device;
     hr = collection->Item(i, &audio_device);
-    if (FAILED(hr))
+    if (FAILED(hr)) {
+      send_log(base::StrCat({" => (ERROR: IMMDeviceCollection::Item=[",
+                             ErrorToString(hr), "])"}));
       continue;
+    }
 
     // Store the unique name.
     ScopedCoMem<WCHAR> endpoint_device_id;
-    audio_device->GetId(&endpoint_device_id);
+    hr = audio_device->GetId(&endpoint_device_id);
+    if (FAILED(hr)) {
+      send_log(base::StrCat(
+          {" => (ERROR: IMMDevice::GetId=[", ErrorToString(hr), "])"}));
+      continue;
+    }
     device.unique_id =
         base::WideToUTF8(static_cast<WCHAR*>(endpoint_device_id));
 
@@ -125,23 +158,35 @@ static bool GetDeviceNamesWinImpl(EDataFlow data_flow,
     // Example: "Microphone (Realtek High Definition Audio)".
     Microsoft::WRL::ComPtr<IPropertyStore> properties;
     hr = audio_device->OpenPropertyStore(STGM_READ, &properties);
-    if (SUCCEEDED(hr)) {
-      ScopedPropVariant friendly_name;
-      hr = properties->GetValue(PKEY_Device_FriendlyName,
-                                friendly_name.Receive());
+    if (FAILED(hr)) {
+      send_log(base::StrCat({" => (ERROR: IMMDevice::OpenPropertyStore=[",
+                             ErrorToString(hr), "])"}));
+      continue;
+    }
 
-      // Store the user-friendly name.
-      if (SUCCEEDED(hr) && friendly_name.get().vt == VT_LPWSTR &&
-          friendly_name.get().pwszVal) {
-        device.device_name = base::WideToUTF8(friendly_name.get().pwszVal);
-      }
+    ScopedPropVariant friendly_name;
+    hr =
+        properties->GetValue(PKEY_Device_FriendlyName, friendly_name.Receive());
+    if (FAILED(hr)) {
+      send_log(base::StrCat(
+          {" => (ERROR: IPropertyStore::GetValue=[", ErrorToString(hr), "])"}));
+      continue;
+    }
 
-      // Append a suffix to USB and Bluetooth devices.  For USB devices, the
-      // suffix contains the vendor id and product id using the format
-      // (VID:PID). For example: (045e:0810).  For Bluetooth devices, the suffix
-      // is (Bluetooth).
-      const std::string device_instance_id =
-          GetDeviceInstanceId(audio_device.Get(), enumerator.Get());
+    // Store the user-friendly name.
+    if (friendly_name.get().vt == VT_LPWSTR && friendly_name.get().pwszVal) {
+      device.device_name = base::WideToUTF8(friendly_name.get().pwszVal);
+    }
+
+    // Append a suffix to USB and Bluetooth devices.  For USB devices, the
+    // suffix contains the vendor id and product id using the format
+    // (VID:PID). For example: (045e:0810).  For Bluetooth devices, the suffix
+    // is (Bluetooth).
+    const std::string device_instance_id =
+        GetDeviceInstanceId(audio_device.Get(), enumerator.Get());
+    if (device_instance_id.empty()) {
+      send_log(" => (ERROR: failed to get instance ID)");
+    } else {
       std::string suffix = GetDeviceSuffixWin(device_instance_id);
       if (!suffix.empty())
         device.device_name += suffix;
@@ -149,6 +194,13 @@ static bool GetDeviceNamesWinImpl(EDataFlow data_flow,
 
     // Add combination of user-friendly and unique name to the output list.
     device_names->push_back(device);
+  }
+
+  if (device_names->size() != number_of_active_devices) {
+    send_log(base::StrCat({" => (WARNING: device count mismatch, expected=[",
+                           base::NumberToString(number_of_active_devices),
+                           "], actual=[",
+                           base::NumberToString(device_names->size()), "])"}));
   }
 
   return true;
@@ -197,12 +249,16 @@ static bool GetDeviceNamesWinXPImpl(AudioDeviceNames* device_names) {
   return true;
 }
 
-bool GetInputDeviceNamesWin(AudioDeviceNames* device_names) {
-  return GetDeviceNamesWinImpl(eCapture, device_names);
+bool GetInputDeviceNamesWin(
+    AudioDeviceNames* device_names,
+    const media::AudioManager::LogCallback& log_callback) {
+  return GetDeviceNamesWinImpl(eCapture, device_names, log_callback);
 }
 
-bool GetOutputDeviceNamesWin(AudioDeviceNames* device_names) {
-  return GetDeviceNamesWinImpl(eRender, device_names);
+bool GetOutputDeviceNamesWin(
+    AudioDeviceNames* device_names,
+    const media::AudioManager::LogCallback& log_callback) {
+  return GetDeviceNamesWinImpl(eRender, device_names, log_callback);
 }
 
 bool GetInputDeviceNamesWinXP(AudioDeviceNames* device_names) {

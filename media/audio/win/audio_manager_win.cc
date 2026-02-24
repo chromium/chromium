@@ -172,9 +172,9 @@ void AudioManagerWin::GetAudioDeviceNamesImpl(bool input,
   DCHECK(device_names->empty());
   // Enumerate all active audio-endpoint capture devices.
   if (input)
-    GetInputDeviceNamesWin(device_names);
+    GetInputDeviceNamesWin(device_names, GetEnumerationLogCallback());
   else
-    GetOutputDeviceNamesWin(device_names);
+    GetOutputDeviceNamesWin(device_names, GetEnumerationLogCallback());
 
   if (!device_names->empty()) {
     device_names->push_front(AudioDeviceName::CreateCommunications());
