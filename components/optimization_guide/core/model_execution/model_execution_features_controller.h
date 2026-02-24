@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_FEATURES_CONTROLLER_H_
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -57,6 +58,8 @@ class ModelExecutionFeaturesController
     // enums.xml.
     kMaxValue = kNotVisibleHardwareUnsupported
   };
+  using HistorySearchVisibilityCallback =
+      base::RepeatingCallback<SettingsVisibilityResult()>;
 
   enum class DogfoodStatus {
     DOGFOOD,
@@ -67,10 +70,10 @@ class ModelExecutionFeaturesController
   ModelExecutionFeaturesController(
       PrefService* browser_context_profile_service,
       signin::IdentityManager* identity_manager,
-      PrefService* local_state,
       policy::ManagementService* management_service,
       DogfoodStatus dogfood_status,
-      bool is_official_build);
+      bool is_official_build,
+      HistorySearchVisibilityCallback history_search_visibility_callback);
 
   ~ModelExecutionFeaturesController() override;
 
@@ -104,6 +107,10 @@ class ModelExecutionFeaturesController
   // model execution. This does not perform any feature related checks such as
   // allowed by enterprise policy.
   bool ShouldModelExecutionBeAllowedForUser() const;
+
+  // Defines when History search setting is visible.  Returns
+  // kNotVisibleHardwareUnsupported.
+  static HistorySearchVisibilityCallback HistorySearchNotSupported();
 
   // Adds `observer` which can observe the change in feature settings.
   void AddObserver(SettingsEnabledObserver* observer);
@@ -180,11 +187,6 @@ class ModelExecutionFeaturesController
   // checks pass, or invalid result indicating the reason if checks fail.
   UserValidityResult PerformSigninChecks() const;
 
-  // Performs settings visibility checks specific to History Search. If passed,
-  // `kUnknown` is returned. Otherwise, the corresponding enum for the failed
-  // check is returned (i.e. kNotVisibleXXXX).
-  SettingsVisibilityResult ShouldHideHistorySearch() const;
-
   // Initializes the state of the different features at startup.
   void InitializeFeatureSettings();
 
@@ -214,14 +216,13 @@ class ModelExecutionFeaturesController
 
   base::ObserverList<SettingsEnabledObserver> observers_;
 
-  // The PrefService is guaranteed to outlive `this`.
-  raw_ptr<PrefService> local_state_;
-
   // Set of features that are visible to unsigned users.
   base::flat_set<UserVisibleFeatureKey> features_allowed_for_unsigned_user_;
 
   // To check if the user is enterprise or not.
   raw_ptr<policy::ManagementService> management_service_;
+
+  HistorySearchVisibilityCallback history_search_visibility_callback_;
 
   // Whether this client is a (likely) dogfood client.
   const DogfoodStatus dogfood_status_;

@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/strings/strcat.h"
+#include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/channel_info.h"
 #include "chrome_model_quality_logs_uploader_service.h"
@@ -18,9 +19,11 @@
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/optimization_guide_buildflags.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/service/variations_service.h"
@@ -62,6 +65,7 @@ ChromeModelQualityLogsUploaderService::ChromeModelQualityLogsUploaderService(
     base::WeakPtr<ModelExecutionFeaturesController>
         model_execution_feature_controller)
     : ModelQualityLogsUploaderService(url_loader_factory, pref_service),
+      local_state_(*pref_service),
       model_execution_feature_controller_(model_execution_feature_controller) {}
 
 ChromeModelQualityLogsUploaderService::
@@ -121,7 +125,8 @@ void ChromeModelQualityLogsUploaderService::SetSystemMetadata(
   }
   // Remove identifiers for privacy reasons.
   logging_metadata->mutable_system_profile()->clear_client_uuid();
-  logging_metadata->mutable_system_profile()->mutable_cloned_install_info()
+  logging_metadata->mutable_system_profile()
+      ->mutable_cloned_install_info()
       ->clear_cloned_from_client_id();
 
   auto* variations_service = g_browser_process->variations_service();
@@ -129,6 +134,32 @@ void ChromeModelQualityLogsUploaderService::SetSystemMetadata(
     logging_metadata->set_is_likely_dogfood_client(
         variations_service->IsLikelyDogfoodClient());
   }
+}
+
+proto::PerformanceClass
+ChromeModelQualityLogsUploaderService::GetPerformanceClass() {
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+  auto performance_class = PerformanceClassFromPref(*local_state_);
+  switch (performance_class) {
+    case OnDeviceModelPerformanceClass::kVeryLow:
+      return proto::PERFORMANCE_CLASS_VERY_LOW;
+    case OnDeviceModelPerformanceClass::kLow:
+      return proto::PERFORMANCE_CLASS_LOW;
+    case OnDeviceModelPerformanceClass::kMedium:
+      return proto::PERFORMANCE_CLASS_MEDIUM;
+    case OnDeviceModelPerformanceClass::kHigh:
+      return proto::PERFORMANCE_CLASS_HIGH;
+    case OnDeviceModelPerformanceClass::kVeryHigh:
+      return proto::PERFORMANCE_CLASS_VERY_HIGH;
+    case OnDeviceModelPerformanceClass::kUnknown:
+    case OnDeviceModelPerformanceClass::kError:
+    case OnDeviceModelPerformanceClass::kServiceCrash:
+    case OnDeviceModelPerformanceClass::kGpuBlocked:
+    case OnDeviceModelPerformanceClass::kFailedToLoadLibrary:
+      return proto::PERFORMANCE_CLASS_UNSPECIFIED;
+  }
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+  return proto::PERFORMANCE_CLASS_UNSPECIFIED;
 }
 
 }  // namespace optimization_guide

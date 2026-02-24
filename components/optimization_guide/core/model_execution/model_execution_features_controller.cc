@@ -6,17 +6,16 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
-#include "components/component_updater/pref_names.h"
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/feature_registry/settings_ui_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
-#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -24,7 +23,6 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "third_party/tflite/buildflags.h"
 
 namespace optimization_guide {
 
@@ -67,16 +65,17 @@ bool CanUseModelExecutionFeatures(signin::IdentityManager* identity_manager) {
 ModelExecutionFeaturesController::ModelExecutionFeaturesController(
     PrefService* browser_context_profile_service,
     signin::IdentityManager* identity_manager,
-    PrefService* local_state,
     policy::ManagementService* management_service,
     DogfoodStatus dogfood_status,
-    bool is_official_build)
+    bool is_official_build,
+    HistorySearchVisibilityCallback history_search_visibility_callback)
     : browser_context_profile_service_(browser_context_profile_service),
       identity_manager_(identity_manager),
-      local_state_(local_state),
       features_allowed_for_unsigned_user_(
           features::internal::GetAllowedFeaturesForUnsignedUser()),
       management_service_(management_service),
+      history_search_visibility_callback_(
+          std::move(history_search_visibility_callback)),
       dogfood_status_(dogfood_status),
       is_official_build_(is_official_build) {
   CHECK(browser_context_profile_service_);
@@ -238,24 +237,13 @@ bool ModelExecutionFeaturesController::ShouldModelExecutionBeAllowedForUser()
   return PerformSigninChecks() == UserValidityResult::kValid;
 }
 
-ModelExecutionFeaturesController::SettingsVisibilityResult
-ModelExecutionFeaturesController::ShouldHideHistorySearch() const {
-#if !BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-  return SettingsVisibilityResult::kNotVisibleHardwareUnsupported;
-#else
-  // Component updates policy check.
-  if (!local_state_->GetBoolean(::prefs::kComponentUpdatesEnabled)) {
-    return SettingsVisibilityResult::kNotVisibleEnterprisePolicy;
-  }
-
-  // Performance class check.
-  if (!IsPerformanceClassCompatible(
-          features::internal::kPerformanceClassListForHistorySearch.Get(),
-          PerformanceClassFromPref(*local_state_))) {
-    return SettingsVisibilityResult::kNotVisibleHardwareUnsupported;
-  }
-  return SettingsVisibilityResult::kUnknown;
-#endif
+// static
+ModelExecutionFeaturesController::HistorySearchVisibilityCallback
+ModelExecutionFeaturesController::HistorySearchNotSupported() {
+  return base::BindRepeating([]() {
+    return ModelExecutionFeaturesController::SettingsVisibilityResult::
+        kNotVisibleHardwareUnsupported;
+  });
 }
 
 ModelExecutionFeaturesController::SettingsVisibilityResult
@@ -280,7 +268,7 @@ ModelExecutionFeaturesController::GetSettingsVisibility(
 
   // Check feature-specific requirements.
   if (feature == UserVisibleFeatureKey::kHistorySearch) {
-    SettingsVisibilityResult result = ShouldHideHistorySearch();
+    SettingsVisibilityResult result = history_search_visibility_callback_.Run();
     if (result != SettingsVisibilityResult::kUnknown) {
       return result;
     }

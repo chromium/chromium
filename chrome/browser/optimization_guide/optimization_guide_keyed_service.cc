@@ -56,6 +56,7 @@
 #include "components/optimization_guide/core/hints/top_host_provider.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/model_execution/model_execution_fetcher.h"
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
@@ -74,6 +75,7 @@
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/optimization_guide_buildflags.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
@@ -170,6 +172,29 @@ class FetcherDelegate : public ModelExecutionManager::Delegate {
   raw_ptr<content::BrowserContext> browser_context_;
 };
 #endif
+
+ModelExecutionFeaturesController::SettingsVisibilityResult
+ShouldHideHistorySearch(PrefService* local_state) {
+  using SettingsVisibilityResult =
+      ModelExecutionFeaturesController::SettingsVisibilityResult;
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+  // Component updates policy check.
+  if (!local_state->GetBoolean(::prefs::kComponentUpdatesEnabled)) {
+    return SettingsVisibilityResult::kNotVisibleEnterprisePolicy;
+  }
+
+  // Performance class check.
+  if (!IsPerformanceClassCompatible(
+          optimization_guide::features::internal::
+              kPerformanceClassListForHistorySearch.Get(),
+          optimization_guide::PerformanceClassFromPref(*local_state))) {
+    return SettingsVisibilityResult::kNotVisibleHardwareUnsupported;
+  }
+  return SettingsVisibilityResult::kUnknown;
+#else
+  return SettingsVisibilityResult::kNotVisibleHardwareUnsupported;
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+}
 
 }  // namespace
 
@@ -352,9 +377,10 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
     model_execution_features_controller_ =
         std::make_unique<optimization_guide::ModelExecutionFeaturesController>(
             profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
-            g_browser_process->local_state(),
             policy::ManagementServiceFactory::GetForProfile(profile),
-            dogfood_status, is_official_build);
+            dogfood_status, is_official_build,
+            base::BindRepeating(&ShouldHideHistorySearch,
+                                g_browser_process->local_state()));
 
     // Don't create logs uploader service when feature is disabled. All the
     // logs upload get route through this service which exists one per

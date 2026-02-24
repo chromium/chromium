@@ -10,6 +10,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/service/test_variations_service.h"
@@ -25,6 +27,9 @@ class ChromeModelQualityLogsUploaderServiceTest : public testing::Test {
   ChromeModelQualityLogsUploaderServiceTest()
       : enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {
     TestVariationsService::RegisterPrefs(pref_service_.registry());
+    model_execution::prefs::RegisterLocalStatePrefs(pref_service_.registry());
+    UpdatePerformanceClassPref(&pref_service_,
+                               OnDeviceModelPerformanceClass::kVeryHigh);
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         &pref_service_, &enabled_state_provider_,
         /*backup_registry_key=*/std::wstring(),
@@ -94,12 +99,14 @@ TEST_F(ChromeModelQualityLogsUploaderServiceTest,
   ChromeModelQualityLogsUploaderService service = MakeUploaderService();
   proto::LoggingMetadata metadata;
   metadata.mutable_system_profile()->set_client_uuid("123");
-  metadata.mutable_system_profile()->mutable_cloned_install_info()
+  metadata.mutable_system_profile()
+      ->mutable_cloned_install_info()
       ->set_cloned_from_client_id(123);
   service.SetSystemMetadata(&metadata);
   EXPECT_FALSE(metadata.system_profile().has_client_uuid());
-  EXPECT_FALSE(metadata.system_profile().cloned_install_info().has_cloned_from_client_id());
+  EXPECT_FALSE(metadata.system_profile()
+                   .cloned_install_info()
+                   .has_cloned_from_client_id());
 }
-
 
 }  // namespace optimization_guide

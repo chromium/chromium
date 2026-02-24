@@ -27,6 +27,7 @@ source_set("optimization_guide") {
     "//chrome/browser/navigation_predictor",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
+    "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/optimization_guide_internals/webui",

@@ -5,18 +5,17 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/component_updater/pref_names.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/core/feature_registry/settings_ui_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
-#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
@@ -31,7 +30,6 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/tflite/buildflags.h"
 
 namespace optimization_guide {
 
@@ -55,22 +53,21 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
 
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    local_state_ = std::make_unique<TestingPrefServiceSimple>();
     prefs::RegisterProfilePrefs(pref_service_->registry());
     model_execution::prefs::RegisterProfilePrefs(pref_service_->registry());
-    model_execution::prefs::RegisterLocalStatePrefs(local_state_->registry());
-    local_state_->registry()->RegisterBooleanPref(
-        ::prefs::kComponentUpdatesEnabled, true, PrefRegistry::LOSSY_PREF);
   }
 
   void CreateController(
       ModelExecutionFeaturesController::DogfoodStatus dogfood_status =
           ModelExecutionFeaturesController::DogfoodStatus::NON_DOGFOOD,
-      bool is_official_build = true) {
+      bool is_official_build = true,
+      ModelExecutionFeaturesController::HistorySearchVisibilityCallback
+          history_search_visibility_callback =
+              ModelExecutionFeaturesController::HistorySearchNotSupported()) {
     controller_ = std::make_unique<ModelExecutionFeaturesController>(
         pref_service_.get(), identity_test_env_.identity_manager(),
-        local_state_.get(), management_service(), dogfood_status,
-        is_official_build);
+        management_service(), dogfood_status, is_official_build,
+        std::move(history_search_visibility_callback));
   }
 
   void EnableSignIn() {
@@ -121,7 +118,6 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
   PrefService* pref_service() { return pref_service_.get(); }
-  PrefService* local_state() { return local_state_.get(); }
   policy::ManagementService* management_service() {
     return &management_service_;
   }
@@ -130,7 +126,6 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  std::unique_ptr<TestingPrefServiceSimple> local_state_;
   TestManagementService management_service_;
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
@@ -518,53 +513,28 @@ TEST_F(
       controller()->ShouldFeatureBeCurrentlyAllowedForLogging(metadata));
 }
 
-TEST_F(ModelExecutionFeaturesControllerTest,
-       HistorySearchVisibilityWithXNNPACK) {
+TEST_F(ModelExecutionFeaturesControllerTest, HistorySearchNotVisibleByDefault) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {features::internal::kHistorySearchSettingsVisibility}, {});
   CreateController();
-
   EnableSignIn();
-
-#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-  EXPECT_EQ(ModelExecutionFeaturesController::SettingsVisibilityResult::
-                kVisibleFieldTrialEnabled,
-            controller()->GetSettingsVisibility(
-                UserVisibleFeatureKey::kHistorySearch));
-#else
   EXPECT_EQ(ModelExecutionFeaturesController::SettingsVisibilityResult::
                 kNotVisibleHardwareUnsupported,
             controller()->GetSettingsVisibility(
                 UserVisibleFeatureKey::kHistorySearch));
-#endif
 }
 
-#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-TEST_F(ModelExecutionFeaturesControllerTest,
-       HistorySearchVisibilityWithPerformanceClass) {
+TEST_F(ModelExecutionFeaturesControllerTest, HistorySearchVisible) {
   base::test::ScopedFeatureList scoped_feature_list;
-
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{features::internal::kHistorySearchSettingsVisibility,
-        {{"PerformanceClassListForHistorySearch", "3,4,5"}}}},
-      {});
-
-  CreateController();
-
+  scoped_feature_list.InitWithFeatures(
+      {features::internal::kHistorySearchSettingsVisibility}, {});
+  CreateController(ModelExecutionFeaturesController::DogfoodStatus::NON_DOGFOOD,
+                   /*is_official_build=*/true, base::BindRepeating([]() {
+                     return ModelExecutionFeaturesController::
+                         SettingsVisibilityResult::kUnknown;
+                   }));
   EnableSignIn();
-
-  // Not visible - performance class not in the list
-  UpdatePerformanceClassPref(local_state(),
-                             OnDeviceModelPerformanceClass::kVeryLow);
-  EXPECT_EQ(ModelExecutionFeaturesController::SettingsVisibilityResult::
-                kNotVisibleHardwareUnsupported,
-            controller()->GetSettingsVisibility(
-                UserVisibleFeatureKey::kHistorySearch));
-
-  // Visible - performance class in the list.
-  UpdatePerformanceClassPref(local_state(),
-                             OnDeviceModelPerformanceClass::kMedium);
   EXPECT_EQ(ModelExecutionFeaturesController::SettingsVisibilityResult::
                 kVisibleFieldTrialEnabled,
             controller()->GetSettingsVisibility(
@@ -572,29 +542,20 @@ TEST_F(ModelExecutionFeaturesControllerTest,
 }
 
 TEST_F(ModelExecutionFeaturesControllerTest,
-       HistorySearchSettingsIsHiddenWithComponentUpdatesDisabled) {
+       HistorySearchNotVisibleByCallback) {
   base::test::ScopedFeatureList scoped_feature_list;
-
   scoped_feature_list.InitWithFeatures(
       {features::internal::kHistorySearchSettingsVisibility}, {});
-
-  CreateController();
-
+  CreateController(ModelExecutionFeaturesController::DogfoodStatus::NON_DOGFOOD,
+                   /*is_official_build=*/true, base::BindRepeating([]() {
+                     return ModelExecutionFeaturesController::
+                         SettingsVisibilityResult::kNotVisibleEnterprisePolicy;
+                   }));
   EnableSignIn();
-
-  // Visible by default since the feature is on.
-  EXPECT_EQ(ModelExecutionFeaturesController::SettingsVisibilityResult::
-                kVisibleFieldTrialEnabled,
-            controller()->GetSettingsVisibility(
-                UserVisibleFeatureKey::kHistorySearch));
-
-  // Not visible if component updates are disabled.
-  local_state()->SetBoolean(::prefs::kComponentUpdatesEnabled, false);
   EXPECT_EQ(ModelExecutionFeaturesController::SettingsVisibilityResult::
                 kNotVisibleEnterprisePolicy,
             controller()->GetSettingsVisibility(
                 UserVisibleFeatureKey::kHistorySearch));
 }
-#endif
 
 }  // namespace optimization_guide

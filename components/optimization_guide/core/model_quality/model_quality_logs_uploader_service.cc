@@ -24,6 +24,7 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/optimization_guide_buildflags.h"
+#include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -35,10 +36,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-
-#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
-#include "components/optimization_guide/core/model_execution/performance_class.h"
-#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 
 namespace optimization_guide {
 
@@ -117,31 +114,6 @@ void OnURLLoadComplete(
                               ModelQualityLogsUploadStatus::kUploadSuccessful);
 }
 
-proto::PerformanceClass GetPerformanceClass(PrefService* local_state) {
-#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
-  auto performance_class = PerformanceClassFromPref(*local_state);
-  switch (performance_class) {
-    case OnDeviceModelPerformanceClass::kVeryLow:
-      return proto::PERFORMANCE_CLASS_VERY_LOW;
-    case OnDeviceModelPerformanceClass::kLow:
-      return proto::PERFORMANCE_CLASS_LOW;
-    case OnDeviceModelPerformanceClass::kMedium:
-      return proto::PERFORMANCE_CLASS_MEDIUM;
-    case OnDeviceModelPerformanceClass::kHigh:
-      return proto::PERFORMANCE_CLASS_HIGH;
-    case OnDeviceModelPerformanceClass::kVeryHigh:
-      return proto::PERFORMANCE_CLASS_VERY_HIGH;
-    case OnDeviceModelPerformanceClass::kUnknown:
-    case OnDeviceModelPerformanceClass::kError:
-    case OnDeviceModelPerformanceClass::kServiceCrash:
-    case OnDeviceModelPerformanceClass::kGpuBlocked:
-    case OnDeviceModelPerformanceClass::kFailedToLoadLibrary:
-      return proto::PERFORMANCE_CLASS_UNSPECIFIED;
-  }
-#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
-  return proto::PERFORMANCE_CLASS_UNSPECIFIED;
-}
-
 }  // namespace
 
 ModelQualityLogsUploaderService::ModelQualityLogsUploaderService(
@@ -166,6 +138,10 @@ bool ModelQualityLogsUploaderService::CanUploadLogs(
 
 void ModelQualityLogsUploaderService::SetSystemMetadata(
     proto::LoggingMetadata* logging_metadata) {}
+
+proto::PerformanceClass ModelQualityLogsUploaderService::GetPerformanceClass() {
+  return proto::PERFORMANCE_CLASS_UNSPECIFIED;
+}
 
 void ModelQualityLogsUploaderService::SetUrlLoaderFactoryForTesting(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
@@ -206,7 +182,7 @@ void ModelQualityLogsUploaderService::UploadModelQualityLogs(
 
   SetSystemMetadata(logging_metadata);
 
-  proto::PerformanceClass perf_class = GetPerformanceClass(pref_service_);
+  proto::PerformanceClass perf_class = GetPerformanceClass();
   if (perf_class != proto::PERFORMANCE_CLASS_UNSPECIFIED) {
     logging_metadata->mutable_on_device_system_profile()->set_performance_class(
         perf_class);

@@ -35,10 +35,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
-#include "components/optimization_guide/core/model_execution/performance_class.h"
-#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
-
 namespace optimization_guide {
 
 namespace {
@@ -102,13 +98,6 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
     model_execution::prefs::RegisterProfilePrefs(pref_service_.registry());
   }
 
-#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
-  void WritePerformanceClassToPref(OnDeviceModelPerformanceClass perf_class) {
-    UpdatePerformanceClassPref(&pref_service_,
-                               OnDeviceModelPerformanceClass::kVeryHigh);
-  }
-#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
-
   void UploadModelQualityLogs(
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request) {
     model_quality_logs_uploader_service_->UploadModelQualityLogs(
@@ -133,8 +122,10 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
             model_quality_logs_uploader_service_->GetWeakPtr());
     switch (feature) {
       case UserVisibleFeatureKey::kCompose:
-        log_entry->log_ai_data_request()->mutable_compose()->mutable_quality()->set_user_feedback(
-            feedback);
+        log_entry->log_ai_data_request()
+            ->mutable_compose()
+            ->mutable_quality()
+            ->set_user_feedback(feedback);
         break;
       case UserVisibleFeatureKey::kTabOrganization:
         // No longer used.
@@ -218,10 +209,6 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
 };
 
 TEST_F(ModelQualityLogsUploaderServiceTest, TestSuccessfulResponse) {
-#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
-  WritePerformanceClassToPref(OnDeviceModelPerformanceClass::kVeryHigh);
-#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
-
   auto ai_data_request = BuildComposeLogAiDataReuqest();
   UploadModelQualityLogs(std::move(ai_data_request));
   VerifyHasPendingLogsUploadRequest();
@@ -232,13 +219,6 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestSuccessfulResponse) {
   auto pending_request = GetPendingLogsUploadRequest();
   EXPECT_EQ(proto::LogAiDataRequest::FeatureCase::kCompose,
             pending_request->feature_case());
-#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
-  // Performance class should be attached.
-  EXPECT_EQ(proto::PERFORMANCE_CLASS_VERY_HIGH,
-            pending_request->logging_metadata()
-                .on_device_system_profile()
-                .performance_class());
-#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
   EXPECT_EQ(
       12345,
       pending_request->logging_metadata().system_profile().build_timestamp());

@@ -104,9 +104,10 @@ OptimizationGuideService::OptimizationGuideService(
     model_execution_features_controller_ =
         std::make_unique<optimization_guide::ModelExecutionFeaturesController>(
             pref_service, identity_manager,
-            GetApplicationContext()->GetLocalState(),
             policy::BrowserManagementServiceFactory::GetForPlatform(),
-            dogfood_status, version_info::IsOfficialBuild());
+            dogfood_status, version_info::IsOfficialBuild(),
+            optimization_guide::ModelExecutionFeaturesController::
+                HistorySearchNotSupported());
 
     if (optimization_guide::features::IsModelQualityLoggingEnabled()) {
       model_quality_logs_uploader_service_ =

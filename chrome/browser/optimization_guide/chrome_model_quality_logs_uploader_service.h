@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_CHROME_MODEL_QUALITY_LOGS_UPLOADER_SERVICE_H_
 #define CHROME_BROWSER_OPTIMIZATION_GUIDE_CHROME_MODEL_QUALITY_LOGS_UPLOADER_SERVICE_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -43,7 +44,11 @@ class ChromeModelQualityLogsUploaderService
   // Populates the system profile proto and the client's dogfood status.
   void SetSystemMetadata(proto::LoggingMetadata* logging_metadata) override;
 
+  // Returns the performance class to include in logs.
+  proto::PerformanceClass GetPerformanceClass() override;
+
  private:
+  raw_ref<PrefService> local_state_;
   // This allows checking for enterprise policy on upload.
   base::WeakPtr<ModelExecutionFeaturesController>
       model_execution_feature_controller_;

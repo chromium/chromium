@@ -48,6 +48,9 @@ class ModelQualityLogsUploaderService {
   // Sets system metadata, including the UMA system profile.
   virtual void SetSystemMetadata(proto::LoggingMetadata* logging_metadata);
 
+  // Returns the performance class to include in logs.
+  virtual proto::PerformanceClass GetPerformanceClass();
+
   // Returns the WeakPtr for uploading logs during model qualtiy logs
   // destruction.
   base::WeakPtr<ModelQualityLogsUploaderService> GetWeakPtr() {

@@ -236,8 +236,6 @@ source_set("model_execution") {
     ]
     deps += [
       ":core_util",
-      ":ondevice",  # TODO: crbug.com/421262905 - Remove this dep.
-      "//components/component_updater",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/prefs",
       "//components/signin/public/identity_manager",
@@ -245,7 +243,6 @@ source_set("model_execution") {
       "//components/version_info",
       "//google_apis",
       "//services/network/public/cpp",
-      "//third_party/tflite:buildflags",
     ]
   }
 }
