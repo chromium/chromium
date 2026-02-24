@@ -864,7 +864,7 @@ class TabResumptionMediatorProxy {
     [self fetchLastSyncedTabItemFromLastActiveDistantTab:tab session:session];
     _sessionTag = session->tag;
     _tabId = tab->tab_id;
-  } else if (canShowMostRecentItem) {
+  } else if (canShowMostRecentItem && mostRecentTab) {
     [self fetchMostRecentTabItemFromWebState:mostRecentTab
                                   openedTime:mostRecentTabOpenedTime.value_or(
                                                  base::Time::UnixEpoch())];
