@@ -15,6 +15,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayProperties.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayView.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayViewBinder.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorUiTabController.java",
   ]
 
   deps = [
@@ -22,6 +23,7 @@ android_library("java") {
     "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
@@ -30,6 +32,7 @@ android_library("java") {
   srcjar_deps = [
     ":jni_headers",
     "//chrome/browser/actor:enums_java",
+    "//chrome/browser/actor/ui:enums_java",
   ]
 }
 
@@ -39,6 +42,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedService.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedServiceFactory.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTask.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorUiTabController.java",
   ]
 }
 
@@ -48,13 +52,20 @@ source_set("android") {
     "actor_keyed_service_android.h",
     "actor_task_android.cc",
     "actor_task_android.h",
+    "ui/actor_ui_tab_controller_android.cc",
+    "ui/actor_ui_tab_controller_android.h",
   ]
 
   deps = [
     ":jni_headers",
     "//base",
     "//chrome/browser/actor",
+    "//chrome/browser/actor/ui",
+    "//chrome/browser/android:tabs_public",
     "//chrome/browser/profiles",
+    "//chrome/browser/tab",
+    "//components/tabs:public",
+    "//ui/base/unowned_user_data",
   ]
 }
 

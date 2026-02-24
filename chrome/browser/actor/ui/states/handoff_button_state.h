@@ -11,6 +11,7 @@ namespace actor::ui {
 
 // Tab-scoped state.
 struct HandoffButtonState {
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.actor.ui
   enum class ControlOwnership {
     // Represents the state where the client has control over the tab.
     kClient,

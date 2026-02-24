@@ -71,7 +71,6 @@ const UiTabState& GetPausedUiTabState() {
   return kPausedState;
 }
 
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 const UiTabState& GetCompletedUiTabState() {
   static const UiTabState kCompletedState = {
       .actor_overlay = {.is_active = false, .border_glow_visible = false},
@@ -119,6 +118,7 @@ void LogUiChangeError(bool result) {
   }
 }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 bool MaybeShowToastViaController(BrowserWindowInterface* bwi) {
   if (auto* controller = bwi->GetFeatures().toast_controller()) {
     return controller->MaybeShowToast(
@@ -167,14 +167,12 @@ void ActorUiStateManager::OnActorTaskStateChange(
       LOG(FATAL) << "Stopped states should be processed via StopTask event.";
   }
 
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   for (const auto& tab : GetTabs(task_id)) {
     if (auto* tab_controller = ActorUiTabControllerInterface::From(tab)) {
       tab_controller->OnUiTabStateChange(ui_tab_state,
                                          base::BindOnce(&LogUiChangeError));
     }
   }
-#endif
 
   notify_actor_task_state_change_debounce_timer_.Start(
       FROM_HERE, kProfileScopedUiUpdateDebounceDelay,
@@ -201,7 +199,6 @@ void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
                                     UiCompleteCallback callback) {
   TRACE_EVENT("actor", "UiStateManager::OnUiEvent_Async", "event",
               DebugString(event));
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   if (base::FeatureList::IsEnabled(features::kGlicActorUi)) {
     const TabUiUpdate update = std::visit(GetNewUiStateFn(), event);
     if (auto* tab_controller =
@@ -223,10 +220,6 @@ void ActorUiStateManager::OnUiEvent(AsyncUiEvent event,
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
   }
-#else
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
-#endif
 }
 
 void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
@@ -271,14 +264,12 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
                           .Get()));
           },
           [](const StoppedActingOnTab& e) {
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
             auto* tab = e.tab_handle.Get();
             if (auto* tab_controller =
                     ActorUiTabControllerInterface::From(tab)) {
               tab_controller->OnUiTabStateChange(
                   GetCompletedUiTabState(), base::BindOnce(&LogUiChangeError));
             }
-#endif
           }},
       event);
 }

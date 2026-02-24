@@ -31,9 +31,6 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
               (const UiTabState& ui_tab_state, UiResultCallback callback),
               (override));
 
-  MOCK_METHOD(void, OnWebContentsAttached, (), (override));
-  MOCK_METHOD(void, OnViewBoundsChanged, (), (override));
-
   MOCK_METHOD(base::WeakPtr<ActorUiTabControllerInterface>,
               GetWeakPtr,
               (),
@@ -42,6 +39,12 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
   MOCK_METHOD(void, SetActorTaskPaused, (), (override));
 
   MOCK_METHOD(void, SetActorTaskResume, (), (override));
+
+  MOCK_METHOD(UiTabState, GetCurrentUiTabState, (), (const, override));
+
+#if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(void, OnWebContentsAttached, (), (override));
+  MOCK_METHOD(void, OnViewBoundsChanged, (), (override));
 
   MOCK_METHOD(void,
               OnOverlayHoverStatusChanged,
@@ -56,8 +59,6 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
               RegisterHandoffButtonController,
               (HandoffButtonController * controller),
               (override));
-
-  MOCK_METHOD(UiTabState, GetCurrentUiTabState, (), (const, override));
 
   MOCK_METHOD(void, OnImmersiveModeChanged, (), (override));
 
@@ -81,11 +82,11 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
               RegisterActorOverlayBackgroundChange,
               (ActorOverlayBackgroundChangeCallback callback),
               (override));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   base::WeakPtrFactory<MockActorUiTabController> weak_factory_{this};
 };
-
 }  // namespace actor::ui
 
 #endif  // CHROME_BROWSER_ACTOR_UI_TEST_SUPPORT_MOCK_ACTOR_UI_TAB_CONTROLLER_H_

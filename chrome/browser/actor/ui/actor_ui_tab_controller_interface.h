@@ -15,7 +15,10 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace actor::ui {
+#if !BUILDFLAG(IS_ANDROID)
 class HandoffButtonController;
+#endif
+
 using UiResultCallback = base::OnceCallback<void(bool)>;
 
 struct UiTabState {
@@ -51,13 +54,6 @@ class ActorUiTabControllerInterface {
   virtual void OnUiTabStateChange(const UiTabState& ui_tab_state,
                                   UiResultCallback callback) = 0;
 
-  // Called whenever web contents are attached to this tab.
-  virtual void OnWebContentsAttached() = 0;
-
-  // Called whenever the view bounds of the web view attached to this tab
-  // change.
-  virtual void OnViewBoundsChanged() = 0;
-
   // Sets the last active task id's state to paused. If there is no task
   // associated to the active task id, this function will do nothing.
   virtual void SetActorTaskPaused() = 0;
@@ -65,6 +61,23 @@ class ActorUiTabControllerInterface {
   // Sets the last active task id's state to resume. If there is no task
   // associated to the active task id, this function will do nothing.
   virtual void SetActorTaskResume() = 0;
+
+  virtual base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() = 0;
+
+  // Returns the current UiTabState.
+  virtual UiTabState GetCurrentUiTabState() const = 0;
+
+  // Retrieves an ActorUiTabControllerInterface from the provided tab, or
+  // nullptr if it does not exist.
+  static ActorUiTabControllerInterface* From(tabs::TabInterface* tab);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Called whenever web contents are attached to this tab.
+  virtual void OnWebContentsAttached() = 0;
+
+  // Called whenever the view bounds of the web view attached to this tab
+  // change.
+  virtual void OnViewBoundsChanged() = 0;
 
   // Called when the hover status changes on the overlay.
   virtual void OnOverlayHoverStatusChanged(bool is_hovering) = 0;
@@ -80,15 +93,6 @@ class ActorUiTabControllerInterface {
 
   [[nodiscard]] virtual base::ScopedClosureRunner
   RegisterHandoffButtonController(HandoffButtonController* controller) = 0;
-
-  virtual base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() = 0;
-
-  // Retrieves an ActorUiTabControllerInterface from the provided tab, or
-  // nullptr if it does not exist.
-  static ActorUiTabControllerInterface* From(tabs::TabInterface* tab);
-
-  // Returns the current UiTabState.
-  virtual UiTabState GetCurrentUiTabState() const = 0;
 
   // Called when the omnibox popup visibility changes.
   virtual void OnWindowOmniboxPopupVisibilityChanged() = 0;
@@ -108,6 +112,7 @@ class ActorUiTabControllerInterface {
   [[nodiscard]] virtual base::ScopedClosureRunner
   RegisterActorOverlayBackgroundChange(
       ActorOverlayBackgroundChangeCallback callback) = 0;
+#endif
 
  private:
   ::ui::ScopedUnownedUserData<ActorUiTabControllerInterface>

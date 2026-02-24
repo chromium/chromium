@@ -7,6 +7,7 @@
 
 namespace actor::ui {
 // Enum for status of the tab indicator (icon to the right of the tab title).
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.actor.ui
 enum class TabIndicatorStatus {
   // Not visible.
   kNone,

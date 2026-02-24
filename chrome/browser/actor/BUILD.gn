@@ -401,11 +401,7 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "actor_keyed_service_browsertest.cc",
-    "tools/attempt_login_tool_browsertest.cc",
-    "tools/navigate_tool_browsertest.cc",
-  ]
+  sources = [ "actor_keyed_service_browsertest.cc" ]
   deps = [
     ":actor",
     ":impl",
@@ -461,12 +457,14 @@ source_set("browser_tests") {
       "site_policy_browsertest.cc",
       "tools/action_tracker_for_metrics_browsertest.cc",
       "tools/attempt_form_filling_tool_browsertest.cc",
+      "tools/attempt_login_tool_browsertest.cc",
       "tools/click_tool_browsertest.cc",
       "tools/drag_and_release_tool_browsertest.cc",
       "tools/history_tool_browsertest.cc",
       "tools/load_and_extract_content_tool_browsertest.cc",
       "tools/media_control_tool_browsertest.cc",
       "tools/mouse_move_tool_browsertest.cc",
+      "tools/navigate_tool_browsertest.cc",
       "tools/observation_delay_controller_browsertest.cc",
       "tools/observation_delay_metrics_browsertest.cc",
       "tools/page_stability_browsertest.cc",

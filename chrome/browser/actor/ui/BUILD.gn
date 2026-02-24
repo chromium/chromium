@@ -5,6 +5,18 @@
 import("//chrome/common/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  # Target to generate Java enums from C++ headers
+  java_cpp_enum("enums_java") {
+    sources = [
+      "states/handoff_button_state.h",
+      "states/tab_indicator_state.h",
+    ]
+  }
+}
+
 source_set("states") {
   public = [
     "states/actor_overlay_state.h",
@@ -235,6 +247,8 @@ source_set("ui") {
     "actor_ui_state_manager.cc",
     "actor_ui_state_manager.h",
     "actor_ui_state_manager_interface.h",
+    "actor_ui_tab_controller_interface.cc",
+    "actor_ui_tab_controller_interface.h",
   ]
   deps = [
     ":ui_event_types",
@@ -247,6 +261,7 @@ source_set("ui") {
   public_deps = [
     ":metrics",
     ":mojo_bindings",
+    "//ui/base/unowned_user_data",
   ]
 
   if (!skip_android_unmigrated_actor_files) {
@@ -257,8 +272,6 @@ source_set("ui") {
       "actor_ui_state_manager_prefs.h",
       "actor_ui_tab_controller.cc",
       "actor_ui_tab_controller.h",
-      "actor_ui_tab_controller_interface.cc",
-      "actor_ui_tab_controller_interface.h",
       "actor_ui_window_controller.h",
       "handoff_button_controller.cc",
       "handoff_button_controller.h",
@@ -277,7 +290,6 @@ source_set("ui") {
       "//components/prefs",
       "//components/tabs:public",
       "//third_party/abseil-cpp:absl",
-      "//ui/base/unowned_user_data",
       "//ui/views",
     ]
 
