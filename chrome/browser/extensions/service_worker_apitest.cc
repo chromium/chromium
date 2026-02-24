@@ -2806,8 +2806,6 @@ class ServiceWorkerWebRequestPersistFilteredEventsTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      extensions_features::kWebRequestPersistFilteredEvents};
   base::AutoReset<bool> disable_lazy_context_spinup_ =
       ExtensionRegistrar::DisableLazyContextSpinupForTest();
 };

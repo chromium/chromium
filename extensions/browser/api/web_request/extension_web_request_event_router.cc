@@ -2157,10 +2157,6 @@ void WebRequestEventRouter::AddPersistedLazyListener(
     const ExtensionId& extension_id,
     const EventListener& listener) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kWebRequestPersistFilteredEvents)) {
-    return;
-  }
   // Do not persist listeners from incognito contexts.
   // TODO(crbug.com/448893426): support OTR contexts.
   if (browser_context->IsOffTheRecord()) {
@@ -2200,10 +2196,6 @@ void WebRequestEventRouter::RemovePersistedLazyListener(
     const ExtensionId& extension_id,
     const std::string& sub_event_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kWebRequestPersistFilteredEvents)) {
-    return;
-  }
   if (browser_context->IsOffTheRecord()) {
     return;
   }
@@ -2418,14 +2410,6 @@ void WebRequestEventRouter::LoadPersistedLazyListeners(
   DCHECK(!browser_context->IsOffTheRecord());
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kWebRequestPersistFilteredEvents)) {
-    // If the feature was disabled, clean up redundant preferences.
-    prefs->UpdateExtensionPref(extension_id, kFilteredLazyListeners,
-                               std::nullopt);
-    return;
-  }
-
   const base::ListValue* persisted_listeners =
       prefs->ReadPrefAsList(extension_id, kFilteredLazyListeners);
   if (!persisted_listeners) {

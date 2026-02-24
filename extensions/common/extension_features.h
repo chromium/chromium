@@ -322,12 +322,6 @@ BASE_DECLARE_FEATURE(kSearchEngineUnconditionalDialog);
 // Allowing them to retrieve certificate information from web requests.
 BASE_DECLARE_FEATURE(kWebRequestSecurityInfo);
 
-// When enabled, filtered webRequest event listeners for service worker-based
-// extensions are persisted to ExtensionPrefs. This allows the browser to know
-// about the listeners before starting the extension service worker (e.g. on
-// browser startup).
-BASE_DECLARE_FEATURE(kWebRequestPersistFilteredEvents);
-
 // When enabled, use an alternative way to add listeners for the webRequest API,
 // which uses the standard `addListener` only, rather than using
 // WebRequestInternal's custom API.
