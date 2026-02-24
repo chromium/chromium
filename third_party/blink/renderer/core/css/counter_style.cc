@@ -717,15 +717,20 @@ CounterStyle::CounterStyle(
 
   if (HasSymbols(system_)) {
     if (system_ == CounterStyleSystem::kAdditive) {
-      for (const auto& symbol :
-           To<CSSValueList>(*style_rule_->GetAdditiveSymbols())) {
+      const CSSValueList* symbols =
+          To<CSSValueList>(style_rule_->GetAdditiveSymbols());
+      symbols_.ReserveInitialCapacity(symbols->length());
+      additive_weights_.ReserveInitialCapacity(symbols->length());
+      for (const auto& symbol : *symbols) {
         const auto& pair = To<CSSValuePair>(*symbol.Get());
         additive_weights_.push_back(
             To<CSSPrimitiveValue>(pair.First()).ComputeInteger(*media_values));
         symbols_.push_back(SymbolToString(pair.Second()));
       }
     } else {
-      for (const auto& symbol : To<CSSValueList>(*style_rule_->GetSymbols())) {
+      const CSSValueList* symbols = To<CSSValueList>(style_rule_->GetSymbols());
+      symbols_.ReserveInitialCapacity(symbols->length());
+      for (const auto& symbol : *symbols) {
         symbols_.push_back(SymbolToString(*symbol.Get()));
       }
     }
