@@ -6,9 +6,11 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "mojo/public/cpp/system/result_for_metrics.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -150,6 +152,9 @@ WriteSyntheticResponseFallbackResult WriteSyntheticResponseFallbackBody(
   MojoResult result = response_body_stream->WriteData(
       base::as_byte_span(kFallbackBody), MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
       num_bytes);
+  base::UmaHistogramEnumeration(
+      "ServiceWorker.SyntheticResponse.WriteFallbackBodyResult",
+      mojo::MojoResultToMetricsEnum(result));
   if (result != MOJO_RESULT_OK) {
     // TODO(crbug.com/483762288): Remove this dump once the bug is fixed.
     SCOPED_CRASH_KEY_NUMBER("SyntheticResponse", "WriteFallbackResult", result);

@@ -2074,6 +2074,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.SyntheticResponse.WriteFallbackBodyResult"
+    enum="MojoResult" expires_after="2026-08-12">
+  <owner>sisidovski@google.com</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the MojoResult returned by WriteData() when writing the synthetic
+    response fallback body.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.UpdateResourceSha256ChecksumsResult"
     enum="ServiceWorkerStatusCode" expires_after="2026-02-26">
   <owner>sisidovski@chromium.org</owner>

@@ -37,6 +37,7 @@ component("system") {
     "message_pipe.h",
     "platform_handle.cc",
     "platform_handle.h",
+    "result_for_metrics.h",
     "scope_to_message_pipe.cc",
     "scope_to_message_pipe.h",
     "simple_watcher.cc",
