@@ -1303,6 +1303,9 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.UNTHROTTLE_ASYNC_TOUCH_MOVES,
                 "When enabled, touch move events to javascript handlers are unthrottled if "
                         + "they are sent as async to Renderer."),
+        Flag.baseFeature(
+                BlinkFeatures.RUSTY_BMP_FEATURE,
+                "When enabled, uses Rust `image` crate to decode BMP images."),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
