@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
 
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/ui/sad_tab_controller.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/views/sad_tab_view.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -27,7 +27,8 @@ bool ChromeWebContentsViewFocusHelper::Focus() {
   SadTabHelper* sad_tab_helper =
       SadTabHelper::FromWebContents(&GetWebContents());
   if (sad_tab_helper) {
-    SadTabView* sad_tab = static_cast<SadTabView*>(sad_tab_helper->sad_tab());
+    SadTabController* sad_tab =
+        static_cast<SadTabController*>(sad_tab_helper->sad_tab());
     if (sad_tab) {
       sad_tab->RequestFocus();
       return true;

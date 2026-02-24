@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/sad_tab.h"
+#include "chrome/browser/ui/sad_tab_controller.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -23,24 +24,6 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
-
-namespace test {
-
-// A friend of SadTabView that's able to call RecordFirstPaint.
-class SadTabViewTestApi {
- public:
-  SadTabViewTestApi(const SadTabViewTestApi&) = delete;
-  SadTabViewTestApi& operator=(const SadTabViewTestApi&) = delete;
-
-  static void RecordFirstPaintForTesting(SadTabView* sad_tab_view) {
-    if (!sad_tab_view->painted_) {
-      sad_tab_view->RecordFirstPaint();
-      sad_tab_view->painted_ = true;
-    }
-  }
-};
-
-}  // namespace test
 
 class SadTabViewInteractiveUITest : public InProcessBrowserTest {
  public:
@@ -121,9 +104,9 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
     // SadTab has a DCHECK that it's been painted at least once
     // before the action button can be pressed, bypass that.
     SadTabHelper* sad_tab_helper = SadTabHelper::FromWebContents(web_contents);
-    SadTabView* sad_tab_view =
-        static_cast<SadTabView*>(sad_tab_helper->sad_tab());
-    test::SadTabViewTestApi::RecordFirstPaintForTesting(sad_tab_view);
+    SadTabController* sad_tab_controller =
+        static_cast<SadTabController*>(sad_tab_helper->sad_tab());
+    sad_tab_controller->RecordFirstPaint();
     PressSpacebar();
   }
 };

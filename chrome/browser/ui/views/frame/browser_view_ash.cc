@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "chrome/browser/ui/sad_tab_controller.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
-#include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "components/search/ntp_features.h"
 #include "ui/compositor/layer.h"
@@ -183,10 +183,10 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(
     if (auto* sad_tab_helper =
             SadTabHelper::FromWebContents(contents_webview->web_contents());
         sad_tab_helper && sad_tab_helper->sad_tab()) {
-      SadTabView* sad_tab_view =
-          static_cast<SadTabView*>(sad_tab_helper->sad_tab());
-      if (sad_tab_view->GetBackgroundRadii() != contents_webview_radii) {
-        sad_tab_view->SetBackgroundRadii(contents_webview_radii);
+      SadTabController* sad_tab_controller =
+          static_cast<SadTabController*>(sad_tab_helper->sad_tab());
+      if (sad_tab_controller->GetBackgroundRadii() != contents_webview_radii) {
+        sad_tab_controller->SetBackgroundRadii(contents_webview_radii);
       }
     } else {
       // We only round contents_webview, if SadTabView is not showing.

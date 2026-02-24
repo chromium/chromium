@@ -64,13 +64,16 @@ class SadTab {
   virtual void RecordFirstPaint();
   virtual void PerformAction(Action);
 
+  // Returns the type of sad tab.
+  SadTabKind kind() const { return kind_; }
+
  protected:
   SadTab(content::WebContents* web_contents, SadTabKind kind);
 
   content::WebContents* web_contents() const { return web_contents_; }
 
  private:
-  raw_ptr<content::WebContents> web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
   SadTabKind kind_;
   // True if a crash happened in the last ten seconds. Repeated crashes
   // may suggest additional troubleshooting steps.

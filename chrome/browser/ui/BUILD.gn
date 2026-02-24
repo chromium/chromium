@@ -1093,6 +1093,8 @@ static_library("ui") {
       "read_anything/read_anything_prefs.h",
       "sad_tab.cc",
       "sad_tab.h",
+      "sad_tab_controller.cc",
+      "sad_tab_controller.h",
       "sad_tab_helper.cc",
       "sad_tab_helper.h",
       "sad_tab_types.h",
