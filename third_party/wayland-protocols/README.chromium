@@ -38,6 +38,7 @@ https://source.chromium.org/chromium/chromium/src/+/main:components/exo/wayland/
 Name: gtk
 URL: https://github.com/GNOME/gtk
 Version: 4.3.0
+Revision: ac07997f886a02db0cdf27a994686db13cef2e15
 Update Mechanism: Manual
 License: LGPL-2.0
 License File: gtk/COPYING
