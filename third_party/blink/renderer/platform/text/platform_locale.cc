@@ -330,18 +330,6 @@ String Locale::ConvertToLocalizedNumber(const String& input) {
   return builder.ToString();
 }
 
-static bool Matches(const String& text, unsigned position, const String& part) {
-  if (part.empty())
-    return true;
-  if (position + part.length() > text.length())
-    return false;
-  for (unsigned i = 0; i < part.length(); ++i) {
-    if (text[position + i] != part[i])
-      return false;
-  }
-  return true;
-}
-
 bool Locale::DetectSignAndGetDigitRange(const String& input,
                                         bool& is_negative,
                                         unsigned& start_index,
@@ -384,11 +372,12 @@ bool Locale::DetectSignAndGetDigitRange(const String& input,
 
 unsigned Locale::MatchedDecimalSymbolIndex(const String& input,
                                            unsigned& position) {
+  const StringView input_view(input, position);
   for (unsigned symbol_index = 0; symbol_index < kDecimalSymbolsSize;
        ++symbol_index) {
-    if (decimal_symbols_[symbol_index].length() &&
-        Matches(input, position, decimal_symbols_[symbol_index])) {
-      position += decimal_symbols_[symbol_index].length();
+    const String& symbol = decimal_symbols_[symbol_index];
+    if (input_view.starts_with(symbol)) {
+      position += symbol.length();
       return symbol_index;
     }
   }
