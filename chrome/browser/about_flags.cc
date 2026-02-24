@@ -12956,6 +12956,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     kUnthrottleAsyncTouchMovesVariations,
                                     "UnthrottleAsyncTouchMoves")},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"horizontal-tab-strip-combo-button",
+     flag_descriptions::kHorizontalTabStripComboButtonName,
+     flag_descriptions::kHorizontalTabStripComboButtonDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(tabs::kHorizontalTabStripComboButton)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

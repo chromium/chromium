@@ -494,6 +494,11 @@ inline constexpr char kHdrAgtmDescription[] =
     "Enables parsing and rendering of adaptive global tone mapping (AGTM) aka "
     "SMTPE ST 2094-50 HDR metadata";
 
+inline constexpr char kHorizontalTabStripComboButtonName[] =
+    "Horizontal Tab Strip Combo Button";
+inline constexpr char kHorizontalTabStripComboButtonDescription[] =
+    "Enables the combo button in the horizontal tab strip.";
+
 inline constexpr char kHistorySyncAlternativeIllustrationName[] =
     "History Sync Alternative Illustration";
 inline constexpr char kHistorySyncAlternativeIllustrationDescription[] =

@@ -5577,6 +5577,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "horizontal-tab-strip-combo-button",
+    "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "http-cache-custom-backend",
     "owners": ["horo@chromium.org", "net-dev@chromium.org"],
     "expiry_milestone": 160
