@@ -2354,20 +2354,22 @@ OutOfFlowLayoutPart::TryCalculateOffset(
                                     ? *container_info.scroll_rect
                                     : container_info.rect;
 
-  LogicalRect container_rect = base_rect;
-  if (const std::optional<PositionAreaOffsets> offsets =
-          candidate_style.PositionAreaOffsets()) {
-    // Reduce the container size and adjust the offset based on the
-    // position-area.
-    const BoxStrut insets =
-        offsets->insets.ConvertToLogical(container_info.writing_direction);
-    container_rect.ContractEdges(insets.block_start, insets.inline_end,
-                                 insets.block_end, insets.inline_start);
-  }
-
   const WritingDirectionMode candidate_writing_direction =
       candidate_style.GetWritingDirection();
   const auto container_writing_direction = container_info.writing_direction;
+
+  // Contract the container-rect based on the position-area if needed.
+  const LogicalRect container_rect = ([&]() {
+    if (const auto& offsets = candidate_style.PositionAreaOffsets()) {
+      const BoxStrut insets =
+          offsets->insets.ConvertToLogical(container_writing_direction);
+      LogicalRect rect = base_rect;
+      rect.ContractEdges(insets.block_start, insets.inline_end,
+                         insets.block_end, insets.inline_start);
+      return rect;
+    }
+    return base_rect;
+  })();
 
   const PhysicalSize container_physical_content_size =
       ToPhysicalSize(container_rect.size,
