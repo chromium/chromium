@@ -923,6 +923,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
     delayUpload: boolean,
     origin: TabUploadOrigin,
   }>) {
+    e.stopPropagation();
+
     this.addTabContextHandleCallback_({
       tabId: e.detail.id,
       title: e.detail.title,
