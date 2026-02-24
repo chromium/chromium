@@ -1,0 +1,9 @@
+/*
+!.gitignore
+!OWNERS
+
+# We want to ignore rules besides any that we check in
+# to allow users to make their own.
+!rules/
+/rules/*
+!/rules/README.md
