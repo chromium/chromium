@@ -267,6 +267,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Whether the keyboard is currently visible.
   bool is_keyboard_visible_ = false;
 
+  // Whether the floaty is currently hidden due to the keyboard being visible.
+  bool is_hidden_by_keyboard_ = false;
+
   // Called when keyboard state changes.
   void OnKeyboardStateChanged(bool is_visible);
 

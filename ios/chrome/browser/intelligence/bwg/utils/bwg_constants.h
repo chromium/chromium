@@ -52,7 +52,8 @@ enum class FloatyUpdateSource {
   Snackbar = 10,
   Alert = 11,
   Banner = 12,
-  kMaxValue = Banner,
+  Keyboard = 13,
+  kMaxValue = Keyboard,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFloatyUpdateSource)
 
