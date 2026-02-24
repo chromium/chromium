@@ -78,9 +78,9 @@ TEST_F(InputDeviceSettingsMetadataManagerTest, DeviceImageForSettingsIsCached) {
   // Based on the default ImageSkia produced by `TestImageDownloader`.
   const char* kExpectedDataUri =
       "data:image/png;base64,"
-      "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAUCAIAAAA7jDsBAAAAH0lE"
-      "QVR4nOzJIQEAAADCsAv6V4YGKCSzE6YQvN+bDgAAAP//NgNJQQAA"
-      "AAZJREFUAwDP2AFQaaaRAwAAAABJRU5ErkJggg==";
+      "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAUCAIAAAA7jDsBAAAAIElEQVR4nOzJ"
+      "sQ0AAAzCsKjq/y/DB0yMePUjgoP1utMGAAD//xhbx+MAAAAGSURBVAMAodQB"
+      "KguVcHUAAAAASUVORK5CYII=";
   EXPECT_EQ(kExpectedDataUri, data_url.value());
 }
 

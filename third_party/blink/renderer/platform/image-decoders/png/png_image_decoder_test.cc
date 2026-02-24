@@ -194,18 +194,6 @@ void TestMissingDataBreaksDecoding(const char* png_file,
   EXPECT_TRUE(decoder->Failed());
 }
 
-// Verify that a decoder with a parse error converts to a static image.
-static void ExpectStatic(ImageDecoder* decoder) {
-  EXPECT_EQ(1u, decoder->FrameCount());
-  EXPECT_FALSE(decoder->Failed());
-
-  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
-  ASSERT_NE(nullptr, frame);
-  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
-  EXPECT_FALSE(decoder->Failed());
-  EXPECT_EQ(kAnimationNone, decoder->RepetitionCount());
-}
-
 // Decode up to the indicated fcTL offset and then provide an fcTL with the
 // wrong chunk size (20 instead of 26).
 void TestInvalidFctlSize(const char* png_file,
@@ -549,17 +537,19 @@ TEST(AnimatedPNGTests, fdatBeforeIdat) {
   ASSERT_EQ(data.size(), modified_data_buffer->size());
 
   {
-    // This broken APNG will be treated as a static png.
+    // After https://github.com/image-rs/image-png/pull/653
+    // this input (fdAT before IDAT) will result in a hard error.
     auto decoder = CreatePNGDecoder();
     decoder->SetData(modified_data_buffer.get(), true);
-    ExpectStatic(decoder.get());
+    EXPECT_EQ(0u, decoder->FrameCount());
+    EXPECT_TRUE(decoder->Failed());
   }
 
   Vector<char> modified_data = modified_data_buffer->CopyAs<Vector<char>>();
 
   {
     // Remove the acTL from the modified image. It now has fdAT before
-    // IDAT, but no acTL, so fdAT should be ignored.
+    // IDAT, but no acTL.
     const size_t kOffsetActl = 33u;
     const size_t kAcTLSize = 20u;
     scoped_refptr<SharedBuffer> modified_data_buffer2 =
@@ -568,10 +558,11 @@ TEST(AnimatedPNGTests, fdatBeforeIdat) {
         base::span(modified_data).subspan(kOffsetActl + kAcTLSize));
     auto decoder = CreatePNGDecoder();
     decoder->SetData(modified_data_buffer2.get(), true);
-    ExpectStatic(decoder.get());
+    EXPECT_EQ(0u, decoder->FrameCount());
+    EXPECT_TRUE(decoder->Failed());
 
     Vector<char> modified_data2 = modified_data_buffer2->CopyAs<Vector<char>>();
-    // Likewise, if an acTL follows the fdAT, it is ignored.
+    // Now check fdAT before IDAT when acTL is present after fdAT.
     const size_t kInsertionOffset = kIdatOffset + kFctlPlusFdatSize - kAcTLSize;
     scoped_refptr<SharedBuffer> modified_data3 = SharedBuffer::Create(
         base::span(modified_data2).first(kInsertionOffset));
@@ -580,7 +571,8 @@ TEST(AnimatedPNGTests, fdatBeforeIdat) {
         base::span(modified_data2).subspan(kInsertionOffset));
     decoder = CreatePNGDecoder();
     decoder->SetData(modified_data3.get(), true);
-    ExpectStatic(decoder.get());
+    EXPECT_EQ(0u, decoder->FrameCount());
+    EXPECT_TRUE(decoder->Failed());
   }
 }
 

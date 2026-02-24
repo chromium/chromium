@@ -18,7 +18,7 @@
 //! let decoder = png::Decoder::new(BufReader::new(File::open("tests/pngsuite/basi0g01.png").unwrap()));
 //! let mut reader = decoder.read_info().unwrap();
 //! // Allocate the output buffer.
-//! let mut buf = vec![0; reader.output_buffer_size()];
+//! let mut buf = vec![0; reader.output_buffer_size().unwrap()];
 //! // Read the next frame. An APNG might contain multiple frames.
 //! let info = reader.next_frame(&mut buf).unwrap();
 //! // Grab the bytes of the image.
@@ -59,8 +59,14 @@
 //! ```
 //!
 
-#![cfg_attr(feature = "unstable", feature(portable_simd))]
 #![forbid(unsafe_code)]
+// Silence certain clippy warnings until our MSRV is higher.
+//
+// The #[default] attribute was stabilized in Rust 1.62.0.
+#![allow(clippy::derivable_impls)]
+// IIUC format args capture was stabilized in Rust 1.58.1.
+#![allow(clippy::uninlined_format_args)]
+#![cfg_attr(feature = "unstable", feature(portable_simd))]
 
 mod adam7;
 pub mod chunk;
@@ -72,11 +78,15 @@ mod srgb;
 pub mod text_metadata;
 mod traits;
 
-pub use crate::adam7::expand_pass as expand_interlaced_row;
-pub use crate::adam7::Adam7Info;
+pub use crate::adam7::{
+    expand_pass as expand_interlaced_row, expand_pass_splat as splat_interlaced_row,
+};
+
+pub use crate::adam7::{Adam7Info, Adam7Variant};
 pub use crate::common::*;
 pub use crate::decoder::stream::{DecodeOptions, Decoded, DecodingError, StreamingDecoder};
 pub use crate::decoder::{Decoder, InterlaceInfo, InterlacedRow, Limits, OutputInfo, Reader};
+pub use crate::decoder::{UnfilterBuf, UnfilterRegion};
 pub use crate::encoder::{Encoder, EncodingError, StreamWriter, Writer};
 pub use crate::filter::Filter;
 

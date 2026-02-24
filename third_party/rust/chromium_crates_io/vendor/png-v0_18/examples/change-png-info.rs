@@ -3,6 +3,8 @@
 use std::fs::File;
 use std::io::{BufReader, BufWriter};
 use std::path::Path;
+
+use png::DecodingError::LimitsExceeded;
 pub type BoxResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
 fn main() -> BoxResult<()> {
@@ -15,8 +17,8 @@ fn main() -> BoxResult<()> {
     let mut reader = decoder.read_info()?;
     // Allocate the output buffer.
     let png_info = reader.info();
-    let mut buf = vec![0; reader.output_buffer_size()];
-    dbg!(png_info);
+    let mut buf = vec![0; reader.output_buffer_size().ok_or(LimitsExceeded)?];
+    println!("{png_info:?}");
 
     // # Encode
     let path_out = Path::new(r"./target/test_modified.png");
@@ -43,7 +45,6 @@ fn main() -> BoxResult<()> {
     let mut counter = 0u8;
     while let Ok(info) = reader.next_frame(&mut buf) {
         let bytes = &buf[..info.buffer_size()];
-        println!("{} {}", info.buffer_size(), reader.output_buffer_size());
         writer.write_image_data(&bytes)?;
         counter += 1;
         println!("Written frame: {}", counter);

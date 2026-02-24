@@ -119,7 +119,7 @@ fn main() {
                 Ok(reader) => reader,
                 Err(_) => continue,
             };
-            let mut image = vec![0; reader.output_buffer_size()];
+            let mut image = vec![0; reader.output_buffer_size().unwrap()];
             let info = match reader.next_frame(&mut image) {
                 Ok(info) => info,
                 Err(_) => continue,

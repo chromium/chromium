@@ -297,7 +297,7 @@ impl<'a, W: Write> Encoder<'a, W> {
         self.info.bit_depth = depth;
     }
 
-    /// Set compression parameters, see [Compression] for the available options.
+    /// Set compression parameters, see [`Compression`] for the available options.
     pub fn set_compression(&mut self, compression: Compression) {
         self.set_deflate_compression(DeflateCompression::from_simple(compression));
         self.set_filter(Filter::from_simple(compression));
@@ -305,7 +305,9 @@ impl<'a, W: Write> Encoder<'a, W> {
 
     /// Provides in-depth customization of DEFLATE compression options.
     ///
-    /// For a simpler selection of compression options see [Self::set_compression].
+    /// For a simpler selection of compression options see [`set_compression`].
+    ///
+    /// [`set_compression`]: Self::set_compression
     pub fn set_deflate_compression(&mut self, compression: DeflateCompression) {
         self.options.compression = compression;
     }
@@ -671,7 +673,7 @@ impl<W: Write> Writer<W> {
 
     fn write_iccp_chunk(&mut self, profile_name: &str, icc_profile: &[u8]) -> Result<()> {
         let profile_name = encode_iso_8859_1(profile_name)?;
-        if profile_name.len() < 1 || profile_name.len() > 79 {
+        if profile_name.is_empty() || profile_name.len() > 79 {
             return Err(TextEncodingError::InvalidKeywordSize.into());
         }
 
@@ -1061,7 +1063,7 @@ impl<W: Write> Writer<W> {
     ///
     /// This borrows the writer which allows for manually appending additional
     /// chunks after the image data has been written.
-    pub fn stream_writer(&mut self) -> Result<StreamWriter<W>> {
+    pub fn stream_writer(&mut self) -> Result<StreamWriter<'_, W>> {
         self.stream_writer_with_size(DEFAULT_BUFFER_LENGTH)
     }
 
@@ -1070,7 +1072,7 @@ impl<W: Write> Writer<W> {
     /// See [`stream_writer`].
     ///
     /// [`stream_writer`]: Self::stream_writer
-    pub fn stream_writer_with_size(&mut self, size: usize) -> Result<StreamWriter<W>> {
+    pub fn stream_writer_with_size(&mut self, size: usize) -> Result<StreamWriter<'_, W>> {
         StreamWriter::new(ChunkOutput::Borrowed(self), size)
     }
 
@@ -1335,13 +1337,29 @@ impl<W: Write> Drop for ChunkWriter<'_, W> {
 /// variant is used to signal that.
 enum Wrapper<'a, W: Write> {
     Chunk(ChunkWriter<'a, W>),
-    Zlib(ZlibEncoder<ChunkWriter<'a, W>>),
+    Flate2(ZlibEncoder<ChunkWriter<'a, W>>),
+    FDeflate(fdeflate::Compressor<ChunkWriter<'a, W>>),
     Unrecoverable,
     /// This is used in-between, should never be matched
     None,
 }
 
 impl<'a, W: Write> Wrapper<'a, W> {
+    fn from_level(writer: ChunkWriter<'a, W>, compression: DeflateCompression) -> io::Result<Self> {
+        Ok(match compression {
+            DeflateCompression::NoCompression => {
+                Wrapper::Flate2(ZlibEncoder::new(writer, flate2::Compression::none()))
+            }
+            DeflateCompression::FdeflateUltraFast => {
+                Wrapper::FDeflate(fdeflate::Compressor::new(writer)?)
+            }
+            DeflateCompression::Level(level) => Wrapper::Flate2(ZlibEncoder::new(
+                writer,
+                flate2::Compression::new(u32::from(level)),
+            )),
+        })
+    }
+
     /// Like `Option::take` this returns the `Wrapper` contained
     /// in `self` and replaces it with `Wrapper::None`
     fn take(&mut self) -> Wrapper<'a, W> {
@@ -1364,6 +1382,7 @@ pub struct StreamWriter<'a, W: Write> {
     writer: Wrapper<'a, W>,
     prev_buf: Vec<u8>,
     curr_buf: Vec<u8>,
+    filtered_buf: Vec<u8>,
     /// Amount of data already written
     index: usize,
     /// length of the current scanline
@@ -1395,17 +1414,18 @@ impl<'a, W: Write> StreamWriter<'a, W> {
         let compression = writer.options.compression;
         let prev_buf = vec![0; in_len];
         let curr_buf = vec![0; in_len];
+        let filtered_buf = vec![0; in_len];
 
         let mut chunk_writer = ChunkWriter::new(writer, buf_len);
         let (line_len, to_write) = chunk_writer.next_frame_info();
         chunk_writer.write_header()?;
-        let zlib = ZlibEncoder::new(chunk_writer, compression.closest_flate2_level());
 
         Ok(StreamWriter {
-            writer: Wrapper::Zlib(zlib),
+            writer: Wrapper::from_level(chunk_writer, compression)?,
             index: 0,
             prev_buf,
             curr_buf,
+            filtered_buf,
             bpp,
             filter,
             width,
@@ -1584,16 +1604,33 @@ impl<'a, W: Write> StreamWriter<'a, W> {
     /// [`Writer`], then it will also do a check on their correctness. Differently from
     /// [`Writer::finish`], this just `flush`es, returns error if some data is abandoned.
     pub fn finish(mut self) -> Result<()> {
+        self.finish_mut()
+    }
+
+    /// Internal helper that can be called both from `fn finish(mut self)`
+    /// and from `fn drop(&mut self)`.
+    fn finish_mut(&mut self) -> Result<()> {
         if self.to_write > 0 {
             let err = FormatErrorKind::MissingData(self.to_write).into();
             return Err(EncodingError::Format(err));
         }
 
-        // TODO: call `writer.finish` somehow?
         self.flush()?;
-
-        if let Wrapper::Chunk(wrt) = self.writer.take() {
-            wrt.writer.validate_sequence_done()?;
+        match self.writer.take() {
+            Wrapper::Chunk(wrt) => {
+                wrt.writer.validate_sequence_done()?;
+            }
+            Wrapper::FDeflate(wrt) => {
+                wrt.finish()?;
+            }
+            Wrapper::Flate2(wrt) => {
+                wrt.finish()?;
+            }
+            Wrapper::None => unreachable!(),
+            Wrapper::Unrecoverable => {
+                let err = FormatErrorKind::Unrecoverable.into();
+                return Err(EncodingError::Format(err));
+            }
         }
 
         Ok(())
@@ -1610,7 +1647,9 @@ impl<'a, W: Write> StreamWriter<'a, W> {
                 let err = FormatErrorKind::Unrecoverable.into();
                 return Err(EncodingError::Format(err));
             }
-            Wrapper::Zlib(_) => unreachable!("never called on a half-finished frame"),
+            Wrapper::Flate2(_) | Wrapper::FDeflate(_) => {
+                unreachable!("never called on a half-finished frame")
+            }
             Wrapper::None => unreachable!(),
         };
         wrt.flush()?;
@@ -1628,10 +1667,13 @@ impl<'a, W: Write> StreamWriter<'a, W> {
 
         // now it can be taken because the next statements cannot cause any errors
         match self.writer.take() {
-            Wrapper::Chunk(wrt) => {
-                let encoder = ZlibEncoder::new(wrt, self.compression.closest_flate2_level());
-                self.writer = Wrapper::Zlib(encoder);
-            }
+            Wrapper::Chunk(wrt) => match Wrapper::from_level(wrt, self.compression) {
+                Ok(writer) => self.writer = writer,
+                Err(err) => {
+                    self.writer = Wrapper::Unrecoverable;
+                    return Err(err.into());
+                }
+            },
             _ => unreachable!(),
         };
 
@@ -1652,7 +1694,14 @@ impl<'a, W: Write> Write for StreamWriter<'a, W> {
 
         if self.to_write == 0 {
             match self.writer.take() {
-                Wrapper::Zlib(wrt) => match wrt.finish() {
+                Wrapper::Flate2(wrt) => match wrt.finish() {
+                    Ok(chunk) => self.writer = Wrapper::Chunk(chunk),
+                    Err(err) => {
+                        self.writer = Wrapper::Unrecoverable;
+                        return Err(err);
+                    }
+                },
+                Wrapper::FDeflate(wrt) => match wrt.finish() {
                     Ok(chunk) => self.writer = Wrapper::Chunk(chunk),
                     Err(err) => {
                         self.writer = Wrapper::Unrecoverable;
@@ -1673,23 +1722,26 @@ impl<'a, W: Write> Write for StreamWriter<'a, W> {
         self.to_write -= written;
 
         if self.index == self.line_len {
-            // TODO: reuse this buffer between rows.
-            let mut filtered = vec![0; self.curr_buf.len()];
             let filter_type = filter(
                 self.filter,
                 self.bpp,
                 &self.prev_buf,
                 &self.curr_buf,
-                &mut filtered,
+                &mut self.filtered_buf,
             );
             // This can't fail as the other variant is used only to allow the zlib encoder to finish
-            let wrt = match &mut self.writer {
-                Wrapper::Zlib(wrt) => wrt,
+            match &mut self.writer {
+                Wrapper::Flate2(wrt) => {
+                    wrt.write_all(&[filter_type as u8])?;
+                    wrt.write_all(&self.filtered_buf)?;
+                }
+                Wrapper::FDeflate(wrt) => {
+                    wrt.write_data(&[filter_type as u8])?;
+                    wrt.write_data(&self.filtered_buf)?;
+                }
                 _ => unreachable!(),
             };
 
-            wrt.write_all(&[filter_type as u8])?;
-            wrt.write_all(&filtered)?;
             mem::swap(&mut self.prev_buf, &mut self.curr_buf);
             self.index = 0;
         }
@@ -1699,8 +1751,9 @@ impl<'a, W: Write> Write for StreamWriter<'a, W> {
 
     fn flush(&mut self) -> io::Result<()> {
         match &mut self.writer {
-            Wrapper::Zlib(wrt) => wrt.flush()?,
+            Wrapper::Flate2(wrt) => wrt.flush()?,
             Wrapper::Chunk(wrt) => wrt.flush()?,
+            Wrapper::FDeflate(_) => (), // TODO: Add `flush()` to `fdeflate::Compressor`?
             // This handles both the case where we entered an unrecoverable state after zlib
             // decoding failure and after a panic while we had taken the chunk/zlib reader.
             Wrapper::Unrecoverable | Wrapper::None => {
@@ -1720,7 +1773,7 @@ impl<'a, W: Write> Write for StreamWriter<'a, W> {
 
 impl<W: Write> Drop for StreamWriter<'_, W> {
     fn drop(&mut self) {
-        let _ = self.flush();
+        let _ = self.finish_mut();
     }
 }
 
@@ -1730,7 +1783,7 @@ mod tests {
     use crate::Decoder;
 
     use io::BufReader;
-    use rand::{thread_rng, Rng};
+    use rand::{rng, Rng};
     use std::cmp;
     use std::fs::File;
     use std::io::Cursor;
@@ -1760,7 +1813,7 @@ mod tests {
                 // Decode image
                 let decoder = Decoder::new(BufReader::new(File::open(path).unwrap()));
                 let mut reader = decoder.read_info().unwrap();
-                let mut buf = vec![0; reader.output_buffer_size()];
+                let mut buf = vec![0; reader.output_buffer_size().unwrap()];
                 let info = reader.next_frame(&mut buf).unwrap();
                 use DeflateCompression::*;
                 for compression in [NoCompression, FdeflateUltraFast, Level(4)] {
@@ -1768,7 +1821,7 @@ mod tests {
                     let mut out = Vec::new();
                     {
                         let mut wrapper = RandomChunkWriter {
-                            rng: thread_rng(),
+                            rng: rng(),
                             w: &mut out,
                         };
 
@@ -1785,7 +1838,7 @@ mod tests {
                     // Decode encoded decoded image
                     let decoder = Decoder::new(Cursor::new(&*out));
                     let mut reader = decoder.read_info().unwrap();
-                    let mut buf2 = vec![0; reader.output_buffer_size()];
+                    let mut buf2 = vec![0; reader.output_buffer_size().unwrap()];
                     reader.next_frame(&mut buf2).unwrap();
                     // check if the encoded image is ok:
                     assert_eq!(buf, buf2);
@@ -1818,7 +1871,7 @@ mod tests {
                 // Decode image
                 let decoder = Decoder::new(BufReader::new(File::open(path).unwrap()));
                 let mut reader = decoder.read_info().unwrap();
-                let mut buf = vec![0; reader.output_buffer_size()];
+                let mut buf = vec![0; reader.output_buffer_size().unwrap()];
                 let info = reader.next_frame(&mut buf).unwrap();
                 use DeflateCompression::*;
                 for compression in [NoCompression, FdeflateUltraFast, Level(4)] {
@@ -1826,7 +1879,7 @@ mod tests {
                     let mut out = Vec::new();
                     {
                         let mut wrapper = RandomChunkWriter {
-                            rng: thread_rng(),
+                            rng: rng(),
                             w: &mut out,
                         };
 
@@ -1841,7 +1894,7 @@ mod tests {
                         let mut stream_writer = encoder.stream_writer().unwrap();
 
                         let mut outer_wrapper = RandomChunkWriter {
-                            rng: thread_rng(),
+                            rng: rng(),
                             w: &mut stream_writer,
                         };
 
@@ -1850,7 +1903,7 @@ mod tests {
                     // Decode encoded decoded image
                     let decoder = Decoder::new(Cursor::new(&*out));
                     let mut reader = decoder.read_info().unwrap();
-                    let mut buf2 = vec![0; reader.output_buffer_size()];
+                    let mut buf2 = vec![0; reader.output_buffer_size().unwrap()];
                     reader.next_frame(&mut buf2).unwrap();
                     // check if the encoded image is ok:
                     assert_eq!(buf, buf2);
@@ -1867,7 +1920,7 @@ mod tests {
             let decoder = Decoder::new(BufReader::new(File::open(&path).unwrap()));
             let mut reader = decoder.read_info().unwrap();
 
-            let mut decoded_pixels = vec![0; reader.output_buffer_size()];
+            let mut decoded_pixels = vec![0; reader.output_buffer_size().unwrap()];
             let info = reader.info();
             assert_eq!(
                 info.width as usize * info.height as usize * usize::from(bit_depth),
@@ -1891,7 +1944,7 @@ mod tests {
             // Decode re-encoded image
             let decoder = Decoder::new(Cursor::new(&*out));
             let mut reader = decoder.read_info().unwrap();
-            let mut redecoded = vec![0; reader.output_buffer_size()];
+            let mut redecoded = vec![0; reader.output_buffer_size().unwrap()];
             reader.next_frame(&mut redecoded).unwrap();
             // check if the encoded image is ok:
             assert_eq!(indexed_data, redecoded);
@@ -2365,6 +2418,60 @@ mod tests {
         Ok(())
     }
 
+    fn test_stream_flushing(compression: Compression) -> Result<()> {
+        let output = vec![0u8; 1024];
+        let mut cursor = Cursor::new(output);
+
+        let mut encoder = Encoder::new(&mut cursor, 8, 8);
+        encoder.set_color(ColorType::Rgba);
+        encoder.set_compression(compression);
+        let mut writer = encoder.write_header()?;
+        let mut stream = writer.stream_writer()?;
+
+        for _ in 0..8 {
+            let written = stream.write(&[1; 32])?;
+            assert_eq!(written, 32);
+            stream.flush()?;
+        }
+        stream.finish()?;
+        drop(writer);
+
+        {
+            cursor.set_position(0);
+            let mut decoder = Decoder::new(cursor).read_info().expect("A valid image");
+            let mut buffer = [0u8; 256];
+            decoder.next_frame(&mut buffer[..]).expect("Valid read");
+            assert_eq!(buffer, [1; 256]);
+        }
+
+        Ok(())
+    }
+
+    #[test]
+    fn stream_flushing_with_high_compression() -> Result<()> {
+        test_stream_flushing(Compression::High)
+    }
+
+    #[test]
+    fn stream_flushing_with_balanced_compression() -> Result<()> {
+        test_stream_flushing(Compression::Balanced)
+    }
+
+    #[test]
+    fn stream_flushing_with_fast_compression() -> Result<()> {
+        test_stream_flushing(Compression::Fast)
+    }
+
+    #[test]
+    fn stream_flushing_with_fastest_compression() -> Result<()> {
+        test_stream_flushing(Compression::Fastest)
+    }
+
+    #[test]
+    fn stream_flushing_with_no_compression() -> Result<()> {
+        test_stream_flushing(Compression::NoCompression)
+    }
+
     #[test]
     #[cfg(all(unix, not(target_pointer_width = "32")))]
     fn exper_error_on_huge_chunk() -> Result<()> {
@@ -2442,7 +2549,7 @@ mod tests {
     impl<R: Rng, W: Write> Write for RandomChunkWriter<R, W> {
         fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
             // choose a random length to write
-            let len = cmp::min(self.rng.gen_range(1..50), buf.len());
+            let len = cmp::min(self.rng.random_range(1..50), buf.len());
 
             self.w.write(&buf[0..len])
         }

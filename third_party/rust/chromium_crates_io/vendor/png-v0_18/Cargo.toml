@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.65"
+rust-version = "1.73"
 name = "png"
-version = "0.18.0-rc"
+version = "0.18.1"
 authors = ["The image-rs Developers"]
 build = false
 include = [
@@ -36,6 +36,11 @@ categories = ["multimedia::images"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/image-rs/image-png"
 
+[features]
+benchmarks = []
+unstable = ["crc32fast/nightly"]
+zlib-rs = ["flate2/zlib-rs"]
+
 [lib]
 name = "png"
 path = "src/lib.rs"
@@ -55,6 +60,12 @@ path = "examples/png-generate.rs"
 [[example]]
 name = "pngcheck"
 path = "examples/pngcheck.rs"
+
+[[bench]]
+name = "adam7"
+path = "benches/adam7.rs"
+harness = false
+required-features = ["benchmarks"]
 
 [[bench]]
 name = "decoder"
@@ -96,28 +107,22 @@ version = "0.5.1"
 version = "1.5.0"
 
 [dev-dependencies.clap]
-version = "3.0"
+version = "4.0"
 features = ["derive"]
 
 [dev-dependencies.criterion]
-version = "0.4.0"
-
-[dev-dependencies.getopts]
-version = "0.2.14"
+version = "0.7.0"
+features = ["cargo_bench_support"]
+default-features = false
 
 [dev-dependencies.glob]
 version = "0.3"
 
 [dev-dependencies.rand]
-version = "0.8.4"
+version = "0.9.2"
 
-[dev-dependencies.term]
-version = "1.0.1"
-
-[features]
-benchmarks = []
-unstable = ["crc32fast/nightly"]
-zlib-rs = ["flate2/zlib-rs"]
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies.criterion]
+version = "0.7.0"
 
 [lints.rust.unexpected_cfgs]
 level = "warn"

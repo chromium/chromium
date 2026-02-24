@@ -55,9 +55,9 @@ criterion_group!(benches, expand_paletted_all);
 criterion_main!(benches);
 
 fn get_random_bytes<R: Rng>(rng: &mut R, n: usize) -> Vec<u8> {
-    use rand::Fill;
+    use rand::TryRngCore;
     let mut result = vec![0u8; n];
-    result.as_mut_slice().try_fill(rng).unwrap();
+    rng.try_fill_bytes(result.as_mut_slice()).unwrap();
     result
 }
 
@@ -70,7 +70,7 @@ struct Input {
 
 impl Input {
     fn new(trns: TrnsPresence, src_bit_depth: u8, input_size_in_bytes: usize) -> Self {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
 
         // We provide RGB entries for 192 out of 256 possible indices and Alpha/Transparency
         // entries for 32 out of 256 possible indices.  Rationale for these numbers:
@@ -102,7 +102,7 @@ impl Input {
         samples_count * output_bytes_per_input_sample
     }
 
-    fn to_info(&self) -> Info {
+    fn to_info(&self) -> Info<'_> {
         create_info_from_plte_trns_bitdepth(&self.palette, self.trns.as_deref(), self.src_bit_depth)
     }
 }
@@ -116,7 +116,7 @@ fn bench_create_fn(c: &mut Criterion, plte_size: usize, trns_size: usize) {
     let mut group = c.benchmark_group("expand_paletted(ctor)");
     group.sample_size(1000);
 
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     let plte = get_random_bytes(&mut rng, 3 * plte_size as usize);
     let trns = get_random_bytes(&mut rng, trns_size as usize);
     let info = create_info_from_plte_trns_bitdepth(&plte, Some(&trns), 8);

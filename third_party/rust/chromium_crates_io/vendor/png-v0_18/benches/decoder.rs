@@ -66,7 +66,7 @@ fn bench_file(g: &mut BenchmarkGroup<WallTime>, data: Vec<u8>, name: String) {
     }
 
     let mut reader = create_reader(data.as_slice());
-    let mut image = vec![0; reader.output_buffer_size()];
+    let mut image = vec![0; reader.output_buffer_size().unwrap()];
     let info = reader.next_frame(&mut image).unwrap();
 
     g.throughput(Throughput::Bytes(info.buffer_size() as u64));
@@ -81,8 +81,8 @@ fn bench_file(g: &mut BenchmarkGroup<WallTime>, data: Vec<u8>, name: String) {
 /// This benchmarks decoding via a sequence of `Reader::read_row` calls.
 fn bench_read_row(g: &mut BenchmarkGroup<WallTime>, data: Vec<u8>, name: &str) {
     let reader = create_reader(data.as_slice());
-    let mut image = vec![0; reader.output_buffer_size()];
-    let bytes_per_row = reader.output_line_size(reader.info().width);
+    let mut image = vec![0; reader.output_buffer_size().unwrap()];
+    let bytes_per_row = reader.output_line_size(reader.info().width).unwrap();
     g.throughput(Throughput::Bytes(image.len() as u64));
     g.bench_with_input(name, &data, |b, data| {
         b.iter(|| {

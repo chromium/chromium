@@ -1,3 +1,47 @@
+## 0.18.1
+
+### Additions
+
+* Added `Filter::MinEntropy` for encoding, which selects the filter that
+  minimizes the Shannon entropy of the filtered row. ([#647])
+* Made `ScaledFloat::SCALING` constant public. ([#650])
+* Support skipping chunks without loading them into memory. ([#630])
+* Allow full unfiltering for partial data, enabling progressive decoding
+  use cases. ([#664])
+
+### Changes
+
+* Improved Paeth unfilter auto-vectorization by changing how loop state
+  is maintained. ([#635])
+* Added `portable_simd` Paeth unfiltering for 3bpp and 4bpp images on nightly.
+  ([#632], [#633])
+* Add early exit for adaptive filter selection when a perfect filter is found.
+  ([#646])
+* Ignore duplicate `acTL` chunks instead of producing errors. ([#651])
+* Require IDAT chunk(s) before fdAT chunks, as mandated by PNG specification.
+  ([#653])
+* Enforce `acTL` frame counts to be valid PNG 4-byte integers (capped at 2^31-1).
+  ([#673])
+
+### Fixes
+
+* Fixed and improved intra-doc links in documentation comments. ([#665])
+* Fixed nightly `portable_simd` build. ([#675])
+
+[#630]: https://github.com/image-rs/image-png/pull/630
+[#632]: https://github.com/image-rs/image-png/pull/632
+[#633]: https://github.com/image-rs/image-png/pull/633
+[#635]: https://github.com/image-rs/image-png/pull/635
+[#646]: https://github.com/image-rs/image-png/pull/646
+[#647]: https://github.com/image-rs/image-png/pull/647
+[#650]: https://github.com/image-rs/image-png/pull/650
+[#651]: https://github.com/image-rs/image-png/pull/651
+[#653]: https://github.com/image-rs/image-png/pull/653
+[#664]: https://github.com/image-rs/image-png/pull/664
+[#665]: https://github.com/image-rs/image-png/pull/665
+[#673]: https://github.com/image-rs/image-png/pull/673
+[#675]: https://github.com/image-rs/image-png/pull/675
+
 ## 0.18.0
 
 ### API Breaking Changes
@@ -6,12 +50,46 @@
 * Improved the compression settings API for encoding.
 * `Decoder` now requires a reader that implements `Seek` and `BufRead` traits.
 * Bump bitflags dependency to 2.0.
+* `StreamingDecoder::update` now takes a structured `UnfilterBuf` argument
+  instead of a direct reference to a vector. This allows in-place
+  decompression. There is a public constructor for `UnfilterBuf`.
+* The methods `Decoder::output_buffer_size` and `output_line_size` now return
+  `Option<usize>` to reflect that these calculations no longer overflow on some
+  targets where the required buffers can not be represented in the address
+  space. They return the mathematically correct size where possible.
+* The `Decoded` enum returned from `StreamingDecoder::update` was simplified to
+  no longer contains any chunk payload data. Instead, it now contains only
+  chunk events where every chunk that was started will eventually be ended by
+  `ChunkComplete`, `BadAncillaryChunk` or `SkippedAncillaryChunk`.
+* Ancillary chunks, i.e. those not critical to decoder interpretation of the
+  file, which fail to parse are now terminated with a `BadAncillaryChunk` event
+  but no longer returned a `DecodingError`. This includes text chunks as well
+  as many metadata chunks (except for `fcTL` that we deem crucial to the
+  parser's understanding of the image sequence in an APNG despite being
+  technically ancillary).
 
-### Other additions
+### Additions
 
 * Added `Reader::read_row` method.
 * Add support for parsing eXIf chunk.
 * Treat most auxiliary chunk errors as benign.
+* Added `splat_interlaced_row`, which implements an alternative method for
+  merging Adam7 interlaced lines into the output buffer that is more suitable
+  for the presentation of progressive states of the buffer.
+* Added `Adam7Variant` documenting the various methods for applying interlaced
+  rows and to prepare an API to progressively read frames through `Decoder`.
+
+### Changes
+
+* The decoding of Adam7 interlaced data is now much faster.
+* The `acTL` chunk is now ignored when it is invalid, instead of producing
+  errors while reading or decoding the following APNG chunks.
+* The requirement of the `fcTL` chunk for the default image to match the IHDR's
+  indicate image size is now enforced.
+* More minor format errors in auxiliary chunks are now ignored by the decoder,
+  instead disregarding the malformed chunk.
+* Adam7 Interlacing on 32-bit targets now handles some cases correctly that
+  previously wrote some bytes to the wrong pixel indices due to overflows.
 
 ## 0.17.16
 

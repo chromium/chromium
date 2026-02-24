@@ -134,12 +134,12 @@ class TestFastPairSavedDevicesHandler : public FastPairSavedDevicesHandler {
 
 const char* GetExpectedImageDataUrl() {
   return "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/"
-         "gAIDAAAA10lEQVR4nOzQMQEAMAjAMA78W94s0D+"
-         "RkJ03HO1wJiuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrE"
-         "BWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQF"
-         "cgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWy"
-         "AlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFXwAAAD//"
-         "yb4x2UAAAAGSURBVAMAZRgCkGqWb1EAAAAASUVORK5CYII=";
+         "gAIDAAAA10lEQVR4nOzQQQ0AIAwAsYXg3zJY2P1bCb3zhqUzrMkKZAWyAlmBrEBWICuQ"
+         "FcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWy"
+         "AlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEB"
+         "WICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQFcgKZAWyAlmBrEBWICuQF"
+         "cgKZAWyAlmBrEBWICuQFcgKZAUfAAD//"
+         "7xo61IAAAAGSURBVAMA6ioByljQE+sAAAAASUVORK5CYII=";
 }
 
 }  // namespace

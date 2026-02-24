@@ -1011,7 +1011,7 @@ dependencies = [
 
 [[package]]
 name = "png"
-version = "0.18.0-rc"
+version = "0.18.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "bitflags 2.11.0",

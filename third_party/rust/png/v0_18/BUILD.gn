@@ -28,14 +28,16 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/decoder/unfiltering_buffer.rs",
     "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/decoder/zlib.rs",
     "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/encoder.rs",
-    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/filter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/filter/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/filter/paeth.rs",
+    "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/filter/simd.rs",
     "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/lib.rs",
     "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/srgb.rs",
     "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/test_utils.rs",
     "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/text_metadata.rs",
     "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/traits.rs",
   ]
-  inputs = []
+  inputs = [ "//third_party/rust/chromium_crates_io/vendor/png-v0_18/src/filter/optimization-notes.md" ]
 
   build_native_rust_unit_tests = false
   edition = "2021"
@@ -43,7 +45,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "png"
   cargo_pkg_description = "PNG decoding and encoding library in pure Rust"
   cargo_pkg_repository = "https://github.com/image-rs/image-png"
-  cargo_pkg_version = "0.18.0-rc"
+  cargo_pkg_version = "0.18.1"
 
   allow_unsafe = false
 

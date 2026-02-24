@@ -63,7 +63,7 @@ fn main() {
         File::open(input_path).expect("Failed to open input file"),
     ));
     let mut reader = decoder.read_info().expect("Failed to read PNG info");
-    let mut buf = vec![0; reader.output_buffer_size()];
+    let mut buf = vec![0; reader.output_buffer_size().expect("Output too big")];
     let first_frame = reader.next_frame(&mut buf).expect("Failed to read PNG frame");
     let input_rgba = &buf[..first_frame.buffer_size()];
     let etc1_data_width = first_frame.width.div_ceil(4);

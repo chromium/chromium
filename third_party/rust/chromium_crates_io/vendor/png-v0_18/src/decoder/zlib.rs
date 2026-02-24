@@ -1,6 +1,59 @@
-use super::{stream::FormatErrorInner, DecodingError, CHUNK_BUFFER_SIZE};
+use super::{stream::FormatErrorInner, unfiltering_buffer::UnfilteringBuffer, DecodingError};
 
 use fdeflate::Decompressor;
+
+/// [PNG spec](https://www.w3.org/TR/2003/REC-PNG-20031110/#10Compression) says that
+/// "deflate/inflate compression with a sliding window (which is an upper bound on the
+/// distances appearing in the deflate stream) of at most 32768 bytes".
+///
+/// `fdeflate` requires that we keep this many most recently decompressed bytes in the
+/// `out_buffer` - this allows referring back to them when handling "length and distance
+/// codes" in the deflate stream).
+const LOOKBACK_SIZE: usize = 32768;
+
+/// A buffer for decompression and in-place filtering of PNG rowlines.
+///
+/// The underlying data structure is a vector, with additional markers dividing
+/// the vector into specific regions of bytes - see [`UnfilterRegion`] for more
+/// details.
+pub struct UnfilterBuf<'data> {
+    /// The data container.
+    pub(crate) buffer: &'data mut [u8],
+    /// The past-the-end index of the region that is allowed to be modified.
+    pub(crate) available: &'data mut usize,
+    /// The past-the-end index of the region with decompressed bytes.
+    pub(crate) filled: &'data mut usize,
+}
+
+/// `UnfilterRegion` divides a `Vec<u8>` buffer into three consecutive regions:
+///
+/// * `vector[0..available]` - bytes that may be mutated (this typically means
+///   bytes that were decompressed earlier, but user of the buffer may also use
+///   this region for storing other data)
+/// * `vector[available..filled]` - already decompressed bytes that need to be
+///   preserved. (Future decompressor calls may reference and copy bytes from
+///   this region.  The maximum `filled - available` "look back" distance for
+///   [PNG compression method 0](https://www.w3.org/TR/png-3/#10CompressionCM0)
+///   is 32768 bytes)
+/// * `vector[filled..]` - buffer where future decompressor calls can write
+///   additional decompressed bytes
+///
+/// Even though only `vector[0..available]` bytes can be mutated, it is allowed
+/// to "shift" or "move" the contents of vector, as long as the:
+///
+/// * `vector[available..filled]` bytes are preserved
+/// * `available` and `filled` offsets are updated
+///
+/// Violating the invariants described above (e.g. mutating the bytes in the
+/// `vector[available..filled]` region) may result in absurdly wacky
+/// decompression output or panics, but not undefined behavior.
+#[derive(Default, Clone, Copy)]
+pub struct UnfilterRegion {
+    /// The past-the-end index of the region that is allowed to be modified.
+    pub available: usize,
+    /// The past-the-end index of the region with decompressed bytes.
+    pub filled: usize,
+}
 
 /// Ergonomics wrapper around `miniz_oxide::inflate::stream` for zlib compressed data.
 pub(super) struct ZlibStream {
@@ -8,20 +61,6 @@ pub(super) struct ZlibStream {
     state: Box<fdeflate::Decompressor>,
     /// If there has been a call to decompress already.
     started: bool,
-    /// Remaining buffered decoded bytes.
-    /// The decoder sometimes wants inspect some already finished bytes for further decoding. So we
-    /// keep a total of 32KB of decoded data available as long as more data may be appended.
-    out_buffer: Vec<u8>,
-    /// The first index of `out_buffer` where new data can be written.
-    out_pos: usize,
-    /// The first index of `out_buffer` that hasn't yet been passed to our client
-    /// (i.e. not yet appended to the `image_data` parameter of `fn decompress` or `fn
-    /// finish_compressed_chunks`).
-    read_pos: usize,
-    /// Limit on how many bytes can be decompressed in total.  This field is mostly used for
-    /// performance optimizations (e.g. to avoid allocating and zeroing out large buffers when only
-    /// a small image is being decoded).
-    max_total_output: usize,
     /// Ignore and do not calculate the Adler-32 checksum. Defaults to `true`.
     ///
     /// This flag overrides `TINFL_FLAG_COMPUTE_ADLER32`.
@@ -35,25 +74,13 @@ impl ZlibStream {
         ZlibStream {
             state: Box::new(Decompressor::new()),
             started: false,
-            out_buffer: Vec::new(),
-            out_pos: 0,
-            read_pos: 0,
-            max_total_output: usize::MAX,
             ignore_adler32: true,
         }
     }
 
     pub(crate) fn reset(&mut self) {
         self.started = false;
-        self.out_buffer.clear();
-        self.out_pos = 0;
-        self.read_pos = 0;
-        self.max_total_output = usize::MAX;
         *self.state = Decompressor::new();
-    }
-
-    pub(crate) fn set_max_total_output(&mut self, n: usize) {
-        self.max_total_output = n;
     }
 
     /// Set the `ignore_adler32` flag and return `true` if the flag was
@@ -82,7 +109,7 @@ impl ZlibStream {
     pub(crate) fn decompress(
         &mut self,
         data: &[u8],
-        image_data: &mut Vec<u8>,
+        image_data: &mut UnfilterBuf<'_>,
     ) -> Result<usize, DecodingError> {
         // There may be more data past the adler32 checksum at the end of the deflate stream. We
         // match libpng's default behavior and ignore any trailing data. In the future we may want
@@ -91,140 +118,136 @@ impl ZlibStream {
             return Ok(data.len());
         }
 
-        self.prepare_vec_for_appending();
-
         if !self.started && self.ignore_adler32 {
             self.state.ignore_adler32();
         }
 
-        let (in_consumed, out_consumed) = self
-            .state
-            .read(data, self.out_buffer.as_mut_slice(), self.out_pos, false)
-            .map_err(|err| {
-                DecodingError::Format(FormatErrorInner::CorruptFlateStream { err }.into())
-            })?;
-
+        let in_consumed = image_data.decompress(&mut self.state, data)?;
         self.started = true;
-        self.out_pos += out_consumed;
-        self.transfer_finished_data(image_data);
-        self.compact_out_buffer_if_needed();
 
         Ok(in_consumed)
     }
 
-    /// Called after all consecutive IDAT chunks were handled.
+    /// Output any remaining buffered data within the decompressor.
     ///
-    /// The compressed stream can be split on arbitrary byte boundaries. This enables some cleanup
-    /// within the decompressor and flushing additional data which may have been kept back in case
-    /// more data were passed to it.
-    pub(crate) fn finish_compressed_chunks(
+    /// Returns `Ok(true)` if all data has been decompressed and there is no
+    /// more data that will be produced, or `Ok(false)` if there's potentially
+    /// more output.
+    ///
+    /// Returns `Err` if the zlib stream is corrupt or truncated too early.
+    pub(crate) fn finish(
         &mut self,
-        image_data: &mut Vec<u8>,
-    ) -> Result<(), DecodingError> {
-        if !self.started {
-            return Ok(());
+        image_data: &mut UnfilterBuf<'_>,
+    ) -> Result<bool, DecodingError> {
+        if !self.started || self.state.is_done() {
+            return Ok(true);
         }
 
-        while !self.state.is_done() {
-            self.prepare_vec_for_appending();
-            let (_in_consumed, out_consumed) = self
-                .state
-                .read(&[], self.out_buffer.as_mut_slice(), self.out_pos, true)
-                .map_err(|err| {
-                    DecodingError::Format(FormatErrorInner::CorruptFlateStream { err }.into())
-                })?;
+        // If the zlib stream isn't done but we've already output all the pixel
+        // data needed, then either there's too much compressed data or the
+        // checksum is missing. Those aren't allowed by the spec, but libpng
+        // generally doesn't treat them as fatal.
+        if *image_data.filled == image_data.buffer.len() {
+            return Ok(true);
+        }
 
-            self.out_pos += out_consumed;
+        let (_, out_consumed) = self
+            .state
+            .read(
+                &[],
+                &mut image_data.buffer[*image_data.available..],
+                *image_data.filled - *image_data.available,
+                false,
+            )
+            .map_err(|err| {
+                DecodingError::Format(FormatErrorInner::CorruptFlateStream { err }.into())
+            })?;
+        *image_data.filled += out_consumed;
 
-            if !self.state.is_done() {
-                let transferred = self.transfer_finished_data(image_data);
-                assert!(
-                    transferred > 0 || out_consumed > 0,
-                    "No more forward progress made in stream decoding."
-                );
-                self.compact_out_buffer_if_needed();
+        if self.state.is_done() {
+            *image_data.available = *image_data.filled;
+            return Ok(true);
+        }
+
+        // More output is only possible if zlib stream hasn't finished and the
+        // output buffer *is* full. (Empty space in the output buffer tells us
+        // there wasn't more data to write into it.)
+        if *image_data.filled == image_data.buffer.len() {
+            *image_data.available =
+                (*image_data.available).max(image_data.filled.saturating_sub(LOOKBACK_SIZE));
+            return Ok(false);
+        }
+
+        // The zlib stream was truncated before the end of the pixel data. This
+        // would ordinarily be caught within fdeflate if we'd passed
+        // end_of_input=true. But we intentionally don't pass that flag so that
+        // we're able to drain all available pixel data first.
+        Err(DecodingError::Format(
+            FormatErrorInner::CorruptFlateStream {
+                err: fdeflate::DecompressionError::InsufficientInput,
+            }
+            .into(),
+        ))
+    }
+}
+
+impl UnfilterRegion {
+    /// Use this region to decompress new filtered rowline data.
+    ///
+    /// Pass the wrapped buffer to
+    /// [`StreamingDecoder::update`][`super::stream::StreamingDecoder::update`] to fill it with
+    /// data and update the region indices.
+    ///
+    /// May panic if invariants of [`UnfilterRegion`] are violated.
+    pub fn as_buf<'data>(&'data mut self, buffer: &'data mut Vec<u8>) -> UnfilterBuf<'data> {
+        assert!(self.available <= self.filled);
+        assert!(self.filled <= buffer.len());
+        UnfilterBuf {
+            buffer,
+            filled: &mut self.filled,
+            available: &mut self.available,
+        }
+    }
+}
+
+impl UnfilterBuf<'_> {
+    /// Pushes `input` into `fdeflate` crate and appends decompressed bytes to `self.buffer`
+    /// (adjusting `self.filled` and `self.available` depending on how many bytes have been
+    /// decompressed).
+    ///
+    /// Returns how many bytes of `input` have been consumed.
+    #[inline]
+    fn decompress(
+        &mut self,
+        decompressor: &mut fdeflate::Decompressor,
+        input: &[u8],
+    ) -> Result<usize, DecodingError> {
+        let output_limit = (*self.filled + UnfilteringBuffer::GROWTH_BYTES).min(self.buffer.len());
+        let (in_consumed, out_consumed) = decompressor
+            .read(
+                input,
+                &mut self.buffer[*self.available..output_limit],
+                *self.filled - *self.available,
+                false,
+            )
+            .map_err(|err| {
+                DecodingError::Format(FormatErrorInner::CorruptFlateStream { err }.into())
+            })?;
+
+        *self.filled += out_consumed;
+        if decompressor.is_done() {
+            *self.available = *self.filled;
+        } else if let Some(new_available) = self.filled.checked_sub(LOOKBACK_SIZE) {
+            // The decompressed data may have started in the middle of the buffer,
+            // so ensure that `self.available` never goes backward.  This is needed
+            // to avoid miscommunicating the size of the "look-back" window when calling
+            // `fdeflate::Decompressor::read` a bit earlier and passing
+            // `&mut self.buffer[*self.available..output_limit]`.
+            if new_available > *self.available {
+                *self.available = new_available;
             }
         }
 
-        self.transfer_finished_data(image_data);
-        self.out_buffer.clear();
-        Ok(())
-    }
-
-    /// Resize the vector to allow allocation of more data.
-    fn prepare_vec_for_appending(&mut self) {
-        // The `debug_assert` below explains why we can use `>=` instead of `>` in the condition
-        // that compares `self.out_post >= self.max_total_output` in the next `if` statement.
-        debug_assert!(!self.state.is_done());
-        if self.out_pos >= self.max_total_output {
-            // This can happen when the `max_total_output` was miscalculated (e.g.
-            // because the `IHDR` chunk was malformed and didn't match the `IDAT` chunk).  In
-            // this case, let's reset `self.max_total_output` before further calculations.
-            self.max_total_output = usize::MAX;
-        }
-
-        let current_len = self.out_buffer.len();
-        let desired_len = self
-            .out_pos
-            .saturating_add(CHUNK_BUFFER_SIZE)
-            .min(self.max_total_output);
-        if current_len >= desired_len {
-            return;
-        }
-
-        let buffered_len = self.decoding_size(self.out_buffer.len());
-        debug_assert!(self.out_buffer.len() <= buffered_len);
-        self.out_buffer.resize(buffered_len, 0u8);
-    }
-
-    fn decoding_size(&self, len: usize) -> usize {
-        // Allocate one more chunk size than currently or double the length while ensuring that the
-        // allocation is valid and that any cursor within it will be valid.
-        len
-            // This keeps the buffer size a power-of-two, required by miniz_oxide.
-            .saturating_add(CHUNK_BUFFER_SIZE.max(len))
-            // Ensure all buffer indices are valid cursor positions.
-            // Note: both cut off and zero extension give correct results.
-            .min(u64::MAX as usize)
-            // Ensure the allocation request is valid.
-            // TODO: maximum allocation limits?
-            .min(isize::MAX as usize)
-            // Don't unnecessarily allocate more than `max_total_output`.
-            .min(self.max_total_output)
-    }
-
-    fn transfer_finished_data(&mut self, image_data: &mut Vec<u8>) -> usize {
-        let transferred = &self.out_buffer[self.read_pos..self.out_pos];
-        image_data.extend_from_slice(transferred);
-        self.read_pos = self.out_pos;
-        transferred.len()
-    }
-
-    fn compact_out_buffer_if_needed(&mut self) {
-        // [PNG spec](https://www.w3.org/TR/2003/REC-PNG-20031110/#10Compression) says that
-        // "deflate/inflate compression with a sliding window (which is an upper bound on the
-        // distances appearing in the deflate stream) of at most 32768 bytes".
-        //
-        // `fdeflate` requires that we keep this many most recently decompressed bytes in the
-        // `out_buffer` - this allows referring back to them when handling "length and distance
-        // codes" in the deflate stream).
-        const LOOKBACK_SIZE: usize = 32768;
-
-        // Compact `self.out_buffer` when "needed".  Doing this conditionally helps to put an upper
-        // bound on the amortized cost of copying the data within `self.out_buffer`.
-        //
-        // TODO: The factor of 4 is an ad-hoc heuristic.  Consider measuring and using a different
-        // factor.  (Early experiments seem to indicate that factor of 4 is faster than a factor of
-        // 2 and 4 * `LOOKBACK_SIZE` seems like an acceptable memory trade-off.  Higher factors
-        // result in higher memory usage, but the compaction cost is lower - factor of 4 means
-        // that 1 byte gets copied during compaction for 3 decompressed bytes.)
-        if self.out_pos > LOOKBACK_SIZE * 4 {
-            // Only preserve the `lookback_buffer` and "throw away" the earlier prefix.
-            let lookback_buffer = self.out_pos.saturating_sub(LOOKBACK_SIZE)..self.out_pos;
-            let preserved_len = lookback_buffer.len();
-            self.out_buffer.copy_within(lookback_buffer, 0);
-            self.read_pos = preserved_len;
-            self.out_pos = preserved_len;
-        }
+        Ok(in_consumed)
     }
 }
