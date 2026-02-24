@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -263,29 +264,21 @@ TEST(WaitableEventTest, ZeroTimeout) {
 // Tests that TimedWait() doesn't instantiate a ScopedBlockingCall if the
 // WaitableEvent is already signaled.
 TEST(WaitableEventTest, TimedWaitDoesNotBlockIfAlreadySignaled) {
-  WaitableEvent event(WaitableEvent::ResetPolicy::AUTOMATIC,
+  WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
                       WaitableEvent::InitialState::SIGNALED);
 
-  TimeDelta short_delay = Milliseconds(10);
-  TimeTicks start_time = TimeTicks::Now();
+  const TimeDelta short_delay = TestTimeouts::tiny_timeout();
+  const TimeTicks start_time = TimeTicks::Now();
   EXPECT_TRUE(event.TimedWait(short_delay));
-  TimeDelta actual_delay = TimeTicks::Now() - start_time;
+  const TimeDelta actual_delay = TimeTicks::Now() - start_time;
   // TimedWait() should return almost immediately.
   EXPECT_LE(actual_delay, short_delay / 2);
 }
 
 // Verifies the suggestion that AssertBaseSyncPrimitivesAllowed() is called even
 // if the event is already signaled and the wait skipped.
-// EXPECT_DCHECK_DEATH() not available in iOS.
-#if BUILDFLAG(IS_IOS)
-#define MAYBE_TimedWaitRespectsRestrictionsEvenIfSignaled \
-  DISABLED_TimedWaitRespectsRestrictionsEvenIfSignaled
-#else
-#define MAYBE_TimedWaitRespectsRestrictionsEvenIfSignaled \
-  TimedWaitRespectsRestrictionsEvenIfSignaled
-#endif
-TEST(WaitableEventTest, MAYBE_TimedWaitRespectsRestrictionsEvenIfSignaled) {
-  WaitableEvent event(WaitableEvent::ResetPolicy::AUTOMATIC,
+TEST(WaitableEventTest, TimedWaitRespectsRestrictionsEvenIfSignaled) {
+  WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
                       WaitableEvent::InitialState::SIGNALED);
   DisallowBaseSyncPrimitives();
   EXPECT_DCHECK_DEATH({ event.TimedWait(Milliseconds(10)); });
