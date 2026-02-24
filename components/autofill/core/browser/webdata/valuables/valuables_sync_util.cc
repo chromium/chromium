@@ -23,66 +23,66 @@ void TrimLoyaltyCard(sync_pb::LoyaltyCard& card) {
   card.clear_merchant_domains();
 }
 
-void TrimVehicleRegistration(sync_pb::VehicleRegistration& pass) {
-  pass.clear_vehicle_make();
-  pass.clear_vehicle_model();
-  pass.clear_vehicle_year();
-  pass.clear_vehicle_identification_number();
-  pass.clear_vehicle_license_plate();
-  pass.clear_license_plate_region();
-  pass.clear_license_plate_country();
-  pass.clear_owner_name();
-  pass.clear_issuer_name();
+void TrimVehicleRegistration(sync_pb::VehicleRegistration& vehicle) {
+  vehicle.clear_vehicle_make();
+  vehicle.clear_vehicle_model();
+  vehicle.clear_vehicle_year();
+  vehicle.clear_vehicle_identification_number();
+  vehicle.clear_vehicle_license_plate();
+  vehicle.clear_license_plate_region();
+  vehicle.clear_license_plate_country();
+  vehicle.clear_owner_name();
+  vehicle.clear_issuer_name();
 }
 
-void TrimFlightReservation(sync_pb::FlightReservation& pass) {
-  pass.clear_flight_number();
-  pass.clear_flight_ticket_number();
-  pass.clear_flight_confirmation_code();
-  pass.clear_passenger_name();
-  pass.clear_departure_airport();
-  pass.clear_arrival_airport();
-  pass.clear_departure_date_unix_epoch_micros();
-  pass.clear_arrival_date_unix_epoch_micros();
-  pass.clear_airline_logo();
-  pass.clear_carrier_code();
-  pass.clear_departure_airport_utc_offset_seconds();
-  pass.clear_arrival_airport_utc_offset_seconds();
+void TrimFlightReservation(sync_pb::FlightReservation& flight_reservation) {
+  flight_reservation.clear_flight_number();
+  flight_reservation.clear_flight_ticket_number();
+  flight_reservation.clear_flight_confirmation_code();
+  flight_reservation.clear_passenger_name();
+  flight_reservation.clear_departure_airport();
+  flight_reservation.clear_arrival_airport();
+  flight_reservation.clear_departure_date_unix_epoch_micros();
+  flight_reservation.clear_arrival_date_unix_epoch_micros();
+  flight_reservation.clear_airline_logo();
+  flight_reservation.clear_carrier_code();
+  flight_reservation.clear_departure_airport_utc_offset_seconds();
+  flight_reservation.clear_arrival_airport_utc_offset_seconds();
 }
 
-void TrimPassport(sync_pb::Passport& pass) {
-  pass.clear_owner_name();
-  pass.clear_masked_number();
-  pass.clear_country_code();
-  pass.clear_issue_date();
-  pass.clear_expiration_date();
+void TrimPassport(sync_pb::Passport& passport) {
+  passport.clear_owner_name();
+  passport.clear_masked_number();
+  passport.clear_country_code();
+  passport.clear_issue_date();
+  passport.clear_expiration_date();
 }
 
-void TrimDriverLicense(sync_pb::DriverLicense& pass) {
-  pass.clear_owner_name();
-  pass.clear_masked_number();
-  pass.clear_region();
-  pass.clear_issue_date();
-  pass.clear_expiration_date();
+void TrimDriverLicense(sync_pb::DriverLicense& driver_license) {
+  driver_license.clear_owner_name();
+  driver_license.clear_masked_number();
+  driver_license.clear_region();
+  driver_license.clear_issue_date();
+  driver_license.clear_expiration_date();
 }
 
-void TrimNationalIdCard(sync_pb::NationalIdCard& pass) {
-  pass.clear_owner_name();
-  pass.clear_masked_number();
-  pass.clear_country_code();
-  pass.clear_issue_date();
-  pass.clear_expiration_date();
+void TrimNationalIdCard(sync_pb::NationalIdCard& national_id_card) {
+  national_id_card.clear_owner_name();
+  national_id_card.clear_masked_number();
+  national_id_card.clear_country_code();
+  national_id_card.clear_issue_date();
+  national_id_card.clear_expiration_date();
 }
 
-void TrimRedressNumber(sync_pb::RedressNumber& pass) {
-  pass.clear_owner_name();
-  pass.clear_masked_number();
+void TrimRedressNumber(sync_pb::RedressNumber& redress_number) {
+  redress_number.clear_owner_name();
+  redress_number.clear_masked_number();
 }
 
-void TrimKnownTravelerNumber(sync_pb::KnownTravelerNumber& pass) {
-  pass.clear_owner_name();
-  pass.clear_masked_number();
-  pass.clear_expiration_date();
+void TrimKnownTravelerNumber(sync_pb::KnownTravelerNumber& ktn) {
+  ktn.clear_owner_name();
+  ktn.clear_masked_number();
+  ktn.clear_expiration_date();
 }
 
 }  // namespace
