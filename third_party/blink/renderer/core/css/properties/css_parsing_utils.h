@@ -219,8 +219,8 @@ cssvalue::CSSScopedKeywordValue* ConsumeScopedKeywordValue(
 CSSStringValue* ConsumeString(CSSParserTokenStream&);
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream&,
                                   const CSSParserContext&);
-CSSURLPatternValue* ConsumeUrlPattern(CSSParserTokenStream&,
-                                      const CSSParserContext&);
+CORE_EXPORT CSSURLPatternValue* ConsumeUrlPattern(CSSParserTokenStream&,
+                                                  const CSSParserContext&);
 
 // Some properties accept non-standard colors, like rgb values without a
 // preceding hash, in quirks mode.

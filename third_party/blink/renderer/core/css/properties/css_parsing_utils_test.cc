@@ -518,5 +518,76 @@ TEST(CSSParsingUtilsTest, ConsumeRevertRuleUnderFlags) {
   }
 }
 
+TEST(CSSParsingUtilsTest, ConsumeUrlPattern) {
+  using css_parsing_utils::ConsumeUrlPattern;
+
+  const CSSParserContext* context = MakeContext(kHTMLStandardMode);
+
+  // Basic valid case.
+  {
+    String text = "url-pattern(\"foo\")";
+    CSSParserTokenStream stream(text);
+    EXPECT_TRUE(ConsumeUrlPattern(stream, *context));
+    EXPECT_TRUE(stream.AtEnd());
+  }
+
+  // Whitespace around argument.
+  {
+    String text = "url-pattern( \"foo\" )";
+    CSSParserTokenStream stream(text);
+    EXPECT_TRUE(ConsumeUrlPattern(stream, *context));
+    EXPECT_TRUE(stream.AtEnd());
+  }
+
+  // Clean up whitespace after block.
+  {
+    String text = "url-pattern(\"foo\")   ";
+    CSSParserTokenStream stream(text);
+    EXPECT_TRUE(ConsumeUrlPattern(stream, *context));
+    EXPECT_TRUE(stream.AtEnd());
+  }
+
+  // Invalid cases:
+
+  {
+    String text = "url-pattern()";
+    CSSParserTokenStream stream(text);
+    EXPECT_FALSE(ConsumeUrlPattern(stream, *context));
+  }
+
+  {
+    String text = "url-pattern(0)";  // As seen in crbug.com/485056787.
+    CSSParserTokenStream stream(text);
+    EXPECT_FALSE(ConsumeUrlPattern(stream, *context));
+  }
+
+  {
+    String text = "url-pattern(ident)";
+    CSSParserTokenStream stream(text);
+    EXPECT_FALSE(ConsumeUrlPattern(stream, *context));
+  }
+
+  {
+    String text = "url-pattern(!)";
+    CSSParserTokenStream stream(text);
+    EXPECT_FALSE(ConsumeUrlPattern(stream, *context));
+  }
+
+  {
+    String text = "url-pattern(ident())";
+    CSSParserTokenStream stream(text);
+    EXPECT_FALSE(ConsumeUrlPattern(stream, *context));
+  }
+
+  {
+    String text = "url-pattern(\"foo\" junk)";
+    CSSParserTokenStream stream(text);
+    EXPECT_FALSE(ConsumeUrlPattern(stream, *context));
+    // On failure, ConsumeUrlPattern should return the stream
+    // in its origin state:
+    EXPECT_EQ(CSSValueID::kUrlPattern, stream.Peek().FunctionId());
+  }
+}
+
 }  // namespace
 }  // namespace blink

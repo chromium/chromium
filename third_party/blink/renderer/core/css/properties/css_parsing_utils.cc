@@ -1821,35 +1821,29 @@ cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream& stream,
   return MakeGarbageCollected<cssvalue::CSSURIValue>(
       *CollectUrlData(url.Value(), context));
 }
+
+// https://drafts.csswg.org/css-navigation-1/#funcdef-url-pattern
 CSSURLPatternValue* ConsumeUrlPattern(CSSParserTokenStream& stream,
                                       const CSSParserContext& context) {
-  wtf_size_t value_start_offset = stream.LookAheadOffset();
-  stream.EnsureLookAhead();
-
-  CSSParserToken token = stream.Peek();
-  if (token.GetType() != kFunctionToken ||
-      token.FunctionId() != CSSValueID::kUrlPattern) {
+  // url-pattern( <string> )
+  if (stream.Peek().FunctionId() != CSSValueID::kUrlPattern) {
     return nullptr;
   }
 
-  {
-    CSSParserTokenStream::RestoringBlockGuard guard(stream);
-    stream.ConsumeWhitespace();
-    token = stream.ConsumeIncludingWhitespace();
-    if (token.GetType() == kBadStringToken || !stream.AtEnd()) {
-      return nullptr;
-    }
-    guard.Release();
+  CSSParserTokenStream::RestoringBlockGuard guard(stream);
+  stream.ConsumeWhitespace();
+  if (stream.Peek().GetType() != kStringToken) {
+    return nullptr;
   }
-  DCHECK_EQ(token.GetType(), kStringToken);
+  AtomicString value =
+      stream.ConsumeIncludingWhitespace().Value().ToAtomicString();
+  if (!guard.Release()) {
+    // Trailing junk after <string>.
+    return nullptr;
+  }
   stream.ConsumeWhitespace();
 
-  wtf_size_t value_end_offset = stream.LookAheadOffset();
-  if (stream.IsAttrTainted(value_start_offset, value_end_offset)) {
-    return nullptr;
-  }
-
-  return MakeGarbageCollected<CSSURLPatternValue>(AtomicString(token.Value()));
+  return MakeGarbageCollected<CSSURLPatternValue>(value);
 }
 
 struct ColorInterpolationSpace {
