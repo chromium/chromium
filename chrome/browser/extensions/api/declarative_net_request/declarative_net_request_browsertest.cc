@@ -7058,10 +7058,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestWebTransportTest, BlockRequests) {
   rule2.condition->request_methods = {"connect"};
   rules.push_back(rule2);
 
-  TestRule rule4 = CreateGenericRule(3);
-  rule4.condition->url_filter = "echo3_exclude";
-  rule4.condition->excluded_request_methods = {"connect"};
-  rules.push_back(rule4);
+  TestRule rule3 = CreateGenericRule(3);
+  rule3.condition->url_filter = "echo3_exclude";
+  rule3.condition->excluded_request_methods = {"connect"};
+  rules.push_back(rule3);
 
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(rules));
 
