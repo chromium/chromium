@@ -1730,9 +1730,9 @@ id RenderWidgetHostViewMac::GetAccessibilityElement() {
 
 id RenderWidgetHostViewMac::GetRootBrowserAccessibilityElement() {
   if (auto* manager = host()->GetRootBrowserAccessibilityManager()) {
-    return manager->GetBrowserAccessibilityRoot()
-        ->GetNativeViewAccessible()
-        .Get();
+    if (auto* root = manager->GetBrowserAccessibilityRoot()) {
+      return root->GetNativeViewAccessible().Get();
+    }
   }
   return nil;
 }
