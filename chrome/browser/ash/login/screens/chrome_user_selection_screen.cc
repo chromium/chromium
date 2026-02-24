@@ -19,8 +19,6 @@
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/lock_screen_utils.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "components/account_id/account_id.h"
@@ -40,14 +38,14 @@ namespace ash {
 ChromeUserSelectionScreen::ChromeUserSelectionScreen(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     DisplayedScreen display_type)
     : UserSelectionScreen(local_state,
                           application_locale_storage,
+                          browser_policy_connector_ash,
                           display_type) {
   device_local_account_policy_service_ =
-      g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->GetDeviceLocalAccountPolicyService();
+      browser_policy_connector_ash->GetDeviceLocalAccountPolicyService();
   if (device_local_account_policy_service_) {
     device_local_account_policy_service_->AddObserver(this);
   }

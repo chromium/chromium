@@ -30,6 +30,10 @@ class AccountId;
 class ApplicationLocaleStorage;
 class PrefService;
 
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
+
 namespace ash {
 
 class SmartLockService;
@@ -45,11 +49,12 @@ class UserSelectionScreen
       public PasswordSyncTokenLoginChecker::Observer,
       public UserOnlineSigninNotifier::Observer {
  public:
-  // `local_state` and `application_locale_storage` must be non-null and must
-  // outlive `this`.
+  // `local_state`, `application_locale_storage`, and
+  // `browser_policy_connector_ash` must be non-null and must outlive `this`.
   UserSelectionScreen(
       PrefService* local_state,
       const ApplicationLocaleStorage* application_locale_storage,
+      const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       DisplayedScreen display_type);
 
   UserSelectionScreen(const UserSelectionScreen&) = delete;
@@ -109,6 +114,8 @@ class UserSelectionScreen
  protected:
   const raw_ref<PrefService> local_state_;
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const raw_ref<const policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
 
   raw_ptr<UserBoardView> view_ = nullptr;
 

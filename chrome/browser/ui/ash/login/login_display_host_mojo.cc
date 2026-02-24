@@ -54,6 +54,7 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -195,6 +196,7 @@ LoginDisplayHostMojo::LoginDisplayHostMojo(
           // TODO(crbug.com/404133029): Avoid using g_browser_process.
           g_browser_process->local_state(),
           g_browser_process->GetFeatures()->application_locale_storage(),
+          g_browser_process->platform_part()->browser_policy_connector_ash(),
           displayed_screen)),
       auth_performer_(UserDataAuthClient::Get()),
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {

@@ -96,11 +96,10 @@ const size_t kMaxUsers = 50;
 // Returns true if we have enterprise domain information.
 // `out_manager`:  Output value of the manager of the device's domain. Can be
 // either a domain (foo.com) or an email address (user@foo.com)
-bool GetDeviceManager(std::string* out_manager) {
-  policy::BrowserPolicyConnectorAsh* policy_connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (policy_connector->IsCloudManaged()) {
-    *out_manager = policy_connector->GetEnterpriseDomainManager();
+bool GetDeviceManager(const policy::BrowserPolicyConnectorAsh& policy_connector,
+                      std::string* out_manager) {
+  if (policy_connector.IsCloudManaged()) {
+    *out_manager = policy_connector.GetEnterpriseDomainManager();
     return true;
   }
   return false;
@@ -487,9 +486,11 @@ class UserSelectionScreen::TpmLockedChecker {
 UserSelectionScreen::UserSelectionScreen(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     DisplayedScreen display_type)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       display_type_(display_type) {
   session_manager::SessionManager::Get()->AddObserver(this);
   if (display_type_ != DisplayedScreen::SIGN_IN_SCREEN) {
@@ -876,7 +877,7 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     if (user->GetType() == user_manager::UserType::kPublicAccount) {
       std::string manager;
       user_info.public_account_info.emplace();
-      if (GetDeviceManager(&manager)) {
+      if (GetDeviceManager(browser_policy_connector_ash_.get(), &manager)) {
         user_info.public_account_info->device_enterprise_manager = manager;
       }
 
