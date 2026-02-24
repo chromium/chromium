@@ -1118,7 +1118,6 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"lens_overlay_homework", "true"},
     {"manage_passwords", "true"},
     {"mandatory_reauth", "true"},
-    {"memory_saver", "true"},
     {"offer_notification", "true"},
     {"price_insights", "true"},
     {"price_tracking", "true"},

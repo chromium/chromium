@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_resource_view.h"
 #include "chrome/browser/ui/views/performance_controls/test_support/memory_saver_unit_test_mixin.h"
 #include "chrome/grit/branded_strings.h"
@@ -212,22 +211,16 @@ TEST_F(MemorySaverBubbleViewTest,
 
 // The correct label should be rendered for different memory savings amounts.
 TEST_P(MemorySaverBubbleViewTest, ShowsCorrectLabelsForDifferentSavings) {
-  LOG(ERROR) << "<<<<<<<<<<<<<<<<<< " << __func__ << " 1";
   AddNewTab(std::get<0>(GetParam()),
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-  LOG(ERROR) << "<<<<<<<<<<<<<<<<<< " << __func__ << " 1";
   SetTabDiscardState(0, true);
 
-  LOG(ERROR) << "<<<<<<<<<<<<<<<<<< " << __func__ << " 1";
   ClickPageActionChip();
 
-  LOG(ERROR) << "<<<<<<<<<<<<<<<<<< " << __func__ << " 1";
   views::Label* label = GetMatchingView<views::Label>(
       MemorySaverResourceView::kMemorySaverResourceViewMemoryLabelElementId);
-  LOG(ERROR) << "<<<<<<<<<<<<<<<<<< " << __func__ << " 1";
   EXPECT_EQ(label->GetText(),
             l10n_util::GetStringUTF16(std::get<1>(GetParam())));
-  LOG(ERROR) << "<<<<<<<<<<<<<<<<<< " << __func__ << " 1";
 }
 
 INSTANTIATE_TEST_SUITE_P(

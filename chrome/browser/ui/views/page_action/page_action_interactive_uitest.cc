@@ -125,7 +125,6 @@ class PageActionUiTestBase {
                 features::kPageActionsMigration,
                 {
                     {features::kPageActionsMigrationZoom.name, "true"},
-                    {features::kPageActionsMigrationMemorySaver.name, "true"},
                 },
             },
             {lens::features::kLensOverlayOmniboxEntryPoint, {}},

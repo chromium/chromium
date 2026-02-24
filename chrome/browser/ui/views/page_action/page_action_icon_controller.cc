@@ -42,7 +42,6 @@
 #include "chrome/browser/ui/views/page_action/pwa_install_view.h"
 #include "chrome/browser/ui/views/page_action/zoom_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
-#include "chrome/browser/ui/views/performance_controls/memory_saver_chip_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_icon_view.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
@@ -147,12 +146,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
             type, std::make_unique<FindBarIcon>(
                       params.browser, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
-        break;
-      case PageActionIconType::kMemorySaver:
-        add_page_action_icon(type, std::make_unique<MemorySaverChipView>(
-                                       params.command_updater, params.browser,
-                                       params.icon_label_bubble_delegate,
-                                       params.page_action_icon_delegate));
         break;
       case PageActionIconType::kIntentPicker:
         add_page_action_icon(
@@ -267,6 +260,7 @@ void PageActionIconController::Init(const PageActionIconParams& params,
       case PageActionIconType::kLensOverlay:
       case PageActionIconType::kTranslate:
       case PageActionIconType::kReadingMode:
+      case PageActionIconType::kMemorySaver:
       case PageActionIconType::kContextualSidePanel:
       case PageActionIconType::kJsOptimizations:
       case PageActionIconType::kRecordReplay:

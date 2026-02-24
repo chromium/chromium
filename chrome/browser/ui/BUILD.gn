@@ -4253,8 +4253,6 @@ static_library("ui") {
       "views/performance_controls/battery_saver_button.h",
       "views/performance_controls/memory_saver_bubble_view.cc",
       "views/performance_controls/memory_saver_bubble_view.h",
-      "views/performance_controls/memory_saver_chip_view.cc",
-      "views/performance_controls/memory_saver_chip_view.h",
       "views/performance_controls/memory_saver_resource_view.cc",
       "views/performance_controls/memory_saver_resource_view.h",
       "views/performance_controls/performance_intervention_bubble.cc",

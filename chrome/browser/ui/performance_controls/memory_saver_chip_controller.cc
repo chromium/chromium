@@ -25,9 +25,7 @@ constexpr base::TimeDelta kChipVisibleDuration = base::Seconds(12);
 
 MemorySaverChipController::MemorySaverChipController(
     page_actions::PageActionController& page_action_controller)
-    : page_action_controller_(page_action_controller) {
-  CHECK(IsPageActionMigrated(PageActionIconType::kMemorySaver));
-}
+    : page_action_controller_(page_action_controller) {}
 
 MemorySaverChipController::~MemorySaverChipController() = default;
 

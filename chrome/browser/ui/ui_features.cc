@@ -357,12 +357,6 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
-                   kPageActionsMigrationMemorySaver,
-                   &kPageActionsMigration,
-                   "memory_saver",
-                   true);
-
-BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationIntentPicker,
                    &kPageActionsMigration,
                    "intent_picker",

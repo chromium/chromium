@@ -199,11 +199,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     translate_page_action_controller_ =
         std::make_unique<TranslatePageActionController>(tab);
 
-    if (IsPageActionMigrated(PageActionIconType::kMemorySaver)) {
-      memory_saver_chip_controller_ =
-          std::make_unique<memory_saver::MemorySaverChipController>(
-              *page_action_controller_);
-    }
+    memory_saver_chip_controller_ =
+        std::make_unique<memory_saver::MemorySaverChipController>(
+            *page_action_controller_);
 
     if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
       intent_picker_view_page_action_controller_ =

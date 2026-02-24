@@ -12,8 +12,6 @@ namespace {
 const base::FeatureParam<bool>* GetPageActionsMigrationParam(
     PageActionIconType page_action) {
   switch (page_action) {
-    case PageActionIconType::kMemorySaver:
-      return &features::kPageActionsMigrationMemorySaver;
     case PageActionIconType::kIntentPicker:
       return &features::kPageActionsMigrationIntentPicker;
     case PageActionIconType::kZoom:
@@ -77,6 +75,7 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
   // and don't have a feature param.
   switch (page_action) {
     case PageActionIconType::kLensOverlay:
+    case PageActionIconType::kMemorySaver:
     case PageActionIconType::kTranslate:
     case PageActionIconType::kContextualSidePanel:
     case PageActionIconType::kJsOptimizations:
