@@ -2315,8 +2315,9 @@ config("default_warnings") {
 
 config("default_clippy_lints") {
   rustflags = [
-    # Treat all default Clippy lints as errors.
-    "-Dclippy::all",
+    # Treat all default Clippy lints as warnings.
+    # See also `config("treat_warnings_as_errors")`.
+    "-Wclippy::all",
 
     # Lints disabled during the initial rollout period (when any objection
     # coming from a Chromium engineer would get a lint disabled):

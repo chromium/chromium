@@ -47,7 +47,7 @@ The following options exist for dealing with unused code warnings:
     - You can also use `#![warn(...)]` to still see the warnings, but avoid
       treating them as errors.
 * Locally set `treat_warnings_as_errors = false` in your `args.gn`.
-  This will affect all Rust and C/C++ warnings.
+  This will affect all Rust and Clippy warnings (as well as C/C++ warnings).
 
 ## Better Gerrit experience for 100-columns-wide code
 
