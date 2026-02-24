@@ -753,7 +753,11 @@ void ReadYUV(const char* file_name,
   auto cs = reinterpret_cast<AVIFImageDecoder*>(decoder.get())
                 ->GetColorSpaceForTesting();
   cs.ToSkYUVColorSpace(bit_depth, &yuv_cs);
-  skia::ConvertRGBAToOrFromYUVA(pm, yuv_cs, pm, kIdentity_SkYUVColorSpace);
+
+  skia::ConvertYUVAToRGBA(
+      SkYUVAInfo(pm.dimensions(), SkYUVAInfo::PlaneConfig::kYUVA,
+                 SkYUVAInfo::Subsampling::k444, yuv_cs),
+      bit_depth, {pm}, pm);
 }
 
 void TestYUVRed(const char* file_name,

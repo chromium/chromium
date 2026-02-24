@@ -482,63 +482,9 @@ class VideoCaptureOverlayRenderTest
         png_color_space.ToSkColorSpace());
     SkBitmap canonical_bitmap;
     CHECK(canonical_bitmap.tryAllocPixels(canonical_format, 0));
-
-    // Populate |canonical_bitmap| with data from the frame. For I420, use
-    // gfx::ColorTransform to map back from YUV→RGB.
-    switch (frame.format()) {
-      case media::PIXEL_FORMAT_ARGB: {
-        // Map from the video frame's ARGB format to the canonical
-        // representation.
-        const SkImageInfo frame_format = SkImageInfo::Make(
-            frame.visible_rect().width(), frame.visible_rect().height(),
-            kBGRA_8888_SkColorType, kUnpremul_SkAlphaType,
-            frame.ColorSpace().ToSkColorSpace());
-        canonical_bitmap.writePixels(
-            SkPixmap(frame_format, frame.visible_data(VideoFrame::Plane::kARGB),
-                     frame.stride(VideoFrame::Plane::kARGB)),
-            0, 0);
-        break;
-      }
-
-      case media::PIXEL_FORMAT_I420: {
-        // Merge the YUV values into a single plane.
-        const gfx::Size& size = frame.visible_rect().size();
-        auto colors = base::HeapArray<SkColor>::WithSize(size.GetArea());
-        int pos = 0;
-        for (int row = 0; row < size.height(); ++row) {
-          auto y = frame.GetVisiblePlaneData(VideoFrame::Plane::kY)
-                       .subspan(row * frame.stride(VideoFrame::Plane::kY));
-          auto u =
-              frame.GetVisiblePlaneData(VideoFrame::Plane::kU)
-                  .subspan((row / 2) * frame.stride(VideoFrame::Plane::kU));
-          auto v =
-              frame.GetVisiblePlaneData(VideoFrame::Plane::kV)
-                  .subspan((row / 2) * frame.stride(VideoFrame::Plane::kV));
-          for (int col = 0; col < size.width(); ++col) {
-            colors[pos] = SkColorSetRGB(y[col], u[col / 2], v[col / 2]);
-            ++pos;
-          }
-        }
-
-        // Perform YUV to RGB and color space conversion.
-        const auto frame_image_info = SkImageInfo::Make(
-            frame.visible_rect().width(), frame.visible_rect().height(),
-            kBGRA_8888_SkColorType, kOpaque_SkAlphaType,
-            frame.ColorSpace().GetAsFullRangeRGB().ToSkColorSpace());
-        SkYUVColorSpace frame_yuv_cs;
-        frame.ColorSpace().ToSkYUVColorSpace(frame.BitDepth(), &frame_yuv_cs);
-        SkPixmap frame_yuv_pm(frame_image_info, colors.data(),
-                              frame_image_info.minRowBytes());
-        skia::ConvertRGBAToOrFromYUVA(frame_yuv_pm, frame_yuv_cs,
-                                      canonical_bitmap.pixmap(),
-                                      kIdentity_SkYUVColorSpace);
-
-        break;
-      }
-
-      default:
-        NOTREACHED();
-    }
+    skia::ConvertYUVAToRGBA(frame.GetVisibleSkYUVAInfo(), frame.BitDepth(),
+                            frame.GetVisiblePlanesSkPixmaps(),
+                            canonical_bitmap.pixmap());
 
     // Determine the full path to the golden file to compare the results.
     base::FilePath golden_file_path;
