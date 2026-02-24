@@ -21,12 +21,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.cc.input.BrowserControlsState;
 
 /** Unit tests for the BrowserStateBrowserControlsVisibilityDelegate. */
@@ -62,7 +62,7 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
         mDelegate.showControlsTransient();
         assertEquals(BrowserControlsState.SHOWN, constraints());
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertEquals(BrowserControlsState.BOTH, constraints());
 
         verify(mCallback, times(2)).onResult(Mockito.anyInt());
@@ -110,7 +110,7 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
         advanceTime((long) (0.5 * MINIMUM_SHOW_DURATION_MS));
         assertEquals(BrowserControlsState.SHOWN, constraints());
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertEquals(BrowserControlsState.BOTH, constraints());
 
         verify(mCallback, times(2)).onResult(Mockito.anyInt());
@@ -130,7 +130,7 @@ public class BrowserStateBrowserControlsVisibilityDelegateTest {
         assertEquals(BrowserControlsState.SHOWN, constraints());
 
         // Run the pending tasks on the UI thread, which will include the transient delayed task.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertEquals(BrowserControlsState.BOTH, constraints());
 
         verify(mCallback, times(2)).onResult(Mockito.anyInt());

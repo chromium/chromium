@@ -29,8 +29,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
-import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UserDataHost;
@@ -38,6 +37,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -66,7 +66,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests {@link WebFeedFollowIntroController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.LEGACY)
 public final class WebFeedFollowIntroControllerTest {
     private static final long SAFE_INTRO_WAIT_TIME_MILLIS = 3 * 1000 + 100;
     private static final GURL sTestUrl = JUnitTestGURLs.EXAMPLE_URL;
@@ -153,6 +152,7 @@ public final class WebFeedFollowIntroControllerTest {
                         mFeedLauncher,
                         mDialogManager,
                         mSnackbarManager);
+        RobolectricUtil.runAllBackgroundAndUi();
         mEmptyTabObserver = mWebFeedFollowIntroController.getEmptyTabObserverForTesting();
         mWebFeedFollowIntroController.setClockForTesting(mClock);
         // TextBubble is impossible to show in a junit.
@@ -504,7 +504,8 @@ public final class WebFeedFollowIntroControllerTest {
 
     private void advanceClockByMs(long timeMs) {
         mClock.advanceCurrentTimeMillis(timeMs);
-        Robolectric.getForegroundThreadScheduler().advanceBy(timeMs, TimeUnit.MILLISECONDS);
+        ShadowLooper.idleMainLooper(timeMs, TimeUnit.MILLISECONDS);
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     /** FakeClock for setting the time. */

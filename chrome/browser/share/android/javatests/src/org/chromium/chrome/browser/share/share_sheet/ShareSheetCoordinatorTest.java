@@ -30,11 +30,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -58,7 +58,6 @@ import java.util.function.Supplier;
 
 /** Tests {@link ShareSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.LEGACY)
 public final class ShareSheetCoordinatorTest {
     private static final String MOCK_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
 
@@ -149,6 +148,7 @@ public final class ShareSheetCoordinatorTest {
         doNothing().when(spyShareSheet).finishUpdateShareSheet(any(), any(), any());
 
         spyShareSheet.updateShareSheet(/* saveLastUsed= */ false, () -> {});
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(spyShareSheet, never())
                 .createThirdPartyPropertyModels(any(), any(), any(), anyBoolean(), any());
@@ -166,6 +166,7 @@ public final class ShareSheetCoordinatorTest {
         doNothing().when(spyShareSheet).finishUpdateShareSheet(any(), any(), any());
 
         spyShareSheet.updateShareSheet(/* saveLastUsed= */ false, () -> {});
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(spyShareSheet, atLeastOnce())
                 .createThirdPartyPropertyModels(any(), any(), any(), anyBoolean(), any());

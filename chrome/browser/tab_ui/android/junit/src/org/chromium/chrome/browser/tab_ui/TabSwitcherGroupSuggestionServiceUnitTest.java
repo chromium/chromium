@@ -22,13 +22,13 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -109,7 +109,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
         TabGroupModelFilter newFilter = mock();
 
         mTabGroupModelFilterSupplier.set(newFilter);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTabGroupModelFilter).removeObserver(any());
         verify(mTabGroupModelFilter).removeTabGroupObserver(any());

@@ -26,7 +26,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -34,6 +33,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -126,7 +126,7 @@ public class SurveyClientUnitTest {
                         mProfile,
                         mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertTrue(
                 "No survey download is requested.", mSurveyController.hasSurveyDownloadInQueue());
@@ -154,7 +154,7 @@ public class SurveyClientUnitTest {
                         mProfile,
                         mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertFalse(
                 "No survey download should be requested.",
@@ -175,7 +175,7 @@ public class SurveyClientUnitTest {
                         mProfile,
                         mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertFalse(
                 "No survey download should be requested.",
@@ -194,7 +194,7 @@ public class SurveyClientUnitTest {
                         mProfile,
                         mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertFalse(
                 "No survey download should be requested.",
@@ -223,7 +223,7 @@ public class SurveyClientUnitTest {
                         mProfile,
                         mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertFalse(
                 "No survey download should be requested.",
@@ -244,7 +244,7 @@ public class SurveyClientUnitTest {
         client.showSurvey(mActivity, mLifecycleDispatcher);
 
         mCrashUploadPermissionSupplier.set(false);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertFalse(
                 "Survey invitation should not shown when crash upload disabled.",
                 mSurveyController.isSurveyShown(TEST_TRIGGER_ID));
@@ -271,7 +271,7 @@ public class SurveyClientUnitTest {
         client.showSurvey(mActivity, mLifecycleDispatcher);
 
         mCrashUploadPermissionSupplier.set(true);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertFalse(
                 "Survey invitation should not shown when crash upload disabled.",
                 mSurveyController.isSurveyShown(TEST_TRIGGER_ID));
@@ -298,7 +298,7 @@ public class SurveyClientUnitTest {
         client.showSurvey(mActivity, mLifecycleDispatcher);
 
         mCrashUploadPermissionSupplier.set(false);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertFalse(
                 "Survey invitation should not shown when crash upload disabled.",
                 mSurveyController.isSurveyShown(TEST_TRIGGER_ID));
@@ -322,7 +322,7 @@ public class SurveyClientUnitTest {
                         mProfile,
                         mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mSurveyController.simulateDownloadFinished(TEST_TRIGGER_ID, false);
         assertTrue("Client should be destroyed when download failed.", client.isDestroyed());
@@ -342,7 +342,7 @@ public class SurveyClientUnitTest {
                         mProfile,
                         mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mSurveyController.simulateDownloadFinished(TEST_TRIGGER_ID, true);
         assertFalse("Survey UI should not shown.", mSurveyUiDelegate.isShowing());
@@ -361,7 +361,7 @@ public class SurveyClientUnitTest {
                         mProfile,
                         mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mSurveyController.simulateDownloadFinished(TEST_TRIGGER_ID, true);
         mSurveyUiDelegate.dismiss();
@@ -380,7 +380,7 @@ public class SurveyClientUnitTest {
                         mProfile,
                         mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         mSurveyController.simulateDownloadFinished(TEST_TRIGGER_ID, true);
         assertTrue("Survey UI should shown.", mSurveyUiDelegate.isShowing());
 
@@ -411,7 +411,7 @@ public class SurveyClientUnitTest {
                         mProfile,
                         mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         mSurveyController.simulateDownloadFinished(TEST_TRIGGER_ID, true);
         assertTrue("Survey UI should shown.", mSurveyUiDelegate.isShowing());
 

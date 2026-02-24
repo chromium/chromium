@@ -48,7 +48,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -56,6 +55,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PayloadCallbackHelper;
@@ -846,7 +846,7 @@ public class AndroidShareSheetControllerUnitTest {
                         .build();
         PendingIntent action = expectAction.getAction();
         action.send();
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         histogramWatcher.assertExpected();
     }

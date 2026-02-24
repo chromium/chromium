@@ -61,11 +61,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -173,7 +173,7 @@ public class UrlBarUnitTest {
     @After
     public void tearDown() {
         mController.close();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
 
     /** Force reset text layout. */
@@ -1021,32 +1021,32 @@ public class UrlBarUnitTest {
         // No single-line report (implied initial state).
         doReturn(1).when(mLayout).getLineCount();
         mUrlBar.onTextChanged("text", 0, 0, 4);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(callback, never()).onResult(anyBoolean());
         clearInvocations(callback);
 
         // Report multi-line.
         doReturn(2).when(mLayout).getLineCount();
         mUrlBar.onTextChanged("longer text", 0, 0, 11);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(callback).onResult(true);
         clearInvocations(callback);
 
         // No repeated callbacks.
         mUrlBar.onTextChanged("longer text 2", 0, 0, 13);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(callback, never()).onResult(anyBoolean());
 
         // Report single-line again.
         doReturn(1).when(mLayout).getLineCount();
         mUrlBar.onTextChanged("text", 0, 0, 4);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(callback).onResult(false);
         clearInvocations(callback);
 
         // No repeated callbacks.
         mUrlBar.onTextChanged("text 2", 0, 0, 6);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(callback, never()).onResult(anyBoolean());
     }
 

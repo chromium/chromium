@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -26,7 +25,6 @@ import org.chromium.chrome.browser.profiles.ProfileJni;
 /** Tests for {@link MerchantTrustSignalsStorageFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class MerchantTrustSignalsStorageFactoryTest {
 
     @Mock private Profile mMockProfile1;

@@ -31,11 +31,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
@@ -100,11 +100,11 @@ public class HubLayoutScrimControllerUnitTest {
         assertPropertyModel(mIsIncognitoSupplier.get());
 
         // Finish the animation.
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mScrimController.startHidingScrim();
         verify(mScrimManager).hideScrim(any(), eq(true), anyInt());
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertFalse(mScrimManager.isShowingScrim());
 

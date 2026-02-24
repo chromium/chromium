@@ -15,10 +15,10 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Batch;
 
 /** Unit tests for {@link PendingRunnable}. */
@@ -41,10 +41,10 @@ public class PendingRunnableTest {
         pendingRunnable.post();
         Mockito.verify(mRunnable, never()).run();
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         Mockito.verify(mRunnable, times(1)).run();
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         Mockito.verify(mRunnable, times(1)).run();
     }
 }

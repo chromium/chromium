@@ -21,9 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
@@ -158,7 +158,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                         buildAccountItem(mAnaAccount, /* showIdp= */ false),
                         buildAccountItem(mNoOneAccount, /* showIdp= */ false),
                         buildAccountItem(mBobAccount, /* showIdp= */ false)));
-        ShadowLooper.shadowMainLooper().idle();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(View.VISIBLE, mContentView.getVisibility());
         RecyclerView accountsList = mContentView.findViewById(R.id.sheet_item_list);

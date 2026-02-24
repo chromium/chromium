@@ -24,7 +24,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
@@ -33,6 +32,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
@@ -207,7 +207,7 @@ public class PaneManagerImplUnitTest {
         PaneManagerImpl paneManager =
                 new PaneManagerImpl(
                         builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.WARM));
 
@@ -215,7 +215,7 @@ public class PaneManagerImplUnitTest {
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.HOT));
 
         paneManager.focusPane(PaneId.TAB_SWITCHER);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         // Not notified a second time.
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.HOT));
 
@@ -237,13 +237,13 @@ public class PaneManagerImplUnitTest {
         PaneManagerImpl paneManager =
                 new PaneManagerImpl(
                         builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.COLD));
         verify(mIncognitoTabSwitcherPane).notifyLoadHint(eq(LoadHint.COLD));
 
         mHubVisibilitySupplier.set(true);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.WARM));
         verify(mIncognitoTabSwitcherPane).notifyLoadHint(eq(LoadHint.WARM));
 
@@ -265,7 +265,7 @@ public class PaneManagerImplUnitTest {
         PaneManagerImpl paneManager =
                 new PaneManagerImpl(
                         builder, mHubVisibilitySupplier, /* defaultPaneId= */ PaneId.TAB_SWITCHER);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.WARM));
         verify(mIncognitoTabSwitcherPane).notifyLoadHint(eq(LoadHint.WARM));
@@ -274,25 +274,25 @@ public class PaneManagerImplUnitTest {
         verify(mIncognitoTabSwitcherPane).notifyLoadHint(eq(LoadHint.HOT));
 
         mHubVisibilitySupplier.set(false);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.COLD));
         verify(mIncognitoTabSwitcherPane, times(2)).notifyLoadHint(eq(LoadHint.WARM));
         verify(mIncognitoTabSwitcherPane).notifyLoadHint(eq(LoadHint.COLD));
 
         paneManager.focusPane(PaneId.TAB_SWITCHER);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         // Not counted again.
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.COLD));
         verify(mIncognitoTabSwitcherPane).notifyLoadHint(eq(LoadHint.COLD));
 
         mHubVisibilitySupplier.set(true);
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.HOT));
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mIncognitoTabSwitcherPane, times(3)).notifyLoadHint(eq(LoadHint.WARM));
 
         paneManager.focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
         verify(mIncognitoTabSwitcherPane, times(2)).notifyLoadHint(eq(LoadHint.HOT));
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabSwitcherPane, times(2)).notifyLoadHint(eq(LoadHint.WARM));
 
         paneManager.destroy();

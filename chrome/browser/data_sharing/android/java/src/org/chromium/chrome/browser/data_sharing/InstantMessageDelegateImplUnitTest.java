@@ -42,12 +42,12 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -284,7 +284,7 @@ public class InstantMessageDelegateImplUnitTest {
         // Chrome is backgrounded. Although, it's not technically to reshow the message since after
         // http://crrev.com/c/6388437 the message is dismissed after being hidden.
         propertyModel.get(ON_FULLY_VISIBLE).onResult(false);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mManagedMessageDispatcher)
                 .dismissMessage(any(), eq(DismissReason.DISMISSED_BY_FEATURE));
 
@@ -406,7 +406,7 @@ public class InstantMessageDelegateImplUnitTest {
         Set<String> idsToHide = new HashSet<>();
         idsToHide.add(messageIdToHide);
         mDelegate.hideInstantaneousMessage(idsToHide);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mManagedMessageDispatcher)
                 .dismissMessage(displayedModel, DismissReason.DISMISSED_BY_FEATURE);
@@ -423,7 +423,7 @@ public class InstantMessageDelegateImplUnitTest {
         Set<String> idsToHide = new HashSet<>();
         idsToHide.add("2");
         mDelegate.hideInstantaneousMessage(idsToHide);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // This should have noop-ed.
         verify(mManagedMessageDispatcher, never()).dismissMessage(any(), anyInt());

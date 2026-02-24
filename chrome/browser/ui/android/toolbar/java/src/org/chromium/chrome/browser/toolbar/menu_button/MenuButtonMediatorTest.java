@@ -27,11 +27,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -52,7 +52,6 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for ToolbarAppMenuManager. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class MenuButtonMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -110,6 +109,7 @@ public class MenuButtonMediatorTest {
     @Test
     public void testInitialization() {
         mAppMenuSupplier.set(mAppMenuCoordinator);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mAppMenuHandler).addObserver(mMenuButtonMediator);
         verify(mAppMenuHandler).createAppMenuButtonHelper();
     }
@@ -117,6 +117,7 @@ public class MenuButtonMediatorTest {
     @Test
     public void testAppMenuVisiblityChange_badgeShowing() {
         mAppMenuSupplier.set(mAppMenuCoordinator);
+        RobolectricUtil.runAllBackgroundAndUi();
         mPropertyModel.set(
                 MenuButtonProperties.SHOW_UPDATE_BADGE, new ShowBadgeProperty(true, false));
         mMenuButtonMediator.onMenuVisibilityChanged(true);
@@ -132,6 +133,7 @@ public class MenuButtonMediatorTest {
     @Test
     public void testAppMenuHighlightChange() {
         mAppMenuSupplier.set(mAppMenuCoordinator);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mMenuButtonMediator.onMenuHighlightChanged(true);
         assertTrue(mPropertyModel.get(MenuButtonProperties.IS_HIGHLIGHTING));
@@ -144,6 +146,7 @@ public class MenuButtonMediatorTest {
     @Test
     public void testAppMenuUpdateBadge() {
         mAppMenuSupplier.set(mAppMenuCoordinator);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         doReturn(true).when(mActivity).isDestroyed();
         mMenuButtonMediator.updateStateChanged();

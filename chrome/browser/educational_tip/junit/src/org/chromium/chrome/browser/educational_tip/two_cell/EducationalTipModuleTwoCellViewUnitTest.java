@@ -25,9 +25,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.educational_tip.R;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -68,7 +68,7 @@ public class EducationalTipModuleTwoCellViewUnitTest {
         mModuleView.setSeeMoreOnClickListener(mSeeMoreClickListener);
 
         seeMoreTextView.performClick();
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mSeeMoreClickListener).onClick(seeMoreTextView);
     }
 
@@ -96,7 +96,7 @@ public class EducationalTipModuleTwoCellViewUnitTest {
         Assert.assertNotNull(drawable);
 
         item1Layout.performClick();
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mItem1ClickListener).onClick(item1Layout);
     }
 
@@ -124,7 +124,7 @@ public class EducationalTipModuleTwoCellViewUnitTest {
         Assert.assertNotNull(drawable);
 
         item2Layout.performClick();
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mItem2ClickListener).onClick(item2Layout);
     }
 

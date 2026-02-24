@@ -406,7 +406,7 @@ public class FuseboxAttachmentModelListUnitTest {
     public void testMaxAttachments() {
         when(mComposeboxQueryControllerBridge.addFile(anyString(), anyString(), any()))
                 .thenReturn("pretokenized-token", "uploaded-token");
-        for (int i = 0; i < FuseboxAttachmentModelList.MAX_ATTACHMENTS; i++) {
+        for (int i = 0; i < FuseboxAttachmentModelList.getMaxAttachments(); i++) {
             FuseboxAttachment attachment = createTestAttachment("pretokenized");
             assertTrue(mFuseboxAttachmentModelList.add(attachment));
         }

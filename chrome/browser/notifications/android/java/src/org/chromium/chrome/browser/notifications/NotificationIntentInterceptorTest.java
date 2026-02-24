@@ -24,12 +24,12 @@ import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowNotificationManager;
 import org.robolectric.shadows.ShadowPendingIntent;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -43,7 +43,6 @@ import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowNotificationManager.class, ShadowPendingIntent.class})
-@LooperMode(LooperMode.Mode.LEGACY)
 public class NotificationIntentInterceptorTest {
     private static final String TEST_NOTIFICATION_TITLE = "Test notification title";
     private static final String TEST_NOTIFICATION_ACTION_TITLE = "Test notification action title";
@@ -148,6 +147,7 @@ public class NotificationIntentInterceptorTest {
                 TEST_NOTIFICATION_TITLE,
                 notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString());
         sendPendingIntent(notification.contentIntent);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify the intent and histograms recorded.
         Intent receivedIntent = mReceiver.intentReceived();
@@ -177,6 +177,7 @@ public class NotificationIntentInterceptorTest {
                 TEST_NOTIFICATION_TITLE,
                 notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString());
         notification.deleteIntent.send();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify the histogram.
         Assert.assertEquals(
@@ -204,6 +205,7 @@ public class NotificationIntentInterceptorTest {
         Notification.Action action = notification.actions[0];
         Assert.assertNotNull(action.actionIntent);
         sendPendingIntent(action.actionIntent);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify the intent and histograms recorded.
         Intent receivedIntent = mReceiver.intentReceived();

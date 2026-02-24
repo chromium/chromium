@@ -17,10 +17,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BottomOverscrollHandler.BottomControlsStatus;
@@ -162,7 +162,7 @@ public class BottomOverscrollHandlerUnitTest {
                 HistogramWatcher.newSingleRecordWatcher(DID_TRIGGER_OVERSCROLL_UMA_NAME, true)) {
             mHandler.start();
             mHandler.release(true);
-            ShadowLooper.runUiThreadTasks();
+            RobolectricUtil.runAllBackgroundAndUi();
             assertEquals(1, mDelegate.showControlsTransientCallCount);
         }
     }
@@ -179,7 +179,7 @@ public class BottomOverscrollHandlerUnitTest {
     @Test
     public void testRelease_notStarted() {
         mHandler.release(true);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(0, mDelegate.showControlsTransientCallCount);
     }
 
@@ -193,7 +193,7 @@ public class BottomOverscrollHandlerUnitTest {
             mHandler.start();
             mHandler.reset();
             mHandler.release(true);
-            ShadowLooper.runUiThreadTasks();
+            RobolectricUtil.runAllBackgroundAndUi();
             assertEquals(0, mDelegate.showControlsTransientCallCount);
         }
     }
@@ -210,7 +210,7 @@ public class BottomOverscrollHandlerUnitTest {
             assertFalse(mHandler.start());
             mHandler.reset();
             mHandler.release(true);
-            ShadowLooper.runUiThreadTasks();
+            RobolectricUtil.runAllBackgroundAndUi();
         }
     }
 }

@@ -25,10 +25,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -55,7 +55,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests {@link ShareSheetUsageRankingHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class ShareSheetUsageRankingHelperTest {
     private static final String MOCK_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
 
@@ -122,7 +121,8 @@ public class ShareSheetUsageRankingHelperTest {
                     resultPropertyModels.set(models);
                     helper.notifyCalled();
                 });
-        helper.waitForOnly();
+        RobolectricUtil.runAllBackgroundAndUi();
+        helper.assertCalledOnce();
         List<PropertyModel> propertyModels = resultPropertyModels.get();
 
         assertEquals("Incorrect number of property models.", 2, propertyModels.size());
@@ -154,7 +154,8 @@ public class ShareSheetUsageRankingHelperTest {
                     resultPropertyModels.set(models);
                     helper.notifyCalled();
                 });
-        helper.waitForOnly();
+        RobolectricUtil.runAllBackgroundAndUi();
+        helper.assertCalledOnce();
         List<PropertyModel> propertyModels = resultPropertyModels.get();
 
         View.OnClickListener onClickListener =

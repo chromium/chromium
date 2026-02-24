@@ -27,9 +27,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -205,7 +205,7 @@ public class MiniPlayerMediatorUnitTest {
         onBottomControlsHeightChanged(HEIGHT_PX, HEIGHT_PX);
         // onControlsOffsetChanged didn't run, kick in the delayed runnable that
         // will fade in the view;
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Layout should become opaque.
         assertTrue(mModel.get(Properties.CONTENTS_OPAQUE));
@@ -243,7 +243,7 @@ public class MiniPlayerMediatorUnitTest {
         onControlsOffsetChanged(0, HEIGHT_PX, false, HEIGHT_PX);
         assertTrue(mModel.get(Properties.CONTENTS_OPAQUE));
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // The delayed runnable should do nothing, contents should stay opaque
         assertTrue(mModel.get(Properties.CONTENTS_OPAQUE));
@@ -281,7 +281,7 @@ public class MiniPlayerMediatorUnitTest {
 
         onBottomControlsHeightChanged(0, 0);
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertTrue(mModel.get(Properties.COMPOSITED_VIEW_VISIBLE));
         assertEquals(VisibilityState.HIDING, mMediator.getVisibility());
     }

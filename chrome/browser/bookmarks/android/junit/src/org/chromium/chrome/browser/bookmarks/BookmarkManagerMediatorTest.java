@@ -52,7 +52,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -1497,7 +1496,7 @@ public class BookmarkManagerMediatorTest {
                 .bookmarkNodeRemoved(
                         mFolderItem1, 0, mFolderItem3, /* isDoingExtensiveChanges= */ false);
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyCurrentBookmarkIds(null, mBookmarkId21);
         // Only 1 selection update should be sent out. This minimizes event notification spam and
         // complexity for observers.
@@ -2330,7 +2329,7 @@ public class BookmarkManagerMediatorTest {
             observer.bookmarkNodeChanged(mFolderItem1);
             observer.bookmarkNodeRemoved(mFolderItem1, 1, mFolderItem3, false);
         }
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Measure number of #setBookmarks by counting #getChildIds.
         verify(mBookmarkModel, times(2)).getChildIds(mFolderId1);
@@ -2357,7 +2356,7 @@ public class BookmarkManagerMediatorTest {
 
         mMediator.onDestroy();
         // Now give the pending task time to run. It should no-op, and not crash.
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test

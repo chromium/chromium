@@ -24,7 +24,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -32,6 +31,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
@@ -76,7 +76,7 @@ public class UserEducationHelperUnitTest {
 
         Mockito.verifyNoInteractions(mTracker);
         profileSupplier.set(mProfile);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         Mockito.verify(mTracker).addOnInitializedCallback(Mockito.any());
     }
 
@@ -126,7 +126,7 @@ public class UserEducationHelperUnitTest {
         mInitCallbackCaptor.getValue().onResult(true);
         TextBubble textBubble = educationHelper.getTextBubbleForTesting();
         assertFalse(textBubble.getDismissOnTouchInteractionForTesting());
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         assertTrue(textBubble.getDismissOnTouchInteractionForTesting());
     }
@@ -158,7 +158,7 @@ public class UserEducationHelperUnitTest {
         mInitCallbackCaptor.getValue().onResult(true);
         TextBubble textBubble = educationHelper.getTextBubbleForTesting();
         textBubble.onDismissForTesting(/* byInsideTouch= */ false);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         Mockito.verify(mTracker).dismissedWithSnooze(featureName, SnoozeAction.SNOOZED);
 
@@ -170,7 +170,7 @@ public class UserEducationHelperUnitTest {
         mInitCallbackCaptor.getValue().onResult(true);
         textBubble = educationHelper.getTextBubbleForTesting();
         textBubble.onDismissForTesting(/* byInsideTouch= */ true);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         Mockito.verify(mTracker).dismissedWithSnooze(featureName, SnoozeAction.DISMISSED);
     }

@@ -18,9 +18,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 /** Unit tests for {@link DirectionalScrollListener}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -79,7 +79,7 @@ public class DirectionalScrollListenerUnitTest {
         verify(mOnScrollUp, never()).run();
 
         // Wait for the throttle to expire.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Third scroll should trigger the callback again.
         mListener.onScrolled(mRecyclerView, 0, 20);
@@ -106,7 +106,7 @@ public class DirectionalScrollListenerUnitTest {
         verify(mOnScrollUp, never()).run();
 
         // Wait for the throttle to expire.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Test scroll up threshold.
         mListener.onScrolled(mRecyclerView, 0, -5);

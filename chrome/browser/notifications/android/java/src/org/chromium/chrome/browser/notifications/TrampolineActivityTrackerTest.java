@@ -20,10 +20,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 /** Robolectric unit tests for TrampolineActivityTracker. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -46,7 +46,7 @@ public class TrampolineActivityTrackerTest {
         assertTrue(TrampolineActivityTracker.getInstance().tryTrackActivity(activity));
         assertFalse(activity.isFinishing());
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertTrue(activity.isFinishing());
     }
 

@@ -24,10 +24,10 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
@@ -1362,7 +1362,7 @@ public class TopControlsStackerUnitTest {
         verify(mTopControlsStacker, never()).updateLayersInternally(anyBoolean(), anyBoolean());
 
         // Execute the posted runnable.
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify that requestLayerUpdateSync is called only once with animate=true.
         verify(mTopControlsStacker, times(1)).updateLayersInternally(true, true);

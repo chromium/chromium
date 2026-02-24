@@ -52,7 +52,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -60,6 +59,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -1032,7 +1032,6 @@ public class LocationBarMediatorTest {
     @Test
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnUrlFocusChange_geolocationPreNative() {
-        ShadowLooper looper = ShadowLooper.shadowMainLooper();
         OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
                 new OneshotSupplierImpl<>();
         mMediator =
@@ -1081,7 +1080,7 @@ public class LocationBarMediatorTest {
 
         assertEquals(primeCount, sGeoHeaderPrimeCount);
         templateUrlServiceSupplier.set(mTemplateUrlService);
-        looper.idle();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(primeCount + 1, sGeoHeaderPrimeCount);
     }
 
@@ -1541,11 +1540,10 @@ public class LocationBarMediatorTest {
     @Test
     @EnableFeatures(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER)
     public void testFusedLocationProvider() {
-        ShadowLooper looper = ShadowLooper.shadowMainLooper();
         mProfileSupplier.set(mProfile);
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mMediator.onFinishNativeInitialization();
-        looper.idle();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(1, sGeoHeaderPrimeCount);
 
@@ -1707,14 +1705,13 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testRestoringText() {
-        ShadowLooper looper = ShadowLooper.shadowMainLooper();
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
         NewTabPageDelegate newTabPageDelegate = mock(NewTabPageDelegate.class);
         doReturn(newTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
         mTabletMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
-        looper.idle();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Prepare a state to be restored for mTab.
         String newText = "new text";
@@ -1752,14 +1749,13 @@ public class LocationBarMediatorTest {
     @Test
     @EnableFeatures({OmniboxFeatureList.OMNIBOX_IMPROVEMENT_FOR_LFF})
     public void testRestoringTextAndEditingStateOnTablet() {
-        ShadowLooper looper = ShadowLooper.shadowMainLooper();
         OmniboxFeatures.sOmniboxImprovementForLFFPersistEditingState.setForTesting(true);
 
         // Recreate mediator to respect the overridden feature flag and params.
         mTabletMediator = createTabletMediator();
         mTabletMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
-        looper.idle();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(true);
         NewTabPageDelegate newTabPageDelegate = mock(NewTabPageDelegate.class);

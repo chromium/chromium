@@ -22,11 +22,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -34,7 +33,6 @@ import java.lang.annotation.RetentionPolicy;
 /** Tests for the {@link DialogManager} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class DialogManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -103,10 +101,11 @@ public class DialogManagerTest {
 
         Runnable callback = mock(Runnable.class);
         mDialogManager.hide(callback);
-        Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(callback, never()).run();
 
         mManualDelayer.runCallbacksSynchronously();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(callback, times(1)).run();
         assertEquals(FakeDialogFragment.DISMISSED, mDialogFragment.getState());
         verify(mMockActionsConsumer, times(1)).consume(DialogManager.HideActions.HIDING_DELAYED);
@@ -120,7 +119,7 @@ public class DialogManagerTest {
         Runnable callback = mock(Runnable.class);
         mManualDelayer.runCallbacksSynchronously();
         mDialogManager.hide(callback);
-        Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(callback, times(1)).run();
         assertEquals(FakeDialogFragment.DISMISSED, mDialogFragment.getState());
         verify(mMockActionsConsumer, times(1))
@@ -132,7 +131,7 @@ public class DialogManagerTest {
     public void testCallbackCalled() {
         Runnable callback = mock(Runnable.class);
         mDialogManager.hide(callback);
-        Robolectric.getForegroundThreadScheduler().advanceToLastPostedRunnable();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(callback, times(1)).run();
         assertEquals(FakeDialogFragment.NEW, mDialogFragment.getState());
         verify(mMockActionsConsumer, times(1)).consume(DialogManager.HideActions.NO_OP);

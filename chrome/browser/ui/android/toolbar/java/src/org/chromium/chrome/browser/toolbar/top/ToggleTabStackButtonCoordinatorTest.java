@@ -30,12 +30,12 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -60,7 +60,6 @@ import java.util.Set;
 
 /** Unit tests for {@link ToggleTabStackButtonCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class ToggleTabStackButtonCoordinatorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -197,6 +196,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Test
     public void testOverviewBehaviorAvailableDuringConstruction() {
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertEquals("Should have 1 overview observer", 1, mLayoutStateObserverSet.size());
 
         mCoordinator.destroy();
@@ -215,6 +215,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testDestroyDuringIph() {
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mCoordinator.handlePageLoadFinished();
         IphCommand iphCommand = verifyIphShown();
@@ -230,6 +231,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testIphAndOverviewHighlight() {
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mCoordinator.handlePageLoadFinished();
         IphCommand iphCommand = verifyIphShown();
@@ -250,6 +252,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testDismissIphBeforeOverview() {
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mCoordinator.handlePageLoadFinished();
         IphCommand iphCommand = verifyIphShown();
@@ -271,6 +274,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testOverviewModeEventsWithoutIph() {
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         showOverviewMode();
         assertEquals(false, mCoordinator.mIphBeingShown);
@@ -283,6 +287,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testIphWithNoPageLoad() {
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verifyIphNotShown();
     }
@@ -311,6 +316,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testIphIncognito() {
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         when(mIncognitoStateProvider.isIncognitoSelected()).thenReturn(true);
         mCoordinator.handlePageLoadFinished();
@@ -342,6 +348,7 @@ public class ToggleTabStackButtonCoordinatorTest {
                         /* toggleTabStackButton= */ mToggleTabStackButton);
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         when(mIncognitoTabModel.getCount()).thenReturn(1);
 
@@ -383,6 +390,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testIphIsShown() {
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(false);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         when(mToggleTabStackButton.isShown()).thenReturn(false);
         mCoordinator.handlePageLoadFinished();
@@ -397,6 +405,7 @@ public class ToggleTabStackButtonCoordinatorTest {
     public void testIphShowedPromo() {
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
         mPromoShownOneshotSupplier.set(true);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mCoordinator.handlePageLoadFinished();
         verifyIphNotShown();
@@ -405,11 +414,13 @@ public class ToggleTabStackButtonCoordinatorTest {
     @Test
     public void testIphDelayedPromoShown() {
         mLayoutSateProviderOneshotSupplier.set(mLayoutStateProvider);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mCoordinator.handlePageLoadFinished();
         verifyIphNotShown();
 
         mPromoShownOneshotSupplier.set(false);
+        RobolectricUtil.runAllBackgroundAndUi();
         mCoordinator.handlePageLoadFinished();
         verifyIphShown();
     }

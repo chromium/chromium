@@ -18,6 +18,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.components.browser_ui.notifications.PendingNotificationTask;
 import org.chromium.components.browser_ui.notifications.ThrottlingNotificationScheduler;
 
@@ -71,7 +72,7 @@ public class ThrottlingNotificationSchedulerTest {
         Assert.assertEquals(1, (int) mTaskInvocationMap.get("t1"));
         addTask("t2", PendingNotificationTask.Priority.LOW);
         addTask("t2", PendingNotificationTask.Priority.LOW);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         Assert.assertEquals(1, (int) mTaskInvocationMap.get("t2"));
     }
 
@@ -81,7 +82,7 @@ public class ThrottlingNotificationSchedulerTest {
         Assert.assertEquals(1, (int) mTaskInvocationMap.get("t1"));
         addTask("t2", PendingNotificationTask.Priority.LOW);
         ThrottlingNotificationScheduler.getInstance().cancelPendingNotificationTask("t2");
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         Assert.assertFalse(mTaskInvocationMap.containsKey("t2"));
     }
 

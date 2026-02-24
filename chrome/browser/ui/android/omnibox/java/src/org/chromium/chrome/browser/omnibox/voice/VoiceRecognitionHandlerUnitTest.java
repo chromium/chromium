@@ -45,11 +45,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
@@ -146,7 +146,7 @@ public class VoiceRecognitionHandlerUnitTest {
         // Make sure destroy() propagates.
         // Any cleanup code scheduled for execution via the means of a Handler or PostTask
         // will be taken care of here.
-        ShadowLooper.shadowMainLooper().idle();
+        RobolectricUtil.runAllBackgroundAndUi();
         mHandler.removeObserver(mObserver);
     }
 

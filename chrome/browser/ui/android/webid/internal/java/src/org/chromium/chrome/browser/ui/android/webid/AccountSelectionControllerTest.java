@@ -43,10 +43,9 @@ import org.mockito.ArgumentMatcher;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ButtonData;
@@ -74,7 +73,6 @@ import java.util.Collections;
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBase {
     @Parameters
     public static Collection<Object> data() {
@@ -433,7 +431,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 mAnaAccount,
                 /* isAutoReauthn= */ true);
         // Auto reauthenticates if no action is taken.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertFalse(mMediator.wasDismissed());
         assertEquals(HeaderType.VERIFY_AUTO_REAUTHN, mMediator.getHeaderType());
 
@@ -457,7 +455,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         verifyNoMoreInteractions(mMockDelegate);
         assertTrue(mMediator.wasDismissed());
         // The delayed task should not call delegate after user dismissing.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
 
     @Test
@@ -716,6 +714,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                         mFilteredOutAccountWithUseDifferentAccount),
                 Arrays.asList(mIdpDataWithUseDifferentAccount),
                 /* newAccounts= */ Collections.EMPTY_LIST);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Account chooser is shown.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
@@ -785,6 +784,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mFilteredOutAccountWithUseDifferentAccount),
                 Arrays.asList(mIdpDataWithUseDifferentAccount),
                 Arrays.asList(mFilteredOutAccountWithUseDifferentAccount));
+        RobolectricUtil.runAllBackgroundAndUi();
         // Account chooser is shown.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
         int expectedCount = mRpMode == RpMode.PASSIVE ? 3 : 2;
@@ -842,6 +842,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mNewUserAccount, mAnaAccountWithUseDifferentAccount),
                 Arrays.asList(mIdpData, mIdpDataWithUseDifferentAccount),
                 /* newAccounts= */ Collections.EMPTY_LIST);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Dragbar should be shown when multiple identity providers are shown.
         assertTrue(mModel.get(ItemProperties.DRAGBAR_HANDLE_VISIBLE));
@@ -948,6 +949,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mSingleIdentifierAccount, mSingleIdentifierAccountFilteredOut),
                 Arrays.asList(mIdpData),
                 /* newAccounts= */ Collections.EMPTY_LIST);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Account chooser is shown.
         assertEquals(HeaderType.SIGN_IN, mModel.get(ItemProperties.HEADER).get(TYPE));
@@ -995,6 +997,7 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                 Arrays.asList(mSingleIdentifierAccount),
                 Arrays.asList(mIdpData),
                 /* newAccounts= */ Arrays.asList(mSingleIdentifierAccount));
+        RobolectricUtil.runAllBackgroundAndUi();
 
         if (mRpMode == RpMode.PASSIVE) {
             // Account chooser is shown.

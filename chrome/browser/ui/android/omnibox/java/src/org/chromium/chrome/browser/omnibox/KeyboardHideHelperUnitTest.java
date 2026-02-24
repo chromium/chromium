@@ -26,17 +26,15 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.ui.base.WindowDelegate;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class KeyboardHideHelperUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Runnable mKeyboardHiddenCallback;
@@ -98,7 +96,7 @@ public class KeyboardHideHelperUnitTest {
     public void testMonitorTimeElapsed() {
         mKeyboardHideHelper.monitorForKeyboardHidden();
         Assert.assertTrue(mKeyboardHideHelper.isMonitoringForLayoutChanges());
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         Assert.assertFalse(mKeyboardHideHelper.isMonitoringForLayoutChanges());
     }
 }

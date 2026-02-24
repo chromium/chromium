@@ -51,12 +51,12 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.omnibox.R;
@@ -195,6 +195,7 @@ public class FuseboxMediatorUnitTest {
     private void addTabAttachment(Tab tab) {
         mMediator.uploadAndAddAttachment(
                 FuseboxAttachment.forTab(tab, mResources, FuseboxAttachmentButtonType.TAB_PICKER));
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     private FuseboxAttachment addAttachment(
@@ -236,6 +237,7 @@ public class FuseboxMediatorUnitTest {
         }
 
         mMediator.uploadAndAddAttachment(attachment);
+        RobolectricUtil.runAllBackgroundAndUi();
         return attachment;
     }
 
@@ -502,7 +504,7 @@ public class FuseboxMediatorUnitTest {
         doReturn(mRenderWidgetHostView).when(mWebContents).getRenderWidgetHostView();
 
         recreateMediator();
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
@@ -597,7 +599,7 @@ public class FuseboxMediatorUnitTest {
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         Intent intent = mIntentCaptor.getValue();
         assertEquals(
-                FuseboxAttachmentModelList.MAX_ATTACHMENTS,
+                FuseboxAttachmentModelList.getMaxAttachments(),
                 intent.getIntExtra(MediaStore.EXTRA_PICK_IMAGES_MAX, /* defaultValue= */ -1));
     }
 
@@ -761,6 +763,7 @@ public class FuseboxMediatorUnitTest {
         // Create set of newly selected Ids.
         Set<Integer> newlySelectedIds = new HashSet<>(Arrays.asList(102, 103, 104));
         mMediator.updateCurrentlyAttachedTabs(newlySelectedIds);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(newlySelectedIds, getCurrentlyAttachedIdsFromModel());
     }
 
@@ -777,7 +780,7 @@ public class FuseboxMediatorUnitTest {
         assertNotNull(
                 intent.getIntegerArrayListExtra(ChromeItemPickerExtras.EXTRA_PRESELECTED_TAB_IDS));
         assertEquals(
-                FuseboxAttachmentModelList.MAX_ATTACHMENTS,
+                FuseboxAttachmentModelList.getMaxAttachments(),
                 intent.getIntExtra(ChromeItemPickerExtras.EXTRA_ALLOWED_SELECTION_COUNT, -1));
     }
 
@@ -799,7 +802,7 @@ public class FuseboxMediatorUnitTest {
         assertTrue(preselectedIds.contains(tab1.getId()));
         assertTrue(preselectedIds.contains(tab2.getId()));
         assertEquals(
-                FuseboxAttachmentModelList.MAX_ATTACHMENTS,
+                FuseboxAttachmentModelList.getMaxAttachments(),
                 intent.getIntExtra(ChromeItemPickerExtras.EXTRA_ALLOWED_SELECTION_COUNT, -1));
     }
 
@@ -816,16 +819,16 @@ public class FuseboxMediatorUnitTest {
         int allowedSelectionCount =
                 intent.getIntExtra(ChromeItemPickerExtras.EXTRA_ALLOWED_SELECTION_COUNT, -1);
         // The image and file attachments should count against the max, the tab should not.
-        assertEquals(FuseboxAttachmentModelList.MAX_ATTACHMENTS - 2, allowedSelectionCount);
+        assertEquals(FuseboxAttachmentModelList.getMaxAttachments() - 2, allowedSelectionCount);
     }
 
     @Test
     public void testMaxAttachments() {
-        for (int i = 0; i < FuseboxAttachmentModelList.MAX_ATTACHMENTS; i++) {
+        for (int i = 0; i < FuseboxAttachmentModelList.getMaxAttachments(); i++) {
             addAttachment("title", "token" + i, FuseboxAttachmentType.ATTACHMENT_FILE);
         }
 
-        assertEquals(FuseboxAttachmentModelList.MAX_ATTACHMENTS, mAttachments.size());
+        assertEquals(FuseboxAttachmentModelList.getMaxAttachments(), mAttachments.size());
 
         mockTab(101, /* webContentsReady= */ true);
         mockTab(102, /* webContentsReady= */ false);
@@ -836,7 +839,7 @@ public class FuseboxMediatorUnitTest {
         newlySelectedIds.add(103);
         newlySelectedIds.add(104);
         mMediator.updateCurrentlyAttachedTabs(newlySelectedIds);
-        assertEquals(FuseboxAttachmentModelList.MAX_ATTACHMENTS, mAttachments.size());
+        assertEquals(FuseboxAttachmentModelList.getMaxAttachments(), mAttachments.size());
 
         mMediator.onFilePickerClicked();
         mMediator.onClipboardClicked();
@@ -856,6 +859,7 @@ public class FuseboxMediatorUnitTest {
 
         // Add tabs as attachments
         mMediator.onTabPickerResult(Activity.RESULT_OK, resultIntent);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(new HashSet<>(selectedTabIds), getCurrentlyAttachedIdsFromModel());
 
         // Verify AutocompleteRequestType is AI Mode.
@@ -870,6 +874,7 @@ public class FuseboxMediatorUnitTest {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
 
         mMediator.onTabPickerResult(Activity.RESULT_OK, resultIntent);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(new HashSet<>(), getCurrentlyAttachedIdsFromModel());
 
         // AI Mode is NOT activated and AutocompleteRequestType remains SEARCH.
@@ -938,7 +943,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testIsMaxAttachmentCountReached_maxAttachmentsReached() {
-        for (int i = 0; i < FuseboxAttachmentModelList.MAX_ATTACHMENTS; i++) {
+        for (int i = 0; i < FuseboxAttachmentModelList.getMaxAttachments(); i++) {
             addAttachment("title" + i, "token" + i, FuseboxAttachmentType.ATTACHMENT_FILE);
         }
         assertTrue(mMediator.isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_FILE));
@@ -954,7 +959,7 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));
 
         // Add maximum attachments
-        for (int i = 0; i < FuseboxAttachmentModelList.MAX_ATTACHMENTS; i++) {
+        for (int i = 0; i < FuseboxAttachmentModelList.getMaxAttachments(); i++) {
             addAttachment("file" + i, "token" + i, FuseboxAttachmentType.ATTACHMENT_FILE);
         }
         assertEquals(0, mAttachments.getRemainingAttachments());

@@ -24,6 +24,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -83,7 +84,7 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
                 "#initializeAsync should be in progress.",
                 PartnerBrowserCustomizations.getInstance().isInitialized());
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(
                 "#initializeAsync should be done.",
                 PartnerBrowserCustomizations.getInstance().isInitialized());
@@ -98,7 +99,7 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
                 "3rd #initializeAsync should be in progress.",
                 PartnerBrowserCustomizations.getInstance().isInitialized());
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(
                 "3rd #initializeAsync should be done.",
                 PartnerBrowserCustomizations.getInstance().isInitialized());
@@ -140,7 +141,7 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
                         HomepageCharacterizationHelperStub::ntpHelper);
 
         // Trigger Async completion.
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Make sure the Outcome logged to UMA is correct.
         histograms.assertExpected();

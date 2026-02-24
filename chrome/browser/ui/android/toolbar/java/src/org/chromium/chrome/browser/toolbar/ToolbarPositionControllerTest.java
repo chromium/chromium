@@ -43,7 +43,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
@@ -51,6 +50,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -423,7 +423,7 @@ public class ToolbarPositionControllerTest {
                             ? ToolbarPositionAndSource.TOP_LONG_PRESS
                             : ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
         }
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test
@@ -1003,7 +1003,7 @@ public class ToolbarPositionControllerTest {
         assertEquals(View.NO_ID, mProgressBarLayoutParams.getAnchorId());
 
         // Run the posted task to complete changing the progress bar layout params.
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertControlsAtTop();
     }
 

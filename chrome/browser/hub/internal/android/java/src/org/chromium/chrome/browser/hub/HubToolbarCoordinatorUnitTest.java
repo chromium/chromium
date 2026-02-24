@@ -28,13 +28,13 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -126,7 +126,7 @@ public class HubToolbarCoordinatorUnitTest {
         assertTrue(mIsAnimatingSupplier.hasObservers());
         mIsAnimatingSupplier.set(true);
         mIsAnimatingSupplier.set(false);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mUserEducationHelper).requestShowIph(any());
         assertFalse(mIsAnimatingSupplier.hasObservers());

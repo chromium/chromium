@@ -41,7 +41,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -49,6 +48,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
@@ -173,7 +173,7 @@ public class ToolbarControlContainerTest {
                 mFullscreenManager,
                 mToolbarDataProvider);
         // The adapter may observe some of these already, which will post events.
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         // The initial addObserver triggers an event that we don't care about. Reset count.
         mOnResourceRequestedCount.set(0);
     }
@@ -213,7 +213,7 @@ public class ToolbarControlContainerTest {
         assertNotEquals(inMotion, mCompositorInMotionSupplier.get());
         int requestCount = mOnResourceRequestedCount.get();
         mCompositorInMotionSupplier.set(inMotion);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         int expectedCount = requestCount + (expectResourceRequested ? 1 : 0);
         assertEquals(expectedCount, mOnResourceRequestedCount.get());
     }
@@ -351,7 +351,7 @@ public class ToolbarControlContainerTest {
 
         // BOTH should cause a new onResourceRequested call.
         setConstraintsOverride(BrowserControlsState.BOTH);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(1, mOnResourceRequestedCount.get());
 
         // The constraints should no longer block isDirty/captures.
@@ -490,7 +490,7 @@ public class ToolbarControlContainerTest {
         when(mLayoutStateProvider.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
         mLayoutStateProviderSupplier.set(mLayoutStateProvider);
         // The supplier posts the notification so idle to let it through.
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verifyIsDirtyWasBlocked(TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION);
 
@@ -841,7 +841,7 @@ public class ToolbarControlContainerTest {
 
         // Finish transition
         mControlContainer.onHeightTransitionFinished(true);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertEquals(
                 "MinHeight is not set correctly.",
@@ -876,7 +876,7 @@ public class ToolbarControlContainerTest {
 
         // Finish transition
         mControlContainer.onHeightTransitionFinished(true);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(
                 "MinHeight is not set correctly.",
                 toolbarHeight + hairlineHeight,
@@ -910,7 +910,7 @@ public class ToolbarControlContainerTest {
 
         // Finish transition
         mControlContainer.onHeightTransitionFinished(false);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(
                 "Transition not finished, so minHeight stays the same.",
                 0,

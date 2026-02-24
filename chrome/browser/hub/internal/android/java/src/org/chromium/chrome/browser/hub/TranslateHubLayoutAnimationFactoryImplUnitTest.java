@@ -28,9 +28,9 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link TranslateHubLayoutAnimationFactoryImpl}. */
@@ -72,7 +72,7 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
                             // Force a layout to ensure width and height are defined.
                             mHubContainerView.layout(0, 0, 100, 100);
                         });
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test
@@ -111,7 +111,7 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
 
         runner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         verify(mListener).beforeStart();
         verify(mListener).onEnd(eq(false));
@@ -123,7 +123,7 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
     public void testTranslateDown() {
         // Ensure the view is visible for hide.
         mHubContainerView.setVisibility(View.VISIBLE);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         HubLayoutAnimatorProvider animatorProvider =
                 TranslateHubLayoutAnimationFactory.createTranslateDownAnimatorProvider(
@@ -160,7 +160,7 @@ public class TranslateHubLayoutAnimationFactoryImplUnitTest {
 
         runner.runWithWaitForAnimatorTimeout(TIMEOUT_MS);
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         verify(mListener).beforeStart();
         verify(mListener).onEnd(eq(false));

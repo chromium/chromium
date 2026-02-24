@@ -39,7 +39,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPackageManager;
 import org.robolectric.shadows.ShadowSystemClock;
 
@@ -48,6 +47,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
@@ -405,7 +405,7 @@ public class PasswordManagerHelperTest {
                 mLoadingModalDialogCoordinator,
                 TEST_EMAIL_ADDRESS);
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mLoadingModalDialogCoordinator).dismiss();
     }
 
@@ -426,7 +426,7 @@ public class PasswordManagerHelperTest {
 
         mLoadingDialogCoordinatorObserver.onDismissable();
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mLoadingModalDialogCoordinator).dismiss();
     }
 

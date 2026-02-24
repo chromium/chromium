@@ -24,9 +24,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -111,7 +111,7 @@ public class PreWarmingRecycledViewPoolTest {
         ensureNoViewsCreated();
 
         // Run first, then cancel.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         mPool.stopCreatingViews();
         ensureAllViewsCreated();
     }
@@ -124,7 +124,7 @@ public class PreWarmingRecycledViewPoolTest {
 
         // Cancel, then run.
         mPool.stopCreatingViews();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         ensureNoViewsCreated();
     }
 
@@ -136,7 +136,7 @@ public class PreWarmingRecycledViewPoolTest {
 
         // Destroy, then run.
         mPool.destroy();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         ensureNoViewsCreated();
     }
 

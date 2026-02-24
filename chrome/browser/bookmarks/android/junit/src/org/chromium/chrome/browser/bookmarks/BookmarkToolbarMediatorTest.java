@@ -38,10 +38,10 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
@@ -75,7 +75,6 @@ import java.util.function.BooleanSupplier;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class BookmarkToolbarMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -157,6 +156,7 @@ public class BookmarkToolbarMediatorTest {
                         mSnackbarManager,
                         mClipboard);
         mBookmarkDelegateSupplier.set(mBookmarkDelegate);
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     private boolean navigationButtonMatchesModel(@NavigationButton int navigationButton) {

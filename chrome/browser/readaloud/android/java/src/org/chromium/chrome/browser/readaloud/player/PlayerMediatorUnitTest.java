@@ -43,12 +43,12 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -1028,7 +1028,7 @@ public class PlayerMediatorUnitTest {
 
     private void fulfillPreview() {
         mPreviewPromise.fulfill(mPreviewPlayback);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mPreviewPlayback).addListener(mPlaybackListenerCaptor.capture());
     }
 
@@ -1041,6 +1041,6 @@ public class PlayerMediatorUnitTest {
 
     private void failPreview() {
         mPreviewPromise.reject(new Exception());
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
 }

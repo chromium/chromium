@@ -38,12 +38,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -122,7 +122,7 @@ public class AddressBarSettingsFragmentUnitTest {
                 initialBackground.getColor());
 
         // Run delayed animation that reverts the color.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         ColorDrawable finalBackground = (ColorDrawable) mBottomButton.getBackground();
         assertEquals(SemanticColorUtils.getDefaultBgColor(mActivity), finalBackground.getColor());

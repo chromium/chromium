@@ -41,11 +41,11 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
@@ -325,7 +325,7 @@ public class ImprovedBookmarkRowTest {
         mModel.set(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
         mModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, mDrawableSupplier);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mStartImageView).setImageDrawable(null);
         verify(mStartImageView).setImageDrawable(mDrawable);
@@ -343,7 +343,7 @@ public class ImprovedBookmarkRowTest {
         mModel.set(ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
         mModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, mNullDrawableSupplier);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mStartImageView, times(2)).setImageDrawable(null);
         verify(mStartImageView, never()).setAlpha(0f);

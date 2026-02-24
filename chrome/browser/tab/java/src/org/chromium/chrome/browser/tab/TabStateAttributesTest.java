@@ -39,6 +39,7 @@ import org.chromium.base.Token;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -202,7 +203,7 @@ public class TabStateAttributesTest {
         verifyNoMoreInteractions(mAttributesObserver);
         reset(mAttributesObserver);
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         TabStateAttributes.from(mTab).setStateForTesting(DirtinessState.UNTIDY);
         observers = TabTestUtils.getTabObservers(mTab);
         while (observers.hasNext()) {

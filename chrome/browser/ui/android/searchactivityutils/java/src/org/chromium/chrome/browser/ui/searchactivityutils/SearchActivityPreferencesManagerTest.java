@@ -32,11 +32,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
@@ -99,12 +99,12 @@ public class SearchActivityPreferencesManagerTest {
 
         // Purge any pending propagate actions to ensure no side effets later in the tests.
         // Needed because `resetCachedValues()` will likely post a task to notify listeners.
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @After
     public void tearDown() {
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         TemplateUrlServiceFactory.setInstanceForTesting(null);
         ProfileManager.setLastUsedProfileForTesting(null);
         SearchActivityPreferencesManager.resetForTesting();
@@ -215,7 +215,7 @@ public class SearchActivityPreferencesManagerTest {
                 new SearchActivityPreferences(
                         "Search Engine", new GURL("https://URL"), false, true, true);
         SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(newSettings, false);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(observer1).accept(eq(newSettings));
         verify(observer2).accept(eq(newSettings));
         clearInvocations(observer1, observer2);
@@ -231,7 +231,7 @@ public class SearchActivityPreferencesManagerTest {
                 new SearchActivityPreferences(
                         "Search Engine", new GURL("https://URL"), true, true, true);
         SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(newSettings, false);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(observer1).accept(eq(newSettings));
         verify(observer2).accept(eq(newSettings));
         verify(observer3).accept(eq(newSettings));
@@ -239,7 +239,7 @@ public class SearchActivityPreferencesManagerTest {
 
         // Finally, reset settings to safe defaults. All listeners should be notified.
         SearchActivityPreferencesManager.resetCachedValues();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(observer1).accept(any());
         verify(observer2).accept(any());
         verify(observer3).accept(any());
@@ -276,7 +276,7 @@ public class SearchActivityPreferencesManagerTest {
                 false);
         verify(listener1, never()).accept(any());
         verify(listener2, never()).accept(any());
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(listener1).accept(any());
         verify(listener2).accept(any());
         clearInvocations(listener1, listener2);
@@ -285,7 +285,7 @@ public class SearchActivityPreferencesManagerTest {
         SearchActivityPreferencesManager.resetCachedValues();
         verify(listener1, never()).accept(any());
         verify(listener2, never()).accept(any());
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(listener1).accept(any());
         verify(listener2).accept(any());
     }
@@ -314,7 +314,7 @@ public class SearchActivityPreferencesManagerTest {
         SearchActivityPreferencesManager.setCurrentlyLoadedPreferences(preference, true);
         // Should not be live right away - expect posted task.
         verify(listener, never()).accept(any());
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(listener).accept(eq(preference));
 
         // Note: we provide different default values than stored ones to make sure everything works.
@@ -369,7 +369,7 @@ public class SearchActivityPreferencesManagerTest {
         // Confirm no data and no updates.
         Assert.assertNull(SearchActivityPreferencesManager.getCurrent().searchEngineName);
         Assert.assertTrue(SearchActivityPreferencesManager.getCurrent().searchEngineUrl.isEmpty());
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(listener, never()).accept(any());
     }
 
@@ -405,7 +405,7 @@ public class SearchActivityPreferencesManagerTest {
         mTemplateUrlServiceLoadListener.onTemplateUrlServiceLoaded();
 
         // Confirm data is available and update is pushed.
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(listener).accept(refPrefs.capture());
         Assert.assertEquals("Cowabunga", refPrefs.getValue().searchEngineName);
         Assert.assertEquals(

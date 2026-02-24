@@ -16,7 +16,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -30,7 +29,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests the class {@link AccountPickerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class AccountPickerMediatorTest {
     /* Used to simulate a name change event for TestAccounts.ACCOUNT1. */
     public static final AccountInfo ACCOUNT1_DIFFERENT_NAME =

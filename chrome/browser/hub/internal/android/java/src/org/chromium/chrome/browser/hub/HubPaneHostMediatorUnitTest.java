@@ -27,11 +27,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
@@ -86,7 +86,7 @@ public class HubPaneHostMediatorUnitTest {
                         mPaneSupplier,
                         mPaneOrderController,
                         /* defaultPaneId= */ PaneId.TAB_SWITCHER);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertNotNull(mModel.get(PANE_ROOT_VIEW));
         assertTrue(mPaneSupplier.hasObservers());
 
@@ -118,7 +118,7 @@ public class HubPaneHostMediatorUnitTest {
                 mPaneSupplier,
                 mPaneOrderController,
                 /* defaultPaneId= */ PaneId.TAB_SWITCHER);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         mPaneSupplier.set(mPane);
 
         mPaneSupplier.set(mIncognitoPane);
@@ -136,7 +136,7 @@ public class HubPaneHostMediatorUnitTest {
                 mPaneSupplier,
                 mPaneOrderController,
                 /* defaultPaneId= */ PaneId.TAB_SWITCHER);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         mPaneSupplier.set(mIncognitoPane);
 
         mPaneSupplier.set(mPane);
@@ -154,7 +154,7 @@ public class HubPaneHostMediatorUnitTest {
                 mPaneSupplier,
                 mPaneOrderController,
                 /* defaultPaneId= */ PaneId.TAB_SWITCHER);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         mPaneSupplier.set(mPane);
 
         mPaneSupplier.set(mIncognitoPane);
@@ -176,7 +176,7 @@ public class HubPaneHostMediatorUnitTest {
                 mPaneSupplier,
                 mPaneOrderController,
                 /* defaultPaneId= */ PaneId.TAB_SWITCHER);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(mRootView, mModel.get(PANE_ROOT_VIEW));
     }
 }

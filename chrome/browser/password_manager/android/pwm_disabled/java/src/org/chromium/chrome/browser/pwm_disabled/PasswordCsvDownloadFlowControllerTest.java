@@ -41,13 +41,13 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowContentResolver;
 import org.robolectric.shadows.ShadowDialog;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowToast;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
@@ -136,7 +136,7 @@ public class PasswordCsvDownloadFlowControllerTest {
         Dialog dialog = ShadowDialog.getLatestDialog();
         dialog.findViewById(R.id.positive_button).performClick();
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         Resources resources = RuntimeEnvironment.getApplication().getResources();
 
@@ -213,7 +213,7 @@ public class PasswordCsvDownloadFlowControllerTest {
 
         // Simulate the user cancelling the activity and not setting a destination file
         shadowActivity.receiveResult(startedIntent, RESULT_OK, new Intent().setData(null));
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertFalse(exportDialog.isShowing());
 
@@ -380,7 +380,7 @@ public class PasswordCsvDownloadFlowControllerTest {
         // crashes occur. This scenario could happen in case of system resource pressure while the
         // file chooser activity is shown.
         mActivity.recreate();
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test

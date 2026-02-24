@@ -34,7 +34,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.LazyOneshotSupplier;
@@ -44,6 +43,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -195,7 +195,7 @@ public class HubCoordinatorUnitTest {
                         mHubColorMixer,
                         /* xrSpaceModeObservableSupplier= */ null,
                         /* defaultPaneId= */ PaneId.TAB_SWITCHER);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         mRootView.getChildCount();
         assertNotEquals(0, mRootView.getChildCount());
     }

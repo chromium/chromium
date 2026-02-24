@@ -46,7 +46,10 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
     private final SimpleRecyclerViewAdapter mAdapter =
             new FuseboxAttachmentRecyclerViewAdapter(mModelList);
 
-    static final int MAX_ATTACHMENTS = OmniboxFeatures.sMultiattachmentFusebox.getValue() ? 10 : 1;
+    public static int getMaxAttachments() {
+        return OmniboxFeatures.sMultiattachmentFusebox.getValue() ? 10 : 1;
+    }
+
     private final Set<Integer> mAttachedTabIds = new ArraySet<>();
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final ObserverList<FuseboxAttachmentChangeListener> mAttachmentChangeListeners =
@@ -419,7 +422,7 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
      * if needed.
      */
     public int getRemainingAttachments() {
-        return MAX_ATTACHMENTS - size();
+        return getMaxAttachments() - size();
     }
 
     private void notifyAttachmentUploadFailed() {

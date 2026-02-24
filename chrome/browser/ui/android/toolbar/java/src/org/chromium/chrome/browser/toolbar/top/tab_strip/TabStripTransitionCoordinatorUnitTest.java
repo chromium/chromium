@@ -43,6 +43,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -262,7 +263,7 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Url focus animation finished to unblock the transition.
         mCoordinator.onUrlAnimationFinished(false);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         Assert.assertEquals(
                 "Height request should go through after the url bar focus.",
                 0,
@@ -294,7 +295,7 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Tab is unobscured to unblock the transition.
         mTabObscuringHandler.unobscure(token);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         Assert.assertEquals(
                 "Height request should go through after tab unobscured.",
                 0,
@@ -424,7 +425,7 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Url focus animation finished to unblock the transition
         mCoordinator.onUrlAnimationFinished(false);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         Assert.assertEquals(
                 "Height request should go through after the url bar focus.",
                 TEST_TAB_STRIP_HEIGHT,
@@ -460,7 +461,7 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Tab is unobscured to unblock the transition.
         mTabObscuringHandler.unobscure(token);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         Assert.assertEquals(
                 "Height request should go through after the tab unobscured.",
                 TEST_TAB_STRIP_HEIGHT,
@@ -508,7 +509,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                 mTestHandler.heightRequested);
 
         mCoordinator.releaseTabStripToken(token);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         Assert.assertEquals(
                 "Height request should go through after the token released.",
                 TEST_TAB_STRIP_HEIGHT,
@@ -530,14 +531,14 @@ public class TabStripTransitionCoordinatorUnitTest {
                 NOTHING_OBSERVED,
                 mTestHandler.heightRequested);
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         Assert.assertEquals(
                 "Height request should be blocked by the token.",
                 NOTHING_OBSERVED,
                 mTestHandler.heightRequested);
 
         mCoordinator.releaseTabStripToken(token);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         Assert.assertEquals(
                 "Height request should go through after the token released.",
                 TEST_TAB_STRIP_HEIGHT,
@@ -558,7 +559,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                 NOTHING_OBSERVED,
                 mTestHandler.heightRequested);
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         Assert.assertEquals(
                 "Height request should go through after the token released.",
                 TEST_TAB_STRIP_HEIGHT,
@@ -605,7 +606,7 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Destroy the coordinator so the transition task is canceled.
         mCoordinator.destroy();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
     }
 
@@ -622,7 +623,7 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Destroy the coordinator so the capture task won't go through.
         mCoordinator.destroy();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
     }
 
@@ -668,7 +669,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         Rect appHeaderRect = new Rect(0, 0, 600, newHeight);
         mAppHeaderState = new AppHeaderState(appHeaderRect, appHeaderRect, true);
         mCoordinator.onAppHeaderStateChanged(mAppHeaderState);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         Assert.assertEquals(
                 "Height request should include the top padding.",
@@ -692,7 +693,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         Rect appHeaderRect = new Rect(0, 0, 600, newHeight);
         mAppHeaderState = new AppHeaderState(appHeaderRect, appHeaderRect, true);
         mCoordinator.onAppHeaderStateChanged(mAppHeaderState);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         Assert.assertEquals(
                 "When new height is less than height with reserved padding, use that instead.",
@@ -715,7 +716,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         Rect appHeaderRect = new Rect(0, 0, NARROW_DESKTOP_WINDOW_WIDTH, newHeight);
         mAppHeaderState = new AppHeaderState(appHeaderRect, appHeaderRect, true);
         mCoordinator.onAppHeaderStateChanged(mAppHeaderState);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         Assert.assertEquals(
                 "Narrow width does not trigger tab strip height transition.",
@@ -967,14 +968,14 @@ public class TabStripTransitionCoordinatorUnitTest {
         // Switch to a fullscreen window of the same width.
         simulateAppHeaderStateChanged(NARROW_DESKTOP_WINDOW_WIDTH, false);
         simulateLayoutChange(NARROW_DESKTOP_WINDOW_WIDTH);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         Assert.assertEquals("Height is not as expected.", 0, mTestHandler.heightRequested);
         Assert.assertTrue("Scrim overlay is not applied as expected.", mDelegate.applyScrimOverlay);
 
         // Switch to a desktop window of the same width.
         simulateAppHeaderStateChanged(NARROW_DESKTOP_WINDOW_WIDTH, true);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         // Fade transition should be requested once initially while switching to a small desktop
         // window, and again when switching back to a small window of the same width after switching
         // out of desktop windowing mode to a window of the same width.
@@ -1004,7 +1005,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                 .when(mSpyControlContainer)
                 .getHeight();
         simulateLayoutChange(LARGE_DESKTOP_WINDOW_WIDTH);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         Assert.assertEquals(
                 "Height transition should update the strip top padding.",
                 TEST_TAB_STRIP_HEIGHT + mReservedTopPadding,
@@ -1114,7 +1115,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         // Simulate switching desktop windowing mode.
         simulateAppHeaderStateChanged(destinationWidth, enterDesktopWindow);
         simulateLayoutChange(destinationWidth);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Verify the last height request made to the transition delegate.
         int expectedHeight;
@@ -1154,7 +1155,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         // the desired height request was made.
         if (tokenInUse) {
             mCoordinator.onUrlAnimationFinished(false);
-            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+            RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
             Assert.assertEquals(
                     "Height request should go through after the token is released.",
                     expectedHeightAfterTokenRelease,
@@ -1197,7 +1198,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                         mDesktopWindowStateManager,
                         mDelegateSupplier,
                         mTestHandler);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
 
     /** Run #onControlsOffsetChanged, changing content offset from |beginOffset| to |endOffset|. */
@@ -1227,7 +1228,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         simulateConfigurationChanged(configuration);
         simulateAppHeaderStateChanged(widthDp, mAppHeaderState.isInDesktopWindow());
         simulateLayoutChange(widthDp);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
 
     private Configuration setConfigurationWithNewWidth(int widthDp) {

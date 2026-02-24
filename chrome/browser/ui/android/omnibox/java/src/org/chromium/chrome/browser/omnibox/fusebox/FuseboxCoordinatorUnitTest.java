@@ -41,13 +41,13 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
@@ -291,7 +291,7 @@ public class FuseboxCoordinatorUnitTest {
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         mCoordinator.beginInput(createSession());
         mTemplateUrlServiceSupplier.set(mTemplateUrlService);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mMediator).setToolbarVisible(false);
     }
@@ -303,7 +303,7 @@ public class FuseboxCoordinatorUnitTest {
                 .when(mComposeboxController)
                 .init(any(Profile.class), any(ComposeboxQueryControllerBridge.class));
         mProfileSupplier.set(mProfile);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         mAutocompleteInput.setRequestType(AutocompleteRequestType.AI_MODE);
 
         mCoordinator.beginInput(createSession());

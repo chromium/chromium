@@ -53,6 +53,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -443,7 +444,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.beginInput(createSession(url, title, pageClassification));
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
     }
 
@@ -464,7 +465,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.beginInput(session);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyAutocompleteStart(url, pageClassification, "test", 0, true);
     }
 
@@ -515,7 +516,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         mMediator.setAutocompleteProfile(mProfile);
         mMediator.beginInput(session);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         // Strictly expect the call to `startZeroSuggest()` here, as Desktop mode retains the
         // Omnibox content on focus.
         verifyAutocompleteStartZeroSuggest("Text", url, pageClassification, title);
@@ -534,7 +535,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(createSession(url, title, pageClassification));
 
         mMediator.onNativeInitialized();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
     }
 
@@ -553,7 +554,7 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.onNativeInitialized();
         mMediator.onTextChanged("test", /* isOnFocusContext= */ false);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyAutocompleteStart(url, pageClassification, "test", 4, false);
     }
 
@@ -573,7 +574,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         mMediator.onTextChanged("test", /* isOnFocusContext= */ false);
         mMediator.onTextChanged("nottest", /* isOnFocusContext= */ false);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyAutocompleteStart(url, pageClassification, "nottest", 4, false);
     }
 
@@ -593,13 +594,13 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(session);
         mMediator.endInput();
         mMediator.beginInput(session);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mAutocompleteController, never()).startZeroSuggest(any());
 
         // Simulate native being initialized. Make sure we only ever issue one request, even if
         // there are multiple requests to activate the autocomplete session.
         mMediator.onNativeInitialized();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
     }
 
@@ -614,12 +615,12 @@ public class AutocompleteMediatorUnitTest {
         // Simulate URL being focus changes.
         mMediator.beginInput(session);
         mMediator.endInput();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mAutocompleteController, never()).startZeroSuggest(any());
 
         // Simulate native being inititalized. Make sure no suggest requests are sent.
         mMediator.onNativeInitialized();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mAutocompleteController, never()).startZeroSuggest(any());
     }
 
@@ -643,12 +644,12 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onTextChanged("", /* isOnFocusContext= */ false);
         mMediator.onTextChanged("A", /* isOnFocusContext= */ false);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mAutocompleteController, never()).start(any(), anyInt(), anyBoolean());
         verify(mAutocompleteController, never()).startZeroSuggest(any());
 
         mMediator.onNativeInitialized();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyAutocompleteStart(url, pageClassification, "A", 0, true);
         verify(mAutocompleteController, never()).startZeroSuggest(any());
     }
@@ -673,7 +674,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onTextChanged("", /* isOnFocusContext= */ false);
 
         mMediator.onNativeInitialized();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mAutocompleteController, never()).start(any(), anyInt(), anyBoolean());
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
     }
@@ -779,17 +780,17 @@ public class AutocompleteMediatorUnitTest {
 
         // Simulate interaction with match before native initialization completed.
         mMediator.onSuggestionClicked(match, 0, url);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyNoMoreInteractions(mAutocompleteDelegate);
 
         // Simulate native initialization complete, but still no profile.
         mMediator.onNativeInitialized();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyNoMoreInteractions(mAutocompleteDelegate);
 
         // Simulate profile loaded.
         mMediator.setAutocompleteProfile(mProfile);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
         assertFalse(mOmniboxLoadUrlParamsCaptor.getValue().openInNewTab);
@@ -808,7 +809,7 @@ public class AutocompleteMediatorUnitTest {
         // Verify no reload on profile change.
         Profile newProfile = mock(Profile.class);
         mMediator.setAutocompleteProfile(newProfile);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyNoMoreInteractions(mAutocompleteDelegate);
     }
 
@@ -915,7 +916,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(session);
 
         mMediator.onNativeInitialized();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyAutocompleteStartZeroSuggest(url.getSpec(), url, pageClassification, title);
     }
 
@@ -933,12 +934,12 @@ public class AutocompleteMediatorUnitTest {
         mMediator.beginInput(session);
 
         // Signal focus prior to initializing native; confirm that zero suggest is not triggered.
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mAutocompleteController, never()).startZeroSuggest(any());
 
         // Initialize native and ensure zero suggest is triggered.
         mMediator.onNativeInitialized();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyAutocompleteStartZeroSuggest("", url, pageClassification, title);
     }
 
@@ -1142,7 +1143,7 @@ public class AutocompleteMediatorUnitTest {
         // No change on key press. No unexpected recordings.
         // Need to run looper here to flush the pending operation.
         mMediator.onTextChanged("a", /* isOnFocusContext= */ false);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifySuggestionRequestToUiModelHistograms(1, 150, 0, null);
 
         // No change on key press. No unexpected recordings.
@@ -1345,17 +1346,17 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.onNativeInitialized();
         mMediator.onTextChanged("test", /* isOnFocusContext= */ false);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyAutocompleteStart(url, pageClassification, "test", 4, false);
 
         mMediator.onTopResumedActivityChanged(false);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mAutocompleteController, never()).start(any(), anyInt(), anyBoolean());
 
         session.getAutocompleteInput().setUserText("test");
 
         mMediator.onTopResumedActivityChanged(true);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verifyAutocompleteStart(url, pageClassification, "test", 4, false);
     }
 
@@ -1768,7 +1769,7 @@ public class AutocompleteMediatorUnitTest {
         doReturn(true).when(ntpDelegate).isIncognitoNewTabPageCurrentlyVisible();
 
         mMediator.beginInput(session);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mMockCachedZeroSuggestionsManager, never()).readFromCache(anyInt());
 
         // Histogram should be recorded once.
@@ -1777,7 +1778,7 @@ public class AutocompleteMediatorUnitTest {
         // When not on an Incognito NTP, cached suggestions should be shown.
         doReturn(false).when(ntpDelegate).isIncognitoNewTabPageCurrentlyVisible();
         mMediator.onTextChanged("", /* isOnFocusContext= */ true);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mMockCachedZeroSuggestionsManager, times(1)).readFromCache(anyInt());
 
         // Histogram record count should not be increased.
@@ -1792,7 +1793,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         mMediator.beginInput(createEmptySession());
         mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertFalse(mListModel.get(SuggestionListProperties.ROUND_TOP_CORNERS));
         assertFalse(mListModel.get(SuggestionListProperties.DRAW_OVER_ANCHOR));

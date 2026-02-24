@@ -37,7 +37,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
@@ -45,6 +44,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
@@ -1168,7 +1168,7 @@ public class TabWindowManagerImplUnitTest {
         TabWindowManager tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
 
         tabWindowManager.keepAllTabModelsLoaded(mMultiInstanceManager, mProfile, mTabModelSelector);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabModel).broadcastSessionRestoreComplete();
     }
 
@@ -1199,7 +1199,7 @@ public class TabWindowManagerImplUnitTest {
 
         mSubject.keepAllTabModelsLoaded(mMultiInstanceManager, mProfile, mTabModelSelector);
         assertEquals(1, mSubject.getAllTabModelSelectors().size());
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabModel).broadcastSessionRestoreComplete();
     }
 

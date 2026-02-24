@@ -36,10 +36,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
@@ -108,7 +108,7 @@ public class HubPaneHostViewUnitTest {
 
         ViewGroup paneFrame = mPaneHost.findViewById(R.id.pane_frame);
         paneFrame.setLayoutParams(layoutParams);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(0, paneFrame.getChildCount());
 
         mPropertyModel.set(PANE_ROOT_VIEW, root1);
@@ -117,7 +117,7 @@ public class HubPaneHostViewUnitTest {
         mPropertyModel.set(PANE_ROOT_VIEW, root2);
         verifyChildren(paneFrame, root1, root2);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyChildren(paneFrame, root2);
 
         mPropertyModel.set(PANE_ROOT_VIEW, root1);
@@ -126,7 +126,7 @@ public class HubPaneHostViewUnitTest {
         mPropertyModel.set(PANE_ROOT_VIEW, root2);
         verifyChildren(paneFrame, root2, root3);
 
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyChildren(paneFrame, root2);
 
         mPropertyModel.set(PANE_ROOT_VIEW, null);
@@ -140,7 +140,7 @@ public class HubPaneHostViewUnitTest {
 
         mPropertyModel.set(PANE_ROOT_VIEW, root1);
         mPropertyModel.set(PANE_ROOT_VIEW, root2);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(1, root2.getAlpha(), /* delta= */ 0);
 
         // Inspired by b/325372945 where the alpha needed to be reset, even when no animations ran.
@@ -156,7 +156,7 @@ public class HubPaneHostViewUnitTest {
 
         mPropertyModel.set(PANE_ROOT_VIEW, root1);
         mPropertyModel.set(PANE_ROOT_VIEW, root2);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(0, root2.getTranslationX(), /* delta= */ 0);
 
         mPropertyModel.set(PANE_ROOT_VIEW, null);

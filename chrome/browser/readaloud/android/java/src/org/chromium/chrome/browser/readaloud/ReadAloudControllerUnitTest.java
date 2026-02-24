@@ -50,7 +50,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
@@ -60,6 +59,7 @@ import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -325,7 +325,7 @@ public class ReadAloudControllerUnitTest {
         mExtractorPromise = new Promise<>();
         when(mExtractor.getDateModified(any())).thenReturn(mExtractorPromise);
         mExtractorPromise.fulfill(1234567123456L);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
 
     void initPlaybackHooks() {
@@ -359,7 +359,7 @@ public class ReadAloudControllerUnitTest {
                         mActivityLifecycleDispatcher,
                         mLayoutStateProviderSupplier,
                         mFullscreenManager);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         return controller;
     }
 
@@ -3214,7 +3214,7 @@ public class ReadAloudControllerUnitTest {
         reset(mHooksImpl);
         doReturn(false).when(mMockProfile).isNativeInitialized();
         mController = createController();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Check readability.
         mController.maybeCheckReadability(mTab);
@@ -3417,7 +3417,7 @@ public class ReadAloudControllerUnitTest {
         GURL gurl = new GURL("https://en.wikipedia.org/wiki/Alphabet_Inc.");
         when(mTab.getUrl()).thenReturn(gurl);
         mController.getTabModelTabObserverforTests().didFirstVisuallyNonEmptyPaint(mTab);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mHooksImpl)
                 .isPageReadable(
                         eq(gurl.getPossiblyInvalidSpec()),
@@ -3619,6 +3619,6 @@ public class ReadAloudControllerUnitTest {
     }
 
     private static void resolvePromises() {
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
 }

@@ -46,10 +46,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -89,8 +89,6 @@ import java.util.function.Supplier;
 /** Unit tests for {@link FeedStream}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-// TODO(crbug.com/40182398): Rewrite using paused loop. See crbug for details.
-@LooperMode(LooperMode.Mode.LEGACY)
 @EnableFeatures(ChromeFeatureList.FEED_LOADING_PLACEHOLDER)
 @DisableFeatures(ChromeFeatureList.FEED_CONTAINMENT)
 public class FeedStreamTest {
@@ -472,6 +470,7 @@ public class FeedStreamTest {
         mLayoutManager.setLastVisiblePosition(lookAheadRange + 1);
         mLayoutManager.setItemCount(itemCount);
         mFeedStream.checkScrollingForLoadMore(triggerDistance / 2);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mFeedSurfaceRendererBridgeMock).loadMore(any(Callback.class));
         histogramWatcher.assertExpected();
     }
@@ -490,6 +489,7 @@ public class FeedStreamTest {
         mLayoutManager.setLastVisiblePosition(lookAheadRange + 1);
         mLayoutManager.setItemCount(itemCount);
         mFeedStream.checkScrollingForLoadMore(triggerDistance);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mFeedSurfaceRendererBridgeMock).loadMore(any(Callback.class));
 
         // loadMore triggered again after hide&show.
@@ -500,6 +500,7 @@ public class FeedStreamTest {
         mLayoutManager.setLastVisiblePosition(lookAheadRange + 1);
         mLayoutManager.setItemCount(itemCount);
         mFeedStream.checkScrollingForLoadMore(triggerDistance);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mFeedSurfaceRendererBridgeMock).loadMore(any(Callback.class));
         histogramWatcher.assertExpected();
     }
@@ -512,6 +513,7 @@ public class FeedStreamTest {
                 (FeedStream.FeedSurfaceActionsHandler)
                         mContentManager.getContextValues(0).get(SurfaceActionsHandler.KEY);
         handler.openUrl(OpenMode.SAME_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mActionDelegate)
                 .openSuggestionUrl(
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
@@ -543,6 +545,7 @@ public class FeedStreamTest {
                         return "someWebFeedName";
                     }
                 });
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mActionDelegate)
                 .openSuggestionUrl(
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
@@ -581,6 +584,7 @@ public class FeedStreamTest {
                         return "someWebFeedName";
                     }
                 });
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mActionDelegate)
                 .openSuggestionUrl(
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.CURRENT_TAB),
@@ -652,6 +656,7 @@ public class FeedStreamTest {
                         mContentManager.getContextValues(0).get(SurfaceActionsHandler.KEY);
 
         handler.openUrl(OpenMode.NEW_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mActionDelegate)
                 .openSuggestionUrl(
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB),
@@ -671,6 +676,7 @@ public class FeedStreamTest {
                         mContentManager.getContextValues(0).get(SurfaceActionsHandler.KEY);
 
         handler.openUrl(OpenMode.NEW_TAB_IN_GROUP, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mActionDelegate)
                 .openSuggestionUrl(
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.NEW_BACKGROUND_TAB),
@@ -689,6 +695,7 @@ public class FeedStreamTest {
                 (FeedStream.FeedSurfaceActionsHandler)
                         mContentManager.getContextValues(0).get(SurfaceActionsHandler.KEY);
         handler.openUrl(OpenMode.INCOGNITO_TAB, TEST_URL, DEFAULT_OPEN_URL_OPTIONS);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mActionDelegate)
                 .openSuggestionUrl(
                         eq(org.chromium.ui.mojom.WindowOpenDisposition.OFF_THE_RECORD),
@@ -984,6 +991,7 @@ public class FeedStreamTest {
                         return title;
                     }
                 });
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mFeedSurfaceRendererBridgeMock)
                 .reportOtherUserAction(eq(FeedUserActionType.TAPPED_ADD_TO_READING_LIST));
@@ -1023,6 +1031,7 @@ public class FeedStreamTest {
         verify(mMockRunnable, times(0)).run();
 
         mSnackbarController.mOnActionFinished.run();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mMockRunnable, times(1)).run();
     }
 
@@ -1046,6 +1055,7 @@ public class FeedStreamTest {
         verify(mMockRunnable, times(0)).run();
 
         mSnackbarController.mOnDismissNoActionFinished.run();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mMockRunnable, times(1)).run();
     }
 
@@ -1062,6 +1072,7 @@ public class FeedStreamTest {
         verify(mSnackbarManager).showSnackbar(mSnackbarCaptor.capture());
 
         mFeedStream.triggerRefresh(mMockRefreshCallback);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mSnackbarManager, times(1)).dismissSnackbars(any());
         verify(mFeedSurfaceRendererBridgeMock).manualRefresh(any());
@@ -1103,6 +1114,7 @@ public class FeedStreamTest {
         mLayoutManager.setLastVisiblePosition(itemCount - LOAD_MORE_TRIGGER_LOOKAHEAD + 1);
         mLayoutManager.setItemCount(itemCount);
         handler.commitDismissal(0);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mFeedSurfaceRendererBridgeMock).loadMore(any(Callback.class));
     }
 

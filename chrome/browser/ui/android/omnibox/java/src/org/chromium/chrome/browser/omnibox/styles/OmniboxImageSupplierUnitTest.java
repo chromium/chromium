@@ -31,11 +31,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -96,7 +96,7 @@ public final class OmniboxImageSupplierUnitTest {
      * @param bitmap the bitmap to return to the caller (may be null)
      */
     private void verifyLargeIconBridgeRequest(@NonNull GURL url, @Nullable Bitmap bitmap) {
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mLargeIconBridgeJni)
                 .getLargeIconForURL(
                         anyLong(),
@@ -143,7 +143,7 @@ public final class OmniboxImageSupplierUnitTest {
         doReturn(mBitmap1).when(mIconGenerator).generateIconForUrl(NAV_URL);
 
         mSupplier.generateFavicon(NAV_URL, mCallback1);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verifyReturnedIcon(null);
         verifyNoOtherInteractionsAndClearInteractions();
@@ -155,7 +155,7 @@ public final class OmniboxImageSupplierUnitTest {
 
         mSupplier.onNativeInitialized();
         mSupplier.generateFavicon(NAV_URL, mCallback1);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mIconGenerator, times(1)).generateIconForUrl(NAV_URL);
         verifyReturnedIcon(mBitmap1);

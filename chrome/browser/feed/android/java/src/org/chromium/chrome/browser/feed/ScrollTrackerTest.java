@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -20,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link ScrollTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.LEGACY)
 public final class ScrollTrackerTest {
     // The delay time used when scheduling the report task.
     private static final long DELAY_TIME_MS = 200L;

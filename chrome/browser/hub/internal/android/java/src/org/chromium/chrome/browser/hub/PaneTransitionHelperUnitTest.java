@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 /** Unit tests for {@link PaneTransitionHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -69,7 +70,7 @@ public class PaneTransitionHelperUnitTest {
         mPaneTransitionHelper.queueTransition(PaneId.TAB_SWITCHER, LoadHint.COLD);
         mPaneTransitionHelper.processTransition(PaneId.TAB_SWITCHER, LoadHint.WARM);
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.WARM));
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         // Verify no additional calls.
         verify(mTabSwitcherPane).notifyLoadHint(anyInt());
     }
@@ -79,7 +80,7 @@ public class PaneTransitionHelperUnitTest {
     public void testRemoveQueuedTransition() {
         mPaneTransitionHelper.queueTransition(PaneId.TAB_SWITCHER, LoadHint.HOT);
         mPaneTransitionHelper.removeTransition(PaneId.TAB_SWITCHER);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabSwitcherPane, never()).notifyLoadHint(anyInt());
     }
 
@@ -89,7 +90,7 @@ public class PaneTransitionHelperUnitTest {
         mPaneTransitionHelper.queueTransition(PaneId.TAB_SWITCHER, LoadHint.HOT);
         mPaneTransitionHelper.queueTransition(PaneId.TAB_SWITCHER, LoadHint.HOT);
         mPaneTransitionHelper.queueTransition(PaneId.TAB_SWITCHER, LoadHint.HOT);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabSwitcherPane).notifyLoadHint(eq(LoadHint.HOT));
     }
 
@@ -114,7 +115,7 @@ public class PaneTransitionHelperUnitTest {
         verify(mBookmarksPane).notifyLoadHint(eq(LoadHint.WARM));
 
         mPaneTransitionHelper.removeTransition(PaneId.TAB_SWITCHER);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         // Verify no additional calls.
         verify(mTabSwitcherPane).notifyLoadHint(anyInt());
     }
@@ -128,7 +129,7 @@ public class PaneTransitionHelperUnitTest {
         verify(mBookmarksPane).notifyLoadHint(eq(LoadHint.COLD));
 
         mPaneTransitionHelper.destroy();
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabSwitcherPane, never()).notifyLoadHint(anyInt());
         verify(mIncognitoTabSwitcherPane, never()).notifyLoadHint(anyInt());
 

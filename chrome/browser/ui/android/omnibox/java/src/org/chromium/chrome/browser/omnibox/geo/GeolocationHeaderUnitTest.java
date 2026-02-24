@@ -35,7 +35,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -56,7 +55,6 @@ import org.chromium.content_public.browser.WebContents;
 /** Robolectric tests for {@link GeolocationHeader}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 @EnableFeatures(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)
 public class GeolocationHeaderUnitTest {
     private static final String SEARCH_URL = "https://www.google.com/search?q=potatoes";
