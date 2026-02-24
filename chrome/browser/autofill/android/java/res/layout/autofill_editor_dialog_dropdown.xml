@@ -20,6 +20,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            android:textAlignment="viewStart"
             android:importantForAccessibility="no" />
 
     <androidx.appcompat.widget.AppCompatSpinner
@@ -30,7 +31,8 @@ found in the LICENSE file.
             android:paddingBottom="@dimen/pref_autofill_dropdown_vertical_padding"
             android:paddingLeft="0dp"
             android:paddingRight="0dp"
-            android:paddingTop="@dimen/pref_autofill_dropdown_vertical_padding" />
+            android:paddingTop="@dimen/pref_autofill_dropdown_vertical_padding"
+            android:textDirection="locale" />
 
     <View android:id="@+id/spinner_underline" style="@style/PreferenceSpinnerUnderlineView" />
 
@@ -39,6 +41,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/pref_autofill_field_top_margin"
+            android:textAlignment="viewStart"
             android:visibility="gone"
             android:textAppearance="@style/TextAppearance.ErrorCaption" />
 
