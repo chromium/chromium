@@ -499,7 +499,7 @@ class AudioManagerAndroid {
     private static @Nullable Optional<Method> sGetOutputLatency;
 
     // Reflect |methodName(int)|, and return it.
-    private static final @Nullable Method reflectMethod(String methodName) {
+    private static @Nullable Method reflectMethod(String methodName) {
         try {
             return AudioManager.class.getMethod(methodName, int.class);
         } catch (NoSuchMethodException e) {
