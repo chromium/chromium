@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+  <head>
+    <title>BiquadFilterNode RenderSizeHint</title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+      promise_test(async () => {
+        const ctx = new OfflineAudioContext({
+          numberOfChannels: 1,
+          length: 128,
+          sampleRate: 3000,
+          renderSizeHint: 1,
+        });
+
+        // Create a BiquadFilterNode.  By default, it has no automation, so
+        // HasSampleAccurateValues() will return false, which is required to
+        // enter the optimized path.
+        const biquad = new BiquadFilterNode(ctx, {type: 'lowpass'});
+
+        // Connect an oscillator to process some data.
+        const osc = new OscillatorNode(ctx, {frequency: 440});
+        osc.connect(biquad);
+        biquad.connect(ctx.destination);
+        osc.start();
+
+        await ctx.startRendering();
+
+        // If we reach here, the test passed (no crash).
+        assert_true(true, 'Rendering completed without crashing.');
+      }, 'BiquadFilterNode with minimum renderSizeHint should not crash');
+
+      promise_test(async () => {
+        const ctx = new OfflineAudioContext({
+          numberOfChannels: 1,
+          length: 128,
+          sampleRate: 768000,
+          renderSizeHint: (768000 * 6),
+        });
+
+        // Create a BiquadFilterNode.  By default, it has no automation, so
+        // HasSampleAccurateValues() will return false, which is required to
+        // enter the optimized path.
+        const biquad = new BiquadFilterNode(ctx, {type: 'lowpass'});
+
+        // Connect an oscillator to process some data.
+        const osc = new OscillatorNode(ctx, {frequency: 440});
+        osc.connect(biquad);
+        biquad.connect(ctx.destination);
+        osc.start();
+
+        await ctx.startRendering();
+
+        // If we reach here, the test passed (no crash).
+        assert_true(true, 'Rendering completed without crashing.');
+      }, 'BiquadFilterNode with maximum renderSizeHint should not crash');
+    </script>
+  </body>
+</html>

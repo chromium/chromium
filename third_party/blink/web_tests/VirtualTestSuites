@@ -6242,6 +6242,7 @@
       "Android"
     ],
     "bases": [
+      "webaudio/BiquadFilter/biquad-render-size-hint.html",
       "webaudio/WaveShaper/waveshaper-rendersizehint.html"
     ],
     "args": [

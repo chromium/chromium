@@ -132,16 +132,13 @@ void Biquad::Process(const float* source_p,
     // documented so it's not clear how to update them anyway.
   } else {
 #if BUILDFLAG(IS_MAC)
-    double* input_p = input_buffer_.Data();
-    double* output_p = output_buffer_.Data();
-
     // Set up filter state.  This is needed in case we're switching from
     // filtering with variable coefficients (i.e., with automations) to
     // fixed coefficients (without automations).
-    input_p[0] = x2_;
-    UNSAFE_TODO(input_p[1]) = x1_;
-    output_p[0] = y2_;
-    UNSAFE_TODO(output_p[1]) = y1_;
+    input_buffer_[0] = x2_;
+    UNSAFE_TODO(input_buffer_[1]) = x1_;
+    output_buffer_[0] = y2_;
+    UNSAFE_TODO(output_buffer_[1]) = y1_;
 
     // Use vecLib if available
     ProcessFast(source_p, dest_p, frames_to_process);
@@ -151,11 +148,12 @@ void Biquad::Process(const float* source_p,
     // automation which needs the history to continue correctly.  Because
     // sourceP and destP can be the same block of memory, we can't read from
     // sourceP to get the last inputs.  Fortunately, processFast has put the
-    // last inputs in input[0] and input[1].
-    x1_ = UNSAFE_TODO(input_p[1]);
-    x2_ = input_p[0];
-    y1_ = UNSAFE_TODO(dest_p[frames_to_process - 1]);
-    y2_ = UNSAFE_TODO(dest_p[frames_to_process - 2]);
+    // last inputs in input_buffer_[0] and input_buffer_[1] and the last outputs
+    // in output_buffer_[0] and output_buffer_[1].
+    x1_ = UNSAFE_TODO(input_buffer_[1]);
+    x2_ = input_buffer_[0];
+    y1_ = UNSAFE_TODO(output_buffer_[1]);
+    y2_ = output_buffer_[0];
 
 #else
     int n = frames_to_process;
@@ -210,12 +208,6 @@ void Biquad::ProcessFast(const float* source_p,
   filter_coefficients[3] = a1_[0];
   filter_coefficients[4] = a2_[0];
 
-  double* input_p = input_buffer_.Data();
-  double* output_p = output_buffer_.Data();
-
-  double* input2p = UNSAFE_TODO(input_p + 2);
-  double* output2p = UNSAFE_TODO(output_p + 2);
-
   // Break up processing into smaller slices (kBiquadBufferSize) if necessary.
 
   int n = frames_to_process;
@@ -224,14 +216,18 @@ void Biquad::ProcessFast(const float* source_p,
     int frames_this_time = n < kBiquadBufferSize ? n : kBiquadBufferSize;
 
     // Copy input to input buffer
-    for (int i = 0; i < frames_this_time; ++i)
-      UNSAFE_TODO(input2p[i]) = *UNSAFE_TODO(source_p++);
+    for (int i = 0; i < frames_this_time; ++i) {
+      UNSAFE_TODO(input_buffer_[i + 2]) = *UNSAFE_TODO(source_p++);
+    }
 
-    ProcessSliceFast(input_p, output_p, filter_coefficients, frames_this_time);
+    ProcessSliceFast(input_buffer_.Data(), output_buffer_.Data(),
+                     filter_coefficients, frames_this_time);
 
     // Copy output buffer to output (converts float -> double).
-    for (int i = 0; i < frames_this_time; ++i)
-      *UNSAFE_TODO(dest_p++) = static_cast<float>(UNSAFE_TODO(output2p[i]));
+    for (int i = 0; i < frames_this_time; ++i) {
+      *UNSAFE_TODO(dest_p++) =
+          static_cast<float>(UNSAFE_TODO(output_buffer_[i + 2]));
+    }
 
     n -= frames_this_time;
   }
@@ -248,10 +244,10 @@ void Biquad::ProcessSliceFast(double* source_p,
   // m_outputBuffer respectively.  These buffers are allocated (in the
   // constructor) with space for two extra samples so it's OK to access array
   // values two beyond framesToProcess.
-  source_p[0] = UNSAFE_TODO(source_p[frames_to_process - 2 + 2]);
-  UNSAFE_TODO(source_p[1]) = UNSAFE_TODO(source_p[frames_to_process - 1 + 2]);
-  dest_p[0] = UNSAFE_TODO(dest_p[frames_to_process - 2 + 2]);
-  UNSAFE_TODO(dest_p[1]) = UNSAFE_TODO(dest_p[frames_to_process - 1 + 2]);
+  source_p[0] = UNSAFE_TODO(source_p[frames_to_process]);
+  UNSAFE_TODO(source_p[1]) = UNSAFE_TODO(source_p[frames_to_process + 1]);
+  dest_p[0] = UNSAFE_TODO(dest_p[frames_to_process]);
+  UNSAFE_TODO(dest_p[1]) = UNSAFE_TODO(dest_p[frames_to_process + 1]);
 }
 
 #endif  // BUILDFLAG(IS_MAC)
@@ -259,13 +255,11 @@ void Biquad::ProcessSliceFast(double* source_p,
 void Biquad::Reset() {
 #if BUILDFLAG(IS_MAC)
   // Two extra samples for filter history
-  double* input_p = input_buffer_.Data();
-  input_p[0] = 0;
-  UNSAFE_TODO(input_p[1]) = 0;
+  input_buffer_[0] = 0;
+  UNSAFE_TODO(input_buffer_[1]) = 0;
 
-  double* output_p = output_buffer_.Data();
-  output_p[0] = 0;
-  UNSAFE_TODO(output_p[1]) = 0;
+  output_buffer_[0] = 0;
+  UNSAFE_TODO(output_buffer_[1]) = 0;
 
 #endif
   x1_ = x2_ = y1_ = y2_ = 0;
