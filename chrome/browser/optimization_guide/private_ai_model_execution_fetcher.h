@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_LEGION_MODEL_EXECUTION_FETCHER_H_
-#define CHROME_BROWSER_OPTIMIZATION_GUIDE_LEGION_MODEL_EXECUTION_FETCHER_H_
+#ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_PRIVATE_AI_MODEL_EXECUTION_FETCHER_H_
+#define CHROME_BROWSER_OPTIMIZATION_GUIDE_PRIVATE_AI_MODEL_EXECUTION_FETCHER_H_
 
 #include <optional>
 
@@ -19,14 +19,15 @@ class Client;
 
 namespace optimization_guide {
 
-class LegionModelExecutionFetcher : public ModelExecutionFetcher {
+class PrivateAiModelExecutionFetcher : public ModelExecutionFetcher {
  public:
-  explicit LegionModelExecutionFetcher(private_ai::Client* legion_client);
-  ~LegionModelExecutionFetcher() override;
+  explicit PrivateAiModelExecutionFetcher(private_ai::Client* legion_client);
+  ~PrivateAiModelExecutionFetcher() override;
 
-  LegionModelExecutionFetcher(const LegionModelExecutionFetcher&) = delete;
-  LegionModelExecutionFetcher& operator=(const LegionModelExecutionFetcher&) =
+  PrivateAiModelExecutionFetcher(const PrivateAiModelExecutionFetcher&) =
       delete;
+  PrivateAiModelExecutionFetcher& operator=(
+      const PrivateAiModelExecutionFetcher&) = delete;
 
   // ModelExecutionFetcher:
   void ExecuteModel(ModelBasedCapabilityKey feature,
@@ -40,9 +41,9 @@ class LegionModelExecutionFetcher : public ModelExecutionFetcher {
   // to ensure that all fetchers are destroyed before the client.
   raw_ptr<private_ai::Client> legion_client_;
 
-  base::WeakPtrFactory<LegionModelExecutionFetcher> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PrivateAiModelExecutionFetcher> weak_ptr_factory_{this};
 };
 
 }  // namespace optimization_guide
 
-#endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_LEGION_MODEL_EXECUTION_FETCHER_H_
+#endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_PRIVATE_AI_MODEL_EXECUTION_FETCHER_H_

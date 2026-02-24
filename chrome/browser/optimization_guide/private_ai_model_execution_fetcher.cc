@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/legion_model_execution_fetcher.h"
+#include "chrome/browser/optimization_guide/private_ai_model_execution_fetcher.h"
 
 #include <utility>
 
@@ -41,15 +41,15 @@ OptimizationGuideModelExecutionError ToModelExecutionError(
 
 }  // namespace
 
-LegionModelExecutionFetcher::LegionModelExecutionFetcher(
+PrivateAiModelExecutionFetcher::PrivateAiModelExecutionFetcher(
     private_ai::Client* legion_client)
     : legion_client_(legion_client) {
   CHECK(legion_client);
 }
 
-LegionModelExecutionFetcher::~LegionModelExecutionFetcher() = default;
+PrivateAiModelExecutionFetcher::~PrivateAiModelExecutionFetcher() = default;
 
-void LegionModelExecutionFetcher::ExecuteModel(
+void PrivateAiModelExecutionFetcher::ExecuteModel(
     ModelBasedCapabilityKey feature,
     signin::IdentityManager* identity_manager,
     const google::protobuf::MessageLite& request_metadata,

@@ -43,7 +43,7 @@ source_set("optimization_guide") {
   if (is_android) {
     public_deps += [ "//chrome/browser/bookmarks/android" ]
   } else {
-    sources += [ "legion_model_execution_fetcher.h" ]
+    sources += [ "private_ai_model_execution_fetcher.h" ]
     public_deps += [ "//components/private_ai" ]
   }
 }
@@ -85,7 +85,7 @@ source_set("impl") {
       "//chrome/browser/optimization_guide/android:jni_headers",
     ]
   } else {
-    sources += [ "legion_model_execution_fetcher.cc" ]
+    sources += [ "private_ai_model_execution_fetcher.cc" ]
     deps += [
       "//chrome/browser/private_ai",
       "//chrome/browser/ui/browser_window",
@@ -198,7 +198,7 @@ source_set("unit_tests") {
   ]
   if (!is_android) {
     sources += [
-      "legion_model_execution_fetcher_unittest.cc",
+      "private_ai_model_execution_fetcher_unittest.cc",
 
       # Android uses a different way of showing browser windows.
       "optimization_guide_tab_url_provider_unittest.cc",

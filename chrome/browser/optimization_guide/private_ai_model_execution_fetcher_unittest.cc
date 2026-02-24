@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/legion_model_execution_fetcher.h"
+#include "chrome/browser/optimization_guide/private_ai_model_execution_fetcher.h"
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -17,20 +17,21 @@
 
 namespace optimization_guide {
 
-class LegionModelExecutionFetcherTest : public testing::Test {
+class PrivateAiModelExecutionFetcherTest : public testing::Test {
  public:
   void SetUp() override {
-    fetcher_ =
-        std::make_unique<LegionModelExecutionFetcher>(&mock_private_ai_client_);
+    fetcher_ = std::make_unique<PrivateAiModelExecutionFetcher>(
+        &mock_private_ai_client_);
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   private_ai::MockPrivateAiClient mock_private_ai_client_;
-  std::unique_ptr<LegionModelExecutionFetcher> fetcher_;
+  std::unique_ptr<PrivateAiModelExecutionFetcher> fetcher_;
 };
 
-TEST_F(LegionModelExecutionFetcherTest, ConvertsZeroStateSuggestionsRequest) {
+TEST_F(PrivateAiModelExecutionFetcherTest,
+       ConvertsZeroStateSuggestionsRequest) {
   proto::ZeroStateSuggestionsRequest request;
   request.mutable_page_context()->set_url("url");
   request.mutable_page_context()->set_title("Hello");
@@ -61,7 +62,7 @@ TEST_F(LegionModelExecutionFetcherTest, ConvertsZeroStateSuggestionsRequest) {
                          /*identity_manager=*/nullptr, request,
                          /*timeout=*/std::nullopt, base::DoNothing());
 }
-TEST_F(LegionModelExecutionFetcherTest,
+TEST_F(PrivateAiModelExecutionFetcherTest,
        ConvertsZeroStateSuggestionsRequestWithLists) {
   proto::ZeroStateSuggestionsRequest request;
   auto* list = request.mutable_page_context_list();
@@ -106,7 +107,8 @@ TEST_F(LegionModelExecutionFetcherTest,
                          /*timeout=*/std::nullopt, base::DoNothing());
 }
 
-TEST_F(LegionModelExecutionFetcherTest, ConvertsZeroStateSuggestionsResponse) {
+TEST_F(PrivateAiModelExecutionFetcherTest,
+       ConvertsZeroStateSuggestionsResponse) {
   EXPECT_CALL(
       mock_private_ai_client_,
       SendPaicRequest(

@@ -95,8 +95,8 @@
 #include "chrome/browser/optimization_guide/android/optimization_guide_bridge.h"
 #include "chrome/browser/optimization_guide/android/optimization_guide_tab_url_provider_android.h"
 #else
-#include "chrome/browser/optimization_guide/legion_model_execution_fetcher.h"
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
+#include "chrome/browser/optimization_guide/private_ai_model_execution_fetcher.h"
 #include "chrome/browser/private_ai/private_ai_service.h"
 #include "chrome/browser/private_ai/private_ai_service_factory.h"
 #include "components/private_ai/client.h"    // nogncheck
@@ -162,7 +162,7 @@ class FetcherDelegate : public ModelExecutionManager::Delegate {
     if (private_ai_service) {
       if (private_ai::Client* client = private_ai_service->GetClient()) {
         return std::make_unique<
-            optimization_guide::LegionModelExecutionFetcher>(client);
+            optimization_guide::PrivateAiModelExecutionFetcher>(client);
       }
     }
     return nullptr;
