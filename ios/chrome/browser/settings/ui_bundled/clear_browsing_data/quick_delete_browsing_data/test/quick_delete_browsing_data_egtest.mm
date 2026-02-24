@@ -69,7 +69,7 @@ id<GREYMatcher> tabsCellMatcher() {
 // Matcher for sign out link in the footer.
 id<GREYMatcher> SignOutLinkMatcher() {
   return grey_allOf(
-      // The link is within the browsing data page footer with ID
+      // The link is within the Quick Delete Browsing Data page footer with ID
       // `kQuickDeleteBrowsingDataFooterIdentifier`.
       grey_ancestor(
           grey_accessibilityID(kQuickDeleteBrowsingDataFooterIdentifier)),
@@ -85,6 +85,15 @@ id<GREYMatcher> ManageOtherDataCellMatcher() {
   return grey_allOf(
       grey_accessibilityID(kQuickDeleteManageOtherDataCellIdentifier),
       grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+}
+
+// Returns a matcher for the "Manage other data" cell with a specific title
+// and subtitle.
+id<GREYMatcher> GetManageOtherDataCellWithStrings(NSString* title,
+                                                  NSString* subtitle) {
+  return grey_allOf(ManageOtherDataCellMatcher(),
+                    grey_descendant(grey_text(title)),
+                    grey_descendant(grey_text(subtitle)), nil);
 }
 
 // Returns a matcher for the actual button with the `timeRange` inside the time
@@ -180,7 +189,7 @@ void NoDeleteBrowsingDataDialogHistogram(
   return config;
 }
 
-// Opens Quick Delete browsing data page.
+// Opens the Quick Delete Browsing Data page.
 - (void)openQuickDeleteBrowsingDataPage {
   [ChromeEarlGreyUI openToolsMenu];
 
@@ -219,7 +228,7 @@ void NoDeleteBrowsingDataDialogHistogram(
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 }
 
-// Tests the cancel button dismisses the browsing data page.
+// Tests the cancel button dismisses the Quick Delete Browsing Data page.
 - (void)testPageNavigationCancelButton {
   // At the beginning of the test, the Delete Browsing Data dialog metric should
   // be empty.
@@ -228,7 +237,7 @@ void NoDeleteBrowsingDataDialogHistogram(
   NoDeleteBrowsingDataDialogHistogram(
       DeleteBrowsingDataDialogAction::kCancelDataTypesSelected);
 
-  // Open quick delete browsing data page.
+  // Open the Quick Delete Browsing Data page.
   [self openQuickDeleteBrowsingDataPage];
 
   // Tap cancel button.
@@ -236,8 +245,8 @@ void NoDeleteBrowsingDataDialogHistogram(
       selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
       performAction:grey_tap()];
 
-  // Ensure the browsing data page is closed while quick delete bottom sheet is
-  // still open.
+  // Ensure the Quick Delete Browsing Data page is closed while quick delete
+  // bottom sheet is still open.
   [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataPageTitleMatcher()]
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
@@ -250,7 +259,7 @@ void NoDeleteBrowsingDataDialogHistogram(
       DeleteBrowsingDataDialogAction::kCancelDataTypesSelected);
 }
 
-// Tests the confirm button dismisses the browsing data page.
+// Tests the confirm button dismisses the Quick Delete Browsing Data page.
 - (void)testPageNavigationConfirmButton {
   // At the beginning of the test, the Delete Browsing Data dialog metrics
   // should be empty.
@@ -259,7 +268,7 @@ void NoDeleteBrowsingDataDialogHistogram(
   NoDeleteBrowsingDataDialogHistogram(
       DeleteBrowsingDataDialogAction::kUpdateDataTypesSelected);
 
-  // Open quick delete browsing data page.
+  // Open the Quick Delete Browsing Data page.
   [self openQuickDeleteBrowsingDataPage];
 
   // Tap confirm button.
@@ -325,7 +334,7 @@ void NoDeleteBrowsingDataDialogHistogram(
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteFormData];
 
-  // Open quick delete browsing data page.
+  // Open the Quick Delete Browsing Data page.
   [self openQuickDeleteBrowsingDataPage];
 
   // Assert all browsing data rows are not selected.
@@ -381,8 +390,8 @@ void NoDeleteBrowsingDataDialogHistogram(
       selectElementWithMatcher:chrome_test_util::NavigationBarCancelButton()]
       performAction:grey_tap()];
 
-  // Ensure the browsing data page is closed while quick delete bottom sheet is
-  // still open.
+  // Ensure the Quick Delete Browsing Data page is closed while quick delete
+  // bottom sheet is still open.
   [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataPageTitleMatcher()]
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
@@ -431,7 +440,7 @@ void NoDeleteBrowsingDataDialogHistogram(
   [ChromeEarlGrey setBoolValue:NO
                    forUserPref:browsing_data::prefs::kDeleteFormData];
 
-  // Open quick delete browsing data page.
+  // Open the Quick Delete Browsing Data page.
   [self openQuickDeleteBrowsingDataPage];
 
   // At the beginning of the test, the Delete Browsing Data dialog metric should
@@ -501,8 +510,8 @@ void NoDeleteBrowsingDataDialogHistogram(
   [[EarlGrey selectElementWithMatcher:BrowsingDataConfirmButtonMatcher()]
       performAction:grey_tap()];
 
-  // Ensure the browsing data page is closed while quick delete bottom sheet is
-  // still open.
+  // Ensure the Quick Delete Browsing Data page is closed while quick delete
+  // bottom sheet is still open.
   [[EarlGrey selectElementWithMatcher:quickDeleteBrowsingDataPageTitleMatcher()]
       assertWithMatcher:grey_nil()];
   [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
@@ -562,7 +571,7 @@ void NoDeleteBrowsingDataDialogHistogram(
   // Sign in is required to show the footer.
   [self signIn];
 
-  // Open quick delete browsing data page.
+  // Open the Quick Delete Browsing Data page.
   [self openQuickDeleteBrowsingDataPage];
 
   // Check that the footer is presented.
@@ -639,13 +648,13 @@ void NoDeleteBrowsingDataDialogHistogram(
   // Focus the first window for the subsequent interactions.
   [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
                                                         WindowWithNumber(0)];
-  // Open browsing data page in the first window.
+  // Open the Quick Delete Browsing Data page in the first window.
   [self openQuickDeleteBrowsingDataPageInWindowWithNumber:0];
 
   // Focus the second window for the subsequent interactions.
   [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
                                                         WindowWithNumber(1)];
-  // Open browsing data page in the second window.
+  // Open the Quick Delete Browsing Data page in the second window.
   [self openQuickDeleteBrowsingDataPageInWindowWithNumber:1];
 
   // Assert history row is not selected in the second window.
@@ -697,8 +706,8 @@ void NoDeleteBrowsingDataDialogHistogram(
       DeleteBrowsingDataDialogAction::kBrowsingHistoryToggledOn);
 }
 
-// Tests if the selected time range in the UI is used for the browsing data
-// page instead of the time range saved in the pref.
+// Tests if the selected time range in the UI is used for the Quick Delete
+// Browsing Data page instead of the time range saved in the pref.
 - (void)testSelectedTimeRangeUsed {
   // Set pref to the last hour.
   [ChromeEarlGrey
@@ -752,7 +761,7 @@ void NoDeleteBrowsingDataDialogHistogram(
                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 1))]
       assertWithMatcher:grey_nil()];
 
-  // Go to the browsing data page.
+  // Go to the Quick Delete Browsing Data page.
   [[EarlGrey selectElementWithMatcher:BrowsingDataButtonMatcher()]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -774,7 +783,7 @@ void NoDeleteBrowsingDataDialogHistogram(
 // Tests that the "Manage other data" cell is only present when the
 // `kPasswordRemovalFromDeleteBrowsingData` feature is enabled.
 - (void)testManageOtherDataCellVisibility {
-  // Open quick delete browsing data page.
+  // Open the Quick Delete Browsing Data page.
   [self openQuickDeleteBrowsingDataPage];
 
   [[EarlGrey selectElementWithMatcher:ManageOtherDataCellMatcher()]
@@ -804,11 +813,58 @@ void NoDeleteBrowsingDataDialogHistogram(
 // Tests that the password cell is not present when the
 // `kPasswordRemovalFromDeleteBrowsingData` feature is enabled.
 - (void)testPasswordCellIsNotPresentWhenThePasswordRemovalFeatureIsEnabled {
-  // Open quick delete browsing data page.
+  // Open the Quick Delete Browsing Data page.
   [self openQuickDeleteBrowsingDataPage];
 
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       assertWithMatcher:grey_nil()];
+}
+
+// Tests that the title and subtitle of the "Manage other data" cell are
+// visible.
+- (void)testManageOtherDataStringsVisibility {
+  // Open the Quick Delete Browsing Data page.
+  [self openQuickDeleteBrowsingDataPage];
+
+  // Check that the "Manage other data" cell is visible with the expected title
+  // and subtitle.
+  [[EarlGrey selectElementWithMatcher:
+                 GetManageOtherDataCellWithStrings(
+                     /*title=*/l10n_util::GetNSString(
+                         IDS_SETTINGS_MANAGE_OTHER_GOOGLE_DATA_LABEL),
+                     /*subtitle=*/l10n_util::GetNSString(
+                         IDS_SETTINGS_MANAGE_PASSWORDS_SUB_LABEL))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the subtitle of the "Manage other data" cell is updated when the
+// sign-in status changes while the user is still on the Quick Delete Browsing
+// Data page.
+- (void)testManageOtherDataSubtitleChange {
+  // Open the Quick Delete Browsing Data page.
+  [self openQuickDeleteBrowsingDataPage];
+
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_SETTINGS_MANAGE_OTHER_GOOGLE_DATA_LABEL);
+  // Check that the "Manage other data" cell is visible with the expected title
+  // and subtitle.
+  [[EarlGrey selectElementWithMatcher:
+                 GetManageOtherDataCellWithStrings(
+                     expectedTitle,
+                     /*subtitle=*/l10n_util::GetNSString(
+                         IDS_SETTINGS_MANAGE_PASSWORDS_SUB_LABEL))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Sign in to trigger a sign-in status update.
+  [self signIn];
+
+  // Check that the "Manage other data" cell's subtitle has changed.
+  [[EarlGrey selectElementWithMatcher:
+                 GetManageOtherDataCellWithStrings(
+                     expectedTitle,
+                     /*subtitle=*/l10n_util::GetNSString(
+                         IDS_SETTINGS_MANAGE_OTHER_DATA_SUB_LABEL))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end
