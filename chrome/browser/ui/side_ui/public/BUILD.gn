@@ -5,6 +5,11 @@
 import("//build/config/android/rules.gni")
 import("//chrome/android/features/android_library_factory_tmpl.gni")
 
+# Public resources
+android_resources("java_resources") {
+  sources = [ "android/java/res/layout/side_ui_anchor_container.xml" ]
+}
+
 # Public Java interfaces
 android_library("java") {
   sources = [

@@ -8,6 +8,9 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+import java.util.Locale;
 
 /**
  * Coordinator for "side UI," with "side UI" referring to views that will anchor to either the left
@@ -56,6 +59,17 @@ public interface SideUiCoordinator {
         public SideUiSpecs(@Px int startX, @Px int endX) {
             mStartX = startX;
             mEndX = endX;
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj) {
+            if (!(obj instanceof SideUiSpecs that)) return false;
+            return (this.mStartX == that.mStartX) && (this.mEndX == that.mEndX);
+        }
+
+        @Override
+        public String toString() {
+            return String.format(Locale.ENGLISH, "[StartX: %d, EndX: %d]", mStartX, mEndX);
         }
     }
 

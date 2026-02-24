@@ -1112,7 +1112,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarVisibilityObserver);
         }
 
-        mSideUiCoordinator = SideUiCoordinatorFactory.create();
+        ViewStub sideUiStartAnchorContainerStub =
+                mActivity.findViewById(R.id.side_ui_start_anchor_container_stub);
+        ViewStub sideUiEndAnchorContainerStub =
+                mActivity.findViewById(R.id.side_ui_end_anchor_container_stub);
+
+        mSideUiCoordinator =
+                SideUiCoordinatorFactory.create(
+                        sideUiStartAnchorContainerStub, sideUiEndAnchorContainerStub);
         mSidePanelContainerCoordinator = SidePanelContainerCoordinatorFactory.create();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS)) {
             mContextualTasksBridge = new ContextualTasksBridge();
