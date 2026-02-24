@@ -1600,7 +1600,7 @@
 <translation id="2078019350989722914">退出前先发提醒信息 (<ph name="KEY_EQUIVALENT" />)</translation>
 <translation id="2079053412993822885">如果您删除了自己的某个证书，则不能再用该证书标识自己的身份。</translation>
 <translation id="2079495302726689071">在新的<ph name="APP" />标签页中打开链接</translation>
-<translation id="2079545284768500474">撤消</translation>
+<translation id="2079545284768500474">撤销</translation>
 <translation id="2079553700504470326">使用您的精确位置信息，而非基于 IP 地址的估计位置信息，以便获得最准确的 Gemini 结果。</translation>
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2081816110395725788">使用电池时让电源闲置</translation>

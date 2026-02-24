@@ -381,7 +381,7 @@
 <translation id="3284124496287403323">.input {$$COUNT :number} .match $$COUNT 1{{with {$$COUNT} item}} * {{with {$$COUNT} items}}</translation>
 <translation id="3286372614333682499">纵向</translation>
 <translation id="3286390186030710347">滑块</translation>
-<translation id="3300733168898541351">撤消</translation>
+<translation id="3300733168898541351">撤销</translation>
 <translation id="3307886118343381874">转到表格末尾</translation>
 <translation id="3312997241656799641">下一个访问过的链接</translation>
 <translation id="3313245066383501820">ChromeVox 辅助键</translation>
