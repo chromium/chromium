@@ -1592,11 +1592,8 @@ TimelineTrigger* CSSAnimations::ComputeTimelineTrigger(
   AnimationTimeline* existing_timeline =
       (existing_trigger ? existing_trigger->GetTimelineInternal() : nullptr);
   AnimationTimeline* new_timeline =
-      animation_index < data->TimelineTriggerSourceList().size()
-          ? ComputeTimeline(element,
-                            data->GetTimelineTriggerSource(animation_index),
-                            update, existing_timeline)
-          : nullptr;
+      ComputeTimeline(element, data->GetTimelineTriggerSource(animation_index),
+                      update, existing_timeline);
   if (!new_timeline) {
     new_timeline = &element->GetDocument().Timeline();
   }

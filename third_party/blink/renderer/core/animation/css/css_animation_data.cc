@@ -104,7 +104,7 @@ const StyleTimeline& CSSAnimationData::GetTimeline(size_t index) const {
 
 const StyleTimeline& CSSAnimationData::GetTimelineTriggerSource(
     size_t index) const {
-  DCHECK_LT(index, timeline_trigger_source_list_.size());
+  DCHECK_LT(index, timeline_trigger_name_list_.size());
   return GetRepeated(timeline_trigger_source_list_, index);
 }
 

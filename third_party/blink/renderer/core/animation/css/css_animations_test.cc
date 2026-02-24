@@ -2777,4 +2777,93 @@ TEST_P(CSSAnimationsTriggerTest, UnequalAnimationAttachments) {
   test_attachments(animations, transform_property);
 }
 
+TEST_P(CSSAnimationsTriggerTest, CoordinatedTimelineTriggerDeclarations) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .view {
+        timeline-trigger-name: --trigger1, --trigger2;
+        timeline-trigger-source: view();
+      }
+      .view_auto {
+        timeline-trigger-name: --trigger1, --trigger2;
+        timeline-trigger-source: view(), auto;
+      }
+      .auto_view {
+        timeline-trigger-name: --trigger1, --trigger2;
+        timeline-trigger-source: auto, view();
+      }
+
+      #source {
+        height: 50px;
+        width: 50px;
+      }
+
+      #space {
+        width: 50px;
+        height: 600px;
+      }
+      .scroller {
+        overflow-y: scroll;
+        height: 500px;
+        width: 500px;
+        border: solid 1px;
+        position: relative;
+      }
+    </style>
+    <div id="scroller" class="scroller">
+      <div id="space"></div>
+      <div id="source" class="source"></div>
+      <div id="space"></div>
+    </div>
+  )HTML");
+
+  Element* source = GetDocument().getElementById(AtomicString("source"));
+
+  const auto test_timeline_type = [&](TimelineTrigger* trigger, bool is_view,
+                                      bool is_scroll, bool is_document) {
+    EXPECT_EQ(source->NamedTriggers()->size(), 2);
+
+    EXPECT_EQ(trigger->Timeline()->IsViewTimeline(), is_view);
+    EXPECT_EQ(trigger->Timeline()->IsScrollTimeline(), is_scroll);
+    EXPECT_EQ(trigger->Timeline()->IsDocumentTimeline(), is_document);
+  };
+
+  const auto get_trigger = [&](AtomicString name) {
+    // To get the same hash in the NamedTriggers map, we need the same tree
+    // scope in the ScopedCSSName keys of the map.
+    const ScopedCSSName* scoped_name = MakeGarbageCollected<ScopedCSSName>(
+        name, source->NamedTriggers()->begin()->key->GetTreeScope());
+    return To<TimelineTrigger>(source->NamedTrigger(scoped_name));
+  };
+
+  source->classList().Add(AtomicString("view"));
+  UpdateAllLifecyclePhasesForTest();
+  test_timeline_type(get_trigger(AtomicString("--trigger1")),
+                     /*is_view=*/true, /*is_scroll=*/true,
+                     /*is_document=*/false);
+  test_timeline_type(get_trigger(AtomicString("--trigger2")),
+                     /*is_view=*/true, /*is_scroll=*/true,
+                     /*is_document=*/false);
+
+  source->classList().Remove(AtomicString("view"));
+  source->classList().Add(AtomicString("view_auto"));
+  UpdateAllLifecyclePhasesForTest();
+  test_timeline_type(get_trigger(AtomicString("--trigger1")),
+                     /*is_view=*/true,
+                     /*is_scroll=*/true, /*is_document=*/false);
+  test_timeline_type(get_trigger(AtomicString("--trigger2")),
+                     /*is_view=*/false,
+                     /*is_scroll=*/false, /*is_document=*/true);
+
+  source->classList().Remove(AtomicString("view_auto"));
+  source->classList().Add(AtomicString("auto_view"));
+  UpdateAllLifecyclePhasesForTest();
+  test_timeline_type(get_trigger(AtomicString("--trigger1")),
+                     /*is_view=*/false,
+                     /*is_scroll=*/false, /*is_document=*/true);
+  test_timeline_type(get_trigger(AtomicString("--trigger2")),
+                     /*is_view=*/true,
+                     /*is_scroll=*/true, /*is_document=*/false);
+}
+
 }  // namespace blink
