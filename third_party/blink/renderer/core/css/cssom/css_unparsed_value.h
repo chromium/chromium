@@ -48,6 +48,14 @@ class CORE_EXPORT CSSUnparsedValue final : public CSSStyleValue {
   CSSUnparsedValue(const CSSUnparsedValue&) = delete;
   CSSUnparsedValue& operator=(const CSSUnparsedValue&) = delete;
 
+  // True if this CSSUnparsedValue can be converted into
+  // a CSSUnparsedDeclarationValue.
+  //
+  // We may want to ban some invalid values earlier, see:
+  // https://github.com/w3c/csswg-drafts/issues/13547
+  bool IsValidDeclarationValue() const;
+
+  // Requires IsValidDeclarationValue()==true.
   const CSSValue* ToCSSValue() const override;
 
   StyleValueType GetType() const override { return kUnparsedType; }
@@ -68,6 +76,7 @@ class CORE_EXPORT CSSUnparsedValue final : public CSSStyleValue {
   }
 
  private:
+  static bool IsValidDeclarationValue(const String&);
   String ToStringInternal() const;
   String SerializeSegments() const;
   // Return 'false' if there is a cycle in the serialization.

@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
 
+#include "css_style_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
 #include "third_party/blink/renderer/core/css/css_variable_data.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -136,6 +138,10 @@ IndexedPropertySetterResult CSSUnparsedValue::AnonymousIndexedSetter(
   return IndexedPropertySetterResult::kIntercepted;
 }
 
+bool CSSUnparsedValue::IsValidDeclarationValue() const {
+  return IsValidDeclarationValue(ToStringInternal());
+}
+
 const CSSValue* CSSUnparsedValue::ToCSSValue() const {
   String unparsed_string = ToStringInternal();
 
@@ -144,12 +150,40 @@ const CSSValue* CSSUnparsedValue::ToCSSValue() const {
         MakeGarbageCollected<CSSVariableData>());
   }
 
+  CHECK(IsValidDeclarationValue(unparsed_string));
+  // The call to IsValidDeclarationValue() above also creates a CSSVariableData
+  // to carry out its check. It would be nice to use that here, but WPTs
+  // expect leading whitespace to be preserved, even though it's not possible
+  // to create such declaration values normally.
+  CSSVariableData* variable_data =
+      CSSVariableData::Create(unparsed_string,
+                              /*is_animation_tainted=*/false,
+                              /*is_attr_tainted=*/false,
+                              /*needs_variable_resolution=*/false);
+
   // TODO(crbug.com/985028): We should probably propagate the CSSParserContext
   // to here.
-  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
-      CSSVariableData::Create(unparsed_string, false /* is_animation_tainted */,
-                              false /* is_attr_tainted */,
-                              false /* needs_variable_resolution */));
+  return MakeGarbageCollected<CSSUnparsedDeclarationValue>(variable_data);
+}
+
+bool CSSUnparsedValue::IsValidDeclarationValue(const String& string) {
+  CSSParserTokenStream stream(string);
+  bool important_unused;
+  // This checks that the value does not violate the "argument grammar" [1]
+  // of any substitution functions, and that it is a valid <declaration-value>
+  // otherwise.
+  //
+  // [1] https://drafts.csswg.org/css-values-5/#argument-grammar
+  //
+  // TODO(andruud): 'restricted_value' depends on the destination property.
+  return CSSVariableParser::ConsumeUnparsedDeclaration(
+      stream,
+      /*allow_important_annotation=*/false,
+      /*is_animation_tainted=*/false,
+      /*must_contain_variable_reference=*/false,
+      /*restricted_value=*/false,
+      /*comma_ends_declaration=*/false, important_unused,
+      *StrictCSSParserContext(SecureContextMode::kInsecureContext));
 }
 
 String CSSUnparsedValue::ToStringInternal() const {
