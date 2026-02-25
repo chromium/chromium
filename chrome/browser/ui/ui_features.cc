@@ -257,7 +257,7 @@ BASE_FEATURE(kThreeButtonPasswordSaveDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kToolbarHeightSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSidePanelFlyoverAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSidePanelFlyoverAnimation, base::FEATURE_ENABLED_BY_DEFAULT);
 bool UseSidePanelFlyoverAnimation() {
 #if BUILDFLAG(IS_MAC)
   // Mac can smoothly resize contents and does not need flyover.
