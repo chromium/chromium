@@ -80,6 +80,7 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
       },
       isLensOverlayShowing: {
         type: Boolean,
+        reflect: true,
       },
       composeboxHeight_: {type: Number},
       composeboxDropdownHeight_: {type: Number},
