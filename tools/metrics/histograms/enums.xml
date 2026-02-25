@@ -16342,6 +16342,7 @@ from previous Chrome versions.
   <int value="665320858" label="WebViewHitTestInBlinkOnTouchStart:disabled"/>
   <int value="665409384"
       label="AutofillToolkitViewsCreditCardDialogsMac:enabled"/>
+  <int value="665421480" label="GlicChromeStatusIcon:enabled"/>
   <int value="665647051" label="DiscountConsentV2:enabled"/>
   <int value="666163273" label="WebMachineLearningNeuralNetwork:enabled"/>
   <int value="666428855" label="MediaRemotingWithoutFullscreen:enabled"/>
@@ -19293,6 +19294,7 @@ from previous Chrome versions.
   <int value="1664401033" label="ColorCorrectRendering:enabled"/>
   <int value="1664463407" label="FirstPartySets:enabled"/>
   <int value="1664710107" label="BorealisScaleClientByDPI:enabled"/>
+  <int value="1665076479" label="GlicChromeStatusIcon:disabled"/>
   <int value="1665349789" label="spurious-power-button-window"/>
   <int value="1665400247" label="OsSettingsDeepLinking:enabled"/>
   <int value="1665430464" label="force-control-face-ae"/>
