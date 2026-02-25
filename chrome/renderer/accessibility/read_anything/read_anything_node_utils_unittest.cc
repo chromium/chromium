@@ -465,6 +465,16 @@ TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTagForPdf_SpanTagReturned) {
   EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, "p"), "span");
 }
 
+TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTagForPdf_ReturnsDivForTextField) {
+  ui::AXNodeData data;
+  data.id = 2;
+  data.role = ax::mojom::Role::kTextField;
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(std::move(data));
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, ""), "div");
+}
+
 TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTagForPdf_LinkTagReturned) {
   ui::AXNodeData data = test::TextNode(2);
   data.role = ax::mojom::Role::kLink;

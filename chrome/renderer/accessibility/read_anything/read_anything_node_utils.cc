@@ -110,6 +110,10 @@ std::string GetHtmlTagForPDF(const ui::AXNode* ax_node,
                              const std::string& html_tag) {
   ax::mojom::Role role = ax_node->GetRole();
 
+  if (ui::IsTextField(ax_node->GetRole())) {
+    return "div";
+  }
+
   // Some nodes in PDFs don't have an HTML tag so use role instead.
   switch (role) {
     case ax::mojom::Role::kEmbeddedObject:
