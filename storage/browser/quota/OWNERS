@@ -1,7 +1,5 @@
 file://storage/OWNERS
 
-# Emeritus
-ayui@chromium.org
 evanstade@microsoft.com
 
 per-file *.mojom=set noparent
