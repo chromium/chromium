@@ -200,7 +200,14 @@ base::WeakPtr<AsyncCheckTracker> GetAsyncCheckTracker(
 }  // anonymous namespace
 
 std::string GetProduct() {
-  return embedder_support::GetProductAndVersion();
+  // We cannot use `embedder_support::GetProductAndVersion()` here because that
+  // relies on base::FeatureList, which need not be initialized at this point -
+  // GetDefaultUserAgent can call this before browser startup is completed.
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kWebViewReduceUserAgentMinorVersion)
+             ? version_info::GetProductNameAndVersionForReducedUserAgent()
+             : std::string(
+                   version_info::GetProductNameAndVersionForUserAgent());
 }
 
 std::string GetUserAgent() {
@@ -211,14 +218,14 @@ std::string GetUserAgent() {
     product += " Mobile";
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewReduceUAAndroidVersionDeviceModel)) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebViewReduceUAAndroidVersionDeviceModel)) {
     // The user-agent reduction feature for WebView, when enabled, should
     // produce a consistent, unified platform string to ensure predictable
-    // behavior. This hardcoded value prevents device-specific platform details
-    // (e.g., "X11; Linux" on desktop devices) from appearing in the reduced
-    // User-Agent. The "Linux; Android 10; K; wv" string matches the expected
-    // format for a reduced WebView User-Agent.
+    // behavior. This hardcoded value prevents device-specific platform
+    // details (e.g., "X11; Linux" on desktop devices) from appearing in the
+    // reduced User-Agent. The "Linux; Android 10; K; wv" string matches the
+    // expected format for a reduced WebView User-Agent.
     constexpr char kUnifiedPlatformOsInfoWebview[] = "Linux; Android 10; K; wv";
     return embedder_support::BuildUserAgentFromOSAndProduct(
         kUnifiedPlatformOsInfoWebview, product);

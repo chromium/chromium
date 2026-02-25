@@ -131,6 +131,9 @@ public class WebViewCachedFlags {
                                             DefaultState.DISABLED),
                                     Map.entry(
                                             AwFeatures.WEBVIEW_USE_NONEMBEDDED_LOW_ENTROPY_SOURCE,
+                                            DefaultState.DISABLED),
+                                    Map.entry(
+                                            AwFeatures.WEBVIEW_FASTER_GET_DEFAULT_USER_AGENT,
                                             DefaultState.DISABLED)));
         }
     }

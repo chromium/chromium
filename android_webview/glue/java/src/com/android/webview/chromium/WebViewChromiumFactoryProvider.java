@@ -691,17 +691,27 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             helper.applyFlagOverrides(
                     Map.of(AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS, shouldEnableFileSystemAccess()));
 
-            // Apply user-agent reduction overrides for WebView. These features
-            // are intended to be enabled only for Android B+.
+            // Set user-agent reduction command-line switches and feature flags for WebView.
+            // We set command line switches as well because we want to read the configuration before
+            // feature flags are set for enabling `getDefaultUserAgent` to not wait for browser
+            // startup.
+            // These features are intended to be enabled only for Android B+.
             // 1) ReduceUserAgentMinorVersion: Enables reduction of the user-agent minor version.
             // 2) WebViewReduceUAAndroidVersionDeviceModel: Enables reduction of the user-agent
             //    Android version and device model.
+            boolean shouldEnableUserAgentReduction = shouldEnableUserAgentReduction();
             helper.applyFlagOverrides(
                     Map.of(
                             AwFeatures.WEBVIEW_REDUCE_UA_ANDROID_VERSION_DEVICE_MODEL,
-                            shouldEnableUserAgentReduction(),
+                            shouldEnableUserAgentReduction,
                             BlinkFeatures.REDUCE_USER_AGENT_MINOR_VERSION,
-                            shouldEnableUserAgentReduction()));
+                            shouldEnableUserAgentReduction));
+            if (shouldEnableUserAgentReduction) {
+                CommandLine.getInstance()
+                        .appendSwitch(AwSwitches.WEBVIEW_REDUCE_USER_AGENT_MINOR_VERSION);
+                CommandLine.getInstance()
+                        .appendSwitch(AwSwitches.WEBVIEW_REDUCE_UA_ANDROID_VERSION_DEVICE_MODEL);
+            }
 
             setSingleton(this);
         }

@@ -133,4 +133,10 @@ const char kWebViewRendererLibraryPrefetch[] =
 const char kWebViewRendererLibraryPrefetchDisabled[] = "disabled";
 const char kWebViewRendererLibraryPrefetchEnabled[] = "enabled";
 
+// Enables different reductions of the user-agent.
+const char kWebViewReduceUserAgentMinorVersion[] =
+    "webview-reduce-user-agent-minor-version";
+const char kWebViewReduceUAAndroidVersionDeviceModel[] =
+    "webview-reduce-ua-android-version-device-model";
+
 }  // namespace switches

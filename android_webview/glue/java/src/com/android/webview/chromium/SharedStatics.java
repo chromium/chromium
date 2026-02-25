@@ -111,11 +111,38 @@ public class SharedStatics {
     }
 
     public String getDefaultUserAgent(Context context) {
-        mAwInit.triggerAndWaitForChromiumStarted(
-                WebViewChromiumAwInit.CallSite.STATIC_GET_DEFAULT_USER_AGENT);
+        if (!mAwInit.isChromiumInitStarted()) {
+            mAwInit.maybeSetChromiumUiThread(Looper.getMainLooper());
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.WebView.Static.GetDefaultUserAgentCalledOnUiThreadIfChromiumNotStarted",
+                    ThreadUtils.runningOnUiThread());
+        }
+        if (!WebViewCachedFlags.get()
+                .isCachedFeatureEnabled(AwFeatures.WEBVIEW_FASTER_GET_DEFAULT_USER_AGENT)) {
+            mAwInit.triggerAndWaitForChromiumStarted(
+                    WebViewChromiumAwInit.CallSite.STATIC_GET_DEFAULT_USER_AGENT);
+        }
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_DEFAULT_USER_AGENT")) {
             recordStaticApiCall(ApiCall.GET_DEFAULT_USER_AGENT);
+            // If we are running on the UI thread, we don't need to startup WebView at all to get
+            // the default user agent. If we are running on a background thread we don't *need* to
+            // startup WebView either. But for a long time, we have suggested that app developers
+            // call this API from the background thread for startup performance benefits.
+            // Calling this API on the background thread runs provider init on the
+            // background thread, and used to run browser process startup on the UI thread such that
+            // the next time a WebView API is called, startup would have already completed.
+            // To maintain that performance benefit, post startup to the UI thread when called from
+            // a background thread but don't block on it. That way, the next time a WebView API is
+            // called, startup may have already completed.
+            if (!ThreadUtils.runningOnUiThread()) {
+                mAwInit.postChromiumStartupIfNeeded(
+                        WebViewChromiumAwInit.CallSite.STATIC_GET_DEFAULT_USER_AGENT);
+            }
+            // This only depends on command line flags for UA reduction. Command line flags are
+            // already initialized by the time we get here since that happens during provider
+            // initialization. Provider initialization must happen before any native code can be
+            // run.
             return AwSettings.getDefaultUserAgent();
         }
     }
@@ -249,20 +276,21 @@ public class SharedStatics {
             return true;
         }
 
-        return WebViewCachedFlags.get().isCachedFeatureEnabled(
-                AwFeatures.WEBVIEW_STOP_BROWSER_STARTUP_IN_IS_MULTI_PROCESS_ENABLED);
+        return WebViewCachedFlags.get()
+                .isCachedFeatureEnabled(
+                        AwFeatures.WEBVIEW_STOP_BROWSER_STARTUP_IN_IS_MULTI_PROCESS_ENABLED);
     }
 
     public boolean isMultiProcessEnabled() {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.IS_MULTI_PROCESS_ENABLED")) {
-                recordStaticApiCall(ApiCall.IS_MULTI_PROCESS_ENABLED);
+            recordStaticApiCall(ApiCall.IS_MULTI_PROCESS_ENABLED);
             if (shouldStopBrowserStartupInIsMultiProcessEnabled()) {
                 return mAwInit.isMultiProcessEnabled();
             }
 
-        mAwInit.triggerAndWaitForChromiumStarted(
-                WebViewChromiumAwInit.CallSite.STATIC_IS_MULTI_PROCESS_ENABLED);
+            mAwInit.triggerAndWaitForChromiumStarted(
+                    WebViewChromiumAwInit.CallSite.STATIC_IS_MULTI_PROCESS_ENABLED);
             return AwContentsStatics.isMultiProcessEnabled();
         }
     }

@@ -9326,6 +9326,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Android.WebView.Static.GetDefaultUserAgentCalledOnUiThreadIfChromiumNotStarted"
+    enum="Boolean" expires_after="2026-07-01">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether getDefaultUserAgent was called on the UI thread or not.
+    Emitted only if browser startup has not been started during the time of the
+    call.
+
+    This is only logged in Android WebView.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.SupervisedUser.UrlCheckResult"
     enum="AndroidWebViewSupervisedUserUrlCheckResult"
     expires_after="2026-05-01">

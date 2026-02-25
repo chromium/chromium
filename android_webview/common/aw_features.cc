@@ -302,4 +302,8 @@ BASE_FEATURE(kWebViewTestNonembeddedLowEntropySource,
 BASE_FEATURE(kWebViewUseNonembeddedLowEntropySource,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the default user agent string is fetched more quickly without
+// waiting for chromium startup to complete.
+BASE_FEATURE(kWebViewFasterGetDefaultUserAgent,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace android_webview::features
