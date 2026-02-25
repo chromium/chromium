@@ -26252,6 +26252,26 @@
             ]
         }
     ],
+    "ThrottleFrameSinksOnInteractionExperiment": [
+        {
+            "platforms": [
+                "chromeos",
+                "android",
+                "android_webview",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ThrottleFrameSinksOnInteraction"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThrottleMainFrameTo60HzMacV3": [
         {
             "platforms": [
