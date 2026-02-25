@@ -76,7 +76,6 @@ pub fn write_escaped(
         AutoEscape::Custom(name) => invalid_autoescape(name),
     }
 }
-
 /// Controls the autoescaping behavior.
 ///
 /// For more information see

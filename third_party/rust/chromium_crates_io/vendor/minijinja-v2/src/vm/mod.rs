@@ -123,7 +123,7 @@ impl<'env> Vm<'env> {
             &mut State {
                 ctx,
                 current_block: None,
-                auto_escape: state.auto_escape(),
+                auto_escape: std::cell::Cell::new(state.auto_escape()),
                 instructions,
                 blocks: BTreeMap::default(),
                 temps: state.temps.clone(),
@@ -181,7 +181,7 @@ impl<'env> Vm<'env> {
         mut stack: Stack,
         mut pc: u32,
     ) -> Result<Option<Value>, Error> {
-        let initial_auto_escape = state.auto_escape;
+        let initial_auto_escape = state.auto_escape.get();
         let undefined_behavior = state.undefined_behavior();
         let mut auto_escape_stack = vec![];
         let mut next_loop_recursion_jump = None;
@@ -462,7 +462,7 @@ impl<'env> Vm<'env> {
                     if let Some((target, end_capture)) = l.current_recursion_jump.take() {
                         pc = target;
                         if end_capture {
-                            stack.push(out.end_capture(state.auto_escape));
+                            stack.push(out.end_capture(state.auto_escape.get()));
                         }
                         continue;
                     }
@@ -519,17 +519,19 @@ impl<'env> Vm<'env> {
                 }
                 Instruction::PushAutoEscape => {
                     a = stack.pop();
-                    auto_escape_stack.push(state.auto_escape);
-                    state.auto_escape = ctx_ok!(self.derive_auto_escape(a, initial_auto_escape));
+                    auto_escape_stack.push(state.auto_escape.get());
+                    state
+                        .auto_escape
+                        .set(ctx_ok!(self.derive_auto_escape(a, initial_auto_escape)));
                 }
                 Instruction::PopAutoEscape => {
-                    state.auto_escape = auto_escape_stack.pop().unwrap();
+                    state.auto_escape.set(auto_escape_stack.pop().unwrap());
                 }
                 Instruction::BeginCapture(mode) => {
                     out.begin_capture(*mode);
                 }
                 Instruction::EndCapture => {
-                    stack.push(out.end_capture(state.auto_escape));
+                    stack.push(out.end_capture(state.auto_escape.get()));
                 }
                 Instruction::ApplyFilter(name, arg_count, local_id) => {
                     let filter =
@@ -777,7 +779,7 @@ impl<'env> Vm<'env> {
             };
 
             let (new_instructions, new_blocks) = ok!(tmpl.instructions_and_blocks());
-            let old_escape = mem::replace(&mut state.auto_escape, tmpl.initial_auto_escape());
+            let old_escape = state.auto_escape.replace(tmpl.initial_auto_escape());
             let old_instructions = mem::replace(&mut state.instructions, new_instructions);
             let old_blocks = mem::replace(&mut state.blocks, prepare_blocks(new_blocks));
             // we need to make a copy of the loaded templates here as we want
@@ -798,7 +800,7 @@ impl<'env> Vm<'env> {
             }
             state.ctx.decr_depth(INCLUDE_RECURSION_COST);
             state.loaded_templates = old_loaded_templates;
-            state.auto_escape = old_escape;
+            state.auto_escape.set(old_escape);
             state.instructions = old_instructions;
             state.blocks = old_blocks;
             ok!(rv.map_err(|err| {
@@ -863,7 +865,7 @@ impl<'env> Vm<'env> {
             Error::new(ErrorKind::EvalBlock, "error in super block").with_source(err)
         }));
         if capture {
-            Ok(out.end_capture(state.auto_escape))
+            Ok(out.end_capture(state.auto_escape.get()))
         } else {
             Ok(Value::UNDEFINED)
         }

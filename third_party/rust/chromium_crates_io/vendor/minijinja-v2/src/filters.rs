@@ -157,7 +157,18 @@ pub fn escape(state: &State, v: &Value) -> Result<Value, Error> {
         None => String::new(),
     };
     let mut out = Output::new(&mut rv);
-    ok!(write_escaped(&mut out, auto_escape, v));
+    if matches!(auto_escape, AutoEscape::Custom(_)) {
+        // The formatter reads the escape mode from state, so temporarily
+        // override it to ensure |e honors the computed escape mode even when
+        // auto-escape is disabled in the current scope. The default formatter
+        // also errors on custom auto-escape formats, so we must route through
+        // the environment formatter here.
+        ok!(state.with_auto_escape(auto_escape, |state| {
+            state.env().format(v, state, &mut out)
+        }));
+    } else {
+        ok!(write_escaped(&mut out, auto_escape, v));
+    }
     Ok(Value::from_safe_string(rv))
 }
 

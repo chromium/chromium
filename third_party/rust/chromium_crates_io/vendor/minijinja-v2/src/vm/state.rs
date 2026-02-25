@@ -1,4 +1,5 @@
 use std::borrow::Cow;
+use std::cell::Cell;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 use std::sync::{Arc, Mutex};
@@ -43,7 +44,7 @@ static STATE_ID: std::sync::atomic::AtomicIsize = std::sync::atomic::AtomicIsize
 pub struct State<'template, 'env> {
     pub(crate) ctx: Context<'env>,
     pub(crate) current_block: Option<&'env str>,
-    pub(crate) auto_escape: AutoEscape,
+    pub(crate) auto_escape: Cell<AutoEscape>,
     pub(crate) instructions: &'template Instructions<'env>,
     pub(crate) temps: Arc<Mutex<BTreeMap<Box<str>, Value>>>,
     pub(crate) blocks: BTreeMap<&'env str, BlockStack<'template, 'env>>,
@@ -64,7 +65,7 @@ impl fmt::Debug for State<'_, '_> {
         let mut ds = f.debug_struct("State");
         ds.field("name", &self.instructions.name());
         ds.field("current_block", &self.current_block);
-        ds.field("auto_escape", &self.auto_escape);
+        ds.field("auto_escape", &self.auto_escape.get());
         ds.field("ctx", &self.ctx);
         ds.field("env", &self.env());
         ds.finish()
@@ -83,7 +84,7 @@ impl<'template, 'env> State<'template, 'env> {
             #[cfg(feature = "macros")]
             id: STATE_ID.fetch_add(1, std::sync::atomic::Ordering::Relaxed),
             current_block: None,
-            auto_escape,
+            auto_escape: Cell::new(auto_escape),
             instructions,
             blocks,
             temps: Default::default(),
@@ -122,7 +123,22 @@ impl<'template, 'env> State<'template, 'env> {
     /// Returns the current value of the auto escape flag.
     #[inline(always)]
     pub fn auto_escape(&self) -> AutoEscape {
-        self.auto_escape
+        self.auto_escape.get()
+    }
+
+    pub(crate) fn with_auto_escape<R>(
+        &self,
+        auto_escape: AutoEscape,
+        f: impl FnOnce(&State<'template, 'env>) -> R,
+    ) -> R {
+        if self.auto_escape.get() == auto_escape {
+            return f(self);
+        }
+
+        let old = self.auto_escape.replace(auto_escape);
+        let rv = f(self);
+        self.auto_escape.set(old);
+        rv
     }
 
     /// Returns the current undefined behavior.
