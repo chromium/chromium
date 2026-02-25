@@ -124,8 +124,11 @@ class DownloadHistoryData : public base::SupportsUserData::Data {
   // order to save memory.
   history::DownloadRow* info() { return info_.get(); }
   void set_info(const history::DownloadRow& i) {
-    // TODO(qinmin): avoid creating a new copy each time.
-    info_ = std::make_unique<history::DownloadRow>(i);
+    if (info_) {
+      *info_ = i;
+    } else {
+      info_ = std::make_unique<history::DownloadRow>(i);
+    }
   }
   void clear_info() {
     info_.reset();
