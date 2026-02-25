@@ -872,7 +872,8 @@ void ExistingUserController::FinalizeAuthAndStartSession(
             ->GetBrokerForUser(user_id);
     bool privacy_warnings_enabled = local_state_->GetBoolean(
         prefs::kManagedGuestSessionPrivacyWarningsEnabled);
-    if (ash::login::IsFullManagementDisclosureNeeded(broker) &&
+    if (ash::login::IsFullManagementDisclosureNeeded(local_state_.get(),
+                                                     broker) &&
         privacy_warnings_enabled) {
       ShowAutoLaunchManagedGuestSessionNotification();
     }

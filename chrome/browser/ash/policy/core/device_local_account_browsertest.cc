@@ -22,6 +22,7 @@
 #include "ash/shell.h"
 #include "ash/system/session/logout_confirmation_controller.h"
 #include "ash/system/session/logout_confirmation_dialog.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -400,7 +401,8 @@ DeviceLocalAccountPolicyBroker* GetDeviceLocalAccountPolicyBroker(
 
 bool IsFullManagementDisclosureNeeded(AccountId account) {
   auto* broker = GetDeviceLocalAccountPolicyBroker(account);
-  return ash::login::IsFullManagementDisclosureNeeded(broker);
+  return ash::login::IsFullManagementDisclosureNeeded(
+      CHECK_DEREF(g_browser_process->local_state()), broker);
 }
 
 ukm::UkmService* GetUkmService() {

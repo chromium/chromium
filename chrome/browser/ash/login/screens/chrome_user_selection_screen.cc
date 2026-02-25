@@ -155,7 +155,7 @@ void ChromeUserSelectionScreen::CheckForPublicSessionLocalePolicyChange(
 void ChromeUserSelectionScreen::CheckIfFullManagementDisclosureNeeded(
     policy::DeviceLocalAccountPolicyBroker* broker) {
   SetPublicSessionShowFullManagementDisclosure(
-      ash::login::IsFullManagementDisclosureNeeded(broker));
+      ash::login::IsFullManagementDisclosureNeeded(local_state_.get(), broker));
 }
 
 void ChromeUserSelectionScreen::SetPublicSessionDisplayName(

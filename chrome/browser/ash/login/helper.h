@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/view.h"
 
+class PrefService;
 class Profile;
 class UserContext;
 
@@ -133,6 +134,7 @@ base::TimeDelta TimeToOnlineSignIn(base::Time last_online_signin,
 // managed and any risky extensions or network certificates are forced
 // through the policies.
 bool IsFullManagementDisclosureNeeded(
+    const PrefService& local_state,
     policy::DeviceLocalAccountPolicyBroker* broker);
 
 // Sets the available auth factors for the user on the login & lock screen.

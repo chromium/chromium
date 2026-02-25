@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/login/signin_partition_manager.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/factories/password_reuse_manager_factory.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
 #include "chrome/browser/profiles/profile.h"
@@ -232,12 +231,12 @@ base::TimeDelta TimeToOnlineSignIn(base::Time last_online_signin,
 }
 
 bool IsFullManagementDisclosureNeeded(
+    const PrefService& local_state,
     policy::DeviceLocalAccountPolicyBroker* broker) {
-  auto* local_state = g_browser_process->local_state();
   return AreRiskyPoliciesUsed(broker) ||
-         local_state->GetBoolean(::prefs::kManagedSessionUseFullLoginWarning) ||
+         local_state.GetBoolean(::prefs::kManagedSessionUseFullLoginWarning) ||
          PolicyHasWebTrustedAuthorityCertificate(broker) ||
-         IsProxyUsed(local_state);
+         IsProxyUsed(&local_state);
 }
 
 void SetAuthFactorsForUser(const AccountId& user,
