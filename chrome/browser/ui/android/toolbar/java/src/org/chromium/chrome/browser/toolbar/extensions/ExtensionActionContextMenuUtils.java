@@ -9,9 +9,8 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.listmenu.BasicListMenu;
@@ -39,6 +38,7 @@ public final class ExtensionActionContextMenuUtils {
      * @param bridge The {@link ExtensionActionContextMenuBridge} that provides the model and
      *     lifecycle.
      * @param rectProvider The {@link RectProvider} to use for positioning the menu.
+     * @param dismissRunnable The {@link Runnable} to run after the context menu is dismissed.
      * @param rootView The root {@link View}, if required by the buttonView.
      */
     public static void showContextMenu(
@@ -46,6 +46,7 @@ public final class ExtensionActionContextMenuUtils {
             ListMenuButton buttonView,
             ExtensionActionContextMenuBridge bridge,
             RectProvider rectProvider,
+            @Nullable Runnable dismissRunnable,
             @Nullable View rootView) {
         ModelList modelList = bridge.getModelList();
 
@@ -118,6 +119,9 @@ public final class ExtensionActionContextMenuUtils {
                     public void onPopupMenuDismissed() {
                         bridge.destroy();
                         buttonView.removePopupListener(this);
+                        if (dismissRunnable != null) {
+                            dismissRunnable.run();
+                        }
                     }
                 });
 
