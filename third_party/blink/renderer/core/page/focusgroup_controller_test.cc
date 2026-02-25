@@ -280,49 +280,141 @@ TEST_F(FocusgroupControllerTest,
 }
 
 TEST_F(FocusgroupControllerTest, FocusgroupDirectionForEventValid) {
-  // Arrow right should be forward and inline.
+  SetBodyInnerHTML(R"HTML(
+    <div id=ltr>LTR element</div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  auto* ltr_element = GetElementById("ltr");
+  ASSERT_TRUE(ltr_element);
+
+  // Arrow right should be forward and inline (in LTR horizontal-tb).
   auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT);
-  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event),
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *ltr_element),
             FocusgroupDirection::kForwardInline);
 
   // Arrow down should be forward and block.
   event = KeyDownEvent(ui::DomKey::ARROW_DOWN);
-  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event),
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *ltr_element),
             FocusgroupDirection::kForwardBlock);
 
   // Arrow left should be backward and inline.
   event = KeyDownEvent(ui::DomKey::ARROW_LEFT);
-  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event),
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *ltr_element),
             FocusgroupDirection::kBackwardInline);
 
   // Arrow up should be backward and block.
   event = KeyDownEvent(ui::DomKey::ARROW_UP);
-  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event),
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *ltr_element),
             FocusgroupDirection::kBackwardBlock);
 
   // When the shift key is pressed, even when combined with a valid arrow key,
   // it should return kNone.
   event = KeyDownEvent(ui::DomKey::ARROW_UP, nullptr, WebInputEvent::kShiftKey);
-  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event),
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *ltr_element),
             FocusgroupDirection::kNone);
 
   // When the ctrl key is pressed, even when combined with a valid arrow key, it
   // should return kNone.
   event =
       KeyDownEvent(ui::DomKey::ARROW_UP, nullptr, WebInputEvent::kControlKey);
-  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event),
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *ltr_element),
             FocusgroupDirection::kNone);
 
   // When the meta key (e.g.: CMD on mac) is pressed, even when combined with a
   // valid arrow key, it should return kNone.
   event = KeyDownEvent(ui::DomKey::ARROW_UP, nullptr, WebInputEvent::kMetaKey);
-  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event),
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *ltr_element),
             FocusgroupDirection::kNone);
 
   // Any other key than an arrow key should return kNone.
   event = KeyDownEvent(ui::DomKey::TAB);
-  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event),
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *ltr_element),
             FocusgroupDirection::kNone);
+}
+
+TEST_F(FocusgroupControllerTest, FocusgroupDirectionForEventRTL) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=rtl dir="rtl">RTL element</div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  auto* rtl_element = GetElementById("rtl");
+  ASSERT_TRUE(rtl_element);
+
+  // In RTL horizontal-tb, inline direction is reversed:
+  // ArrowRight → backward inline (towards inline-start in RTL).
+  auto* event = KeyDownEvent(ui::DomKey::ARROW_RIGHT);
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *rtl_element),
+            FocusgroupDirection::kBackwardInline);
+
+  // ArrowLeft → forward inline (towards inline-end in RTL).
+  event = KeyDownEvent(ui::DomKey::ARROW_LEFT);
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *rtl_element),
+            FocusgroupDirection::kForwardInline);
+
+  // Block axis is unchanged in RTL horizontal-tb.
+  event = KeyDownEvent(ui::DomKey::ARROW_DOWN);
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *rtl_element),
+            FocusgroupDirection::kForwardBlock);
+
+  event = KeyDownEvent(ui::DomKey::ARROW_UP);
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *rtl_element),
+            FocusgroupDirection::kBackwardBlock);
+}
+
+TEST_F(FocusgroupControllerTest, FocusgroupDirectionForEventVerticalRL) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=vrl style="writing-mode: vertical-rl">Vertical RL</div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  auto* vrl_element = GetElementById("vrl");
+  ASSERT_TRUE(vrl_element);
+
+  // In vertical-rl LTR, the inline axis is vertical and the block axis is
+  // horizontal. ArrowDown → forward inline, ArrowUp → backward inline,
+  // ArrowLeft → forward block, ArrowRight → backward block.
+  auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN);
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *vrl_element),
+            FocusgroupDirection::kForwardInline);
+
+  event = KeyDownEvent(ui::DomKey::ARROW_UP);
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *vrl_element),
+            FocusgroupDirection::kBackwardInline);
+
+  event = KeyDownEvent(ui::DomKey::ARROW_LEFT);
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *vrl_element),
+            FocusgroupDirection::kForwardBlock);
+
+  event = KeyDownEvent(ui::DomKey::ARROW_RIGHT);
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *vrl_element),
+            FocusgroupDirection::kBackwardBlock);
+}
+
+TEST_F(FocusgroupControllerTest, FocusgroupDirectionForEventVerticalLR) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=vlr style="writing-mode: vertical-lr">Vertical LR</div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  auto* vlr_element = GetElementById("vlr");
+  ASSERT_TRUE(vlr_element);
+
+  // In vertical-lr LTR, the inline axis is vertical and the block axis is
+  // horizontal. ArrowDown → forward inline, ArrowUp → backward inline,
+  // ArrowRight → forward block, ArrowLeft → backward block.
+  auto* event = KeyDownEvent(ui::DomKey::ARROW_DOWN);
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *vlr_element),
+            FocusgroupDirection::kForwardInline);
+
+  event = KeyDownEvent(ui::DomKey::ARROW_UP);
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *vlr_element),
+            FocusgroupDirection::kBackwardInline);
+
+  event = KeyDownEvent(ui::DomKey::ARROW_RIGHT);
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *vlr_element),
+            FocusgroupDirection::kForwardBlock);
+
+  event = KeyDownEvent(ui::DomKey::ARROW_LEFT);
+  EXPECT_EQ(utils::FocusgroupDirectionForEvent(event, *vlr_element),
+            FocusgroupDirection::kBackwardBlock);
 }
 
 TEST_F(FocusgroupControllerTest, IsDirectionBackward) {

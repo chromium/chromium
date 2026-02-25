@@ -31,10 +31,6 @@ bool FocusgroupController::HandleArrowKeyboardEvent(KeyboardEvent* event,
   ExecutionContext* context = frame->DomWindow()->GetExecutionContext();
   DCHECK(RuntimeEnabledFeatures::FocusgroupEnabled(context));
 
-  FocusgroupDirection direction = utils::FocusgroupDirectionForEvent(event);
-  if (direction == FocusgroupDirection::kNone)
-    return false;
-
   if (!frame->GetDocument())
     return false;
 
@@ -43,6 +39,16 @@ bool FocusgroupController::HandleArrowKeyboardEvent(KeyboardEvent* event,
     // The FocusgroupController shouldn't handle this arrow key event when the
     // focus already moved to a different element than where it came from. The
     // webpage likely had a key-handler that moved the focus.
+    return false;
+  }
+
+  // Resolve the logical direction from the focused element's writing mode.
+  // This means arrow keys follow the element's local writing direction: in an
+  // RTL context ArrowLeft is forward-inline, in vertical-rl ArrowDown is
+  // forward-inline, etc.
+  FocusgroupDirection direction =
+      utils::FocusgroupDirectionForEvent(event, *focused);
+  if (direction == FocusgroupDirection::kNone) {
     return false;
   }
 

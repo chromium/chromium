@@ -65,8 +65,14 @@ class CORE_EXPORT FocusgroupControllerUtils {
   STATIC_ONLY(FocusgroupControllerUtils);
 
  public:
+  // Maps the physical arrow key from |event| to a logical focusgroup
+  // direction, accounting for the writing direction (RTL, vertical writing
+  // modes) of |focused_element|. The caller passes the currently focused
+  // element so that arrow keys follow its local writing direction. Returns
+  // kNone for non-arrow keys or when modifier keys are held.
   static FocusgroupDirection FocusgroupDirectionForEvent(
-      const KeyboardEvent* event);
+      const KeyboardEvent* event,
+      const Element& focused_element);
   static bool IsDirectionBackward(FocusgroupDirection direction);
   static bool IsDirectionForward(FocusgroupDirection direction);
   static bool IsDirectionInline(FocusgroupDirection direction);

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/grid_focusgroup_structure_info.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -151,25 +152,54 @@ class FocusgroupVisualOrderTraversalContext {
 }  // namespace
 
 FocusgroupDirection FocusgroupControllerUtils::FocusgroupDirectionForEvent(
-    const KeyboardEvent* event) {
+    const KeyboardEvent* event,
+    const Element& focused_element) {
   DCHECK(event);
-  if (event->ctrlKey() || event->metaKey() || event->shiftKey())
+  if (event->ctrlKey() || event->metaKey() || event->shiftKey()) {
     return FocusgroupDirection::kNone;
-
-  const AtomicString key(event->key());
-  // TODO(bebeaudr): Support RTL. Will it be as simple as inverting the
-  // direction associated with the left and right arrows when in a RTL element?
-  if (key == keywords::kArrowDown) {
-    return FocusgroupDirection::kForwardBlock;
-  } else if (key == keywords::kArrowRight) {
-    return FocusgroupDirection::kForwardInline;
-  } else if (key == keywords::kArrowUp) {
-    return FocusgroupDirection::kBackwardBlock;
-  } else if (key == keywords::kArrowLeft) {
-    return FocusgroupDirection::kBackwardInline;
   }
 
-  return FocusgroupDirection::kNone;
+  // Determine the physical direction for the pressed arrow key.
+  const AtomicString key(event->key());
+  LogicalDirection logical_direction;
+  if (key == keywords::kArrowDown || key == keywords::kArrowRight ||
+      key == keywords::kArrowUp || key == keywords::kArrowLeft) {
+    // Resolve the writing direction from the focused element's computed style.
+    // This means arrow keys follow the element's local writing direction (e.g.,
+    // an RTL item inside an LTR focusgroup uses RTL key mappings). Falls back
+    // to horizontal-tb LTR when no style is available.
+    const ComputedStyle* style = focused_element.GetComputedStyle();
+    if (!style) {
+      return FocusgroupDirection::kNone;
+    }
+    WritingDirectionMode writing_direction = style->GetWritingDirection();
+
+    // Map the physical arrow key to a logical direction using the focused
+    // element's writing direction. This correctly handles RTL (left/right
+    // swap for inline) and vertical writing modes (axes swap).
+    if (key == keywords::kArrowDown) {
+      logical_direction = writing_direction.Bottom();
+    } else if (key == keywords::kArrowRight) {
+      logical_direction = writing_direction.Right();
+    } else if (key == keywords::kArrowUp) {
+      logical_direction = writing_direction.Top();
+    } else {
+      logical_direction = writing_direction.Left();
+    }
+  } else {
+    return FocusgroupDirection::kNone;
+  }
+
+  switch (logical_direction) {
+    case LogicalDirection::kInlineStart:
+      return FocusgroupDirection::kBackwardInline;
+    case LogicalDirection::kInlineEnd:
+      return FocusgroupDirection::kForwardInline;
+    case LogicalDirection::kBlockStart:
+      return FocusgroupDirection::kBackwardBlock;
+    case LogicalDirection::kBlockEnd:
+      return FocusgroupDirection::kForwardBlock;
+  }
 }
 
 bool FocusgroupControllerUtils::IsDirectionForward(
