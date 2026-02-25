@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/caching_zero_state_suggestions_manager.h"
+#include "chrome/browser/glic/suggestions/caching_zero_state_suggestions_manager.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -16,7 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace contextual_cueing {
+namespace glic {
 namespace {
 void NavigateAndCommitContents(content::WebContents* contents,
                                const GURL& url) {
@@ -32,7 +32,7 @@ class TestContextualCueingService
       content::WebContents* web_contents,
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
-      GlicSuggestionsCallback callback) override {
+      contextual_cueing::GlicSuggestionsCallback callback) override {
     if (last_callback_) {
       pending_callbacks_.push_back(std::move(last_callback_));
     }
@@ -44,7 +44,7 @@ class TestContextualCueingService
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
       const content::WebContents* focused_tab,
-      GlicSuggestionsCallback callback) override {
+      contextual_cueing::GlicSuggestionsCallback callback) override {
     if (last_callback_) {
       pending_callbacks_.push_back(std::move(last_callback_));
     }
@@ -254,4 +254,4 @@ TEST_F(CachingContextualCueingServiceTest, EvictIncompleteCacheEntries) {
 }
 
 }  // namespace
-}  // namespace contextual_cueing
+}  // namespace glic

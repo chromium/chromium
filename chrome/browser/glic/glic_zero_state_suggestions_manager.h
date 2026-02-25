@@ -15,10 +15,10 @@
 
 namespace contextual_cueing {
 class ContextualCueingService;
-class CachingZeroStateSuggestionsManager;
 }  // namespace contextual_cueing
 
 namespace glic {
+class CachingZeroStateSuggestionsManager;
 class GlicSharingManager;
 class GlicInstance;
 class Host;
@@ -90,7 +90,7 @@ class GlicZeroStateSuggestionsManager {
   // A caching wrapper around `contextual_cueing_service_`. Set only when
   // kCacheZeroStateSuggestions is enabled. Should always be used if present,
   // instead of `contextual_cueing_service_`.
-  std::unique_ptr<contextual_cueing::CachingZeroStateSuggestionsManager>
+  std::unique_ptr<CachingZeroStateSuggestionsManager>
       caching_zero_state_manager_;
 
   // This passed by the glic_keyed_service.

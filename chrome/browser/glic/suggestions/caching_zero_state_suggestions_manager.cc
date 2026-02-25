@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/contextual_cueing/caching_zero_state_suggestions_manager.h"
+#include "chrome/browser/glic/suggestions/caching_zero_state_suggestions_manager.h"
 
 #include "base/types/id_type.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
@@ -11,7 +11,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
-namespace contextual_cueing {
+namespace glic {
 
 std::vector<std::string> EmptySuggestions() {
   return {};
@@ -203,8 +203,9 @@ class CachingContextualCueingServiceImpl
 };
 
 std::unique_ptr<CachingZeroStateSuggestionsManager>
-CreateCachingZeroStateSuggestionsManager(ContextualCueingService* service) {
+CreateCachingZeroStateSuggestionsManager(
+    contextual_cueing::ContextualCueingService* service) {
   return std::make_unique<CachingContextualCueingServiceImpl>(service);
 }
 
-}  // namespace contextual_cueing
+}  // namespace glic

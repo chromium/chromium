@@ -269,6 +269,8 @@ source_set("impl") {
     "service/metrics/glic_instance_metrics.h",
     "service/metrics/glic_metrics_session_manager.cc",
     "service/metrics/glic_metrics_session_manager.h",
+    "suggestions/caching_zero_state_suggestions_manager.cc",
+    "suggestions/caching_zero_state_suggestions_manager.h",
     "widget/browser_conditions.cc",
     "widget/browser_conditions.h",
   ]
@@ -493,6 +495,7 @@ source_set("unit_tests") {
       "service/metrics/glic_instance_coordinator_metrics_unittest.cc",
       "service/metrics/glic_instance_metrics_unittest.cc",
       "service/metrics/glic_metrics_session_manager_unittest.cc",
+      "suggestions/caching_zero_state_suggestions_manager_unittest.cc",
     ]
   } else {
     sources += [ "common/glic_tab_observer_android_unittest.cc" ]

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_CACHING_ZERO_STATE_SUGGESTIONS_MANAGER_H_
-#define CHROME_BROWSER_CONTEXTUAL_CUEING_CACHING_ZERO_STATE_SUGGESTIONS_MANAGER_H_
+#ifndef CHROME_BROWSER_GLIC_SUGGESTIONS_CACHING_ZERO_STATE_SUGGESTIONS_MANAGER_H_
+#define CHROME_BROWSER_GLIC_SUGGESTIONS_CACHING_ZERO_STATE_SUGGESTIONS_MANAGER_H_
 
 #include <memory>
 #include <optional>
@@ -14,10 +14,13 @@
 
 namespace content {
 class WebContents;
-}
+}  // namespace content
 
 namespace contextual_cueing {
 class ContextualCueingService;
+}  // namespace contextual_cueing
+
+namespace glic {
 
 class CachingZeroStateSuggestionsManager {
  public:
@@ -43,8 +46,9 @@ class CachingZeroStateSuggestionsManager {
 };
 
 std::unique_ptr<CachingZeroStateSuggestionsManager>
-CreateCachingZeroStateSuggestionsManager(ContextualCueingService* service);
+CreateCachingZeroStateSuggestionsManager(
+    contextual_cueing::ContextualCueingService* service);
 
-}  // namespace contextual_cueing
+}  // namespace glic
 
-#endif  // CHROME_BROWSER_CONTEXTUAL_CUEING_CACHING_ZERO_STATE_SUGGESTIONS_MANAGER_H_
+#endif  // CHROME_BROWSER_GLIC_SUGGESTIONS_CACHING_ZERO_STATE_SUGGESTIONS_MANAGER_H_
