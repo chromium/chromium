@@ -1093,11 +1093,6 @@ BASE_FEATURE(kInstantHotspotOnNearby, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kInstantTethering, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the internal server side speech recognition on ChromeOS.
-// Controls the launched locales.
-BASE_FEATURE(kInternalServerSideSpeechRecognition,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables or disables the internal server side speech recognition on ChromeOS.
 // The supported locales for this feature are specified using the locales
 // filter in finch config.
 BASE_FEATURE(kInternalServerSideSpeechRecognitionByFinch,
@@ -2712,9 +2707,7 @@ bool IsSnoopingProtectionEnabled() {
 
 bool IsInternalServerSideSpeechRecognitionEnabled() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
-  return (ShouldForceEnableServerSideSpeechRecognition() ||
-          base::FeatureList::IsEnabled(kInternalServerSideSpeechRecognition));
+  return true;
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

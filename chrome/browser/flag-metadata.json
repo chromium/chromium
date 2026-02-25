@@ -3908,11 +3908,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "enable-projector-server-side-speech-recognition",
-    "owners": ["yilkal@chromium.org", "cros-projector@google.com"],
-    "expiry_milestone": 115
-  },
-  {
     "name": "enable-projector-server-side-usm",
     "owners": [ "cros-projector@google.com" ],
     "expiry_milestone": 135

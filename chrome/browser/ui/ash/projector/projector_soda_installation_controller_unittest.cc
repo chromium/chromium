@@ -53,8 +53,7 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
     // TODO: dorianbrandon - Remove finch flag from disabled list.
     scoped_feature_list_.InitWithFeatures(
         {features::kOnDeviceSpeechRecognition},
-        {features::kInternalServerSideSpeechRecognition,
-         features::kForceEnableServerSideSpeechRecognition,
+        {features::kForceEnableServerSideSpeechRecognition,
          features::kInternalServerSideSpeechRecognitionUSMModelFinch});
   }
   ProjectorSodaInstallationControllerTest(
@@ -191,7 +190,6 @@ TEST_F(ProjectorSodaInstallationControllerTest, OnSodaInstallErrorUnspecified) {
   NewScreencastPrecondition soda_install_error(
       NewScreencastPreconditionState::kDisabled,
       {NewScreencastPreconditionReason::kSodaInstallationErrorUnspecified});
-  EXPECT_CALL(app_client(), OnSodaInstallError());
   EXPECT_CALL(projector_client(),
               OnNewScreencastPreconditionChanged(soda_install_error));
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
@@ -204,7 +202,6 @@ TEST_F(ProjectorSodaInstallationControllerTest, OnSodaInstallErrorNeedsReboot) {
   NewScreencastPrecondition soda_install_error(
       NewScreencastPreconditionState::kDisabled,
       {NewScreencastPreconditionReason::kSodaInstallationErrorNeedsReboot});
-  EXPECT_CALL(app_client(), OnSodaInstallError());
   EXPECT_CALL(projector_client(),
               OnNewScreencastPreconditionChanged(soda_install_error));
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(

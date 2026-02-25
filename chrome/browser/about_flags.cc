@@ -940,9 +940,6 @@ const FeatureEntry::FeatureVariation kBorealisZinkGlDriverVariations[] = {
 const char kArcEnableVirtioBlkForDataInternalName[] =
     "arc-enable-virtio-blk-for-data";
 
-const char kProjectorServerSideSpeechRecognition[] =
-    "enable-projector-server-side-speech-recognition";
-
 const char kArcEnableAttestationFlag[] = "arc-enable-attestation";
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -9332,12 +9329,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kProjectorAppDebugDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kProjectorAppDebug)},
 
-    {kProjectorServerSideSpeechRecognition,
-     flag_descriptions::kProjectorServerSideSpeechRecognitionName,
-     flag_descriptions::kProjectorServerSideSpeechRecognitionDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kInternalServerSideSpeechRecognition)},
-
     {"enable-projector-server-side-usm",
      flag_descriptions::kProjectorServerSideUsmName,
      flag_descriptions::kProjectorServerSideUsmDescription, kOsCrOS,
@@ -13077,16 +13068,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
                                        const FeatureEntry& entry) {
 #if BUILDFLAG(IS_CHROMEOS)
   version_info::Channel channel = chrome::GetChannel();
-  // enable-projector-server-side-speech-recognition is only available in Chrome
-  // branded builds.
-  if (std::string_view(kProjectorServerSideSpeechRecognition) ==
-      entry.internal_name) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    return false;
-#else
-    return true;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  }
 
   // enable-ui-devtools is only available on for non Stable channels.
   if (std::string_view(ui_devtools::switches::kEnableUiDevTools) ==

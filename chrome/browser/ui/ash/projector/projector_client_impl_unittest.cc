@@ -409,8 +409,7 @@ INSTANTIATE_TEST_SUITE_P(
              features::kForceEnableServerSideSpeechRecognition},
             {features::kInternalServerSideSpeechRecognitionUSMModelFinch}),
         ProjectorClientTestScenario(
-            {features::kInternalServerSideSpeechRecognition,
-             features::kOnDeviceSpeechRecognition},
+            {features::kOnDeviceSpeechRecognition},
             {features::kForceEnableServerSideSpeechRecognition,
              features::kInternalServerSideSpeechRecognitionUSMModelFinch})));
 
