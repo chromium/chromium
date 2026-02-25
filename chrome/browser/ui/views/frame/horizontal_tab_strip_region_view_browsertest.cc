@@ -246,6 +246,17 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest, HasMultiselectableState
   EXPECT_TRUE(ax_node_data.HasState(ax::mojom::State::kMultiselectable));
 }
 
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
+                       IncognitoLeadingButtonsCheckDoesntCrash) {
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  HorizontalTabStripRegionView* incognito_tab_strip_region_view =
+      views::AsViewClass<HorizontalTabStripRegionView>(
+          BrowserView::GetBrowserViewForBrowser(incognito_browser)
+              ->tab_strip_view());
+  // This should not crash.
+  incognito_tab_strip_region_view->HasLeadingButtons();
+}
+
 // When scrolling is disabled, the tab strip cannot be larger than the container
 // so tabs that do not fit in the tabstrip will become invisible. This is the
 // opposite behavior from

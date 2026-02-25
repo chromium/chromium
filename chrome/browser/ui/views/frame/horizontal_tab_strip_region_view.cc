@@ -78,6 +78,10 @@
 #include "ui/aura/window.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+constexpr int kTabStripRegionInternalPaddingMac = 12;
+#endif
+
 namespace {
 
 class FrameGrabHandle : public views::View {
@@ -235,9 +239,6 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
         AddChildView(std::make_unique<TabStripComboButton>(browser));
     combo_button_->SetProperty(views::kCrossAxisAlignmentKey,
                                views::LayoutAlignment::kCenter);
-    combo_button_->SetPaintToLayer();
-    combo_button_->layer()->SetFillsBoundsOpaquely(false);
-    combo_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
   }
 
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
@@ -685,6 +686,24 @@ views::View* HorizontalTabStripRegionView::GetTabStripView() {
   return tab_strip_;
 }
 
+bool HorizontalTabStripRegionView::HasLeadingButtons() const {
+  if (combo_button_ && combo_button_->GetVisible() &&
+      ((combo_button_->start_button() &&
+        combo_button_->start_button()->GetVisible()) ||
+       (combo_button_->end_button() &&
+        combo_button_->end_button()->GetVisible()))) {
+    return true;
+  }
+  if (unfocus_button_ && unfocus_button_->GetVisible()) {
+    return true;
+  }
+  if (tab_search_container_ && render_tab_search_before_tab_strip_ &&
+      tab_search_container_->GetVisible()) {
+    return true;
+  }
+  return false;
+}
+
 void HorizontalTabStripRegionView::LogTabSearchPositionForTesting() {
   tab_search_position_metrics_logger_->LogMetricsForTesting();  // IN-TEST
 }
@@ -741,6 +760,17 @@ void HorizontalTabStripRegionView::UpdateButtonBorders() {
 }
 
 void HorizontalTabStripRegionView::UpdateTabStripMargin() {
+#if BUILDFLAG(IS_MAC)
+  if (HasLeadingButtons()) {
+    // When leading buttons are present, maintain a consistent 12px gap from
+    // the caption buttons on Mac.
+    SetProperty(views::kInternalPaddingKey,
+                gfx::Insets::TLBR(0, kTabStripRegionInternalPaddingMac, 0, 0));
+  } else {
+    ClearProperty(views::kInternalPaddingKey);
+  }
+#endif
+
   // The new tab button overlaps the tabstrip. Render it to a layer and adjust
   // the tabstrip right margin to reserve space for it.
   std::optional<int> tab_strip_right_margin;
@@ -781,6 +811,9 @@ void HorizontalTabStripRegionView::UpdateTabStripMargin() {
   }
 
   if (combo_button_) {
+    combo_button_->SetPaintToLayer();
+    combo_button_->layer()->SetFillsBoundsOpaquely(false);
+    combo_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
     current_leading_width +=
         combo_button_->GetPreferredSize().width() +
         GetLayoutConstant(LayoutConstant::kTabStripPadding);

@@ -138,6 +138,7 @@ class HorizontalTabStripRegionView final : public TabStripRegionView {
   void SetTabStripObserver(TabStripObserver* observer) override;
   views::View* GetTabStripView() override;
 
+  bool HasLeadingButtons() const;
   void LogTabSearchPositionForTesting();
 
  private:

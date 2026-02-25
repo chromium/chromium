@@ -133,6 +133,10 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
     kMultiContents
   };
   TopSeparatorType GetTopSeparatorType() const;
+
+  // Returns the leading margin for the horizontal tab strip region.
+  int GetHorizontalTabStripLeadingMargin(
+      const BrowserLayoutParams& params) const;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_TABBED_LAYOUT_IMPL_H_

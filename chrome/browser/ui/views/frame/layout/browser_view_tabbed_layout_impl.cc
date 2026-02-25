@@ -34,6 +34,7 @@
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -128,6 +129,26 @@ BrowserViewTabbedLayoutImpl::GetTopSeparatorType() const {
 
   // The separator should go in the multi contents view instead.
   return TopSeparatorType::kMultiContents;
+}
+
+// Inset the leading edge of the tabstrip by the size of the swoop of the
+// first tab; this is especially important for Mac, where the negative
+// space of the caption button margins and the edge of the tabstrip should
+// overlap. This only applies if there are no other leading buttons; if
+// there are, we want a consistent gap from the caption buttons. The
+// trailing edge receives the usual treatment, as it is the new tab button
+// and not a tab.
+int BrowserViewTabbedLayoutImpl::GetHorizontalTabStripLeadingMargin(
+    const BrowserLayoutParams& params) const {
+  int leading_margin = TabStyle::Get()->GetBottomCornerRadius();
+  if (const gfx::Insets* internal_padding =
+          views().horizontal_tab_strip_region_view->GetProperty(
+              views::kInternalPaddingKey)) {
+    leading_margin =
+        std::max(0.f, params.leading_exclusion.horizontal_padding -
+                          static_cast<float>(internal_padding->left()));
+  }
+  return leading_margin;
 }
 
 std::pair<gfx::Size, gfx::Size>
@@ -570,14 +591,9 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
                    views().browser_view)) {
     gfx::Rect tabstrip_bounds;
     if (tab_strip_type == TabStripType::kHorizontal) {
-      // Inset the leading edge of the tabstrip by the size of the swoop of the
-      // first tab; this is especially important for Mac, where the negative
-      // space of the caption button margins and the edge of the tabstrip should
-      // overlap. The trailing edge receives the usual treatment, as it is the
-      // new tab button and not a tab.
+      const int leading_margin = GetHorizontalTabStripLeadingMargin(params);
       tabstrip_bounds = GetBoundsWithExclusion(
-          params, views().horizontal_tab_strip_region_view,
-          TabStyle::Get()->GetBottomCornerRadius());
+          params, views().horizontal_tab_strip_region_view, leading_margin);
       params.SetTop(tabstrip_bounds.bottom() -
                     GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap));
       needs_exclusion = false;
@@ -1066,20 +1082,13 @@ gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayout(
     params.Inset(gfx::Insets::TLBR(height, 0, 0, 0));
   }
 
-  // If the tabstrip is in the top container (which can happen in immersive
-  // mode), ensure it is laid out here.
   if (IsParentedTo(views().horizontal_tab_strip_region_view,
                    views().top_container)) {
     gfx::Rect tabstrip_bounds;
     if (tab_strip_type == TabStripType::kHorizontal) {
-      // When there is an exclusion, inset the leading edge of the tabstrip by
-      // the size of the swoop of the first tab; this is especially important
-      // for Mac, where the negative space of the caption button margins and the
-      // edge of the tabstrip should overlap. The trailing edge receives the
-      // usual treatment, as it is the new tab button and not a tab.
+      const int leading_margin = GetHorizontalTabStripLeadingMargin(params);
       tabstrip_bounds = GetBoundsWithExclusion(
-          params, views().horizontal_tab_strip_region_view,
-          TabStyle::Get()->GetBottomCornerRadius());
+          params, views().horizontal_tab_strip_region_view, leading_margin);
       params.SetTop(tabstrip_bounds.bottom() -
                     GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap));
       needs_exclusion = false;
