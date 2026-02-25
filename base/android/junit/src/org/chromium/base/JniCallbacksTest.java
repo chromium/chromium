@@ -123,6 +123,61 @@ public class JniCallbacksTest {
         Assert.assertEquals(2, resultCount[0]);
     }
 
+    @Test
+    public void testJavaToOnceCallbackWithSubtype() {
+        String[] result = {null};
+        JniCallbacksTestJni.get().passOnceCallbackWithSubtype(r -> result[0] = r);
+        Assert.assertEquals("test string", result[0]);
+    }
+
+    @Test
+    public void testJavaToOnceCallbackWithScopedSubtype() {
+        String[] result = {null};
+        JniCallbacksTestJni.get().passOnceCallbackWithScopedSubtype(r -> result[0] = r);
+        Assert.assertEquals("scoped string", result[0]);
+    }
+
+    @Test
+    public void testJavaToRepeatingCallbackWithSubtype() {
+        String[] results = new String[2];
+        int[] resultCount = {0};
+        JniCallbacksTestJni.get()
+                .passRepeatingCallbackWithSubtype(
+                        r -> {
+                            results[resultCount[0]] = r;
+                            resultCount[0]++;
+                        });
+        Assert.assertEquals(2, resultCount[0]);
+        Assert.assertEquals("s1", results[0]);
+        Assert.assertEquals("s2", results[1]);
+    }
+
+    @Test
+    public void testNativeToOnceCallbackWithSubtype() {
+        Callback<String> c = JniCallbacksTestJni.get().getOnceCallbackWithSubtype();
+        c.onResult("native subtype");
+        Assert.assertEquals(
+                "native subtype", JniCallbacksTestJni.get().getOnceCallbackWithSubtypeResult());
+    }
+
+    @Test
+    public void testNativeToRepeatingCallbackWithSubtype() {
+        JniRepeatingCallback<String> c =
+                JniCallbacksTestJni.get().getRepeatingCallbackWithSubtype();
+        c.onResult("s1");
+        c.onResult("s2");
+        Assert.assertEquals(2, JniCallbacksTestJni.get().getRepeatingCallbackWithSubtypeRunCount());
+        c.destroy();
+    }
+
+    @Test
+    public void testPassReturnedOnceCallbackWithSubtype() {
+        Callback<String> c = JniCallbacksTestJni.get().getOnceCallbackWithSubtype();
+        JniCallbacksTestJni.get().passOnceCallbackWithSubtype(c);
+        Assert.assertEquals(
+                "test string", JniCallbacksTestJni.get().getOnceCallbackWithSubtypeResult());
+    }
+
     @NativeMethods
     interface Natives {
         void resetCounters();
@@ -147,7 +202,7 @@ public class JniCallbacksTest {
 
         int getRepeatingCallbackResultCount();
 
-        @JniType("base::OnceCallback<void(bool, int32_t)>")
+        @JniType("base::OnceCallback<void(bool, jni_zero::JavaRef<jobject>)>")
         Callback2<Boolean, Integer> getOnceCallback2();
 
         boolean getOnceCallback2Result1();
@@ -158,6 +213,16 @@ public class JniCallbacksTest {
         JniRepeatingCallback2<Boolean, Integer> getRepeatingCallback2();
 
         int getRepeatingCallback2ResultCount();
+
+        @JniType("base::OnceCallback<void(const jni_zero::JavaRef<jstring>&)>")
+        Callback<String> getOnceCallbackWithSubtype();
+
+        String getOnceCallbackWithSubtypeResult();
+
+        @JniType("base::RepeatingCallback<void(const jni_zero::JavaRef<jstring>&)>")
+        JniRepeatingCallback<String> getRepeatingCallbackWithSubtype();
+
+        int getRepeatingCallbackWithSubtypeRunCount();
 
         void passOnceClosure(@JniType("base::OnceClosure") Runnable r);
 
@@ -174,5 +239,17 @@ public class JniCallbacksTest {
         void passRepeatingCallback2(
                 @JniType("base::RepeatingCallback<void(bool, int32_t)>")
                         Callback2<Boolean, Integer> c);
+
+        void passOnceCallbackWithSubtype(
+                @JniType("base::OnceCallback<void(const jni_zero::JavaRef<jstring>&)>")
+                        Callback<String> c);
+
+        void passOnceCallbackWithScopedSubtype(
+                @JniType("base::OnceCallback<void(jni_zero::ScopedJavaLocalRef<jstring>)>")
+                        Callback<String> c);
+
+        void passRepeatingCallbackWithSubtype(
+                @JniType("base::RepeatingCallback<void(const jni_zero::JavaRef<jstring>&)>")
+                        Callback<String> c);
     }
 }

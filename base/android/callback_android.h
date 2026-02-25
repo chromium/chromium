@@ -7,6 +7,7 @@
 
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
@@ -98,11 +99,10 @@ BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
                [](base::OnceCallback<R(Arg1, Arg2)> captured_callback,
                   const jni_zero::JavaRef<jobject>& j_result1,
                   const jni_zero::JavaRef<jobject>& j_result2) {
+                 JNIEnv* env = jni_zero::AttachCurrentThread();
                  std::move(captured_callback)
-                     .Run(jni_zero::FromJniType<std::decay_t<Arg1>>(
-                              jni_zero::AttachCurrentThread(), j_result1),
-                          jni_zero::FromJniType<std::decay_t<Arg2>>(
-                              jni_zero::AttachCurrentThread(), j_result2));
+                     .Run(jni_zero::FromJniType<Arg1>(env, j_result1),
+                          jni_zero::FromJniType<Arg2>(env, j_result2));
                },
                std::move(callback)));
 }
@@ -119,11 +119,9 @@ BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
           [](const base::RepeatingCallback<R(Arg1, Arg2)>& captured_callback,
              const jni_zero::JavaRef<jobject>& j_result1,
              const jni_zero::JavaRef<jobject>& j_result2) {
-            captured_callback.Run(
-                jni_zero::FromJniType<std::decay_t<Arg1>>(
-                    jni_zero::AttachCurrentThread(), j_result1),
-                jni_zero::FromJniType<std::decay_t<Arg2>>(
-                    jni_zero::AttachCurrentThread(), j_result2));
+            JNIEnv* env = jni_zero::AttachCurrentThread();
+            captured_callback.Run(jni_zero::FromJniType<Arg1>(env, j_result1),
+                                  jni_zero::FromJniType<Arg2>(env, j_result2));
           },
           callback));
 }
@@ -138,9 +136,9 @@ BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
       env, base::BindOnce(
                [](base::OnceCallback<R(Arg)> captured_callback,
                   const jni_zero::JavaRef<jobject>& j_result) {
-                 auto result = jni_zero::FromJniType<std::decay_t<Arg>>(
-                     jni_zero::AttachCurrentThread(), j_result);
-                 std::move(captured_callback).Run(std::move(result));
+                 JNIEnv* env = jni_zero::AttachCurrentThread();
+                 std::move(captured_callback)
+                     .Run(jni_zero::FromJniType<Arg>(env, j_result));
                },
                std::move(callback)));
 }
@@ -166,14 +164,14 @@ BASE_EXPORT ScopedJavaLocalRef<jobject> ToJniCallback(
     JNIEnv* env,
     const base::RepeatingCallback<R(Arg)>& callback) {
   return ToJniCallback(
-      env, base::BindRepeating(
-               [](const base::RepeatingCallback<R(Arg)>& captured_callback,
-                  const jni_zero::JavaRef<jobject>& j_result) {
-                 Arg result = jni_zero::FromJniType<Arg>(
-                     jni_zero::AttachCurrentThread(), j_result);
-                 captured_callback.Run(std::move(result));
-               },
-               callback));
+      env,
+      base::BindRepeating(
+          [](const base::RepeatingCallback<R(Arg)>& captured_callback,
+             const jni_zero::JavaRef<jobject>& j_result) {
+            JNIEnv* env = jni_zero::AttachCurrentThread();
+            captured_callback.Run(jni_zero::FromJniType<Arg>(env, j_result));
+          },
+          callback));
 }
 
 // Java Callbacks don't return a value so any return value by the passed in
@@ -232,45 +230,19 @@ struct IsRepeatingCallback<base::RepeatingCallback<void(T1, T2)>>
 template <typename T>
 void RunJavaCallback(const jni_zero::ScopedJavaGlobalRef<jobject>& callback,
                      T arg) {
-  if constexpr (requires { jni_zero::ToJniType(nullptr, std::move(arg)); }) {
-    JNIEnv* env = jni_zero::AttachCurrentThread();
-    base::android::RunObjectCallbackAndroid(
-        callback, jni_zero::ToJniType(env, std::move(arg)));
-  } else {
-    static_assert(
-        sizeof(T) == 0,
-        "Could not find ToJniType<> specialization for the callback's "
-        "parameter. Make sure the header declaring it is #included before "
-        "base/callback_android.h");
-  }
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  base::android::RunObjectCallbackAndroid(
+      callback, jni_zero::ToJniType(env, std::move(arg)));
 }
 
 template <typename T1, typename T2>
 void RunJavaCallback2(const jni_zero::ScopedJavaGlobalRef<jobject>& callback,
                       T1 arg1,
                       T2 arg2) {
-  if constexpr (requires { jni_zero::ToJniType(nullptr, std::move(arg1)); }) {
-    if constexpr (requires { jni_zero::ToJniType(nullptr, std::move(arg2)); }) {
-      JNIEnv* env = jni_zero::AttachCurrentThread();
-      base::android::RunObjectCallbackAndroid2(
-          callback, jni_zero::ToJniType(env, std::move(arg1)),
-          jni_zero::ToJniType(env, std::move(arg2)));
-    } else {
-      static_assert(
-          sizeof(T1) == 0,
-          "Could not find ToJniType<> specialization for the callback's "
-          "second parameter. Make sure the header declaring it is #included "
-          "before "
-          "base/callback_android.h");
-    }
-  } else {
-    static_assert(
-        sizeof(T1) == 0,
-        "Could not find ToJniType<> specialization for the callback's "
-        "first parameter. Make sure the header declaring it is #included "
-        "before "
-        "base/callback_android.h");
-  }
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  base::android::RunObjectCallbackAndroid2(
+      callback, jni_zero::ToJniType(env, std::move(arg1)),
+      jni_zero::ToJniType(env, std::move(arg2)));
 }
 
 }  // namespace base::android::internal
@@ -333,6 +305,7 @@ inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env, T&& callback) {
                     std::remove_cvref_t<T>>::value) {
     return base::android::ToJniCallback(env, std::move(callback));
   } else {
+    // Repeating callback.
     return base::android::ToJniCallback(env, std::forward<T>(callback));
   }
 }

@@ -79,17 +79,18 @@ void JNI_MyClass_OnNameChanged(JNIEnv* env, const std::string& name) { ... }
 std::string JNI_MyClass_GetName(JNIEnv* env) { return "name"; }
 ```
 
-**Header:** `#include "base/android/jni_string.h"`
 **Null Handling:** `null` Java strings are converted to empty `std::string` or `std::u16string`.
 
 ### Callbacks (Java -> Native)
 
-To pass a Java `Runnable` or `Callback` to C++ as a `base::OnceClosure` or `base::OnceCallback`.
+* To pass a Java `Runnable` / `Callback` / `Callback2` to C++ as a `base::OnceCallback`, use `@JniType`.
+* 3+ or more parameter variants is not currently supported.
 
 **Java:**
 ```java
 void doSomething(@JniType("base::OnceClosure") Runnable callback);
 void fetchSuccess(@JniType("base::OnceCallback<void(std::string)>") Callback<String> callback);
+void fetchSuccess2(@JniType("base::OnceCallback<void(const jni_zero::JavaRef<jobject>&, long)>") Callback2<SomeClass, Long> callback);
 ```
 
 **C++:**
@@ -100,23 +101,33 @@ void fetchSuccess(@JniType("base::OnceCallback<void(std::string)>") Callback<Str
 void JNI_MyClass_DoSomething(JNIEnv* env, base::OnceClosure callback) {
     std::move(callback).Run();
 }
-```
 
-**Header:** `#include "base/android/callback_android.h"`
+void JNI_MyClass_FetchSuccess2(JNIEnv* env, base::OnceCallback<void(const jni_zero::JavaRef<jobject>&, long)> callback) {
+    std::move(callback).Run(nullptr, 123L);
+}
+```
 
 ### Callbacks (Native -> Java)
 
-To pass a C++ callback to Java, use `@JniType` on the Java side. The Java side should
-receive a `JniOnceCallback<T>`, `JniRepeatingCallback<T>`, `JniOnceRunnable`, or
-`JniRepeatingRunnable` (which for the `Once*` variants, can be typed as
-`Runnable` or `Callback` if you don't need to call `destroy()`). For two-parameter
-callbacks, use `Callback2<T1, T2>`.
+* To pass a C++ callback to Java, use `@JniType` on the Java side.
+* The Java side may be typed one of:
+  * `JniOnceRunnable` / `JniRepeatingRunnable`
+  * `JniOnceCallback<T>` / `JniRepeatingCallback<T>`,
+  * `JniOnceCallback2<T1, T2>` / `JniRepeatingCallback2<T1. T2>`,
+* For the `Repeating*` variants, you must call `destroy()` when done with them.
+* For the `Once*` variants, `destroy()` is called when it's run, but you must call it manually if it is never run.
+* The `Once*` variants, can be typed as `Runnable` / `Callback` / `Callback2` if you don't need `destroy()`.
 
 **Java:**
 ```java
 @CalledByNative
 void onResult(@JniType("base::OnceCallback<void(std::string)>") JniOnceCallback<String> callback) {
     callback.onResult("success");
+}
+
+@CalledByNative
+void onResult2(@JniType("base::OnceCallback<void(const jni_zero::JavaRef<jobject>&, long)>") JniOnceCallback2<SomeClass, Long> callback) {
+    callback.onResult(new SomeClass(), 123L);
 }
 
 @CalledByNative
@@ -133,6 +144,13 @@ void Finish(JNIEnv* env, base::OnceCallback<void(std::string)> callback) {
     Java_MyClass_onResult(env, std::move(callback));
 }
 
+void Finish2(JNIEnv* env, base::OnceCallback<void(const jni_zero::JavaRef<jobject>&, long)> callback) {
+    auto callback = base::BindOnce([](){
+      ...
+    });
+    Java_MyClass_onResult2(env, std::move(callback));
+}
+
 base::OnceClosure JNI_MyClass_GetClosure(JNIEnv* env) {
     return base::BindOnce([](){
       ...
@@ -140,13 +158,6 @@ base::OnceClosure JNI_MyClass_GetClosure(JNIEnv* env) {
 }
 ```
 
-**Header:** `#include "base/android/callback_android.h"`
-
-**Important:** For the `Once*` variants, you must call `destroy()` on the Java
-callback if it is never run to avoid leaking the native object.
-`JniOnceCallback` and `JniOnceRunnable` will automatically destroy themselves
-after one call. For the `Repeating*` variants, you must call `destroy()` when
-done with them.
 
 ### Nullable Parameters (std::optional)
 
