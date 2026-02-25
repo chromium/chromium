@@ -34,8 +34,7 @@ void FakeWalletPassAccessManager::SaveWalletEntityInstance(
             if (!weakSelf) {
               return std::nullopt;
             }
-            return weakSelf->RunUpsertCallback(std::move(entity),
-                                               /*is_save=*/true);
+            return weakSelf->RunUpsertCallback(std::move(entity));
           },
           weak_ptr_factory_.GetWeakPtr(), entity)
           .Then(std::move(callback)),
@@ -54,8 +53,7 @@ void FakeWalletPassAccessManager::UpdateWalletEntityInstance(
             if (!weakSelf) {
               return std::nullopt;
             }
-            return weakSelf->RunUpsertCallback(std::move(entity),
-                                               /*is_save=*/false);
+            return weakSelf->RunUpsertCallback(std::move(entity));
           },
           weak_ptr_factory_.GetWeakPtr(), entity)
           .Then(std::move(callback)),
@@ -83,16 +81,9 @@ void FakeWalletPassAccessManager::GetUnmaskedWalletEntityInstance(
 }
 
 std::optional<EntityInstance> FakeWalletPassAccessManager::RunUpsertCallback(
-    EntityInstance entity,
-    bool is_save) {
+    EntityInstance entity) {
   if (features::debug::kFakeWalletApiResponsesSimulateFailure.Get()) {
     return std::nullopt;
-  }
-
-  // If saving a new entity, assign a random GUID.
-  if (is_save) {
-    entity = entity.CopyWithNewEntityId(EntityInstance::EntityId(
-        base::Uuid::GenerateRandomV4().AsLowercaseString()));
   }
 
   upserted_unmasked_entities_.insert_or_assign(entity.guid(), entity);

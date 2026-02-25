@@ -43,8 +43,7 @@ class FakeWalletPassAccessManager : public WalletPassAccessManager {
       GetUnmaskedEntityInstanceCallback callback) override;
 
  private:
-  std::optional<EntityInstance> RunUpsertCallback(EntityInstance entity,
-                                                  bool is_save);
+  std::optional<EntityInstance> RunUpsertCallback(EntityInstance entity);
   std::optional<EntityInstance> RunGetUnmaskedCallback(
       EntityInstance::EntityId entity_id);
 
