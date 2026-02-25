@@ -100,9 +100,9 @@ suite('GlicPageFocusTest', function() {
     assertEquals(1, glicBrowserProxy.getCallCount('getGlicShortcut'));
     assertEquals('⌃A', shortcutInput.shortcut);
 
-    // Clicking on the edit button should clear out the shortcut.
+    // Clicking on the clear button should clear out the shortcut.
     glicBrowserProxy.setGlicShortcutResponse('');
-    shortcutInput.$.edit.click();
+    shortcutInput.$.clear.click();
     let arg = await glicBrowserProxy.whenCalled('setGlicShortcut');
     await microtasksFinished();
     assertEquals('', arg);
@@ -110,6 +110,7 @@ suite('GlicPageFocusTest', function() {
     glicBrowserProxy.reset();
 
     // Verify that inputting an invalid shortcut doesn't update the shortcut.
+    shortcutInput.$.edit.click();
     keyDownOn(field, 65);
     await microtasksFinished();
     assertEquals(0, glicBrowserProxy.getCallCount('setGlicShortcut'));
@@ -137,9 +138,9 @@ suite('GlicPageFocusTest', function() {
         1, glicBrowserProxy.getCallCount('getGlicFocusToggleShortcut'));
     assertEquals('Alt+Shift+G', shortcutInput.shortcut);
 
-    // Clicking on the edit button should clear out the shortcut.
+    // Clicking on the clear button should clear out the shortcut.
     glicBrowserProxy.setGlicFocusToggleShortcutResponse('');
-    shortcutInput.$.edit.click();
+    shortcutInput.$.clear.click();
     let arg = await glicBrowserProxy.whenCalled('setGlicFocusToggleShortcut');
     await microtasksFinished();
     assertEquals('', arg);
@@ -147,6 +148,7 @@ suite('GlicPageFocusTest', function() {
     glicBrowserProxy.reset();
 
     // Verify that inputting an invalid shortcut doesn't update the shortcut.
+    shortcutInput.$.edit.click();
     keyDownOn(field, 65);
     await microtasksFinished();
     assertEquals(
@@ -214,11 +216,10 @@ suite('GlicPageFocusTest', function() {
         assertEquals('⌃A', field.value);
 
         // Act.
-        shortcutInput.$.edit.click();
+        shortcutInput.$.clear.click();
         await metricsBrowserProxy.whenCalled('recordBooleanHistogram');
         await microtasksFinished();
         glicBrowserProxy.setShortcutResponse(params.shortcut, /*response=*/ '');
-        keyDownOn(field, 27);  // Escape key.
         await microtasksFinished();
         assertEquals('', field.value);
 
@@ -247,7 +248,6 @@ suite('GlicPageFocusTest', function() {
 
         // Act.
         shortcutInput.$.edit.click();
-        await metricsBrowserProxy.whenCalled('recordBooleanHistogram');
         await microtasksFinished();
         glicBrowserProxy.setShortcutResponse(
             params.shortcut, /*response=*/ 'Ctrl + A');
@@ -258,8 +258,7 @@ suite('GlicPageFocusTest', function() {
         // Assert.
         booleanHistograms =
             await metricsBrowserProxy.getArgs('recordBooleanHistogram');
-        assertEquals(2, booleanHistograms.length);
-        verifyBooleanMetric(params.customizationMetric, false);
+        assertEquals(1, booleanHistograms.length);
         verifyBooleanMetric(params.customizationMetric, true);
         if (params.enablementPrefix) {
           userActions = await metricsBrowserProxy.getArgs('recordAction');
@@ -281,7 +280,6 @@ suite('GlicPageFocusTest', function() {
 
         // Act.
         shortcutInput.$.edit.click();
-        await metricsBrowserProxy.whenCalled('recordBooleanHistogram');
         await microtasksFinished();
         glicBrowserProxy.setShortcutResponse(params.shortcut, 'Ctrl + B');
         keyDownOn(field, 66, ['ctrl']);
@@ -290,8 +288,7 @@ suite('GlicPageFocusTest', function() {
         // Assert.
         booleanHistograms =
             await metricsBrowserProxy.getArgs('recordBooleanHistogram');
-        assertEquals(2, booleanHistograms.length);
-        verifyBooleanMetric(params.customizationMetric, true);
+        assertEquals(1, booleanHistograms.length);
         verifyBooleanMetric(params.customizationMetric, true);
         if (params.enablementPrefix) {
           userActions = await metricsBrowserProxy.getArgs('recordAction');

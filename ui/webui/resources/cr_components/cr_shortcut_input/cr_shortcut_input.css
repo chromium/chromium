@@ -23,6 +23,7 @@
   --cr-input-error-display: none;
 }
 
-#edit {
+#edit,
+#clear {
   margin-inline-start: var(--cr-icon-ripple-padding);
 }

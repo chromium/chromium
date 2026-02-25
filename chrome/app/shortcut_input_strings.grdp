@@ -36,4 +36,7 @@
   <message name="IDS_SHORTCUT_NEED_CHARACTER" desc="Error message explaining that a shortcut needs a character. This is only shown if a valid modifier is already entered.">
     Type a letter
   </message>
+  <message name="IDS_SHORTCUT_CLEAR" desc="The label for the button to clear the shortcut.">
+    Clear
+  </message>
 </grit-part>

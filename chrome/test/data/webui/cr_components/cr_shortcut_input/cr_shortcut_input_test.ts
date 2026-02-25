@@ -76,20 +76,32 @@ suite('CrShortcutInputTest', function() {
     assertEquals('Ctrl + A', field.value);
     assertEquals('Ctrl+A', input.shortcut);
 
-    // Test clearing the shortcut.
-    const clearShortcutPromise = eventToPromise('shortcut-updated', input);
+    // Test that clicking edit preserves the last shortcut value.
     input.$.edit.click();
-    assertEquals(input.$.input, input.shadowRoot.activeElement);
+    await microtasksFinished();
+    assertEquals('', field.value);
+    assertEquals('Ctrl+A', input.shortcut);
+
+    // Test that ending capture using the escape key restores the value.
+    const stopInputCapturePromise =
+        eventToPromise('input-capture-change', input);
+    keyDownOn(field, 27);  // Escape key.
+    await stopInputCapturePromise;
+    assertEquals('Ctrl + A', field.value);
+    assertEquals('Ctrl+A', input.shortcut);
+
+    // Test that clicking clear erases the field value and the stored shortcut
+    // value.
+    const clearShortcutPromise = eventToPromise('shortcut-updated', input);
+    input.$.clear.click();
     event = await clearShortcutPromise;
     await microtasksFinished();
     assertEquals('', event.detail);
-    field.blur();
     assertEquals('', input.shortcut);
+    assertEquals('', field.value);
 
-    // The `input-capture-change` event should happen twice when the edit button
-    // is clicked. The first event is triggered when the mouse down happens and
-    // the input capture should stop. The second event occurs during mouse up
-    // which triggers the button to start the input capture again.
+    // The `input-capture-change` event should happen once when the edit button
+    // is clicked.
     const inputCaptureChangeResults: boolean[] = [];
     input.addEventListener('input-capture-change', (e) => {
       inputCaptureChangeResults.push((e as CustomEvent<boolean>).detail);
@@ -97,32 +109,51 @@ suite('CrShortcutInputTest', function() {
 
     input.$.edit.click();
     await microtasksFinished();
-    assertEquals(2, inputCaptureChangeResults.length);
-    assertFalse(inputCaptureChangeResults[0]!);
-    assertTrue(inputCaptureChangeResults[1]!);
+    assertEquals(1, inputCaptureChangeResults.length);
+    assertTrue(inputCaptureChangeResults[0]!);
+  });
 
-    // Test ending capture using the escape key.
-    const stopInputCapturePromise =
-        eventToPromise('input-capture-change', input);
+  test('ButtonDisabledStates', async function() {
+    // Initially shortcut is empty - clear button should be disabled.
+    assertTrue(input.$.clear.disabled);
+    assertFalse(input.$.edit.disabled);
+
+    // Set a shortcut.
+    input.shortcut = 'Ctrl+A';
+    await microtasksFinished();
+    assertFalse(input.$.clear.disabled);
+    assertFalse(input.$.edit.disabled);
+
+    // Start editing. During editing, the edit button should be disabled.
     input.$.edit.click();
-    keyDownOn(field, 27);  // Escape key.
-    event = await stopInputCapturePromise;
-    assertFalse(event.detail);
+    await microtasksFinished();
+    assertFalse(input.$.clear.disabled);
+    assertTrue(input.$.edit.disabled);
+
+    // Clear shortcut - the clear button should return to being disabled.
+    input.$.clear.click();
+    await microtasksFinished();
+    assertTrue(input.$.clear.disabled);
+    assertFalse(input.$.edit.disabled);
   });
 
   test('AriaLabelUpdates', async function() {
-    // Verify that the aria labels are initially empty
+    // Verify that the aria labels are initially empty.
     assertEquals('', input.$.input.ariaLabel);
     assertEquals('', input.$.edit.ariaLabel);
+    assertEquals('', input.$.clear.ariaLabel);
 
-    // Update the input and edit button aria labels
+    // Update the aria labels.
     const inputAriaLabel = 'input';
     const editButtonAriaLabel = 'edit';
+    const clearButtonAriaLabel = 'clear';
     input.inputAriaLabel = inputAriaLabel;
     input.editButtonAriaLabel = editButtonAriaLabel;
+    input.clearButtonAriaLabel = clearButtonAriaLabel;
     await microtasksFinished();
     assertEquals(inputAriaLabel, input.$.input.ariaLabel);
     assertEquals(editButtonAriaLabel, input.$.edit.ariaLabel);
+    assertEquals(clearButtonAriaLabel, input.$.clear.ariaLabel);
   });
 
   test('GetBubbleAnchor', function() {

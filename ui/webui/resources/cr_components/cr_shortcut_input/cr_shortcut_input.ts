@@ -30,6 +30,7 @@ export interface CrShortcutInputElement {
   $: {
     input: CrInputElement,
     edit: CrIconButtonElement,
+    clear: CrIconButtonElement,
   };
 }
 
@@ -53,6 +54,7 @@ export class CrShortcutInputElement extends CrShortcutInputElementBase {
       shortcut: {type: String},
       inputAriaLabel: {type: String},
       editButtonAriaLabel: {type: String},
+      clearButtonAriaLabel: {type: String},
       inputDisabled: {type: Boolean},
       allowCtrlAltShortcuts: {type: Boolean},
       error_: {type: Number},
@@ -67,6 +69,7 @@ export class CrShortcutInputElement extends CrShortcutInputElementBase {
   accessor shortcut: string = '';
   accessor inputAriaLabel: string = '';
   accessor editButtonAriaLabel: string = '';
+  accessor clearButtonAriaLabel: string = '';
   accessor inputDisabled: boolean = false;
   accessor allowCtrlAltShortcuts = false;
   protected accessor readonly_: boolean = true;
@@ -109,12 +112,18 @@ export class CrShortcutInputElement extends CrShortcutInputElementBase {
     this.fire('input-capture-change', false);
   }
 
-  private clearShortcut_() {
+  private async clearShortcut_() {
     this.pendingShortcut_ = '';
-    this.shortcut = '';
     // Commit the empty shortcut in order to clear the current shortcut.
-    this.commitPending_();
-    this.endCapture_();
+    await this.commitPending_();
+    if (this.capturing_) {
+      // Cleared while an edit was in progress - perform proper cleanup.
+      await this.endCapture_();
+    } else {
+      // Cleared while not capturing - just fire the event to signal to the
+      // page that the shortcut has been cleared.
+      this.fire('input-capture-change', false);
+    }
   }
 
   private onKeyDown_(e: KeyboardEvent) {
@@ -252,7 +261,7 @@ export class CrShortcutInputElement extends CrShortcutInputElementBase {
     if (this.inputDisabled) {
       return this.i18n('setShortcutInSystemSettings');
     }
-    return formatShortcutText(this.shortcut);
+    return formatShortcutText(this.readonly_ ? this.shortcut : '');
   }
 
   protected getIsInvalid_(): boolean {
@@ -260,12 +269,12 @@ export class CrShortcutInputElement extends CrShortcutInputElementBase {
   }
 
   protected onEditClick_() {
-    // TODO(ghazale): The clearing functionality should be improved.
-    // Instead of clicking the edit button, and then clicking elsewhere to
-    // commit the "empty" shortcut, introduce a separate clear button.
-    this.clearShortcut_();
     this.readonly_ = false;
     this.$.input.focus();
+  }
+
+  protected onClearClick_() {
+    void this.clearShortcut_();
   }
 }
 

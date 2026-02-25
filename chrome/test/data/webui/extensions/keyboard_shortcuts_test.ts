@@ -168,27 +168,24 @@ suite('ExtensionShortcutTest', function() {
     assertEquals('Ctrl+A', shortcutInput.shortcut);
 
     // Test clearing the shortcut.
-    shortcutInput.$.edit.click();
-    assertEquals(shortcutInput.$.input, shortcutInput.shadowRoot.activeElement);
+    shortcutInput.$.clear.click();
     arg = await testDelegate.whenCalled('updateExtensionCommandKeybinding');
     await microtasksFinished();
 
-    field.blur();
     testDelegate.reset();
     assertDeepEquals([oneCommand.id, oneCommand.commands[0]!.name, ''], arg);
     assertEquals('', shortcutInput.shortcut);
+    assertEquals('', field.value);
 
-    // The click event causes the input element to lose focus on mouse down
-    // but regains focus on mouse up after triggering the edit button on mouse
-    // up. This should ultimately result in shortcuts being suspended.
+    // The click event on the edit button should result in shortcuts handling
+    // being suspended.
     shortcutInput.$.edit.click();
     await testDelegate.whenCalled('setShortcutHandlingSuspended');
     await microtasksFinished();
     const shortcutSuspendedArgs =
         testDelegate.getArgs('setShortcutHandlingSuspended');
-    assertEquals(2, testDelegate.getCallCount('setShortcutHandlingSuspended'));
-    assertFalse(shortcutSuspendedArgs[0]);
-    assertTrue(shortcutSuspendedArgs[1]);
+    assertEquals(1, testDelegate.getCallCount('setShortcutHandlingSuspended'));
+    assertTrue(shortcutSuspendedArgs[0]);
     testDelegate.reset();
 
     // Test ending capture using the escape key.

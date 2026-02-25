@@ -377,10 +377,10 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
 
   private async onShortcutUpdated_(event: CustomEvent<string>) {
     this.shortcutInput_ = event.detail;
-    await this.browserProxy_.setGlicShortcut(this.shortcutInput_);
     if (this.removedShortcut_ === null) {
       this.removedShortcut_ = this.registeredShortcut_;
     }
+    await this.browserProxy_.setGlicShortcut(this.shortcutInput_);
     this.registeredShortcut_ = await this.browserProxy_.getGlicShortcut();
     // Records true if the shortcut string is defined and not empty.
     this.metricsBrowserProxy_.recordBooleanHistogram(
