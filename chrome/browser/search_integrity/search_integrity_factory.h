@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SEARCH_INTEGRITY_SEARCH_INTEGRITY_FACTORY_H_
 #define CHROME_BROWSER_SEARCH_INTEGRITY_SEARCH_INTEGRITY_FACTORY_H_
 
+#include <memory>
+
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 

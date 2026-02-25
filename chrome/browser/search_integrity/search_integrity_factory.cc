@@ -4,6 +4,8 @@
 
 #include "chrome/browser/search_integrity/search_integrity_factory.h"
 
+#include <memory>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_integrity/search_integrity.h"
