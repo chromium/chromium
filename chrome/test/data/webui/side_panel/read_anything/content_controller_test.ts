@@ -1010,6 +1010,46 @@ suite('ContentController', () => {
       assertFalse(!!nodeStore.getDomNode(axId));
     });
 
+    test('converts anchor to span when no matching URL is found', () => {
+      chrome.readingMode.axTreeAnchors = {};
+      anchor.textContent = 'Text with no URL';
+      contentController.updateAnchorsForReadability(container);
+      const spans = container.querySelectorAll('span');
+      const anchors = container.querySelectorAll('a');
+
+      assertFalse(!!nodeStore.getDomNode(axId));
+      assertTrue(!!spans[0]);
+      assertEquals(1, spans.length);
+      assertEquals(0, anchors.length);
+      assertEquals('Text with no URL', spans[0].textContent);
+    });
+
+    test('converts anchor to span when href is empty', () => {
+      anchor.removeAttribute('href');
+      contentController.updateAnchorsForReadability(container);
+      const anchors = container.querySelectorAll('a');
+      const spans = container.querySelectorAll('span');
+
+      assertFalse(!!nodeStore.getDomNode(axId));
+      assertEquals(0, anchors.length);
+      assertEquals(1, spans.length);
+    });
+
+    test(
+        'converts anchor to span when URL is not present in axTreeAnchors',
+        () => {
+          chrome.readingMode.axTreeAnchors = {
+            'https://www.wasteheadquarters.com/': [{axId: 999, name: 'waste'}],
+          };
+          contentController.updateAnchorsForReadability(container);
+          const anchors = container.querySelectorAll('a');
+          const spans = container.querySelectorAll('span');
+
+          assertFalse(!!nodeStore.getDomNode(axId));
+          assertEquals(0, anchors.length);
+          assertEquals(1, spans.length);
+        });
+
     test('does nothing if not in Readability mode', () => {
       chrome.readingMode.activeDistillationMethod =
           chrome.readingMode.distillationTypeScreen2x;
