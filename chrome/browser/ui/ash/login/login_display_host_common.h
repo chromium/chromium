@@ -88,8 +88,11 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   void ShowSigninError(SigninError error, const std::string& details) final;
   void ShowOobeNotCompletedError() final;
 
+  // TODO: b/481969867 - Remove after managed local pin and password flag is
+  // enabled.
   void SAMLConfirmPassword(::login::StringList scraped_passwords,
                            std::unique_ptr<UserContext> user_context) final;
+  void ShowSamlConfirmPassword(std::unique_ptr<UserContext> user_context) final;
   void ShowPasswordSelectionScreen() final;
   WizardContext* GetWizardContextForTesting() final;
 

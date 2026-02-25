@@ -367,6 +367,7 @@ class WizardController : public OobeUI::Observer {
   void ShowFjordTouchControllerScreen();
   void ShowFjordStationSetupScreen();
   void ShowFjordFwUpdateScreen();
+  void ShowSamlConfirmPasswordScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();

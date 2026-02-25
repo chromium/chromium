@@ -687,6 +687,13 @@ void LoginDisplayHostCommon::SAMLConfirmPassword(
   StartWizard(SamlConfirmPasswordView::kScreenId);
 }
 
+void LoginDisplayHostCommon::ShowSamlConfirmPassword(
+    std::unique_ptr<UserContext> user_context) {
+  CHECK(features::IsManagedLocalPinAndPasswordEnabled());
+  wizard_context_->user_context = std::move(user_context);
+  StartWizard(SamlConfirmPasswordView::kScreenId);
+}
+
 WizardContext* LoginDisplayHostCommon::GetWizardContextForTesting() {
   return GetWizardContext();
 }

@@ -943,7 +943,8 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
   if (is_enterprise_managed &&
       user_context.GetUserType() == user_manager::UserType::kRegular &&
       user_has_empty_password_.value_or(false) &&
-      !user_has_challenge_response_keys_.value_or(false)) {
+      !user_has_challenge_response_keys_.value_or(false) &&
+      !features::IsManagedLocalPinAndPasswordEnabled()) {
     // ERROR: Enterprise-managed regular user lacks an online password.
     // This scenario is unsupported.
     SYSLOG(ERROR) << "Authentication failed: Enterprise-managed user lacks an "

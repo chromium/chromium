@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/ash/components/http_auth_dialog/http_auth_dialog.h"
+#include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/user_manager/user_type.h"
 #include "net/base/net_errors.h"
@@ -489,6 +490,8 @@ class GaiaScreenHandler final
   bool proxy_auth_dialog_need_reload_ = false;
 
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
+
+  std::unique_ptr<AuthFactorEditor> auth_factor_editor_;
 
   bool is_gaia_password_required_ = false;
 

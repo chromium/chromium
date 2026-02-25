@@ -11,6 +11,6 @@ const char kSecondUserCorpExampleComEmail[] = "bob@corp.example.com";
 const char kThirdUserCorpExampleComEmail[] = "carol@corp.example.com";
 const char kFourthUserCorpExampleTestEmail[] = "dan@corp.example.test";
 const char kFifthUserExampleTestEmail[] = "eve@example.test";
-const char kSixthUserCorpExampleTestEmail[] = "fatima@example.test";
+const char kSixthUserCorpExampleTestEmail[] = "frank@example.test";
 
 }  // namespace ash::saml_test_users

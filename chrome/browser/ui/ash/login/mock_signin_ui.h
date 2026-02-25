@@ -59,6 +59,10 @@ class MockSigninUI : public SigninUI {
               SAMLConfirmPassword,
               (::login::StringList, std::unique_ptr<UserContext>),
               (override));
+  MOCK_METHOD(void,
+              ShowSamlConfirmPassword,
+              (std::unique_ptr<UserContext>),
+              (override));
 };
 
 }  // namespace ash

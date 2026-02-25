@@ -1682,17 +1682,15 @@ void WizardController::OnSamlConfirmPasswordScreenExit(
     case SamlConfirmPasswordScreen::Result::kSuccess:
       switch (wizard_context_->knowledge_factor_setup.auth_setup_flow) {
         case WizardContext::AuthChangeFlow::kInitialSetup:
-          // TODO: b/445665662 - Move the SAML confirm password screen to after
-          // Cryptohome is mounted for initial setup.
-          [[fallthrough]];
-        case WizardContext::AuthChangeFlow::kReauthentication:
-          // During reauthentication the SAML confirm password screen is only
-          // shown before Cryptohome is mounted.
-          CompleteLogin();
+          // Continue initial setup by showing other auth factors flows.
+          ShowPinSetupScreenAsMainFactor();
           break;
         case WizardContext::AuthChangeFlow::kRecovery:
-          NOTREACHED() << "SAML confirm password screen should not be shown "
-                          "during recovery.";
+        case WizardContext::AuthChangeFlow::kReauthentication:
+          // During reauthentication/recovery the SAML confirm password screen
+          // is only shown before Cryptohome is mounted.
+          CompleteLogin();
+          break;
       }
       break;
     case SamlConfirmPasswordScreen::Result::kCancel:
@@ -1702,6 +1700,11 @@ void WizardController::OnSamlConfirmPasswordScreenExit(
       ShowSignInFatalErrorScreen(
           SignInFatalErrorScreen::Error::kScrapedPasswordVerificationFailure,
           base::DictValue());
+      break;
+    case ash::SamlConfirmPasswordScreen::Result::kNotApplicable:
+      // Continue initial setup by showing other auth factors flows.
+      ShowPinSetupScreenAsMainFactor();
+      break;
   }
 }
 
@@ -2517,9 +2520,28 @@ void WizardController::OnCryptohomeRecoverySetupScreenExit(
     CryptohomeRecoverySetupScreen::Result result) {
   OnScreenExit(CryptohomeRecoverySetupScreenView::kScreenId,
                CryptohomeRecoverySetupScreen::GetResultString(result));
-  // First step of the AuthFactor setup flow. Offer PIN as a main factor. If
-  // there isn't hardware support, the screen exits gracefully.
-  ShowPinSetupScreenAsMainFactor();
+  bool might_require_saml_password_confirmation =
+      AuthSessionStorage::Get() &&
+      wizard_context_->extra_factors_token.has_value() &&
+      AuthSessionStorage::Get()
+          ->Peek(wizard_context_->extra_factors_token.value())
+          ->GetRequiresPasswordConfirmation();
+
+  if (features::IsManagedLocalPinAndPasswordEnabled() &&
+      might_require_saml_password_confirmation) {
+    // Show the SamlConfirmPassword screen if the requirements for
+    // SamlConfirmPasswordScreen are met (no scraped password, more than 2
+    // scrapped password).
+    // Note: When the AllowedLocalAuthFactors policy is set,
+    // the SamlConfirmPassword screen will be skipped due to being NotApplicable
+    // and we will continue with the `ShowPinSetupScreenAsMainFactor` inside the
+    // `OnSamlConfirmPasswordScreenExit`.
+    ShowSamlConfirmPasswordScreen();
+  } else {
+    // First step of the AuthFactor setup flow. Offer PIN as a main factor. If
+    // there isn't hardware support, the screen exits gracefully.
+    ShowPinSetupScreenAsMainFactor();
+  }
 }
 
 void WizardController::OnPasswordSelectionScreenExit(
@@ -3873,6 +3895,11 @@ void WizardController::MaybeNotifyFjordOobeStateManager(
   }
 
   state_manager->SetFjordOobeState(state);
+}
+
+void WizardController::ShowSamlConfirmPasswordScreen() {
+  CHECK(features::IsManagedLocalPinAndPasswordEnabled());
+  SetCurrentScreen(GetScreen<SamlConfirmPasswordScreen>());
 }
 
 }  // namespace ash

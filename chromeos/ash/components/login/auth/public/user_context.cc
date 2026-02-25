@@ -554,6 +554,22 @@ void UserContext::SetMountState(UserContext::MountState mount_state) {
   cryptohome_.SetMountState(mount_state);
 }
 
+std::vector<std::string> UserContext::GetScrapedSamlPasswords() const {
+  return scraped_saml_passwords_;
+}
+
+void UserContext::SetScrapedSamlPasswords(
+    const std::vector<std::string> scraped_saml_passwords) {
+  scraped_saml_passwords_ = scraped_saml_passwords;
+}
+
+bool UserContext::GetRequiresPasswordConfirmation() const {
+  return requires_password_confirmation_;
+}
+void UserContext::SetRequiresPasswordConfirmation(bool is_requried) {
+  requires_password_confirmation_ = is_requried;
+}
+
 void UserContext::ClearSecrets() {
   key_.ClearSecret();
   password_key_.ClearSecret();
@@ -565,6 +581,7 @@ void UserContext::ClearSecrets() {
   gaia_password_.reset();
   saml_password_.reset();
   local_input_.reset();
+  scraped_saml_passwords_.clear();
 }
 
 }  // namespace ash

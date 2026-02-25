@@ -92,6 +92,9 @@ class SigninUI {
   virtual void SAMLConfirmPassword(
       ::login::StringList scraped_passwords,
       std::unique_ptr<UserContext> user_context) = 0;
+
+  virtual void ShowSamlConfirmPassword(
+      std::unique_ptr<UserContext> user_context) = 0;
 };
 
 }  // namespace ash

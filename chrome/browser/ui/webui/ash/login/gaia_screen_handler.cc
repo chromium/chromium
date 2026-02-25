@@ -29,6 +29,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
@@ -83,6 +84,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
@@ -92,6 +94,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/services/auth_factor_config/auth_factor_config_utils.h"
 #include "chromeos/components/onc/certificate_scope.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "chromeos/components/security_token_pin/error_generator.h"
@@ -352,6 +355,61 @@ bool IsOfflineLoginAllowed() {
       WizardContext::GaiaPath::kReauth;
 
   return !(is_gaia_reauth_flow && IsDeviceOwnedByChild());
+}
+// Callback for fetching the auth factors configuration
+
+void OnGetAuthFactorsConfiguration(std::unique_ptr<UserContext> user_context,
+                                   std::optional<AuthenticationError> error) {
+  CHECK(user_context);
+  CHECK(user_context->GetRequiresPasswordConfirmation());
+  bool has_online_password = false;
+  bool has_local_password = false;
+  bool has_pin = false;
+  if (error.has_value()) {
+    // Note: In case of error we will continue and treat this user as though
+    // they don't have an online password. In practice the errors happen when
+    // you try to get auth factors for a non existent or already deleted
+    // cryptohome.
+    LOG(WARNING) << "Failed to get auth factors configuration, "
+                 << error->get_cryptohome_error();
+  } else {
+    const auto& config = user_context->GetAuthFactorsConfiguration();
+    auto* password_factor =
+        config.FindFactorByType(cryptohome::AuthFactorType::kPassword);
+    has_online_password =
+        password_factor && auth::IsGaiaPassword(*password_factor);
+    has_local_password =
+        password_factor && auth::IsLocalPassword(*password_factor);
+    has_pin = config.FindFactorByType(cryptohome::AuthFactorType::kPin);
+  }
+  auto* wizard_context = LoginDisplayHost::default_host()->GetWizardContext();
+  bool has_any_knowledge_factor =
+      has_local_password || has_online_password || has_pin;
+
+  // If we are in the `kInitialSetup` flow, we should change it to Reauth as a
+  // user can only have an existing auth factor if they are reauthenticating.
+  // This can happen if the user tries to go through the Add User flow for an
+  // existing user.
+  if (has_any_knowledge_factor &&
+      wizard_context->knowledge_factor_setup.auth_setup_flow ==
+          WizardContext::AuthChangeFlow::kInitialSetup) {
+    SYSLOG(INFO) << "(LOGIN)AuthChangeFlow::kInitialSetup changing to "
+                 << "kReauthentication during SAML";
+    wizard_context->knowledge_factor_setup.auth_setup_flow =
+        WizardContext::AuthChangeFlow::kReauthentication;
+  }
+  // TODO: b/481345917 - Handle cryptohome deleted edge cases.
+
+  // If this is an existing user with an online password, we can confirm the
+  // password now. Otherwise, if it's an initial setup, password confirmation
+  // might still happen later once we know if the user is expected to set a
+  // local factor or not.
+  if (has_online_password) {
+    LoginDisplayHost::default_host()->GetSigninUI()->ShowSamlConfirmPassword(
+        std::move(user_context));
+    return;
+  }
+  LoginDisplayHost::default_host()->CompleteLogin(*user_context);
 }
 
 }  // namespace
@@ -973,8 +1031,20 @@ void GaiaScreenHandler::CompleteAuthentication(
     auto scraped_saml_passwords =
         signin_artifacts.scraped_saml_passwords.value_or(::login::StringList{});
     CHECK_NE(scraped_saml_passwords.size(), 1u);
-    LoginDisplayHost::default_host()->GetSigninUI()->SAMLConfirmPassword(
-        std::move(scraped_saml_passwords), std::move(user_context));
+    if (features::IsManagedLocalPinAndPasswordEnabled()) {
+      user_context->SetScrapedSamlPasswords(std::move(scraped_saml_passwords));
+      user_context->SetRequiresPasswordConfirmation(true);
+      if (!auth_factor_editor_) {
+        auth_factor_editor_ =
+            std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get());
+      }
+      auth_factor_editor_->GetAuthFactorsConfiguration(
+          std::move(user_context),
+          base::BindOnce(&OnGetAuthFactorsConfiguration));
+    } else {
+      LoginDisplayHost::default_host()->GetSigninUI()->SAMLConfirmPassword(
+          std::move(scraped_saml_passwords), std::move(user_context));
+    }
   } else {
     LoginDisplayHost::default_host()->CompleteLogin(*user_context);
   }
@@ -1286,7 +1356,6 @@ void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {
   // loading slowly.
   // CallExternalAPI("onBeforeLoad");
   populated_account_id_ = account_id;
-
   login_request_variant_ = GaiaLoginVariant::kUnknown;
   if (account_id.is_valid()) {
     login_request_variant_ = GaiaLoginVariant::kOnlineSignin;
