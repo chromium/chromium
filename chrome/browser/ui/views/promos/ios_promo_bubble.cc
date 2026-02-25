@@ -508,6 +508,12 @@ std::unique_ptr<views::View> IOSPromoBubble::CreateImageAndBodyTextView(
             .SetCornerRadius(
                 views::LayoutProvider::Get()->GetCornerRadiusMetric(
                     views::Emphasis::kHigh));
+
+    if (bubble_type == BubbleType::kQRCode) {
+      image_view_builder.SetAccessibleName(
+          l10n_util::GetStringUTF16(IDS_IOS_DESKTOP_PROMO_QR_CODE_ALT_TEXT));
+    }
+
     auto image_container_builder =
         views::Builder<views::View>()
             .SetLayoutManager(std::make_unique<views::FillLayout>())
