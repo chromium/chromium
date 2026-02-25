@@ -622,7 +622,6 @@
       "Linux"
     ],
     "bases": [
-      "external/wpt/device-bound-session-credentials",
       "http/tests/inspector-protocol/network/device-bound-sessions.js"
     ],
     "exclusive_tests": "ALL",

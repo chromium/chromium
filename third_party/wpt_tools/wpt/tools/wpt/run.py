@@ -324,7 +324,7 @@ Consider installing certutil via your OS package manager or directly.""")
             kwargs["headless"] = True
             logger.info("Running in headless mode, pass --no-headless to disable")
 
-        if kwargs["browser_channel"] == "nightly" and kwargs["enable_webtransport_h3"] is None:
+        if kwargs["enable_webtransport_h3"] is None:
             kwargs["enable_webtransport_h3"] = True
 
         # Turn off Firefox WebRTC ICE logging on WPT (turned on by mozrunner)
@@ -448,9 +448,9 @@ class FirefoxAndroid(BrowserSetup):
             self._logcat.stop()
 
 
-class Chrome(BrowserSetup):
-    name = "chrome"
-    browser_cls: ClassVar[Type[browser.ChromeChromiumBase]] = browser.Chrome
+class ChromeAndEdgeSetup(BrowserSetup):
+    """Base class for Chrome and Edge."""
+    webdriver_name: ClassVar[str]  # e.g., "chromedriver", "msedgedriver"
     experimental_channels: ClassVar[Tuple[str, ...]] = ("dev", "canary")
 
     def setup_kwargs(self, kwargs):
@@ -485,7 +485,7 @@ class Chrome(BrowserSetup):
                     webdriver_binary = None
 
             if webdriver_binary is None:
-                install = self.prompt_install("chromedriver")
+                install = self.prompt_install(self.webdriver_name)
 
                 if install:
                     webdriver_binary = self.browser.install_webdriver(
@@ -499,27 +499,39 @@ class Chrome(BrowserSetup):
             if webdriver_binary:
                 kwargs["webdriver_binary"] = webdriver_binary
             else:
-                raise WptrunError("Unable to locate or install matching ChromeDriver binary")
-        if kwargs["headless"] is None and not kwargs["debug_test"]:
-            kwargs["headless"] = True
-            logger.info("Running in headless mode, pass --no-headless to disable")
+                raise WptrunError(f"Unable to locate or install matching {self.webdriver_name} binary")
+
+        if kwargs["enable_webtransport_h3"] is None:
+            # To start the WebTransport over HTTP/3 test server.
+            kwargs["enable_webtransport_h3"] = True
+
         if browser_channel in self.experimental_channels:
             # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/16448
             kwargs["webdriver_args"].append("--disable-build-check")
             if kwargs["enable_experimental"] is None:
                 logger.info(
-                    "Automatically turning on experimental features for Chrome Dev/Canary or Chromium trunk")
+                    "Automatically turning on experimental features")
                 kwargs["enable_experimental"] = True
-            if kwargs["enable_webtransport_h3"] is None:
-                # To start the WebTransport over HTTP/3 test server.
-                kwargs["enable_webtransport_h3"] = True
         elif browser_channel is not None:
             # browser_channel is not set when running WPT in chromium
             kwargs["enable_experimental"] = False
         if os.getenv("TASKCLUSTER_ROOT_URL"):
             # We are on Taskcluster, where our Docker container does not have
-            # enough capabilities to run Chrome with sandboxing. (gh-20133)
+            # enough capabilities to run the browser with sandboxing. (gh-20133)
             kwargs["binary_args"].append("--no-sandbox")
+
+
+class Chrome(ChromeAndEdgeSetup):
+    name = "chrome"
+    browser_cls: ClassVar[Type[browser.ChromeChromiumBase]] = browser.Chrome
+    webdriver_name = "chromedriver"
+
+    def setup_kwargs(self, kwargs):
+        super().setup_kwargs(kwargs)
+
+        if kwargs["headless"] is None and not kwargs["debug_test"]:
+            kwargs["headless"] = True
+            logger.info("Running in headless mode, pass --no-headless to disable")
 
 
 class HeadlessShell(BrowserSetup):
@@ -658,72 +670,10 @@ class Opera(BrowserSetup):
                 raise WptrunError("Unable to locate or install operadriver binary")
 
 
-class Edge(BrowserSetup):
+class Edge(ChromeAndEdgeSetup):
     name = "MicrosoftEdge"
     browser_cls = browser.Edge
-    experimental_channels: ClassVar[Tuple[str, ...]] = ("dev", "canary")
-
-    def setup_kwargs(self, kwargs):
-        browser_channel = kwargs["browser_channel"]
-        if kwargs["binary"] is None:
-            binary = self.browser.find_binary(venv_path=self.venv.path, channel=browser_channel)
-            if binary:
-                kwargs["binary"] = binary
-            else:
-                raise WptrunError(f"Unable to locate {self.name.capitalize()} binary")
-
-        if kwargs["mojojs_path"]:
-            kwargs["enable_mojojs"] = True
-            logger.info("--mojojs-path is provided, enabling MojoJS")
-        else:
-            path = self.browser.install_mojojs(dest=self.venv.path,
-                                               browser_binary=kwargs["binary"])
-            if path:
-                kwargs["mojojs_path"] = path
-                kwargs["enable_mojojs"] = True
-                logger.info(f"MojoJS enabled automatically (mojojs_path: {path})")
-            else:
-                kwargs["enable_mojojs"] = False
-                logger.info("MojoJS is disabled for this run.")
-
-        if kwargs["webdriver_binary"] is None:
-            webdriver_binary = None
-            if not kwargs["install_webdriver"]:
-                webdriver_binary = self.browser.find_webdriver(self.venv.bin_path)
-                if webdriver_binary and not self.browser.webdriver_supports_browser(
-                        webdriver_binary, kwargs["binary"], browser_channel):
-                    webdriver_binary = None
-
-            if webdriver_binary is None:
-                install = self.prompt_install("msedgedriver")
-
-                if install:
-                    webdriver_binary = self.browser.install_webdriver(
-                        dest=self.venv.bin_path,
-                        channel=browser_channel,
-                        browser_binary=kwargs["binary"],
-                    )
-            else:
-                logger.info("Using webdriver binary %s" % webdriver_binary)
-
-            if webdriver_binary:
-                kwargs["webdriver_binary"] = webdriver_binary
-            else:
-                raise WptrunError("Unable to locate or install matching msedgedriver binary")
-        if browser_channel in self.experimental_channels:
-            # HACK(Hexcles): work around https://github.com/web-platform-tests/wpt/issues/16448
-            kwargs["webdriver_args"].append("--disable-build-check")
-            if kwargs["enable_experimental"] is None:
-                logger.info(
-                    "Automatically turning on experimental features for Microsoft Edge Dev/Canary")
-                kwargs["enable_experimental"] = True
-            if kwargs["enable_webtransport_h3"] is None:
-                # To start the WebTransport over HTTP/3 test server.
-                kwargs["enable_webtransport_h3"] = True
-        if os.getenv("TASKCLUSTER_ROOT_URL"):
-            # We are on Taskcluster, where our Docker container does not have
-            # enough capabilities to run Microsoft Edge with sandboxing. (gh-20133)
-            kwargs["binary_args"].append("--no-sandbox")
+    webdriver_name = "msedgedriver"
 
 
 class Safari(BrowserSetup):
@@ -775,9 +725,21 @@ class Servo(BrowserSetup):
             kwargs["binary"] = binary
 
 
-class ServoWebDriver(Servo):
-    name = "servodriver"
-    browser_cls = browser.ServoWebDriver
+class ServoLegacy(Servo):
+    name = "servo_legacy"
+    browser_cls = browser.ServoLegacy
+
+    def install(self, channel=None):
+        if self.prompt_install(self.name):
+            return self.browser.install(self.venv.path)
+
+    def setup_kwargs(self, kwargs):
+        if kwargs["binary"] is None:
+            binary = self.browser.find_binary(self.venv.path, None)
+
+            if binary is None:
+                raise WptrunError("Unable to find servo binary in PATH")
+            kwargs["binary"] = binary
 
 
 class WebKit(BrowserSetup):
@@ -892,7 +854,7 @@ product_setup = {
     "headless_shell": HeadlessShell,
     "safari": Safari,
     "servo": Servo,
-    "servodriver": ServoWebDriver,
+    "servo_legacy": ServoLegacy,
     "sauce": Sauce,
     "opera": Opera,
     "webkit": WebKit,

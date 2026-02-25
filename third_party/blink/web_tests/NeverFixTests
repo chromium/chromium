@@ -1853,3 +1853,6 @@ crbug.com/40550039 svg/W3C-SVG-1.1-SE/struct-use-11-f.svg [ Skip ]
 [ Mac13-arm64 ] external/wpt/webxr/* [ Skip ]
 [ Mac12-arm64 ] external/wpt/webxr/* [ Skip ]
 [ Win11-arm64 ] external/wpt/webxr/* [ Skip ]
+
+# Device Bound Session Credentials is not supported on Android.
+[ Android ] external/wpt/device-bound-session-credentials/* [ Skip ]

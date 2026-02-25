@@ -1,0 +1,43 @@
+This is a testharness.js-based test.
+[FAIL] Current times and effect phase in active range when delay = 0 and endDelay = 0 |
+  assert_approx_equals: values do not match for "timeline current time" expected 50 +/- 0.125 but got 0
+[FAIL] Current times and effect phase at effect end time when delay = 0 and endDelay = 0 |
+  assert_approx_equals: values do not match for "timeline current time" expected 100 +/- 0.125 but got 0
+[FAIL] Current times and effect phase before start delay when delay = 500 and endDelay = 0 |
+  assert_approx_equals: values do not match for "timeline current time" expected 25 +/- 0.125 but got 0
+[FAIL] Current times and effect phase at start delay when delay = 500 and endDelay = 0 |
+  assert_approx_equals: values do not match for "timeline current time" expected 50 +/- 0.125 but got 0
+[FAIL] Current times and effect phase in active range when delay = 500 and endDelay = 0 |
+  assert_approx_equals: values do not match for "timeline current time" expected 75 +/- 0.125 but got 0
+[FAIL] Current times and effect phase at effect end time when delay = 500 and endDelay = 0 |
+  assert_approx_equals: values do not match for "timeline current time" expected 100 +/- 0.125 but got 0
+[FAIL] Current times and effect phase in active range when delay = 0 and endDelay = 500 |
+  assert_approx_equals: values do not match for "timeline current time" expected 25 +/- 0.125 but got 0
+[FAIL] Current times and effect phase at effect end time when delay = 0 and endDelay = 500 |
+  assert_approx_equals: values do not match for "timeline current time" expected 50 +/- 0.125 but got 0
+[FAIL] Current times and effect phase after effect end time when delay = 0 and endDelay = 500 |
+  assert_approx_equals: values do not match for "timeline current time" expected 75 +/- 0.125 but got 0
+[FAIL] Current times and effect phase at timeline boundary when delay = 0 and endDelay = 500 |
+  assert_approx_equals: values do not match for "timeline current time" expected 100 +/- 0.125 but got 0
+[FAIL] Current times and effect phase before start delay when delay = 250 and endDelay = 250 |
+  assert_approx_equals: values do not match for "timeline current time" expected 10 +/- 0.125 but got 0
+[FAIL] Current times and effect phase at start delay when delay = 250 and endDelay = 250 |
+  assert_approx_equals: values do not match for "timeline current time" expected 25 +/- 0.125 but got 0
+[FAIL] Current times and effect phase in active range when delay = 250 and endDelay = 250 |
+  assert_approx_equals: values do not match for "timeline current time" expected 50 +/- 0.125 but got 0
+[FAIL] Current times and effect phase at effect end time when delay = 250 and endDelay = 250 |
+  assert_approx_equals: values do not match for "timeline current time" expected 75 +/- 0.125 but got 0
+[FAIL] Current times and effect phase after effect end time when delay = 250 and endDelay = 250 |
+  assert_approx_equals: values do not match for "timeline current time" expected 90 +/- 0.125 but got 0
+[FAIL] Current times and effect phase at timeline boundary when delay = 250 and endDelay = 250 |
+  assert_approx_equals: values do not match for "timeline current time" expected 100 +/- 0.125 but got 0
+[FAIL] Current times and effect phase in active range when delay = -125 and endDelay = -125 |
+  assert_approx_equals: values do not match for "timeline current time" expected 50 +/- 0.125 but got 0
+[FAIL] Current times and effect phase at timeline end when delay = -125 and endDelay = -125 |
+  assert_approx_equals: values do not match for "timeline current time" expected 100 +/- 0.125 but got 0
+[FAIL] Playback rate affects whether active phase boundary is inclusive.
+  assert_true: Animation effect is in active phase when current time is 0%. expected true got false
+[FAIL] Pause in before phase, scroll timeline into active phase, animation should remain in the before phase
+  assert_approx_equals: values do not match for "undefined" expected 50 +/- 0.125 but got 0
+Harness: the test ran to completion.
+

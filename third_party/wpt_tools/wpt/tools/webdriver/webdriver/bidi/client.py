@@ -100,6 +100,7 @@ class BidiSession:
         self.script = modules.Script(self)
         self.session = modules.Session(self)
         self.storage = modules.Storage(self)
+        self.user_agent_client_hints = modules.UserAgentClientHints(self)
         self.web_extension = modules.WebExtension(self)
 
     @property
@@ -156,11 +157,17 @@ class BidiSession:
                     loop: Optional[asyncio.AbstractEventLoop] = None) -> None:
         """Connect to the WebDriver BiDi remote via WebSockets"""
 
-        await self.start_transport(loop)
+        try:
+            await self.start_transport(loop)
 
-        if self.session_id is None:
-            self.session_id, self.capabilities = await self.session.new(  # type: ignore
-                capabilities=self.requested_capabilities)
+            if self.session_id is None:
+                self.session_id, self.capabilities = await self.session.new(  # type: ignore
+                    capabilities=self.requested_capabilities)
+
+        except Exception:
+            # Make sure we end up back in a consistent state.
+            await self.end()
+            raise
 
     def on_transport_closed(self):
         for future in self.pending_commands.values():

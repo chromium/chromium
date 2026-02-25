@@ -33,7 +33,7 @@ external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html
 virtual/force-allow-storage-access/*
 
 # Device Bound Session Credentials relies on the `//chrome` layer.
-virtual/dbsc-enabled/external/wpt/device-bound-session-credentials/*
+external/wpt/device-bound-session-credentials/*
 
 # DocumentIsolationPolicy requires SiteIsolation which is disabled on headless shell on Windows and Mac.
 external/wpt/html/document-isolation-policy/*
