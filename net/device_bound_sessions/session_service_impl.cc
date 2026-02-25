@@ -628,15 +628,7 @@ void SessionServiceImpl::DeferRequestForRefresh(
   it->second.emplace_back(std::move(callback));
 
   auto* session = GetSession(session_key);
-  CHECK(session, base::NotFatalUntil::M147);
-  // TODO(crbug.com/417770933): Remove this block.
-  if (!session) {
-    // If we can't find the session, clear the `session_key` in the map
-    // and continue all related requests. We can call this a fatal error
-    // because the session has already been deleted.
-    UnblockDeferredRequests(session_key, RefreshResult::kFatalError);
-    return;
-  }
+  CHECK(session);
   // Notify the request that it has been deferred for refreshed cookies.
   NotifySessionAccess(request.device_bound_session_access_callback(),
                       SessionAccess::AccessType::kUpdate, session_key,
