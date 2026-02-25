@@ -38,6 +38,8 @@ namespace content {
 
 namespace {
 constexpr char kSameOriginAllowlistedPage[] = "/response_origin.html";
+constexpr char kCrossOriginAllowlistedPage[] =
+    "/response_and_cross_origin.html";
 }
 
 struct ResponseEntry {
@@ -45,6 +47,9 @@ struct ResponseEntry {
   absl::flat_hash_map<std::string, std::string> headers;
 };
 
+// TODO(crbug.com/486121443): Once the test flakiness due to the issue in
+// WebPrescientNetworkingImpl is resolved, add a test covering preconnect from
+// the link header response.
 class ConnectionAllowlistTest : public ContentBrowserTest {
  public:
   ConnectionAllowlistTest()
@@ -497,6 +502,54 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
 
   // Preconnect to the same url also gets blocked.
   EXPECT_EQ(connection_tracker.GetAcceptedSocketCount(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkPreconnect) {
+  // Create a separate server for receiving preconnect.
+  net::test_server::EmbeddedTestServer cross_origin_server;
+  net::test_server::ConnectionTracker connection_tracker(&cross_origin_server);
+
+  // Note: the URL pattern in allowlist should be surrounded by double quotes.
+  RegisterResponse(kCrossOriginAllowlistedPage,
+                   ResponseEntry("<html><body>Hello</body></html>",
+                                 {{"Connection-Allowlist",
+                                   R"((response-origin "*://b.test:*/*"))"}}));
+
+  // Use `StartAndReturnHandle()` to start the servers; this ensures graceful
+  // shutdown when the test finishes. Otherwise, a socket read may occur after
+  // the connection tracker is destroyed, invoking a callback via a dangling
+  // pointer and crashing the test.
+  auto cross_origin_server_handle = cross_origin_server.StartAndReturnHandle();
+  ASSERT_TRUE(cross_origin_server_handle);
+  auto server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL allowed_url = cross_origin_server.GetURL("b.test", "/allow.js");
+  GURL denied_url = cross_origin_server.GetURL("c.test", "/deny.js");
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(),
+      embedded_test_server()->GetURL("a.test", kCrossOriginAllowlistedPage)));
+
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(), JsReplace(R"(
+            var allowed_link = document.createElement('link');
+            allowed_link.href = $1;
+            allowed_link.rel = 'preconnect';
+            allowed_link.crossorigin= 'anonymous';
+
+            var denied_link = document.createElement('link');
+            denied_link.href = $2;
+            denied_link.rel = 'preconnect';
+            denied_link.crossorigin= 'anonymous';
+
+            document.body.appendChild(allowed_link);
+            document.body.appendChild(denied_link);
+          )",
+                                                allowed_url, denied_url)));
+
+  connection_tracker.WaitForAcceptedConnections(1u);
+  EXPECT_EQ(1u, connection_tracker.GetAcceptedSocketCount());
 }
 
 }  // namespace content

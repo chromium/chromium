@@ -84,13 +84,13 @@ void NetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
   if (!render_frame_host)
     return;
 
-  // TODO(crbug.com/447954811): pass the `network_restrictions_id` from the
-  // caller.
+  std::optional<base::UnguessableToken> network_restrictions_id =
+      render_frame_host->GetNetworkRestrictionsID();
   preconnect_manager_->StartPreconnectUrl(
       url.GetURL(), allow_credentials,
       GetPendingNetworkAnonymizationKey(render_frame_host),
       kNetworkHintsTrafficAnnotation, /*storage_partition_config=*/nullptr,
-      /*network_restrictions_id=*/std::nullopt,
+      network_restrictions_id,
       /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
