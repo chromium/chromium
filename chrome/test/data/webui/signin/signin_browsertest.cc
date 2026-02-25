@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
@@ -71,4 +72,19 @@ class SigninTestWithHistorySync : public SigninTest {
 IN_PROC_BROWSER_TEST_F(SigninTestWithHistorySync, HistorySyncOptIn) {
   set_test_loader_host(chrome::kChromeUIHistorySyncOptinHost);
   RunTest("signin/history_sync_optin_test.js", "mocha.run()");
+}
+
+class SigninTestWithHistorySyncRefresh : public SigninTestWithHistorySync {
+ protected:
+  SigninTestWithHistorySyncRefresh() {
+    feature_list_.InitAndEnableFeature(switches::kFirstRunDesktopRefresh);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SigninTestWithHistorySyncRefresh, HistorySyncOptIn) {
+  set_test_loader_host(chrome::kChromeUIHistorySyncOptinHost);
+  RunTest("signin/history_sync_optin_app_refresh_test.js", "mocha.run()");
 }

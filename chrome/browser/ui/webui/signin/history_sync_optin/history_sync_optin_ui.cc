@@ -83,7 +83,9 @@ HistorySyncOptinUI::HistorySyncOptinUI(content::WebUI* web_ui)
   // Add required resources.
   webui::SetupWebUIDataSource(
       source, base::span(kSigninHistorySyncOptinResources),
-      IDR_SIGNIN_HISTORY_SYNC_OPTIN_HISTORY_SYNC_OPTIN_HTML);
+      base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)
+          ? IDR_SIGNIN_HISTORY_SYNC_OPTIN_HISTORY_SYNC_OPTIN_REFRESH_HTML
+          : IDR_SIGNIN_HISTORY_SYNC_OPTIN_HISTORY_SYNC_OPTIN_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"historySyncOptInTitle", IDS_HISTORY_SYNC_OPT_IN_TITLE},
@@ -95,14 +97,17 @@ HistorySyncOptinUI::HistorySyncOptinUI(content::WebUI* web_ui)
       {"historySyncOptInDescription", IDS_HISTORY_SYNC_OPT_IN_DESCRIPTION},
   };
 
-  source->AddResourcePath("images/window_left_illustration.svg",
-                          IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
-  source->AddResourcePath("images/window_left_illustration_dark.svg",
-                          IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_DARK_SVG);
-  source->AddResourcePath("images/window_right_illustration.svg",
-                          IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG);
-  source->AddResourcePath("images/window_right_illustration_dark.svg",
-                          IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
+  // Refreshed UI doesn't need the background illustrations.
+  if (!base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)) {
+    source->AddResourcePath("images/window_left_illustration.svg",
+                            IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
+    source->AddResourcePath("images/window_left_illustration_dark.svg",
+                            IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_DARK_SVG);
+    source->AddResourcePath("images/window_right_illustration.svg",
+                            IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG);
+    source->AddResourcePath("images/window_right_illustration_dark.svg",
+                            IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
+  }
 
   source->AddLocalizedStrings(kLocalizedStrings);
   // Add avatar fallback value.

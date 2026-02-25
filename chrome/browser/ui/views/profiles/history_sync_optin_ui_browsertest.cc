@@ -32,9 +32,14 @@
 // Tests for the chrome://history-sync-optin WebUI page.
 namespace {
 
+using HistorySyncOptinPixelTestParam = std::tuple<PixelTestParam, bool>;
+
 std::string ParamToTestSuffix(
-    const testing::TestParamInfo<PixelTestParam>& info) {
-  return info.param.test_suffix;
+    const testing::TestParamInfo<HistorySyncOptinPixelTestParam>& info) {
+  const PixelTestParam& pixel_param = std::get<0>(info.param);
+  bool is_ui_refresh_enabled = std::get<1>(info.param);
+  return base::StrCat(
+      {pixel_param.test_suffix, is_ui_refresh_enabled ? "Refresh" : ""});
 }
 
 const PixelTestParam kDialogTestParams[] = {
@@ -46,13 +51,20 @@ const PixelTestParam kDialogTestParams[] = {
 
 class HistorySyncOptinUIDialogPixelTest
     : public ProfilesPixelTestBaseT<DialogBrowserTest>,
-      public testing::WithParamInterface<PixelTestParam> {
+      public testing::WithParamInterface<HistorySyncOptinPixelTestParam> {
  public:
   HistorySyncOptinUIDialogPixelTest()
-      : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam()) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
-        /*disabled_features=*/{});
+      : ProfilesPixelTestBaseT<DialogBrowserTest>(std::get<0>(GetParam())) {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        syncer::kReplaceSyncPromosWithSignInPromos};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+    bool is_ui_refresh_enabled = std::get<1>(GetParam());
+    if (is_ui_refresh_enabled) {
+      enabled_features.push_back(switches::kFirstRunDesktopRefresh);
+    } else {
+      disabled_features.push_back(switches::kFirstRunDesktopRefresh);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   ~HistorySyncOptinUIDialogPixelTest() override = default;
@@ -94,7 +106,8 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinUIDialogPixelTest, InvokeUi_default) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          HistorySyncOptinUIDialogPixelTest,
-                         testing::ValuesIn(kDialogTestParams),
+                         testing::Combine(testing::ValuesIn(kDialogTestParams),
+                                          testing::Bool()),
                          &ParamToTestSuffix);
 
 // Creates a step to represent the history-sync-optin.
@@ -156,14 +169,21 @@ const PixelTestParam kWindowTestParams[] = {
 
 class HistorySyncOptinUIWindowPixelTest
     : public ProfilesPixelTestBaseT<UiBrowserTest>,
-      public testing::WithParamInterface<PixelTestParam>,
+      public testing::WithParamInterface<HistorySyncOptinPixelTestParam>,
       public views::ViewObserver {
  public:
   HistorySyncOptinUIWindowPixelTest()
-      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam()) {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
-        /*disabled_features=*/{});
+      : ProfilesPixelTestBaseT<UiBrowserTest>(std::get<0>(GetParam())) {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        syncer::kReplaceSyncPromosWithSignInPromos};
+    std::vector<base::test::FeatureRef> disabled_features = {};
+    bool is_ui_refresh_enabled = std::get<1>(GetParam());
+    if (is_ui_refresh_enabled) {
+      enabled_features.push_back(switches::kFirstRunDesktopRefresh);
+    } else {
+      disabled_features.push_back(switches::kFirstRunDesktopRefresh);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   ~HistorySyncOptinUIWindowPixelTest() override {
@@ -188,7 +208,7 @@ class HistorySyncOptinUIWindowPixelTest
               new HistorySyncOptinStepControllerForTest(host));
         }));
     profile_picker_view_->views::View::AddObserver(this);
-    profile_picker_view_->ShowAndWait(GetParam().window_size);
+    profile_picker_view_->ShowAndWait(std::get<0>(GetParam()).window_size);
   }
 
   bool VerifyUi() override {
@@ -234,5 +254,6 @@ IN_PROC_BROWSER_TEST_P(HistorySyncOptinUIWindowPixelTest, InvokeUi_default) {
 
 INSTANTIATE_TEST_SUITE_P(,
                          HistorySyncOptinUIWindowPixelTest,
-                         testing::ValuesIn(kWindowTestParams),
+                         testing::Combine(testing::ValuesIn(kWindowTestParams),
+                                          testing::Bool()),
                          &ParamToTestSuffix);
