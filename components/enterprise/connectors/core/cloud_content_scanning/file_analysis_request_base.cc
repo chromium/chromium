@@ -426,7 +426,8 @@ void FileAnalysisRequestBase::GetData(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&GetFileDataBlocking, path_,
                      std::move(scoped_file_access_),
-                     cached_data_.mime_type.empty(), is_obfuscated_, true,
+                     cached_data_.mime_type.empty(), is_obfuscated_,
+                     force_sync_hash_computation_,
                      base::OwnedRef(std::move(unused_hash_callback))),
       base::BindOnce(&FileAnalysisRequestBase::OnGotFileData,
                      weakptr_factory_.GetWeakPtr()));

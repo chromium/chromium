@@ -492,7 +492,8 @@ void DeepScanningRequest::StartSingleFileScan() {
       /* delay_opening_file */ false,
       base::BindOnce(&DeepScanningRequest::OnScanComplete,
                      weak_ptr_factory_.GetWeakPtr(), metadata_->GetFullPath()),
-      base::DoNothing(), metadata_->IsObfuscated());
+      base::DoNothing(), metadata_->IsObfuscated(),
+      /* force_sync_hash_computation */ false);
 
   request->set_filename(metadata_->GetTargetFilePath().AsUTF8Unsafe());
 
