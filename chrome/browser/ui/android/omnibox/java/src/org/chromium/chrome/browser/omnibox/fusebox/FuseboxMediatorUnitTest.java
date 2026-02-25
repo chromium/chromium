@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -84,7 +86,6 @@ import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -261,22 +262,6 @@ public class FuseboxMediatorUnitTest {
         when(data.getIntegerArrayListExtra(ChromeItemPickerExtras.EXTRA_ATTACHMENT_TAB_IDS))
                 .thenReturn(new ArrayList<>(tabIds));
         return data;
-    }
-
-    private Set<Integer> getCurrentlyAttachedIdsFromModel() {
-        Set<Integer> ids = new HashSet<>();
-        for (int i = 0; i < mAttachments.size(); i++) {
-            MVCListAdapter.ListItem listItem = mAttachments.get(i);
-            if (listItem.type != FuseboxAttachmentType.ATTACHMENT_TAB) continue;
-
-            FuseboxAttachment attachment =
-                    listItem.model.get(FuseboxAttachmentProperties.ATTACHMENT);
-            Tab tab = attachment.tab;
-            if (tab != null) {
-                ids.add(tab.getId());
-            }
-        }
-        return ids;
     }
 
     @Test
@@ -698,7 +683,7 @@ public class FuseboxMediatorUnitTest {
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
 
-        mAttachments.get(0).model.get(FuseboxAttachmentProperties.ON_REMOVE).run();
+        mAttachments.remove(mAttachments.get(0), /* isFailure= */ false);
         assertEquals(0, mAttachments.size());
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
@@ -707,7 +692,7 @@ public class FuseboxMediatorUnitTest {
         assertEquals(1, mAttachments.size());
         assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
 
-        mAttachments.get(0).model.get(FuseboxAttachmentProperties.ON_REMOVE).run();
+        mAttachments.remove(mAttachments.get(0), /* isFailure= */ false);
         assertEquals(0, mAttachments.size());
         assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
 
@@ -719,7 +704,7 @@ public class FuseboxMediatorUnitTest {
         assertEquals(2, mAttachments.size());
         assertFalse(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
 
-        mAttachments.get(0).model.get(FuseboxAttachmentProperties.ON_REMOVE).run();
+        mAttachments.remove(mAttachments.get(0), /* isFailure= */ false);
         assertEquals(1, mAttachments.size());
         assertTrue(mModel.get(FuseboxProperties.POPUP_TOOL_CREATE_IMAGE_ENABLED));
     }
@@ -758,13 +743,13 @@ public class FuseboxMediatorUnitTest {
 
         addTabAttachment(tab1);
         addTabAttachment(tab3);
-        assertEquals(new HashSet<>(Arrays.asList(101, 103)), getCurrentlyAttachedIdsFromModel());
+        assertThat(mAttachments.getAttachedTabIds()).containsExactly(101, 103);
 
         // Create set of newly selected Ids.
         Set<Integer> newlySelectedIds = new HashSet<>(Arrays.asList(102, 103, 104));
         mMediator.updateCurrentlyAttachedTabs(newlySelectedIds);
         RobolectricUtil.runAllBackgroundAndUi();
-        assertEquals(newlySelectedIds, getCurrentlyAttachedIdsFromModel());
+        assertThat(mAttachments.getAttachedTabIds()).containsExactlyElementsIn(newlySelectedIds);
     }
 
     @Test
@@ -860,7 +845,7 @@ public class FuseboxMediatorUnitTest {
         // Add tabs as attachments
         mMediator.onTabPickerResult(Activity.RESULT_OK, resultIntent);
         RobolectricUtil.runAllBackgroundAndUi();
-        assertEquals(new HashSet<>(selectedTabIds), getCurrentlyAttachedIdsFromModel());
+        assertThat(mAttachments.getAttachedTabIds()).containsExactlyElementsIn(selectedTabIds);
 
         // Verify AutocompleteRequestType is AI Mode.
         assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
@@ -875,7 +860,7 @@ public class FuseboxMediatorUnitTest {
 
         mMediator.onTabPickerResult(Activity.RESULT_OK, resultIntent);
         RobolectricUtil.runAllBackgroundAndUi();
-        assertEquals(new HashSet<>(), getCurrentlyAttachedIdsFromModel());
+        assertThat(mAttachments.getAttachedTabIds()).isEmpty();
 
         // AI Mode is NOT activated and AutocompleteRequestType remains SEARCH.
         assertEquals(AutocompleteRequestType.SEARCH, mInput.getRequestType());
@@ -971,7 +956,7 @@ public class FuseboxMediatorUnitTest {
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_ENABLED));
 
         // Remove one attachment to free up space
-        mAttachments.get(0).model.get(FuseboxAttachmentProperties.ON_REMOVE).run();
+        mAttachments.remove(mAttachments.get(0), /* isFailure= */ false);
         assertTrue(mAttachments.getRemainingAttachments() > 0);
 
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_ENABLED));
