@@ -13,10 +13,8 @@ class FontFeatureValuesMapIterationSource final
     : public PairSyncIterable<CSSFontFeatureValuesMap>::IterationSource {
  public:
   FontFeatureValuesMapIterationSource(const CSSFontFeatureValuesMap& map,
-                                      const FontFeatureAliases aliases)
-      : map_(map),
-        aliases_(std::move(aliases)),
-        iterator_(aliases_.begin()) {}
+                                      FontFeatureAliases aliases)
+      : map_(map), aliases_(std::move(aliases)), iterator_(aliases_.begin()) {}
 
   bool FetchNextItem(ScriptState* script_state,
                      String& map_key,
