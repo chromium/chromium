@@ -25,6 +25,8 @@
         results.createWithoutOptionsFailed = false;
         results.session1TopKExists = 'topK' in lmSession1;
         results.session1TemperatureExists = 'temperature' in lmSession1;
+        results.session1OnQuotaOverflowExists = 'onquotaoverflow' in lmSession1
+        results.session1OnContextOverflowExists = 'oncontextoverflow' in lmSession1
       } catch (e) {
         results.createWithoutOptionsFailed = true;
         results.createWithoutOptionsError = e.message;
@@ -36,6 +38,8 @@
         results.createWithOptionsFailed = false;
         results.session2TopKExists = 'topK' in lmSession2;
         results.session2TemperatureExists = 'temperature' in lmSession2;
+        results.session2OnQuotaOverflowExists = 'onquotaoverflow' in lmSession2
+        results.session2OnContextOverflowExists = 'oncontextoverflow' in lmSession2
       } catch (e) {
         results.createWithOptionsFailed = true;
         results.createWithOptionsError = e.message;

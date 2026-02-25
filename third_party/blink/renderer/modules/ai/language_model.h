@@ -54,6 +54,7 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
   ExecutionContext* GetExecutionContext() const override;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(quotaoverflow, kQuotaoverflow)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(contextoverflow, kContextoverflow)
 
   // language_model.idl implementation.
   static ScriptPromise<LanguageModel> create(
@@ -119,7 +120,7 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
       mojom::blink::ModelExecutionContextInfoPtr context_info);
   void OnResponseComplete(
       mojom::blink::ModelExecutionContextInfoPtr context_info);
-  void OnQuotaOverflow();
+  void OnContextOverflow();
 
   using ResolverOrStream =
       std::variant<ScriptPromiseResolverBase*, ReadableStream*>;

@@ -135,7 +135,10 @@ interface LanguageModel : EventTarget {
   [MeasureAs=LanguageModel_Temperature, RuntimeEnabled=LanguageModelLegacyParamsAndAttributes]
   readonly attribute float temperature;
 
+  [MeasureAs=LanguageModel_OnQuotaOverflow, RuntimeEnabled=LanguageModelLegacyParamsAndAttributes]
   attribute EventHandler onquotaoverflow;
+  [MeasureAs=LanguageModel_OnContextOverflow]
+  attribute EventHandler oncontextoverflow;
 
   [
     MeasureAs=LanguageModel_Clone,

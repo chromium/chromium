@@ -5111,6 +5111,8 @@ enum WebFeature {
   kLanguageModel_ContextWindow = 5794,
   kLanguageModel_MeasureContextUsage = 5795,
   kV8WindowClient_Navigate_Method = 5796,
+  kLanguageModel_OnQuotaOverflow = 5797,
+  kLanguageModel_OnContextOverflow = 5798,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

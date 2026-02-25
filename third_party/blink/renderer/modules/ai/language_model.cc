@@ -318,7 +318,7 @@ class AppendClient : public GarbageCollected<AppendClient>,
     NOTREACHED() << "Append() should not invoke `OnStreaming()`";
   }
 
-  void OnQuotaOverflow() override {
+  void OnContextOverflow() override {
     if (overflow_callback_) {
       overflow_callback_.Run();
     }
@@ -655,7 +655,7 @@ ScriptPromise<V8LanguageModelPromptResult> LanguageModel::prompt(
       AIMetrics::AISessionType::kLanguageModel,
       BindOnce(&LanguageModel::ResolvePromiseOnComplete, WrapPersistent(this),
                WrapPersistent(resolver)),
-      BindRepeating(&LanguageModel::OnQuotaOverflow, WrapPersistent(this)),
+      BindRepeating(&LanguageModel::OnContextOverflow, WrapPersistent(this)),
       BindOnce(&RejectPromiseOnError<V8LanguageModelPromptResult>,
                WrapPersistent(resolver)),
       BindOnce(&RejectPromiseOnAbort<V8LanguageModelPromptResult>,
@@ -691,7 +691,7 @@ ReadableStream* LanguageModel::promptStreaming(
       script_state, options->getSignalOr(nullptr), task_runner_,
       AIMetrics::AISessionType::kLanguageModel,
       BindOnce(&LanguageModel::OnResponseComplete, WrapPersistent(this)),
-      BindRepeating(&LanguageModel::OnQuotaOverflow, WrapPersistent(this)));
+      BindRepeating(&LanguageModel::OnContextOverflow, WrapPersistent(this)));
 
   String json_schema = GetSchemaForInput(*processed_constraint, options);
   ConvertPromptInputsToMojo(
@@ -847,7 +847,7 @@ ScriptPromise<IDLUndefined> LanguageModel::append(
                       WrapPersistent(signal),
                       BindOnce(&LanguageModel::OnResponseComplete,
                                WrapWeakPersistent(this)),
-                      BindRepeating(&LanguageModel::OnQuotaOverflow,
+                      BindRepeating(&LanguageModel::OnContextOverflow,
                                     WrapWeakPersistent(this))),
       BindOnce(&RejectResolver, WrapPersistent(resolver)));
   return promise;
@@ -964,8 +964,15 @@ scoped_refptr<base::SequencedTaskRunner> LanguageModel::GetTaskRunner() {
   return task_runner_;
 }
 
-void LanguageModel::OnQuotaOverflow() {
-  DispatchEvent(*Event::Create(event_type_names::kQuotaoverflow));
+void LanguageModel::OnContextOverflow() {
+  ExecutionContext* execution_context = GetExecutionContext();
+
+  if (execution_context &&
+      RuntimeEnabledFeatures::LanguageModelLegacyParamsAndAttributesEnabled(
+          execution_context)) {
+    DispatchEvent(*Event::Create(event_type_names::kQuotaoverflow));
+  }
+  DispatchEvent(*Event::Create(event_type_names::kContextoverflow));
 }
 
 }  // namespace blink

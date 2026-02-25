@@ -49,16 +49,16 @@ void EchoAILanguageModel::DoMockExecution(
     return;
   }
 
-  uint32_t quota = EchoAIManagerImpl::kMaxContextSizeInTokens;
-  if (input.size() > quota) {
+  uint32_t context_window = EchoAIManagerImpl::kMaxContextSizeInTokens;
+  if (input.size() > context_window) {
     responder->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge,
-        blink::mojom::QuotaErrorInfo::New(input.size(), quota));
+        blink::mojom::QuotaErrorInfo::New(input.size(), context_window));
     return;
   }
-  if (current_tokens_ > quota - input.size()) {
+  if (current_tokens_ > context_window - input.size()) {
     current_tokens_ = input.size();
-    responder->OnQuotaOverflow();
+    responder->OnContextOverflow();
   }
   current_tokens_ += input.size();
   responder->OnStreaming(kResponsePrefix);

@@ -111,7 +111,7 @@ class Responder final : public GarbageCollected<Responder>,
     Cleanup();
   }
 
-  void OnQuotaOverflow() override {
+  void OnContextOverflow() override {
     if (overflow_callback_) {
       overflow_callback_.Run();
     }
@@ -164,7 +164,7 @@ class Responder final : public GarbageCollected<Responder>,
       const String&,
       mojom::blink::ModelExecutionContextInfoPtr context_info)>
       complete_callback_;
-  // A callback invoked anytime the model's token quota is exceeded.
+  // A callback invoked anytime the model's token context window is exceeded.
   base::RepeatingClosure overflow_callback_;
   // Callback invoked on model error.
   base::OnceCallback<void(DOMException*)> error_callback_;
@@ -271,7 +271,7 @@ class StreamingResponder final
     Cleanup();
   }
 
-  void OnQuotaOverflow() override {
+  void OnContextOverflow() override {
     if (overflow_callback_) {
       overflow_callback_.Run();
     }

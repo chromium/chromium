@@ -668,7 +668,7 @@ TEST_F(AILanguageModelTest, QuotaOverflowOnPromptInput) {
   std::string long_prompt(kTestMaxTokens / 3, 'a');
   AITestUtils::TestStreamingResponder responder;
   session->Prompt(MakeInput(long_prompt), nullptr, responder.BindRemote());
-  responder.WaitForQuotaOverflow();
+  responder.WaitForContextOverflow();
   EXPECT_TRUE(responder.WaitForCompletion());
   // Response should include input/output of previous prompt with the original
   // long prompt not present.
@@ -687,7 +687,7 @@ TEST_F(AILanguageModelTest, QuotaOverflowOnAppend) {
   std::string long_prompt(kTestMaxTokens / 3, 'a');
   AITestUtils::TestStreamingResponder responder;
   session->Append(MakeInput(long_prompt), responder.BindRemote());
-  responder.WaitForQuotaOverflow();
+  responder.WaitForContextOverflow();
   EXPECT_TRUE(responder.WaitForCompletion());
 
   EXPECT_THAT(Prompt(*session, MakeInput("foo")),
@@ -713,7 +713,7 @@ TEST_F(AILanguageModelTest, QuotaOverflowOnOutput) {
 
   AITestUtils::TestStreamingResponder responder;
   session->Prompt(MakeInput("foo"), nullptr, responder.BindRemote());
-  responder.WaitForQuotaOverflow();
+  responder.WaitForContextOverflow();
   EXPECT_TRUE(responder.WaitForCompletion());
   EXPECT_THAT(responder.responses(), ElementsAre(long_response));
 

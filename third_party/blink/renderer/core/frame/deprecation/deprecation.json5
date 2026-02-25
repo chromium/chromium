@@ -291,6 +291,15 @@
       "chrome_status_feature": 5134603979063296
     },
     {
+      "name": "LanguageModel_OnQuotaOverflow",
+      "message": "LanguageModel.onquotaoverflow is deprecated. Please use LanguageModel.oncontextoverflow instead. The LanguageModel.onquotaoverflow alias is only available in extensions.",
+      "translation_note": "Warning for using deprecated 'onquotaoverflow' event handler.",
+      "web_features": [
+        "kLanguageModel_OnQuotaOverflow"
+      ],
+      "chrome_status_feature": 5134603979063296
+    },
+    {
       "name": "LanguageModelParams",
       "message": "LanguageModel.params() is deprecated and now only available in extension contexts. The topK and temperature related fields within its result are also deprecated.",
       "translation_note": "Warning message for web developers when they call the deprecated LanguageModel.params() method.",

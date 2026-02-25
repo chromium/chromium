@@ -40,7 +40,7 @@ class AITestUtils {
     // Returns true on successful completion and false on error.
     bool WaitForCompletion();
 
-    void WaitForQuotaOverflow();
+    void WaitForContextOverflow();
 
     blink::mojom::ModelStreamingResponseStatus error_status() const {
       EXPECT_TRUE(error_status_.has_value());
@@ -67,14 +67,14 @@ class AITestUtils {
     void OnStreaming(const std::string& text) override;
     void OnCompletion(
         blink::mojom::ModelExecutionContextInfoPtr context_info) override;
-    void OnQuotaOverflow() override;
+    void OnContextOverflow() override;
 
     std::optional<blink::mojom::ModelStreamingResponseStatus> error_status_;
     blink::mojom::QuotaErrorInfoPtr quota_error_info_;
     std::vector<std::string> responses_;
     uint64_t current_tokens_ = 0;
     base::RunLoop run_loop_;
-    base::RunLoop quota_overflow_run_loop_;
+    base::RunLoop context_overflow_run_loop_;
     mojo::Receiver<blink::mojom::ModelStreamingResponder> receiver_{this};
   };
 

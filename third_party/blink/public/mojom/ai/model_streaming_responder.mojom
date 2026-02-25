@@ -91,5 +91,5 @@ interface ModelStreamingResponder {
   // Called when the context overflows when reserving the space for the newly
   // added items. It does not indicate a failure or guarantee the success.
   // Used by Prompt API only.
-  OnQuotaOverflow();
+  OnContextOverflow();
 };

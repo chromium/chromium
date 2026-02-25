@@ -207,9 +207,9 @@ class AILanguageModel::PromptState
     }
   }
 
-  void OnQuotaOverflow() {
+  void OnContextOverflow() {
     if (responder_) {
-      responder_->OnQuotaOverflow();
+      responder_->OnContextOverflow();
     }
   }
 
@@ -867,16 +867,17 @@ void AILanguageModel::PromptGetInputSizeComplete(
 
   auto space_reserved = context_->ReserveSpace(*token_count);
   if (space_reserved == Context::SpaceReservationResult::kInsufficientSpace) {
-    auto quota = context_->GetAvailableTokens();
+    auto available_tokens = context_->GetAvailableTokens();
     prompt_state_->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge,
-        blink::mojom::QuotaErrorInfo::New(token_count.value(), quota));
+        blink::mojom::QuotaErrorInfo::New(token_count.value(),
+                                          available_tokens));
     return;
   }
 
   if (space_reserved == Context::SpaceReservationResult::kSpaceMadeAvailable) {
     HandleOverflow();
-    prompt_state_->OnQuotaOverflow();
+    prompt_state_->OnContextOverflow();
   }
 
   // Use a cloned version of the current session so it is easy to restore to
@@ -935,7 +936,7 @@ void AILanguageModel::OnPromptOutputComplete() {
     // will process the context including `model_output`, so it can be ignored
     // here.
     HandleOverflow();
-    responder->OnQuotaOverflow();
+    responder->OnContextOverflow();
   } else if (model_output) {
     // Add the output to the session since this is not added automatically from
     // the Generate() call. The previous token will be a kModel token from

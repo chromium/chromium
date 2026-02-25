@@ -92,7 +92,7 @@ TEST(CreateModelExecutionResponder, Simple) {
   responder.set_disconnect_handler(disconnect_runloop.QuitClosure());
   responder->OnStreaming("a");
   responder->OnStreaming("b");
-  responder->OnQuotaOverflow();
+  responder->OnContextOverflow();
   responder->OnCompletion(
       mojom::blink::ModelExecutionContextInfo::New(kTestTokenNumber));
   // Check that the promise will be resolved with the "result" string.

@@ -5912,7 +5912,7 @@ interface LanguageModel : EventTarget
     attribute @@toStringTag
     getter contextUsage
     getter contextWindow
-    getter onquotaoverflow
+    getter oncontextoverflow
     method append
     method clone
     method constructor
@@ -5920,7 +5920,7 @@ interface LanguageModel : EventTarget
     method measureContextUsage
     method prompt
     method promptStreaming
-    setter onquotaoverflow
+    setter oncontextoverflow
 interface LanguageModelToolCall
     attribute @@toStringTag
     getter arguments
