@@ -1351,6 +1351,10 @@ BASE_FEATURE(kHttpsFirstModeIncognitoNewSettings,
 
 // Experimental image replacement feature. b/482792874
 BASE_FEATURE(kIndigo, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kIndigoAlphaGenerateUrl{
+    &kIndigo, "indigo_alpha_generate_url", ""};
+const base::FeatureParam<std::string> kIndigoAlphaStatusUrl{
+    &kIndigo, "indigo_alpha_status_url", ""};
 
 #if !BUILDFLAG(IS_ANDROID)
 // A feature that controls whether Instant uses a spare renderer.

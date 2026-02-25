@@ -5,19 +5,26 @@
 assert(!is_android)
 
 source_set("indigo") {
-  sources = [ "indigo_page_action_controller.h" ]
+  sources = [
+    "indigo_alpha_rpc.h",
+    "indigo_page_action_controller.h",
+  ]
 
   public_deps = [
     "//base",
     "//chrome/browser/ui/tabs",
     "//components/tabs:public",
+    "//url",
   ]
 
   deps = [ "//content/public/browser" ]
 }
 
 source_set("impl") {
-  sources = [ "indigo_page_action_controller.cc" ]
+  sources = [
+    "indigo_alpha_rpc.cc",
+    "indigo_page_action_controller.cc",
+  ]
 
   deps = [
     ":indigo",
@@ -26,5 +33,23 @@ source_set("impl") {
     "//chrome/browser/ui/views/page_action",
     "//chrome/common:chrome_features",
     "//content/public/browser",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "indigo_alpha_rpc_unittest.cc" ]
+  deps = [
+    ":impl",
+    ":indigo",
+    "//base/test:test_support",
+    "//chrome/common:chrome_features",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
   ]
 }
