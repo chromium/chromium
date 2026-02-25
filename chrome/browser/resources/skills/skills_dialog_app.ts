@@ -4,9 +4,11 @@
 
 import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import 'chrome://resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import 'chrome://resources/cr_elements/icons.html.js';
@@ -15,6 +17,7 @@ import './icons.html.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -57,19 +60,20 @@ export interface SkillsDialogAppElement {
   $: {
     accountEmail: HTMLElement,
     cancelButton: HTMLElement,
+    dialog: CrDialogElement,
     emojiTrigger: HTMLInputElement,
-    refineErrorMessage: HTMLElement,
+    emojiZeroStateIcon: CrIconElement,
     header: HTMLElement,
     iconRedo: CrIconButtonElement,
     iconRefine: CrIconButtonElement,
     iconUndo: CrIconButtonElement,
     instructionsText: HTMLTextAreaElement,
-    nameText: CrInputElement,
-    saveButton: CrButtonElement,
-    textareaWrapper: HTMLElement,
     nameLoaderContainer: HTMLElement,
+    nameText: CrInputElement,
+    refineErrorMessage: HTMLElement,
+    saveButton: CrButtonElement,
     saveErrorContainer: HTMLElement,
-    emojiZeroStateIcon: CrIconElement,
+    textareaWrapper: HTMLElement,
   };
 }
 
@@ -129,7 +133,8 @@ export class SkillsDialogAppElement extends CrLitElement {
   private originalPrompt_: string = '';
   private refinedPrompt_: string = '';
 
-  private resizeObserver_: ResizeObserver|null = null;
+  private textareaResizeObserver_: ResizeObserver|null = null;
+  private dialogResizeObserver_: ResizeObserver|null = null;
 
   protected get isSaveButtonDisabled() {
     return !this.skill_.name || !this.skill_.prompt ||
@@ -162,22 +167,36 @@ export class SkillsDialogAppElement extends CrLitElement {
           this.signedInEmail_ = email;
         });
     if (window.ResizeObserver) {
-      this.resizeObserver_ = new ResizeObserver(() => {
+      this.textareaResizeObserver_ = new ResizeObserver(() => {
         this.checkTextareaOverflow_();
+      });
+
+      // Need to explicitly observe the native dialog element because cr-dialog
+      // always has size 0x0, so does not trigger child size changes required to
+      // expand the dialog.
+      this.dialogResizeObserver_ = new ResizeObserver(() => {
+        const dialog = this.$.dialog?.getNative();
+        if (dialog) {
+          document.body.style.height = `${dialog.offsetHeight}px`;
+        }
       });
     }
   }
 
-  private disconnectResizeObserver_() {
-    if (this.resizeObserver_) {
-      this.resizeObserver_.disconnect();
-      this.resizeObserver_ = null;
+  private disconnectTextareaResizeObserver_() {
+    if (this.textareaResizeObserver_) {
+      this.textareaResizeObserver_.disconnect();
+      this.textareaResizeObserver_ = null;
     }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.disconnectResizeObserver_();
+    this.disconnectTextareaResizeObserver_();
+    if (this.dialogResizeObserver_) {
+      this.dialogResizeObserver_.disconnect();
+      this.dialogResizeObserver_ = null;
+    }
   }
 
   override updated(changedProperties: PropertyValues) {
@@ -188,19 +207,23 @@ export class SkillsDialogAppElement extends CrLitElement {
     if (changedProperties.has('isRefineLoading_') && this.isRefineLoading_) {
       // Wait for the DOM to be fully updated.
       this.updateComplete.then(() => {
-        this.disconnectResizeObserver_();
+        this.disconnectTextareaResizeObserver_();
       });
+    }
+
+    if (this.dialogResizeObserver_ && this.$.dialog) {
+      this.dialogResizeObserver_.observe(this.$.dialog.getNative());
     }
   }
 
-  private attachResizeObserver_() {
+  private attachTextareaResizeObserver_() {
     const textarea = this.instructionsTextarea_;
-    this.disconnectResizeObserver_();
-    this.resizeObserver_ = new ResizeObserver(() => {
+    this.disconnectTextareaResizeObserver_();
+    this.textareaResizeObserver_ = new ResizeObserver(() => {
       this.checkTextareaOverflow_();
     });
     // Observe the current textarea
-    this.resizeObserver_.observe(textarea);
+    this.textareaResizeObserver_.observe(textarea);
     textarea.onscroll = () => this.checkTextareaOverflow_();
   }
 
@@ -361,7 +384,7 @@ export class SkillsDialogAppElement extends CrLitElement {
         .finally(() => {
           this.isRefineLoading_ = false;
           this.updateComplete.then(() => {
-            this.attachResizeObserver_();
+            this.attachTextareaResizeObserver_();
             this.checkTextareaOverflow_();
             this.instructionsTextarea_.focus();
           });
@@ -392,7 +415,7 @@ export class SkillsDialogAppElement extends CrLitElement {
         });
   }
 
-  /** Click listener for the cancel button. */
+  /** Click listener for the cancel button and closing dialog. */
   protected cancel_(e: Event) {
     e.preventDefault();
     SkillsDialogBrowserProxy.getInstance().handler.closeDialog();

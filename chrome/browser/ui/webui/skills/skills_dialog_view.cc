@@ -13,6 +13,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
@@ -24,8 +25,9 @@ namespace {
 
 constexpr float kCornerRadius = 12.0f;
 constexpr int kWebViewWidth = 448;
-constexpr int kWebViewMinHeight = 471;
-constexpr int kWebViewMaxHeight = 503;  // Extra space needed for save error.
+constexpr int kWebViewMinHeight = 442;
+constexpr int kWebViewMaxHeight = 516;  // Extra space needed for errors and
+                                        // multi-line user account info.
 gfx::Size kWebViewMinSize = gfx::Size(kWebViewWidth, kWebViewMinHeight);
 gfx::Size kWebViewMaxSize = gfx::Size(kWebViewWidth, kWebViewMaxHeight);
 }  // namespace

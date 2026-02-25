@@ -10,17 +10,27 @@
  * #include=cr-shared-style-lit
  * #css_wrapper_metadata_end */
 
-.dialog-container {
-  background-color: var(--color-sys-surface);
-  display: grid;
-  gap: 16px;
-  overflow: hidden;
-  padding: 12px;
+cr-dialog {
+  --cr-dialog-background-color: var(--color-sys-surface);
+  --cr-dialog-border-radius: 12px;
+  --cr-dialog-shadow: none;
+  --cr-dialog-width: 100%;
 }
 
-.header-container {
+cr-dialog::part(dialog) {
+  box-shadow: none;
+}
+
+/* Needed to prevent the dialog body from being scrollable. */
+cr-dialog::part(wrapper) {
+  height: auto;
+  max-height: none;
+}
+
+[slot='title'] {
   display: grid;
   gap: 4px;
+  padding: 20px 20px 16px 20px;
 }
 
 h1 {
@@ -39,7 +49,16 @@ p.description {
   margin: 0;
 }
 
+[slot='body'] {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 20px 16px 20px;
+}
+
 .form-group {
+  display: flex;
+  flex-direction: column;
   gap: 16px;
 }
 
@@ -48,6 +67,7 @@ p.description {
 }
 
 cr-input {
+  --cr-input-error-display: none;
   --cr-input-focus-outline-color: var(--cr-focus-outline-color);
   --cr-input-font-size: 12px;
   --cr-input-hover-background-color: var(--color-sys-surface-variant);
@@ -236,29 +256,6 @@ textarea::placeholder {
   background-color: var(--cr-hover-background-color);
 }
 
-#accountInfo {
-  background-color: var(--color-sys-base-container);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px 16px;
-}
-
-#accountLabel {
-  color: var(--color-sys-on-surface);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 16px;
-}
-
-#accountEmail {
-  color: var(--color-sys-on-surface-subtle);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 16px;
-}
-
 .error-message {
   font-size: 11px;
   line-height: 16px;
@@ -304,4 +301,23 @@ textarea::placeholder {
   --iron-icon-fill-color: var(--color-sys-error);
   --iron-icon-width: 16px;
   --iron-icon-height: 16px;
+}
+
+[slot='footer'] {
+  background-color: var(--color-sys-neutral-container);
+  border-top: 1px solid var(--color-sys-neutral-outline);
+  box-sizing: border-box;
+  font-size: 12px;
+  font-weight: 400;
+  gap: 4px;
+  line-height: 18px;
+  padding: 15px 20px 20px 20px;
+}
+
+#accountLabel {
+  color: var(--color-sys-on-surface);
+}
+
+#accountEmail {
+  color: var(--color-sys-primary);
 }
