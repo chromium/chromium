@@ -73,7 +73,6 @@ class GnomeDesktopResizerTest : public testing::Test {
   FakeCaptureStreamManager stream_manager_;
   GnomeDesktopResizer resizer_{
       stream_manager_.GetWeakPtr(), /*display_config_monitor=*/nullptr,
-      /*registry=*/nullptr,
       base::BindRepeating(&GnomeDesktopResizerTest::ApplyMonitorsConfig,
                           base::Unretained(this))};
   GnomeDisplayConfig display_config_;

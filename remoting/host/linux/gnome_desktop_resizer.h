@@ -26,7 +26,6 @@
 #include "remoting/host/linux/gnome_display_config_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
-#include "ui/base/glib/scoped_gobject.h"
 
 namespace remoting {
 
@@ -70,18 +69,13 @@ class GnomeDesktopResizer : public DesktopResizer {
     webrtc::DesktopVector position;
 
     // The preferred scale. A supported monitor scale that is proportionally
-    // closest to this scale will be used. For the primary monitor, an
-    // additional text scale will be applied to adjust for the discrepancy
-    // between the monitor scale and the preferred scale; it won't be applied
-    // for non-primary monitors. Note that the text scale is global, so it won't
-    // work very well with a mixed DPI setup.
+    // closest to this scale will be used.
     double scale = 1.0;
   };
 
   GnomeDesktopResizer(
       base::WeakPtr<CaptureStreamManager> stream_manager,
       base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor,
-      ScopedGObject<GSettings> registry,
       base::RepeatingCallback<void(const GnomeDisplayConfig&)>
           apply_monitors_config);
 
@@ -106,9 +100,6 @@ class GnomeDesktopResizer : public DesktopResizer {
   // Delays `clear_preferred_config_timer_` if it's running; otherwise do
   // nothing.
   void MaybeDelayClearPreferredConfig();
-
-  double GetTextScalingFactor() const;
-  void SetTextScalingFactor(double text_scaling_factor);
 
   base::WeakPtr<CaptureStreamManager> stream_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -182,9 +173,6 @@ class GnomeDesktopResizer : public DesktopResizer {
   // Flag to allow disabling the ignore-fractional-scale behavior for testing.
   // See comments in DoApplyPreferredMonitorsConfig().
   bool ignore_fractional_scales_in_multimon_ = true;
-
-  // Used to set the text-scaling-factor.
-  ScopedGObject<GSettings> registry_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
