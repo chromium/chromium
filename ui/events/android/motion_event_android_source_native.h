@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_input_event.h"
 #include "ui/events/android/motion_event_android_source.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
 
@@ -16,7 +17,7 @@ namespace ui {
 class MotionEventAndroidSourceNative : public MotionEventAndroidSource {
  public:
   MotionEventAndroidSourceNative(base::android::ScopedInputEvent event,
-                                 float y_offset_pix);
+                                 gfx::PointF offset);
 
   MotionEventAndroidSourceNative(const MotionEventAndroidSourceNative&) =
       delete;
@@ -55,7 +56,7 @@ class MotionEventAndroidSourceNative : public MotionEventAndroidSource {
 
  private:
   const base::android::ScopedInputEvent event_;
-  const float y_offset_pix_;
+  const gfx::PointF offset_;
 };
 
 }  // namespace ui

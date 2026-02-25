@@ -26,6 +26,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -372,10 +373,9 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   virtual void OnInputIgnored(const blink::WebInputEvent& event) {}
 
 #if BUILDFLAG(IS_ANDROID)
-  // Get the y value by which the touch sequence is offsetted by. For e.g.
-  // visible top controls will result in a non zero offset to be added to touch
-  // events.
-  virtual float GetCurrentTouchSequenceYOffset();
+  // Get the offset for the current touch sequence. e.g. visible top controls or
+  // side UI will result in a nonzero offset being added to touch events.
+  virtual gfx::PointF GetCurrentTouchSequenceOffset();
 #endif
 
  protected:

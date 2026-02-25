@@ -393,7 +393,7 @@ void AndroidStateTransferHandler::HandleTouchEvent(
   auto event = ui::MotionEventAndroidFactory::CreateFromNative(
       std::move(input_event),
       1.f / state_for_curr_sequence_->transfer_state->dip_scale,
-      state_for_curr_sequence_->transfer_state->web_contents_y_offset_pix,
+      state_for_curr_sequence_->transfer_state->web_contents_offset,
       event_times);
 
   state_for_curr_sequence_->rir_support->OnTouchEvent(

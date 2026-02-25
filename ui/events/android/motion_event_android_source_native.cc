@@ -13,8 +13,8 @@ namespace ui {
 
 MotionEventAndroidSourceNative::MotionEventAndroidSourceNative(
     base::android::ScopedInputEvent event,
-    float y_offset_pix)
-    : event_(std::move(event)), y_offset_pix_(y_offset_pix) {
+    gfx::PointF offset)
+    : event_(std::move(event)), offset_(offset) {
   CHECK(event_);
 }
 
@@ -25,12 +25,11 @@ int MotionEventAndroidSourceNative::GetPointerId(size_t pointer_index) const {
 }
 
 float MotionEventAndroidSourceNative::GetXPix(size_t pointer_index) const {
-  return AMotionEvent_getX(event_.a_input_event(), pointer_index);
+  return AMotionEvent_getX(event_.a_input_event(), pointer_index) + offset_.x();
 }
 
 float MotionEventAndroidSourceNative::GetYPix(size_t pointer_index) const {
-  return AMotionEvent_getY(event_.a_input_event(), pointer_index) +
-         y_offset_pix_;
+  return AMotionEvent_getY(event_.a_input_event(), pointer_index) + offset_.y();
 }
 
 float MotionEventAndroidSourceNative::GetTouchMajorPix(
@@ -101,7 +100,8 @@ float MotionEventAndroidSourceNative::GetHistoricalXPix(
     size_t pointer_index,
     size_t historical_index) const {
   return AMotionEvent_getHistoricalX(event_.a_input_event(), pointer_index,
-                                     historical_index);
+                                     historical_index) +
+         offset_.x();
 }
 
 float MotionEventAndroidSourceNative::GetHistoricalYPix(
@@ -109,7 +109,7 @@ float MotionEventAndroidSourceNative::GetHistoricalYPix(
     size_t historical_index) const {
   return AMotionEvent_getHistoricalY(event_.a_input_event(), pointer_index,
                                      historical_index) +
-         y_offset_pix_;
+         offset_.y();
 }
 
 bool MotionEventAndroidSourceNative::IsLatestEventTimeResampled() const {

@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/android/ui_android_export.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
 
@@ -121,7 +122,7 @@ class UI_ANDROID_EXPORT EventForwarder {
 
   void RemoveObserver(Observer* observer);
 
-  float GetCurrentTouchSequenceYOffset();
+  gfx::PointF GetCurrentTouchSequenceOffset();
 
  private:
   friend class ViewAndroid;

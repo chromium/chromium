@@ -421,12 +421,14 @@ void EventForwarder::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-float EventForwarder::GetCurrentTouchSequenceYOffset() {
+gfx::PointF EventForwarder::GetCurrentTouchSequenceOffset() {
   CHECK(!java_obj_.is_uninitialized());
   JNIEnv* env = jni_zero::AttachCurrentThread();
   auto java_obj = java_obj_.get(env);
   DCHECK(!java_obj.is_null());
-  return Java_EventForwarder_getWebContentsOffsetYInWindow(env, java_obj);
+  return gfx::PointF(
+      Java_EventForwarder_getWebContentsOffsetXInWindow(env, java_obj),
+      Java_EventForwarder_getWebContentsOffsetYInWindow(env, java_obj));
 }
 
 }  // namespace ui

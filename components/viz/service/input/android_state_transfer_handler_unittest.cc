@@ -14,6 +14,7 @@
 #include "components/viz/service/input/viz_touch_state_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/point_f.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
@@ -480,33 +481,34 @@ TEST_F(AndroidStateTransferHandlerTest, UsesDeviceScaleFactorFromState) {
   }
 }
 
-//  _______________________
-// | (sys_ui_offset)       |
-// |-----------------------|
-// | (web_contents_offset) |
-// |-----------------------|
-// |                       |
-// |                       |
-// |                       |
-// |                       |
-// |                       |
-// |                       |
-// |-----------------------|
-//
+//  _________________________
+// | (sys_ui_y_offset)       |
+// |-------------------------|
+// | (web_contents_y_offset) |
+// |-------------------------|
+// |web_     |               |
+// |contents_|               |
+// |x_offset |               |
+// |         |               |
+// |         |               |
+// |         |               |
+// |-------------------------|
 TEST_F(AndroidStateTransferHandlerTest,
        UsesWebContentsOffsetForMotionEventCreation) {
-  int sys_ui_offset = -9;
-  const int web_contents_offset = -8;
+  int sys_ui_x_offset = -7;
+  int sys_ui_y_offset = -9;
+  const int web_contents_x_offset = -6;
+  const int web_contents_y_offset = -8;
+  const int raw_x = 107;
   const int raw_y = 109;
-  const int delta_x = 0;
   const int meta_state = 0;
 
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> java_motion_event =
-      JNI_MotionEvent::Java_MotionEvent_obtain(env, 0, 0, kAndroidActionDown, 0,
-                                               raw_y, meta_state);
-  JNI_MotionEvent::Java_MotionEvent_offsetLocation(env, java_motion_event,
-                                                   delta_x, sys_ui_offset);
+      JNI_MotionEvent::Java_MotionEvent_obtain(env, 0, 0, kAndroidActionDown,
+                                               raw_x, raw_y, meta_state);
+  JNI_MotionEvent::Java_MotionEvent_offsetLocation(
+      env, java_motion_event, sys_ui_x_offset, sys_ui_y_offset);
 
   const AInputEvent* native_event = nullptr;
   if (__builtin_available(android 31, *)) {
@@ -516,25 +518,30 @@ TEST_F(AndroidStateTransferHandlerTest,
 
   auto state = input::mojom::TouchTransferState::New();
   state->dip_scale = 1.f;
-  state->web_contents_y_offset_pix = web_contents_offset;
+  state->web_contents_offset =
+      gfx::PointF(web_contents_x_offset, web_contents_y_offset);
 
   handler_.StateOnTouchTransfer(std::move(state),
                                 mock_rir_support_.GetWeakPtr());
 
-  int expected_y = raw_y + sys_ui_offset + web_contents_offset;
-  EXPECT_CALL(mock_rir_support_, OnTouchEvent(EqXYInPixels(0, expected_y), _));
+  int expected_x = raw_x + sys_ui_x_offset + web_contents_x_offset;
+  int expected_y = raw_y + sys_ui_y_offset + web_contents_y_offset;
+  EXPECT_CALL(mock_rir_support_,
+              OnTouchEvent(EqXYInPixels(expected_x, expected_y), _));
   handler_.OnMotionEvent(base::android::ScopedInputEvent(native_event),
                          kRootCompositorFrameSinkId);
 
-  // Offset by an arbitrary value which is larger than absolute value of
-  // `web_contents_offset`.
-  sys_ui_offset -= 10;
+  // Offset by arbitrary values which are larger than absolute values of
+  // `web_contents_x_offset` and `web_contents_y_offset`.
+  sys_ui_x_offset -= 10;
+  sys_ui_y_offset -= 10;
   base::android::ScopedJavaLocalRef<jobject>
       motion_event_with_diff_sys_ui_offset =
           JNI_MotionEvent::Java_MotionEvent_obtain(
-              env, 0, 0, kAndroidActionMove, 0, raw_y, meta_state);
+              env, 0, 0, kAndroidActionMove, raw_x, raw_y, meta_state);
   JNI_MotionEvent::Java_MotionEvent_offsetLocation(
-      env, motion_event_with_diff_sys_ui_offset, delta_x, sys_ui_offset);
+      env, motion_event_with_diff_sys_ui_offset, sys_ui_x_offset,
+      sys_ui_y_offset);
 
   if (__builtin_available(android 31, *)) {
     native_event =
@@ -542,8 +549,10 @@ TEST_F(AndroidStateTransferHandlerTest,
   }
   CHECK(native_event);
 
-  expected_y = raw_y + sys_ui_offset + web_contents_offset;
-  EXPECT_CALL(mock_rir_support_, OnTouchEvent(EqXYInPixels(0, expected_y), _));
+  expected_x = raw_x + sys_ui_x_offset + web_contents_x_offset;
+  expected_y = raw_y + sys_ui_y_offset + web_contents_y_offset;
+  EXPECT_CALL(mock_rir_support_,
+              OnTouchEvent(EqXYInPixels(expected_x, expected_y), _));
   handler_.OnMotionEvent(base::android::ScopedInputEvent(native_event),
                          kRootCompositorFrameSinkId);
 }

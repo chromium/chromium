@@ -20,6 +20,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/test/motion_event_test_utils.h"
 #include "ui/events/test/scoped_event_test_tick_clock.h"
+#include "ui/gfx/geometry/point_f.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/events/motionevent_jni_headers/MotionEvent_jni.h"
@@ -467,7 +468,7 @@ TEST(MotionEventAndroidTest, NativeBackedConstructor) {
   std::unique_ptr<MotionEventAndroid> event =
       MotionEventAndroidFactory::CreateFromNative(
           base::android::ScopedInputEvent(native_event), kPixToDip,
-          /* y_offset_pix= */ 0,
+          /* offset= */ gfx::PointF(),
           /* event_times= */ std::nullopt);
 
   EXPECT_EQ(event->GetX(0), x * kPixToDip);

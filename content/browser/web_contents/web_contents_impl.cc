@@ -12133,9 +12133,9 @@ void WebContentsImpl::OnInputIgnored(const blink::WebInputEvent& event) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-float WebContentsImpl::GetCurrentTouchSequenceYOffset() {
+gfx::PointF WebContentsImpl::GetCurrentTouchSequenceOffset() {
   ui::ViewAndroid* view_android = GetNativeView();
-  return view_android->event_forwarder()->GetCurrentTouchSequenceYOffset();
+  return view_android->event_forwarder()->GetCurrentTouchSequenceOffset();
 }
 #endif
 

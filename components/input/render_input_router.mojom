@@ -10,6 +10,7 @@ import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "third_party/blink/public/mojom/input/input_event_result.mojom";
 import "third_party/blink/public/mojom/input/input_handler.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 [EnableIf=is_android]
 import "ui/events/mojom/motion_event_android.mojom";
 
@@ -39,10 +40,10 @@ struct TouchTransferState {
   // FrameSinkId of root widget which was being touched at the time of transfer.
   viz.mojom.FrameSinkId root_widget_frame_sink_id;
 
-  // Y offset to be added to points received from Android to get coordinates
+  // Offset to be added to points received from Android to get coordinates
   // relative to root widget. This will be used to account for top controls
-  // height when creating MotionEventAndroid on Viz side.
-  float web_contents_y_offset_pix;
+  // height and side UI width when creating MotionEventAndroid on Viz side.
+  gfx.mojom.PointF web_contents_offset;
 
   // Device scale factor being used to create MotionEventAndroid objects for
   // converting device pixels to device independent pixels.

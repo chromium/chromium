@@ -1420,8 +1420,8 @@ void RenderWidgetHostViewAndroid::SendStateOnTouchTransfer(
     return;
   }
 
-  const float y_offset_pix =
-      host()->delegate()->GetCurrentTouchSequenceYOffset();
+  const gfx::PointF web_contents_offset =
+      host()->delegate()->GetCurrentTouchSequenceOffset();
 
   std::optional<std::unique_ptr<ui::MotionEventAndroid>> motion_event_android =
       std::nullopt;
@@ -1431,7 +1431,7 @@ void RenderWidgetHostViewAndroid::SendStateOnTouchTransfer(
             gfx::PointF(event.GetX(0), event.GetY(0)));
   }
   remote->StateOnTouchTransfer(input::mojom::TouchTransferState::New(
-      event.GetRawDownTime(), GetFrameSinkId(), y_offset_pix,
+      event.GetRawDownTime(), GetFrameSinkId(), web_contents_offset,
       view_.GetDipScale(), browser_would_have_handled,
       std::move(motion_event_android)));
 }

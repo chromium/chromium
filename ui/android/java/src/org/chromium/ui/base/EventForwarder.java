@@ -268,6 +268,11 @@ public class EventForwarder {
     }
 
     @CalledByNative
+    private float getWebContentsOffsetXInWindow() {
+        return mCurrentTouchOffsetX;
+    }
+
+    @CalledByNative
     private float getWebContentsOffsetYInWindow() {
         return mCurrentTouchOffsetY;
     }

@@ -1203,7 +1203,7 @@ class CONTENT_EXPORT WebContentsImpl
       ui::Compositor* compositor) override;
   void OnInputIgnored(const blink::WebInputEvent& event) override;
 #if BUILDFLAG(IS_ANDROID)
-  float GetCurrentTouchSequenceYOffset() override;
+  gfx::PointF GetCurrentTouchSequenceOffset() override;
 #endif
 
   // RenderFrameHostManager::Delegate ------------------------------------------

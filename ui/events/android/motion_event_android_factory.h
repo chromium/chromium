@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "ui/events/android/motion_event_android.h"
 #include "ui/events/events_export.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace ui {
 
@@ -72,7 +73,7 @@ class EVENTS_EXPORT MotionEventAndroidFactory {
   static std::unique_ptr<MotionEventAndroid> CreateFromNative(
       base::android::ScopedInputEvent input_event,
       float pix_to_dip,
-      float y_offset_pix,
+      gfx::PointF offset,
       std::optional<MotionEventAndroid::EventTimes> event_times);
 };
 
