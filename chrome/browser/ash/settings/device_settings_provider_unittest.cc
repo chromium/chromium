@@ -802,13 +802,40 @@ TEST_F(DeviceSettingsProviderTest, DecodeDeviceState) {
       .mutable_device_state()
       ->mutable_disabled_state()
       ->set_message(kDisabledMessage);
+  device_policy_->policy_data()
+      .mutable_device_state()
+      ->mutable_disabled_state()
+      ->set_location_tracking_enabled(true);
   BuildAndInstallDevicePolicy();
 
   // Verify that the device state has been decoded correctly.
-  EXPECT_TRUE(provider_->Get(kDeviceDisabled));
+  const base::Value* value = provider_->Get(kDeviceDisabled);
+  ASSERT_TRUE(value);
+  EXPECT_TRUE(value->GetBool());
   const base::Value expected_disabled_message_value(kDisabledMessage);
   EXPECT_EQ(expected_disabled_message_value,
             *provider_->Get(kDeviceDisabledMessage));
+  value = provider_->Get(kDeviceDisabledLocationTrackingEnabled);
+  ASSERT_TRUE(value);
+  EXPECT_TRUE(value->GetBool());
+
+  // Verify that location tracking can be disabled.
+  device_policy_->policy_data()
+      .mutable_device_state()
+      ->mutable_disabled_state()
+      ->set_location_tracking_enabled(false);
+  BuildAndInstallDevicePolicy();
+  value = provider_->Get(kDeviceDisabledLocationTrackingEnabled);
+  ASSERT_TRUE(value);
+  EXPECT_FALSE(value->GetBool());
+
+  // Verify that clearing the field works.
+  device_policy_->policy_data()
+      .mutable_device_state()
+      ->mutable_disabled_state()
+      ->clear_location_tracking_enabled();
+  BuildAndInstallDevicePolicy();
+  EXPECT_FALSE(provider_->Get(kDeviceDisabledLocationTrackingEnabled));
 
   // Verify that a change to the device state triggers a notification.
   device_policy_->policy_data().mutable_device_state()->clear_device_mode();
@@ -816,6 +843,7 @@ TEST_F(DeviceSettingsProviderTest, DecodeDeviceState) {
 
   // Verify that the updated state has been decoded correctly.
   EXPECT_FALSE(provider_->Get(kDeviceDisabled));
+  EXPECT_FALSE(provider_->Get(kDeviceDisabledLocationTrackingEnabled));
 }
 
 TEST_F(DeviceSettingsProviderTest, DecodeReportingSettings) {

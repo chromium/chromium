@@ -647,6 +647,11 @@ class EnrollmentState {
     if (state_response.has_disabled_state()) {
       result.dict.Set(kDeviceStateDisabledMessage,
                       state_response.disabled_state().message());
+      if (state_response.disabled_state().has_location_tracking_enabled()) {
+        result.dict.Set(
+            kDeviceStateLocationTrackingEnabled,
+            state_response.disabled_state().location_tracking_enabled());
+      }
     }
 
     LOG(WARNING) << "Initial enrollment mode = '" << mode << "', "
@@ -680,6 +685,11 @@ class EnrollmentState {
     if (state_response.has_disabled_state()) {
       result.dict.Set(kDeviceStateDisabledMessage,
                       state_response.disabled_state().message());
+      if (state_response.disabled_state().has_location_tracking_enabled()) {
+        result.dict.Set(
+            kDeviceStateLocationTrackingEnabled,
+            state_response.disabled_state().location_tracking_enabled());
+      }
     }
 
     if (state_response.has_license_type()) {

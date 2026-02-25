@@ -86,6 +86,7 @@ constexpr auto kKnownSettings = base::MakeFixedFlatSet<std::string_view>({
     kDeviceCrostiniArcAdbSideloadingAllowed,
     kDeviceDisabled,
     kDeviceDisabledMessage,
+    kDeviceDisabledLocationTrackingEnabled,
     kDeviceDisplayResolution,
     kDeviceDlcPredownloadList,
     kDeviceDockMacAddressSource,
@@ -1424,8 +1425,15 @@ void DecodeDeviceState(const em::PolicyData& policy_data,
 
   const em::DeviceState& device_state = policy_data.device_state();
 
-  if (device_state.device_mode() == em::DeviceState::DEVICE_MODE_DISABLED)
+  if (device_state.device_mode() == em::DeviceState::DEVICE_MODE_DISABLED) {
     new_values_cache->SetBoolean(kDeviceDisabled, true);
+    if (device_state.has_disabled_state() &&
+        device_state.disabled_state().has_location_tracking_enabled()) {
+      new_values_cache->SetBoolean(
+          kDeviceDisabledLocationTrackingEnabled,
+          device_state.disabled_state().location_tracking_enabled());
+    }
+  }
   if (device_state.has_disabled_state() &&
       device_state.disabled_state().has_message()) {
     new_values_cache->SetString(kDeviceDisabledMessage,

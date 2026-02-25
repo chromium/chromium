@@ -540,6 +540,33 @@ const KNOWN_SCREENS: ScreenDefType[] = [
           });
         },
       },
+      {
+        // Device disabled with location tracking enabled
+        id: 'location-tracking',
+        trigger: (screen: any) => {
+          screen.onBeforeShow({
+            serial: '1234567890',
+            domain: 'example.com',
+            message: 'Please return this device to the techstop.',
+            locationTrackingEnabled: true,
+          });
+        },
+      },
+      {
+        // Device disabled with restriction schedule
+        id: 'restriction-schedule',
+        trigger: (screen: any) => {
+          screen.onBeforeShow({
+            serial: '1234567890',
+            domain: 'example.com',
+            message: 'Please return this device to the techstop.',
+            deviceRestrictionScheduleEnabled: true,
+            deviceName: 'Chromebook',
+            restrictionScheduleEndDay: 'Monday',
+            restrictionScheduleEndTime: '5:00 PM',
+          });
+        },
+      },
     ],
   },
   {

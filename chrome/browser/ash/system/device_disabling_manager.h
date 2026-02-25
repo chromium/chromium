@@ -68,6 +68,9 @@ class DeviceDisablingManager
     virtual void OnDisabledMessageChanged(
         const std::string& disabled_message) = 0;
 
+    virtual void OnLocationTrackingEnabledChanged(
+        bool location_tracking_enabled) = 0;
+
     virtual void OnRestrictionScheduleMessageChanged() = 0;
   };
 
@@ -118,6 +121,11 @@ class DeviceDisablingManager
   // up to date if the disabled screen was triggered.
   const std::string& disabled_message() const { return disabled_message_; }
 
+  // Returns whether location tracking is enabled for the disabled device. The
+  // value is only guaranteed to be up to date if the disabled screen was
+  // triggered.
+  bool location_tracking_enabled() const { return location_tracking_enabled_; }
+
   // Returns the cached serial_number. The value is only guaranteed to be
   // up to date if the disabled screen was triggered.
   const std::string& serial_number() const { return serial_number_; }
@@ -140,6 +148,10 @@ class DeviceDisablingManager
   // Cache the disabled message and inform observers if it changed.
   void CacheDisabledMessageAndNotify(const std::string& disabled_message);
 
+  // Cache the location tracking enabled state and inform observers if it
+  // changed.
+  void CacheLocationTrackingEnabledAndNotify(bool location_tracking_enabled);
+
   // DeviceRestrictionScheduleController::Observer:
   void OnRestrictionScheduleStateChanged(bool enabled) override;
   void OnRestrictionScheduleMessageChanged() override;
@@ -160,6 +172,7 @@ class DeviceDisablingManager
 
   base::CallbackListSubscription device_disabled_subscription_;
   base::CallbackListSubscription disabled_message_subscription_;
+  base::CallbackListSubscription location_tracking_enabled_subscription_;
 
   // Indicates whether the device was disabled when the cros settings were last
   // read.
@@ -170,6 +183,9 @@ class DeviceDisablingManager
 
   // A cached copy of the message to show on the device disabled screen.
   std::string disabled_message_;
+
+  // A cached copy of whether location tracking is enabled.
+  bool location_tracking_enabled_ = false;
 
   // A cached copy of the serial number to show on the device disabled screen.
   std::string serial_number_;

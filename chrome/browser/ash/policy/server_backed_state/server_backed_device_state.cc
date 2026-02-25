@@ -18,6 +18,8 @@ namespace policy {
 const char kDeviceStateManagementDomain[] = "management_domain";
 const char kDeviceStateMode[] = "device_mode";
 const char kDeviceStateDisabledMessage[] = "disabled_message";
+const char kDeviceStateLocationTrackingEnabled[] =
+    "location_tracking_enabled";
 const char kDeviceStatePackagedLicense[] = "packaged_license";
 const char kDeviceStateLicenseType[] = "license_type";
 const char kDeviceStateAssignedUpgradeType[] = "assigned_upgrade_type";

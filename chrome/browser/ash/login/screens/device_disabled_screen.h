@@ -27,6 +27,8 @@ class DeviceDisabledScreen : public BaseScreen,
 
   // system::DeviceDisablingManager::Observer:
   void OnDisabledMessageChanged(const std::string& disabled_message) override;
+  void OnLocationTrackingEnabledChanged(
+      bool location_tracking_enabled) override;
   void OnRestrictionScheduleMessageChanged() override;
 
  private:

@@ -26,6 +26,7 @@ void DeviceDisabledScreenHandler::Show(const Params& params) {
           .Set("serial", params.serial)
           .Set("domain", params.domain)
           .Set("message", params.message)
+          .Set("locationTrackingEnabled", params.location_tracking_enabled)
           .Set("deviceRestrictionScheduleEnabled",
                params.device_restriction_schedule_enabled)
           .Set("deviceName", params.device_name)
@@ -36,6 +37,13 @@ void DeviceDisabledScreenHandler::Show(const Params& params) {
 
 void DeviceDisabledScreenHandler::UpdateMessage(const std::string& message) {
   CallExternalAPI("updateData", base::DictValue().Set("message", message));
+}
+
+void DeviceDisabledScreenHandler::UpdateLocationTracking(
+    bool location_tracking_enabled) {
+  CallExternalAPI("updateData",
+                  base::DictValue().Set("locationTrackingEnabled",
+                                        location_tracking_enabled));
 }
 
 void DeviceDisabledScreenHandler::UpdateRestrictionScheduleMessage(
@@ -59,6 +67,10 @@ void DeviceDisabledScreenHandler::DeclareLocalizedValues(
                IDS_DEVICE_DISABLED_EXPLANATION_WITH_DOMAIN);
   builder->Add("deviceDisabledExplanationWithoutDomain",
                IDS_DEVICE_DISABLED_EXPLANATION_WITHOUT_DOMAIN);
+  builder->Add("deviceDisabledExplanationWithLocation",
+               IDS_DEVICE_DISABLED_EXPLANATION_WITH_LOCATION);
+  builder->Add("deviceDisabledExplanationWithLocationAndDomain",
+               IDS_DEVICE_DISABLED_EXPLANATION_WITH_LOCATION_AND_DOMAIN);
   builder->Add("deviceDisabledHeadingRestrictionSchedule",
                IDS_DEVICE_DISABLED_HEADING_RESTRICTION_SCHEDULE);
   builder->Add("deviceDisabledExplanationRestrictionSchedule",

@@ -32,6 +32,7 @@ class DeviceDisabledScreenView {
     std::string serial;
     std::string domain;
     std::string message;
+    bool location_tracking_enabled;
     bool device_restriction_schedule_enabled;
     std::u16string device_name;
     std::u16string restriction_schedule_end_day;
@@ -40,6 +41,8 @@ class DeviceDisabledScreenView {
   virtual void Show(const Params& params) = 0;
 
   virtual void UpdateMessage(const std::string& message) = 0;
+
+  virtual void UpdateLocationTracking(bool location_tracking_enabled) = 0;
 
   virtual void UpdateRestrictionScheduleMessage(
       const std::u16string& end_day,
@@ -66,6 +69,7 @@ class DeviceDisabledScreenHandler final : public DeviceDisabledScreenView,
   // DeviceDisabledScreenView:
   void Show(const Params& params) override;
   void UpdateMessage(const std::string& message) override;
+  void UpdateLocationTracking(bool location_tracking_enabled) override;
   void UpdateRestrictionScheduleMessage(
       const std::u16string& end_day,
       const std::u16string& end_time) override;

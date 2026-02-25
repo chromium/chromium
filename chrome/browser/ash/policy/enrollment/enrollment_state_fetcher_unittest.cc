@@ -786,6 +786,7 @@ TEST_F(EnrollmentStateFetcherTest, InitialEnrollmentEnforced) {
   EXPECT_EQ(*device_state.FindString(kDeviceStateManagementDomain),
             "example.org");
   EXPECT_FALSE(device_state.FindString(kDeviceStateDisabledMessage));
+  EXPECT_FALSE(device_state.FindBool(kDeviceStateLocationTrackingEnabled));
   EXPECT_FALSE(device_state.FindString(kDeviceStateLicenseType));
   EXPECT_FALSE(device_state.FindString(kDeviceStatePackagedLicense));
   EXPECT_FALSE(device_state.FindString(kDeviceStateAssignedUpgradeType));
@@ -803,6 +804,8 @@ TEST_F(EnrollmentStateFetcherTest, InitialEnrollmentDisabled) {
       em::DeviceInitialEnrollmentStateResponse::
           INITIAL_ENROLLMENT_MODE_DISABLED);
   state_response->mutable_disabled_state()->set_message(kTestDisabledMessage);
+  state_response->mutable_disabled_state()->set_location_tracking_enabled(
+      true);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
                   GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
@@ -819,6 +822,9 @@ TEST_F(EnrollmentStateFetcherTest, InitialEnrollmentDisabled) {
   ASSERT_TRUE(device_state.FindString(kDeviceStateDisabledMessage));
   EXPECT_EQ(*device_state.FindString(kDeviceStateDisabledMessage),
             kTestDisabledMessage);
+  ASSERT_TRUE(device_state.FindBool(kDeviceStateLocationTrackingEnabled));
+  EXPECT_EQ(*device_state.FindBool(kDeviceStateLocationTrackingEnabled),
+            true);
 }
 
 TEST_F(EnrollmentStateFetcherTest, ZTEWithPackagedEnterpriseLicense) {
@@ -1031,6 +1037,7 @@ TEST_F(EnrollmentStateFetcherTest, ReEnrollmentRequested) {
   EXPECT_EQ(*device_state.FindString(kDeviceStateManagementDomain),
             "example.org");
   EXPECT_FALSE(device_state.FindString(kDeviceStateDisabledMessage));
+  EXPECT_FALSE(device_state.FindBool(kDeviceStateLocationTrackingEnabled));
   EXPECT_FALSE(device_state.FindString(kDeviceStateLicenseType));
   EXPECT_FALSE(device_state.FindString(kDeviceStatePackagedLicense));
   EXPECT_FALSE(device_state.FindString(kDeviceStateAssignedUpgradeType));
@@ -1070,6 +1077,8 @@ TEST_F(EnrollmentStateFetcherTest, ReEnrollmentDisabled) {
   state_response->set_restore_mode(
       em::DeviceStateRetrievalResponse::RESTORE_MODE_DISABLED);
   state_response->mutable_disabled_state()->set_message(kTestDisabledMessage);
+  state_response->mutable_disabled_state()->set_location_tracking_enabled(
+      false);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
                   GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
@@ -1086,6 +1095,9 @@ TEST_F(EnrollmentStateFetcherTest, ReEnrollmentDisabled) {
   ASSERT_TRUE(device_state.FindString(kDeviceStateDisabledMessage));
   EXPECT_EQ(*device_state.FindString(kDeviceStateDisabledMessage),
             kTestDisabledMessage);
+  ASSERT_TRUE(device_state.FindBool(kDeviceStateLocationTrackingEnabled));
+  EXPECT_FALSE(
+      *device_state.FindBool(kDeviceStateLocationTrackingEnabled));
 }
 
 TEST_F(EnrollmentStateFetcherTest, AutoREWithPerpetualLicense) {
@@ -1416,6 +1428,7 @@ TEST_P(EnrollmentStateFetcherTestP, ReEnrollmentRequested) {
   EXPECT_EQ(*device_state.FindString(kDeviceStateManagementDomain),
             "example.org");
   EXPECT_FALSE(device_state.FindString(kDeviceStateDisabledMessage));
+  EXPECT_FALSE(device_state.FindBool(kDeviceStateLocationTrackingEnabled));
   EXPECT_FALSE(device_state.FindString(kDeviceStateLicenseType));
   EXPECT_FALSE(device_state.FindString(kDeviceStatePackagedLicense));
   EXPECT_FALSE(device_state.FindString(kDeviceStateAssignedUpgradeType));
@@ -1455,6 +1468,8 @@ TEST_P(EnrollmentStateFetcherTestP, ReEnrollmentDisabled) {
   state_response->set_restore_mode(
       em::DeviceStateRetrievalResponse::RESTORE_MODE_DISABLED);
   state_response->mutable_disabled_state()->set_message(kTestDisabledMessage);
+  state_response->mutable_disabled_state()->set_location_tracking_enabled(
+      true);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
                   GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
@@ -1471,6 +1486,9 @@ TEST_P(EnrollmentStateFetcherTestP, ReEnrollmentDisabled) {
   ASSERT_TRUE(device_state.FindString(kDeviceStateDisabledMessage));
   EXPECT_EQ(*device_state.FindString(kDeviceStateDisabledMessage),
             kTestDisabledMessage);
+  ASSERT_TRUE(device_state.FindBool(kDeviceStateLocationTrackingEnabled));
+  EXPECT_TRUE(
+      *device_state.FindBool(kDeviceStateLocationTrackingEnabled));
 }
 
 TEST_P(EnrollmentStateFetcherTestP, UmaHistogramsCounts) {

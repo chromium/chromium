@@ -30,6 +30,7 @@ interface DeviceDisabledScreenData {
   serial: string;
   domain: string;
   message: string;
+  locationTrackingEnabled: boolean;
   deviceRestrictionScheduleEnabled: boolean;
   deviceName: string;
   restrictionScheduleEndDay: string;
@@ -72,6 +73,14 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
       },
 
       /**
+       * Whether location tracking is enabled for the disabled device.
+       */
+      locationTrackingEnabled: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * Flag indicating if the device was disabled because it is in restricted
        * schedule.
        */
@@ -109,6 +118,7 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
   private serial: string;
   private enrollmentDomain: string;
   private message: string;
+  private locationTrackingEnabled: boolean;
   private deviceRestrictionScheduleEnabled: boolean;
   private deviceName: string;
   private restrictionScheduleEndDay: string;
@@ -155,6 +165,9 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
     }
     if ('message' in data) {
       this.message = data.message;
+    }
+    if ('locationTrackingEnabled' in data) {
+      this.locationTrackingEnabled = data.locationTrackingEnabled;
     }
     if ('deviceRestrictionScheduleEnabled' in data) {
       this.deviceRestrictionScheduleEnabled =
@@ -204,7 +217,7 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
   private disabledText(
       locale: string, serial: string, domain: string,
       deviceRestrictionScheduleEnabled: boolean,
-      deviceName: string): TrustedHTML {
+      locationTrackingEnabled: boolean, deviceName: string): TrustedHTML {
     if (deviceRestrictionScheduleEnabled) {
       return this.i18nAdvancedDynamic(
           locale, 'deviceDisabledExplanationRestrictionSchedule', {
@@ -213,6 +226,15 @@ export class DeviceDisabled extends DeviceDisabledElementBase {
               deviceName,
             ],
           });
+    }
+    if (locationTrackingEnabled) {
+      if (domain) {
+        return this.i18nAdvancedDynamic(
+            locale, 'deviceDisabledExplanationWithLocationAndDomain',
+            {substitutions: [domain]});
+      }
+      return this.i18nAdvancedDynamic(
+          locale, 'deviceDisabledExplanationWithLocation', {substitutions: []});
     }
     if (domain) {
       return this.i18nAdvancedDynamic(

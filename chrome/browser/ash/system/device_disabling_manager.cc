@@ -78,6 +78,10 @@ void DeviceDisablingManager::Init() {
       kDeviceDisabledMessage,
       base::BindRepeating(&DeviceDisablingManager::Update,
                           weak_factory_.GetWeakPtr()));
+  location_tracking_enabled_subscription_ = cros_settings_->AddSettingsObserver(
+      kDeviceDisabledLocationTrackingEnabled,
+      base::BindRepeating(&DeviceDisablingManager::Update,
+                          weak_factory_.GetWeakPtr()));
 
   device_restriction_schedule_controller_->AddObserver(this);
 
@@ -92,6 +96,16 @@ void DeviceDisablingManager::CacheDisabledMessageAndNotify(
   disabled_message_ = disabled_message;
   for (auto& observer : observers_)
     observer.OnDisabledMessageChanged(disabled_message_);
+}
+
+void DeviceDisablingManager::CacheLocationTrackingEnabledAndNotify(
+    bool location_tracking_enabled) {
+  if (location_tracking_enabled == location_tracking_enabled_)
+    return;
+
+  location_tracking_enabled_ = location_tracking_enabled;
+  for (auto& observer : observers_)
+    observer.OnLocationTrackingEnabledChanged(location_tracking_enabled_);
 }
 
 void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
@@ -151,6 +165,14 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
   std::string disabled_message =
       maybe_disabled_message ? *maybe_disabled_message : std::string();
   CacheDisabledMessageAndNotify(disabled_message);
+
+  // Update the location tracking enabled state.
+  std::optional<bool> maybe_location_tracking_enabled =
+      local_state_->GetDict(prefs::kServerBackedDeviceState)
+          .FindBool(policy::kDeviceStateLocationTrackingEnabled);
+  bool location_tracking_enabled =
+      maybe_location_tracking_enabled.value_or(false);
+  CacheLocationTrackingEnabledAndNotify(location_tracking_enabled);
 
   // Indicate that the device is disabled.
   std::move(callback).Run(true);
@@ -230,6 +252,12 @@ void DeviceDisablingManager::Update() {
   std::string disabled_message;
   cros_settings_->GetString(kDeviceDisabledMessage, &disabled_message);
   CacheDisabledMessageAndNotify(disabled_message);
+
+  // Update the location tracking enabled state.
+  bool location_tracking_enabled = false;
+  cros_settings_->GetBoolean(kDeviceDisabledLocationTrackingEnabled,
+                             &location_tracking_enabled);
+  CacheLocationTrackingEnabledAndNotify(location_tracking_enabled);
 
   if (device_disabled_) {
     // If the device was disabled already, updating the disabled message is the

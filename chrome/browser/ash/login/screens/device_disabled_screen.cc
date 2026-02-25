@@ -48,6 +48,8 @@ void DeviceDisabledScreen::ShowImpl() {
   params.serial = DeviceDisablingManager()->serial_number();
   params.domain = DeviceDisablingManager()->enrollment_domain();
   params.message = DeviceDisablingManager()->disabled_message();
+  params.location_tracking_enabled =
+      DeviceDisablingManager()->location_tracking_enabled();
   params.device_restriction_schedule_enabled =
       DeviceRestrictionScheduleController().RestrictionScheduleEnabled();
   params.device_name = ui::GetChromeOSDeviceName();
@@ -71,6 +73,13 @@ void DeviceDisabledScreen::OnDisabledMessageChanged(
     const std::string& disabled_message) {
   if (view_) {
     view_->UpdateMessage(disabled_message);
+  }
+}
+
+void DeviceDisabledScreen::OnLocationTrackingEnabledChanged(
+    bool location_tracking_enabled) {
+  if (view_) {
+    view_->UpdateLocationTracking(location_tracking_enabled);
   }
 }
 

@@ -7166,6 +7166,12 @@
       <message name="IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TOMORROW" desc="Message part DAY for IDS_DEVICE_DISABLED_EXPLANATION_RESTRICTION_SCHEDULE_TIME.">
         tomorrow
       </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_WITH_LOCATION" desc="Shown on the device disabled screen if the admin has enabled location tracking. The explanation of the situation.">
+        Your administrator disabled your device and can access its location.
+      </message>
+      <message name="IDS_DEVICE_DISABLED_EXPLANATION_WITH_LOCATION_AND_DOMAIN" desc="Shown on the device disabled screen if the admin has enabled location tracking and set a custom message. The explanation of the situation.">
+        Your <ph name="DOMAIN_NAME">$1<ex>google.com</ex></ph> administrator disabled your device and can access its location.
+      </message>
 
       <!-- Strings for OnTask notifications -->
       <message name="IDS_ON_TASK_NOTIFICATION_TITLE" desc="Class Tools title for OnTask notifications">

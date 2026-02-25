@@ -11,6 +11,7 @@ namespace policy {
 extern const char kDeviceStateManagementDomain[];
 extern const char kDeviceStateMode[];
 extern const char kDeviceStateDisabledMessage[];
+extern const char kDeviceStateLocationTrackingEnabled[];
 extern const char kDeviceStatePackagedLicense[];
 extern const char kDeviceStateLicenseType[];
 extern const char kDeviceStateAssignedUpgradeType[];
