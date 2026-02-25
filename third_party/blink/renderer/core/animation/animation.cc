@@ -3150,6 +3150,7 @@ bool Animation::Update(TimingUpdateReason reason) {
     }
   }
 
+  if (reason == kTimingUpdateForAnimationFrame) {
     if (idle || CalculateAnimationPlayState() ==
                     V8AnimationPlayState::Enum::kFinished) {
       // See crbug.com/420284818. Reset composited paint status to avoid
@@ -3161,12 +3162,10 @@ bool Animation::Update(TimingUpdateReason reason) {
         UpdateCompositedPaintStatus();
       }
 
-      if (reason == kTimingUpdateForAnimationFrame) {
-        finished_ = true;
-
-        NotifyProbe();
-      }
+      finished_ = true;
     }
+    NotifyProbe();
+  }
 
   DCHECK(!outdated_);
 
