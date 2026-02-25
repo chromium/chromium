@@ -3205,7 +3205,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.DataList.Events" enum="AutofillDataListEvents"
-    expires_after="2026-03-01">
+    expires_after="2026-04-05">
   <owner>brunobraga@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -8016,7 +8016,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.Timing.ParseFormUntilInteraction2" units="ms"
-    expires_after="2026-03-01">
+    expires_after="2026-12-12">
   <owner>schwering@google.com</owner>
   <owner>brunobraga@google.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
@@ -9167,8 +9167,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.WebView.Funnel.FillAfterInteraction{AutofillFormType}"
-    enum="BooleanAutofillFillAfterInteraction" expires_after="2026-03-08">
-  <owner>pkotwicz@chromium.org</owner>
+    enum="BooleanAutofillFillAfterInteraction" expires_after="2026-12-12">
+  <owner>battre@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Counts whether users filled the form, given that they have already
