@@ -705,8 +705,8 @@ void LocalBinaryUploadService::OnTimeout(BinaryUploadRequest::Id id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DVLOG(1) << __func__ << ": id=" << id;
 
-  if (active_requests_.count(id) > 0) {
-    const auto& info = active_requests_.at(id);
+  if (auto it = active_requests_.find(id); it != active_requests_.end()) {
+    const auto& info = it->second;
     RecordRequestMetrics(
         info, enterprise_connectors::ScanRequestUploadResult::kTimeout,
         ContentAnalysisResponse());
