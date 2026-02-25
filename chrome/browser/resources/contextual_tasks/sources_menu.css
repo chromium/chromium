@@ -37,11 +37,7 @@ cr-action-menu > .header:first-child {
 }
 
 .file-icon {
-  background-color: var(--color-composebox-pdf-chip-icon-background,
-      --color-composebox-background);
-  border-radius: var(--pdf-icon-border-radius, 4px);
-  box-sizing: border-box;
-  color: var(--color-composebox-pdf-chip-icon-border);
-  height: var(--mwb-icon-size);
-  width: var(--mwb-icon-size);
+  color: #b3261e;
+  border-radius: 8px;
+  display: flex;
 }
