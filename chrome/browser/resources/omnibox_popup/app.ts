@@ -35,16 +35,20 @@ import {getHtml} from './app.html.js';
 const canShowSecondarySideMediaQueryList =
     window.matchMedia('(min-width: 675px)');
 
+// Not all selection states of the webui popup are supported on the native
+// browser side.
+function selectionIsNativelySupported(s: OmniboxPopupSelection): boolean {
+  return s.state !== SelectionLineState.kFocusedButtonContextEntrypoint;
+}
+
 function selectionsEqual(
     a: OmniboxPopupSelection, b: OmniboxPopupSelection): boolean {
   return a.line === b.line && a.state === b.state &&
       a.actionIndex === b.actionIndex;
 }
 
-// Not all selection states of the webui popup are supported on the native
-// browser side.
-function selectionIsNativelySupported(s: OmniboxPopupSelection): boolean {
-  return s.state !== SelectionLineState.kFocusedButtonContextEntrypoint;
+function selectionToString(s: OmniboxPopupSelection) {
+  return `{${s.line},${s.state},${s.actionIndex}}`;
 }
 
 // Displays the autocomplete matches in the autocomplete result.
@@ -344,18 +348,23 @@ export class OmniboxPopupAppElement extends I18nMixinLit
 
   private onUpdateSelection_(
       oldSelection: OmniboxPopupSelection, selection: OmniboxPopupSelection) {
-    if (!this.webuiOmniboxPopupSelectionControlEnabled_) {
+    if (this.webuiOmniboxPopupSelectionControlEnabled_) {
+      this.setSelection_(selection, false);
+    } else {
       this.getDropdown().updateSelection(oldSelection, selection);
     }
   }
 
-  private setSelection_(selection: OmniboxPopupSelection) {
+  private setSelection_(
+      selection: OmniboxPopupSelection, notify: boolean = true) {
     const oldSelection = this.selection_;
     this.selection_ = selection;
     this.getDropdown().updateSelection(oldSelection, this.selection_);
-    this.pageHandler_.setPopupSelection(
-        selectionIsNativelySupported(this.selection_) ? this.selection_ :
-                                                        kDefaultSelection);
+    if (notify) {
+      this.pageHandler_.setPopupSelection(
+          selectionIsNativelySupported(this.selection_) ? this.selection_ :
+                                                          kDefaultSelection);
+    }
 
     const entrypoint = this.getContextualEntrypointButton_();
     if (entrypoint) {
@@ -392,6 +401,13 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     const isNormal = (selection: OmniboxPopupSelection) =>
         selection.state === SelectionLineState.kNormal;
     let fromIndex = available.findIndex(s => selectionsEqual(from, s));
+    if (fromIndex < 0 && from.state === SelectionLineState.kKeywordMode) {
+      // Second chance for keyword mode selections, to accommodate instant
+      // keyword mode lines activating keyword mode from native side.
+      fromIndex = available.findIndex(
+          s =>
+              selectionsEqual({...from, state: SelectionLineState.kNormal}, s));
+    }
     if (fromIndex < 0) {
       available.splice(0, 0, from);
       fromIndex = 0;
@@ -472,7 +488,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
           1 :
           0;
       available.splice(insertionIndex, 0, {
-        line: -1,
+        // Use first default match if available (if not, the -1 means kNoMatch).
+        line: result.matches.findIndex(m => m.allowedToBeDefaultMatch),
         state: SelectionLineState.kFocusedButtonAim,
         actionIndex: 0,
       });
@@ -495,7 +512,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       this.pageHandler_.openPopupSelection(this.selection_, disposition);
     } else {
       assertNotReached(
-          'openCurrentSelection_ called for unsupported selection');
+          `openCurrentSelection_ called for unsupported selection: ${
+              selectionToString(this.selection_)}`);
     }
   }
 

@@ -490,11 +490,11 @@ class OmniboxEditModel {
   // as well as updating the textfield with the new temporary text.
   // |reset_to_default| restores the original inline autocompletion.
   // |force_update_ui| updates the UI even if the selection has not changed.
-  // |cancel_autocomplete| cancels autocomplete query to avoid match changes.
+  // |native_update| cancels autocomplete query and notifies observers.
   void SetPopupSelection(OmniboxPopupSelection new_selection,
                          bool reset_to_default = false,
                          bool force_update_ui = false,
-                         bool cancel_autocomplete = true);
+                         bool native_update = true);
 
   // Returns true if popup selection is on the initial line, which is usually
   // the default match (except in the no-default-match case).

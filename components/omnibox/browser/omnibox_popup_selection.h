@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <ostream>
 #include <tuple>
 #include <vector>
 
@@ -150,5 +151,11 @@ struct OmniboxPopupSelection {
       bool aim_button_visible,
       Step step);
 };
+
+#if DCHECK_ALWAYS_ON
+std::ostream& operator<<(std::ostream& os, const OmniboxPopupSelection& s);
+std::ostream& operator<<(std::ostream& os,
+                         const std::vector<OmniboxPopupSelection>& ss);
+#endif
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_POPUP_SELECTION_H_
