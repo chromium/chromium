@@ -22,6 +22,7 @@ TabSearchToolbarButtonController::~TabSearchToolbarButtonController() = default;
 void TabSearchToolbarButtonController::OnBubbleInitializing() {
   actions::ActionItem* tab_search_action_item = GetTabSearchActionItem();
   tab_search_action_item->SetIsShowingBubble(true);
+  tab_search_action_item->SetVisible(true);
   PinnedToolbarActionsContainer* pinned_toolbar_actions_container =
       browser_view_->toolbar()->pinned_toolbar_actions_container();
 
