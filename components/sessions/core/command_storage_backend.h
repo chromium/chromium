@@ -246,7 +246,7 @@ class SESSIONS_EXPORT CommandStorageBackend
   // Timestamp when this session was started.
   base::Time timestamp_;
 
-  // Data for the last session. If unset, fallback to legacy session data.
+  // Data for the last session.
   std::optional<SessionInfo> last_session_info_;
 
   // Paths of the two most recently written files with a valid marker (the

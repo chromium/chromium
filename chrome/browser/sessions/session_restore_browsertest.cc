@@ -3193,9 +3193,9 @@ class SessionRestoreWithIncompleteFileTest : public InProcessBrowserTest {
     base::FilePath user_data_dir;
     EXPECT_TRUE(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
     base::FilePath sessions_dir =
-        user_data_dir.AppendASCII(TestingProfile::kTestUserProfileDir);
-    if (!base::DeletePathRecursively(
-            sessions_dir.Append(sessions::kSessionsDirectory))) {
+        user_data_dir.AppendASCII(TestingProfile::kTestUserProfileDir)
+            .Append(sessions::kSessionsDirectory);
+    if (!base::DeletePathRecursively(sessions_dir)) {
       ADD_FAILURE() << "Unable to delete sessions directory";
       return false;
     }
@@ -3203,8 +3203,7 @@ class SessionRestoreWithIncompleteFileTest : public InProcessBrowserTest {
       ADD_FAILURE() << "Unable to create sessions directory";
       return false;
     }
-    base::FilePath session_file_path = sessions_dir.Append(
-        base::FilePath(sessions::kLegacyCurrentSessionFileName));
+    base::FilePath session_file_path = sessions_dir.AppendUTF8("Session_1234");
     base::FilePath data_dir;
     if (!base::PathService::Get(chrome::DIR_TEST_DATA, &data_dir)) {
       ADD_FAILURE() << "Unable to get data dir";

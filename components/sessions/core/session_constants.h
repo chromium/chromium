@@ -32,22 +32,6 @@ extern const base::FilePath::CharType SESSIONS_EXPORT
 // timestamp.
 extern const base::FilePath::CharType SESSIONS_EXPORT kTimestampSeparator[];
 
-// TODO(sky): remove the legacy files around ~1/2022.
-
-// Legacy file names (current and previous) for a type of TAB.
-// Used before Chrome 85.
-extern const base::FilePath::StringViewType SESSIONS_EXPORT
-    kLegacyCurrentTabSessionFileName;
-extern const base::FilePath::StringViewType SESSIONS_EXPORT
-    kLegacyLastTabSessionFileName;
-
-// Legacy file names (current and previous) for a type of SESSION.
-// Used before Chrome 85.
-extern const base::FilePath::StringViewType SESSIONS_EXPORT
-    kLegacyCurrentSessionFileName;
-extern const base::FilePath::StringViewType SESSIONS_EXPORT
-    kLegacyLastSessionFileName;
-
 // The maximum number of navigation entries in each direction to persist.
 extern const int SESSIONS_EXPORT gMaxPersistNavigationCount;
 

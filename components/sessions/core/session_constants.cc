@@ -20,16 +20,6 @@ const base::FilePath::CharType kAppSessionFileNamePrefix[] =
 
 const base::FilePath::CharType kTimestampSeparator[] = FILE_PATH_LITERAL("_");
 
-const base::FilePath::StringViewType kLegacyCurrentTabSessionFileName =
-    FILE_PATH_LITERAL("Current Tabs");
-const base::FilePath::StringViewType kLegacyLastTabSessionFileName =
-    FILE_PATH_LITERAL("Last Tabs");
-
-const base::FilePath::StringViewType kLegacyCurrentSessionFileName =
-    FILE_PATH_LITERAL("Current Session");
-const base::FilePath::StringViewType kLegacyLastSessionFileName =
-    FILE_PATH_LITERAL("Last Session");
-
 const int gMaxPersistNavigationCount = 6;
 
 }  // namespace sessions
