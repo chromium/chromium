@@ -122,10 +122,14 @@ export class DumpCreator {
     const uaData = await navigator.userAgentData
         .getHighEntropyValues(['fullVersionList']);
     const dumpObject = {
-      'getUserMedia': userMediaRequests,
-      'PeerConnections': peerConnectionDataStore,
-      'UserAgent': navigator.userAgent,
-      'UserAgentData': uaData,
+      cpuPerformance: navigator.cpuPerformance,
+      deviceMemory: navigator.deviceMemory,
+      hardwareConcurrency: navigator.hardwareConcurrency,
+      timestamp: Date.now(),
+      getUserMedia: userMediaRequests,
+      PeerConnections: peerConnectionDataStore,
+      UserAgent: navigator.userAgent,
+      UserAgentData: uaData,
     };
     const textBlob =
         new Blob([JSON.stringify(dumpObject, null, 1)],
