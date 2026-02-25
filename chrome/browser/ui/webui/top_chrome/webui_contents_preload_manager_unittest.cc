@@ -21,7 +21,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/web_contents_tester.h"
@@ -93,10 +92,6 @@ class WebUIContentsPreloadManagerTest : public ChromeRenderViewHostTestHarness {
     return WebUIContentsPreloadManager::GetInstance();
   }
 
-  void SetMemoryPressureLevel(base::MemoryPressureLevel level) {
-    fake_memory_monitor_.SetAndNotifyMemoryPressure(level);
-  }
-
   MockPreloadCandidateSelector& preload_candidate_selector() {
     return *preload_candidate_selector_;
   }
@@ -105,7 +100,6 @@ class WebUIContentsPreloadManagerTest : public ChromeRenderViewHostTestHarness {
 
  private:
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
-  memory_pressure::test::FakeMemoryPressureMonitor fake_memory_monitor_;
   base::test::ScopedFeatureList enabled_feature_{
       features::kPreloadTopChromeWebUI};
   WebUIContentsPreloadManagerTestAPI test_api_;
@@ -125,7 +119,8 @@ TEST_F(WebUIContentsPreloadManagerTest, PreloadedContentsIsNotNullAfterWarmup) {
 
 TEST_F(WebUIContentsPreloadManagerTest, NoPreloadUnderHeavyMemoryPressure) {
   // Don't preload if the memory pressure is moderate or higher.
-  SetMemoryPressureLevel(base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  base::MemoryPressureListenerRegistry::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   std::unique_ptr<content::BrowserContext> browser_context =
       std::make_unique<TestingProfile>();
   test_api().MaybePreloadForBrowserContext(browser_context.get());

@@ -369,6 +369,8 @@ class CONTENT_EXPORT PrerenderHostRegistry
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner();
 
+  base::MemoryPressureLevel GetCurrentMemoryPressureLevel();
+
   // Holds the PrerenderHostId of running PrerenderHost. Reset to an invalid
   // value when there's no running PrerenderHost. Tracks only the host id of
   // speculation rules triggers and ignores requests from embedder because
