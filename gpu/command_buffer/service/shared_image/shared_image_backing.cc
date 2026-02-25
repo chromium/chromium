@@ -128,12 +128,14 @@ void SharedImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {}
 
 bool SharedImageBacking::UploadFromMemory(
     const std::vector<SkPixmap>& pixmaps) {
-  LOG(FATAL) << "Shared image debug info: " << debug_label();
+  LOG(FATAL) << "Shared image debug info: " << debug_label()
+             << ", backing type = " << GetName();
 }
 
 bool SharedImageBacking::ReadbackToMemory(
     const std::vector<SkPixmap>& pixmaps) {
-  LOG(FATAL) << "Shared image debug info: " << debug_label();
+  LOG(FATAL) << "Shared image debug info: " << debug_label()
+             << ", backing type = " << GetName();
 }
 
 void SharedImageBacking::ReadbackToMemoryAsync(
