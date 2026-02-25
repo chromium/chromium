@@ -188,15 +188,17 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
     if (!ShouldCreateAcceleratedImages(GetRasterContextProvider().get())) {
       snapshot_provider_ =
           CanvasNon2DSnapshotProviderBitmap::Create(required_provider_info);
+      CHECK(snapshot_provider_);
+      cached_draw_info_ = required_provider_info;
     } else {
       snapshot_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
           required_provider_info.size, required_provider_info.format,
           required_provider_info.alpha_type, required_provider_info.color_space,
           SharedGpuContext::ContextProviderWrapper(),
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
-    }
-    if (snapshot_provider_) {
-      cached_draw_info_ = required_provider_info;
+      if (snapshot_provider_) {
+        cached_draw_info_ = required_provider_info;
+      }
     }
   }
 
