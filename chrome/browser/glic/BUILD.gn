@@ -169,6 +169,8 @@ source_set("impl") {
     "glic_metrics.cc",
     "glic_metrics_provider.cc",
     "glic_metrics_provider.h",
+    "glic_navigation_throttle.cc",
+    "glic_navigation_throttle.h",
     "glic_net_log.cc",
     "glic_pref_names.cc",
     "glic_profile_manager.cc",
@@ -525,6 +527,7 @@ source_set("browser_tests") {
       "actor/glic_actor_policy_checker_browsertest.cc",
       "glic_browsertest.cc",
       "glic_metrics_browsertest.cc",
+      "glic_navigation_throttle_browsertest.cc",
       "glic_net_log_browsertest.cc",
       "glic_policy_browsertest.cc",
       "glic_profile_manager_browsertest.cc",
@@ -541,6 +544,7 @@ source_set("browser_tests") {
       "widget/application_hotkey_delegate_browsertest.cc",
     ]
   }
+
   deps = [
     ":glic",
     ":impl",

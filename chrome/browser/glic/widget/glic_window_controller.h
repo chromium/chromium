@@ -81,11 +81,13 @@ class GlicWindowController {
 
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.
-  virtual void Toggle(BrowserWindowInterface* bwi,
-                      bool prevent_close,
-                      mojom::InvocationSource source,
-                      std::optional<std::string> prompt_suggestion,
-                      bool auto_send) = 0;
+  virtual void Toggle(
+      BrowserWindowInterface* bwi,
+      bool prevent_close,
+      mojom::InvocationSource source,
+      std::optional<std::string> deprecated_prompt_suggestion,
+      bool deprecated_auto_send,
+      std::optional<std::string> deprecated_conversation_id) = 0;
 
   // If the panel is opened, but sign-in is required, we provide a sign-in
   // button which closes the panel. This is called after the user signs in to

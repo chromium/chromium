@@ -81,8 +81,9 @@ class GlicWindowControllerImpl
   void Toggle(BrowserWindowInterface* browser,
               bool prevent_close,
               mojom::InvocationSource source,
-              std::optional<std::string> prompt_suggestion,
-              bool auto_send) override;
+              std::optional<std::string> deprecated_prompt_suggestion,
+              bool deprecated_auto_send,
+              std::optional<std::string> deprecated_conversation_id) override;
   void ShowAfterSignIn(base::WeakPtr<Browser> browser) override;
   void FocusIfOpen() override;
   void Shutdown() override;

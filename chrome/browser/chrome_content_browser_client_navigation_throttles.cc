@@ -176,6 +176,10 @@
 #include "extensions/browser/extensions_browser_client.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_navigation_throttle.h"
+#endif  // BUILDFLAG(ENABLE_GLIC)
+
 namespace {
 
 // Wrapper for SSLErrorHandler::HandleSSLError() that supplies //chrome-level
@@ -591,10 +595,15 @@ void CreateAndAddChromeThrottlesForNavigation(
   web_app::IsolatedWebAppThrottle::MaybeCreateAndAdd(registry);
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
   actor::ActorNavigationThrottle::MaybeCreateAndAdd(registry);
 
   dom_distiller::DistillerPageWebContents::MaybeCreateAndAddNavigationThrottle(
       registry);
 
   dom_distiller::DistillerReferrerThrottle::MaybeCreateAndAdd(registry);
+
+#if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicNavigationThrottle::MaybeCreateAndAdd(registry);
+#endif  // BUILDFLAG(ENABLE_GLIC)
 }
