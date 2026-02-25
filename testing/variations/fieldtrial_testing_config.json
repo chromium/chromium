@@ -2504,24 +2504,6 @@
             ]
         }
     ],
-    "AutofillEnableCvcStorage": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillEnableCvcStorageAndFilling",
-                        "AutofillEnableCvcStorageAndFillingEnhancement",
-                        "AutofillEnableCvcStorageAndFillingStandaloneFormEnhancement",
-                        "SyncAutofillWalletCredentialData"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillEnableFillingPhoneCountryCodesByAddressCountryCodes": [
         {
             "platforms": [
