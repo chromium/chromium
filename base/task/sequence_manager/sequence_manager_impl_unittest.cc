@@ -1023,6 +1023,41 @@ TEST_P(SequenceManagerTest,
   EXPECT_TRUE(GetTaskQueueImpl(queue.get())->delayed_work_queue()->Empty());
 }
 
+TEST_P(SequenceManagerTest, CancelDelayedTaskDuringQueueDestruction) {
+  auto queue = CreateTaskQueue();
+
+  // Post a delayed task. We need the handle to cancel it.
+  base::DelayedTaskHandle handle =
+      queue->task_runner()->PostCancelableDelayedTask(
+          subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+          base::DoNothing(), base::Seconds(10));
+
+  // Post an immediate task that, when destroyed, cancels the delayed task.
+  class Canceler {
+   public:
+    explicit Canceler(base::DelayedTaskHandle handle)
+        : handle_(std::move(handle)) {}
+    ~Canceler() {
+      if (handle_.IsValid()) {
+        handle_.CancelTask();
+      }
+    }
+
+   private:
+    base::DelayedTaskHandle handle_;
+  };
+
+  queue->task_runner()->PostTask(
+      FROM_HERE, base::BindOnce([](std::unique_ptr<Canceler> c) {},
+                                std::make_unique<Canceler>(std::move(handle))));
+
+  // Move the task from incoming queue to work queue.
+  GetTaskQueueImpl(queue.get())->ReloadEmptyImmediateWorkQueue();
+
+  // Now unregister the queue.
+  queue.reset();
+}
+
 TEST_P(SequenceManagerTest, DelayedTaskPosting) {
   auto queue = CreateTaskQueue();
 

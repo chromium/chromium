@@ -417,6 +417,7 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
     DelayedIncomingQueue delayed_incoming_queue;
     ObserverList<TaskObserver>::UncheckedAndDanglingUntriaged task_observers;
     HeapHandle heap_handle;
+    bool unregistered = false;
     bool is_enabled = true;
     std::optional<Fence> current_fence;
     std::optional<TimeTicks> delayed_fence;
