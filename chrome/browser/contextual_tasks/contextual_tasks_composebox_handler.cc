@@ -263,7 +263,7 @@ void ContextualTasksComposeboxHandler::SubmitQuery(
 
 void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
     const std::string& query) {
-  bool was_overlay_open_on_submit = web_ui_interface_->IsLensOverlayShowing();
+  bool is_overlay_open_on_submit = web_ui_interface_->IsLensOverlayShowing();
 
   // Retrieve the overlay token before closing the overlay, as the controller
   // might be destroyed or reset during closure.
@@ -275,7 +275,7 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   std::optional<base::Uuid> task_id = web_ui_interface_->GetTaskId();
   auto* contextual_tasks_service = GetContextualTasksService();
   if (!task_id.has_value() || !contextual_tasks_service ||
-      was_overlay_open_on_submit) {
+      (is_overlay_open_on_submit && !IsAnyContextUploading())) {
     ContinueCreateAndSendQueryMessage(query, task_id, overlay_token);
     return;
   }
@@ -321,7 +321,8 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
       std::move(context_decoration_params),
       base::BindOnce(&ContextualTasksComposeboxHandler::OnContextRetrieved,
                      weak_factory_.GetWeakPtr(), query, active_tab_handle,
-                     /*task_id=*/task_id));
+                     /*task_id=*/task_id,
+                     is_overlay_open_on_submit ? overlay_token : std::nullopt));
 }
 
 contextual_tasks::ContextualTasksService*
@@ -333,10 +334,10 @@ void ContextualTasksComposeboxHandler::OnContextRetrieved(
     std::string query,
     tabs::TabHandle active_tab_handle,
     std::optional<base::Uuid> original_task_id,
+    std::optional<base::UnguessableToken> overlay_token,
     std::unique_ptr<contextual_tasks::ContextualTaskContext> context) {
   if (!context || web_ui_interface_->GetTaskId() != original_task_id) {
-    ContinueCreateAndSendQueryMessage(query, original_task_id,
-                                      /*overlay_token=*/std::nullopt);
+    ContinueCreateAndSendQueryMessage(query, original_task_id, overlay_token);
     return;
   }
   tabs::TabInterface* active_tab = active_tab_handle.Get();
@@ -351,16 +352,14 @@ void ContextualTasksComposeboxHandler::OnContextRetrieved(
   // run immediately due to number of usages expected
   // being based on tabs_to_update.size().
   if (tabs_to_update.empty()) {
-    ContinueCreateAndSendQueryMessage(query, original_task_id,
-                                      /*overlay_token=*/std::nullopt);
+    ContinueCreateAndSendQueryMessage(query, original_task_id, overlay_token);
     return;
   }
   base::RepeatingClosure create_and_send_query_closure = base::BarrierClosure(
       tabs_to_update.size(),
       base::BindOnce(
           &ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage,
-          weak_factory_.GetWeakPtr(), query, original_task_id,
-          /*overlay_token=*/std::nullopt));
+          weak_factory_.GetWeakPtr(), query, original_task_id, overlay_token));
 
   int32_t tab_id;
   for (tabs::TabInterface* tab : tabs_to_update) {
