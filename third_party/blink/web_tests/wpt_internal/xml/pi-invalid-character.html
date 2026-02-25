@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>Illegal character in processing instruction should not crash.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+  test(() => {
+    const xmlString = "<doc><?processin� instruction ?></doc>";
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xmlString, "application/xml");
+    assert_equals(
+      doc.documentElement.localName,
+      "doc",
+      "Document should be parsed without a crash and root element accessible."
+    );
+  }, "Processing instruction with invalid character does not crash.");
+</script>

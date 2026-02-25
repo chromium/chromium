@@ -330,13 +330,22 @@ void XMLDocumentParserRs::ProcessingInstruction(rust::Str target,
     return;
   }
 
-  // ASSERT_NO_EXCEPTION here as we expect the XML parser to produce an error if
-  // the processing instruction would have had an invalid target name or would
-  // have contained the closing sequence '?>'.
   class ProcessingInstruction* pi =
       current_node_->GetDocument().createProcessingInstruction(
           RustStrToWtfString(target), RustStrToWtfString(data),
-          ASSERT_NO_EXCEPTION);
+          IGNORE_EXCEPTION);
+
+  // This situation can arise when the parser accepts a target name or data
+  // because of the XML definition of what a valid character is, but the
+  // construction of the ProcessingInstruction fails when document.cc's
+  // IsValidChar() rejects the target name or data. Follow the non-Rust
+  // implementation here to ignore this situation without throwing a
+  // non-wellformedness error.
+  // For other nullptr result cases of createProcessingInstruction the parser is
+  // expected to report parsing errors before getting here.
+  if (!pi) {
+    return;
+  }
 
   // Insertion needs to be done first to determine is_css_ in
   // ProcessingInstruction.
