@@ -62,6 +62,8 @@
 
 namespace {
 constexpr int kRegionVerticalPadding = 5;
+constexpr int kResizeAreaWidth = 5;
+constexpr int kCollapsedResizeAreaWidth = 2;
 }  // namespace
 
 VerticalTabStripRegionView::VerticalTabStripRegionView(
@@ -69,6 +71,7 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
     actions::ActionItem* root_action_item,
     BrowserView* browser_view)
     : browser_view_(browser_view),
+      resize_area_width_(kResizeAreaWidth),
       tab_strip_model_(browser_view->browser()->GetTabStripModel()),
       state_controller_(state_controller),
       root_action_item_(root_action_item),
@@ -172,8 +175,9 @@ void VerticalTabStripRegionView::Layout(PassKey) {
 
   // Manually position the resize area as it overlaps views handled by the flex
   // layout.
-  resize_area_->SetBoundsRect(gfx::Rect(bounds().right() - kResizeAreaWidth, 0,
-                                        kResizeAreaWidth, bounds().height()));
+  resize_area_->SetBoundsRect(gfx::Rect(bounds().right() - resize_area_width_,
+                                        0, resize_area_width_,
+                                        bounds().height()));
 }
 
 views::View* VerticalTabStripRegionView::GetDefaultFocusableChild() {
@@ -617,6 +621,10 @@ void VerticalTabStripRegionView::OnCollapsedStateChanged(
       gfx::Insets::TLBR(
           GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapsedPadding),
           padding, 0, padding));
+
+  resize_area_width_ = state_controller->IsCollapsed()
+                           ? kCollapsedResizeAreaWidth
+                           : kResizeAreaWidth;
 
   flex_layout_->SetInteriorMargin(gfx::Insets::TLBR(
       0, 0,

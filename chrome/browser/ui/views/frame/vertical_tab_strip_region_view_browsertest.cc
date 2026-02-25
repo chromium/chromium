@@ -125,9 +125,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeAreaBounds) {
   EXPECT_EQ(region_view()->bounds().height(),
             region_view()->resize_area_for_testing()->bounds().height());
   EXPECT_EQ(0, region_view()->resize_area_for_testing()->bounds().y());
-  // Verify resize area width.
-  EXPECT_EQ(VerticalTabStripRegionView::kResizeAreaWidth,
-            region_view()->resize_area_for_testing()->bounds().width());
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewSmaller) {

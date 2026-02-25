@@ -9,31 +9,32 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "cc/paint/paint_flags.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/native_theme/overlay_scrollbar_constants.h"
 #include "ui/views/background.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace {
 
-// Total thickness of the thumb (matches visuals when hovered).
-constexpr int kThumbThickness = 10;
-constexpr int kThumbUnhoveredOffset = 5;
-constexpr int kThumbUnhoveredTrailingPadding = 2;
+// Total thickness of the thumb.
+constexpr int kThumbThickness = 5;
+constexpr int kThumbTrailingPadding = 4;
+constexpr int kCollapsedThumbTrailingPadding = 0;
 
 }  // namespace
 
 VerticalTabStripScrollBar::Thumb::Thumb(VerticalTabStripScrollBar* scroll_bar)
-    : views::BaseScrollBarThumb(scroll_bar) {
+    : views::BaseScrollBarThumb(scroll_bar), scroll_bar_(scroll_bar) {
   // |scroll_bar| isn't done being constructed; it's not safe to do anything
   // that might reference it yet.
 }
@@ -44,19 +45,16 @@ void VerticalTabStripScrollBar::Thumb::Init() {
   SetFlipCanvasOnPaintForRTLUI(true);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  // Animate all changes to the layer except the first one.
-  OnStateChanged();
+  StartHideCountdown();
   layer()->SetAnimator(ui::LayerAnimator::CreateImplicitAnimator());
 }
 
 gfx::Size VerticalTabStripScrollBar::Thumb::CalculatePreferredSize(
     const views::SizeBounds& /*available_size*/) const {
-  // The visual size of the thumb is kThumbThickness, but it slides back and
-  // forth by thumb_hover_offset(). To make event targeting work well, expand
-  // the width of the thumb such that it's always taking up the full width of
-  // the track regardless of the offset.
-  return gfx::Size(kThumbThickness + kThumbUnhoveredOffset,
-                   kThumbThickness + kThumbUnhoveredOffset);
+  const int padding = scroll_bar_->tab_strip_collapsed_
+                          ? kCollapsedThumbTrailingPadding
+                          : kThumbTrailingPadding;
+  return gfx::Size(kThumbThickness + padding, kThumbThickness + padding);
 }
 
 void VerticalTabStripScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
@@ -65,10 +63,9 @@ void VerticalTabStripScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
   fill_flags.setColor(GetColorProvider()->GetColor(ui::kColorSysStateDisabled));
   gfx::RectF fill_bounds(GetLocalBounds());
   fill_bounds.Inset(gfx::InsetsF::TLBR(
-      0, kThumbUnhoveredOffset, 0,
-      GetState() == views::Button::STATE_NORMAL
-          ? kThumbUnhoveredOffset + kThumbUnhoveredTrailingPadding
-          : 0));
+      0, 0, 0,
+      (scroll_bar_->tab_strip_collapsed_ ? kCollapsedThumbTrailingPadding
+                                         : kThumbTrailingPadding)));
   float rounded_corners = fill_bounds.width() / 2.0f;
   canvas->DrawRoundRect(fill_bounds, rounded_corners, fill_flags);
 }
@@ -76,24 +73,10 @@ void VerticalTabStripScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
 void VerticalTabStripScrollBar::Thumb::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
   Show();
-}
-
-void VerticalTabStripScrollBar::Thumb::OnStateChanged() {
+  // Don't start the hide countdown if the thumb is still hovered or pressed.
   if (GetState() == views::Button::STATE_NORMAL) {
-    gfx::Transform translation;
-    const int direction = base::i18n::IsRTL() ? -1 : 1;
-    translation.Translate(gfx::Vector2d(direction * kThumbUnhoveredOffset, 0));
-    layer()->SetTransform(translation);
-
-    if (GetWidget()) {
-      StartHideCountdown();
-    }
-  } else {
-    hide_timer_.Stop();
-    Show();
-    layer()->SetTransform(gfx::Transform());
+    StartHideCountdown();
   }
-  SchedulePaint();
 }
 
 void VerticalTabStripScrollBar::Thumb::Show() {
@@ -101,10 +84,6 @@ void VerticalTabStripScrollBar::Thumb::Show() {
     layer()->SetOpacity(1.0f);
   }
   hide_timer_.Stop();
-  // Don't start the hide countdown if the thumb is still hovered or pressed.
-  if (GetState() == views::Button::STATE_NORMAL) {
-    StartHideCountdown();
-  }
 }
 
 void VerticalTabStripScrollBar::Thumb::Hide() {
@@ -124,21 +103,33 @@ void VerticalTabStripScrollBar::Thumb::StartHideCountdown() {
 BEGIN_METADATA(VerticalTabStripScrollBar, Thumb)
 END_METADATA
 
-VerticalTabStripScrollBar::VerticalTabStripScrollBar()
-    : views::ScrollBar(views::ScrollBar::Orientation::kVertical) {
-  // Allow the thumb to take up the whole size of the scrollbar.  Layout need
-  // only set the thumb cross-axis coordinate; ScrollBar::Update() will set the
-  // thumb size/offset.
+VerticalTabStripScrollBar::VerticalTabStripScrollBar(
+    tabs::VerticalTabStripStateController* state_controller)
+    : views::ScrollBar(views::ScrollBar::Orientation::kVertical),
+      tab_strip_collapsed_(state_controller->IsCollapsed()) {
+  SetNotifyEnterExitOnChild(true);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   auto* thumb = new Thumb(this);
   SetThumb(thumb);
   thumb->Init();
+  collapsed_state_changed_subscription_ =
+      state_controller->RegisterOnCollapseChanged(base::BindRepeating(
+          &VerticalTabStripScrollBar::OnCollapsedStateChanged,
+          base::Unretained(this)));
 }
 
 VerticalTabStripScrollBar::~VerticalTabStripScrollBar() = default;
 
-gfx::Insets VerticalTabStripScrollBar::GetInsets() const {
-  return gfx::Insets::TLBR(0, -kThumbUnhoveredOffset, 0, 0);
+void VerticalTabStripScrollBar::OnMouseEntered(const ui::MouseEvent& event) {
+  VerticalTabStripScrollBar::Thumb* thumb =
+      static_cast<VerticalTabStripScrollBar::Thumb*>(GetThumb());
+  thumb->Show();
+}
+
+void VerticalTabStripScrollBar::OnMouseExited(const ui::MouseEvent& event) {
+  VerticalTabStripScrollBar::Thumb* thumb =
+      static_cast<VerticalTabStripScrollBar::Thumb*>(GetThumb());
+  thumb->StartHideCountdown();
 }
 
 bool VerticalTabStripScrollBar::OverlapsContent() const {
@@ -150,7 +141,17 @@ gfx::Rect VerticalTabStripScrollBar::GetTrackBounds() const {
 }
 
 int VerticalTabStripScrollBar::GetThickness() const {
-  return kThumbThickness;
+  return kThumbThickness + (tab_strip_collapsed_
+                                ? kCollapsedThumbTrailingPadding
+                                : kThumbTrailingPadding);
+}
+
+void VerticalTabStripScrollBar::OnCollapsedStateChanged(
+    tabs::VerticalTabStripStateController* state_controller) {
+  if (tab_strip_collapsed_ != state_controller->IsCollapsed()) {
+    tab_strip_collapsed_ = state_controller->IsCollapsed();
+    InvalidateLayout();
+  }
 }
 
 BEGIN_METADATA(VerticalTabStripScrollBar)
