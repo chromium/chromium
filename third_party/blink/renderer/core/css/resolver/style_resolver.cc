@@ -1823,7 +1823,7 @@ void StyleResolver::ApplyBaseStyleNoCache(
         style_request.matching_behavior != kMatchAllRulesExcludingSMIL);
   }
 
-  const MatchResult& match_result = collector.MatchedResult();
+  const MatchResult& match_result = cascade.GetMatchResult();
 
   if (IsForPseudoElement(*element, style_request)) {
     if (!match_result.HasMatchedProperties()) {
@@ -1831,8 +1831,8 @@ void StyleResolver::ApplyBaseStyleNoCache(
     }
   }
 
-  const MatchResult& result = cascade.GetMatchResult();
-  CacheSuccess cache_success = ApplyMatchedCache(state, style_request, result);
+  CacheSuccess cache_success =
+      ApplyMatchedCache(state, style_request, match_result);
   ComputedStyleBuilder& builder = state.StyleBuilder();
 
   if (style_recalc_context.is_ensuring_style &&
