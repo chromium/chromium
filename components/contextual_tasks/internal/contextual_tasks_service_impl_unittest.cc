@@ -99,7 +99,7 @@ class MockContextualTaskSyncBridge : public ContextualTaskSyncBridge {
 
 class MockContextualTasksObserver : public ContextualTasksService::Observer {
  public:
-  MOCK_METHOD(void, OnInitialized, (), (override));
+  MOCK_METHOD(void, OnContextualTasksServiceInitialized, (), (override));
   MOCK_METHOD(void,
               OnTaskAdded,
               (const ContextualTask& task,
@@ -1301,7 +1301,7 @@ TEST_F(ContextualTasksServiceImplTest, DisassociateAllTabsFromTask) {
   // Wait for the sync pieces to finish init so there aren't multiple code
   // paths trying to add tasks to the service.
   base::RunLoop init_run_loop;
-  EXPECT_CALL(observer_, OnInitialized()).WillOnce([&]() {
+  EXPECT_CALL(observer_, OnContextualTasksServiceInitialized()).WillOnce([&]() {
     init_run_loop.Quit();
   });
   init_run_loop.Run();
@@ -1468,7 +1468,9 @@ TEST_F(ContextualTasksServiceImplTest, BuildContextualTasksFromLoadedData) {
   SetContextualTaskSyncBridgeForTesting(std::move(mock_contextual_task_bridge));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(observer_, OnInitialized()).WillOnce([&]() { run_loop.Quit(); });
+  EXPECT_CALL(observer_, OnContextualTasksServiceInitialized()).WillOnce([&]() {
+    run_loop.Quit();
+  });
 
   service_->AddObserver(&observer_);
 
@@ -1518,7 +1520,9 @@ TEST_F(ContextualTasksServiceImplTest,
   SetContextualTaskSyncBridgeForTesting(std::move(mock_contextual_task_bridge));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(observer_, OnInitialized()).WillOnce([&]() { run_loop.Quit(); });
+  EXPECT_CALL(observer_, OnContextualTasksServiceInitialized()).WillOnce([&]() {
+    run_loop.Quit();
+  });
 
   service_->AddObserver(&observer_);
 
@@ -1580,7 +1584,9 @@ TEST_F(ContextualTasksServiceImplTest,
   SetContextualTaskSyncBridgeForTesting(std::move(mock_contextual_task_bridge));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(observer_, OnInitialized()).WillOnce([&]() { run_loop.Quit(); });
+  EXPECT_CALL(observer_, OnContextualTasksServiceInitialized()).WillOnce([&]() {
+    run_loop.Quit();
+  });
 
   service_->AddObserver(&observer_);
 

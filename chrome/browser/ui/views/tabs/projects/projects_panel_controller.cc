@@ -11,9 +11,15 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 
 ProjectsPanelController::ProjectsPanelController(
-    tab_groups::TabGroupSyncService* tab_group_sync_service)
-    : tab_group_sync_service_(tab_group_sync_service) {
+    tab_groups::TabGroupSyncService* tab_group_sync_service,
+    contextual_tasks::ContextualTasksService* contextual_tasks_service)
+    : tab_group_sync_service_(tab_group_sync_service),
+      contextual_tasks_service_(contextual_tasks_service) {
   tab_group_sync_service_observer_.Observe(tab_group_sync_service);
+
+  if (contextual_tasks_service) {
+    contextual_tasks_service_observer_.Observe(contextual_tasks_service);
+  }
 }
 
 ProjectsPanelController::~ProjectsPanelController() = default;
@@ -43,6 +49,11 @@ void ProjectsPanelController::AddObserver(Observer* observer) {
 
 void ProjectsPanelController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+const std::vector<contextual_tasks::Thread>&
+ProjectsPanelController::GetThreads() {
+  return threads_;
 }
 
 void ProjectsPanelController::OnInitialized() {
@@ -122,4 +133,25 @@ void ProjectsPanelController::OnTabGroupsReordered(
   for (auto& observer : observers_) {
     observer.OnTabGroupsReordered(tab_groups_);
   }
+}
+
+void ProjectsPanelController::OnContextualTasksServiceInitialized() {
+  contextual_tasks_service_->GetTasks(base::BindOnce(
+      [](base::WeakPtr<ProjectsPanelController> weak_this,
+         std::vector<contextual_tasks::ContextualTask> tasks) {
+        if (!weak_this) {
+          return;
+        }
+        weak_this->threads_ = std::vector<contextual_tasks::Thread>();
+        for (auto& task : tasks) {
+          if (task.GetThread().has_value()) {
+            weak_this->threads_.push_back(task.GetThread().value());
+          }
+        }
+
+        for (auto& observer : weak_this->observers_) {
+          observer.OnThreadsInitialized(weak_this->threads_);
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr()));
 }
