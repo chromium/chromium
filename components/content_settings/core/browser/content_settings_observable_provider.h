@@ -30,7 +30,12 @@ class ObservableProvider : public ProviderInterface {
 
  private:
   base::ThreadChecker thread_checker_;
-  base::ObserverList<Observer, true>::Unchecked observer_list_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observer_list_;
 };
 
 }  // namespace content_settings

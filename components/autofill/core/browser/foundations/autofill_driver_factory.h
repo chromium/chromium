@@ -71,10 +71,22 @@ class AutofillDriverFactory {
   void SetLifecycleStateAndNotifyObservers(AutofillDriver& driver,
                                            LifecycleState new_state);
 
-  const base::ObserverList<Observer>& observers() { return observers_; }
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  const base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>&
+  observers() {
+    return observers_;
+  }
 
  private:
-  base::ObserverList<Observer> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 };
 
 }  // namespace autofill

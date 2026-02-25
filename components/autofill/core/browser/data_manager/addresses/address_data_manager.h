@@ -399,7 +399,12 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
   virtual void RemoveProfileImpl(const std::string& guid,
                                  bool non_permanent_account_profile_removal);
 
-  base::ObserverList<Observer> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   std::unique_ptr<ContactInfoPreconditionChecker>
       contact_info_precondition_checker_;

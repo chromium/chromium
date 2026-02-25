@@ -326,7 +326,12 @@ class SavedTabGroupModel {
   void HandleTabGroupRemovedFromSync(int index);
 
   // Obsevers of the model.
-  base::ObserverList<SavedTabGroupModelObserver>::Unchecked observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      SavedTabGroupModelObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observers_;
 
   // True when SavedTabGroupModel::LoadStoredEntries has finished, false
   // otherwise.
