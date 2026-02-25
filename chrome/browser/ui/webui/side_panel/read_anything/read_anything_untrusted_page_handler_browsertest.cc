@@ -2036,13 +2036,19 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
-    EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/false))
-        .Times(1);
+    // Regression test for crbug.com/487308693. With kPdfOopif enabled, RM
+    // receives 3 sequential signals about the current page when it's a pdf.
+    // 1) Page is not a pdf
+    // 2) Page is a pdf but the frame is not loaded
+    // 3) Page is a pdf with the frame loaded
+    // OnReadabilityDistillationStateChanged should only be called on non-pdfs.
+    // Previously we were calling it in step 2 above, but we know it's a pdf at
+    // that point, so we shouldn't be. Hence this check that's it's called
+    // only once.
+    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(1);
   } else {
-    EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/false))
-        .Times(2);
+    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(3);
   }
-  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/true)).Times(1);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
@@ -2061,6 +2067,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
 
   EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/true)).Times(1);
+  EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(0);
   handler_ = CreateHandler();
 }
 
@@ -2074,6 +2081,7 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
   ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
 
   EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/true)).Times(2);
+  EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(0);
 
   handler_ = CreateHandler();
   handler_->OnActiveAXTreeIDChanged();
