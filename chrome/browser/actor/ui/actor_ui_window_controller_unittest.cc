@@ -13,6 +13,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/ui/actor_overlay_web_view.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
@@ -25,7 +26,9 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
 
-class ActorUiContentsContainerControllerTest : public ChromeViewsTestBase {
+class ActorUiContentsContainerControllerTest
+    : public chrome_test_utils::TestingBrowserProcessDeathTestMixin,
+      public ChromeViewsTestBase {
  public:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();

@@ -78,6 +78,19 @@ base::FilePath GetTestFilePath(const base::FilePath& dir,
 // The returned path is GURL format.
 GURL GetTestUrl(const base::FilePath& dir, const base::FilePath& file);
 
+// This class is inherited by unit test fixtures that leverage death tests with
+// a dependency on TestingBrowserProcess. It is necessary as currently death
+// tests will incompletely initialize the test environment, see bug below.
+// TODO(crbug.com/487292986): This should be eliminated once we update chromium
+// unit tests to avoid using listeners for test setup, or all existing death
+// test clients are updated to allow for the existence of the g_browser_process,
+// at which point this can be merged up into `ChromeUnitTestSuiteInitializer`.
+class TestingBrowserProcessDeathTestMixin {
+ public:
+  TestingBrowserProcessDeathTestMixin();
+  ~TestingBrowserProcessDeathTestMixin() = default;
+};
+
 }  // namespace chrome_test_utils
 
 #endif  // CHROME_TEST_BASE_CHROME_TEST_UTILS_H_

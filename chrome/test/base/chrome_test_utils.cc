@@ -8,6 +8,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/filename_util.h"
@@ -106,6 +107,12 @@ base::FilePath GetTestFilePath(const base::FilePath& dir,
 
 GURL GetTestUrl(const base::FilePath& dir, const base::FilePath& file) {
   return net::FilePathToFileURL(GetTestFilePath(dir, file));
+}
+
+TestingBrowserProcessDeathTestMixin::TestingBrowserProcessDeathTestMixin() {
+  if (!TestingBrowserProcess::GetGlobal()) {
+    TestingBrowserProcess::CreateInstance();
+  }
 }
 
 }  // namespace chrome_test_utils

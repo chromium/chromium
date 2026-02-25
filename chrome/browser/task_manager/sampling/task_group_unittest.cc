@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -52,7 +53,9 @@ class FakeTask : public Task {
 
 }  // namespace
 
-class TaskGroupTest : public testing::Test {
+class TaskGroupTest
+    : public chrome_test_utils::TestingBrowserProcessDeathTestMixin,
+      public testing::Test {
  public:
   TaskGroupTest()
       : io_task_runner_(content::GetIOThreadTaskRunner({})),

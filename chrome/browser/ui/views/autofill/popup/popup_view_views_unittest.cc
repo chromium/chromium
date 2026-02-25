@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views_test_api.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_warning_view.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -1815,7 +1816,12 @@ TEST_F(PopupViewViewsTest, CellSubPopupResetAfterSuggestionsUpdates) {
 // environment (namely creates a `TestingProfile`) that fails to be created in
 // the sub-process (see `EXPECT_CHECK_DEATH_WITH` doc for details). This fail
 // hides the real death reason to be tested.
-using PopupViewViewsDeathTest = ChromeViewsTestBase;
+class PopupViewViewsDeathTest
+    : public chrome_test_utils::TestingBrowserProcessDeathTestMixin,
+      public ChromeViewsTestBase {
+  using ChromeViewsTestBase::ChromeViewsTestBase;
+};
+
 TEST_F(PopupViewViewsDeathTest, OpenSubPopupWithNoChildrenCheckCrash) {
   NiceMock<MockAutofillPopupController> controller;
   controller.set_suggestions({
