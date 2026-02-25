@@ -512,6 +512,7 @@ ClipboardAndroid::ClipboardAndroid() {
 
 ClipboardAndroid::~ClipboardAndroid() {
   DCHECK(CalledOnValidThread());
+  GetClipboardMap().SetJavaSideNativePtr(nullptr);
 }
 
 void ClipboardAndroid::OnPreShutdown() {}
