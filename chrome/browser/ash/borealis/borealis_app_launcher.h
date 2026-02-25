@@ -19,6 +19,7 @@ class BorealisAppLauncher {
  public:
   enum class LaunchResult {
     kSuccess,
+    kUninstalled,  // User uninstalled Borealis via MOTD dialog.
     kUnknownApp,
     kNoResponse,
     kError,

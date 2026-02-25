@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd.mojom.h"
+#include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_util.h"
 #include "content/public/browser/webui_config.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
@@ -19,15 +21,6 @@ class WebUI;
 namespace borealis {
 
 class BorealisMOTDPageHandler;
-
-// Forward declaration so that config definition can come before controller.
-class BorealisMOTDUI;
-
-class BorealisMOTDUIConfig
-    : public content::DefaultWebUIConfig<BorealisMOTDUI> {
- public:
-  BorealisMOTDUIConfig();
-};
 
 // The WebUI for chrome://borealis-motd
 // This class is an interface. It should be implemented in //chrome
@@ -47,22 +40,14 @@ class BorealisMOTDUI : public ui::MojoWebDialogUI,
       mojo::PendingReceiver<ash::borealis_motd::mojom::PageHandlerFactory>
           pending_receiver);
 
-  // ash::borealis_motd::mojom::PageHandlerFactory implementation.
-  void CreatePageHandler(
-      mojo::PendingRemote<ash::borealis_motd::mojom::Page> pending_page,
-      mojo::PendingReceiver<ash::borealis_motd::mojom::PageHandler>
-          pending_page_handler) override;
-
  protected:
   // A callback function that is called when the page handler is closed.
   // |action| is the action that the user took on the page.
-  void OnPageClosed();
+  void OnPageClosed(UserMotdAction action);
 
   std::unique_ptr<BorealisMOTDPageHandler> page_handler_;
   mojo::Receiver<ash::borealis_motd::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
-
-  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 }  // namespace borealis

@@ -4,6 +4,9 @@
 
 #include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_dialog.h"
 
+#include <memory>
+
+#include "ash/constants/url_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -60,19 +63,9 @@ class MOTDWebContentsHandler
 
 }  // namespace
 
-void MaybeShowBorealisMOTDDialog(base::OnceCallback<void()> cb,
-                                 content::BrowserContext* context) {
-  if (!base::FeatureList::IsEnabled(features::kShowBorealisMotd)) {
-    std::move(cb).Run();
-    return;
-  }
-
-  BorealisMOTDDialog::Show(std::move(cb), context);
-}
-
-BorealisMOTDDialog::BorealisMOTDDialog(base::OnceCallback<void()> cb,
-                                       content::BrowserContext* context)
-    : close_callback_(std::move(cb)) {
+BorealisMOTDDialog::BorealisMOTDDialog(content::BrowserContext* context,
+                                       OnMotdClosedCallback callback)
+    : close_callback_(std::move(callback)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   set_allow_default_context_menu(false);
@@ -122,14 +115,32 @@ BorealisMOTDDialog::BorealisMOTDDialog(base::OnceCallback<void()> cb,
 BorealisMOTDDialog::~BorealisMOTDDialog() = default;
 
 // static
-void BorealisMOTDDialog::Show(base::OnceCallback<void()> cb,
-                              content::BrowserContext* context) {
+void BorealisMOTDDialog::Show(content::BrowserContext* context,
+                              OnMotdClosedCallback callback) {
   // BorealisMOTDDialog is self-deleting via OnDialogClosed().
-  new BorealisMOTDDialog(std::move(cb), context);
+  new BorealisMOTDDialog(context, std::move(callback));
+}
+
+// static
+void BorealisMOTDDialog::MaybeShow(content::BrowserContext* context,
+                                   OnMotdClosedCallback callback) {
+  if (!base::FeatureList::IsEnabled(features::kShowBorealisMotd)) {
+    std::move(callback).Run(UserMotdAction::kDismiss);
+    return;
+  }
+
+  BorealisMOTDDialog::Show(context, std::move(callback));
 }
 
 void BorealisMOTDDialog::OnDialogClosed(const std::string& json_retval) {
-  std::move(close_callback_).Run();
+  // If the user performed an action to close the dialog such as
+  // clicking X button, the default kDismiss action is kept
+  UserMotdAction user_action = UserMotdAction::kDismiss;
+  if (!json_retval.empty()) {
+    user_action = GetUserActionFromString(json_retval);
+  }
+
+  std::move(close_callback_).Run(user_action);
   delete this;
 }
 

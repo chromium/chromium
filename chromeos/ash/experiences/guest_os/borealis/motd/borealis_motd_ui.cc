@@ -10,7 +10,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_page_handler.h"
-#include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_util.h"
 #include "chromeos/ash/grit/borealis_motd_resources.h"
 #include "chromeos/ash/grit/borealis_motd_resources_map.h"
 #include "content/public/browser/web_contents.h"
@@ -28,10 +27,6 @@ constexpr const char kBorealisMessageURL[] =
 }  // namespace
 
 namespace borealis {
-
-BorealisMOTDUIConfig::BorealisMOTDUIConfig()
-    : DefaultWebUIConfig(content::kChromeUIScheme,
-                         ash::kChromeUIBorealisMOTDHost) {}
 
 BorealisMOTDUI::BorealisMOTDUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
@@ -56,6 +51,7 @@ BorealisMOTDUI::BorealisMOTDUI(content::WebUI* web_ui)
       {"dismissText", IDS_ASH_BOREALIS_MOTD_DISMISS_TEXT},
       {"placeholderText", IDS_ASH_BOREALIS_MOTD_PLACEHOLDER_TEXT},
       {"titleText", IDS_ASH_BOREALIS_MOTD_TITLE_TEXT},
+      {"uninstallText", IDS_ASH_BOREALIS_MOTD_UNINSTALL_TEXT},
   };
   source->AddLocalizedStrings(kStrings);
 
@@ -72,21 +68,13 @@ void BorealisMOTDUI::BindInterface(
   page_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
-void BorealisMOTDUI::CreatePageHandler(
-    mojo::PendingRemote<ash::borealis_motd::mojom::Page> pending_page,
-    mojo::PendingReceiver<ash::borealis_motd::mojom::PageHandler>
-        pending_page_handler) {
-  page_handler_ = std::make_unique<BorealisMOTDPageHandler>(
-      std::move(pending_page_handler), std::move(pending_page),
-      base::BindOnce(&BorealisMOTDUI::OnPageClosed, base::Unretained(this)));
-}
+void BorealisMOTDUI::OnPageClosed(UserMotdAction action) {
+  base::ListValue args;
+  args.Append(GetUserActionString(action));
 
-void BorealisMOTDUI::OnPageClosed() {
   // CloseDialog() is a no-op if we are not in a dialog (e.g. user
   // access the page using the URL directly, which is not supported).
-  ui::MojoWebDialogUI::CloseDialog(base::ListValue());
+  ui::MojoWebDialogUI::CloseDialog(args);
 }
-
-WEB_UI_CONTROLLER_TYPE_IMPL(BorealisMOTDUI)
 
 }  // namespace borealis

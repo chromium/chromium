@@ -10,6 +10,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
+#include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_page_handler.h"
+
 class Profile;
 
 namespace borealis {
@@ -40,10 +42,13 @@ class BorealisAppLauncherImpl : public BorealisAppLauncher {
   // Launch the given |app_id|'s associated application with the given |args|.
   // This can be the borealis launcher itself or one of its GuestOsRegistry
   // apps. |source| indicates the source of the launch request.
+  // |motd_user_action| is used to identify action on the motd dialog that
+  // was taken by the user.
   void LaunchAfterMOTD(std::string app_id,
                        const std::vector<std::string>& args,
                        BorealisLaunchSource source,
-                       OnLaunchedCallback callback);
+                       OnLaunchedCallback callback,
+                       UserMotdAction motd_user_action);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
   base::WeakPtrFactory<BorealisAppLauncherImpl> weak_factory_{this};

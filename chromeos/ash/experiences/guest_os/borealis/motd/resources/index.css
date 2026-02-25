@@ -18,6 +18,13 @@ body {
   margin-inline-end: auto;
 }
 
+.button-container {
+  display: flex;
+  justify-content: center;
+  font: var(--cros-button-1-font);
+  margin-top: 80px;
+}
+
 h2 {
   text-align: center;
 }

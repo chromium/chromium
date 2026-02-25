@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_util.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 namespace content {
@@ -15,26 +16,32 @@ class BrowserContext;
 
 namespace borealis {
 
-// Show Borealis MOTD dialog if features::kBorealis is enabled before the
-// Borealis splash screen.
-void MaybeShowBorealisMOTDDialog(base::OnceCallback<void()> cb,
-                                 content::BrowserContext* context);
-
 class BorealisMOTDDialog : public ui::WebDialogDelegate {
  public:
-  static void Show(base::OnceCallback<void()> cb,
-                   content::BrowserContext* context);
+  // The closed callback used by the Page Handler.
+  // Receives the action the user performed when closing the dialog (dismiss,
+  // uninstall) as an UserMotdAction.
+  using OnMotdClosedCallback = base::OnceCallback<void(UserMotdAction)>;
+
+  static void Show(content::BrowserContext* context,
+                   OnMotdClosedCallback callback);
+
+  // Shows Borealis MOTD dialog if features::kBorealis is enabled. In common
+  // cases, this is used before the Borealis splash screen.
+  static void MaybeShow(content::BrowserContext* context,
+                        OnMotdClosedCallback callback);
+
   BorealisMOTDDialog(const BorealisMOTDDialog&) = delete;
   BorealisMOTDDialog& operator=(const BorealisMOTDDialog&) = delete;
   ~BorealisMOTDDialog() override;
 
  private:
-  BorealisMOTDDialog(base::OnceCallback<void()>,
-                     content::BrowserContext* context);
+  BorealisMOTDDialog(content::BrowserContext* context,
+                     OnMotdClosedCallback callback);
   // ui::WebDialogDelegate:
   void OnDialogClosed(const std::string& json_retval) override;
 
-  base::OnceCallback<void()> close_callback_;
+  OnMotdClosedCallback close_callback_;
 };
 
 }  // namespace borealis

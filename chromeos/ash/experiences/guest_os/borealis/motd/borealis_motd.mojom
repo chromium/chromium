@@ -17,6 +17,11 @@ interface PageHandler {
   // This is called when the web page is "closed" or user clicks dismiss button.
   // The dialog (or whatever) hosting it should also be closed.
   OnDismiss();
+  // This is called when the user clicks uninstall button. Uninstall the
+  // borealis from the system.
+  OnUninstall();
+  // Check if borealis is installed.
+  IsBorealisInstalled() => (bool is_installed);
 };
 
 // Lives in the renderer process. The browser uses this to send updates

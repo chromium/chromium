@@ -34,24 +34,31 @@ void BorealisAppLauncherImpl::Launch(std::string app_id,
                                      const std::vector<std::string>& args,
                                      BorealisLaunchSource source,
                                      OnLaunchedCallback callback) {
-  borealis::MaybeShowBorealisMOTDDialog(
+  borealis::BorealisMOTDDialog::MaybeShow(
+      profile_,
       base::BindOnce(&BorealisAppLauncherImpl::LaunchAfterMOTD,
                      weak_factory_.GetWeakPtr(), std::move(app_id),
-                     std::move(args), std::move(source), std::move(callback)),
-      profile_);
+                     std::move(args), std::move(source), std::move(callback)));
 }
 
 void BorealisAppLauncherImpl::LaunchAfterMOTD(
     std::string app_id,
     const std::vector<std::string>& args,
     BorealisLaunchSource source,
-    OnLaunchedCallback callback) {
+    OnLaunchedCallback callback,
+    UserMotdAction motd_user_action) {
+  // If user uninstalled borealis, we don't need to continue.
+  if (motd_user_action == UserMotdAction::kUninstall) {
+    std::move(callback).Run(LaunchResult::kUninstalled);
+    return;
+  }
+
   if (!borealis::BorealisServiceFactory::GetForProfile(profile_)
            ->Features()
            .IsEnabled()) {
     ash::BorealisInstallerDialog::Show(profile_);
     RecordBorealisInstallSourceHistogram(source);
-    std::move(callback).Run(LaunchResult::kSuccess);
+    std::move(callback).Run(LaunchResult::kUnknownApp);
     return;
   }
   if (!borealis::BorealisServiceFactory::GetForProfile(profile_)
