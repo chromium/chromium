@@ -146,7 +146,10 @@ def tree_closure_notifier(*, name, **kwargs):
 tree_closure_notifier(
     name = "chromium-tree-closer-email",
     notify_rotation_urls = [
-        "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-build-sheriff",
+        #"https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-build-sheriff",
+        # Stop the tree-closer from sending emails to gardeners as we enabled the IRM alerts.
+        # go/irm-gardener-integration
+        "chrome-ops-luci-bisection-test@google.com",
     ],
     template = luci.notifier_template(
         name = "tree_closure_email_template",
