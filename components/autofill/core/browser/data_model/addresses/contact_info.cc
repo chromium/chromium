@@ -148,6 +148,7 @@ std::set<std::u16string> GetNamePartVariantsDeprecated(
   return variants;
 }
 
+// TODO(crbug.com/479905438) Remove once launched.
 bool MatchesCjkVariant(std::u16string_view full_name,
                        const std::set<std::u16string>& given_name_variants,
                        const std::set<std::u16string>& family_name_variants) {
@@ -387,9 +388,6 @@ bool IsNormalizedNameVariantOfLinear(std::u16string_view full_name_1,
                                      std::u16string_view full_name_2) {
   // These early returns are just optimizations, the rest of the logic should
   // handle these cases as well.
-  if (full_name_2.size() > full_name_1.size()) {
-    return false;
-  }
   if (full_name_1 == full_name_2 || full_name_2.empty()) {
     return true;
   }
@@ -397,6 +395,10 @@ bool IsNormalizedNameVariantOfLinear(std::u16string_view full_name_1,
   if (HasCjkNameCharacteristics(base::UTF16ToUTF8(full_name_1))) {
     return IsSubsequence(TokenizeNormalizedCjkName(full_name_1),
                          TokenizeNormalizedCjkName(full_name_2));
+  }
+
+  if (full_name_2.size() > full_name_1.size()) {
+    return false;
   }
 
   std::vector<std::u16string_view> tokens_1 = base::SplitStringPiece(

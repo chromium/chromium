@@ -1103,6 +1103,8 @@ INSTANTIATE_TEST_SUITE_P(
         {.full_name = u"王磊", .other_full_name = u"磊"},
         {.full_name = u"王 磊", .other_full_name = u"王"},
         {.full_name = u"王 磊", .other_full_name = u"磊"},
+        {.full_name = u"王 磊", .other_full_name = u"王磊"},
+        {.full_name = u"王磊", .other_full_name = u"王 磊"},
         {.full_name = u"ワ　タシ", .other_full_name = u"ワ"},
         {.full_name = u"ワ　タシ", .other_full_name = u"タシ"},
         {.full_name = u"ワ・タシ", .other_full_name = u"ワ"},
