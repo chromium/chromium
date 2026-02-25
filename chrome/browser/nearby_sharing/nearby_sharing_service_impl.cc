@@ -1938,8 +1938,7 @@ bool NearbySharingServiceImpl::HasAvailableDiscoveryMediums() {
           net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI ||
       connection_type ==
           net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET;
-  return IsBluetoothPowered() ||
-         (hasNetworkConnection && ::features::IsNearbyMdnsEnabled());
+  return IsBluetoothPowered() || hasNetworkConnection;
 }
 
 void NearbySharingServiceImpl::InvalidateSurfaceState() {

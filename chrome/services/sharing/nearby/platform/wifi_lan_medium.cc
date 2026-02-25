@@ -115,7 +115,7 @@ WifiLanMedium::WifiLanMedium(
   // NOTE: We do not set the disconnect handler for the SharedRemotes here. They
   // are fundamental dependencies of the Nearby Connections process, which will
   // crash if any dependency disconnects.
-  if (mdns_manager_.is_bound() && ::features::IsNearbyMdnsEnabled()) {
+  if (mdns_manager_.is_bound()) {
     mdns_manager_->AddObserver(mdns_observer_.BindNewPipeAndPassRemote());
     VLOG(1) << " Added Mdns observer.";
   }

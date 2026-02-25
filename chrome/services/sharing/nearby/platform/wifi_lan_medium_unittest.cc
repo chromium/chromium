@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -28,7 +27,6 @@
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
-#include "components/cross_device/nearby/nearby_features.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -694,12 +692,7 @@ TEST_F(WifiLanMediumTest, Listen_DestroyWhileWaiting) {
 /*============================================================================*/
 // Begin: StartDiscovery()
 /*============================================================================*/
-TEST_F(WifiLanMediumTest, Discovery_FlagEnabled_StartAndStopSucceeds) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kEnableNearbyMdns},
-      /*disabled_features=*/{});
-
+TEST_F(WifiLanMediumTest, Discovery_StartAndStopSucceeds) {
   Initialize(WifiInitState::kComplete);
 
   api::WifiLanMedium::DiscoveredServiceCallback discovery_callback = {
@@ -713,31 +706,7 @@ TEST_F(WifiLanMediumTest, Discovery_FlagEnabled_StartAndStopSucceeds) {
       /*service_type=*/kNearbyServiceType));
 }
 
-TEST_F(WifiLanMediumTest, Discovery_FlagDisabled_StartAndStopFails) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{::features::kEnableNearbyMdns});
-
-  Initialize(WifiInitState::kComplete);
-
-  api::WifiLanMedium::DiscoveredServiceCallback discovery_callback = {
-      .service_discovered_cb = [](const NsdServiceInfo& service_info) {},
-      .service_lost_cb = [](const NsdServiceInfo& service_info) {}};
-
-  EXPECT_FALSE(wifi_lan_medium_->StartDiscovery(
-      /*service_type=*/kNearbyServiceType,
-      /*callback=*/std::move(discovery_callback)));
-  EXPECT_FALSE(wifi_lan_medium_->StopDiscovery(
-      /*service_type=*/kNearbyServiceType));
-}
-
 TEST_F(WifiLanMediumTest, Discovery_StopUnknownServiceFails) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kEnableNearbyMdns},
-      /*disabled_features=*/{});
-
   Initialize(WifiInitState::kComplete);
 
   api::WifiLanMedium::DiscoveredServiceCallback discovery_callback = {
@@ -752,11 +721,6 @@ TEST_F(WifiLanMediumTest, Discovery_StopUnknownServiceFails) {
 }
 
 TEST_F(WifiLanMediumTest, Discovery_FindsService) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kEnableNearbyMdns},
-      /*disabled_features=*/{});
-
   Initialize(WifiInitState::kComplete);
 
   StartMdnsDiscovery(/*service_type=*/kNearbyServiceType);
@@ -781,11 +745,6 @@ TEST_F(WifiLanMediumTest, Discovery_FindsService) {
 }
 
 TEST_F(WifiLanMediumTest, Discovery_LosesAndFindsService) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kEnableNearbyMdns},
-      /*disabled_features=*/{});
-
   Initialize(WifiInitState::kComplete);
 
   StartMdnsDiscovery(/*service_type=*/kNearbyServiceType);
@@ -830,11 +789,6 @@ TEST_F(WifiLanMediumTest, Discovery_LosesAndFindsService) {
 }
 
 TEST_F(WifiLanMediumTest, Discovery_MultipleDiscovery) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{::features::kEnableNearbyMdns},
-      /*disabled_features=*/{});
-
   Initialize(WifiInitState::kComplete);
 
   // Start 2 discovery sessions.

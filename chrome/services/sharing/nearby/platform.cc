@@ -384,7 +384,7 @@ std::unique_ptr<WifiLanMedium> ImplementationPlatform::CreateWifiLanMedium() {
 
   const mojo::SharedRemote<::sharing::mojom::MdnsManager>& mdns_manager =
       nearby_shared_remotes->mdns_manager;
-  if (features::IsNearbyMdnsEnabled() && !mdns_manager.is_bound()) {
+  if (!mdns_manager.is_bound()) {
     LOG(ERROR) << "MdnsManager not bound. Returning null WifiLan medium";
     return nullptr;
   }

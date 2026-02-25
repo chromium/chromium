@@ -17143,21 +17143,6 @@
             ]
         }
     ],
-    "NearbyMdns": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableNearbyMdns"
-                    ]
-                }
-            ]
-        }
-    ],
     "NearbyShareNameEnabled": [
         {
             "platforms": [

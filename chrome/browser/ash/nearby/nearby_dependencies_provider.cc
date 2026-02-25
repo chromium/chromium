@@ -294,18 +294,14 @@ NearbyDependenciesProvider::GetWifiLanDependencies() {
       std::move(tcp_socket_factory.receiver));
 
   MojoPipe<::sharing::mojom::MdnsManager> mdns_manager;
-  if (::features::IsNearbyMdnsEnabled()) {
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<::nearby::sharing::NearbyConnectionsMdnsManager>(),
-        std::move(mdns_manager.receiver));
-  }
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<::nearby::sharing::NearbyConnectionsMdnsManager>(),
+      std::move(mdns_manager.receiver));
 
   return ::sharing::mojom::WifiLanDependencies::New(
       std::move(cros_network_config.remote),
       std::move(firewall_hole_factory.remote),
-      std::move(tcp_socket_factory.remote),
-      (::features::IsNearbyMdnsEnabled() ? std::move(mdns_manager.remote)
-                                         : mojo::NullRemote()));
+      std::move(tcp_socket_factory.remote), std::move(mdns_manager.remote));
 }
 
 sharing::mojom::WifiDirectDependenciesPtr

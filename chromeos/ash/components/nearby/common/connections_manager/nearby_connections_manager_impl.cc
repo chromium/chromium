@@ -296,8 +296,7 @@ void NearbyConnectionsManagerImpl::StartDiscovery(
       ShouldEnableWebRtc(data_usage,
                          NearbyConnectionsManager::PowerLevel::kHighPower),
       /*wifi_lan=*/
-      ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower) &&
-          ::features::IsNearbyMdnsEnabled(),
+      ShouldEnableWifiLan(data_usage, PowerLevel::kHighPower),
       /*wifi_direct=*/
       base::FeatureList::IsEnabled(features::kNearbySharingWifiDirect));
   CD_LOG(VERBOSE, Feature::NEARBY_INFRA)
