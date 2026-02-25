@@ -164,28 +164,6 @@ each histogram.
   </token>
 </histogram>
 
-<histogram name="PerformanceManager.ChildScenarioMappingResult"
-    enum="ChildScenarioMappingResult" expires_after="2025-12-31">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The result of an attempt to map the shared memory for performance scenarios
-    in a child process. Recorded when a child process receives a shared memory
-    region from the browser process to map. If the result is kSystemError,
-    PerformanceManager.ChildScenarioMappingSystemError is also logged.
-  </summary>
-</histogram>
-
-<histogram name="PerformanceManager.ChildScenarioMappingSystemError"
-    units="system error code" expires_after="2025-12-31">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The system error code when PerformanceManager.ChildScenarioMappingResult is
-    kSystemError.
-  </summary>
-</histogram>
-
 <histogram
     name="PerformanceManager.CPUMonitorMemoryUse.{ResourceContextType}.{ResourceContextState}"
     units="KB" expires_after="2025-09-07">
@@ -210,29 +188,6 @@ each histogram.
     <variant name="Live" summary="associated with an existing resource"/>
     <variant name="Total" summary="in any state"/>
   </token>
-</histogram>
-
-<histogram name="PerformanceManager.CreateScenarioMemoryResult"
-    enum="CreateScenarioMemoryResult" expires_after="2025-12-31">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The result of an attempt to create the shared memory for performance
-    scenarios in the browser process. Recorded when a PerformanceScenarioData is
-    created for a process, shortly after the process starts. If the result is
-    kSystemError, PerformanceManager.CreateScenarioMemorySystemError is also
-    logged.
-  </summary>
-</histogram>
-
-<histogram name="PerformanceManager.CreateScenarioMemorySystemError"
-    units="system error code" expires_after="2025-12-31">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The system error code when PerformanceManager.CreateScenarioMemoryResult is
-    kSystemError.
-  </summary>
 </histogram>
 
 <histogram name="PerformanceManager.Discarding.DecisionResult{Trigger}"
