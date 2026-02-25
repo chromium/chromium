@@ -9,8 +9,6 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipDescription;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.os.Build;
@@ -41,7 +39,6 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -217,13 +214,10 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                             assert mLinkToTextCoordinator != null;
                             ShareParams textShareParams =
                                     mLinkToTextCoordinator.getShareParams(LinkToggleState.NO_LINK);
-                            ClipboardManager clipboard =
-                                    (ClipboardManager)
-                                            mActivity.getSystemService(Context.CLIPBOARD_SERVICE);
-                            clipboard.setPrimaryClip(
-                                    ClipData.newPlainText(
+                            Clipboard.getInstance()
+                                    .setText(
                                             textShareParams.getTitle(),
-                                            textShareParams.getTextAndUrl()));
+                                            assertNonNull(textShareParams.getTextAndUrl()));
                         })
                 .build();
     }
@@ -238,25 +232,19 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
                             String linkUrl = mShareParams.getUrl();
                             Uri imageUri = mShareParams.getImageUriToShare();
                             if (imageUri != null) {
-                                // This call stores the URL in the cache image provider.
-                                Clipboard.getInstance().setImageUri(imageUri);
-
-                                ClipboardManager clipboard =
-                                        (ClipboardManager)
-                                                mActivity.getSystemService(
-                                                        Context.CLIPBOARD_SERVICE);
-                                ClipData clip =
+                                String mimeType = mShareParams.getFileContentType();
+                                assert mimeType != null;
+                                ClipData clipData =
                                         new ClipData(
                                                 "imageLink",
                                                 new String[] {
-                                                    mShareParams.getFileContentType(),
-                                                    ClipDescription.MIMETYPE_TEXT_PLAIN
+                                                    mimeType, ClipDescription.MIMETYPE_TEXT_PLAIN
                                                 },
                                                 new ClipData.Item(
                                                         linkUrl, /* intent= */ null, imageUri));
-                                clipboard.setPrimaryClip(clip);
-                                Toast.makeText(mActivity, R.string.image_copied, Toast.LENGTH_SHORT)
-                                        .show();
+                                Clipboard.getInstance()
+                                        .setImageUri(
+                                                imageUri, clipData, /* notifyOnSuccess= */ true);
                             }
                         })
                 .build();

@@ -448,28 +448,33 @@ public class ClipboardImpl extends Clipboard
 
             @Override
             protected void onPostExecute(@Nullable ClipData clipData) {
-                if (setPrimaryClipNoException(clipData) && notifyOnSuccess) {
-                    showToastIfNeeded(R.string.image_copied);
-                }
-
-                // Storing timestamp is for avoiding accessing the system clipboard data, which may
-                // cause the clipboard access notification to show up, when we try to clean up the
-                // image file. There is a small chance that the clipboard image is updated between
-                // |setPrimaryClipNoException| and |getImageTimestamp|, and we will get a wrong
-                // timestamp. But it is okay since the timestamp is for deciding if the image file
-                // need to be deleted. If the timestamp is wrong here, we just keep the image file a
-                // little longer than expected.
-                long imageTimestamp = getImageTimestamp();
-
-                if (mImageFileProvider == null) {
-                    mPendingCopiedImageMetadata =
-                            new ImageFileProvider.ClipboardFileMetadata(uri, imageTimestamp);
-                } else {
-                    mImageFileProvider.storeLastCopiedImageMetadata(
-                            new ImageFileProvider.ClipboardFileMetadata(uri, imageTimestamp));
-                }
+                setImageUri(uri, clipData, notifyOnSuccess);
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    @Override
+    public void setImageUri(Uri uri, ClipData clipData, boolean notifyOnSuccess) {
+        if (setPrimaryClipNoException(clipData) && notifyOnSuccess) {
+            showToastIfNeeded(R.string.image_copied);
+        }
+
+        // Storing timestamp is for avoiding accessing the system clipboard data, which may
+        // cause the clipboard access notification to show up, when we try to clean up the
+        // image file. There is a small chance that the clipboard image is updated between
+        // |setPrimaryClipNoException| and |getImageTimestamp|, and we will get a wrong
+        // timestamp. But it is okay since the timestamp is for deciding if the image file
+        // need to be deleted. If the timestamp is wrong here, we just keep the image file a
+        // little longer than expected.
+        long imageTimestamp = getImageTimestamp();
+
+        if (mImageFileProvider == null) {
+            mPendingCopiedImageMetadata =
+                    new ImageFileProvider.ClipboardFileMetadata(uri, imageTimestamp);
+        } else {
+            mImageFileProvider.storeLastCopiedImageMetadata(
+                    new ImageFileProvider.ClipboardFileMetadata(uri, imageTimestamp));
+        }
     }
 
     @Override

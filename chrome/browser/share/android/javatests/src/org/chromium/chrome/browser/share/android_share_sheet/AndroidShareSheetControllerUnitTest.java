@@ -51,9 +51,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.base.task.test.ShadowPostTask;
-import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
@@ -95,9 +92,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Test for {@link AndroidShareSheetController} and {@link AndroidCustomActionProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        sdk = 34,
-        shadows = {ShadowPostTask.class})
+@Config(sdk = 34)
 public class AndroidShareSheetControllerUnitTest {
     private static final String SELECTOR_FOR_LINK_TO_TEXT = "selector";
 
@@ -160,15 +155,6 @@ public class AndroidShareSheetControllerUnitTest {
         doAnswer(invocation -> new GURL(invocation.getArgument(0)))
                 .when(mMockDomDistillerUrlUtilsJni)
                 .getOriginalUrlFromDistillerUrl(anyString());
-        // Setup shadow post task for clipboard actions.
-        ShadowPostTask.setTestImpl(
-                new TestImpl() {
-                    @Override
-                    public void postDelayedTask(
-                            @TaskTraits int taskTraits, Runnable task, long delay) {
-                        task.run();
-                    }
-                });
 
         doReturn(true).when(mTabGroupSharingController).isAvailableForTab(any());
 
@@ -207,7 +193,6 @@ public class AndroidShareSheetControllerUnitTest {
     /** Test whether custom actions are attached to the intent. */
     @Test
     @RequiresApi(api = 34)
-    @Config(sdk = 34)
     public void shareWithCustomAction() {
         ShareParams params =
                 new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL.getSpec())
@@ -242,7 +227,6 @@ public class AndroidShareSheetControllerUnitTest {
 
     @Test
     @RequiresApi(api = 34)
-    @Config(sdk = 34)
     public void shareWithoutCustomAction() {
         ShareParams params =
                 new ShareParams.Builder(mWindow, "", "")
@@ -258,7 +242,6 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
-    @Config(sdk = 34)
     public void choosePrintAction() throws CanceledException {
         Assume.assumeFalse(
                 "Test ignored in the desktop mode because the Print action is not showed in the"
@@ -354,7 +337,6 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
-    @Config(sdk = 34)
     public void shareImageWithCustomActions() {
         Uri testImageUri = Uri.parse("content://test.image.uri");
         ShareParams params =
@@ -380,7 +362,6 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
-    @Config(sdk = 34)
     public void shareImageLinkThenCopyImageAndLink() throws CanceledException {
         Uri testImageUri = Uri.parse("content://test.image.uri");
         ShareParams params =
@@ -535,7 +516,6 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
-    @Config(sdk = 34)
     public void shareLinkToHighlightText() throws CanceledException {
         ShareParams params =
                 new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL.getSpec())
@@ -586,7 +566,6 @@ public class AndroidShareSheetControllerUnitTest {
 
     @Test
     @RequiresApi(34)
-    @Config(sdk = 34)
     public void shareLinkToHighlightTextFailed() {
         LinkToTextCoordinator.setForceSelectorForTesting("");
 
@@ -625,7 +604,6 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
-    @Config(sdk = 34)
     public void shareQrCodeForImage() throws CanceledException {
         QrCodeDialog.setInstanceForTesting(Mockito.mock(QrCodeDialog.class));
         Uri testImageUri = Uri.parse("content://test.image.uri");
@@ -659,7 +637,6 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
-    @Config(sdk = 34)
     public void webShareImageLink() throws CanceledException {
         Uri testImageUri = Uri.parse("content://test.image.uri/image.png");
         ShareParams params =
@@ -695,7 +672,6 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
-    @Config(sdk = 34)
     public void webShareImageOnly() {
         Uri testImageUri = Uri.parse("content://test.image.uri");
         ShareParams params =
@@ -720,7 +696,6 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
-    @Config(sdk = 34)
     public void chooseLongScreenShot() throws CanceledException {
         LongScreenshotsCoordinator mockCoordinator = Mockito.mock(LongScreenshotsCoordinator.class);
         LongScreenshotsCoordinator.setInstanceForTesting(mockCoordinator);
@@ -758,7 +733,6 @@ public class AndroidShareSheetControllerUnitTest {
     }
 
     @Test
-    @Config(sdk = 34)
     public void shareScreenshot() {
         Uri testImageUri = Uri.parse("content://test.screenshot.uri");
         // Build the same params and share extras as sharing a long screenshot
