@@ -32,6 +32,8 @@ namespace {
 // is unloaded.
 bool ShouldCloseTabOnExtensionUnload(const Extension* extension,
                                      content::WebContents* web_contents) {
+  CHECK(web_contents);
+
   // Case 1: A "regular" extension page, e.g. chrome-extension://<id>/page.html.
   // Note: we check the tuple or precursor tuple in order to close any
   // windows with opaque origins that were opened by extensions, and may
@@ -68,6 +70,7 @@ bool ShouldCloseTabOnExtensionUnload(const Extension* extension,
 // |extension_id|.
 void UnmuteIfMutedByExtension(content::WebContents* contents,
                               const ExtensionId& extension_id) {
+  CHECK(contents);
   LastMuteMetadata::CreateForWebContents(contents);  // Ensures metadata exists.
   LastMuteMetadata* const metadata =
       LastMuteMetadata::FromWebContents(contents);
@@ -107,6 +110,13 @@ void ExtensionBrowserWindowHelper::CleanUpTabsOnUnload(
   // Iterate backwards as we may remove items while iterating.
   for (int i = tab_list->GetTabCount() - 1; i >= 0; --i) {
     content::WebContents* web_contents = tab_list->GetTab(i)->GetContents();
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(http://crbug.com/453008083): Until kLoadAllTabsAtStartup and
+    // kWebContentsDiscard ship, `web_contents` may be null for some tabs.
+    if (!web_contents) {
+      continue;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
     if (ShouldCloseTabOnExtensionUnload(extension, web_contents)) {
       // Do not close the last tab if it belongs to the extension. Instead
       // replace it with the default NTP.
