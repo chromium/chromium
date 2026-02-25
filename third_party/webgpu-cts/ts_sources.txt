@@ -342,6 +342,7 @@ src/webgpu/api/validation/image_copy/buffer_related.spec.ts
 src/webgpu/api/validation/image_copy/buffer_texture_copies.spec.ts
 src/webgpu/api/validation/image_copy/layout_related.spec.ts
 src/webgpu/api/validation/image_copy/texture_related.spec.ts
+src/webgpu/api/validation/pipeline/immediates.spec.ts
 src/webgpu/api/validation/query_set/create.spec.ts
 src/webgpu/api/validation/query_set/destroy.spec.ts
 src/webgpu/api/validation/queue/buffer_mapped.spec.ts
