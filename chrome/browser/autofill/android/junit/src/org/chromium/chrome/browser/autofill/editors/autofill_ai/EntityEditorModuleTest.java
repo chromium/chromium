@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DATE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.TEXT_INPUT;
@@ -100,6 +101,18 @@ public class EntityEditorModuleTest {
                     /* typeNameAsString= */ "Passport number",
                     /* dataType= */ DataType.STRING,
                     /* fieldType= */ FieldType.PASSPORT_NUMBER);
+    private static final AttributeType PASSPORT_ISSUE_DATE_TYPE =
+            new AttributeType(
+                    /* typeName= */ AttributeTypeName.PASSPORT_ISSUE_DATE,
+                    /* typeNameAsString= */ "Issue date",
+                    /* dataType= */ DataType.DATE,
+                    /* fieldType= */ FieldType.PASSPORT_ISSUE_DATE);
+    private static final AttributeType PASSPORT_EXPIRATION_DATE_TYPE =
+            new AttributeType(
+                    /* typeName= */ AttributeTypeName.PASSPORT_EXPIRATION_DATE,
+                    /* typeNameAsString= */ "Expiration date",
+                    /* dataType= */ DataType.DATE,
+                    /* fieldType= */ FieldType.PASSPORT_EXPIRATION_DATE);
     private static final EntityType PASSPORT_TYPE =
             new EntityType(
                     /* typeName= */ EntityTypeName.PASSPORT,
@@ -111,7 +124,9 @@ public class EntityEditorModuleTest {
                     /* attributeTypes= */ List.of(
                             PASSPORT_NAME_ATTRIBUTE_TYPE,
                             PASSPORT_COUNTRY_ATTRIBUTE_TYPE,
-                            PASSPORT_NUMBER_ATTRIBUTE_TYPE));
+                            PASSPORT_NUMBER_ATTRIBUTE_TYPE,
+                            PASSPORT_ISSUE_DATE_TYPE,
+                            PASSPORT_EXPIRATION_DATE_TYPE));
 
     private static final EntityInstance LOCAL_PASSPORT =
             new EntityInstance.Builder(PASSPORT_TYPE)
@@ -122,6 +137,9 @@ public class EntityEditorModuleTest {
                     .addAttribute(
                             new AttributeInstance(
                                     PASSPORT_NUMBER_ATTRIBUTE_TYPE, /* value= */ "AA123456"))
+                    .addAttribute(
+                            new AttributeInstance(
+                                    PASSPORT_ISSUE_DATE_TYPE, /* value= */ "2026-02-15"))
                     .build();
 
     private static final EntityInstance WALLET_PASSPORT =
@@ -329,6 +347,8 @@ public class EntityEditorModuleTest {
                 /* fieldType= */ FieldType.PASSPORT_NUMBER,
                 /* label= */ "Passport number",
                 /* value= */ "AA123456");
+        verifyDateFieldContent(editorFields.get(3), /* label= */ "Issue date");
+        verifyDateFieldContent(editorFields.get(4), /* label= */ "Expiration date");
     }
 
     private void verifyTextFieldContent(
@@ -351,6 +371,12 @@ public class EntityEditorModuleTest {
         assertFalse(item.model.get(IS_REQUIRED));
         assertEquals(label, item.model.get(LABEL));
         assertEquals(value, item.model.get(VALUE));
+    }
+
+    private void verifyDateFieldContent(EditorItem item, String label) {
+        assertEquals(DATE, item.type);
+        assertFalse(item.model.get(IS_REQUIRED));
+        assertEquals(label, item.model.get(LABEL));
     }
 
     private void verifySourceNotice(ListModel<EditorItem> editorFields, String expectedNoticeText) {

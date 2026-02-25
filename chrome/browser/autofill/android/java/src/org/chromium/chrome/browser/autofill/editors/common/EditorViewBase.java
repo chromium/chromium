@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill.editors.common;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DATE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NON_EDITABLE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NOTICE;
@@ -44,6 +45,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
+import org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldView;
+import org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldViewBinder;
 import org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldView;
 import org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldViewBinder;
 import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
@@ -105,6 +108,8 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
             mTextFieldMCPs = new ArrayList<>();
     private final List<PropertyModelChangeProcessor<PropertyModel, DropdownFieldView, PropertyKey>>
             mDropdownFieldMCPs = new ArrayList<>();
+    private final List<PropertyModelChangeProcessor<PropertyModel, DateFieldView, PropertyKey>>
+            mDateFieldMCPs = new ArrayList<>();
     private final List<EditText> mEditableTextFields = new ArrayList<>();
     private final List<Spinner> mDropdownFields = new ArrayList<>();
 
@@ -198,10 +203,6 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
 
     public List<FieldView> getFieldViews() {
         return Collections.unmodifiableList(mFieldViews);
-    }
-
-    public void addFieldView(FieldView fieldView) {
-        mFieldViews.add(fieldView);
     }
 
     public void setEditorTitle(String editorTitle) {
@@ -461,8 +462,10 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
         mFieldViews.clear();
         mTextFieldMCPs.forEach(PropertyModelChangeProcessor::destroy);
         mDropdownFieldMCPs.forEach(PropertyModelChangeProcessor::destroy);
+        mDateFieldMCPs.forEach(PropertyModelChangeProcessor::destroy);
         mTextFieldMCPs.clear();
         mDropdownFieldMCPs.clear();
+        mDateFieldMCPs.clear();
         mEditableTextFields.clear();
         mDropdownFields.clear();
 
@@ -532,7 +535,7 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
                                     editorItem.model,
                                     dropdownView,
                                     DropdownFieldViewBinder::bindDropdownFieldView));
-                    addFieldView(dropdownView);
+                    mFieldViews.add(dropdownView);
                     mDropdownFields.add(dropdownView.getDropdown());
                     childView = dropdownView.getLayout();
                     break;
@@ -546,7 +549,7 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
                                     editorItem.model,
                                     inputLayout,
                                     TextFieldViewBinder::bindTextFieldView));
-                    addFieldView(inputLayout);
+                    mFieldViews.add(inputLayout);
                     mEditableTextFields.add(inputLayout.getEditText());
                     childView = inputLayout;
                     break;
@@ -576,6 +579,18 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
                             textView,
                             EditorComponentsViewBinder::bindNoticeTextView);
                     childView = noticeLayout;
+                    break;
+                }
+            case DATE:
+                {
+                    DateFieldView dateField = new DateFieldView(getStyledContext());
+                    mDateFieldMCPs.add(
+                            PropertyModelChangeProcessor.create(
+                                    editorItem.model,
+                                    dateField,
+                                    DateFieldViewBinder::bindDateFieldView));
+                    mFieldViews.add(dateField);
+                    childView = dateField;
                     break;
                 }
         }

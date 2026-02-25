@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEdi
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DATE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.TEXT_INPUT;
@@ -21,6 +22,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.EditorComponen
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
+import static org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldProperties.DATE_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
@@ -136,9 +138,13 @@ class EntityEditorMediator {
                     editorFields.add(countryItem);
                     mAttributeFields.put(attributeType, countryItem.model);
                     break;
-                default:
+                case DataType.DATE:
+                    editorFields.add(getDateDropdown(attributeType));
                     break;
-                    // TODO: crbug.com/476755159 - Implement other data types.
+                default:
+                    assert false
+                            : "Unhandled entity attribute data type: "
+                                    + attributeType.getDataType();
             }
         }
         maybeAddEntitySourceNoticeItem(editorFields, mEntityInstance.getRecordType());
@@ -174,6 +180,16 @@ class EntityEditorMediator {
                         .with(IS_REQUIRED, false)
                         .with(VALUE, value)
                         .build());
+    }
+
+    private EditorItem getDateDropdown(AttributeType attributeType) {
+        return new EditorItem(
+                DATE,
+                new PropertyModel.Builder(DATE_ALL_KEYS)
+                        .with(LABEL, attributeType.getTypeNameAsString())
+                        .with(IS_REQUIRED, false)
+                        .build(),
+                /* isFullLine= */ true);
     }
 
     private String getStringAttribute(EntityInstance entityInstance, AttributeType attributeType) {

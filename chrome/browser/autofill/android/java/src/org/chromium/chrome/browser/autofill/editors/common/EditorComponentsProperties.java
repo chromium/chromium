@@ -41,7 +41,13 @@ public class EditorComponentsProperties {
     /*
      * Types of fields this editor model supports.
      */
-    @IntDef({ItemType.DROPDOWN, ItemType.TEXT_INPUT, ItemType.NON_EDITABLE_TEXT, ItemType.NOTICE})
+    @IntDef({
+        ItemType.DROPDOWN,
+        ItemType.TEXT_INPUT,
+        ItemType.NON_EDITABLE_TEXT,
+        ItemType.NOTICE,
+        ItemType.DATE
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ItemType {
         // A fixed list of values, only 1 of which can be selected.
@@ -52,6 +58,8 @@ public class EditorComponentsProperties {
         int NON_EDITABLE_TEXT = 3;
         // A notice string that is not editable.
         int NOTICE = 4;
+        // 3 dropdowns to pick a date.
+        int DATE = 5;
     }
 
     public static boolean isDropdownField(ListItem fieldItem) {
