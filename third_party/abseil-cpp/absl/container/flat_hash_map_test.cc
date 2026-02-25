@@ -33,7 +33,6 @@
 #include "absl/container/internal/unordered_map_modifiers_test.h"
 #include "absl/log/check.h"
 #include "absl/meta/type_traits.h"
-#include "absl/types/any.h"
 
 #if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
 #include <ranges>  // NOLINT(build/c++20)

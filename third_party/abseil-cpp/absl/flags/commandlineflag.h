@@ -27,6 +27,7 @@
 #define ABSL_FLAGS_COMMANDLINEFLAG_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "absl/base/config.h"
@@ -87,11 +88,11 @@ class CommandLineFlag {
   // absl::CommandLineFlag::TryGet()
   //
   // Attempts to retrieve the flag value. Returns value on success,
-  // absl::nullopt otherwise.
+  // std::nullopt otherwise.
   template <typename T>
-  absl::optional<T> TryGet() const {
+  std::optional<T> TryGet() const {
     if (IsRetired() || !IsOfType<T>()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
 
     // Implementation notes:
@@ -119,7 +120,7 @@ class CommandLineFlag {
     Read(&u.value);
     // allow retired flags to be "read", so we can report invalid access.
     if (IsRetired()) {
-      return absl::nullopt;
+      return std::nullopt;
     }
     return std::move(u.value);
   }

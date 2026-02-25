@@ -61,6 +61,25 @@ cc_library(
 )
 
 cc_library(
+    name = "hardening",
+    srcs = [
+        "internal/hardening.cc",
+    ],
+    hdrs = [
+        "internal/hardening.h",
+    ],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = [
+        "//absl:__subpackages__",
+    ],
+    deps = [
+        ":config",
+        ":core_headers",
+    ],
+)
+
+cc_library(
     name = "log_severity",
     srcs = ["log_severity.cc"],
     hdrs = ["log_severity.h"],
@@ -616,6 +635,22 @@ cc_test(
 )
 
 cc_test(
+    name = "hardening_test",
+    size = "small",
+    srcs = [
+        "internal/hardening_test.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":config",
+        ":hardening",
+        "@googletest//:gtest",
+        "@googletest//:gtest_main",
+    ],
+)
+
+cc_test(
     name = "no_destructor_test",
     srcs = ["no_destructor_test.cc"],
     copts = ABSL_TEST_COPTS,
@@ -950,7 +985,6 @@ cc_test(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":core_headers",
-        "//absl/types:optional",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],

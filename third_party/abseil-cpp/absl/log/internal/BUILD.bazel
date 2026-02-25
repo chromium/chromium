@@ -470,7 +470,6 @@ cc_library(
         "//absl/memory",
         "//absl/strings",
         "//absl/synchronization",
-        "//absl/types:optional",
     ],
 )
 

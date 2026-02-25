@@ -352,7 +352,6 @@ absl_cc_test(
     absl::flags_parse
     absl::flags_reflection
     absl::int128
-    absl::optional
     absl::raw_logging_internal
     absl::strings
     absl::time

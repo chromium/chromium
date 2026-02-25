@@ -933,7 +933,7 @@ struct AbslInternal_YouForgotToExplicitlyInitializeAField {
 // We disable this on Clang versions < 13 because of the following
 // false-positive:
 //
-//   absl::string_view f(absl::optional<absl::string_view> sv) { return *sv; }
+//   absl::string_view f(std::optional<absl::string_view> sv) { return *sv; }
 //
 // See the following links for details:
 // https://reviews.llvm.org/D64448
@@ -964,7 +964,7 @@ struct AbslInternal_YouForgotToExplicitlyInitializeAField {
 // We disable this on Clang versions < 13 because of the following
 // false-positive:
 //
-//   absl::string_view f(absl::optional<absl::string_view> sv) { return *sv; }
+//   absl::string_view f(std::optional<absl::string_view> sv) { return *sv; }
 //
 // See the following links for details:
 // https://reviews.llvm.org/D64448

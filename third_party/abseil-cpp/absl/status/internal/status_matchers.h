@@ -16,12 +16,12 @@
 #define ABSL_STATUS_INTERNAL_STATUS_MATCHERS_H_
 
 #include <ostream>  // NOLINT
-#include <string>
 #include <type_traits>
 #include <utility>
 
 #include "gmock/gmock.h"  // gmock_for_status_matchers.h
 #include "absl/base/config.h"
+#include "absl/base/macros.h"
 #include "absl/status/status.h"
 #include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
@@ -30,12 +30,20 @@ namespace absl_testing {
 ABSL_NAMESPACE_BEGIN
 namespace status_internal {
 
-inline const absl::Status& GetStatus(const absl::Status& status) {
+// TODO(b/323927127): Remove ABSL_REFACTOR_INLINE once callers are cleaned up
+// and move it into a namespace like adl_barrier without types to avoid
+// accidental ADL.
+ABSL_REFACTOR_INLINE inline const absl::Status& GetStatus(
+    const absl::Status& status) {
   return status;
 }
 
+// TODO(b/323927127): Remove ABSL_REFACTOR_INLINE once callers are cleaned up
+// and move it into a namespace like adl_barrier without types to avoid
+// accidental ADL.
 template <typename T>
-inline const absl::Status& GetStatus(const absl::StatusOr<T>& status) {
+ABSL_REFACTOR_INLINE const absl::Status& GetStatus(
+    const absl::StatusOr<T>& status) {
   return status.status();
 }
 

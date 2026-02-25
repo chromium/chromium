@@ -257,6 +257,5 @@ absl_test("flag_test") {
     "//third_party/abseil-cpp/absl/strings",
     "//third_party/abseil-cpp/absl/strings:string_view",
     "//third_party/abseil-cpp/absl/time",
-    "//third_party/abseil-cpp/absl/types:optional",
   ]
 }

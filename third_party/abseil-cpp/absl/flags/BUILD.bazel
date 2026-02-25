@@ -411,7 +411,6 @@ cc_test(
         "//absl/numeric:int128",
         "//absl/strings",
         "//absl/time",
-        "//absl/types:optional",
         "@googletest//:gtest",
         "@googletest//:gtest_main",
     ],
@@ -437,7 +436,6 @@ cc_binary(
         ":reflection",
         "//absl/strings",
         "//absl/time",
-        "//absl/types:optional",
         "@google_benchmark//:benchmark_main",
     ],
 )

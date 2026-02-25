@@ -154,6 +154,34 @@ absl_cc_test(
     GTest::gmock_main
 )
 
+absl_cc_library(
+  NAME
+    internal_optional_ref
+  HDRS
+    "optional_ref.h"
+  COPTS
+    ${ABSL_DEFAULT_COPTS}
+  DEPS
+    absl::config
+    absl::core_headers
+  PUBLIC
+)
+
+absl_cc_test(
+  NAME
+    optional_ref_test
+  SRCS
+    "optional_ref_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
+  DEPS
+    absl::base
+    absl::config
+    absl::internal_optional_ref
+    absl::strings
+    GTest::gmock_main
+)
+
 # Deprecated empty library.
 # Clients should remove this dependency.
 absl_cc_library(

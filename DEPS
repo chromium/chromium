@@ -4075,6 +4075,7 @@ include_rules = [
   '-third_party/abseil-cpp/absl/time',
   '-third_party/abseil-cpp/absl/types/any.h',
   '-third_party/abseil-cpp/absl/types/optional.h',
+  '-third_party/abseil-cpp/absl/types/optional_ref.h',
   '-third_party/abseil-cpp/absl/types/span.h',
   '-third_party/abseil-cpp/absl/types/variant.h',
   '-third_party/abseil-cpp/absl/utility/utility.h',

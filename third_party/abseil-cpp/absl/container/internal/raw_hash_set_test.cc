@@ -31,6 +31,7 @@
 #include <map>
 #include <memory>
 #include <numeric>
+#include <optional>
 #include <ostream>
 #include <random>
 #include <set>
@@ -53,7 +54,6 @@
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_function_defaults.h"
 #include "absl/container/internal/hash_policy_testing.h"
-#include "absl/random/random.h"
 #include "absl/container/internal/hashtable_control_bytes.h"
 #include "absl/container/internal/hashtable_debug.h"
 #include "absl/container/internal/hashtablez_sampler.h"
@@ -68,9 +68,9 @@
 #include "absl/memory/memory.h"
 #include "absl/meta/type_traits.h"
 #include "absl/numeric/int128.h"
+#include "absl/random/random.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -3840,7 +3840,7 @@ struct DestroyCaller {
   ~DestroyCaller() {
     if (destroy_func) (*destroy_func)();
   }
-  void Deactivate() { destroy_func = absl::nullopt; }
+  void Deactivate() { destroy_func = std::nullopt; }
 
   template <typename H>
   friend H AbslHashValue(H h, const DestroyCaller& d) {
@@ -3849,7 +3849,7 @@ struct DestroyCaller {
   bool operator==(const DestroyCaller& d) const { return val == d.val; }
 
   int val;
-  absl::optional<absl::FunctionRef<void()>> destroy_func;
+  std::optional<absl::FunctionRef<void()>> destroy_func;
 };
 
 TEST(Table, ReentrantCallsFail) {
@@ -3896,8 +3896,11 @@ TEST(Table, DestroyedCallsFail) {
   }
 #if !defined(__clang__) && defined(__GNUC__)
   GTEST_SKIP() << "Flaky on GCC.";
-#endif
-  absl::optional<IntTable> t;
+#elif defined(ABSL_HAVE_THREAD_SANITIZER)
+  GTEST_SKIP() << "Fails on TSan.";
+  // Note: we use else rather than endif here to avoid unreachable code errors.
+#else
+  std::optional<IntTable> t;
   t.emplace({1});
   IntTable* t_ptr = &*t;
   EXPECT_TRUE(t_ptr->contains(1));
@@ -3907,8 +3910,10 @@ TEST(Table, DestroyedCallsFail) {
       "use-of-uninitialized-value";
 #else
       "destroyed hash table";
-#endif
+#endif  // ABSL_HAVE_MEMORY_SANITIZER
   EXPECT_DEATH_IF_SUPPORTED(t_ptr->contains(1), expected_death_message);
+
+#endif  // ABSL_HAVE_THREAD_SANITIZER
 }
 
 TEST(Table, DestroyedCallsFailDuringDestruction) {
@@ -3925,7 +3930,7 @@ TEST(Table, DestroyedCallsFailDuringDestruction) {
   bool do_lookup = false;
 
   using Table = absl::flat_hash_map<int, std::shared_ptr<int>>;
-  absl::optional<Table> t = Table();
+  std::optional<Table> t = Table();
   Table* t_ptr = &*t;
   auto destroy = [&](int* ptr) {
     if (do_lookup) {
@@ -4001,64 +4006,91 @@ TEST(HashtableSize, GenerateNewSeedDoesntChangeSize) {
     hs.generate_new_seed();
     EXPECT_EQ(hs.size(), size);
     size = size * 2 + 1;
-  } while (size < MaxValidSizeFor1ByteSlot());
+  } while (size < std::min(MaxStorableSize(),
+                           MaxSizeAtMaxValidCapacity(/*slot_size=*/1)));
 }
 
 TEST(Table, MaxValidSize) {
   IntTable t;
-  EXPECT_EQ(MaxValidSize(sizeof(IntTable::value_type)), t.max_size());
+  EXPECT_EQ(
+      MaxValidSize(sizeof(IntTable::key_type), sizeof(IntTable::value_type)),
+      t.max_size());
   if constexpr (sizeof(size_t) == 8) {
     for (size_t i = 0; i < 35; ++i) {
       SCOPED_TRACE(i);
       size_t slot_size = size_t{1} << i;
-      size_t max_size = MaxValidSize(slot_size);
-      ASSERT_FALSE(IsAboveValidSize(max_size, slot_size));
-      ASSERT_TRUE(IsAboveValidSize(max_size + 1, slot_size));
+      size_t key_size = slot_size;
+      size_t max_size = MaxValidSize(key_size, slot_size);
       ASSERT_LT(max_size, uint64_t{1} << 60);
-      // For non gigantic slot sizes we expect max size to be at least 2^40.
-      if (i <= 22) {
-        ASSERT_FALSE(IsAboveValidSize(size_t{1} << 40, slot_size));
+      if (key_size <= 4) {
+        ASSERT_EQ(max_size, uint64_t{1} << 8 * key_size);
+      } else if (i <= 21) {
         ASSERT_GE(max_size, uint64_t{1} << 40);
       }
-      ASSERT_LT(SizeToCapacity(max_size),
-                uint64_t{1} << HashtableSize::kSizeBitCount);
+      ASSERT_LE(max_size, uint64_t{1} << HashtableSize::kSizeBitCount);
       ASSERT_LT(absl::uint128(max_size) * slot_size, uint64_t{1} << 63);
     }
   }
-  EXPECT_LT(MaxValidSize</*kSizeOfSizeT=*/4>(1), 1 << 30);
-  EXPECT_LT(MaxValidSize</*kSizeOfSizeT=*/4>(2), 1 << 29);
+  EXPECT_LT(MaxValidSize</*kSizeOfSizeT=*/4>(1, 1), 1 << 30);
+  EXPECT_LT(MaxValidSize</*kSizeOfSizeT=*/4>(2, 2), 1 << 29);
   for (size_t i = 0; i < 29; ++i) {
+    SCOPED_TRACE(i);
     size_t slot_size = size_t{1} << i;
-    size_t max_size = MaxValidSize</*kSizeOfSizeT=*/4>(slot_size);
-    ASSERT_FALSE(IsAboveValidSize</*kSizeOfSizeT=*/4>(max_size, slot_size));
-    ASSERT_TRUE(IsAboveValidSize</*kSizeOfSizeT=*/4>(max_size + 1, slot_size));
+    size_t key_size = slot_size;
+    size_t max_size = MaxValidSize</*kSizeOfSizeT=*/4>(key_size, slot_size);
     ASSERT_LT(max_size, 1 << 30);
     size_t max_capacity = SizeToCapacity(max_size);
-    ASSERT_LT(max_capacity, (size_t{1} << 31) / slot_size);
-    ASSERT_GT(max_capacity, (1 << 29) / slot_size);
+    ASSERT_LT(uint64_t{max_capacity} * slot_size, size_t{1} << 31);
+    if (key_size < 4) {
+      ASSERT_EQ(max_size, uint64_t{1} << 8 * key_size);
+    } else {
+      ASSERT_GT(max_capacity, (1 << 29) / slot_size);
+    }
     ASSERT_LT(max_capacity * slot_size, size_t{1} << 31);
   }
 }
 
 TEST(Table, MaxSizeOverflow) {
+#ifdef ABSL_HAVE_EXCEPTIONS
+  GTEST_SKIP() << "Skipping test because exceptions are enabled. EXPECT_DEATH "
+                  "doesn't work with exceptions.";
+#elif defined(ABSL_HAVE_THREAD_SANITIZER)
+  GTEST_SKIP() << "ThreadSanitizer test runs fail on OOM even in EXPECT_DEATH.";
+#else
+  const std::string expected_death_message =
+      "new failed|failed to allocate|bad_alloc|exceeds maximum supported size";
   size_t overflow = (std::numeric_limits<size_t>::max)();
-  EXPECT_DEATH_IF_SUPPORTED(IntTable t(overflow), "Hash table size overflow");
+  EXPECT_DEATH_IF_SUPPORTED(IntTable t(overflow), expected_death_message);
   IntTable t;
-  EXPECT_DEATH_IF_SUPPORTED(t.reserve(overflow), "Hash table size overflow");
-  EXPECT_DEATH_IF_SUPPORTED(t.rehash(overflow), "Hash table size overflow");
-  size_t slightly_overflow = MaxValidSize(sizeof(IntTable::value_type)) + 1;
+  EXPECT_DEATH_IF_SUPPORTED(t.reserve(overflow), expected_death_message);
+  EXPECT_DEATH_IF_SUPPORTED(t.rehash(overflow), expected_death_message);
+  size_t slightly_overflow =
+      MaxValidSize(sizeof(IntTable::key_type), sizeof(IntTable::value_type)) +
+      1;
   size_t slightly_overflow_capacity =
       NextCapacity(NormalizeCapacity(slightly_overflow));
   EXPECT_DEATH_IF_SUPPORTED(IntTable t2(slightly_overflow_capacity - 10),
-                            "Hash table size overflow");
+                            expected_death_message);
   EXPECT_DEATH_IF_SUPPORTED(t.reserve(slightly_overflow),
-                            "Hash table size overflow");
+                            expected_death_message);
   EXPECT_DEATH_IF_SUPPORTED(t.rehash(slightly_overflow),
-                            "Hash table size overflow");
+                            expected_death_message);
   IntTable non_empty_table;
   non_empty_table.insert(0);
   EXPECT_DEATH_IF_SUPPORTED(non_empty_table.reserve(slightly_overflow),
-                            "Hash table size overflow");
+                            expected_death_message);
+#endif  // defined(ABSL_HAVE_THREAD_SANITIZER)
+}
+
+// Tests that reserving enough space for more than the max number of unique keys
+// doesn't crash and we end up with kMaxValidCapacity.
+TEST(Table, MaxSizeOverflowUniqueKeys) {
+  absl::flat_hash_set<uint8_t> t8;
+  t8.reserve(1 << 9);
+  EXPECT_EQ(t8.capacity(), SizeToCapacity(t8.max_size()));
+  absl::flat_hash_set<uint16_t> t16;
+  t16.reserve(1 << 17);
+  EXPECT_EQ(t16.capacity(), SizeToCapacity(t16.max_size()));
 }
 
 // TODO(b/397453582): Remove support for const hasher and remove this test.
@@ -4082,9 +4114,11 @@ TEST(Table, ConstLambdaHash) {
   EXPECT_EQ(t.find(3), t.end());
 }
 
-struct ConstUint8Hash {
-  size_t operator()(uint8_t) const { return *value; }
-  size_t* value;
+struct ZeroHash {
+  template <typename T>
+  size_t operator()(T) const {
+    return 0;
+  }
 };
 
 // This test is imitating growth of a very big table and triggers all buffer
@@ -4100,18 +4134,18 @@ struct ConstUint8Hash {
 // 4. Then a few times we will extend control buffer end.
 // 5. Finally we will catch up and go to overflow codepath.
 TEST(Table, GrowExtremelyLargeTable) {
+  // ProbedItem8Bytes causes OOMs on some platforms so we use ProbedItem4Bytes.
   constexpr size_t kTargetCapacity =
-#if defined(__wasm__) || defined(__asmjs__) || defined(__i386__)
-      NextCapacity(ProbedItem4Bytes::kMaxNewCapacity);  // OOMs on WASM, 32-bit.
+#if defined(__wasm__) || defined(__asmjs__) || defined(__i386__) || \
+    defined(_MSC_VER) || defined(ABSL_HAVE_THREAD_SANITIZER) ||     \
+    defined(ABSL_HAVE_MEMORY_SANITIZER) ||                          \
+    (!defined(__clang__) && defined(__GNUC__))
+      NextCapacity(ProbedItem4Bytes::kMaxNewCapacity);
 #else
       NextCapacity(ProbedItem8Bytes::kMaxNewCapacity);
 #endif
 
-  size_t hash = 0;
-  // In order to save memory we use 1 byte slot.
-  // There are not enough different values to achieve big capacity, so we
-  // artificially update growth info to force resize.
-  absl::flat_hash_set<uint8_t, ConstUint8Hash> t(63, ConstUint8Hash{&hash});
+  absl::flat_hash_set<uint32_t, ZeroHash> t(63);
   CommonFields& common = RawHashSetTestOnlyAccess::GetCommon(t);
   // Set 0 seed so that H1 is always 0.
   common.set_no_seed_for_testing();
@@ -4127,7 +4161,8 @@ TEST(Table, GrowExtremelyLargeTable) {
   for (size_t cap = t.capacity(); cap < kTargetCapacity;
        cap = NextCapacity(cap)) {
     ASSERT_EQ(t.capacity(), cap);
-    // Update growth info to force resize on the next insert.
+    // Update growth info to force resize on the next insert. This way we avoid
+    // having to insert many elements.
     common.growth_info().OverwriteManyEmptyAsFull(CapacityToGrowth(cap) -
                                                   t.size());
     t.insert(inserted_till++);

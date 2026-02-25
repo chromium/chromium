@@ -63,6 +63,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -71,6 +72,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "absl/base/attributes.h"
@@ -898,10 +900,10 @@ typename std::enable_if<is_hashable<T>::value, H>::type AbslHashValue(
   return H::combine(std::move(hash_state), opt.get());
 }
 
-// AbslHashValue for hashing absl::optional
+// AbslHashValue for hashing std::optional
 template <typename H, typename T>
 typename std::enable_if<is_hashable<T>::value, H>::type AbslHashValue(
-    H hash_state, const absl::optional<T>& opt) {
+    H hash_state, const std::optional<T>& opt) {
   if (opt) hash_state = H::combine(std::move(hash_state), *opt);
   return H::combine(std::move(hash_state), opt.has_value());
 }
@@ -915,12 +917,12 @@ struct VariantVisitor {
   }
 };
 
-// AbslHashValue for hashing absl::variant
+// AbslHashValue for hashing std::variant
 template <typename H, typename... T>
 typename std::enable_if<conjunction<is_hashable<T>...>::value, H>::type
-AbslHashValue(H hash_state, const absl::variant<T...>& v) {
+AbslHashValue(H hash_state, const std::variant<T...>& v) {
   if (!v.valueless_by_exception()) {
-    hash_state = absl::visit(VariantVisitor<H>{std::move(hash_state)}, v);
+    hash_state = std::visit(VariantVisitor<H>{std::move(hash_state)}, v);
   }
   return H::combine(std::move(hash_state), v.index());
 }
@@ -1079,19 +1081,24 @@ ABSL_ATTRIBUTE_ALWAYS_INLINE inline uint64_t CombineRawImpl(uint64_t state,
   // The general idea here is to do two CRC32 operations in parallel using the
   // low and high 32 bits of state as CRC states. Note that: (1) when absl::Hash
   // is inlined into swisstable lookups, we know that the seed's high bits are
-  // zero so s.u32s.high is available immediately. (2) We chose to rotate value
-  // right by 45 for the low CRC because that minimizes the probe benchmark
-  // geomean across the 64 possible rotations. (3) The union makes it easy for
-  // the compiler to understand that the high and low CRC states are independent
-  // from each other so that when CombineRawImpl is repeated (e.g. for
-  // std::pair<size_t, size_t>), the CRC chains can run in parallel. We
+  // zero so s.u32s.high is available immediately. (2) We chose to multiply
+  // value by 3 for the low CRC because (a) multiplication by 3 can be done in 1
+  // cycle on x86/ARM and (b) multiplication has carry bits so it's nonlinear in
+  // GF(2) and therefore ensures that the two CRCs are independent (unlike bit
+  // rotation, XOR, etc). (3) We also tried using addition instead of
+  // multiplication by 3, but (a) code size is larger and (b) if the input keys
+  // all have 0s in the bits where the addition constant has 1s, then the
+  // addition is equivalent to XOR and linear in GF(2). (4) The union makes it
+  // easy for the compiler to understand that the high and low CRC states are
+  // independent from each other so that when CombineRawImpl is repeated (e.g.
+  // for std::pair<size_t, size_t>), the CRC chains can run in parallel. We
   // originally tried using bswaps rather than shifting by 32 bits (to get from
   // high to low bits) because bswap is one byte smaller in code size, but the
   // compiler couldn't understand that the CRC chains were independent.
   s.u32s.high =
       static_cast<uint32_t>(ABSL_HASH_INTERNAL_CRC32_U64(s.u32s.high, value));
   s.u32s.low = static_cast<uint32_t>(
-      ABSL_HASH_INTERNAL_CRC32_U64(s.u32s.low, absl::rotr(value, 45)));
+      ABSL_HASH_INTERNAL_CRC32_U64(s.u32s.low, 3 * value));
   return s.u64;
 }
 #else   // ABSL_HASH_INTERNAL_HAS_CRC32

@@ -399,7 +399,6 @@ cc_library(
         ":platform",
         ":randen_hwaes_impl",
         "//absl/base:config",
-        "//absl/types:optional",
     ],
 )
 

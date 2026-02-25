@@ -606,7 +606,6 @@ EXPORTS
     ??$InvokeParseFlag@N@flags_internal@absl@@YA_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PANPAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@34@@Z
     ??$InvokeParseFlag@V?$vector@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@@__Cr@std@@@flags_internal@absl@@YA_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAV?$vector@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@@34@PAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@34@@Z
     ??$InvokeSet@V?$Flag@V?$vector@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@@__Cr@std@@@flags_internal@absl@@V?$vector@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@@__Cr@std@@@FlagImplPeer@flags_internal@absl@@SAXAAV?$Flag@V?$vector@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@@__Cr@std@@@12@ABV?$vector@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$allocator@V?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@23@@__Cr@std@@@Z
-    ??$IsAboveValidSize@$03@container_internal@absl@@YA_NII@Z
     ??$IsDestructionTrivial@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@23@@container_internal@absl@@YA?A_PXZ
     ??$IsOfType@F@CommandLineFlag@absl@@QBE_NXZ
     ??$IsOfType@G@CommandLineFlag@absl@@QBE_NXZ
@@ -660,7 +659,10 @@ EXPORTS
     ??$MakeSpan@$SU?$array@D$0DKJI@@__Cr@std@@@absl@@YA?AV?$Span@D@0@AAU?$array@D$0DKJI@@__Cr@std@@@Z
     ??$MakeSpan@$SV?$InlinedVector@PAVLogSink@absl@@$0BA@V?$allocator@PAVLogSink@absl@@@__Cr@std@@@absl@@@absl@@YA?AV?$Span@PAVLogSink@absl@@@0@AAV?$InlinedVector@PAVLogSink@absl@@$0BA@V?$allocator@PAVLogSink@absl@@@__Cr@std@@@0@@Z
     ??$MakeSpan@$SV?$vector@PAVLogSink@absl@@V?$allocator@PAVLogSink@absl@@@__Cr@std@@@__Cr@std@@@absl@@YA?AV?$Span@PAVLogSink@absl@@@0@AAV?$vector@PAVLogSink@absl@@V?$allocator@PAVLogSink@absl@@@__Cr@std@@@__Cr@std@@@Z
-    ??$MaxValidSizeFor1ByteSlot@$03@container_internal@absl@@YAIXZ
+    ??$MaxSizeAtMaxValidCapacity@$03@container_internal@absl@@YAII@Z
+    ??$MaxValidSize@$03@container_internal@absl@@YAIII@Z
+    ??$MaxValidSizeForKeySize@$03@container_internal@absl@@YAII@Z
+    ??$MaxValidSizeForSlotSize@$03@container_internal@absl@@YAII@Z
     ??$Merge@$00@CordRepBtree@cord_internal@absl@@CAPAV012@PAV012@0@Z
     ??$Merge@$0A@@CordRepBtree@cord_internal@absl@@CAPAV012@PAV012@0@Z
     ??$Microseconds@H$0A@@absl@@YA?AVDuration@0@H@Z
@@ -5423,6 +5425,7 @@ EXPORTS
     ?max_size@?$vector@UViableSubstitution@strings_internal@absl@@V?$allocator@UViableSubstitution@strings_internal@absl@@@__Cr@std@@@__Cr@std@@QBEIXZ
     ?max_size@?$vector@V?$unique_ptr@VFlagStateInterface@flags_internal@absl@@U?$default_delete@VFlagStateInterface@flags_internal@absl@@@__Cr@std@@@__Cr@std@@V?$allocator@V?$unique_ptr@VFlagStateInterface@flags_internal@absl@@U?$default_delete@VFlagStateInterface@flags_internal@absl@@@__Cr@std@@@__Cr@std@@@23@@__Cr@std@@QBEIXZ
     ?maybe_increment_generation_on_insert@CommonFieldsGenerationInfoDisabled@container_internal@absl@@QAEXXZ
+    ?maybe_invalid_capacity@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@container_internal@absl@@$$V@container_internal@absl@@ABEIXZ
     ?memcasecmp@strings_internal@absl@@YAHPBD0I@Z
     ?message@Status@absl@@QBE?AV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@XZ
     ?message@StatusRep@status_internal@absl@@QBEABV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ

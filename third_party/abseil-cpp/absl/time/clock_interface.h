@@ -36,6 +36,8 @@ ABSL_NAMESPACE_BEGIN
 // Clocks into interfaces rather than having implementations call absl::Now()
 // directly.
 //
+// Implementations of this interface must be thread-safe.
+//
 // The Clock::GetRealClock() function returns a reference to the global realtime
 // clock.
 //
