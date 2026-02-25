@@ -89,13 +89,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
-// XpsObjectModel.h indirectly includes <wincrypt.h> which is
-// incompatible with Chromium's OpenSSL. By including wincrypt_shim.h
-// first, problems are avoided.
-// clang-format off
-#include "base/win/wincrypt_shim.h"
-// clang-format on
-
 #include <objbase.h>
 
 #include <XpsObjectModel.h>

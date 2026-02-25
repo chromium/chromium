@@ -5,10 +5,13 @@
 #ifndef NET_SSL_CLIENT_CERT_STORE_WIN_H_
 #define NET_SSL_CLIENT_CERT_STORE_WIN_H_
 
+#include <windows.h>
+
+#include <wincrypt.h>
+
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/base/net_export.h"
 #include "net/ssl/client_cert_store.h"

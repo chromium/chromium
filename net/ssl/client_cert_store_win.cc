@@ -4,15 +4,16 @@
 
 #include "net/ssl/client_cert_store_win.h"
 
+#include <windows.h>
+
 #include <algorithm>
 #include <functional>
 #include <memory>
 #include <string>
 
-#include <windows.h>
-
 #define SECURITY_WIN32
 #include <security.h>
+#include <wincrypt.h>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -23,7 +24,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/scoped_generic.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/win/wincrypt_shim.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_win.h"
 #include "net/ssl/ssl_platform_key_util.h"

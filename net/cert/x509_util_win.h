@@ -7,12 +7,13 @@
 
 #include <windows.h>
 
+#include <wincrypt.h>
+
 #include <memory>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"

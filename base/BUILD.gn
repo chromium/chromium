@@ -1980,7 +1980,6 @@ component("base") {
       "win/win_util.h",
       "win/winbase_shim.h",
       "win/wincred_shim.h",
-      "win/wincrypt_shim.h",
       "win/window_enumerator.cc",
       "win/window_enumerator.h",
       "win/windows_defines.inc",

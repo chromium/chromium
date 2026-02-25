@@ -6,6 +6,8 @@
 
 #include <windows.h>
 
+#include <wincrypt.h>
+
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -19,7 +21,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/win/wincrypt_shim.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"

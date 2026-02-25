@@ -8,7 +8,9 @@
 #ifndef NET_THIRD_PARTY_MOZILLA_WIN_CERT_WIN_UTIL_H_
 #define NET_THIRD_PARTY_MOZILLA_WIN_CERT_WIN_UTIL_H_
 
-#include "base/win/wincrypt_shim.h"
+#include <windows.h>
+
+#include <wincrypt.h>
 
 namespace net {
 

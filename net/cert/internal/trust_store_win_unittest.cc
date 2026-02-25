@@ -4,6 +4,10 @@
 
 #include "net/cert/internal/trust_store_win.h"
 
+#include <windows.h>
+
+#include <wincrypt.h>
+
 #include <algorithm>
 #include <memory>
 #include <string_view>
@@ -17,7 +21,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/base/features.h"
 #include "net/cert/cert_database.h"

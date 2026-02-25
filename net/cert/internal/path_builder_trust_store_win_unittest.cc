@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <windows.h>
+
+#include <wincrypt.h>
+
 #include <algorithm>
 
 #include "base/base_paths.h"
@@ -9,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
-#include "base/win/wincrypt_shim.h"
 #include "build/build_config.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/cert/internal/test_helpers.h"

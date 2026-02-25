@@ -37,15 +37,9 @@
 #include "ui/gfx/skia_span_util.h"
 
 #if BUILDFLAG(IS_WIN)
-// XpsObjectModel.h indirectly includes <wincrypt.h> which is
-// incompatible with Chromium's OpenSSL. By including wincrypt_shim.h
-// first, problems are avoided.
-// clang-format off
-#include "base/win/wincrypt_shim.h"
+#include <objbase.h>
 
 #include <XpsObjectModel.h>
-#include <objbase.h>
-// clang-format on
 
 #include "third_party/skia/include/docs/SkXPSDocument.h"
 #include "third_party/skia/include/encode/SkPngRustEncoder.h"

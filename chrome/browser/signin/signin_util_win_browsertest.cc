@@ -4,7 +4,10 @@
 
 #include "chrome/browser/signin/signin_util_win.h"
 
+#include <windows.h>
+
 #include <stddef.h>
+#include <wincrypt.h>
 
 #include <memory>
 
@@ -16,7 +19,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_reg_util_win.h"
-#include "base/win/wincrypt_shim.h"
 #include "build/build_config.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"

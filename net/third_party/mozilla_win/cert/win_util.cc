@@ -7,7 +7,10 @@
 
 #include "net/third_party/mozilla_win/cert/win_util.h"
 
-#include "base/win/wincrypt_shim.h"
+#include <windows.h>
+
+#include <wincrypt.h>
+
 #include "crypto/scoped_capi_types.h"
 
 namespace net {
