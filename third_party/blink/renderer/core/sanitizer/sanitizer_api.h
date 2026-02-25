@@ -5,29 +5,27 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SANITIZER_SANITIZER_API_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SANITIZER_SANITIZER_API_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
+
 // This file includes the entry points for the Sanitizer API.
 
 namespace blink {
 
 class ContainerNode;
-class SetHTMLOptions;
-class SetHTMLUnsafeOptions;
 class ExceptionState;
+class FragmentParserOptions;
 class StreamingSanitizer;
 
-class SanitizerAPI final {
+class CORE_EXPORT SanitizerAPI final {
  public:
-  static void SanitizeSafeInternal(const ContainerNode* context_element,
-                                   ContainerNode* root_element,
-                                   SetHTMLOptions* options,
-                                   ExceptionState& exception_state);
-  static void SanitizeUnsafeInternal(const ContainerNode* context_element,
-                                     ContainerNode* root_element,
-                                     SetHTMLUnsafeOptions* options,
-                                     ExceptionState& exception_state);
-
-  static StreamingSanitizer* CreateStreamingSanitizerUnsafeInternal(
-      const SetHTMLUnsafeOptions* options,
+  static void SanitizeInternal(Sanitizer::Mode mode,
+                               const ContainerNode* context_element,
+                               ContainerNode* root_element,
+                               FragmentParserOptions options,
+                               ExceptionState& exception_state);
+  static StreamingSanitizer* CreateStreamingSanitizerInternal(
+      FragmentParserOptions options,
       const ContainerNode* context,
       ExceptionState& exception_state);
 };

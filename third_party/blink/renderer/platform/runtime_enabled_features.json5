@@ -5695,6 +5695,15 @@
       status: "stable",
     },
     {
+      // When enabled, trusted types can be used to enforce sanitization &
+      // script running rules.
+      // For example, it can enforce that any HTML setter would go through a
+      // sanitizer. See https://github.com/w3c/trusted-types/issues/594
+      name: "TrustedTypesCreateParserOptions",
+      status: "experimental",
+      depends_on: ["SanitizerAPI", "SetHTMLCanRunScripts"],
+    },
+    {
       name: "TrustedTypesFromLiteral",
       status: "experimental",
       base_feature: "none",

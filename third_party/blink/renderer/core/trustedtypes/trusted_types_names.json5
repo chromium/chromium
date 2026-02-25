@@ -49,6 +49,7 @@
     "replace",
     "replaceChildren",
     "replaceWith",
+    "setHTML",
     "setHTMLUnsafe",
     "setInterval",
     "setTimeout",

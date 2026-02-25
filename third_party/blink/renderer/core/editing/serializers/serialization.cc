@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
+#include "third_party/blink/renderer/core/html/parser/fragment_parser_options.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser_fastpath.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -84,8 +85,10 @@
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
+#include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -667,12 +670,17 @@ DocumentFragment* CreateFragmentFromText(const EphemeralRange& context,
   return fragment;
 }
 
+namespace {
+// ForceInertTemplate specifies whether the HTML parser should parse into an
+// inert (non-active) template document.
+enum class ForceInertTemplate { kDontForce, kForce };
+
 DocumentFragment* CreateFragmentForInnerOuterHTML(
     const String& markup,
     Element* context_element,
     ParserContentPolicy parser_content_policy,
-    Element::ParseDeclarativeShadowRoots parse_declarative_shadows,
-    Element::ForceHtml force_html,
+    FragmentParserConfig::ParseDeclarativeShadowRoots parse_declarative_shadows,
+    FragmentParserConfig::ForceHtml force_html,
     ForceInertTemplate force_inert,
     CustomElementRegistry* registry,
     ExceptionState& exception_state) {
@@ -691,14 +699,15 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
   DocumentFragment* fragment = DocumentFragment::Create(document);
   document.setAllowDeclarativeShadowRoots(
       parse_declarative_shadows ==
-      Element::ParseDeclarativeShadowRoots::kParse);
+      FragmentParserConfig::ParseDeclarativeShadowRoots::kParse);
 
-  if (IsA<HTMLDocument>(document) || force_html == Element::ForceHtml::kForce) {
+  if (IsA<HTMLDocument>(document) ||
+      force_html == FragmentParserConfig::ForceHtml::kForce) {
     bool log_tag_stats = false;
     base::ElapsedTimer parse_timer;
     HTMLFragmentParsingBehaviorSet parser_behavior;
     if (parse_declarative_shadows ==
-        Element::ParseDeclarativeShadowRoots::kParse) {
+        FragmentParserConfig::ParseDeclarativeShadowRoots::kParse) {
       parser_behavior.Put(HTMLFragmentParsingBehavior::kIncludeShadowRoots);
     }
     const bool parsed_fast_path = TryParsingHTMLFragment(
@@ -758,6 +767,49 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
   }
   return fragment;
 }
+}  // namespace
+
+DocumentFragment* ParseHTMLFragment(const String& markup,
+                                    const FragmentParserConfig& config,
+                                    FragmentParserOptions options,
+                                    ExceptionState& exception_state) {
+  if (RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled()) {
+    auto trusted_options = TrustedTypesCheckForParserOptions(
+        options, MarkupInsertionMode::kFragment,
+        config.context_element->GetExecutionContext(), config.interface_name,
+        config.property_name, exception_state);
+    if (!trusted_options) {
+      return nullptr;
+    }
+    options = *trusted_options;
+  }
+
+  const ParserContentPolicy content_policy =
+      (RuntimeEnabledFeatures::SetHTMLCanRunScriptsEnabled() &&
+       options.run_scripts() == FragmentParserOptions::RunScripts::kRunScripts)
+          ? kAllowScriptingContentAndDoNotMarkAlreadyStarted
+          : kAllowScriptingContent;
+
+  const bool should_sanitize =
+      options.sanitizer_init() ||
+      (config.sanitizer_mode == Sanitizer::Mode::kSafe);
+
+  CHECK(!should_sanitize || RuntimeEnabledFeatures::SanitizerAPIEnabled());
+  DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
+      markup, config.context_element, content_policy,
+      config.parse_declarative_shadows, config.force_html,
+      should_sanitize ? ForceInertTemplate::kForce
+                      : ForceInertTemplate::kDontForce,
+      config.registry, exception_state);
+
+  if (fragment && should_sanitize) {
+    SanitizerAPI::SanitizeInternal(config.sanitizer_mode,
+                                   config.context_element, fragment, options,
+                                   exception_state);
+  }
+
+  return fragment;
+}
 
 DocumentFragment* CreateFragmentForTransformToFragment(
     const String& source_string,
@@ -804,42 +856,6 @@ static inline void RemoveElementPreservingChildren(DocumentFragment* fragment,
     fragment->InsertBefore(child, element);
   }
   fragment->RemoveChild(element);
-}
-
-DocumentFragment* CreateContextualFragment(
-    const String& markup,
-    Element* element,
-    ParserContentPolicy parser_content_policy,
-    ExceptionState& exception_state) {
-  DCHECK(element);
-
-  DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-      markup, element, parser_content_policy,
-      Element::ParseDeclarativeShadowRoots::kDontParse,
-      Element::ForceHtml::kDontForce, ForceInertTemplate::kDontForce,
-      RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
-          ? element->customElementRegistry()
-          : element->GetDocument().customElementRegistry(),
-      exception_state);
-  if (!fragment)
-    return nullptr;
-
-  // We need to pop <html> and <body> elements and remove <head> to
-  // accommodate folks passing complete HTML documents to make the
-  // child of an element.
-
-  Node* next_node = nullptr;
-  for (Node* node = fragment->firstChild(); node; node = next_node) {
-    next_node = node->nextSibling();
-    if (IsA<HTMLHtmlElement>(node) || IsA<HTMLHeadElement>(node) ||
-        IsA<HTMLBodyElement>(node)) {
-      auto* child_element = To<HTMLElement>(node);
-      if (Node* first_child = child_element->firstChild())
-        next_node = first_child;
-      RemoveElementPreservingChildren(fragment, child_element);
-    }
-  }
-  return fragment;
 }
 
 void ReplaceChildrenWithFragment(ContainerNode* container,
@@ -948,6 +964,50 @@ static Document* CreateStagingDocumentForMarkupSanitization(
   document->SetIsForMarkupSanitization(true);
 
   return document;
+}
+
+DocumentFragment* CreateContextualFragment(const String& html,
+                                           Element* element,
+                                           ExceptionState& exception_state) {
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
+  DocumentFragment* fragment = blink::ParseHTMLFragment(
+      html,
+      {
+          .interface_name = trusted_types_names::kRange,
+          .property_name = trusted_types_names::kCreateContextualFragment,
+          .context_element = element,
+          .registry =
+              RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
+                  ? element->customElementRegistry()
+                  : element->GetDocument().customElementRegistry(),
+      },
+      FragmentParserOptions(FragmentParserOptions::RunScripts::kRunScripts),
+      exception_state);
+
+  if (!fragment) {
+    return nullptr;
+  }
+
+  // We need to pop <html> and <body> elements and remove <head> to
+  // accommodate folks passing complete HTML documents to make the
+  // child of an element.
+  Node* next_node = nullptr;
+  for (Node* child = fragment->firstChild(); child; child = next_node) {
+    next_node = child->nextSibling();
+    if (IsA<HTMLHtmlElement>(child) || IsA<HTMLHeadElement>(child) ||
+        IsA<HTMLBodyElement>(child)) {
+      auto* child_element = To<HTMLElement>(child);
+      if (Node* first_child = child_element->firstChild()) {
+        next_node = first_child;
+      }
+      RemoveElementPreservingChildren(fragment, child_element);
+    }
+  }
+
+  return fragment;
 }
 
 static bool ContainsStyleElements(const DocumentFragment& fragment) {

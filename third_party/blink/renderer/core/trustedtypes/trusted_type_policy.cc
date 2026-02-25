@@ -170,7 +170,7 @@ TrustedParserOptions* TrustedTypePolicy::createParserOptions(
   ScriptValue out;
   auto result =
       policy_options_->createParserOptions()->Invoke(nullptr, options);
-  if (!result.To(&out)) {
+  if (!result.To(&out) || out.IsNull() || out.IsUndefined()) {
     return nullptr;
   }
 

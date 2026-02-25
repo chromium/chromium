@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_container.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_set_html_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_html_unsafe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_scrollintoviewoptions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeanimationoptions_unrestricteddouble.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeeffectoptions_unrestricteddouble.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmlunsafeoptions_trustedparseroptions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_timelinerangeoffset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_stringlegacynulltoemptystring_trustedhtml.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
@@ -110,6 +112,7 @@
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element_data_cache.h"
@@ -209,6 +212,7 @@
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
+#include "third_party/blink/renderer/core/html/parser/fragment_parser_options.h"
 #include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
@@ -243,6 +247,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observation.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_size.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -259,6 +264,8 @@
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_parser_options.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_types_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
@@ -9171,80 +9178,74 @@ V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* Element::outerHTML() const {
 
 void Element::SetInnerHTMLInternal(
     const String& html,
-    ParseDeclarativeShadowRoots parse_declarative_shadows,
-    ForceHtml force_html,
-    std::variant<std::monostate, SetHTMLOptions*, SetHTMLUnsafeOptions*>
-        options,
+    FragmentParserConfig::ParseDeclarativeShadowRoots parse_declarative_shadows,
+    FragmentParserConfig::ForceHtml force_html,
+    Sanitizer::Mode sanitizer_mode,
+    const FragmentParserOptions& options,
+    const AtomicString& property_name,
     ExceptionState& exception_state) {
+  if (exception_state.HadException()) {
+    return;
+  }
   if (html.empty() && !HasNonInBodyInsertionMode()) {
     setTextContent(html);
-  } else {
-    // Use null registry to create fragment if the context element is a
-    // template element as the container of the document fragment will be a
-    // document fragment without browsing context.
-    auto* template_element = DynamicTo<HTMLTemplateElement>(*this);
-    CustomElementRegistry* registry = GetDocument().customElementRegistry();
-    if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-      registry = template_element ? nullptr : customElementRegistry();
-    }
-    const ParserContentPolicy content_policy =
-        (RuntimeEnabledFeatures::SetHTMLCanRunScriptsEnabled() &&
-         std::holds_alternative<SetHTMLUnsafeOptions*>(options) &&
-         std::get<SetHTMLUnsafeOptions*>(options)->runScripts())
-            ? kAllowScriptingContentAndDoNotMarkAlreadyStarted
-            : kAllowScriptingContent;
-
-    if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-            html, this, content_policy, parse_declarative_shadows, force_html,
-            std::holds_alternative<std::monostate>(options)
-                ? ForceInertTemplate::kDontForce
-                : ForceInertTemplate::kForce,
-            registry, exception_state)) {
-      if (std::holds_alternative<SetHTMLOptions*>(options)) {
-        CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
-        SanitizerAPI::SanitizeSafeInternal(this, fragment,
-                                           std::get<SetHTMLOptions*>(options),
-                                           exception_state);
-      } else if (std::holds_alternative<SetHTMLUnsafeOptions*>(options)) {
-        CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
-        SanitizerAPI::SanitizeUnsafeInternal(
-            this, fragment, std::get<SetHTMLUnsafeOptions*>(options),
-            exception_state);
-      } else {
-        CHECK(std::holds_alternative<std::monostate>(options));
-        // No options; nothing to do.
-      }
-      ContainerNode* container = this;
-      if (template_element) {
-        container = template_element->content();
-      }
-      ReplaceChildrenWithFragment(container, fragment, exception_state);
-    }
+    return;
   }
+
+  // Use null registry to create fragment if the context element is a
+  // template element as the container of the document fragment will be a
+  // document fragment without browsing context.
+  auto* template_element = DynamicTo<HTMLTemplateElement>(*this);
+  CustomElementRegistry* registry = GetDocument().customElementRegistry();
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    registry = template_element ? nullptr : customElementRegistry();
+  }
+
+  DocumentFragment* fragment =
+      ParseHTMLFragment(html,
+                        {.sanitizer_mode = sanitizer_mode,
+                         .parse_declarative_shadows = parse_declarative_shadows,
+                         .force_html = force_html,
+                         .interface_name = trusted_types_names::kElement,
+                         .property_name = property_name,
+                         .context_element = this,
+                         .registry = registry},
+                        options, exception_state);
+
+  if (!fragment) {
+    return;
+  }
+
+  ContainerNode* container = this;
+  if (template_element) {
+    container = template_element->content();
+  }
+  ReplaceChildrenWithFragment(container, fragment, exception_state);
 }
 
 void Element::SetInnerHTMLWithoutTrustedTypes(const String& html,
                                               ExceptionState& exception_state) {
-  SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kDontParse,
-                       ForceHtml::kDontForce, std::monostate{},
-                       exception_state);
+  SetInnerHTMLInternal(
+      html, FragmentParserConfig::ParseDeclarativeShadowRoots::kDontParse,
+      FragmentParserConfig::ForceHtml::kDontForce, Sanitizer::Mode::kUnsafe,
+      FragmentParserOptions(), trusted_types_names::kInnerHTML,
+      exception_state);
 }
 
 void Element::setInnerHTML(
     const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* html,
     ExceptionState& exception_state) {
   probe::BreakableLocation(GetExecutionContext(), "Element.setInnerHTML");
-  String compliant_html = TrustedTypesCheckForHTML(
-      html, GetExecutionContext(), trusted_types_names::kElement,
-      trusted_types_names::kInnerHTML, exception_state);
+  SetInnerHTMLWithoutTrustedTypes(
+      CheckTrustedTypes(html, trusted_types_names::kInnerHTML, exception_state),
+      exception_state);
+}
+
+void Element::SetOuterHTMLInternal(const String& html,
+                                   ExceptionState& exception_state) {
   if (exception_state.HadException()) {
     return;
   }
-  SetInnerHTMLWithoutTrustedTypes(compliant_html, exception_state);
-}
-
-void Element::SetOuterHTMLWithoutTrustedTypes(const String& html,
-                                              ExceptionState& exception_state) {
   Node* p = parentNode();
   if (!p) {
     exception_state.ThrowDOMException(
@@ -9265,15 +9266,20 @@ void Element::SetOuterHTMLWithoutTrustedTypes(const String& html,
   Node* prev = previousSibling();
   Node* next = nextSibling();
 
-  DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-      html, parent, kAllowScriptingContent,
-      ParseDeclarativeShadowRoots::kDontParse, ForceHtml::kDontForce,
-      ForceInertTemplate::kDontForce,
-      RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
-          ? customElementRegistry()
-          : GetDocument().customElementRegistry(),
-      exception_state);
-  if (exception_state.HadException()) {
+  DocumentFragment* fragment = ParseHTMLFragment(
+      html,
+      {
+          .interface_name = trusted_types_names::kElement,
+          .property_name = trusted_types_names::kOuterHTML,
+          .context_element = parent,
+          .registry =
+              RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
+                  ? customElementRegistry()
+                  : GetDocument().customElementRegistry(),
+      },
+      FragmentParserOptions(), exception_state);
+
+  if (!fragment) {
     return;
   }
 
@@ -9298,16 +9304,17 @@ void Element::SetOuterHTMLWithoutTrustedTypes(const String& html,
   }
 }
 
+void Element::SetOuterHTMLWithoutTrustedTypes(const String& html,
+                                              ExceptionState& exception_state) {
+  SetOuterHTMLInternal(html, exception_state);
+}
+
 void Element::setOuterHTML(
     const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* html,
     ExceptionState& exception_state) {
-  String compliant_html = TrustedTypesCheckForHTML(
-      html, GetExecutionContext(), trusted_types_names::kElement,
-      trusted_types_names::kOuterHTML, exception_state);
-  if (exception_state.HadException()) {
-    return;
-  }
-  SetOuterHTMLWithoutTrustedTypes(compliant_html, exception_state);
+  SetOuterHTMLInternal(
+      CheckTrustedTypes(html, trusted_types_names::kOuterHTML, exception_state),
+      exception_state);
 }
 
 // Step 4 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()
@@ -9510,10 +9517,12 @@ void Element::insertAdjacentText(const String& where,
   InsertAdjacent(where, GetDocument().createTextNode(text), exception_state);
 }
 
-void Element::InsertAdjacentHTMLWithoutTrustedTypes(
-    const String& where,
-    const String& markup,
-    ExceptionState& exception_state) {
+void Element::InsertAdjacentHTMLInternal(const String& where,
+                                         const String& html,
+                                         ExceptionState& exception_state) {
+  if (exception_state.HadException()) {
+    return;
+  }
   Node* context_node = ContextNodeForInsertion(where, this, exception_state);
   if (!context_node) {
     return;
@@ -9531,30 +9540,37 @@ void Element::InsertAdjacentHTMLWithoutTrustedTypes(
   }
 
   // Step 3 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()
-  DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-      markup, context_element, kAllowScriptingContent,
-      ParseDeclarativeShadowRoots::kDontParse, ForceHtml::kDontForce,
-      ForceInertTemplate::kDontForce,
-      RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
-          ? customElementRegistry()
-          : GetDocument().customElementRegistry(),
-      exception_state);
-  if (!fragment) {
-    return;
+  if (DocumentFragment* fragment = ParseHTMLFragment(
+          html,
+          {
+              .interface_name = trusted_types_names::kElement,
+              .property_name = trusted_types_names::kInsertAdjacentHTML,
+              .context_element = context_element,
+              .registry =
+                  RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
+                      ? customElementRegistry()
+                      : GetDocument().customElementRegistry(),
+          },
+          FragmentParserOptions(), exception_state)) {
+    InsertAdjacent(where, fragment, exception_state);
   }
-  InsertAdjacent(where, fragment, exception_state);
+}
+
+void Element::InsertAdjacentHTMLWithoutTrustedTypesForTesting(
+    const String& where,
+    const String& markup,
+    ExceptionState& exception_state) {
+  InsertAdjacentHTMLInternal(where, markup, exception_state);
 }
 
 void Element::insertAdjacentHTML(const String& where,
                                  const V8UnionStringOrTrustedHTML* html,
                                  ExceptionState& exception_state) {
-  String compliant_html = TrustedTypesCheckForHTML(
-      html, GetExecutionContext(), trusted_types_names::kElement,
-      trusted_types_names::kInsertAdjacentHTML, exception_state);
-  if (exception_state.HadException()) {
-    return;
-  }
-  InsertAdjacentHTMLWithoutTrustedTypes(where, compliant_html, exception_state);
+  InsertAdjacentHTMLInternal(
+      where,
+      CheckTrustedTypes(html, trusted_types_names::kInsertAdjacentHTML,
+                        exception_state),
+      exception_state);
 }
 
 void Element::setPointerCapture(PointerId pointer_id,
@@ -13424,43 +13440,75 @@ void Element::SetHTMLUnsafeWithoutTrustedTypes(
     const String& html,
     ExceptionState& exception_state) {
   UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
-  SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
-                       ForceHtml::kForce, std::monostate{}, exception_state);
+  SetInnerHTMLInternal(
+      html, FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
+      FragmentParserConfig::ForceHtml::kForce, Sanitizer::Mode::kUnsafe,
+      FragmentParserOptions(), trusted_types_names::kSetHTMLUnsafe,
+      exception_state);
 }
 
 void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                             ExceptionState& exception_state) {
   UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
-  String compliant_html = TrustedTypesCheckForHTML(
-      html, GetExecutionContext(), trusted_types_names::kElement,
-      trusted_types_names::kSetHTMLUnsafe, exception_state);
-  if (exception_state.HadException()) {
-    return;
-  }
-  SetInnerHTMLInternal(compliant_html, ParseDeclarativeShadowRoots::kParse,
-                       ForceHtml::kForce, std::monostate{}, exception_state);
+  SetInnerHTMLInternal(
+      CheckTrustedTypes(html, trusted_types_names::kSetHTMLUnsafe,
+                        exception_state),
+      FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
+      FragmentParserConfig::ForceHtml::kForce, Sanitizer::Mode::kUnsafe,
+      FragmentParserOptions(), trusted_types_names::kSetHTMLUnsafe,
+      exception_state);
 }
 
+// TODO(nrosenthal): merge these calls once all the flags are merged.
 void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                             SetHTMLUnsafeOptions* options,
                             ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
-  String compliant_html = TrustedTypesCheckForHTML(
-      html, GetExecutionContext(), trusted_types_names::kElement,
-      trusted_types_names::kSetHTMLUnsafe, exception_state);
-  if (exception_state.HadException()) {
-    return;
-  }
-  SetInnerHTMLInternal(compliant_html, ParseDeclarativeShadowRoots::kParse,
-                       ForceHtml::kForce, options, exception_state);
+  UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
+
+  SetInnerHTMLInternal(
+      CheckTrustedTypes(html, trusted_types_names::kSetHTMLUnsafe,
+                        exception_state),
+      FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
+      FragmentParserConfig::ForceHtml::kForce, Sanitizer::Mode::kUnsafe,
+      FragmentParserOptions(options), trusted_types_names::kSetHTMLUnsafe,
+      exception_state);
+}
+
+void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
+                            TrustedParserOptions* options,
+                            ExceptionState& exception_state) {
+  CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+  UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
+  SetInnerHTMLInternal(
+      CheckTrustedTypes(html, trusted_types_names::kSetHTMLUnsafe,
+                        exception_state),
+      FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
+      FragmentParserConfig::ForceHtml::kForce, Sanitizer::Mode::kUnsafe,
+      FragmentParserOptions(options), trusted_types_names::kSetHTMLUnsafe,
+      exception_state);
 }
 
 void Element::setHTML(const String& html,
                       SetHTMLOptions* options,
                       ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
-  SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
-                       ForceHtml::kForce, options, exception_state);
+  SetInnerHTMLInternal(
+      html, FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
+      FragmentParserConfig::ForceHtml::kForce, Sanitizer::Mode::kSafe,
+      FragmentParserOptions(options), trusted_types_names::kSetHTML,
+      exception_state);
+}
+
+void Element::setHTML(const String& html,
+                      TrustedParserOptions* options,
+                      ExceptionState& exception_state) {
+  CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
+  SetInnerHTMLInternal(
+      html, FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
+      FragmentParserConfig::ForceHtml::kForce, Sanitizer::Mode::kSafe,
+      FragmentParserOptions(options), trusted_types_names::kSetHTML,
+      exception_state);
 }
 
 void Element::SetNamedTriggers(NamedAnimationTriggerMap&& named_triggers) {

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/serializers/create_markup_options.h"
 #include "third_party/blink/renderer/core/editing/serializers/html_interchange.h"
+#include "third_party/blink/renderer/core/html/parser/fragment_parser_options.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -48,10 +49,6 @@ class Node;
 class CSSPropertyValueSet;
 
 enum ChildrenOnly { kIncludeNode, kChildrenOnly };
-
-// ForceInertTemplate specifies whether the HTML parser should parse into an
-// inert (non-active) template document.
-enum class ForceInertTemplate { kDontForce, kForce };
 
 using ShadowRootSet = HeapHashSet<Member<ShadowRoot>>;
 struct ShadowRootInclusion final {
@@ -91,22 +88,17 @@ DocumentFragment* CreateFragmentFromMarkupWithContext(Document&,
                                                       unsigned fragment_end,
                                                       const String& base_url,
                                                       ParserContentPolicy);
-DocumentFragment* CreateFragmentForInnerOuterHTML(
-    const String&,
-    Element*,
-    ParserContentPolicy,
-    Element::ParseDeclarativeShadowRoots parse_declarative_shadows,
-    Element::ForceHtml force_html,
-    ForceInertTemplate force_inert,
-    CustomElementRegistry* registry,
-    ExceptionState&);
+DocumentFragment* ParseHTMLFragment(const String& html,
+                                    const FragmentParserConfig& config,
+                                    FragmentParserOptions options,
+                                    ExceptionState& exception_state);
 DocumentFragment* CreateFragmentForTransformToFragment(
     const String&,
     const String& source_mime_type,
     Document& output_doc);
-DocumentFragment* CreateContextualFragment(const String&,
+
+DocumentFragment* CreateContextualFragment(const String& html,
                                            Element*,
-                                           ParserContentPolicy,
                                            ExceptionState&);
 
 bool IsPlainTextMarkup(Node*);

@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/dom/container_node.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_html_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmlunsafeoptions_trustedparseroptions.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/selector_filter.h"
@@ -67,6 +68,7 @@
 #include "third_party/blink/renderer/core/html/html_stream.h"
 #include "third_party/blink/renderer/core/html/html_tag_collection.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
+#include "third_party/blink/renderer/core/html/parser/fragment_parser_options.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -74,6 +76,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
@@ -1918,8 +1921,9 @@ WritableStream* ContainerNode::streamAppendHTMLUnsafe(
     ExceptionState& exception_state) {
   DEFINE_STATIC_LOCAL(AtomicString, kInterfaceName, ("streamAppendHTMLUnsafe"));
 
-  return HTMLStream::Create(script_state, this, options, kInterfaceName,
-                            exception_state);
+  return HTMLStream::Create(script_state, this,
+                            FragmentParserOptions::From(options),
+                            kInterfaceName, exception_state);
 }
 
 WritableStream* ContainerNode::streamHTMLUnsafe(
@@ -1927,8 +1931,9 @@ WritableStream* ContainerNode::streamHTMLUnsafe(
     V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
     ExceptionState& exception_state) {
   DEFINE_STATIC_LOCAL(AtomicString, kPropertyName, ("streamHTMLUnsafe"));
-  WritableStream* stream = HTMLStream::Create(script_state, this, options,
-                                              kPropertyName, exception_state);
+  WritableStream* stream = HTMLStream::Create(
+      script_state, this, FragmentParserOptions::From(options), kPropertyName,
+      exception_state);
   if (!exception_state.HadException()) {
     RemoveChildren();
   }

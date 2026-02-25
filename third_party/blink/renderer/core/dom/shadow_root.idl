@@ -56,9 +56,12 @@ interface ShadowRoot : DocumentFragment {
     // See https://crbug.com/346835896
     [RuntimeEnabled=ShadowRootReferenceTarget] attribute DOMString? referenceTarget;
 
+    // TODO(nrosenthal): remove duplicates once flags are merged.
     [RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe((TrustedHTML or DOMString) string);
     [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe((TrustedHTML or DOMString) html, SetHTMLUnsafeOptions options);
     [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLSafe,CEReactions] void setHTML(DOMString html, optional SetHTMLOptions options = {});
+    [RuntimeEnabled=TrustedTypesCreateParserOptions,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe((TrustedHTML or DOMString) html, TrustedParserOptions options);
+    [RuntimeEnabled=TrustedTypesCreateParserOptions,RaisesException,MeasureAs=SetHTMLSafe,CEReactions] void setHTML(DOMString html, TrustedParserOptions options);
 
     // https://github.com/whatwg/html/issues/2142
     [RuntimeEnabled=DocumentPatching, CallWith=ScriptState, RaisesException] WritableStream streamAppendHTMLUnsafe(optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});

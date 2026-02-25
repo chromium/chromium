@@ -113,10 +113,12 @@ dictionary SetHTMLUnsafeOptions {
     // https://github.com/whatwg/html/pull/9538
     [RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe((TrustedHTML or DOMString) html);
     // https://wicg.github.io/sanitizer-api/#sanitizer-api
-    // TODO(vogelheim): Merge the two setHTMLUnsafe variants into one, once the
+    // TODO(vogelheim): Merge the 3 setHTMLUnsafe variants into one, once the
     //   different RuntimeEnabled flags are both perma-enabled.
     [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe((TrustedHTML or DOMString) html, SetHTMLUnsafeOptions options);
+    [RuntimeEnabled=TrustedTypesCreateParserOptions,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe((TrustedHTML or DOMString) html, TrustedParserOptions options);
     [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLSafe,CEReactions] void setHTML(DOMString html, optional SetHTMLOptions options = {});
+    [RuntimeEnabled=TrustedTypesCreateParserOptions,RaisesException,MeasureAs=SetHTMLSafe,CEReactions] void setHTML(DOMString html, TrustedParserOptions options);
 
     // https://github.com/whatwg/html/issues/2142
     // https://github.com/whatwg/html/issues/11542

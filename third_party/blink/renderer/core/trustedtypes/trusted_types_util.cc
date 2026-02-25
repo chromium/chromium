@@ -4,13 +4,19 @@
 
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 
+#include <optional>
+
 #include "base/compiler_specific.h"
+#include "base/notreached.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_sanitizer_config.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_set_html_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_set_html_unsafe_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmlunsafeoptions_trustedparseroptions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedhtml.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedscript.h"
@@ -20,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/html/parser/fragment_parser_options.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/exception_metadata.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
@@ -59,6 +66,7 @@ enum TrustedTypeViolationKind {
   kScriptExecutionAndDefaultPolicyFailed,
   kTrustedHTMLParserOptionsTransform,
   kTrustedHTMLParserOptionsTransformAndNoDefaultPolicyExisted,
+  kTrustedHTMLParserOptionsTransformAndDefaultPolicyFailed,
 };
 
 // Strings to support building a sample, used in:
@@ -132,6 +140,10 @@ const char* GetMessage(TrustedTypeViolationKind kind) {
       CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
       return "The TrustedParserOptions parser options transform failed and no "
              "'default' policy for 'TrustedParserOptions' has been defined.";
+    case kTrustedHTMLParserOptionsTransformAndDefaultPolicyFailed:
+      CHECK(RuntimeEnabledFeatures::DocumentPatchingEnabled());
+      return "The TrustedParserOptions parser options transform failed and the "
+             "'default' policy failed to execute.";
   }
   NOTREACHED();
 }
@@ -624,44 +636,82 @@ String TrustedTypesCheckForHTML(const V8UnionStringOrTrustedHTML* value,
   NOTREACHED();
 }
 
-[[nodiscard]] CORE_EXPORT const TrustedParserOptions*
-TrustedTypesCheckForParserOptions(
-    const V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*
-        options_or_trusted_options,
-    const ExecutionContext* execution_context,
-    const AtomicString& interface_name,
-    const AtomicString& property_name,
-    ExceptionState& exception_state) {
-  if (options_or_trusted_options->IsTrustedParserOptions()) {
-    return options_or_trusted_options->GetAsTrustedParserOptions();
+[[nodiscard]] CORE_EXPORT std::optional<FragmentParserOptions>
+TrustedTypesCheckForParserOptions(FragmentParserOptions options,
+                                  MarkupInsertionMode insertion_mode,
+                                  const ExecutionContext* execution_context,
+                                  const AtomicString& interface_name,
+                                  const AtomicString& property_name,
+                                  ExceptionState& exception_state) {
+  if (options.trust_mode() == FragmentParserOptions::TrustMode::kTrusted) {
+    return options;
   }
-
-  const SetHTMLUnsafeOptions* options =
-      options_or_trusted_options->GetAsSetHTMLUnsafeOptions();
 
   if (!RequireTrustedTypesCheck(execution_context)) {
-    return MakeGarbageCollected<TrustedParserOptions>(options->sanitizer(),
-                                                      options->runScripts());
+    return options;
   }
+
+  // When streaming, we cannot use createHTML because the full HTML is not known
+  // at the time of checking. So in the streaming scenario, checking the parser
+  // options is a mandatory step. When setting HTML from a fragment (e.g.
+  // SetHTML), a trusted ParserOptions is optional.
+  const bool parser_options_required =
+      insertion_mode == MarkupInsertionMode::kStream;
 
   auto* default_policy = GetDefaultPolicy(execution_context);
   if (!default_policy) {
-    TrustedTypeFail(kTrustedHTMLParserOptionsTransform, execution_context,
-                    interface_name, property_name, exception_state,
-                    g_empty_string);
-    return nullptr;
+    if (parser_options_required &&
+        TrustedTypeFail(kTrustedHTMLParserOptionsTransform, execution_context,
+                        interface_name, property_name, exception_state,
+                        g_empty_string)) {
+      return std::nullopt;
+    }
+    return options;
   }
 
   if (!default_policy->HasCreateParserOptions()) {
-    TrustedTypeFail(kTrustedHTMLParserOptionsTransformAndNoDefaultPolicyExisted,
-                    execution_context, interface_name, property_name,
-                    exception_state, g_empty_string);
-    return nullptr;
+    if (parser_options_required &&
+        TrustedTypeFail(
+            kTrustedHTMLParserOptionsTransformAndNoDefaultPolicyExisted,
+            execution_context, interface_name, property_name, exception_state,
+            g_empty_string)) {
+      return std::nullopt;
+    }
+    return options;
   }
 
-  TryRethrowScope rethrow_scope(execution_context->GetIsolate(),
-                                exception_state);
-  return default_policy->createParserOptions(options, exception_state);
+  TrustedParserOptions* result = nullptr;
+  {
+    TryRethrowScope rethrow_scope(execution_context->GetIsolate(),
+                                  exception_state);
+
+    SetHTMLUnsafeOptions* unsafe_options_for_policy =
+        SetHTMLUnsafeOptions::Create(execution_context->GetIsolate());
+    unsafe_options_for_policy->setRunScripts(
+        options.run_scripts() ==
+        FragmentParserOptions::RunScripts::kRunScripts);
+    if (options.sanitizer_init()) {
+      unsafe_options_for_policy->setSanitizer(options.sanitizer_init());
+    }
+    result = default_policy->createParserOptions(unsafe_options_for_policy,
+                                                 exception_state);
+  }
+
+  if (exception_state.HadException()) {
+    return std::nullopt;
+  }
+
+  if (!result) {
+    if (TrustedTypeFail(
+            kTrustedHTMLParserOptionsTransformAndDefaultPolicyFailed,
+            execution_context, interface_name, property_name, exception_state,
+            g_empty_string)) {
+      return std::nullopt;
+    }
+    return options;
+  }
+
+  return FragmentParserOptions(result);
 }
 
 String TrustedTypesCheckForScript(const V8UnionStringOrTrustedScript* value,

@@ -53,8 +53,10 @@
 #include "third_party/blink/renderer/core/dom/names_map.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
+#include "third_party/blink/renderer/core/html/parser/fragment_parser_options.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_types_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/transform_view.h"
@@ -149,6 +151,7 @@ class StylePropertyMapReadOnly;
 class StyleRecalcContext;
 class StyleScopeData;
 class TextVisitor;
+class TrustedParserOptions;
 class V8UnionBooleanOrScrollIntoViewOptions;
 class V8UnionKeyframeAnimationOptionsOrUnrestrictedDouble;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedHTML;
@@ -292,19 +295,6 @@ class CORE_EXPORT Element : public ContainerNode {
   Element(const QualifiedName& tag_name,
           Document*,
           ConstructionType = kCreateElement);
-
-  // ParseDeclarativeShadowRoots specifies whether declarative shadow roots
-  // should be parsed by the HTML parser.
-  enum class ParseDeclarativeShadowRoots {
-    kDontParse = 0,
-    kParse = 1,
-  };
-  // ForceHtml specifies whether the HTML parser should be used when parsing
-  // markup even if we are in an XML document.
-  enum class ForceHtml {
-    kDontForce = 0,
-    kForce = 1,
-  };
 
   // Animatable implementation.
   // https://drafts.csswg.org/web-animations-1/#the-animatable-interface-mixin
@@ -1403,9 +1393,9 @@ class CORE_EXPORT Element : public ContainerNode {
   void insertAdjacentText(const String& where,
                           const String& text,
                           ExceptionState&);
-  void InsertAdjacentHTMLWithoutTrustedTypes(const String& where,
-                                             const String& html,
-                                             ExceptionState&);
+  void InsertAdjacentHTMLWithoutTrustedTypesForTesting(const String& where,
+                                                       const String& html,
+                                                       ExceptionState&);
   void insertAdjacentHTML(const String& where,
                           const V8UnionStringOrTrustedHTML* html,
                           ExceptionState&);
@@ -1416,7 +1406,7 @@ class CORE_EXPORT Element : public ContainerNode {
                                        ExceptionState& = ASSERT_NO_EXCEPTION);
   void SetOuterHTMLWithoutTrustedTypes(const String&,
                                        ExceptionState& = ASSERT_NO_EXCEPTION);
-
+  void SetOuterHTMLInternal(const String&, ExceptionState&);
   V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* innerHTML() const;
   V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* outerHTML() const;
   void setInnerHTML(const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML*,
@@ -1434,10 +1424,14 @@ class CORE_EXPORT Element : public ContainerNode {
   void setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
                      SetHTMLUnsafeOptions*,
                      ExceptionState&);
+  void setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
+                     TrustedParserOptions*,
+                     ExceptionState&);
   void setHTML(const String& html, SetHTMLOptions*, ExceptionState&);
+  void setHTML(const String& html, TrustedParserOptions*, ExceptionState&);
 
-  void setPointerCapture(PointerId poinetr_id, ExceptionState&);
-  void releasePointerCapture(PointerId pointer_id, ExceptionState&);
+  void setPointerCapture(PointerId, ExceptionState&);
+  void releasePointerCapture(PointerId, ExceptionState&);
 
   // Returns true iff the element would capture the next pointer event. This
   // is true between a setPointerCapture call and a releasePointerCapture (or
@@ -2527,17 +2521,26 @@ class CORE_EXPORT Element : public ContainerNode {
                                                         const QualifiedName&,
                                                         const AtomicString&);
 
-  void SetInnerHTMLInternal(
-      const String&,
-      ParseDeclarativeShadowRoots parse_declarative_shadows,
-      ForceHtml force_html_over_xml,
-      // When called from SetHTML or SetHTMLUnsafe, SetInnerHTMLInternal must
-      // process their options dictionary, which you can pass into |options|.
-      // When called from a method without options, like the classic innerHTML
-      // setter, you can pass std::monostate{} to designate no options.
-      std::variant<std::monostate, SetHTMLOptions*, SetHTMLUnsafeOptions*>
-          options,
-      ExceptionState&);
+  void SetInnerHTMLInternal(const String&,
+                            FragmentParserConfig::ParseDeclarativeShadowRoots,
+                            FragmentParserConfig::ForceHtml,
+                            Sanitizer::Mode,
+                            const FragmentParserOptions&,
+                            const AtomicString& property_name,
+                            ExceptionState&);
+
+  template <typename T>
+  String CheckTrustedTypes(T* html,
+                           const AtomicString& property_name,
+                           ExceptionState& exception_state) const {
+    return TrustedTypesCheckForHTML(html, GetExecutionContext(),
+                                    trusted_types_names::kElement,
+                                    property_name, exception_state);
+  }
+
+  void InsertAdjacentHTMLInternal(const String& where,
+                                  const String& input,
+                                  ExceptionState& exception_state);
 
   void RemoveAttrNodeList();
   void DetachAllAttrNodesFromElement();
