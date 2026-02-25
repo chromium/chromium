@@ -225,6 +225,8 @@ data/bear-vp9-opus.webm
 data/bear-vp9.ivf
 data/bear-vp9.ivf.context
 data/bear-vp9.webm
+data/bear-vp9a-422.webm
+data/bear-vp9a-444.webm
 data/bear-vp9a-odd-dimensions.webm
 data/bear-vp9a.webm
 data/bear.ac3

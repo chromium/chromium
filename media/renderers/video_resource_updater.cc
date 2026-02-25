@@ -270,6 +270,12 @@ viz::SharedImageFormat VideoPixelFormatToMultiPlanarSharedImageFormat(
       return viz::MultiPlaneFormat::kNV12A;
     case PIXEL_FORMAT_I420A:
       return viz::MultiPlaneFormat::kI420A;
+    case PIXEL_FORMAT_I422A:
+      return viz::SharedImageFormat::MultiPlane(
+          PlaneConfig::kY_U_V_A, Subsampling::k422, ChannelFormat::k8);
+    case PIXEL_FORMAT_I444A:
+      return viz::SharedImageFormat::MultiPlane(
+          PlaneConfig::kY_U_V_A, Subsampling::k444, ChannelFormat::k8);
     case PIXEL_FORMAT_NV16:
     case PIXEL_FORMAT_NV24:
     case PIXEL_FORMAT_P010LE:
@@ -289,8 +295,6 @@ viz::SharedImageFormat VideoPixelFormatToMultiPlanarSharedImageFormat(
     case PIXEL_FORMAT_XB30:
     case PIXEL_FORMAT_BGRA:
     case PIXEL_FORMAT_RGBAF16:
-    case PIXEL_FORMAT_I422A:
-    case PIXEL_FORMAT_I444A:
     case PIXEL_FORMAT_YUV420AP10:
     case PIXEL_FORMAT_YUV422AP10:
     case PIXEL_FORMAT_YUV444AP10:

@@ -490,11 +490,11 @@ bool VpxVideoDecoder::CopyVpxImageToVideoFrame(
       break;
 
     case VPX_IMG_FMT_I422:
-      codec_format = PIXEL_FORMAT_I422;
+      codec_format = vpx_image_alpha ? PIXEL_FORMAT_I422A : PIXEL_FORMAT_I422;
       break;
 
     case VPX_IMG_FMT_I444:
-      codec_format = PIXEL_FORMAT_I444;
+      codec_format = vpx_image_alpha ? PIXEL_FORMAT_I444A : PIXEL_FORMAT_I444;
       break;
 
     case VPX_IMG_FMT_I42016:

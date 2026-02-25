@@ -2847,6 +2847,22 @@ TEST_F(PipelineIntegrationTest, BasicPlayback_VP9A_Odd_WebM) {
   EXPECT_EQ(last_video_frame_format_, PIXEL_FORMAT_I420A);
 }
 
+// Verify that VP9 422 video with alpha channel can be played back.
+TEST_F(PipelineIntegrationTest, BasicPlayback_VP9A_422_WebM) {
+  ASSERT_EQ(PIPELINE_OK, Start("bear-vp9a-422.webm"));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_EQ(last_video_frame_format_, PIXEL_FORMAT_I422A);
+}
+
+// Verify that VP9 444 video with alpha channel can be played back.
+TEST_F(PipelineIntegrationTest, BasicPlayback_VP9A_444_WebM) {
+  ASSERT_EQ(PIPELINE_OK, Start("bear-vp9a-444.webm"));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_EQ(last_video_frame_format_, PIXEL_FORMAT_I444A);
+}
+
 // Verify that VP9 video with 4:4:4 subsampling can be played back.
 TEST_F(PipelineIntegrationTest, P444_VP9_WebM) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-320x240-P444.webm"));

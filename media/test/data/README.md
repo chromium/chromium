@@ -25,6 +25,18 @@ The audio track of bear-320x240.webm.
 #### bear-vp9.webm
 VP9 video only WebM file.
 
+#### bear-vp9a-422.webm
+VP9 video with alpha channel and yuv 422 subsampling.
+```
+ffmpeg -c:v libvpx-vp9 -i bear-vp9a.webm -pix_fmt yuva422p -strict experimental bear-vp9a-422.webm
+```
+
+#### bear-vp9a-444.webm
+VP9 video with alpha channel and yuv 444 subsampling.
+```
+ffmpeg -c:v libvpx-vp9 -i bear-vp9a.webm -pix_fmt yuva444p -strict experimental bear-vp9a-444.webm
+```
+
 #### bear-vp9-opus.webm
 VP9 Video with Opus Audio.
 
