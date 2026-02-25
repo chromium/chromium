@@ -767,6 +767,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.SQLite.OpenToReadMetadataResult"
+    enum="IndexedDbStatusType" expires_after="2026-10-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the result when the SQLite backing store opens a DB for the sole
+    purpose of reading metadata (i.e. name and version).
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.SQLite.PutRecord.CompressionRatio" units="%"
     expires_after="2026-06-01">
   <owner>leimy@chromium.org</owner>

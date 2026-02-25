@@ -14,6 +14,7 @@
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/backing_store_test_base.h"
 #include "content/browser/indexed_db/instance/sqlite/backing_store_database_impl.h"
+#include "content/browser/indexed_db/instance/sqlite/backing_store_impl.h"
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
@@ -453,6 +454,56 @@ TEST_F(BackingStoreSqliteTest, BlobChunking) {
     PutRecord(*db, object_store_id, key, value);
     EXPECT_EQ(ReadBlobContents(*db, object_store_id, key), payload);
   }
+}
+
+TEST_F(BackingStoreSqliteTest,
+       LeftoverDatabaseCleanedAfterGetDatabaseNamesAndVersions) {
+  base::HistogramTester histogram_tester;
+
+  // Create a valid database.
+  {
+    ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
+                         backing_store()->CreateOrOpenDatabase(u"basic_db"));
+    std::unique_ptr<BackingStore::Transaction> transaction =
+        CreateAndBeginTransaction(
+            *db, blink::mojom::IDBTransactionMode::VersionChange);
+    EXPECT_TRUE(transaction
+                    ->CreateObjectStore(1, u"object_store_name",
+                                        IndexedDBKeyPath(u"object_store_key"),
+                                        /*auto_increment=*/true)
+                    .ok());
+    EXPECT_TRUE(transaction->SetDatabaseVersion(1).ok());
+    CommitTransactionAndVerify(*transaction);
+  }
+
+  // Create a database that's left in a zygotic state. Since we don't run the
+  // cleanup task, the database is left behind despite being zygotic. This
+  // simulates a previous crash.
+  const std::u16string kDbName = u"leftover_db";
+  base::FilePath db_path = GetDatabasePath(kDbName);
+  EXPECT_FALSE(base::PathExists(db_path));
+  BackingStoreImpl* backing_store_impl =
+      reinterpret_cast<BackingStoreImpl*>(backing_store());
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<DatabaseConnection> connection,
+      DatabaseConnection::Open(kDbName, db_path, *backing_store_impl));
+  EXPECT_TRUE(base::PathExists(db_path));
+  std::ignore = std::move(*connection).GetCleanupTask(/*force_closing=*/true);
+  EXPECT_TRUE(base::PathExists(db_path));
+
+  // `GetDatabaseNamesAndVersions()` won't return the zygotic database, and
+  // furthermore erases it.
+  ASSERT_OK_AND_ASSIGN(
+      std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions,
+      backing_store()->GetDatabaseNamesAndVersions());
+  ASSERT_EQ(names_and_versions.size(), 1U);
+  EXPECT_EQ(names_and_versions[0]->name, u"basic_db");
+  EXPECT_FALSE(base::PathExists(db_path));
+
+  // Verify that the histogram was logged when opening the leftover database.
+  // Nothing is logged for "basic_db" since it reads from `cached_versions_`.
+  histogram_tester.ExpectUniqueSample(
+      "IndexedDB.SQLite.OpenToReadMetadataResult.OnDisk", 2 /*kCorruption*/, 1);
 }
 
 }  // namespace content::indexed_db::sqlite

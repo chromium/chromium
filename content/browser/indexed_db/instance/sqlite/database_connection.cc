@@ -857,7 +857,8 @@ class IndexCursorImpl : public BackingStoreCursorImpl {
 StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
     std::optional<std::u16string_view> name,
     base::FilePath path,
-    BackingStoreImpl& backing_store) {
+    BackingStoreImpl& backing_store,
+    bool erase_if_zygotic) {
   auto connection =
       base::WrapUnique(new DatabaseConnection(path, backing_store));
   Status s = connection->Init(name);
@@ -868,16 +869,22 @@ StatusOr<std::unique_ptr<DatabaseConnection>> DatabaseConnection::Open(
       loss.message = s.ToString();
     }
     // If opening fails, recover or destroy the DB and try once more.
-    std::move(*connection).DestroySoon(/*force_closing=*/false).Run();
+    std::move(*connection).GetCleanupTask(/*force_closing=*/false).Run();
     connection = base::WrapUnique(new DatabaseConnection(path, backing_store));
     s = connection->Init(name);
     connection->data_loss_info_ = std::move(loss);
     s.Log("IndexedDB.SQLite.OpenRetryResult");
   }
+  if (s.ok() && erase_if_zygotic && connection->IsZygotic()) {
+    s = Status::Corruption(
+        "Database was zygotic on open, indicating prior unclean shutdown");
+    connection->marked_for_permanent_deletion_ = true;
+  }
   if (!s.ok()) {
-    std::move(*connection).DestroySoon(/*force_closing=*/false).Run();
+    std::move(*connection).GetCleanupTask(/*force_closing=*/false).Run();
     return base::unexpected(s);
   }
+
   return connection;
 }
 
@@ -951,11 +958,11 @@ DatabaseConnection::DatabaseConnection(base::FilePath path,
 DatabaseConnection::~DatabaseConnection() {
   // Closing a `sql::Database` can be an expensive operation since it performs a
   // checkpoint. Hence, ensure that closing happens intentionally (in the task
-  // returned by `DestroySoon()`).
-  CHECK(!db_) << "DestroySoon() must be called before destruction";
+  // returned by `GetCleanupTask()`).
+  CHECK(!db_) << "GetCleanupTask() must be called before destruction";
 }
 
-base::OnceClosure DatabaseConnection::DestroySoon(bool force_closing) && {
+base::OnceClosure DatabaseConnection::GetCleanupTask(bool force_closing) && {
   CHECK(db_);
 
   // Although generally active blobs will keep `this` alive, when the backing
