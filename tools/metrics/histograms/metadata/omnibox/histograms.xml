@@ -100,6 +100,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".RegularModel" summary=""/>
   <variant name=".Tab" summary=""/>
   <variant name=".ThinkingModel" summary=""/>
+  <variant name=".Unknown" summary=""/>
 </variants>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/omnibox/omnibox_context_menu_controller.h:ContextType) -->
