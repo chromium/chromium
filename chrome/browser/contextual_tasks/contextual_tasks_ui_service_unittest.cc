@@ -1103,4 +1103,23 @@ TEST_F(ContextualTasksUiServiceTest, ShareUrl_FromEmbeddedPage_Intercepted) {
   run_loop.Run();
 }
 
+TEST_F(ContextualTasksUiServiceTest, GetAimUrlFromContextualTasksUrl) {
+  // Search param not found.
+  EXPECT_TRUE(ContextualTasksUiService::GetAimUrlFromContextualTasksUrl(
+                  GURL("chrome://contextual-tasks"))
+                  .is_empty());
+
+  // Not valid AIM URL.
+  EXPECT_TRUE(
+      ContextualTasksUiService::GetAimUrlFromContextualTasksUrl(
+          GURL("chrome://contextual-tasks?aim_url=https%3A%2F%2Fbing.com"))
+          .is_empty());
+
+  // Valid AIM URL.
+  EXPECT_EQ(GURL("https://google.com/search"),
+            ContextualTasksUiService::GetAimUrlFromContextualTasksUrl(GURL(
+                "chrome://"
+                "contextual-tasks?aim_url=https%3A%2F%2Fgoogle.com%2Fsearch")));
+}
+
 }  // namespace contextual_tasks
