@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_mutator.h"
 #import "ios/chrome/browser/composebox/ui/composebox_input_plate_view_controller_delegate.h"
 #import "ios/chrome/browser/composebox/ui/composebox_metrics_recorder.h"
+#import "ios/chrome/browser/composebox/ui/composebox_server_strings.h"
 #import "ios/chrome/browser/composebox/ui/composebox_snackbar_presenter.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
@@ -780,6 +781,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   }
   _disabledModels = disabledModels;
   [self updatePlusButtonItems];
+}
+
+- (void)setServerStrings:(ComposeboxServerStrings*)serverStrings {
+  // TODO(crbug.com/487169190): Integrate server strings.
 }
 
 - (void)setRemainingAttachmentCapacity:(NSUInteger)capacity {

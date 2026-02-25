@@ -13,6 +13,7 @@
 
 enum class ComposeboxInputPlateControls : unsigned int;
 enum class ComposeboxModelOption;
+@class ComposeboxServerStrings;
 
 // Consumer for the composebox composebox.
 @protocol ComposeboxInputPlateConsumer
@@ -99,6 +100,9 @@ enum class ComposeboxModelOption;
 // Sets the list of disabled models.
 - (void)setDisabledModels:
     (std::unordered_set<ComposeboxModelOption>)disabledModels;
+
+// Sets the server strings.
+- (void)setServerStrings:(ComposeboxServerStrings*)serverStrings;
 
 // Sets the remaining capacity for attachments.
 - (void)setRemainingAttachmentCapacity:(NSUInteger)capacity;
