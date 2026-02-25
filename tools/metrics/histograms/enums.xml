@@ -23945,9 +23945,10 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="FEATURE_NAME_UNSPECIFIED"/>
   <int value="3" label="FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT"/>
   <int value="700" label="FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION"/>
+  <int value="701" label="FEATURE_NAME_CHROME_FORMS_AI"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/private_ai/proto/legion.proto:FeatureName) -->
+<!-- LINT.ThenChange(//components/private_ai/proto/private_ai.proto:FeatureName) -->
 
 <enum name="ProbeResult">
   <int value="0" label="No internet"/>
