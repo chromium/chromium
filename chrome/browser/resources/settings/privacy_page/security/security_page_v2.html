@@ -38,17 +38,6 @@
     background-color: var(--security-page-selected-card-background-color);
   }
 
-  .section-header {
-    color: var(--cr-primary-text-color);
-    flex: 1;
-    font-size: 108%;
-    font-weight: 400;
-    letter-spacing: .25px;
-    margin-bottom: 16px;
-    margin-top: 30px;
-    width: 100%;
-  }
-
   .settings-columned-section {
     padding: 0;
   }
@@ -61,8 +50,8 @@
     column-gap: 16px;
   }
 
-  settings-section > .title.first {
-    margin-top: 0px;
+  settings-section:first-of-type {
+    --cr-section-vertical-margin: 0;
   }
 
   settings-section:not(:first-of-type) > :first-child {
