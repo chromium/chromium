@@ -49,13 +49,14 @@ bool WebMAudioClient::InitializeConfig(
   if (channels_ == -1)
     channels_ = 1;
 
-  ChannelLayout channel_layout =
-      channels_ > 8 ? CHANNEL_LAYOUT_DISCRETE : GuessChannelLayout(channels_);
+  ChannelLayoutConfig channel_layout = ChannelLayoutConfig::Guess(channels_);
 
-  if (channel_layout == CHANNEL_LAYOUT_UNSUPPORTED) {
+  if (channel_layout.channel_layout() == CHANNEL_LAYOUT_UNSUPPORTED) {
     MEDIA_LOG(ERROR, media_log_) << "Unsupported channel count " << channels_;
     return false;
   }
+
+  CHECK_EQ(channel_layout.channels(), channels_);
 
   int samples_per_second = samples_per_second_;
   if (output_samples_per_second_ > 0)
@@ -78,8 +79,8 @@ bool WebMAudioClient::InitializeConfig(
   }
 
   config->Initialize(
-      audio_codec, sample_format, {channel_layout, channels_},
-      samples_per_second, codec_private, encryption_scheme,
+      audio_codec, sample_format, channel_layout, samples_per_second,
+      codec_private, encryption_scheme,
       base::Microseconds((seek_preroll != -1 ? seek_preroll : 0) / 1000),
       codec_delay_in_frames);
   return config->IsValidConfig();
