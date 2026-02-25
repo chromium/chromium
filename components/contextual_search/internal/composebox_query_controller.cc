@@ -489,12 +489,13 @@ void ComposeboxQueryController::CreateSearchUrl(
       // TODO(crbug.com/462509148): Determine how to support interaction
       // requests for multi-context input flow.
       if (search_url_request_info->lens_overlay_selection_type.has_value()) {
+        request_id_generator_.SetContextId(
+            last_active_lens_file->request_id->context_id());
         auto interaction_request_id = request_id_generator_.GetNextRequestId(
             lens::RequestIdUpdateMode::kInteractionRequest,
             search_url_request_info->image_crop.has_value()
                 ? lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE
-                : last_active_lens_file->request_id->media_type(),
-            last_active_lens_file->GetContextId());
+                : last_active_lens_file->request_id->media_type());
         SendInteractionRequest(
             std::move(interaction_request_id),
             search_url_request_info->query_text,
@@ -811,11 +812,11 @@ void ComposeboxQueryController::StartFileUploadFlow(
     int64_t context_id = contextual_input_data->context_id.has_value()
                              ? contextual_input_data->context_id.value()
                              : RandInt64();
+    request_id_generator_.SetContextId(context_id);
     current_file_info.request_id = *request_id_generator_.GetNextRequestId(
         lens::RequestIdUpdateMode::kMultiContextUploadRequest,
         lens::MimeTypeToMediaType(current_file_info.mime_type,
-                                  use_has_viewport_media_type),
-        context_id);
+                                  use_has_viewport_media_type));
   }
 
   // Update the file upload status to processing.
