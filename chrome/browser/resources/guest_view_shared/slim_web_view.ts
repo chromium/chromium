@@ -185,6 +185,11 @@ const eventDescriptors: EventMap = new Map([
   ['unresponsive', {}],
 ]);
 
+const slimWebViewContainerFinalizationRegistry =
+    new FinalizationRegistry((containerId: number) => {
+      chrome.slimWebViewPrivate.destroyContainer(containerId);
+    });
+
 export class SlimWebViewElement extends CrLitElement {
   static get is() {
     // This is a restricted custom element name that is allowed-listed in
@@ -301,9 +306,10 @@ export class SlimWebViewElement extends CrLitElement {
     };
     const result =
         await BrowserProxyImpl.getInstance().handler.createGuest(createParams);
+    // We immediately attach the guest to the embedder frame. The browser knows
+    // how to handle the guest's lifecycle after this, so we don't need to
+    // handle its destruction explicitly here.
     this.onGuestCreated(result.guestInstanceId);
-    // TODO(crbug.com/460804848): destroy guest when this element is destroyed,
-    // if guest is not attached.
   }
 
   private onGuestCreated(guestInstanceId: number) {
@@ -320,8 +326,7 @@ export class SlimWebViewElement extends CrLitElement {
     assert(iframeElement);
     assert(iframeElement.contentWindow);
     this.containerId = chrome.slimWebViewPrivate.getNextId();
-    // TODO(crbug.com/460804848): Bind the destruction of the container to the
-    // destruction of this element.
+    slimWebViewContainerFinalizationRegistry.register(this, this.containerId);
     chrome.slimWebViewPrivate.attachIframeGuest(
         this.containerId,
         this.guestInstanceId,
