@@ -279,10 +279,10 @@ void WebJsErrorReportProcessor::SendErrorReport(
   if (web::GetWebClient()->GetJSErrorReportLoggingLevel(browser_state_) ==
       JSErrorReportLoggingLevel::FULL) {
     if (error_report.page_url) {
-      params["page_url"] = error_report.page_url.value();
+      params["url0"] = error_report.page_url.value();
     }
     if (error_report.page_url_file_extension) {
-      params["page_url_file_extension"] =
+      params["url0_file_extension"] =
           error_report.page_url_file_extension.value();
     }
   }
