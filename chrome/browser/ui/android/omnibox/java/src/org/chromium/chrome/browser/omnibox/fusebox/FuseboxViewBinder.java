@@ -96,6 +96,9 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CLIPBOARD_CLICKED) {
             view.popup.mClipboardButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED) {
+            view.popup.mClipboardButton.setEnabled(
+                    model.get(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED));
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE) {
             updateButtonVisibility(
                     model,

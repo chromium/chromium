@@ -65,6 +65,10 @@ class FuseboxProperties {
     public static final WritableObjectPropertyKey<Runnable> POPUP_ATTACH_CLIPBOARD_CLICKED =
             new WritableObjectPropertyKey<>();
 
+    /** Whether the Clipboard button in the popup is enabled. */
+    public static final WritableBooleanPropertyKey POPUP_ATTACH_CLIPBOARD_ENABLED =
+            new WritableBooleanPropertyKey();
+
     /** Whether the Clipboard button in the popup is visible. */
     public static final WritableBooleanPropertyKey POPUP_ATTACH_CLIPBOARD_VISIBLE =
             new WritableBooleanPropertyKey();
@@ -157,6 +161,7 @@ class FuseboxProperties {
         POPUP_ATTACH_CAMERA_CLICKED,
         POPUP_ATTACH_CAMERA_ENABLED,
         POPUP_ATTACH_CLIPBOARD_CLICKED,
+        POPUP_ATTACH_CLIPBOARD_ENABLED,
         POPUP_ATTACH_CLIPBOARD_VISIBLE,
         POPUP_ATTACH_CURRENT_TAB_CLICKED,
         POPUP_ATTACH_CURRENT_TAB_ENABLED,

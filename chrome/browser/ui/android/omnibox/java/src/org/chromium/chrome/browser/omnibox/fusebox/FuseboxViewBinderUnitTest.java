@@ -320,6 +320,14 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    public void testClipboardButtonEnabled() {
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED, true);
+        assertTrue(mViewHolder.popup.mClipboardButton.isEnabled());
+        mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_ENABLED, false);
+        assertFalse(mViewHolder.popup.mClipboardButton.isEnabled());
+    }
+
+    @Test
     public void requestTypeDrawable() {
         mModel.set(
                 FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
