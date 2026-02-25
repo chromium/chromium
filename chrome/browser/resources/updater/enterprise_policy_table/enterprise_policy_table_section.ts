@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
-import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/icons.html.js';
 import './enterprise_policy_value.js';
 import '../icons.html.js';
 
@@ -44,14 +45,18 @@ export class EnterprisePolicyTableSectionElement extends CrLitElement {
 
   accessor rowData: RowData[] = [];
 
-  protected onRowExpandedChanged(e: CustomEvent<{value: boolean}>) {
+  protected canExpand(item: RowData): boolean {
+    return Object.keys(item.policy.valuesBySource).length > 1;
+  }
+
+  protected onExpandButtonClick(e: Event) {
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number(currentTarget.dataset['index']);
     assert(!Number.isNaN(index));
 
     const data = this.rowData[index];
     assert(data !== undefined);
-    data.isExpanded = e.detail.value;
+    data.isExpanded = !data.isExpanded;
     this.requestUpdate();
   }
 

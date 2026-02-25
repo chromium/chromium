@@ -58,6 +58,7 @@ suite('EnterprisePolicyTableSectionTest', () => {
     assertTrue(!!row1.querySelector('.warning-icon'));
     assertFalse(!!row1.querySelector('.check-icon'));
     assertFalse(row1.hasAttribute('expanded'));
+    assertTrue(!!row1.querySelector('.expand-icon'));
     const value1 = row1.querySelector('enterprise-policy-value');
     assertTrue(!!value1);
     assertEquals('Policy1', value1.policyName);
@@ -71,6 +72,7 @@ suite('EnterprisePolicyTableSectionTest', () => {
     assertFalse(!!row2.querySelector('.warning-icon'));
     assertTrue(!!row2.querySelector('.check-icon'));
     assertTrue(row2.hasAttribute('expanded'));
+    assertFalse(!!row2.querySelector('.expand-icon'));
     const value2 = row2.querySelector('enterprise-policy-value');
     assertTrue(!!value2);
     assertEquals('Policy2', value2.policyName);
@@ -94,7 +96,10 @@ suite('EnterprisePolicyTableSectionTest', () => {
     element.rowData = [{
       name: 'Policy1',
       policy: {
-        valuesBySource: {'Source1': 'Value1'},
+        valuesBySource: {
+          'Source1': 'Value1',
+          'Source2': 'Value2',
+        },
         prevailingSource: 'Source1',
       },
       isExpanded: false,
@@ -102,23 +107,22 @@ suite('EnterprisePolicyTableSectionTest', () => {
     }];
     await microtasksFinished();
 
-    const expandButton = element.shadowRoot.querySelector('cr-expand-button')!;
+    const expandButton = element.shadowRoot.querySelector<HTMLElement>(
+        'cr-icon-button.expand-icon')!;
     const collapse = element.shadowRoot.querySelector('cr-collapse')!;
 
-    assertFalse(expandButton.expanded);
     assertFalse(collapse.opened);
+    assertFalse(element.rowData[0]!.isExpanded);
 
     expandButton.click();
     await microtasksFinished();
 
-    assertTrue(expandButton.expanded);
     assertTrue(collapse.opened);
     assertTrue(element.rowData[0]!.isExpanded);
 
     expandButton.click();
     await microtasksFinished();
 
-    assertFalse(expandButton.expanded);
     assertFalse(collapse.opened);
     assertFalse(element.rowData[0]!.isExpanded);
   });
