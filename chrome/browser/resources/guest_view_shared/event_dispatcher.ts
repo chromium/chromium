@@ -50,7 +50,7 @@ export class EventDict {
  */
 export interface EventDescriptor {
   guestInstanceAssociated?: boolean;
-  factory?: (args: EventDict) => Event | null;
+  factory?: (args: EventDict, guestInstanceId: number) => Event | null;
   handler?: (element: HTMLElement) => void;
 
   // Properties used if `factory` is undefined.
@@ -118,7 +118,7 @@ export class EventDispatcher {
     }
     let event: Event|null = null;
     if (descriptor.factory) {
-      event = descriptor.factory(new EventDict(args));
+      event = descriptor.factory(new EventDict(args), this.guestInstanceId);
     } else {
       event = new Event(eventName, {
         bubbles: true,

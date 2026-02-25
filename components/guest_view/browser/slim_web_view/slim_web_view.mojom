@@ -34,6 +34,17 @@ interface PageHandler {
   // Navigates the GuestView to the given URL. URL must be valid and either
   // https or about:blank.
   Navigate(int32 guest_instance_id, url.mojom.Url url);
+
+  // The action chosen by the client to take when setting a permission.
+  enum PermissionResponseAction {
+    kDeny = 0,
+    kAllow = 1,
+    kDefault = 2,
+  };
+  // Sets the permission for the given guest and request ID. Returns whether the
+  // permission was granted.
+  SetPermission(int32 guest_instance_id, int32 request_id,
+                PermissionResponseAction action) => (bool allowed);
 };
 
 // Interface that implements browser-to-page messages for a SlimWebView.

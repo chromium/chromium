@@ -130,6 +130,8 @@ std::unique_ptr<GuestViewBase> SlimWebViewGuest::Create(
   return base::WrapUnique(new SlimWebViewGuest(owner_render_frame_host));
 }
 
+SlimWebViewGuest::~SlimWebViewGuest() = default;
+
 void SlimWebViewGuest::Navigate(const GURL& url) {
   // TODO(acondor): Implement other security and navigation params, such as
   // header overrides.
@@ -198,6 +200,15 @@ void SlimWebViewGuest::RendererUnresponsive(
 
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       slim_web_view::kEventUnresponsive, base::DictValue()));
+}
+
+void SlimWebViewGuest::RequestMediaAccessPermission(
+    content::WebContents* source,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
+  GuestRequestMediaAccessPermission(request, std::move(callback));
 }
 
 void SlimWebViewGuest::DidStartNavigation(
@@ -291,6 +302,13 @@ void SlimWebViewGuest::GuestViewMainFrameProcessGone(
            GetGuestMainFrame()->GetProcess()->GetID().value());
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       slim_web_view::kEventExit, std::move(args)));
+}
+
+void SlimWebViewGuest::GuestRequestMediaAccessPermission(
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  CHECK(!IsOwnedByControlledFrameEmbedder());
+  permission_helper_.RequestMediaAccessPermission(request, std::move(callback));
 }
 
 void SlimWebViewGuest::MaybeRecreateGuestContents(

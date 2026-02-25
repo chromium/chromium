@@ -36,16 +36,20 @@ class SlimWebViewPageHandler
   void SetSize(int32_t guest_instance_id,
                mojom::SetSizeParamsPtr size_params) override;
   void Navigate(int32_t guest_instance_id, const GURL& url) override;
+  void SetPermission(int32_t guest_instance_id,
+                     int32_t request_id,
+                     mojom::PageHandler_PermissionResponseAction action,
+                     SetPermissionCallback callback) override;
 
  private:
   friend class content::DocumentUserData<SlimWebViewPageHandler>;
   SlimWebViewPageHandler(content::RenderFrameHost* render_frame_host,
-                         mojo::PendingReceiver<mojom::PageHandler> page_handler,
+                         mojo::PendingReceiver<PageHandler> page_handler,
                          mojo::PendingRemote<mojom::Page> page);
 
   GuestViewManager* GetGuestViewManager();
 
-  mojo::Receiver<mojom::PageHandler> receiver_;
+  mojo::Receiver<PageHandler> receiver_;
   mojo::Remote<mojom::Page> page_;
 };
 

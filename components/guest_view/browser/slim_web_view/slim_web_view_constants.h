@@ -15,6 +15,7 @@ extern const char kEventLoadCommit[];
 extern const char kEventLoadStart[];
 extern const char kEventLoadStop[];
 extern const char kEventNewWindow[];
+extern const char kEventPermission[];
 extern const char kEventSizeChanged[];
 extern const char kEventUnresponsive[];
 
@@ -25,8 +26,10 @@ extern const char kNewHeight[];
 extern const char kNewWidth[];
 extern const char kOldHeight[];
 extern const char kOldWidth[];
+extern const char kPermission[];
 extern const char kProcessId[];
 extern const char kReason[];
+extern const char kRequestId[];
 extern const char kRequestInfo[];
 extern const char kTargetURL[];
 extern const char kWindowOpenDisposition[];

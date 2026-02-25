@@ -11,7 +11,7 @@ import {EventDispatcher} from './event_dispatcher.js';
 import type {EventDict, EventMap} from './event_dispatcher.js';
 import {getCss} from './slim_web_view.css.js';
 import {getHtml} from './slim_web_view.html.js';
-import {BrowserProxyImpl} from './slim_web_view_browser_proxy.js';
+import {BrowserProxyImpl, PermissionResponseAction} from './slim_web_view_browser_proxy.js';
 
 export interface SlimWebViewElement {
   $: {
@@ -99,6 +99,73 @@ export class NewWindowEvent extends Event {
   }
 }
 
+export interface PermissionRequest {
+  allow(): void;
+  deny(): void;
+}
+
+export class PermissionRequestEvent extends Event {
+  readonly permission: string;
+  readonly request: PermissionRequest;
+  private readonly requestId: number;
+  private readonly guestInstanceId: number;
+  private actionTaken: boolean = false;
+
+  static factory(args: EventDict, guestInstanceId: number) {
+    return new PermissionRequestEvent(args, guestInstanceId);
+  }
+
+  private constructor(args: EventDict, guestInstanceId: number) {
+    super('permissionrequest', {
+      bubbles: true,
+      cancelable: true,
+    });
+    this.permission = args.getString('permission');
+    this.requestId = args.getInt('requestId');
+    this.guestInstanceId = guestInstanceId;
+    this.request = {
+      allow: this.allow.bind(this),
+      deny: this.deny.bind(this),
+    };
+  }
+
+  handle(element: HTMLElement) {
+    const performDefault = element.dispatchEvent(this);
+    if (!performDefault || this.actionTaken) {
+      // Because SlimWebView is only used in WebUIs, we assume that an action
+      // is always taken by the event handler that chose to prevent the default
+      // action. Note that the action might be taken asynchronously.
+      return;
+    }
+    this.actionTaken = true;
+    this.defaultAction();
+  }
+
+  private allow() {
+    assert(!this.actionTaken);
+    this.actionTaken = true;
+    BrowserProxyImpl.getInstance().handler.setPermission(
+        this.guestInstanceId, this.requestId, PermissionResponseAction.kAllow);
+  }
+
+  private deny() {
+    assert(!this.actionTaken);
+    this.actionTaken = true;
+    BrowserProxyImpl.getInstance().handler.setPermission(
+        this.guestInstanceId, this.requestId, PermissionResponseAction.kDeny);
+  }
+
+  private async defaultAction() {
+    const result = await BrowserProxyImpl.getInstance().handler.setPermission(
+        this.guestInstanceId, this.requestId,
+        PermissionResponseAction.kDefault);
+    if (!result.allowed) {
+      console.warn(`Permission ${this.permission} denied`);
+    }
+  }
+}
+
+
 class SizeChangedEvent extends Event {
   readonly oldHeight: number;
   readonly oldWidth: number;
@@ -173,6 +240,13 @@ const eventDescriptors: EventMap = new Map([
     'newwindow',
     {
       factory: NewWindowEvent.factory,
+    },
+  ],
+  [
+    'permission',
+    {
+      factory: PermissionRequestEvent.factory,
+      handler: PermissionRequestEvent.prototype.handle,
     },
   ],
   [

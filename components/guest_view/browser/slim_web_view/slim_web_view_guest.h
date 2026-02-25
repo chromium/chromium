@@ -7,6 +7,7 @@
 
 #include "components/guest_view/browser/guest_view.h"
 #include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/slim_web_view/slim_web_view_permission_helper.h"
 #include "net/base/net_errors.h"
 
 class GURL;
@@ -24,6 +25,14 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
 
   static std::unique_ptr<GuestViewBase> Create(
       content::RenderFrameHost* owner_render_frame_host);
+
+  SlimWebViewGuest(const SlimWebViewGuest&) = delete;
+  SlimWebViewGuest& operator=(const SlimWebViewGuest&) = delete;
+  ~SlimWebViewGuest() override;
+
+  SlimWebViewPermissionHelper& permission_helper() {
+    return permission_helper_;
+  }
 
   void Navigate(const GURL& url);
 
@@ -57,6 +66,10 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
       content::WebContents* source,
       content::RenderWidgetHost* render_widget_host,
       base::RepeatingClosure hang_monitor_restarter) final;
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) final;
 
   // content::WebContentsObserver:
   void DidStartNavigation(content::NavigationHandle* navigation_handle) final;
@@ -70,6 +83,9 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
   void GuestSizeChangedDueToAutoSize(const gfx::Size& old_size,
                                      const gfx::Size& new_size) final;
   void GuestViewMainFrameProcessGone(base::TerminationStatus status) final;
+  void GuestRequestMediaAccessPermission(
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) final;
   void MaybeRecreateGuestContents(
       content::RenderFrameHost* outer_contents_frame) final;
   void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
@@ -79,6 +95,8 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
   void GuestViewDidStopLoading() final;
 
   void LoadAbort(bool is_top_level, const GURL& url, net::Error error_code);
+
+  SlimWebViewPermissionHelper permission_helper_{this};
 };
 
 }  // namespace guest_view

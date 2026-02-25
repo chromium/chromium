@@ -8,6 +8,7 @@
 
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/slim_web_view/slim_web_view_guest.h"
+#include "components/guest_view/browser/slim_web_view/slim_web_view_permission_helper.h"
 #include "content/public/browser/render_process_host.h"
 
 namespace guest_view {
@@ -71,9 +72,29 @@ void SlimWebViewPageHandler::Navigate(int32_t guest_instance_id,
   guest->Navigate(url);
 }
 
+void SlimWebViewPageHandler::SetPermission(
+    int32_t guest_instance_id,
+    int32_t request_id,
+    mojom::PageHandler_PermissionResponseAction action,
+    SetPermissionCallback callback) {
+  auto* guest = SlimWebViewGuest::FromInstanceID(
+      render_frame_host().GetProcess()->GetID(), guest_instance_id);
+  if (!guest) {
+    mojo::ReportBadMessage("Invalid guest instance id.");
+    return;
+  }
+  auto result = guest->permission_helper().SetPermission(request_id, action);
+  if (result == SlimWebViewPermissionHelper::SetPermissionResult::kInvalid) {
+    mojo::ReportBadMessage("Invalid request id.");
+    return;
+  }
+  std::move(callback).Run(
+      result == SlimWebViewPermissionHelper::SetPermissionResult::kAllowed);
+}
+
 SlimWebViewPageHandler::SlimWebViewPageHandler(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<mojom::PageHandler> page_handler,
+    mojo::PendingReceiver<PageHandler> page_handler,
     mojo::PendingRemote<mojom::Page> page)
     : content::DocumentUserData<SlimWebViewPageHandler>(render_frame_host),
       receiver_(this, std::move(page_handler)),
