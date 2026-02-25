@@ -92,7 +92,13 @@ void PersistentDisplayLayoutManager::ApplyDisplayLayout(
         // See comment in protobuf.
         track.clear_screen_id();
       }
-      display_layout = std::move(display_layout_from_file);
+      if (display_layout_from_file->video_track_size() > 0) {
+        display_layout = std::move(display_layout_from_file);
+      } else {
+        // The display layout may be empty if the previous host incarnation has
+        // failed to create the virtual monitors.
+        LOG(WARNING) << "Ignored empty display layout.";
+      }
     } else {
       LOG(ERROR) << "Failed to parse display layout.";
     }
