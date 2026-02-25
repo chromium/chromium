@@ -1,0 +1,14 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("core") {
+  public = [ "dependency_factory_impl_ios.h" ]
+  sources = [ "dependency_factory_impl_ios.mm" ]
+
+  public_deps = [
+    "//base",
+    "//components/enterprise/core",
+    "//ios/chrome/browser/shared/model/profile",
+  ]
+}
