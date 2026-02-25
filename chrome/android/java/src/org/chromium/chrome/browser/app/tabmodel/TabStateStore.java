@@ -269,6 +269,7 @@ public class TabStateStore implements TabPersistentStore {
                         !ignoreIncognitoFiles,
                         mCombinedTabRestorerDelegate,
                         mTabCreatorManager,
+                        mTabStateStorageService::createBatch,
                         /* logRestoreDuration= */ true);
 
         boolean[] restoreOrder =
@@ -325,6 +326,7 @@ public class TabStateStore implements TabPersistentStore {
                         /* restoreIncognitoTabs= */ true,
                         delegate,
                         mTabCreatorManager,
+                        mTabStateStorageService::createBatch,
                         /* logRestoreDuration= */ false);
 
         for (boolean incognito : new boolean[] {false, true}) {

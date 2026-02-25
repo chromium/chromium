@@ -8,10 +8,13 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.os.SystemClock;
 
+import androidx.core.util.Supplier;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.TabRestorer.TabRestorerDelegate;
+import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
@@ -216,25 +219,29 @@ class CombinedTabRestorer {
      * @param restoreIncognitoTabs Whether to restore incognito tabs.
      * @param delegate The delegate to be notified of events from the tab restorers.
      * @param tabCreatorManager The tab creator manager to create the tabs.
+     * @param batchFactory The factory to create scoped storage batches.
      * @param logRestoreDuration Whether to log the restore duration.
      */
     CombinedTabRestorer(
             boolean restoreIncognitoTabs,
             CombinedTabRestorerDelegate delegate,
             TabCreatorManager tabCreatorManager,
+            Supplier<ScopedStorageBatch> batchFactory,
             boolean logRestoreDuration) {
         mDelegate = new TabRestorerDelegateImpl(delegate, restoreIncognitoTabs);
         mRegularTabRestorer =
                 new TabRestorer(
                         /* incognito= */ false,
                         mDelegate,
-                        tabCreatorManager.getTabCreator(/* incognito= */ false));
+                        tabCreatorManager.getTabCreator(/* incognito= */ false),
+                        batchFactory);
         mIncognitoTabRestorer =
                 restoreIncognitoTabs
                         ? new TabRestorer(
                                 /* incognito= */ true,
                                 mDelegate,
-                                tabCreatorManager.getTabCreator(/* incognito= */ true))
+                                tabCreatorManager.getTabCreator(/* incognito= */ true),
+                                batchFactory)
                         : null;
         mLoadStartTime = logRestoreDuration ? SystemClock.elapsedRealtime() : INVALID_TIME;
     }

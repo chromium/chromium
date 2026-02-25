@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tabmodel.TabPersistenceUtils.shouldSkipTab;
 
 import androidx.annotation.IntDef;
+import androidx.core.util.Supplier;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -15,6 +16,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.Tab;
@@ -117,6 +119,7 @@ class TabRestorer {
     private final boolean mIncognito;
     private final TabRestorerDelegate mDelegate;
     private final TabCreator mTabCreator;
+    private final Supplier<ScopedStorageBatch> mBatchFactory;
     private final List<Integer> mTabIdsToIgnore = new ArrayList<>();
 
     private @State int mState = State.EMPTY;
@@ -135,11 +138,17 @@ class TabRestorer {
      * @param incognito Whether the tab restorer is for incognito tabs.
      * @param delegate The delegate to notify when the tab restorer for certain events.
      * @param tabCreator The tab creator to use to create tabs.
+     * @param batchFactory The factory to create scoped storage batches.
      */
-    TabRestorer(boolean incognito, TabRestorerDelegate delegate, TabCreator tabCreator) {
+    TabRestorer(
+            boolean incognito,
+            TabRestorerDelegate delegate,
+            TabCreator tabCreator,
+            Supplier<ScopedStorageBatch> batchFactory) {
         mIncognito = incognito;
         mDelegate = delegate;
         mTabCreator = tabCreator;
+        mBatchFactory = batchFactory;
     }
 
     /**
@@ -391,14 +400,16 @@ class TabRestorer {
         LoadedTabState[] loadedTabStates = mData.getLoadedTabStates();
         int finalIndex = loadedTabStates.length;
 
-        while (batchSize > 0 && mIndex < finalIndex) {
-            LoadedTabState loadedTabState = loadedTabStates[mIndex];
-            if (!mTabIdsToIgnore.contains(loadedTabState.tabId)) {
-                restoreTab(loadedTabState, mIndex, /* isActive= */ false);
-            }
+        try (ScopedStorageBatch batch = mBatchFactory.get()) {
+            while (batchSize > 0 && mIndex < finalIndex) {
+                LoadedTabState loadedTabState = loadedTabStates[mIndex];
+                if (!mTabIdsToIgnore.contains(loadedTabState.tabId)) {
+                    restoreTab(loadedTabState, mIndex, /* isActive= */ false);
+                }
 
-            mIndex++;
-            batchSize--;
+                mIndex++;
+                batchSize--;
+            }
         }
 
         if (mIndex < finalIndex) {
