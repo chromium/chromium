@@ -35,10 +35,13 @@ class IOSPromoController {
   static IOSPromoController* From(
       BrowserWindowInterface* browser_window_interface);
 
+  // Returns true if the IOS promos can be shown.
+  bool CanShowIOSPromo(desktop_to_mobile_promos::PromoType promo_type);
+
  private:
   void OnPromoTriggered(desktop_to_mobile_promos::PromoType promo_type);
 
-  bool ShouldShowPromo(desktop_to_mobile_promos::PromoType promo_type);
+  bool IsUserEligibleForPromo(desktop_to_mobile_promos::PromoType promo_type);
 
   const raw_ptr<Browser> browser_;
 

@@ -28,6 +28,9 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
+#include "chrome/browser/ui/promos/ios_promo_controller.h"
+#include "chrome/browser/ui/promos/ios_promo_trigger_service.h"
+#include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_email_dialog_view.h"
@@ -43,6 +46,8 @@
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
+#include "components/desktop_to_mobile_promos/features.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -129,13 +134,45 @@ gfx::ImageSkia GetFaviconForWebContents(content::WebContents* web_contents) {
   return centered_favicon;
 }
 
-base::OnceCallback<void()> CreatePriceTrackingEmailCallback(
+bool ShouldShowIOSPriceTrackingPromo(content::WebContents* web_contents,
+                                     Browser* browser) {
+  auto* const interface =
+      BrowserUserEducationInterface::MaybeGetForWebContentsInTab(web_contents);
+  IOSPromoController* controller = IOSPromoController::From(browser);
+  return ((interface &&
+           interface->CanShowFeaturePromo(
+               feature_engagement::kIPHiOSPriceTrackingDesktopFeature)) &&
+          (controller &&
+           controller->CanShowIOSPromo(
+               desktop_to_mobile_promos::PromoType::kPriceTracking)) &&
+          (MobilePromoOnDesktopTypeEnabled(
+              MobilePromoOnDesktopPromoType::kPriceTracking)));
+}
+
+base::OnceCallback<void()> CreatePriceTrackingCallback(
+    Browser* browser,
     Profile* profile,
     views::View* anchor_view,
     content::WebContents* web_contents,
     const bookmarks::BookmarkNode* bookmark) {
-  if (!profile ||
-      commerce::IsEmailNotificationPrefSetByUser(profile->GetPrefs())) {
+  if (!profile) {
+    return base::DoNothing();
+  }
+
+  // If it is eligible, the Desktop to Mobile Price Tracking promo should
+  // replace the email promo because they have the same alerting purpose.
+  if (ShouldShowIOSPriceTrackingPromo(web_contents, browser)) {
+    IOSPromoTriggerService* const trigger_service =
+        IOSPromoTriggerServiceFactory::GetForProfile(profile);
+    if (trigger_service) {
+      return base::BindOnce(
+          &IOSPromoTriggerService::NotifyPromoShouldBeShown,
+          base::Unretained(trigger_service),
+          desktop_to_mobile_promos::PromoType::kPriceTracking);
+    }
+  }
+
+  if (commerce::IsEmailNotificationPrefSetByUser(profile->GetPrefs())) {
     return base::DoNothing();
   }
 
@@ -409,9 +446,8 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
 
-  base::OnceCallback<void()> post_save_callback =
-      CreatePriceTrackingEmailCallback(profile, anchor_view, web_contents,
-                                       bookmark_node);
+  base::OnceCallback<void()> post_save_callback = CreatePriceTrackingCallback(
+      browser, profile, anchor_view, web_contents, bookmark_node);
 
   auto bubble_delegate_unique =
       std::make_unique<BookmarkBubbleDelegate>(browser, url);
