@@ -66,10 +66,10 @@ enum class GeminiPageContextComputationState {
   kPending,
 };
 
-// Enum representing the page context attachment state of the BWG experience.
+// Enum representing the page context attachment state of the Gemini experience.
 // This needs to stay in sync with GCRGeminiPageContextAttachmentState (and its
 // SDK counterpart).
-enum class BWGPageContextAttachmentState {
+enum class GeminiPageContextAttachmentState {
   // The attach state is unknown.
   kUnknown,
   // Page context should be attached.
@@ -81,6 +81,9 @@ enum class BWGPageContextAttachmentState {
   // Page context attachment is disabled by an enterprise policy.
   kEnterpriseDisabled,
 };
+
+// TODO(crbug.com/467341184): Remove this alias once all callers have migrated.
+using BWGPageContextAttachmentState = GeminiPageContextAttachmentState;
 
 // Enum representing the Gemini view state.
 // This needs to stay in sync with GCRGeminiViewState (and its SDK counterpart).
@@ -135,7 +138,7 @@ void ResetGemini();
 
 // Updates the page attachment state of the floaty if it's invoked.
 void UpdatePageAttachmentState(
-    BWGPageContextAttachmentState bwg_attachment_state);
+    GeminiPageContextAttachmentState gemini_attachment_state);
 
 // Returns true if a URL is protected.
 bool IsProtectedUrl(std::string url);

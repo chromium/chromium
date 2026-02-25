@@ -134,9 +134,9 @@ const NSInteger kDynamicSettingsItemTypeOffset = 10000;
 
 - (void)setPageContentSharingPref:(BOOL)value {
   _prefService->SetBoolean(prefs::kIOSBWGPageContentSetting, value);
-  ios::provider::BWGPageContextAttachmentState attachmentState =
-      value ? ios::provider::BWGPageContextAttachmentState::kAttached
-            : ios::provider::BWGPageContextAttachmentState::kUserDisabled;
+  ios::provider::GeminiPageContextAttachmentState attachmentState =
+      value ? ios::provider::GeminiPageContextAttachmentState::kAttached
+            : ios::provider::GeminiPageContextAttachmentState::kUserDisabled;
   ios::provider::UpdatePageAttachmentState(attachmentState);
 }
 

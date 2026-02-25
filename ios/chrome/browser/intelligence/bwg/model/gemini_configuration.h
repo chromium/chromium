@@ -22,7 +22,7 @@ namespace ios::provider {
 enum class GeminiLocationPermissionState;
 enum class BWGPageContextState;
 enum class GeminiPageContextComputationState;
-enum class BWGPageContextAttachmentState;
+enum class GeminiPageContextAttachmentState;
 }  // namespace ios::provider
 
 namespace optimization_guide::proto {
@@ -55,9 +55,21 @@ class PageContext;
 @property(nonatomic, assign) ios::provider::GeminiPageContextComputationState
     geminiPageContextComputationState;
 
+// The state of the BWG PageContext computation.
+// TODO(crbug.com/467341090): Remove this property once all callers have
+// migrated.
+@property(nonatomic, assign) ios::provider::GeminiPageContextComputationState
+    BWGPageContextComputationState;
+
+// The state of the Gemini PageContext attachment.
+@property(nonatomic, assign) ios::provider::GeminiPageContextAttachmentState
+    geminiPageContextAttachmentState;
+
 // The state of the BWG PageContext attachment.
-@property(nonatomic, assign)
-    ios::provider::BWGPageContextAttachmentState BWGPageContextAttachmentState;
+// TODO(crbug.com/467341184): Remove this property once all callers have
+// migrated.
+@property(nonatomic, assign) ios::provider::GeminiPageContextAttachmentState
+    BWGPageContextAttachmentState;
 
 // The favicon of the attached page. Uses a default icon if it's unavailable.
 @property(nonatomic, strong) UIImage* favicon;
