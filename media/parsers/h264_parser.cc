@@ -1592,7 +1592,7 @@ H264Parser::Result H264Parser::ParseSEI(H264SEI* sei) {
     H264SEIMessage sei_msg;
     switch (type) {
       case kSEIRecoveryPoint: {
-        auto recovery_point = sei_msg.emplace<H264SEIRecoveryPoint>();
+        auto& recovery_point = sei_msg.emplace<H264SEIRecoveryPoint>();
         READ_UE_AND_MINUS_BITS_READ_OR_RETURN(
             &recovery_point.recovery_frame_cnt, &num_bits_remain);
         READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(

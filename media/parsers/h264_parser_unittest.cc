@@ -291,7 +291,7 @@ TEST(H264ParserTest, RecoveryPointSEIParsing) {
       // SEI payload size = 1.
       0x01,
       // SEI payload.
-      0x84,
+      0x7c,
       // RBSP trailing bits.
       0x80,
       // Second NALU Start code.
@@ -327,10 +327,10 @@ TEST(H264ParserTest, RecoveryPointSEIParsing) {
   for (const auto& sei_msg : recovery_point_sei.msgs) {
     const auto* recovery_point = std::get_if<H264SEIRecoveryPoint>(&sei_msg);
     ASSERT_TRUE(recovery_point);
-    EXPECT_EQ(recovery_point->recovery_frame_cnt, 0);
-    EXPECT_EQ(recovery_point->exact_match_flag, false);
-    EXPECT_EQ(recovery_point->broken_link_flag, false);
-    EXPECT_EQ(recovery_point->changing_slice_group_idc, 0);
+    EXPECT_EQ(recovery_point->recovery_frame_cnt, 2);
+    EXPECT_EQ(recovery_point->exact_match_flag, true);
+    EXPECT_EQ(recovery_point->broken_link_flag, true);
+    EXPECT_EQ(recovery_point->changing_slice_group_idc, 2);
   }
 
   ASSERT_EQ(H264Parser::kOk, parser.AdvanceToNextNALU(&target_nalu));
