@@ -26,6 +26,9 @@ ClipboardChangeEventController::ClipboardChangeEventController(
 
 void ClipboardChangeEventController::FocusedFrameChanged() {
   if (fire_clipboardchange_on_focus_) {
+    if (!GetExecutionContext()) {
+      return;
+    }
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kClipboardChangeEventFiredAfterFocusGain);
     fire_clipboardchange_on_focus_ = false;
@@ -61,7 +64,13 @@ void ClipboardChangeEventController::UnregisterWithDispatcher() {
 
 SystemClipboard* ClipboardChangeEventController::GetSystemClipboard() const {
   ExecutionContext* context = GetExecutionContext();
+  if (!context) {
+    return nullptr;
+  }
   LocalFrame* local_frame = To<LocalDOMWindow>(context)->GetFrame();
+  if (!local_frame) {
+    return nullptr;
+  }
   return local_frame->GetSystemClipboard();
 }
 
@@ -74,7 +83,6 @@ void ClipboardChangeEventController::Trace(Visitor* visitor) const {
 
 void ClipboardChangeEventController::OnClipboardChanged() {
   ExecutionContext* context = GetExecutionContext();
-  // TODO(roraja): revisit if this null check is really required
   if (!context) {
     return;
   }
@@ -101,6 +109,9 @@ void ClipboardChangeEventController::OnPermissionResult(
 
 void ClipboardChangeEventController::MaybeDispatchClipboardChangeEvent() {
   ExecutionContext* context = GetExecutionContext();
+  if (!context) {
+    return;
+  }
   LocalDOMWindow& window = *To<LocalDOMWindow>(context);
 
   // Check if document has focus
@@ -114,6 +125,9 @@ void ClipboardChangeEventController::MaybeDispatchClipboardChangeEvent() {
 
   // Check for sticky activation first
   LocalFrame* frame = window.GetFrame();
+  if (!frame) {
+    return;
+  }
   if (frame->HasStickyUserActivation()) {
     DispatchClipboardChangeEvent();
     return;
@@ -136,7 +150,6 @@ void ClipboardChangeEventController::MaybeDispatchClipboardChangeEvent() {
 
 void ClipboardChangeEventController::DispatchClipboardChangeEvent() {
   SystemClipboard* clipboard = GetSystemClipboard();
-  // TODO(roraja): revisit if this null check
   if (!clipboard) {
     return;
   }
