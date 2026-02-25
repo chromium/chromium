@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineIconUtils;
+import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -69,22 +70,22 @@ public class CustomSiteSearchMediator implements TemplateUrlService.TemplateUrlS
         // TODO: Handle default number of rows shown and show more button
         for (TemplateUrl url : urls) {
             PropertyModel model =
-                    new PropertyModel.Builder(CustomSiteSearchProperties.ALL_KEYS)
-                            .with(CustomSiteSearchProperties.SITE_NAME, url.getShortName())
-                            .with(CustomSiteSearchProperties.SITE_SHORTCUT, url.getKeyword())
+                    new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)
+                            .with(SiteSearchProperties.SITE_NAME, url.getShortName())
+                            .with(SiteSearchProperties.SITE_SHORTCUT, url.getKeyword())
                             .with(
-                                    CustomSiteSearchProperties.ON_CLICK,
+                                    SiteSearchProperties.ON_CLICK,
                                     v -> {
                                         // TODO: Handle overflow menu button
                                     })
                             .with(
-                                    CustomSiteSearchProperties.ICON,
+                                    SiteSearchProperties.ICON,
                                     FaviconUtils.createGenericFaviconBitmap(
                                             mContext, mFaviconSize, null))
                             .build();
 
             fetchFavicon(url, model);
-            mModelList.add(new ListItem(CustomSiteSearchProperties.ViewType.SEARCH_ENGINE, model));
+            mModelList.add(new ListItem(SiteSearchProperties.ViewType.SEARCH_ENGINE, model));
         }
     }
 
@@ -96,7 +97,7 @@ public class CustomSiteSearchMediator implements TemplateUrlService.TemplateUrlS
         SearchEngineIconUtils.updateIcon(
                 mContext,
                 model,
-                CustomSiteSearchProperties.ICON,
+                SiteSearchProperties.ICON,
                 url,
                 faviconUrl,
                 mLargeIconBridge,

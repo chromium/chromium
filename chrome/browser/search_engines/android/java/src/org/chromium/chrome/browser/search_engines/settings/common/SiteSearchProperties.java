@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.search_engines.settings.custom_site_search;
+package org.chromium.chrome.browser.search_engines.settings.common;
 
 import android.graphics.Bitmap;
 import android.view.View.OnClickListener;
@@ -18,7 +18,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @NullMarked
-class CustomSiteSearchProperties {
+public class SiteSearchProperties {
     @IntDef({ViewType.SEARCH_ENGINE, ViewType.ADD, ViewType.MORE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ViewType {

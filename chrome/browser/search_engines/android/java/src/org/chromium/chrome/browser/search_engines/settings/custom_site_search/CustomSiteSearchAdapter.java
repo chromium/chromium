@@ -10,7 +10,8 @@ import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.search_engines.R;
-import org.chromium.chrome.browser.search_engines.settings.custom_site_search.CustomSiteSearchProperties.ViewType;
+import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties.ViewType;
+import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchViewBinder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -24,32 +25,32 @@ class CustomSiteSearchAdapter extends SimpleRecyclerViewAdapter {
                 parent -> {
                     View view =
                             LayoutInflater.from(context)
-                                    .inflate(R.layout.custom_site_search_item, parent, false);
-                    view.setTag(new CustomSiteSearchViewBinder.ViewHolder(view));
+                                    .inflate(R.layout.site_search_engine_item, parent, false);
+                    view.setTag(new SiteSearchViewBinder.ViewHolder(view));
                     return view;
                 },
-                CustomSiteSearchViewBinder::bind);
+                SiteSearchViewBinder::bind);
 
         registerType(
                 ViewType.ADD,
                 parent -> {
                     View view =
                             LayoutInflater.from(context)
-                                    .inflate(R.layout.custom_site_search_add_item, parent, false);
-                    view.setTag(new CustomSiteSearchViewBinder.ViewHolder(view));
+                                    .inflate(R.layout.site_search_add_item, parent, false);
+                    view.setTag(new SiteSearchViewBinder.ViewHolder(view));
                     return view;
                 },
-                CustomSiteSearchViewBinder::bind);
+                SiteSearchViewBinder::bind);
 
         registerType(
                 ViewType.MORE,
                 parent -> {
                     View view =
                             LayoutInflater.from(context)
-                                    .inflate(R.layout.custom_site_search_more_item, parent, false);
-                    view.setTag(new CustomSiteSearchViewBinder.ViewHolder(view));
+                                    .inflate(R.layout.site_search_more_item, parent, false);
+                    view.setTag(new SiteSearchViewBinder.ViewHolder(view));
                     return view;
                 },
-                CustomSiteSearchViewBinder::bind);
+                SiteSearchViewBinder::bind);
     }
 }

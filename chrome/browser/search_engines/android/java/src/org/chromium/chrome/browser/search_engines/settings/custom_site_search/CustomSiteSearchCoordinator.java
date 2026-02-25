@@ -9,6 +9,8 @@ import android.content.Context;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
+import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
+import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchViewBinder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -29,17 +31,17 @@ public class CustomSiteSearchCoordinator {
         mMediator = new CustomSiteSearchMediator(context, mModelList, profile);
 
         mPropertyModel =
-                new PropertyModel.Builder(CustomSiteSearchProperties.ALL_KEYS)
-                        .with(CustomSiteSearchProperties.ADAPTER, mAdapter)
+                new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)
+                        .with(SiteSearchProperties.ADAPTER, mAdapter)
                         .build();
 
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mPropertyModel, pref, CustomSiteSearchViewBinder::bindPreference);
+                        mPropertyModel, pref, SiteSearchViewBinder::bindPreference);
     }
 
     public void destroy() {
-        mPropertyModel.set(CustomSiteSearchProperties.ADAPTER, null);
+        mPropertyModel.set(SiteSearchProperties.ADAPTER, null);
         mPropertyModelChangeProcessor.destroy();
         mAdapter.destroy();
         mMediator.destroy();
