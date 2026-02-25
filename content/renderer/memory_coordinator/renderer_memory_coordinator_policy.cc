@@ -4,6 +4,7 @@
 
 #include "content/renderer/memory_coordinator/renderer_memory_coordinator_policy.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -59,10 +60,12 @@ void RendererMemoryCoordinatorPolicy::OnV8HeapLastResortGC() {
   // notify consumers that retain references to the v8 heap.
   manager().UpdateConsumers(
       this,
-      [](std::string_view consumer_id, base::MemoryConsumerTraits traits,
+      [](std::string_view consumer_id,
+         std::optional<base::MemoryConsumerTraits> traits,
          ProcessType process_type, ChildProcessId child_process_id) {
-        return traits.release_gc_references ==
-               base::MemoryConsumerTraits::ReleaseGCReferences::kYes;
+        return traits.has_value() &&
+               traits->release_gc_references ==
+                   base::MemoryConsumerTraits::ReleaseGCReferences::kYes;
       },
       0, /*release_memory=*/true);
 
@@ -81,10 +84,12 @@ void RendererMemoryCoordinatorPolicy::OnV8HeapLastResortGC() {
 void RendererMemoryCoordinatorPolicy::OnRestoreLimitTimerFired() {
   manager().UpdateConsumers(
       this,
-      [](std::string_view consumer_id, base::MemoryConsumerTraits traits,
+      [](std::string_view consumer_id,
+         std::optional<base::MemoryConsumerTraits> traits,
          ProcessType process_type, ChildProcessId child_process_id) {
-        return traits.release_gc_references ==
-               base::MemoryConsumerTraits::ReleaseGCReferences::kYes;
+        return traits.has_value() &&
+               traits->release_gc_references ==
+                   base::MemoryConsumerTraits::ReleaseGCReferences::kYes;
       },
       base::MemoryConsumer::kDefaultMemoryLimit, /*release_memory=*/false);
 }

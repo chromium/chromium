@@ -32,7 +32,7 @@ void MemoryConsumer::UpdateMemoryLimit(int percentage) {
 
 MemoryConsumerRegistration::MemoryConsumerRegistration(
     std::string_view consumer_id,
-    MemoryConsumerTraits traits,
+    std::optional<MemoryConsumerTraits> traits,
     MemoryConsumer* consumer,
     CheckUnregister check_unregister,
     CheckRegistryExists check_registry_exists)

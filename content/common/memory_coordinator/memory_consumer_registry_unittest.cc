@@ -5,6 +5,7 @@
 #include "content/common/memory_coordinator/memory_consumer_registry.h"
 
 #include <map>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -29,13 +30,13 @@ using ::testing::Test;
 
 struct ConsumerEntry {
   std::string consumer_id;
-  base::MemoryConsumerTraits traits;
+  std::optional<base::MemoryConsumerTraits> traits;
   ProcessType process_type;
   ChildProcessId child_process_id;
   raw_ptr<MemoryConsumerGroupHost> host;
 };
 
-const base::MemoryConsumerTraits kTestTraits1{};
+const std::optional<base::MemoryConsumerTraits> kTestTraits1 = std::nullopt;
 
 }  // namespace
 
@@ -62,7 +63,7 @@ class MemoryConsumerRegistryTest : public Test,
   }
 
   void OnConsumerGroupAdded(std::string_view consumer_id,
-                            base::MemoryConsumerTraits traits,
+                            std::optional<base::MemoryConsumerTraits> traits,
                             ProcessType process_type,
                             ChildProcessId child_process_id) override {
     entries_.push_back({std::string(consumer_id), traits, process_type,

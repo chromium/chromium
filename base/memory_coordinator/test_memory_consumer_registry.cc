@@ -26,7 +26,7 @@ TestMemoryConsumerRegistry::~TestMemoryConsumerRegistry() {
 
 void TestMemoryConsumerRegistry::OnMemoryConsumerAdded(
     std::string_view consumer_id,
-    MemoryConsumerTraits traits,
+    std::optional<MemoryConsumerTraits> traits,
     RegisteredMemoryConsumer consumer) {
   CHECK(!std::ranges::contains(memory_consumers_, consumer));
   memory_consumers_.push_back(consumer);

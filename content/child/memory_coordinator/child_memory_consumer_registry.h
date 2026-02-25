@@ -6,6 +6,7 @@
 #define CONTENT_CHILD_MEMORY_COORDINATOR_CHILD_MEMORY_CONSUMER_REGISTRY_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -44,7 +45,7 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistry
   // identically.
   class ConsumerGroup {
    public:
-    explicit ConsumerGroup(base::MemoryConsumerTraits traits);
+    explicit ConsumerGroup(std::optional<base::MemoryConsumerTraits> traits);
 
     ~ConsumerGroup();
 
@@ -57,10 +58,10 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistry
 
     bool empty() const { return memory_consumers_.empty(); }
 
-    base::MemoryConsumerTraits traits() const { return traits_; }
+    std::optional<base::MemoryConsumerTraits> traits() const { return traits_; }
 
    private:
-    base::MemoryConsumerTraits traits_;
+    std::optional<base::MemoryConsumerTraits> traits_;
 
     int memory_limit_ = base::MemoryConsumer::kDefaultMemoryLimit;
 
@@ -69,7 +70,7 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistry
 
   // base::MemoryConsumerRegistry:
   void OnMemoryConsumerAdded(std::string_view consumer_id,
-                             base::MemoryConsumerTraits traits,
+                             std::optional<base::MemoryConsumerTraits> traits,
                              base::RegisteredMemoryConsumer consumer) override;
   void OnMemoryConsumerRemoved(
       std::string_view consumer_id,

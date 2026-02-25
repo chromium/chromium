@@ -5,6 +5,7 @@
 #ifndef BASE_MEMORY_COORDINATOR_MEMORY_CONSUMER_REGISTRY_H_
 #define BASE_MEMORY_COORDINATOR_MEMORY_CONSUMER_REGISTRY_H_
 
+#include <optional>
 #include <string_view>
 #include <utility>
 
@@ -54,7 +55,7 @@ class BASE_EXPORT MemoryConsumerRegistry {
   // Adds/Removes an instance of MemoryConsumer with a specific
   // `consumer_id` and `traits`.
   void AddMemoryConsumer(std::string_view consumer_id,
-                         MemoryConsumerTraits traits,
+                         std::optional<MemoryConsumerTraits> traits,
                          MemoryConsumer* consumer);
   void RemoveMemoryConsumer(std::string_view consumer_id,
                             MemoryConsumer* consumer);
@@ -78,7 +79,7 @@ class BASE_EXPORT MemoryConsumerRegistry {
 
  private:
   virtual void OnMemoryConsumerAdded(std::string_view consumer_id,
-                                     MemoryConsumerTraits traits,
+                                     std::optional<MemoryConsumerTraits> traits,
                                      RegisteredMemoryConsumer consumer) = 0;
   virtual void OnMemoryConsumerRemoved(std::string_view consumer_id,
                                        RegisteredMemoryConsumer consumer) = 0;

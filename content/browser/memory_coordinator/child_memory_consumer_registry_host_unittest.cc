@@ -5,6 +5,7 @@
 #include "content/browser/memory_coordinator/child_memory_consumer_registry_host.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -71,7 +72,7 @@ class MockMemoryConsumerGroupController : public MemoryConsumerGroupController {
   MOCK_METHOD(void,
               OnConsumerGroupAdded,
               (std::string_view consumer_id,
-               base::MemoryConsumerTraits traits,
+               std::optional<base::MemoryConsumerTraits> traits,
                ProcessType process_type,
                ChildProcessId child_process_id),
               (override));

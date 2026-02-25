@@ -52,7 +52,7 @@ interface ChildMemoryConsumerRegistryHost {
   BindCoordinator(pending_remote<ChildMemoryCoordinator> coordinator);
 
   // Registers a MemoryConsumer with the browser-side registry.
-  Register(string consumer_id, MemoryConsumerTraits traits);
+  Register(string consumer_id, MemoryConsumerTraits? traits);
 
   // Unregisters a MemoryConsumer with the browser-side registry.
   Unregister(string consumer_id);

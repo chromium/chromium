@@ -5,6 +5,7 @@
 #ifndef CONTENT_CHILD_MEMORY_COORDINATOR_BROWSER_MEMORY_COORDINATOR_BRIDGE_H_
 #define CONTENT_CHILD_MEMORY_COORDINATOR_BROWSER_MEMORY_COORDINATOR_BRIDGE_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -42,7 +43,7 @@ class BrowserMemoryCoordinatorBridge
 
   // MemoryCoordinatorPolicyManager::Observer:
   void OnConsumerGroupAdded(std::string_view consumer_id,
-                            base::MemoryConsumerTraits traits,
+                            std::optional<base::MemoryConsumerTraits> traits,
                             ProcessType process_type,
                             ChildProcessId child_process_id) override;
   void OnConsumerGroupRemoved(std::string_view consumer_id,
@@ -83,7 +84,8 @@ class BrowserMemoryCoordinatorBridge
 #endif
 
   // Tracks all consumer groups known to this class.
-  absl::flat_hash_map<std::string, base::MemoryConsumerTraits> groups_;
+  absl::flat_hash_map<std::string, std::optional<base::MemoryConsumerTraits>>
+      groups_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

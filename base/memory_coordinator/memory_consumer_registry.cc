@@ -61,9 +61,10 @@ MemoryConsumerRegistry::~MemoryConsumerRegistry() {
   CHECK(destruction_observers_.empty());
 }
 
-void MemoryConsumerRegistry::AddMemoryConsumer(std::string_view consumer_id,
-                                               MemoryConsumerTraits traits,
-                                               MemoryConsumer* consumer) {
+void MemoryConsumerRegistry::AddMemoryConsumer(
+    std::string_view consumer_id,
+    std::optional<MemoryConsumerTraits> traits,
+    MemoryConsumer* consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   OnMemoryConsumerAdded(consumer_id, traits,
                         RegisteredMemoryConsumer(consumer));

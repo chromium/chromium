@@ -44,7 +44,7 @@ class DummyChildMemoryConsumerRegistryHost
   }
 
   void Register(const std::string& consumer_id,
-                base::MemoryConsumerTraits traits) override {
+                std::optional<base::MemoryConsumerTraits> traits) override {
     auto [_, inserted] = registered_ids_.insert(consumer_id);
     CHECK(inserted);
   }
@@ -67,7 +67,7 @@ class DummyChildMemoryConsumerRegistryHost
   absl::flat_hash_set<std::string> registered_ids_;
 };
 
-const base::MemoryConsumerTraits kTestTraits1{};
+const std::optional<base::MemoryConsumerTraits> kTestTraits1 = std::nullopt;
 
 }  // namespace
 

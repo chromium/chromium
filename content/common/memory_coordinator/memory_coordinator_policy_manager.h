@@ -6,6 +6,7 @@
 #define CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_COORDINATOR_POLICY_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -47,10 +48,11 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     ~Observer() override = default;
 
     // Called when a new consumer group is added/removed.
-    virtual void OnConsumerGroupAdded(std::string_view consumer_id,
-                                      base::MemoryConsumerTraits traits,
-                                      ProcessType process_type,
-                                      ChildProcessId child_process_id) = 0;
+    virtual void OnConsumerGroupAdded(
+        std::string_view consumer_id,
+        std::optional<base::MemoryConsumerTraits> traits,
+        ProcessType process_type,
+        ChildProcessId child_process_id) = 0;
     virtual void OnConsumerGroupRemoved(std::string_view consumer_id,
                                         ChildProcessId child_process_id) = 0;
   };
@@ -101,7 +103,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
                                   MemoryConsumerGroupHost* host) override;
   void RemoveMemoryConsumerGroupHost(ChildProcessId child_process_id) override;
   void OnConsumerGroupAdded(std::string_view consumer_id,
-                            base::MemoryConsumerTraits traits,
+                            std::optional<base::MemoryConsumerTraits> traits,
                             ProcessType process_type,
                             ChildProcessId child_process_id) override;
   void OnConsumerGroupRemoved(std::string_view consumer_id,
@@ -124,7 +126,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
 
   using ConsumerFilter =
       base::FunctionRef<bool(std::string_view consumer_id,
-                             base::MemoryConsumerTraits traits,
+                             std::optional<base::MemoryConsumerTraits> traits,
                              ProcessType process_type,
                              ChildProcessId child_process_id)>;
 
@@ -142,7 +144,8 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
  private:
   class GroupState {
    public:
-    GroupState(base::MemoryConsumerTraits traits, ProcessType process_type);
+    GroupState(std::optional<base::MemoryConsumerTraits> traits,
+               ProcessType process_type);
     ~GroupState();
 
     // Updates the limit requested by `policy`. Returns the new aggregate limit
@@ -155,7 +158,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     std::optional<int> ClearMemoryLimitForPolicy(
         MemoryCoordinatorPolicy* policy);
 
-    base::MemoryConsumerTraits traits() const { return traits_; }
+    std::optional<base::MemoryConsumerTraits> traits() const { return traits_; }
     ProcessType process_type() const { return process_type_; }
     int current_limit() const { return current_limit_; }
 
@@ -165,7 +168,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     // Computes the memory limit based on existing policies.
     int RecomputeMemoryLimit() const;
 
-    const base::MemoryConsumerTraits traits_;
+    const std::optional<base::MemoryConsumerTraits> traits_;
     const ProcessType process_type_;
 
     // The limit requested by each policy.

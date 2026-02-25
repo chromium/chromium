@@ -15,7 +15,7 @@ namespace content {
 // MemoryConsumerRegistry::ConsumerGroup ---------------------------------------
 
 MemoryConsumerRegistry::ConsumerGroup::ConsumerGroup(
-    base::MemoryConsumerTraits traits)
+    std::optional<base::MemoryConsumerTraits> traits)
     : traits_(traits) {}
 
 MemoryConsumerRegistry::ConsumerGroup::~ConsumerGroup() {
@@ -87,7 +87,7 @@ void MemoryConsumerRegistry::UpdateConsumers(
 
 void MemoryConsumerRegistry::OnMemoryConsumerAdded(
     std::string_view consumer_id,
-    base::MemoryConsumerTraits traits,
+    std::optional<base::MemoryConsumerTraits> traits,
     base::RegisteredMemoryConsumer consumer) {
   auto [it, inserted] = consumer_groups_.try_emplace(consumer_id);
   std::unique_ptr<ConsumerGroup>& consumer_group = it->second;

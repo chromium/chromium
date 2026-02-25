@@ -4,6 +4,8 @@
 
 #include "content/common/memory_coordinator/memory_pressure_listener_policy.h"
 
+#include <optional>
+
 #include "base/memory/memory_pressure_listener.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
 #include "content/public/common/child_process_id.h"
@@ -30,7 +32,8 @@ void MemoryPressureListenerPolicy::OnMemoryPressure(
 
   manager().UpdateConsumers(
       this,
-      [](std::string_view consumer_id, base::MemoryConsumerTraits traits,
+      [](std::string_view consumer_id,
+         std::optional<base::MemoryConsumerTraits> traits,
          ProcessType process_type, ChildProcessId child_process_id) {
         return child_process_id.is_null();
       },

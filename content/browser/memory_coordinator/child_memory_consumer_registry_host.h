@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEMORY_COORDINATOR_CHILD_MEMORY_CONSUMER_REGISTRY_HOST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -65,7 +66,7 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
   void BindCoordinator(mojo::PendingRemote<mojom::ChildMemoryCoordinator>
                            coordinator_remote) override;
   void Register(const std::string& consumer_id,
-                base::MemoryConsumerTraits traits) override;
+                std::optional<base::MemoryConsumerTraits> traits) override;
   void Unregister(const std::string& consumer_id) override;
 
   // MemoryConsumerGroupHost:

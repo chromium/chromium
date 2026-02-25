@@ -21,7 +21,7 @@ BrowserMemoryCoordinatorBridge::~BrowserMemoryCoordinatorBridge() {
 
 void BrowserMemoryCoordinatorBridge::OnConsumerGroupAdded(
     std::string_view consumer_id,
-    base::MemoryConsumerTraits traits,
+    std::optional<base::MemoryConsumerTraits> traits,
     ProcessType process_type,
     ChildProcessId child_process_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
