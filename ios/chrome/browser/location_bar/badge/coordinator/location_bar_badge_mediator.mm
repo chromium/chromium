@@ -328,10 +328,16 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
               l10n_util::GetNSString(IDS_IOS_ASK_GEMINI_CHIP_PREFILL_PROMPT));
         }
       }
+
       [self.BWGCommandHandler
           startGeminiFlowWithEntryPoint:gemini::EntryPoint::OmniboxChip];
       _tracker->NotifyEvent(
           feature_engagement::events::kIOSGeminiContextualCueChipUsed);
+
+      // Ensure badge is hidden after the user interacts with it.
+      if ([self.consumer isBadgeVisible]) {
+        [self.consumer hideBadge];
+      }
       break;
     case LocationBarBadgeType::kContextualPanelEntryPointSample:
     case LocationBarBadgeType::kPriceInsights:
