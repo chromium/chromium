@@ -7,5 +7,6 @@
 #![allow(clippy::approx_constant)]
 
 mod helpers;
+mod test_headers;
 mod test_mojomparse;
 mod test_parser;

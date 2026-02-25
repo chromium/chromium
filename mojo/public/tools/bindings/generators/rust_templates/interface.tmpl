@@ -39,7 +39,7 @@ impl {{args_struct(method)}} {
     let flags = bindings::message_header::MessageHeaderFlags::empty();
     {%- endif %}
     bindings::message::MojomMessage {
-      header: bindings::message_header::MessageHeaderV3::new(
+      header: bindings::message_header::MessageHeader::new(
         0, {{ method.ordinal }}, flags, 0),
       payload,
       handles
@@ -55,7 +55,7 @@ impl {{response_struct(method)}} {
     let (payload, handles) = mojom_value_parser::serialize(Self { {{field_names(method.response_param_struct.fields)}} } );
     let flags = bindings::message_header::MessageHeaderFlags::IS_RESPONSE;
     bindings::message::MojomMessage {
-      header: bindings::message_header::MessageHeaderV3::new(
+      header: bindings::message_header::MessageHeader::new(
         0, {{ method.ordinal }}, flags, 0
       ),
       payload,

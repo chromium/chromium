@@ -24,6 +24,7 @@ rust_static_library("mojom_value_parser_core") {
     "deparse_values.rs",
     "errors.rs",
     "lib_core.rs",
+    "message_header.rs",
     "pack.rs",
     "parse_primitives.rs",
     "parse_values.rs",
@@ -63,6 +64,7 @@ rust_static_library("mojom_value_parser_unittests") {
   sources = [
     "test/helpers.rs",
     "test/lib.rs",
+    "test/test_headers.rs",
     "test/test_mojomparse.rs",
     "test/test_parser.rs",
   ]

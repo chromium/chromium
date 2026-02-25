@@ -30,7 +30,7 @@ use system::mojo_types::UntypedHandle;
 /// FOR_RELEASE: This is kind of a crummy type, we should come up with a better
 /// API that leverages the RawMojoMessage type in the system bindings
 pub struct MojomMessage {
-    pub header: MessageHeaderV3,
+    pub header: MessageHeader,
     pub payload: Vec<u8>,
     pub handles: Vec<UntypedHandle>,
 }
@@ -38,21 +38,19 @@ pub struct MojomMessage {
 impl MojomMessage {
     /// Parse the given raw message into a structured representation.
     pub fn from_raw(msg: &RawMojoMessage) -> ParsingResult<Self> {
-        // FOR_RELEASE: Make sure any errors are handled gracefully.
+        // FOR_RELEASE: Make sure any MojoErrors are handled gracefully.
         let (raw_bytes, handles) = msg.read_data().unwrap();
-        // FOR_RELEASE: Make sure we're not calling to_vec here
-        let mut payload = raw_bytes.to_vec();
-        let (remaining_bytes, header) = MessageHeaderV3::deserialize_with_version(&mut payload)?;
-        let remaining_bytes_len = remaining_bytes.len();
-        let num_bytes_read = payload.len() - remaining_bytes_len;
-        let _ = payload.drain(0..num_bytes_read);
+        let (remaining_bytes, header) = MessageHeader::deserialize(&raw_bytes)?;
+        // FOR_RELEASE: Hopefully once we make our MojomMessage type better we
+        // can avoid calling to_vec here.
+        let payload = remaining_bytes.to_vec();
         Ok(MojomMessage { header, payload, handles })
     }
 
     /// Serialize this message into its binary equivalent, and return the
     /// attached handles
     pub fn into_data(self) -> (Vec<u8>, Vec<UntypedHandle>) {
-        let mut serialized = self.header.serialize_with_version();
+        let mut serialized = self.header.serialize();
         serialized.extend(self.payload);
         (serialized, self.handles)
     }

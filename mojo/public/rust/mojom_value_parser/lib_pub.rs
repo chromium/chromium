@@ -13,5 +13,8 @@ chromium::import! {
 }
 
 pub use mojom_value_parser_core::{deserialize, deserialize_exact, serialize, ParsingResult};
+pub use mojom_value_parser_core::{
+    MessageHeader, MessageHeaderV1, MessageHeaderV2, MessageHeaderV3,
+};
 pub use mojom_value_parser_core::{MojomParse, PrimitiveEnum};
 pub use parsing_attribute::{MojomParse, PrimitiveEnum};
