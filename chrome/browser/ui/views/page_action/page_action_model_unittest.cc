@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 
+#include "base/memory/raw_ref.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
@@ -40,6 +41,31 @@ class MockPageActionModelObserver : public PageActionModelObserver {
               OnPageActionModelWillBeDeleted,
               (const PageActionModelInterface& model),
               (override));
+};
+
+class ReentrantPageActionModelObserver : public PageActionModelObserver {
+ public:
+  explicit ReentrantPageActionModelObserver(PageActionModel& model)
+      : model_(model) {}
+
+  void OnPageActionModelChanged(
+      const PageActionModelInterface& model) override {
+    ++change_count_;
+    if (!did_trigger_reentrant_update_) {
+      did_trigger_reentrant_update_ = true;
+      model_->SetActionActive(PassKey(), true);
+    }
+  }
+
+  void OnPageActionModelWillBeDeleted(
+      const PageActionModelInterface& model) override {}
+
+  int change_count() const { return change_count_; }
+
+ private:
+  const raw_ref<PageActionModel> model_;
+  int change_count_ = 0;
+  bool did_trigger_reentrant_update_ = false;
 };
 
 class PageActionModelTest : public ::testing::Test {
@@ -280,6 +306,19 @@ TEST_F(PageActionModelTest, ActionActive) {
   model_.SetActionActive(PassKey(), false);
   EXPECT_FALSE(model_.GetActionActive());
   testing::Mock::VerifyAndClearExpectations(&observer_);
+}
+
+TEST(PageActionModelReentrancyTest, AppliesReentrantUpdateWithoutSecondNotify) {
+  PageActionModel model;
+  ReentrantPageActionModelObserver observer(model);
+  model.AddObserver(&observer);
+
+  model.SetShowRequested(PassKey(), true);
+
+  EXPECT_TRUE(model.GetActionActive());
+  EXPECT_EQ(observer.change_count(), 1);
+
+  model.RemoveObserver(&observer);
 }
 
 TEST_F(PageActionModelTest, OverrideImageWithColorSource) {

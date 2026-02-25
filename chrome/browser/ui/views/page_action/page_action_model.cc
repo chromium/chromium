@@ -29,7 +29,7 @@ void PageActionModel::SetShowRequested(base::PassKey<PageActionController>,
     return;
   }
   show_requested_ = requested;
-  NotifyChange();
+  NotifyChange(Property::kShowRequested);
 }
 
 void PageActionModel::SetShouldShowSuggestionChip(
@@ -40,7 +40,7 @@ void PageActionModel::SetShouldShowSuggestionChip(
     return;
   }
   should_show_suggestion_chip_ = show;
-  NotifyChange();
+  NotifyChange(Property::kShouldShowSuggestionChip);
 }
 
 void PageActionModel::SetSuggestionChipConfig(
@@ -52,7 +52,7 @@ void PageActionModel::SetSuggestionChipConfig(
   }
   should_animate_ = config.should_animate;
   should_announce_chip_ = config.should_announce_chip;
-  NotifyChange();
+  NotifyChange(Property::kSuggestionChipConfig);
 }
 
 void PageActionModel::SetTabActive(base::PassKey<PageActionController>,
@@ -61,7 +61,7 @@ void PageActionModel::SetTabActive(base::PassKey<PageActionController>,
     return;
   }
   is_tab_active_ = is_active;
-  NotifyChange();
+  NotifyChange(Property::kTabActive);
 }
 
 void PageActionModel::SetHasPinnedIcon(base::PassKey<PageActionController>,
@@ -70,7 +70,7 @@ void PageActionModel::SetHasPinnedIcon(base::PassKey<PageActionController>,
     return;
   }
   has_pinned_icon_ = has_pinned_icon;
-  NotifyChange();
+  NotifyChange(Property::kHasPinnedIcon);
 }
 
 void PageActionModel::SetActionItemProperties(
@@ -104,7 +104,7 @@ void PageActionModel::SetActionItemProperties(
   }
 
   if (model_changed) {
-    NotifyChange();
+    NotifyChange(Property::kActionItemProperties);
   }
 }
 
@@ -176,7 +176,7 @@ void PageActionModel::SetOverrideText(
     return;
   }
   override_text_ = override_text;
-  NotifyChange();
+  NotifyChange(Property::kOverrideText);
 }
 
 void PageActionModel::SetOverrideAccessibleName(
@@ -186,7 +186,7 @@ void PageActionModel::SetOverrideAccessibleName(
     return;
   }
   override_accessible_name_ = override_accessible_name;
-  NotifyChange();
+  NotifyChange(Property::kOverrideAccessibleName);
 }
 
 void PageActionModel::SetOverrideImage(
@@ -198,7 +198,7 @@ void PageActionModel::SetOverrideImage(
   }
   override_image_ = override_image;
   color_source_ = color_source;
-  NotifyChange();
+  NotifyChange(Property::kOverrideImage);
 }
 
 void PageActionModel::SetOverrideTooltip(
@@ -208,7 +208,7 @@ void PageActionModel::SetOverrideTooltip(
     return;
   }
   override_tooltip_ = override_tooltip;
-  NotifyChange();
+  NotifyChange(Property::kOverrideTooltip);
 }
 
 void PageActionModel::SetIsSuppressedByOmnibox(
@@ -218,7 +218,7 @@ void PageActionModel::SetIsSuppressedByOmnibox(
     return;
   }
   is_suppressed_by_omnibox_ = is_suppressed;
-  NotifyChange();
+  NotifyChange(Property::kIsSuppressedByOmnibox);
 }
 
 void PageActionModel::SetExemptFromOmniboxSuppression(
@@ -228,7 +228,7 @@ void PageActionModel::SetExemptFromOmniboxSuppression(
     return;
   }
   is_exempt_from_omnibox_suppression_ = is_exempt;
-  NotifyChange();
+  NotifyChange(Property::kExemptFromOmniboxSuppression);
 }
 
 void PageActionModel::SetIsChipShowing(base::PassKey<PageActionController>,
@@ -239,7 +239,7 @@ void PageActionModel::SetIsChipShowing(base::PassKey<PageActionController>,
   }
 
   is_chip_showing_ = is_chip_showing;
-  NotifyChange();
+  NotifyChange(Property::kIsChipShowing);
 }
 
 void PageActionModel::SetActionActive(base::PassKey<PageActionController>,
@@ -249,7 +249,7 @@ void PageActionModel::SetActionActive(base::PassKey<PageActionController>,
   }
 
   action_active_ = is_active;
-  NotifyChange();
+  NotifyChange(Property::kActionActive);
 }
 
 void PageActionModel::AddObserver(PageActionModelObserver* observer) {
@@ -260,12 +260,23 @@ void PageActionModel::RemoveObserver(PageActionModelObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void PageActionModel::NotifyChange() {
-  CHECK(!is_notifying_observers_)
-      << "PageActionModel should not be updated while notifying observers";
+void PageActionModel::NotifyChange(Property property) {
+  // Crash if the same property is modified again during notification, as this
+  // would cause an infinite loop (A notifies -> observer sets A -> notifies
+  // -> ...).
+  CHECK(!notified_properties_.Has(property));
+  notified_properties_.Put(property);
+
+  if (is_notifying_observers_) {
+    notified_properties_.Remove(property);
+    return;
+  }
+
   base::AutoReset<bool> auto_reset(&is_notifying_observers_, true);
   observer_list_.Notify(&PageActionModelObserver::OnPageActionModelChanged,
                         *this);
+
+  notified_properties_.Remove(property);
 }
 
 bool PageActionModel::IsEphemeral() const {
@@ -279,7 +290,7 @@ void PageActionModel::SetShouldShowAnchoredMessage(
     return;
   }
   should_show_anchored_message_ = show;
-  NotifyChange();
+  NotifyChange(Property::kShouldShowAnchoredMessage);
 }
 
 void PageActionModel::SetAnchoredMessageText(
@@ -289,7 +300,7 @@ void PageActionModel::SetAnchoredMessageText(
     return;
   }
   anchored_message_text_ = anchored_message;
-  NotifyChange();
+  NotifyChange(Property::kAnchoredMessageText);
 }
 
 void PageActionModel::SetAnchoredMessageCloseIcon(
@@ -299,7 +310,7 @@ void PageActionModel::SetAnchoredMessageCloseIcon(
     return;
   }
   anchored_message_show_close_icon_ = anchored_message_show_close_icon;
-  NotifyChange();
+  NotifyChange(Property::kAnchoredMessageCloseIcon);
 }
 
 bool PageActionModel::ShouldShowAnchoredMessage() const {
@@ -317,7 +328,7 @@ void PageActionModel::SetIsAnchoredMessageShowing(
     return;
   }
   is_anchored_message_showing_ = is_anchored_message_showing;
-  NotifyChange();
+  NotifyChange(Property::kIsAnchoredMessageShowing);
 }
 
 const std::u16string& PageActionModel::GetAnchoredMessageText() const {

@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
@@ -195,8 +196,37 @@ class PageActionModel : public PageActionModelInterface {
   bool IsEphemeral() const override;
 
  private:
-  // Notifies observers of a model change.
-  void NotifyChange();
+  // Identifies which property triggered a NotifyChange call, used for
+  // per-property reentrancy checks.
+  enum class Property {
+    kShowRequested,
+    kShouldShowSuggestionChip,
+    kSuggestionChipConfig,
+    kTabActive,
+    kHasPinnedIcon,
+    kActionItemProperties,
+    kOverrideText,
+    kOverrideAccessibleName,
+    kOverrideImage,
+    kOverrideTooltip,
+    kIsSuppressedByOmnibox,
+    kExemptFromOmniboxSuppression,
+    kIsChipShowing,
+    kActionActive,
+    kShouldShowAnchoredMessage,
+    kAnchoredMessageText,
+    kAnchoredMessageCloseIcon,
+    kIsAnchoredMessageShowing,
+    kMaxValue = kIsAnchoredMessageShowing,
+  };
+  using PropertySet =
+      base::EnumSet<Property, Property::kShowRequested, Property::kMaxValue>;
+
+  // Notifies observers of a model change. `property` identifies the property
+  // that was modified, used for reentrancy checks. Re-entrant modifications to
+  // the same property CHECK-fail, as they would cause an infinite notification
+  // loop.
+  void NotifyChange(Property property);
 
   // Represents whether this page action will be always visible or not.
   const bool is_ephemeral_ = false;
@@ -271,8 +301,13 @@ class PageActionModel : public PageActionModelInterface {
   // by `is_suppressed_by_omnibox_` variable (eg. AI mode page action).
   bool is_exempt_from_omnibox_suppression_ = false;
 
-  // Flag used to disallow reentrant behaviour.
+  // Flag used while notifying observers.
   bool is_notifying_observers_ = false;
+
+  // Tracks which properties have been modified during the current notification
+  // cycle. Used to detect infinite loops: if the same property is modified
+  // again during notification, we CHECK-fail.
+  PropertySet notified_properties_;
 
   base::ObserverList<PageActionModelObserver> observer_list_;
 };
