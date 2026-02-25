@@ -1043,13 +1043,7 @@
     "AndroidParentalControlsV2": [
         {
             "platforms": [
-                "android",
-                "android_webview",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
@@ -17711,6 +17705,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "NotificationCollisionManagement"
+                    ]
+                }
+            ]
+        }
+    ],
+    "NoOpParentalControlsV2": [
+        {
+            "platforms": [
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SupervisedUserEmitLogRecordSeparately",
+                        "SupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs",
+                        "SupervisedUserUseUrlFilteringService"
                     ]
                 }
             ]
