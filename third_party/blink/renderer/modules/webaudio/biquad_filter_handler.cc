@@ -316,22 +316,19 @@ void BiquadFilterHandler::Process(uint32_t frames_to_process) {
       // BiquadDSPKernel of each BiquadProcessor.
 
       if (are_filter_coefficients_dirty) {
-        SECURITY_CHECK(static_cast<unsigned>(frames_to_process) <=
-                       render_quantum_frames_);
+        const size_t frames_count = static_cast<size_t>(frames_to_process);
+        SECURITY_CHECK(frames_count <= render_quantum_frames_);
 
         if (has_sample_accurate_values && is_audio_rate) {
           parameter_cutoff_frequency_->CalculateSampleAccurateValues(
               cutoff_frequency_sample_accurate_values_.as_span().first(
-                  static_cast<size_t>(frames_to_process)));
+                  frames_count));
           parameter_q_->CalculateSampleAccurateValues(
-              q_sample_accurate_values_.as_span().first(
-                  static_cast<size_t>(frames_to_process)));
+              q_sample_accurate_values_.as_span().first(frames_count));
           parameter_gain_->CalculateSampleAccurateValues(
-              gain_sample_accurate_values_.as_span().first(
-                  static_cast<size_t>(frames_to_process)));
+              gain_sample_accurate_values_.as_span().first(frames_count));
           parameter_detune_->CalculateSampleAccurateValues(
-              detune_sample_accurate_values_.as_span().first(
-                  static_cast<size_t>(frames_to_process)));
+              detune_sample_accurate_values_.as_span().first(frames_count));
 
           // If all the values are actually constant for this render (or the
           // automation rate is "k-rate" for all of the AudioParams), we
@@ -339,11 +336,15 @@ void BiquadFilterHandler::Process(uint32_t frames_to_process) {
           // they would be the same as the first.
           bool is_constant =
               HasConstantValues(
-                  cutoff_frequency_sample_accurate_values_.as_span()) &&
-              HasConstantValues(q_sample_accurate_values_.as_span()) &&
-              HasConstantValues(gain_sample_accurate_values_.as_span()) &&
-              HasConstantValues(detune_sample_accurate_values_.as_span());
-          size_t needed_frames = is_constant ? 1 : render_quantum_frames_;
+                  cutoff_frequency_sample_accurate_values_.as_span().first(
+                      frames_count)) &&
+              HasConstantValues(
+                  q_sample_accurate_values_.as_span().first(frames_count)) &&
+              HasConstantValues(
+                  gain_sample_accurate_values_.as_span().first(frames_count)) &&
+              HasConstantValues(
+                  detune_sample_accurate_values_.as_span().first(frames_count));
+          size_t needed_frames = is_constant ? 1 : frames_count;
           // Convert from Hertz to normalized frequency 0 -> 1.
           for (const auto& biquad : biquads_) {
             biquad->SetHasSampleAccurateValues(needed_frames > 1);
