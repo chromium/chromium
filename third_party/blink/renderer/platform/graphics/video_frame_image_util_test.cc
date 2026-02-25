@@ -105,7 +105,6 @@ class VideoFrameImageUtilTest
 
   scoped_refptr<StaticBitmapImage> DoCreateImageFromVideoFrame(
       scoped_refptr<media::VideoFrame> frame,
-      CanvasSnapshotProvider* snapshot_provider = nullptr,
       media::PaintCanvasVideoRenderer* video_renderer = nullptr,
       bool prefer_tagged_orientation = true) {
     const auto transform =
@@ -119,22 +118,15 @@ class VideoFrameImageUtilTest
       dest_rect.Transpose();
     }
 
-    std::unique_ptr<CanvasSnapshotProvider> local_snapshot_provider;
-
+    auto info =
+        CreateSnapshotProviderInfoForVideoFrame(*frame, dest_rect.size());
+    std::unique_ptr<CanvasSnapshotProvider> snapshot_provider =
+        CreateSnapshotProviderForVideo(info, raster_context_provider());
     if (!snapshot_provider) {
-      auto info =
-          CreateSnapshotProviderInfoForVideoFrame(*frame, dest_rect.size());
-      local_snapshot_provider =
-          CreateSnapshotProviderForVideo(info, raster_context_provider());
-      if (!local_snapshot_provider) {
-        DLOG(ERROR) << "Failed to create CanvasResourceProvider.";
-        return nullptr;
-      }
-
-      snapshot_provider = local_snapshot_provider.get();
-      CHECK(snapshot_provider);
+      DLOG(ERROR) << "Failed to create CanvasResourceProvider.";
+      return nullptr;
     }
-    return CreateImageFromVideoFrame(std::move(frame), snapshot_provider,
+    return CreateImageFromVideoFrame(std::move(frame), snapshot_provider.get(),
                                      video_renderer, prefer_tagged_orientation);
   }
 
@@ -174,13 +166,13 @@ TEST_P(VideoFrameImageUtilTest, CreateImageFromVideoFrameOrientation) {
 
   // We expect applying transform during copy if `prefer_tagged_orientation` is
   // false.
-  auto image = DoCreateImageFromVideoFrame(frame, nullptr, nullptr,
+  auto image = DoCreateImageFromVideoFrame(frame, nullptr,
                                            /*prefer_tagged_orientation=*/false);
   EXPECT_EQ(image->Orientation(), ImageOrientationEnum::kDefault);
 
   // We expect doing copy without transform applied and result image be tagged
   // with correct orientation.
-  image = DoCreateImageFromVideoFrame(frame, nullptr, nullptr,
+  image = DoCreateImageFromVideoFrame(frame, nullptr,
                                       /*prefer_tagged_orientation=*/true);
 
   // TODO(crbug.com/40172676): Accelerated images are not tagged correctly.
@@ -242,7 +234,7 @@ TEST_P(VideoFrameImageUtilTest, CreateImageFromVideoFrameTextureFrame) {
   }
 }
 
-TEST_P(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
+TEST_P(VideoFrameImageUtilTest, AcceleratedImageIsCreated) {
   // Only matters for accelerated case.
   if (!expect_accelerated_images()) {
     GTEST_SKIP();
@@ -252,16 +244,7 @@ TEST_P(VideoFrameImageUtilTest, FlushedAcceleratedImage) {
       raster_context_provider(), kTestSize, gfx::Rect(kTestSize),
       base::DoNothing());
 
-  auto provider = CreateSnapshotProviderForVideo(
-      {kTestAlphaType, kTestColorSpace, kTestFormat, kTestSize},
-      raster_context_provider());
-  ASSERT_TRUE(provider);
-  EXPECT_TRUE(provider->IsAccelerated());
-
-  auto image = DoCreateImageFromVideoFrame(texture_frame, provider.get());
-  EXPECT_TRUE(image->IsTextureBacked());
-
-  image = DoCreateImageFromVideoFrame(texture_frame, provider.get());
+  auto image = DoCreateImageFromVideoFrame(texture_frame);
   EXPECT_TRUE(image->IsTextureBacked());
 }
 
