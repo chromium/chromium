@@ -595,7 +595,8 @@ class CORE_EXPORT Element : public ContainerNode {
   void scrollByForTesting(double x, double y);
   void scrollToForTesting(double x, double y);
 
-  bool SetScrollOffset(const ScrollToOptions*);
+  bool ScrollTo(const ScrollToOptions*,
+                ScriptPromiseResolver<IDLUndefined>* = nullptr);
 
   // Returns the bounds of this Element, unclipped, in the coordinate space of
   // the local root's widget. That is, in the outermost main frame, this will
@@ -2177,10 +2178,12 @@ class CORE_EXPORT Element : public ContainerNode {
 
   bool ScrollLayoutBoxBy(const ScrollToOptions*,
                          ScriptPromiseResolver<IDLUndefined>*);
-  bool ScrollLayoutBoxTo(const ScrollToOptions*);
+  bool ScrollLayoutBoxTo(const ScrollToOptions*,
+                         ScriptPromiseResolver<IDLUndefined>*);
   bool ScrollFrameBy(const ScrollToOptions*,
                      ScriptPromiseResolver<IDLUndefined>*);
-  bool ScrollFrameTo(const ScrollToOptions*);
+  bool ScrollFrameTo(const ScrollToOptions*,
+                     ScriptPromiseResolver<IDLUndefined>*);
 
   bool HasElementFlag(ElementFlags mask) const;
   void SetElementFlag(ElementFlags, bool value = true);

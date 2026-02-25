@@ -2980,18 +2980,23 @@ ScriptPromise<IDLUndefined> Element::scrollTo(ScriptState* script_state,
 ScriptPromise<IDLUndefined> Element::scrollTo(
     ScriptState* script_state,
     const ScrollToOptions* scroll_to_options) {
-  if (!InActiveDocument()) {
-    return CreateScrollResolvedPromise(script_state);
+  ScriptPromiseResolver<IDLUndefined>* resolver = nullptr;
+  if (script_state &&
+      RuntimeEnabledFeatures::ProgrammaticScrollPromiseEnabled()) {
+    resolver =
+        MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   }
-  SetScrollOffset(scroll_to_options);
-  return CreateScrollResolvedPromise(script_state);
+
+  ScrollTo(scroll_to_options, resolver);
+  return resolver ? resolver->Promise() : EmptyPromise();
 }
 
-// TODO(mustaq@chromium.org): Rename this method to avoid any confusion with the
-// same-named function in `ScrollableArea`. This method is public because it is
-// used by WebElement for (probably) non-programmatic scroll.
-bool Element::SetScrollOffset(const ScrollToOptions* scroll_to_options) {
+bool Element::ScrollTo(const ScrollToOptions* scroll_to_options,
+                       ScriptPromiseResolver<IDLUndefined>* resolver) {
   if (!InActiveDocument()) {
+    if (resolver) {
+      resolver->Resolve();
+    }
     return false;
   }
 
@@ -3005,9 +3010,9 @@ bool Element::SetScrollOffset(const ScrollToOptions* scroll_to_options) {
                                             DocumentUpdateReason::kJavaScript);
 
   if (GetDocument().ScrollingElementNoLayout() == this) {
-    return ScrollFrameTo(scroll_to_options);
+    return ScrollFrameTo(scroll_to_options, resolver);
   } else {
-    return ScrollLayoutBoxTo(scroll_to_options);
+    return ScrollLayoutBoxTo(scroll_to_options, resolver);
   }
 }
 
@@ -3071,18 +3076,20 @@ bool Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options,
       cc::ScrollSourceType::kRelativeScroll, scroll_behavior, resolver);
 }
 
-bool Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options) {
+bool Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options,
+                                ScriptPromiseResolver<IDLUndefined>* resolver) {
   mojom::blink::ScrollBehavior scroll_behavior =
       ScrollableArea::V8EnumToScrollBehavior(
           scroll_to_options->behavior().AsEnum());
 
   LayoutBox* box = GetLayoutBoxForScrolling();
-  if (!box) {
-    return false;
-  }
+  PaintLayerScrollableArea* scrollable_area =
+      box ? box->GetScrollableArea() : nullptr;
 
-  PaintLayerScrollableArea* scrollable_area = box->GetScrollableArea();
   if (!scrollable_area) {
+    if (resolver) {
+      resolver->Resolve();
+    }
     return false;
   }
 
@@ -3134,9 +3141,9 @@ bool Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options) {
     new_offset = scrollable_area->ScrollPositionToOffset(snap_point.value());
   }
 
-  return scrollable_area->SetScrollOffset(
-      new_offset, mojom::blink::ScrollType::kProgrammatic,
-      cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior);
+  return scrollable_area->SetProgrammaticScrollOffset(
+      new_offset, cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior,
+      resolver);
 }
 
 bool Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options,
@@ -3180,19 +3187,21 @@ bool Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options,
       cc::ScrollSourceType::kRelativeScroll, scroll_behavior, resolver);
 }
 
-bool Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
+bool Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options,
+                            ScriptPromiseResolver<IDLUndefined>* resolver) {
   mojom::blink::ScrollBehavior scroll_behavior =
       ScrollableArea::V8EnumToScrollBehavior(
           scroll_to_options->behavior().AsEnum());
   LocalFrame* frame = GetDocument().GetFrame();
-  if (!frame || !frame->View() || !GetDocument().GetPage()) {
+  if (!frame || !frame->View() || !frame->View()->LayoutViewport() ||
+      !GetDocument().GetPage()) {
+    if (resolver) {
+      resolver->Resolve();
+    }
     return false;
   }
 
   ScrollableArea* viewport = frame->View()->LayoutViewport();
-  if (!viewport) {
-    return false;
-  }
 
   ScrollOffset new_offset = viewport->GetScrollOffset();
   if (scroll_to_options->hasLeft()) {
@@ -3215,11 +3224,10 @@ bool Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options) {
   new_position =
       viewport->GetSnapPositionAndSetTarget(*strategy).value_or(new_position);
   new_offset = viewport->ScrollPositionToOffset(new_position);
-  // TODO(mustaq@chromium.org): Switch the following method to
-  // `SetProgrammaticScrollOffset`.
-  return viewport->SetScrollOffset(
-      new_offset, mojom::blink::ScrollType::kProgrammatic,
-      cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior);
+
+  return viewport->SetProgrammaticScrollOffset(
+      new_offset, cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior,
+      resolver);
 }
 
 bool Element::HandleScrollByPageCommand(CommandEventType command) {

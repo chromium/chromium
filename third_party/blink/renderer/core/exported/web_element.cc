@@ -445,7 +445,7 @@ bool WebElement::SetScrollOffset(const gfx::Vector2dF& offset) {
   scroll_to_options->setLeft(offset.x());
   scroll_to_options->setTop(offset.y());
   scroll_to_options->setBehavior(V8ScrollBehavior::Enum::kInstant);
-  return element->SetScrollOffset(scroll_to_options);
+  return element->ScrollTo(scroll_to_options);
 }
 
 void WebElement::ScrollIntoViewIfNeeded() {
