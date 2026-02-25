@@ -304,6 +304,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/favicon",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/file_system_access",
+    "//chrome/browser/glic",
     "//chrome/browser/history",
     "//chrome/browser/k_anonymity_service",
     "//chrome/browser/lookalikes",
@@ -492,13 +493,6 @@ source_set("profiles_extra_parts_impl") {
     deps += [ "//chrome/browser/enterprise/data_controls" ]
   }
 
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
-    if (!is_android) {
-      deps += [ "//chrome/browser/ui/tabs:glic" ]
-    }
-  }
-
   if (enable_on_device_translation) {
     deps += [ "//chrome/browser/on_device_translation" ]
   }
@@ -515,7 +509,10 @@ source_set("profiles_extra_parts_impl") {
   }
 
   if (!is_android) {
-    deps += [ "//chrome/browser/password_manager:startup_import" ]
+    deps += [
+      "//chrome/browser/password_manager:startup_import",
+      "//chrome/browser/ui/tabs:glic",
+    ]
   }
 }
 

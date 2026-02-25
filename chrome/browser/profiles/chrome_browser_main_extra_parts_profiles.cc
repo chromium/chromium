@@ -13,6 +13,7 @@
 #include "chrome/browser/accessibility/accessibility_labels_service_factory.h"
 #include "chrome/browser/accessibility/page_colors_controller_factory.h"
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_data_provider_factory.h"
+#include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -91,6 +92,8 @@
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/font_pref_change_notifier_factory.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices_factory.h"
 #include "chrome/browser/history/domain_diversity_reporter_factory.h"
@@ -526,13 +529,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/actor/actor_keyed_service_factory.h"
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#endif
-
-#if BUILDFLAG(ENABLE_GLIC) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/tabs/glic_actor_task_icon_manager_factory.h"
 #endif
 
@@ -681,9 +678,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   AccountsPolicyManagerFactory::GetInstance();
   search_integrity::SearchIntegrityFactory::GetInstance();
 #endif
-#if BUILDFLAG(ENABLE_GLIC)
   actor::ActorKeyedServiceFactory::GetInstance();
-#endif
 #if BUILDFLAG(IS_ANDROID)
   AndroidSessionDurationsServiceFactory::GetInstance();
 #endif
@@ -986,11 +981,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_CHROMEOS)
   GalleryWatchManager::EnsureFactoryBuilt();
 #endif
-#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicKeyedServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   tabs::GlicActorTaskIconManagerFactory::GetInstance();
-#endif
 #endif
 #if !BUILDFLAG(IS_ANDROID)
   GlobalErrorServiceFactory::GetInstance();
