@@ -2502,8 +2502,6 @@
                     "enable_features": [
                         "AutofillEnableAmountExtraction",
                         "AutofillEnableBuyNowPayLater",
-                        "AutofillEnableBuyNowPayLaterForExternallyLinked",
-                        "AutofillEnableBuyNowPayLaterForKlarna",
                         "AutofillEnableBuyNowPayLaterUpdatedSuggestionSecondLineString",
                         "AutofillEnableTouchToFillReshowForBnpl",
                         "AutofillTouchToFillShowManualFillForVcnFix"
