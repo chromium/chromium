@@ -68,8 +68,8 @@ void TopContainerButton::RemovedFromWidget() {
 
 ui::ColorId TopContainerButton::GetForegroundColor() const {
   return GetWidget() && GetWidget()->ShouldPaintAsActive()
-             ? kColorToolbarButtonIcon
-             : kColorToolbarButtonIconInactive;
+             ? kColorTabForegroundInactiveFrameActive
+             : kColorTabForegroundInactiveFrameInactive;
 }
 
 std::unique_ptr<views::ActionViewInterface>
