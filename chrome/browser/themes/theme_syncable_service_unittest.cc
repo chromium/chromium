@@ -1216,7 +1216,7 @@ TEST_F(RealThemeSyncableServiceTest, ShouldDownloadBrowserColorScheme) {
 
   // Verify that the new pref is used.
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(prefs::kBrowserColorScheme),
-            static_cast<int>(ThemeService::BrowserColorScheme::kLight));
+            std::to_underlying(ThemeService::BrowserColorScheme::kLight));
 }
 
 TEST_F(RealThemeSyncableServiceTest, ShouldUploadBrowserColorScheme) {
@@ -1247,7 +1247,7 @@ TEST_F(RealThemeSyncableServiceTest, ShouldUploadBrowserColorScheme) {
   // Verify that the old pref is updated.
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(
                 prefs::kDeprecatedBrowserColorSchemeDoNotUse),
-            static_cast<int>(ThemeService::BrowserColorScheme::kLight));
+            std::to_underlying(ThemeService::BrowserColorScheme::kLight));
 }
 
 TEST_F(RealThemeSyncableServiceTest, ShouldDownloadNtpBackground) {
@@ -3734,11 +3734,11 @@ class ThemePrefsMigrationTest : public ::testing::Test {
                                   false);
     registry->RegisterIntegerPref(
         prefs::kDeprecatedBrowserColorSchemeDoNotUse,
-        static_cast<int>(ThemeService::BrowserColorScheme::kSystem),
+        std::to_underlying(ThemeService::BrowserColorScheme::kSystem),
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
     registry->RegisterIntegerPref(
         prefs::kBrowserColorScheme,
-        static_cast<int>(ThemeService::BrowserColorScheme::kSystem));
+        std::to_underlying(ThemeService::BrowserColorScheme::kSystem));
     registry->RegisterIntegerPref(
         prefs::kDeprecatedUserColorDoNotUse, SK_ColorTRANSPARENT,
         user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -3849,7 +3849,7 @@ class ThemePrefsMigrationShouldReadPrefsTest : public ::testing::Test {
     initial_data.push_back(CreateRemotePrefsSyncData(
         prefs::kDeprecatedBrowserColorSchemeDoNotUse,
         base::Value(
-            static_cast<int>(ThemeService::BrowserColorScheme::kLight))));
+            std::to_underlying(ThemeService::BrowserColorScheme::kLight))));
     initial_data.push_back(
         CreateRemotePrefsSyncData(prefs::kDeprecatedUserColorDoNotUse,
                                   base::Value(static_cast<int>(SK_ColorRED))));
@@ -3914,7 +3914,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
   EXPECT_FALSE(
       prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
   EXPECT_EQ(prefs()->GetInteger(prefs::kBrowserColorScheme),
-            static_cast<int>(ThemeService::BrowserColorScheme::kLight));
+            std::to_underlying(ThemeService::BrowserColorScheme::kLight));
   EXPECT_EQ(prefs()->GetInteger(prefs::kUserColor),
             static_cast<int>(SK_ColorRED));
   EXPECT_EQ(prefs()->GetInteger(prefs::kBrowserColorVariant),
@@ -3958,7 +3958,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
   EXPECT_FALSE(
       prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
   EXPECT_EQ(prefs()->GetInteger(prefs::kBrowserColorScheme),
-            static_cast<int>(ThemeService::BrowserColorScheme::kLight));
+            std::to_underlying(ThemeService::BrowserColorScheme::kLight));
   EXPECT_EQ(prefs()->GetInteger(prefs::kUserColor),
             static_cast<int>(SK_ColorRED));
   EXPECT_EQ(prefs()->GetInteger(prefs::kBrowserColorVariant),
@@ -3999,7 +3999,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
   EXPECT_FALSE(
       prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
   EXPECT_NE(prefs()->GetInteger(prefs::kBrowserColorScheme),
-            static_cast<int>(ThemeService::BrowserColorScheme::kLight));
+            std::to_underlying(ThemeService::BrowserColorScheme::kLight));
   EXPECT_NE(prefs()->GetInteger(prefs::kUserColor),
             static_cast<int>(SK_ColorRED));
   EXPECT_NE(prefs()->GetInteger(prefs::kBrowserColorVariant),
@@ -4035,7 +4035,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
   EXPECT_FALSE(
       prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
   EXPECT_EQ(prefs()->GetInteger(prefs::kBrowserColorScheme),
-            static_cast<int>(ThemeService::BrowserColorScheme::kDark));
+            std::to_underlying(ThemeService::BrowserColorScheme::kDark));
 
   // Start prefs sync.
   syncer::SyncableService* pref_sync_service =
@@ -4049,7 +4049,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
   EXPECT_FALSE(
       prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
   EXPECT_NE(prefs()->GetInteger(prefs::kBrowserColorScheme),
-            static_cast<int>(ThemeService::BrowserColorScheme::kLight));
+            std::to_underlying(ThemeService::BrowserColorScheme::kLight));
   EXPECT_NE(prefs()->GetInteger(prefs::kUserColor),
             static_cast<int>(SK_ColorRED));
   EXPECT_NE(prefs()->GetInteger(prefs::kBrowserColorVariant),
@@ -4088,7 +4088,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest,
   EXPECT_FALSE(
       prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
   EXPECT_EQ(prefs()->GetInteger(prefs::kBrowserColorScheme),
-            static_cast<int>(ThemeService::BrowserColorScheme::kLight));
+            std::to_underlying(ThemeService::BrowserColorScheme::kLight));
   EXPECT_EQ(prefs()->GetInteger(prefs::kUserColor),
             static_cast<int>(SK_ColorRED));
   EXPECT_EQ(prefs()->GetInteger(prefs::kBrowserColorVariant),
@@ -4114,7 +4114,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest, ShouldPrioritizeThemeSpecifics) {
   EXPECT_FALSE(
       prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
   EXPECT_EQ(prefs()->GetInteger(prefs::kBrowserColorScheme),
-            static_cast<int>(ThemeService::BrowserColorScheme::kLight));
+            std::to_underlying(ThemeService::BrowserColorScheme::kLight));
 
   sync_pb::ThemeSpecifics theme_specifics;
   theme_specifics.set_browser_color_scheme(
@@ -4130,7 +4130,7 @@ TEST_F(ThemePrefsMigrationShouldReadPrefsTest, ShouldPrioritizeThemeSpecifics) {
       prefs()->GetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs));
   // Overwrites the theme set by prefs.
   EXPECT_EQ(prefs()->GetInteger(prefs::kBrowserColorScheme),
-            static_cast<int>(ThemeService::BrowserColorScheme::kDark));
+            std::to_underlying(ThemeService::BrowserColorScheme::kDark));
 }
 
 // Regression test for crbug.com/375553464.

@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTest,
         prefs::kDeprecatedBrowserColorSchemeDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(base::Value(
-            static_cast<int>(ThemeService::BrowserColorScheme::kLight))));
+            std::to_underlying(ThemeService::BrowserColorScheme::kLight))));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
@@ -374,7 +374,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTest,
         prefs::kDeprecatedBrowserColorSchemeDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(base::Value(
-            static_cast<int>(ThemeService::BrowserColorScheme::kDark))));
+            std::to_underlying(ThemeService::BrowserColorScheme::kDark))));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTest,
         prefs::kDeprecatedBrowserColorSchemeDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(base::Value(
-            static_cast<int>(ThemeService::BrowserColorScheme::kLight))));
+            std::to_underlying(ThemeService::BrowserColorScheme::kLight))));
 
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_P(
         prefs::kDeprecatedBrowserColorSchemeDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(base::Value(
-            static_cast<int>(ThemeService::BrowserColorScheme::kLight))));
+            std::to_underlying(ThemeService::BrowserColorScheme::kLight))));
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
             /*non_unique_name=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,
@@ -539,7 +539,7 @@ IN_PROC_BROWSER_TEST_P(
         prefs::kDeprecatedBrowserColorSchemeDoNotUse);
     preference_specifics->set_value(
         preferences_helper::ConvertPrefValueToValueInSpecifics(base::Value(
-            static_cast<int>(ThemeService::BrowserColorScheme::kLight))));
+            std::to_underlying(ThemeService::BrowserColorScheme::kLight))));
     GetFakeServer()->InjectEntity(
         syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
             /*non_unique_name=*/prefs::kDeprecatedBrowserColorSchemeDoNotUse,

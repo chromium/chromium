@@ -178,7 +178,7 @@ class BrowserWidgetColorProviderTest : public BrowserWidgetTest {
     // Set the default browser pref to follow system color mode.
     profile()->GetPrefs()->SetInteger(
         prefs::kBrowserColorScheme,
-        static_cast<int>(ThemeService::BrowserColorScheme::kSystem));
+        std::to_underlying(ThemeService::BrowserColorScheme::kSystem));
   }
 
  protected:
