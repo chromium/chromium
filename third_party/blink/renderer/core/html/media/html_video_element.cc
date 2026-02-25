@@ -710,7 +710,6 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     }
     snapshot_provider_.reset();
     sw_draw_surface_.reset();
-    cached_draw_info_ = required_provider_info;
 
     if (ShouldCreateAcceleratedImages(raster_context_provider)) {
       snapshot_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
@@ -723,12 +722,13 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
       }
     } else if (base::FeatureList::IsEnabled(kHTMLVideoElementCacheSkSurface)) {
       sw_draw_surface_ = CanvasNon2DSnapshotProviderBitmap::CreateSurface(
-          cached_draw_info_.value());
+          required_provider_info);
       if (!sw_draw_surface_) {
         return nullptr;
       }
     }
 
+    cached_draw_info_ = required_provider_info;
     allow_accelerated_images_ = allow_accelerated_images;
   }
   cache_deleting_timer_.StartOneShot(kTemporaryResourceDeletionDelay,
