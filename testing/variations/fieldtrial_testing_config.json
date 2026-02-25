@@ -13696,6 +13696,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "check_disk": "true"
+                    },
                     "enable_features": [
                         "HttpCacheInitializeDiskCacheBackendEarly"
                     ]

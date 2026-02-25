@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -31,6 +32,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -68,6 +70,10 @@ namespace net {
 
 BASE_FEATURE(kHttpCacheInitializeDiskCacheBackendEarly,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool>
+    kHttpCacheInitializeDiskCacheBackendEarlyCheckDisk{
+        &kHttpCacheInitializeDiskCacheBackendEarly, "check_disk", false};
 
 namespace {
 // True if any HTTP cache has been initialized.
@@ -163,8 +169,59 @@ std::optional<CacheType> HttpCache::BackendFactory::GetCacheType() const {
   return std::nullopt;
 }
 
+void HttpCache::BackendFactory::HasExistingFileToLoad(
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(false);
+}
+
 std::optional<CacheType> HttpCache::DefaultBackend::GetCacheType() const {
   return type_;
+}
+
+void HttpCache::DefaultBackend::HasExistingFileToLoad(
+    base::OnceCallback<void(bool)> callback) {
+  if (path_.empty()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+
+  std::unique_ptr<disk_cache::BackendFileOperations> file_ops;
+  if (file_operations_factory_) {
+    file_ops = file_operations_factory_->Create(task_runner);
+  } else {
+    file_ops = std::make_unique<disk_cache::TrivialFileOperations>();
+  }
+
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](std::unique_ptr<disk_cache::BackendFileOperations> ops,
+             base::FilePath path) {
+// On platforms other than Android, GrantSandboxAccessOnThreadPool()
+// is called when the browser process creates a NetworkContext, and that
+// function explicitly ensures the/ cache directory is created.
+// Thus we need to check if cache files actually exist.
+#if !BUILDFLAG(IS_ANDROID)
+            if (!ops->PathExists(path)) {
+              return false;
+            }
+            auto enumerator = ops->EnumerateFiles(path);
+            return enumerator && enumerator->Next().has_value();
+
+// For Android, we don't create the directory so checking
+// the directory is enough and we should minimize file operations
+// as much as possible during browser startup.
+#else
+            return ops->PathExists(path);
+#endif
+          },
+          std::move(file_ops), path_),
+      std::move(callback));
 }
 
 //-----------------------------------------------------------------------------
@@ -469,16 +526,30 @@ HttpCache::HttpCache(
   // Session may be NULL in unittests.
   // TODO(mmenke): Seems like tests could be changed to provide a session,
   // rather than having logic only used in unit tests here.
-  if (!session) {
-    return;
+  if (session) {
+    net_log_ = session->net_log();
   }
 
-  net_log_ = session->net_log();
   if (base::FeatureList::IsEnabled(kHttpCacheInitializeDiskCacheBackendEarly) &&
       backend_factory_) {
     if (auto maybe_cache_type = backend_factory_->GetCacheType()) {
       if (*maybe_cache_type == CacheType::DISK_CACHE) {
-        CreateBackend(CompletionOnceCallback());
+        if (!kHttpCacheInitializeDiskCacheBackendEarlyCheckDisk.Get()) {
+          CreateBackend(CompletionOnceCallback());
+          base::UmaHistogramBoolean("HttpCache.CreateBackendEarly", true);
+        } else {
+          backend_factory_->HasExistingFileToLoad(base::BindOnce(
+              [](base::WeakPtr<HttpCache> self, bool has_file) {
+                bool create_backend = false;
+                if (self && has_file) {
+                  self->CreateBackend(CompletionOnceCallback());
+                  create_backend = true;
+                }
+                base::UmaHistogramBoolean("HttpCache.CreateBackendEarly",
+                                          create_backend);
+              },
+              weak_factory_.GetWeakPtr()));
+        }
       }
     }
   }

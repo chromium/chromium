@@ -104,6 +104,10 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 #endif
 
     virtual std::optional<CacheType> GetCacheType() const;
+
+    // Returns true via `callback` if existing cache files are found, indicating
+    // that early initialization of the backend is appropriate.
+    virtual void HasExistingFileToLoad(base::OnceCallback<void(bool)> callback);
   };
 
   // A default backend factory for the common use cases.
@@ -140,6 +144,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 #endif
 
     std::optional<CacheType> GetCacheType() const override;
+    void HasExistingFileToLoad(
+        base::OnceCallback<void(bool)> callback) override;
 
    private:
     CacheType type_;

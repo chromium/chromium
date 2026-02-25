@@ -7,15 +7,27 @@
 #include <stdint.h>
 
 #include "base/command_line.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/http/http_cache.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/cpp/originating_process_id.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/transferable_directory.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -63,7 +75,7 @@ class NetworkServiceShutdownRaceTest : public testing::Test {
   }
 
  private:
-  BrowserTaskEnvironment task_environment_;
+  BrowserTaskEnvironment task_environment_{BrowserTaskEnvironment::IO_MAINLOOP};
 };
 
 // This should not crash.
@@ -141,6 +153,114 @@ TEST(NetworkServiceInstanceImplParseCommandLineTest,
     EXPECT_EQ(GetNetLogMaximumFileSizeFromCommandLineForTesting(command_line),
               std::numeric_limits<uint64_t>::max());
   }
+}
+
+class NetworkServiceHttpCacheEarlyInitTest : public testing::Test {
+ public:
+  NetworkServiceHttpCacheEarlyInitTest() = default;
+
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    cache_path_ = temp_dir_.GetPath().AppendASCII("cache");
+  }
+
+  void CreateNetworkContext(bool enable_early_init,
+                            std::optional<bool> check_disk) {
+    if (enable_early_init) {
+      feature_list_.InitAndEnableFeatureWithParameters(
+          net::kHttpCacheInitializeDiskCacheBackendEarly,
+          {{"check_disk", *check_disk ? "true" : "false"}});
+    } else {
+      feature_list_.InitAndDisableFeature(
+          net::kHttpCacheInitializeDiskCacheBackendEarly);
+    }
+
+    network::mojom::NetworkContextParamsPtr context_params =
+        network::mojom::NetworkContextParams::New();
+    context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
+    context_params->file_paths->http_cache_directory =
+        network::TransferableDirectory(cache_path_);
+    context_params->cert_verifier_params = GetCertVerifierParams(
+        cert_verifier::mojom::CertVerifierCreationParams::New());
+
+    CreateNetworkContextInNetworkService(
+        network_context_.BindNewPipeAndPassReceiver(),
+        std::move(context_params));
+
+    // Await cache initialization.
+    task_environment_.RunUntilIdle();
+    disk_cache::FlushCacheThreadForTesting();
+  }
+
+  void MakeRequest() {
+    net::test_server::EmbeddedTestServer test_server;
+    test_server.AddDefaultHandlers(
+        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+    ASSERT_TRUE(test_server.Start());
+
+    mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
+    network::mojom::URLLoaderFactoryParamsPtr params =
+        network::mojom::URLLoaderFactoryParams::New();
+    params->process_id = network::OriginatingProcess::browser();
+    network_context_->CreateURLLoaderFactory(
+        loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+    auto request = std::make_unique<network::ResourceRequest>();
+    request->url = test_server.GetURL("/echo");
+
+    auto loader = network::SimpleURLLoader::Create(
+        std::move(request),
+        net::DefineNetworkTrafficAnnotation("test", "test"));
+    loader->DownloadToString(
+        loader_factory.get(),
+        base::BindOnce([](std::optional<std::string> body) {}), 1024);
+    task_environment_.RunUntilIdle();
+    disk_cache::FlushCacheThreadForTesting();
+  }
+
+  bool CacheExists() {
+    // See HttpCache::DefaultBackend::HasExistingFileToLoad() for detail.
+#if !BUILDFLAG(IS_ANDROID)
+    if (!base::DirectoryExists(cache_path_)) {
+      return false;
+    }
+    base::FileEnumerator enumerator(cache_path_, true,
+                                    base::FileEnumerator::FILES);
+    return !enumerator.Next().empty();
+#else
+    return base::DirectoryExists(cache_path_);
+#endif
+  }
+
+  BrowserTaskEnvironment task_environment_{BrowserTaskEnvironment::IO_MAINLOOP};
+  base::ScopedTempDir temp_dir_;
+  base::FilePath cache_path_;
+  base::test::ScopedFeatureList feature_list_;
+  mojo::Remote<network::mojom::NetworkContext> network_context_;
+};
+
+TEST_F(NetworkServiceHttpCacheEarlyInitTest, EarlyInitDisabled) {
+  ASSERT_FALSE(CacheExists());
+  CreateNetworkContext(/*enable_early_init=*/false,
+                       /*check_disk=*/std::nullopt);
+  EXPECT_FALSE(CacheExists());
+  MakeRequest();
+  EXPECT_TRUE(CacheExists());
+}
+
+TEST_F(NetworkServiceHttpCacheEarlyInitTest, EarlyInitEnabledCheckDiskTrue) {
+  ASSERT_FALSE(CacheExists());
+  CreateNetworkContext(/*enable_early_init=*/true, /*check_disk=*/true);
+  EXPECT_FALSE(CacheExists());
+  MakeRequest();
+  EXPECT_TRUE(CacheExists());
+}
+
+TEST_F(NetworkServiceHttpCacheEarlyInitTest, EarlyInitEnabledCheckDiskFalse) {
+  ASSERT_FALSE(CacheExists());
+  CreateNetworkContext(/*enable_early_init=*/true, /*check_disk=*/false);
+  EXPECT_TRUE(CacheExists());
 }
 
 }  // namespace content

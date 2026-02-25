@@ -737,6 +737,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="HttpCache.CreateBackendEarly" enum="Boolean"
+    expires_after="2026-07-26">
+  <owner>yoichio@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Logged wether or not CreateBackend is called when HttpCache is created. This
+    is valid when HttpCacheInitializeDiskCacheBackendEarly is enabled.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.CreateDiskEntry" units="ms"
     expires_after="2026-07-26">
   <owner>yhirano@chromium.org</owner>
