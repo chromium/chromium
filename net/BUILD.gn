@@ -4354,6 +4354,7 @@ if (is_apple) {
   fuzzer_test("net_url_conversions_fuzzer") {
     sources = [ "base/apple/url_conversions_fuzzer.mm" ]
     deps = [
+      ":net_fuzzer_test_support",
       "//base",
       "//net",
     ]
