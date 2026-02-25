@@ -9,8 +9,11 @@
 
 #include "base/files/file.h"
 #include "chrome/utility/safe_browsing/zip_writer_delegate.h"
-#include "third_party/unrar/google/unrar_delegates.h"
 #include "third_party/zlib/google/zip_reader.h"
+
+#if USE_UNRAR
+#include "third_party/unrar/google/unrar_delegates.h"
+#endif
 
 namespace safe_browsing {
 

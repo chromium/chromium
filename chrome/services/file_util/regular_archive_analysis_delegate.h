@@ -6,7 +6,10 @@
 #define CHROME_SERVICES_FILE_UTIL_REGULAR_ARCHIVE_ANALYSIS_DELEGATE_H_
 
 #include "chrome/utility/safe_browsing/archive_analysis_delegate.h"
+
+#if USE_UNRAR
 #include "third_party/unrar/google/unrar_delegates.h"
+#endif
 
 namespace safe_browsing {
 

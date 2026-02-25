@@ -7,7 +7,10 @@
 
 #include "chrome/utility/safe_browsing/archive_analysis_delegate.h"
 #include "components/enterprise/obfuscation/core/utils.h"
+
+#if USE_UNRAR
 #include "third_party/unrar/google/unrar_wrapper.h"
+#endif
 
 namespace safe_browsing {
 
