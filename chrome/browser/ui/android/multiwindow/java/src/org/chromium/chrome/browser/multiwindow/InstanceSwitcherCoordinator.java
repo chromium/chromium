@@ -534,7 +534,7 @@ public class InstanceSwitcherCoordinator {
     }
 
     private PropertyModel generateListItem(InstanceInfo item) {
-        String title = mUiUtils.getItemTitle(item);
+        String title = UiUtils.getItemTitle(mContext, item);
         String desc = mUiUtils.getItemDesc(item);
         boolean isCurrentWindow = item.type == InstanceInfo.Type.CURRENT;
         PropertyModel.Builder builder =
@@ -562,7 +562,7 @@ public class InstanceSwitcherCoordinator {
                     InstanceSwitcherItemProperties.CLOSE_BUTTON_CONTENT_DESCRIPTION,
                     mContext.getString(
                             R.string.instance_switcher_item_close_content_description,
-                            mUiUtils.getItemTitle(item)));
+                            UiUtils.getItemTitle(mContext, item)));
             timestamp = calculateClosureTime(item);
         }
         String lastAccessedString =
@@ -606,7 +606,7 @@ public class InstanceSwitcherCoordinator {
                 InstanceSwitcherItemProperties.MORE_MENU_CONTENT_DESCRIPTION,
                 mContext.getString(
                         R.string.instance_switcher_item_more_menu_content_description,
-                        mUiUtils.getItemTitle(item)));
+                        UiUtils.getItemTitle(mContext, item)));
     }
 
     private void closeWindow(InstanceInfo item) {
@@ -901,7 +901,7 @@ public class InstanceSwitcherCoordinator {
                                         item.isIncognitoSelected,
                                         item.lastAccessedTime,
                                         item.closureTime);
-                        newTitle = mUiUtils.getItemTitle(updatedItem);
+                        newTitle = UiUtils.getItemTitle(mContext, updatedItem);
                     }
 
                     listItem.model.set(InstanceSwitcherItemProperties.TITLE, newTitle);

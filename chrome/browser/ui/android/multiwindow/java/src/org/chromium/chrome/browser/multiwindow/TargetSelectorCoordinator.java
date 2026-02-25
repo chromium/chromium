@@ -172,7 +172,7 @@ public class TargetSelectorCoordinator {
     }
 
     private PropertyModel generateListItem(InstanceInfo item) {
-        String title = mUiUtils.getItemTitle(item);
+        String title = UiUtils.getItemTitle(mContext, item);
         String desc = mUiUtils.getItemDesc(item);
         PropertyModel.Builder builder =
                 new PropertyModel.Builder(TargetSelectorItemProperties.ALL_KEYS)

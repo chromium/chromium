@@ -162,6 +162,36 @@ public class UiUtils {
         dialog.show();
     }
 
+    /**
+     * Gets the display title for an instance.
+     *
+     * @param context The {@link Context} to retrieve string resources.
+     * @param item {@link InstanceInfo} to get a title string for.
+     * @return Text string for a given instance.
+     */
+    public static String getItemTitle(Context context, InstanceInfo item) {
+        // We do not restore incognito tabs in an instance if its task got killed. Treat it as if it
+        // did not have any incognito tabs.
+        int incognitoTabCount = recoverableIncognitoTabCount(item);
+        int totalTabCount = totalTabCount(item);
+        String title;
+        Resources res = context.getResources();
+        if (!TextUtils.isEmpty(item.customTitle)) {
+            title = item.customTitle;
+        } else if (totalTabCount == 0 || isInitialNonIncognitoWindow(item, totalTabCount)) {
+            title = res.getString(R.string.instance_switcher_entry_empty_window);
+        } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
+            // Show 'incognito tab' only when we have any restorable incognito tabs.
+            title =
+                    IncognitoUtils.shouldOpenIncognitoAsWindow()
+                            ? res.getString(R.string.instance_switcher_title_incognito_window)
+                            : res.getString(R.string.notification_incognito_tab);
+        } else {
+            title = item.title;
+        }
+        return title;
+    }
+
     private static void recordNameWindowUserAction(@NameWindowDialogSource int source) {
         switch (source) {
             case NameWindowDialogSource.WINDOW_MANAGER:
@@ -207,34 +237,6 @@ public class UiUtils {
     Drawable getTintedIcon(@DrawableRes int drawableId) {
         return org.chromium.ui.UiUtils.getTintedDrawable(
                 mContext, drawableId, R.color.default_icon_color_tint_list);
-    }
-
-    /**
-     * @param item {@link InstanceInfo} to get a title string for.
-     * @return Text string for a given instance.
-     */
-    String getItemTitle(InstanceInfo item) {
-        // We do not restore incognito tabs in an instance if its task got killed. Treat it as if it
-        // did not have any incognito tabs.
-        int incognitoTabCount = recoverableIncognitoTabCount(item);
-        int totalTabCount = totalTabCount(item);
-        String title;
-        Resources res = mContext.getResources();
-        // TODO (crbug.com/441312171): Add "Incognito - " prefix for incognito instances.
-        if (!TextUtils.isEmpty(item.customTitle)) {
-            title = item.customTitle;
-        } else if (totalTabCount == 0 || isInitialNonIncognitoWindow(item, totalTabCount)) {
-            title = res.getString(R.string.instance_switcher_entry_empty_window);
-        } else if (item.isIncognitoSelected && incognitoTabCount > 0) {
-            // Show 'incognito tab' only when we have any restorable incognito tabs.
-            title =
-                    IncognitoUtils.shouldOpenIncognitoAsWindow()
-                            ? res.getString(R.string.instance_switcher_title_incognito_window)
-                            : res.getString(R.string.notification_incognito_tab);
-        } else {
-            title = item.title;
-        }
-        return title;
     }
 
     /**
@@ -383,7 +385,7 @@ public class UiUtils {
     /**
      * @return Whether a new Chrome instance has not yet started loading a URL on its tab.
      */
-    private boolean isInitialNonIncognitoWindow(InstanceInfo item, int totalTabCount) {
+    private static boolean isInitialNonIncognitoWindow(InstanceInfo item, int totalTabCount) {
         if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             return !item.isIncognitoSelected
                     && totalTabCount == 1

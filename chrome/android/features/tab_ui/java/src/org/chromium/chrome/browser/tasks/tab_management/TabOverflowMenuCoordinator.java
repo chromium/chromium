@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.multiwindow.UiUtils.getItemTitle;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
@@ -495,10 +496,7 @@ public abstract class TabOverflowMenuCoordinator<T>
                 if (mMultiInstanceManager.getCurrentInstanceId() == instanceInfo.instanceId) {
                     continue;
                 }
-                String windowDisplayName =
-                        instanceInfo.title.isBlank()
-                                ? mActivity.getString(R.string.instance_switcher_entry_empty_window)
-                                : instanceInfo.title;
+                String windowDisplayName = getItemTitle(mActivity, instanceInfo);
                 submenuItems.add(
                         new ListItem(
                                 MENU_ITEM,

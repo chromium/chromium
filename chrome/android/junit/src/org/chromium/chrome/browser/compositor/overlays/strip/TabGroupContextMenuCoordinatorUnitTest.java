@@ -967,14 +967,52 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Test
     @Feature("Tab Strip Group Context Menu")
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
-    public void testMoveToWindow_EmptyWindowTitle() {
+    public void testMoveToWindow_NonEmptyCustomWindowTitle() {
         final InstanceInfo emptyTitleInstance =
                 new InstanceInfo(
                         INSTANCE_ID_2,
                         TASK_ID,
                         CURRENT,
                         EXAMPLE_URL.toString(),
-                        "",
+                        /* title= */ "Example",
+                        /* customTitle= */ "My window",
+                        NUM_TABS,
+                        NUM_INCOGNITO_TABS,
+                        /* isIncognitoSelected= */ false,
+                        LAST_ACCESSED_TIME,
+                        /* closureTime= */ 0);
+
+        setUpTabGroupModelFilter();
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, emptyTitleInstance));
+        var modelList = new ModelList();
+        mTabGroupContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_GROUP_ID);
+
+        ListItem moveToWindowItem = modelList.get(4);
+        assertNotNull(moveToWindowItem);
+
+        var subMenu = moveToWindowItem.model.get(SUBMENU_ITEMS);
+        assertEquals("Submenu should have 2 items", 2, subMenu.size());
+
+        ListItem otherWindowItem = subMenu.get(1);
+        assertEquals(
+                "The title for the other window is incorrect.",
+                "My window",
+                otherWindowItem.model.get(TITLE));
+    }
+
+    @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testMoveToWindow_EmptyCustomWindowTitle() {
+        final InstanceInfo emptyTitleInstance =
+                new InstanceInfo(
+                        INSTANCE_ID_2,
+                        TASK_ID,
+                        CURRENT,
+                        EXAMPLE_URL.toString(),
+                        /* title= */ "Example",
                         /* customTitle= */ null,
                         NUM_TABS,
                         NUM_INCOGNITO_TABS,
@@ -997,8 +1035,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
         ListItem otherWindowItem = subMenu.get(1);
         assertEquals(
-                "The title for the other window should be the incognito window title string.",
-                mActivity.getString(R.string.instance_switcher_entry_empty_window),
+                "The title for the other window is incorrect.",
+                "Example",
                 otherWindowItem.model.get(TITLE));
     }
 }

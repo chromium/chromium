@@ -177,53 +177,54 @@ public class UiUtilsUnitTest {
         assertEquals(
                 "Instance with normal tabs and custom title has a wrong title",
                 CUSTOM_TITLE,
-                mUiUtils.getItemTitle(mockInstance(57, 1, 0, false, CUSTOM_TITLE)));
+                UiUtils.getItemTitle(mContext, mockInstance(57, 1, 0, false, CUSTOM_TITLE)));
 
         assertEquals(
                 "Instance with normal tabs and custom title has a wrong title",
                 TITLE,
-                mUiUtils.getItemTitle(mockInstance(57, 1, 0, false, /* customTitle= */ null)));
+                UiUtils.getItemTitle(
+                        mContext, mockInstance(57, 1, 0, false, /* customTitle= */ null)));
 
         // Empty window
         assertEquals(
                 "Instance with no tabs has a wrong title",
                 EMPTY_WINDOW,
-                mUiUtils.getItemTitle(mockInstance(57, 0, 0, false)));
+                UiUtils.getItemTitle(mContext, mockInstance(57, 0, 0, false)));
 
         assertEquals(
                 "Instance should be empty if not initialized yet",
                 EMPTY_WINDOW,
-                mUiUtils.getItemTitle(mockInstanceBeforeLoadingTab(57)));
+                UiUtils.getItemTitle(mContext, mockInstanceBeforeLoadingTab(57)));
 
         // Normal tabs only -> TITLE
         assertEquals(
                 "Instance with normal tabs has a wrong title",
                 TITLE,
-                mUiUtils.getItemTitle(mockInstance(57, 1, 0, false)));
+                UiUtils.getItemTitle(mContext, mockInstance(57, 1, 0, false)));
 
         if (shouldOpenIncognitoAsWindow) {
             // Incognito window -> Incognito window
             assertEquals(
                     "Instance with only incognito tabs has a wrong title",
                     INCOGNITO_WINDOW,
-                    mUiUtils.getItemTitle(mockInstance(57, 0, 1, true)));
+                    UiUtils.getItemTitle(mContext, mockInstance(57, 0, 1, true)));
 
         } else {
             // Incognito selected -> Incognito, regardless of # of normal tabs
             assertEquals(
                     "Instance with only incognito tabs has a wrong title",
                     INCOGNITO,
-                    mUiUtils.getItemTitle(mockInstance(57, 1, 1, true)));
+                    UiUtils.getItemTitle(mContext, mockInstance(57, 1, 1, true)));
             assertEquals(
                     "Instance with only incognito tabs has a wrong title",
                     INCOGNITO,
-                    mUiUtils.getItemTitle(mockInstance(57, 0, 1, true)));
+                    UiUtils.getItemTitle(mContext, mockInstance(57, 0, 1, true)));
 
             // Incognito-selected, mixed tabs, killed task -> TITLE (use normal tab info)
             assertEquals(
                     "Incognito-selected, mixed tab, killed task should show normal tab title",
                     TITLE,
-                    mUiUtils.getItemTitle(mockInstance(-1, 1, 1, true)));
+                    UiUtils.getItemTitle(mContext, mockInstance(-1, 1, 1, true)));
         }
     }
 
