@@ -37,6 +37,8 @@ constexpr int kCrashEndpointResponseMaxSizeInBytes = 1024;
 // The url of the crash report upload endpoint.
 constexpr char kCrashEndpointUrl[] = "https://clients2.google.com/cr/report";
 
+constexpr char kNewlineSeparator[] = "\n";
+
 const char kWebJsErrorReportProcessorKeyName[] =
     "web_js_error_report_processor";
 
@@ -141,6 +143,19 @@ void AddStandardReportParams(ParameterMap& report_params) {
                        general_params.get()->end());
 }
 
+// Removes stack frames which are not from injected feature scripts.
+std::string RedactStack(std::string stack) {
+  std::vector<std::string_view> kept_frames;
+  for (const auto& frame :
+       base::SplitStringPiece(stack, kNewlineSeparator, base::KEEP_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    if (frame.find("@user-script:") != std::string::npos) {
+      kept_frames.push_back(frame);
+    }
+  }
+  return base::JoinString(kept_frames, kNewlineSeparator);
+}
+
 }  // namespace
 
 namespace web {
@@ -180,7 +195,7 @@ void WebJsErrorReportProcessor::ReportJavaScriptError(
   report.from_main_frame = details.is_main_frame;
   report.api = details.api;
   report.error_message = details.message;
-  report.stack_trace = details.stack;
+  report.stack_trace = RedactStack(details.stack);
   report.page_url = details.url.GetWithEmptyPath().spec();
 
   std::string filename = details.url.ExtractFileName();
