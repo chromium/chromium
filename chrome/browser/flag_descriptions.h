@@ -456,6 +456,11 @@ inline constexpr char kDefaultBrowserFrameworkDescription[] =
 inline constexpr char kDefaultBrowserFrameworkName[] =
     "Default Browser Framework";
 
+inline constexpr char kDefaultBrowserPromptSurfacesDescription[] =
+    "Enables using various default browser prompt surfaces.";
+inline constexpr char kDefaultBrowserPromptSurfacesName[] =
+    "Default Browser Prompt Surfaces";
+
 inline constexpr char kDefaultSearchEnginePrewarmName[] =
     "Default search engine prewarm";
 inline constexpr char kDefaultSearchEnginePrewarmDescription[] =

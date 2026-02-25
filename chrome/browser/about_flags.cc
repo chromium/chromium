@@ -425,6 +425,18 @@ const FeatureEntry::Choice kPullToRefreshChoices[] = {
      switches::kPullToRefresh, "2"}};
 #endif  // USE_AURA
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+const FeatureEntry::FeatureParam kDefaultBrowserPromptSurfaces_Infobar[] = {
+    {"prompt_surface", "infobar"}};
+const FeatureEntry::FeatureParam kDefaultBrowserPromptSurfaces_BubbleDialog[] =
+    {{"prompt_surface", "bubble_dialog"}};
+
+const FeatureEntry::FeatureVariation kDefaultBrowserPromptSurfacesVariations[] =
+    {{"with Infobar", kDefaultBrowserPromptSurfaces_Infobar, nullptr},
+     {"with Bubble Dialog", kDefaultBrowserPromptSurfaces_BubbleDialog,
+      nullptr}};
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+
 const FeatureEntry::FeatureParam kLocalNetworkAccessChecksBlock[] = {
     {"LocalNetworkAccessChecksWarn", "false"}};
 const FeatureEntry::FeatureVariation kLocalNetworkAccessChecksVariations[] = {
@@ -11172,6 +11184,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultBrowserFrameworkName,
      flag_descriptions::kDefaultBrowserFrameworkDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(default_browser::kDefaultBrowserFramework)},
+
+    {"default-browser-prompt-surfaces",
+     flag_descriptions::kDefaultBrowserPromptSurfacesName,
+     flag_descriptions::kDefaultBrowserPromptSurfacesDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         default_browser::kDefaultBrowserPromptSurfaces,
+         kDefaultBrowserPromptSurfacesVariations,
+         "DefaultBrowserPromptSurfaces")},
 #endif  // !BUILDFLAG(IS_ANDROID) && ! BUILDFLAG(IS_CHROMEOS)
 
     {"privacy-sandbox-ad-topics-content-parity",
