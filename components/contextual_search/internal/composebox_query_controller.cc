@@ -352,7 +352,8 @@ ComposeboxQueryController::GetRequestIdForViewportImage(
 }
 
 lens::AddedInputs ComposeboxQueryController::CreateAddedInputs(
-    const std::vector<base::UnguessableToken>& file_tokens) {
+    const std::vector<base::UnguessableToken>& file_tokens,
+    bool include_files_without_lens_usage_intent) {
   lens::AddedInputs added_inputs;
   if (!cluster_info_.has_value()) {
     return added_inputs;
@@ -365,7 +366,8 @@ lens::AddedInputs ComposeboxQueryController::CreateAddedInputs(
     }
 
     if (file_info->input_data &&
-        !file_info->input_data->has_lens_usage_intent) {
+        !file_info->input_data->has_lens_usage_intent &&
+        !include_files_without_lens_usage_intent) {
       continue;
     }
 
@@ -424,8 +426,11 @@ void ComposeboxQueryController::CreateSearchUrl(
   if (is_aim_search) {
     // For AIM queries, add the added inputs param to the request url params,
     // regardless of if any of the context was a Lens upload.
+    bool include_files_without_lens_usage_intent =
+        !search_url_request_info->image_crop.has_value();
     lens::AddedInputs added_inputs =
-        CreateAddedInputs(search_url_request_info->file_tokens);
+        CreateAddedInputs(search_url_request_info->file_tokens,
+                          include_files_without_lens_usage_intent);
     if (added_inputs.added_inputs_size() > 0) {
       std::string serialized_proto;
       CHECK(added_inputs.SerializeToString(&serialized_proto));
@@ -658,7 +663,8 @@ lens::ClientToAimMessage ComposeboxQueryController::CreateClientToAimRequest(
 
     // Add added inputs.
     lens::AddedInputs added_inputs =
-        CreateAddedInputs(create_client_to_aim_request_info->file_tokens);
+        CreateAddedInputs(create_client_to_aim_request_info->file_tokens,
+                          /*include_files_without_lens_usage_intent=*/false);
     if (added_inputs.added_inputs_size() > 0) {
       submit_query->mutable_payload()->mutable_added_inputs()->CopyFrom(
           added_inputs);

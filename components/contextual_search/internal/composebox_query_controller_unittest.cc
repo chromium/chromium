@@ -1082,7 +1082,8 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccessWithFileName) {
   EXPECT_EQ(file_info->file_name, "test_file.pdf");
 
   // Assert: Check that the file name is correctly set in the added inputs.
-  auto added_inputs = controller().CreateAddedInputs({file_token});
+  auto added_inputs = controller().CreateAddedInputs(
+      {file_token}, /*include_files_without_lens_usage_intent=*/false);
   ASSERT_EQ(added_inputs.added_inputs_size(), 1);
   EXPECT_EQ(added_inputs.added_inputs(0).lens_file().file_name(),
             "test_file.pdf");
@@ -4411,6 +4412,9 @@ TEST_F(ComposeboxQueryControllerTest,
       ComposeboxQueryController::SearchUrlType::kAim;
   search_url_request_info->file_tokens.push_back(file_token);
   search_url_request_info->query_start_time = kTestQueryStartTime;
+  // Set an image crop to force include_files_without_lens_usage_intent to be
+  // false. This represents the region search use case.
+  search_url_request_info->image_crop = lens::ImageCrop();
 
   base::test::TestFuture<GURL> url_future;
   controller().CreateSearchUrl(std::move(search_url_request_info),
@@ -4481,7 +4485,8 @@ TEST_F(ComposeboxQueryControllerTest, MimeTypeToString) {
             std::nullopt);
 }
 
-TEST_F(ComposeboxQueryControllerTest, CreateSearchUrl_AimSearch_IncludesLnsMode) {
+TEST_F(ComposeboxQueryControllerTest,
+       CreateSearchUrl_AimSearch_IncludesLnsMode) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
 
@@ -4514,6 +4519,45 @@ TEST_F(ComposeboxQueryControllerTest, CreateSearchUrl_AimSearch_IncludesLnsMode)
   EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kLnsModeQueryParameterKey,
                                          &lns_mode_value));
   EXPECT_EQ(lns_mode_value, "cvst");
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateAddedInputs_IncludesFilesWithoutLensUsageIntent) {
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  // Act: Start the file upload flow (PDF) without Lens usage intent.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kPdf;
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kPdf));
+  input_data->has_lens_usage_intent = false;
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+  // Case 1: include_files_without_lens_usage_intent = false.
+  {
+    auto added_inputs = controller().CreateAddedInputs(
+        {file_token}, /*include_files_without_lens_usage_intent=*/false);
+    EXPECT_EQ(added_inputs.added_inputs_size(), 0);
+  }
+
+  // Case 2: include_files_without_lens_usage_intent = true.
+  {
+    auto added_inputs = controller().CreateAddedInputs(
+        {file_token}, /*include_files_without_lens_usage_intent=*/true);
+    ASSERT_EQ(added_inputs.added_inputs_size(), 1);
+    EXPECT_EQ(added_inputs.added_inputs(0).lens_file().vsrid(),
+              GetEncodedRequestInfoForToken(file_token));
+  }
 }
 
 }  // namespace contextual_search
