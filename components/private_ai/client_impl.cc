@@ -95,7 +95,7 @@ void ClientImpl::EstablishConnection() {
 Connection* ClientImpl::GetOrCreateConnection() {
   if (!connection_) {
     connection_ = connection_factory_->Create(base::BindOnce(
-        &ClientImpl::OnConnectionDisconnected, base::Unretained(this)));
+        &ClientImpl::OnConnectionDisconnected, weak_factory_.GetWeakPtr()));
   }
   return connection_.get();
 }
