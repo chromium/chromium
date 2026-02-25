@@ -1267,7 +1267,7 @@ std::unique_ptr<PendingPreloadData> HTMLPreloadScanner::Scan(
       // Don't preload anything if a CSP meta tag is found. We should rarely
       // find them here because the HTMLPreloadScanner is only used for the
       // synchronous parsing path.
-      CHECK(csp_meta_tag_count >= 0);
+      CHECK_GE(csp_meta_tag_count, 0);
       if (csp_meta_tag_count) {
         // Reset the tokenizer, to avoid re-scanning tokens that we are about to
         // start parsing.

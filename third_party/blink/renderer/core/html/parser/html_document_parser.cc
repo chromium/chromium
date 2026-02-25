@@ -1807,13 +1807,13 @@ bool HTMLDocumentParser::AllowPreloading() {
     return false;
   }
 
-  if (RuntimeEnabledFeatures::AllowPreloadingWithCSPMetaTagEnabled()) {
-    CHECK_GE(seen_csp_meta_tags_, 0);
-    if (!seen_csp_meta_tags_) {
-      // No CSP meta tags seen - Early return allowing preloads.
-      return true;
-    }
+  CHECK_GE(seen_csp_meta_tags_, 0);
+  if (!seen_csp_meta_tags_) {
+    // No CSP meta tags seen - Early return allowing preloads.
+    return true;
+  }
 
+  if (RuntimeEnabledFeatures::AllowPreloadingWithCSPMetaTagEnabled()) {
     Document* document = GetDocument();
     if (!document) {
       // Seen CSP tag, but there is no document to check the CSP (detach()
@@ -1836,9 +1836,9 @@ bool HTMLDocumentParser::AllowPreloading() {
     // Only allows preloads if all seen meta tags have been processed.
     return static_cast<int>(csp->GetParsedPolicies().size()) ==
            seen_csp_meta_tags_;
+  } else {
+    return false;
   }
-
-  return true;
 }
 
 }  // namespace blink
