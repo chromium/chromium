@@ -991,6 +991,80 @@ TEST_F(PdfAccessibilityTreeTest, DocumentLanguageOnRootNode) {
                          ax::mojom::StringAttribute::kLanguage));
 }
 
+TEST_F(PdfAccessibilityTreeTest, StructureTreeRootAttributes) {
+  base::test::ScopedFeatureList pdf_tags;
+  pdf_tags.InitAndEnableFeature(chrome_pdf::features::kPdfTags);
+  CreatePdfAccessibilityTree();
+
+  // Structure tree:
+  //   kDocument -> kPart -> kDocument(lang="es", alt="...") -> kP -> text.
+  auto doc_structure_root =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  doc_structure_root->type = chrome_pdf::PdfTagType::kDocument;
+
+  auto page_structure =
+      std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  page_structure->type = chrome_pdf::PdfTagType::kPart;
+
+  auto pdf_doc = std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  pdf_doc->type = chrome_pdf::PdfTagType::kDocument;
+  pdf_doc->language = "es";
+  pdf_doc->alt_text = "Document description";
+
+  text_runs_ = {kFirstTextRun, kSecondTextRun};
+  chars_.insert(chars_.end(), std::begin(kDummyCharsData),
+                std::end(kDummyCharsData));
+
+  auto para = std::make_unique<chrome_pdf::AccessibilityStructureElement>();
+  para->type = chrome_pdf::PdfTagType::kP;
+  para->associated_text_runs_if_available.push_back(&text_runs_[0]);
+
+  pdf_doc->children.push_back(std::move(para));
+  page_structure->children.push_back(std::move(pdf_doc));
+  doc_structure_root->children.push_back(std::move(page_structure));
+
+  page_info_.text_run_count = text_runs_.size();
+  page_info_.char_count = chars_.size();
+
+  std::unique_ptr<chrome_pdf::AccessibilityDocInfo> doc_info =
+      CreateAccessibilityDocInfo();
+  doc_info->is_tagged = true;
+  doc_info->structure_tree_root = std::move(doc_structure_root);
+
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(std::move(doc_info));
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+
+  WaitForThreadTasks();
+  // Wait for `PdfAccessibilityTree::UnserializeNodes()`, a delayed task.
+  WaitForThreadDelayedTasks();
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  CheckRootAndStatusNodes(pdf_root, page_count_,
+                          /*is_pdf_ocr_test=*/false, /*is_ocr_completed=*/false,
+                          /*create_empty_ocr_results=*/false);
+
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+
+  // Tagged PDFs have a /Document element at the root of their structure tree
+  // which gets mapped to kGenericContainer to avoid introducing a redundant
+  // Document node in the accessibility tree.
+  ASSERT_EQ(1u, page->GetChildCount());
+  const ui::AXNode* container = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, container);
+  EXPECT_EQ(ax::mojom::Role::kGenericContainer, container->GetRole());
+
+  // The container node holds the kDocument attributes.
+  EXPECT_EQ("es", container->GetStringAttribute(
+                      ax::mojom::StringAttribute::kLanguage));
+  EXPECT_EQ(
+      "Document description",
+      container->GetStringAttribute(ax::mojom::StringAttribute::kDescription));
+}
+
 TEST_F(PdfAccessibilityTreeTest, PartiallyTaggedPdfPreservesSemanticStructure) {
   base::test::ScopedFeatureList pdf_tags;
   pdf_tags.InitAndEnableFeature(chrome_pdf::features::kPdfTags);
