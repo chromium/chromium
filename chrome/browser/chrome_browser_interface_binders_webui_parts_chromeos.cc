@@ -607,7 +607,6 @@ void PopulateChromeWebUIFrameInterfaceBrokersTrustedPartsCros(
   registry.ForWebUI<ash::file_manager::FileManagerUI>();
   registry.ForWebUI<ash::smb_dialog::SmbShareDialogUI>();
   registry.ForWebUI<ash::smb_dialog::SmbCredentialsDialogUI>();
-  registry.ForWebUI<FeedbackUI>();
   registry.ForWebUI<ash::MallUI>().Add<ash::mall::mojom::PageHandler>();
 
 #if !defined(OFFICIAL_BUILD)
