@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/create_markup_options.h"
 #include "third_party/blink/renderer/core/editing/serializers/html_interchange.h"
 #include "third_party/blink/renderer/core/html/parser/fragment_parser_options.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_types_names.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -92,6 +93,11 @@ DocumentFragment* ParseHTMLFragment(const String& html,
                                     const FragmentParserConfig& config,
                                     FragmentParserOptions options,
                                     ExceptionState& exception_state);
+FragmentParserConfig GetFragmentParserConfig(Sanitizer::Mode mode,
+                                             const AtomicString& interface_name,
+                                             const AtomicString& property_name,
+                                             ContainerNode* context);
+
 DocumentFragment* CreateFragmentForTransformToFragment(
     const String&,
     const String& source_mime_type,

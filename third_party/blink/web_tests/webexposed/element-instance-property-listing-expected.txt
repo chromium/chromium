@@ -28,9 +28,13 @@ namespace http://www.w3.org/1999/xhtml
     property activeViewTransition
     property addEventListener
     property after
+    property afterHTML
+    property afterHTMLUnsafe
     property animate
     property append
     property appendChild
+    property appendHTML
+    property appendHTMLUnsafe
     property ariaActiveDescendantElement
     property ariaAtomic
     property ariaAutoComplete
@@ -93,6 +97,8 @@ namespace http://www.w3.org/1999/xhtml
     property autofocus
     property baseURI
     property before
+    property beforeHTML
+    property beforeHTMLUnsafe
     property blur
     property checkVisibility
     property childElementCount
@@ -309,6 +315,8 @@ namespace http://www.w3.org/1999/xhtml
     property popover
     property prefix
     property prepend
+    property prependHTML
+    property prependHTMLUnsafe
     property previousElementSibling
     property previousSibling
     property pseudo
@@ -324,6 +332,8 @@ namespace http://www.w3.org/1999/xhtml
     property replaceChild
     property replaceChildren
     property replaceWith
+    property replaceWithHTML
+    property replaceWithHTMLUnsafe
     property requestFullscreen
     property requestPointerLock
     property role
@@ -1366,9 +1376,13 @@ namespace http://www.w3.org/2000/svg
     property activeViewTransition
     property addEventListener
     property after
+    property afterHTML
+    property afterHTMLUnsafe
     property animate
     property append
     property appendChild
+    property appendHTML
+    property appendHTMLUnsafe
     property ariaActiveDescendantElement
     property ariaAtomic
     property ariaAutoComplete
@@ -1429,6 +1443,8 @@ namespace http://www.w3.org/2000/svg
     property autofocus
     property baseURI
     property before
+    property beforeHTML
+    property beforeHTMLUnsafe
     property blur
     property checkVisibility
     property childElementCount
@@ -1626,6 +1642,8 @@ namespace http://www.w3.org/2000/svg
     property part
     property prefix
     property prepend
+    property prependHTML
+    property prependHTMLUnsafe
     property previousElementSibling
     property previousSibling
     property pseudo
@@ -1641,6 +1659,8 @@ namespace http://www.w3.org/2000/svg
     property replaceChild
     property replaceChildren
     property replaceWith
+    property replaceWithHTML
+    property replaceWithHTMLUnsafe
     property requestFullscreen
     property requestPointerLock
     property role

@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/core/dom/user_action_element_set.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/events/event_util.h"
 #include "third_party/blink/renderer/core/events/gesture_event.h"
@@ -111,6 +112,7 @@
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
+#include "third_party/blink/renderer/core/html/parser/fragment_parser_options.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
@@ -131,6 +133,8 @@
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_types_names.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
@@ -1224,6 +1228,110 @@ void Node::after(
     return;
   }
   parent->InsertBefore(node_vector, viable_next_sibling, exception_state);
+}
+
+namespace {
+bool CanInsertHTMLToParent(Node* child) {
+  const ContainerNode* parent = child->parentNode();
+  return parent && (parent->IsElementNode() || parent->IsShadowRoot());
+}
+}  // namespace
+
+void Node::replaceWithHTML(const String& html,
+                           V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
+                           ExceptionState& exception_state) {
+  if (CanInsertHTMLToParent(this)) {
+    parentNode()->ReplaceChildWithHTML(
+        this, html,
+        blink::GetFragmentParserConfig(
+            Sanitizer::Mode::kSafe, trusted_types_names::kNode,
+            trusted_types_names::kReplaceWithHTML, parentNode()),
+        FragmentParserOptions::From(options), exception_state);
+  }
+}
+
+void Node::replaceWithHTMLUnsafe(
+    const V8UnionStringOrTrustedHTML* html,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    ExceptionState& exception_state) {
+  if (!CanInsertHTMLToParent(this)) {
+    return;
+  }
+  const FragmentParserConfig config = blink::GetFragmentParserConfig(
+      Sanitizer::Mode::kUnsafe, trusted_types_names::kNode,
+      trusted_types_names::kReplaceWithHTMLUnsafe, parentNode());
+
+  parentNode()->ReplaceChildWithHTML(
+      this,
+      TrustedTypesCheckForHTML(html, GetExecutionContext(),
+                               config.interface_name, config.property_name,
+                               exception_state),
+      config, FragmentParserOptions::From(options), exception_state);
+}
+
+void Node::beforeHTML(const String& html,
+                      V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
+                      ExceptionState& exception_state) {
+  if (CanInsertHTMLToParent(this)) {
+    parentNode()->InsertHTMLBefore(
+        this, html,
+        blink::GetFragmentParserConfig(
+            Sanitizer::Mode::kSafe, trusted_types_names::kNode,
+            trusted_types_names::kBeforeHTML, parentNode()),
+
+        FragmentParserOptions::From(options), exception_state);
+  }
+}
+
+void Node::beforeHTMLUnsafe(
+    const V8UnionStringOrTrustedHTML* html,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    ExceptionState& exception_state) {
+  if (!CanInsertHTMLToParent(this)) {
+    return;
+  }
+  const FragmentParserConfig config = blink::GetFragmentParserConfig(
+      Sanitizer::Mode::kUnsafe, trusted_types_names::kNode,
+      trusted_types_names::kBeforeHTMLUnsafe, parentNode());
+
+  parentNode()->InsertHTMLBefore(
+      this,
+      TrustedTypesCheckForHTML(html, GetExecutionContext(),
+                               config.interface_name, config.property_name,
+                               exception_state),
+      config, FragmentParserOptions::From(options), exception_state);
+}
+
+void Node::afterHTML(const String& html,
+                     V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
+                     ExceptionState& exception_state) {
+  if (CanInsertHTMLToParent(this)) {
+    parentNode()->InsertHTMLBefore(
+        nextSibling(), html,
+        blink::GetFragmentParserConfig(
+            Sanitizer::Mode::kSafe, trusted_types_names::kNode,
+            trusted_types_names::kAfterHTML, parentNode()),
+        FragmentParserOptions::From(options), exception_state);
+  }
+}
+
+void Node::afterHTMLUnsafe(
+    const V8UnionStringOrTrustedHTML* html,
+    V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
+    ExceptionState& exception_state) {
+  if (!CanInsertHTMLToParent(this)) {
+    return;
+  }
+  const FragmentParserConfig config = blink::GetFragmentParserConfig(
+      Sanitizer::Mode::kUnsafe, trusted_types_names::kNode,
+      trusted_types_names::kAfterHTMLUnsafe, parentNode());
+
+  parentNode()->InsertHTMLBefore(
+      nextSibling(),
+      TrustedTypesCheckForHTML(html, GetExecutionContext(),
+                               config.interface_name, config.property_name,
+                               exception_state),
+      config, FragmentParserOptions::From(options), exception_state);
 }
 
 void Node::replaceWith(

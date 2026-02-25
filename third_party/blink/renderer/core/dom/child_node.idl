@@ -26,4 +26,12 @@ interface mixin ChildNode {
   [Unscopable, RaisesException, CEReactions] undefined after((Node or DOMString or TrustedScript)... nodes);
   [Unscopable, RaisesException, CEReactions] undefined replaceWith((Node or DOMString or TrustedScript)... nodes);
   [Unscopable, RaisesException, CEReactions] undefined remove();
+
+  // https://github.com/whatwg/html/issues/11669
+  [RuntimeEnabled=DocumentPatching, RaisesException] void beforeHTML(DOMString html, optional (SetHTMLOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=DocumentPatching, RaisesException] void beforeHTMLUnsafe((TrustedHTML or DOMString) html, optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=DocumentPatching, RaisesException] void afterHTML(DOMString html, optional (SetHTMLOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=DocumentPatching, RaisesException] void afterHTMLUnsafe((TrustedHTML or DOMString) html, optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=DocumentPatching, RaisesException] void replaceWithHTML(DOMString html, optional (SetHTMLOptions or TrustedParserOptions) options = {});
+  [RuntimeEnabled=DocumentPatching, RaisesException] void replaceWithHTMLUnsafe((TrustedHTML or DOMString) html, optional (SetHTMLUnsafeOptions or TrustedParserOptions) options = {});
 };

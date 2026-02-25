@@ -143,6 +143,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
                      ExceptionState&);
   void setHTML(const String& html, SetHTMLOptions*, ExceptionState&);
   void setHTML(const String& html, TrustedParserOptions*, ExceptionState&);
+
   const Vector<AtomicString>& marker() const { return markers_; }
 
   Node* Clone(Document& factory,
@@ -239,7 +240,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   template <class T>
   String CheckHTML(const T* html,
                    const AtomicString& property_name,
-                   ExceptionState& exception_state) {
+                   ExceptionState& exception_state) const {
     return TrustedTypesCheckForHTML(html, GetExecutionContext(),
                                     trusted_types_names::kShadowRoot,
                                     property_name, exception_state);

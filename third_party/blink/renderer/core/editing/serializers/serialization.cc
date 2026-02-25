@@ -40,6 +40,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/counters_attachment_context.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
@@ -49,6 +50,7 @@
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/range.h"
@@ -88,6 +90,7 @@
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_types_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
@@ -769,10 +772,33 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
 }
 }  // namespace
 
+FragmentParserConfig GetFragmentParserConfig(Sanitizer::Mode mode,
+                                             const AtomicString& interface_name,
+                                             const AtomicString& property_name,
+                                             ContainerNode* context) {
+  CHECK(context->IsElementNode() || context->IsShadowRoot());
+  return {.sanitizer_mode = mode,
+          .parse_declarative_shadows =
+              FragmentParserConfig::ParseDeclarativeShadowRoots::kParse,
+          .force_html = FragmentParserConfig::ForceHtml::kForce,
+          .interface_name = interface_name,
+          .property_name = property_name,
+          .context_element = context->IsElementNode()
+                                 ? To<Element>(context)
+                                 : &To<ShadowRoot>(context)->host(),
+          .registry = context->IsElementNode()
+                          ? To<Element>(context)->customElementRegistry()
+                          : To<ShadowRoot>(context)->customElementRegistry()};
+}
+
 DocumentFragment* ParseHTMLFragment(const String& markup,
                                     const FragmentParserConfig& config,
                                     FragmentParserOptions options,
                                     ExceptionState& exception_state) {
+  if (exception_state.HadException()) {
+    return nullptr;
+  }
+
   if (RuntimeEnabledFeatures::TrustedTypesCreateParserOptionsEnabled()) {
     auto trusted_options = TrustedTypesCheckForParserOptions(
         options, MarkupInsertionMode::kFragment,

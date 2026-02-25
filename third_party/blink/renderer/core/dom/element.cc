@@ -9176,6 +9176,21 @@ V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* Element::outerHTML() const {
       V8UnionStringLegacyNullToEmptyStringOrTrustedHTML>(GetOuterHTMLString());
 }
 
+namespace {
+CustomElementRegistry* CustomElementRegistryForInnerHTML(Element* element) {
+  // Use null registry to create fragment if the context element is a
+  // template element as the container of the document fragment will be a
+  // document fragment without browsing context.
+  auto* template_element = DynamicTo<HTMLTemplateElement>(*element);
+  CustomElementRegistry* registry =
+      element->GetDocument().customElementRegistry();
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    registry = template_element ? nullptr : element->customElementRegistry();
+  }
+  return registry;
+}
+}  // namespace
+
 void Element::SetInnerHTMLInternal(
     const String& html,
     FragmentParserConfig::ParseDeclarativeShadowRoots parse_declarative_shadows,
@@ -9192,15 +9207,6 @@ void Element::SetInnerHTMLInternal(
     return;
   }
 
-  // Use null registry to create fragment if the context element is a
-  // template element as the container of the document fragment will be a
-  // document fragment without browsing context.
-  auto* template_element = DynamicTo<HTMLTemplateElement>(*this);
-  CustomElementRegistry* registry = GetDocument().customElementRegistry();
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
-    registry = template_element ? nullptr : customElementRegistry();
-  }
-
   DocumentFragment* fragment =
       ParseHTMLFragment(html,
                         {.sanitizer_mode = sanitizer_mode,
@@ -9209,7 +9215,7 @@ void Element::SetInnerHTMLInternal(
                          .interface_name = trusted_types_names::kElement,
                          .property_name = property_name,
                          .context_element = this,
-                         .registry = registry},
+                         .registry = CustomElementRegistryForInnerHTML(this)},
                         options, exception_state);
 
   if (!fragment) {
@@ -9217,7 +9223,7 @@ void Element::SetInnerHTMLInternal(
   }
 
   ContainerNode* container = this;
-  if (template_element) {
+  if (auto* template_element = DynamicTo<HTMLTemplateElement>(this)) {
     container = template_element->content();
   }
   ReplaceChildrenWithFragment(container, fragment, exception_state);
