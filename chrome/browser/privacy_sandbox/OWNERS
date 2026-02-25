@@ -1,1 +1,3 @@
 file://components/privacy_sandbox/OWNERS
+
+per-file fenced_frame_viewport_observer_interactive_uitest.cc=file://third_party/blink/renderer/core/html/fenced_frame/OWNERS
