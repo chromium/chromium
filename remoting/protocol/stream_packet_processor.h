@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/webrtc/rtc_base/async_packet_socket.h"
 
@@ -23,22 +24,20 @@ class StreamPacketProcessor {
 
   // Packs data into packet to be sent over the packet socket. Returns nullptr
   // if the data is malformed.
-  virtual scoped_refptr<net::IOBufferWithSize> Pack(const uint8_t* data,
-                                                    size_t data_size) const = 0;
+  virtual scoped_refptr<net::IOBufferWithSize> Pack(
+      base::span<const uint8_t> data) const = 0;
 
-  // Unpacks a packet from the packet socket's buffer. |bytes_consumed| should
-  // be updated with number of bytes it consumed from |data|. If the packet
+  // Unpacks a packet from the packet socket's buffer. `bytes_consumed` should
+  // be updated with number of bytes it consumed from `data`. If the packet
   // can't be unpacked (generally because the packet is not fully received),
-  // nullptr will be returned and |bytes_consumed| will be set to 0.
+  // nullptr will be returned and `bytes_consumed` will be set to 0.
   virtual scoped_refptr<net::IOBufferWithSize> Unpack(
-      const uint8_t* data,
-      size_t data_size,
+      base::span<const uint8_t> data,
       size_t* bytes_consumed) const = 0;
 
   // Applies WebRTC packet options on a packet that has already been packed.
   virtual void ApplyPacketOptions(
-      uint8_t* data,
-      size_t data_size,
+      base::span<uint8_t> data,
       const webrtc::PacketTimeUpdateParams& packet_time_params) const = 0;
 };
 

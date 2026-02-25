@@ -4,7 +4,8 @@
 
 #include "remoting/protocol/stun_tcp_packet_processor.h"
 
-#include "base/compiler_specific.h"
+#include <algorithm>
+
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -23,12 +24,8 @@ constexpr size_t kStunHeaderSize = 20;
 constexpr size_t kTurnChannelDataHeaderSize = 4;
 constexpr size_t kPacketLengthOffset = 2;
 
-int GetExpectedStunPacketSize(const uint8_t* data_ptr,
-                              size_t len,
+int GetExpectedStunPacketSize(base::span<const uint8_t> data,
                               size_t* pad_bytes) {
-  // TODO(crbug.com/40284755): GetExpectedStunPacketSize() should receive a
-  // span.
-  auto data = UNSAFE_TODO(base::span(data_ptr, len));
   DCHECK_LE(kTurnChannelDataHeaderSize, data.size());
 
   // Get packet type (STUN or TURN).
@@ -64,66 +61,60 @@ StunTcpPacketProcessor* StunTcpPacketProcessor::GetInstance() {
 }
 
 scoped_refptr<net::IOBufferWithSize> StunTcpPacketProcessor::Pack(
-    const uint8_t* data,
-    size_t data_size) const {
+    base::span<const uint8_t> data) const {
   // Each packet is expected to have header (STUN/TURN ChannelData), where
   // header contains message type and and length of message.
-  if (data_size < kPacketHeaderSize + kPacketLengthOffset) {
+  if (data.size() < kPacketHeaderSize + kPacketLengthOffset) {
     NOTREACHED();
   }
 
   size_t pad_bytes;
-  size_t expected_len = GetExpectedStunPacketSize(data, data_size, &pad_bytes);
+  size_t expected_len = GetExpectedStunPacketSize(data, &pad_bytes);
 
   // Accepts only complete STUN/TURN packets.
-  if (data_size != expected_len) {
+  if (data.size() != expected_len) {
     NOTREACHED();
   }
 
   // Add any pad bytes to the total size.
-  size_t size = data_size + pad_bytes;
+  size_t size = data.size() + pad_bytes;
 
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(size);
-  UNSAFE_TODO(memcpy(buffer->data(), data, data_size));
+  buffer->span().copy_prefix_from(data);
 
   if (pad_bytes) {
-    char padding[4] = {};
     DCHECK_LE(pad_bytes, 4u);
-    UNSAFE_TODO(memcpy(buffer->data() + data_size, padding, pad_bytes));
+    std::ranges::fill(buffer->span().subspan(data.size()).first(pad_bytes), 0);
   }
   return buffer;
 }
 
 scoped_refptr<net::IOBufferWithSize> StunTcpPacketProcessor::Unpack(
-    const uint8_t* data,
-    size_t data_size,
+    base::span<const uint8_t> data,
     size_t* bytes_consumed) const {
   *bytes_consumed = 0;
-  if (data_size < kPacketHeaderSize + kPacketLengthOffset) {
+  if (data.size() < kPacketHeaderSize + kPacketLengthOffset) {
     return nullptr;
   }
 
   size_t pad_bytes;
-  size_t packet_size = GetExpectedStunPacketSize(data, data_size, &pad_bytes);
+  size_t packet_size = GetExpectedStunPacketSize(data, &pad_bytes);
 
-  if (data_size < packet_size + pad_bytes) {
+  if (data.size() < packet_size + pad_bytes) {
     return nullptr;
   }
 
   // We have a complete packet.
-  const uint8_t* cur = data;
   *bytes_consumed = packet_size + pad_bytes;
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(packet_size);
-  UNSAFE_TODO(memcpy(buffer->data(), cur, packet_size));
+  buffer->span().copy_from(data.first(packet_size));
   return buffer;
 }
 
 void StunTcpPacketProcessor::ApplyPacketOptions(
-    uint8_t* data,
-    size_t data_size,
+    base::span<uint8_t> data,
     const webrtc::PacketTimeUpdateParams& packet_time_params) const {
-  webrtc::ApplyPacketOptions(webrtc::ArrayView<uint8_t>(data, data_size),
-                             packet_time_params, webrtc::TimeMicros());
+  webrtc::ApplyPacketOptions(data, packet_time_params, webrtc::TimeMicros());
 }
 
 }  // namespace remoting::protocol

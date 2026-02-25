@@ -27,15 +27,13 @@ class StunTcpPacketProcessor final : public StreamPacketProcessor {
   static StunTcpPacketProcessor* GetInstance();
 
   // StreamPacketProcessor implementations.
-  scoped_refptr<net::IOBufferWithSize> Pack(const uint8_t* data,
-                                            size_t data_size) const override;
+  scoped_refptr<net::IOBufferWithSize> Pack(
+      base::span<const uint8_t> data) const override;
   scoped_refptr<net::IOBufferWithSize> Unpack(
-      const uint8_t* data,
-      size_t data_size,
+      base::span<const uint8_t> data,
       size_t* bytes_consumed) const override;
   void ApplyPacketOptions(
-      uint8_t* data,
-      size_t data_size,
+      base::span<uint8_t> data,
       const webrtc::PacketTimeUpdateParams& packet_time_params) const override;
 };
 
