@@ -217,12 +217,6 @@ export class SearchboxMatchElement extends CrLitElement {
     this.pageHandler_ = SearchboxBrowserProxy.getInstance().handler;
   }
 
-  override firstUpdated() {
-    this.addEventListener('click', (event) => this.onMatchClick_(event));
-    this.addEventListener('focusin', () => this.onMatchFocusin_());
-    this.addEventListener('mousedown', () => this.onMatchMouseDown_());
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -249,6 +243,12 @@ export class SearchboxMatchElement extends CrLitElement {
         changedPrivateProperties.has('forceHideEllipsis_')) {
       this.showEllipsis = this.computeShowEllipsis_();
     }
+  }
+
+  override firstUpdated() {
+    this.addEventListener('click', (event) => this.onMatchClick_(event));
+    this.addEventListener('focusin', () => this.onMatchFocusin_());
+    this.addEventListener('mousedown', () => this.onMatchMouseDown_());
   }
 
   //============================================================================

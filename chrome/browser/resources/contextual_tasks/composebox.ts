@@ -243,6 +243,20 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
     }
   }
 
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.clearTooltipImpressionTimer_();
+    this.stopObservingResize_();
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+      this.resizeObserver_ = null;
+    }
+    this.eventTracker_.removeAll();
+    this.searchboxListenerIds_.forEach(
+        id => assert(this.searchboxCallbackRouter_.removeListener(id)));
+    this.searchboxListenerIds_ = [];
+  }
+
   // Must have `$` access in updated to avoid violating Lit contract since
   // since `willUpdate` runs before `render`, which will cause `$`
   // to not be populated yet.
@@ -356,20 +370,6 @@ export class ContextualTasksComposeboxElement extends CrLitElement {
       clearTimeout(this.tooltipImpressionTimer_);
       this.tooltipImpressionTimer_ = null;
     }
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-    this.clearTooltipImpressionTimer_();
-    this.stopObservingResize_();
-    if (this.resizeObserver_) {
-      this.resizeObserver_.disconnect();
-      this.resizeObserver_ = null;
-    }
-    this.eventTracker_.removeAll();
-    this.searchboxListenerIds_.forEach(
-        id => assert(this.searchboxCallbackRouter_.removeListener(id)));
-    this.searchboxListenerIds_ = [];
   }
 
   clearInputAndFocus(querySubmitted: boolean = false): void {

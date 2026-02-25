@@ -440,10 +440,6 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.placeholderCycler_?.stop();
   }
 
-  override firstUpdated() {
-    performance.measure('realbox-creation', 'realbox-creation-start');
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -478,6 +474,10 @@ export class SearchboxElement extends SearchboxElementBase implements
             this.tabSuggestions_.find(tab => tab.showInPreviousTabChip) || null;
       }
     }
+  }
+
+  override firstUpdated() {
+    performance.measure('realbox-creation', 'realbox-creation-start');
   }
 
   private computeInputAriaLive_(): string {

@@ -58,13 +58,6 @@ export class SearchboxActionElement extends CrLitElement {
   override accessor ariaLabel: string = '';
   accessor actionIndex: number = -1;
 
-  override firstUpdated() {
-    this.addEventListener('click', (event) => this.onActionClick_(event));
-    this.addEventListener('keydown', (event) => this.onActionKeyDown_(event));
-    this.addEventListener(
-        'mousedown', (event) => this.onActionMouseDown_(event));
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -74,6 +67,13 @@ export class SearchboxActionElement extends CrLitElement {
     if (changedProperties.has('iconPath')) {
       this.iconStyle_ = this.computeActionIconStyle_();
     }
+  }
+
+  override firstUpdated() {
+    this.addEventListener('click', (event) => this.onActionClick_(event));
+    this.addEventListener('keydown', (event) => this.onActionKeyDown_(event));
+    this.addEventListener(
+        'mousedown', (event) => this.onActionMouseDown_(event));
   }
 
   private onActionClick_(e: PointerEvent|KeyboardEvent) {

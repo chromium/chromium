@@ -245,49 +245,6 @@ export class ContextualTasksAppElement extends CrLitElement {
   // already in basic mode, the user is returned to basic mode.
   private basicModeBeforeNavigation_ = this.isInBasicMode_;
 
-  override firstUpdated() {
-    this.postMessageHandler_ =
-        new PostMessageHandler(this.$.threadFrame, this.browserProxy_);
-    this.postMessageHandler_.setInputPlateBoundsUpdateCallback(
-        this.onInputPlateBoundsUpdate_.bind(this));
-
-    this.eventTracker_.add(
-        this.$.composebox, 'composebox-height-update', (e: CustomEvent) => {
-          // TODO(crbug.com/483737358): Sending an object instead of a proto is
-          // a temporary solution to unblock the prototype. Remove this method
-          // once the proto is implemented on the webview side.
-          this.postMessageHandler_.sendObjectMessage({
-            type: 'composebox-height-update',
-            height: e.detail.height,
-          });
-          // Update the height of the forced composebox bounds if it is set.
-          if (this.forcedComposeboxBounds_) {
-            this.forcedComposeboxBounds_.height = e.detail.height;
-          }
-        });
-  }
-
-  protected async onNewThreadClick_() {
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.OpenNewThread');
-    chrome.metricsPrivate.recordBoolean(
-        'ContextualTasks.WebUI.UserAction.OpenNewThread', true);
-    const {url} = await this.browserProxy_.handler.getThreadUrl();
-    const newThreadUrl = new URL(url);
-    const currentUrl = new URL(this.$.threadFrame.src);
-    const source = currentUrl.searchParams.get('source');
-    if (source) {
-      newThreadUrl.searchParams.set('source', source);
-    }
-    const aep = currentUrl.searchParams.get('aep');
-    if (aep) {
-      newThreadUrl.searchParams.set('aep', aep);
-    }
-    this.$.threadFrame.src = newThreadUrl.href;
-    this.$.composebox.startExpandAnimation();
-    this.$.composebox.clearInputAndFocus();
-  }
-
   override async connectedCallback() {
     super.connectedCallback();
 
@@ -482,6 +439,28 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.eventTracker_.removeAll();
   }
 
+  override firstUpdated() {
+    this.postMessageHandler_ =
+        new PostMessageHandler(this.$.threadFrame, this.browserProxy_);
+    this.postMessageHandler_.setInputPlateBoundsUpdateCallback(
+        this.onInputPlateBoundsUpdate_.bind(this));
+
+    this.eventTracker_.add(
+        this.$.composebox, 'composebox-height-update', (e: CustomEvent) => {
+          // TODO(crbug.com/483737358): Sending an object instead of a proto is
+          // a temporary solution to unblock the prototype. Remove this method
+          // once the proto is implemented on the webview side.
+          this.postMessageHandler_.sendObjectMessage({
+            type: 'composebox-height-update',
+            height: e.detail.height,
+          });
+          // Update the height of the forced composebox bounds if it is set.
+          if (this.forcedComposeboxBounds_) {
+            this.forcedComposeboxBounds_.height = e.detail.height;
+          }
+        });
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
@@ -585,6 +564,27 @@ export class ContextualTasksAppElement extends CrLitElement {
     return getNonOccludedClipPath(
                composeboxBounds, this.occluders_, OCCLUDER_EXTRA_PADDING_PX) +
         'z-index: 100;';
+  }
+
+  protected async onNewThreadClick_() {
+    chrome.metricsPrivate.recordUserAction(
+        'ContextualTasks.WebUI.UserAction.OpenNewThread');
+    chrome.metricsPrivate.recordBoolean(
+        'ContextualTasks.WebUI.UserAction.OpenNewThread', true);
+    const {url} = await this.browserProxy_.handler.getThreadUrl();
+    const newThreadUrl = new URL(url);
+    const currentUrl = new URL(this.$.threadFrame.src);
+    const source = currentUrl.searchParams.get('source');
+    if (source) {
+      newThreadUrl.searchParams.set('source', source);
+    }
+    const aep = currentUrl.searchParams.get('aep');
+    if (aep) {
+      newThreadUrl.searchParams.set('aep', aep);
+    }
+    this.$.threadFrame.src = newThreadUrl.href;
+    this.$.composebox.startExpandAnimation();
+    this.$.composebox.clearInputAndFocus();
   }
 
   getEnableNativeZeroStateSuggestionsForTesting() {
