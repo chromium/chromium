@@ -381,7 +381,7 @@ TEST_F(FtlSignalStrategyTest, StreamRemotelyClosed) {
   ASSERT_FALSE(signal_strategy_->IsSignInError());
 }
 
-TEST_F(FtlSignalStrategyTest, SendStanza_Success) {
+TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_Success) {
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
   registration_manager_->ExpectSignInGaiaSucceeds();
   signal_strategy_->Connect();
@@ -398,10 +398,11 @@ TEST_F(FtlSignalStrategyTest, SendStanza_Success) {
                     MessagingClient::DoneCallback on_done) {
         std::move(on_done).Run(HttpStatus::OK());
       });
-  signal_strategy_->SendStanza(std::move(stanza));
+  signal_strategy_->SendMessage(SignalingAddress(kFakeRemoteFtlId),
+                                SignalingMessage(std::move(stanza)));
 }
 
-TEST_F(FtlSignalStrategyTest, SendStanza_AuthError) {
+TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_AuthError) {
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
   registration_manager_->ExpectSignInGaiaSucceeds();
   signal_strategy_->Connect();
@@ -419,7 +420,8 @@ TEST_F(FtlSignalStrategyTest, SendStanza_AuthError) {
         std::move(on_done).Run(
             HttpStatus(HttpStatus::Code::UNAUTHENTICATED, "unauthenticated"));
       });
-  signal_strategy_->SendStanza(std::move(stanza));
+  signal_strategy_->SendMessage(SignalingAddress(kFakeRemoteFtlId),
+                                SignalingMessage(std::move(stanza)));
 
   ASSERT_EQ(3u, state_history_.size());
   ASSERT_EQ(SignalStrategy::State::CONNECTING, state_history_[0]);
@@ -431,7 +433,7 @@ TEST_F(FtlSignalStrategyTest, SendStanza_AuthError) {
   ASSERT_FALSE(signal_strategy_->IsSignInError());
 }
 
-TEST_F(FtlSignalStrategyTest, SendStanza_NetworkError) {
+TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_NetworkError) {
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
   registration_manager_->ExpectSignInGaiaSucceeds();
   signal_strategy_->Connect();
@@ -448,7 +450,8 @@ TEST_F(FtlSignalStrategyTest, SendStanza_NetworkError) {
         std::move(on_done).Run(
             HttpStatus(HttpStatus::Code::UNAVAILABLE, "unavailable"));
       });
-  signal_strategy_->SendStanza(std::move(stanza));
+  signal_strategy_->SendMessage(SignalingAddress(kFakeRemoteFtlId),
+                                SignalingMessage(std::move(stanza)));
 
   ASSERT_EQ(1u, received_messages_.size());
   auto& error_message = received_messages_[0];

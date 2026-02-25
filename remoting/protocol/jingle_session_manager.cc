@@ -167,8 +167,11 @@ bool JingleSessionManager::OnSignalStrategyIncomingMessage(
 void JingleSessionManager::SendReply(
     std::unique_ptr<jingle_xmpp::XmlElement> original_stanza,
     JingleMessageReply::ErrorType error) {
-  signal_strategy_->SendStanza(JingleMessageReplyToXml(
-      JingleMessageReply(error), original_stanza.get()));
+  std::unique_ptr<jingle_xmpp::XmlElement> reply_stanza =
+      JingleMessageReplyToXml(JingleMessageReply(error), original_stanza.get());
+  SignalingAddress to =
+      SignalingAddress::Parse(reply_stanza.get(), SignalingAddress::TO);
+  signal_strategy_->SendMessage(to, SignalingMessage(std::move(reply_stanza)));
 }
 
 void JingleSessionManager::SessionDestroyed(JingleSession* session) {

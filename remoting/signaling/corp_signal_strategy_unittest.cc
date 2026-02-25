@@ -231,7 +231,7 @@ TEST_F(CorpSignalStrategyTest, StartStream_NetworkError) {
   ASSERT_FALSE(signal_strategy_->IsSignInError());
 }
 
-TEST_F(CorpSignalStrategyTest, SendStanza_Success) {
+TEST_F(CorpSignalStrategyTest, SendMessage_XmlElement_Success) {
   EXPECT_CALL(*messaging_client_, StartReceivingMessages(_, _))
       .WillOnce([](base::OnceClosure on_ready,
                    MessagingClient::DoneCallback on_closed) {
@@ -267,13 +267,16 @@ TEST_F(CorpSignalStrategyTest, SendStanza_Success) {
         std::move(on_done).Run(HttpStatus::OK());
       });
 
-  signal_strategy_->SendStanza(std::move(stanza));
+  signal_strategy_->SendMessage(SignalingAddress(kFakeRemoteCorpId),
+                                SignalingMessage(std::move(stanza)));
 }
 
-TEST_F(CorpSignalStrategyTest, SendStanza_NotConnected) {
+TEST_F(CorpSignalStrategyTest, SendMessage_XmlElement_NotConnected) {
   auto stanza =
       CreateXmlStanza(Direction::OUTGOING, signal_strategy_->GetNextId());
-  EXPECT_FALSE(signal_strategy_->SendStanza(std::move(stanza)));
+  EXPECT_FALSE(
+      signal_strategy_->SendMessage(SignalingAddress(kFakeRemoteCorpId),
+                                    SignalingMessage(std::move(stanza))));
 }
 
 TEST_F(CorpSignalStrategyTest, ReceiveStanza_Success) {

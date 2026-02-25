@@ -45,7 +45,8 @@ std::unique_ptr<IqRequest> IqSender::SendIq(
     id = signal_strategy_->GetNextId();
     stanza->AddAttr(kQNameId, id);
   }
-  if (!signal_strategy_->SendStanza(std::move(stanza))) {
+  if (!signal_strategy_->SendMessage(SignalingAddress(addressee),
+                                     SignalingMessage(std::move(stanza)))) {
     return nullptr;
   }
   DCHECK(requests_.find(id) == requests_.end());

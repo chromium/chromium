@@ -151,37 +151,37 @@ void FakeSignalStrategy::RemoveListener(Listener* listener) {
   listeners_.RemoveObserver(listener);
 }
 
-bool FakeSignalStrategy::SendStanza(
-    std::unique_ptr<jingle_xmpp::XmlElement> stanza) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  address_.SetInMessage(stanza.get(), SignalingAddress::FROM);
-
-  if (peer_callback_.is_null()) {
-    return false;
-  }
-
-  if (send_delay_.is_zero()) {
-    peer_callback_.Run(std::move(stanza));
-  } else {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(peer_callback_, std::move(stanza)),
-        send_delay_);
-  }
-  return true;
-}
-
 bool FakeSignalStrategy::SendMessage(
     const SignalingAddress& destination_address,
     SignalingMessage&& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (auto* stanza_ptr =
+          std::get_if<std::unique_ptr<jingle_xmpp::XmlElement>>(&message)) {
+    auto& stanza = *stanza_ptr;
+    address_.SetInMessage(stanza.get(), SignalingAddress::FROM);
+
+    if (peer_callback_.is_null()) {
+      return false;
+    }
+
+    if (send_delay_.is_zero()) {
+      peer_callback_.Run(std::move(stanza));
+    } else {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, base::BindOnce(peer_callback_, std::move(stanza)),
+          send_delay_);
+    }
+    return true;
+  }
 
   const ftl::ChromotingMessage* ftl_message =
       std::get_if<ftl::ChromotingMessage>(&message);
   if (ftl_message && ftl_message->has_xmpp()) {
     auto stanza = base::WrapUnique<jingle_xmpp::XmlElement>(
         jingle_xmpp::XmlElement::ForStr(ftl_message->xmpp().stanza()));
-    return SendStanza(std::move(stanza));
+    return SendMessage(destination_address,
+                       SignalingMessage(std::move(stanza)));
   }
 
   NOTIMPLEMENTED();

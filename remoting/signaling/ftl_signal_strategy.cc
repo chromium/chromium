@@ -47,9 +47,8 @@ class FtlSignalStrategy::Core {
   const SignalingAddress& GetLocalAddress() const;
   void AddListener(Listener* listener);
   void RemoveListener(Listener* listener);
-  bool SendStanza(std::unique_ptr<jingle_xmpp::XmlElement> stanza);
   bool SendMessage(const SignalingAddress& destination_address,
-                   const ftl::ChromotingMessage& message);
+                   SignalingMessage&& message);
   bool IsSignInError() const;
 
  private:
@@ -186,37 +185,9 @@ void FtlSignalStrategy::Core::RemoveListener(Listener* listener) {
   listeners_.RemoveObserver(listener);
 }
 
-bool FtlSignalStrategy::Core::SendStanza(
-    std::unique_ptr<jingle_xmpp::XmlElement> stanza) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (GetState() != CONNECTED) {
-    HOST_LOG << "Dropping signaling message because FTL is not connected.";
-    return false;
-  }
-
-  SignalingAddress to =
-      SignalingAddress::Parse(stanza.get(), SignalingAddress::TO);
-
-  // Synthesizing the from attribute in the message.
-  stanza->SetAttr(kQNameFrom, local_address_.id());
-
-  std::string stanza_id = stanza->Attr(kQNameId);
-
-  ftl::ChromotingMessage crd_message;
-  crd_message.mutable_xmpp()->set_stanza(stanza->Str());
-  SendMessageImpl(to, crd_message,
-                  base::BindOnce(&Core::OnSendMessageResponse,
-                                 weak_factory_.GetWeakPtr(), to, stanza_id));
-
-  // Return false if the SendMessageImpl() call above resulted in the
-  // SignalStrategy being disconnected.
-  return GetState() == CONNECTED;
-}
-
 bool FtlSignalStrategy::Core::SendMessage(
     const SignalingAddress& destination_address,
-    const ftl::ChromotingMessage& message) {
+    SignalingMessage&& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (GetState() != CONNECTED) {
@@ -224,8 +195,32 @@ bool FtlSignalStrategy::Core::SendMessage(
     return false;
   }
 
+  if (auto* stanza_ptr =
+          std::get_if<std::unique_ptr<jingle_xmpp::XmlElement>>(&message)) {
+    auto& stanza = *stanza_ptr;
+    // Synthesizing the from attribute in the message.
+    stanza->SetAttr(kQNameFrom, local_address_.id());
+
+    std::string stanza_id = stanza->Attr(kQNameId);
+
+    ftl::ChromotingMessage crd_message;
+    crd_message.mutable_xmpp()->set_stanza(stanza->Str());
+    SendMessageImpl(
+        destination_address, SignalingMessage(std::move(crd_message)),
+        base::BindOnce(&Core::OnSendMessageResponse, weak_factory_.GetWeakPtr(),
+                       destination_address, stanza_id));
+    return GetState() == CONNECTED;
+  }
+
+  const ftl::ChromotingMessage* ftl_message =
+      std::get_if<ftl::ChromotingMessage>(&message);
+  if (!ftl_message) {
+    LOG(ERROR) << "Tried to send a non-FTL message with FtlSignalStrategy.";
+    return false;
+  }
+
   SendMessageImpl(
-      destination_address, SignalingMessage(message),
+      destination_address, std::move(message),
       base::BindOnce(&Core::OnSendMessageResponse, weak_factory_.GetWeakPtr(),
                      destination_address, std::string()));
 
@@ -520,20 +515,9 @@ void FtlSignalStrategy::RemoveListener(Listener* listener) {
   core_->RemoveListener(listener);
 }
 
-bool FtlSignalStrategy::SendStanza(
-    std::unique_ptr<jingle_xmpp::XmlElement> stanza) {
-  return core_->SendStanza(std::move(stanza));
-}
-
 bool FtlSignalStrategy::SendMessage(const SignalingAddress& destination_address,
                                     SignalingMessage&& message) {
-  ftl::ChromotingMessage* ftl_message =
-      std::get_if<ftl::ChromotingMessage>(&message);
-  if (!ftl_message) {
-    LOG(ERROR) << "Tried to send a non-FTL message with FtlSignalStrategy.";
-    return false;
-  }
-  return core_->SendMessage(destination_address, *ftl_message);
+  return core_->SendMessage(destination_address, std::move(message));
 }
 
 std::string FtlSignalStrategy::GetNextId() {

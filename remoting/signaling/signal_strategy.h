@@ -103,9 +103,6 @@ class SignalStrategy {
   // Remove a |listener| previously added with AddListener().
   virtual void RemoveListener(Listener* listener) = 0;
 
-  // Sends a raw XMPP stanza. Returns false if the stanza couldn't be sent.
-  virtual bool SendStanza(std::unique_ptr<jingle_xmpp::XmlElement> stanza) = 0;
-
   // Sends a message. Returns false if the message couldn't be sent.
   virtual bool SendMessage(const SignalingAddress& destination_address,
                            SignalingMessage&& message) = 0;

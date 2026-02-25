@@ -63,14 +63,20 @@ class IqSenderTest : public testing::Test {
     message.message_id = kStanzaId;
     message.SetPayload(SessionTerminate());
 
-    XmlElement* sent_stanza;
-    EXPECT_CALL(signal_strategy_, SendStanzaPtr(_))
-        .WillOnce(DoAll(SaveArg<0>(&sent_stanza), Return(true)));
+    EXPECT_CALL(signal_strategy_, SendMessage(SignalingAddress(kTo), _))
+        .WillOnce([&](const SignalingAddress&, SignalingMessage&& message_arg) {
+          auto* sent_stanza_ptr =
+              std::get_if<std::unique_ptr<XmlElement>>(&message_arg);
+          EXPECT_TRUE(sent_stanza_ptr);
+          if (sent_stanza_ptr) {
+            XmlElement* sent_stanza = sent_stanza_ptr->get();
+            std::unique_ptr<XmlElement> expected_stanza =
+                JingleMessageToXml(message);
+            EXPECT_EQ(expected_stanza->Str(), sent_stanza->Str());
+          }
+          return true;
+        });
     request_ = sender_->SendIq(message, callback_.Get());
-
-    std::unique_ptr<XmlElement> expected_stanza = JingleMessageToXml(message);
-    EXPECT_EQ(expected_stanza->Str(), sent_stanza->Str());
-    delete sent_stanza;
   }
 
   bool FormatAndDeliverResponse(const std::string& from,

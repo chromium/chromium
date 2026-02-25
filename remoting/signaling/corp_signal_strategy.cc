@@ -50,7 +50,6 @@ class CorpSignalStrategy::Core {
   const SignalingAddress& GetLocalAddress() const;
   void AddListener(Listener* listener);
   void RemoveListener(Listener* listener);
-  bool SendStanza(std::unique_ptr<jingle_xmpp::XmlElement> stanza);
   bool SendMessage(const SignalingAddress& destination_address,
                    SignalingMessage&& message);
   std::string GetNextId();
@@ -155,32 +154,6 @@ void CorpSignalStrategy::Core::RemoveListener(Listener* listener) {
   listeners_.RemoveObserver(listener);
 }
 
-bool CorpSignalStrategy::Core::SendStanza(
-    std::unique_ptr<jingle_xmpp::XmlElement> stanza) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (GetState() != CONNECTED) {
-    LOG(WARNING) << "Dropping signaling message because not connected.";
-    return false;
-  }
-
-  SignalingAddress to =
-      SignalingAddress::Parse(stanza.get(), SignalingAddress::TO);
-  if (to.empty()) {
-    LOG(ERROR) << "Invalid destination address.";
-    return false;
-  }
-
-  stanza->SetAttr(kQNameFrom, GetLocalAddress().id());
-
-  internal::PeerMessageStruct peer_message;
-  internal::IqStanzaStruct iq_stanza;
-  iq_stanza.xml = stanza->Str();
-  peer_message.payload = std::move(iq_stanza);
-
-  return SendMessage(to, std::move(peer_message));
-}
-
 bool CorpSignalStrategy::Core::SendMessage(
     const SignalingAddress& destination_address,
     SignalingMessage&& message) {
@@ -189,6 +162,24 @@ bool CorpSignalStrategy::Core::SendMessage(
   if (GetState() != CONNECTED) {
     LOG(WARNING) << "Dropping message because not connected.";
     return false;
+  }
+
+  if (auto* stanza_ptr =
+          std::get_if<std::unique_ptr<jingle_xmpp::XmlElement>>(&message)) {
+    auto& stanza = *stanza_ptr;
+    if (destination_address.empty()) {
+      LOG(ERROR) << "Invalid destination address.";
+      return false;
+    }
+
+    stanza->SetAttr(kQNameFrom, GetLocalAddress().id());
+
+    internal::PeerMessageStruct peer_message;
+    internal::IqStanzaStruct iq_stanza;
+    iq_stanza.xml = stanza->Str();
+    peer_message.payload = std::move(iq_stanza);
+
+    return SendMessage(destination_address, std::move(peer_message));
   }
 
   auto* peer_message = std::get_if<internal::PeerMessageStruct>(&message);
@@ -209,8 +200,7 @@ bool CorpSignalStrategy::Core::SendMessage(
     }
   });
   messaging_client_->SendMessage(SignalingAddress(messaging_authz_token_),
-                                 SignalingMessage(std::move(*peer_message)),
-                                 std::move(on_done));
+                                 std::move(message), std::move(on_done));
   return true;
 }
 
@@ -371,11 +361,6 @@ void CorpSignalStrategy::AddListener(Listener* listener) {
 
 void CorpSignalStrategy::RemoveListener(Listener* listener) {
   core_->RemoveListener(listener);
-}
-
-bool CorpSignalStrategy::SendStanza(
-    std::unique_ptr<jingle_xmpp::XmlElement> stanza) {
-  return core_->SendStanza(std::move(stanza));
 }
 
 bool CorpSignalStrategy::SendMessage(

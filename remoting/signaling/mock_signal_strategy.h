@@ -31,13 +31,6 @@ class MockSignalStrategy : public SignalStrategy {
                bool(const SignalingAddress& destination_address,
                     SignalingMessage&& message));
 
-  // GMock currently doesn't support move-only arguments, so we have
-  // to use this hack here.
-  MOCK_METHOD1(SendStanzaPtr, bool(jingle_xmpp::XmlElement* stanza));
-  bool SendStanza(std::unique_ptr<jingle_xmpp::XmlElement> stanza) override {
-    return SendStanzaPtr(stanza.release());
-  }
-
   const SignalingAddress& GetLocalAddress() const override;
 
  private:
