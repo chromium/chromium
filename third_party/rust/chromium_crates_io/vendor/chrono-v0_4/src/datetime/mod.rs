@@ -620,10 +620,11 @@ impl<Tz: TimeZone> DateTime<Tz> {
     /// can not have more than 4 digits.
     #[cfg(feature = "alloc")]
     #[must_use]
+    #[track_caller]
     pub fn to_rfc2822(&self) -> String {
         let mut result = String::with_capacity(32);
         write_rfc2822(&mut result, self.overflowing_naive_local(), self.offset.fix())
-            .expect("writing rfc2822 datetime to string should never fail");
+            .expect("date cannot be represented by RFC 2822");
         result
     }
 
@@ -1529,6 +1530,7 @@ impl<Tz: TimeZone> Add<TimeDelta> for DateTime<Tz> {
     type Output = DateTime<Tz>;
 
     #[inline]
+    #[track_caller]
     fn add(self, rhs: TimeDelta) -> DateTime<Tz> {
         self.checked_add_signed(rhs).expect("`DateTime + TimeDelta` overflowed")
     }
@@ -1548,6 +1550,7 @@ impl<Tz: TimeZone> Add<Duration> for DateTime<Tz> {
     type Output = DateTime<Tz>;
 
     #[inline]
+    #[track_caller]
     fn add(self, rhs: Duration) -> DateTime<Tz> {
         let rhs = TimeDelta::from_std(rhs)
             .expect("overflow converting from core::time::Duration to TimeDelta");
@@ -1567,6 +1570,7 @@ impl<Tz: TimeZone> Add<Duration> for DateTime<Tz> {
 /// Consider using [`DateTime<Tz>::checked_add_signed`] to get an `Option` instead.
 impl<Tz: TimeZone> AddAssign<TimeDelta> for DateTime<Tz> {
     #[inline]
+    #[track_caller]
     fn add_assign(&mut self, rhs: TimeDelta) {
         let datetime =
             self.datetime.checked_add_signed(rhs).expect("`DateTime + TimeDelta` overflowed");
@@ -1587,6 +1591,7 @@ impl<Tz: TimeZone> AddAssign<TimeDelta> for DateTime<Tz> {
 /// Consider using [`DateTime<Tz>::checked_add_signed`] to get an `Option` instead.
 impl<Tz: TimeZone> AddAssign<Duration> for DateTime<Tz> {
     #[inline]
+    #[track_caller]
     fn add_assign(&mut self, rhs: Duration) {
         let rhs = TimeDelta::from_std(rhs)
             .expect("overflow converting from core::time::Duration to TimeDelta");
@@ -1603,6 +1608,7 @@ impl<Tz: TimeZone> Add<FixedOffset> for DateTime<Tz> {
     type Output = DateTime<Tz>;
 
     #[inline]
+    #[track_caller]
     fn add(mut self, rhs: FixedOffset) -> DateTime<Tz> {
         self.datetime =
             self.naive_utc().checked_add_offset(rhs).expect("`DateTime + FixedOffset` overflowed");
@@ -1626,6 +1632,7 @@ impl<Tz: TimeZone> Add<FixedOffset> for DateTime<Tz> {
 impl<Tz: TimeZone> Add<Months> for DateTime<Tz> {
     type Output = DateTime<Tz>;
 
+    #[track_caller]
     fn add(self, rhs: Months) -> Self::Output {
         self.checked_add_months(rhs).expect("`DateTime + Months` out of range")
     }
@@ -1647,6 +1654,7 @@ impl<Tz: TimeZone> Sub<TimeDelta> for DateTime<Tz> {
     type Output = DateTime<Tz>;
 
     #[inline]
+    #[track_caller]
     fn sub(self, rhs: TimeDelta) -> DateTime<Tz> {
         self.checked_sub_signed(rhs).expect("`DateTime - TimeDelta` overflowed")
     }
@@ -1666,6 +1674,7 @@ impl<Tz: TimeZone> Sub<Duration> for DateTime<Tz> {
     type Output = DateTime<Tz>;
 
     #[inline]
+    #[track_caller]
     fn sub(self, rhs: Duration) -> DateTime<Tz> {
         let rhs = TimeDelta::from_std(rhs)
             .expect("overflow converting from core::time::Duration to TimeDelta");
@@ -1687,6 +1696,7 @@ impl<Tz: TimeZone> Sub<Duration> for DateTime<Tz> {
 /// Consider using [`DateTime<Tz>::checked_sub_signed`] to get an `Option` instead.
 impl<Tz: TimeZone> SubAssign<TimeDelta> for DateTime<Tz> {
     #[inline]
+    #[track_caller]
     fn sub_assign(&mut self, rhs: TimeDelta) {
         let datetime =
             self.datetime.checked_sub_signed(rhs).expect("`DateTime - TimeDelta` overflowed");
@@ -1707,6 +1717,7 @@ impl<Tz: TimeZone> SubAssign<TimeDelta> for DateTime<Tz> {
 /// Consider using [`DateTime<Tz>::checked_sub_signed`] to get an `Option` instead.
 impl<Tz: TimeZone> SubAssign<Duration> for DateTime<Tz> {
     #[inline]
+    #[track_caller]
     fn sub_assign(&mut self, rhs: Duration) {
         let rhs = TimeDelta::from_std(rhs)
             .expect("overflow converting from core::time::Duration to TimeDelta");
@@ -1723,6 +1734,7 @@ impl<Tz: TimeZone> Sub<FixedOffset> for DateTime<Tz> {
     type Output = DateTime<Tz>;
 
     #[inline]
+    #[track_caller]
     fn sub(mut self, rhs: FixedOffset) -> DateTime<Tz> {
         self.datetime =
             self.naive_utc().checked_sub_offset(rhs).expect("`DateTime - FixedOffset` overflowed");
@@ -1746,6 +1758,7 @@ impl<Tz: TimeZone> Sub<FixedOffset> for DateTime<Tz> {
 impl<Tz: TimeZone> Sub<Months> for DateTime<Tz> {
     type Output = DateTime<Tz>;
 
+    #[track_caller]
     fn sub(self, rhs: Months) -> Self::Output {
         self.checked_sub_months(rhs).expect("`DateTime - Months` out of range")
     }
@@ -1782,6 +1795,7 @@ impl<Tz: TimeZone> Sub<&DateTime<Tz>> for DateTime<Tz> {
 impl<Tz: TimeZone> Add<Days> for DateTime<Tz> {
     type Output = DateTime<Tz>;
 
+    #[track_caller]
     fn add(self, days: Days) -> Self::Output {
         self.checked_add_days(days).expect("`DateTime + Days` out of range")
     }
@@ -1800,6 +1814,7 @@ impl<Tz: TimeZone> Add<Days> for DateTime<Tz> {
 impl<Tz: TimeZone> Sub<Days> for DateTime<Tz> {
     type Output = DateTime<Tz>;
 
+    #[track_caller]
     fn sub(self, days: Days) -> Self::Output {
         self.checked_sub_days(days).expect("`DateTime - Days` out of range")
     }

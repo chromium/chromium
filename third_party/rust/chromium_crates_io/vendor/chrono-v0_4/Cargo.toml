@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.62.0"
 name = "chrono"
-version = "0.4.43"
+version = "0.4.44"
 build = false
 include = [
     "src/*",

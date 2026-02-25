@@ -1,6 +1,6 @@
 [package]
 name = "chrono"
-version = "0.4.43"
+version = "0.4.44"
 description = "Date and time library for Rust"
 homepage = "https://github.com/chronotope/chrono"
 documentation = "https://docs.rs/chrono/"

@@ -61,6 +61,7 @@ impl NaiveWeek {
     /// ```
     #[inline]
     #[must_use]
+    #[track_caller]
     pub const fn first_day(&self) -> NaiveDate {
         expect(self.checked_first_day(), "first weekday out of range for `NaiveDate`")
     }
@@ -113,6 +114,7 @@ impl NaiveWeek {
     /// ```
     #[inline]
     #[must_use]
+    #[track_caller]
     pub const fn last_day(&self) -> NaiveDate {
         expect(self.checked_last_day(), "last weekday out of range for `NaiveDate`")
     }
@@ -167,6 +169,7 @@ impl NaiveWeek {
     /// ```
     #[inline]
     #[must_use]
+    #[track_caller]
     pub const fn days(&self) -> RangeInclusive<NaiveDate> {
         // `expect` doesn't work because `RangeInclusive` is not `Copy`
         match self.checked_days() {

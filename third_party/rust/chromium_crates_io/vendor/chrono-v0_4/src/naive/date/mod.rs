@@ -1982,6 +1982,7 @@ impl Add<TimeDelta> for NaiveDate {
     type Output = NaiveDate;
 
     #[inline]
+    #[track_caller]
     fn add(self, rhs: TimeDelta) -> NaiveDate {
         self.checked_add_signed(rhs).expect("`NaiveDate + TimeDelta` overflowed")
     }
@@ -1998,6 +1999,7 @@ impl Add<TimeDelta> for NaiveDate {
 /// Consider using [`NaiveDate::checked_add_signed`] to get an `Option` instead.
 impl AddAssign<TimeDelta> for NaiveDate {
     #[inline]
+    #[track_caller]
     fn add_assign(&mut self, rhs: TimeDelta) {
         *self = self.add(rhs);
     }
@@ -2030,6 +2032,7 @@ impl AddAssign<TimeDelta> for NaiveDate {
 impl Add<Months> for NaiveDate {
     type Output = NaiveDate;
 
+    #[track_caller]
     fn add(self, months: Months) -> Self::Output {
         self.checked_add_months(months).expect("`NaiveDate + Months` out of range")
     }
@@ -2059,6 +2062,7 @@ impl Add<Months> for NaiveDate {
 impl Sub<Months> for NaiveDate {
     type Output = NaiveDate;
 
+    #[track_caller]
     fn sub(self, months: Months) -> Self::Output {
         self.checked_sub_months(months).expect("`NaiveDate - Months` out of range")
     }
@@ -2073,6 +2077,7 @@ impl Sub<Months> for NaiveDate {
 impl Add<Days> for NaiveDate {
     type Output = NaiveDate;
 
+    #[track_caller]
     fn add(self, days: Days) -> Self::Output {
         self.checked_add_days(days).expect("`NaiveDate + Days` out of range")
     }
@@ -2087,6 +2092,7 @@ impl Add<Days> for NaiveDate {
 impl Sub<Days> for NaiveDate {
     type Output = NaiveDate;
 
+    #[track_caller]
     fn sub(self, days: Days) -> Self::Output {
         self.checked_sub_days(days).expect("`NaiveDate - Days` out of range")
     }
@@ -2134,6 +2140,7 @@ impl Sub<TimeDelta> for NaiveDate {
     type Output = NaiveDate;
 
     #[inline]
+    #[track_caller]
     fn sub(self, rhs: TimeDelta) -> NaiveDate {
         self.checked_sub_signed(rhs).expect("`NaiveDate - TimeDelta` overflowed")
     }
@@ -2151,6 +2158,7 @@ impl Sub<TimeDelta> for NaiveDate {
 /// Consider using [`NaiveDate::checked_sub_signed`] to get an `Option` instead.
 impl SubAssign<TimeDelta> for NaiveDate {
     #[inline]
+    #[track_caller]
     fn sub_assign(&mut self, rhs: TimeDelta) {
         *self = self.sub(rhs);
     }
