@@ -81,6 +81,7 @@ public class TipsNotificationsOptInPromoTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/487549444
     public void testOptInBottomSheetDismiss() throws IOException {
         var tripResult = showOptInBottomSheet();
         TipsOptInBottomSheetFacility bottomSheet = tripResult.first;
