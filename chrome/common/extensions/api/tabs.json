@@ -270,7 +270,7 @@
         "name": "sendMessage",
         "nocompile": true,
         "type": "function",
-        "description": "Sends a single message to the content script(s) in the specified tab, with an optional callback to run when a response is sent back.  The $(ref:runtime.onMessage) event is fired in each content script running in the specified tab for the current extension.",
+        "description": "Sends a single message to the content script(s) in the specified tab. The $(ref:runtime.onMessage) event is fired in each content script running in the specified tab for the current extension.",
         "parameters": [
           {
             "type": "integer",
@@ -304,11 +304,12 @@
         "returns_async": {
           "name": "callback",
           "optional": true,
+          "description": "Promise that resolves with the response from the content script. If an error occurs while connecting to the specified tab, the promise will be rejected.",
           "parameters": [
             {
               "name": "response",
               "type": "any",
-              "description": "The JSON response object sent by the handler of the message. If an error occurs while connecting to the specified tab, the promise will be rejected."
+              "description": "The JSON response object sent by the handler of the message."
             }
           ]
         }

@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -208,8 +208,7 @@ chrome.tabs.connect = function(tabId, connectInfo) {};
 chrome.tabs.sendRequest = function(tabId, request, callback) {};
 
 /**
- * Sends a single message to the content script(s) in the specified tab, with an
- * optional callback to run when a response is sent back.  The
+ * Sends a single message to the content script(s) in the specified tab. The
  * $(ref:runtime.onMessage) event is fired in each content script running in the
  * specified tab for the current extension.
  * @param {number} tabId
@@ -219,7 +218,9 @@ chrome.tabs.sendRequest = function(tabId, request, callback) {};
  *   frameId: (number|undefined),
  *   documentId: (string|undefined)
  * }=} options
- * @param {function(*): void=} callback
+ * @param {function(*): void=} callback Promise that resolves with the response
+ *     from the content script. If an error occurs while connecting to the
+ *     specified tab, the promise will be rejected.
  * @see https://developer.chrome.com/extensions/tabs#method-sendMessage
  */
 chrome.tabs.sendMessage = function(tabId, message, options, callback) {};
