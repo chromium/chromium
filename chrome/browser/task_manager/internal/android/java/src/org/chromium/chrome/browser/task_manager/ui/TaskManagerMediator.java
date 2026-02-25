@@ -18,7 +18,6 @@ import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_ID;
 import static org.chromium.chrome.browser.task_manager.ui.TaskManagerProperties.TASK_NAME;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -36,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 /**
  * The class works as a mediator between the underlyning model (ModelList) and the task manager
@@ -274,7 +272,9 @@ class TaskManagerMediator {
 
             @Override
             public void onTaskToBeRemoved(long taskId) {
-                mTasks.removeAt(getIndexForTaskId(taskId));
+                Integer index = getIndexForTaskId(taskId);
+                if (index == null) return;
+                mTasks.removeAt(index);
                 checkAndNotifyIfHasKillableSelectedTaskChanged();
             }
 
@@ -283,7 +283,9 @@ class TaskManagerMediator {
                 // TODO(crbug.com/380165957): Asynchronously get values if performance issues are
                 // observed.
                 for (long taskId : taskIds) {
-                    ListItem task = mTasks.get(getIndexForTaskId(taskId));
+                    Integer index = getIndexForTaskId(taskId);
+                    if (index == null) continue;
+                    ListItem task = mTasks.get(index);
 
                     updateTaskModel(task, taskId);
                 }
@@ -302,13 +304,13 @@ class TaskManagerMediator {
         };
     }
 
-    private int getIndexForTaskId(long taskId) {
+    private @Nullable Integer getIndexForTaskId(long taskId) {
         for (int i = 0; i < mTasks.size(); i++) {
             if (mTasks.get(i).model.get(TASK_ID) == taskId) {
                 return i;
             }
         }
-        throw new NoSuchElementException("Task id " + taskId + " not found");
+        return null;
     }
 
     private void checkAndNotifyIfHasKillableSelectedTaskChanged() {
@@ -356,7 +358,7 @@ class TaskManagerMediator {
     }
 
     @SuppressWarnings("NullMarked")
-    private static Comparator<ListItem> getTaskComparator(@NonNull SortDescriptor descriptor) {
+    private static Comparator<ListItem> getTaskComparator(SortDescriptor descriptor) {
         Comparator<ListItem> ascComparator =
                 (a, b) -> {
                     if (descriptor.key == TASK_NAME) {
