@@ -854,10 +854,19 @@ class CacheEncryptionPolicyTestBase : public InProcessBrowserTest {
         << "Failed to compute cache size, backend might not be initialized. "
            "Result: "
         << net::ErrorToString(static_cast<int>(cache_size_or_error));
+
+    histogram_tester_.ExpectBucketCount(
+        "Enterprise.CacheEncryptionPolicyEnabled",
+        !GetCacheEncryptionPolicyValue(), 0);
+    EXPECT_GE(histogram_tester_.GetBucketCount(
+                  "Enterprise.CacheEncryptionPolicyEnabled",
+                  GetCacheEncryptionPolicyValue()),
+              1);
   }
 
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+  base::HistogramTester histogram_tester_;
 #if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
   base::test::ScopedFeatureList scoped_feature_list_;
 #endif
@@ -902,6 +911,8 @@ IN_PROC_BROWSER_TEST_F(CacheEncryptionEnabledByPolicyTest,
   base::FilePath new_profile_path = profile_manager->user_data_dir().Append(
       FILE_PATH_LITERAL("NewTestProfile"));
 
+  base::HistogramTester profile_histogram_tester;
+
   // Create the profile.
   Profile& new_profile =
       profiles::testing::CreateProfileSync(profile_manager, new_profile_path);
@@ -924,6 +935,14 @@ IN_PROC_BROWSER_TEST_F(CacheEncryptionEnabledByPolicyTest,
   EXPECT_FALSE(
       prefs->GetString(enterprise_connectors::kEncryptedCachePrimaryKey)
           .empty());
+
+  profile_histogram_tester.ExpectBucketCount(
+      "Enterprise.CacheEncryptionPolicyEnabled",
+      !GetCacheEncryptionPolicyValue(), 0);
+  EXPECT_GE(profile_histogram_tester.GetBucketCount(
+                "Enterprise.CacheEncryptionPolicyEnabled",
+                GetCacheEncryptionPolicyValue()),
+            1);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

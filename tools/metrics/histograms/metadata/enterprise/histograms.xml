@@ -391,6 +391,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.CacheEncryptionPolicyEnabled" enum="BooleanEnabled"
+    expires_after="2027-02-17">
+  <owner>haihan@google.com</owner>
+  <owner>valadkevich@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
+  <summary>
+    Records whether the CacheEncryptionEnabled enterprise policy is enabled, or
+    if the EnableCacheEncryptionForTesting flag is set. Logged during network
+    context initialization when evaluating whether the HTTP cache should be
+    encrypted. Useful for slicing Finch experiment data.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.CBCMPolicyInvalidations"
     enum="EnterprisePolicyInvalidations" expires_after="2026-12-01">
   <owner>zmin@chromium.org</owner>
