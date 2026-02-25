@@ -64,11 +64,19 @@ PopulateContextualResources(contextual_tasks::ContextualTaskContext* context) {
   }
   std::vector<contextual_tasks::mojom::ContextInfoPtr> context_items;
   for (const auto& attachment : context->GetUrlAttachments()) {
+    const GURL url = attachment.GetURL();
+    const std::string title = base::UTF16ToUTF8(attachment.GetTitle());
+
+    // Skip if URL is invalid, or if title is empty.
+    if (!url.is_valid() || title.empty()) {
+      continue;
+    }
+
     switch (attachment.GetResourceType()) {
       case contextual_tasks::ResourceType::kWebpage: {
         auto tab_context = contextual_tasks::mojom::TabContext::New();
-        tab_context->title = base::UTF16ToUTF8(attachment.GetTitle());
-        tab_context->url = attachment.GetURL();
+        tab_context->title = title;
+        tab_context->url = url;
         tab_context->tab_id = attachment.GetTabSessionId().id();
         context_items.push_back(contextual_tasks::mojom::ContextInfo::NewTab(
             std::move(tab_context)));
@@ -76,16 +84,16 @@ PopulateContextualResources(contextual_tasks::ContextualTaskContext* context) {
       }
       case contextual_tasks::ResourceType::kPdf: {
         auto file_context = contextual_tasks::mojom::FileContext::New();
-        file_context->title = base::UTF16ToUTF8(attachment.GetTitle());
-        file_context->url = attachment.GetURL();
+        file_context->title = title;
+        file_context->url = url;
         context_items.push_back(contextual_tasks::mojom::ContextInfo::NewFile(
             std::move(file_context)));
         break;
       }
       case contextual_tasks::ResourceType::kImage: {
         auto image_context = contextual_tasks::mojom::ImageContext::New();
-        image_context->title = base::UTF16ToUTF8(attachment.GetTitle());
-        image_context->url = attachment.GetURL();
+        image_context->title = title;
+        image_context->url = url;
         context_items.push_back(contextual_tasks::mojom::ContextInfo::NewImage(
             std::move(image_context)));
         break;
