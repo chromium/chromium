@@ -126,7 +126,12 @@ public class DropdownFieldView implements FieldView {
     }
 
     public void setLabel(String label, boolean isRequired) {
-        mLabel.setText(isRequired ? label + FieldView.REQUIRED_FIELD_INDICATOR : label);
+        if (TextUtils.isEmpty(label)) {
+            mLabel.setVisibility(View.GONE);
+        } else {
+            mLabel.setVisibility(View.VISIBLE);
+            mLabel.setText(isRequired ? label + FieldView.REQUIRED_FIELD_INDICATOR : label);
+        }
     }
 
     public void setDropdownValues(List<String> values, @Nullable String hint) {
