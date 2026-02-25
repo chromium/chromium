@@ -555,3 +555,7 @@
   --cr-composebox-match-remove-button-top: 0;
   display: none;
 }
+
+#composeboxContainer:not(:has(#composebox[show-dropdown_])) ~ #contextualTasksSuggestionsContainer {
+  display: none;
+}

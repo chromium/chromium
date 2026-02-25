@@ -2044,4 +2044,69 @@ suite('ContextualTasksComposeboxTest', () => {
     assertEquals('', innerComposebox.inputPlaceholderOverride);
     assertEquals(initialPlaceholder, inputElement.placeholder);
   });
+
+  test('SuggestionsHiddenWhenDropdownNotShown', async () => {
+    loadTimeData.overrideValues({
+      composeboxShowTypedSuggestWithContext: false,
+      enableNativeZeroStateSuggestions: true,
+    });
+
+    contextualTasksApp.isShownInTab_ = true;
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    contextualTasksApp.isZeroState_ = true;
+    await contextualComposebox.updateComplete;
+    await composebox.updateComplete;
+
+    const suggestionsContainer =
+        contextualComposebox.$.contextualTasksSuggestionsContainer;
+    assertTrue(!!suggestionsContainer, 'Suggestions container should exist');
+
+    // Initial state: No matches yet, so show-dropdown_ should be false.
+    assertFalse(
+        composebox.hasAttribute('show-dropdown_'),
+        'Dropdown should not be shown initially');
+    assertEquals(
+        'none', getComputedStyle(suggestionsContainer).display,
+        'Suggestions should be hidden when dropdown is not shown');
+
+    // Add a file.
+    const file = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
+    await uploadFileAndVerify(FAKE_TOKEN_STRING, file);
+
+    // Provide ZPS matches (empty query).
+    await setupAutocompleteResults(searchboxCallbackRouterRemote, '');
+    await contextualComposebox.updateComplete;
+    await composebox.updateComplete;
+
+    // show-dropdown_ should be true now because we have ZPS matches and no
+    // input.
+    assertTrue(
+        composebox.hasAttribute('show-dropdown_'),
+        'Dropdown should be shown with ZPS matches after adding a file');
+
+    // The suggestions container should be visible.
+    assertNotEquals(
+        'none', getComputedStyle(suggestionsContainer).display,
+        'Suggestions should be visible when dropdown is shown');
+
+    // Simulate typing.
+    const inputElement = composebox.$.input;
+    simulateUserInput(inputElement, 'test');
+
+    // Provide typed matches.
+    await setupAutocompleteResults(searchboxCallbackRouterRemote, 'test');
+    await contextualComposebox.updateComplete;
+    await composebox.updateComplete;
+
+    // show-dropdown_ should be false because we have a file and
+    // composeboxShowTypedSuggestWithContext is false.
+    assertFalse(
+        composebox.hasAttribute('show-dropdown_'),
+        'Dropdown should hide when typing with a file and showTypedSuggestWithContext is false');
+
+    // The CSS rule should hide the suggestions container.
+    assertEquals(
+        'none', getComputedStyle(suggestionsContainer).display,
+        'Suggestions should be hidden via CSS when dropdown is hidden');
+  });
 });
