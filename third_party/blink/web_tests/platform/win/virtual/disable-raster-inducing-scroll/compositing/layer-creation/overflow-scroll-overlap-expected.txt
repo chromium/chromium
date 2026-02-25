@@ -14,7 +14,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='scroller' class='overflow'",
+      "name": "LayoutBlockFlow (positioned, relayout-boundary) DIV id='scroller' class='overflow'",
       "position": [20, 20],
       "bounds": [306, 206],
       "contentsOpaqueForText": true

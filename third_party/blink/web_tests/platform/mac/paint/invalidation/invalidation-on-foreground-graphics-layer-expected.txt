@@ -7,13 +7,13 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow DIV",
+      "name": "LayoutBlockFlow (relayout-boundary) DIV",
       "bounds": [200, 200],
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow DIV",
+      "name": "LayoutBlockFlow (relayout-boundary) DIV",
       "bounds": [185, 185],
       "drawsContent": false,
       "transform": 1
@@ -33,13 +33,13 @@
       "transform": 1
     },
     {
-      "name": "Scroll corner of LayoutBlockFlow DIV",
+      "name": "Scroll corner of LayoutBlockFlow (relayout-boundary) DIV",
       "position": [185, 185],
       "bounds": [15, 15],
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow DIV",
+      "name": "LayoutBlockFlow (relayout-boundary) DIV",
       "bounds": [300, 300],
       "contentsOpaque": true,
       "backgroundColor": "#D3D3D3",
@@ -53,7 +53,7 @@
       "transform": 1
     },
     {
-      "name": "LayoutBlockFlow DIV",
+      "name": "LayoutBlockFlow (relayout-boundary) DIV",
       "position": [100, 100],
       "bounds": [200, 200],
       "contentsOpaque": true,

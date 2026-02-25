@@ -4,4 +4,4 @@ layer at (0,0)
   LayoutBlockFlow {HTML} at (0,0) size 800x200
     LayoutBlockFlow (children-inline) {BODY} at (0,0) size 800x200
 layer at (8,7)
-  LayoutIFrame (display-locked, positioned, block) {IFRAME} at (8,7) size 10x10
+  LayoutIFrame (display-locked, positioned, block, relayout-boundary) {IFRAME} at (8,7) size 10x10

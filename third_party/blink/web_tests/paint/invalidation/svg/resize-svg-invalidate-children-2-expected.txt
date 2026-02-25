@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutSVGRoot svg",
+      "name": "LayoutSVGRoot (relayout-boundary) svg",
       "bounds": [600, 400],
       "backgroundColor": "#008000",
       "invalidations": [

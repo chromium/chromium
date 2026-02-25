@@ -22,7 +22,7 @@ In all iframes, the green fixed-position element should not be composited.
       "transform": 3
     },
     {
-      "name": "LayoutIFrame (positioned, block) IFRAME id='iframe2' class='composited'",
+      "name": "LayoutIFrame (positioned, block, relayout-boundary) IFRAME id='iframe2' class='composited'",
       "bounds": [154, 154],
       "transform": 4
     },
@@ -34,7 +34,7 @@ In all iframes, the green fixed-position element should not be composited.
       "transform": 6
     },
     {
-      "name": "LayoutIFrame (positioned, block) IFRAME id='iframe3'",
+      "name": "LayoutIFrame (positioned, block, relayout-boundary) IFRAME id='iframe3'",
       "position": [10, 380],
       "bounds": [154, 154]
     },
