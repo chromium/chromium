@@ -571,7 +571,7 @@ class TabImpl implements Tab {
 
     @CalledByNative
     @Override
-    public GURL getUrl() {
+    public @JniType("GURL") GURL getUrl() {
         if (!isInitialized()) {
             return GURL.emptyGURL();
         }

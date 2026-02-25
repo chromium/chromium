@@ -82,8 +82,12 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
+using base::android::JavaLongArrayToLongVector;
 using base::android::JavaRef;
+using base::android::ScopedJavaLocalRef;
+
 using chrome::android::BackgroundTabManager;
+
 using content::GlobalRequestID;
 using content::NavigationController;
 using content::WebContents;
@@ -139,7 +143,7 @@ TabAndroid::GetAllNativeTabs(
   }
 
   std::vector<int64_t> tab_ptr;
-  base::android::JavaLongArrayToLongVector(env, j_tabs_ptr, &tab_ptr);
+  JavaLongArrayToLongVector(env, j_tabs_ptr, &tab_ptr);
 
   for (size_t i = 0; i < tab_ptr.size(); ++i) {
     tab_native_ptrs.push_back(reinterpret_cast<TabAndroid*>(tab_ptr[i]));
@@ -168,8 +172,8 @@ TabAndroid::TabAndroid(JNIEnv* env,
 }
 
 TabAndroid::~TabAndroid() {
+  JNIEnv* env = AttachCurrentThread();
   GetContentLayer()->RemoveAllChildren();
-  JNIEnv* env = base::android::AttachCurrentThread();
   const jni_zero::JavaRef<jobject>& obj = weak_java_tab_.get(env);
   if (obj) {
     Java_TabImpl_clearNativePtr(env, obj);
@@ -196,11 +200,11 @@ int TabAndroid::GetAndroidId() const {
 
 std::unique_ptr<WebContentsStateByteBuffer>
 TabAndroid::GetWebContentsByteBuffer() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
+  auto tab = weak_java_tab_.get(env);
   ScopedJavaLocalRef<jobject> state =
-      Java_TabImpl_getWebContentsStateByteBuffer(env, weak_java_tab_.get(env));
-  int version = Java_TabImpl_getWebContentsStateSavedStateVersion(
-      env, weak_java_tab_.get(env));
+      Java_TabImpl_getWebContentsStateByteBuffer(env, tab);
+  int version = Java_TabImpl_getWebContentsStateSavedStateVersion(env, tab);
 
   // If the web contents is null (denoted by saved_state_version being -1),
   // return a nullptr.
@@ -212,13 +216,11 @@ TabAndroid::GetWebContentsByteBuffer() const {
 }
 
 base::android::ScopedJavaLocalRef<jobject> TabAndroid::GetJavaObject() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return weak_java_tab_.get(env);
+  return weak_java_tab_.get(AttachCurrentThread());
 }
 
 base::android::ScopedJavaLocalRef<jobject> TabAndroid::GetJavaObject() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return weak_java_tab_.get(env);
+  return weak_java_tab_.get(AttachCurrentThread());
 }
 
 scoped_refptr<cc::slim::Layer> TabAndroid::GetContentLayer() const {
@@ -226,33 +228,32 @@ scoped_refptr<cc::slim::Layer> TabAndroid::GetContentLayer() const {
 }
 
 int TabAndroid::GetLaunchType() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_getLaunchType(env, weak_java_tab_.get(env));
 }
 
 int TabAndroid::GetUserAgent() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_getUserAgent(env, weak_java_tab_.get(env));
 }
 
 bool TabAndroid::IsNativePage() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_isNativePage(env, weak_java_tab_.get(env));
 }
 
 std::u16string TabAndroid::GetTitle() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_getTitle(env, weak_java_tab_.get(env));
 }
 
 GURL TabAndroid::GetURL() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return url::GURLAndroid::ToNativeGURL(
-      env, Java_TabImpl_getUrl(env, weak_java_tab_.get(env)));
+  JNIEnv* env = AttachCurrentThread();
+  return Java_TabImpl_getUrl(env, weak_java_tab_.get(env));
 }
 
 bool TabAndroid::IsUserInteractable() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_isUserInteractable(env, weak_java_tab_.get(env));
 }
 
@@ -261,7 +262,7 @@ sync_sessions::SyncedTabDelegate* TabAndroid::GetSyncedTabDelegate() const {
 }
 
 bool TabAndroid::IsIncognito() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   const bool is_incognito =
       Java_TabImpl_isIncognito(env, weak_java_tab_.get(env));
   if (Profile* p = profile()) {
@@ -271,7 +272,7 @@ bool TabAndroid::IsIncognito() const {
 }
 
 base::Time TabAndroid::GetLastShownTimestamp() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   const int64_t timestamp =
       Java_TabImpl_getLastShownTimestamp(env, weak_java_tab_.get(env));
   return (timestamp == -1)
@@ -280,18 +281,18 @@ base::Time TabAndroid::GetLastShownTimestamp() const {
 }
 
 int TabAndroid::GetTabLaunchTypeAtCreation() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_getTabLaunchTypeAtCreation(env, weak_java_tab_.get(env));
 }
 
 int TabAndroid::GetParentId() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_getParentId(env, weak_java_tab_.get(env));
 }
 
 void TabAndroid::DeleteFrozenNavigationEntries(
     const WebContentsState::DeletionPredicate& predicate) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   Java_TabImpl_deleteNavigationEntriesFromFrozenState(
       env, weak_java_tab_.get(env), reinterpret_cast<intptr_t>(&predicate));
 }
@@ -309,12 +310,12 @@ void TabAndroid::SetWindowSessionID(SessionID window_id) {
 }
 
 bool TabAndroid::IsCustomTab() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_isCustomTab(env, weak_java_tab_.get(env));
 }
 
 bool TabAndroid::IsHidden() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_isHidden(env, weak_java_tab_.get(env));
 }
 
@@ -592,7 +593,7 @@ void TabAndroid::NotifyTabGroupChanged(
 }
 
 bool TabAndroid::IsDragging() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_isDragging(env, weak_java_tab_.get(env));
 }
 
@@ -615,7 +616,7 @@ void TabAndroid::SetDevToolsAgentHost(
 }
 
 bool TabAndroid::IsTrustedWebActivity() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_isTrustedWebActivity(env, weak_java_tab_.get(env));
 }
 
@@ -632,7 +633,7 @@ content::WebContents* TabAndroid::GetContents() const {
 }
 
 void TabAndroid::Close() {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   Java_TabImpl_closeTabFromNative(env, weak_java_tab_.get(env));
 }
 
@@ -643,7 +644,7 @@ base::CallbackListSubscription TabAndroid::RegisterWillDiscardContents(
 }
 
 bool TabAndroid::IsActivated() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_isActivated(env, weak_java_tab_.get(env));
 }
 
@@ -662,7 +663,7 @@ bool TabAndroid::IsVisible() const {
 }
 
 bool TabAndroid::IsSelected() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_isMultiSelected(env, weak_java_tab_.get(env));
 }
 
@@ -738,7 +739,7 @@ const tabs::TabFeatures* TabAndroid::GetTabFeatures() const {
 }
 
 bool TabAndroid::IsPinned() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   return Java_TabImpl_getIsPinned(env, weak_java_tab_.get(env));
 }
 
@@ -755,7 +756,7 @@ bool TabAndroid::IsSplit() const {
 }
 
 std::optional<tab_groups::TabGroupId> TabAndroid::GetGroup() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   std::optional<base::Token> token =
       Java_TabImpl_getTabGroupId(env, weak_java_tab_.get(env));
   return tab_groups::TabGroupId::FromOptionalToken(token);
@@ -836,13 +837,13 @@ void TabAndroid::UpdateProperties() {
 }
 
 void TabAndroid::SetIsPinned(bool is_pinned) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   Java_TabImpl_setIsPinned(env, weak_java_tab_.get(env), is_pinned);
 }
 
 void TabAndroid::SetTabGroupId(
     std::optional<tab_groups::TabGroupId> tab_group_id) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> java_token;
   if (tab_group_id) {
     java_token =
@@ -851,10 +852,10 @@ void TabAndroid::SetTabGroupId(
   Java_TabImpl_setTabGroupId(env, weak_java_tab_.get(env), java_token);
 }
 
-static base::android::ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
+static ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(
     JNIEnv* env,
     const JavaRef<jobject>& jweb_contents) {
-  base::android::ScopedJavaLocalRef<jobject> jtab;
+  ScopedJavaLocalRef<jobject> jtab;
 
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);

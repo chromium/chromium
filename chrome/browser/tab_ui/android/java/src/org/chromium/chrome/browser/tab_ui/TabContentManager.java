@@ -23,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -721,15 +722,19 @@ public class TabContentManager {
 
         void captureThumbnail(
                 long nativeTabContentManager,
-                Object tab,
+                @JniType("TabAndroid*") Tab tab,
                 float thumbnailScale,
                 boolean returnBitmap,
                 Callback<@Nullable Bitmap> callback);
 
         void cacheTabWithBitmap(
-                long nativeTabContentManager, Object tab, Object bitmap, float thumbnailScale);
+                long nativeTabContentManager,
+                @JniType("TabAndroid*") Tab tab,
+                Bitmap bitmap,
+                float thumbnailScale);
 
-        void invalidateIfChanged(long nativeTabContentManager, int tabId, GURL url);
+        void invalidateIfChanged(
+                long nativeTabContentManager, int tabId, @JniType("GURL") GURL url);
 
         void updateVisibleIds(long nativeTabContentManager, int[] priority, int primaryTabId);
 
