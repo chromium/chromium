@@ -185,3 +185,6 @@ crbug.com/471103692 [ Linux ] external/wpt/webaudio/the-audio-api/the-mediastrea
 
 # Gardener 2026-02-24
 crbug.com/459235322 [ Linux ] webaudio/OfflineAudioContext/offlineaudiocontext-promise-basic.html [ Pass Timeout ]
+
+# Times out under MSan, similar to crbug.com/459235322.
+crbug.com/480249475 [ Linux ] external/wpt/css/css-pseudo/input-element-pseudo-open.optional.html [ Pass Timeout ]
