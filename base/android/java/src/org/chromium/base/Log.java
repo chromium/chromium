@@ -21,6 +21,7 @@ import java.util.Locale;
  * <p>Usage documentation: {@code //docs/android_logging.md}.
  */
 @NullMarked
+@SuppressWarnings("NoAndroidLog")
 public class Log {
     /** Convenience property, same as {@link android.util.Log#ASSERT}. */
     public static final int ASSERT = android.util.Log.ASSERT;
