@@ -55,9 +55,9 @@ bool AnalysisServiceSettingsBase::TryParseServiceProviderData(
   }
 
   service_provider_name_ = *service_provider_name;
-  if (service_provider_config.count(service_provider_name_)) {
-    analysis_config_ =
-        service_provider_config.at(service_provider_name_).analysis;
+  if (auto it = service_provider_config.find(service_provider_name_);
+      it != service_provider_config.end()) {
+    analysis_config_ = it->second.analysis;
   }
   if (!analysis_config_) {
     DLOG(ERROR) << "No analysis config for corresponding service provider";
@@ -323,8 +323,8 @@ std::map<std::string, TagSettings> AnalysisServiceSettingsBase::GetTags(
 
   std::map<std::string, TagSettings> output;
   for (const std::string& tag : enable_tags) {
-    if (tags_.count(tag)) {
-      output[tag] = tags_.at(tag);
+    if (auto it = tags_.find(tag); it != tags_.end()) {
+      output[tag] = it->second;
     } else {
       output[tag] = TagSettings();
     }
@@ -339,8 +339,8 @@ AnalysisServiceSettingsBase::GetPatternSettings(
     const PatternSettings& patterns,
     base::MatcherStringPattern::ID match) {
   // If the pattern exists directly in the map, return its settings.
-  if (patterns.count(match) == 1) {
-    return patterns.at(match);
+  if (auto it = patterns.find(match); it != patterns.end()) {
+    return it->second;
   }
 
   // If the pattern doesn't exist in the map, it might mean that it wasn't the
