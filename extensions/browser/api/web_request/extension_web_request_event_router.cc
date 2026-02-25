@@ -1916,16 +1916,6 @@ bool WebRequestEventRouter::AddEventListener(
     return false;
   }
 
-  LOG(ERROR) << "AddEventListener: " << browser_context
-             << " extension_id: " << extension_id
-             << " extension_name: " << extension_name
-             << " event_name: " << event_name
-             << " sub_event_name: " << sub_event_name
-             << " render_process_id: " << render_process_id
-             << " web_view_instance_id: " << web_view_instance_id
-             << " worker_thread_id: " << worker_thread_id
-             << " service_worker_version_id: " << service_worker_version_id;
-
   auto listener = std::make_unique<EventListener>(std::move(id));
   listener->extension_name = extension_name;
   listener->histogram_value = GetEventHistogramValue(event_name);
