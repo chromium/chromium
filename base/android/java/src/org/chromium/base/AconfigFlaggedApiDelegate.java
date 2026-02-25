@@ -366,6 +366,14 @@ public interface AconfigFlaggedApiDelegate {
     }
 
     /**
+     * Returns the {@link PasswordEchoSplitSettingDelegate} if the feature to split the Android
+     * setting 'Show passwords' is enabled. the feature is enabled. Returns null otherwise.
+     */
+    default @Nullable PasswordEchoSplitSettingDelegate getPasswordEchoSplitSettingDelegate() {
+        return null;
+    }
+
+    /**
      * Constructs {@link WebAppQueryRequest} and calls {@link
      * android.content.pm.webapp.WebAppManager#query(@NonNull WebAppQueryRequest
      * request, @NonNull @CallbackExecutor Executor executor, @NonNull IntConsumer callback)} with

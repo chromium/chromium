@@ -5517,6 +5517,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/base/AconfigFlaggedApiDelegate.java",
       "android/java/src/org/chromium/base/BindingRequestQueue.java",
+      "android/java/src/org/chromium/base/PasswordEchoSplitSettingDelegate.java",
       "android/java/src/org/chromium/base/SelectionActionMenuClientWrapper.java",
       "android/java/src/org/chromium/base/serial/SerialManager.java",
       "android/java/src/org/chromium/base/serial/SerialPort.java",
