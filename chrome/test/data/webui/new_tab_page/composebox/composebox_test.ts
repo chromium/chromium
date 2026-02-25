@@ -806,48 +806,30 @@ suite('NewTabPageComposeboxTest', () => {
             '#fileUploadButton'));
   });
 
-  test('file upload buttons disabled when max files uploaded', async () => {
-    loadTimeData.overrideValues({'composeboxFileMaxCount': 1});
-    loadTimeData.overrideValues({'composeboxShowPdfUpload': true});
-    createComposeboxElement();
-    searchboxHandler.setPromiseResolveFor(
-        ADD_FILE_CONTEXT_FN,
-        {token: {low: BigInt(1), high: BigInt(2)}});
-
-    // File upload buttons are not disabled when there are no files.
-    assertFalse(composeboxElement.$.context.$.fileUploadButton.disabled);
-    assertFalse(composeboxElement.$.context.$.imageUploadButton.disabled);
-
-    // Arrange.
-    const dataTransfer = new DataTransfer();
-    const file = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
-    dataTransfer.items.add(file);
-    composeboxElement.$.context.$.fileInput.files = dataTransfer.files;
-    composeboxElement.$.context.$.fileInput.dispatchEvent(new Event('change'));
-
-    await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
-    await microtasksFinished();
-
-    // Assert.
-    assertTrue(composeboxElement.$.context.$.fileUploadButton.disabled);
-    assertTrue(composeboxElement.$.context.$.imageUploadButton.disabled);
-  });
-
   test(
-      'inputs disabled based on file count and create image mode', async () => {
+      'upload button should not be disabled except when upload is in progress',
+      async () => {
         loadTimeData.overrideValues({
-          'composeboxFileMaxCount': 1,
           'composeboxShowCreateImageButton': true,
         });
-
+        const testInputState = {
+          ...mockInputState,
+          maxInstances: {
+            [InputType.kBrowserTab]: 1,
+            [InputType.kLensImage]: 1,
+            [InputType.kLensFile]: 1,
+          },
+          maxTotalInputs: 1,
+        };
         createComposeboxElement();
+        searchboxCallbackRouterRemote.onInputStateChanged(testInputState);
         await microtasksFinished();
 
         searchboxHandler.setPromiseResolveFor(
             ADD_FILE_CONTEXT_FN,
             {token: {low: BigInt(1), high: BigInt(2)}});
 
-        // Upload a PDF file. `uploadButtonDisabled` should be true.
+        // Upload a PDF file.
         const pdfFile = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(pdfFile);
@@ -857,7 +839,7 @@ suite('NewTabPageComposeboxTest', () => {
 
         await searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
         await microtasksFinished();
-        assertTrue(composeboxElement.$.context['uploadButtonDisabled_']);
+        assertFalse(composeboxElement.$.context['uploadButtonDisabled_']);
 
         // Delete the file. `uploadButtonDisabled` should be false.
         const deletedId = composeboxElement.$.context.$.carousel.files[0]!.uuid;
@@ -884,11 +866,11 @@ suite('NewTabPageComposeboxTest', () => {
         await microtasksFinished();
         assertFalse(composeboxElement.$.context['uploadButtonDisabled_']);
 
-        // Enter create image mode. `uploadButtonDisabled` should be true.
+        // Enter create image mode.
         composeboxElement.$.context['activeTool_'] =
             ComposeboxToolMode.kImageGen;
         await composeboxElement.$.context.updateComplete;
-        assertTrue(composeboxElement.$.context['uploadButtonDisabled_']);
+        assertFalse(composeboxElement.$.context['uploadButtonDisabled_']);
 
         // Exit create image mode. `uploadButtonDisabled` should be false.
         composeboxElement.$.context['activeTool_'] =
