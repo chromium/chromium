@@ -237,10 +237,7 @@ struct StorageTraits<const T&> {
 
 template <typename... Ts>
 struct ParamTuple {
-  bool Parse(const base::ListValue& list,
-             const base::ListValue::const_iterator& it) {
-    return it == list.end();
-  }
+  bool Parse(base::ListValue::const_iterator it) { return true; }
 
   template <typename H, typename... As>
   void Apply(const H& handler, As... args) {
@@ -250,9 +247,8 @@ struct ParamTuple {
 
 template <typename T, typename... Ts>
 struct ParamTuple<T, Ts...> {
-  bool Parse(const base::ListValue& list,
-             const base::ListValue::const_iterator& it) {
-    return it != list.end() && GetValue(*it, head) && tail.Parse(list, it + 1);
+  bool Parse(base::ListValue::const_iterator it) {
+    return GetValue(*it, head) && tail.Parse(it + 1);
   }
 
   template <typename H, typename... As>
@@ -270,7 +266,7 @@ bool ParseAndHandle(const base::RepeatingCallback<void(As...)>& handler,
                     DispatchCallback callback,
                     const base::ListValue& list) {
   ParamTuple<As...> tuple;
-  if (!tuple.Parse(list, list.begin())) {
+  if (list.size() != sizeof...(As) || !tuple.Parse(list.begin())) {
     LOG(ERROR) << "Failed to parse arguments for " << method
                << " call: " << list.DebugString();
     return false;
@@ -286,7 +282,7 @@ bool ParseAndHandleWithCallback(
     DispatchCallback callback,
     const base::ListValue& list) {
   ParamTuple<As...> tuple;
-  if (!tuple.Parse(list, list.begin())) {
+  if (list.size() != sizeof...(As) || !tuple.Parse(list.begin())) {
     LOG(ERROR) << "Failed to parse arguments for " << method
                << " call: " << list.DebugString();
     return false;
