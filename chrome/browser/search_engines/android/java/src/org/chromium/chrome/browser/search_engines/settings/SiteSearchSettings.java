@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.chrome.browser.search_engines.settings.custom_search_engine.CustomSearchEngineListCoordinator;
 import org.chromium.chrome.browser.search_engines.settings.custom_site_search.CustomSiteSearchCoordinator;
-import org.chromium.chrome.browser.search_engines.settings.custom_site_search.CustomSiteSearchListPreference;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -63,7 +62,7 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
         }
 
         SettingsUtils.addPreferencesFromResource(this, R.xml.custom_site_search_preferences);
-        CustomSiteSearchListPreference customSiteSearchPref =
+        SearchEngineListPreference customSiteSearchPref =
                 findPreference(CUSTOM_SITE_SEARCH_LIST_PREF);
         if (customSiteSearchPref != null) {
             if (mSiteSearchCoordinator == null) {

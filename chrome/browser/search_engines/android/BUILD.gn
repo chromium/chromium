@@ -33,10 +33,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_search_engine/EditSearchEngineDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchAdapter.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchCoordinator.java",
-    "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchListPreference.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchMediator.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchProperties.java",
-    "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchRecyclerView.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/custom_site_search/CustomSiteSearchViewBinder.java",
   ]
 
@@ -102,7 +100,6 @@ android_resources("java_resources") {
     "java/res/layout/custom_search_engine_item.xml",
     "java/res/layout/custom_site_search_add_item.xml",
     "java/res/layout/custom_site_search_item.xml",
-    "java/res/layout/custom_site_search_list_preference.xml",
     "java/res/layout/custom_site_search_more_item.xml",
     "java/res/layout/default_search_engine_dialog_view.xml",
     "java/res/layout/edit_site_search_dialog.xml",

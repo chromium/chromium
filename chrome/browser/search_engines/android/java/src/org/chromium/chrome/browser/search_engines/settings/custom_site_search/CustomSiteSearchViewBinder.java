@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.search_engines.R;
+import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -54,7 +55,7 @@ class CustomSiteSearchViewBinder {
     }
 
     public static void bindPreference(
-            PropertyModel model, CustomSiteSearchListPreference pref, PropertyKey propertyKey) {
+            PropertyModel model, SearchEngineListPreference pref, PropertyKey propertyKey) {
         if (CustomSiteSearchProperties.ADAPTER == propertyKey) {
             pref.setAdapter(model.get(CustomSiteSearchProperties.ADAPTER));
         }

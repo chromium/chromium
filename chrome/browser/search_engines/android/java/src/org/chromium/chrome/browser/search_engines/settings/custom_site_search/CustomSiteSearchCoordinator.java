@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -22,7 +23,7 @@ public class CustomSiteSearchCoordinator {
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
     public CustomSiteSearchCoordinator(
-            Context context, Profile profile, CustomSiteSearchListPreference pref) {
+            Context context, Profile profile, SearchEngineListPreference pref) {
         mModelList = new ModelList();
         mAdapter = new CustomSiteSearchAdapter(context, mModelList);
         mMediator = new CustomSiteSearchMediator(context, mModelList, profile);
