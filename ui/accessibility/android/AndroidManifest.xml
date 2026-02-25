@@ -14,5 +14,8 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config" />
         </service>
+        <service
+            android:name=".AccessibilityTestHelperService"
+            android:exported="true"/>
     </application>
 </manifest>
