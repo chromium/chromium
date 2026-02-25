@@ -179,8 +179,8 @@ void VerticalDraggedTabsContainer::BuildDragLayout(
   auto* source_dragged_view = GetDragHandler().ViewFromTabSlot(
       session_data.source_view_drag_data()->attached_view);
   CHECK(source_dragged_view);
-  CHECK_EQ(dragging_views_bounds_, gfx::Rect());
 
+  dragging_views_bounds_ = gfx::Rect();
   dragging_views_bounds_.Offset(
       GetSourceViewOffsetFromMouse(*source_dragged_view, session_data));
 
