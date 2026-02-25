@@ -26,7 +26,7 @@ TcpConnectJob::Connector::Connector(TcpConnectJob* parent) : parent_(*parent) {}
 
 TcpConnectJob::Connector::~Connector() = default;
 
-int TcpConnectJob::Connector::OnEndpointDataAvailable() {
+int TcpConnectJob::Connector::TryAdvanceState() {
   DCHECK(!is_done());
 
   if (next_state_ == State::kWaitForIPEndPoint) {
@@ -75,7 +75,7 @@ const IPEndPoint& TcpConnectJob::Connector::CurrentAddress() const {
 void TcpConnectJob::Connector::OnIOComplete(int result) {
   int rv = DoLoop(result);
   if (rv != ERR_IO_PENDING) {
-    parent_->OnConnectorComplete(rv);
+    parent_->OnConnectorComplete(rv, *this);
     // `this` may be deleted here.
   }
 }
@@ -117,7 +117,8 @@ int TcpConnectJob::Connector::DoLoop(int result) {
 int TcpConnectJob::Connector::DoObtainIPEndPoint() {
   DCHECK(!current_address_);
 
-  TcpConnectJob::IPEndPointInfo endpoint_info = parent_->GetNextIPEndPoint();
+  TcpConnectJob::IPEndPointInfo endpoint_info =
+      parent_->GetNextIPEndPoint(*this);
 
   if (!endpoint_info.has_value()) {
     if (endpoint_info.error() == ERR_IO_PENDING) {

@@ -127,6 +127,9 @@ class MockConnectCompleter {
   // Convenience function that combines WaitForConnect() and Complete().
   void WaitForConnectAndComplete(int result);
 
+  // Returns true if the completer has a waiting connection attempt.
+  bool is_connecting() const { return !callback_.is_null(); }
+
  private:
   friend class MockTCPClientSocket;
   friend class MockSSLClientSocket;

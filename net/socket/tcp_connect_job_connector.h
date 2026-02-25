@@ -43,13 +43,16 @@ class TcpConnectJob::Connector {
 
   ~Connector();
 
-  // Called when there may be ServiceEndpoint data available for the connector
-  // to advance. If `next_state_` is one of the two waiting state, updates
-  // `next_state_` and runs DoLoop(). Otherwise, returns ERR_IO_PENDING, since
-  // busy with something else. Must not be called if already done. On error,
-  // may return ERR_NAME_NOT_RESOLVED, if all IPs have been exhausted, rather
-  // than the error from the most recent connection attempt.
-  int OnEndpointDataAvailable();
+  // If `next_state_` is one of the two waiting states, updates `next_state_`
+  // and runs DoLoop() to attempt to pull needed data from parent class's host
+  // resolution. Returns ERR_IO_PENDING or final net::Error code. If not in a
+  // waiting state, always returns ERR_IO_PENDING. Must not be called if already
+  // done. On error, may return ERR_NAME_NOT_RESOLVED, if all IPs have been
+  // exhausted, rather than the error from the most recent connection attempt.
+  //
+  // Needs to be called by the parent job whenever the host resolution may have
+  // data available the Connector hasn't observed yet.
+  int TryAdvanceState();
 
   LoadState GetLoadState() const;
 
@@ -61,7 +64,17 @@ class TcpConnectJob::Connector {
   // once the connector has successfully completed.
   const IPEndPoint& CurrentAddress() const;
 
+  bool is_waiting_for_endpoint() const {
+    return next_state_ == State::kWaitForIPEndPoint;
+  }
   bool is_done() const { return next_state_ == State::kDone; }
+
+  // Whether `this` is currently connecting to an IPv6 IP, or is connected to
+  // one and waiting for DNS to make progress.
+  bool is_connecting_to_ipv6() const {
+    return current_address_ &&
+           current_address_->GetFamily() == ADDRESS_FAMILY_IPV6;
+  }
 
  private:
   // Note that while in either of the "Wait" states, this is waiting on more

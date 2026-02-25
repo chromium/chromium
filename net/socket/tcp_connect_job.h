@@ -47,12 +47,12 @@ class SocketTag;
 //
 // Since this class runs the DNS request in parallel with trying multiple
 // connection attempts, it doesn't use a DoLoop() pattern often found in net.
-// Instead, it has two primary methods that manage reacting to state updates:
-// DoServiceEndpointsUpdated() and DoTryAdvanceWaitingConnectors(). Each of
-// those methods returns a net::Error representing the progress of the
-// TcpConnectJob as a whole, and so can be called either synchronously or
-// asynchronously. If the caller invoking them is async, it's expected to call
-// NotifyDelegateOfCompletion() itself.
+// Instead, it has three primary methods that manage reacting to state updates:
+// DoServiceEndpointsUpdated(), DoTryAdvanceWaitingConnectors(), and
+// DoConnectorComplete(). Each of those methods returns a net::Error
+// representing the progress of the TcpConnectJob as a whole, and so can be
+// called either synchronously or asynchronously. If the caller invoking them is
+// async, it's expected to call NotifyDelegateOfCompletion() itself.
 class NET_EXPORT_PRIVATE TcpConnectJob
     : public ConnectJob,
       public HostResolver::ServiceEndpointRequest::Delegate {
@@ -113,6 +113,11 @@ class NET_EXPORT_PRIVATE TcpConnectJob
 
   static base::TimeDelta ConnectionTimeout();
 
+  // Returns true if there are two live connectors. CHECKs if complete, since
+  // both connectors are deleted at that point, which is probably not what
+  // callers are trying to test.
+  bool has_two_connectors_for_testing() const;
+
  private:
   // Connectors manage the actual connection attempts. They keep on pulling
   // IP addresses to try from the TcpConnectJob and trying to connect to them
@@ -127,7 +132,7 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   int ConnectInternal() override;
   void ChangePriorityInternal(RequestPriority priority) override;
 
-  // One of the two principal methods running the the TcpConnectJob's state
+  // One of the three principal methods running the the TcpConnectJob's state
   // machine. Returns either final error code of the TcpConnectJob if complete,
   // or ERR_IO_PENDING if not.
   //
@@ -136,36 +141,59 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // which the request finished.
   int DoServiceEndpointsUpdated(std::optional<int> dns_request_final_result);
 
-  // One of the two principal methods running the the TcpConnectJob's state
+  // Method that can be posted to asynchronously call
+  // DoTryAdvanceWaitingConnectors() and will complete the TcpConnectJob if that
+  // returns something other than ERR_IO_PENDING.
+  void TryAdvanceWaitingConnectorsAsync();
+
+  // One of the three principal methods running the the TcpConnectJob's state
   // machine.
   //
   // Tells Connectors to check if what DNS data they're waiting on is now
   // available. Returns either final error code of the entire TcpConnectJob if
   // complete, or ERR_IO_PENDING if not.
   //
-  // Called when service endpoints are updated.
+  // Called when one of the following happens:
+  // * When service endpoints are updated.
+  // * When the slow timer triggers, and a second job is created.
+  // * When there are two connectors, called asynchronously by
+  //   GetNextIPEndPoint() through a posted TryAdvanceWaitingConnectorsAsync()
+  //   call whenever it advances `current_service_endpoint_index_`, to give the
+  //   other connector a chance to get an IP from the new ServiceEndpoint.
   int DoTryAdvanceWaitingConnectors();
+
+  // One of the three principal methods running the the TcpConnectJob's state
+  // machine.
+  //
+  // Called when a connector has completed - it has either failed to establish a
+  // usable connections, having tried all possible IP addresses (and the DNS
+  // resolution is complete), or it has a usable connection. Returns
+  // `ERR_IO_PENDING` if there's another connector that the job should wait on,
+  // or the final net::Error for the Job.
+  int DoConnectorComplete(int result, Connector& connector);
 
   // HostResolver::ServiceEndpointRequest:
   void OnServiceEndpointsUpdated() override;
   void OnServiceEndpointRequestFinished(int rv) override;
 
-  // Called back from a Connector when it completes. On failure, the last error
+  // Called back from `connector` when it completes. On failure, the last error
   // of `connection_attempts_` will be preferred over `result`, if there are any
   // errors there, since the error here will generally be ERR_NAME_NOT_RESOLVED
   // due to exhausting all provided IP addresses, rather than a connection
   // error.
-  void OnConnectorComplete(int result);
+  void OnConnectorComplete(int result, Connector& connector);
 
-  // Returns the next `IPEndPoint` that the Connector should connect to, and
-  // logs that endpoint has been attempted. Never returns the same IPEndPoint
-  // twice.
+  // Called by `slow_timer_`. Creates and starts `ipv4_connector_`.
+  void OnSlow();
+
+  // Returns the next `IPEndPoint` that `connector` should connect to, and logs
+  // that endpoint has been attempted. Never returns the same IPEndPoint twice.
   //
   // Returns ERR_NAME_NOT_RESOLVED if there are no more IPEndPoints, and never
   // will be any more (i.e., the DNS request must be completed), ERR_IO_PENDING
   // if none are available yet. On any fatal DNS error, all work is cancelled,
   // so this shouldn't return other error values.
-  IPEndPointInfo GetNextIPEndPoint();
+  IPEndPointInfo GetNextIPEndPoint(const Connector& connector);
 
   // Returns whether `result` is usable for this connection. If `svcb_optional`
   // is true, the non-HTTPS/SVCB fallback is allowed.
@@ -193,13 +221,15 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // connected to an endpoint and ServiceEndpointRequest is crypto ready, or
   // we've given up on establishing a connection.
   //
-  // On success, takes the connected socket from the Connector and calls
-  // SetSocket(). On failure, returns the error from the last entry in
-  // `connection_attempts_`. If the array is empty, adds an entry in
+  // On success, takes the connected socket from `connector` and calls
+  // SetSocket().
+  //
+  // On failure, `connector` is ignored, and returns the error from the last
+  // entry in `connection_attempts_`. If the array is empty, adds an entry in
   // `connection_attempts_` with an empty IP and `result`, and then return
   // `result`. That can happen if there's a DNS error, or there are no usable
   // ServiceEndpoints.
-  int SetDone(int result);
+  int SetDone(int result, Connector* connector = nullptr);
 
   // These wrap the corresponding methods in `dns_request_`. They pull results
   // from `endpoint_override_` instead, if populated.
@@ -225,14 +255,43 @@ class NET_EXPORT_PRIVATE TcpConnectJob
 
   std::unique_ptr<HostResolver::ServiceEndpointRequest> dns_request_;
   bool dns_request_complete_ = false;
+  // The index within the the ServiceEndpoint result of `dns_request_` that
+  // we're currently trying to connect to. Reset each time endpoint results are
+  // updated. This is both a performance optimization, to avoid searching
+  // through the same IPs again and again (Comparing them to
+  // `attempted_addresses_`), and has functional impact - it's only incremented
+  // once all endpoints within a ServiceEndpoint have been tried and failed,
+  // since they're in priority order.
+  size_t current_service_endpoint_index_ = 0;
 
-  std::unique_ptr<Connector> connector_;
+  // At the start, only `primary_connector_` is non-null, and will try to
+  // alternate connecting to IPv6 and IPv4 addresses, based on what's available
+  // and on `prefer_ipv6_`. Once the slow timer expires, there will always be
+  // two connectors, the primary always prefers to connect to IPv6 destinations,
+  // and `ipv4_connector_` will prefer IPv4 ones. If there are only untried IPv4
+  // or IPv6 addresses available in the ServiceEndpoint indicated by
+  // `current_service_endpoint_index_`, both jobs may try to connect to IPs of
+  // the same type. If the primary connector is doing an IPv4 resolution when
+  // the timer expires, it will be moved into the `ipv4_connector_` slot.
+  //
+  // This is a little awkward, but it avoids the need to swap active connectors
+  // when a connection attempt fails before we create a second Connector, so
+  // allows for a single function to resume a stalled connector on DNS complete,
+  // and a single function to get the next IP for the primary/secondary
+  // connector (which can be used by the resume function as well), and allows
+  // for sync completion of all calls when possible, without any post tasks,
+  // except when advancing `current_service_endpoint_index_`.
+  std::unique_ptr<TcpConnectJob::Connector> primary_connector_;
+  std::unique_ptr<TcpConnectJob::Connector> ipv4_connector_;
 
   // Set/cleared on error connecting to IPv6/IPv4. Affects what type of IP is
-  // preferred, if IPv6 and IPv4 IPs of equal priority are available.
+  // preferred, if IPv6 and IPv4 IPs of equal priority are available. Only
+  // matters when there's only one Connector.
   bool prefer_ipv6_ = true;
 
   ResolveErrorInfo resolve_error_info_;
+
+  base::OneShotTimer slow_timer_;
 
   // This includes addresses that Connectors are currently attempting to connect
   // to. No address will ever br tried twice, even if it appears in multiple
@@ -264,6 +323,8 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // calls that can't be cancelled coming in late, and to double-check that the
   // TcpConnectJob isn't completing twice.
   bool is_done_ = false;
+
+  base::WeakPtrFactory<TcpConnectJob> weak_ptr_factory_{this};
 };
 
 }  // namespace net
