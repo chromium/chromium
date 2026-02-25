@@ -116,6 +116,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandMigrationTest,
   std::string manifest_b_content = R"(
         {
           "name": "App B",
+          "id": "/",
           "start_url": "manifest_test_page.html",
           "display": "standalone",
           "migrate_from": [{ "id": "/web_apps/basic.html",
@@ -174,6 +175,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandMigrationTest,
   std::string manifest_b_content = R"(
         {
           "name": "App B",
+          "id": "/",
           "start_url": "manifest_test_page.html",
           "display": "standalone",
           "migrate_from": [{ "id": "/web_apps/basic.html",

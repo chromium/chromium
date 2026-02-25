@@ -5569,25 +5569,37 @@ TEST_F(ManifestParserTest, MigrateFromParseRules) {
 
   // If non-array, empty and error.
   {
-    auto& manifest = ParseManifest(R"({"migrate_from": "not-an-array"})");
+    auto& manifest =
+        ParseManifest(R"({"id": "this_id", "migrate_from": "not-an-array"})");
     EXPECT_EQ(0u, manifest->migrate_from.size());
-    EXPECT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ("property 'migrate_from' ignored, type array expected.",
               errors()[0]);
+  }
+
+  // Valid array but no manifest id, empty and error.
+  {
+    auto& manifest = ParseManifest(R"({"migrate_from": ["app_id_1"]})");
+    EXPECT_EQ(0u, manifest->migrate_from.size());
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ(
+        "property 'migrate_from' ignored, manifest must specify an 'id' "
+        "property in order to receive a migration.",
+        errors()[0]);
   }
 
   // Array with non-strings and non-objects, ignore invalid types.
   {
     auto& manifest = ParseManifest(
-        R"({"migrate_from": ["app_id_1", 123, {"id": "app_id_2"}]})");
-    EXPECT_EQ(2u, manifest->migrate_from.size());
+        R"({"id": "this_id", "migrate_from": ["app_id_1", 123, {"id": "app_id_2"}]})");
+    ASSERT_EQ(2u, manifest->migrate_from.size());
     EXPECT_EQ("http://foo.com/app_id_1",
               manifest->migrate_from[0]->id.GetString());
     EXPECT_FALSE(manifest->migrate_from[0]->install_url.has_value());
     EXPECT_EQ("http://foo.com/app_id_2",
               manifest->migrate_from[1]->id.GetString());
     EXPECT_FALSE(manifest->migrate_from[1]->install_url.has_value());
-    EXPECT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ("migrate_from entry ignored, type string or object expected.",
               errors()[0]);
   }
@@ -5595,8 +5607,8 @@ TEST_F(ManifestParserTest, MigrateFromParseRules) {
   // Valid array with mixed string and object with install_url.
   {
     auto& manifest = ParseManifest(
-        R"({"migrate_from": ["app_id_1", {"id": "app_id_2", "install_url": "http://foo.com/install"}]})");
-    EXPECT_EQ(2u, manifest->migrate_from.size());
+        R"({"id": "this_id", "migrate_from": ["app_id_1", {"id": "app_id_2", "install_url": "http://foo.com/install"}]})");
+    ASSERT_EQ(2u, manifest->migrate_from.size());
     EXPECT_EQ("http://foo.com/app_id_1",
               manifest->migrate_from[0]->id.GetString());
     EXPECT_FALSE(manifest->migrate_from[0]->install_url.has_value());
@@ -5611,9 +5623,9 @@ TEST_F(ManifestParserTest, MigrateFromParseRules) {
   // Object with missing id.
   {
     auto& manifest = ParseManifest(
-        R"({"migrate_from": [{"install_url": "http://example.com/install"}]})");
+        R"({"id": "this_id", "migrate_from": [{"install_url": "http://example.com/install"}]})");
     EXPECT_EQ(0u, manifest->migrate_from.size());
-    EXPECT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ("migrate_from entry ignored, 'id' is missing or not a valid URL.",
               errors()[0]);
   }
@@ -5621,7 +5633,7 @@ TEST_F(ManifestParserTest, MigrateFromParseRules) {
   // Object with cross-origin install_url.
   {
     auto& manifest = ParseManifest(
-        R"({"migrate_from": [{"id": "http://foo.com/app", "install_url": "http://example.com/install"}]})");
+        R"({"id": "this_id", "migrate_from": [{"id": "http://foo.com/app", "install_url": "http://example.com/install"}]})");
     EXPECT_EQ(0u, manifest->migrate_from.size());
     EXPECT_EQ(1u, GetErrorCount());
     EXPECT_EQ(
@@ -5634,6 +5646,7 @@ TEST_F(ManifestParserTest, MigrateFromParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({
+          "id": "this_id",
           "migrate_from": [
             {
               "id": "app_id_1",
@@ -5643,7 +5656,7 @@ TEST_F(ManifestParserTest, MigrateFromParseRules) {
             }
           ]
         })");
-    EXPECT_EQ(2u, manifest->migrate_from.size());
+    ASSERT_EQ(2u, manifest->migrate_from.size());
     EXPECT_EQ("http://foo.com/app_id_1",
               manifest->migrate_from[0]->id.GetString());
     ASSERT_TRUE(manifest->migrate_from[0]->install_url.has_value());
@@ -5659,6 +5672,7 @@ TEST_F(ManifestParserTest, MigrateFromParseRules) {
   {
     auto& manifest = ParseManifest(
         R"({
+          "id": "this_id",
           "migrate_from": [
             {
               "id": "app_id_1",
@@ -5674,7 +5688,7 @@ TEST_F(ManifestParserTest, MigrateFromParseRules) {
             }
           ]
         })");
-    EXPECT_EQ(4u, manifest->migrate_from.size());
+    ASSERT_EQ(4u, manifest->migrate_from.size());
     EXPECT_EQ(manifest->migrate_from[0]->behavior,
               mojom::blink::ManifestMigrationBehavior::kForce);
     EXPECT_EQ(manifest->migrate_from[1]->behavior,
@@ -5683,7 +5697,7 @@ TEST_F(ManifestParserTest, MigrateFromParseRules) {
               mojom::blink::ManifestMigrationBehavior::kSuggest);
     EXPECT_EQ(manifest->migrate_from[3]->behavior,
               mojom::blink::ManifestMigrationBehavior::kSuggest);
-    EXPECT_EQ(1u, GetErrorCount());
+    ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ("behavior value 'invalid' ignored, unknown value.", errors()[0]);
   }
 }

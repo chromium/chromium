@@ -2196,6 +2196,13 @@ Vector<mojom::blink::ManifestMigrateFromPtr> ManifestParser::ParseMigrateFrom(
     return migrate_from_list;
   }
 
+  if (!manifest_->has_custom_id) {
+    AddErrorInfo(
+        "property 'migrate_from' ignored, manifest must specify an 'id' "
+        "property in order to receive a migration.");
+    return migrate_from_list;
+  }
+
   JSONArray* migrate_from_array = object->GetArray("migrate_from");
   if (!migrate_from_array) {
     AddErrorInfo(
