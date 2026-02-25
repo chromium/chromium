@@ -19,28 +19,29 @@ namespace actor {
 
 bool SafetyList::ContainsUrlPair(const GURL& source,
                                  const GURL& destination) const {
-  return std::ranges::any_of(patterns_, [&](const SafetyListPatterns& pattern) {
-    return pattern.source.Matches(source) &&
-           pattern.destination.Matches(destination);
+  return std::ranges::any_of(entries_, [&](const SafetyListEntry& entry) {
+    return entry.source.Matches(source) &&
+           entry.destination.Matches(destination);
   });
 }
 
 bool SafetyList::ContainsUrlPairWithWildcardSource(
     const GURL& source,
     const GURL& destination) const {
-  return std::ranges::any_of(patterns_, [&](const SafetyListPatterns& pattern) {
+  return std::ranges::any_of(entries_, [&](const SafetyListEntry& entry) {
     // A full wildcard [*] is not included in `HasDomainWildcard()`, so we check
     // for that as well.
     bool has_domain_wildcard =
-        pattern.source.GetScope() ==
+        entry.source.GetScope() ==
             ContentSettingsPattern::Scope::kFullWildcard ||
-        pattern.source.HasDomainWildcard();
-    return has_domain_wildcard && pattern.source.Matches(source) &&
-           pattern.destination.Matches(destination);
+        entry.source.HasDomainWildcard();
+    return has_domain_wildcard && entry.source.Matches(source) &&
+           entry.destination.Matches(destination);
   });
 }
 
-SafetyList::SafetyList(Patterns patterns) : patterns_(std::move(patterns)) {}
+SafetyList::SafetyList(std::vector<SafetyListEntry> entries)
+    : entries_(std::move(entries)) {}
 
 SafetyList::~SafetyList() = default;
 
@@ -49,8 +50,9 @@ SafetyList& SafetyList::operator=(const SafetyList&) = default;
 
 // static
 base::expected<SafetyList, SafetyListParseResult>
-SafetyList::ParsePatternListFromJson(const base::ListValue& list_data) {
-  Patterns patterns;
+SafetyList::ParseEntriesFromJson(const base::ListValue& list_data) {
+  std::vector<SafetyListEntry> entries;
+  entries.reserve(list_data.size());
   for (const auto& navigation : list_data) {
     const base::DictValue* navigation_dict = navigation.GetIfDict();
     if (!navigation_dict) {
@@ -58,7 +60,7 @@ SafetyList::ParsePatternListFromJson(const base::ListValue& list_data) {
           SafetyListParseResult::kJsonListValueNotADictionary);
     }
 
-    // Only parse pattern pair if both fields exist.
+    // Only parse entry if both fields exist.
     const std::string* from = navigation_dict->FindString("from");
     if (!from) {
       return base::unexpected(SafetyListParseResult::kInvalidFromField);
@@ -77,10 +79,10 @@ SafetyList::ParsePatternListFromJson(const base::ListValue& list_data) {
     if (!destination.IsValid()) {
       return base::unexpected(SafetyListParseResult::kInvalidToUrlPattern);
     }
-    patterns.push_back(
-        SafetyListPatterns{std::move(source), std::move(destination)});
+    entries.push_back(
+        SafetyListEntry{std::move(source), std::move(destination)});
   }
-  return SafetyList(std::move(patterns));
+  return SafetyList(std::move(entries));
 }
 
 }  // namespace actor

@@ -40,28 +40,26 @@ enum class SafetyListParseResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:SafetyListParseResult)
 
-struct SafetyListPatterns {
+struct SafetyListEntry {
   ContentSettingsPattern source;
   ContentSettingsPattern destination;
 
-  friend bool operator==(const SafetyListPatterns&,
-                         const SafetyListPatterns&) = default;
+  friend bool operator==(const SafetyListEntry&,
+                         const SafetyListEntry&) = default;
 };
 
 class SafetyList {
  public:
-  using Patterns = std::vector<SafetyListPatterns>;
-
-  explicit SafetyList(Patterns patterns = {});
+  explicit SafetyList(std::vector<SafetyListEntry> entries = {});
 
   ~SafetyList();
 
   SafetyList(const SafetyList&);
   SafetyList& operator=(const SafetyList&);
 
-  const Patterns& patterns() const { return patterns_; }
+  const std::vector<SafetyListEntry>& entries() const { return entries_; }
 
-  size_t size() const { return patterns_.size(); }
+  size_t size() const { return entries_.size(); }
 
   bool ContainsUrlPairWithWildcardSource(const GURL& source,
                                          const GURL& destination) const;
@@ -76,20 +74,20 @@ class SafetyList {
   // Just in case, to prevent rules which do not have wildcard in their
   // `source` from erroneously applying, we still pass `url` as the `source`
   // argument for ContainsUrlPair.
-  bool ContainsPatternMatchingSelfNavigation(const GURL& url) const {
+  bool ContainsEntryMatchingSelfNavigation(const GURL& url) const {
     return ContainsUrlPair(url, url);
   }
 
-  // Parses a list of patterns from a JSON list. Returns the parsed SafetyList
+  // Parses a list of entries from a JSON list. Returns the parsed SafetyList
   // on success, or a SafetyListParseResult on failure. If the result is a
   // SafetyListParseResult, the enum value is guaranteed to not be `kSuccess`.
-  static base::expected<SafetyList, SafetyListParseResult>
-  ParsePatternListFromJson(const base::ListValue& list_data);
+  static base::expected<SafetyList, SafetyListParseResult> ParseEntriesFromJson(
+      const base::ListValue& list_data);
 
   friend bool operator==(const SafetyList&, const SafetyList&) = default;
 
  private:
-  Patterns patterns_;
+  std::vector<SafetyListEntry> entries_;
 };
 
 }  // namespace actor

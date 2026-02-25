@@ -30,13 +30,13 @@ constexpr std::string_view kAllowedHistogramName =
 constexpr std::string_view kBlockedHistogramName =
     "Actor.SafetyListParseResult.NavigationBlocked";
 
-void MaybeAppendHardcodedPatterns(SafetyList::Patterns& patterns) {
+void MaybeAppendHardcodedEntries(std::vector<SafetyListEntry>& entries) {
   if (IsNavigationGatingEnabled() &&
       kGlicIncludeHardcodedBlockListEntries.Get()) {
-    patterns.emplace_back(
+    entries.emplace_back(
         ContentSettingsPattern::FromString("*"),
         ContentSettingsPattern::FromString("[*.]googleplex.com"));
-    patterns.emplace_back(
+    entries.emplace_back(
         ContentSettingsPattern::FromString("*"),
         ContentSettingsPattern::FromString("[*.]corp.google.com"));
   }
@@ -56,9 +56,9 @@ SafetyListManager SafetyListManager::CreateForTesting() {
 }
 
 SafetyListManager::SafetyListManager() {
-  SafetyList::Patterns patterns;
-  MaybeAppendHardcodedPatterns(patterns);
-  blocked_ = SafetyList(std::move(patterns));
+  std::vector<SafetyListEntry> entries;
+  MaybeAppendHardcodedEntries(entries);
+  blocked_ = SafetyList(std::move(entries));
 }
 SafetyListManager::~SafetyListManager() = default;
 
@@ -81,7 +81,7 @@ SafetyListManager::ParseStatus SafetyListManager::ParseSafetyListsInternal(
       -> base::expected<SafetyList, SafetyListParseResult> {
     if (const base::Value* value = json_dict->Find(field_name)) {
       if (const base::ListValue* list = value->GetIfList()) {
-        return SafetyList::ParsePatternListFromJson(*list);
+        return SafetyList::ParseEntriesFromJson(*list);
       }
       return base::unexpected(SafetyListParseResult::kJsonKeyValueNotAList);
     }
@@ -97,9 +97,9 @@ SafetyListManager::ParseStatus SafetyListManager::ParseSafetyListsInternal(
   base::expected<SafetyList, SafetyListParseResult> blocked_result =
       parse_one_list(kBlockedFieldName);
   if (blocked_result.has_value()) {
-    SafetyList::Patterns patterns = blocked_result->patterns();
-    MaybeAppendHardcodedPatterns(patterns);
-    blocked_ = SafetyList(std::move(patterns));
+    std::vector<SafetyListEntry> entries = blocked_result->entries();
+    MaybeAppendHardcodedEntries(entries);
+    blocked_ = SafetyList(std::move(entries));
   }
 
   return {allowed_result.error_or(SafetyListParseResult::kSuccess),

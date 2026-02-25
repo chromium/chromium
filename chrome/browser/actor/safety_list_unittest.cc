@@ -121,7 +121,7 @@ TEST(SafetyListTest, ContainsUrlPair) {
   };
 
   for (const auto& test_case : kTestCases) {
-    SafetyList::Patterns list;
+    std::vector<SafetyListEntry> list;
     list.push_back({test_case.source_pattern, test_case.destination_pattern});
     SCOPED_TRACE(test_case.desc);
     EXPECT_EQ(test_case.expected,
@@ -131,7 +131,7 @@ TEST(SafetyListTest, ContainsUrlPair) {
 }
 
 TEST(SafetyListTest, ContainsUrlPair_MultipleEntries) {
-  SafetyList::Patterns list;
+  std::vector<SafetyListEntry> list;
   list.push_back({ContentSettingsPattern::FromString("a.com"),
                   ContentSettingsPattern::FromString("b.com")});
   list.push_back({ContentSettingsPattern::FromString("c.com"),
@@ -193,7 +193,7 @@ TEST(SafetyListTest, ParseJsonList) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
-    EXPECT_THAT(SafetyList::ParsePatternListFromJson(
+    EXPECT_THAT(SafetyList::ParseEntriesFromJson(
                     base::test::ParseJsonList(test_case.json)),
                 test_case.matches);
   }
@@ -267,7 +267,7 @@ TEST(SafetyListTest, ContainsUrlPairWithWildcardSource) {
   };
 
   for (const auto& test_case : kTestCases) {
-    SafetyList::Patterns list;
+    std::vector<SafetyListEntry> list;
     list.push_back({test_case.source_pattern, test_case.destination_pattern});
     SCOPED_TRACE(test_case.desc);
     EXPECT_EQ(test_case.expected,
@@ -350,11 +350,11 @@ TEST(SafetyListTest, ContainsPatternMatchingSelfNavigation) {
   };
 
   for (const auto& test_case : kTestCases) {
-    SafetyList::Patterns list;
+    std::vector<SafetyListEntry> list;
     list.push_back({test_case.source_pattern, test_case.destination_pattern});
     SCOPED_TRACE(test_case.desc);
     EXPECT_EQ(test_case.expected,
-              SafetyList(list).ContainsPatternMatchingSelfNavigation(
+              SafetyList(list).ContainsEntryMatchingSelfNavigation(
                   GURL(test_case.url)));
   }
 }

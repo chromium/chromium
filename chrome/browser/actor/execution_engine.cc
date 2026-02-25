@@ -760,7 +760,7 @@ void ExecutionEngine::SafetyChecksForNextAction() {
   const GURL& url =
       tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedURL();
   if (safety_list_manager.get_blocked_list()
-          .ContainsPatternMatchingSelfNavigation(url)) {
+          .ContainsEntryMatchingSelfNavigation(url)) {
     OnMayActOnTabDecision(
         tab->GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
         MayActOnUrlBlockReason::kBlockedByStaticList);
