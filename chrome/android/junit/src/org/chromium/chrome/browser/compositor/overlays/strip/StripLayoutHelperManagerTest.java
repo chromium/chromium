@@ -257,7 +257,8 @@ public class StripLayoutHelperManagerTest {
                         ObservableSuppliers.createMonotonic(mShareDelegate),
                         /* xrSpaceModeObservableSupplier= */ null,
                         mBackPressManager,
-                        mSnackbarManager);
+                        mSnackbarManager,
+                        () -> {});
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);
         mStripLayoutHelperManager.setIsTabStripHiddenByHeightTransition(false);
     }

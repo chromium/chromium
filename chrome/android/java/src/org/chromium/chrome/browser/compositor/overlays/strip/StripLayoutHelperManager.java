@@ -243,6 +243,7 @@ public class StripLayoutHelperManager
     private float mTopPadding; // in dp units
     private final float mDensity;
     private int mOrientation;
+    private final Runnable mGlicClickHandler;
     private @Nullable TintedCompositorButton mGlicButton;
     private @Nullable TintedCompositorButton mModelSelectorButton;
     private final Context mContext;
@@ -495,6 +496,7 @@ public class StripLayoutHelperManager
      *     space mode, false otherwise.
      * @param backPressManager The {@link BackPressManager} for handling back press.
      * @param snackbarManager The {@link SnackbarManager} used to show snackbar UI.
+     * @param glicClickHandler The click handler for the Glic button.
      */
     // TODO(crbug.com/484116872): Suppressing to observe SharedPreferences, which is discouraged;
     // should use another messaging channel instead.
@@ -524,7 +526,8 @@ public class StripLayoutHelperManager
             MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             @Nullable NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             BackPressManager backPressManager,
-            SnackbarManager snackbarManager) {
+            SnackbarManager snackbarManager,
+            Runnable glicClickHandler) {
         mContext = context;
         Resources res = context.getResources();
         mManagerHost = managerHost;
@@ -580,15 +583,16 @@ public class StripLayoutHelperManager
                 };
         mStripVisibilityStateSupplier.addSyncObserverAndPostIfNonNull(
                 mStripVisibilityStateObserver);
+        mGlicClickHandler = glicClickHandler;
 
         if (isGlicButtonEnabled()) {
-            StripLayoutViewOnClickHandler glicClickHandler =
+            StripLayoutViewOnClickHandler glicClickHandlerOnButton =
                     (time, view, motionEventButtonState, modifiers) -> handleGlicButtonClick();
             StripLayoutViewOnKeyboardFocusHandler glicKeyboardFocusHandler =
                     (isFocused, view) -> {
                         getActiveStripLayoutHelper().onKeyboardFocus(isFocused, view);
                     };
-            createGlicButton(context, glicClickHandler, glicKeyboardFocusHandler);
+            createGlicButton(context, glicClickHandlerOnButton, glicKeyboardFocusHandler);
             ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
         }
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
@@ -932,7 +936,9 @@ public class StripLayoutHelperManager
         getActiveStripLayoutHelper().onHoverExit(/* inTabStrip= */ false);
     }
 
-    private void handleGlicButtonClick() {}
+    private void handleGlicButtonClick() {
+        mGlicClickHandler.run();
+    }
 
     private void handleModelSelectorButtonClick() {
         if (mTabModelSelector == null) return;

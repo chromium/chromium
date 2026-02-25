@@ -161,10 +161,14 @@ if (is_android) {
     sources = [
       "public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java",
       "public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceFactory.java",
+      "public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceHandler.java",
     ]
     deps = [
+      "//base:log_java",
+      "//base:supplier_java",
       "//chrome/browser/glic/android:jni_headers_java",
       "//chrome/browser/profiles/android:java",
+      "//chrome/browser/ui/browser_window/public/android:java",
       "//third_party/jni_zero:jni_zero_java",
     ]
   }

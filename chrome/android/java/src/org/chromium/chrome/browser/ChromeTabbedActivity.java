@@ -1088,7 +1088,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             mRootUiCoordinator.getShareDelegateSupplier(),
                             mXrSceneCoreSessionManagerSupplier.get(),
                             mBackPressManager,
-                            getSnackbarManager());
+                            getSnackbarManager(),
+                            () -> ((TabbedRootUiCoordinator) mRootUiCoordinator).toggleGlic());
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
     }

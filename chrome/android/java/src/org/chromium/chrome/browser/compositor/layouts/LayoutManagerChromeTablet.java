@@ -95,6 +95,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      *     space modes on XR.
      * @param backPressManager The {@link BackPressManager} for handling back press.
      * @param snackbarManager The {@link SnackbarManager} used to show snackbar UI.
+     * @param glicClickHandler The click handler for the tab strip Glic button.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -120,7 +121,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             @Nullable XrSceneCoreSessionManager xrSceneCoreSessionManager,
             BackPressManager backPressManager,
-            SnackbarManager snackbarManager) {
+            SnackbarManager snackbarManager,
+            Runnable glicClickHandler) {
         super(
                 host,
                 contentContainer,
@@ -160,7 +162,8 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         shareDelegateSupplier,
                         xrSpaceModeObservableSupplier,
                         backPressManager,
-                        snackbarManager);
+                        snackbarManager,
+                        glicClickHandler);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
         mDesktopWindowStateManager = desktopWindowStateManager;
