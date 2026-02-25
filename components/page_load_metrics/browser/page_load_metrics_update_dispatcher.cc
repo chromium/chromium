@@ -548,20 +548,7 @@ void PageLoadMetricsUpdateDispatcher::
 
 void PageLoadMetricsUpdateDispatcher::
     ClearSoftNavigationLargestContentfulPaint() {
-  soft_navigation_contentful_paint_candidate_.Text().Reset(
-      std::nullopt, 0u, blink::LargestContentfulPaintType::kNone,
-      /*image_bpp=*/0.0,
-      /*image_request_priority=*/std::nullopt,
-      /*image_discovery_time=*/std::nullopt,
-      /*image_load_start=*/std::nullopt,
-      /*image_load_end=*/std::nullopt);
-  soft_navigation_contentful_paint_candidate_.Image().Reset(
-      std::nullopt, 0u, blink::LargestContentfulPaintType::kNone,
-      /*image_bpp=*/0.0,
-      /*image_request_priority=*/std::nullopt,
-      /*image_discovery_time=*/std::nullopt,
-      /*image_load_start=*/std::nullopt,
-      /*image_load_end=*/std::nullopt);
+  soft_navigation_contentful_paint_candidate_.Clear();
 }
 
 void PageLoadMetricsUpdateDispatcher::SetUpSharedMemoryForDroppedFrames(

@@ -99,6 +99,8 @@ class ContentfulPaintTimingInfo {
 
   std::unique_ptr<base::trace_event::TracedValue> DataAsTraceValue() const;
 
+  void Clear();
+
   ContentfulPaintTimingInfo() = delete;
 
  private:
@@ -125,6 +127,8 @@ class ContentfulPaint {
   ContentfulPaintTimingInfo& Image() { return image_; }
   const ContentfulPaintTimingInfo& Image() const { return image_; }
   const ContentfulPaintTimingInfo& MergeTextAndImageTiming() const;
+
+  void Clear();
 
  private:
   ContentfulPaintTimingInfo text_;
