@@ -164,10 +164,10 @@ bool ShouldSampleFailures() {
   double report_probability = 0.0;
   switch (install_static::GetChromeChannel()) {
     case version_info::Channel::CANARY:
-      report_probability = 0.05;
+      report_probability = 0.1;
       break;
     case version_info::Channel::DEV:
-      report_probability = 0.01;
+      report_probability = 0.05;
       break;
     case version_info::Channel::BETA:
       report_probability = 0.03;
