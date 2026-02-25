@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.setup_list.SetupListCompletable;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /** Coordinator for the sign in promo card. */
@@ -33,10 +34,12 @@ public class SignInPromoCoordinator implements EducationalTipCardProvider, Setup
             Runnable onModuleClickedCallback, EducationTipModuleActionDelegate actionDelegate) {
         mOnModuleClickedCallback = onModuleClickedCallback;
         mActionDelegate = actionDelegate;
-        mSignInCoordinator =
-                mActionDelegate.createBottomSheetSigninAndHistorySyncCoordinator(
-                        new BottomSheetSigninAndHistorySyncCoordinator.Delegate() {},
-                        SigninAccessPoint.SET_UP_LIST);
+        if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
+            mSignInCoordinator =
+                    mActionDelegate.createBottomSheetSigninAndHistorySyncCoordinator(
+                            new BottomSheetSigninAndHistorySyncCoordinator.Delegate() {},
+                            SigninAccessPoint.SET_UP_LIST);
+        }
     }
 
     // EducationalTipCardProvider implementation.
@@ -66,7 +69,12 @@ public class SignInPromoCoordinator implements EducationalTipCardProvider, Setup
 
     @Override
     public void onCardClicked() {
-        mActionDelegate.startSignInFlow(assumeNonNull(mSignInCoordinator));
+        if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
+            assumeNonNull(mSignInCoordinator)
+                    .startSigninFlow(mActionDelegate.createSigninBottomSheetConfig());
+        } else {
+            mActionDelegate.showSignInLegacy();
+        }
         mOnModuleClickedCallback.run();
     }
 

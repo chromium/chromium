@@ -5,6 +5,8 @@ package org.chromium.chrome.browser.educational_tip;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,6 +25,8 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.educational_tip.cards.HistorySyncPromoCoordinator;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -31,9 +35,12 @@ import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 
@@ -41,6 +48,10 @@ import java.util.Set;
 
 /** Test relating to {@link HistorySyncPromoCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({
+    SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+    SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+})
 public class HistorySyncPromoCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Runnable mOnModuleClickedCallback;
@@ -51,6 +62,7 @@ public class HistorySyncPromoCoordinatorUnitTest {
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private SyncService mSyncService;
     @Mock private SetupListManager mSetupListManager;
+    @Mock private BottomSheetSigninAndHistorySyncCoordinator mSignInCoordinator;
     private NonNullObservableSupplier<Profile> mProfileSupplier;
 
     private HistorySyncPromoCoordinator mHistorySyncPromoCoordinator;
@@ -65,6 +77,9 @@ public class HistorySyncPromoCoordinatorUnitTest {
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         SetupListManager.setInstanceForTesting(mSetupListManager);
+        when(mActionDelegate.createBottomSheetSigninAndHistorySyncCoordinator(
+                        any(), eq(SigninAccessPoint.HISTORY_SYNC_EDUCATIONAL_TIP)))
+                .thenReturn(mSignInCoordinator);
 
         mHistorySyncPromoCoordinator =
                 new HistorySyncPromoCoordinator(
@@ -152,5 +167,30 @@ public class HistorySyncPromoCoordinatorUnitTest {
         mHistorySyncPromoCoordinator.syncStateChanged();
 
         verify(mRemoveModuleCallback, never()).run();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
+        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
+    })
+    public void testOnCardClicked_legacy() {
+        mHistorySyncPromoCoordinator.onCardClicked();
+
+        verify(mActionDelegate).showHistorySyncOptInLegacy(eq(mRemoveModuleCallback));
+        verify(mOnModuleClickedCallback).run();
+        verify(mSignInCoordinator, never()).startSigninFlow(any());
+    }
+
+    @Test
+    @SmallTest
+    public void testOnCardClicked() {
+        mHistorySyncPromoCoordinator.onCardClicked();
+
+        verify(mActionDelegate).createHistorySyncBottomSheetConfig();
+        verify(mSignInCoordinator).startSigninFlow(any());
+        verify(mOnModuleClickedCallback).run();
+        verify(mActionDelegate, never()).showHistorySyncOptInLegacy(any());
     }
 }

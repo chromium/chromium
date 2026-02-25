@@ -3320,30 +3320,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             }
 
             @Override
-            public void showHistorySyncOptIn(Runnable dismissHistorySyncModuleCallback) {
-                AccountPickerBottomSheetStrings accountPickerBottomSheetStrings =
-                        new AccountPickerBottomSheetStrings.Builder(
-                                        getContext()
-                                                .getString(
-                                                        R.string
-                                                                .signin_account_picker_bottom_sheet_title))
-                                .setSubtitleString(
-                                        getContext()
-                                                .getString(
-                                                        R.string
-                                                                .signin_account_picker_bottom_sheet_benefits_subtitle))
-                                .build();
+            public void showHistorySyncOptInLegacy(Runnable dismissHistorySyncModuleCallback) {
                 BottomSheetSigninAndHistorySyncConfig bottomSheetConfig =
-                        new BottomSheetSigninAndHistorySyncConfig.Builder(
-                                        accountPickerBottomSheetStrings,
-                                        BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode
-                                                .NO_SIGNIN,
-                                        BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode
-                                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                        HistorySyncConfig.OptInMode.REQUIRED,
-                                        getContext().getString(R.string.history_sync_title),
-                                        getContext().getString(R.string.history_sync_subtitle))
-                                .build();
+                        createHistorySyncBottomSheetConfig();
+
                 @Nullable Intent intent =
                         SigninAndHistorySyncActivityLauncherImpl.get()
                                 .createBottomSheetSigninIntentOrShowError(
@@ -3366,6 +3346,61 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             },
                             null);
                 }
+            }
+
+            @Override
+            public void showSignInLegacy() {
+                BottomSheetSigninAndHistorySyncConfig bottomSheetConfig =
+                        createSigninBottomSheetConfig();
+
+                @Nullable Intent intent =
+                        SigninAndHistorySyncActivityLauncherImpl.get()
+                                .createBottomSheetSigninIntentOrShowError(
+                                        ChromeTabbedActivity.this,
+                                        mTabModelSelector.getCurrentModel().getProfile(),
+                                        bottomSheetConfig,
+                                        SigninAccessPoint.SET_UP_LIST);
+
+                if (intent != null) {
+                    WindowAndroid windowAndroid = ChromeTabbedActivity.this.getWindowAndroid();
+                    windowAndroid.showIntent(intent, /* callback= */ null, null);
+                }
+            }
+
+            @Override
+            public BottomSheetSigninAndHistorySyncConfig createHistorySyncBottomSheetConfig() {
+                return new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                createAccountPickerStrings(),
+                                BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode.NO_SIGNIN,
+                                BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode
+                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.REQUIRED,
+                                getContext().getString(R.string.history_sync_title),
+                                getContext().getString(R.string.history_sync_subtitle))
+                        .build();
+            }
+
+            @Override
+            public BottomSheetSigninAndHistorySyncConfig createSigninBottomSheetConfig() {
+                return new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                createAccountPickerStrings(),
+                                BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode
+                                        .BOTTOM_SHEET,
+                                BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode
+                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.OPTIONAL,
+                                getString(R.string.history_sync_title),
+                                getString(R.string.history_sync_subtitle))
+                        .build();
+            }
+
+            private AccountPickerBottomSheetStrings createAccountPickerStrings() {
+                String title = getString(R.string.signin_account_picker_bottom_sheet_title);
+                String subtitle =
+                        getString(R.string.signin_account_picker_bottom_sheet_benefits_subtitle);
+                return new AccountPickerBottomSheetStrings.Builder(title)
+                        .setSubtitleString(subtitle)
+                        .build();
             }
 
             @Override
@@ -3406,30 +3441,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             BottomSheetSigninAndHistorySyncCoordinator.Delegate delegate,
                             @SigninAccessPoint int accessPoint) {
                 return createBottomSheetSigninCoordinator(delegate, accessPoint);
-            }
-
-            @Override
-            public void startSignInFlow(BottomSheetSigninAndHistorySyncCoordinator coordinator) {
-                String title = getString(R.string.signin_account_picker_bottom_sheet_title);
-                String subtitle =
-                        getString(R.string.signin_account_picker_bottom_sheet_benefits_subtitle);
-                AccountPickerBottomSheetStrings accountPickerBottomSheetStrings =
-                        new AccountPickerBottomSheetStrings.Builder(title)
-                                .setSubtitleString(subtitle)
-                                .build();
-                BottomSheetSigninAndHistorySyncConfig config =
-                        new BottomSheetSigninAndHistorySyncConfig.Builder(
-                                        accountPickerBottomSheetStrings,
-                                        BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode
-                                                .BOTTOM_SHEET,
-                                        BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode
-                                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                        HistorySyncConfig.OptInMode.OPTIONAL,
-                                        getString(R.string.history_sync_title),
-                                        getString(R.string.history_sync_subtitle))
-                                .build();
-
-                coordinator.startSigninFlow(config);
             }
         };
     }
