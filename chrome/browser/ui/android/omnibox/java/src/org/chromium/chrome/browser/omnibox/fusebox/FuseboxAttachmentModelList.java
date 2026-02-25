@@ -288,13 +288,28 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
     }
 
     /**
+     * Removes all tab attachments that are not explicitly identified.
+     *
+     * @param tabIdsToKeep A set of tab ids corresponding to tabs that are to be kept.
+     */
+    public void removeTabsNotInSet(Set<Integer> tabIdsToKeep) {
+        removeIf(
+                (ListItem item) -> {
+                    if (item.type != FuseboxAttachmentType.ATTACHMENT_TAB) return false;
+                    FuseboxAttachment attachment =
+                            item.model.get(FuseboxAttachmentProperties.ATTACHMENT);
+                    Integer tabId = assumeNonNull(attachment).tabId;
+                    return !tabIdsToKeep.contains(tabId);
+                });
+    }
+
+    /**
      * Removes FuseboxAttachments from the model list and backend that satisfy the given filter
      * predicate.
      *
      * @param filter The predicate to test each {@link ListItem} against for removal.
-     * @return True if one or more attachments were removed; False, otherwise.
      */
-    public boolean removeIf(Predicate<ListItem> filter) {
+    private void removeIf(Predicate<ListItem> filter) {
         List<FuseboxAttachment> attachmentsToRemove = new ArrayList<>();
 
         // Identify attachments that satisfy the filter.
@@ -307,16 +322,13 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
 
         // If nothing was found, return false.
         if (attachmentsToRemove.isEmpty()) {
-            return false;
+            return;
         }
 
         // Execute removal using the existing single-item method.
         for (FuseboxAttachment attachment : attachmentsToRemove) {
             remove(attachment, /* isFailure= */ false);
         }
-
-        // Since we executed actual removal logic one or more times, return true.
-        return true;
     }
 
     /**

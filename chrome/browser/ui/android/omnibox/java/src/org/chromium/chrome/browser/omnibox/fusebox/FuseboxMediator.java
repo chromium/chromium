@@ -503,15 +503,8 @@ public class FuseboxMediator {
         if (tabModelSelector == null) return;
 
         Set<Integer> currentAttachedIds = mModelList.getAttachedTabIds();
-        try (var batchToken = mModelList.beginBatchEdit()) {
-            mModelList.removeIf(
-                    item -> {
-                        if (item.type != FuseboxAttachmentType.ATTACHMENT_TAB) return false;
-                        FuseboxAttachment attachment =
-                                item.model.get(FuseboxAttachmentProperties.ATTACHMENT);
-                        Integer tabId = assumeNonNull(attachment).tabId;
-                        return !newlySelectedTabIds.contains(tabId);
-                    });
+        try (var ignored = mModelList.beginBatchEdit()) {
+            mModelList.removeTabsNotInSet(newlySelectedTabIds);
 
             for (int id : newlySelectedTabIds) {
                 if (!currentAttachedIds.contains(id)) {
