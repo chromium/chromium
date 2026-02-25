@@ -13,7 +13,7 @@ import type {SkillSource} from '../../glic_api/glic_api.js';
 
 import type {NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo} from './../../actor_webui.mojom-webui.js';
 import {ResponseExtras} from './../post_message_transport.js';
-import {additionalContextToClient, focusedTabDataToClient, idToClient, invokeOptionsToClient, navigationConfirmationRequestToClient, navigationConfirmationResponseToMojo, optionalToClient, pageMetadataToClient, panelOpeningDataToClient, panelStateToClient, selectAutofillSuggestionsDialogRequestToClient, selectAutofillSuggestionsDialogResponseToMojo, selectCredentialDialogRequestToClient, selectCredentialDialogResponseToMojo, tabDataToClient, timeDeltaFromClient, userConfirmationDialogRequestToClient, userConfirmationDialogResponseToMojo, webClientModeToMojo} from './conversions.js';
+import {additionalContextToClient, focusedTabDataToClient, idToClient, invokeOptionsToClient, navigationConfirmationRequestToClient, navigationConfirmationResponseToMojo, optionalToClient, pageMetadataToClient, panelOpeningDataToClient, panelStateToClient, selectAutofillSuggestionsDialogRequestToClient, selectAutofillSuggestionsDialogResponseToMojo, selectCredentialDialogRequestToClient, selectCredentialDialogResponseToMojo, tabDataToClient, timeDeltaFromClient, userConfirmationDialogRequestToClient, userConfirmationDialogResponseToMojo, webClientModeToMojo, zeroStateSuggestionsToClient} from './conversions.js';
 import type {GatedSender} from './gated_sender.js';
 import type {ApiHostEmbedder, GlicApiHost} from './glic_api_host.js';
 import {PanelOpenState} from './types.js';
@@ -250,8 +250,10 @@ export class WebClientImpl implements WebClientInterface {
       suggestions: ZeroStateSuggestionsV2Mojo,
       options: ZeroStateSuggestionsOptionsMojo): void {
     this.sender.sendLatestWhenActive(
-        'glicWebClientZeroStateSuggestionsChanged',
-        {suggestions: suggestions, options: options});
+        'glicWebClientZeroStateSuggestionsChanged', {
+          suggestions: zeroStateSuggestionsToClient(suggestions),
+          options: options,
+        });
   }
 
   notifyActorTaskStateChanged(taskId: number, state: ActorTaskStateMojo): void {

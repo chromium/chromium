@@ -22,7 +22,4 @@ BASE_FEATURE(kGlicDaisyChainViaCoordinator, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAutoOpenGlicForPdf, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<std::string> kAutoOpenGlicForPdfArm{
-    &kAutoOpenGlicForPdf, "arm", "standardZS"};
-
 }  // namespace features

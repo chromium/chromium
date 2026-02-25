@@ -63,6 +63,7 @@ class GlicZeroStateSuggestionsManager {
   void Reset();
 
  private:
+  bool WasAutoOpenedForPdf();
   void FilterTabs(std::vector<content::WebContents*>& tabs);
 
   // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
