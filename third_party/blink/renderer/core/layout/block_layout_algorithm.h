@@ -86,7 +86,9 @@ struct BlockLineClampData {
     return data.lines_until_clamp == 0;
   }
 
-  void UpdateFromStyle(int lines_until_clamp, LayoutUnit clamp_bfc_offset);
+  void UpdateFromStyle(int lines_until_clamp,
+                       LayoutUnit clamp_bfc_offset,
+                       LayoutUnit end_border_padding);
 
   // Returns false if we need to relayout with a different clamp BFC offset.
   bool UpdateAfterLayout(const LayoutResult* layout_result,
@@ -125,9 +127,6 @@ struct BlockLineClampData {
   // if data.state == kClampByLines.
   int initial_lines_until_clamp = 0;
 
-  // Only relevant if data.state == kMeasureLinesUntilBfcOffset.
-  MarginStrut end_margin_strut;
-
   // If set, the box was clamped, and this is the previous inflow position after
   // the last line or box before clamp. Can only be set if
   // data.state == kClampByLines.
@@ -142,6 +141,11 @@ struct BlockLineClampData {
   // The last LayoutObject encountered since the last line.
   // Can only be set if data.state == kMeasureLinesUntilBfcOffset.
   const LayoutObject* last_layout_object = nullptr;
+
+  // The chain of ancestor data needed to compute the size of the line-clamp
+  // container corresponding to each clamp point.
+  // Can only be set if data.state == kMeasureLinesUntilBfcOffset.
+  const LineClampAncestorChain* ancestor_chain = nullptr;
 };
 
 // A class for general block layout (e.g. a <div> with no special style).

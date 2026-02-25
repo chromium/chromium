@@ -732,8 +732,8 @@ class CORE_EXPORT ConstraintSpace final {
     return rare_data_ ? rare_data_->GetLineClampData() : LineClampData();
   }
 
-  MarginStrut LineClampEndMarginStrut() const {
-    return rare_data_ ? rare_data_->LineClampEndMarginStrut() : MarginStrut();
+  const LineClampAncestorChain* GetLineClampAncestorChain() const {
+    return rare_data_ ? rare_data_->GetLineClampAncestorChain() : nullptr;
   }
 
   // Return true if `text-box-trim:trim-start` is in effect at the beginning of
@@ -933,7 +933,8 @@ class CORE_EXPORT ConstraintSpace final {
           is_adjacent_to_paper_edge_block_start(
               other.is_adjacent_to_paper_edge_block_start),
           is_adjacent_to_paper_edge_block_end(
-              other.is_adjacent_to_paper_edge_block_end) {
+              other.is_adjacent_to_paper_edge_block_end),
+          line_clamp_ancestor_chain_(other.line_clamp_ancestor_chain_) {
       switch (GetDataUnionType()) {
         case DataUnionType::kNone:
           break;
@@ -993,7 +994,9 @@ class CORE_EXPORT ConstraintSpace final {
       }
     }
 
-    void Trace(Visitor*) const {}
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(line_clamp_ancestor_chain_);
+    }
 
     bool MaySkipLayout(const RareData& other) const {
       if (replaced_child_percentage_resolution_block_size !=
@@ -1043,7 +1046,9 @@ class CORE_EXPORT ConstraintSpace final {
               other.is_adjacent_to_paper_edge_block_start ||
           is_adjacent_to_paper_edge_block_end !=
               other.is_adjacent_to_paper_edge_block_end ||
-          ignore_margins_for_stretch != other.ignore_margins_for_stretch) {
+          ignore_margins_for_stretch != other.ignore_margins_for_stretch ||
+          !base::ValuesEquivalent(line_clamp_ancestor_chain_,
+                                  other.line_clamp_ancestor_chain_)) {
         return false;
       }
 
@@ -1093,7 +1098,7 @@ class CORE_EXPORT ConstraintSpace final {
           is_adjacent_to_paper_edge_inline_end ||
           is_adjacent_to_paper_edge_block_start ||
           is_adjacent_to_paper_edge_block_end ||
-          !ignore_margins_for_stretch.IsEmpty()) {
+          !ignore_margins_for_stretch.IsEmpty() || line_clamp_ancestor_chain_) {
         return false;
       }
 
@@ -1177,14 +1182,12 @@ class CORE_EXPORT ConstraintSpace final {
       EnsureBlockData()->line_clamp_data = value;
     }
 
-    MarginStrut LineClampEndMarginStrut() const {
-      return GetDataUnionType() == DataUnionType::kBlockData
-                 ? block_data_.line_clamp_end_margin_strut
-                 : MarginStrut();
+    const LineClampAncestorChain* GetLineClampAncestorChain() const {
+      return line_clamp_ancestor_chain_;
     }
 
-    void SetLineClampEndMarginStrut(MarginStrut value) {
-      EnsureBlockData()->line_clamp_end_margin_strut = value;
+    void SetLineClampAncestorChain(const LineClampAncestorChain* value) {
+      line_clamp_ancestor_chain_ = value;
     }
 
     void SetIsTableCell() { EnsureTableCellData(); }
@@ -1389,7 +1392,6 @@ class CORE_EXPORT ConstraintSpace final {
       std::optional<LayoutUnit> forced_bfc_block_offset;
       LayoutUnit clearance_offset = LayoutUnit::Min();
       LineClampData line_clamp_data;
-      MarginStrut line_clamp_end_margin_strut;
     };
 
     struct TableCellData {
@@ -1561,6 +1563,8 @@ class CORE_EXPORT ConstraintSpace final {
       StretchData stretch_data_;
       SubgridData subgrid_data_;
     };
+
+    Member<const LineClampAncestorChain> line_clamp_ancestor_chain_;
   };
 
   // This struct simply allows us easily copy, compare, and initialize all the
