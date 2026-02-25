@@ -8,6 +8,7 @@
 #include <functional>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "third_party/material_color_utilities/src/cpp/palettes/tones.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
