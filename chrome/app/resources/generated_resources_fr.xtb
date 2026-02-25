@@ -2484,7 +2484,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2660115748527982021">Conseil : De nombreuses applis Android sont disponibles sur le Web. Vérifiez leur disponibilité dans l'appli ou sur le site Web du développeur.</translation>
 <translation id="2660779039299703961">Événement</translation>
 <translation id="266079277508604648">Impossible de se connecter à l'imprimante. Vérifiez qu'elle est sous tension et connectée à votre Chromebook par Wi-Fi ou USB.</translation>
-<translation id="2661315027005813059">Page de cache amélioré : <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="2661315027005813059">Page de cache back/forward : <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="2661714428027871023">Naviguez plus rapidement et consommez moins de données en mode simplifié. Cliquez ici pour en savoir plus.</translation>
 <translation id="2662876636500006917">Chrome Web Store</translation>
 <translation id="2663253180579749458">Ajout du profil eSIM. Cela peut prendre quelques minutes.</translation>
@@ -4046,7 +4046,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3727187387656390258">Inspecter le pop-up</translation>
 <translation id="372722114124766626">Une seule fois</translation>
 <translation id="3727332897090187514">Aucune remarque ajoutée</translation>
-<translation id="3727473233247516571">Sous-cadre en cache amélioré : <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
+<translation id="3727473233247516571">Sous-cadre en cache back/forward : <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="3727558469988088200">Obtenir les clés d'accès</translation>
 <translation id="3727843212509629024">Code incorrect. Réessayez.</translation>
 <translation id="3727850735097852673">Pour utiliser le Gestionnaire de mots de passe de Google avec le trousseau macOS, relancez Chrome et autorisez l'accès au trousseau. Vos onglets s'ouvriront alors de nouveau.</translation>
@@ -6043,7 +6043,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5090637338841444533">Non autorisé à suivre la position de la caméra</translation>
 <translation id="5091636240353511739">Afficher le code</translation>
 <translation id="5093477827231450397">Liste des sites que vous avez bloqués et qui ne doivent pas suggérer d'annonces à d'autres sites</translation>
-<translation id="5093569275467863761">Sous-cadre de navigation privée en cache amélioré : <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="5093569275467863761">Sous-cadre de navigation privée en cache back/forward : <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="5094176498302660097">Vous pouvez ouvrir et modifier les fichiers compatibles avec cette appli depuis l'appli Fichiers ou d'autres applis. Pour contrôler quels fichiers s'ouvrent dans cette appli par défaut, découvrez comment <ph name="BEGIN_LINK" />définir les applis par défaut sur votre appareil<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Communiquer avec les applications natives associées</translation>
 <translation id="5095252080770652994">Progression</translation>
@@ -10308,7 +10308,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8033958968890501070">Délai dépassé</translation>
 <translation id="8034399942062051455">L'optimisation V8 est désactivée</translation>
 <translation id="8034697324150621782">Remplacer par la vue du haut</translation>
-<translation id="8035059678007243127">Page de navigation privée en cache amélioré : <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
+<translation id="8035059678007243127">Page de navigation privée en cache back/forward : <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Aidez-nous à améliorer la saisie automatique</translation>
 <translation id="8036504271468642248">Phrase précédente</translation>
 <translation id="8037117027592400564">Accéder à l'ensemble du texte énoncé à l'aide de la synthèse vocale</translation>

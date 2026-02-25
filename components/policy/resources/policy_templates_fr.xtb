@@ -903,7 +903,7 @@ Une "entrée utilisateur" est définie par les API du système d'exploitation et
 <translation id="162162247775156979">Désactiver les rapports sur l'état du stockage de l'appareil</translation>
 <translation id="1622982680869126605">Autoriser l'organiseur d'onglets et améliorer les modèles d'IA.</translation>
 <translation id="1625700732886306811">Autoriser <ph name="PRODUCT_NAME" /> à se connecter aux appareils sur toutes les adresses IP</translation>
-<translation id="1626379196197114720">Autoriser l'utilisation du cache amélioré</translation>
+<translation id="1626379196197114720">Autoriser l'utilisation du cache back/forward</translation>
 <translation id="1628974048137236820">Fiches non affichées sur la page Nouvel onglet</translation>
 <translation id="163200210584085447">Les formats de cette liste seront mis en correspondance avec la source
       de sécurité de l'URL à l'origine de la demande. En cas de correspondance,
@@ -1887,7 +1887,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
       </translation>
 <translation id="2336822410658374491">Désactiver l'accès au menu contextuel du moteur de recherche par défaut</translation>
 <translation id="233726003666026610">Paramètres des groupes suggérés</translation>
-<translation id="2337859888277013371">Ne pas autoriser l'utilisation du cache amélioré</translation>
+<translation id="2337859888277013371">Ne pas autoriser l'utilisation du cache back/forward</translation>
 <translation id="2341509917222115272">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent choisir d'associer les clients et les hôtes au moment de la connexion, ce qui évite d'avoir à saisir systématiquement un code.
 
       Si cette règle est désactivée, cette fonctionnalité n'est pas disponible.</translation>
@@ -6446,9 +6446,9 @@ Si la règle est définie sur "False", les enseignants ne peuvent pas accéder �
       Si la règle n'est pas définie, l'utilisateur peut choisir l'image de l'avatar qui le représente dans l'écran de connexion.</translation>
 <translation id="5428716437928918274">Contrôles des paramètres de Privacy Sandbox</translation>
 <translation id="5430760800138878127">Le nouveau comportement de l'analyseur HTML, permettant d'utiliser plus de balises, sera activé.</translation>
-<translation id="5431392643649571773">Lorsque cette règle est activée, la fonctionnalité <ph name="PRODUCT_NAME" /> permet d'utiliser le cache amélioré. Si l'utilisateur change de page, celle qui est quittée peut être conservée en l'état (arborescence de documents, script, etc.) dans le cache amélioré. Par exemple, si l'utilisateur retourne sur cette page, celle-ci peut ainsi être restaurée à partir de ce cache et affichée telle qu'elle était avant sa mise en cache.
+<translation id="5431392643649571773">Lorsque cette règle est activée, la fonctionnalité <ph name="PRODUCT_NAME" /> permet d'utiliser le cache back/forward. Si l'utilisateur change de page, celle qui est quittée peut être conservée en l'état (arborescence de documents, script, etc.) dans le cache back/forward. Par exemple, si l'utilisateur retourne sur cette page, celle-ci peut ainsi être restaurée à partir de ce cache et affichée telle qu'elle était avant sa mise en cache.
 
-          Toutefois, cette fonctionnalité peut entraîner des dysfonctionnements pour certains sites Web qui ne s'attendent pas à ce que leurs pages soient mises en cache, en particulier ceux qui reposent sur le déclenchement de l'événement "<ph name="UNLOAD_HANDLER_NAME" />" en cas de changement de page. L'événement "<ph name="UNLOAD_HANDLER_NAME" />" ne se déclenche pas si la page concernée est stockée dans le cache amélioré.
+          Toutefois, cette fonctionnalité peut entraîner des dysfonctionnements pour certains sites Web qui ne s'attendent pas à ce que leurs pages soient mises en cache, en particulier ceux qui reposent sur le déclenchement de l'événement "<ph name="UNLOAD_HANDLER_NAME" />" en cas de changement de page. L'événement "<ph name="UNLOAD_HANDLER_NAME" />" ne se déclenche pas si la page concernée est stockée dans le cache back/forward.
 
           Si cette règle est activée ou qu'elle n'est pas configurée,
 
@@ -7422,7 +7422,7 @@ Cette règle a été abandonnée dans la version M124.</translation>
 
       Si elle est désactivée, ils ne peuvent pas en bénéficier.</translation>
 <translation id="603779881955332593">Google Sheets (compatible depuis la version 135)</translation>
-<translation id="6042407236638640864">Autoriser les pages avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> à accéder au cache amélioré</translation>
+<translation id="6042407236638640864">Autoriser les pages avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> à accéder au cache back/forward</translation>
 <translation id="604243460476563291">Désactiver le transfert de fichiers dans les connexions d'assistance à distance avec les administrateurs de l'entreprise</translation>
 <translation id="6042629184389251062">La collecte de métriques avec clé d'URL  n'est pas autorisée</translation>
 <translation id="6046615715547751255">Ne pas autoriser les contrôles de rapports précis</translation>

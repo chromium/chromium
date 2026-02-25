@@ -597,7 +597,7 @@
 <translation id="7419819959108735624">选择要使用 Google 智能镜头搜索的内容</translation>
 <translation id="742463671275348370">{NUM_DEVICES,plural, =0{一个或多个 Chrome 扩展程序访问过 1 部 USB 设备}=1{一个或多个 Chrome 扩展程序正在访问 1 部 USB 设备}other{一个或多个 Chrome 扩展程序正在访问 # 部 USB 设备}}</translation>
 <translation id="7426611252293106642">Google Chrome 可能无法正常运行，因为它不再支持此 Linux 发行版</translation>
-<translation id="7437998757836447326">退出 Chrome</translation>
+<translation id="7437998757836447326">在 Chrome 退出账号</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{您的组织会在 Chrome 闲置 1 分钟后自动关闭它。}other{您的组织会在 Chrome 闲置 # 分钟后自动关闭它。}}</translation>
 <translation id="7450541714075000668">已复制文字</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{您的组织会在 Chrome 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}other{您的组织会在 Chrome 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}}</translation>
@@ -731,7 +731,7 @@
 <translation id="8679801911857917785">它还能够控制Chrome启动后显示的页面。</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="8712767363896337380">离最新版本只有一步之遥了！重新启动 Chrome 即可完成更新。</translation>
-<translation id="8718062187489036808">退出 Chrome</translation>
+<translation id="8718062187489036808">在 Chrome 退出账号</translation>
 <translation id="8725440680697264016">向 Google 询问此视频</translation>
 <translation id="873133009373065397">Google Chrome 无法确定或设置默认浏览器</translation>
 <translation id="8747073452963259673">搜索区域的左下角：左侧 <ph name="LEFT" />%，底部 <ph name="BOTTOM" />%</translation>
