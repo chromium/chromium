@@ -259,7 +259,7 @@ public class ExtensionsMenuMediatorTest {
         // Click on the context menu button.
         ListItem item = mActionModels.get(0);
         View.OnClickListener contextMenuButtonListener =
-                item.model.get(ExtensionsMenuItemProperties.CLICK_LISTENER);
+                item.model.get(ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ON_CLICK);
         ListMenuButton mockContextMenuButton = createMockMenuButton();
         contextMenuButtonListener.onClick(mockContextMenuButton);
 

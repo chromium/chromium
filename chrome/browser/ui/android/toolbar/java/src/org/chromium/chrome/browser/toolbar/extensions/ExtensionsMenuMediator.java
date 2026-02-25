@@ -199,7 +199,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
                     new PropertyModel.Builder(ExtensionsMenuItemProperties.ALL_KEYS)
                             .with(ExtensionsMenuItemProperties.TITLE, entry.actionButton.text)
                             .with(
-                                    ExtensionsMenuItemProperties.CLICK_LISTENER,
+                                    ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ON_CLICK,
                                     (view) ->
                                             onContextMenuButtonClicked(
                                                     (ListMenuButton) view, entry.id))
