@@ -81,6 +81,7 @@ source_set("android") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/actor_overlay_background.xml",
     "java/res/layout/actor_control_layout.xml",
     "java/res/layout/actor_overlay.xml",
   ]
@@ -103,6 +104,7 @@ robolectric_library("junit") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/theme:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/theme/android:java_resources",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
@@ -111,4 +113,29 @@ robolectric_library("junit") {
     "//ui/android:ui_java_test_support",
   ]
   resources_package = "org.chromium.chrome.browser.actor.ui"
+}
+
+android_library("unit_device_javatests") {
+  resources_package = "org.chromium.chrome.browser.actor"
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayViewRenderTest.java" ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:tasks_java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//ui/android:ui_utils_java",
+  ]
 }

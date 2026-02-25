@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 1. TOP GLOW (Fades Top -> Bottom) -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp" />
+            <!-- Angle 270 is Top-to-Bottom -->
+            <gradient
+                android:angle="270"
+                android:startColor="@color/color_primary_with_alpha_20"
+                android:centerColor="@android:color/transparent"
+                android:endColor="@android:color/transparent" />
+        </shape>
+    </item>
+
+    <!-- 2. BOTTOM GLOW (Fades Bottom -> Top) -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp" />
+            <!-- Angle 90 is Bottom-to-Top -->
+            <gradient
+                android:angle="90"
+                android:startColor="@color/color_primary_with_alpha_20"
+                android:centerColor="@android:color/transparent"
+                android:endColor="@android:color/transparent" />
+        </shape>
+    </item>
+
+    <!-- 3. LEFT GLOW (Fades Left -> Right) -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp" />
+            <!-- Angle 0 is Left-to-Right -->
+            <gradient
+                android:angle="0"
+                android:startColor="@color/color_primary_with_alpha_20"
+                android:centerColor="@android:color/transparent"
+                android:endColor="@android:color/transparent" />
+        </shape>
+    </item>
+
+    <!-- 4. RIGHT GLOW (Fades Right -> Left) -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp" />
+            <!-- Angle 180 is Right-to-Left -->
+            <gradient
+                android:angle="180"
+                android:startColor="@color/color_primary_with_alpha_20"
+                android:centerColor="@android:color/transparent"
+                android:endColor="@android:color/transparent" />
+        </shape>
+    </item>
+
+    <!-- 5. THE CRISP OUTER BORDER -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="16dp" />
+            <stroke
+                android:width="2.5dp"
+                android:color="?attr/colorPrimary" />
+            <!-- Ensures nothing blocks the map underneath -->
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+
+</layer-list>
