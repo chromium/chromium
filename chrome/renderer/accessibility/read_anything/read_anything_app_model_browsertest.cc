@@ -2049,3 +2049,219 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_TRUE(model().requires_distillation());
   EXPECT_EQ(model().active_tree_id(), child_tree_id);
 }
+
+class ReadAnythingAppModelReadabilityTest : public ReadAnythingAppModelTest {
+ public:
+  ReadAnythingAppModelReadabilityTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingWithReadability,
+         features::kReadAnythingWithReadabilityAllowLinks},
+        {});
+  }
+  ~ReadAnythingAppModelReadabilityTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ReadAnythingAppModelReadabilityTest,
+       GetAXTreeAnchors_ExtractsBasicLink) {
+  std::string url = "https://www.google.com";
+  std::string link_text = "Ir a Google";
+
+  ui::AXNodeData link_node;
+  link_node.id = 2;
+  link_node.role = ax::mojom::Role::kLink;
+  link_node.SetName(link_text);
+  link_node.AddStringAttribute(ax::mojom::StringAttribute::kUrl, url);
+  link_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlId,
+                               "link-id-1");
+  link_node.AddStringAttribute(ax::mojom::StringAttribute::kLinkTarget,
+                               "_blank");
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {link_node.id};
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = root.id;
+  update.nodes = {std::move(root), std::move(link_node)};
+
+  ApplyAccessibilityUpdates(tree_id_, {std::move(update)});
+  model().SetActiveTreeId(tree_id_);
+
+  model().set_should_extract_anchors_from_tree_for_readability(true);
+  model().ProcessAXTreeAnchors();
+  const auto& result = model().ax_tree_anchors();
+
+  // Validates that only one link is processed
+  ASSERT_EQ(1u, result.size());
+  ASSERT_TRUE(result.count(url));
+
+  const auto& links = result.at(url);
+  // Validates a single link is mapped to the given URL
+  ASSERT_EQ(1u, links.size());
+  EXPECT_EQ(2, links[0].id);
+  EXPECT_EQ(link_text, links[0].name);
+  EXPECT_EQ("link-id-1", links[0].html_id);
+  EXPECT_EQ("_blank", links[0].target);
+}
+
+TEST_F(ReadAnythingAppModelReadabilityTest, GetAXTreeAnchors_MultipleLinks) {
+  std::string google_url = "https://www.google.com";
+  std::string wikipedia_url = "https://www.wikipedia.org";
+
+  ui::AXNodeData text_prev_1;
+  text_prev_1.id = 2;
+  text_prev_1.role = ax::mojom::Role::kStaticText;
+  text_prev_1.SetName("Visit ");
+
+  ui::AXNodeData link_google_1;
+  link_google_1.id = 3;
+  link_google_1.role = ax::mojom::Role::kLink;
+  link_google_1.SetName("Google Homepage");
+  link_google_1.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                                   google_url);
+  link_google_1.AddStringAttribute(ax::mojom::StringAttribute::kHtmlId, "g1");
+
+  ui::AXNodeData text_next_1;
+  text_next_1.id = 4;
+  text_next_1.role = ax::mojom::Role::kStaticText;
+  text_next_1.SetName(" now.");
+
+  ui::AXNodeData paragraph_1;
+  paragraph_1.id = 10;
+  paragraph_1.role = ax::mojom::Role::kParagraph;
+  paragraph_1.child_ids = {text_prev_1.id, link_google_1.id, text_next_1.id};
+
+  // Setup 2nd Google Anchor
+  ui::AXNodeData link_google_2;
+  link_google_2.id = 5;
+  link_google_2.role = ax::mojom::Role::kLink;
+  link_google_2.SetName("Google Footer");
+  link_google_2.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                                   google_url);
+  link_google_2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlId, "g2");
+
+  ui::AXNodeData paragraph_2;
+  paragraph_2.id = 11;
+  paragraph_2.role = ax::mojom::Role::kParagraph;
+  paragraph_2.child_ids = {link_google_2.id};
+
+  // Setup Wikipedia anchor
+  ui::AXNodeData link_wiki;
+  link_wiki.id = 6;
+  link_wiki.role = ax::mojom::Role::kLink;
+  link_wiki.SetName("Wiki");
+  link_wiki.AddStringAttribute(ax::mojom::StringAttribute::kUrl, wikipedia_url);
+
+  ui::AXNodeData text_next_wiki;
+  text_next_wiki.id = 7;
+  text_next_wiki.role = ax::mojom::Role::kStaticText;
+  text_next_wiki.SetName(" is free.");
+
+  ui::AXNodeData paragraph_3;
+  paragraph_3.id = 12;
+  paragraph_3.role = ax::mojom::Role::kParagraph;
+  paragraph_3.child_ids = {link_wiki.id, text_next_wiki.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {paragraph_1.id, paragraph_2.id, paragraph_3.id};
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = root.id;
+  update.nodes = {std::move(root),          std::move(paragraph_1),
+                  std::move(text_prev_1),   std::move(link_google_1),
+                  std::move(text_next_1),   std::move(paragraph_2),
+                  std::move(link_google_2), std::move(paragraph_3),
+                  std::move(link_wiki),     std::move(text_next_wiki)};
+
+  ApplyAccessibilityUpdates(tree_id_, {std::move(update)});
+  model().SetActiveTreeId(tree_id_);
+
+  model().set_should_extract_anchors_from_tree_for_readability(true);
+  model().ProcessAXTreeAnchors();
+
+  auto result = model().ax_tree_anchors();
+  // Validate that there are two links in the dictionary
+  ASSERT_EQ(2u, result.size());
+  ASSERT_TRUE(result.count(google_url));
+  ASSERT_TRUE(result.count(wikipedia_url));
+
+  auto& google_links = result[google_url];
+  ASSERT_EQ(2u, google_links.size());
+  std::sort(google_links.begin(), google_links.end(),
+            [](const auto& a, const auto& b) { return a.id < b.id; });
+
+  // Validate first Google anchor
+  EXPECT_EQ(3, google_links[0].id);
+  EXPECT_EQ("Google Homepage", google_links[0].name);
+  EXPECT_EQ("Visit ", google_links[0].text_before);
+  EXPECT_EQ(" now.", google_links[0].text_after);
+  EXPECT_EQ("g1", google_links[0].html_id);
+
+  // Validate second Google anchor
+  EXPECT_EQ(5, google_links[1].id);
+  EXPECT_EQ("Google Footer", google_links[1].name);
+  EXPECT_TRUE(google_links[1].text_before.empty());
+  EXPECT_TRUE(google_links[1].text_after.empty());
+  EXPECT_EQ("g2", google_links[1].html_id);
+
+  // Validate Wiki anchor
+  const auto& wiki_links = result[wikipedia_url];
+  ASSERT_EQ(1u, wiki_links.size());
+  EXPECT_EQ(6, wiki_links[0].id);
+  EXPECT_EQ("Wiki", wiki_links[0].name);
+  EXPECT_TRUE(wiki_links[0].text_before.empty());
+  EXPECT_EQ(" is free.", wiki_links[0].text_after);
+}
+
+TEST_F(ReadAnythingAppModelReadabilityTest,
+       GetAXTreeAnchors_IgnoresInvalidLinks) {
+  std::string js_url = "javascript:alert(1)";
+  ui::AXNodeData js_link_node;
+  js_link_node.id = 2;
+  js_link_node.role = ax::mojom::Role::kLink;
+  js_link_node.SetName("Click me for XSS");
+  js_link_node.AddStringAttribute(ax::mojom::StringAttribute::kUrl, js_url);
+
+  std::string data_url = "data:text/html,<b>Hi</b>";
+  ui::AXNodeData data_link_node;
+  data_link_node.id = 3;
+  data_link_node.role = ax::mojom::Role::kLink;
+  data_link_node.SetName("Data Link");
+  data_link_node.AddStringAttribute(ax::mojom::StringAttribute::kUrl, data_url);
+
+  std::string empty_url = "";
+  ui::AXNodeData empty_link_node;
+  empty_link_node.id = 4;
+  empty_link_node.role = ax::mojom::Role::kLink;
+  empty_link_node.SetName("Empty Link");
+  empty_link_node.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                                     empty_url);
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {js_link_node.id, data_link_node.id, empty_link_node.id};
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.root_id = root.id;
+  update.nodes = {std::move(root), std::move(js_link_node),
+                  std::move(data_link_node), std::move(empty_link_node)};
+
+  ApplyAccessibilityUpdates(tree_id_, {std::move(update)});
+  model().SetActiveTreeId(tree_id_);
+
+  model().set_should_extract_anchors_from_tree_for_readability(true);
+  model().ProcessAXTreeAnchors();
+
+  const auto& result = model().ax_tree_anchors();
+  ASSERT_TRUE(result.empty());
+}

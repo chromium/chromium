@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -32,6 +33,7 @@
 #include "ui/accessibility/ax_tree_update_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+#include "url/url_util.h"
 
 namespace {
 
@@ -87,6 +89,12 @@ ReadAnythingAppModel::AXTreeInfo::AXTreeInfo(
     : manager(std::move(manager)) {}
 
 ReadAnythingAppModel::AXTreeInfo::~AXTreeInfo() = default;
+
+ReadAnythingAppModel::AnchorData::AnchorData() = default;
+ReadAnythingAppModel::AnchorData::AnchorData(const AnchorData& other) = default;
+ReadAnythingAppModel::AnchorData& ReadAnythingAppModel::AnchorData::operator=(
+    const AnchorData& other) = default;
+ReadAnythingAppModel::AnchorData::~AnchorData() = default;
 
 ReadAnythingAppModel::SelectionEndpoint::SelectionEndpoint(
     const ui::AXSelection& selection,
@@ -1253,4 +1261,131 @@ bool ReadAnythingAppModel::SelectionNodesContainedInDistilledContent() const {
   std::sort(sorted_content_ids.begin(), sorted_content_ids.end());
   return std::includes(sorted_content_ids.begin(), sorted_content_ids.end(),
                        selection_node_ids_.begin(), selection_node_ids_.end());
+}
+
+void ReadAnythingAppModel::ProcessAXTreeAnchors() {
+  DUMP_WILL_BE_CHECK(
+      features::IsReadAnythingWithReadabilityAllowLinksEnabled());
+  if (!should_extract_anchors_from_tree_for_readability_) {
+    return;
+  }
+
+  if (active_tree_id_ == ui::AXTreeIDUnknown() || !ContainsActiveTree()) {
+    return;
+  }
+
+  ui::AXSerializableTree* tree = GetActiveTree();
+  if (!tree || !tree->root()) {
+    return;
+  }
+
+  should_extract_anchors_from_tree_for_readability_ = false;
+  ax_tree_anchors_ = CollectAnchorsFromAXTree(tree);
+}
+
+std::map<std::string, std::vector<ReadAnythingAppModel::AnchorData>>
+ReadAnythingAppModel::CollectAnchorsFromAXTree(ui::AXSerializableTree* tree) {
+  std::map<std::string, std::vector<AnchorData>> grouped_links;
+  if (!tree || !tree->root()) {
+    return grouped_links;
+  }
+
+  std::stack<const ui::AXNode*> stack;
+  stack.push(tree->root());
+
+  // Do a DFS travserse of the tree
+  while (!stack.empty()) {
+    const ui::AXNode* node = stack.top();
+    stack.pop();
+
+    ax::mojom::Role role = node->GetRole();
+    // Ignore any portions of the web contents that Readability is supposed
+    // to remove the original content.
+    bool is_ignored_role =
+        role == ax::mojom::Role::kBanner || role == ax::mojom::Role::kButton ||
+        role == ax::mojom::Role::kComboBoxSelect ||
+        role == ax::mojom::Role::kComplementary ||
+        role == ax::mojom::Role::kContentInfo ||
+        role == ax::mojom::Role::kForm || role == ax::mojom::Role::kIframe ||
+        role == ax::mojom::Role::kIframePresentational ||
+        role == ax::mojom::Role::kMenu || role == ax::mojom::Role::kMenuBar ||
+        role == ax::mojom::Role::kNavigation ||
+        role == ax::mojom::Role::kSearch ||
+        role == ax::mojom::Role::kSearchBox ||
+        role == ax::mojom::Role::kTextField;
+
+    if (is_ignored_role) {
+      continue;
+    }
+
+    // Process the AX Node if it is an anchor.
+    if (role == ax::mojom::Role::kLink) {
+      std::string url =
+          node->GetStringAttribute(ax::mojom::StringAttribute::kUrl);
+      if (url.empty()) {
+        continue;
+      }
+
+      // Ignore any anchor that is not a regular website. E.g. mailto or
+      // javascript:void
+      if (!url::FindAndCompareScheme(url, "http", nullptr) &&
+          !url::FindAndCompareScheme(url, "https", nullptr)) {
+        continue;
+      }
+
+      AnchorData data;
+      data.id = node->id();
+      // HTML 'id' attribute.
+      if (node->HasStringAttribute(ax::mojom::StringAttribute::kHtmlId)) {
+        data.html_id =
+            node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId);
+      }
+
+      // HTML 'target' attribute (e.g., "_blank").
+      if (node->HasStringAttribute(ax::mojom::StringAttribute::kLinkTarget)) {
+        data.target =
+            node->GetStringAttribute(ax::mojom::StringAttribute::kLinkTarget);
+      }
+
+      // HTML 'title' attribute (hover tooltip).
+      if (node->HasStringAttribute(ax::mojom::StringAttribute::kTooltip)) {
+        data.title =
+            node->GetStringAttribute(ax::mojom::StringAttribute::kTooltip);
+      }
+
+      // Accessible name (the visible text or aria-label)
+      if (node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+        data.name = node->GetStringAttribute(ax::mojom::StringAttribute::kName);
+      }
+
+      // Text context immediately before the link.
+      ui::AXNode* prev_node = node->GetPreviousUnignoredSibling();
+      if (prev_node &&
+          prev_node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+        data.text_before =
+            prev_node->GetStringAttribute(ax::mojom::StringAttribute::kName);
+      }
+
+      // Text context immediately after the link.
+      ui::AXNode* next_node = node->GetNextUnignoredSibling();
+      if (next_node &&
+          next_node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+        data.text_after =
+            next_node->GetStringAttribute(ax::mojom::StringAttribute::kName);
+      }
+
+      grouped_links[url].push_back(std::move(data));
+    }
+
+    for (auto it = node->UnignoredChildrenBegin();
+         it != node->UnignoredChildrenEnd(); ++it) {
+      stack.push(&*it);
+    }
+  }
+
+  return grouped_links;
+}
+
+void ReadAnythingAppModel::ResetAXTreeAnchors() {
+  ax_tree_anchors_.clear();
 }
