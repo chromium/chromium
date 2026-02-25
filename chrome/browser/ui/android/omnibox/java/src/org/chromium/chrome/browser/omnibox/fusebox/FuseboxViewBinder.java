@@ -54,14 +54,12 @@ class FuseboxViewBinder {
             updateRequestTypeButton(model, view);
             updateButtonsA11yAnnouncements(model, view);
             updateToolDrawables(model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE), view);
-            reanchorViewsForCompactFusebox(model, view);
         } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED) {
             view.requestType.setOnClickListener(
                     v -> model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run());
         } else if (propertyKey == FuseboxProperties.ATTACHMENTS_VISIBLE) {
             boolean visible = model.get(FuseboxProperties.ATTACHMENTS_VISIBLE);
             view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);
-            reanchorViewsForCompactFusebox(model, view);
 
             // This fixes a flicker we see when transitioning from 0 attachments to 1 attachment.
             // The last attachment would be shown at the start of the fade animation, and any
