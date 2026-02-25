@@ -158,6 +158,9 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // regardless of any other throttling.
   void SetAllowThrottling(bool allowed);
 
+  // If other clients are interactive, reduce frame cadence if `throttled`.
+  void SetThrottledDueToInteraction(bool throttled);
+
   // SurfaceClient implementation.
   void OnSurfaceCommitted(Surface* surface) override;
   void OnSurfaceActivated(Surface* surface) override;

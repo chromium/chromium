@@ -1996,6 +1996,14 @@ TEST_P(CompositorFrameSinkSupportTest, BeginFrameInterval) {
   support->SetNeedsBeginFrame(false);
 }
 
+TEST_P(CompositorFrameSinkSupportTest, InteractionsThrottleToHalfFrameRate) {
+  constexpr base::TimeDelta kNativeInterval = BeginFrameArgs::DefaultInterval();
+  constexpr base::TimeDelta kThrottledInterval = kNativeInterval * 2;
+  support_->SetThrottledDueToInteraction(true);
+  EXPECT_EQ(support_->GetThrottlerForTesting().begin_frame_interval(),
+            kThrottledInterval);
+}
+
 TEST_P(CompositorFrameSinkSupportTest, HandlesSmallErrorInBeginFrameTimes) {
   FakeExternalBeginFrameSource begin_frame_source(0.f, false);
 
@@ -2008,7 +2016,7 @@ TEST_P(CompositorFrameSinkSupportTest, HandlesSmallErrorInBeginFrameTimes) {
   support->SetNeedsBeginFrame(true);
   constexpr base::TimeDelta kNativeInterval = BeginFrameArgs::DefaultInterval();
   constexpr base::TimeDelta kThrottledInterval = kNativeInterval * 2;
-  support->SetThrottleInterval(kThrottledInterval);
+  manager_->Throttle({support->frame_sink_id()}, kThrottledInterval);
   constexpr base::TimeDelta kEpsilon = base::Microseconds(2);
 
   base::TimeTicks frame_time;
@@ -2070,7 +2078,7 @@ TEST_P(CompositorFrameSinkSupportTest, BeginFrameIntervalAccess) {
   EXPECT_EQ(support_->GetThrottlerForTesting().begin_frame_interval(),
             base::TimeDelta());
 
-  support_->SetThrottleInterval(base::Milliseconds(32));
+  manager_->Throttle({support_->frame_sink_id()}, base::Milliseconds(32));
   EXPECT_EQ(support_->GetThrottlerForTesting().begin_frame_interval(),
             base::Milliseconds(32));
 }
@@ -2130,7 +2138,7 @@ TEST_P(CompositorFrameSinkSupportTest,
   static constexpr base::TimeDelta kThrottledFrameInterval = base::Hertz(5);
   // Request BeginFrames.
   support_->SetNeedsBeginFrame(true);
-  support_->SetThrottleInterval(kThrottledFrameInterval);
+  manager_->Throttle({support_->frame_sink_id()}, kThrottledFrameInterval);
   ASSERT_THAT(BeginFrameArgs::DefaultInterval(), Ne(kThrottledFrameInterval));
 
   base::TimeTicks frame_time = base::TimeTicks::Now();
@@ -2488,7 +2496,7 @@ TEST_P(CompositorFrameSinkSupportTest,
   static constexpr base::TimeDelta kThrottledFrameInterval = base::Hertz(5);
   // Request BeginFrames.
   support_->SetNeedsBeginFrame(true);
-  support_->SetThrottleInterval(kThrottledFrameInterval);
+  manager_->Throttle({support_->frame_sink_id()}, kThrottledFrameInterval);
   ASSERT_THAT(BeginFrameArgs::DefaultInterval(), Ne(kThrottledFrameInterval));
 
   base::TimeTicks frame_time = base::TimeTicks::Now();
