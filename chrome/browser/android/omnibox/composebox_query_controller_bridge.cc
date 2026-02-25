@@ -142,7 +142,10 @@ void ComposeboxQueryControllerBridge::Destroy(JNIEnv* env) {
 }
 
 size_t ComposeboxQueryControllerBridge::GetAttachmentCount() const {
-  return query_controller()->GetFileInfoList().size();
+  // Uploaded context tokens are updated as soon as
+  // session_handle_->CreateContextToken() is called in the file or tab context
+  // upload flows.
+  return session_handle_->GetUploadedContextTokens().size();
 }
 
 base::WeakPtr<ComposeboxQueryControllerBridge>
@@ -255,16 +258,6 @@ ComposeboxQueryControllerBridge::CreateSearchUrlRequestInfoFromUrl(GURL url) {
   search_url_request_info->query_start_time = base::Time::Now();
   search_url_request_info->aim_entry_point =
       omnibox::ANDROID_CHROME_FUSEBOX_ENTRY_POINT;
-  search_url_request_info->invocation_source =
-      lens::LensOverlayInvocationSource::kOmniboxContextualQuery;
-  // Read the list of tokens from the fileinfo map in the contextual search
-  // controller.
-  // TODO(crbug.com/455952553): Rely on the contextual search session handle
-  // to track uploaded context tokens.
-  for (const contextual_search::FileInfo* file_info :
-       query_controller()->GetFileInfoList()) {
-    search_url_request_info->file_tokens.push_back(file_info->file_token);
-  }
   return search_url_request_info;
 }
 
@@ -274,7 +267,7 @@ void ComposeboxQueryControllerBridge::GetAimUrl(
     const base::android::JavaRef<jobject>& j_callback) {
   auto search_url_request_info =
       CreateSearchUrlRequestInfoFromUrl(std::move(url));
-  query_controller()->CreateSearchUrl(
+  session_handle_->CreateSearchUrl(
       std::move(search_url_request_info),
       base::BindOnce(&RunJavaCallback,
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
@@ -287,7 +280,7 @@ void ComposeboxQueryControllerBridge::GetImageGenerationUrl(
   auto search_url_request_info =
       CreateSearchUrlRequestInfoFromUrl(std::move(url));
   search_url_request_info->additional_params["imgn"] = "1";
-  query_controller()->CreateSearchUrl(
+  session_handle_->CreateSearchUrl(
       std::move(search_url_request_info),
       base::BindOnce(&RunJavaCallback,
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
@@ -333,16 +326,13 @@ void ComposeboxQueryControllerBridge::SetActiveModel(
 
 std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
 ComposeboxQueryControllerBridge::CreateLensOverlaySuggestInputs() const {
-  auto tokens = std::vector<base::UnguessableToken>();
-  // Read the list of tokens from the fileinfo list in the contextual search
-  // controller.
-  // TODO(crbug.com/455843962): Rely on the contextual search session handle
-  // to track uploaded context tokens.
-  for (const contextual_search::FileInfo* file_info :
-       query_controller()->GetFileInfoList()) {
-    tokens.push_back(file_info->file_token);
+  std::optional<lens::proto::LensOverlaySuggestInputs> suggest_inputs =
+      session_handle_->GetSuggestInputs();
+  if (!suggest_inputs.has_value()) {
+    return std::make_unique<lens::proto::LensOverlaySuggestInputs>();
   }
-  return query_controller()->CreateSuggestInputs(tokens);
+  return std::make_unique<lens::proto::LensOverlaySuggestInputs>(
+      *suggest_inputs);
 }
 
 void ComposeboxQueryControllerBridge::OnFileUploadStatusChanged(
