@@ -80,7 +80,12 @@ class ASH_EXPORT SystemTrayNotifier {
   base::ObserverList<NetworkObserver>::Unchecked network_observers_;
   base::ObserverList<ScreenSecurityObserver>::Unchecked
       screen_security_observers_;
-  base::ObserverList<SystemTrayObserver>::Unchecked system_tray_observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      SystemTrayObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      system_tray_observers_;
   base::ObserverList<VirtualKeyboardObserver>::Unchecked
       virtual_keyboard_observers_;
 };

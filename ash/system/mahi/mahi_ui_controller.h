@@ -181,7 +181,12 @@ class ASH_EXPORT MahiUiController : public SessionObserver {
   VisibilityState visibility_state_ =
       VisibilityState::kSummaryAndOutlinesAndElucidation;
 
-  base::ObserverList<Delegate> delegates_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Delegate,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      delegates_;
 
   views::UniqueWidgetPtr mahi_panel_widget_;
 
