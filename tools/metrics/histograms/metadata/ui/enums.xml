@@ -471,6 +471,9 @@ chromium-metrics-reviews@google.com.
   <int value="79" label="UMA_FUSEBOX_UPLOAD_FAILED"/>
   <int value="80" label="UMA_BOOKMARK_LINK_COPIED"/>
   <int value="81" label="UMA_BOOKMARK_LINK_COPIED_NON_SELECTION"/>
+  <int value="82" label="UMA_CROSS_DEVICE_SETTING_IMPORT"/>
+  <int value="83" label="UMA_CROSS_DEVICE_SETTING_UNDO"/>
+  <int value="84" label="UMA_CROSS_DEVICE_SETTING_REDO"/>
 </enum>
 
 <enum name="WebUIPreloadReason">
