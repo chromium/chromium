@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -26,10 +27,6 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_enabling.h"
-#endif
 
 namespace skills {
 
@@ -214,7 +211,6 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, DialogIsTabScoped) {
 
 // Verify that the UI Controller (SkillsUI) received the delegate pointer.
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, VerifyWebUIPlumbing) {
-#if BUILDFLAG(ENABLE_GLIC)
   // Enable Glic late to avoid a crash in GlicTabIndicatorHelper during tab
   // creation.
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
@@ -242,13 +238,11 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest, VerifyWebUIPlumbing) {
   EXPECT_EQ(skills_ui->GetInitialSkillForTesting().name, "skill_name");
   EXPECT_EQ(skills_ui->GetInitialSkillForTesting().icon, "icon");
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
-#endif
 }
 
 // Verify that clicking the Cancel button closes the dialog.
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        CancelButtonClosesDialog) {
-#if BUILDFLAG(ENABLE_GLIC)
   // Enable Glic late to avoid a crash in GlicTabIndicatorHelper during tab
   // creation.
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
@@ -288,14 +282,12 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   histogram_tester_.ExpectBucketCount("Skills.Dialog.Creation.Action",
                                       SkillsDialogAction::kCancelled, 1);
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
-#endif
 }
 
 // Verify that the Skill data passed to ShowDialog correctly populates the
 // HTML input fields in the WebUI.
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        SkillPopulatesUIFields) {
-#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
 
   // Setup a specific test skill.
@@ -355,12 +347,10 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
   EXPECT_EQ(*icon, kTestIcon);
 
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
                        KeyboardShortcutsAreRouted) {
-#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
 
   skills::Skill test_skill("id", "name", "icon", "prompt");
@@ -429,7 +419,6 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
     })()
   )");
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
-#endif
 }
 
 }  // namespace skills
