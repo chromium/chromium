@@ -48,10 +48,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   size_t PackedByteLength() const { return descriptor_.PackedByteLength(); }
   size_t NumberOfElements() const { return descriptor_.NumberOfElements(); }
 
-  base::WeakPtr<const WebNNTensorImpl> GetWeakPtr() const {
-    return weak_factory_.GetWeakPtr();
-  }
-
   bool IsValidWithDescriptor(const OperandDescriptor& descriptor) const;
 
   // This method will be called by `WriteTensor()` after the write info is
@@ -137,8 +133,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
 
   const OperandDescriptor descriptor_;
   const MLTensorUsage usage_;
-
-  base::WeakPtrFactory<WebNNTensorImpl> weak_factory_{this};
 };
 
 }  // namespace webnn

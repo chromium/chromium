@@ -63,6 +63,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) TensorImplDml final
   // access to WebNN and to EndAccessWebNN() again.
   scoped_refptr<gfx::D3DSharedFence> EndAccessWebNN();
 
+  base::WeakPtr<const TensorImplDml> GetWeakPtr() const {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   ~TensorImplDml() override;
 
