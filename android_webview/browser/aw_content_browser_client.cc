@@ -39,6 +39,7 @@
 #include "android_webview/browser/network_service/aw_url_loader_throttle.h"
 #include "android_webview/browser/network_service/net_helpers.h"
 #include "android_webview/browser/prefetch/aw_prefetch_service_delegate.h"
+#include "android_webview/browser/safe_browsing/aw_advanced_protection_status_manager_bridge.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_navigation_throttle.h"
 #include "android_webview/browser/safe_browsing/aw_url_checker_delegate_impl.h"
 #include "android_webview/browser/supervised_user/aw_supervised_user_throttle.h"
@@ -1530,6 +1531,10 @@ bool AwContentBrowserClient::ShouldAnimateBackForwardTransitions() {
 bool AwContentBrowserClient::OriginSupportsConcreteCrossOriginIsolation(
     const url::Origin& origin) {
   return false;
+}
+
+bool AwContentBrowserClient::IsAndroidAdvancedProtectionEnabled() {
+  return AwAdvancedProtectionStatusManagerBridge::IsUnderAdvancedProtection();
 }
 
 }  // namespace android_webview

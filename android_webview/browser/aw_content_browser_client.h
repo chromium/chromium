@@ -326,6 +326,8 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   bool OriginSupportsConcreteCrossOriginIsolation(
       const url::Origin& origin) override;
 
+  bool IsAndroidAdvancedProtectionEnabled() override;
+
   AwFeatureListCreator* aw_feature_list_creator() {
     return aw_feature_list_creator_;
   }
