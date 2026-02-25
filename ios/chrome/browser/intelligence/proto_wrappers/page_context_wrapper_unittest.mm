@@ -3391,6 +3391,112 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Text_Size) {
   }
 }
 
+// Tests the extraction of form control attributes (input, textarea, select,
+// button).
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_FormControlData) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure = HtmlPage(
+      "Forms", RawHtml("<html><body><form name=\"f1\" action='/submit'>"
+                       "  <input type=\"text\" name=\"t1\" value=\"v1\" "
+                       "required placeholder=\"p1\">"
+                       "  <input type=\"text\" name=\"t2\" value=\"v2\" "
+                       "readonly>"
+                       "  <input type=\"checkbox\" checked>"
+                       "  <select name=\"s1\">"
+                       "    <option value=\"o1\" selected>O1</option>"
+                       "    <option disabled>O2</option>"
+                       "  </select>"
+                       "  <button type=\"submit\">Submit</button>"
+                       "  <textarea name=\"texta\">text contents</textarea>"
+                       "</form></body></html>"));
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+
+  ASSERT_EQ(root_node.children_nodes_size(), 1);
+  const auto& form_node = root_node.children_nodes(0);
+
+  EXPECT_TRUE(form_node.content_attributes().has_form_data());
+  EXPECT_EQ(form_node.content_attributes().form_data().form_name(), "f1");
+  // The full URL depends on the test server port, so we check the suffix.
+  EXPECT_TRUE(base::EndsWith(
+      form_node.content_attributes().form_data().action_url(), "/submit"));
+
+  ASSERT_EQ(form_node.children_nodes_size(), 6);
+  const auto* input_text_node = &form_node.children_nodes(0);
+  const auto* input_readonly_node = &form_node.children_nodes(1);
+  const auto* input_checkbox_node = &form_node.children_nodes(2);
+  const auto* select_node = &form_node.children_nodes(3);
+  const auto* button_node = &form_node.children_nodes(4);
+  const auto* textarea_node = &form_node.children_nodes(5);
+
+  ASSERT_TRUE(input_text_node);
+  const auto& fc_text =
+      input_text_node->content_attributes().form_control_data();
+  EXPECT_EQ(fc_text.field_name(), "t1");
+  EXPECT_EQ(fc_text.field_value(), "v1");
+  EXPECT_TRUE(fc_text.is_required());
+  EXPECT_FALSE(
+      input_text_node->content_attributes().interaction_info().is_disabled());
+  EXPECT_EQ(fc_text.placeholder(), "p1");
+
+  ASSERT_TRUE(input_readonly_node);
+  const auto& fc_readonly =
+      input_readonly_node->content_attributes().form_control_data();
+  EXPECT_EQ(fc_readonly.field_name(), "t2");
+  EXPECT_EQ(fc_readonly.field_value(), "v2");
+  EXPECT_FALSE(fc_readonly.is_required());
+  EXPECT_TRUE(input_readonly_node->content_attributes().has_interaction_info());
+  EXPECT_TRUE(input_readonly_node->content_attributes()
+                  .interaction_info()
+                  .is_disabled());
+
+  ASSERT_TRUE(input_checkbox_node);
+  const auto& fc_checkbox =
+      input_checkbox_node->content_attributes().form_control_data();
+  EXPECT_TRUE(fc_checkbox.is_checked());
+
+  ASSERT_TRUE(select_node);
+  const auto& fc_select = select_node->content_attributes().form_control_data();
+  EXPECT_EQ(fc_select.field_name(), "s1");
+  ASSERT_EQ(fc_select.select_options_size(), 2);
+  EXPECT_EQ(fc_select.select_options(0).value(), "o1");
+  EXPECT_EQ(fc_select.select_options(0).text(), "O1");
+  EXPECT_TRUE(fc_select.select_options(0).is_selected());
+  EXPECT_EQ(fc_select.select_options(1).value(), "O2");
+  EXPECT_EQ(fc_select.select_options(1).text(), "O2");
+  EXPECT_TRUE(fc_select.select_options(1).is_disabled());
+
+  ASSERT_TRUE(button_node);
+
+  ASSERT_TRUE(textarea_node);
+  const auto& fc_textarea =
+      textarea_node->content_attributes().form_control_data();
+  EXPECT_EQ(fc_textarea.field_name(), "texta");
+}
+
 // Tests that Canvas Metadata is extracted correctly.
 TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Canvas) {
   if (!IsRefactored()) {

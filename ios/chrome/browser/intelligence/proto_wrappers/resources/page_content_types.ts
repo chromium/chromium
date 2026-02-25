@@ -350,6 +350,7 @@ export interface PageContentFormControlData {
   placeholder?: string;
   isChecked: boolean;
   isRequired: boolean;
+  isReadonly?: boolean;
   redactionDecision: PageContentRedactionDecision;
 }
 

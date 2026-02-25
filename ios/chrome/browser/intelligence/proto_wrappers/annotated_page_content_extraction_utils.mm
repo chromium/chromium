@@ -55,6 +55,23 @@ constexpr char kEndOffsetKey[] = "endOffset";
 constexpr char kSelectedTextKey[] = "selectedText";
 constexpr char kFocusedDomNodeIdKey[] = "focusedDomNodeId";
 constexpr char kDocumentIdKey[] = "documentId";
+constexpr char kFormControlDataKey[] = "formControlData";
+constexpr char kFormControlTypeKey[] = "formControlType";
+constexpr char kFieldNameKey[] = "fieldName";
+constexpr char kFieldValueKey[] = "fieldValue";
+constexpr char kSelectOptionsKey[] = "selectOptions";
+constexpr char kOptionValueKey[] = "value";
+constexpr char kOptionTextKey[] = "text";
+constexpr char kIsSelectedKey[] = "isSelected";
+constexpr char kIsDisabledKey[] = "disabled";
+constexpr char kPlaceholderKey[] = "placeholder";
+constexpr char kIsCheckedKey[] = "isChecked";
+constexpr char kIsRequiredKey[] = "isRequired";
+constexpr char kIsReadonlyKey[] = "isReadonly";
+constexpr char kRedactionDecisionKey[] = "redactionDecision";
+constexpr char kFormDataKey[] = "formData";
+constexpr char kFormNameKey[] = "formName";
+constexpr char kFormActionUrlKey[] = "actionUrl";
 
 // Reads a JS number (double) from a `dict` stored under `key`.
 std::optional<int> ReadJsNumber(const base::DictValue& dict, const char* key) {
@@ -257,6 +274,106 @@ void PopulateIframeData(
   }
 }
 
+// Populates the form control data of the `destination_node` from the
+// `form_control_data` content.
+void PopulateFormControlData(
+    const base::DictValue& form_control_data,
+    optimization_guide::proto::ContentNode* destination_node) {
+  optimization_guide::proto::FormControlData* proto_form_control_data =
+      destination_node->mutable_content_attributes()
+          ->mutable_form_control_data();
+
+  if (std::optional<int> form_control_type =
+          ReadJsNumber(form_control_data, kFormControlTypeKey)) {
+    if (optimization_guide::proto::FormControlType_IsValid(
+            *form_control_type)) {
+      proto_form_control_data->set_form_control_type(
+          static_cast<optimization_guide::proto::FormControlType>(
+              *form_control_type));
+    }
+  }
+
+  if (const std::string* field_name =
+          form_control_data.FindString(kFieldNameKey)) {
+    proto_form_control_data->set_field_name(*field_name);
+  }
+
+  if (const std::string* field_value =
+          form_control_data.FindString(kFieldValueKey)) {
+    proto_form_control_data->set_field_value(*field_value);
+  }
+
+  if (const std::string* placeholder =
+          form_control_data.FindString(kPlaceholderKey)) {
+    proto_form_control_data->set_placeholder(*placeholder);
+  }
+
+  proto_form_control_data->set_is_checked(
+      form_control_data.FindBool(kIsCheckedKey).value_or(false));
+
+  proto_form_control_data->set_is_required(
+      form_control_data.FindBool(kIsRequiredKey).value_or(false));
+
+  if (form_control_data.FindBool(kIsReadonlyKey).value_or(false)) {
+    // Temporarily map readonly to disabled. This is a lossy workaround that
+    // preserves "do not edit" intent for consumers that only read proto data.
+    // TODO(crbug.com/481361478): Add readonly field to FormControlData proto.
+    destination_node->mutable_content_attributes()
+        ->mutable_interaction_info()
+        ->set_is_disabled(true);
+  }
+
+  if (std::optional<int> redaction_decision =
+          ReadJsNumber(form_control_data, kRedactionDecisionKey)) {
+    if (optimization_guide::proto::RedactionDecision_IsValid(
+            *redaction_decision)) {
+      proto_form_control_data->set_redaction_decision(
+          static_cast<optimization_guide::proto::RedactionDecision>(
+              *redaction_decision));
+    }
+  }
+
+  if (const base::ListValue* select_options =
+          form_control_data.FindList(kSelectOptionsKey)) {
+    for (const base::Value& option_value : *select_options) {
+      if (option_value.is_dict()) {
+        const base::DictValue* option_dict = &option_value.GetDict();
+        optimization_guide::proto::SelectOption* proto_select_option =
+            proto_form_control_data->add_select_options();
+
+        if (const std::string* value =
+                option_dict->FindString(kOptionValueKey)) {
+          proto_select_option->set_value(*value);
+        }
+        if (const std::string* text = option_dict->FindString(kOptionTextKey)) {
+          proto_select_option->set_text(*text);
+        }
+        proto_select_option->set_is_selected(
+            option_dict->FindBool(kIsSelectedKey).value_or(false));
+        proto_select_option->set_is_disabled(
+            option_dict->FindBool(kIsDisabledKey).value_or(false));
+      }
+    }
+  }
+}
+
+// Populates the form data of the `destination_node` from the `form_data`
+// content.
+void PopulateFormInfo(
+    const base::DictValue& form_data,
+    optimization_guide::proto::ContentNode* destination_node) {
+  optimization_guide::proto::FormInfo* proto_form_info =
+      destination_node->mutable_content_attributes()->mutable_form_data();
+
+  if (const std::string* form_name = form_data.FindString(kFormNameKey)) {
+    proto_form_info->set_form_name(*form_name);
+  }
+
+  if (const std::string* action_url = form_data.FindString(kFormActionUrlKey)) {
+    proto_form_info->set_action_url(*action_url);
+  }
+}
+
 }  // namespace
 
 void PopulateAPCNodeFromContentTree(
@@ -362,6 +479,22 @@ void PopulateAPCNodeFromContentTree(
           }
         }
         PopulateIframeData(*iframe_data, destination_node, origin);
+      }
+      break;
+    }
+    case optimization_guide::proto::CONTENT_ATTRIBUTE_FORM: {
+      const base::DictValue* form_data =
+          content_attributes->FindDict(kFormDataKey);
+      if (form_data) {
+        PopulateFormInfo(*form_data, destination_node);
+      }
+      break;
+    }
+    case optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL: {
+      const base::DictValue* form_control_data =
+          content_attributes->FindDict(kFormControlDataKey);
+      if (form_control_data) {
+        PopulateFormControlData(*form_control_data, destination_node);
       }
       break;
     }

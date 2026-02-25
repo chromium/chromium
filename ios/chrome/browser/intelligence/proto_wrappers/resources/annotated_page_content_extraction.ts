@@ -4,8 +4,8 @@
 
 import {APC_NODE_DEPTH_COST, getRemoteFrameRemoteToken, MAX_APC_RESPONSE_DEPTH, NONCE_ATTR} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/common.js';
 import {getNodeId, getOrCreateNodeId} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
-import {PageContentAnchorRel, PageContentAnnotatedRole, PageContentAttributeType, PageContentTextSize} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
-import type {PageContent, PageContentAttributes, PageContentFrameData, PageContentFrameInteractionInfo, PageContentNode, PageContentPageInteractionInfo} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
+import {FormControlType, PageContentAnchorRel, PageContentAnnotatedRole, PageContentAttributeType, PageContentRedactionDecision, PageContentTextSize} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
+import type {PageContent, PageContentAttributes, PageContentFormControlData, PageContentFormData, PageContentFrameData, PageContentFrameInteractionInfo, PageContentNode, PageContentPageInteractionInfo} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
 
 // Set of DOM Node IDs that are considered interactive (focused, selection
 // start/end). These nodes should be included in the APC tree even if they are
@@ -114,6 +114,29 @@ const TEXT_MASKING_CHAR_SQUARE = '\u25A0';  // ■
 // The constant length of the masked text.
 const MASKED_TEXT_LENGTH = 7;
 
+// Form control types.
+const PASSWORD_TYPE = 'password';
+const BUTTON_TYPE = 'button';
+const CHECKBOX_TYPE = 'checkbox';
+const COLOR_TYPE = 'color';
+const DATE_TYPE = 'date';
+const DATETIME_LOCAL_TYPE = 'datetime-local';
+const EMAIL_TYPE = 'email';
+const FILE_TYPE = 'file';
+const HIDDEN_TYPE = 'hidden';
+const IMAGE_TYPE = 'image';
+const MONTH_TYPE = 'month';
+const NUMBER_TYPE = 'number';
+const RADIO_TYPE = 'radio';
+const RANGE_TYPE = 'range';
+const RESET_TYPE = 'reset';
+const SEARCH_TYPE = 'search';
+const SUBMIT_TYPE = 'submit';
+const TELEPHONE_TYPE = 'tel';
+const TIME_TYPE = 'time';
+const URL_TYPE = 'url';
+const WEEK_TYPE = 'week';
+const TEXT_TYPE = 'text';
 
 const BASIC_CONTENT_ATTRIBUTES: PageContentAttributes = {
   attributeType: PageContentAttributeType.UNKNOWN,
@@ -210,6 +233,95 @@ function getTextSizeCategory(
 }
 
 /**
+ * Maps an element to its corresponding FormControlType.
+ *
+ * @param element The element to map.
+ * @return The corresponding FormControlType.
+ */
+function getFormControlType(element: HTMLElement): FormControlType|undefined {
+  const tagName = element.tagName;
+
+  if (tagName === TAG_BUTTON) {
+    const type = (element as HTMLButtonElement).type;
+    switch (type) {
+      case 'submit':
+        return FormControlType.BUTTON_SUBMIT;
+      case 'reset':
+        return FormControlType.BUTTON_RESET;
+      case 'button':
+      default:
+        return FormControlType.BUTTON_BUTTON;
+    }
+  }
+
+  if (tagName === TAG_INPUT) {
+    const type = (element as HTMLInputElement).type;
+    switch (type) {
+      case BUTTON_TYPE:
+        return FormControlType.INPUT_BUTTON;
+      case CHECKBOX_TYPE:
+        return FormControlType.INPUT_CHECKBOX;
+      case COLOR_TYPE:
+        return FormControlType.INPUT_COLOR;
+      case DATE_TYPE:
+        return FormControlType.INPUT_DATE;
+      case DATETIME_LOCAL_TYPE:
+        return FormControlType.INPUT_DATETIME_LOCAL;
+      case EMAIL_TYPE:
+        return FormControlType.INPUT_EMAIL;
+      case FILE_TYPE:
+        return FormControlType.INPUT_FILE;
+      case HIDDEN_TYPE:
+        return FormControlType.INPUT_HIDDEN;
+      case IMAGE_TYPE:
+        return FormControlType.INPUT_IMAGE;
+      case MONTH_TYPE:
+        return FormControlType.INPUT_MONTH;
+      case NUMBER_TYPE:
+        return FormControlType.INPUT_NUMBER;
+      case PASSWORD_TYPE:
+        return FormControlType.INPUT_PASSWORD;
+      case RADIO_TYPE:
+        return FormControlType.INPUT_RADIO;
+      case RANGE_TYPE:
+        return FormControlType.INPUT_RANGE;
+      case RESET_TYPE:
+        return FormControlType.INPUT_RESET;
+      case SEARCH_TYPE:
+        return FormControlType.INPUT_SEARCH;
+      case SUBMIT_TYPE:
+        return FormControlType.INPUT_SUBMIT;
+      case TELEPHONE_TYPE:
+        return FormControlType.INPUT_TELEPHONE;
+      case TIME_TYPE:
+        return FormControlType.INPUT_TIME;
+      case URL_TYPE:
+        return FormControlType.INPUT_URL;
+      case WEEK_TYPE:
+        return FormControlType.INPUT_WEEK;
+      case TEXT_TYPE:
+      default:
+        // Standard default type when no type is specified.
+        return FormControlType.INPUT_TEXT;
+    }
+  }
+
+  if (tagName === TAG_SELECT) {
+    if ((element as HTMLSelectElement).multiple) {
+      return FormControlType.SELECT_MULTIPLE;
+    }
+    return FormControlType.SELECT_ONE;
+  }
+
+  if (tagName === TAG_TEXTAREA) {
+    return FormControlType.TEXT_AREA;
+  }
+
+  // Fallback, though we shouldn't reach here for form controls.
+  return undefined;
+}
+
+/**
  * Extracts the relationships (rel attribute) from an anchor element.
  *
  * @param anchorElement The anchor element to extract relationships from.
@@ -245,6 +357,24 @@ function getAnchorRel(anchorElement: HTMLAnchorElement):
   }
   return result;
 }
+
+/**
+ * Extracts form specific content attributes from a given DOM element.
+ *
+ * @param form The form element to process.
+ * @return The populated PageContentFormData.
+ */
+function getFormData(form: HTMLFormElement): PageContentFormData {
+  const formData: PageContentFormData = {};
+  if (form.name) {
+    formData.formName = form.name;
+  }
+  if (form.action) {
+    formData.actionUrl = form.action;
+  }
+  return formData;
+}
+
 
 // TODO(crbug.com/480945289): Complete this function as more data becomes
 // available throughout iterations.
@@ -534,6 +664,102 @@ function getContentForIframeNode(
 }
 
 /**
+ * Extracts form control specific content attributes from a given DOM element.
+ * Handles inputs, textareas, selects, and buttons.
+ *
+ * @param domNode The element to process.
+ * @param tagName The tag name of the element.
+ * @return The populated PageContentFormControlData.
+ */
+function getFormControlData(
+    domNode: HTMLElement, tagName: string): PageContentFormControlData {
+  // There must be a type returned, throw an exception if not.
+  const formControlType = getFormControlType(domNode)!;
+  const formControlData: PageContentFormControlData = {
+    formControlType: formControlType,
+    selectOptions: [],
+    isChecked: false,
+    isRequired: false,
+    // TODO(crbug.com/485211722): Set redaction decision for Autofill.
+    redactionDecision: PageContentRedactionDecision.NO_REDACTION_NECESSARY,
+  };
+
+  const name = (domNode as HTMLInputElement).name;
+  if (name !== undefined && name !== '') {
+    formControlData.fieldName = name;
+  }
+
+  const value = (domNode as HTMLInputElement).value;
+  if (value !== undefined) {
+    // TODO(crbug.com/485211722): Complete implementation once redaction
+    // decision is fully available.
+    // Exclude password field value mirroring Blink's logic.
+    // For now, only extract value if type != password.
+    // TAG_TEXTAREA and TAG_SELECT do not support the 'type' attribute to
+    // designate a password field, so we consider their values safe to extract
+    // (unless they are custom passwords, which is handled separately).
+    if (tagName !== TAG_INPUT ||
+        (domNode as HTMLInputElement).type !== PASSWORD_TYPE) {
+      formControlData.fieldValue = value;
+    }
+  }
+
+  formControlData.isRequired = (domNode as HTMLInputElement).required ?? false;
+
+  // Handle aria-required override.
+  if (!formControlData.isRequired &&
+      domNode.getAttribute('aria-required') === 'true') {
+    formControlData.isRequired = true;
+  }
+
+  const isReadonly = (domNode as HTMLInputElement).readOnly ?? false;
+  formControlData.isReadonly = isReadonly;
+
+  // Handle aria-readonly override.
+  if (!isReadonly && domNode.getAttribute('aria-readonly') === 'true') {
+    formControlData.isReadonly = true;
+  }
+
+  // Checkbox and Radio.
+  if (tagName === TAG_INPUT) {
+    const inputElement = domNode as HTMLInputElement;
+    if (inputElement.type === 'checkbox' || inputElement.type === 'radio') {
+      formControlData.isChecked = inputElement.checked;
+    }
+  }
+
+  // Placeholder.
+  const placeholder = (domNode as HTMLInputElement).placeholder;
+  if (placeholder) {
+    formControlData.placeholder = placeholder;
+  } else {
+    const ariaPlaceholder = domNode.getAttribute('aria-placeholder');
+    if (ariaPlaceholder) {
+      formControlData.placeholder = ariaPlaceholder;
+    }
+  }
+
+  // Select Options.
+  if (tagName === TAG_SELECT) {
+    const selectElement = domNode as HTMLSelectElement;
+    for (const option of Array.from(selectElement.options)) {
+      let text = option.text;
+      if (!text) {
+        text = option.label;
+      }
+      formControlData.selectOptions.push({
+        value: option.value,
+        text: text,
+        isSelected: option.selected,
+        disabled: option.disabled,
+      });
+    }
+  }
+
+  return formControlData as PageContentFormControlData;
+}
+
+/**
  * Returns basic content for an element node that is not a generic
  * container based on its tag name.
  *
@@ -643,19 +869,22 @@ function getBasicContentForNonGenericElement(
         contentAttributes: {
           ...BASIC_CONTENT_ATTRIBUTES,
           attributeType: PageContentAttributeType.FORM,
+          formData: getFormData(domNode as HTMLFormElement),
         },
       };
     case TAG_INPUT:
     case TAG_TEXTAREA:
     case TAG_SELECT:
-    case TAG_BUTTON:
+    case TAG_BUTTON: {
       return {
         childrenNodes: [],
         contentAttributes: {
           ...BASIC_CONTENT_ATTRIBUTES,
           attributeType: PageContentAttributeType.FORM_CONTROL,
+          formControlData: getFormControlData(domNode, tagName),
         },
       };
+    }
     case TAG_H1:
     case TAG_H2:
     case TAG_H3:
