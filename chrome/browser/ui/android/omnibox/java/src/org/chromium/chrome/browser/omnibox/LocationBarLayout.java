@@ -46,7 +46,7 @@ public class LocationBarLayout extends ConstraintLayout {
     protected ImageButton mZoomButton;
     protected ImageButton mInstallButton;
     protected ImageButton mComposeplateButton;
-    private final @Nullable View mNavigateButton;
+    protected final @Nullable View mNavigateButton;
     protected UrlBar mUrlBar;
 
     protected UrlBarCoordinator mUrlCoordinator;
