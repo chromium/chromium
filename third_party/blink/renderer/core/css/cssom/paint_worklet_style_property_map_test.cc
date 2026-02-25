@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_style_property_map.h"
 
 #include <memory>
+
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -13,7 +14,6 @@
 #include "third_party/blink/renderer/core/css/cssom/css_keyword_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_paint_worklet_input.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
-#include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unsupported_color.h"
 #include "third_party/blink/renderer/core/css/properties/longhands/custom_property.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -66,8 +67,7 @@ class PaintWorkletStylePropertyMapTest : public PageTestBase {
     CSSStyleValue* style_value = data.at("--x")->ToCSSStyleValue();
     EXPECT_EQ(style_value->GetType(),
               CSSStyleValue::StyleValueType::kUnparsedType);
-    EXPECT_EQ(static_cast<CSSUnparsedValue*>(style_value)->ToUnparsedString(),
-              "50");
+    EXPECT_EQ(style_value->toString(), "50");
     waitable_event->Signal();
   }
 

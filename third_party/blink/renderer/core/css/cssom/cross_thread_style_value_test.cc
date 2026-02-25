@@ -19,12 +19,12 @@
 #include "third_party/blink/renderer/core/css/cssom/css_keyword_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
-#include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unsupported_color.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -152,8 +152,7 @@ TEST_F(CrossThreadStyleValueTest, CrossThreadUnparsedValueToCSSStyleValue) {
   CSSStyleValue* style_value = value->ToCSSStyleValue();
   EXPECT_EQ(style_value->GetType(),
             CSSStyleValue::StyleValueType::kUnparsedType);
-  EXPECT_EQ(static_cast<CSSUnparsedValue*>(style_value)->ToUnparsedString(),
-            "Unparsed");
+  EXPECT_EQ(style_value->toString(), "Unparsed");
 }
 
 TEST_F(CrossThreadStyleValueTest, PassKeywordValueCrossThread) {
