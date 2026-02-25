@@ -53,7 +53,6 @@ class ConnectionBasic : public Connection {
 
   std::unique_ptr<SecureChannel> secure_channel_;
 
-  // Called to trigger a disconnect and destruction of the connection.
   base::OnceCallback<void(ErrorCode)> on_disconnect_;
 
   int32_t next_request_id_{1};

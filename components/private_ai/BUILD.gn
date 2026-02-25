@@ -102,8 +102,6 @@ source_set("testing") {
   sources = [
     "testing/fake_connection.cc",
     "testing/fake_connection.h",
-    "testing/fake_secure_channel.cc",
-    "testing/fake_secure_channel.h",
     "testing/fake_token_manager.cc",
     "testing/fake_token_manager.h",
     "testing/mock_private_ai_client.h",
@@ -120,7 +118,6 @@ source_set("testing") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "client_impl_integration_test.cc",
     "client_impl_unittest.cc",
     "connection_basic_unittest.cc",
     "connection_metrics_unittest.cc",

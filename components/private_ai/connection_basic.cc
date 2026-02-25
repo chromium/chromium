@@ -56,13 +56,10 @@ void ConnectionBasic::Send(proto::PrivateAiRequest request,
 }
 
 void ConnectionBasic::OnDestroy(ErrorCode error) {
-  on_disconnect_.Reset();
   auto pending_requests = std::move(pending_request_callbacks_);
   for (auto& pending_request : pending_requests) {
     std::move(pending_request.second).Run(base::unexpected(error));
   }
-
-  weak_factory_.InvalidateWeakPtrsAndDoom();
 }
 
 void ConnectionBasic::OnResponseReceived(

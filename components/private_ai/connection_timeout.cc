@@ -49,10 +49,7 @@ void ConnectionTimeout::OnDestroy(ErrorCode error) {
   for (auto& entry : pending) {
     std::move(entry.second).Run(base::unexpected(error));
   }
-
   inner_connection_->OnDestroy(error);
-
-  weak_factory_.InvalidateWeakPtrsAndDoom();
 }
 
 void ConnectionTimeout::OnResponse(
