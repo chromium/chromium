@@ -593,7 +593,7 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
   // Check the form is displayed with the correct title and footer.
   [[EarlGrey
       selectElementWithMatcher:
-          chrome_test_util::HeaderWithAccessibilityLabelId(
+          chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
               IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_EDIT_PINNED_SITE_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Check the "Name" field and type a new value.
@@ -700,13 +700,7 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
 
 // Tests pinning 8 sites and verifying the "Add site" button disappears after 8
 // sites are added, and reappears after unpinning one.
-// TODO(crbug.com/483977973): Reenable this test on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testMostVisitedPinEightSites testMostVisitedPinEightSites
-#else
-#define MAYBE_testMostVisitedPinEightSites DISABLED_testMostVisitedPinEightSites
-#endif
-- (void)MAYBE_testMostVisitedPinEightSites {
+- (void)testMostVisitedPinEightSites {
   id<GREYMatcher> addSiteButton = grey_accessibilityID(
       AccessibilityIdentifierForMostVisitedCellAtIndex(-1));
   // Add 8 pinned sites. Before pinning each, verify that the "Add site" button
@@ -738,7 +732,7 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
   // Now the "+" button should be back.
   ScrollMostVisitedToRightEdge();
   [[EarlGrey selectElementWithMatcher:addSiteButton]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_interactable()];
 }
 
 #pragma mark - Test utils
@@ -793,7 +787,7 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
   // Verify form title.
   [[EarlGrey
       selectElementWithMatcher:
-          chrome_test_util::HeaderWithAccessibilityLabelId(
+          chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
               IDS_IOS_CONTENT_SUGGESTIONS_PIN_SITE_ADD_PINNED_SITE_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
   id<GREYMatcher> saveButton = grey_allOf(
