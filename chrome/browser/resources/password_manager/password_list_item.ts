@@ -150,6 +150,8 @@ export class PasswordListItemElement extends PasswordListItemElementBase {
           await PluralStringProxyImpl.getInstance().getPluralString(
               'deviceOnlyPasswordsIconTooltip',
               this.getCredentialsOnDevice_().length);
+    } else {
+      this.showMovePasswordDialog_ = false;
     }
   }
 
