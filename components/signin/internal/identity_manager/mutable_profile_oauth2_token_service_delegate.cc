@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -27,6 +28,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
 #include "components/signin/internal/identity_manager/token_binding_oauth2_access_token_fetcher.h"
+#include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/signin_client.h"
@@ -648,61 +650,70 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
     }
 
     DCHECK(!account_id.IsEmail())
-        << "Acount id should be a Gaia id [account_id = " << account_id << "]";
+        << "Account id should be a Gaia id [account_id = " << account_id << "]";
     DCHECK(!refresh_token.empty());
 
-    // Only load secondary accounts when account consistency is enabled.
-    bool load_account =
-        account_id == loading_primary_account_id_ ||
-        account_consistency_ == signin::AccountConsistencyMethod::kDice;
-    LoadTokenFromDBStatus load_token_status =
-        load_account ? LoadTokenFromDBStatus::TOKEN_LOADED
-                     : LoadTokenFromDBStatus::TOKEN_REVOKED_SECONDARY_ACCOUNT;
+    const bool is_primary_account = account_id == loading_primary_account_id_;
 
-    bool revoke_token = false;
-    switch (revoke_all_tokens_on_load_) {
-      case RevokeAllTokensOnLoad::kNo:
-        break;
-      case RevokeAllTokensOnLoad::kDeleteSiteDataOnExit:
-        // Tokens are not revoked when clearing cookies if the user
-        // is signed in non-syncing.
-        revoke_token = loading_primary_account_id_.empty();
-        break;
-      case RevokeAllTokensOnLoad::kExplicitRevoke:
-        revoke_token = true;
-        break;
-    }
-
-    if (load_account && revoke_token) {
-      if (account_id == loading_primary_account_id_) {
-        RevokeCredentialsOnServer(refresh_token);
-        refresh_token = GaiaConstants::kInvalidRefreshToken;
-        wrapped_binding_key = std::vector<uint8_t>();
-        PersistCredentials(account_id, refresh_token, wrapped_binding_key);
-      } else {
-        load_account = false;
+    const bool revoke_token_on_load = [&] {
+      switch (revoke_all_tokens_on_load_) {
+        case RevokeAllTokensOnLoad::kNo:
+          return false;
+        case RevokeAllTokensOnLoad::kDeleteSiteDataOnExit:
+          // Tokens are not revoked when clearing cookies if the user
+          // is signed in.
+          return loading_primary_account_id_.empty();
+        case RevokeAllTokensOnLoad::kExplicitRevoke:
+          return true;
       }
-      load_token_status = LoadTokenFromDBStatus::TOKEN_REVOKED_ON_LOAD;
-    }
+      NOTREACHED();
+    }();
+
+    LoadTokenFromDBStatus load_token_status =
+        LoadTokenFromDBStatus::TOKEN_LOADED;
+    const bool revoke_token = [&] {
+      // Revoke all secondary accounts when account consistency is disabled.
+      if (!is_primary_account &&
+          account_consistency_ != signin::AccountConsistencyMethod::kDice) {
+        load_token_status =
+            LoadTokenFromDBStatus::TOKEN_REVOKED_SECONDARY_ACCOUNT;
+        return true;
+      }
+      if (revoke_token_on_load) {
+        load_token_status = LoadTokenFromDBStatus::TOKEN_REVOKED_ON_LOAD;
+        return true;
+      }
+
+      return false;
+    }();
 
     UMA_HISTOGRAM_ENUMERATION(
         "Signin.LoadTokenFromDB", load_token_status,
         LoadTokenFromDBStatus::NUM_LOAD_TOKEN_FROM_DB_STATUS);
 
-    if (load_account) {
-      if (!revoke_token && should_reencrypt) {
-        did_reencrypt = true;
-        PersistCredentials(account_id, refresh_token, wrapped_binding_key);
-      }
-      RecordAccountAvailabilityStartup(account_id, refresh_token);
-
-      UpdateCredentialsInMemory(account_id, refresh_token, wrapped_binding_key);
-      FireRefreshTokenAvailable(account_id);
-    } else {
+    if (revoke_token) {
       RevokeCredentialsOnServer(refresh_token);
-      ClearPersistedCredentials(account_id);
-      FireRefreshTokenRevoked(account_id);
+      if (is_primary_account) {
+        // If the primary token needs to be revoked, replace it with
+        // `GaiaConstants::kInvalidRefreshToken`.
+        refresh_token = GaiaConstants::kInvalidRefreshToken;
+        wrapped_binding_key = std::vector<uint8_t>();
+        PersistCredentials(account_id, refresh_token, wrapped_binding_key);
+      } else {
+        ClearPersistedCredentials(account_id);
+        FireRefreshTokenRevoked(account_id);
+        continue;
+      }
     }
+
+    if (!revoke_token && should_reencrypt) {
+      did_reencrypt = true;
+      PersistCredentials(account_id, refresh_token, wrapped_binding_key);
+    }
+
+    RecordAccountAvailabilityStartup(account_id, refresh_token);
+    UpdateCredentialsInMemory(account_id, refresh_token, wrapped_binding_key);
+    FireRefreshTokenAvailable(account_id);
   }
   RecordTokenBindingHistogramsOnCredentialsLoaded(
       token_binding_helper_.get(),
