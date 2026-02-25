@@ -89,6 +89,11 @@
                       }];
 }
 
+- (void)setAssistantContainerDetents:
+    (NSArray<AssistantContainerDetent*>*)detents {
+  // TODO(crbug.com/390204874): Implement detent updates.
+}
+
 - (void)dismissAssistantContainerAnimated:(BOOL)animated
                                completion:(ProceduralBlock)completion {
   if (!_containerViewController) {

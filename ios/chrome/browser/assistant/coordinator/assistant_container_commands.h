@@ -25,6 +25,10 @@
 - (void)dismissAssistantContainerAnimated:(BOOL)animated
                                completion:(ProceduralBlock)completion;
 
+// Sets the available detents for the container.
+- (void)setAssistantContainerDetents:
+    (NSArray<AssistantContainerDetent*>*)detents;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_ASSISTANT_COORDINATOR_ASSISTANT_CONTAINER_COMMANDS_H_

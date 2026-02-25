@@ -8,6 +8,17 @@
 #import <Foundation/Foundation.h>
 
 @class AssistantContainerViewController;
+@class AssistantContainerDetent;
+
+// Describes the presentation context of the Assistant Container.
+enum class AssistantPresentationContext {
+  // Standard compact-width presentation (e.g., iPhone portrait).
+  // The container behaves as a traditional bottom sheet.
+  kSheet,
+  // Regular-width presentation (e.g., iPad full screen).
+  // The container is presented as a side panel.
+  kPanel,
+};
 
 // Delegate for the Assistant Container to notify embedders of state changes.
 @protocol AssistantContainerDelegate <NSObject>
@@ -30,6 +41,22 @@
 // Called after the container's view has disappeared.
 - (void)assistantContainer:(AssistantContainerViewController*)container
       didDisappearAnimated:(BOOL)animated;
+
+#pragma mark - Sizing and Detents
+
+// Called when the container successfully settles on a new detent.
+- (void)assistantContainer:(AssistantContainerViewController*)container
+           didChangeDetent:(AssistantContainerDetent*)newDetent;
+
+// Called when the container updates its internal height dynamically.
+- (void)assistantContainer:(AssistantContainerViewController*)container
+           didUpdateHeight:(CGFloat)newHeight;
+
+#pragma mark - Context Changes
+
+// Called when the host environment's presentation context changes.
+- (void)assistantContainer:(AssistantContainerViewController*)container
+          didChangeContext:(AssistantPresentationContext)newContext;
 
 @end
 
