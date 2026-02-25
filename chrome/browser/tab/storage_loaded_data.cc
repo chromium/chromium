@@ -362,9 +362,7 @@ StorageLoadedData::StorageLoadedData(
   tracker_->SetLoadingContext(&context_);
 }
 
-StorageLoadedData::~StorageLoadedData() {
-  observers_.Notify(&Observer::OnDestroyed);
-}
+StorageLoadedData::~StorageLoadedData() = default;
 
 RestoreEntityTracker* StorageLoadedData::GetTracker() const {
   return tracker_.get();

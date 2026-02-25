@@ -53,10 +53,6 @@ void StorageRestoreOrchestrator::ObserverImpl::OnNodeRejected(StorageId node) {
   orchestrator_->OnNodeRejected(node);
 }
 
-void StorageRestoreOrchestrator::ObserverImpl::OnDestroyed() {
-  orchestrator_->OnDataDestroyed();
-}
-
 // StorageRestoreOrchestrator implementation.
 StorageRestoreOrchestrator::StorageRestoreOrchestrator(
     TabStripCollection* collection,
@@ -65,8 +61,7 @@ StorageRestoreOrchestrator::StorageRestoreOrchestrator(
     : data_observer_(this),
       collection_(collection),
       service_(service),
-      loaded_data_(loaded_data),
-      is_data_observer_registered_(true) {
+      loaded_data_(loaded_data) {
   loaded_data_->RegisterObserver(&data_observer_);
 
   RestoreEntityTracker* tracker = loaded_data_->GetTracker();
@@ -83,13 +78,17 @@ StorageRestoreOrchestrator::StorageRestoreOrchestrator(
 }
 
 StorageRestoreOrchestrator::~StorageRestoreOrchestrator() {
-  OnDataDestroyed();
+  DCHECK(loaded_data_)
+      << "StorageLoadedData must be alive when the orchestrator is destroyed.";
+  loaded_data_->UnregisterObserver(&data_observer_);
 
-  service_->CreateScopedBatch();
-  service_->SaveChildren(collection_);
-  CollectionChildSaveCrawler crawler(service_);
-  DirectChildWalker walker(collection_, &crawler);
-  walker.Walk();
+  if (!is_restore_cancelled_) {
+    auto batch = service_->CreateScopedBatch();
+    service_->SaveChildren(collection_);
+    CollectionChildSaveCrawler crawler(service_);
+    DirectChildWalker walker(collection_, &crawler);
+    walker.Walk();
+  }
 }
 
 void StorageRestoreOrchestrator::OnSaveChildTab(
@@ -145,12 +144,8 @@ void StorageRestoreOrchestrator::OnNodeRejected(StorageId node) {
   service_->Remove(node);
 }
 
-void StorageRestoreOrchestrator::OnDataDestroyed() {
-  if (is_data_observer_registered_) {
-    DCHECK(loaded_data_);
-    loaded_data_->UnregisterObserver(&data_observer_);
-    is_data_observer_registered_ = false;
-  }
+void StorageRestoreOrchestrator::OnRestoreCancelled() {
+  is_restore_cancelled_ = true;
 }
 
 void StorageRestoreOrchestrator::OnChildrenAdded(

@@ -31,6 +31,10 @@ void StorageCollectionSynchronizerAndroid::FullSave(JNIEnv* env) {
   synchronizer_.FullSave();
 }
 
+void StorageCollectionSynchronizerAndroid::CancelRestore(JNIEnv* env) {
+  synchronizer_.CancelRestore();
+}
+
 void StorageCollectionSynchronizerAndroid::SaveTab(JNIEnv* env,
                                                    TabAndroid* tab) {
   synchronizer_.SaveTab(tab);

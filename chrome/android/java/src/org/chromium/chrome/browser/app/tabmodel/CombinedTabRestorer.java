@@ -37,6 +37,9 @@ class CombinedTabRestorer {
         /** Called once both the regular and incognito tab restorer have been cancelled. */
         default void onCancelled() {}
 
+        /** Called when either the regular or incognito tab restorer have been finished. */
+        default void onRestoredForModel(boolean incognito) {}
+
         /**
          * Called once the active tab has been restored.
          *
@@ -164,6 +167,7 @@ class CombinedTabRestorer {
             assert state.isLoadFinished();
             state.setFinished();
 
+            mOrchestratorDelegate.onRestoredForModel(incognito);
             sendOnFinishedOrStartRemainingTabRestorer();
         }
 

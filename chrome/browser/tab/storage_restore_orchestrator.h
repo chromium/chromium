@@ -48,6 +48,7 @@ class StorageRestoreOrchestrator
   void SaveChildNodeOnly(TabCollectionNodeHandle handle) override;
 
   void OnNodeRejected(StorageId node);
+  void OnRestoreCancelled() override;
 
  private:
   class ObserverImpl : public StorageLoadedData::Observer {
@@ -55,7 +56,6 @@ class StorageRestoreOrchestrator
     explicit ObserverImpl(StorageRestoreOrchestrator* orchestrator);
     ~ObserverImpl() override;
     void OnNodeRejected(StorageId node) override;
-    void OnDestroyed() override;
 
    private:
     raw_ptr<StorageRestoreOrchestrator> orchestrator_;
@@ -65,7 +65,6 @@ class StorageRestoreOrchestrator
                       bool was_inserted);
   void OnSaveChildCollection(const TabCollection::NodeHandle& handle,
                              bool was_inserted);
-  void OnDataDestroyed();
 
   // Tracks events performed on StorageLoadedData.
   ObserverImpl data_observer_;
@@ -74,7 +73,7 @@ class StorageRestoreOrchestrator
   raw_ptr<TabStateStorageService> service_;
   raw_ptr<StorageLoadedData> loaded_data_;
 
-  bool is_data_observer_registered_;
+  bool is_restore_cancelled_;
 };
 
 }  // namespace tabs

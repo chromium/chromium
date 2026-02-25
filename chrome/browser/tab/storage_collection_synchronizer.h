@@ -25,6 +25,9 @@ class StorageCollectionSynchronizer {
     // Saves the node represented by the handle to storage. This
     // will only save the payload for the given handle.
     virtual void SaveChildNodeOnly(TabCollectionNodeHandle handle) = 0;
+
+    // Called when the restoration process is cancelled.
+    virtual void OnRestoreCancelled();
   };
 
   StorageCollectionSynchronizer(TabStripCollection* collection,
@@ -37,6 +40,9 @@ class StorageCollectionSynchronizer {
 
   // Saves the entire collection and its descendants to the service.
   void FullSave();
+
+  // Cancels the restoration process.
+  void CancelRestore();
 
   // Used to manually save a tab.
   void SaveTab(TabInterface* tab);

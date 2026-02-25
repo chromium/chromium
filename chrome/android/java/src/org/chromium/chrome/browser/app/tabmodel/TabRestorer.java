@@ -262,8 +262,9 @@ class TabRestorer {
 
     private void cancelInternal() {
         if (mData != null) {
-            cleanupStorageLoadedData();
+            // Delegate still needs access to the StorageLoadedData before it is cleaned up.
             mDelegate.onCancelled(mIncognito);
+            cleanupStorageLoadedData();
         }
     }
 
@@ -278,8 +279,10 @@ class TabRestorer {
 
         assert mState == State.FINISHING;
         mState = State.FINISHED;
-        cleanupStorageLoadedData();
+
+        // Delegate still needs access to the StorageLoadedData before it is cleaned up.
         mDelegate.onFinished(mIncognito);
+        cleanupStorageLoadedData();
 
         RecordHistogram.recordCount1000Histogram(
                 "Tabs.TabStateStore.FilteredTabCount", mRestoreFilteredTabCount);

@@ -59,6 +59,12 @@ public class StorageCollectionSynchronizer implements Destroyable {
         StorageCollectionSynchronizerJni.get().fullSave(mNativePtr);
     }
 
+    /** Cancels the restoration process. */
+    public void cancelRestore() {
+        assert mNativePtr != 0;
+        StorageCollectionSynchronizerJni.get().cancelRestore(mNativePtr);
+    }
+
     /** Saves a tab to storage through the observer associated with the synchronizer. */
     public void saveTab(Tab tab) {
         assert mNativePtr != 0;
@@ -81,6 +87,8 @@ public class StorageCollectionSynchronizer implements Destroyable {
                 @JniType("tabs::TabStripCollection*") TabStripCollection collection);
 
         void fullSave(long nativeStorageCollectionSynchronizerAndroid);
+
+        void cancelRestore(long nativeStorageCollectionSynchronizerAndroid);
 
         void saveTab(
                 long nativeStorageCollectionSynchronizerAndroid, @JniType("TabAndroid*") Tab tab);

@@ -41,6 +41,10 @@ class CollectionSaveCrawler : public DirectChildWalker::Processor {
   raw_ptr<TabStateStorageService> service_;
 };
 
+// CollectionSynchronizerObserver implementation.
+void StorageCollectionSynchronizer::CollectionSynchronizerObserver::
+    OnRestoreCancelled() {}
+
 StorageCollectionSynchronizer::StorageCollectionSynchronizer(
     TabStripCollection* collection,
     TabStateStorageService* service)
@@ -51,6 +55,14 @@ void StorageCollectionSynchronizer::FullSave() {
   CollectionSaveCrawler crawler(service_);
   DirectChildWalker walker(collection_, &crawler);
   walker.Walk();
+}
+
+void StorageCollectionSynchronizer::CancelRestore() {
+  if (observer_) {
+    observer_->OnRestoreCancelled();
+    collection_->RemoveObserver(observer_.get());
+    observer_.reset();
+  }
 }
 
 void StorageCollectionSynchronizer::SaveTab(TabInterface* tab) {

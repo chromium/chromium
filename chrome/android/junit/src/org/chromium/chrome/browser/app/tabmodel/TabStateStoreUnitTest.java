@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.PersistentStoreMigrationManager;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -69,6 +70,7 @@ public class TabStateStoreUnitTest {
     @Mock private TabModel mIncognitoTabModel;
     @Mock private Profile mProfile;
     @Mock private TabCreatorManager mTabCreatorManager;
+    @Mock private TabCreator mTabCreator;
     @Mock private TabPersistencePolicy mTabPersistencePolicy;
     @Mock private PersistentStoreMigrationManager mMigrationManager;
     @Mock private CipherFactory mCipherFactory;
@@ -82,7 +84,7 @@ public class TabStateStoreUnitTest {
     @Captor private ArgumentCaptor<Callback<StorageLoadedData>> mCallbackCaptor;
 
     private final ModelTrackingOrchestrator.Factory mFactory =
-            (a, b, c, d) -> mModelTrackingOrchestrator;
+            (a, b, c, d, e) -> mModelTrackingOrchestrator;
     private final SettableNullableObservableSupplier<Tab> mRegularTabSupplier =
             ObservableSuppliers.createNullable();
     private final SettableNullableObservableSupplier<Tab> mIncognitoTabSupplier =
@@ -247,7 +249,34 @@ public class TabStateStoreUnitTest {
         ShadowLooper.runUiThreadTasks();
 
         verify(mObserver).onStateLoaded();
+        verify(mModelTrackingOrchestrator).onRestoredForModel(false);
+        verify(mModelTrackingOrchestrator).onRestoredForModel(true);
         verify(mModelTrackingOrchestrator).onRestoreFinished();
+    }
+
+    @Test
+    public void testLoadAndRestore_Cancel() {
+        mTabStateStore.onNativeLibraryReady();
+        when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
+        when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mTabCreator);
+
+        TabState tabState = new TabState();
+        tabState.contentsState = mock(WebContentsState.class);
+        LoadedTabState loadedTabState = new LoadedTabState(0, tabState);
+        when(mRegularData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {loadedTabState});
+
+        mTabStateStore.destroy();
+        mTabStateStore.loadState(false);
+
+        verify(mTabStateStorageService, times(2))
+                .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
+
+        List<Callback<StorageLoadedData>> callbacks = mCallbackCaptor.getAllValues();
+
+        callbacks.get(0).onResult(mRegularData);
+        callbacks.get(1).onResult(mIncognitoData);
+
+        verify(mModelTrackingOrchestrator, times(2)).onRestoreCancelled();
     }
 
     @Test
