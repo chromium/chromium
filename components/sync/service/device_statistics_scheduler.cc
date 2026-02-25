@@ -69,12 +69,15 @@ base::Time DeviceStatisticsScheduler::ComputeEarliestAllowedTimeToRun() const {
   const base::Time last_recorded_at =
       std::min(pref_service_->GetTime(kLastAttemptedToRecordPref), now);
 
-  // The metrics should be recorded once per calendar day, so the next possible
-  // time is midnight on the day after the last recording.
+  // The metrics should be recorded once per N calendar days (determined by a
+  // feature param), so the next possible time is midnight, N days after the
+  // last recording.
   base::Time earliest_allowed =
       last_recorded_at.is_null()
           ? now
-          : (last_recorded_at + base::Days(1)).LocalMidnight();
+          : (last_recorded_at +
+             base::Days(kSyncRecordDeviceStatisticsMetricsPeriodDays.Get()))
+                .LocalMidnight();
 
   if (earliest_allowed > now) {
     // Recording has already happened today. Wait (somewhat arbitrarily) until

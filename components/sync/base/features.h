@@ -214,10 +214,11 @@ BASE_DECLARE_FEATURE(kSyncRecordDeviceStatisticsMetrics);
 // exact number is somewhat arbitrary, chosen to ensure that refresh tokens are
 // loaded, the local cache GUID is up to date, and to avoid interfering with
 // general (sync or browser) startup.
-inline constexpr base::FeatureParam<base::TimeDelta>
-    kSyncRecordDeviceStatisticsMetricsDelay{
-        &kSyncRecordDeviceStatisticsMetrics,
-        "SyncRecordDeviceStatisticsMetricsDelay", base::Seconds(30)};
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kSyncRecordDeviceStatisticsMetricsDelay);
+// Controls how often device statistics are collected and recorded in metrics,
+// as the minimum number of days between recordings.
+BASE_DECLARE_FEATURE_PARAM(int, kSyncRecordDeviceStatisticsMetricsPeriodDays);
 
 // If enabled, DeviceInfoSyncBridge uses WallClockTimer for pulse updates,
 // which is more resilient to device suspension.
