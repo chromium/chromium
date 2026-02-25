@@ -35,12 +35,10 @@ InvalidConnectionDisconnector::InvalidConnectionDisconnector(
     : connection_manager_(connection_manager),
       phone_model_(phone_model),
       timer_(std::move(timer)) {
-  connection_manager_->AddObserver(this);
+  connection_manager_observation_.Observe(connection_manager);
 }
 
-InvalidConnectionDisconnector::~InvalidConnectionDisconnector() {
-  connection_manager_->RemoveObserver(this);
-}
+InvalidConnectionDisconnector::~InvalidConnectionDisconnector() = default;
 
 void InvalidConnectionDisconnector::OnConnectionStatusChanged() {
   timer_->Stop();

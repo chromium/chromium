@@ -59,17 +59,13 @@ std::string GetMessageTypeName(proto::MessageType message_type) {
 MessageReceiverImpl::MessageReceiverImpl(
     secure_channel::ConnectionManager* connection_manager,
     PhoneHubStructuredMetricsLogger* phone_hub_structured_metrics_logger)
-    : connection_manager_(connection_manager),
-      phone_hub_structured_metrics_logger_(
+    : phone_hub_structured_metrics_logger_(
           phone_hub_structured_metrics_logger) {
-  DCHECK(connection_manager_);
-
-  connection_manager_->AddObserver(this);
+  DCHECK(connection_manager);
+  connection_manager_observation_.Observe(connection_manager);
 }
 
-MessageReceiverImpl::~MessageReceiverImpl() {
-  connection_manager_->RemoveObserver(this);
-}
+MessageReceiverImpl::~MessageReceiverImpl() = default;
 
 void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
   // The first two bytes of |payload| is reserved for the header

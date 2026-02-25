@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_INVALID_CONNECTION_DISCONNECTOR_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace base {
@@ -50,6 +51,10 @@ class InvalidConnectionDisconnector
   raw_ptr<secure_channel::ConnectionManager> connection_manager_;
   raw_ptr<PhoneModel> phone_model_;
   std::unique_ptr<base::OneShotTimer> timer_;
+
+  base::ScopedObservation<secure_channel::ConnectionManager,
+                          secure_channel::ConnectionManager::Observer>
+      connection_manager_observation_{this};
 };
 
 }  // namespace ash::phonehub

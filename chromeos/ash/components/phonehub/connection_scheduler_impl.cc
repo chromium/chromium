@@ -36,13 +36,10 @@ ConnectionSchedulerImpl::ConnectionSchedulerImpl(
   DCHECK(feature_status_provider_);
 
   current_feature_status_ = feature_status_provider_->GetStatus();
-  feature_status_provider_->AddObserver(this);
+  feature_status_provider_observation_.Observe(feature_status_provider);
 }
 
-ConnectionSchedulerImpl::~ConnectionSchedulerImpl() {
-  feature_status_provider_->RemoveObserver(this);
-  weak_ptr_factory_.InvalidateWeakPtrs();
-}
+ConnectionSchedulerImpl::~ConnectionSchedulerImpl() = default;
 
 void ConnectionSchedulerImpl::ScheduleConnectionNow(
     DiscoveryEntryPoint entry_point) {

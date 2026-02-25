@@ -25,21 +25,17 @@ PingManagerImpl::PingManagerImpl(
     MessageSender* message_sender)
     : connection_manager_(connection_manager),
       feature_status_provider_(feature_status_provider),
-      message_receiver_(message_receiver),
       message_sender_(message_sender) {
   DCHECK(connection_manager);
   DCHECK(feature_status_provider);
   DCHECK(message_receiver);
   DCHECK(message_sender);
 
-  feature_status_provider_->AddObserver(this);
-  message_receiver_->AddObserver(this);
+  feature_status_provider_observation_.Observe(feature_status_provider);
+  message_receiver_observation_.Observe(message_receiver);
 }
 
-PingManagerImpl::~PingManagerImpl() {
-  feature_status_provider_->RemoveObserver(this);
-  message_receiver_->RemoveObserver(this);
-}
+PingManagerImpl::~PingManagerImpl() = default;
 
 void PingManagerImpl::OnPhoneStatusSnapshotReceived(
     proto::PhoneStatusSnapshot phone_status_snapshot) {

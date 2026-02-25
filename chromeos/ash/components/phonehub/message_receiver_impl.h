@@ -6,8 +6,8 @@
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_MESSAGE_RECEIVER_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/phonehub/message_receiver.h"
-
 #include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
@@ -27,8 +27,10 @@ class MessageReceiverImpl : public MessageReceiver,
   // secure_channel::ConnectionManager::Observer:
   void OnMessageReceived(const std::string& payload) override;
 
-  raw_ptr<secure_channel::ConnectionManager> connection_manager_;
   raw_ptr<PhoneHubStructuredMetricsLogger> phone_hub_structured_metrics_logger_;
+  base::ScopedObservation<secure_channel::ConnectionManager,
+                          secure_channel::ConnectionManager::Observer>
+      connection_manager_observation_{this};
 };
 
 }  // namespace ash::phonehub

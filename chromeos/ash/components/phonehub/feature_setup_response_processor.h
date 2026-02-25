@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_FEATURE_SETUP_RESPONSE_PROCESSOR_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/phonehub/message_receiver.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 
@@ -32,8 +33,9 @@ class FeatureSetupResponseProcessor : public MessageReceiver::Observer {
   void OnFeatureSetupResponseReceived(
       proto::FeatureSetupResponse response) override;
 
-  raw_ptr<MessageReceiver> message_receiver_;
   raw_ptr<MultideviceFeatureAccessManager> multidevice_feature_access_manager_;
+  base::ScopedObservation<MessageReceiver, MessageReceiver::Observer>
+      message_receiver_observation_{this};
 };
 
 }  // namespace ash::phonehub

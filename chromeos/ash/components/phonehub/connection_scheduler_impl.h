@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/connection_scheduler.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
@@ -57,6 +58,9 @@ class ConnectionSchedulerImpl : public ConnectionScheduler,
   // Provides us the backoff timers for RequestConnection().
   net::BackoffEntry retry_backoff_;
   FeatureStatus current_feature_status_;
+  base::ScopedObservation<FeatureStatusProvider,
+                          FeatureStatusProvider::Observer>
+      feature_status_provider_observation_{this};
   base::WeakPtrFactory<ConnectionSchedulerImpl> weak_ptr_factory_{this};
 };
 
