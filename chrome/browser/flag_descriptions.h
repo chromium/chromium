@@ -7822,6 +7822,12 @@ inline constexpr char kCrOSSystemVoiceIsolationOptionName[] =
 inline constexpr char kCrOSSystemVoiceIsolationOptionDescription[] =
     "Enable the options of setting system voice isolation per stream.";
 
+inline constexpr char kAudioFlexibleLoopbackForSystemLoopbackName[] =
+    "Use FLEXIBLE_LOOPBACK instead of POST_MIX_LOOPBACK";
+inline constexpr char kAudioFlexibleLoopbackForSystemLoopbackDescription[] =
+    "Request a FLEXIBLE_LOOPBACK instead of POST_MIX_LOOPBACK for system "
+    "loopback";
+
 inline constexpr char kShowSpatialAudioToggleName[] =
     "Enable a setting toggle for spatial audio";
 inline constexpr char kShowSpatialAudioToggleDescription[] =
