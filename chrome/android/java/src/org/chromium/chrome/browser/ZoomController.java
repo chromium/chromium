@@ -104,11 +104,33 @@ public class ZoomController {
             @Nullable WebContents webContents,
             @Nullable BrowserContextHandle browserContextHandle) {
         if (AccessibilityFeatureMap.sAndroidZoomIndicator.isEnabled()) {
-            if (webContents == null || browserContextHandle == null) return false;
-            double defaultZoomFactor = HostZoomMap.getDefaultZoomLevel(browserContextHandle);
-            HostZoomMap.setZoomLevel(webContents, defaultZoomFactor);
-            return true;
+            return zoomResetPage(webContents, browserContextHandle);
         }
+        return zoomResetVisual(webContents);
+    }
+
+    /**
+     * Resets the zoom factor of the WebContents using Page Zoom (layout reflow).
+     *
+     * @param webContents {@link WebContents} to reset the zoom of.
+     * @return True if there was a zoom change, false otherwise.
+     */
+    public static boolean zoomResetPage(
+            @Nullable WebContents webContents,
+            @Nullable BrowserContextHandle browserContextHandle) {
+        if (webContents == null || browserContextHandle == null) return false;
+        double defaultZoomFactor = HostZoomMap.getDefaultZoomLevel(browserContextHandle);
+        HostZoomMap.setZoomLevel(webContents, defaultZoomFactor);
+        return true;
+    }
+
+    /**
+     * Resets the zoom factor of the WebContents using Visual Zoom (pinch-to-zoom simulation).
+     *
+     * @param webContents {@link WebContents} to reset the zoom of.
+     * @return True if there was a zoom change, false otherwise.
+     */
+    public static boolean zoomResetVisual(@Nullable WebContents webContents) {
         return pinchByDelta(webContents, ZoomConstants.ZOOM_RESET_DELTA);
     }
 

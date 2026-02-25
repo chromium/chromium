@@ -686,13 +686,7 @@ public class KeyboardShortcuts {
                 R.string.keyboard_shortcut_webpage_group_header,
                 new KeyCombo[] {
                     new KeyCombo(KeyEvent.KEYCODE_ZOOM_IN, NO_MODIFIER),
-                    new KeyCombo(KeyEvent.KEYCODE_EQUALS, KeyEvent.META_CTRL_ON),
-                    new KeyCombo(
-                            KeyEvent.KEYCODE_PLUS,
-                            (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON)),
-                    new KeyCombo(
-                            KeyEvent.KEYCODE_EQUALS,
-                            (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON))
+                    new KeyCombo(KeyEvent.KEYCODE_EQUALS, KeyEvent.META_CTRL_ON)
                 });
         new KeyboardShortcutDefinition(
                 KeyboardShortcutsSemanticMeaning.ZOOM_OUT,
@@ -1193,10 +1187,10 @@ public class KeyboardShortcuts {
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.print_id, false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.ZOOM_IN:
-                    ZoomController.zoomIn(currentWebContents);
+                    ZoomController.zoomInPage(currentWebContents);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.ZOOM_OUT:
-                    ZoomController.zoomOut(currentWebContents);
+                    ZoomController.zoomOutPage(currentWebContents);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.ZOOM_IN_LEGACY:
                     ZoomController.zoomInVisual(currentWebContents);
@@ -1205,7 +1199,7 @@ public class KeyboardShortcuts {
                     ZoomController.zoomOutVisual(currentWebContents);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.ZOOM_RESET:
-                    ZoomController.zoomReset(currentWebContents, browserContextHandle);
+                    ZoomController.zoomResetPage(currentWebContents, browserContextHandle);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.RELOAD_TAB:
                     if (currentTab != null) {
