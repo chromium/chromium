@@ -208,6 +208,7 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
 
   // Set a valid URL.
   web_state_->SetCurrentURL(GURL("https://example.com"));
+  web_state_->SetContentsMimeType("text/html");
 
   // Add a fake JS result for page context extraction.
   base::DictValue result;
@@ -324,6 +325,7 @@ TEST_F(GeminiBrowserAgentTest, TestActiveWebStateChanged) {
 TEST_F(GeminiBrowserAgentTest, TestOnGeminiViewStateExpanded) {
   // Set a valid URL.
   web_state_->SetCurrentURL(GURL("https://example.com"));
+  web_state_->SetContentsMimeType("text/html");
 
   // Add a fake JS result for page context extraction.
   base::DictValue result;
@@ -367,6 +369,7 @@ TEST_F(GeminiBrowserAgentTest, TestPageContextGenerationTimeout) {
 
   UIViewController* base_view_controller = [[UIViewController alloc] init];
   web_state_->SetCurrentURL(GURL("https://example.com"));
+  web_state_->SetContentsMimeType("text/html");
   web_state_->SetLoading(true);
 
   // Add a fake JS result for page context extraction.

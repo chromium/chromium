@@ -19,5 +19,6 @@ extern const char kPageContextLatencyHistogramSuccessStatus[];
 extern const char kPageContextLatencyHistogramFailureStatus[];
 extern const char kPageContextLatencyHistogramTimeoutStatus[];
 extern const char kPageContextLatencyHistogramPageProtectedStatus[];
+extern const char kPageContextLatencyHistogramNotExtractableStatus[];
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_METRICS_CONSTANTS_H_

@@ -39,6 +39,8 @@ enum class PageContextWrapperError {
   kTimeout,
   // innerText was expected, but none was extracted.
   kInnerTextError,
+  // The Page Context is not extractable (e.g. unsupported MIME type or scheme).
+  kPageNotExtractableError,
 };
 
 using PageContextWrapperCallbackResponse =
@@ -54,6 +56,9 @@ using PageContextWrapperCallbackResponse =
 // the caller is populating PageContext protos for lots of tabs. When adding a
 // new async task, ensure a related setter is also created to keep the
 // disable-by-default behaviour.
+//
+// *Important*: This class is designed as one-shot. It is not designed to be
+// reused for multiple PageContext protos. Create a new one if needed.
 @interface PageContextWrapper : NSObject
 
 // Initializer with a PageContextWrapperConfig.

@@ -4907,6 +4907,7 @@ chromium-metrics-reviews@google.com.
   </token>
   <token key="Status">
     <variant name="Failure"/>
+    <variant name="NotExtractable"/>
     <variant name="PageProtected"/>
     <variant name="Success"/>
     <variant name="Timeout"/>

@@ -17,3 +17,5 @@ const char kPageContextLatencyHistogramSuccessStatus[] = ".Success";
 const char kPageContextLatencyHistogramFailureStatus[] = ".Failure";
 const char kPageContextLatencyHistogramTimeoutStatus[] = ".Timeout";
 const char kPageContextLatencyHistogramPageProtectedStatus[] = ".PageProtected";
+const char kPageContextLatencyHistogramNotExtractableStatus[] =
+    ".NotExtractable";

@@ -107,6 +107,22 @@ TEST_F(PageContextWrapperMetricsTest, TestUnfinishedSubtask) {
       "IOS.PageContext.Screenshot.Success.Latency", 0);
 }
 
+// Tests that a NotExtractable subtask logs the correct metric.
+TEST_F(PageContextWrapperMetricsTest, TestNotExtractableStatus) {
+  [metrics() executionStartedForTask:PageContextTask::kAnnotatedPageContent];
+  [metrics()
+      executionFinishedForTask:PageContextTask::kAnnotatedPageContent
+          withCompletionStatus:PageContextCompletionStatus::kNotExtractable];
+  [metrics()
+      executionFinishedForTask:PageContextTask::kOverall
+          withCompletionStatus:PageContextCompletionStatus::kNotExtractable];
+
+  histogram_tester()->ExpectTotalCount(
+      "IOS.PageContext.Overall.NotExtractable.Latency", 1);
+  histogram_tester()->ExpectTotalCount(
+      "IOS.PageContext.AnnotatedPageContent.NotExtractable.Latency", 1);
+}
+
 // Tests that the logged latency metric is accurate.
 TEST_F(PageContextWrapperMetricsTest, TestLatencyValue) {
   base::TimeDelta overall_latency = base::Milliseconds(250);

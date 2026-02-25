@@ -16,6 +16,8 @@ bool CanExtractPageContextForWebState(web::WebState* web_state) {
 
   const GURL& url = web_state->GetVisibleURL();
   const std::string mime_type = web_state->GetContentsMimeType();
+
+  // TODO(crbug.com/485311221): Allow PDFs when their support is added.
   bool mime_type_ok =
       web::IsContentTypeHtml(mime_type) || web::IsContentTypeImage(mime_type);
 

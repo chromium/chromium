@@ -654,6 +654,9 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_InnerTextFailure) {
                       test_server_.GetURL(kMainPagePath), web_state());
 
   // Use a fake web state to cause inner text extraction to fail.
+  fake_web_state()->SetVisibleURL(GURL("http://example.com/"));
+  fake_web_state()->SetContentsMimeType("text/html");
+
   PageContextWrapperCallbackResponse captured_response =
       RunPageContextWrapper(fake_web_state(), ^(PageContextWrapper* wrapper) {
         wrapper.shouldGetInnerText = YES;
@@ -746,6 +749,9 @@ TEST_P(PageContextWrapperTest, TimeoutVerification) {
 
 // Tests that the wrapper correctly handles a failure in PDF generation.
 TEST_P(PageContextWrapperTest, PopulatePageContext_PDFGenerationFailure) {
+  fake_web_state()->SetVisibleURL(GURL("http://example.com/"));
+  fake_web_state()->SetContentsMimeType("text/html");
+
   PageContextWrapperCallbackResponse captured_response =
       RunPageContextWrapper(fake_web_state(), ^(PageContextWrapper* wrapper) {
         wrapper.shouldGetFullPagePDF = YES;
@@ -758,6 +764,9 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_PDFGenerationFailure) {
 
 // Tests that the wrapper correctly handles a failure in APC generation.
 TEST_P(PageContextWrapperTest, PopulatePageContext_APCGenerationFailure) {
+  fake_web_state()->SetVisibleURL(GURL("http://example.com/"));
+  fake_web_state()->SetContentsMimeType("text/html");
+
   PageContextWrapperCallbackResponse captured_response =
       RunPageContextWrapper(fake_web_state(), ^(PageContextWrapper* wrapper) {
         wrapper.shouldGetAnnotatedPageContent = YES;
@@ -768,8 +777,44 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_APCGenerationFailure) {
   EXPECT_EQ(captured_response.error(), PageContextWrapperError::kAPCError);
 }
 
+// Tests that the wrapper correctly handles an unextractable page.
+TEST_P(PageContextWrapperTest, PopulatePageContext_NotExtractable) {
+  fake_web_state()->SetVisibleURL(GURL("chrome://version"));
+  fake_web_state()->SetContentsMimeType("text/html");
+
+  PageContextWrapperCallbackResponse captured_response =
+      RunPageContextWrapper(fake_web_state(), ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  // Verify that the callback was called with a NotExtractable error.
+  ASSERT_FALSE(captured_response.has_value());
+  EXPECT_EQ(captured_response.error(),
+            PageContextWrapperError::kPageNotExtractableError);
+}
+
+// Tests that the wrapper correctly handles an unextractable page due to MIME
+// type (PDF).
+TEST_P(PageContextWrapperTest, PopulatePageContext_NotExtractable_PDF) {
+  fake_web_state()->SetVisibleURL(GURL("https://example.com/file.pdf"));
+  fake_web_state()->SetContentsMimeType("application/pdf");
+
+  PageContextWrapperCallbackResponse captured_response =
+      RunPageContextWrapper(fake_web_state(), ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  // Verify that the callback was called with a NotExtractable error.
+  ASSERT_FALSE(captured_response.has_value());
+  EXPECT_EQ(captured_response.error(),
+            PageContextWrapperError::kPageNotExtractableError);
+}
+
 // Tests that the wrapper correctly handles a failure in inner text generation.
 TEST_P(PageContextWrapperTest, PopulatePageContext_InnerTextGenerationFailure) {
+  fake_web_state()->SetVisibleURL(GURL("http://example.com/"));
+  fake_web_state()->SetContentsMimeType("text/html");
+
   PageContextWrapperCallbackResponse captured_response =
       RunPageContextWrapper(fake_web_state(), ^(PageContextWrapper* wrapper) {
         wrapper.shouldGetInnerText = YES;
@@ -1064,6 +1109,9 @@ TEST_P(PageContextWrapperTest,
 // snapshot update.
 TEST_P(PageContextWrapperTest,
        PopulatePageContext_WebStateDestroyedDuringForcedSnapshot) {
+  web::test::LoadHtml(@"<html></html>", GURL("http://example.com/"),
+                      web_state());
+
   // Capture pointer to web_state_ to allow binding in the block.
   auto* web_state_ptr = &web_state_;
   PageContextWrapperCallbackResponse captured_response =
@@ -1113,10 +1161,16 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_WebStateDestroyed) {
   EXPECT_EQ(captured_response.error(), PageContextWrapperError::kGenericError);
 }
 
-// Tests that the page context correctly handles data URLs by truncating them.
+// Tests that the page context correctly handles data URL iframes by truncating
+// them.
 TEST_P(PageContextWrapperTest, PopulatePageContext_DataURL) {
   const std::string data_url = "data:text/html,<p>Hello Data</p>";
-  web::test::LoadHtml(@"<p>Hello Data</p>", GURL(data_url), web_state());
+  auto page_structure =
+      HtmlPage("Main", Paragraph("Hello Main"), Iframe(data_url));
+  std::string main_html = page_helper_->Build(page_structure);
+  GURL main_url = test_server_.GetURL(kMainPagePath);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html), main_url,
+                      web_state());
 
   PageContextWrapperCallbackResponse response =
       RunPageContextWrapper(web_state(), ^(PageContextWrapper* wrapper) {
@@ -1128,11 +1182,23 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_DataURL) {
       std::move(response.value());
 
   ASSERT_TRUE(page_context);
-  EXPECT_EQ(page_context->url(), "data:");
+  EXPECT_EQ(page_context->url(), main_url.spec());
   ASSERT_TRUE(page_context->has_annotated_page_content());
-  const auto& main_frame_data =
-      page_context->annotated_page_content().main_frame_data();
-  EXPECT_EQ(main_frame_data.url(), "data:");
+
+  const optimization_guide::proto::ContentNode* iframe_node = nullptr;
+  for (const auto& node :
+       page_context->annotated_page_content().root_node().children_nodes()) {
+    if (node.content_attributes().attribute_type() ==
+        optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
+      iframe_node = &node;
+      break;
+    }
+  }
+  ASSERT_TRUE(iframe_node);
+
+  const auto& iframe_frame_data =
+      iframe_node->content_attributes().iframe_data().frame_data();
+  EXPECT_EQ(iframe_frame_data.url(), "data:");
 }
 
 // Tests that an iframe with a data URL is treated as cross-origin (opaque

@@ -32,6 +32,8 @@ enum class PageContextCompletionStatus {
   kProtected,
   // PageContext extraction timed out.
   kTimeout,
+  // PageContext is not extractable (e.g. unsupported MIME type or scheme).
+  kNotExtractable,
 };
 
 // PageContextWrapperMetrics keeps track of the execution time of different

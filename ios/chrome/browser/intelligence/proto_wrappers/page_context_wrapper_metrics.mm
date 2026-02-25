@@ -42,6 +42,8 @@ const char* PageContextCompletionStatusToString(
       return kPageContextLatencyHistogramPageProtectedStatus;
     case PageContextCompletionStatus::kTimeout:
       return kPageContextLatencyHistogramTimeoutStatus;
+    case PageContextCompletionStatus::kNotExtractable:
+      return kPageContextLatencyHistogramNotExtractableStatus;
   }
 }
 
