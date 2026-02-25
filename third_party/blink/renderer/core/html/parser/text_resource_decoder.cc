@@ -28,7 +28,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/trace_event/trace_event.h"
-#include "third_party/blink/renderer/core/html/parser/html_meta_charset_parser.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_encoding_detector.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -308,10 +307,16 @@ void TextResourceDecoder::CheckForMetaCharset(base::span<const char> data) {
     return;
   }
 
+  FinalizeMetaCharsetCheck();
+}
+
+void TextResourceDecoder::FinalizeMetaCharsetCheck() {
+  DCHECK(charset_parser_);
+
+  meta_charset_disposition_ = charset_parser_->MetaCharsetResult();
   SetEncoding(charset_parser_->Encoding(), kEncodingFromMetaTag);
   charset_parser_.reset();
   checked_for_meta_charset_ = true;
-  return;
 }
 
 // We use the encoding detector in two cases:
@@ -442,6 +447,12 @@ String TextResourceDecoder::Flush() {
                           (options_.GetContentType() ==
                            TextResourceDecoderOptions::kCSSContent)))) {
     AutoDetectEncodingIfAllowed(buffer_);
+  }
+
+  if (options_.GetContentType() == TextResourceDecoderOptions::kHTMLContent &&
+      !checked_for_meta_charset_ && charset_parser_) {
+    charset_parser_->Finish();
+    FinalizeMetaCharsetCheck();
   }
 
   if (!codec_) {

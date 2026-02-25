@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -198,6 +199,56 @@ TEST(TextResourceDecoderTest, DoNotAutoDetectISO2022JP) {
   String auto_detected_charset;
   decoder->Decode(base::span(kISO2022JP), &auto_detected_charset);
   EXPECT_TRUE(auto_detected_charset.empty());
+}
+
+TEST(TextResourceDecoderTest, MetaCharsetDispositionFoundInFirst1024Bytes) {
+  test::TaskEnvironment task_environment;
+  std::unique_ptr<TextResourceDecoder> decoder =
+      std::make_unique<TextResourceDecoder>(
+          TextResourceDecoderOptions(TextResourceDecoderOptions::kHTMLContent));
+
+  const char kHtml[] =
+      "<!doctype html><html><head><meta charset=\"utf-8\"></head><body>"
+      "hi</body></html>";
+  decoder->Decode(base::byte_span_from_cstring(kHtml));
+  decoder->Flush();
+
+  EXPECT_EQ(TextResourceDecoder::MetaCharsetDisposition::kFoundInFirst1024Bytes,
+            decoder->GetMetaCharsetDisposition());
+}
+
+TEST(TextResourceDecoderTest, MetaCharsetDispositionFoundAfterFirst1024Bytes) {
+  test::TaskEnvironment task_environment;
+  std::unique_ptr<TextResourceDecoder> decoder =
+      std::make_unique<TextResourceDecoder>(
+          TextResourceDecoderOptions(TextResourceDecoderOptions::kHTMLContent));
+
+  std::string html = "<!doctype html><html><head>";
+  html.append(1100, ' ');
+  html += "<meta charset=\"utf-8\"></head><body>hi</body></html>";
+  decoder->Decode(base::as_chars(base::as_byte_span(html)));
+  decoder->Flush();
+
+  EXPECT_EQ(
+      TextResourceDecoder::MetaCharsetDisposition::kFoundAfterFirst1024Bytes,
+      decoder->GetMetaCharsetDisposition());
+}
+
+TEST(TextResourceDecoderTest,
+     MetaCharsetDispositionNotFoundWhenDecodingFinishes) {
+  test::TaskEnvironment task_environment;
+  std::unique_ptr<TextResourceDecoder> decoder =
+      std::make_unique<TextResourceDecoder>(
+          TextResourceDecoderOptions(TextResourceDecoderOptions::kHTMLContent));
+
+  const char kHtml[] =
+      "<!doctype html><html><head><title>x</title></head><body>"
+      "hi</body></html>";
+  decoder->Decode(base::byte_span_from_cstring(kHtml));
+  decoder->Flush();
+
+  EXPECT_EQ(TextResourceDecoder::MetaCharsetDisposition::kNotFound,
+            decoder->GetMetaCharsetDisposition());
 }
 
 }  // namespace blink

@@ -52,9 +52,11 @@ class CORE_EXPORT DecodedDataDocumentParser : public DocumentParser {
   ~DecodedDataDocumentParser() override;
 
  private:
+  void MaybeEmitMetaCharsetTraceEvent();
   void UpdateDocument(const String& decoded_data);
 
   bool needs_decoder_;
+  bool meta_charset_trace_event_emitted_ = false;
   std::unique_ptr<TextResourceDecoder> decoder_;
 };
 

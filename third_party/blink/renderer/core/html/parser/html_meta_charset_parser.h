@@ -42,6 +42,13 @@ class HTMLMetaCharsetParser {
   USING_FAST_MALLOC(HTMLMetaCharsetParser);
 
  public:
+  enum class MetaCharsetDisposition {
+    kUnknown,
+    kFoundInFirst1024Bytes,
+    kFoundAfterFirst1024Bytes,
+    kNotFound,
+  };
+
   HTMLMetaCharsetParser();
   HTMLMetaCharsetParser(const HTMLMetaCharsetParser&) = delete;
   HTMLMetaCharsetParser& operator=(const HTMLMetaCharsetParser&) = delete;
@@ -49,8 +56,12 @@ class HTMLMetaCharsetParser {
 
   // Returns true if done checking, regardless whether an encoding is found.
   bool CheckForMetaCharset(base::span<const char> data);
+  void Finish();
 
   const TextEncoding& Encoding() { return encoding_; }
+  MetaCharsetDisposition MetaCharsetResult() const {
+    return meta_charset_disposition_;
+  }
 
  private:
   bool ProcessMeta(const HTMLToken& token);
@@ -62,6 +73,8 @@ class HTMLMetaCharsetParser {
 
   bool done_checking_;
   TextEncoding encoding_;
+  MetaCharsetDisposition meta_charset_disposition_ =
+      MetaCharsetDisposition::kUnknown;
 };
 
 }  // namespace blink

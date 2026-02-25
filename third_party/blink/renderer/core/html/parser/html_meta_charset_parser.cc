@@ -94,6 +94,17 @@ bool HTMLMetaCharsetParser::CheckForMetaCharset(base::span<const char> data) {
       if (!end && tag != html_names::HTMLTag::kUnknown) {
         tokenizer_->UpdateStateFor(tag);
         if (tag == html_names::HTMLTag::kMeta && ProcessMeta(*token)) {
+          // MetaCharsetDisposition enum values are named with "1024" in them.
+          // If this threshold changes, update those names (and related string
+          // mappings) to match.
+          static_assert(
+              kBytesToCheckUnconditionally == 1024,
+              "Update MetaCharsetDisposition names if threshold changes");
+          meta_charset_disposition_ =
+              input_.NumberOfCharactersConsumed() <=
+                      kBytesToCheckUnconditionally
+                  ? MetaCharsetDisposition::kFoundInFirst1024Bytes
+                  : MetaCharsetDisposition::kFoundAfterFirst1024Bytes;
           done_checking_ = true;
           return true;
         }
@@ -115,6 +126,7 @@ bool HTMLMetaCharsetParser::CheckForMetaCharset(base::span<const char> data) {
 
     if (!in_head_section_ &&
         input_.NumberOfCharactersConsumed() >= kBytesToCheckUnconditionally) {
+      meta_charset_disposition_ = MetaCharsetDisposition::kNotFound;
       done_checking_ = true;
       return true;
     }
@@ -123,6 +135,15 @@ bool HTMLMetaCharsetParser::CheckForMetaCharset(base::span<const char> data) {
   }
 
   return false;
+}
+
+void HTMLMetaCharsetParser::Finish() {
+  if (done_checking_) {
+    return;
+  }
+
+  meta_charset_disposition_ = MetaCharsetDisposition::kNotFound;
+  done_checking_ = true;
 }
 
 }  // namespace blink
