@@ -45,6 +45,10 @@ class DumpAccessibilityEventsViewsTest
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsViewsTest,
                        MetaTest_FocusEventRecorded) {
   SKIP_IF_VIEWS_AX_ENABLED();
+  SetFilters(R"(
+@AURALINUX-DENY:FOCUS-EVENT:FALSE*
+@AURALINUX-DENY:STATE-CHANGE:FOCUSED:FALSE*
+)");
   BEGIN_RECORDING_EVENTS_OR_SKIP("meta-test-focus-event-recorded");
   button_->RequestFocus();
 }
@@ -58,6 +62,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsViewsTest,
   AddDenyFilter("*");
   SetFilters(R"(
 @AURALINUX-ALLOW:FOCUS-EVENT*
+@AURALINUX-DENY:FOCUS-EVENT:FALSE*
+@AURALINUX-DENY:STATE-CHANGE:FOCUSED:FALSE*
 @MAC-ALLOW:AXFocusedUIElementChanged*
 @UIA-WIN-ALLOW:AutomationFocusChanged*
 @WIN-ALLOW:EVENT_OBJECT_FOCUS*
@@ -74,6 +80,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsViewsTest,
   SetFilters(R"(
 @AURALINUX-DENY:FOCUS-EVENT*
 @AURALINUX-DENY:STATE-CHANGE*
+@AURALINUX-DENY:TEXT-CARET-MOVED*
+@AURALINUX-DENY:TEXT-SELECTION-CHANGED*
 @MAC-DENY:AXFocusedUIElementChanged*
 @UIA-WIN-DENY:AutomationFocusChanged*
 @WIN-DENY:EVENT_OBJECT_FOCUS*
