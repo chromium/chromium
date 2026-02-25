@@ -84,7 +84,7 @@ std::map<std::string, std::vector<std::string>> BuildDeviceIdMapping(
       continue;
     }
 
-    ret[term.first] = values;
+    ret[term.first] = std::move(values);
   }
   ret[kChromeOsRawId].emplace_back(std::move(printer_id));
 
