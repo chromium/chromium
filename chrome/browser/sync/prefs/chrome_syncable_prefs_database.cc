@@ -9,6 +9,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/tree_fixing/pref_names.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
@@ -40,10 +41,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/browser/pref_names.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_pref_names.h"
 #endif
 
 namespace browser_sync {
@@ -1900,12 +1897,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kDesktopToiOSPriceTrackingPromoOptOut,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-#if BUILDFLAG(ENABLE_GLIC)
     {glic::prefs::kGlicRolloutEligibility,
      {syncable_prefs_ids::kGlicRolloutEligibility, syncer::PRIORITY_PREFERENCES,
       sync_preferences::PrefSensitivity::kExemptFromUserControlWhileSignedIn,
       sync_preferences::MergeBehavior::kNone}},
-#endif  // BUILDFLAG(ENABLE_GLIC)
     {subscription_eligibility::prefs::kAiSubscriptionTier,
      {syncable_prefs_ids::kSubscriptionEligibilityAiSubscriptionTier,
       syncer::PRIORITY_PREFERENCES,

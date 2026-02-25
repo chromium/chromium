@@ -20,6 +20,8 @@ source_set("sync_integration_tests_impl") {
     ":sync_integration_test_support",
     "//chrome/browser/autofill",
     "//chrome/browser/bookmarks",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/test_support",
     "//chrome/browser/history",
     "//chrome/browser/metrics:test_support",
     "//chrome/browser/password_manager/factories",
@@ -363,13 +365,6 @@ source_set("sync_integration_tests_impl") {
       "//chrome/test/data/banners/",
       "//net/tools/testserver/",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
-    ]
-  }
-
-  if (enable_glic) {
-    deps += [
-      "//chrome/browser/glic",
-      "//chrome/browser/glic/test_support",
     ]
   }
 }
