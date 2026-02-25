@@ -9,8 +9,6 @@ blink_core_sources_html = [
   "anchor_element_metrics_sender.h",
   "anchor_element_viewport_position_tracker.h",
   "anchor_element_viewport_position_tracker.cc",
-  "anchor_element_observer.cc",
-  "anchor_element_observer.h",
   "anchor_element_utils.cc",
   "anchor_element_utils.h",
   "blocking_attribute.cc",

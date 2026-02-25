@@ -82,7 +82,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
-#include "third_party/blink/renderer/core/html/anchor_element_observer.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
@@ -326,7 +325,7 @@ void HTMLElement::ApplyBorderAttributeToStyle(
 }
 
 bool HTMLElement::IsPresentationAttribute(const QualifiedName& name) const {
-  if (name == html_names::kAlignAttr || name == html_names::kAnchorAttr ||
+  if (name == html_names::kAlignAttr ||
       name == html_names::kContenteditableAttr ||
       name == html_names::kHiddenAttr || name == html_names::kLangAttr ||
       name.Matches(xml_names::kLangAttr) ||
@@ -354,11 +353,6 @@ void HTMLElement::CollectStyleForPresentationAttribute(
     } else {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               value);
-    }
-  } else if (name == html_names::kAnchorAttr) {
-    if (RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled()) {
-      AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyID::kPositionAnchor, CSSValueID::kAuto);
     }
   } else if (name == html_names::kContenteditableAttr) {
     AtomicString lower_value = value.LowerASCII();
@@ -2395,9 +2389,7 @@ const HTMLElement* HTMLElement::FindTopmostPopoverAncestor(
   // 1. DOM tree ancestor.
   check_ancestor(
       FlatTreeTraversal::ParentElement(new_popover_or_top_layer_element));
-  // 2. Anchor attribute.
-  check_ancestor(new_popover_or_top_layer_element.anchorElement());
-  // 3. Invoker to popover
+  // 2. Invoker to popover
   check_ancestor(new_popovers_invoker);
   return topmost_popover_ancestor;
 }

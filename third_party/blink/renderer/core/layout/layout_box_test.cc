@@ -1818,6 +1818,8 @@ TEST_F(LayoutBoxTest, AnchorInFragmentedContainingBlock) {
     }
     #target {
       position: absolute;
+      position-anchor: --a;
+      inset: auto;
     }
   )CSS");
   SetBodyInnerHTML(R"HTML(
@@ -1825,7 +1827,7 @@ TEST_F(LayoutBoxTest, AnchorInFragmentedContainingBlock) {
       <div id="cb">
         <div id="spacer"></div>
         <div id="anchor"></div>
-        <div id="target" anchor="anchor"></div>
+        <div id="target"></div>
       </div>
     </div>
   )HTML");
@@ -1834,8 +1836,6 @@ TEST_F(LayoutBoxTest, AnchorInFragmentedContainingBlock) {
   EXPECT_EQ(GetLayoutObjectByElementId("anchor"),
             target->FindTargetAnchor(*MakeGarbageCollected<ScopedCSSName>(
                 AtomicString("--a"), &GetDocument())));
-  EXPECT_EQ(GetLayoutObjectByElementId("anchor"),
-            target->AcceptableImplicitAnchor());
 }
 
 TEST_F(LayoutBoxTest, AnchorInInlineContainingBlock) {
@@ -1844,8 +1844,8 @@ TEST_F(LayoutBoxTest, AnchorInInlineContainingBlock) {
       <span id="not-implicit-anchor">not implicit anchor</span>
       <span style="position: relative">
         <span id="anchor" style="anchor-name: --a">anchor</span>
-        <div id="target" anchor="not-implicit-anchor"
-             style="position: absolute; top: anchor(--a top)"></div>
+        <div id="target"
+             style="position-anchor: --a; position: absolute; top: anchor(--a top)"></div>
       </span>
       some text
     </div>

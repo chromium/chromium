@@ -157,9 +157,6 @@ dictionary SetHTMLUnsafeOptions {
     readonly attribute long clientHeight;
     [RuntimeEnabled=StandardizedBrowserZoom] readonly attribute double currentCSSZoom;
 
-    // Used by both Anchor Positioning and Popover
-    [CEReactions,RuntimeEnabled=HTMLAnchorAttribute,ImplementedAs=anchorElementForBinding] attribute Element? anchorElement;
-
     // Non-standard API
     [MeasureAs=ElementScrollIntoViewIfNeeded] void scrollIntoViewIfNeeded(optional boolean centerIfNeeded);
 

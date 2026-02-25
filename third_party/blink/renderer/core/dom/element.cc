@@ -173,7 +173,6 @@
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_list.h"
-#include "third_party/blink/renderer/core/html/anchor_element_observer.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
@@ -496,9 +495,6 @@ bool IsElementReflectionAttribute(const QualifiedName& name) {
     return true;
   }
   if (name == html_names::kPopovertargetAttr) {
-    return true;
-  }
-  if (name == html_names::kAnchorAttr) {
     return true;
   }
   if (name == html_names::kCommandforAttr) {
@@ -2037,26 +2033,6 @@ void Element::DefaultEventHandler(Event& event) {
     }
   }
   ContainerNode::DefaultEventHandler(event);
-}
-
-Element* Element::anchorElement() const {
-  if (!RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled()) {
-    return nullptr;
-  }
-  return GetElementAttributeResolvingReferenceTarget(html_names::kAnchorAttr);
-}
-
-// For JavaScript binding, return the anchor element without resolving the
-// reference target, to avoid exposing shadow root content to JS.
-Element* Element::anchorElementForBinding() const {
-  CHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
-  return GetElementAttribute(html_names::kAnchorAttr);
-}
-
-void Element::setAnchorElementForBinding(Element* new_element) {
-  CHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
-  SetElementAttribute(html_names::kAnchorAttr, new_element);
-  EnsureAnchorElementObserver().Notify();
 }
 
 inline void Element::SynchronizeAttribute(const QualifiedName& name) const {
@@ -3893,11 +3869,7 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       StyleAttributeChanged(params.new_value, params.reason);
       SoftNavigationHeuristics::ModifiedAttribute(this, name);
     } else if (IsPresentationAttribute(name)) {
-      if (name == html_names::kAnchorAttr) {
-        if (RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled()) {
-          EnsureAnchorElementObserver().Notify();
-        }
-      } else if (name == html_names::kHiddenAttr) {
+      if (name == html_names::kHiddenAttr) {
         if (params.new_value == keywords::kUntilFound) {
           EnsureDisplayLockContext().SetIsHiddenUntilFoundElement(true);
         } else if (DisplayLockContext* context = GetDisplayLockContext()) {
@@ -4224,10 +4196,6 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     SetIsCanvasOrInCanvasSubtree(true);
   }
 
-  if (AnchorElementObserver* observer = GetAnchorElementObserver()) {
-    observer->Notify();
-  }
-
   if (!insertion_point.IsInTreeScope()) {
     return kInsertionDone;
   }
@@ -4513,10 +4481,6 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
     frame->GetEditor().ElementRemoved(this);
     frame->GetSpellChecker().ElementRemoved(this);
     frame->GetEventHandler().ElementRemoved(this);
-  }
-
-  if (AnchorElementObserver* observer = GetAnchorElementObserver()) {
-    observer->Notify();
   }
 
   // Removing an element means that we should remove this overscroll area,
@@ -13335,23 +13299,7 @@ bool Element::MayBeImplicitAnchor() const {
   return false;
 }
 
-AnchorElementObserver* Element::GetAnchorElementObserver() const {
-  if (const ElementRareDataVector* data = RareData()) {
-    return data->GetAnchorElementObserver();
-  }
-  return nullptr;
-}
-
-AnchorElementObserver& Element::EnsureAnchorElementObserver() {
-  DCHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
-  return UnpackAndRefresh(EnsureRareData().EnsureAnchorElementObserver(this));
-}
-
 Element* Element::ImplicitAnchorElement() const {
-  if (Element* anchor = anchorElement()) {
-    DCHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
-    return anchor;
-  }
   if (const HTMLElement* html_element = DynamicTo<HTMLElement>(this)) {
     if (Element* internal_anchor = html_element->implicitAnchor()) {
       return internal_anchor;

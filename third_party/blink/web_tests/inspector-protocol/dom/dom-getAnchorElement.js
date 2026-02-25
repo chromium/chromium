@@ -4,6 +4,7 @@
   await dp.DOM.enable();
   const getDocumentResponse = await dp.DOM.getDocument();
   const target = (await dp.DOM.querySelector({nodeId: getDocumentResponse.result.root.nodeId, selector: '#target'})).result.nodeId;
+  const target2 = (await dp.DOM.querySelector({nodeId: getDocumentResponse.result.root.nodeId, selector: '#target2'})).result.nodeId;
   const defaultTarget = (await dp.DOM.querySelector({nodeId: getDocumentResponse.result.root.nodeId, selector: '#default-target'})).result.nodeId;
 
   // Get named, implicit, and default anchors via queries.
@@ -21,7 +22,7 @@
   testRunner.log(implicitAnchorByQuery === implicitAnchor.result.nodeId);
   testRunner.log(defaultAnchorByQuery === defaultAnchor.result.nodeId);
 
-  const unreachableAnchor = await dp.DOM.getAnchorElement({nodeId: target, anchorSpecifier: '--unreachable'});
+  const unreachableAnchor = await dp.DOM.getAnchorElement({nodeId: target2, anchorSpecifier: '--unreachable'});
   const nonExistentAnchor = await dp.DOM.getAnchorElement({nodeId: namedAnchorByQuery});
   testRunner.log('Anchor query with no valid result should return node Id of 0:');
   testRunner.log(unreachableAnchor.result.nodeId);

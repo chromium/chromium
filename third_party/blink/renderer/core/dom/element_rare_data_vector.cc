@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
-#include "third_party/blink/renderer/core/html/anchor_element_observer.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
@@ -650,21 +649,6 @@ std::pair<std::reference_wrapper<ExplicitlySetAttrElementsMap>,
 ElementRareDataVector::EnsureExplicitlySetElementsForAttr() {
   return EnsureField<ExplicitlySetAttrElementsMap>(
       FieldId::kExplicitlySetElementsForAttr);
-}
-
-std::pair<std::reference_wrapper<AnchorElementObserver>, ElementRareDataVector*>
-ElementRareDataVector::EnsureAnchorElementObserver(
-    Element* new_source_element) {
-  DCHECK(!GetAnchorElementObserver() ||
-         GetAnchorElementObserver()->GetSourceElement() == new_source_element);
-  CHECK(RuntimeEnabledFeatures::HTMLAnchorAttributeEnabled());
-  return EnsureField<AnchorElementObserver>(FieldId::kAnchorElementObserver,
-                                            new_source_element);
-}
-
-AnchorElementObserver* ElementRareDataVector::GetAnchorElementObserver() const {
-  return static_cast<AnchorElementObserver*>(
-      GetField(FieldId::kAnchorElementObserver));
 }
 
 bool ElementRareDataVector::HasCustomElementRegistrySet() const {

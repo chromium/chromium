@@ -1546,24 +1546,6 @@
     "expires": "Jun 1, 2025"
   },
   {
-    "prefix": "html-anchor-attribute-disabled",
-    "owners": [
-      "masonf@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "external/wpt/html/semantics/popovers"
-    ],
-    "args": [
-      "--disable-blink-features=HTMLAnchorAttribute"
-    ],
-    "expires": "Jun 1, 2026"
-  },
-  {
     "prefix": "http-cache-default-backend",
     "platforms": [
       "Linux",

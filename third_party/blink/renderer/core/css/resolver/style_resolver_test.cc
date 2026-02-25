@@ -2331,17 +2331,29 @@ TEST_F(StyleResolverTest, AnchorQueriesMPC) {
         width: 100px;
         height: 100px;
       }
-      #anchor1 { left: 100px; }
-      #anchor2 { left: 150px; }
+      #anchor1 {
+        anchor-name: --anchor1;
+        left: 100px;
+      }
+      #anchor2 {
+        anchor-name: --anchor2;
+        left: 150px;
+      }
       .anchored {
         position: absolute;
         left: anchor(left);
       }
+      #a {
+        position-anchor: --anchor1;
+      }
+      #b {
+        position-anchor: --anchor2;
+      }
     </style>
     <div class=anchor id=anchor1>X</div>
     <div class=anchor id=anchor2>Y</div>
-    <div class=anchored id=a anchor=anchor1>A</div>
-    <div class=anchored id=b anchor=anchor2>B</div>
+    <div class=anchored id=a>A</div>
+    <div class=anchored id=b>B</div>
   )HTML");
 
   UpdateAllLifecyclePhasesForTest();

@@ -79,7 +79,6 @@ class Vector2dF;
 
 namespace blink {
 
-class AnchorElementObserver;
 class AnchorPositionScrollData;
 class Animation;
 class AnimationTrigger;
@@ -1913,14 +1912,6 @@ class CORE_EXPORT Element : public ContainerNode {
   void SetScrollTargetGroupContainerData(ScrollMarkerGroupData*);
   ScrollMarkerGroupData* GetScrollTargetGroupContainerData() const;
 
-  // Retrieves the element pointed to by this element's 'anchor' content
-  // attribute, if that element exists.
-  // TODO(crbug.com/40059176) If the HTMLAnchorAttribute feature is disabled,
-  // this will return nullptr;
-  Element* anchorElement() const;
-  Element* anchorElementForBinding() const;
-  void setAnchorElementForBinding(Element*);
-
   AnchorPositionScrollData& EnsureAnchorPositionScrollData();
   void RemoveAnchorPositionScrollData();
   AnchorPositionScrollData* GetAnchorPositionScrollData() const;
@@ -1935,10 +1926,6 @@ class CORE_EXPORT Element : public ContainerNode {
   // so.
   bool MayBeImplicitAnchor() const;
   void SetMayBeImplicitAnchor();
-
-  bool HasAnchorElementObserverForTesting() const {
-    return GetAnchorElementObserver();
-  }
 
   // https://drafts.csswg.org/css-anchor-1/#implicit-anchor-element
   Element* ImplicitAnchorElement() const;
@@ -2213,9 +2200,6 @@ class CORE_EXPORT Element : public ContainerNode {
   void SetInlineStyleFromString(const AtomicString&);
 
   void NotifyAXOfAttachedSubtree();
-
-  AnchorElementObserver& EnsureAnchorElementObserver();
-  AnchorElementObserver* GetAnchorElementObserver() const;
 
   // If the only inherited changes in the parent element are independent,
   // these changes can be directly propagated to this element (the child).

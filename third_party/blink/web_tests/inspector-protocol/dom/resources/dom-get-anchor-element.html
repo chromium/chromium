@@ -17,7 +17,7 @@
       anchor-name: --unreachable;
     }
 
-    #target {
+    #target, #target2 {
       position: absolute;
     }
 
@@ -29,11 +29,17 @@
   <body>
     <div class="parent">
       <div id="named-anchor"></div>
-      <div id="implicit-anchor"></div>
+      <button id="implicit-anchor" popovertarget="target"></button>
       <div id="default-anchor"></div>
-      <div id="target" anchor="implicit-anchor"></div>
+      <div id="target" popover></div>
       <div id="default-target"></div>
+      <div id="target2"></div>
     </div>
     <div id="unreachable-anchor"></div>
+    <script>
+      const implicitAnchor = document.getElementById('implicit-anchor');
+      const target = document.getElementById('target');
+      target.showPopover({source: implicitAnchor});
+    </script>
   </body>
 </html>

@@ -36,7 +36,6 @@ typedef HeapVector<Member<Attr>> AttrNodeList;
 class ElementIntersectionObserverData;
 class ContainerQueryEvaluator;
 class EditContext;
-class AnchorElementObserver;
 class InlineStylePropertyMap;
 class ElementInternals;
 class DisplayLockContext;
@@ -400,11 +399,6 @@ class CORE_EXPORT ElementRareDataVector final
             ElementRareDataVector*>
   EnsureAnchorPositionScrollData(Element*);
 
-  std::pair<std::reference_wrapper<AnchorElementObserver>,
-            ElementRareDataVector*>
-  EnsureAnchorElementObserver(Element*);
-  AnchorElementObserver* GetAnchorElementObserver() const;
-
   bool HasCustomElementRegistrySet() const;
   CustomElementRegistry* GetCustomElementRegistry() const;
   [[nodiscard]] ElementRareDataVector* SetCustomElementRegistry(
@@ -605,34 +599,33 @@ class CORE_EXPORT ElementRareDataVector final
     kIsValue = 21,
     kSavedLayerScrollOffset = 22,
     kAnchorPositionScrollData = 23,
-    kAnchorElementObserver = 24,
-    kMayBeImplicitAnchor = 25,
-    kLastRememberedBlockSize = 26,
-    kLastRememberedInlineSize = 27,
-    kRestrictionTargetId = 28,
-    kStyleScopeData = 29,
-    kOutOfFlowData = 30,
-    kInvokerData = 31,
-    kInterestInvokerTargetData = 32,
-    kScrollMarkerGroupData = 33,
-    kScrollMarkerGroupContainerData = 34,
-    kExplicitlySetElementsForAttr = 35,
-    kCSSPseudoElementData = 36,
-    kCustomElementRegistry = 37,
-    kAnimationTriggerData = 38,
-    kFocusgroupLastFocused = 39,
-    kDisplayAdElementMonitor = 40,
-    kOverscrollAreaTracker = 41,
-    kAltContentData = 42,
-    kOverscrollContainer = 43,
-    kTrackedElementRect = 44,
-    kNodeLists = 45,
-    kMutationObserverData = 46,
-    kFlatTreeNodeData = 47,
-    kScrollTimelines = 48,
-    kDOMNodeId = 50,
-    kMarker = 51,
-    kNumFields = 52,
+    kMayBeImplicitAnchor = 24,
+    kLastRememberedBlockSize = 25,
+    kLastRememberedInlineSize = 26,
+    kRestrictionTargetId = 27,
+    kStyleScopeData = 28,
+    kOutOfFlowData = 29,
+    kInvokerData = 30,
+    kInterestInvokerTargetData = 31,
+    kScrollMarkerGroupData = 32,
+    kScrollMarkerGroupContainerData = 33,
+    kExplicitlySetElementsForAttr = 34,
+    kCSSPseudoElementData = 35,
+    kCustomElementRegistry = 36,
+    kAnimationTriggerData = 37,
+    kFocusgroupLastFocused = 38,
+    kDisplayAdElementMonitor = 39,
+    kOverscrollAreaTracker = 40,
+    kAltContentData = 41,
+    kOverscrollContainer = 42,
+    kTrackedElementRect = 43,
+    kNodeLists = 44,
+    kMutationObserverData = 45,
+    kFlatTreeNodeData = 46,
+    kScrollTimelines = 47,
+    kDOMNodeId = 49,
+    kMarker = 50,
+    kNumFields = 51,
   };
 
   inline const Member<ElementRareDataField>* ArrayBase() const {

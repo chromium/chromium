@@ -872,7 +872,6 @@ external/wpt/css/css-multicol/multicol-height-002-print.xht
 
 # This times out on headless, on Mac only. It takes appreciably longer locally on my Mac on headless. Not sure why.
 external/wpt/html/semantics/popovers/popover-focus-2.html
-virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-focus-2.html
 
 # These are flaky on Mac. Judging by the other focus-related test in this list, I'm assuming
 # there is some kind of headless focus problem.
@@ -906,8 +905,6 @@ virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-
 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-large-top*
 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-*
 virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-*
-virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-focus.html
-virtual/html-anchor-attribute-disabled/external/wpt/html/semantics/popovers/popover-hidden-display.html
 virtual/main-thread-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-custom-timing-function.html
 virtual/main-thread-clip-path-animation/external/wpt/css/css-masking/clip-path/animations/clip-path-animation-fixed-position-rounding-error.html
 virtual/media-foundation-for-clear-dcomp/external/wpt/media-source/last-frame-dimensions.html

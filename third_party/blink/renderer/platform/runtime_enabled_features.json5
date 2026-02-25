@@ -3035,12 +3035,6 @@
       status: "experimental",
       base_feature: "none",
     },
-    // The `anchor` attribute, supported by both anchor positioning and the
-    // popover API.
-    {
-      name: "HTMLAnchorAttribute",
-      status: "experimental",
-    },
     // Additional default command/commandfor actions that aren't part of v1 of
     // commands. When this flag is disabled only v1 actions (popover and dialog
     // defaults) will work.

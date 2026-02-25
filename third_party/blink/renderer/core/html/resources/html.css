@@ -1706,14 +1706,6 @@ dialog:-internal-dialog-in-top-layer::backdrop {
     }
 }
 
-@supports blink-feature(HTMLAnchorAttribute) {
-    /* Popovers using anchor positioning get their inset properties reset, to make
-    * it easier to position them. */
-    [popover][anchor] {
-        inset:auto;
-    }
-}
-
 slot {
     display: contents;
 }
