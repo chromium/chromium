@@ -370,6 +370,12 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="(Deprecated) No OHTTP key service"/>
 </enum>
 
+<enum name="SafeBrowsingJsOptimizerSetting">
+  <int value="0" label="Blocked"/>
+  <int value="1" label="Allowed"/>
+  <int value="2" label="Blocked for unfamiliar sites"/>
+</enum>
+
 <enum name="SafeBrowsingOhttpFetchKeyTriggerReason">
   <int value="0" label="DuringHashRealTimeLookup"/>
   <int value="1" label="AsyncFetch"/>

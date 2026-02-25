@@ -2603,6 +2603,17 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.Pref.JsOptimizerSetting"
+    enum="SafeBrowsingJsOptimizerSetting" expires_after="2026-08-19">
+  <owner>tiffanysong@google.com</owner>
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The current value of the JavascriptOptimizerSetting of the profile. Recorded
+    for regular user profiles on profile startup.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.Pref.MainProfile.SafeBrowsingState"
     enum="SafeBrowsingState" expires_after="never">
 <!-- expires-never: required for Safe Browsing State filter on UMA -->
