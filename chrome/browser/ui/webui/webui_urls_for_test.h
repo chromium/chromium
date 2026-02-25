@@ -8,6 +8,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -30,36 +31,68 @@ static const char* const kChromeUrls[] = {
 #if !BUILDFLAG(IS_CHROMEOS)
     "chrome://app-service-internals",
 #endif
+    "chrome://actor-internals",
+    "chrome://actor-overlay",
     "chrome://attribution-internals",
+    "chrome://autofill-ml-internals",
     "chrome://autofill-internals",
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    "chrome://batch-upload",
+#endif
+
     "chrome://bookmarks",
     "chrome://bookmarks-side-panel.top-chrome",
+    "chrome://certificate-manager",
+    "chrome://chrome-finds-internals",
     "chrome://chrome-urls",
+    "chrome://color-pipeline-internals",
     "chrome://comments-side-panel.top-chrome",
+    "chrome://commerce-internals",
     "chrome://components",
     "chrome://connection-help",
     "chrome://connection-monitoring-detected",
+    "chrome://connectors-internals",
+    "chrome://crashes",
 // TODO(crbug.com/40913109): Re-enable this test
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
     "chrome://credits",
 #endif
     "chrome://customize-chrome-side-panel.top-chrome",
+    "chrome://data-sharing-internals",
+
+#if !BUILDFLAG(IS_CHROMEOS)
+    "chrome://default-browser-modal",
+#endif
+
     "chrome://debug-webuis-disabled",
     "chrome://device-log",
     "chrome://download-internals",
     "chrome://downloads",
     "chrome://extensions",
     "chrome://extensions-internals",
+    "chrome://extensions-zero-state",
+    "chrome://family-link-user-internals",
+    "chrome://feedback",
     "chrome://flags",
     "chrome://gcm-internals",
     "chrome://gpu",
     "chrome://histograms",
     "chrome://history",
+    "chrome://history-clusters-internals",
     "chrome://history-clusters-side-panel.top-chrome",
+    "chrome://history-side-panel.top-chrome",
     "chrome://indexeddb-internals",
+    "chrome://infobar-internals",
     "chrome://inspect",
     "chrome://internals/session-service",
+    "chrome://interstitials",
     "chrome://interstitials/ssl",
+    "chrome://legion-internals",
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+    "chrome://linux-proxy-config",
+#endif
+    "chrome://location-internals",
     "chrome://local-state",
     "chrome://management",
     "chrome://media-engagement",
@@ -70,18 +103,30 @@ static const char* const kChromeUrls[] = {
     "chrome://net-internals",
     "chrome://network-errors",
     "chrome://new-tab-page",
+    "chrome://newtab-footer",
     "chrome://new-tab-page-third-party",
     "chrome://newtab",
     "chrome://ntp-tiles-internals",
     "chrome://omnibox",
+    "chrome://on-device-internals",
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    "chrome://on-device-translation-internals",
+#endif
+
+    "chrome://optimization-guide-internals",
     "chrome://password-manager",
     "chrome://password-manager-internals",
     "chrome://policy",
     "chrome://predictors",
     "chrome://prefs-internals",
+    "chrome://privacy-sandbox-internals",
+    "chrome://private-aggregation-internals",
     "chrome://process-internals",
+    "chrome://profile-internals",
     "chrome://quota-internals",
     "chrome://read-later.top-chrome",
+    "chrome://regional-capabilities-internals",
     "chrome://reset-password",
     "chrome://safe-browsing",
     "chrome://saved-tab-groups-unsupported",
@@ -89,14 +134,20 @@ static const char* const kChromeUrls[] = {
     "chrome://serviceworker-internals",
     "chrome://segmentation-internals",
     "chrome://settings",
+    "chrome://shopping-insights-side-panel.top-chrome",
     "chrome://signin-internals",
     "chrome://site-engagement",
+    "chrome://suggest-internals",
     "chrome://support-tool",
     "chrome://sync-internals",
     "chrome://system",
     "chrome://tab-search.top-chrome",
+    "chrome://tab-strip-internals",
     "chrome://terms",
     "chrome://topics-internals",
+    "chrome://traces",
+    "chrome://traces-internals",
+    "chrome://tracing",
     "chrome://translate-internals",
     "chrome://ukm",
     "chrome://usb-internals",
@@ -104,9 +155,14 @@ static const char* const kChromeUrls[] = {
     "chrome://user-education-internals",
     "chrome://version",
     "chrome://web-app-internals",
+    "chrome://webnn-internals",
     "chrome://webrtc-internals",
     "chrome://webrtc-logs",
     "chrome://webui-gallery",
+
+#if BUILDFLAG(ENABLE_VR)
+    "chrome://webxr-internals",
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     "chrome://whats-new",
@@ -133,30 +189,22 @@ static const char* const kChromeUrls[] = {
     "chrome://camera-app/views/main.html",
     "chrome://bluetooth-pairing",
     "chrome://certificate-manager/",
-
-    // TODO(b/300875336): Navigating to chrome://cloud-upload causes an
-    // assertion failure because there are no dialog args.
     "chrome://cloud-upload",
-
     "chrome://connectivity-diagnostics",
-    "chrome://connectors-internals",
-    "chrome://crashes",
     "chrome://crostini-installer",
     "chrome://cryptohome",
     "chrome://diagnostics",
     "chrome://drive-internals",
     "chrome://emoji-picker",
-    "chrome://family-link-user-internals",
     "chrome://file-manager",
     "chrome://help-app",
-    "chrome://linux-proxy-config",
     "chrome://manage-mirrorsync",
     "chrome://multidevice-internals",
     "chrome://multidevice-setup",
     "chrome://nearby",
     "chrome://nearby-internals",
     "chrome://network",
-    "chrome://office-fallback/",
+    "chrome://office-fallback",
     "chrome://os-feedback",
     "chrome-untrusted://os-feedback",
     "chrome://os-settings",
@@ -172,9 +220,9 @@ static const char* const kChromeUrls[] = {
     "chrome://shimless-rma",
     "chrome://shortcut-customization",
     "chrome://slow",
-    "chrome://smb-credentials-dialog/",
-    "chrome://smb-share-dialog/",
-    "chrome://urgent-password-expiry-notification/",
+    "chrome://smb-credentials-dialog",
+    "chrome://smb-share-dialog",
+    "chrome://urgent-password-expiry-notification",
     "chrome://sys-internals",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -208,7 +256,13 @@ static const char* const kChromeUrls[] = {
 #endif
 };
 
-// List of chrome:// URLs exempted from sanity check tests.
+// List of chrome:// URLs that fail sanity check tests, i.e. at least
+// one of the following is true:
+// (1) Have a console error when loaded
+// (2) Have a network (e.g. resource fetch) error when loaded
+// (3) Don't use TrustedTypes
+// Don't add new URLs here unless there's a strong reason for them to be
+// exempted from these basic checks.
 static constexpr const char* const kChromeUntestedUrls[] = {
     "chrome-untrusted://compose",
     "chrome-untrusted://data-sharing",
@@ -217,83 +271,46 @@ static constexpr const char* const kChromeUntestedUrls[] = {
     "chrome-untrusted://ntp-microsoft-auth",
     "chrome-untrusted://print",
     "chrome-untrusted://read-anything-side-panel.top-chrome",
+    "chrome://access-code-cast",
 #if !defined(NDEBUG)
     // TODO(crbug.com/487113801): Investigate why tests are flaky on dbg bots.
     "chrome://accessibility",
 #endif
-    "chrome://access-code-cast",
-    "chrome://actor-internals",
-    "chrome://actor-overlay",
     "chrome://app-settings",
-    "chrome://autofill-ml-internals",
-    "chrome://batch-upload",
-    "chrome://certificate-manager",
-    "chrome://chrome-finds-internals",
-    "chrome://color-pipeline-internals",
-    "chrome://commerce-internals",
-    "chrome://connectors-internals",
     "chrome://constrained-test",
     "chrome://contextual-tasks",
-    "chrome://crashes",
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/40913109): Re-enable this test
     "chrome://credits",
 #endif
-    "chrome://data-sharing-internals",
-    "chrome://default-browser-modal",
     // TODO(crbug.com/40710256): Test failure due to excessive output.
     "chrome://discards",
-    "chrome://extensions-zero-state",
-    "chrome://family-link-user-internals",
-    "chrome://feedback",
     "chrome://glic",
     "chrome://glic-fre",
-    "chrome://history-clusters-internals",
-    "chrome://history-side-panel.top-chrome",
     "chrome://history-sync-optin",
-    "chrome://infobar-internals",
+    // Not a valid URL; only internals/session-service is valid.
     "chrome://internals",
-    "chrome://interstitials",
-    "chrome://legion-internals",
-    "chrome://linux-proxy-config",
-    "chrome://location-internals",
     // Note: Disabled because a DCHECK fires when directly visiting the URL.
     "chrome://managed-user-profile-notice",
     // TODO(crbug.com/40185163): DCHECK failure
     "chrome://memory-internals",
-    "chrome://newtab-footer",
     "chrome://omnibox-popup.top-chrome",
-    "chrome://on-device-internals",
-    "chrome://on-device-translation-internals",
-    "chrome://optimization-guide-internals",
-    "chrome://privacy-sandbox-internals",
-    "chrome://private-aggregation-internals",
     "chrome://profile-customization",
-    "chrome://profile-internals",
-    "chrome://regional-capabilities-internals",
-    "chrome://shopping-insights-side-panel.top-chrome",
     "chrome://signin-dice-web-intercept.top-chrome",
     "chrome://signin-error",
     "chrome://skills",
-    "chrome://suggest-internals",
     // TODO(crbug.com/40137561): Navigating to chrome://sync-confirmation and
     // quickly navigating away cause DCHECK failure.
     "chrome://sync-confirmation",
     "chrome://tab-group-home",
-    "chrome://tab-strip-internals",
     // TODO(crbug.com/40137562): Navigating to chrome://tab-strip and quickly
     // navigating away cause DCHECK failure.
     "chrome://tab-strip.top-chrome",
-    "chrome://traces",
-    "chrome://traces-internals",
-    "chrome://tracing",
     "chrome://updater",
     "chrome://view-cert",
     "chrome://watermark",
-    "chrome://webnn-internals",
     "chrome://webui-browser",
     "chrome://webui-toolbar.top-chrome",
-    "chrome://webxr-internals",
 #if BUILDFLAG(IS_MAC)
     // TODO(crbug.com/40772380): this test is flaky on mac.
     "chrome://bluetooth-internals",
@@ -368,10 +385,10 @@ static constexpr const char* const kChromeUntestedUrls[] = {
     "chrome://media-app",
     "chrome://mobilesetup",
     "chrome://notification-tester",
-    "chrome://office-fallback",
     "chrome://oobe",
     "chrome://os-credits",
     "chrome://os-print",
+    // Needs html path to be valid.
     "chrome://proximity-auth",
     "chrome://recorder-app",
     "chrome://sample-system-web-app",
@@ -379,10 +396,7 @@ static constexpr const char* const kChromeUntestedUrls[] = {
     "chrome://security-curtain",
     "chrome://sensor-info",
     "chrome://slow_trace",
-    "chrome://smb-credentials-dialog",
-    "chrome://smb-share-dialog",
     "chrome://status-area-internals",
-    "chrome://urgent-password-expiry-notification",
     "chrome://vc-background",
     "chrome://vm",
 #endif
