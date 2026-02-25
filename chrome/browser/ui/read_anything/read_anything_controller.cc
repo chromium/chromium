@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -296,6 +297,9 @@ void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
   // Reading Mode was inactive.
   if (distillation_state_ == DistillationState::kDistillationEmpty &&
       GetPresentationState() == PresentationState::kInactive) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ReadAnything.SidePanelTriggeredByEmptyState", trigger);
+
     SidePanelOpenTrigger side_panel_open_trigger =
         read_anything::ReadAnythingToSidePanelOpenTrigger(trigger);
 
@@ -462,6 +466,10 @@ void ReadAnythingController::OnDistillationStateChanged(
 
   if (new_state == DistillationState::kDistillationEmpty &&
       GetPresentationState() == PresentationState::kInImmersiveOverlay) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.ReadAnything.SidePanelTriggeredByEmptyState",
+        ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton);
+
     TogglePresentation();
   }
   distillation_state_ = new_state;

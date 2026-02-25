@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -1386,6 +1387,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     ReadAnythingControllerBrowserTest,
     OnDistillationStateChanged_EmptyContentInImmersive_TogglesToSidePanel) {
+  base::HistogramTester histogram_tester;
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
@@ -1408,6 +1410,10 @@ IN_PROC_BROWSER_TEST_F(
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
   }));
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.SidePanelTriggeredByEmptyState",
+      ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1466,6 +1472,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ReadAnythingControllerBrowserTest,
     OnDistillationStateChanged_OpenWithDistillationEmpty_OpensInSidePanel) {
+  base::HistogramTester histogram_tester;
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
   auto* controller = ReadAnythingController::From(tab);
@@ -1496,6 +1503,10 @@ IN_PROC_BROWSER_TEST_F(
     return side_panel_ui->IsSidePanelEntryShowing(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything));
   }));
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.SidePanelTriggeredByEmptyState",
+      ReadAnythingOpenTrigger::kOmniboxChip, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(

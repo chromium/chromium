@@ -3331,6 +3331,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.SidePanelTriggeredByEmptyState"
+    enum="ReadAnythingOpenTrigger" expires_after="2027-01-01">
+  <owner>martinglopez@google.com</owner>
+  <owner>chrome-irm-devs@google.com</owner>
+  <summary>
+    Records when Immersive Reading Mode opens in side panel mode because the
+    distillation was empty. This metric captures the original trigger for
+    opening Reading Mode (e.g. Omnibox, Context Menu) or the Toggle trigger.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.SpeechError"
     enum="ReadAnythingSpeechError" expires_after="2026-08-23">
   <owner>lwinston@google.com</owner>
