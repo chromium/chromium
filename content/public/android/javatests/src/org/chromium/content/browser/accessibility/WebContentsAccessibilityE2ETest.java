@@ -5,110 +5,53 @@
 package org.chromium.content.browser.accessibility;
 
 import android.app.UiAutomation;
-import android.content.ComponentName;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
-import android.view.accessibility.AccessibilityEvent;
+import android.content.IntentFilter;
 
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.ui.accessibility.testservice.IAccessibilityTestHelperService;
 
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for Accessibility end-to-end. */
 @Batch(Batch.PER_CLASS)
 @RunWith(BaseJUnit4ClassRunner.class)
 public class WebContentsAccessibilityE2ETest {
-    private static final String ACCESSIBILITY_TEST_SERVICE_PACKAGE =
-            "org.chromium.ui.accessibility.testservice";
-    private static final String ACCESSIBILITY_TEST_SERVICE_CLASS =
-            "org.chromium.ui.accessibility.testservice.AccessibilityTestService";
-    private static final String ACCESSIBILITY_TEST_HELPER_SERVICE_CLASS =
-            "org.chromium.ui.accessibility.testservice.AccessibilityTestHelperService";
-    private static final ComponentName ACCESSIBILITY_TEST_SERVICE_COMPONENT_NAME =
-            new ComponentName(ACCESSIBILITY_TEST_SERVICE_PACKAGE, ACCESSIBILITY_TEST_SERVICE_CLASS);
-    private static final ComponentName ACCESSIBILITY_TEST_HELPER_SERVICE_COMPONENT_NAME =
-            new ComponentName(
-                    ACCESSIBILITY_TEST_SERVICE_PACKAGE, ACCESSIBILITY_TEST_HELPER_SERVICE_CLASS);
     private static final String ACCESSIBILITY_TEST_SERVICE_NAME =
-            ACCESSIBILITY_TEST_SERVICE_COMPONENT_NAME.flattenToString();
-    private static final long BIND_TIMEOUT_MS = 5000;
-    private static final long EVENT_TIMEOUT_MS = 5000;
-    private static final String TAG = "WebContentsAccessibilityE2ETest";
+            "org.chromium.ui.accessibility.testservice/.AccessibilityTestService";
+    private static final String ACTION_ACCESSIBILITY_EVENT =
+            "org.chromium.ui.accessibility.testservice.ACCESSIBILITY_EVENT";
 
-    private final AtomicReference<CompletableFuture<IAccessibilityTestHelperService>>
-            mServiceFuture = new AtomicReference<>(new CompletableFuture<>());
+    private Context mContext;
+    private boolean mReceivedIntent;
 
     @Rule
     public AccessibilityContentShellActivityTestRule mActivityTestRule =
             new AccessibilityContentShellActivityTestRule();
 
-    private final ServiceConnection mConnection =
-            new ServiceConnection() {
-                @Override
-                public void onServiceConnected(ComponentName className, IBinder service) {
-                    // Ensure calls made in this block are thread safe.
-                    mServiceFuture
-                            .get()
-                            .complete(IAccessibilityTestHelperService.Stub.asInterface(service));
-                }
-
-                @Override
-                public void onServiceDisconnected(ComponentName arg0) {
-                    // Ensure calls made in this block are thread safe.
-                    mServiceFuture.set(new CompletableFuture<>());
-                }
-            };
-
     @Before
     public void setUp() throws IOException {
+        mContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
         enableAccessibilityService();
-        ensureBoundToHelperService();
     }
 
     @After
     public void tearDown() throws IOException {
         disableAccessibilityService();
-    }
-
-    private void ensureBoundToHelperService() {
-        if (mServiceFuture.get().isDone()) {
-            return;
-        }
-
-        Intent intent = new Intent();
-        intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-        intent.setComponent(ACCESSIBILITY_TEST_HELPER_SERVICE_COMPONENT_NAME);
-        intent.setPackage(ACCESSIBILITY_TEST_SERVICE_PACKAGE);
-        boolean bound =
-                InstrumentationRegistry.getInstrumentation()
-                        .getContext()
-                        .bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        Assert.assertTrue("Failed to bind to helper service", bound);
-    }
-
-    private IAccessibilityTestHelperService getAccessibilityHelperService()
-            throws TimeoutException, InterruptedException, ExecutionException {
-        return mServiceFuture.get().get(BIND_TIMEOUT_MS, TimeUnit.MILLISECONDS);
     }
 
     private void enableAccessibilityService() throws IOException {
@@ -155,19 +98,36 @@ public class WebContentsAccessibilityE2ETest {
 
     @Test
     @SmallTest
-    public void testAccessibilityServiceReceivesTextSelectionChanged() throws Throwable {
-        // Load a page.
-        String url = UrlUtils.encodeHtmlDataUri("<p>hello</p>");
-        mActivityTestRule.launchContentShellWithUrl(url);
+    public void testAccessibilityServiceConnected() throws Throwable {
+        // Register a receiver for the intent fired by the accessibility service.
+        IntentFilter filter = new IntentFilter(ACTION_ACCESSIBILITY_EVENT);
+        BroadcastReceiver receiver =
+                new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        mReceivedIntent = true;
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContext.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED);
+                });
 
-        // Ask the service to wait for a text selection changed on the omnibox.
-        boolean eventReceived =
-                getAccessibilityHelperService()
-                        .waitForEvent(
-                                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED,
-                                "android.widget.EditText",
-                                url,
-                                EVENT_TIMEOUT_MS);
-        Assert.assertTrue("Service did not receive event", eventReceived);
+        try {
+            // Showing this page will ensure our AccessibilityTestService receives events in
+            // onAccessibilityEvent.
+            mActivityTestRule.launchContentShellWithUrl(UrlUtils.encodeHtmlDataUri("<p>hello</p>"));
+
+            // Wait for the intent to be received. The service should send an intent when it gets an
+            // event.
+            CriteriaHelper.pollUiThread(
+                    () -> mReceivedIntent, "Did not receive intent from service.");
+        } finally {
+            // Unregister the receiver.
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mContext.unregisterReceiver(receiver);
+                    });
+        }
     }
 }

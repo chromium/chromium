@@ -6,25 +6,14 @@ android_resources("accessibility_test_support_resources") {
   custom_package = "org.chromium.ui.accessibility.testservice"
 }
 
-android_aidl("accessibility_test_service_aidl") {
-  testonly = true
-  import_include = [ "javatest/src" ]
-  sources = [ "javatest/src/org/chromium/ui/accessibility/testservice/IAccessibilityTestHelperService.aidl" ]
-}
-
 android_apk("accessibility_test_support_apk") {
   testonly = true
   apk_name = "AccessibilityTestService"
   android_manifest = "AndroidManifest.xml"
-  sources = [
-    "javatest/src/org/chromium/ui/accessibility/testservice/AccessibilityTestHelperService.java",
-    "javatest/src/org/chromium/ui/accessibility/testservice/AccessibilityTestService.java",
-  ]
+  sources = [ "javatest/src/org/chromium/ui/accessibility/testservice/AccessibilityTestService.java" ]
   manifest_package = "org.chromium.ui.accessibility.testservice"
-  srcjar_deps = [ ":accessibility_test_service_aidl" ]
   deps = [
     ":accessibility_test_support_resources",
     "//base:base_java",
-    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
   ]
 }

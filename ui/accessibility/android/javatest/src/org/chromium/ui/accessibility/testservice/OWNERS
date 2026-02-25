@@ -1,3 +1,0 @@
-# Note to reviewers: the files in this directory are test-only.
-per-file *.aidl=set noparent
-per-file *.aidl=file://ipc/SECURITY_OWNERS

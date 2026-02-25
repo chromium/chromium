@@ -716,7 +716,6 @@ android_library("content_javatests") {
     "//content/test/data/media/",
   ]
   data_deps = [ "//net:test_support" ]
-  srcjar_deps = [ "//ui/accessibility/android:accessibility_test_service_aidl" ]
 }
 
 robolectric_binary("content_junit_tests") {
