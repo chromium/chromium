@@ -4726,6 +4726,9 @@ class CSSMathExpressionNodeParser {
         DCHECK(RuntimeEnabledFeatures::CSSRandomFunctionEnabled());
         DCHECK_GE(nodes.size(), 2u);
         DCHECK_LE(nodes.size(), 3u);
+        if (!context_.InElementContext()) {
+          return nullptr;
+        }
         local_context_.IncrementRandomValueCount();
         const auto& random_value_sharing =
             std::get<const RandomValueSharing*>(non_expr_argument);
