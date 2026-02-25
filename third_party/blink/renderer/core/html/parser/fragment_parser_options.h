@@ -8,8 +8,10 @@
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_html_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_set_html_unsafe_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmloptions_trustedparseroptions.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_sethtmlunsafeoptions_trustedparseroptions.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_parser_options.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -21,7 +23,6 @@ namespace blink {
 
 class CustomElementRegistry;
 class V8UnionSanitizerOrSanitizerConfigOrSanitizerPresets;
-class V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions;
 
 class CORE_EXPORT FragmentParserConfig {
   STACK_ALLOCATED();
@@ -81,6 +82,18 @@ class CORE_EXPORT FragmentParserOptions {
           kSetHTMLUnsafeOptions:
         return FragmentParserOptions(options->GetAsSetHTMLUnsafeOptions());
       case V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions::ContentType::
+          kTrustedParserOptions:
+        return FragmentParserOptions(options->GetAsTrustedParserOptions());
+    }
+  }
+
+  static FragmentParserOptions From(
+      const V8UnionSetHTMLOptionsOrTrustedParserOptions* options) {
+    switch (options->GetContentType()) {
+      case V8UnionSetHTMLOptionsOrTrustedParserOptions::ContentType::
+          kSetHTMLOptions:
+        return FragmentParserOptions(options->GetAsSetHTMLOptions());
+      case V8UnionSetHTMLOptionsOrTrustedParserOptions::ContentType::
           kTrustedParserOptions:
         return FragmentParserOptions(options->GetAsTrustedParserOptions());
     }

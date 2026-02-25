@@ -45,6 +45,7 @@ class HTMLCollection;
 class RadioNodeList;
 class ScriptState;
 class V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions;
+class V8UnionSetHTMLOptionsOrTrustedParserOptions;
 class StyleRecalcContext;
 class WhitespaceAttacher;
 class WritableStream;
@@ -403,6 +404,12 @@ class CORE_EXPORT ContainerNode : public Node {
       ScriptState*,
       V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions*,
       ExceptionState&);
+  WritableStream* streamHTML(ScriptState*,
+                             V8UnionSetHTMLOptionsOrTrustedParserOptions*,
+                             ExceptionState&);
+  WritableStream* streamAppendHTML(ScriptState*,
+                                   V8UnionSetHTMLOptionsOrTrustedParserOptions*,
+                                   ExceptionState&);
 
   // DocumentOrElementEventHandlers:
   // These event listeners are only actually web-exposed on interfaces that

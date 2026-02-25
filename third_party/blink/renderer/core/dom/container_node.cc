@@ -1926,11 +1926,36 @@ WritableStream* ContainerNode::streamAppendHTMLUnsafe(
                             kInterfaceName, exception_state);
 }
 
+WritableStream* ContainerNode::streamAppendHTML(
+    ScriptState* script_state,
+    V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
+    ExceptionState& exception_state) {
+  DEFINE_STATIC_LOCAL(AtomicString, kPropertyName, ("streamAppendHTML"));
+  WritableStream* stream = HTMLStream::Create(
+      script_state, this, FragmentParserOptions::From(options), kPropertyName,
+      exception_state);
+  return stream;
+}
+
 WritableStream* ContainerNode::streamHTMLUnsafe(
     ScriptState* script_state,
     V8UnionSetHTMLUnsafeOptionsOrTrustedParserOptions* options,
     ExceptionState& exception_state) {
   DEFINE_STATIC_LOCAL(AtomicString, kPropertyName, ("streamHTMLUnsafe"));
+  WritableStream* stream = HTMLStream::Create(
+      script_state, this, FragmentParserOptions::From(options), kPropertyName,
+      exception_state);
+  if (!exception_state.HadException()) {
+    RemoveChildren();
+  }
+  return stream;
+}
+
+WritableStream* ContainerNode::streamHTML(
+    ScriptState* script_state,
+    V8UnionSetHTMLOptionsOrTrustedParserOptions* options,
+    ExceptionState& exception_state) {
+  DEFINE_STATIC_LOCAL(AtomicString, kPropertyName, ("streamHTML"));
   WritableStream* stream = HTMLStream::Create(
       script_state, this, FragmentParserOptions::From(options), kPropertyName,
       exception_state);
