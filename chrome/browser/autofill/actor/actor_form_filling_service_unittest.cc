@@ -188,6 +188,8 @@ class RecordingTestContentAutofillDriver : public TestContentAutofillDriver {
   using TestContentAutofillDriver::TestContentAutofillDriver;
   ~RecordingTestContentAutofillDriver() override = default;
 
+  MOCK_METHOD(void, RendererShouldClearPreviewedForm, (), (override));
+
   // TestContentAutofillDriver:
   base::flat_set<FieldGlobalId> ApplyFormAction(
       mojom::FormActionType action_type,
@@ -1005,6 +1007,13 @@ TEST(ActorFormFillingServiceWithoutAutofillTest, NoAutofillClient) {
                          future.GetCallback());
   EXPECT_THAT(future.Get(),
               ErrorIs(ActorFormFillingError::kAutofillNotAvailable));
+}
+
+// Tests that requesting to clear the form preview correctly routes the call
+// to `AutofillDriver`.
+TEST_F(ActorFormFillingServiceTest, ClearFormPreview) {
+  EXPECT_CALL(driver(), RendererShouldClearPreviewedForm()).Times(1);
+  service().ClearFormPreview(tab(), /*form_index=*/0);
 }
 
 }  // namespace

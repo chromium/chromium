@@ -750,8 +750,14 @@ void ActorFormFillingServiceImpl::PreviewForm(const tabs::TabInterface& tab,
 void ActorFormFillingServiceImpl::ClearFormPreview(
     const tabs::TabInterface& tab,
     int form_index) {
-  // TODO(crbug.com/481381308): Implement clearing a previewed form.
-  NOTIMPLEMENTED();
+  base::expected<std::reference_wrapper<BrowserAutofillManager>,
+                 ActorFormFillingError>
+      maybe_manager = GetAutofillManager(tab);
+  if (!maybe_manager.has_value()) {
+    return;
+  }
+  AutofillManager& autofill_manager = maybe_manager.value();
+  autofill_manager.driver().RendererShouldClearPreviewedForm();
 }
 
 void ActorFormFillingServiceImpl::FillForm(
