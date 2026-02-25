@@ -153,7 +153,8 @@ URLMergeKey ComputeURLMergeKey(
   if (deduplication_helper) {
     auto key = deduplication_helper->ComputeURLDeduplicationKey(
         url, base::UTF16ToUTF8(title));
-    DCHECK(!key.empty());
+    DCHECK(!key.empty()) << "Deduplication key should not be empty. URL: "
+                         << url << ", title: " << base::UTF16ToUTF8(title);
     return key;
   }
 
