@@ -140,6 +140,12 @@ class GPU_GLES2_EXPORT DecoderContext : public AsyncAPIInterface,
   virtual gles2::ErrorState* GetErrorState() = 0;
 
   //
+  // Methods required by GLES2 Decoder helpers
+  //
+  // Bind the framebuffer `service_id` and perform any workarounds needed.
+  virtual void BindFramebuffer(unsigned target, uint32_t service_id) const = 0;
+
+  //
   // Methods required by Texture.
   //
   // Indicates whether a given internal format is one for a compressed

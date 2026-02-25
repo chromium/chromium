@@ -492,7 +492,8 @@ void DeleteShader(GLuint shader) {
     glDeleteShader(shader);
 }
 
-bool BindFramebufferTexture2D(GLenum target,
+bool BindFramebufferTexture2D(DecoderContext* decoder,
+                              GLenum target,
                               GLuint texture_id,
                               GLint level,
                               GLuint framebuffer) {
@@ -512,7 +513,7 @@ bool BindFramebufferTexture2D(GLenum target,
   glTexParameterf(binding_target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   glTexParameteri(binding_target, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   glTexParameteri(binding_target, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glBindFramebufferEXT(GL_FRAMEBUFFER, framebuffer);
+  decoder->BindFramebuffer(GL_FRAMEBUFFER, framebuffer);
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, target,
                             texture_id, level);
 
@@ -546,7 +547,7 @@ void DoCopyTexImage2D(
   DCHECK(dest_binding_target == GL_TEXTURE_2D ||
          dest_binding_target == GL_TEXTURE_CUBE_MAP);
   DCHECK(source_level == 0 || decoder->GetFeatureInfo()->IsES3Capable());
-  if (BindFramebufferTexture2D(source_target, source_id, source_level,
+  if (BindFramebufferTexture2D(decoder, source_target, source_id, source_level,
                                framebuffer)) {
     glBindTexture(dest_binding_target, dest_id);
     glTexParameterf(dest_binding_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -604,7 +605,7 @@ void DoCopyTexSubImage2D(
   DCHECK(dest_binding_target == GL_TEXTURE_2D ||
          dest_binding_target == GL_TEXTURE_CUBE_MAP);
   DCHECK(source_level == 0 || decoder->GetFeatureInfo()->IsES3Capable());
-  if (BindFramebufferTexture2D(source_target, source_id, source_level,
+  if (BindFramebufferTexture2D(decoder, source_target, source_id, source_level,
                                framebuffer)) {
     glBindTexture(dest_binding_target, dest_id);
     glTexParameterf(dest_binding_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -769,7 +770,7 @@ void DoReadbackAndTexImage(TexImageCommandType command_type,
   DCHECK(dest_binding_target == GL_TEXTURE_2D ||
          dest_binding_target == GL_TEXTURE_CUBE_MAP);
   DCHECK(source_level == 0 || decoder->GetFeatureInfo()->IsES3Capable());
-  if (BindFramebufferTexture2D(source_target, source_id, source_level,
+  if (BindFramebufferTexture2D(decoder, source_target, source_id, source_level,
                                framebuffer)) {
     glBindTexture(dest_binding_target, dest_id);
     glTexParameterf(dest_binding_target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -1343,7 +1344,7 @@ void CopyTextureResourceManagerImpl::DoCopyTextureInternal(
               (y + height / 2.f) * m_y / source_height);
 
   DCHECK(dest_level == 0 || decoder->GetFeatureInfo()->IsES3Capable());
-  if (BindFramebufferTexture2D(dest_target, dest_id, dest_level,
+  if (BindFramebufferTexture2D(decoder, dest_target, dest_id, dest_level,
                                framebuffer_)) {
 #ifndef NDEBUG
     // glValidateProgram of MACOSX validates FBO unlike other platforms, so

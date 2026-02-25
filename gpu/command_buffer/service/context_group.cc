@@ -120,9 +120,17 @@ ContextGroup::ContextGroup(
 
   use_passthrough_cmd_decoder_ = gpu_preferences_.use_passthrough_cmd_decoder;
 }
-
 gpu::ContextResult ContextGroup::Initialize(DecoderContext* decoder,
                                             ContextType context_type) {
+  return InitializeWithCompleteFramebufferForWorkarounds(decoder, context_type,
+                                                         0);
+}
+
+gpu::ContextResult
+ContextGroup::InitializeWithCompleteFramebufferForWorkarounds(
+    DecoderContext* decoder,
+    ContextType context_type,
+    uint32_t complete_fbo_for_workarounds) {
   switch (context_type) {
     case CONTEXT_TYPE_WEBGL1:
       if (kGpuFeatureStatusBlocklisted ==
@@ -156,8 +164,9 @@ gpu::ContextResult ContextGroup::Initialize(DecoderContext* decoder,
   DisallowedFeatures adjusted_disallowed_features =
       GetDisallowedFeatures(context_type);
 
-  feature_info_->Initialize(context_type, use_passthrough_cmd_decoder_,
-                            adjusted_disallowed_features);
+  feature_info_->InitializeWithCompleteFramebufferForWorkarounds(
+      context_type, use_passthrough_cmd_decoder_, adjusted_disallowed_features,
+      complete_fbo_for_workarounds);
 
   // Fail early if ES3 is requested and driver does not support it.
   if ((context_type == CONTEXT_TYPE_WEBGL2 ||

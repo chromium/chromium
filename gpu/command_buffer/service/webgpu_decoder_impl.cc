@@ -306,6 +306,9 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::string_view GetLogPrefix() override { return "WebGPUDecoderImpl"; }
   gles2::ContextGroup* GetContextGroup() override { return nullptr; }
   gles2::ErrorState* GetErrorState() override { NOTREACHED(); }
+  void BindFramebuffer(unsigned target, uint32_t service_id) const override {
+    NOTREACHED();
+  }
   bool IsCompressedTextureFormat(unsigned format) override { NOTREACHED(); }
   bool ClearLevel(gles2::Texture* texture,
                   unsigned target,
