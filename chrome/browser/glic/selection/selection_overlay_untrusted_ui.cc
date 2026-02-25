@@ -10,6 +10,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/glic_untrusted_resources.h"
+#include "chrome/grit/glic_untrusted_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -21,7 +23,7 @@ bool SelectionOverlayUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return GlicEnabling::IsProfileEligible(
              Profile::FromBrowserContext(browser_context)) &&
-         base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew);
+         base::FeatureList::IsEnabled(::features::kGlicRegionSelectionNew);
 }
 
 SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
@@ -32,7 +34,8 @@ SelectionOverlayUntrustedUI::SelectionOverlayUntrustedUI(content::WebUI* web_ui)
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUIGlicUntrustedURL);
   CHECK(html_source);
-  // TODO(b/479179977): Add resources.
+  webui::SetupWebUIDataSource(html_source, kGlicUntrustedResources,
+                              IDR_GLIC_UNTRUSTED_SELECTION_OVERLAY_HTML);
 }
 
 SelectionOverlayUntrustedUI::~SelectionOverlayUntrustedUI() = default;

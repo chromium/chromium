@@ -187,6 +187,9 @@ group("resources") {
       "glic/fre:resources",
       "glic/shared:resources",
     ]
+    if (!is_android) {
+      public_deps += [ "glic/selection_overlay:resources" ]
+    }
   }
 
   if (enterprise_watermark) {
