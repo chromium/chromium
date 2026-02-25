@@ -127,6 +127,7 @@ void ConnectionTokenAttestation::OnAttestationResponse(
 
 void ConnectionTokenAttestation::OnDestroy(ErrorCode error) {
   attestation_state_ = AttestationState::kFailed;
+  on_disconnect_.Reset();
 
   auto pending_requests = std::move(pending_requests_);
   for (auto& pending_request : pending_requests) {
@@ -134,6 +135,10 @@ void ConnectionTokenAttestation::OnDestroy(ErrorCode error) {
   }
 
   inner_connection_->OnDestroy(error);
+
+  token_manager_ = nullptr;
+  logger_ = nullptr;
+  weak_factory_.InvalidateWeakPtrsAndDoom();
 }
 
 void ConnectionTokenAttestation::CallOnDisconnect(ErrorCode error_code) {

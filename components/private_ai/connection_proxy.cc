@@ -92,6 +92,8 @@ void ConnectionProxy::Send(proto::PrivateAiRequest request,
 }
 
 void ConnectionProxy::OnDestroy(ErrorCode error) {
+  on_disconnect_.Reset();
+
   auto pending_requests = std::move(pending_requests_);
   for (auto& pending : pending_requests) {
     std::move(pending.callback).Run(base::unexpected(error));
@@ -100,6 +102,10 @@ void ConnectionProxy::OnDestroy(ErrorCode error) {
   if (inner_connection_) {
     inner_connection_->OnDestroy(error);
   }
+
+  token_manager_ = nullptr;
+  network_service_ = nullptr;
+  weak_factory_.InvalidateWeakPtrsAndDoom();
 }
 
 void ConnectionProxy::CallOnDisconnect(ErrorCode error_code) {
