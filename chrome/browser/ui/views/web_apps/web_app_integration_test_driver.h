@@ -146,7 +146,9 @@ enum class FilesOptions {
 enum class UpdateDialogResponse {
   kAcceptUpdate,
   kCancelDialogAndUninstall,
+  kCancelDialogAndCancelUninstall,
   kIgnoreDialog,
+  kCloseDialog,
 };
 
 enum class SubAppInstallDialogOptions {

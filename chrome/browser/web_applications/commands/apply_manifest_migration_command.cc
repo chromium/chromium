@@ -213,6 +213,10 @@ void ApplyManifestMigrationCommand::StartWithLock(
 void ApplyManifestMigrationCommand::OnIconsCopied(bool success) {
   GetMutableDebugValue().Set("icon_copy_successful_for_forced_migration",
                              success);
+
+  all_apps_lock_->install_manager().NotifyWebAppManifestUpdated(
+      destination_app_id_);
+
   if (!success) {
     CompleteCommandAndSelfDestruct(
         ApplyManifestMigrationResult::kAppMigrationFailedDuringIconCopy);
