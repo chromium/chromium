@@ -75,6 +75,9 @@ message AccessibilityAnnotationSpecifics {
 
     // The domain (eTLD+1) of the courier or logistics service.
     optional string carrier_domain = 5;
+
+    // The date on which the shipment is estimated to be delivered.
+    optional int64 estimated_delivery_date_unix_epoch_seconds = 6;
   }
 
   // Represents a government-issued driver's license.

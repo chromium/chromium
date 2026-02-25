@@ -2308,6 +2308,7 @@ VISIT_PROTO_FIELDS(
   VISIT(delivery_address);
   VISIT(carrier_name);
   VISIT(carrier_domain);
+  VISIT(estimated_delivery_date_unix_epoch_seconds);
 }
 
 VISIT_PROTO_FIELDS(
