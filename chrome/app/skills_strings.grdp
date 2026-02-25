@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Skills specific strings (included from generated_resources.grd). -->
 <grit-part>
-   <message name="IDS_SKILL_SAVED_TOAST_BODY" desc="Text on the toast after a skill is saved" translateable="false">
+   <message name="IDS_SKILL_SAVED_TOAST_BODY" desc="Text on the toast after a skill is saved">
     Saved skill
   </message>
-  <message name="IDS_SKILL_SAVED_TOAST_BUTTON" desc="Text on the toast action button after a skill is saved" translateable="false">
+  <message name="IDS_SKILL_SAVED_TOAST_BUTTON" desc="Text on the toast action button after a skill is saved">
     Try with Gemini in Chrome
   </message>
-  <message name="IDS_SKILL_DELETED_TOAST_BODY" desc="Text on the toast action button after a skill is saved" translateable="false">
+  <message name="IDS_SKILL_DELETED_TOAST_BODY" desc="Text on the toast action button after a skill is saved">
     Deleted skill
   </message>
 
   <!-- a11y strings -->
-  <message name="IDS_SKILL_CARD_ACTION_MENU_LABEL" desc="Accessibility label for button that opens a dropdown on a skill card with options for deleting or copying the text of a skill." translateable="false">
+  <message name="IDS_SKILL_CARD_ACTION_MENU_LABEL" is_accessibility_with_no_ui="true" desc="Accessibility label for button that opens a dropdown on a skill card with options for deleting or copying the text of a skill.">
     Manage your skill
   </message>
-  <message name="IDS_ADD_NEW_SKILL_LABEL" desc="Accessibility label for the add button that opens a dialog allowing users to create a new skill." translateable="false">
+  <message name="IDS_ADD_NEW_SKILL_LABEL" is_accessibility_with_no_ui="true" desc="Accessibility label for the add button that opens a dialog allowing users to create a new skill.">
     Add a new skill
   </message>
 
