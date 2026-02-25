@@ -28,8 +28,12 @@ specific_include_rules = {
   "page_content_metadata_observer_browsertest\.cc": [
     "+content/shell",
     "+components/network_session_configurator/common/network_switches.h",
+    "+media/base/media_switches.h",
   ],
   "page_content_proto_util_unittest\.cc": [
     "+third_party/skia/include/core/SkColor.h",
+  ],
+  "page_content_metadata_observer.cc": [
+    "+media/base/media_switches.h",
   ],
 }

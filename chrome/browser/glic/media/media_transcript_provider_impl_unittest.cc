@@ -103,8 +103,9 @@ TEST_F(MediaTranscriptProviderImplTest, GetTranscriptsForFrameEdgeCases) {
 TEST_F(MediaTranscriptProviderImplTest, OnTranscriptionBeginForFrame) {
   auto mock_owner =
       std::make_unique<MockPageContentMetadataObserver>(web_contents());
-  optimization_guide::MediaTranscriptObserver::CreateForCurrentDocument(
-      rfh(), mock_owner->GetWeakPtr());
+  optimization_guide::MediaTranscriptObserver::GetOrCreateForCurrentDocument(
+      rfh())
+      ->AddOwner(mock_owner->GetWeakPtr());
 
   EXPECT_CALL(*mock_owner, OnTranscriptionBegin(rfh()));
   provider().OnTranscriptionBeginForFrame(rfh());

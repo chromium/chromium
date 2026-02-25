@@ -495,6 +495,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kHeadlessLiveCaption);
 // If enabled, Glic will start captioning as soon as a profile is loaded.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kHeadlessCaptionEarlyStart);
 
+// If enabled, chrome would inform Glic once it starts trasncribing, if Glic
+// requested to be informed.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaTrasncriptsFlagInPageMetadata);
+
 // Enable site-specific media link helpers.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaLinkHelpers);
 
