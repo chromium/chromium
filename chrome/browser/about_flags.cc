@@ -12984,6 +12984,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(tabs::kHorizontalTabStripComboButton)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"ntp-mvc-refactor", flag_descriptions::kNtpMvcRefactorName,
+     flag_descriptions::kNtpMvcRefactorDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kNtpMvcRefactor)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

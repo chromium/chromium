@@ -509,6 +509,7 @@ public abstract class ChromeFeatureList {
     public static final String NOTIFICATION_TRAMPOLINE = "NotificationTrampoline";
     public static final String NOTIFICATION_TRAMPOLINE_NO_NEW_TASK =
             "NotificationTrampolineNoNewTask";
+    public static final String NTP_MVC_REFACTOR = "NtpMvcRefactor";
     public static final String OMAHA_MIN_SDK_VERSION_ANDROID = "OmahaMinSdkVersionAndroid";
     public static final String OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP =
             "OmniboxAutofocusOnIncognitoNtp";
@@ -993,6 +994,8 @@ public abstract class ChromeFeatureList {
                     NOTIFICATION_TRAMPOLINE_NO_NEW_TASK,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sNtpMvcRefactor =
+            newCachedFlag(NTP_MVC_REFACTOR, /* defaultValue= */ false);
     public static final CachedFlag sPCctMinimumHeight = newCachedFlag(PCCT_MINIMUM_HEIGHT, true);
     public static final CachedFlag sPaintPreviewDemo = newCachedFlag(PAINT_PREVIEW_DEMO, false);
     public static final CachedFlag sPersistAcrossReboots =
@@ -1224,6 +1227,7 @@ public abstract class ChromeFeatureList {
                     sNewTabPageCustomizationV2,
                     sNotificationTrampoline,
                     sNotificationTrampolineNoNewTask,
+                    sNtpMvcRefactor,
                     sPCctMinimumHeight,
                     sPaintPreviewDemo,
                     sPersistAcrossReboots,

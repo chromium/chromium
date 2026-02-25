@@ -8283,6 +8283,7 @@ from previous Chrome versions.
   <int value="-2077268643" label="disable-device-enumeration"/>
   <int value="-2076848010" label="NtpComposebox:disabled"/>
   <int value="-2076313806" label="TrustTokens:disabled"/>
+  <int value="-2076121369" label="NtpMvcRefactor:disabled"/>
   <int value="-2075870708" label="MediaRemotingEncrypted:disabled"/>
   <int value="-2075807193" label="enable-webusb-on-any-origin"/>
   <int value="-2075725205" label="disable-new-zip-unpacker"/>
@@ -11655,6 +11656,7 @@ from previous Chrome versions.
   <int value="-949137285" label="EnableRootNsDnsProxy:enabled"/>
   <int value="-948930847" label="EnableOopPrintDrivers:enabled"/>
   <int value="-948684341" label="OmniboxBlurWithEscape:enabled"/>
+  <int value="-948678625" label="NtpMvcRefactor:enabled"/>
   <int value="-948256052" label="EnableInputInDiagnosticsApp:enabled"/>
   <int value="-948067160" label="AXTreeFixing:disabled"/>
   <int value="-947643308" label="EnableTouchscreensInDiagnosticsApp:disabled"/>
