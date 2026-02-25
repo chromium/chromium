@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp_customization.theme.upload_image;
 
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.BITMAP_FOR_PREVIEW;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.BUTTON_BOTTOM_MARGIN;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LOGO_BITMAP;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LOGO_PARAMS;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LOGO_VISIBILITY;
@@ -55,6 +56,8 @@ public class UploadImagePreviewLayoutViewBinder {
             layout.setSearchBoxHeight(model.get(SEARCH_BOX_HEIGHT));
         } else if (propertyKey == SEARCH_BOX_TOP_MARGIN) {
             layout.setSearchBoxTopMargin(model.get(SEARCH_BOX_TOP_MARGIN));
+        } else if (propertyKey == BUTTON_BOTTOM_MARGIN) {
+            layout.setButtonBottomMargin(model.get(BUTTON_BOTTOM_MARGIN));
         }
     }
 }
