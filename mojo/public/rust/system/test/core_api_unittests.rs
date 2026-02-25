@@ -378,11 +378,6 @@ fn test_close_trap_with_active_trigger() {
         system::raw_trap::HandleSignals::READABLE,
         system::raw_trap::TriggerCondition::TriggerWhenSatisfied,
         move |event| {
-            println!(
-                "Trigger fired with result {:?} and signals {:?}",
-                event.result(),
-                event.signals_state()
-            );
             expect_eq!(event.result(), Err(system::trap::TrapError::Cancelled));
         },
     );
@@ -404,11 +399,6 @@ fn test_trap_clear_triggers() {
                 system::raw_trap::HandleSignals::READABLE,
                 system::raw_trap::TriggerCondition::TriggerWhenSatisfied,
                 |event| {
-                    println!(
-                        "Trigger fired with result {:?} and signals {:?}",
-                        event.result(),
-                        event.signals_state()
-                    );
                     expect_eq!(event.result(), Err(system::trap::TrapError::Cancelled));
                 },
             )
@@ -448,12 +438,6 @@ fn test_trap_multiple_blocking_events() {
             system::raw_trap::HandleSignals::READABLE,
             system::raw_trap::TriggerCondition::TriggerWhenSatisfied,
             move |event| {
-                println!(
-                    "Trigger {} fired with result {:?} and signals {:?}",
-                    i,
-                    event.result(),
-                    event.signals_state()
-                );
                 match event.result() {
                     Ok(()) => {
                         // Standard behavior we expect for this test.
@@ -464,10 +448,10 @@ fn test_trap_multiple_blocking_events() {
                         ep_a_clone.read().expect("Failed to read from ep_a in callback");
                     }
                     Err(system::trap::TrapError::Cancelled) => {
-                        // Do not increase the callback count, as this is not a callback
-                        // we're interested in measuring, but don't panic either.
-                        // We expect this at the conclusion of our test, when Trap is dropped.
-                        println!("Trigger {} was cancelled. This is expected during Trap drop.", i);
+                        // Do not increase the callback count, as this is not a
+                        // callback we're interested in measuring, but don't
+                        // panic either. We expect this at the conclusion of our
+                        // test, when the Trap is dropped.
                     }
                     Err(system::trap::TrapError::FailedPrecondition) => {
                         // Since we manually Drop our Trap at the end of the test,
