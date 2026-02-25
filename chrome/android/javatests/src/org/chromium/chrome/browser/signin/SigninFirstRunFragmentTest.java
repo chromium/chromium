@@ -728,8 +728,15 @@ public class SigninFirstRunFragmentTest {
     public void testContinueButtonWithChildAccount() {
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
-        checkContinueButtonWithChildAccount(
-                /* hasFullNameInButtonText= */ true, TestAccounts.CHILD_ACCOUNT);
+        launchActivityWithFragment();
+        final String continueAsButtonText =
+                getContinueAsButtonText(TestAccounts.CHILD_ACCOUNT, true);
+
+        clickContinueButton(continueAsButtonText);
+
+        verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+        checkFragmentWithSignInSpinner(
+                TestAccounts.CHILD_ACCOUNT, continueAsButtonText, /* isChildAccount= */ true);
     }
 
     @Test
@@ -756,9 +763,17 @@ public class SigninFirstRunFragmentTest {
     public void testContinueButtonWithChildAccountWithNonDisplayableAccountEmail() {
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL);
 
-        checkContinueButtonWithChildAccount(
-                /* hasFullNameInButtonText= */ true,
-                TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL);
+        launchActivityWithFragment();
+
+        final String continueAsButtonText =
+                getContinueAsButtonText(TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL, true);
+        clickContinueButton(continueAsButtonText);
+
+        verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+        checkFragmentWithSignInSpinner(
+                TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL,
+                continueAsButtonText,
+                /* isChildAccount= */ true);
     }
 
     @Test
@@ -766,12 +781,20 @@ public class SigninFirstRunFragmentTest {
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void
             testContinueButtonWithChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName() {
-
         mSigninTestRule.addAccount(TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME);
 
-        checkContinueButtonWithChildAccount(
-                /* hasFullNameInButtonText= */ false,
-                TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME);
+        launchActivityWithFragment();
+
+        final String continueAsButtonText =
+                getContinueAsButtonText(
+                        TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME, false);
+        clickContinueButton(continueAsButtonText);
+
+        verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
+        checkFragmentWithSignInSpinner(
+                TestAccounts.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL_AND_NO_NAME,
+                continueAsButtonText,
+                /* isChildAccount= */ true);
     }
 
     @Test
@@ -1435,21 +1458,6 @@ public class SigninFirstRunFragmentTest {
         onView(withId(R.id.fre_browser_managed_by)).check(matches(isDisplayed()));
         onView(withId(R.id.privacy_disclaimer)).check(matches(isDisplayed()));
         onView(withText(R.string.fre_browser_managed_by_parent)).check(matches(isDisplayed()));
-    }
-
-    private void checkContinueButtonWithChildAccount(
-            boolean hasFullNameInButtonText, AccountInfo accountInfo) {
-        // TODO(b/343011580) Split this method into smaller more specific methods
-        launchActivityWithFragment();
-
-        final String continueAsButtonText =
-                getContinueAsButtonText(accountInfo, hasFullNameInButtonText);
-        clickContinueButton(continueAsButtonText);
-
-        verify(mFirstRunPageDelegateMock).acceptTermsOfService(true);
-
-        checkFragmentWithSignInSpinner(
-                accountInfo, continueAsButtonText, /* isChildAccount= */ true);
     }
 
     private String getContinueAsButtonText(
