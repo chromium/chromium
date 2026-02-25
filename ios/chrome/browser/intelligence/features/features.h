@@ -234,6 +234,9 @@ bool IsGeminiLatencyImprovementEnabled();
 // Acts as a killswitch where the feature is enabled by default.
 BASE_DECLARE_FEATURE(kPageContextExtractorRefactored);
 
+// Returns true if the refactored page context extractor is enabled.
+bool IsPageContextExtractorRefactoredEnabled();
+
 // Feature flag to enable the refactored FRE flow (Gemini architecture).
 BASE_DECLARE_FEATURE(kGeminiRefactoredFRE);
 

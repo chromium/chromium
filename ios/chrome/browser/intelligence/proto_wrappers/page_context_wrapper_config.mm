@@ -38,8 +38,7 @@ bool PageContextWrapperConfig::use_rich_extraction() const {
 }
 
 PageContextWrapperConfigBuilder::PageContextWrapperConfigBuilder() {
-  use_refactored_extractor_ =
-      base::FeatureList::IsEnabled(kPageContextExtractorRefactored);
+  use_refactored_extractor_ = IsPageContextExtractorRefactoredEnabled();
   graft_cross_origin_frame_content_ = false;
   use_rich_extraction_ = false;
 }

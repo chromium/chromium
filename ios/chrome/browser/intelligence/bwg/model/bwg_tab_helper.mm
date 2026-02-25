@@ -559,9 +559,17 @@ void BwgTabHelper::PopulatePageContextFields() {
     page_context_wrapper_ = nil;
   }
 
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRefactoredExtractor(IsPageContextExtractorRefactoredEnabled())
+          .SetGraftCrossOriginFrameContent(IsGeminiRichAPCExtractionEnabled())
+          .SetUseRichExtraction(IsGeminiRichAPCExtractionEnabled())
+          .Build();
+
   // Create a new wrapper.
   page_context_wrapper_ = [[PageContextWrapper alloc]
         initWithWebState:web_state_
+                  config:config
       completionCallback:page_context_wrapper_response_ready_callback_];
 
   // Configure it to fetch full context.

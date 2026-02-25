@@ -366,6 +366,10 @@ bool IsGeminiLatencyImprovementEnabled() {
 
 BASE_FEATURE(kPageContextExtractorRefactored, base::FEATURE_ENABLED_BY_DEFAULT);
 
+bool IsPageContextExtractorRefactoredEnabled() {
+  return base::FeatureList::IsEnabled(kPageContextExtractorRefactored);
+}
+
 BASE_FEATURE(kGeminiRefactoredFRE, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiRefactoredFREEnabled() {
@@ -577,5 +581,9 @@ bool IsGeminiActorEnabled() {
 BASE_FEATURE(kGeminiRichAPCExtraction, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGeminiRichAPCExtractionEnabled() {
+  if (!IsPageContextExtractorRefactoredEnabled()) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(kGeminiRichAPCExtraction);
 }

@@ -179,6 +179,7 @@ source_set("unit_tests") {
     "frame_grafter_unittest.mm",
     "page_context_extractor_java_script_feature_unittest.mm",
     "page_context_utils_unittest.mm",
+    "page_context_wrapper_config_unittest.mm",
     "page_context_wrapper_metrics_unittest.mm",
     "page_context_wrapper_unittest.mm",
   ]
