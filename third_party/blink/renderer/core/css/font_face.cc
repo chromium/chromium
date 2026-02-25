@@ -414,15 +414,27 @@ void FontFace::setVariant(ExecutionContext* context,
 void FontFace::setFeatureSettings(ExecutionContext* context,
                                   const String& s,
                                   ExceptionState& exception_state) {
+  // Save old value to detect actual change.
+  Member<const CSSValue> old_feature_settings = feature_settings_;
   SetPropertyFromString(context, s, AtRuleDescriptorID::FontFeatureSettings,
                         &exception_state);
+
+  if (old_feature_settings != feature_settings_) {
+    InvalidateFontFaceOnDescriptorUpdate();
+  }
 }
 
 void FontFace::setVariationSettings(ExecutionContext* context,
                                     const String& s,
                                     ExceptionState& exception_state) {
+  // Save old value to detect actual change.
+  Member<const CSSValue> old_variation_settings = variation_settings_;
   SetPropertyFromString(context, s, AtRuleDescriptorID::FontVariationSettings,
                         &exception_state);
+
+  if (old_variation_settings != variation_settings_) {
+    InvalidateFontFaceOnDescriptorUpdate();
+  }
 }
 
 void FontFace::setDisplay(ExecutionContext* context,

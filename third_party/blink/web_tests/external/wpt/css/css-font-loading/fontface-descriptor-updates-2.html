@@ -15,6 +15,8 @@ function snapshotFontFaces() {
     ranges:    faces.map(f => f.unicodeRange),
     styles:    faces.map(f => f.style),
     stretches: faces.map(f => f.stretch),
+    featureSettings: faces.map(f => f.featureSettings),
+    variationSettings: faces.map(f => f.variationSettings),
   };
 }
 
@@ -43,8 +45,10 @@ promise_test(async () => {
   const f3 = new FontFace("unicodeTest", "url(resources/GenR102.woff2)", { unicodeRange: "U+0020-007F" });
   const f4 = new FontFace("styleTest", "url(resources/GenR102.woff2)", { style: "oblique" });
   const f5 = new FontFace("stretchTest", "url(resources/GenR102.woff2)", { stretch: "expanded" });
+  const f6 = new FontFace("featureTest", "url(resources/GenR102.woff2)", { featureSettings: "'liga' 1" });
+  const f7 = new FontFace("variationTest", "url(resources/GenR102.woff2)", { variationSettings: "'wght' 700" });
 
-  [f1, f2, f3, f4, f5].forEach(f => document.fonts.add(f));
+  [f1, f2, f3, f4, f5, f6, f7].forEach(f => document.fonts.add(f));
 
   const before = snapshotFontFaces();
 
@@ -54,6 +58,8 @@ promise_test(async () => {
     ranges:    { present: ["U+20-7F"] },
     styles:    { present: ["oblique"] },
     stretches: { present: ["expanded"] },
+    featureSettings:   { present: ['"liga"'] },
+    variationSettings: { present: ['"wght" 700'] },
   });
 
   applyUpdates([
@@ -62,6 +68,8 @@ promise_test(async () => {
     [f3, { unicodeRange: "U+0000-00FF" }],
     [f4, { style: "italic" }],
     [f5, { stretch: "normal" }],
+    [f6, { featureSettings: "'smcp' 1" }],
+    [f7, { variationSettings: "'wght' 400" }],
   ]);
 
   const after = snapshotFontFaces();
@@ -72,6 +80,8 @@ promise_test(async () => {
     ranges:    { present: ["U+0-FF"], absent: ["U+20-7F"] },
     styles:    { present: ["italic"], absent: ["oblique"] },
     stretches: { present: ["normal"], absent: ["expanded"] },
+    featureSettings:   { present: ['"smcp"'], absent: ['"liga"'] },
+    variationSettings: { present: ['"wght" 400'], absent: ['"wght" 700'] },
   });
 }, "FontFace descriptor mutations are reflected in FontFaceSet");
 
