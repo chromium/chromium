@@ -252,6 +252,11 @@ bool IpcDesktopEnvironmentFactory::BindConnectionEventsReceiver(
 void IpcDesktopEnvironmentFactory::SetRequiredUsername(
     std::string_view username) {
   DCHECK(network_task_runner_->BelongsToCurrentThread());
+
+  if (required_username_ == username) {
+    return;
+  }
+
   CHECK(active_connections_.empty())
       << "Cannot change required username when there are active connections.";
 
