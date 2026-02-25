@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/layout/base_layout_algorithm_test.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -33,7 +34,7 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   void SetUp() override { BaseLayoutAlgorithmTest::SetUp(); }
 
   void BuildGridGeometry(const GridLayoutAlgorithm& algorithm) {
-    auto grid_sizing_tree = algorithm.BuildGridSizingTree();
+    auto grid_sizing_tree = BuildGridSizingTree(algorithm);
 
     algorithm.InitializeTrackSizes(&grid_sizing_tree);
     algorithm.CompleteTrackSizingAlgorithm(

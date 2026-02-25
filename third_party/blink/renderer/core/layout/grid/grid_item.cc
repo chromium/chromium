@@ -183,9 +183,14 @@ GridItemData::GridItemData(
   // context as specified in:
   //   https://drafts.csswg.org/css-contain-2/#containment-layout
   //   https://drafts.csswg.org/css-contain-2/#containment-paint
+  //
+  // TODO(almaher): Check for grid-lanes here, as well, once we add support
+  // for grid-lanes subgridded to another grid* container.
   if (node.IsGrid() && !node.ShouldApplyLayoutContainment() &&
       !node.ShouldApplyPaintContainment() &&
       !style.IsContainerForSizeContainerQueries()) {
+    // TODO(almaher): If the parent grid is a grid-lanes container, then we only
+    // consider subgrids in the grid axis.
     has_subgridded_columns =
         is_parallel_with_root_grid
             ? style.GridTemplateColumns().IsSubgriddedAxis()

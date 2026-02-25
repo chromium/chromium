@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_LAYOUT_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_GRID_GRID_LAYOUT_UTILS_H_
 
+#include "third_party/blink/renderer/core/layout/grid/grid_layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_sizing_tree.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/core/style/grid_track_size.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
@@ -17,13 +19,17 @@ namespace blink {
 class BlockNode;
 class BoxFragmentBuilder;
 class ConstraintSpace;
+class GridLayoutData;
 class GridLayoutTrackCollection;
+class GridLineResolver;
 class GridSizingTrackCollection;
 class GridTrackList;
+class LayoutBox;
 class LogicalBoxFragment;
 
 enum class AxisEdge;
 struct BoxStrut;
+struct FragmentGeometry;
 struct GridItemData;
 struct LogicalSize;
 struct LogicalStaticPosition;
@@ -164,6 +170,89 @@ LayoutUnit ComputeBaselineOffset(
     FontBaseline font_baseline,
     GridTrackSizingDirection track_direction,
     LayoutUnit available_size);
+
+// Aggregate all direct out of flow children from the grid container associated
+// with `algorithm` to `opt_oof_children`, unless it's not provided.
+//
+// TODO(almaher): Make these methods take a template type for the layout
+// algorithm to allow this to work with grid-lanes, as well.
+void BuildGridSizingSubtree(
+    const GridLayoutAlgorithm& algorithm,
+    GridSizingTree* sizing_tree,
+    HeapVector<Member<LayoutBox>>* opt_oof_children,
+    const SubgriddedItemData& opt_subgrid_data = kNoSubgriddedItemData,
+    const GridLineResolver* opt_parent_line_resolver = nullptr,
+    bool must_invalidate_placement_cache = false,
+    bool must_ignore_children = false);
+
+CORE_EXPORT GridSizingTree
+BuildGridSizingTree(const GridLayoutAlgorithm& algorithm,
+                    HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr);
+GridSizingTree BuildGridSizingTreeIgnoringChildren(
+    const GridLayoutAlgorithm& algorithm);
+
+// Calculate the initial fragment geometry for a subgrid item.
+FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
+    const GridItemData& subgrid_data,
+    const ConstraintSpace& space,
+    const GridSizingSubtree& sizing_subtree = kNoGridSizingSubtree);
+
+// Helper which iterates over the sizing tree, and instantiates a subgrid
+// algorithm to invoke the callback with.
+template <typename CallbackFunc>
+void ForEachSubgrid(const GridSizingSubtree& sizing_subtree,
+                    const GridLayoutAlgorithm& algorithm,
+                    const CallbackFunc& callback_func,
+                    bool should_compute_min_max_sizes = true) {
+  // Exit early if this subtree doesn't have nested subgrids.
+  auto next_subgrid_subtree = sizing_subtree.FirstChild();
+  if (!next_subgrid_subtree) {
+    return;
+  }
+
+  const auto& layout_data = sizing_subtree.LayoutData();
+
+  for (const auto& grid_item : sizing_subtree.GetGridItems()) {
+    if (!grid_item.IsSubgrid()) {
+      continue;
+    }
+
+    const auto space =
+        algorithm.CreateConstraintSpaceForLayout(grid_item, layout_data);
+    const auto fragment_geometry = CalculateInitialFragmentGeometryForSubgrid(
+        grid_item, space,
+        should_compute_min_max_sizes ? next_subgrid_subtree
+                                     : kNoGridSizingSubtree);
+
+    const GridLayoutAlgorithm subgrid_algorithm(
+        {grid_item.node, fragment_geometry, space});
+
+    DCHECK(next_subgrid_subtree);
+    callback_func(
+        subgrid_algorithm, next_subgrid_subtree,
+        SubgriddedItemData(grid_item, layout_data,
+                           algorithm.GetConstraintSpace().GetWritingMode()));
+
+    next_subgrid_subtree = next_subgrid_subtree.NextSibling();
+  }
+}
+
+std::unique_ptr<GridLayoutTrackCollection> CreateSubgridTrackCollection(
+    const SubgriddedItemData& subgrid_data,
+    const ComputedStyle& style,
+    const ConstraintSpace& space,
+    const BoxStrut& border_scrollbar_padding,
+    const LogicalSize grid_available_size,
+    GridTrackSizingDirection track_direction);
+
+// Initialize the track collections of a given grid sizing data.
+void InitializeTrackCollection(const SubgriddedItemData& opt_subgrid_data,
+                               const ComputedStyle& style,
+                               const ConstraintSpace& space,
+                               const BoxStrut& border_scrollbar_padding,
+                               const LogicalSize grid_available_size,
+                               GridTrackSizingDirection track_direction,
+                               GridLayoutData* layout_data);
 
 }  // namespace blink
 
