@@ -3404,7 +3404,9 @@ Called by update_autofill_enums.py.-->
 <!-- LINT.IfChange(BnplFormEvent) -->
 
 <enum name="BnplFormEvent">
-  <int value="0" label="Suggestions shown"/>
+  <int value="0"
+      label="Suggestions shown on a BNPL-eligible page, regardless of whether
+             a BNPL suggestion was shown"/>
   <int value="1" label="A Buy Now Pay Later suggestion was shown"/>
   <int value="2" label="Suggestion accepted"/>
   <int value="3" label="Form filled with Affirm VCN"/>

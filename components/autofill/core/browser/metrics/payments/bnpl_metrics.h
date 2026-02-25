@@ -80,8 +80,9 @@ std::string ConvertBnplFlowResultToString(BnplFlowResult result);
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class BnplFormEvent {
-  // Payments autofill suggestions were shown on a BNPL-eligible merchant.
-  kSuggestionsShown = 0,
+  // Payments autofill suggestions were shown on a BNPL-eligible page,
+  // regardless of whether a BNPL suggestion was shown.
+  kSuggestionsShownOnBnplEligiblePage = 0,
 
   // The BNPL suggestion was added to the payments autofill dropdown and shown
   // to the user.
