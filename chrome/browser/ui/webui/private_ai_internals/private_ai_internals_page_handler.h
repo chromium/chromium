@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_LEGION_INTERNALS_LEGION_INTERNALS_PAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_LEGION_INTERNALS_LEGION_INTERNALS_PAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_PRIVATE_AI_INTERNALS_PRIVATE_AI_INTERNALS_PAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_PRIVATE_AI_INTERNALS_PRIVATE_AI_INTERNALS_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
-#include "chrome/browser/ui/webui/legion_internals/legion_internals.mojom.h"
+#include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals.mojom.h"
 #include "components/private_ai/client.h"
 #include "components/private_ai/common/private_ai_logger.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -78,4 +78,4 @@ class LegionInternalsPageHandler
       scoped_logger_observations_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_LEGION_INTERNALS_LEGION_INTERNALS_PAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_PRIVATE_AI_INTERNALS_PRIVATE_AI_INTERNALS_PAGE_HANDLER_H_

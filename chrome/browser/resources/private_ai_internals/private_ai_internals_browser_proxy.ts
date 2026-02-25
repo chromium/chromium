@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {LegionInternalsPageHandlerRemote, LegionResponseMojoType} from './legion_internals.mojom-webui.js';
-import {LegionInternalsPageCallbackRouter, LegionInternalsPageHandler} from './legion_internals.mojom-webui.js';
+import type {LegionInternalsPageHandlerRemote, LegionResponseMojoType} from './private_ai_internals.mojom-webui.js';
+import {LegionInternalsPageCallbackRouter, LegionInternalsPageHandler} from './private_ai_internals.mojom-webui.js';
 
 /**
  * @fileoverview A browser proxy for the Legion Internals page.

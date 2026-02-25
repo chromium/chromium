@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/legion_internals/legion_internals_page_handler.h"
+#include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals_page_handler.h"
 
 #include <memory>
 #include <string>
@@ -13,7 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/legion_internals/legion_internals.mojom.h"
+#include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals.mojom.h"
 #include "components/private_ai/client.h"
 #include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/features.h"

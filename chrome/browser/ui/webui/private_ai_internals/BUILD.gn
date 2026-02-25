@@ -6,12 +6,12 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(!is_android)
 
-source_set("legion_internals") {
+source_set("private_ai_internals") {
   sources = [
-    "legion_internals_page_handler.cc",
-    "legion_internals_page_handler.h",
-    "legion_internals_ui.cc",
-    "legion_internals_ui.h",
+    "private_ai_internals_page_handler.cc",
+    "private_ai_internals_page_handler.h",
+    "private_ai_internals_ui.cc",
+    "private_ai_internals_ui.h",
   ]
 
   deps = [
@@ -30,6 +30,6 @@ source_set("legion_internals") {
 }
 
 mojom("mojo_bindings") {
-  sources = [ "legion_internals.mojom" ]
+  sources = [ "private_ai_internals.mojom" ]
   webui_module_path = "/"
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/legion_internals/legion_internals_ui.h"
+#include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals_ui.h"
 
 #include <memory>
 #include <utility>
@@ -11,11 +11,11 @@
 #include "chrome/browser/private_ai/private_ai_service.h"
 #include "chrome/browser/private_ai/private_ai_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/legion_internals/legion_internals.mojom.h"
-#include "chrome/browser/ui/webui/legion_internals/legion_internals_page_handler.h"
+#include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals.mojom.h"
+#include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/legion_internals_resources.h"
-#include "chrome/grit/legion_internals_resources_map.h"
+#include "chrome/grit/private_ai_internals_resources.h"
+#include "chrome/grit/private_ai_internals_resources_map.h"
 #include "components/private_ai/features.h"
 #include "components/private_ai/proto/private_ai.pb.h"
 #include "content/public/browser/browser_context.h"
@@ -52,8 +52,9 @@ LegionInternalsUI::LegionInternalsUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUILegionInternalsHost);
 
-  webui::SetupWebUIDataSource(source, base::span(kLegionInternalsResources),
-                              IDR_LEGION_INTERNALS_LEGION_INTERNALS_HTML);
+  webui::SetupWebUIDataSource(
+      source, base::span(kPrivateAiInternalsResources),
+      IDR_PRIVATE_AI_INTERNALS_PRIVATE_AI_INTERNALS_HTML);
 
   source->AddString("default_url", private_ai::kPrivateAiUrl.Get());
   source->AddString("default_api_key", private_ai::kPrivateAiApiKey.Get());

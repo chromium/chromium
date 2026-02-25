@@ -6,8 +6,8 @@ import '/strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {LogLevel} from './legion_internals.mojom-webui.js';
-import {LegionInternalsBrowserProxyImpl} from './legion_internals_browser_proxy.js';
+import {LogLevel} from './private_ai_internals.mojom-webui.js';
+import {LegionInternalsBrowserProxyImpl} from './private_ai_internals_browser_proxy.js';
 
 const proxy = LegionInternalsBrowserProxyImpl.getInstance();
 
