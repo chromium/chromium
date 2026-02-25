@@ -16,8 +16,6 @@ namespace {
 const NSInteger kLabelNumLines = 2;
 const CGFloat kSpaceIconTitle = 10;
 const CGFloat kMagicStackIconSize = 52;
-// Standard width of tiles.
-const CGFloat kPreferredMaxWidth = 74;
 // Image container corner radius.
 const CGFloat kCornerRadius = 8.0;
 
@@ -42,7 +40,6 @@ const CGFloat kCornerRadius = 8.0;
     _titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     _titleLabel.font = [self titleLabelFont];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
-    _titleLabel.preferredMaxLayoutWidth = kPreferredMaxWidth;
     _titleLabel.numberOfLines = kLabelNumLines;
     _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
 
