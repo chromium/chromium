@@ -12,7 +12,10 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
@@ -40,12 +43,22 @@ constexpr uint8_t kPublicKeySHA256[32] = {
     0x00, 0x26, 0x43, 0x86, 0x03, 0x36, 0xa6, 0x38, 0x86, 0x63};
 static_assert(std::size(kPublicKeySHA256) == crypto::kSHA256Length);
 
-bool IsOnDeviceModelAlreadyInstalled(ComponentUpdateService* cus) {
+// Extension id is eidcjfoningnkhpoelgpjemmhmopkeoi.
+constexpr char kClassifierModelManifestName[] =
+    "Optimization Guide On Device Taxonomy Model";
+constexpr base::FilePath::CharType kClassifierModelInstallationRelativePath[] =
+    FILE_PATH_LITERAL("OnDeviceClassifierModel");
+constexpr uint8_t kClassifierModelPublicKeySHA256[32] = {
+    0x48, 0x32, 0x95, 0xed, 0x8d, 0x6d, 0xa7, 0xfe, 0x4b, 0x6f, 0x94,
+    0xcc, 0x7c, 0xef, 0xa4, 0xe8, 0xa3, 0x79, 0xd7, 0xe5, 0x79, 0x5f,
+    0x53, 0x64, 0xef, 0xe7, 0x7b, 0xe1, 0x52, 0x44, 0x5b, 0x37};
+static_assert(std::size(kClassifierModelPublicKeySHA256) ==
+              crypto::kSHA256Length);
+
+bool IsModelAlreadyInstalled(ComponentUpdateService* cus,
+                             const std::string& extension_id) {
   CrxUpdateItem update_item;
-  bool success =
-      cus->GetComponentDetails(OptimizationGuideOnDeviceModelInstallerPolicy::
-                                   GetOnDeviceModelExtensionId(),
-                               &update_item);
+  bool success = cus->GetComponentDetails(extension_id, &update_item);
   return success && update_item.component.has_value() &&
          update_item.component->version.IsValid() &&
          update_item.component->version.CompareToWildcardString("0.0.0.0") > 0;
@@ -55,10 +68,8 @@ bool IsOnDeviceModelAlreadyInstalled(ComponentUpdateService* cus) {
 
 OptimizationGuideOnDeviceModelInstallerPolicy::
     OptimizationGuideOnDeviceModelInstallerPolicy(
-        base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-            state_manager,
-        optimization_guide::OnDeviceModelRegistrationAttributes attributes)
-    : state_manager_(state_manager), attributes_(std::move(attributes)) {}
+        base::WeakPtr<OnDeviceModelComponentStateManager> state_manager)
+    : state_manager_(state_manager) {}
 
 OptimizationGuideOnDeviceModelInstallerPolicy::
     ~OptimizationGuideOnDeviceModelInstallerPolicy() = default;
@@ -105,22 +116,63 @@ void OptimizationGuideOnDeviceModelInstallerPolicy::ComponentReady(
   }
 }
 
-base::FilePath
-OptimizationGuideOnDeviceModelInstallerPolicy::GetRelativeInstallDir() const {
-  return base::FilePath(kInstallationRelativePath);
+bool OptimizationGuideOnDeviceModelInstallerPolicy::AllowCachedCopies() const {
+  return false;
 }
 
-void OptimizationGuideOnDeviceModelInstallerPolicy::GetHash(
-    std::vector<uint8_t>* hash) const {
-  hash->assign(std::begin(kPublicKeySHA256), std::end(kPublicKeySHA256));
-}
-
-std::string OptimizationGuideOnDeviceModelInstallerPolicy::GetName() const {
-  return kManifestName;
+bool OptimizationGuideOnDeviceModelInstallerPolicy::
+    AllowUpdatesOnMeteredConnections() const {
+  return false;
 }
 
 update_client::InstallerAttributes
 OptimizationGuideOnDeviceModelInstallerPolicy::GetInstallerAttributes() const {
+  return {};
+}
+
+// static
+void OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand(
+    const std::string& id,
+    OnDemandUpdater::Priority priority) {
+  g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
+      id, priority, base::BindOnce([](update_client::Error error) {
+        if (error != update_client::Error::NONE &&
+            error != update_client::Error::UPDATE_IN_PROGRESS) {
+          LOG(ERROR) << "Failed to update on-device model component with error "
+                     << static_cast<int>(error);
+        }
+      }));
+}
+
+OptimizationGuideOnDeviceBaseModelInstallerPolicy::
+    OptimizationGuideOnDeviceBaseModelInstallerPolicy(
+        base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+            state_manager,
+        optimization_guide::OnDeviceModelRegistrationAttributes attributes)
+    : OptimizationGuideOnDeviceModelInstallerPolicy(state_manager),
+      attributes_(std::move(attributes)) {}
+
+OptimizationGuideOnDeviceBaseModelInstallerPolicy::
+    ~OptimizationGuideOnDeviceBaseModelInstallerPolicy() = default;
+
+base::FilePath
+OptimizationGuideOnDeviceBaseModelInstallerPolicy::GetRelativeInstallDir()
+    const {
+  return base::FilePath(kInstallationRelativePath);
+}
+
+void OptimizationGuideOnDeviceBaseModelInstallerPolicy::GetHash(
+    std::vector<uint8_t>* hash) const {
+  hash->assign(std::begin(kPublicKeySHA256), std::end(kPublicKeySHA256));
+}
+
+std::string OptimizationGuideOnDeviceBaseModelInstallerPolicy::GetName() const {
+  return kManifestName;
+}
+
+update_client::InstallerAttributes
+OptimizationGuideOnDeviceBaseModelInstallerPolicy::GetInstallerAttributes()
+    const {
   using Hint = optimization_guide::proto::OnDeviceModelPerformanceHint;
   base::flat_set<Hint> hints{attributes_.supported_hints};
   return {
@@ -138,36 +190,58 @@ OptimizationGuideOnDeviceModelInstallerPolicy::GetInstallerAttributes() const {
   };
 }
 
-bool OptimizationGuideOnDeviceModelInstallerPolicy::AllowCachedCopies() const {
-  return false;
-}
-
-bool OptimizationGuideOnDeviceModelInstallerPolicy::
-    AllowUpdatesOnMeteredConnections() const {
-  return false;
-}
-
 // static
-const std::string
-OptimizationGuideOnDeviceModelInstallerPolicy::GetOnDeviceModelExtensionId() {
+const std::string OptimizationGuideOnDeviceBaseModelInstallerPolicy::
+    GetOnDeviceModelExtensionId() {
   return crx_file::id_util::GenerateIdFromHash(kPublicKeySHA256);
 }
 
 // static
-void OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand(
+void OptimizationGuideOnDeviceBaseModelInstallerPolicy::UpdateOnDemand(
     OnDemandUpdater::Priority priority) {
-  g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
-      GetOnDeviceModelExtensionId(), priority,
-      base::BindOnce([](update_client::Error error) {
-        if (error != update_client::Error::NONE &&
-            error != update_client::Error::UPDATE_IN_PROGRESS) {
-          LOG(ERROR) << "Failed to update on-device model component with error "
-                     << static_cast<int>(error);
-        }
-      }));
+  OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand(
+      GetOnDeviceModelExtensionId(), priority);
 }
 
-void RegisterOptimizationGuideOnDeviceModelComponent(
+OptimizationGuideOnDeviceClassifierModelInstallerPolicy::
+    OptimizationGuideOnDeviceClassifierModelInstallerPolicy(
+        base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+            state_manager)
+    : OptimizationGuideOnDeviceModelInstallerPolicy(state_manager) {}
+
+OptimizationGuideOnDeviceClassifierModelInstallerPolicy::
+    ~OptimizationGuideOnDeviceClassifierModelInstallerPolicy() = default;
+
+base::FilePath
+OptimizationGuideOnDeviceClassifierModelInstallerPolicy::GetRelativeInstallDir()
+    const {
+  return base::FilePath(kClassifierModelInstallationRelativePath);
+}
+
+void OptimizationGuideOnDeviceClassifierModelInstallerPolicy::GetHash(
+    std::vector<uint8_t>* hash) const {
+  hash->assign(std::begin(kClassifierModelPublicKeySHA256),
+               std::end(kClassifierModelPublicKeySHA256));
+}
+
+std::string OptimizationGuideOnDeviceClassifierModelInstallerPolicy::GetName()
+    const {
+  return kClassifierModelManifestName;
+}
+
+// static
+const std::string
+OptimizationGuideOnDeviceClassifierModelInstallerPolicy::GetExtensionId() {
+  return crx_file::id_util::GenerateIdFromHash(kClassifierModelPublicKeySHA256);
+}
+
+// static
+void OptimizationGuideOnDeviceClassifierModelInstallerPolicy::UpdateOnDemand() {
+  OptimizationGuideOnDeviceModelInstallerPolicy::UpdateOnDemand(
+      GetExtensionId(), OnDemandUpdater::Priority::FOREGROUND);
+}
+
+void RegisterOptimizationGuideOnDeviceBaseModelComponent(
     ComponentUpdateService* cus,
     base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
     optimization_guide::OnDeviceModelRegistrationAttributes attributes) {
@@ -177,25 +251,56 @@ void RegisterOptimizationGuideOnDeviceModelComponent(
       [](base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
          ComponentUpdateService* cus) {
         if (state_manager) {
-          state_manager->InstallerRegistered(
-              IsOnDeviceModelAlreadyInstalled(cus));
+          state_manager->InstallerRegistered(IsModelAlreadyInstalled(
+              cus, OptimizationGuideOnDeviceBaseModelInstallerPolicy::
+                       GetOnDeviceModelExtensionId()));
         }
       },
       state_manager->GetWeakPtr(), cus);
   base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<OptimizationGuideOnDeviceModelInstallerPolicy>(
+      std::make_unique<OptimizationGuideOnDeviceBaseModelInstallerPolicy>(
           state_manager, std::move(attributes)))
       ->Register(cus, std::move(register_callback));
 }
 
-void UninstallOptimizationGuideOnDeviceModelComponent(
+void UninstallOptimizationGuideOnDeviceBaseModelComponent(
     base::WeakPtr<OnDeviceModelComponentStateManager> state_manager) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<OptimizationGuideOnDeviceModelInstallerPolicy>(
+      std::make_unique<OptimizationGuideOnDeviceBaseModelInstallerPolicy>(
           state_manager,
           // Attributes don't matter for uninstall.
           optimization_guide::OnDeviceModelRegistrationAttributes({})))
+      ->Uninstall();
+}
+
+void RegisterOptimizationGuideOnDeviceClassifierModelComponent(
+    ComponentUpdateService* cus,
+    base::WeakPtr<OnDeviceModelComponentStateManager> state_manager) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto register_callback = base::BindOnce(
+      [](base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
+         ComponentUpdateService* cus) {
+        if (state_manager) {
+          state_manager->InstallerRegistered(IsModelAlreadyInstalled(
+              cus, OptimizationGuideOnDeviceClassifierModelInstallerPolicy::
+                       GetExtensionId()));
+        }
+      },
+      state_manager->GetWeakPtr(), cus);
+  base::MakeRefCounted<ComponentInstaller>(
+      std::make_unique<OptimizationGuideOnDeviceClassifierModelInstallerPolicy>(
+          state_manager))
+      ->Register(cus, std::move(register_callback));
+}
+
+void UninstallOptimizationGuideOnDeviceClassifierModelComponent(
+    base::WeakPtr<OnDeviceModelComponentStateManager> state_manager) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  base::MakeRefCounted<ComponentInstaller>(
+      std::make_unique<OptimizationGuideOnDeviceClassifierModelInstallerPolicy>(
+          state_manager))
       ->Uninstall();
 }
 

@@ -59,7 +59,7 @@ OnDeviceInternalsCrxObserver::OnDeviceInternalsCrxObserver(
     PageHandler& page_handler)
     : page_handler_(page_handler),
       component_id_(
-          component_updater::OptimizationGuideOnDeviceModelInstallerPolicy::
+          component_updater::OptimizationGuideOnDeviceBaseModelInstallerPolicy::
               GetOnDeviceModelExtensionId()) {
   component_updater::CrxUpdateItem item;
   bool success = g_browser_process->component_updater()->GetComponentDetails(

@@ -88,19 +88,19 @@ class OnDeviceModelComponentStateManagerDelegate
     if (!g_browser_process) {
       return;
     }
-    component_updater::RegisterOptimizationGuideOnDeviceModelComponent(
+    component_updater::RegisterOptimizationGuideOnDeviceBaseModelComponent(
         g_browser_process->component_updater(), std::move(state_manager),
         std::move(attributes));
   }
 
   void Uninstall(base::WeakPtr<OnDeviceModelComponentStateManager>
                      state_manager) override {
-    component_updater::UninstallOptimizationGuideOnDeviceModelComponent(
+    component_updater::UninstallOptimizationGuideOnDeviceBaseModelComponent(
         std::move(state_manager));
   }
 
   void RequestUpdate(bool is_background) override {
-    component_updater::OptimizationGuideOnDeviceModelInstallerPolicy::
+    component_updater::OptimizationGuideOnDeviceBaseModelInstallerPolicy::
         UpdateOnDemand(
             is_background
                 ? component_updater::OnDemandUpdater::Priority::BACKGROUND
@@ -108,8 +108,9 @@ class OnDeviceModelComponentStateManagerDelegate
   }
 
   std::string GetComponentId() override {
-    return component_updater::OptimizationGuideOnDeviceModelInstallerPolicy::
-        GetOnDeviceModelExtensionId();
+    return component_updater::
+        OptimizationGuideOnDeviceBaseModelInstallerPolicy::
+            GetOnDeviceModelExtensionId();
   }
 };
 
