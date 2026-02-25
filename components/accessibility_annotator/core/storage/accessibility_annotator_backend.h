@@ -5,17 +5,30 @@
 #ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_STORAGE_ACCESSIBILITY_ANNOTATOR_BACKEND_H_
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_STORAGE_ACCESSIBILITY_ANNOTATOR_BACKEND_H_
 
+#include <memory>
+
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "components/keyed_service/core/keyed_service.h"
 
+namespace syncer {
+class DataTypeControllerDelegate;
+}  // namespace syncer
+
+namespace version_info {
+enum class Channel;
+}  // namespace version_info
+
 namespace accessibility_annotator {
 
+class AccessibilityAnnotationSyncBridge;
 class AccessibilityAnnotatorDatabase;
 
 class AccessibilityAnnotatorBackend : public KeyedService {
  public:
-  AccessibilityAnnotatorBackend();
+  explicit AccessibilityAnnotatorBackend(version_info::Channel channel);
+  ~AccessibilityAnnotatorBackend() override;
 
   AccessibilityAnnotatorBackend(const AccessibilityAnnotatorBackend&) = delete;
   AccessibilityAnnotatorBackend& operator=(
@@ -25,11 +38,15 @@ class AccessibilityAnnotatorBackend : public KeyedService {
   // methods.
   void Init(const base::FilePath& db_path);
 
- protected:
-  ~AccessibilityAnnotatorBackend() override;
+  // Returns DataTypeControllerDelegate for the accessibility annotation
+  // datatype.
+  base::WeakPtr<syncer::DataTypeControllerDelegate>
+  GetAccessibilityAnnotationControllerDelegate();
 
  private:
   base::SequenceBound<AccessibilityAnnotatorDatabase> db_;
+  std::unique_ptr<AccessibilityAnnotationSyncBridge>
+      accessibility_annotation_sync_bridge_;
 };
 
 }  // namespace accessibility_annotator

@@ -4,6 +4,8 @@
 
 source_set("accessibility_annotator") {
   sources = [
+    "accessibility_annotator_backend_factory.cc",
+    "accessibility_annotator_backend_factory.h",
     "accessibility_annotator_data_provider_factory.cc",
     "accessibility_annotator_data_provider_factory.h",
   ]
@@ -11,7 +13,9 @@ source_set("accessibility_annotator") {
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/common:channel_info",
     "//components/accessibility_annotator/core",
+    "//components/accessibility_annotator/core/storage",
     "//components/keyed_service/content",
     "//content/public/browser",
   ]
@@ -19,7 +23,10 @@ source_set("accessibility_annotator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "accessibility_annotator_data_provider_factory_unittest.cc" ]
+  sources = [
+    "accessibility_annotator_backend_factory_unittest.cc",
+    "accessibility_annotator_data_provider_factory_unittest.cc",
+  ]
   deps = [
     ":accessibility_annotator",
     "//chrome/test:test_support",

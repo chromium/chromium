@@ -4,6 +4,8 @@
 
 source_set("storage") {
   sources = [
+    "accessibility_annotation_sync_bridge.cc",
+    "accessibility_annotation_sync_bridge.h",
     "accessibility_annotator_backend.cc",
     "accessibility_annotator_backend.h",
     "accessibility_annotator_database.cc",
@@ -13,6 +15,8 @@ source_set("storage") {
   public_deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/sync/base",
+    "//components/sync/model",
     "//sql",
   ]
 }
