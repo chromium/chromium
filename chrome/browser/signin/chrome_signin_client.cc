@@ -199,14 +199,10 @@ class ChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
   }
 
   signin::OAuthConsumer GetOAuthConsumerForGlicUserStatus() const override {
-#if BUILDFLAG(ENABLE_GLIC)
     CHECK(base::FeatureList::IsEnabled(features::kGlicUserStatusCheck));
     return signin::OAuthConsumer(
         signin::oauth_consumer_name::kGlicUserStatusName,
         {features::kGeminiOAuth2Scope.Get()});
-#else
-    NOTREACHED();
-#endif
   }
 };
 
