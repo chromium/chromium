@@ -14,6 +14,14 @@ void VerifyBytesPerSample(int bytes_per_sample) {
   CHECK(bytes_per_sample == 1 || bytes_per_sample == 2 ||
         bytes_per_sample == 4);
 }
+
+base::AlignedHeapArray<uint8_t> MakeBackingData(size_t length,
+                                                int bytes_per_sample) {
+  if (!length) [[unlikely]] {
+    return base::AlignedHeapArray<uint8_t>();
+  }
+  return base::AlignedUninit<uint8_t>(length, bytes_per_sample);
+}
 }  // namespace
 
 AudioChunk::AudioChunk(int bytes_per_sample)
@@ -22,7 +30,7 @@ AudioChunk::AudioChunk(int bytes_per_sample)
 }
 
 AudioChunk::AudioChunk(size_t length, int bytes_per_sample)
-    : data_(base::AlignedUninit<uint8_t>(length, bytes_per_sample)),
+    : data_(MakeBackingData(length, bytes_per_sample)),
       bytes_per_sample_(bytes_per_sample) {
   VerifyBytesPerSample(bytes_per_sample);
   CHECK_EQ(length % bytes_per_sample, 0U);
@@ -30,7 +38,7 @@ AudioChunk::AudioChunk(size_t length, int bytes_per_sample)
 }
 
 AudioChunk::AudioChunk(const uint8_t* data, size_t length, int bytes_per_sample)
-    : data_(base::AlignedUninit<uint8_t>(length, bytes_per_sample)),
+    : data_(MakeBackingData(length, bytes_per_sample)),
       bytes_per_sample_(bytes_per_sample) {
   VerifyBytesPerSample(bytes_per_sample);
   CHECK_EQ(length % bytes_per_sample, 0U);
@@ -41,7 +49,7 @@ AudioChunk::AudioChunk(const uint8_t* data, size_t length, int bytes_per_sample)
 
 AudioChunk::AudioChunk(base::span<const uint8_t> data_span,
                        int bytes_per_sample)
-    : data_(base::AlignedUninit<uint8_t>(data_span.size(), bytes_per_sample)),
+    : data_(MakeBackingData(data_span.size(), bytes_per_sample)),
       bytes_per_sample_(bytes_per_sample) {
   CHECK_EQ(data_span.size() % bytes_per_sample, 0U);
   base::span(data_).copy_from_nonoverlapping(data_span);
