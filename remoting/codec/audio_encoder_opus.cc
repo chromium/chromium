@@ -83,10 +83,11 @@ void AudioEncoderOpus::InitEncoder() {
   }
 
   // Drop leftover data because it's for different sampling rate.
-  leftover_samples_ = 0;
-  leftover_buffer_size_ =
+  leftover_frames_ = 0;
+  leftover_samples_size_in_frames_ =
       frame_size_ + media::SincResampler::kDefaultRequestSize;
-  leftover_buffer_.reset(new int16_t[leftover_buffer_size_ * channels_]);
+  leftover_samples_.reset(
+      new int16_t[leftover_samples_size_in_frames_ * channels_]);
 }
 
 void AudioEncoderOpus::DestroyEncoder() {
@@ -150,7 +151,7 @@ std::unique_ptr<AudioPacket> AudioEncoderOpus::Encode(
     return nullptr;
   }
 
-  int samples_in_packet = packet->data(0).size() / kBytesPerSample / channels_;
+  int frames_in_packet = packet->data(0).size() / kBytesPerSample / channels_;
   const int16_t* next_sample =
       UNSAFE_TODO(reinterpret_cast<const int16_t*>(packet->data(0).data()));
 
@@ -160,40 +161,40 @@ std::unique_ptr<AudioPacket> AudioEncoderOpus::Encode(
   encoded_packet->set_sampling_rate(kOpusSamplingRate);
   encoded_packet->set_channels(channels_);
 
-  int prefetch_samples =
+  const int prefetch_frames =
       resampler_.get() ? media::SincResampler::kDefaultRequestSize : 0;
-  int samples_wanted = frame_size_ + prefetch_samples;
+  int frames_wanted = frame_size_ + prefetch_frames;
 
-  while (leftover_samples_ + samples_in_packet >= samples_wanted) {
+  while (leftover_frames_ + frames_in_packet >= frames_wanted) {
     const int16_t* pcm_buffer = nullptr;
 
     // Combine the packet with the leftover samples, if any.
-    if (leftover_samples_ > 0) {
-      pcm_buffer = leftover_buffer_.get();
-      int samples_to_copy = samples_wanted - leftover_samples_;
-      UNSAFE_TODO(memcpy(leftover_buffer_.get() + leftover_samples_ * channels_,
+    if (leftover_frames_ > 0) {
+      pcm_buffer = leftover_samples_.get();
+      const int frames_to_copy = frames_wanted - leftover_frames_;
+      UNSAFE_TODO(memcpy(leftover_samples_.get() + leftover_frames_ * channels_,
                          next_sample,
-                         samples_to_copy * kBytesPerSample * channels_));
+                         frames_to_copy * kBytesPerSample * channels_));
     } else {
       pcm_buffer = next_sample;
     }
 
     // Resample data if necessary.
-    int samples_consumed = 0;
+    int frames_consumed = 0;
     if (resampler_.get()) {
       resampling_data_ = reinterpret_cast<const char*>(pcm_buffer);
       resampling_data_pos_ = 0;
-      resampling_data_size_ = samples_wanted * channels_ * kBytesPerSample;
+      resampling_data_size_ = frames_wanted * channels_ * kBytesPerSample;
       resampler_->Resample(kOpusFrameCount, resampler_bus_.get());
       resampling_data_ = nullptr;
-      samples_consumed = resampling_data_pos_ / channels_ / kBytesPerSample;
+      frames_consumed = resampling_data_pos_ / channels_ / kBytesPerSample;
 
       static_assert(kBytesPerSample == 2, "ToInterleaved expects 2 bytes.");
       resampler_bus_->ToInterleaved<media::SignedInt16SampleTypeTraits>(
           resample_buffer_);
       pcm_buffer = resample_buffer_.data();
     } else {
-      samples_consumed = frame_size_;
+      frames_consumed = frame_size_;
     }
 
     // Initialize output buffer.
@@ -213,26 +214,27 @@ std::unique_ptr<AudioPacket> AudioEncoderOpus::Encode(
     data->resize(result);
 
     // Cleanup leftover buffer.
-    if (samples_consumed >= leftover_samples_) {
-      samples_consumed -= leftover_samples_;
-      leftover_samples_ = 0;
-      UNSAFE_TODO(next_sample += samples_consumed * channels_);
-      samples_in_packet -= samples_consumed;
+    if (frames_consumed >= leftover_frames_) {
+      frames_consumed -= leftover_frames_;
+      leftover_frames_ = 0;
+      UNSAFE_TODO(next_sample += frames_consumed * channels_);
+      frames_in_packet -= frames_consumed;
     } else {
-      leftover_samples_ -= samples_consumed;
-      UNSAFE_TODO(memmove(leftover_buffer_.get(),
-                          leftover_buffer_.get() + samples_consumed * channels_,
-                          leftover_samples_ * channels_ * kBytesPerSample));
+      leftover_frames_ -= frames_consumed;
+      UNSAFE_TODO(memmove(leftover_samples_.get(),
+                          leftover_samples_.get() + frames_consumed * channels_,
+                          leftover_frames_ * channels_ * kBytesPerSample));
     }
   }
 
   // Store the leftover samples.
-  if (samples_in_packet > 0) {
-    DCHECK_LE(leftover_samples_ + samples_in_packet, leftover_buffer_size_);
-    UNSAFE_TODO(memmove(leftover_buffer_.get() + leftover_samples_ * channels_,
+  if (frames_in_packet > 0) {
+    DCHECK_LE(leftover_frames_ + frames_in_packet,
+              leftover_samples_size_in_frames_);
+    UNSAFE_TODO(memmove(leftover_samples_.get() + leftover_frames_ * channels_,
                         next_sample,
-                        samples_in_packet * kBytesPerSample * channels_));
-    leftover_samples_ += samples_in_packet;
+                        frames_in_packet * kBytesPerSample * channels_));
+    leftover_frames_ += frames_in_packet;
   }
 
   // Return nullptr if there's nothing in the packet.
