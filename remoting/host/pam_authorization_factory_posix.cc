@@ -17,7 +17,6 @@
 #include "remoting/host/base/username.h"
 #include "remoting/host/pam_utils.h"
 #include "remoting/protocol/channel_authenticator.h"
-#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 namespace remoting {
 

@@ -531,7 +531,6 @@ static_library("common") {
     "//remoting/signaling",
     "//services/network:network_service",
     "//services/network/public/cpp",
-    "//third_party/libjingle_xmpp:rtc_xmllite",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/events",
 
@@ -783,7 +782,6 @@ static_library("test_support") {
     ":common",
     "//remoting/base:test_support",
     "//remoting/host/file_transfer:test_support",
-    "//third_party/libjingle_xmpp:rtc_xmllite",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
@@ -1175,7 +1173,6 @@ if (enable_me2me_host) {
       "//remoting/protocol",
       "//remoting/signaling",
       "//services/network/public/cpp",
-      "//third_party/libjingle_xmpp:rtc_xmllite",
       "//third_party/webrtc_overrides:webrtc_component",
     ]
 
