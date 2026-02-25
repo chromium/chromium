@@ -138,6 +138,8 @@ class StorageLoadedData {
   std::optional<int> GetActiveTabIndex() const;
 
   const StorageLoadingContext& GetLoadingContext() const;
+  const std::string& GetWindowTag() const;
+  bool IsOffTheRecord() const;
 
   // Alerts observers that a node has been rejected during the restoration
   // process.
@@ -150,6 +152,8 @@ class StorageLoadedData {
   friend class Builder;
 
   StorageLoadedData(
+      std::string_view window_tag,
+      bool is_off_the_record,
       std::vector<tabs_pb::TabState> loaded_tabs,
       std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups,
       std::unique_ptr<RestoreEntityTracker> associator,
@@ -157,6 +161,8 @@ class StorageLoadedData {
       StorageLoadingContext context);
 
   base::ObserverList<Observer> observers_;
+  std::string window_tag_;
+  bool is_off_the_record_;
   std::vector<tabs_pb::TabState> loaded_tabs_;
   std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups_;
   std::unique_ptr<RestoreEntityTracker> tracker_;

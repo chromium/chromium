@@ -84,6 +84,8 @@ StorageRestoreOrchestrator::~StorageRestoreOrchestrator() {
 
   if (!is_restore_cancelled_) {
     auto batch = service_->CreateScopedBatch();
+    service_->ClearDivergentNodesForWindow(loaded_data_->GetWindowTag(),
+                                           loaded_data_->IsOffTheRecord());
     service_->SaveChildren(collection_);
     CollectionChildSaveCrawler crawler(service_);
     DirectChildWalker walker(collection_, &crawler);
@@ -108,10 +110,12 @@ void StorageRestoreOrchestrator::OnSaveChildTab(
     TabCollectionHandle parent_handle = parent->GetHandle();
     DCHECK(tracker->HasCollectionBeenAssociated(parent_handle));
   } else {
-    // Nodes not previously persisted will be orphaned until restoration
-    // completes.
+    // Nodes not previously persisted will be marked as divergent.
     service_->Save(tab);
   }
+
+  service_->SaveDivergentChildren(parent,
+                                  base::PassKey<StorageRestoreOrchestrator>());
 }
 
 void StorageRestoreOrchestrator::OnSaveChildCollection(
@@ -134,10 +138,12 @@ void StorageRestoreOrchestrator::OnSaveChildCollection(
     TabCollectionHandle parent_handle = parent->GetHandle();
     DCHECK(tracker->HasCollectionBeenAssociated(parent_handle));
   } else {
-    // Nodes not previously persisted will be orphaned until restoration
-    // completes.
+    // Nodes not previously persisted will be marked as divergent.
     service_->Save(collection);
   }
+
+  service_->SaveDivergentChildren(parent,
+                                  base::PassKey<StorageRestoreOrchestrator>());
 }
 
 void StorageRestoreOrchestrator::OnNodeRejected(StorageId node) {
@@ -176,11 +182,17 @@ void StorageRestoreOrchestrator::OnChildrenRemoved(
       service_->Remove(std::get<TabHandle>(handle).Get());
     }
   }
+  service_->SaveDivergentChildren(position.parent_handle.Get(),
+                                  base::PassKey<StorageRestoreOrchestrator>());
 }
 
 void StorageRestoreOrchestrator::OnChildMoved(
     const TabCollection::Position& to_position,
     const NodeData& node_data) {
+  service_->SaveDivergentChildren(to_position.parent_handle.Get(),
+                                  base::PassKey<StorageRestoreOrchestrator>());
+  service_->SaveDivergentChildren(node_data.position.parent_handle.Get(),
+                                  base::PassKey<StorageRestoreOrchestrator>());
 }
 
 void StorageRestoreOrchestrator::SaveChildNodeOnly(TabCollectionNodeHandle handle) {

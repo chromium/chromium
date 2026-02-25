@@ -311,7 +311,7 @@ std::unique_ptr<StorageLoadedData> StorageLoadedData::Builder::Build(
     TabStateStorageDatabase* database) {
   if (context_.HasError()) {
     return base::WrapUnique(new StorageLoadedData(
-        std::vector<tabs_pb::TabState>(),
+        window_tag_, is_off_the_record_, std::vector<tabs_pb::TabState>(),
         std::vector<std::unique_ptr<TabGroupCollectionData>>(),
         std::move(tracker_), std::nullopt, std::move(context_)));
   }
@@ -342,18 +342,23 @@ std::unique_ptr<StorageLoadedData> StorageLoadedData::Builder::Build(
   // may be necessary.
 
   StorageLoadedData* result = new StorageLoadedData(
-      std::move(loaded_tabs), std::move(loaded_groups_), std::move(tracker_),
-      active_tab_index, std::move(context_));
+      window_tag_, is_off_the_record_, std::move(loaded_tabs),
+      std::move(loaded_groups_), std::move(tracker_), active_tab_index,
+      std::move(context_));
   return base::WrapUnique(result);
 }
 
 StorageLoadedData::StorageLoadedData(
+    std::string_view window_tag,
+    bool is_off_the_record,
     std::vector<tabs_pb::TabState> loaded_tabs,
     std::vector<std::unique_ptr<TabGroupCollectionData>> loaded_groups,
     std::unique_ptr<RestoreEntityTracker> tracker,
     std::optional<int> active_tab_index,
     StorageLoadingContext context)
-    : loaded_tabs_(std::move(loaded_tabs)),
+    : window_tag_(window_tag),
+      is_off_the_record_(is_off_the_record),
+      loaded_tabs_(std::move(loaded_tabs)),
       loaded_groups_(std::move(loaded_groups)),
       tracker_(std::move(tracker)),
       active_tab_index_(active_tab_index),
@@ -384,6 +389,14 @@ std::optional<int> StorageLoadedData::GetActiveTabIndex() const {
 const StorageLoadedData::StorageLoadingContext&
 StorageLoadedData::GetLoadingContext() const {
   return context_;
+}
+
+const std::string& StorageLoadedData::GetWindowTag() const {
+  return window_tag_;
+}
+
+bool StorageLoadedData::IsOffTheRecord() const {
+  return is_off_the_record_;
 }
 
 void StorageLoadedData::NotifyNodeRejected(StorageId node) {
