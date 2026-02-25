@@ -52,7 +52,8 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
   bool ClearCSSConnected();
   void ClearAll();
   void AddFontFace(FontFace*, bool css_connected);
-  void RemoveFontFace(FontFace*, bool css_connected);
+  // Returns true if the font face was found and removed.
+  bool RemoveFontFace(FontFace*, bool css_connected);
 
   size_t GetNumSegmentedFacesForTesting();
 
@@ -89,7 +90,9 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
     void AddFontFace(FontFace* font_face, bool css_connected);
     bool IsEmpty() const { return map_.empty(); }
 
-    // Returns true if associated |CSSSegmentedFontFace| is empty.
+    // Returns true if the font face was found and removed. Handles the case
+    // where the font face's current capabilities differ from the stored key
+    // (e.g., after a descriptor update).
     bool RemoveFontFace(FontFace* font_face);
 
     void Trace(Visitor*) const;
@@ -144,7 +147,9 @@ class CORE_EXPORT FontFaceCache final : public GarbageCollected<FontFaceCache> {
     void Clear() { map_.clear(); }
     CapabilitiesSet* Find(const AtomicString& family) const;
     bool IsEmpty() const { return map_.empty(); }
-    // Returns true if |font_face| is removed from |map_|.
+    // Returns true if |font_face| is removed from |map_|. Handles the case
+    // where the font face's family name differs from the stored key (e.g.,
+    // after a setFamily descriptor update).
     bool RemoveFontFace(FontFace* font_face);
 
     size_t GetNumSegmentedFacesForTesting() const;

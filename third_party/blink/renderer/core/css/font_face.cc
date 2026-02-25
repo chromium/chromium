@@ -356,8 +356,12 @@ void FontFace::setFamily(ExecutionContext* context,
 void FontFace::setStyle(ExecutionContext* context,
                         const String& s,
                         ExceptionState& exception_state) {
+  Member<const CSSValue> old_style = style_;
   SetPropertyFromString(context, s, AtRuleDescriptorID::FontStyle,
                         &exception_state);
+  if (old_style != style_) {
+    InvalidateFontFaceOnDescriptorUpdate();
+  }
 }
 
 void FontFace::setWeight(ExecutionContext* context,
@@ -376,8 +380,12 @@ void FontFace::setWeight(ExecutionContext* context,
 void FontFace::setStretch(ExecutionContext* context,
                           const String& s,
                           ExceptionState& exception_state) {
+  Member<const CSSValue> old_stretch = stretch_;
   SetPropertyFromString(context, s, AtRuleDescriptorID::FontStretch,
                         &exception_state);
+  if (old_stretch != stretch_) {
+    InvalidateFontFaceOnDescriptorUpdate();
+  }
 }
 
 void FontFace::setUnicodeRange(ExecutionContext* context,
@@ -1046,8 +1054,9 @@ void FontFace::InvalidateFontFaceOnDescriptorUpdate() {
 
   FontFaceCache* cache = font_selector->GetFontFaceCache();
 
-  cache->RemoveFontFace(this, /*css_connected=*/false);
-
+  if (!cache->RemoveFontFace(this, /*css_connected=*/false)) {
+    return;
+  }
   cache->AddFontFace(this, /*css_connected=*/false);
 
   font_selector->FontFaceInvalidated(

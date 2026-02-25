@@ -96,7 +96,8 @@ class CSSSegmentedFontFace final
   void FontFaceInvalidated();
 
   void AddFontFace(FontFace*, bool css_connected);
-  void RemoveFontFace(FontFace*);
+  // Returns true if the font face was found and removed.
+  bool RemoveFontFace(FontFace*);
   bool IsEmpty() const { return font_faces_->IsEmpty(); }
 
   const FontData* GetFontData(const FontDescription&);

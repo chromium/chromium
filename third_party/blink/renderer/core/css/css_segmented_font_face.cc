@@ -67,13 +67,14 @@ void CSSSegmentedFontFace::AddFontFace(FontFace* font_face,
   font_faces_->Insert(font_face, css_connected);
 }
 
-void CSSSegmentedFontFace::RemoveFontFace(FontFace* font_face) {
+bool CSSSegmentedFontFace::RemoveFontFace(FontFace* font_face) {
   if (!font_faces_->Erase(font_face)) {
-    return;
+    return false;
   }
 
   font_data_table_.clear();
   font_face->CssFontFace()->RemoveSegmentedFontFace(this);
+  return true;
 }
 
 const FontData* CSSSegmentedFontFace::GetFontData(
