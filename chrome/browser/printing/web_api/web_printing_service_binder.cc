@@ -17,7 +17,6 @@
 #include "chrome/browser/printing/web_api/web_printing_service_chromeos.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/extension_registry.h"
 #endif
 
 namespace printing {
@@ -27,16 +26,7 @@ std::optional<std::string> InferAssociatedAppId(
     content::RenderFrameHost* render_frame_host) {
   if (auto* web_app_id = web_app::WebAppTabHelper::GetAppId(
           content::WebContents::FromRenderFrameHost(render_frame_host))) {
-    // If this is a web app, return its id.
     return *web_app_id;
-  }
-  auto* extension =
-      extensions::ExtensionRegistry::Get(render_frame_host->GetBrowserContext())
-          ->enabled_extensions()
-          .GetExtensionOrAppByURL(render_frame_host->GetLastCommittedURL());
-  if (extension && extension->is_platform_app()) {
-    // If this is a chrome app, return its id.
-    return extension->id();
   }
   return std::nullopt;
 }
