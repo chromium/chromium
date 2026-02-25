@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_INVOKE_HANDLER_H_
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_INVOKE_HANDLER_H_
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -13,6 +14,10 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
+
+namespace tabs {
+class TabInterface;
+}
 
 namespace glic {
 
@@ -26,6 +31,7 @@ class GlicInvokeHandler : public Host::Observer {
       base::OnceCallback<void(GlicInstance*, GlicInvokeHandler*)>;
 
   GlicInvokeHandler(GlicInstanceImpl& instance,
+                    tabs::TabInterface* tab,
                     GlicInvokeOptions options,
                     CompletionCallback completion_callback);
   ~GlicInvokeHandler() override;
@@ -37,6 +43,7 @@ class GlicInvokeHandler : public Host::Observer {
   void Invoke();
 
   // Ends the invocation process with the given error.
+  // May delete this.
   void OnError(GlicInvokeError error);
 
   // Host::Observer:
@@ -45,12 +52,15 @@ class GlicInvokeHandler : public Host::Observer {
  private:
   void SendToClient();
   mojom::InvokeOptionsPtr CreateMojoOptions();
+  // May delete this.
   void OnSuccess();
+  void OnTabClosed(tabs::TabInterface* tab);
 
   const base::raw_ref<GlicInstanceImpl> instance_;
   GlicInvokeOptions options_;
   CompletionCallback completion_callback_;
 
+  base::CallbackListSubscription tab_destruction_subscription_;
   base::ScopedObservation<Host, Host::Observer> host_observation_{this};
   base::OneShotTimer timeout_timer_;
 
