@@ -185,10 +185,14 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
   if (!cached_draw_info_ ||
       !required_provider_info.Matches(*cached_draw_info_)) {
     cached_draw_info_.reset();
+    sw_draw_surface_.reset();
+    snapshot_provider_.reset();
     if (!ShouldCreateAcceleratedImages(GetRasterContextProvider().get())) {
-      snapshot_provider_ =
-          CanvasNon2DSnapshotProviderBitmap::Create(required_provider_info);
-      CHECK(snapshot_provider_);
+      if (base::FeatureList::IsEnabled(
+              kImageCaptureFrameGrabberDrawCacheSkSurface)) {
+        sw_draw_surface_ = CanvasNon2DSnapshotProviderBitmap::CreateSurface(
+            required_provider_info);
+      }
       cached_draw_info_ = required_provider_info;
     } else {
       snapshot_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
@@ -206,25 +210,12 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
 
   if (cached_draw_info_) {
     std::optional<CanvasSnapshotProvider::Info> sw_draw_info;
-    CanvasNon2DResourceProviderSharedImage* snapshot_provider_si = nullptr;
-    sk_sp<SkSurface> sw_draw_surface;
-
-    if (snapshot_provider_->IsExternalBitmapProvider()) {
+    if (!snapshot_provider_) {
       sw_draw_info = required_provider_info;
-      if (base::FeatureList::IsEnabled(
-              kImageCaptureFrameGrabberDrawCacheSkSurface)) {
-        sw_draw_surface = static_cast<CanvasNon2DSnapshotProviderBitmap*>(
-                              snapshot_provider_.get())
-                              ->GetCachedSurface();
-      }
-    } else {
-      snapshot_provider_si =
-          static_cast<CanvasNon2DResourceProviderSharedImage*>(
-              snapshot_provider_.get());
     }
 
-    image = CreateImageFromVideoFrame(frame, snapshot_provider_si,
-                                      std::move(sw_draw_info), sw_draw_surface,
+    image = CreateImageFromVideoFrame(frame, snapshot_provider_.get(),
+                                      std::move(sw_draw_info), sw_draw_surface_,
                                       &video_renderer_);
   }
 

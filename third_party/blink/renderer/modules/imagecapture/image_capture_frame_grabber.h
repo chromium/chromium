@@ -14,7 +14,7 @@
 #include "third_party/blink/public/platform/web_callbacks.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -60,8 +60,9 @@ class ImageCaptureFrameGrabber final : public MediaStreamVideoSink {
   TaskHandle timeout_task_handle_;
 
   media::PaintCanvasVideoRenderer video_renderer_;
-  std::unique_ptr<CanvasSnapshotProvider> snapshot_provider_;
+  std::unique_ptr<CanvasNon2DResourceProviderSharedImage> snapshot_provider_;
   std::optional<CanvasSnapshotProvider::Info> cached_draw_info_;
+  sk_sp<SkSurface> sw_draw_surface_;
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<ImageCaptureFrameGrabber> weak_factory_{this};
