@@ -239,7 +239,7 @@ template("msvc_toolchain") {
       depsformat = "msvc"
       description = "CXX_MODULE {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.pcm" ]
-      command = "$env_wrapper$cl /Fo{{output}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} {{module_deps_no_self}} /Fd\"$pdbname\" -fmodule-name={{label_name}} /c -x c++ -Xclang -emit-module {{source}}"
+      command = "$env_wrapper$cl /Fo{{output}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} {{module_deps_no_self}} /Fd\"$pdbname\" -fmodule-name={{cc_module_name}} /c -x c++ -Xclang -emit-module {{source}}"
     }
 
     tool("cxx") {
