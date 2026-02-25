@@ -5,10 +5,19 @@
 import os
 import re
 from pathlib import Path
-from typing import Iterable, List
+from typing import Iterable, List, Set, Self, Dict
+from dataclasses import dataclass
+import tempfile
+import platform
+
+import setup_modules
+import chromium_src.tools.metrics.python_support.dependency_solver as dependency_solver
 
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 _CHROMIUM_SRC_DIR = os.path.dirname(os.path.dirname(os.path.dirname(_THIS_DIR)))
+_TOOLS_METRICS_RELATIVE_PATH = os.path.join('tools', 'metrics')
+_TOOLS_METRICS_DIR = os.path.join(_CHROMIUM_SRC_DIR,
+                                  _TOOLS_METRICS_RELATIVE_PATH)
 
 # Paths relative to src/ that we want to run the test from
 _TEST_DIRECTORIES_TO_SCAN = [
@@ -23,6 +32,93 @@ TEST_DIRECTORIES_RELATIVE_TO_SRC = [
 ]
 
 _EXPECTED_TEST_FILES_SUFFIXES = ['test.py', 'tests.py']
+
+
+def _get_temp_path(prefix=''):
+  fd, path = tempfile.mkstemp(prefix=prefix)
+  os.close(fd)
+  return path
+
+
+@dataclass
+class TestableScript:
+  """Describe a script that can be safely run for testing"""
+  # The name to identify the script by
+  identifiable_name: str
+
+  # Path relative to src/
+  file_path: Path
+
+  # Full cmd to run with args included
+  cmd: List[str]
+
+  @classmethod
+  def CreatePythonScript(cls,
+                         file_path: Path,
+                         flags: List[str] = []) -> 'TestableScript':
+    """ Creates TestableScript object for python script
+
+    Args:
+      file_path - a path to python script relative to src/
+      flags - a list of flags to pass to the script
+
+    Returns:
+      TestableScript object set up to run using vpython3
+    """
+    return TestableScript(identifiable_name=str(
+        file_path.relative_to(_TOOLS_METRICS_RELATIVE_PATH)),
+                          file_path=file_path,
+                          cmd=['vpython3', str(file_path), *flags])
+
+
+# As one of the check we just run some of our existing scripts that don't have
+# side effects and check if they finish successfully this is done as a last
+# line of defense against changing in dependencies causing failures of scripts.
+_TESTABLE_SCRIPTS: List[TestableScript] = [
+    TestableScript.CreatePythonScript(
+        file_path=Path('tools/metrics/actions/extract_actions.py')),
+    TestableScript.CreatePythonScript(
+        file_path=Path('tools/metrics/actions/pretty_print.py')),
+    TestableScript.CreatePythonScript(
+        file_path=Path('tools/metrics/actions/print_action_names.py')),
+    TestableScript.CreatePythonScript(
+        file_path=Path('tools/metrics/histograms/merge_xml.py'),
+        flags=['--output', _get_temp_path('merge_xml_test')]),
+    TestableScript.CreatePythonScript(
+        file_path=Path('tools/metrics/histograms/pretty_print.py'),
+        flags=['tools/metrics/histograms/metadata/uma/histograms.xml']),
+    TestableScript.CreatePythonScript(file_path=Path(
+        'tools/metrics/histograms/print_expanded_histograms.py')),
+    TestableScript.CreatePythonScript(
+        file_path=Path('tools/metrics/histograms/print_histogram_names.py')),
+    TestableScript.CreatePythonScript(
+        file_path=Path('tools/metrics/histograms/validate_format.py')),
+    TestableScript.CreatePythonScript(file_path=Path(
+        'tools/metrics/histograms/validate_histograms_index.py')),
+    TestableScript.CreatePythonScript(
+        file_path=Path('tools/metrics/histograms/validate_token.py'),
+        flags=['tools/metrics/histograms/metadata/uma/histograms.xml']),
+    TestableScript.CreatePythonScript(
+        file_path=Path('tools/metrics/private_metrics/pretty_print.py'),
+        flags=['tools/metrics/private_metrics/dwa.xml']),
+    TestableScript.CreatePythonScript(
+        file_path=Path('tools/metrics/private_metrics/validate_format.py'),
+        flags=['tools/metrics/private_metrics/dwa.xml']),
+    TestableScript.CreatePythonScript(
+        file_path=Path('tools/metrics/ukm/pretty_print.py'), flags=[]),
+    TestableScript.CreatePythonScript(
+        file_path=Path('tools/metrics/ukm/validate_format.py')),
+    # TODO(crbug.com/482274154): Fix this script.
+    # TestableScript.CreatePythonScript(
+    #   file_path='tools/metrics/histograms/histogram_ownership.py'
+    # ),
+]
+
+# TODO(crbug.com/482274154): Fix this script on windows.
+if platform.system() != 'Windows':
+  _TESTABLE_SCRIPTS.append(
+      TestableScript.CreatePythonScript(file_path=Path(
+          'tools/metrics/histograms/find_unmapped_histograms.py')))
 
 
 def _is_test_file(file_path: str) -> bool:
@@ -93,3 +189,34 @@ def validate_gn_sources(target_group: str) -> set[str]:
   missing_in_gn = actual_files - listed_files
 
   return {str(f) for f in missing_in_gn}
+
+
+def _is_script_affected_by(testable_script: TestableScript,
+                           modified_files: Set[Path],
+                           deps_graph: Dict[str, List[str]]) -> bool:
+  if testable_script.file_path in modified_files:
+    return True
+  all_dependencies = dependency_solver.get_all_dependencies(
+      deps_graph,
+      str(testable_script.file_path.relative_to(_TOOLS_METRICS_RELATIVE_PATH)))
+  return any(
+      str(file.relative_to(_TOOLS_METRICS_RELATIVE_PATH)) in all_dependencies
+      for file in modified_files)
+
+
+def get_affected_testable_scripts(
+    modified_files: Set[Path]) -> List[TestableScript]:
+  """Returns testable scripts that are affected by changes in modified_files
+
+  Args:
+    modified_files - list of modified files as absolute paths that can
+      affects _TESTABLE_SCRIPTS
+  """
+  modified_files_src_base = set(
+      p.relative_to(_CHROMIUM_SRC_DIR) for p in modified_files)
+  deps_graph = dependency_solver.scan_directory_dependencies(_TOOLS_METRICS_DIR)
+  return [
+      testable_script
+      for testable_script in _TESTABLE_SCRIPTS if _is_script_affected_by(
+          testable_script, modified_files_src_base, deps_graph)
+  ]

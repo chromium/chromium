@@ -8,9 +8,7 @@ for more details on the presubmit API built into gcl.
 """
 
 import sys
-import os
-import tempfile
-import platform
+from pathlib import Path
 
 sys.path.append('.')
 
@@ -24,65 +22,6 @@ import chromium_src.tools.metrics.python_support.script_checker as script_checke
 
 UKM_XML = 'ukm.xml'
 ENUMS_XML = 'enums.xml'
-
-
-def _get_temp_path(prefix=''):
-  fd, path = tempfile.mkstemp(prefix=prefix)
-  os.close(fd)
-  return path
-
-
-# As one of the check we just run some of our existing scripts that don't have
-# side effects and check if they finish successfully this is done as a last
-# line of defense against changing in dependencies causing failures of scripts.
-# TODO(crbug.com/482274154): Only run those that could be affected
-#                            based on what was changed.
-_PY_SCRIPTS_TO_RUN = {
-    'extract_actions': ['vpython3', 'tools/metrics/actions/extract_actions.py'],
-    'actions/pretty_print':
-    ['vpython3', 'tools/metrics/actions/pretty_print.py'],
-    'actions/print_action_names':
-    ['vpython3', 'tools/metrics/actions/print_action_names.py'],
-    # TODO(crbug.com/482274154): Fix this script.
-    # 'histograms/histogram_ownership':
-    # ['vpython3', 'tools/metrics/histograms/histogram_ownership.py'],
-    'histograms/merge_xml': [
-        'vpython3', 'tools/metrics/histograms/merge_xml.py', '--output',
-        _get_temp_path('merge_xml_test')
-    ],
-    'histograms/pretty_print': [
-        'vpython3', 'tools/metrics/histograms/pretty_print.py',
-        'tools/metrics/histograms/metadata/uma/histograms.xml'
-    ],
-    'histograms/print_expanded_histograms':
-    ['vpython3', 'tools/metrics/histograms/print_expanded_histograms.py'],
-    'histograms/print_histogram_names':
-    ['vpython3', 'tools/metrics/histograms/print_histogram_names.py'],
-    'histograms/validate_format':
-    ['vpython3', 'tools/metrics/histograms/validate_format.py'],
-    'histograms/validate_histograms_index':
-    ['vpython3', 'tools/metrics/histograms/validate_histograms_index.py'],
-    'histograms/validate_token': [
-        'vpython3', 'tools/metrics/histograms/validate_token.py',
-        'tools/metrics/histograms/metadata/uma/histograms.xml'
-    ],
-    'private_metrics/pretty_print': [
-        'vpython3', 'tools/metrics/private_metrics/pretty_print.py',
-        'tools/metrics/private_metrics/dwa.xml'
-    ],
-    'private_metrics/validate_format': [
-        'vpython3', 'tools/metrics/private_metrics/validate_format.py',
-        'tools/metrics/private_metrics/dwa.xml'
-    ],
-    'ukm/pretty_print': ['vpython3', 'tools/metrics/ukm/pretty_print.py'],
-    'ukm/validate_format': ['vpython3', 'tools/metrics/ukm/validate_format.py'],
-}
-
-if platform.system() != 'Windows':
-  # TODO(crbug.com/482274154): Fix this script on windows.
-  _PY_SCRIPTS_TO_RUN['histograms/find_unmapped_histograms'] = [
-      'vpython3', 'tools/metrics/histograms/find_unmapped_histograms.py'
-  ]
 
 
 _FILES_MISSING_IN_BUILD_GN_ERROR_TEMPLATE = """
@@ -125,17 +64,18 @@ def CheckChange(input_api, output_api):
         input_api.PresubmitLocalPath())
     problems.extend(output_api.PresubmitError(i) for i in my_py_issues)
 
-  if py_or_build_modified:
+  scripts_to_test = tests_helpers.get_affected_testable_scripts(
+      Path(p) for p in absolute_paths_of_affected_files)
+  if scripts_to_test:
+    print(f"Running {len(scripts_to_test)} affected scripts to check them.")
     commands_failed = script_checker.check_scripts(
-        _PY_SCRIPTS_TO_RUN,
+        scripts_to_test,
         input_api.os_path.dirname(
             input_api.os_path.dirname(input_api.PresubmitLocalPath())))
     problems.extend([
-        output_api.PresubmitError(f"Failed to run {name} (code: {code}): " +
-                                  " ".join(_PY_SCRIPTS_TO_RUN[name]))
+        output_api.PresubmitError(f"Failed to run {name} (code: {code})")
         for name, code in commands_failed
     ])
-
 
   # Early return if the ukm file is changed, then the presubmit script in the
   # ukm directory would run and report the errors.
