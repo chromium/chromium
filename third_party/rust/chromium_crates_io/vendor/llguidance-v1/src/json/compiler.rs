@@ -28,6 +28,10 @@ pub struct JsonCompileOptions {
     pub whitespace_pattern: Option<String>,
     pub coerce_one_of: bool,
     pub lenient: bool,
+    /// Allowed escape letters after '\' when quoting JSON strings.
+    /// Defaults to full JSON set: nrbtf"u\
+    /// For example, set to nrbtf"\ to disallow \uXXXX escapes.
+    pub json_allowed_escapes: Option<String>,
     #[serde(skip)]
     pub retriever: Option<RetrieveWrapper>,
 }
@@ -80,6 +84,7 @@ impl Default for JsonCompileOptions {
             whitespace_flexible: true,
             coerce_one_of: false,
             lenient: false,
+            json_allowed_escapes: None,
             retriever: None,
         }
     }
@@ -685,10 +690,15 @@ impl Compiler {
     }
 
     fn json_quote(&self, ast: RegexAst) -> RegexAst {
+        let allowed_escapes = self
+            .options
+            .json_allowed_escapes
+            .clone()
+            .unwrap_or_else(|| "nrbtf\\\"u".to_string());
         RegexAst::JsonQuote(
             Box::new(ast),
             JsonQuoteOptions {
-                allowed_escapes: "nrbtf\\\"u".to_string(),
+                allowed_escapes,
                 raw_mode: false,
             },
         )
@@ -950,5 +960,72 @@ fn always_non_empty(ast: &RegexAst) -> bool {
         | RegexAst::Regex(_)
         | RegexAst::SearchRegex(_)
         | RegexAst::ExprRef(_) => false,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::api::ParserLimits;
+    use serde_json::json;
+
+    #[test]
+    fn json_quote_default_allows_u_escape() {
+        let compiler = Compiler::new(
+            JsonCompileOptions::default(),
+            GrammarBuilder::new(None, ParserLimits::default()),
+        );
+        let quoted = compiler.json_quote(RegexAst::EmptyString);
+        match quoted {
+            RegexAst::JsonQuote(_, opts) => assert_eq!(opts.allowed_escapes, "nrbtf\\\"u"),
+            _ => panic!("expected JsonQuote AST"),
+        }
+    }
+
+    #[test]
+    fn json_quote_uses_override_from_options() {
+        let compiler = Compiler::new(
+            JsonCompileOptions {
+                json_allowed_escapes: Some("nrbtf\\\"".to_string()),
+                ..Default::default()
+            },
+            GrammarBuilder::new(None, ParserLimits::default()),
+        );
+        let quoted = compiler.json_quote(RegexAst::EmptyString);
+        match quoted {
+            RegexAst::JsonQuote(_, opts) => assert_eq!(opts.allowed_escapes, "nrbtf\\\""),
+            _ => panic!("expected JsonQuote AST"),
+        }
+    }
+
+    #[test]
+    fn x_guidance_accepts_json_allowed_escapes() {
+        let mut schema = json!({
+            "type": "object",
+            "properties": {
+                "x": { "type": "string" }
+            },
+            "required": ["x"],
+            "additionalProperties": false,
+            "x-guidance": {
+                "json_allowed_escapes": "nrbtf\\\""
+            }
+        });
+
+        let builder = GrammarBuilder::new(None, ParserLimits::default());
+        JsonCompileOptions::default()
+            .json_to_llg_with_overrides(builder, schema.clone())
+            .expect("schema with x-guidance override should compile");
+
+        // Ensure callers can still stamp options back into schema.
+        JsonCompileOptions {
+            json_allowed_escapes: Some("nrbtf\\\"".to_string()),
+            ..Default::default()
+        }
+        .apply_to(&mut schema);
+        assert_eq!(
+            schema["x-guidance"]["json_allowed_escapes"],
+            Value::String("nrbtf\\\"".to_string())
+        );
     }
 }
