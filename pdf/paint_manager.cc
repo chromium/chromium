@@ -138,6 +138,8 @@ void PaintManager::SetSize(const gfx::Size& new_size,
 
   if (base::FeatureList::IsEnabled(features::kPdfBufferedPaintManager)) {
     gfx::Size new_new_size = GetNewContextSize(plugin_size_, new_size);
+    static_assert(SkColorType::kN32_SkColorType ==
+                  SkColorType::kBGRA_8888_SkColorType);
     image_info_ = SkImageInfo::MakeN32(new_new_size.width(),
                                        new_new_size.height(), alpha_type);
     plugin_size_ = new_size;
