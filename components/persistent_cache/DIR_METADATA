@@ -1,0 +1,6 @@
+monorail {
+  component: "Internals>Storage>PersistentCache"
+}
+buganizer_public {
+  component_id: 2034149
+}
