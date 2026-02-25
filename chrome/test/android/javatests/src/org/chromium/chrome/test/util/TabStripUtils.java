@@ -94,27 +94,6 @@ public class TabStripUtils {
     }
 
     /**
-     * Long press a compositor button.
-     * @param button The button to long press.
-     * @param activity the ChromeTabbedActivity.
-     */
-    public static void longPressCompositorButton(
-            CompositorButton button,
-            Instrumentation instrumentation,
-            ChromeTabbedActivity activity) {
-        final StripLayoutHelperManager manager = getStripLayoutHelperManager(activity);
-        final float x = button.getDrawX() + button.getWidth() / 2;
-        final float y = button.getDrawY() + button.getHeight() / 2;
-        instrumentation.runOnMainSync(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        manager.simulateLongPress(x, y);
-                    }
-                });
-    }
-
-    /**
      * @param tabStrip The tab strip to wait for.
      */
     public static void settleDownCompositor(final StripLayoutHelper tabStrip) {

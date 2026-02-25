@@ -289,6 +289,15 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                                         .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
                                         .build(),
                                 /* allowDialog= */ true);
+            } else if (menuId == R.id.close_all_tabs_menu_id
+                    || menuId == R.id.close_all_incognito_tabs_menu_id) {
+                tabModel.getTabRemover()
+                        .closeTabs(
+                                TabClosureParams.closeAllTabs()
+                                        .hideTabGroups(true)
+                                        .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
+                                        .build(),
+                                /* allowDialog= */ true);
             }
         };
     }
@@ -396,6 +405,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             itemList.add(createMuteUnmuteSiteItem(tabs, isIncognito));
         }
         itemList.add(createCloseItem(isIncognito));
+        itemList.add(createCloseAllTabsItem(isIncognito));
     }
 
     private void buildMenuActionItemsForMultipleTabs(
@@ -575,6 +585,14 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         return buildListItem(R.string.close, R.id.close_tab, isIncognito);
     }
 
+    private ListItem createCloseAllTabsItem(boolean isIncognito) {
+        int stringRes =
+                isIncognito ? R.string.menu_close_all_incognito_tabs : R.string.menu_close_all_tabs;
+        int menuRes =
+                isIncognito ? R.id.close_all_incognito_tabs_menu_id : R.id.close_all_tabs_menu_id;
+        return buildListItem(stringRes, menuRes, isIncognito);
+    }
+
     private static void recordMenuAction(int menuId, boolean isMultipleTabs) {
         if (menuId == R.id.add_to_tab_group) {
             recordUserAction("AddToTabGroup", isMultipleTabs);
@@ -610,6 +628,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             recordUserAction("UnmuteSite", isMultipleTabs);
         } else if (menuId == R.id.duplicate_tab_menu_id) {
             recordUserAction("DuplicateTab", isMultipleTabs);
+        } else if (menuId == R.id.close_all_tabs_menu_id) {
+            recordUserAction("CloseAllTabs", /* isMultipleTabs= */ false);
+        } else if (menuId == R.id.close_all_incognito_tabs_menu_id) {
+            recordUserAction("CloseAllIncognitoTabs", /* isMultipleTabs= */ false);
         } else {
             assert false : "Unknown menu id: " + menuId;
         }

@@ -31881,6 +31881,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileToolbarCloseAllTabs">
+  <obsolete>
+    Deprecated in favor of MobileToolbarTabMenu.CloseAll*Tabs.
+  </obsolete>
   <owner>clank-app-team@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <description>
@@ -32352,6 +32355,12 @@ should be able to be added at any place in this file.
     <variant name=".AddToTabGroup.MultiTab"
         summary="User opened the bottom sheet to add multiple tabs to a new
                  or existing tab group, via the tab context menu on tab strip
+                 on Android."/>
+    <variant name=".CloseAllIncognitoTabs"
+        summary="User closed all incognito tabs via the tab context menu on
+                 tab strip on Android."/>
+    <variant name=".CloseAllTabs"
+        summary="User closed all tabs via the tab context menu on tab strip
                  on Android."/>
     <variant name=".CloseTab"
         summary="User closed a tab via the tab context menu on tab strip on

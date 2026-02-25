@@ -230,7 +230,6 @@ public class StripLayoutHelperTest {
     @Mock private ServiceStatus mServiceStatus;
     @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private Bitmap mAvatarBitmap;
-    @Mock private TintedCompositorButton mCloseButton;
     @Mock TabStripIphController mController;
     @Mock private TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
 
@@ -2366,45 +2365,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @Feature("Advanced Peripherals Support")
-    public void testCloseTabsContextMenu_PreventsHovercard() {
-        // Set up: see testOnLongPress_OnCloseButton setup.
-        initializeTest(false, false, 0);
-        StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
-        mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
-
-        // Mock tab's view.
-        View tabView = new View(mActivity);
-        tabView.setLayoutParams(new MarginLayoutParams(150, 50));
-        when(mModel.getTabAt(1).getView()).thenReturn(tabView);
-
-        // Long press on second tab's close button.
-        StripLayoutTab tab = tabs[1];
-        when(tab.checkCloseHitTest(anyFloat(), anyFloat())).thenReturn(true);
-        when(tab.getCloseButton()).thenReturn(mCloseButton);
-        when(mCloseButton.getParentView()).thenReturn(tab);
-        when(mCloseButton.getType()).thenReturn(ButtonType.TAB_CLOSE);
-        mStripLayoutHelper.setTabAtPositionForTesting(tab);
-        mStripLayoutHelper.onLongPress(150f, 0f);
-
-        assertTrue(
-                "Expected 'close all tabs' context menu to be showing",
-                mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
-
-        // Now try to hover on the tab.
-        mStripLayoutHelper.updateLastHoveredTab(tab);
-
-        verify(mTabHoverCardView, never())
-                .show(
-                        nullable(Tab.class),
-                        anyBoolean(),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat());
-    }
-
-    @Test
     @Feature("Tab Context Menu")
     @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testBottomSheet_constructedWithoutDestroyHide() {
@@ -2648,6 +2608,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, 0);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(150f);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
+        mStripLayoutHelper.setTabContextMenuCoordinatorForTesting(mTabContextMenuCoordinator);
 
         // Mock tab's view.
         View tabView = new View(mActivity);
@@ -2663,13 +2624,11 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabAtPositionForTesting(tabs[1]);
         mStripLayoutHelper.onLongPress(150f, 0f);
 
-        // Verify that we show the popup menu anchored on the close button.
+        // Verify that we show the tab context menu.
         assertFalse(
                 "Should not be in reorder mode after long press on tab close button.",
                 mStripLayoutHelper.getInReorderModeForTesting());
-        assertTrue(
-                "Should show menu anchored on close button after long press.",
-                mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
+        verify(mTabContextMenuCoordinator).showMenu(any(), any());
     }
 
     @Test
@@ -2731,13 +2690,10 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabAtPositionForTesting(null);
         mStripLayoutHelper.onLongPress(x, y);
 
-        // Verify that we do not show the popup menu anchored on the close button.
+        // Verify that we do not show the popup menu anchored on the Glic button.
         assertFalse(
                 "Should not be in reorder mode after long press on empty space on tab strip.",
                 mStripLayoutHelper.getInReorderModeForTesting());
-        assertFalse(
-                "Should not show after long press on empty space on tab strip.",
-                mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
         assertFalse(
                 "Should not show after long press on empty space on tab strip.",
                 mStripLayoutHelper.isGlicButtonMenuShowingForTesting());
@@ -5388,9 +5344,7 @@ public class StripLayoutHelperTest {
                                         - tabCloseButton.getTouchTargetBounds().left)
                                 / 2;
         mStripLayoutHelper.click(TIMESTAMP, viewMidX, 0, MotionEvent.BUTTON_SECONDARY, 0);
-        assertTrue(
-                "Should show tab menu after secondary click on tab close.",
-                mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
+        verify(mTabContextMenuCoordinator, times(2)).showMenu(any(), any());
     }
 
     @Test
@@ -6218,23 +6172,6 @@ public class StripLayoutHelperTest {
                 "Expected openKeyboardFocusedContextMenu to return true if tab context menu opened",
                 mStripLayoutHelper.openKeyboardFocusedContextMenu());
         verify(mTabGroupContextMenuCoordinator, times(1)).showMenu(any(), any());
-    }
-
-    @Test
-    public void testOpenContextMenu_closeButton() {
-        initializeTest(false, false, 0);
-        // Set up a view for ListMenu to use (otherwise constructing the ListMenu will fail).
-        View tabView = new View(mActivity);
-        when(mModel.getTabAt(anyInt())).thenReturn(mTab);
-        when(mTab.getView()).thenReturn(tabView);
-        StripLayoutTab parentTab = mStripLayoutHelper.getStripLayoutTabsForTesting()[0];
-        parentTab.getCloseButton().setKeyboardFocused(true);
-        assertTrue(
-                "Expected openKeyboardFocusedContextMenu to return true if tab context menu opened",
-                mStripLayoutHelper.openKeyboardFocusedContextMenu());
-        assertTrue(
-                "Expected close button context menu to be showing",
-                mStripLayoutHelper.isCloseButtonMenuShowingForTesting());
     }
 
     @Test
