@@ -9,8 +9,11 @@
 
 UntrustedTopChromeWebUIController::UntrustedTopChromeWebUIController(
     content::WebUI* web_ui,
-    bool enable_chrome_send)
-    : TopChromeWebUIController(web_ui, enable_chrome_send) {
+    bool enable_chrome_send,
+    bool enable_chrome_histograms)
+    : TopChromeWebUIController(web_ui,
+                               enable_chrome_send,
+                               enable_chrome_histograms) {
   // chrome.send() will not work without bindings.
   CHECK(!enable_chrome_send);
   // UntrustedWebUIController should never enable WebUI bindings that expose

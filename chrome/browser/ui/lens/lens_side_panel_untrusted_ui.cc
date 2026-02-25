@@ -38,7 +38,9 @@
 namespace lens {
 
 LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
-    : UntrustedTopChromeWebUIController(web_ui) {
+    : UntrustedTopChromeWebUIController(web_ui,
+                                        /*enable_chrome_send=*/false,
+                                        /*enable_chrome_histograms=*/true) {
   // Set up the chrome-untrusted://lens/ source.
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(

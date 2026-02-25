@@ -18,8 +18,10 @@ class WebUI;
 // interface needed.
 class UntrustedTopChromeWebUIController : public TopChromeWebUIController {
  public:
-  explicit UntrustedTopChromeWebUIController(content::WebUI* contents,
-                                             bool enable_chrome_send = false);
+  explicit UntrustedTopChromeWebUIController(
+      content::WebUI* contents,
+      bool enable_chrome_send = false,
+      bool enable_chrome_histograms = false);
   ~UntrustedTopChromeWebUIController() override;
   UntrustedTopChromeWebUIController(UntrustedTopChromeWebUIController&) =
       delete;
