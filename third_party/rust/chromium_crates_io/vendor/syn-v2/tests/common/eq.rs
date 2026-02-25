@@ -586,7 +586,7 @@ spanless_eq_enum!(CaptureBy; Value(move_kw) Ref Use(use_kw));
 spanless_eq_enum!(ClosureBinder; NotPresent For(span generic_params));
 spanless_eq_enum!(Const; Yes(0) No);
 spanless_eq_enum!(ConstItemRhsKind; Body(rhs) TypeConst(rhs));
-spanless_eq_enum!(Defaultness; Default(0) Final);
+spanless_eq_enum!(Defaultness; Implicit Default(0) Final(0));
 spanless_eq_enum!(EarlyParsedAttribute; CfgTrace(0) CfgAttrTrace);
 spanless_eq_enum!(Extern; None Implicit(0) Explicit(0 1));
 spanless_eq_enum!(FloatTy; F16 F32 F64 F128);

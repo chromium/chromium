@@ -1676,6 +1676,9 @@ pub(crate) mod parsing {
         };
         let mutability: Option<Token![mut]> = input.parse()?;
         let self_token: Token![self] = input.parse()?;
+        if input.peek(Token![::]) {
+            return Err(input.error("expected `:`"));
+        }
         Ok((reference, mutability, self_token))
     }
 
