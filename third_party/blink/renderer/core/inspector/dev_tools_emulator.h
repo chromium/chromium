@@ -98,6 +98,7 @@ class CORE_EXPORT DevToolsEmulator final
 
   void EnableMobileEmulation();
   void DisableMobileEmulation();
+  void SetForceAndroidOverlayScrollbar(bool);
 
   // Enables viewport override and returns the emulation transform to be used.
   // The |position| is in CSS pixels, and |scale| is relative to a page scale of
@@ -159,6 +160,7 @@ class CORE_EXPORT DevToolsEmulator final
 
   bool embedder_hide_scrollbars_;
   bool scrollbars_hidden_;
+  bool force_android_overlay_scrollbar_;
 
   bool embedder_cookie_enabled_;
   bool document_cookie_disabled_;

@@ -70,6 +70,11 @@ struct BLINK_COMMON_EXPORT
     return r.device_posture;
   }
 
+  static bool force_android_overlay_scrollbar(
+      const blink::DeviceEmulationParams& r) {
+    return r.force_android_overlay_scrollbar;
+  }
+
   static bool Read(blink::mojom::DeviceEmulationParamsDataView r,
                    blink::DeviceEmulationParams* out);
 };

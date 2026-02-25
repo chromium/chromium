@@ -2192,20 +2192,20 @@ TEST_P(ScrollbarAppearanceTest, NativeScrollbarChangeToMobileByEmulator) {
             div_scrollable->VerticalScrollbar()->IsOverlayScrollbar());
   DCHECK(!div_scrollable->VerticalScrollbar()->GetTheme().IsMockTheme());
 
-  // Turn on mobile emulator.
+  // Force scrollbars to overlay theme.
   DeviceEmulationParams params;
-  params.screen_type = mojom::EmulatedScreenType::kMobile;
+  params.force_android_overlay_scrollbar = true;
   WebView().EnableDeviceEmulation(params);
 
-  // For root Scrollbar, mobile emulator will change them to page VisualViewport
+  // For root Scrollbar, device emulator will change them to page VisualViewport
   // scrollbar layer.
   EXPECT_TRUE(viewport.LayerForHorizontalScrollbar());
 
-  // Ensure div scrollbar also change to mobile overlay theme.
+  // Ensure div scrollbar also change to overlay theme.
   EXPECT_TRUE(div_scrollable->VerticalScrollbar()->IsOverlayScrollbar());
   EXPECT_TRUE(div_scrollable->VerticalScrollbar()->IsSolidColor());
 
-  // Turn off mobile emulator.
+  // Turn off device emulator.
   WebView().DisableDeviceEmulation();
 
   EXPECT_TRUE(root_scrollable->VerticalScrollbar());

@@ -1,0 +1,11 @@
+Tests Emulation.setDeviceMetricsOverride(scrollbarType) affects scrollbar width.
+Initial scrollbar width: 15
+1. Mobile: false, ScrollbarType: overlay
+Scrollbar width is 0 (overlay)
+2. Mobile: true, ScrollbarType: default
+Scrollbar width is 0 (overlay forced by mobile)
+3. Mobile: true, ScrollbarType: overlay
+Scrollbar width is 0 (overlay)
+4. Mobile: false, ScrollbarType: default
+Scrollbar width is restored to initial (default)
+

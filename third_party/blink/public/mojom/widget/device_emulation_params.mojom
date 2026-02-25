@@ -53,4 +53,7 @@ struct DeviceEmulationParams {
 
   // Posture of the device.
   blink.mojom.DevicePostureType device_posture;
+
+  // Forces Android Overlay Scrollbar.
+  bool force_android_overlay_scrollbar;
 };

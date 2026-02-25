@@ -656,7 +656,8 @@ Response EmulationHandler::SetDeviceMetricsOverride(
     std::unique_ptr<Emulation::ScreenOrientation> screen_orientation,
     std::unique_ptr<protocol::Page::Viewport> viewport,
     std::unique_ptr<protocol::Emulation::DisplayFeature> display_feature,
-    std::unique_ptr<protocol::Emulation::DevicePosture> device_posture) {
+    std::unique_ptr<protocol::Emulation::DevicePosture> device_posture,
+    std::optional<std::string> scrollbar_type) {
   const static int max_size = 10000000;
   const static double max_scale = 10;
   const static int max_orientation_angle = 360;
@@ -771,6 +772,15 @@ Response EmulationHandler::SetDeviceMetricsOverride(
   if (device_posture) {
     params.device_posture =
         DevicePostureTypeFromString(device_posture->GetType()).value();
+  }
+
+  if (mobile ||
+      (scrollbar_type &&
+       *scrollbar_type ==
+           Emulation::SetDeviceMetricsOverride::ScrollbarTypeEnum::Overlay)) {
+    params.force_android_overlay_scrollbar = true;
+  } else {
+    params.force_android_overlay_scrollbar = false;
   }
 
   if (viewport) {

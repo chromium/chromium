@@ -154,6 +154,8 @@ DevToolsEmulator::DevToolsEmulator(WebViewImpl* web_view)
       embedder_hide_scrollbars_(
           web_view->GetPage()->GetSettings().GetHideScrollbars()),
       scrollbars_hidden_(false),
+      force_android_overlay_scrollbar_(
+          web_view->GetPage()->GetSettings().GetForceAndroidOverlayScrollbar()),
       embedder_cookie_enabled_(
           web_view->GetPage()->GetSettings().GetCookieEnabled()),
       document_cookie_disabled_(false),
@@ -322,7 +324,9 @@ gfx::Transform DevToolsEmulator::EnableDeviceEmulation(
       emulation_params_.device_scale_factor == params.device_scale_factor &&
       emulation_params_.scale == params.scale &&
       emulation_params_.viewport_offset == params.viewport_offset &&
-      emulation_params_.viewport_scale == params.viewport_scale) {
+      emulation_params_.viewport_scale == params.viewport_scale &&
+      emulation_params_.force_android_overlay_scrollbar ==
+          params.force_android_overlay_scrollbar) {
     return ComputeRootLayerTransform();
   }
   if ((emulation_params_.device_scale_factor != params.device_scale_factor ||
@@ -359,6 +363,8 @@ gfx::Transform DevToolsEmulator::EnableDeviceEmulation(
   else
     DisableMobileEmulation();
 
+  SetForceAndroidOverlayScrollbar(params.force_android_overlay_scrollbar);
+
   web_view_->SetCompositorDeviceScaleFactorOverride(params.device_scale_factor);
 
   // TODO(wjmaclean): Tell all local frames in the WebView's frame tree, not
@@ -385,6 +391,7 @@ void DevToolsEmulator::DisableDeviceEmulation() {
   web_view_->GetPage()->GetSettings().SetDeviceScaleAdjustment(
       embedder_device_scale_adjustment_);
   DisableMobileEmulation();
+  SetForceAndroidOverlayScrollbar(false);
   web_view_->SetCompositorDeviceScaleFactorOverride(0.f);
   web_view_->SetPageScaleFactor(1.f);
 
@@ -407,7 +414,6 @@ void DevToolsEmulator::EnableMobileEmulation() {
   CHECK(!is_shutdown_);
   CHECK(!emulate_mobile_enabled());
   global_overrides_ = ScopedGlobalOverrides::AssureInstalled();
-  web_view_->GetPage()->GetSettings().SetForceAndroidOverlayScrollbar(true);
   web_view_->GetPage()->GetSettings().SetViewportStyle(
       mojom::blink::ViewportStyle::kMobile);
   web_view_->GetPage()->GetSettings().SetViewportEnabled(true);
@@ -439,7 +445,6 @@ void DevToolsEmulator::DisableMobileEmulation() {
     return;
   }
   global_overrides_.reset();
-  web_view_->GetPage()->GetSettings().SetForceAndroidOverlayScrollbar(false);
   web_view_->GetPage()->GetSettings().SetViewportEnabled(
       embedder_viewport_enabled_);
   web_view_->GetPage()->GetSettings().SetViewportMetaEnabled(
@@ -571,6 +576,27 @@ void DevToolsEmulator::SetScrollbarsHidden(bool hidden) {
   scrollbars_hidden_ = hidden;
   web_view_->GetPage()->GetSettings().SetHideScrollbars(
       scrollbars_hidden_ || embedder_hide_scrollbars_);
+}
+
+void DevToolsEmulator::SetForceAndroidOverlayScrollbar(
+    bool force_android_overlay_scrollbar) {
+  if (force_android_overlay_scrollbar_ == force_android_overlay_scrollbar) {
+    return;
+  }
+  force_android_overlay_scrollbar_ = force_android_overlay_scrollbar;
+  web_view_->GetPage()->GetSettings().SetForceAndroidOverlayScrollbar(
+      force_android_overlay_scrollbar_);
+
+  if (web_view_->GetPage()->GetVisualViewport().IsActiveViewport()) {
+    web_view_->GetPage()->GetVisualViewport().InitializeScrollbars();
+  }
+
+  web_view_->GetPage()->UsesOverlayScrollbarsChanged();
+
+  if (web_view_->MainFrameImpl()) {
+    web_view_->MainFrameImpl()->GetFrameView()->UpdateLifecycleToLayoutClean(
+        DocumentUpdateReason::kInspector);
+  }
 }
 
 void DevToolsEmulator::SetDocumentCookieDisabled(bool disabled) {

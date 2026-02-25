@@ -85,7 +85,8 @@ class CORE_EXPORT InspectorEmulationAgent final
       std::unique_ptr<protocol::Emulation::ScreenOrientation>,
       std::unique_ptr<protocol::Page::Viewport>,
       std::unique_ptr<protocol::Emulation::DisplayFeature>,
-      std::unique_ptr<protocol::Emulation::DevicePosture>) override;
+      std::unique_ptr<protocol::Emulation::DevicePosture>,
+      std::optional<String> scrollbar_type) override;
   protocol::Response clearDeviceMetricsOverride() override;
   protocol::Response setDataSaverOverride(
       std::optional<bool> data_saver) override;
