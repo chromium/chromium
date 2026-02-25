@@ -17,7 +17,6 @@
 enum class ApplicationMode;
 class Browser;
 @protocol BrowserProviderInterface;
-class GURL;
 enum class SafariDataImportEntryPoint;
 @protocol SafariDataImportUIHandler;
 @protocol SceneCommands;
@@ -61,7 +60,9 @@ enum class WarningType;
 
 // Coordinator for the scene, managing the top-level UI.
 @interface SceneCoordinator
-    : RootCoordinator <SettingsCommands, SettingsNavigationControllerDelegate>
+    : RootCoordinator <SceneCommands,
+                       SettingsCommands,
+                       SettingsNavigationControllerDelegate>
 
 - (instancetype)initWithSceneCommandsEndpoint:
                     (id<SceneCommands>)sceneCommandsEndpoint
@@ -118,64 +119,6 @@ enum class WarningType;
 // Sets the `mode` as the active one.
 - (void)setActiveMode:(TabGridMode)mode;
 
-// Shows the account menu.
-- (void)showAccountMenuFromWebWithURL:(const GURL&)url;
-
-// Shows the signin UI.
-- (void)showSignin:(ShowSigninCommand*)command
-    baseViewController:(UIViewController*)baseViewController;
-
-// Shows the fullscreen sign-in promo.
-- (void)showFullscreenSigninPromoWithCompletion:
-    (SigninCoordinatorCompletionCallback)completion;
-
-// Shows the web sign-in promo.
-- (void)showWebSigninPromoFromViewController:(UIViewController*)viewController
-                                         URL:(const GURL&)URL;
-
-// Stops the sign-in coordinator actions and dismisses its views either
-// with or without animation. Executes its signinCompletion. It’s expected to be
-// not already executed.
-- (void)stopSigninCoordinatorWithCompletionAnimated:(BOOL)animated;
-
-// Shows the Safari Data Import UI.
-- (void)
-    displaySafariDataImportFromEntryPoint:(SafariDataImportEntryPoint)entryPoint
-                            withUIHandler:
-                                (id<SafariDataImportUIHandler>)UIHandler
-                       baseViewController:(UIViewController*)baseViewController;
-
-// Shows the Safari Data Import UI.
-- (void)displaySafariDataImportFromEntryPoint:
-            (SafariDataImportEntryPoint)entryPoint
-                                withUIHandler:
-                                    (id<SafariDataImportUIHandler>)UIHandler;
-
-// Stops the settings navigation controller.
-- (void)stopSettingsAnimated:(BOOL)animated
-                  completion:(ProceduralBlock)completion;
-
-// Creates the settings navigation controller for the safety check if it doesn't
-// exist.
-- (void)createSafetyCheckSettingsWithReferrer:
-    (password_manager::PasswordCheckReferrer)referrer;
-
-// Shows the Password Checkup page for `referrer`.
-- (void)showPasswordCheckupPageForReferrer:
-    (password_manager::PasswordCheckReferrer)referrer;
-
-// Shows the Password Issues page for `warningType`.
-- (void)
-    showPasswordIssuesWithWarningType:(password_manager::WarningType)warningType
-                             referrer:(password_manager::PasswordCheckReferrer)
-                                          referrer;
-
-// Stops the Password Checkup coordinator.
-- (void)stopPasswordCheckupCoordinator;
-
-// Shows the History page.
-- (void)showHistory;
-
 // Shows the Youtube Incognito interstitial with the given `URLLoadParams`.
 - (void)showYoutubeIncognitoWithUrlLoadParams:
     (const UrlLoadParams&)URLLoadParams;
@@ -183,112 +126,6 @@ enum class WarningType;
 // Shows the Incognito interstitial with the given `URLLoadParams`.
 - (void)showIncognitoInterstitialWithUrlLoadParams:
     (const UrlLoadParams&)URLLoadParams;
-
-// Shows the settings navigation controller.
-- (void)presentSettingsFromViewController:(UIViewController*)baseViewController;
-
-// Shows the settings UI, presenting from `baseViewController` and with blue dot
-// for default browser settings if specified.
-- (void)showSettingsFromViewController:(UIViewController*)baseViewController
-              hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot;
-
-// Shows the Safe Browsing settings page presenting from `baseViewController`.
-- (void)showSafeBrowsingSettingsFromViewController:
-    (UIViewController*)baseViewController;
-
-// Shows the Settings UI, presenting from `baseViewController`.
-- (void)showSettingsFromViewController:(UIViewController*)baseViewController;
-
-// Shows the settings Privacy UI.
-- (void)showPrivacySettingsFromViewController:
-    (UIViewController*)baseViewController;
-
-// Shows the Report an Issue UI, presenting from `baseViewController`.
-- (void)showReportAnIssueFromViewController:
-            (UIViewController*)baseViewController
-                                     sender:(UserFeedbackSender)sender;
-
-// Shows the Report an Issue UI, presenting from `baseViewController`, using
-// `specificProductData` for additional product data to be sent in the report.
-- (void)
-    showReportAnIssueFromViewController:(UIViewController*)baseViewController
-                                 sender:(UserFeedbackSender)sender
-                    specificProductData:(NSDictionary<NSString*, NSString*>*)
-                                            specificProductData;
-
-// Shows the Settings UI if nothing else is displayed.
-- (void)maybeShowSettingsFromViewController;
-
-// Opens the Price Tracking notifications settings UI.
-- (void)openPriceTrackingNotificationsSettings;
-
-// Opens a debug menu for AI prototyping.
-- (void)openAIMenu;
-
-// Opens the assistant sheet.
-- (void)showAssistant;
-
-// Shows the application App Store page, if any.
-- (void)showAppStorePage;
-
-// Shows a notification with the signed-in user account.
-- (void)showSigninAccountNotificationFromViewController:
-    (UIViewController*)baseViewController;
-
-// Shows the settings UI for price tracking notifications.
-- (void)showPriceTrackingNotificationsSettings;
-
-// Closes presented views and opens `command`.
-- (void)closePresentedViewsAndOpenURL:(OpenNewTabCommand*)command;
-
-// Closes presented views.
-- (void)closePresentedViews;
-
-// Closes presented views.
-- (void)closePresentedViews:(BOOL)animated
-                 completion:(ProceduralBlock)completion;
-
-// Dismisses all modal dialogs.
-- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox
-                         dismissSnackbars:(BOOL)dismissSnackbars;
-
-// Dismisses all modal dialogs.
-- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox;
-
-// Dismisses all modal dialogs.
-- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion;
-
-// Dismisses all modal dialogs (if any) before showing the Password Checkup page
-// for `referrer`.
-- (void)dismissModalsAndShowPasswordCheckupPageForReferrer:
-    (password_manager::PasswordCheckReferrer)referrer;
-
-// Opens the `command` URL in a new tab.
-- (void)openURLInNewTab:(OpenNewTabCommand*)command;
-
-// Open a new window with `userActivity`
-- (void)openNewWindowWithActivity:(NSUserActivity*)userActivity;
-
-// Shows the TabGrid, in the chosen `mode`.
-- (void)displayTabGridInMode:(TabGridOpeningMode)mode;
-
-// Stops voice search on all browsers (regular and incognito) in the scene.
-- (void)stopAllVoiceSearch;
-
-// Sets whether the UI is displaying incognito content.
-- (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible;
-
-// Prepare to show the TabSwitcher UI.
-- (void)prepareTabSwitcher;
-
-// Closes all open modals. If `dismissSnackbars` is YES, also dismisses
-// all snackbars. Ensures that a non-incognito NTP tab is open. If
-// incognito is forced, then it will ensure an incognito NTP tab is open.
-// The `completion` block is called once all these preparations are complete.
-- (void)prepareToPresentModalWithSnackbarDismissal:(BOOL)dismissSnackbars
-                                        completion:(ProceduralBlock)completion;
 
 @end
 

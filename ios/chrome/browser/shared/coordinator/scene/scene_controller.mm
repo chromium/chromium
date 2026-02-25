@@ -838,14 +838,6 @@ bool IsSigninForcedByPolicy() {
   return nil;
 }
 
-
-
-// Shows the Password Checkup page for `referrer`.
-- (void)showPasswordCheckupPageForReferrer:
-    (password_manager::PasswordCheckReferrer)referrer {
-  [self.mainCoordinator showPasswordCheckupPageForReferrer:referrer];
-}
-
 // A sink for profileState:didTransitionFromInitStage: and
 // sceneState:transitionedToActivationLevel: events.
 //
@@ -1104,11 +1096,6 @@ bool IsSigninForcedByPolicy() {
 
 - (void)teardownUI {
   // The UI should be stopped before the models they observe are stopped.
-  // Force close the settings if open. This gives Settings the opportunity to
-  // unregister observers and destroy C++ objects before the application is
-  // shut down without depending on non-deterministic call to -dealloc.
-  [self.mainCoordinator stopSettingsAnimated:NO completion:nil];
-
   [_mainCoordinator stop];
   _mainCoordinator = nil;
 
@@ -1609,10 +1596,6 @@ bool IsSigninForcedByPolicy() {
 
 - (void)showPriceTrackingNotificationsSettings {
   [self.mainCoordinator showPriceTrackingNotificationsSettings];
-}
-
-- (void)openPriceTrackingNotificationsSettings {
-  [self.mainCoordinator openPriceTrackingNotificationsSettings];
 }
 
 - (void)openNewWindowWithActivity:(NSUserActivity*)userActivity {
@@ -2258,22 +2241,6 @@ bool IsSigninForcedByPolicy() {
   [self activateBVCAndMakeCurrentBVCPrimary];
 }
 
-// Helper method to call `-dismissModalDialogsWithCompletion:` with default
-// snackbar dismissal behavior.
-- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox {
-  [self.mainCoordinator dismissModalDialogsWithCompletion:completion
-                                           dismissOmnibox:dismissOmnibox];
-}
-
-- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox
-                         dismissSnackbars:(BOOL)dismissSnackbars {
-  [self.mainCoordinator dismissModalDialogsWithCompletion:completion
-                                           dismissOmnibox:dismissOmnibox
-                                         dismissSnackbars:dismissSnackbars];
-}
-
 - (void)openMultipleTabsWithURLs:(const std::vector<GURL>&)URLs
                  inIncognitoMode:(BOOL)openInIncognito
                       completion:(ProceduralBlock)completion {
@@ -2484,6 +2451,15 @@ bool IsSigninForcedByPolicy() {
   [self displayCurrentBVC:completion];
 }
 
+// TODO(crbug.com/487346856): Remove this method from
+// SceneURLLoadingServiceDelegate.
+- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion
+                           dismissOmnibox:(BOOL)dismissOmnibox {
+  id<SceneCommands> sceneHandler = HandlerForProtocol(
+      self.currentBrowserForURLLoading->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler dismissModalDialogsWithCompletion:completion];
+}
+
 #pragma mark - SceneUIHandler
 
 - (void)displayCurrentBVC:(ProceduralBlock)completion {
@@ -2603,14 +2579,6 @@ bool IsSigninForcedByPolicy() {
   if (tabOpenedCompletion) {
     tabOpenedCompletion();
   }
-}
-
-#pragma mark - Sign In UI presentation
-
-// Close Settings, or Signin or the 3rd-party intents Incognito interstitial.
-- (void)closePresentedViews:(BOOL)animated
-                 completion:(ProceduralBlock)completion {
-  [self.mainCoordinator closePresentedViews:animated completion:completion];
 }
 
 #pragma mark - WebStateListObserving
