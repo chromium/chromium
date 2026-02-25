@@ -52,7 +52,8 @@ class GaiaLoginIntegrationTest : public AshIntegrationTest {
   ~GaiaLoginIntegrationTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(GaiaLoginIntegrationTest, GaiaLogin) {
+// TODO: b/484110852 - Re-enable this test once the flakiness is fixed.
+IN_PROC_BROWSER_TEST_F(GaiaLoginIntegrationTest, DISABLED_GaiaLogin) {
   login_mixin().Login();
 
   // Waits for the primary user session to start.
