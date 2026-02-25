@@ -62,8 +62,6 @@ BASE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckSync,
 
 constexpr base::FeatureParam<AvoidUnnecessaryBeforeUnloadCheckSyncMode>::Option
     kAvoidUnnecessaryBeforeUnloadCheckSyncModeOption[] = {
-        {AvoidUnnecessaryBeforeUnloadCheckSyncMode::kDumpWithoutCrashing,
-         "DumpWithoutCrashing"},
         {AvoidUnnecessaryBeforeUnloadCheckSyncMode::kWithSendBeforeUnload,
          "WithSendBeforeUnload"},
         {AvoidUnnecessaryBeforeUnloadCheckSyncMode::kWithoutSendBeforeUnload,

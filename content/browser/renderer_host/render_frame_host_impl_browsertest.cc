@@ -2541,21 +2541,17 @@ class AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTest,
-    ::testing::Values("DumpWithoutCrashing",
-                      "WithSendBeforeUnload",
-                      "WithoutSendBeforeUnload"),
+    ::testing::Values("WithSendBeforeUnload", "WithoutSendBeforeUnload"),
     [](const testing::TestParamInfo<
         AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTest::ParamType>& info) {
       return info.param;
     });
 
 // Regression test for https://crbug.com/411855273.
-// Confirms that the back navigation in the following scenario must not report
-// DumpWithoutCrashing and must not crash with the navigation re-entrancy issue.
+// Confirms that the back navigation in the following scenario must not crash
+// with the navigation re-entrancy issue.
 IN_PROC_BROWSER_TEST_P(AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTest,
                        PotentialReentrancyOnFailedSubframeBackNavigation) {
-  const base::HistogramTester histogram_tester;
-
   // Load a page with a CSP policy that causes all subframe loads to fail.
   EXPECT_TRUE(NavigateToURL(shell(),
                             GURL("data:text/html,"
@@ -2589,7 +2585,6 @@ IN_PROC_BROWSER_TEST_P(AvoidUnnecessaryBeforeUnloadCheckSyncBrowserTest,
   TestNavigationObserver test_navigation_observer3(web_contents());
   web_contents()->GetController().GoBack();
   test_navigation_observer3.Wait();
-  histogram_tester.ExpectTotalCount("Stability.DumpWithoutCrashingStatus", 0);
 }
 
 namespace {

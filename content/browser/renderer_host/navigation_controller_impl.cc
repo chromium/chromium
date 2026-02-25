@@ -616,7 +616,6 @@ NavigationControllerImpl::ScopedPendingEntryReentrancyGuard::
   CHECK(!controller->in_navigate_to_pending_entry_);
 
   controller->in_navigate_to_pending_entry_ = true;
-  controller->CheckPotentialNavigationReentrancy();
 
   // It must not be possible to delete the pending NavigationEntry while
   // navigating to it. Grab a reference to delay potential deletion until
@@ -2900,17 +2899,6 @@ void NavigationControllerImpl::DiscardPendingEntry(bool was_failure) {
   // when the tab is being destroyed for shutdown, since it won't return to
   // NavigateToEntry in that case.)  http://crbug.com/347742.
   CHECK(!in_navigate_to_pending_entry_ || frame_tree_->IsBeingDestroyed());
-  // If `was_failure` is true, it means that the pending entry was discarded by
-  // a `PendingEntryRefDeleted` call within `OnRequestFailedInternal`, in
-  // response to a navigation request failure. This case is not at risk for
-  // re-entrancy when `can_be_in_navigate_to_pending_entry_` is true, because
-  // that code also creates another `PendingEntryRef` that would prevent the
-  // `DiscardPendingEntry` call if the PostTask were skipped. See
-  // https://crbug.com/411855273.
-  if (!was_failure && can_be_in_navigate_to_pending_entry_ &&
-      !frame_tree_->IsBeingDestroyed()) {
-    CheckPotentialNavigationReentrancy();
-  }
 
   if (was_failure && pending_entry_) {
     failed_pending_entry_id_ = pending_entry_->GetUniqueID();
@@ -5489,14 +5477,6 @@ void NavigationControllerImpl::DidChangeReferrerPolicy(
   // in the navigation API when the referrer policy changes.
   entry->set_protect_url_in_navigation_api(
       ShouldProtectUrlInNavigationApi(referrer_policy));
-}
-
-void NavigationControllerImpl::CheckPotentialNavigationReentrancy() {
-  if (can_be_in_navigate_to_pending_entry_) {
-    // This DumpWithoutCrashing is an investigation code for
-    // https://crbug.com/396998476.
-    base::debug::DumpWithoutCrashing();
-  }
 }
 
 std::unique_ptr<NavigationRequest>

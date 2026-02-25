@@ -17081,6 +17081,16 @@ void RenderFrameHostImpl::SendBeforeUnload(
       },
       rfh, for_legacy);
   if (for_legacy) {
+    auto continue_navigation_closure =
+        base::BindOnce(std::move(before_unload_closure),
+                       /*proceed=*/true,
+                       /*renderer_before_unload_start_time=*/
+                       send_before_unload_start_time_,
+                       /*renderer_before_unload_end_time=*/
+                       base::TimeTicks::Now(),
+                       /*before_unload_dialog_opened_time=*/base::TimeTicks(),
+                       /*before_unload_dialog_closed_time=*/base::TimeTicks());
+
     // We would like to synchronously continue navigation without the following
     // PostTask in the future to improve performance if the frame being
     // navigated (and all child frames) do not have beforeunload handlers.
@@ -17098,39 +17108,17 @@ void RenderFrameHostImpl::SendBeforeUnload(
     // kWithSendBeforeUnload or kWithoutSendBeforeUnload (To understand these
     // modes, please refer to the code comment of the
     // `AvoidUnnecessaryBeforeUnloadCheckSyncMode` enum in the header file).
-    //
-    // The following `can_be_in_navigate_to_pending_entry` flag is used to
-    // investigate whether it is safe to do so, by checking whether the CHECK
-    // would've failed if we continue synchronously instead of posting a task.
-    // This flag is only used when kAvoidUnnecessaryBeforeUnloadCheckSyncMode is
-    // set to kDumpWithoutCrashing.
     const bool is_eligible_for_avoid_unnecessary_beforeunload =
         is_waiting_for_beforeunload_completion_ &&
         unload_ack_is_for_navigation_ &&
         GetContentClient()
             ->browser()
             ->SupportsAvoidUnnecessaryBeforeUnloadCheckSync();
-    const bool can_be_in_navigate_to_pending_entry =
-        is_eligible_for_avoid_unnecessary_beforeunload &&
-        IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabledFor(
-            features::AvoidUnnecessaryBeforeUnloadCheckSyncMode::
-                kDumpWithoutCrashing) &&
-        frame_tree()->controller().in_navigate_to_pending_entry();
-
-    base::TimeTicks renderer_before_unload_end_time_for_legacy =
-        base::TimeTicks::Now();
-
     if (is_eligible_for_avoid_unnecessary_beforeunload &&
         IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabledFor(
             features::AvoidUnnecessaryBeforeUnloadCheckSyncMode::
                 kWithSendBeforeUnload)) {
-      std::move(before_unload_closure)
-          .Run(/*proceed=*/true, /*renderer_before_unload_start_time=*/
-               send_before_unload_start_time_,
-               /*renderer_before_unload_end_time=*/
-               renderer_before_unload_end_time_for_legacy,
-               /*before_unload_dialog_opened_time=*/base::TimeTicks(),
-               /*before_unload_dialog_closed_time=*/base::TimeTicks());
+      std::move(continue_navigation_closure).Run();
       return;
     }
 
@@ -17138,38 +17126,7 @@ void RenderFrameHostImpl::SendBeforeUnload(
     // happens early in the navigation flow and shouldn't race with any other
     // tasks associated with this navigation.
     GetUIThreadTaskRunner({BrowserTaskType::kBeforeUnloadBrowserResponse})
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                [](blink::mojom::LocalFrame::BeforeUnloadCallback callback,
-                   base::TimeTicks renderer_before_unload_start_time,
-                   base::TimeTicks renderer_before_unload_end_time,
-                   base::WeakPtr<NavigationControllerImpl>
-                       navigation_controller,
-                   const bool can_be_in_navigate_to_pending_entry) {
-                  if (can_be_in_navigate_to_pending_entry &&
-                      navigation_controller) {
-                    navigation_controller
-                        ->set_can_be_in_navigate_to_pending_entry(true);
-                  }
-                  std::move(callback).Run(
-                      /*proceed=*/true, renderer_before_unload_start_time,
-                      renderer_before_unload_end_time,
-                      /*before_unload_dialog_opened_time=*/base::TimeTicks(),
-                      /*before_unload_dialog_closed_time=*/base::TimeTicks());
-                  if (can_be_in_navigate_to_pending_entry &&
-                      navigation_controller) {
-                    navigation_controller
-                        ->set_can_be_in_navigate_to_pending_entry(false);
-                  }
-                },
-                std::move(before_unload_closure),
-                /*renderer_before_unload_start_time=*/
-                send_before_unload_start_time_,
-                /*renderer_before_unload_end_time=*/
-                renderer_before_unload_end_time_for_legacy,
-                frame_tree()->controller().GetWeakPtr(),
-                can_be_in_navigate_to_pending_entry));
+        ->PostTask(FROM_HERE, std::move(continue_navigation_closure));
     return;
   }
   auto scope = MakeUrgentMessageScopeIfNeeded();

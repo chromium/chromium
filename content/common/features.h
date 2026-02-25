@@ -24,8 +24,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckSync);
 // ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync() in the
 // header file for the context (See: https://crbug.com/396998476).
 enum class AvoidUnnecessaryBeforeUnloadCheckSyncMode {
-  // Enable DumpWithoutCrashing code for beforeunload investigation.
-  kDumpWithoutCrashing,
   // The following mode is mostly the same as the original
   // kAvoidUnnecessaryBeforeUnloadCheckSync feature that sky@ experimented in
   // the past (Ref: https://crbug.com/40361673, https://crbug.com/396998476).
