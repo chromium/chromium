@@ -28,7 +28,6 @@ class FakeTokenManager : public phosphor::TokenManager {
   void SetReturnToken(bool return_token);
   void RunPendingCallbacks();
   void RunPendingProxyCallbacks();
-  void WaitForPendingCallback();
   size_t GetPendingCallbackCount();
   size_t GetPendingProxyCallbackCount();
 
