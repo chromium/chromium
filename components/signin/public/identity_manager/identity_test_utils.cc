@@ -709,8 +709,11 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
 
   AccountTrackerService* account_tracker_service =
       identity_manager->GetAccountTrackerService();
-  account_tracker_service->SetAccountInfoFromUserInfo(
-      account_id, signin::AccountInfoFromUserInfo(user_info));
+  std::optional<AccountInfo> account_info =
+      signin::AccountInfoFromUserInfo(user_info);
+  CHECK(account_info);
+  account_tracker_service->SetAccountInfoFromUserInfo(account_id,
+                                                      *account_info);
 
   bool managed =
       !hosted_domain.empty() && hosted_domain != kNoHostedDomainFound;

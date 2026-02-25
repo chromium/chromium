@@ -426,16 +426,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountFetcher.AccountUserInfoFetchTime" units="ms"
-    expires_after="2024-07-21">
+    expires_after="2027-02-19">
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     The time it takes to fetch the account information (except avatar) for one
-    account in AccountFetcherService. This is recorded every time a User Info
-    fetch request from AccountFetcherService succeeds.
-
-    This histogram, along with Signin.AccountFetcher.AccountAvatarFetchTime,
-    will be used to decide whether to use OneGoogle library.
+    account in AccountFetcherService. This is recorded when user info fetch
+    succeeds.
   </summary>
 </histogram>
 
@@ -475,7 +472,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     This histogram records the state of the account that is stored in the
     preferences; whether it is fully or partially known. Recorded whenever a
-    fetched account is retreived from the server.
+    fetched account is retrieved succesfully from the server.
   </summary>
 </histogram>
 

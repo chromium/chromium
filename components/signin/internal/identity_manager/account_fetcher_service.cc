@@ -253,8 +253,15 @@ void AccountFetcherService::RefreshAccountInfo(const CoreAccountId& account_id,
 void AccountFetcherService::OnUserInfoFetchSuccess(
     const CoreAccountId& account_id,
     const base::DictValue& user_info) {
-  account_tracker_service_->SetAccountInfoFromUserInfo(
-      account_id, signin::AccountInfoFromUserInfo(user_info));
+  std::optional<AccountInfo> fetched_account_info =
+      signin::AccountInfoFromUserInfo(user_info);
+  if (!fetched_account_info) {
+    OnUserInfoFetchFailure(account_id);
+    return;
+  }
+
+  account_tracker_service_->SetAccountInfoFromUserInfo(account_id,
+                                                       *fetched_account_info);
   auto it = user_info_fetch_start_times_.find(account_id);
   if (it != user_info_fetch_start_times_.end()) {
     base::UmaHistogramMediumTimes(

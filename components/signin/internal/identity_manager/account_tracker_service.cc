@@ -260,7 +260,7 @@ void AccountTrackerService::StopTrackingAccount(
 
 void AccountTrackerService::SetAccountInfoFromUserInfo(
     const CoreAccountId& account_id,
-    std::optional<AccountInfo> fetched_user_info) {
+    const AccountInfo& fetched_user_info) {
   DCHECK(accounts_.contains(account_id));
   AccountInfo& account_info = accounts_[account_id];
 
@@ -276,30 +276,26 @@ void AccountTrackerService::SetAccountInfoFromUserInfo(
   }
   base::UmaHistogramEnumeration("Signin.AccountInPref.State", state);
 
-  if (fetched_user_info) {
-    DCHECK(!fetched_user_info->gaia.empty());
-    DCHECK(!fetched_user_info->email.empty());
-    fetched_user_info->account_id = PickAccountIdForAccount(
-        fetched_user_info->gaia, fetched_user_info->email);
+  CHECK(!fetched_user_info.gaia.empty());
+  CHECK(!fetched_user_info.email.empty());
+  AccountInfo user_info_copy = fetched_user_info;
+  user_info_copy.account_id =
+      PickAccountIdForAccount(fetched_user_info.gaia, fetched_user_info.email);
 
-    // Whether the existing account in pref matches the fetched account.
-    bool accounts_matching =
-        fetched_user_info->account_id == account_info.account_id;
-    base::UmaHistogramBoolean("Signin.AccountInPref.MatchingFetchedAccount",
-                              accounts_matching);
+  // Whether the existing account in pref matches the fetched account.
+  bool accounts_matching = user_info_copy.account_id == account_info.account_id;
+  base::UmaHistogramBoolean("Signin.AccountInPref.MatchingFetchedAccount",
+                            accounts_matching);
 
-    if (accounts_matching) {
-      account_info.UpdateWith(fetched_user_info.value());
-    } else {
-      DLOG(ERROR) << "Cannot set account info from user info as account ids "
-                     "do not match: existing_account_info = {"
-                  << account_info << "} new_account_info = {"
-                  << fetched_user_info.value() << "}";
-    }
+  if (accounts_matching) {
+    account_info.UpdateWith(user_info_copy);
+  } else {
+    DLOG(ERROR) << "Cannot set account info from user info as account ids "
+                   "do not match: existing_account_info = {"
+                << account_info << "} new_account_info = {" << user_info_copy
+                << "}";
   }
 
-  // TODO(msarda): Should account update notification be sent if the account was
-  // not updated (e.g. |fetched_user_info|==nullopt)?
   if (!account_info.gaia.empty()) {
     NotifyAccountUpdated(account_info);
   }
