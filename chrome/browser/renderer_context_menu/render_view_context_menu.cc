@@ -48,6 +48,9 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_features.h"
@@ -236,6 +239,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/favicon_size.h"
@@ -276,13 +280,6 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
 #endif
-
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#include "ui/base/resource/resource_bundle.h"
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_extension_util.h"
@@ -840,14 +837,12 @@ bool IsLensOptionEnteredThroughKeyboard(int event_flags) {
 
 bool IsGlicWindow(const RenderViewContextMenu* menu,
                   content::BrowserContext* browser_context) {
-#if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsEnabledByFlags()) {
     auto* glic_service =
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser_context);
     return glic_service && glic_service->IsActiveWebContents(
                                menu->GetWebContents()->GetOuterWebContents());
   }
-#endif  // BUILDFLAG(ENABLE_GLIC)
   return false;
 }
 
@@ -1088,7 +1083,6 @@ void RenderViewContextMenu::InitMenu() {
       menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     }
   } else {
-#if BUILDFLAG(ENABLE_GLIC)
     // Add "Copy Link Address" menu option for Glic Multi instance. Link
     // options are not supported by default (since Glic uses WebView's context
     // menu).
@@ -1097,7 +1091,6 @@ void RenderViewContextMenu::InitMenu() {
       AppendCopyLinkLocationItem();
       menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
     }
-#endif  // BUILDFLAG(ENABLE_GLIC)
   }
 
   bool media_image = content_type_->SupportsGroup(
@@ -1184,14 +1177,11 @@ void RenderViewContextMenu::InitMenu() {
       content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PRINT)) {
     AppendPrintItem();
   } else {
-#if BUILDFLAG(ENABLE_GLIC)
-
     if (IsGlicWindow(this, browser_context_) &&
         base::FeatureList::IsEnabled(features::kGlicPrintMenuItem) &&
         glic::GlicEnabling::IsMultiInstanceEnabled()) {
       AppendPrintItem();
     }
-#endif  // BUILDFLAG(ENABLE_GLIC)
   }
 
   // ITEM_GROUP_SMART_SELECTION is for selected text that is not a link.
@@ -2091,7 +2081,6 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
 }
 
 void RenderViewContextMenu::AppendGlicShareImageItem() {
-#if BUILDFLAG(ENABLE_GLIC)
   if (glic::GlicEnabling::IsShareImageEnabledForProfile(GetProfile()) &&
       !IsGlicWindow(this, browser_context_)) {
     tabs::TabInterface* tab =
@@ -2113,7 +2102,6 @@ void RenderViewContextMenu::AppendGlicShareImageItem() {
           kGlicShareImageMenuItem);
     }
   }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 void RenderViewContextMenu::AppendAudioItems() {
@@ -2414,7 +2402,6 @@ void RenderViewContextMenu::AppendReadAnythingItem() {
 }
 
 void RenderViewContextMenu::AppendGlicItems() {
-#if BUILDFLAG(ENABLE_GLIC)
   if (IsGlicWindow(this, browser_context_)) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_RELOAD_GLIC,
                                     IDS_CONTENT_CONTEXT_RELOAD);
@@ -2441,7 +2428,6 @@ void RenderViewContextMenu::AppendGlicItems() {
           kGlicArchiveConversationMenuItem);
     }
   }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 }
 
 void RenderViewContextMenu::AppendRotationItems() {
@@ -3368,18 +3354,15 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_CONTENT_CONTEXT_RELOAD_GLIC:
-#if BUILDFLAG(ENABLE_GLIC)
       if (glic::GlicEnabling::IsEnabledByFlags()) {
         auto* glic_service = glic::GlicKeyedService::Get(browser_context_);
         if (glic_service) {
           glic_service->Reload(GetRenderFrameHost());
         }
       }
-#endif  // BUILDFLAG(ENABLE_GLIC)
       break;
 
     case IDC_CONTENT_CONTEXT_CLOSE_GLIC:
-#if BUILDFLAG(ENABLE_GLIC)
       if (glic::GlicEnabling::IsEnabledByFlags() &&
           !glic::GlicEnabling::IsMultiInstanceEnabled()) {
         auto* glic_service = glic::GlicKeyedService::Get(browser_context_);
@@ -3394,11 +3377,9 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
           }
         }
       }
-#endif  // BUILDFLAG(ENABLE_GLIC)
       break;
 
     case IDC_CONTENT_CONTEXT_ARCHIVE_GLIC:  // Added for archive conversation
-#if BUILDFLAG(ENABLE_GLIC)
       if (glic::GlicEnabling::IsMultiInstanceEnabled() &&
           base::FeatureList::IsEnabled(features::kGlicArchiveConversation)) {
         auto* glic_service = glic::GlicKeyedService::Get(browser_context_);
@@ -3407,7 +3388,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
           glic_service->Archive(GetRenderFrameHost()->GetOutermostMainFrame());
         }
       }
-#endif  // BUILDFLAG(ENABLE_GLIC)
       break;
 
     case IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH:
@@ -3996,14 +3976,12 @@ bool RenderViewContextMenu::IsPasteAndMatchStyleEnabled() const {
 }
 
 bool RenderViewContextMenu::IsPrintPreviewEnabled() const {
-#if BUILDFLAG(ENABLE_GLIC)
   if (IsGlicWindow(this, browser_context_) &&
       base::FeatureList::IsEnabled(features::kGlicPrintMenuItem) &&
       glic::GlicEnabling::IsMultiInstanceEnabled()) {
     return GetPrefs(browser_context_)->GetBoolean(prefs::kPrintingEnabled) &&
            (source_web_contents_ && !source_web_contents_->IsCrashed());
   }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
   if (params_.media_type != ContextMenuDataMediaType::kNone &&
       !(params_.media_flags & ContextMenuData::kMediaCanPrint)) {
@@ -4413,7 +4391,6 @@ void RenderViewContextMenu::ExecSaveAs() {
 }
 
 void RenderViewContextMenu::ExecGlicShareImage() {
-#if BUILDFLAG(ENABLE_GLIC)
   if (!glic::GlicEnabling::IsShareImageEnabledForProfile(GetProfile())) {
     // If this has changed since the context menu was summoned, bail early.
     return;
@@ -4423,7 +4400,6 @@ void RenderViewContextMenu::ExecGlicShareImage() {
         tabs::TabInterface::MaybeGetFromContents(source_web_contents_),
         GetRenderFrameHost(), params().src_url);
   }
-#endif  // BUILDLFLAG(ENABLE_GLIC)
 }
 
 void RenderViewContextMenu::ExecExitFullscreen() {

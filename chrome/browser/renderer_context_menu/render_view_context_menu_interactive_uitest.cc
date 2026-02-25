@@ -18,6 +18,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/glic/host/glic_features.mojom.h"
+#include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
@@ -29,6 +32,8 @@
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -40,6 +45,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/custom_handlers/protocol_handler.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -68,14 +74,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/host/glic_features.mojom.h"
-#include "chrome/browser/glic/host/guest_util.h"
-#include "chrome/browser/glic/test_support/interactive_glic_test.h"
-#include "chrome/browser/ui/toasts/api/toast_id.h"
-#include "chrome/browser/ui/toasts/toast_controller.h"
-#include "components/prefs/pref_service.h"
-
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #include "base/base64.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"  // nogncheck
@@ -89,8 +87,6 @@
 #include "components/enterprise/content/clipboard_restriction_service.h"  // nogncheck
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 using testing::_;
 using testing::AllOf;
@@ -1173,8 +1169,6 @@ IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTestNoTestingConfig,
   EXPECT_EQ(response.http_request()->content, kBeaconMessage);
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
-
 class GlicInteractiveContextMenuTest
     : public glic::test::InteractiveGlicTest,
       public ::testing::WithParamInterface<bool> {
@@ -1663,7 +1657,5 @@ INSTANTIATE_TEST_SUITE_P(MultiInstance,
                          testing::Bool());
 
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 }  // namespace

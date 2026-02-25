@@ -466,18 +466,14 @@ class ContextMenuBrowserTest
     if (IsPreviewEnabled()) {
       scoped_feature_list_.InitWithFeatures(
           {blink::features::kLinkPreview,
-#if BUILDFLAG(ENABLE_GLIC)
            features::kGlic,
-#endif  // BUILDFLAG(ENABLE_GLIC)
            media::kContextMenuSaveVideoFrameAs,
            media::kContextMenuSearchForVideoFrame},
           {omnibox::kWebUIOmniboxPopup});
     } else {
       scoped_feature_list_.InitWithFeatures(
           {
-#if BUILDFLAG(ENABLE_GLIC)
               features::kGlic,
-#endif  // BUILDFLAG(ENABLE_GLIC)
               media::kContextMenuSaveVideoFrameAs,
               media::kContextMenuSearchForVideoFrame},
           {blink::features::kLinkPreview, omnibox::kWebUIOmniboxPopup});
