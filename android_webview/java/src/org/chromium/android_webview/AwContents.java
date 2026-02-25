@@ -1463,13 +1463,15 @@ public class AwContents implements SmartClipProvider {
     private static class WindowAndroidWrapper {
         private final WindowAndroid mWindowAndroid;
         private final CleanupReference mCleanupReference;
+        private final WeakReference<Context> mContextRef;
 
         // This ref-counts is used only to destroy WindowAndroid eagerly
         // when AwContents is destroyed. The CleanupReference is still used
         // if a Wrapper is created without any AwContents.
         private int mRefFromAwContentsDestroyRunnable;
 
-        public WindowAndroidWrapper(WindowAndroid windowAndroid) {
+        public WindowAndroidWrapper(Context context, WindowAndroid windowAndroid) {
+            mContextRef = new WeakReference<>(context);
             mWindowAndroid = windowAndroid;
             mCleanupReference = new CleanupReference(this, (e) -> windowAndroid.destroy());
         }
@@ -1491,7 +1493,7 @@ public class AwContents implements SmartClipProvider {
         private void maybeCleanupEarly() {
             if (mRefFromAwContentsDestroyRunnable != 0) return;
 
-            Context context = mWindowAndroid.getContext().get();
+            Context context = mContextRef.get();
             if (context != null && sContextWindowMap.get(context) != this) return;
 
             mCleanupReference.cleanupNow();
@@ -1516,17 +1518,17 @@ public class AwContents implements SmartClipProvider {
                     final boolean listenToActivityState = false;
                     activityWindow =
                             new ActivityWindowAndroid(
-                                    context,
+                                    activity,
                                     listenToActivityState,
                                     IntentRequestTracker.createFromActivity(activity),
                                     /* insetObserver= */ null,
                                     /* trackOcclusion= */ false);
                 }
-                wrapper = new WindowAndroidWrapper(activityWindow);
+                wrapper = new WindowAndroidWrapper(context, activityWindow);
             } else {
                 wrapper =
                         new WindowAndroidWrapper(
-                                new WindowAndroid(context, /* trackOcclusion= */ false));
+                                context, new WindowAndroid(context, /* trackOcclusion= */ false));
             }
             sContextWindowMap.put(context, wrapper);
         }
