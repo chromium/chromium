@@ -1342,53 +1342,52 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
   const bool is_gpu_compositing_enabled =
       SharedGpuContext::IsGpuCompositingEnabled();
   if (is_gpu_compositing_enabled) {
-    if (use_gpu_raster) {
+    // We can try to create a SharedImage provider if either (a) we are using
+    // GPU raster or (b) we are using CPU raster and native
+    // mappable buffers are supported, in which case the created SharedImage
+    // could be mapped onto the CPU for software raster writes and then read by
+    // the display compositor.
+    bool native_mappable_si_supported =
+        SharedGpuContext::MaySupportImageChromium() &&
+        RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
+    if (use_gpu_raster || native_mappable_si_supported) {
       gpu::SharedImageUsageSet shared_image_usage_flags =
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-      if (canvas()->LowLatencyEnabled()) {
-        // Try a SharedImage provider with usage optimized for low-latency.
+
+      bool low_latency_supported = false;
+      if (use_gpu_raster && canvas()->LowLatencyEnabled()) {
+        // Optimize usage for low-latency if possible.
         bool can_use_swapchain = SharedGpuContext::ContextProviderWrapper()
                                      ->ContextProvider()
                                      .SharedImageInterface()
                                      ->GetCapabilities()
                                      .shared_image_swap_chain;
-        bool can_use_concurrent_read_write =
+        low_latency_supported =
             can_use_swapchain ||
             (SharedGpuContext::MaySupportImageChromium() &&
              (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled() ||
               base::FeatureList::IsEnabled(
                   features::kLowLatencyCanvas2dImageChromium)));
-        if (can_use_concurrent_read_write) {
-          shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-          shared_image_usage_flags |=
-              gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-        }
+      }
+
+      if (low_latency_supported) {
+        shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+        shared_image_usage_flags |=
+            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
       } else {
-        // In the case we are hardware compositing, try to enable the usage of
-        // the image as scanout buffer (overlay).
-        if (SharedGpuContext::MaySupportImageChromium() &&
-            RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
+        // Add support for use as an overlay if possible.
+        bool overlays_supported =
+            SharedGpuContext::MaySupportImageChromium() &&
+            RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
+        if (overlays_supported) {
           shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
         }
       }
+
       provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
           canvas()->Size(), format, alpha_type, color_space,
-          SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
-          shared_image_usage_flags, canvas());
-    } else if (SharedGpuContext::MaySupportImageChromium() &&
-               RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled()) {
-      // In this case, we are using CPU raster and GPU compositing and native
-      // mappable buffers are supported. Try to use a
-      // Canvas2DResourceProviderSharedImage, which if successful will result in
-      // using a SharedImage that can be mapped onto the CPU for software raster
-      // writes and then read by the display compositor (and potentially used as
-      // an overlay).
-      const gpu::SharedImageUsageSet shared_image_usage_flags =
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-          gpu::SHARED_IMAGE_USAGE_SCANOUT;
-      provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
-          canvas()->Size(), format, alpha_type, color_space,
-          SharedGpuContext::ContextProviderWrapper(), RasterMode::kCPU,
+          SharedGpuContext::ContextProviderWrapper(),
+          use_gpu_raster ? RasterMode::kGPU : RasterMode::kCPU,
           shared_image_usage_flags, canvas());
     }
   } else {  // SW compositing
