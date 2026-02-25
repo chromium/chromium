@@ -81,9 +81,9 @@ PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     CanvasNon2DResourceProviderSharedImage* snapshot_provider,
     std::optional<CanvasSnapshotProvider::Info> sw_draw_info,
     sk_sp<SkSurface> cached_sw_draw_surface,
-    media::PaintCanvasVideoRenderer* video_renderer,
-    bool prefer_tagged_orientation,
-    bool reinterpret_video_as_srgb);
+    media::PaintCanvasVideoRenderer* video_renderer = nullptr,
+    bool prefer_tagged_orientation = true,
+    bool reinterpret_video_as_srgb = false);
 
 PLATFORM_EXPORT bool ShouldCreateAcceleratedImages(
     viz::RasterContextProvider* raster_context_provider);

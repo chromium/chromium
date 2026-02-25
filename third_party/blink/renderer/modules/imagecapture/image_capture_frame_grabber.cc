@@ -170,6 +170,11 @@ void ImageCaptureFrameGrabber::GrabFrame(
       MediaStreamVideoSink::UsesAlpha::kDefault);
 }
 
+// Killswitch guarding ImageCaptureFrameGrabber not caching the SkSurface used
+// for VideoFrame->StaticBitmapImage software draws.
+BASE_FEATURE(kImageCaptureFrameGrabberDrawCacheSkSurface,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 void ImageCaptureFrameGrabber::OnVideoFrame(
     media::VideoFrame* frame,
     ScriptPromiseResolver<ImageBitmap>* resolver) {
@@ -191,8 +196,31 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
     }
   }
 
-  scoped_refptr<StaticBitmapImage> image = CreateImageFromVideoFrame(
-      frame, snapshot_provider_.get(), &video_renderer_);
+  scoped_refptr<StaticBitmapImage> image;
+
+  if (snapshot_provider_) {
+    std::optional<CanvasSnapshotProvider::Info> sw_draw_info;
+    CanvasNon2DResourceProviderSharedImage* snapshot_provider_si = nullptr;
+    sk_sp<SkSurface> sw_draw_surface;
+
+    if (snapshot_provider_->IsExternalBitmapProvider()) {
+      sw_draw_info = required_provider_info;
+      if (base::FeatureList::IsEnabled(
+              kImageCaptureFrameGrabberDrawCacheSkSurface)) {
+        sw_draw_surface = static_cast<CanvasNon2DSnapshotProviderBitmap*>(
+                              snapshot_provider_.get())
+                              ->GetCachedSurface();
+      }
+    } else {
+      snapshot_provider_si =
+          static_cast<CanvasNon2DResourceProviderSharedImage*>(
+              snapshot_provider_.get());
+    }
+
+    image = CreateImageFromVideoFrame(frame, snapshot_provider_si,
+                                      std::move(sw_draw_info), sw_draw_surface,
+                                      &video_renderer_);
+  }
 
   timeout_task_handle_.Cancel();
   MediaStreamVideoSink::DisconnectFromTrack();
