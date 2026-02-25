@@ -146,7 +146,9 @@ class CWVAutofillControllerTest : public web::WebTest {
 
     const testing::TestInfo* const test_info =
         testing::UnitTest::GetInstance()->current_test_info();
-    if (test_info && std::string(test_info->name()) == "SubmitCallback") {
+    if (test_info &&
+        (std::string(test_info->name()) == "SubmitCallback" ||
+         std::string(test_info->name()) == "FetchFullCardDetailsNoDriver")) {
       scoped_feature_list_.InitAndDisableFeature(
           autofill::features::kAutofillAcrossIframesIos);
     }
@@ -528,6 +530,90 @@ TEST_F(CWVAutofillControllerTest, SubmitCallbackAcrossIframes) {
       test_form_data);
 
   EXPECT_OCMOCK_VERIFY(delegate);
+}
+
+// Tests that fetchFullCardDetailsForCard:completionHandler: returns an error
+// when the web frame is missing.
+TEST_F(CWVAutofillControllerTest, FetchFullCardDetailsNoFrame) {
+  pref_service_.registry()->RegisterBooleanPref(
+      ios_web_view::kCWVAutofillVCNUsageEnabled, false);
+  CWVCreditCard* card = [[CWVCreditCard alloc]
+      initWithCreditCard:autofill::test::GetCreditCard()];
+  __block BOOL completion_handler_called = NO;
+  [autofill_controller_
+      fetchFullCardDetailsForCard:card
+                completionHandler:^(CWVCreditCard* fullCard, NSError* error) {
+                  completion_handler_called = YES;
+                  EXPECT_FALSE(fullCard);
+                  EXPECT_NSEQ(CWVAutofillErrorDomain, error.domain);
+                  EXPECT_EQ(CWVAutofillErrorNoWebFrame, error.code);
+                }];
+  EXPECT_TRUE(completion_handler_called);
+}
+
+// Tests that fetchFullCardDetailsForCard:completionHandler: returns an error
+// when the autofill driver is missing.
+TEST_F(CWVAutofillControllerTest, FetchFullCardDetailsNoDriver) {
+  pref_service_.registry()->RegisterBooleanPref(
+      ios_web_view::kCWVAutofillVCNUsageEnabled, false);
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  std::string frame_id = frame->GetFrameId();
+  web::WebFrame* frame_ptr = frame.get();
+  AddWebFrame(std::move(frame));
+
+  // Simulate form activity to set _lastFormActivityWebFrameID.
+  autofill::FormActivityParams params;
+  params.frame_id = frame_id;
+  params.type = "focus";
+  form_activity_tab_helper_->FormActivityRegistered(frame_ptr, params);
+
+  // Simulate missing driver by notifying the factory that the WebState is being
+  // destroyed. This will cause the factory to return nullptr for any subsequent
+  // DriverForFrame() calls.
+  static_cast<web::WebStateObserver&>(
+      autofill_controller_.autofillClient->GetAutofillDriverFactory())
+      .WebStateDestroyed(&web_state_);
+
+  CWVCreditCard* card = [[CWVCreditCard alloc]
+      initWithCreditCard:autofill::test::GetCreditCard()];
+  __block BOOL completion_handler_called = NO;
+  [autofill_controller_
+      fetchFullCardDetailsForCard:card
+                completionHandler:^(CWVCreditCard* fullCard, NSError* error) {
+                  completion_handler_called = YES;
+                  EXPECT_FALSE(fullCard);
+                  EXPECT_NSEQ(CWVAutofillErrorDomain, error.domain);
+                  EXPECT_EQ(CWVAutofillErrorNoAutofillDriver, error.code);
+                }];
+  EXPECT_TRUE(completion_handler_called);
+}
+
+// Tests that fetchFullCardDetailsForCard:completionHandler: returns a full
+// card.
+TEST_F(CWVAutofillControllerTest, FetchFullCardDetails) {
+  pref_service_.registry()->RegisterBooleanPref(
+      ios_web_view::kCWVAutofillVCNUsageEnabled, false);
+  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  std::string frame_id = frame->GetFrameId();
+  AddWebFrame(std::move(frame));
+
+  // Simulate form activity to set _lastFormActivityWebFrameID.
+  autofill::FormActivityParams params;
+  params.frame_id = frame_id;
+  params.type = "focus";
+  web::WebFrame* main_frame = web_frames_manager_->GetMainWebFrame();
+  form_activity_tab_helper_->FormActivityRegistered(main_frame, params);
+
+  CWVCreditCard* card = [[CWVCreditCard alloc]
+      initWithCreditCard:autofill::test::GetCreditCard()];
+  __block BOOL completion_handler_called = NO;
+  [autofill_controller_
+      fetchFullCardDetailsForCard:card
+                completionHandler:^(CWVCreditCard* fullCard, NSError* error) {
+                  completion_handler_called = YES;
+                  EXPECT_TRUE(fullCard);
+                }];
+  EXPECT_TRUE(completion_handler_called);
 }
 
 // Tests that CWVAutofillController notifies user of password leaks.

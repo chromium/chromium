@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <variant>
+
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/suggestions/suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
 
@@ -49,6 +52,14 @@
 
 - (BOOL)hasCustomCardArtImage {
   return _formSuggestion.hasCustomCardArtImage;
+}
+
+- (NSString* __nullable)GUID {
+  autofill::Suggestion::Payload payload = _formSuggestion.payload;
+  if (const auto* guid = std::get_if<autofill::Suggestion::Guid>(&payload)) {
+    return base::SysUTF8ToNSString(guid->value());
+  }
+  return nil;
 }
 
 - (BOOL)isPasswordSuggestion {

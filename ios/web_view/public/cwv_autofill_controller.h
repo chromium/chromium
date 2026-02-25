@@ -16,6 +16,26 @@ NS_ASSUME_NONNULL_BEGIN
 @class CWVCreditCard;
 @protocol CWVAutofillControllerDelegate;
 
+// The error domain for autofill errors.
+FOUNDATION_EXPORT CWV_EXPORT NSErrorDomain const CWVAutofillErrorDomain;
+
+// A block that takes a full credit card and an optional error.
+// Nullability annotations are used here because either argument can be nil
+// depending on the success of the operation.
+typedef void (^CWVFetchFullCardDetailsCompletionHandler)(
+    CWVCreditCard* _Nullable fullCard,
+    NSError* _Nullable error);
+
+// Possible error codes for autofill.
+typedef NS_ENUM(NSInteger, CWVAutofillError) {
+  // An unknown error occurred.
+  CWVAutofillErrorUnknown = -1,
+  // The web frame no longer exists.
+  CWVAutofillErrorNoWebFrame = -2,
+  // The autofill driver no longer exists.
+  CWVAutofillErrorNoAutofillDriver = -3,
+};
+
 // Exposes features that allow autofilling html forms. May include autofilling
 // of single fields, address forms, credit card forms, or password forms.
 CWV_EXPORT
@@ -75,6 +95,13 @@ CWV_EXPORT
 - (void)acceptCreditCardAsSuggestion:(CWVCreditCard*)creditCard
                              atIndex:(NSInteger)index
                    completionHandler:(nullable void (^)(void))completionHandler;
+
+// Fetches the full details of |creditCard|.
+// This may trigger a verification UI (e.g. CVC prompt) if the card is masked.
+// The resulting |fullCard| will contain the full card number and CVC.
+- (void)fetchFullCardDetailsForCard:(CWVCreditCard*)creditCard
+                  completionHandler:(CWVFetchFullCardDetailsCompletionHandler)
+                                        completionHandler;
 
 // Changes focus to the previous sibling of the currently focused field.
 // No-op if no field is currently focused or if previous field is not available.

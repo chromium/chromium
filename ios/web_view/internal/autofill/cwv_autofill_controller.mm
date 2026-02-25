@@ -22,6 +22,7 @@
 #import "components/autofill/core/browser/foundations/autofill_manager.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#import "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #import "components/autofill/core/browser/payments/legal_message_line.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
@@ -76,6 +77,9 @@ using autofill::FieldRendererId;
 using autofill::FormData;
 using autofill::FormRendererId;
 using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
+
+NSErrorDomain const CWVAutofillErrorDomain =
+    @"org.chromium.chromewebview.AutofillErrorDomain";
 
 @interface CWVAutofillController () <AutofillManagerObserver,
                                      CRWWebFramesManagerObserver>
@@ -443,6 +447,52 @@ CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
                         completionHandler();
                       }
                     }];
+}
+
+- (void)fetchFullCardDetailsForCard:(CWVCreditCard*)card
+                  completionHandler:(CWVFetchFullCardDetailsCompletionHandler)
+                                        completionHandler {
+  web::WebFrame* frame = autofill::AutofillJavaScriptFeature::GetInstance()
+                             ->GetWebFramesManager(_webState)
+                             ->GetFrameWithId(_lastFormActivityWebFrameID);
+
+  if (!frame) {
+    if (completionHandler) {
+      NSError* error = [NSError errorWithDomain:CWVAutofillErrorDomain
+                                           code:CWVAutofillErrorNoWebFrame
+                                       userInfo:nil];
+      completionHandler(/*fullCard=*/nil, error);
+    }
+    return;
+  }
+
+  autofill::AutofillDriverIOS* driver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState, frame);
+  if (!driver) {
+    if (completionHandler) {
+      NSError* error = [NSError errorWithDomain:CWVAutofillErrorDomain
+                                           code:CWVAutofillErrorNoAutofillDriver
+                                       userInfo:nil];
+      completionHandler(/*fullCard=*/nil, error);
+    }
+    return;
+  }
+
+  autofill::BrowserAutofillManager& manager = driver->GetAutofillManager();
+  autofill::CreditCardAccessManager* accessManager =
+      manager.GetCreditCardAccessManager();
+
+  accessManager->FetchCreditCard(
+      card.internalCard, base::BindOnce(
+                             ^(CWVFetchFullCardDetailsCompletionHandler handler,
+                               const autofill::CreditCard& fetchedCard) {
+                               CWVCreditCard* fullCard = [[CWVCreditCard alloc]
+                                   initWithCreditCard:fetchedCard];
+                               if (handler) {
+                                 handler(fullCard, /*error=*/nil);
+                               }
+                             },
+                             completionHandler));
 }
 
 - (void)focusPreviousField {

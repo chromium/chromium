@@ -263,7 +263,8 @@ IOSWebViewPaymentsAutofillClient::GetCardUnmaskPromptModel() {
 
 VirtualCardEnrollmentManager*
 IOSWebViewPaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
-  if (GetPrefService()->GetBoolean(ios_web_view::kCWVAutofillVCNUsageEnabled)) {
+  if (client_->GetPrefs()->GetBoolean(
+          ios_web_view::kCWVAutofillVCNUsageEnabled)) {
     if (!virtual_card_enrollment_manager_) {
       virtual_card_enrollment_manager_ =
           std::make_unique<VirtualCardEnrollmentManager>(

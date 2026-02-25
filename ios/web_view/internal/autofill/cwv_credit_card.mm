@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
@@ -38,6 +39,10 @@
   return [self valueForType:autofill::CREDIT_CARD_NUMBER];
 }
 
+- (NSString*)CVC {
+  return base::SysUTF16ToNSString(_internalCard.cvc());
+}
+
 - (NSString*)networkName {
   return [self valueForType:autofill::CREDIT_CARD_TYPE];
 }
@@ -64,6 +69,28 @@
 
 - (NSString*)cardNameForDisplay {
   return base::SysUTF16ToNSString(_internalCard.CardNameForAutofillDisplay());
+}
+
+- (CWVCreditCardRecordType)recordType {
+  switch (_internalCard.record_type()) {
+    case autofill::CreditCard::RecordType::kLocalCard:
+      return CWVCreditCardRecordTypeLocalCard;
+    case autofill::CreditCard::RecordType::kMaskedServerCard:
+      return CWVCreditCardRecordTypeMaskedServerCard;
+    case autofill::CreditCard::RecordType::kFullServerCard:
+      return CWVCreditCardRecordTypeFullServerCard;
+    case autofill::CreditCard::RecordType::kVirtualCard:
+      return CWVCreditCardRecordTypeVirtualCard;
+  }
+}
+
+- (BOOL)isVirtual {
+  return _internalCard.record_type() ==
+         autofill::CreditCard::RecordType::kVirtualCard;
+}
+
+- (NSString*)GUID {
+  return base::SysUTF8ToNSString(_internalCard.guid());
 }
 
 #pragma mark - NSObject

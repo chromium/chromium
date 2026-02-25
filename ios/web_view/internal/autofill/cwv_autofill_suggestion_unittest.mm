@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -40,6 +41,25 @@ TEST_F(CWVAutofillSuggestionTest, Initialization) {
   EXPECT_EQ(formSuggestion, suggestion.formSuggestion);
   EXPECT_EQ(CWVSuggestionTypeAddressEntry, suggestion.suggestionType);
   EXPECT_FALSE([suggestion isPasswordSuggestion]);
+}
+
+// Tests CWVAutofillSuggestion initialization with GUID payload.
+TEST_F(CWVAutofillSuggestionTest, GUIDPayload) {
+  NSString* guid = @"TestGUID";
+  FormSuggestion* formSuggestion = [FormSuggestion
+      suggestionWithValue:@"TestValue"
+       displayDescription:@"TestDisplayDescription"
+                     icon:nil
+                     type:autofill::SuggestionType::kAddressEntry
+                  payload:autofill::Suggestion::Guid("TestGUID")
+           requiresReauth:NO];
+  CWVAutofillSuggestion* suggestion = [[CWVAutofillSuggestion alloc]
+      initWithFormSuggestion:formSuggestion
+                    formName:@"TestFormName"
+             fieldIdentifier:@"TestFieldIdentifier"
+                     frameID:@"TestFrameID"
+        isPasswordSuggestion:NO];
+  EXPECT_NSEQ(guid, suggestion.GUID);
 }
 
 }  // namespace ios_web_view

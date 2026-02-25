@@ -85,6 +85,21 @@ TEST_F(CWVCreditCardTest, ReadProperties) {
   EXPECT_NSEQ(card_number, cwv_credit_card.cardNumber);
   EXPECT_NSEQ(expiration_month, cwv_credit_card.expirationMonth);
   EXPECT_NSEQ(expiration_year, cwv_credit_card.expirationYear);
+  EXPECT_NSEQ(base::SysUTF8ToNSString(credit_card.guid()),
+              cwv_credit_card.GUID);
+  EXPECT_EQ(CWVCreditCardRecordTypeLocalCard, cwv_credit_card.recordType);
+  EXPECT_FALSE(cwv_credit_card.isVirtual);
+}
+
+// Tests CWVCreditCard properly handles virtual cards.
+TEST_F(CWVCreditCardTest, VirtualCard) {
+  autofill::CreditCard credit_card = autofill::test::GetCreditCard();
+  credit_card.set_record_type(autofill::CreditCard::RecordType::kVirtualCard);
+  CWVCreditCard* cwv_credit_card =
+      [[CWVCreditCard alloc] initWithCreditCard:credit_card];
+
+  EXPECT_EQ(CWVCreditCardRecordTypeVirtualCard, cwv_credit_card.recordType);
+  EXPECT_TRUE(cwv_credit_card.isVirtual);
 }
 
 }  // namespace ios_web_view

@@ -449,12 +449,23 @@ class WebViewPasswordStoreObserver
 }
 
 - (NSArray<CWVCreditCard*>*)creditCards {
+  std::vector<const autofill::CreditCard*> fetchedCards =
+      _personalDataManager->payments_data_manager().GetCreditCards();
+
   NSMutableArray* creditCards = [NSMutableArray array];
-  for (const autofill::CreditCard* internalCard :
-       _personalDataManager->payments_data_manager().GetCreditCards()) {
-    CWVCreditCard* creditCard =
-        [[CWVCreditCard alloc] initWithCreditCard:*internalCard];
-    [creditCards addObject:creditCard];
+  for (const autofill::CreditCard* card : fetchedCards) {
+    if (card->virtual_card_enrollment_state() ==
+        autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled) {
+      autofill::CreditCard virtualCard =
+          autofill::CreditCard::CreateVirtualCard(*card);
+      CWVCreditCard* cwvVirtualCard =
+          [[CWVCreditCard alloc] initWithCreditCard:virtualCard];
+      [creditCards addObject:cwvVirtualCard];
+      // Do not `continue` here. Enrolled cards should be added twice, once as
+      // a virtual card and once as a regular card, to allow the user to choose.
+    }
+    CWVCreditCard* cwvCard = [[CWVCreditCard alloc] initWithCreditCard:*card];
+    [creditCards addObject:cwvCard];
   }
   return [creditCards copy];
 }

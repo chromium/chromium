@@ -69,6 +69,9 @@ CWV_EXPORT
 // The type of the suggestion.
 @property(nonatomic, readonly) CWVSuggestionType suggestionType;
 
+// The GUID of the credit card associated with the suggestion.
+@property(nonatomic, copy, readonly, nullable) NSString* GUID;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 // YES if this is a password autofill suggestion.
