@@ -183,6 +183,7 @@ public class FuseboxMediator {
     /** Called when the user stops interacting with the Omnibox. */
     /* package */ void endInput() {
         mModelList.clear();
+        mPopup.dismiss();
         setToolbarVisible(false);
         setAutocompleteInput(null);
     }

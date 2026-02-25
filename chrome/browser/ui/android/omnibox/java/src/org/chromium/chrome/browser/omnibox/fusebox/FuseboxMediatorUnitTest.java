@@ -332,6 +332,15 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void testEndInput_DismissesPopup() {
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        verify(mPopup).show();
+
+        mMediator.endInput();
+        verify(mPopup).dismiss();
+    }
+
+    @Test
     public void popupAddsTabs() {
         assertFalse(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_VISIBLE));
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();
