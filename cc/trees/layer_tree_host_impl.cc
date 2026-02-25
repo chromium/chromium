@@ -5423,7 +5423,7 @@ bool LayerTreeHostImpl::AnimateLayers(base::TimeTicks monotonic_time,
       is_active_tree ? active_tree_->property_trees()->scroll_tree()
                      : pending_tree_->property_trees()->scroll_tree();
   const bool animated = mutator_host_->TickAnimations(
-      monotonic_time, scroll_tree, is_active_tree);
+      monotonic_time, scroll_tree, is_active_tree, mutator_events_.get());
 
   // TODO(crbug.com/40443202): Only do this if the animations are on the active
   // tree, or if they are on the pending tree waiting for some future time to

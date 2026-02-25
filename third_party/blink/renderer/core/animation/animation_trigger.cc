@@ -152,6 +152,20 @@ cc::AnimationTrigger::Behavior AnimationTrigger::ToCcAnimationTriggerBehavior(
   NOTREACHED();
 }
 
+void AnimationTrigger::DestroyCompositorTrigger() {
+  if (!compositor_trigger_) {
+    return;
+  }
+
+  compositor_trigger_->SetAnimationTriggerDelegate(nullptr);
+
+  if (cc::AnimationHost* host = compositor_trigger_->GetAnimationHost()) {
+    host->RemoveTrigger(compositor_trigger_);
+  }
+
+  compositor_trigger_ = nullptr;
+}
+
 void AnimationTrigger::Dispose() {
   DestroyCompositorTrigger();
 }
@@ -323,6 +337,8 @@ void AnimationTrigger::UpdateCompositorTrigger(
     // We should tie creating a cc trigger to whether there is at least one
     // compositable animation attached, perhaps in addAnimation.
     CreateCompositorTrigger();
+    compositor_trigger_->SetAnimationTriggerDelegate(
+        static_cast<cc::AnimationTriggerDelegate*>(this));
   }
 
   if (compositor_trigger_) {

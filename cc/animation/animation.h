@@ -26,7 +26,7 @@ class AnimationEvents;
 class AnimationHost;
 class AnimationTimeline;
 class KeyframeEffect;
-struct AnimationEvent;
+struct AnimationPlaybackEvent;
 
 // An Animation is responsible for managing animating properties for a set of
 // targets. Each target is represented by a KeyframeEffect and can be animating
@@ -125,7 +125,7 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation>,
   // appropriate, based on the event characteristics.
   // Delegates animation event that was successfully dispatched or doesn't need
   // to be dispatched.
-  void DispatchAndDelegateAnimationEvent(const AnimationEvent& event);
+  void DispatchAndDelegateAnimationEvent(const AnimationPlaybackEvent& event);
 
   // Returns true if this animation effects pending tree, such as a custom
   // property animation with paint worklet.
@@ -169,7 +169,7 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation>,
   void UnregisterAnimation();
 
   // Delegates animation event
-  void DelegateAnimationEvent(const AnimationEvent& event);
+  void DelegateAnimationEvent(const AnimationPlaybackEvent& event);
 
   // Common code between AttachElement and AttachNoElement.
   void AttachElementInternal(ElementId element_id);

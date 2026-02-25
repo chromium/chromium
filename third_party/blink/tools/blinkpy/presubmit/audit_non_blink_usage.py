@@ -703,6 +703,7 @@ _CONFIG = [
             "cc::AnimationHost",
             "cc::AnimationIdProvider",
             "cc::AnimationTrigger",
+            "cc::AnimationTriggerDelegate",
             "cc::AnimationTimeline",
             "cc::FilterKeyframe",
             "cc::KeyframedFilterAnimationCurve",

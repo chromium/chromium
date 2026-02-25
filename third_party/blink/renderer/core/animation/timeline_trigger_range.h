@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TIMELINE_TRIGGER_RANGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TIMELINE_TRIGGER_RANGE_H_
 
+#include "cc/animation/timeline_trigger.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_trigger_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_timelinerangeoffset.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -15,6 +16,7 @@ namespace blink {
 class AnimationTimeline;
 class Element;
 class ExecutionContext;
+class Node;
 class ScrollTimeline;
 
 // https://drafts.csswg.org/web-animations-2/#trigger-state
@@ -39,6 +41,7 @@ class CORE_EXPORT TimelineTriggerRange : public ScriptWrappable {
  public:
   using Boundary = V8UnionStringOrTimelineRangeOffset;
   using State = TimelineTriggerState;
+  using CcBoundaries = cc::TimelineTrigger::Boundaries;
 
   TimelineTriggerRange(AnimationTimeline* timeline,
                        Boundary* activation_range_start,
@@ -73,6 +76,7 @@ class CORE_EXPORT TimelineTriggerRange : public ScriptWrappable {
     double current_offset = 0.;
   };
 
+  static Node* ComputeBoundariesSource(const ScrollTimeline& timeline);
   std::optional<TriggerBoundaries> CalculateTriggerBoundaries();
   TriggerBoundaries ComputeTriggerBoundaries(double current_offset,
                                              Element& timeline_source,
@@ -83,6 +87,9 @@ class CORE_EXPORT TimelineTriggerRange : public ScriptWrappable {
       const ScrollTimeline& timeline) {
     return ComputeTriggerBoundaries(current_offset, timeline_source, timeline);
   }
+
+  std::optional<CcBoundaries> ComputeCcBoundaries(
+      cc::AnimationTimeline* cc_timeline);
 
   std::optional<State> UpdateState();
   std::optional<State> ComputeState();

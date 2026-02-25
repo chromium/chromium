@@ -88,7 +88,7 @@ double ComputeTriggerBoundary(std::optional<TimelineOffset> offset,
                               double default_value,
                               const ScrollTimeline& timeline,
                               const TimelineRange::ScrollOffsets& range_offsets,
-                              Element& timeline_source) {
+                              const Node& timeline_source) {
   if (offset) {
     // |range_offsets| is in physical pixels. Get the range values in CSS
     // pixels.
@@ -275,6 +275,22 @@ const TimelineTriggerRange::Boundary* TimelineTriggerRange::activeRangeEnd(
   return active_range_end_;
 }
 
+Node* TimelineTriggerRange::ComputeBoundariesSource(
+    const ScrollTimeline& timeline) {
+  Node* timeline_source = timeline.ComputeResolvedSource();
+  if (!timeline_source) {
+    return nullptr;
+  }
+
+  if (IsA<LayoutView>(timeline_source->GetLayoutObject())) {
+    // If the source is the root document, it isn't an "Element", so we need
+    // to work with its scrollingElement
+    timeline_source = To<Document>(timeline_source)->ScrollingElementNoLayout();
+  }
+
+  return timeline_source;
+}
+
 TimelineTriggerRange::TriggerBoundaries
 TimelineTriggerRange::ComputeTriggerBoundaries(double current_offset,
                                                Element& timeline_source,
@@ -360,23 +376,10 @@ std::optional<TimelineTriggerState> TimelineTriggerRange::ComputeState() {
       return std::nullopt;
     }
 
-    Node* timeline_source = timeline->ComputeResolvedSource();
-    if (!timeline_source) {
-      return std::nullopt;
-    }
+    Node* timeline_source = ComputeBoundariesSource(*timeline);
 
     current_offset = AdjustForAbsoluteZoom::AdjustScroll(
         *current_offset, *timeline_source->GetLayoutObject());
-
-    if (IsA<LayoutView>(timeline_source->GetLayoutObject())) {
-      // If the source is the root document, it isn't an "Element", so we need
-      // to work with its scrollingElement
-      timeline_source =
-          To<Document>(timeline_source)->ScrollingElementNoLayout();
-      if (!timeline_source) {
-        return std::nullopt;
-      }
-    }
 
     boundaries = ComputeTriggerBoundaries(
         *current_offset, *To<Element>(timeline_source), *timeline);
@@ -416,6 +419,70 @@ std::optional<TimelineTriggerState> TimelineTriggerRange::ComputeState() {
   }
 
   return new_state;
+}
+
+std::optional<TimelineTriggerRange::CcBoundaries>
+TimelineTriggerRange::ComputeCcBoundaries(cc::AnimationTimeline* cc_timeline) {
+  if (!timeline_->IsProgressBased()) {
+    // Non progress based triggers are always in a tripped state,
+    // no need to composite the trigger so we should not be in this function.
+    return std::nullopt;
+  }
+
+  ScrollTimeline* timeline =
+      DynamicTo<ScrollTimeline>(timeline_->ExposedTimeline());
+  if (!timeline) {
+    return std::nullopt;
+  }
+
+  Node* timeline_source = ComputeBoundariesSource(*timeline);
+  if (!timeline_source) {
+    return std::nullopt;
+  }
+
+  TriggerBoundaries boundaries = ComputeTriggerBoundaries(
+      /*(unused) current_offset=*/0, *To<Element>(timeline_source), *timeline);
+
+  // Blink boundaries are calculated in CSS pixels, but cc ScrollTimeline
+  // offsets are in physical pixels. So, scale the blink boundaries into
+  // physical pixels.
+  // TODO(451238244): Update boundaries whenever zoom factor changes.
+  double zoom_factor =
+      timeline_source->GetLayoutBox()->StyleRef().EffectiveZoom();
+  boundaries.activation_start = boundaries.activation_start * zoom_factor;
+  boundaries.activation_end = boundaries.activation_end * zoom_factor;
+  boundaries.active_start = boundaries.active_start * zoom_factor;
+  boundaries.active_end = boundaries.active_end * zoom_factor;
+
+  const double ms_per_pixel_multiplier =
+      cc::ScrollTimeline::kScrollTimelineMicrosecondsPerPixel;
+
+  // In cc, we evaluate "enter" and "exit" using the current time of the
+  // timeline. The current time of the timeline is measured relative to the
+  // start of the timeline's range which, in the case of a view timeline, is the
+  // start of its cover range.
+  double timeline_start_offset =
+      static_cast<cc::ScrollTimeline*>(cc_timeline)->pending_offsets()->start;
+
+  CcBoundaries cc_boundaries;
+  cc_boundaries.activation_start_time =
+      base::TimeTicks() +
+      base::Microseconds((boundaries.activation_start - timeline_start_offset) *
+                         ms_per_pixel_multiplier);
+  cc_boundaries.activation_end_time =
+      base::TimeTicks() +
+      base::Microseconds((boundaries.activation_end - timeline_start_offset) *
+                         ms_per_pixel_multiplier);
+  cc_boundaries.active_start_time =
+      base::TimeTicks() +
+      base::Microseconds((boundaries.active_start - timeline_start_offset) *
+                         ms_per_pixel_multiplier);
+  cc_boundaries.active_end_time =
+      base::TimeTicks() +
+      base::Microseconds((boundaries.active_end - timeline_start_offset) *
+                         ms_per_pixel_multiplier);
+
+  return cc_boundaries;
 }
 
 void TimelineTriggerRange::Trace(Visitor* visitor) const {

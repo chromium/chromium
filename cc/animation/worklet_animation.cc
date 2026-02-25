@@ -86,8 +86,8 @@ void WorkletAnimation::UpdateState(bool start_ready_animations,
 void WorkletAnimation::TakeTimeUpdatedEvent(AnimationEvents* events) {
   DCHECK(events->needs_time_updated_events());
   if (last_synced_local_time_.Read(*this) != local_time_.Read(*this)) {
-    events->events().emplace_back(animation_timeline()->id(), id_,
-                                  local_time_.Read(*this));
+    events->events().emplace_back(AnimationPlaybackEvent(
+        animation_timeline()->id(), id_, local_time_.Read(*this)));
     last_synced_local_time_.Write(*this) = local_time_.Read(*this);
   }
 }

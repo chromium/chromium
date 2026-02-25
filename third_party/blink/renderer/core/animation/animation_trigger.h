@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ANIMATION_TRIGGER_H_
 
 #include "cc/animation/animation_trigger.h"
+#include "cc/animation/animation_trigger_delegate.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_animation_play_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_animation_trigger_behavior.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
@@ -22,7 +23,8 @@ class Animation;
 class Element;
 class ExceptionState;
 
-class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
+class CORE_EXPORT AnimationTrigger : public ScriptWrappable,
+                                     public cc::AnimationTriggerDelegate {
   DEFINE_WRAPPERTYPEINFO();
   USING_PRE_FINALIZER(AnimationTrigger, Dispose);
 
@@ -66,7 +68,7 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable {
   void UpdateCompositorTrigger(
       const PaintArtifactCompositor* paint_artifact_compositor);
   virtual void CreateCompositorTrigger() {}
-  virtual void DestroyCompositorTrigger() {}
+  virtual void DestroyCompositorTrigger();
   cc::AnimationTrigger* CompositorTrigger() { return nullptr; }
 
   void Dispose();

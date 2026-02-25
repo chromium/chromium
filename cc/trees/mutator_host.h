@@ -69,7 +69,8 @@ class MutatorHost {
   // don't need to pass the scroll tree in here.
   virtual bool TickAnimations(base::TimeTicks monotonic_time,
                               const ScrollTree& scroll_tree,
-                              bool is_active_tree) = 0;
+                              bool is_active_tree,
+                              MutatorEvents* events) = 0;
   // Tick animations that depends on scroll offset.
   virtual void TickScrollAnimations(base::TimeTicks monotonic_time,
                                     const ScrollTree& scroll_tree) = 0;

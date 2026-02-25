@@ -1264,8 +1264,10 @@ void LayerTreeHost::AnimateLayers(base::TimeTicks monotonic_time) {
   std::unique_ptr<MutatorEvents> events = mutator_host()->CreateEvents();
 
   if (mutator_host()->TickAnimations(monotonic_time,
-                                     property_trees()->scroll_tree(), true))
+                                     property_trees()->scroll_tree(), true,
+                                     events.get())) {
     mutator_host()->UpdateAnimationState(true, events.get());
+  }
 
   if (!events->IsEmpty()) {
     property_tree_delegate_->OnAnimateLayers();

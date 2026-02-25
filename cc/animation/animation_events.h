@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/time/time.h"
@@ -16,7 +17,7 @@
 
 namespace cc {
 
-struct CC_ANIMATION_EXPORT AnimationEvent {
+struct CC_ANIMATION_EXPORT AnimationPlaybackEvent {
   enum class Type { kStarted, kFinished, kAborted, kTakeOver, kTimeUpdated };
 
   typedef size_t KeyframeEffectId;
@@ -26,21 +27,21 @@ struct CC_ANIMATION_EXPORT AnimationEvent {
     int model_id;
   };
 
-  AnimationEvent(Type type,
-                 UniqueKeyframeModelId uid,
-                 int group_id,
-                 int target_property,
-                 base::TimeTicks monotonic_time);
+  AnimationPlaybackEvent(Type type,
+                         UniqueKeyframeModelId uid,
+                         int group_id,
+                         int target_property,
+                         base::TimeTicks monotonic_time);
 
-  // Constructs AnimationEvent of TIME_UPDATED type.
-  AnimationEvent(int timeline_id,
-                 int animation_id,
-                 std::optional<base::TimeDelta> local_time);
+  // Constructs AnimationPlaybackEvent of TIME_UPDATED type.
+  AnimationPlaybackEvent(int timeline_id,
+                         int animation_id,
+                         std::optional<base::TimeDelta> local_time);
 
-  AnimationEvent(const AnimationEvent& other);
-  AnimationEvent& operator=(const AnimationEvent& other);
+  AnimationPlaybackEvent(const AnimationPlaybackEvent& other);
+  AnimationPlaybackEvent& operator=(const AnimationPlaybackEvent& other);
 
-  ~AnimationEvent();
+  ~AnimationPlaybackEvent();
 
   bool ShouldDispatchToKeyframeEffectAndModel() const;
 
@@ -55,8 +56,23 @@ struct CC_ANIMATION_EXPORT AnimationEvent {
   base::TimeTicks animation_start_time;
   std::unique_ptr<gfx::AnimationCurve> curve;
 
-  // Set for TIME_UPDATED events.
   std::optional<base::TimeDelta> local_time;
+};
+
+// This describes the occurrence of an event for an animation-trigger[1]
+// that occurs on the impl thread.
+// [1] https://drafts.csswg.org/css-animations-2/#animation-triggers
+struct CC_ANIMATION_EXPORT AnimationTriggerEvent {
+  enum class Type {
+    kActivate,
+    kDeactivate,
+  };
+
+  AnimationTriggerEvent(int trigger_id, Type type);
+  AnimationTriggerEvent(const AnimationTriggerEvent& other);
+
+  int trigger_id;
+  Type type;
 };
 
 class CC_ANIMATION_EXPORT AnimationEvents : public MutatorEvents {
@@ -72,11 +88,13 @@ class CC_ANIMATION_EXPORT AnimationEvents : public MutatorEvents {
     needs_time_updated_events_ = value;
   }
 
-  const std::vector<AnimationEvent>& events() const { return events_; }
-  std::vector<AnimationEvent>& events() { return events_; }
+  using Event = std::variant<AnimationPlaybackEvent, AnimationTriggerEvent>;
+
+  const std::vector<Event>& events() const { return events_; }
+  std::vector<Event>& events() { return events_; }
 
  private:
-  std::vector<AnimationEvent> events_;
+  std::vector<Event> events_;
   bool needs_time_updated_events_ = false;
 };
 

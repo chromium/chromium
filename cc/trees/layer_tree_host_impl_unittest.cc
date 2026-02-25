@@ -18540,7 +18540,7 @@ ConcurrentImplOnlyScrollAnimationsTest::CreateAndTickScrollAnimations() {
 
   // Bring the animations to their initial values (current_offset).
   animation_host->TickAnimations(base::TimeTicks() + base::Milliseconds(200),
-                                 host_impl_->GetScrollTree(), true);
+                                 host_impl_->GetScrollTree(), true, nullptr);
   EXPECT_EQ(host_impl_->GetScrollTree().current_scroll_offset(
                 scroller1_->element_id()),
             current_offset1_);
@@ -18553,7 +18553,7 @@ ConcurrentImplOnlyScrollAnimationsTest::CreateAndTickScrollAnimations() {
 
   // Bring the animations to intermediate values.
   animation_host->TickAnimations(base::TimeTicks() + base::Milliseconds(300),
-                                 host_impl_->GetScrollTree(), true);
+                                 host_impl_->GetScrollTree(), true, nullptr);
   EXPECT_GT(host_impl_->GetScrollTree()
                 .current_scroll_offset(scroller1_->element_id())
                 .y(),
@@ -18570,7 +18570,7 @@ void ConcurrentImplOnlyScrollAnimationsTest::CompleteScrollAnimations() {
   AnimationHost* animation_host = GetImplAnimationHost();
   // Bring the animations to their final values.
   animation_host->TickAnimations(base::TimeTicks() + base::Milliseconds(600),
-                                 host_impl_->GetScrollTree(), true);
+                                 host_impl_->GetScrollTree(), true, nullptr);
   // Bring the animations to a FINISHED state.
   animation_host->UpdateAnimationState(true, nullptr);
 
@@ -18760,7 +18760,7 @@ TEST_P(ConcurrentSnapAnimationsTest, TrackAnimatingSnapTargetIds) {
   while (animation_host->HasImplOnlyScrollAnimatingElement()) {
     animation_host->TickAnimations(
         base::TimeTicks() + base::Milliseconds(t++ * 100),
-        host_impl_->GetScrollTree(), true);
+        host_impl_->GetScrollTree(), true, nullptr);
     animation_host->UpdateAnimationState(true, nullptr);
   }
 

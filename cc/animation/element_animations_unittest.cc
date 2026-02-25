@@ -332,10 +332,12 @@ TEST_F(ElementAnimationsTest, AddedAnimationIsDestroyed) {
   auto events = CreateEventsForTesting();
   animation2_impl->UpdateState(true, events.get());
   EXPECT_EQ(1u, events->events().size());
-  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events()[0].type);
+  const AnimationPlaybackEvent& event =
+      std::get<AnimationPlaybackEvent>(events->events()[0]);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kStarted, event.type);
 
   // The actual detachment happens here, inside the callback
-  animation2->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  animation2->DispatchAndDelegateAnimationEvent(event);
   EXPECT_TRUE(delegate.started());
 }
 
@@ -367,7 +369,9 @@ TEST_F(ElementAnimationsTest, DoNotClobberStartTimes) {
 
   // Synchronize the start times.
   EXPECT_EQ(1u, events->events().size());
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  const AnimationPlaybackEvent& event =
+      std::get<AnimationPlaybackEvent>(events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(event);
   EXPECT_EQ(animation_->keyframe_effect()
                 ->GetKeyframeModelById(keyframe_model_id)
                 ->start_time(),
@@ -414,7 +418,9 @@ TEST_F(ElementAnimationsTest, UseSpecifiedStartTimes) {
 
   // Synchronize the start times.
   EXPECT_EQ(1u, events->events().size());
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  const AnimationPlaybackEvent& event =
+      std::get<AnimationPlaybackEvent>(events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(event);
 
   EXPECT_EQ(start_time, animation_->keyframe_effect()
                             ->GetKeyframeModelById(keyframe_model_id)
@@ -471,7 +477,8 @@ TEST_F(ElementAnimationsTest, Activation) {
   animation_impl_->Tick(kInitialTickTime);
   animation_impl_->UpdateState(true, events.get());
   EXPECT_EQ(1u, events->events().size());
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  const auto* event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
 
   EXPECT_EQ(1u, host->ticking_animations_for_testing().size());
   EXPECT_EQ(1u, host_impl->ticking_animations_for_testing().size());
@@ -499,7 +506,8 @@ TEST_F(ElementAnimationsTest, Activation) {
   EXPECT_EQ(1u, host_impl->ticking_animations_for_testing().size());
 
   EXPECT_EQ(1u, events->events().size());
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   animation_->Tick(kInitialTickTime + base::Milliseconds(1500));
   animation_->UpdateState(true, nullptr);
 
@@ -553,7 +561,9 @@ TEST_F(ElementAnimationsTest, SyncPause) {
 
   animation_->Tick(time);
   animation_->UpdateState(true, nullptr);
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  const AnimationPlaybackEvent& event =
+      std::get<AnimationPlaybackEvent>(events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(event);
 
   EXPECT_EQ(KeyframeModel::RUNNING,
             animation_impl_->keyframe_effect()
@@ -627,19 +637,21 @@ TEST_F(ElementAnimationsTest, DoNotSyncFinishedAnimation) {
   animation_impl_->Tick(kInitialTickTime);
   animation_impl_->UpdateState(true, events.get());
   EXPECT_EQ(1u, events->events().size());
-  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events()[0].type);
+  const auto* event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kStarted, event->type);
 
   // Notify main thread animations that the animation has started.
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
 
   // Complete animation on impl thread.
   events = CreateEventsForTesting();
   animation_impl_->Tick(kInitialTickTime + base::Seconds(1));
   animation_impl_->UpdateState(true, events.get());
   EXPECT_EQ(1u, events->events().size());
-  EXPECT_EQ(AnimationEvent::Type::kFinished, events->events()[0].type);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kFinished, event->type);
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
 
   animation_->Tick(kInitialTickTime + base::Seconds(2));
   animation_->UpdateState(true, nullptr);
@@ -678,8 +690,9 @@ TEST_F(ElementAnimationsTest, AnimationsAreDeleted) {
 
   // There should be a STARTED event for the animation.
   EXPECT_EQ(1u, events->events().size());
-  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events()[0].type);
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  const auto* event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kStarted, event->type);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
 
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_->UpdateState(true, nullptr);
@@ -694,13 +707,14 @@ TEST_F(ElementAnimationsTest, AnimationsAreDeleted) {
 
   // There should be a FINISHED event for the animation.
   EXPECT_EQ(1u, events->events().size());
-  EXPECT_EQ(AnimationEvent::Type::kFinished, events->events()[0].type);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kFinished, event->type);
 
   // Neither animations should have deleted the animation yet.
   EXPECT_TRUE(animation_->GetKeyframeModel(TargetProperty::OPACITY));
   EXPECT_TRUE(animation_impl_->GetKeyframeModel(TargetProperty::OPACITY));
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
 
   animation_->Tick(kInitialTickTime + base::Milliseconds(3000));
   animation_->UpdateState(true, nullptr);
@@ -740,8 +754,9 @@ TEST_F(ElementAnimationsTest, AnimationFinishedOnImplDeletedOnMain) {
 
   // There should be a STARTED event for the animation.
   EXPECT_EQ(1u, events->events().size());
-  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events()[0].type);
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  const auto* event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kStarted, event->type);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
 
   events = CreateEventsForTesting();
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
@@ -751,7 +766,8 @@ TEST_F(ElementAnimationsTest, AnimationFinishedOnImplDeletedOnMain) {
 
   // There should be a FINISHED event for the animation.
   EXPECT_EQ(1u, events->events().size());
-  EXPECT_EQ(AnimationEvent::Type::kFinished, events->events()[0].type);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kFinished, event->type);
 
   // Before the FINISHED event is received, main aborts the keyframe
   // and detaches the element.
@@ -762,7 +778,7 @@ TEST_F(ElementAnimationsTest, AnimationFinishedOnImplDeletedOnMain) {
   EXPECT_FALSE(animation_->keyframe_effect()->has_any_keyframe_model());
 
   // Then we dispatch the FINISHED event.
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
 
   EXPECT_TRUE(host_->needs_push_properties());
 
@@ -953,7 +969,9 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransition) {
   EXPECT_EQ(initial_value,
             client_impl_.GetScrollOffset(element_id_, ElementListType::ACTIVE));
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  const AnimationPlaybackEvent& event =
+      std::get<AnimationPlaybackEvent>(events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(event);
   animation_->Tick(kInitialTickTime + duration / 2);
   animation_->UpdateState(true, nullptr);
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
@@ -1133,7 +1151,9 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransitionNoImplProvider) {
   animation_impl_->UpdateState(true, events.get());
   DCHECK_EQ(1UL, events->events().size());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  const AnimationPlaybackEvent& event =
+      std::get<AnimationPlaybackEvent>(events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(event);
   animation_->Tick(kInitialTickTime + duration / 2);
   animation_->UpdateState(true, nullptr);
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
@@ -1363,7 +1383,9 @@ TEST_F(ElementAnimationsTest, SpecifiedStartTimesAreSentToMainThreadDelegate) {
 
   // Synchronize the start times.
   EXPECT_EQ(1u, events->events().size());
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  const AnimationPlaybackEvent& event =
+      std::get<AnimationPlaybackEvent>(events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(event);
 
   // Validate start time on the main thread delegate.
   EXPECT_EQ(start_time, delegate.start_time());
@@ -1401,8 +1423,8 @@ TEST_F(ElementAnimationsTest,
   EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   // Send the synchronized start time.
-  animation_->DispatchAndDelegateAnimationEvent(AnimationEvent(
-      AnimationEvent::Type::kStarted,
+  animation_->DispatchAndDelegateAnimationEvent(AnimationPlaybackEvent(
+      AnimationPlaybackEvent::Type::kStarted,
       {animation_->animation_timeline()->id(), animation_->id(),
        keyframe_model_id},
       1, TargetProperty::OPACITY, kInitialTickTime + base::Milliseconds(2000)));
@@ -1817,7 +1839,11 @@ TEST_F(ElementAnimationsTest, SkipUpdateState) {
 
   // Should have one STARTED event and one FINISHED event.
   EXPECT_EQ(2u, events->events().size());
-  EXPECT_NE(events->events()[0].type, events->events()[1].type);
+  const AnimationPlaybackEvent& event0 =
+      std::get<AnimationPlaybackEvent>(events->events()[0]);
+  const AnimationPlaybackEvent& event1 =
+      std::get<AnimationPlaybackEvent>(events->events()[1]);
+  EXPECT_NE(event0.type, event1.type);
 
   // The float transition should still be at its starting point.
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
@@ -2033,12 +2059,14 @@ TEST_F(ElementAnimationsTest, ImplThreadAbortedAnimationGetsDeleted) {
   animation_impl_->UpdateState(true, events.get());
   EXPECT_TRUE(host_impl_->needs_push_properties());
   EXPECT_EQ(1u, events->events().size());
-  EXPECT_EQ(AnimationEvent::Type::kAborted, events->events()[0].type);
+  const AnimationPlaybackEvent& event =
+      std::get<AnimationPlaybackEvent>(events->events()[0]);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kAborted, event.type);
   EXPECT_EQ(
       KeyframeModel::WAITING_FOR_DELETION,
       animation_impl_->GetKeyframeModel(TargetProperty::OPACITY)->run_state());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(event);
   EXPECT_EQ(KeyframeModel::ABORTED,
             animation_->GetKeyframeModel(TargetProperty::OPACITY)->run_state());
   EXPECT_TRUE(delegate.aborted());
@@ -2105,16 +2133,18 @@ TEST_F(ElementAnimationsTest, ImplThreadTakeoverAnimationGetsDeleted) {
   EXPECT_TRUE(delegate_impl.finished());
   EXPECT_TRUE(host_impl_->needs_push_properties());
   EXPECT_EQ(1u, events->events().size());
-  EXPECT_EQ(AnimationEvent::Type::kTakeOver, events->events()[0].type);
-  EXPECT_EQ(TicksFromSecondsF(123), events->events()[0].animation_start_time);
-  EXPECT_EQ(target_value, static_cast<ScrollOffsetAnimationCurve*>(
-                              events->events()[0].curve.get())
-                              ->target_value());
+  const AnimationPlaybackEvent& event =
+      std::get<AnimationPlaybackEvent>(events->events()[0]);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kTakeOver, event.type);
+  EXPECT_EQ(TicksFromSecondsF(123), event.animation_start_time);
+  EXPECT_EQ(target_value,
+            static_cast<ScrollOffsetAnimationCurve*>(event.curve.get())
+                ->target_value());
   EXPECT_EQ(nullptr,
             animation_impl_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET));
 
   // MT receives the event to take over.
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(event);
   EXPECT_TRUE(delegate.takeover());
 
   // Animation::NotifyAnimationTakeover requests SetNeedsPushProperties to purge
@@ -2161,8 +2191,12 @@ TEST_F(ElementAnimationsTest, FinishedEventsForGroup) {
 
   // Both animations should have started.
   EXPECT_EQ(2u, events->events().size());
-  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events()[0].type);
-  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events()[1].type);
+  const auto* event0 =
+      std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  const auto* event1 =
+      std::get_if<AnimationPlaybackEvent>(&events->events()[1]);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kStarted, event0->type);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kStarted, event1->type);
 
   events = CreateEventsForTesting();
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(1000));
@@ -2183,8 +2217,11 @@ TEST_F(ElementAnimationsTest, FinishedEventsForGroup) {
 
   // Both animations should have generated FINISHED events.
   EXPECT_EQ(2u, events->events().size());
-  EXPECT_EQ(AnimationEvent::Type::kFinished, events->events()[0].type);
-  EXPECT_EQ(AnimationEvent::Type::kFinished, events->events()[1].type);
+
+  event0 = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  event1 = std::get_if<AnimationPlaybackEvent>(&events->events()[1]);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kFinished, event0->type);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kFinished, event1->type);
 }
 
 // Ensure that when a group has a mix of aborted and finished animations,
@@ -2215,8 +2252,12 @@ TEST_F(ElementAnimationsTest, FinishedAndAbortedEventsForGroup) {
 
   // Both animations should have started.
   EXPECT_EQ(2u, events->events().size());
-  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events()[0].type);
-  EXPECT_EQ(AnimationEvent::Type::kStarted, events->events()[1].type);
+  const auto* event0 =
+      std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  const auto* event1 =
+      std::get_if<AnimationPlaybackEvent>(&events->events()[1]);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kStarted, event0->type);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kStarted, event1->type);
 
   animation_impl_->AbortKeyframeModelsWithProperty(TargetProperty::OPACITY,
                                                    false);
@@ -2228,10 +2269,12 @@ TEST_F(ElementAnimationsTest, FinishedAndAbortedEventsForGroup) {
   // We should have exactly 2 events: a FINISHED event for the tranform
   // animation, and an ABORTED event for the opacity animation.
   EXPECT_EQ(2u, events->events().size());
-  EXPECT_EQ(AnimationEvent::Type::kFinished, events->events()[0].type);
-  EXPECT_EQ(TargetProperty::TRANSFORM, events->events()[0].target_property);
-  EXPECT_EQ(AnimationEvent::Type::kAborted, events->events()[1].type);
-  EXPECT_EQ(TargetProperty::OPACITY, events->events()[1].target_property);
+  event0 = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  event1 = std::get_if<AnimationPlaybackEvent>(&events->events()[1]);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kFinished, event0->type);
+  EXPECT_EQ(TargetProperty::TRANSFORM, event0->target_property);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kAborted, event1->type);
+  EXPECT_EQ(TargetProperty::OPACITY, event1->target_property);
 }
 
 TEST_F(ElementAnimationsTest, MaximumAnimationScaleNotScaled) {
@@ -2701,7 +2744,8 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
   animation_impl_->Tick(kInitialTickTime);
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  const auto* event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   events->events().clear();
 
   // Finish the animation.
@@ -2774,7 +2818,8 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   events->events().clear();
 
   animation_->RemoveKeyframeModel(keyframe_model_id);
@@ -2827,7 +2872,8 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   events->events().clear();
 
   animation_impl_->AbortKeyframeModelsWithProperty(TargetProperty::TRANSFORM,
@@ -2844,7 +2890,8 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(4000));
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   EXPECT_FALSE(client_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(client_.GetTransformIsCurrentlyAnimating(
@@ -2928,7 +2975,8 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenOpacityAnimationChanges) {
   animation_impl_->Tick(kInitialTickTime);
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  const auto* event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   events->events().clear();
 
   // Finish the animation.
@@ -2990,7 +3038,8 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenOpacityAnimationChanges) {
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   events->events().clear();
 
   animation_->RemoveKeyframeModel(keyframe_model_id);
@@ -3042,7 +3091,8 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenOpacityAnimationChanges) {
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   events->events().clear();
 
   animation_impl_->AbortKeyframeModelsWithProperty(TargetProperty::OPACITY,
@@ -3059,7 +3109,8 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenOpacityAnimationChanges) {
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(4000));
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   EXPECT_FALSE(client_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(client_.GetOpacityIsCurrentlyAnimating(element_id_,
@@ -3142,7 +3193,8 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenFilterAnimationChanges) {
   animation_impl_->Tick(kInitialTickTime);
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  const auto* event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   events->events().clear();
 
   // Finish the animation.
@@ -3204,7 +3256,8 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenFilterAnimationChanges) {
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   events->events().clear();
 
   animation_->RemoveKeyframeModel(keyframe_model_id);
@@ -3256,7 +3309,8 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenFilterAnimationChanges) {
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   events->events().clear();
 
   animation_impl_->AbortKeyframeModelsWithProperty(TargetProperty::FILTER,
@@ -3273,7 +3327,8 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenFilterAnimationChanges) {
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(4000));
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   EXPECT_FALSE(client_.GetHasPotentialFilterAnimation(element_id_,
                                                       ElementListType::ACTIVE));
   EXPECT_FALSE(client_.GetFilterIsCurrentlyAnimating(element_id_,
@@ -3357,7 +3412,8 @@ TEST_F(ElementAnimationsTest,
   animation_impl_->Tick(kInitialTickTime);
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  const auto* event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   events->events().clear();
 
   // Finish the animation.
@@ -3419,7 +3475,8 @@ TEST_F(ElementAnimationsTest,
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   events->events().clear();
 
   animation_->RemoveKeyframeModel(keyframe_model_id);
@@ -3471,7 +3528,8 @@ TEST_F(ElementAnimationsTest,
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   events->events().clear();
 
   animation_impl_->AbortKeyframeModelsWithProperty(
@@ -3488,7 +3546,8 @@ TEST_F(ElementAnimationsTest,
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(4000));
   animation_impl_->UpdateState(true, events.get());
 
-  animation_->DispatchAndDelegateAnimationEvent(events->events()[0]);
+  event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
+  animation_->DispatchAndDelegateAnimationEvent(*event);
   EXPECT_FALSE(client_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(client_.GetBackdropFilterIsCurrentlyAnimating(

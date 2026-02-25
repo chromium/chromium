@@ -8,6 +8,7 @@
 
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
+#include "cc/animation/animation_trigger_delegate.h"
 #include "cc/animation/keyframe_effect.h"
 
 namespace cc {
@@ -75,6 +76,38 @@ void AnimationTrigger::SetAnimationData(std::vector<AnimationData>& data) {
   if (animation_data_.Read(*this) != data) {
     SetNeedsPushProperties();
     animation_data_.Write(*this) = data;
+  }
+}
+
+void AnimationTrigger::PerformActivate(AnimationEvents* events) {
+  DCHECK(events);
+  events->events().emplace_back(
+      AnimationTriggerEvent(id(), AnimationTriggerEvent::Type::kActivate));
+  // TODO(crbug.com/451238244): Trigger animations.
+}
+
+void AnimationTrigger::PerformDeactivate(AnimationEvents* events) {
+  DCHECK(events);
+  events->events().emplace_back(
+      AnimationTriggerEvent(id(), AnimationTriggerEvent::Type::kDeactivate));
+  // TODO(crbug.com/451238244): Trigger animations.
+}
+
+void AnimationTrigger::SetAnimationTriggerDelegate(
+    AnimationTriggerDelegate* delegate) {
+  animation_trigger_delegate_ = delegate;
+}
+
+void AnimationTrigger::DispatchAnimationTriggerEvent(
+    const AnimationTriggerEvent& event) {
+  if (animation_trigger_delegate_) {
+    switch (event.type) {
+      case AnimationTriggerEvent::Type::kActivate:
+        animation_trigger_delegate_->NotifyActivated();
+        break;
+      case AnimationTriggerEvent::Type::kDeactivate:
+        animation_trigger_delegate_->NotifyDeactivated();
+    }
   }
 }
 

@@ -38,6 +38,10 @@ class CORE_EXPORT EventTrigger : public AnimationTrigger {
   void Trace(Visitor* visitor) const override;
 
  private:
+  // cc::AnimationTriggerDelegate implementation.
+  void NotifyActivated() override {}
+  void NotifyDeactivated() override {}
+
   void DidAddAnimation() override;
   void DidRemoveAnimation(Animation* animation) override;
   void ClearListenerIfNecessary();

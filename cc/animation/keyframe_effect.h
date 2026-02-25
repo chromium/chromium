@@ -115,7 +115,8 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
 
   // Dispatches animation event to a keyframe model specified as part of the
   // event. Returns true if the event is dispatched, false otherwise.
-  bool DispatchAnimationEventToKeyframeModel(const AnimationEvent& event);
+  bool DispatchAnimationEventToKeyframeModel(
+      const AnimationPlaybackEvent& event);
 
   // Returns true if there are any KeyframeModels that have neither finished
   // nor aborted.
@@ -190,7 +191,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   std::optional<gfx::PointF> ScrollOffsetForAnimation() const;
   void GenerateEvent(AnimationEvents* events,
                      const KeyframeModel& keyframe_model,
-                     AnimationEvent::Type type,
+                     AnimationPlaybackEvent::Type type,
                      base::TimeTicks monotonic_time);
   void GenerateTakeoverEventForScrollAnimation(
       AnimationEvents* events,

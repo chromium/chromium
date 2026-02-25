@@ -118,7 +118,7 @@ TEST_F(WorkletAnimationTest, LocalTimeIsUsedWhenTicking) {
 }
 
 // Test generation of animation events by worklet animations.
-TEST_F(WorkletAnimationTest, AnimationEventLocalTimeUpdate) {
+TEST_F(WorkletAnimationTest, AnimationPlaybackEventLocalTimeUpdate) {
   AttachWorkletAnimation();
 
   std::optional<base::TimeDelta> local_time = base::Seconds(1);
@@ -134,10 +134,11 @@ TEST_F(WorkletAnimationTest, AnimationEventLocalTimeUpdate) {
   EXPECT_TRUE(animation_events->needs_time_updated_events());
   worklet_animation_->TakeTimeUpdatedEvent(animation_events);
   EXPECT_EQ(1u, animation_events->events().size());
-  AnimationEvent event = animation_events->events()[0];
-  EXPECT_EQ(AnimationEvent::Type::kTimeUpdated, event.type);
-  EXPECT_EQ(worklet_animation_->id(), event.uid.animation_id);
-  EXPECT_EQ(local_time, event.local_time);
+  const auto* event =
+      std::get_if<AnimationPlaybackEvent>(&animation_events->events()[0]);
+  EXPECT_EQ(AnimationPlaybackEvent::Type::kTimeUpdated, event->type);
+  EXPECT_EQ(worklet_animation_->id(), event->uid.animation_id);
+  EXPECT_EQ(local_time, event->local_time);
 
   // If the state is not updated no more events is generated.
   mutator_events = host_->CreateEvents();
@@ -164,7 +165,8 @@ TEST_F(WorkletAnimationTest, AnimationEventLocalTimeUpdate) {
   EXPECT_TRUE(animation_events->needs_time_updated_events());
   worklet_animation_->TakeTimeUpdatedEvent(animation_events);
   EXPECT_EQ(1u, animation_events->events().size());
-  EXPECT_EQ(local_time, animation_events->events()[0].local_time);
+  event = std::get_if<AnimationPlaybackEvent>(&animation_events->events()[0]);
+  EXPECT_EQ(local_time, event->local_time);
 }
 
 TEST_F(WorkletAnimationTest, CurrentTimeCorrectlyUsesScrollTimeline) {

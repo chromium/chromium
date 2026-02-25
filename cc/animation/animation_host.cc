@@ -27,6 +27,7 @@
 #include "cc/animation/scroll_offset_animations.h"
 #include "cc/animation/scroll_offset_animations_impl.h"
 #include "cc/animation/scroll_timeline.h"
+#include "cc/animation/timeline_trigger.h"
 #include "cc/animation/worklet_animation.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -649,7 +650,8 @@ bool AnimationHost::ActivateAnimations(MutatorEvents* mutator_events) {
 
 bool AnimationHost::TickAnimations(base::TimeTicks monotonic_time,
                                    const ScrollTree& scroll_tree,
-                                   bool is_active_tree) {
+                                   bool is_active_tree,
+                                   MutatorEvents* mutator_events) {
   TRACE_EVENT0("cc", "AnimationHost::TickAnimations");
   // We tick animations in the following order:
   // 1. regular animations 2. mutator 3. worklet animations
@@ -666,7 +668,15 @@ bool AnimationHost::TickAnimations(base::TimeTicks monotonic_time,
 
   TRACE_EVENT_INSTANT0("cc", "NeedsTickAnimations", TRACE_EVENT_SCOPE_THREAD);
 
+  if (is_active_tree) {
+    // We update triggers first since they affect whether an animation is in
+    // effect or not.
+    auto* animation_events = static_cast<AnimationEvents*>(mutator_events);
+    UpdateTriggers(scroll_tree, animation_events);
+  }
+
   bool animated = false;
+
   std::vector<AnimationTimeline*> scroll_timelines;
   for (auto& kv : id_to_timeline_map_.Read(*this)) {
     AnimationTimeline* timeline = kv.second.get();
@@ -739,6 +749,7 @@ bool AnimationHost::UpdateAnimationState(bool start_ready_animations,
   auto* animation_events = static_cast<AnimationEvents*>(mutator_events);
 
   TRACE_EVENT0("cc", "AnimationHost::UpdateAnimationState");
+
   AnimationsList ticking_animations_copy = ticking_animations_.Read(*this);
   for (auto& it : ticking_animations_copy)
     it->UpdateState(start_ready_animations, animation_events);
@@ -774,12 +785,26 @@ void AnimationHost::SetAnimationEvents(
   auto events =
       base::WrapUnique(static_cast<AnimationEvents*>(mutator_events.release()));
 
-  for (const AnimationEvent& event : events->events()) {
-    AnimationTimeline* timeline = GetTimelineById(event.uid.timeline_id);
-    if (timeline) {
-      Animation* animation = timeline->GetAnimationById(event.uid.animation_id);
-      if (animation)
-        animation->DispatchAndDelegateAnimationEvent(event);
+  for (const AnimationEvents::Event& event : events->events()) {
+    if (const auto* playback_event =
+            std::get_if<AnimationPlaybackEvent>(&event)) {
+      AnimationTimeline* timeline =
+          GetTimelineById(playback_event->uid.timeline_id);
+      if (timeline) {
+        Animation* animation =
+            timeline->GetAnimationById(playback_event->uid.animation_id);
+        if (animation) {
+          animation->DispatchAndDelegateAnimationEvent(*playback_event);
+        }
+      }
+    } else if (const auto* trigger_event =
+                   std::get_if<AnimationTriggerEvent>(&event)) {
+      AnimationTrigger* trigger = GetTriggerById(trigger_event->trigger_id);
+      if (trigger) {
+        trigger->DispatchAnimationTriggerEvent(*trigger_event);
+      }
+    } else {
+      NOTREACHED();  // Unhandled animation event type.
     }
   }
 }
@@ -1045,6 +1070,16 @@ bool AnimationHost::HasScrollLinkedAnimation(ElementId for_scroller) const {
     }
   }
   return false;
+}
+
+void AnimationHost::UpdateTriggers(const ScrollTree& scroll_tree,
+                                   AnimationEvents* events) const {
+  for (const auto& kv : id_to_trigger_map_.Read(*this)) {
+    AnimationTrigger* trigger = kv.second.get();
+    // NOTE(crbug.com/451238244): Only timeline triggers are supported for now.
+    DCHECK(trigger->IsTimelineTrigger());
+    static_cast<TimelineTrigger*>(trigger)->Update(scroll_tree, events);
+  }
 }
 
 }  // namespace cc

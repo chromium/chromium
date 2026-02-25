@@ -190,7 +190,8 @@ void Animation::RemoveFromTicking() {
   animation_host()->RemoveFromTicking(this);
 }
 
-void Animation::DispatchAndDelegateAnimationEvent(const AnimationEvent& event) {
+void Animation::DispatchAndDelegateAnimationEvent(
+    const AnimationPlaybackEvent& event) {
   if (event.ShouldDispatchToKeyframeEffectAndModel()) {
     if (!keyframe_effect() ||
         !keyframe_effect()->DispatchAnimationEventToKeyframeModel(event)) {
@@ -204,25 +205,25 @@ void Animation::DispatchAndDelegateAnimationEvent(const AnimationEvent& event) {
   DelegateAnimationEvent(event);
 }
 
-void Animation::DelegateAnimationEvent(const AnimationEvent& event) {
+void Animation::DelegateAnimationEvent(const AnimationPlaybackEvent& event) {
   if (animation_delegate_) {
     switch (event.type) {
-      case AnimationEvent::Type::kStarted:
+      case AnimationPlaybackEvent::Type::kStarted:
         animation_delegate_->NotifyAnimationStarted(
             event.monotonic_time, event.target_property, event.group_id);
         break;
 
-      case AnimationEvent::Type::kFinished:
+      case AnimationPlaybackEvent::Type::kFinished:
         animation_delegate_->NotifyAnimationFinished(
             event.monotonic_time, event.target_property, event.group_id);
         break;
 
-      case AnimationEvent::Type::kAborted:
+      case AnimationPlaybackEvent::Type::kAborted:
         animation_delegate_->NotifyAnimationAborted(
             event.monotonic_time, event.target_property, event.group_id);
         break;
 
-      case AnimationEvent::Type::kTakeOver:
+      case AnimationPlaybackEvent::Type::kTakeOver:
         // TODO(crbug.com/40655283): Routing TAKEOVER events is broken.
         DCHECK(!event.is_impl_only);
         DCHECK(event.target_property == TargetProperty::SCROLL_OFFSET);
@@ -232,7 +233,7 @@ void Animation::DelegateAnimationEvent(const AnimationEvent& event) {
             event.animation_start_time, event.curve->Clone());
         break;
 
-      case AnimationEvent::Type::kTimeUpdated:
+      case AnimationPlaybackEvent::Type::kTimeUpdated:
         DCHECK(!event.is_impl_only);
         animation_delegate_->NotifyLocalTimeUpdated(event.local_time);
         break;
@@ -333,9 +334,9 @@ void Animation::NotifyKeyframeModelFinishedForTesting(
     int keyframe_model_id,
     TargetProperty::Type target_property,
     int group_id) {
-  AnimationEvent event(AnimationEvent::Type::kFinished,
-                       {timeline_id, id(), keyframe_model_id}, group_id,
-                       target_property, base::TimeTicks());
+  AnimationPlaybackEvent event(AnimationPlaybackEvent::Type::kFinished,
+                               {timeline_id, id(), keyframe_model_id}, group_id,
+                               target_property, base::TimeTicks());
   DispatchAndDelegateAnimationEvent(event);
 }
 

@@ -21,6 +21,7 @@ cc_component("animation") {
     "animation_timeline.h",
     "animation_trigger.cc",
     "animation_trigger.h",
+    "animation_trigger_delegate.h",
     "element_animations.cc",
     "element_animations.h",
     "filter_animation_curve.cc",
