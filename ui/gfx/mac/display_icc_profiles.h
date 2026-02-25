@@ -10,6 +10,7 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_space_export.h"
 
@@ -49,10 +50,12 @@ class COLOR_SPACE_EXPORT DisplayICCProfiles {
   DisplayICCProfiles();
   ~DisplayICCProfiles();
 
-  void UpdateIfNeeded();
+  void UpdateIfNeeded() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  base::flat_map<ColorSpace, base::apple::ScopedCFTypeRef<CFDataRef>> map_;
-  bool needs_update_ = true;
+  base::flat_map<ColorSpace, base::apple::ScopedCFTypeRef<CFDataRef>> map_
+      GUARDED_BY(lock_);
+  bool needs_update_ GUARDED_BY(lock_) = true;
+  base::Lock lock_;
 };
 
 }  // namespace gfx

@@ -776,6 +776,7 @@ test("gfx_unittests") {
       "font_fallback_mac_unittest.cc",
       "image/image_mac_unittest.mm",
       "mac/coordinate_conversion_unittest.mm",
+      "mac/display_icc_profiles_unittest.cc",
       "mac/io_surface_unittest.cc",
       "mac/menu_text_elider_mac_unittest.mm",
       "platform_font_mac_unittest.mm",

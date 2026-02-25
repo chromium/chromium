@@ -17,6 +17,7 @@ DisplayICCProfiles* DisplayICCProfiles::GetInstance() {
 
 base::apple::ScopedCFTypeRef<CFDataRef>
 DisplayICCProfiles::GetDataForColorSpace(const ColorSpace& color_space) {
+  base::AutoLock lock(lock_);
   UpdateIfNeeded();
   base::apple::ScopedCFTypeRef<CFDataRef> result;
   auto found = map_.find(color_space);
@@ -41,8 +42,12 @@ void DisplayICCProfiles::UpdateIfNeeded() {
   map_.clear();
 
   // Always add Apple's sRGB profile.
+  base::apple::ScopedCFTypeRef<CGColorSpaceRef> srgb_colorspace(
+      CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
+  CHECK(srgb_colorspace);
   base::apple::ScopedCFTypeRef<CFDataRef> srgb_icc(
-      CGColorSpaceCopyICCData(CGColorSpaceCreateWithName(kCGColorSpaceSRGB)));
+      CGColorSpaceCopyICCData(srgb_colorspace.get()));
+  CHECK(srgb_icc);
   map_[ColorSpace::CreateSRGB()] = srgb_icc;
 
   // Add the profiles for all active displays.
@@ -88,6 +93,7 @@ void DisplayICCProfiles::DisplayReconfigurationCallBack(
     void* user_info) {
   DisplayICCProfiles* profiles =
       reinterpret_cast<DisplayICCProfiles*>(user_info);
+  base::AutoLock lock(profiles->lock_);
   profiles->needs_update_ = true;
 }
 
