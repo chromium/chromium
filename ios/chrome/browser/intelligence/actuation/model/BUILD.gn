@@ -2,6 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("actuation_error") {
+  sources = [
+    "actuation_error.h",
+    "actuation_error.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("model") {
   sources = [
     "actuation_service.h",
@@ -11,7 +19,10 @@ source_set("model") {
     "actuation_tool_factory.h",
     "actuation_tool_factory.mm",
   ]
-  public_deps = [ "//ios/chrome/browser/intelligence/actuation/model/tools:actuation_interface" ]
+  public_deps = [
+    ":actuation_error",
+    "//ios/chrome/browser/intelligence/actuation/model/tools:actuation_interface",
+  ]
   deps = [
     "//base",
     "//components/keyed_service/core",

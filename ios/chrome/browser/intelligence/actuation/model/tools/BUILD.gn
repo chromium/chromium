@@ -5,6 +5,8 @@
 source_set("actuation_interface") {
   sources = [ "actuation_tool.h" ]
 
+  public_deps =
+      [ "//ios/chrome/browser/intelligence/actuation/model:actuation_error" ]
   deps = [ "//base" ]
 }
 
@@ -18,6 +20,7 @@ source_set("navigate_tool") {
     ":actuation_interface",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actuation/model:actuation_error",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
@@ -35,6 +38,7 @@ source_set("unit_tests") {
     ":navigate_tool",
     "//base/test:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/actuation/model:actuation_error",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",

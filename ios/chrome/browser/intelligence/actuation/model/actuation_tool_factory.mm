@@ -24,7 +24,7 @@ ActuationToolFactory::CreateTool(
     case optimization_guide::proto::Action::kNavigate:
       return NavigateTool::Create(action.navigate(), profile);
     default:
-      return base::unexpected(ActuationError{
-          ActuationErrorCode::kUnsupportedAction, "Unsupported action"});
+      return base::unexpected(
+          ActuationError{ActuationErrorCode::kUnsupportedAction});
   }
 }

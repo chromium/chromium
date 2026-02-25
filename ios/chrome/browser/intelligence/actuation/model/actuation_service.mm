@@ -31,15 +31,13 @@ void ActuationService::ExecuteAction(
   if (action.action_case() ==
       optimization_guide::proto::Action::ACTION_NOT_SET) {
     std::move(callback).Run(base::unexpected(
-        ActuationError{ActuationErrorCode::kUnsupportedAction,
-                       "There isn't a tool to support this action."}));
+        ActuationError{ActuationErrorCode::kUnsupportedAction}));
     return;
   }
 
   if (IsToolDisabled(action.action_case())) {
     std::move(callback).Run(base::unexpected(
-        ActuationError{ActuationErrorCode::kToolDisabled,
-                       "Tool is disabled via feature parameter."}));
+        ActuationError{ActuationErrorCode::kToolDisabledByFeature}));
     return;
   }
 

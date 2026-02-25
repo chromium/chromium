@@ -582,9 +582,8 @@
               updateQueryResult:@"Action executed successfully."
                      forFeature:AIPrototypingFeature::kActuationTools];
         } else {
-          NSString* errorMsg =
-              [NSString stringWithFormat:@"Action failed: %s",
-                                         result.error().message.c_str()];
+          NSString* errorMsg = base::SysUTF8ToNSString(base::StringPrintf(
+              "Action failed: %s", GetActuationErrorMessage(result.error())));
           NSLog(@"[AIPrototypingMediator] %@", errorMsg);
           [weakSelf.consumer
               updateQueryResult:errorMsg

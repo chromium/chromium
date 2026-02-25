@@ -78,14 +78,16 @@ TEST_F(NavigateToolTest, Create_MissingProtoFields) {
       NavigateTool::Create(action.navigate(), profile_.get());
 
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActuationErrorCode::kToolCreationFailed, result.error().code);
+  EXPECT_EQ(ActuationErrorCode::kCreationMissingRequiredFields,
+            result.error().code);
 
   action.mutable_navigate()->clear_url();
   action.mutable_navigate()->set_tab_id(1);
 
   result = NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActuationErrorCode::kToolCreationFailed, result.error().code);
+  EXPECT_EQ(ActuationErrorCode::kCreationMissingRequiredFields,
+            result.error().code);
 }
 
 TEST_F(NavigateToolTest, Create_NoWebStateForTabId) {
@@ -97,7 +99,8 @@ TEST_F(NavigateToolTest, Create_NoWebStateForTabId) {
   base::expected<std::unique_ptr<NavigateTool>, ActuationError> result =
       NavigateTool::Create(action.navigate(), profile_.get());
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActuationErrorCode::kToolCreationFailed, result.error().code);
+  EXPECT_EQ(ActuationErrorCode::kCreationTargetTabNotFound,
+            result.error().code);
 }
 
 TEST_F(NavigateToolTest, Execute_TabRemovedBeforeExecution) {
@@ -124,7 +127,8 @@ TEST_F(NavigateToolTest, Execute_TabRemovedBeforeExecution) {
 
   ActuationResult result = future.Get();
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActuationErrorCode::kExecutionFailed, result.error().code);
+  EXPECT_EQ(ActuationErrorCode::kExecutionMissingDependencies,
+            result.error().code);
 }
 
 TEST_F(NavigateToolTest, Execute_InvalidUrl) {
@@ -147,7 +151,7 @@ TEST_F(NavigateToolTest, Execute_InvalidUrl) {
 
   ActuationResult result = future.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(ActuationErrorCode::kExecutionFailed, result.error().code);
+  EXPECT_EQ(ActuationErrorCode::kNavigationInvalidURL, result.error().code);
 }
 
 TEST_F(NavigateToolTest, Execute_Success) {
@@ -286,5 +290,5 @@ TEST_F(NavigateToolTest, Execute_TargetTabUnrealized) {
 
   ActuationResult result = future.Get();
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(ActuationErrorCode::kExecutionFailed, result.error().code);
+  EXPECT_EQ(ActuationErrorCode::kNavigationTabNotRealized, result.error().code);
 }

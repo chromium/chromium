@@ -26,8 +26,7 @@ NavigateTool::Create(const optimization_guide::proto::NavigateAction& action,
                      ProfileIOS* profile) {
   if (!action.has_tab_id() || !action.has_url()) {
     return base::unexpected(
-        ActuationError{ActuationErrorCode::kToolCreationFailed,
-                       "NavigateAction proto is missing tab id or url."});
+        ActuationError{ActuationErrorCode::kCreationMissingRequiredFields});
   }
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
@@ -38,21 +37,18 @@ NavigateTool::Create(const optimization_guide::proto::NavigateAction& action,
   Browser* browser = browser_and_index.browser;
   if (tab_index == WebStateList::kInvalidIndex || !browser) {
     return base::unexpected(
-        ActuationError{ActuationErrorCode::kToolCreationFailed,
-                       "Target tab isn't in any Browser."});
+        ActuationError{ActuationErrorCode::kCreationTargetTabNotFound});
   }
 
   WebStateList* web_state_list = browser->GetWebStateList();
   if (!web_state_list) {
     return base::unexpected(
-        ActuationError{ActuationErrorCode::kToolCreationFailed,
-                       "Failed to get WebStateList from browser."});
+        ActuationError{ActuationErrorCode::kCreationMissingWebStateList});
   }
   web::WebState* web_state = web_state_list->GetWebStateAt(tab_index);
   if (!web_state) {
     return base::unexpected(
-        ActuationError{ActuationErrorCode::kToolCreationFailed,
-                       "Failed to get WebState from WebStateList."});
+        ActuationError{ActuationErrorCode::kCreationMissingWebState});
   }
   return std::unique_ptr<NavigateTool>(
       new NavigateTool(action.url(), web_state->GetWeakPtr(), web_state_list,
@@ -63,24 +59,24 @@ NavigateTool::Create(const optimization_guide::proto::NavigateAction& action,
 // ActuationService.
 void NavigateTool::Execute(ActuationCallback callback) {
   if (!web_state_ || !web_state_list_ || !url_loader_) {
-    std::move(callback).Run(
-        base::unexpected(ActuationError{ActuationErrorCode::kExecutionFailed,
-                                        "Missing required dependencies."}));
+    std::move(callback).Run(base::unexpected(
+        ActuationError{ActuationErrorCode::kExecutionMissingDependencies}));
     return;
   }
 
   GURL url(url_);
   if (!url.is_valid()) {
     std::move(callback).Run(base::unexpected(
-        ActuationError{ActuationErrorCode::kExecutionFailed, "Invalid URL"}));
+        ActuationError{ActuationErrorCode::kNavigationInvalidURL}));
     return;
   }
 
   // Unrealized WebStates are restored, but not fully functional, tabs that
   // haven't been activated yet. They do not support navigation.
   if (!web_state_->IsRealized()) {
-    std::move(callback).Run(base::unexpected(ActuationError{
-        ActuationErrorCode::kExecutionFailed, "Target tab is not realized."}));
+    std::move(callback).Run(base::unexpected(
+        ActuationError{ActuationErrorCode::kNavigationTabNotRealized}));
+
     return;
   }
 

@@ -54,7 +54,8 @@ NSString* const kActuationAppInterfaceErrorDomain =
         if (result.has_value()) {
           completion(nil);
         } else {
-          NSString* errorMsg = base::SysUTF8ToNSString(result.error().message);
+          NSString* errorMsg =
+              base::SysUTF8ToNSString(GetActuationErrorMessage(result.error()));
           completion([NSError
               errorWithDomain:@"ActuationErrorCode"
                          code:(NSInteger)result.error().code
