@@ -22,8 +22,8 @@
 // that all URLs registered in the config map at runtime are added to
 // one of the lists below.
 static const char* const kChromeUrls[] = {
-#if !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-    // TODO(crbug.com/477013842): Investigate why tests fail on Win-Asan.
+#if defined(NDEBUG)
+    // TODO(crbug.com/487113801): Investigate why tests are flaky on dbg bots.
     "chrome://accessibility",
 #endif
 // TODO:(https://crbug.com/1439754): Flakily crashes on ChromeOS.
@@ -217,8 +217,8 @@ static constexpr const char* const kChromeUntestedUrls[] = {
     "chrome-untrusted://ntp-microsoft-auth",
     "chrome-untrusted://print",
     "chrome-untrusted://read-anything-side-panel.top-chrome",
-#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-    // TODO(crbug.com/477013842): Investigate why tests fail on Win-Asan.
+#if !defined(NDEBUG)
+    // TODO(crbug.com/487113801): Investigate why tests are flaky on dbg bots.
     "chrome://accessibility",
 #endif
     "chrome://access-code-cast",

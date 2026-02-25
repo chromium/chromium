@@ -3920,7 +3920,6 @@ if (!is_android) {
       "../browser/ui/waap/initial_webui_browsertest.cc",
       "../browser/ui/webid/identity_dialog_controller_browsertest.cc",
       "../browser/ui/webui/chrome_content_browser_client_webui_part_browsertest.cc",
-      "../browser/ui/webui/chrome_url_data_manager_browsertest.cc",
       "../browser/ui/webui/chrome_web_ui_controller_factory_browsertest.cc",
       "../browser/ui/webui/chrome_webui_navigation_browsertest.cc",
       "../browser/ui/webui/commerce/price_insights_handler_browsertest.cc",
@@ -3958,14 +3957,10 @@ if (!is_android) {
       "../browser/ui/webui/top_chrome/preload_context_browsertest.cc",
       "../browser/ui/webui/top_chrome/webui_contents_preload_manager_browsertest.cc",
       "../browser/ui/webui/web_dialog_web_contents_delegate_browsertest.cc",
-      "../browser/ui/webui/web_ui_all_urls_browser_test.cc",
-      "../browser/ui/webui/web_ui_all_urls_browser_test.h",
       "../browser/ui/webui/webnn_internals/webnn_internals_browsertest.cc",
       "../browser/ui/webui/webui_embedding_context_browsertest.cc",
       "../browser/ui/webui/webui_load_timer_browsertest.cc",
-      "../browser/ui/webui/webui_url_browsertest.cc",
       "../browser/ui/webui/webui_url_hashes_browsertest.cc",
-      "../browser/ui/webui/webui_urls_for_test.h",
       "../browser/unload_browsertest.cc",
       "../browser/user_agent/user_agent_browsertest.cc",
       "../browser/visited_url_ranking/desktop_tab_model_url_visit_data_fetcher_browsertest.cc",
@@ -4663,6 +4658,13 @@ if (!is_android) {
     }
 
     if (include_js_tests) {
+      sources += [
+        "../browser/ui/webui/chrome_url_data_manager_browsertest.cc",
+        "../browser/ui/webui/web_ui_all_urls_browser_test.cc",
+        "../browser/ui/webui/web_ui_all_urls_browser_test.h",
+        "../browser/ui/webui/webui_url_browsertest.cc",
+        "../browser/ui/webui/webui_urls_for_test.h",
+      ]
       deps += [ "//chrome/test/data/webui:browser_tests" ]
     }
     if (is_chromeos && include_js2gtest_tests) {
