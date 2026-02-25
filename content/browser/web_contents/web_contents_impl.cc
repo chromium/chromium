@@ -12297,15 +12297,9 @@ bool WebContentsImpl::CancelPrerendering(FrameTreeNode* frame_tree_node,
     return frame_tree_node->GetParentOrOuterDocumentOrEmbedder()
         ->CancelPrerendering(PrerenderCancellationReason(final_status));
   }
-  PrerenderHostId prerender_host_id =
-      frame_tree_node->frame_tree().delegate()->GetPrerenderHostId();
-  PrerenderHost* prerender_host =
-      GetPrerenderHostRegistry()->FindNonReservedHostById(prerender_host_id);
-  if (!prerender_host) {
-    return false;
-  }
   return GetPrerenderHostRegistry()->CancelHost(
-      prerender_host->prerender_host_id(), final_status);
+            frame_tree_node->frame_tree().delegate()->GetPrerenderHostId(),
+            final_status);
 }
 
 ui::mojom::VirtualKeyboardMode WebContentsImpl::GetVirtualKeyboardMode() const {

@@ -14416,16 +14416,8 @@ bool RenderFrameHostImpl::CancelPrerendering(
   if (!outermost_frame) {
     return false;
   }
-  PrerenderHostId prerender_host_id =
-      outermost_frame->frame_tree().delegate()->GetPrerenderHostId();
-  PrerenderHost* prerender_host =
-      delegate_->GetPrerenderHostRegistry()->FindNonReservedHostById(
-          prerender_host_id);
-  if (!prerender_host) {
-    return false;
-  }
   return delegate_->GetPrerenderHostRegistry()->CancelHost(
-      prerender_host->prerender_host_id(), reason);
+      outermost_frame->frame_tree().delegate()->GetPrerenderHostId(), reason);
 }
 
 void RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy(
