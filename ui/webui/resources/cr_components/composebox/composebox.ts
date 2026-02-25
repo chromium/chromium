@@ -1432,28 +1432,34 @@ export class ComposeboxElement extends I18nMixinLit
         this.pendingUploads_.delete(file.uuid);
         this.fileUploadsComplete = this.pendingUploads_.size === 0;
         return;
+      } else if (file.status === FileUploadStatus.kUploadSuccessful) {
+        // At this point, due to the error message handling above (for
+        // `kValidationFailed`, `kUploadExpired`, and `kUploadFailed`),
+        // if kUploadSuccessful, the file upload is complete.
+        // Else, the file upload is in progress.
+        this.pendingUploads_.delete(file.uuid);
+        this.fileUploadsComplete = this.pendingUploads_.size === 0;
+
+        const announcer = getAnnouncerInstance();
+        announcer.announce(this.i18n('composeboxFileUploadCompleteText'));
+      } else if (
+          file.status === FileUploadStatus.kProcessing ||
+          file.status === FileUploadStatus.kProcessingSuggestSignalsReady) {
+        // `NotUploaded`, `UploadStarted` come before and after `kProcessing`
+        //  respectively, so we only need to add to `pendingUploads_` when in a
+        //  type of processing state.
+        this.pendingUploads_.add(file.uuid);
+        this.fileUploadsComplete = this.pendingUploads_.size === 0;
       }
+
+      // Fetch contextual suggestions for processingSuggestSignalsReady
+      // non-images:
       if (status === FileUploadStatus.kProcessingSuggestSignalsReady &&
           this.showZps && !file.type.includes('image')) {
         // Query autocomplete to get contextual suggestions for files.
         this.queryAutocomplete_(/* clearMatches= */ true);
       }
-      // `NotUploaded`, `UploadStarted` come before and after `kProcessing`
-      //  respectively, so we only need to add to `pendingUploads_` when in a
-      //  type of processing state.
-      if (file.status === FileUploadStatus.kProcessing ||
-          file.status === FileUploadStatus.kProcessingSuggestSignalsReady) {
-        this.pendingUploads_.add(file.uuid);
-        this.fileUploadsComplete = this.pendingUploads_.size === 0;
-      }
-      const isFinished = file?.status === FileUploadStatus.kValidationFailed ||
-          file.status === FileUploadStatus.kUploadSuccessful ||
-          file.status === FileUploadStatus.kUploadExpired ||
-          file.status === FileUploadStatus.kUploadFailed;
-      if (isFinished) {
-        this.pendingUploads_.delete(file.uuid);
-        this.fileUploadsComplete = this.pendingUploads_.size === 0;
-      }
+      // For image files:
       if (status === FileUploadStatus.kProcessingSuggestSignalsReady &&
           file.type.includes('image')) {
         // If we're in create image mode, update the aim tool mode.
@@ -1471,11 +1477,6 @@ export class ComposeboxElement extends I18nMixinLit
       if (status === FileUploadStatus.kProcessing &&
           file.type.includes('tab')) {
         this.queryAutocomplete_(/* clearMatches= */ true);
-      }
-
-      if (status === FileUploadStatus.kUploadSuccessful) {
-        const announcer = getAnnouncerInstance();
-        announcer.announce(this.i18n('composeboxFileUploadCompleteText'));
       }
     }
   }
