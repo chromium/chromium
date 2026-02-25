@@ -56,8 +56,6 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement {
 
   void ScrollSelectedIntoView(bool apply_snap_alignment);
 
-  Node* InnerNodeForHitTesting() final { return this; }
-
   // Returns the mode of scroll-marker-group property of the originating
   // element.
   CORE_EXPORT ScrollMarkerGroup::ScrollMarkerMode ScrollMarkerGroupMode() const;

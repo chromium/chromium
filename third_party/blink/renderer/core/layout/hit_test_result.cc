@@ -328,6 +328,13 @@ void HitTestResult::SetInnerNode(Node* n) {
   }
 
   inner_possibly_pseudo_node_ = n;
+  // InnerNodeForHitTesting() always resolves to the originating DOM element for
+  // any pseudo-element (including activation-behavior pseudos like
+  // ::scroll-marker). inner_node_ is therefore always a non-pseudo Element,
+  // which is required for editing/selection (IsEditable, CanStartSelection,
+  // GetPosition).
+  // The raw pseudo is kept in inner_possibly_pseudo_node_ and exposed via
+  // InnerPossiblyPseudoElement() for hover/active state and event dispatch.
   if (auto* pseudo_element = DynamicTo<PseudoElement>(n))
     n = pseudo_element->InnerNodeForHitTesting();
   inner_node_ = n;
@@ -339,6 +346,15 @@ void HitTestResult::SetInnerNode(Node* n) {
     inner_element_ = element;
   else
     inner_element_ = FlatTreeTraversal::ParentElement(*inner_node_);
+}
+
+Element* HitTestResult::InnerPossiblyPseudoElement() const {
+  if (auto* pseudo =
+          DynamicTo<PseudoElement>(inner_possibly_pseudo_node_.Get());
+      pseudo && pseudo->SupportsHitTesting()) {
+    return pseudo;
+  }
+  return inner_element_.Get();
 }
 
 void HitTestResult::SetURLElement(Element* n) {

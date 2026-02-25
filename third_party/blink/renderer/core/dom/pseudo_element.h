@@ -83,9 +83,22 @@ class CORE_EXPORT PseudoElement : public Element {
   static AtomicString PseudoElementNameForEvents(Element*);
   static bool IsWebExposed(PseudoId, const Node*);
 
-  // Pseudo-elements are not allowed to be the inner node for hit testing.
-  // Find the closest ancestor which is a real dom node.
+  // Returns the node to store as |inner_node_| in HitTestResult.
+  //
+  // Always resolves to the originating DOM element, for every pseudo-element
+  // including those with activation behavior (::scroll-marker, ::scroll-button,
+  // ::interest-hint). This enforces the invariant that |inner_node_| is always
+  // a real (non-pseudo) Element, which is required for:
+  //   - SelectionController: IsEditable / CanStartSelection / GetPosition
+  //
+  // Dispatch targets the pseudo via InnerPossiblyPseudoElement() instead:
+  //   - DispatchMousePointerEvent uses InnerPossiblyPseudoElement() so
+  //     EventDispatcher::node_ = the pseudo, keeping HasActivationBehavior()
+  //     checks, DefaultEventHandler dispatch, and event.pseudoTarget working.
   virtual Node* InnerNodeForHitTesting();
+
+  bool SupportsHitTesting() const;
+  static bool SupportsHitTesting(PseudoId pseudo_id);
 
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
 

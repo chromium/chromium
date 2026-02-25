@@ -246,8 +246,8 @@ class CORE_EXPORT MouseEventManager final
   unsigned svg_pan_ : 1;
   unsigned mouse_down_may_start_drag_ : 1;
 
-  // Tracks the element that received the last mousedown event.  This is cleared
-  // on mouseup.
+  // Tracks the element that received the last mousedown event. For
+  // hit-testable pseudos, this is the pseudo itself. Cleared on mouseup.
   Member<Element> mousedown_element_;
   Member<Node> mouse_press_node_;
 

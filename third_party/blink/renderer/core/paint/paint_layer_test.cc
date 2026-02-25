@@ -1956,13 +1956,16 @@ TEST_P(PaintLayerTest, HitTestPseudoElementWithContinuation) {
     <span id='target'></span>
   )HTML");
   Element* target = GetDocument().getElementById(AtomicString("target"));
+  PseudoElement* before = target->GetPseudoElement(kPseudoIdBefore);
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
   HitTestLocation location(PhysicalOffset(10, 10));
   HitTestResult result(request, location);
   GetDocument().GetLayoutView()->HitTest(location, result);
+  // InnerNodeForHitTesting() always resolves to the originating element so
+  // that selection and editing work correctly. The raw pseudo is stored in
+  // inner_possibly_pseudo_node_ and accessed via InnerPossiblyPseudoNode().
   EXPECT_EQ(target, result.InnerNode());
-  EXPECT_EQ(target->GetPseudoElement(kPseudoIdBefore),
-            result.InnerPossiblyPseudoNode());
+  EXPECT_EQ(before, result.InnerPossiblyPseudoNode());
 }
 
 TEST_P(PaintLayerTest, HitTestFirstLetterPseudoElement) {
@@ -2637,7 +2640,11 @@ TEST_P(PaintLayerTest, HitTestScrollMarkerPseudoElement) {
   HitTestLocation location(PhysicalOffset(25, 20));
   HitTestResult result(request, location);
   GetDocument().GetLayoutView()->HitTest(location, result);
-  EXPECT_EQ(second_scroll_marker, result.InnerNode());
+  // InnerNodeForHitTesting() always resolves to the originating element to
+  // maintain the non-pseudo invariant on inner_node_. The pseudo itself is
+  // accessible via InnerPossiblyPseudoNode() for hover/dispatch purposes.
+  EXPECT_EQ(second_div, result.InnerNode());
+  EXPECT_EQ(second_scroll_marker, result.InnerPossiblyPseudoNode());
 
   MouseEvent& event = *MouseEvent::Create();
   event.SetType(event_type_names::kClick);

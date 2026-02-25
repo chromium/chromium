@@ -522,9 +522,12 @@ bool FindNodeWithLowestDistanceMetric(Node*& adjusted_node,
     }
   }
 
-  // As for HitTestResult.innerNode, we skip over pseudo-elements.
-  if (adjusted_node && adjusted_node->IsPseudoElement() &&
-      !adjusted_node->IsScrollMarkerPseudoElement()) {
+  // Resolve pseudos to their originating element unless they have activation
+  // behavior (::scroll-marker, ::scroll-button, ::interest-hint). Touch
+  // adjustment targets the clickable element, which for pseudos like
+  // ::before, ::after, ::marker is the originating element.
+  while (adjusted_node && adjusted_node->IsPseudoElement() &&
+         !To<PseudoElement>(adjusted_node)->HasActivationBehavior()) {
     adjusted_node = adjusted_node->ParentOrShadowHostNode();
   }
 

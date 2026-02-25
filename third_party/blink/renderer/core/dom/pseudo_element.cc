@@ -694,6 +694,32 @@ Node* PseudoElement::InnerNodeForHitTesting() {
   return parent;
 }
 
+// static
+bool PseudoElement::SupportsHitTesting(PseudoId pseudo_id) {
+  // Returns true for pseudo-elements that should participate in hit testing.
+  // This gates whether the pseudo appears via InnerPossiblyPseudoElement().
+  // Event targeting (which pseudo keeps event.RawTarget vs resolves to
+  // originating) is determined by HasActivationBehavior() in
+  // EventTargetRespectingTargetRules.
+  switch (pseudo_id) {
+    case kPseudoIdInterestHint:
+    case kPseudoIdScrollMarker:
+    case kPseudoIdScrollMarkerGroupBefore:
+    case kPseudoIdScrollMarkerGroupAfter:
+    case kPseudoIdScrollButtonBlockStart:
+    case kPseudoIdScrollButtonInlineStart:
+    case kPseudoIdScrollButtonInlineEnd:
+    case kPseudoIdScrollButtonBlockEnd:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool PseudoElement::SupportsHitTesting() const {
+  return SupportsHitTesting(pseudo_id_);
+}
+
 void PseudoElement::AccessKeyAction(
     SimulatedClickCreationScope creation_scope) {
   // If this is a pseudo-element with activation behavior such as a

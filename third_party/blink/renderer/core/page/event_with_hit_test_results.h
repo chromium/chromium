@@ -52,6 +52,9 @@ class EventWithHitTestResults {
   }
   Node* InnerNode() const { return hit_test_result_.InnerNode(); }
   Element* InnerElement() const { return hit_test_result_.InnerElement(); }
+  Element* InnerPossiblyPseudoElement() const {
+    return hit_test_result_.InnerPossiblyPseudoElement();
+  }
 
   const HitTestLocation& GetHitTestLocation() const {
     return hit_test_location_;

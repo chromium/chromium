@@ -5337,7 +5337,7 @@ MouseEventWithHitTestResults Document::PerformMouseEventHitTest(
 
   if (!request.ReadOnly()) {
     UpdateHoverActiveState(request.Active(), !request.Move(),
-                           result.InnerElement());
+                           result.InnerPossiblyPseudoElement());
   }
 
   return MouseEventWithHitTestResults(event, location, result);

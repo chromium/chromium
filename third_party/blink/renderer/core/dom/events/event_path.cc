@@ -40,11 +40,18 @@
 namespace blink {
 
 EventTarget& EventPath::EventTargetRespectingTargetRules(Node& reference_node) {
-  if (reference_node.IsPseudoElement() &&
-      !reference_node.IsScrollControlPseudoElement() &&
-      !reference_node.IsInterestHintPseudoElement()) {
-    DCHECK(reference_node.parentNode());
-    return *reference_node.parentNode();
+  if (auto* pseudo = DynamicTo<PseudoElement>(reference_node)) {
+    // Pseudos with activation behavior (::scroll-marker, ::scroll-button,
+    // ::interest-hint) are kept as event.RawTarget() so their
+    // DefaultEventHandler fires correctly (the handler checks
+    // |event.RawTarget() == this|).
+    // Other pseudos resolve to their originating element.
+    if (!pseudo->HasActivationBehavior()) {
+      if (pseudo->isConnected()) {
+        return pseudo->UltimateOriginatingElement();
+      }
+      // Disconnected pseudo — fall back to the pseudo itself.
+    }
   }
 
   return reference_node;

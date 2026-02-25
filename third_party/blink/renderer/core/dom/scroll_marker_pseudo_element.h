@@ -23,7 +23,6 @@ class ScrollMarkerPseudoElement : public PseudoElement {
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const final { return true; }
   bool WillRespondToMouseClickEvents() override { return true; }
-  Node* InnerNodeForHitTesting() final { return this; }
   void SetScrollMarkerGroup(
       ScrollMarkerGroupPseudoElement* scroll_marker_group);
   ScrollMarkerGroupPseudoElement* ScrollMarkerGroup() const {

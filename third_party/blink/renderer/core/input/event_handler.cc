@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
@@ -391,7 +392,7 @@ void EventHandler::PerformHitTest(const HitTestLocation& location,
   const HitTestRequest& request = result.GetHitTestRequest();
   if (!request.ReadOnly()) {
     frame_->GetDocument()->UpdateHoverActiveState(
-        request.Active(), !request.Move(), result.InnerElement());
+        request.Active(), !request.Move(), result.InnerPossiblyPseudoElement());
   }
 }
 
@@ -960,14 +961,14 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
   }
 
   mouse_event_manager_->SetClickCount(mouse_event.click_count);
-  mouse_event_manager_->SetMouseDownElement(mev.InnerElement());
+  mouse_event_manager_->SetMouseDownElement(mev.InnerPossiblyPseudoElement());
 
   if (!mouse_event.FromTouch())
     frame_->Selection().SetCaretBlinkingSuspended(true);
 
   WebInputEventResult event_result = DispatchMousePointerEvent(
-      WebInputEvent::Type::kPointerDown, mev.InnerElement(), mev.Event(),
-      Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+      WebInputEvent::Type::kPointerDown, mev.InnerPossiblyPseudoElement(),
+      mev.Event(), Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
 
   // Disabled form controls still need to resize the scrollable area.
   if ((event_result == WebInputEventResult::kNotHandled ||
@@ -1214,7 +1215,8 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
   if (current_subframe) {
     // Update over/out state before passing the event to the subframe.
     pointer_event_manager_->SendMouseAndPointerBoundaryEvents(
-        EffectiveMouseEventTargetElement(mev.InnerElement()), mev.Event());
+        EffectiveMouseEventTargetElement(mev.InnerPossiblyPseudoElement()),
+        mev.Event());
 
     // Event dispatch in sendMouseAndPointerBoundaryEvents may have caused the
     // subframe of the target node to be detached from its LocalFrameView, in
@@ -1253,9 +1255,9 @@ WebInputEventResult EventHandler::HandleMouseMoveOrLeaveEvent(
     return event_result;
   }
 
-  event_result = DispatchMousePointerEvent(WebInputEvent::Type::kPointerMove,
-                                           mev.InnerElement(), mev.Event(),
-                                           coalesced_events, predicted_events);
+  event_result = DispatchMousePointerEvent(
+      WebInputEvent::Type::kPointerMove, mev.InnerPossiblyPseudoElement(),
+      mev.Event(), coalesced_events, predicted_events);
   // Since there is no default action for the mousemove event, MouseEventManager
   // handles drag for text selection even when js cancels the mouse move event.
   // https://w3c.github.io/uievents/#event-type-mousemove
@@ -1338,8 +1340,8 @@ WebInputEventResult EventHandler::HandleMouseReleaseEvent(
     event_result = WebInputEventResult::kHandledSuppressed;
   } else {
     event_result = DispatchMousePointerEvent(
-        WebInputEvent::Type::kPointerUp, mev.InnerElement(), mev.Event(),
-        Vector<WebMouseEvent>(), Vector<WebMouseEvent>(),
+        WebInputEvent::Type::kPointerUp, mev.InnerPossiblyPseudoElement(),
+        mev.Event(), Vector<WebMouseEvent>(), Vector<WebMouseEvent>(),
         (GetSelectionController().HasExtendedSelection() &&
          IsSelectionOverLink(mev)));
   }
@@ -1395,6 +1397,15 @@ WebInputEventResult EventHandler::UpdateDragAndDrop(
   // Drag events should never go to text nodes (following IE, and proper
   // mouseover/out dispatch)
   Element* new_target = mev.InnerElement();
+
+  // Pseudo-elements without activation behavior (::before, ::after, ::marker)
+  // are visual decorations; for drag targeting resolve them to their
+  // ultimate originating element so that drag events reach the actual content
+  // element.
+  if (auto* pseudo = DynamicTo<PseudoElement>(new_target);
+      pseudo && !pseudo->HasActivationBehavior()) {
+    new_target = &pseudo->UltimateOriginatingElement();
+  }
 
   // The drag target could be something inside a UA shadow root, in which case
   // it should be retargeted to the shadow host.
@@ -2054,8 +2065,8 @@ GestureEventWithHitTestResults EventHandler::TargetGestureEvent(
   HitTestRequest request(hit_type | HitTestRequest::kAllowChildFrameContent);
   if (!request.ReadOnly()) {
     UpdateCrossFrameHoverActiveState(
-        request.Active(),
-        event_with_hit_test_results.GetHitTestResult().InnerElement());
+        request.Active(), event_with_hit_test_results.GetHitTestResult()
+                              .InnerPossiblyPseudoElement());
   }
 
   if (should_keep_active_for_min_interval) {
@@ -2200,8 +2211,9 @@ WebInputEventResult EventHandler::SendContextMenuEvent(
   // |SelectionController::sendContextMenuEvent()|.
   document.UpdateStyleAndLayout(DocumentUpdateReason::kContextMenu);
 
-  Element* target_element =
-      override_target_element ? override_target_element : mev.InnerElement();
+  Element* target_element = override_target_element
+                                ? override_target_element
+                                : mev.InnerPossiblyPseudoElement();
   WebInputEventResult result =
       mouse_event_manager_
           ->DispatchMouseEvent(
@@ -2423,7 +2435,8 @@ void EventHandler::HoverTimerFired(TimerBase*) {
       HitTestResult result(request, location);
       layout_object->HitTest(location, result);
       frame_->GetDocument()->UpdateHoverActiveState(
-          request.Active(), !request.Move(), result.InnerElement());
+          request.Active(), !request.Move(),
+          result.InnerPossiblyPseudoElement());
     }
   }
 }
@@ -2650,7 +2663,8 @@ MouseEventWithHitTestResults EventHandler::GetMouseEventTarget(
 
       if (!request.ReadOnly()) {
         frame_->GetDocument()->UpdateHoverActiveState(
-            request.Active(), !request.Move(), result.InnerElement());
+            request.Active(), !request.Move(),
+            result.InnerPossiblyPseudoElement());
       }
 
       return MouseEventWithHitTestResults(

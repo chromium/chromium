@@ -247,7 +247,13 @@ DispatchEventResult EventDispatcher::Dispatch() {
   // activationTarget to parent.
   if (is_activation_event && !activation_target && event_->bubbles()) {
     wtf_size_t size = event_->GetEventPath().size();
-    for (wtf_size_t i = 1; i < size; ++i) {
+    // When node_ is a pseudo-element, CalculatePath() replaces it with its
+    // UltimateOriginatingElement() at path index 0 (pseudos are not exposed
+    // in the event path). That means path[0] is the originating element, not
+    // node_ itself, so we must start the search at i=0 to avoid skipping the
+    // originating element (e.g., <summary> whose ::marker was clicked).
+    const wtf_size_t start = node_->IsPseudoElement() ? 0 : 1;
+    for (wtf_size_t i = start; i < size; ++i) {
       Node& target = event_->GetEventPath()[i].GetNode();
       if (target.HasActivationBehavior()) {
         activation_target = &target;
@@ -453,7 +459,12 @@ inline void EventDispatcher::DispatchEventPostProcess(
     if (!event_->DefaultHandled() && !event_->defaultPrevented() &&
         event_->bubbles()) {
       wtf_size_t size = event_->GetEventPath().size();
-      for (wtf_size_t i = 1; i < size; ++i) {
+      // When node_ is a pseudo-element, CalculatePath() replaces it at path
+      // index 0 with its UltimateOriginatingElement() (pseudos are not exposed
+      // in the event path). Start at i=0 so the originating element's
+      // DefaultEventHandler is also invoked (e.g., <summary> for ::marker).
+      const wtf_size_t start = node_->IsPseudoElement() ? 0 : 1;
+      for (wtf_size_t i = start; i < size; ++i) {
         event_->GetEventPath()[i].GetNode().DefaultEventHandler(*event_);
         if (event_->DefaultHandled() || event_->defaultPrevented()) {
           break;

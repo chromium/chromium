@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/editing/bidi_adjustment.h"
 #include "third_party/blink/renderer/core/editing/editing_behavior.h"
 #include "third_party/blink/renderer/core/editing/editing_boundary.h"
@@ -1133,6 +1134,17 @@ bool SelectionController::HandleMousePressEvent(
   mouse_down_may_start_select_ = (CanMouseDownStartSelect(event.InnerNode()) ||
                                   IsSelectionOverLink(event)) &&
                                  !event.GetScrollbar();
+  // Don't start selection when clicking an activation-behavior pseudo-element
+  // (e.g. ::scroll-marker, ::interest-hint). These act as interactive controls
+  // and clearing the selection on mousedown already happens in
+  // HandleMouseFocus.
+  if (mouse_down_may_start_select_) {
+    if (auto* pseudo = DynamicTo<PseudoElement>(
+            event.GetHitTestResult().InnerPossiblyPseudoNode());
+        pseudo && pseudo->HasActivationBehavior()) {
+      mouse_down_may_start_select_ = false;
+    }
+  }
   mouse_down_was_single_click_on_caret_ = false;
   mouse_down_was_single_click_in_selection_ = false;
   if (!Selection().IsAvailable()) {
