@@ -10,12 +10,14 @@ option java_outer_classname = 'ToolConfigProto';
 
 package omnibox;
 
+import "icon.proto";
 import "tool_mode.proto";
 import "tool_rule.proto";
+import "tool_substate_config.proto";
 import "url_param.proto";
 
 // Configuration for a tool mode.
-// Next ID: 8
+// Next ID: 10
 message ToolConfig {
   // The tool mode.
   ToolMode tool = 1;
@@ -34,4 +36,8 @@ message ToolConfig {
   // The URL params to be appended to the /search or /folif URLs when this tool
   // is chosen.
   repeated UrlParam aim_url_params = 7;
+  // Substate configurations.
+  repeated ToolSubstateConfig substate_configs = 8;
+  // The icon for the tool.
+  optional Icon icon = 9;
 }

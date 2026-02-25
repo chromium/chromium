@@ -1,0 +1,22 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+option java_package = 'org.chromium.components.omnibox';
+option java_outer_classname = 'IconProto';
+
+package omnibox;
+
+import "icon_resource_ids.proto";
+
+// Configuration for Icon.
+// Next ID: 2
+message Icon {
+  // The icon id.
+  // Note: this legacy enum does not have an unspecified value, so clients
+  // should trate the current PLACE_WHITE = 0 as unspecified instead.
+  optional IconResourceIds icon_id = 1;
+}

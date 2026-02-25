@@ -14,7 +14,7 @@ import "model_mode.proto";
 import "searchbox_config.proto";
 
 // AIM Eligibility Response.
-// Next ID: 9
+// Next ID: 10
 message AimEligibilityResponse {
   optional bool is_eligible = 1;
   optional bool is_pdf_upload_eligible = 2;
@@ -43,4 +43,7 @@ message AimEligibilityResponse {
   // contain all key-value pairs defined within at least one of
   // these criteria sets.
   repeated AimDetectionUrlRule aim_detection_url_rule = 8;
+
+  // Whether the user is eligible for Co-Browse.
+  optional bool is_cobrowse_eligible = 9;
 }

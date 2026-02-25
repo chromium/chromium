@@ -29,6 +29,7 @@ message SuggestTemplateInfo {
   // The style of the suggestion.
   optional StandardSuggestStyle style = 1;
 
+  // Next ID: 11
   enum IconType {
     // Unspecified.
     ICON_TYPE_UNSPECIFIED = 0;
@@ -54,6 +55,9 @@ message SuggestTemplateInfo {
     // Notes spark icon, used for AIM More Threads suggestions.
     //
     NOTES_SPARK = 9;
+    // Draft spark icon, typically used for AIM canvas suggestions.
+    //
+    DRAFT_SPARK = 10;
   }
 
   // The icon type of the suggestion, this is typically the icon in front of
