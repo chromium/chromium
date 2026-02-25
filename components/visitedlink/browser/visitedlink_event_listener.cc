@@ -312,8 +312,8 @@ void VisitedLinkEventListener::RenderWidgetHostVisibilityChanged(
     content::RenderWidgetHost* rwh,
     bool became_visible) {
   int child_id = rwh->GetProcess()->GetDeprecatedID();
-  if (updaters_.count(child_id)) {
-    updaters_[child_id]->Update();
+  if (auto it = updaters_.find(child_id); it != updaters_.end()) {
+    it->second->Update();
   }
 }
 
