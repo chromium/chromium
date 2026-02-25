@@ -17,7 +17,8 @@ export function getHtml(this: SourcesMenuElement) {
             <cr-url-list-item class="dropdown-item" data-index="${index}"
                 @click="${this.onTabClick_}"
                 .description="${this.getHostname_(item.tab.url)}"
-                .url="${item.tab.url}" .title="${item.tab.title}">
+                .url="${item.tab.url}" .title="${item.tab.title}"
+                aria-label="${item.tab.title}">
             </cr-url-list-item>
           `;
         } else if (item.file) {
@@ -34,7 +35,9 @@ export function getHtml(this: SourcesMenuElement) {
           return html`
             <cr-url-list-item class="dropdown-item" data-index="${index}"
               @click="${this.onImageClick_}"
-              .imageUrls="${[item.image.url]}" .title="${item.image.title}">
+              .title="${item.image.title}">
+              <img slot="customIcon" src="${this.getImageSrc_(item.image.url)}"
+                  .alt="${item.image.title}">
             </cr-url-list-item>
           `;
         } else {
