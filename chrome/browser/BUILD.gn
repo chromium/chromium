@@ -6181,6 +6181,7 @@ static_library("browser") {
     if (!is_android) {
       deps += [
         "//chrome/browser/glic/media",
+        "//chrome/browser/glic/selection",
         "//chrome/browser/skills",
       ]
       allow_circular_includes_from += [ "//chrome/browser/glic/media" ]

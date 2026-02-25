@@ -519,7 +519,6 @@ if (!is_android) {
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_tasks",
       "//chrome/browser/favicon",
-      "//chrome/browser/glic/selection",
       "//chrome/browser/image_fetcher",
       "//chrome/browser/indigo",
       "//chrome/browser/media/webrtc",
@@ -601,6 +600,9 @@ if (!is_android) {
 
     if (enable_glic) {
       deps += [ "//chrome/browser/glic" ]
+      if (!is_android) {
+        deps += [ "//chrome/browser/glic/selection" ]
+      }
     }
 
     if (!is_android) {

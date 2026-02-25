@@ -19455,6 +19455,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_GLIC_SHARE_IMAGE_FAILED_TOAST_BODY" desc="Text on a toast notification that is shown when sharing an image with Gemini fails (when using the 'Create image with Gemini' context menu item)">
         Could not share image with Gemini. Try again or try another image.
       </message>
+      <message name="IDS_GLIC_SELECTION_OVERLAY_RENDERER_LABEL" desc="The label for the renderer process housing the Gemini's selection overlay.">
+        Gemini Selection Overlay
+      </message>
       <message name="IDS_COPIED_TO_CLIPBOARD_TOAST_BODY" desc="Text on a toast notification that is shown when an item has been copied to clipboard.">
         Copied to clipboard
       </message>

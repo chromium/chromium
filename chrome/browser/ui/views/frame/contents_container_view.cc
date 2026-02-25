@@ -48,6 +48,7 @@
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view.h"
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller_impl.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/selection/selection_overlay_features.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -122,6 +123,17 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
+  if (base::FeatureList::IsEnabled(glic::features::kGlicRegionSelectionNew)) {
+    auto glic_selection_overlay_view = std::make_unique<views::WebView>();
+    glic_selection_overlay_view->SetProperty(
+        views::kElementIdentifierKey, kGlicSelectionOverlayViewElementId);
+    glic_selection_overlay_view->SetVisible(false);
+    glic_selection_overlay_view->SetLayoutManager(
+        std::make_unique<views::FillLayout>());
+    glic_selection_overlay_view_ =
+        AddChildView(std::move(glic_selection_overlay_view));
+  }
+
   if (glic::GlicEnabling::IsProfileEligible(browser_view->GetProfile())) {
     glic_border_ = AddChildView(
         views::Builder<glic::ContextSharingBorderView>(
@@ -269,6 +281,10 @@ void ContentsContainerView::UpdateBorderRoundedCorners() {
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
+  if (glic_selection_overlay_view_) {
+    glic_selection_overlay_view_->holder()->SetCornerRadii(radii);
+  }
+
   if (glic_border_) {
     glic_border_->SetRoundedCorners(content_rounded_corners);
   }
@@ -295,6 +311,10 @@ void ContentsContainerView::ClearBorderRoundedCorners() {
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
+  if (glic_selection_overlay_view_) {
+    glic_selection_overlay_view_->holder()->SetCornerRadii(kNoRoundedCorners);
+  }
+
   if (glic_border_) {
     glic_border_->SetRoundedCorners(kNoRoundedCorners);
   }
@@ -609,6 +629,15 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
         actor_overlay_web_view_.get(), actor_overlay_web_view_->GetVisible(),
         non_devtools_contents_bounds, size_bounds);
   }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (glic_selection_overlay_view_) {
+    layouts.child_layouts.emplace_back(
+        glic_selection_overlay_view_.get(),
+        glic_selection_overlay_view_->GetVisible(),
+        non_devtools_contents_bounds, size_bounds);
+  }
+#endif
 
   // Reading Mode overlay view bounds are the same as the contents view.
   if (features::IsImmersiveReadAnythingEnabled() &&

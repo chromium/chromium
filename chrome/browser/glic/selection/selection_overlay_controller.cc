@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/render_view_host.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -99,7 +99,7 @@ void SelectionOverlayController::InitializeOverlay() {
   // We can only continue once both the WebUI is bound and the initialization
   // data is processed and ready. If either of those conditions aren't met, we
   // exit early and wait for the other condition to call this method again.
-  if (!screenshot_available_) {
+  if (!page_ || !screenshot_available_) {
     return;
   }
 
@@ -145,20 +145,17 @@ bool SelectionOverlayController::IsResultsSidePanelShowing() {
 }
 
 GURL SelectionOverlayController::GetInitialURL() {
-  // TODO(b:479179977): Switch to glic selection overlay.
-  return GURL(chrome::kChromeUILensOverlayUntrustedURL);
+  return GURL(chrome::kChromeUIGlicSelectionOverlayURL);
 }
 
 void SelectionOverlayController::NotifyIsOverlayShowing(bool is_showing) {}
 
 int SelectionOverlayController::GetToolResourceId() {
-  // TODO(b:479179977): Switch to glic selection overlay.
-  return IDS_LENS_OVERLAY_RENDERER_LABEL;
+  return IDS_GLIC_SELECTION_OVERLAY_RENDERER_LABEL;
 }
 
 ui::ElementIdentifier SelectionOverlayController::GetViewContainerId() {
-  // TODO(b:479179977): Switch to glic selection overlay.
-  return kLensOverlayViewElementId;
+  return kGlicSelectionOverlayViewElementId;
 }
 
 SidePanelEntry::PanelType SelectionOverlayController::GetSidePanelType() {

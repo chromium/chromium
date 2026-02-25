@@ -24,8 +24,16 @@ enum DismissOverlayReason {
   kBackgroundClick = 1,
 };
 
+// `chrome-untrusted://glic/selection-overlay/` WebUI calls this interface to
+// setup the mojo channel.
+interface SelectionOverlayPageHandlerFactory {
+  // Called when the WebUI page is initialized. Sets up the mojom channel.
+  CreatePageHandler(pending_receiver<SelectionOverlayPageHandler> handler,
+                    pending_remote<SelectionOverlayPage> page);
+};
+
 // C++ handler that receives requests from the
-// `chrome-untrusted://glic-selection-overlay/` WebUI.
+// `chrome-untrusted://glic/selection-overlay/` WebUI.
 interface SelectionOverlayPageHandler {
   // The WebUI informs the browser to dismiss the selection overlay with a
   // specific reason.
@@ -39,7 +47,7 @@ interface SelectionOverlayPageHandler {
   DeleteRegion(mojo_base.mojom.UnguessableToken id);
 };
 
-// `chrome-untrusted://glic-selection-overlay/` WebUI page handler that receives
+// `chrome-untrusted://glic/selection-overlay/` WebUI page handler that receives
 // requests from the browser.
 interface SelectionOverlayPage {
   // Pass the screenshot from the browser to the WebUI. `screenshot` is captured

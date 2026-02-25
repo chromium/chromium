@@ -157,6 +157,10 @@ inline constexpr char kChromeUIGlicHost[] = "glic";
 inline constexpr char kChromeUIGlicURL[] = "chrome://glic/";
 inline constexpr char kChromeUIGlicFreHost[] = "glic-fre";
 inline constexpr char kChromeUIGlicFreURL[] = "chrome://glic-fre";
+inline constexpr char kChromeUIGlicUntrustedHost[] = "glic";
+inline constexpr char kChromeUIGlicUntrustedURL[] = "chrome-untrusted://glic/";
+inline constexpr char kChromeUIGlicSelectionOverlayURL[] =
+    "chrome-untrusted://glic/selection-overlay/";
 inline constexpr char kChromeUIContextualTasksVirtualHost[] = "googlesearch";
 inline constexpr char kChromeUIContextualTasksVirtualURL[] =
     "chrome://googlesearch";

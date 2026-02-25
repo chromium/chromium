@@ -13,6 +13,8 @@ source_set("selection") {
     "selection_overlay_controller.h",
     "selection_overlay_features.cc",
     "selection_overlay_features.h",
+    "selection_overlay_untrusted_ui.cc",
+    "selection_overlay_untrusted_ui.h",
   ]
 
   deps = [
@@ -23,6 +25,7 @@ source_set("selection") {
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/lens",
     "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/top_chrome",
     "//mojo/public/mojom/base",
   ]
 }

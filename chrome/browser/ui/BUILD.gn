@@ -5477,6 +5477,7 @@ static_library("ui") {
         "//chrome/browser/glic/browser_ui:glow_controller",
         "//chrome/browser/glic/browser_ui:glow_controller_impl",
         "//chrome/browser/glic/browser_ui:glow_impl",
+        "//chrome/browser/glic/selection",
         "//chrome/browser/ui/views/glic",
         "//chrome/browser/ui/views/tabs/glic",
         "//chrome/browser/ui/views/tabs/glic:impl",

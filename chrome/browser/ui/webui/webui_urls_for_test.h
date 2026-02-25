@@ -287,6 +287,7 @@ static constexpr const char* const kChromeUntestedUrls[] = {
     "chrome://discards",
     "chrome://glic",
     "chrome://glic-fre",
+    "chrome-untrusted://glic",
     "chrome://history-sync-optin",
     // Not a valid URL; only internals/session-service is valid.
     "chrome://internals",

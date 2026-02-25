@@ -203,6 +203,11 @@
 #include "components/surface_embed/common/surface_embed.mojom.h"
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/selection/selection_overlay_features.h"
+#include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
+#endif
+
 namespace chrome::internal {
 
 using content::RegisterWebUIControllerInterfaceBinder;
@@ -710,6 +715,13 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
   registry.ForWebUI<NtpMicrosoftAuthUntrustedUI>()
       .Add<new_tab_page::mojom::
                MicrosoftAuthUntrustedDocumentInterfacesFactory>();
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (base::FeatureList::IsEnabled(glic::features::kGlicRegionSelectionNew)) {
+    registry.ForWebUI<glic::SelectionOverlayUntrustedUI>()
+        .Add<glic::selection::SelectionOverlayPageHandlerFactory>();
+  }
+#endif
 }
 
 }  // namespace chrome::internal
