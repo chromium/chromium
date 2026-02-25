@@ -346,31 +346,6 @@ each histogram.
   </summary>
 </histogram>
 
-<histogram
-    name="PerformanceManager.InitializeChildProcessCoordination.RequestCount"
-    units="count" expires_after="2025-12-31">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The number of times a child process has requested to initialize its
-    coordination with the browser process. Logged just after the process starts.
-  </summary>
-</histogram>
-
-<histogram
-    name="PerformanceManager.InitializeChildProcessCoordination.ResponseCount"
-    units="count" expires_after="2025-12-31">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The number of times a child process has received a response from the browser
-    process after requesting to initialize its coordination. The difference
-    between this and
-    PerformanceManager.InitializeChildProcessCoordination.RequestCount is the
-    number of requests that did not receive a response.
-  </summary>
-</histogram>
-
 <histogram name="PerformanceManager.InputScenarioChanges{InputScenario}"
     enum="InputScenarioUpdateReason" expires_after="2026-08-09">
   <owner>kraskevich@google.com</owner>
