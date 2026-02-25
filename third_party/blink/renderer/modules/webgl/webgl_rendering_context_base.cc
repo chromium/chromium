@@ -6453,6 +6453,10 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   auto info = CreateSnapshotProviderInfoForVideoFrame(
       *media_video_frame, dest_rect.size(), reinterpret_video_as_srgb);
   auto* snapshot_provider = image_cache.GetCanvasSnapshotProvider(info);
+  if (!snapshot_provider) {
+    return;
+  }
+
   std::optional<CanvasSnapshotProvider::Info> sw_draw_info;
   CanvasNon2DResourceProviderSharedImage* snapshot_provider_si = nullptr;
   sk_sp<SkSurface> sw_draw_surface;
