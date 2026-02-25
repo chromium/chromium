@@ -12,9 +12,11 @@
 #include "base/test/chrome_track_event.descriptor.h"
 #include "base/test/perfetto_sql_stdlib.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/builtin_categories.h"
+#include "base/trace_event/trace_config_category_filter.h"
 #include "base/trace_event/trace_event_impl.h"
-#include "base/trace_event/trace_log.h"
-#include "third_party/perfetto/include/perfetto/tracing/core/chrome_config.h"
+#include "third_party/perfetto/include/perfetto/tracing/core/chrome_config.h"  // IWYU pragma: keep
+#include "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/extension_descriptor.pbzero.h"
 
 namespace base::test {

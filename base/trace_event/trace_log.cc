@@ -4,46 +4,58 @@
 
 #include "base/trace_event/trace_log.h"
 
-#include <algorithm>
-#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
 #include <memory>
+#include <string>
 #include <string_view>
-#include <utility>
 
-#include "base/compiler_specific.h"
-#include "base/debug/leak_annotations.h"
-#include "base/format_macros.h"
-#include "base/functional/bind.h"
-#include "base/location.h"
-#include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted_memory.h"
-#include "base/memory/stack_allocated.h"
+#include "base/byte_size.h"
+#include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/process/process.h"
-#include "base/process/process_metrics.h"
+#include "base/process/process_handle.h"
 #include "base/run_loop.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_tokenizer.h"
-#include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/time/time_override.h"
+#include "base/trace_event/builtin_categories.h"
 #include "base/trace_event/perfetto_proto_appender.h"
+#include "base/trace_event/trace_arguments.h"
+#include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_event_impl.h"
 #include "build/build_config.h"
-#include "third_party/perfetto/include/perfetto/ext/trace_processor/export_json.h"  // nogncheck
-#include "third_party/perfetto/include/perfetto/trace_processor/trace_processor_storage.h"  // nogncheck
 #include "third_party/perfetto/include/perfetto/tracing/console_interceptor.h"
-#include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"  // nogncheck
-#include "third_party/perfetto/protos/perfetto/config/interceptor_config.gen.h"  // nogncheck
-#include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.gen.h"  // nogncheck
-#include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.gen.h"  // nogncheck
+#include "third_party/perfetto/include/perfetto/tracing/core/chrome_config.h"  // IWYU pragma: keep
+#include "third_party/perfetto/include/perfetto/tracing/event_context.h"
+#include "third_party/perfetto/include/perfetto/tracing/internal/track_event_internal.h"
+#include "third_party/perfetto/include/perfetto/tracing/internal/track_event_legacy.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_category_registry.h"
+#include "third_party/perfetto/protos/perfetto/config/interceptor_config.gen.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/track_event.pbzero.h"
+
+#if BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
+#include <utility>
+
+#include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
+#include "third_party/perfetto/include/perfetto/ext/trace_processor/export_json.h"  // nogncheck
+#include "third_party/perfetto/include/perfetto/trace_processor/basic_types.h"  // nogncheck
+#include "third_party/perfetto/include/perfetto/trace_processor/status.h"  // nogncheck
+#include "third_party/perfetto/include/perfetto/trace_processor/trace_processor_storage.h"  // nogncheck
+#endif
 
 namespace base::trace_event {
 

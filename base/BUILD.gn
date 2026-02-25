@@ -4439,11 +4439,15 @@ test("base_unittests") {
 
   deps += [
     "//third_party/perfetto:perfetto_test_support",
-    "//third_party/perfetto/include/perfetto/trace_processor:storage",
     "//third_party/perfetto/protos/perfetto/trace:lite",
     "//third_party/perfetto/protos/perfetto/trace/interned_data:lite",
     "//third_party/perfetto/protos/perfetto/trace/track_event:lite",
   ]
+
+  if (use_perfetto_trace_processor) {
+    deps +=
+        [ "//third_party/perfetto/include/perfetto/trace_processor:storage" ]
+  }
 
   if (enable_nocompile_tests) {
     deps += [ ":base_nocompile_tests" ]

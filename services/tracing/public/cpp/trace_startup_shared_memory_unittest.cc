@@ -13,7 +13,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
-#include "base/trace_event/trace_log.h"
+#include "base/trace_event/builtin_categories.h"
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "mojo/core/embedder/embedder.h"
