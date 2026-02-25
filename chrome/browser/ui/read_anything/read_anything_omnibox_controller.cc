@@ -8,6 +8,7 @@
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -76,7 +77,12 @@ void ReadAnythingOmniboxController::Activate(
 
     if (features::IsReadAnythingOmniboxChipEnabled() &&
         base::FeatureList::IsEnabled(features::kPageActionsMigration) &&
-        open_trigger.has_value() && GetCurrentPageActionState().showing) {
+        open_trigger.has_value() &&
+        open_trigger.value() !=
+            ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton &&
+        GetCurrentPageActionState().showing) {
+      // Ignore the toggle presentation button for this metric, since that can
+      // only be used after RM is already open.
       base::UmaHistogramEnumeration(
           "Accessibility.ReadAnything.EntryPointAfterOmnibox",
           open_trigger.value());

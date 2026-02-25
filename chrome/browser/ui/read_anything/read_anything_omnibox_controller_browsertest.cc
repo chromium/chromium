@@ -161,3 +161,19 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
       "Accessibility.ReadAnything.EntryPointAfterOmnibox",
       ReadAnythingOpenTrigger::kReadAnythingContextMenu, 1);
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
+                       Activate_DoesNotLogTogglePresentationAfterOmniboxShown) {
+  base::HistogramTester histogram_tester;
+  controller_ = CreateController();
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  tab->GetTabFeatures()->page_action_controller()->Show(
+      kActionSidePanelShowReadAnything);
+
+  controller_->Activate(
+      true, ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton);
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.EntryPointAfterOmnibox", 0);
+}
