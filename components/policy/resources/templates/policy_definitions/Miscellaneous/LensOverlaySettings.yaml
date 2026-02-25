@@ -1,4 +1,5 @@
 caption: Settings for the Lens Overlay feature
+deprecated: true
 desc: |-
   Lens Overlay lets users perform contextual Google searches either via a screenshot or by asking a question about the current page's contents. This feature requires the end user to opt-in.
 

@@ -1,5 +1,6 @@
 caption: Allow <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> button to
   be shown in the search box on the New Tab page if supported.
+deprecated: true
 default: true
 desc: Leaving the policy unset or setting it to Enabled allows users to view and
   use the <ph name="GOOGLE_LENS_PRODUCT_NAME">Google Lens</ph> button in the
