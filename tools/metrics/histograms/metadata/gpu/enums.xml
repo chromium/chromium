@@ -169,15 +169,19 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="CONTEXT_LOST_ALLOCATE_FRAME_BUFFERS_FAILED"/>
 </enum>
 
+<!-- LINT.IfChange(CreateFallbackImageResult) -->
+
 <enum name="CreateFallbackImageResult">
   <summary>Result of creating fallback shared image</summary>
   <int value="0" label="Success"/>
   <int value="1" label="FailedPrefersExternalSampler"/>
   <int value="2" label="FailedYcbcrMismatch"/>
-  <int value="3" label="FailedExternalTexture"/>
+  <int value="3" label="FailedYCbCrTextureCreationFailure"/>
   <int value="4" label="FailedInvalidTextureInfo"/>
   <int value="5" label="FailedCreateTexture"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/viz/service/display_embedder/image_context_impl.cc:CreateFallbackImageResult) -->
 
 <enum name="D3D11FeatureLevel">
   <int value="0" label="Unknown"/>
