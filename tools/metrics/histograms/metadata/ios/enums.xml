@@ -124,6 +124,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h:FullscreenModeTransitionReason) -->
 
+<!-- LINT.IfChange(GeminiViewState) -->
+
+<enum name="GeminiViewState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Hidden"/>
+  <int value="2" label="Collapsed"/>
+  <int value="3" label="Expanded"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/public/provider/chrome/browser/bwg/bwg_api.h:GeminiViewState) -->
+
 <enum name="GeolocationAPI">
   <int value="0" label="Clear Watch"/>
   <int value="1" label="Get Current Position"/>

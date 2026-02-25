@@ -588,9 +588,7 @@ void GeminiBrowserAgent::DismissFloaty() {
     return;
   }
 
-  if (last_shown_view_state_ == ios::provider::GeminiViewState::kCollapsed) {
-    RecordFloatyDismissedWhileCollapsed();
-  }
+  RecordFloatyDismissedState(last_shown_view_state_);
 
   is_floaty_invoked_ = false;
   is_hidden_by_keyboard_ = false;
@@ -714,6 +712,14 @@ void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
     }
     [new_active->GetWebViewProxy().scrollViewProxy
         addObserver:scroll_observer_];
+
+    if (!IsGeminiCopresenceZeroStateWithChatHistoryEnabled() ||
+        !is_floaty_invoked_) {
+      return;
+    }
+
+    ios::provider::RequestUIChange(
+        ios::provider::GeminiUIElementType::kZeroState);
   }
 }
 

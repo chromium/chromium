@@ -84,6 +84,7 @@ enum class GeminiPageContextAttachmentState {
 
 // Enum representing the Gemini view state.
 // This needs to stay in sync with GCRGeminiViewState (and its SDK counterpart).
+// LINT.IfChange(GeminiViewState)
 enum class GeminiViewState {
   // The Gemini view state is unknown.
   kUnknown,
@@ -97,7 +98,9 @@ enum class GeminiViewState {
   kCollapsed,
   // The Gemini view is expanded.
   kExpanded,
+  kMaxValue = kExpanded,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:GeminiViewState)
 
 // Enum representing the UI element type for which a change is requested.
 // This needs to stay in sync with GCRGeminiUIElementType (and its SDK

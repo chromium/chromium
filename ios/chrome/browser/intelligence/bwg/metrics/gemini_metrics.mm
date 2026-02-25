@@ -157,6 +157,9 @@ const char kFloatyShownFromSourceHistogram[] =
 const char kFloatyHiddenFromSourceHistogram[] =
     "IOS.Gemini.Floaty.HiddenFromSource";
 
+const char kFloatyDismissedStateHistogram[] =
+    "IOS.Gemini.Floaty.DismissedState";
+
 const char kImageRemixContextMenuEntryPointAspectRatioTappedHistogram[] =
     "IOS.Gemini.ImageRemix.ContextMenuEntryPoint.AspectRatio.Tapped";
 
@@ -374,9 +377,16 @@ void RecordFloatyCollapsedToExpanded() {
       IOSGeminiViewStateTransition::kCollapsedToExpanded);
 }
 
-void RecordFloatyDismissedWhileCollapsed() {
-  base::RecordAction(
-      base::UserMetricsAction("MobileGeminiFloatyCollapsedToDismissed"));
+void RecordFloatyDismissedState(ios::provider::GeminiViewState state) {
+  base::UmaHistogramEnumeration(kFloatyDismissedStateHistogram, state);
+
+  if (state == ios::provider::GeminiViewState::kCollapsed) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileGeminiFloatyCollapsedToDismissed"));
+  } else if (state == ios::provider::GeminiViewState::kExpanded) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileGeminiFloatyExpandedToDismissed"));
+  }
 }
 
 void RecordFloatyMinimizedTime(base::TimeTicks elapsed_minimized_floaty_time) {

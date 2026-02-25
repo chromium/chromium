@@ -27260,6 +27260,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileGeminiFloatyExpandedToDismissed">
+  <owner>joemerramos@google.com</owner>
+  <description>
+    The user dismissed the Gemini floaty from an expanded state. iOS only.
+  </description>
+</action>
+
 <action name="MobileGeminiFREConsentAccept">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy@google.com</owner>
