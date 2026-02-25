@@ -70,6 +70,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
+#include "extensions/browser/api/web_request/web_request_api_helpers.h"
+#include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/crx_installer.h"
 #include "extensions/browser/event_router.h"
@@ -2799,20 +2801,29 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
 }
 
 class ServiceWorkerWebRequestPersistFilteredEventsTest
-    : public ServiceWorkerWebRequestEarlyListenerTest {
+    : public ServiceWorkerWebRequestEarlyListenerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ServiceWorkerWebRequestPersistFilteredEventsTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        extensions_features::kWebRequestPersistFilteredEventsViaEventRouter,
+        GetParam());
+  }
+
  protected:
   WebRequestEventRouter* web_request_router() {
     return WebRequestEventRouter::Get(profile());
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::AutoReset<bool> disable_lazy_context_spinup_ =
       ExtensionRegistrar::DisableLazyContextSpinupForTest();
 };
 
 // Test that persisted webRequest filters are restored after browser restart.
 // Step 1: load the extension.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestPersistFilteredEventsTest,
                        PRE_WebRequestAfterRestart) {
   base::FilePath extension_path = test_data_dir_.AppendASCII("service_worker")
                                       .AppendASCII("worker_based_background")
@@ -2831,7 +2842,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
 }
 
 // Step 2: test that filters are restored post restart.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestPersistFilteredEventsTest,
                        WebRequestAfterRestart) {
   // DO NOT wait for the listeners to be added by the service worker.
   // We rely on the persistence mechanism.
@@ -2844,6 +2855,20 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
                     profile(), "webRequest.onBeforeRequest"));
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
+
+  // Check that the listeners details have been properly restored.
+  int extra_info_spec = -1;
+  WebRequestEventRouter::RequestFilter* filter;
+  EXPECT_TRUE(web_request_router()->GetInactiveListenerDetailsForTesting(
+      profile(), extension->id(), "webRequest.onBeforeRequest", &filter,
+      &extra_info_spec));
+  EXPECT_FALSE(filter->urls.MatchesAllURLs());
+  EXPECT_TRUE(filter->urls.MatchesURL(GURL("http://127.0.0.1/empty.html")));
+  EXPECT_EQ(filter->types.size(), 1);
+  EXPECT_EQ(filter->types[0], WebRequestResourceType::MAIN_FRAME);
+  EXPECT_EQ(extra_info_spec,
+            extension_web_request_api_helpers::ExtraInfoSpec::EXTRA_HEADERS);
+
   // Navigate and expect the listener in the extension to be triggered.
   ResultCatcher catcher;
   catcher.RestrictToBrowserContext(profile());
@@ -2888,7 +2913,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
 // Test that persisted webRequest filters are not restored after browser restart
 // if they were explicitly removed.
 // Step 1: load the extension that removes its listeners.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestPersistFilteredEventsTest,
                        PRE_WebRequestAfterRestart_RemoveListener) {
   base::FilePath extension_path =
       test_data_dir_.AppendASCII("service_worker")
@@ -2913,7 +2938,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
 }
 
 // Step 2: test that filters are NOT restored post restart.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerWebRequestPersistFilteredEventsTest,
                        WebRequestAfterRestart_RemoveListener) {
   // No service worker should be running yet.
   EXPECT_EQ(process_manager()->GetAllWorkersIdsForTesting().size(), 0u);
@@ -2924,6 +2949,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerWebRequestPersistFilteredEventsTest,
   EXPECT_EQ(0u, web_request_router()->GetListenerCountForTesting(
                     profile(), "webRequest.onBeforeRequest"));
 }
+
+// Instantiate test suite with the WebRequestPersistFilteredEventsViaEventRouter
+// feature flag enabled and disabled.
+INSTANTIATE_TEST_SUITE_P(All,
+                         ServiceWorkerWebRequestPersistFilteredEventsTest,
+                         testing::Bool());
 
 // Tests that chrome.browserAction.onClicked sees user gesture.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,

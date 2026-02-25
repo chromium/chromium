@@ -75,6 +75,8 @@ class WebRequestEventRouter : public KeyedService {
 
   // Key to the extension preference that stores serialized lazy webRequest
   // listeners.
+  // TODO(crbug.com/474558883): remove once migration to EventRouter mechanism
+  // is complete.
   static const char kFilteredLazyListeners[];
 
   explicit WebRequestEventRouter(content::BrowserContext* browser_context);
@@ -295,7 +297,8 @@ class WebRequestEventRouter : public KeyedService {
                         int render_process_id,
                         int web_view_instance_id,
                         int worker_thread_id,
-                        int64_t service_worker_version_id);
+                        int64_t service_worker_version_id,
+                        bool is_lazy);
 
   // Removes the listeners for a given <webview>.
   void RemoveWebViewEventListeners(content::BrowserContext* browser_context,
@@ -344,6 +347,8 @@ class WebRequestEventRouter : public KeyedService {
   // browser context. Called when the extension is loaded.
   // NOTE: loads all listeners or none at all. If the persisted listeners
   // were invalid, it clears the corresponding pref.
+  // TODO(crbug.com/474558883): remove once migration to EventRouter mechanism
+  // is complete.
   void LoadPersistedLazyListeners(content::BrowserContext* browser_context,
                                   const ExtensionId& extension_id);
 
@@ -353,6 +358,14 @@ class WebRequestEventRouter : public KeyedService {
   size_t GetInactiveListenerCountForTesting(
       content::BrowserContext* browser_context,
       const std::string& event_name);
+
+  // Get details of an inactive listener given event name - for testing only.
+  bool GetInactiveListenerDetailsForTesting(
+      content::BrowserContext* browser_context,
+      const ExtensionId& extension_id,
+      const std::string& event_name,
+      RequestFilter** filter,
+      int* extra_info_spec);
 
   bool HasAnyExtraHeadersListenerForTesting(
       content::BrowserContext* browser_context) {
@@ -423,6 +436,8 @@ class WebRequestEventRouter : public KeyedService {
 
     // Deserializes a listener from a persisted dictionary value into its
     // inactive (lazy) state. Returns nullptr on failure and sets `error`.
+    // TODO(crbug.com/474558883): remove once migration to EventRouter mechanism
+    // is complete.
     static std::unique_ptr<EventListener> InitFromInactiveListenerValue(
         const base::DictValue& value,
         const ExtensionId& extension_id,
@@ -430,6 +445,8 @@ class WebRequestEventRouter : public KeyedService {
         std::string* error);
 
     // Serializes a listener for persistence.
+    // TODO(crbug.com/474558883): remove once migration to EventRouter mechanism
+    // is complete.
     base::DictValue ToInactiveListenerValue() const;
 
     bool HasExtraHeaders() const {
@@ -536,6 +553,15 @@ class WebRequestEventRouter : public KeyedService {
   // Returns the EventListener with the given `id`, or nullptr.
   EventListener* FindEventListener(const EventListener::ID& id);
 
+  // Returns the active EventListener corresponding to the provided
+  // `browser_context_id`, `extension_id`, `event_name`, and `sub_event_name`,
+  // or nullptr if not found.
+  EventListener* FindEventListenerBySubEventName(
+      BrowserContextID browser_context_id,
+      const ExtensionId& extension_id,
+      const std::string& event_name,
+      const std::string& sub_event_name);
+
   // Returns the EventListener with the given `id` from `listeners`.
   EventListener* FindEventListenerInContainer(const EventListener::ID& id,
                                               const Listeners& listeners);
@@ -550,6 +576,13 @@ class WebRequestEventRouter : public KeyedService {
                             int worker_thread_id,
                             int64_t service_worker_version_id);
 
+  // Adds a listener to the inactive (lazy) listeners list for the specified
+  // context and event. Updates global listener counts (like extra headers and
+  // security info) if applicable.
+  void AddLazyListener(content::BrowserContext* browser_context,
+                       const std::string& event_name,
+                       std::unique_ptr<EventListener> listener);
+
   // Removes a lazy listener registration. This affects both the provided
   // `original_context` and any incognito context associated with it.
   void RemoveLazyListener(content::BrowserContext* original_context,
@@ -557,12 +590,16 @@ class WebRequestEventRouter : public KeyedService {
                           const std::string& sub_event_name);
 
   // Adds a listener to the persisted lazy listeners for the given extension.
+  // TODO(crbug.com/474558883): remove once migration to EventRouter mechanism
+  // is complete.
   void AddPersistedLazyListener(content::BrowserContext* browser_context,
                                 const ExtensionId& extension_id,
                                 const EventListener& listener);
 
   // Removes a listener from the persisted lazy listeners for the given
   // extension.
+  // TODO(crbug.com/474558883): remove once migration to EventRouter mechanism
+  // is complete.
   void RemovePersistedLazyListener(content::BrowserContext* browser_context,
                                    const ExtensionId& extension_id,
                                    const std::string& sub_event_name);

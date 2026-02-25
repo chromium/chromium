@@ -211,7 +211,7 @@ class EventEmitterWithAlternativeAddListenerUnittest
  public:
   EventEmitterWithAlternativeAddListenerUnittest() {
     feature_list_.InitAndEnableFeature(
-        extensions_features::kWebRequestAlternativeAddListener);
+        extensions_features::kWebRequestPersistFilteredEventsViaEventRouter);
   }
 
  private:

@@ -208,7 +208,7 @@ BASE_FEATURE(kSearchEngineExplicitChoiceDialog,
 BASE_FEATURE(kSearchEngineUnconditionalDialog,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebRequestAlternativeAddListener,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebRequestPersistFilteredEventsViaEventRouter,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace extensions_features

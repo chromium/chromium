@@ -166,7 +166,8 @@ void EventEmitter::AddListener(gin::Arguments* arguments) {
 
   v8::Local<v8::Object> options;
   if (base::FeatureList::IsEnabled(
-          extensions_features::kWebRequestAlternativeAddListener) &&
+          extensions_features::
+              kWebRequestPersistFilteredEventsViaEventRouter) &&
       !arguments->PeekNext().IsEmpty()) {
     // The `options` argument is currently limited to webRequest API only.
     std::string_view event_name = listeners_->GetEventName();

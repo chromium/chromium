@@ -415,10 +415,8 @@ void WebRequestAPI::OnListenerAdded(const EventListenerInfo& details) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!base::FeatureList::IsEnabled(
-          extensions_features::kWebRequestAlternativeAddListener)) {
-    return;
-  }
-  if (details.is_lazy) {
+          extensions_features::
+              kWebRequestPersistFilteredEventsViaEventRouter)) {
     return;
   }
 
@@ -553,14 +551,17 @@ void WebRequestAPI::OnListenerAdded(const EventListenerInfo& details) {
                details.browser_context, details.extension_id, extension_name,
                event_name, sub_event_name, std::move(filter), extra_info_spec,
                details.render_process_id, web_view_instance_id,
-               details.worker_thread_id, details.service_worker_version_id)) {
+               details.worker_thread_id, details.service_worker_version_id,
+               details.is_lazy)) {
     AddMessageToConsoleForListener(details,
                                    blink::mojom::ConsoleMessageLevel::kError,
                                    "Failed to add listener.");
     return;
   }
 
-  helpers::ClearCacheOnNavigation();
+  if (!details.is_lazy) {
+    helpers::ClearCacheOnNavigation();
+  }
 }
 
 void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
@@ -1201,11 +1202,11 @@ WebRequestInternalAddEventListenerFunction::Run() {
 
   bool success =
       WebRequestEventRouter::Get(browser_context())
-          ->AddEventListener(browser_context(), extension_id_safe(),
-                             extension_name, event_name, sub_event_name,
-                             std::move(filter), extra_info_spec,
-                             render_process_id, web_view_instance_id,
-                             worker_thread_id(), service_worker_version_id());
+          ->AddEventListener(
+              browser_context(), extension_id_safe(), extension_name,
+              event_name, sub_event_name, std::move(filter), extra_info_spec,
+              render_process_id, web_view_instance_id, worker_thread_id(),
+              service_worker_version_id(), /*is_lazy=*/false);
   EXTENSION_FUNCTION_VALIDATE(success);
 
   helpers::ClearCacheOnNavigation();

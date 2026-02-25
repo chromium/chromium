@@ -45,7 +45,7 @@ void WebRequestNatives::IsAlternativeAddListenerEnabled(
   CHECK_EQ(0, args.Length());
 
   args.GetReturnValue().Set(base::FeatureList::IsEnabled(
-      extensions_features::kWebRequestAlternativeAddListener));
+      extensions_features::kWebRequestPersistFilteredEventsViaEventRouter));
 }
 
 }  // namespace extensions

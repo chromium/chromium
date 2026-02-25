@@ -7145,23 +7145,23 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
   EXPECT_EQ(2, get_request_count());
 }
 
-class ManifestV3WebRequestApiTestWithAlternativeAddListener
+class ManifestV3WebRequestApiTestWithEventRouterPersistence
     : public ManifestV3WebRequestApiTest {
  public:
-  ManifestV3WebRequestApiTestWithAlternativeAddListener() {
+  ManifestV3WebRequestApiTestWithEventRouterPersistence() {
     scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kWebRequestAlternativeAddListener);
+        extensions_features::kWebRequestPersistFilteredEventsViaEventRouter);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Test that, when the `WebRequestAlternativeAddListener` feature flag is
-// enabled, adding a listener right after an extension has been unloaded, but
-// before its renderer has been shut down, doesn't cause a CHECK failure in
-// WebRequestAPI. Regression test for https://crbug.com/479841044.
-IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTestWithAlternativeAddListener,
+// Test that, when the `kWebRequestPersistFilteredEventsViaEventRouter` feature
+// flag is enabled, adding a listener right after an extension has been
+// unloaded, but before its renderer has been shut down, doesn't cause a CHECK
+// failure in WebRequestAPI. Regression test for https://crbug.com/479841044.
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTestWithEventRouterPersistence,
                        DontCrashOnExtensionUnload) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   static constexpr char kManifest[] =
