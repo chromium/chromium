@@ -1909,7 +1909,6 @@
       // https://issues.chromium.org/issues/357649033
       name: "CustomizableSelectListbox",
       status: "stable",
-      depends_on: ["SelectMobileDesktopParity"],
     },
     {
       // appearance:base-select for <select multiple size=1> with a picker.
@@ -4939,16 +4938,6 @@
       // See https://chromestatus.com/feature/4811835974615040
       name: "SelectivePermissionsIntervention",
       status: "experimental",
-    },
-    {
-      // Makes the logic to choose between ListBox (in-page) or MenuList
-      // (dropdown) select element modes the same between mobile and desktop.
-      // Without this flag, mobile will always use MenuList and desktop always
-      // makes <select multiple> a ListBox.
-      // https://chromestatus.com/feature/5412736871825408
-      // https://issues.chromium.org/issues/439964654
-      name: "SelectMobileDesktopParity",
-      status: "stable",
     },
     {
       // Removes the forced overflow:hidden rules on the select element's

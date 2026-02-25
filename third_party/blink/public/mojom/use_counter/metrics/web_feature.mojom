@@ -4857,7 +4857,7 @@ enum WebFeature {
   kInputParsedParentSelect = 5546,
   kInputParsedAncestorSelect = 5547,
   kCSSSelectorPseudoHasSlotted = 5548,
-  kSelectMultipleShowPopup = 5549,
+  kOBSOLETE_SelectMultipleShowPopup = 5549,
   kSharedWorkerExtendedLifetimeFeatureEnabled = 5550,
   kSharedWorkerExtendedLifetimeIsTrue = 5551,
   // The items above roughly this point are available in the M137 branch.

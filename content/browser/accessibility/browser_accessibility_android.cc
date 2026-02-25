@@ -522,23 +522,6 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
   // children of a link as not interesting to prevent double utterances.
   const BrowserAccessibility* parent = PlatformGetParent();
 
-  // When SelectMobileDesktopParity is enabled, ListBox selects are supported on
-  // android in addition to combobox/MenuList selects, in which case ListBox
-  // options should be interesting or else they can't be selected or toggled.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kSelectMobileDesktopParity)) {
-    // Should not read options in a multiselect combobox as it is invisible.
-    // Adding IsFocusable() to handle an edge case in crbug.com/395134019 to
-    // allow select options in aria list box. This is also able to handle edge
-    // case in crbug.com/358195473 to not allow TalkBack to read out collapsed
-    // multi-selectable options.
-    if (parent && parent->GetRole() == ax::mojom::Role::kListBox &&
-        parent->HasState(ax::mojom::State::kMultiselectable) &&
-        GetRole() == ax::mojom::Role::kListBoxOption && IsFocusable()) {
-      return false;
-    }
-  }
-
   while (parent) {
     // Generally, if a parent is a control (like a combobox) and the child isn't
     // focusable, the child is hidden to reduce clutter.

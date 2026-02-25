@@ -1490,11 +1490,6 @@ TEST_P(LayoutBoxModelObjectTest, ChangingWillChangeBackdropFilter) {
 }
 
 TEST_P(LayoutBoxModelObjectTest, UpdateStackingContextForOption) {
-  // We do not create LayoutObject for option elements inside multiple selects
-  // on platforms where DelegatesMenuListRendering() returns true like Android.
-  if (LayoutTheme::GetTheme().DelegatesMenuListRendering())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes op {

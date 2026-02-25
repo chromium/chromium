@@ -214,29 +214,21 @@ unsigned HTMLSelectElement::ListBoxSize() const {
 }
 
 void HTMLSelectElement::UpdateUsesMenuList() {
-  if (RuntimeEnabledFeatures::SelectMobileDesktopParityEnabled()) {
-    // Choose MenuList or ListBox the same regardless of the platform:
-    // <select>                  MenuList (popup)
-    // <select size=1>           MenuList (popup)
-    // <select multiple size=1>  MenuList (popup)
-    // <select multiple>         ListBox  (in-page)
-    // <select size=4>           ListBox  (in-page)
-    // <select multiple size=4>  ListBox  (in-page)
-    if (is_multiple_) {
-      // <select multiple> does not use MenuList by default. The author must
-      // specify <select multiple size=1> to get MenuList.
-      uses_menu_list_ =
-          FastHasAttribute(html_names::kSizeAttr) ? size_ == 1 : false;
-    } else {
-      uses_menu_list_ = size_ <= 1;
-    }
-    return;
+  // Choose MenuList or ListBox the same regardless of the platform:
+  // <select>                  MenuList (popup)
+  // <select size=1>           MenuList (popup)
+  // <select multiple size=1>  MenuList (popup)
+  // <select multiple>         ListBox  (in-page)
+  // <select size=4>           ListBox  (in-page)
+  // <select multiple size=4>  ListBox  (in-page)
+  if (is_multiple_) {
+    // <select multiple> does not use MenuList by default. The author must
+    // specify <select multiple size=1> to get MenuList.
+    uses_menu_list_ =
+        FastHasAttribute(html_names::kSizeAttr) ? size_ == 1 : false;
+  } else {
+    uses_menu_list_ = size_ <= 1;
   }
-
-  if (LayoutTheme::GetTheme().DelegatesMenuListRendering())
-    uses_menu_list_ = true;
-  else
-    uses_menu_list_ = !is_multiple_ && size_ <= 1;
 }
 
 int HTMLSelectElement::ActiveSelectionEndListIndex() const {
@@ -1007,7 +999,6 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
 void HTMLSelectElement::SelectOptionFromPopoverPickerOrBaseListbox(
     HTMLOptionElement* option) {
   if (!UsesMenuList() || IsMultiple()) {
-    CHECK(RuntimeEnabledFeatures::SelectMobileDesktopParityEnabled());
     option->SetSelectedState(!option->Selected());
     option->SetDirty(true);
     if (!IsMultiple()) {

@@ -1822,91 +1822,47 @@ dialog:where(:modal) {
 
 /* noscript is handled internally, as it depends on settings. */
 
-@supports not blink-feature(SelectMobileDesktopParity) {
-  select:not(:-internal-list-box):not([multiple]) {
-    font: -internal-auto-base(-webkit-small-control, inherit);
-    text-shadow: -internal-auto-base(none, inherit);
-    text-transform: -internal-auto-base(none, initial);
-    text-rendering: -internal-auto-base(auto, inherit);
-    letter-spacing: -internal-auto-base(normal, inherit);
-    word-spacing: -internal-auto-base(normal, inherit);
-    text-align: -internal-auto-base(start, initial);
-    text-indent: -internal-auto-base(0px, initial);
-    -webkit-rtl-ordering: -internal-auto-base(logical, inherit);
-    cursor: -internal-auto-base(default, inherit);
-    white-space: -internal-auto-base(pre, inherit);
-    /* This text-autospace rule won't work because it is set with !important
-     * earlier in the UA stylesheet. After merging with the rest of the UA
-     * style rules when removing the CustomizableSelect flag, it should start
-     * to work. */
-    text-autospace: -internal-auto-base(no-autospace !important, inherit);
-    color: -internal-auto-base(FieldText, inherit);
-    background-color: -internal-auto-base(Field, transparent);
-    border: 1px solid -internal-auto-base(light-dark(#767676, #858585), currentColor);
-    padding-block: -internal-auto-base(0, 0.25em);
-    padding-inline: -internal-auto-base(0, 0.5em);
+/* These styles are identical to the not blink-feature block above, except
+ * that the :not([multiple]) part is removed. */
+select:not(:-internal-list-box) {
+  font: -internal-auto-base(-webkit-small-control, inherit);
+  text-shadow: -internal-auto-base(none, inherit);
+  text-transform: -internal-auto-base(none, initial);
+  text-rendering: -internal-auto-base(auto, inherit);
+  letter-spacing: -internal-auto-base(normal, inherit);
+  word-spacing: -internal-auto-base(normal, inherit);
+  text-align: -internal-auto-base(start, initial);
+  text-indent: -internal-auto-base(0px, initial);
+  -webkit-rtl-ordering: -internal-auto-base(logical, inherit);
+  cursor: -internal-auto-base(default, inherit);
+  white-space: -internal-auto-base(pre, inherit);
+  /* This text-autospace rule won't work because it is set with !important
+   * earlier in the UA stylesheet. After merging with the rest of the UA
+   * style rules when removing the CustomizableSelect flag, it should start
+   * to work. */
+  text-autospace: -internal-auto-base(no-autospace !important, inherit);
+  color: -internal-auto-base(FieldText, inherit);
+  background-color: -internal-auto-base(Field, transparent);
+  border: 1px solid -internal-auto-base(light-dark(#767676, #858585), currentColor);
+  padding-block: -internal-auto-base(0, 0.25em);
+  padding-inline: -internal-auto-base(0, 0.5em);
 
-    /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
-     * https://github.com/openui/open-ui/issues/1026
-     * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
-    /* TODO(crbug.com/1511354): This might be able to be combined with the
-     * default select option rules at some point. This should be re-evaluated
-     * before StylableSelect is shipped. */
-    min-inline-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px)));
-    /* The 1lh here makes sure that options with no text still make the button
-     * have the same height as options with text. */
-    min-block-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px, 1lh)));
+  /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
+   * https://github.com/openui/open-ui/issues/1026
+   * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
+  /* TODO(crbug.com/41483940): This might be able to be combined with the
+   * default select option rules at some point. This should be re-evaluated
+   * before StylableSelect is shipped. */
+  min-inline-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px)));
+  /* The 1lh here makes sure that options with no text still make the button
+   * have the same height as options with text. */
+  min-block-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px, 1lh)));
 
-    gap: -internal-auto-base(initial, 0.5em);
-    border-radius: -internal-auto-base(0, 0.5em);
-    align-items: -internal-auto-base(center, unset);
-    /* https://github.com/whatwg/html/issues/10876 */
-    user-select: -internal-auto-base(auto, none);
-  }
-}
-@supports blink-feature(SelectMobileDesktopParity) {
-  /* These styles are identical to the not blink-feature block above, except
-   * that the :not([multiple]) part is removed. */
-  select:not(:-internal-list-box) {
-    font: -internal-auto-base(-webkit-small-control, inherit);
-    text-shadow: -internal-auto-base(none, inherit);
-    text-transform: -internal-auto-base(none, initial);
-    text-rendering: -internal-auto-base(auto, inherit);
-    letter-spacing: -internal-auto-base(normal, inherit);
-    word-spacing: -internal-auto-base(normal, inherit);
-    text-align: -internal-auto-base(start, initial);
-    text-indent: -internal-auto-base(0px, initial);
-    -webkit-rtl-ordering: -internal-auto-base(logical, inherit);
-    cursor: -internal-auto-base(default, inherit);
-    white-space: -internal-auto-base(pre, inherit);
-    /* This text-autospace rule won't work because it is set with !important
-     * earlier in the UA stylesheet. After merging with the rest of the UA
-     * style rules when removing the CustomizableSelect flag, it should start
-     * to work. */
-    text-autospace: -internal-auto-base(no-autospace !important, inherit);
-    color: -internal-auto-base(FieldText, inherit);
-    background-color: -internal-auto-base(Field, transparent);
-    border: 1px solid -internal-auto-base(light-dark(#767676, #858585), currentColor);
-    padding-block: -internal-auto-base(0, 0.25em);
-    padding-inline: -internal-auto-base(0, 0.5em);
-
-    /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
-     * https://github.com/openui/open-ui/issues/1026
-     * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
-    /* TODO(crbug.com/1511354): This might be able to be combined with the
-     * default select option rules at some point. This should be re-evaluated
-     * before StylableSelect is shipped. */
-    min-inline-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px)));
-    /* The 1lh here makes sure that options with no text still make the button
-     * have the same height as options with text. */
-    min-block-size: -internal-auto-base(auto, calc-size(auto, max(size, 24px, 1lh)));
-
-    gap: -internal-auto-base(initial, 0.5em);
-    border-radius: -internal-auto-base(0, 0.5em);
-    align-items: -internal-auto-base(center, unset);
-    /* https://github.com/whatwg/html/issues/10876 */
-    user-select: -internal-auto-base(auto, none);
-  }
+  gap: -internal-auto-base(initial, 0.5em);
+  border-radius: -internal-auto-base(0, 0.5em);
+  align-items: -internal-auto-base(center, unset);
+  /* https://github.com/whatwg/html/issues/10876 */
+  user-select: -internal-auto-base(auto, none);
 }
 @supports blink-feature(CustomizableSelectListbox) {
   select {
@@ -2000,134 +1956,72 @@ dialog:where(:modal) {
   }
 }
 
-@supports not blink-feature(SelectMobileDesktopParity) {
-  select:not(:-internal-list-box):not([multiple])::picker(select) {
-    box-sizing: border-box;
-    border: 1px solid;
-    padding: 0;
-    color: -internal-auto-base(inherit, CanvasText);
-    background-color: Canvas;
-    margin: 0;
-    inset: auto;
-    min-inline-size: anchor-size(self-inline);
-    /* TODO(crbug.com/409942762): Consider removing -internal-auto-base() here
-     * if underlying performance issues with lh units are fixed. */
-    min-block-size: -internal-auto-base(0, 1lh);
-    /* Go to the edge of the viewport, and add scrollbars if needed. */
-    max-block-size: stretch;
-    overflow: auto;
-    /* Below and span-right, by default. */
-    position-area: block-end span-inline-end;
-    position-try-order: most-block-size;
-    position-try-fallbacks:
-        block-start span-inline-end,   /* First try above and span-right. */
-        block-end span-inline-start,   /* Then below but span-left. */
-        block-start span-inline-start; /* Then above and span-left. */
-  }
-}
-@supports blink-feature(SelectMobileDesktopParity) {
-  select:not(:-internal-list-box)::picker(select) {
-    box-sizing: border-box;
-    border: 1px solid -internal-auto-base(light-dark(#767676, #858585), currentColor);
-    border-radius: -internal-auto-base(2px, 0);
-    padding: 0;
-    color: -internal-auto-base(inherit, CanvasText);
-    background-color: Canvas;
-    margin: 0;
-    inset: auto;
-    min-inline-size: anchor-size(self-inline);
-    /* TODO(crbug.com/409942762): Consider removing -internal-auto-base() here
-     * if underlying performance issues with lh units are fixed. */
-    min-block-size: -internal-auto-base(0, 1lh);
-    /* Go to the edge of the viewport, and add scrollbars if needed. */
-    max-block-size: stretch;
-    overflow: auto;
-    /* Below and span-right, by default. */
-    position-area: block-end span-inline-end;
-    position-try-order: most-block-size;
-    position-try-fallbacks:
-      block-start span-inline-end,
-      block-end span-inline-start,
-      block-start span-inline-start;
-  }
+select:not(:-internal-list-box)::picker(select) {
+  box-sizing: border-box;
+  border: 1px solid -internal-auto-base(light-dark(#767676, #858585), currentColor);
+  border-radius: -internal-auto-base(2px, 0);
+  padding: 0;
+  color: -internal-auto-base(inherit, CanvasText);
+  background-color: Canvas;
+  margin: 0;
+  inset: auto;
+  min-inline-size: anchor-size(self-inline);
+  /* TODO(crbug.com/409942762): Consider removing -internal-auto-base() here
+   * if underlying performance issues with lh units are fixed. */
+  min-block-size: -internal-auto-base(0, 1lh);
+  /* Go to the edge of the viewport, and add scrollbars if needed. */
+  max-block-size: stretch;
+  overflow: auto;
+  /* Below and span-right, by default. */
+  position-area: block-end span-inline-end;
+  position-try-order: most-block-size;
+  position-try-fallbacks:
+    block-start span-inline-end,
+    block-end span-inline-start,
+    block-start span-inline-start;
 }
 
-@supports not blink-feature(SelectMobileDesktopParity) {
-  select:not(:-internal-list-box):not([multiple]) option {
-    /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
-     * https://github.com/openui/open-ui/issues/1026
-     * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
-    /* TODO(crbug.com/1511354): This might be able to be combined with the
-     * default select option rules at some point. This should be re-evaluted
-     * before CustomizableSelect is shipped. */
-    min-inline-size: 24px;
-    /* TODO(crbug.com/409942762): Consider removing -internal-auto-base() here
-     * if underlying performance issues with lh units are fixed. */
-    min-block-size: -internal-auto-base(24px, max(24px, 1lh));
-    font-weight: -internal-auto-base(normal, inherit);
-    padding-inline: -internal-auto-base(2px, 0.5em);
-    padding-block-end: -internal-auto-base(1px, 0);
-    display: -internal-auto-base(block, flex);
-    align-items: center;
-    gap: 0.5em;
-  }
+select:not(:-internal-list-box) option {
+  /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
+   * https://github.com/openui/open-ui/issues/1026
+   * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
+  /* TODO(crbug.com/41483940): This might be able to be combined with the
+   * default select option rules at some point. This should be re-evaluted
+   * before CustomizableSelect is shipped. */
+  min-inline-size: 24px;
+  /* TODO(crbug.com/409942762): Consider removing -internal-auto-base() here
+   * if underlying performance issues with lh units are fixed. */
+  min-block-size: -internal-auto-base(24px, max(24px, 1lh));
+  font-weight: -internal-auto-base(normal, inherit);
+  align-items: center;
+  gap: 0.5em;
 }
-@supports blink-feature(SelectMobileDesktopParity) {
-  select:not(:-internal-list-box) option {
-    /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
-     * https://github.com/openui/open-ui/issues/1026
-     * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
-    /* TODO(crbug.com/41483940): This might be able to be combined with the
-     * default select option rules at some point. This should be re-evaluted
-     * before CustomizableSelect is shipped. */
-    min-inline-size: 24px;
-    /* TODO(crbug.com/409942762): Consider removing -internal-auto-base() here
-     * if underlying performance issues with lh units are fixed. */
-    min-block-size: -internal-auto-base(24px, max(24px, 1lh));
-    font-weight: -internal-auto-base(normal, inherit);
-    align-items: center;
-    gap: 0.5em;
-  }
-  select:not(:-internal-list-box):not([multiple]) option {
-    padding-inline: -internal-auto-base(2px, 0.5em);
-    padding-block-end: -internal-auto-base(1px, 0);
-    display: -internal-auto-base(block, flex);
-  }
-  /* In the multiple case, we want to use the same styles as base appearance
-   * because the picker is rendered as a popover. */
-  select:not(:-internal-list-box)[multiple] option {
-    padding-inline: 0.5em;
-    padding-block-end: 0;
-    display: flex;
-  }
+select:not(:-internal-list-box):not([multiple]) option {
+  padding-inline: -internal-auto-base(2px, 0.5em);
+  padding-block-end: -internal-auto-base(1px, 0);
+  display: -internal-auto-base(block, flex);
+}
+/* In the multiple case, we want to use the same styles as base appearance
+ * because the picker is rendered as a popover. */
+select:not(:-internal-list-box)[multiple] option {
+  padding-inline: 0.5em;
+  padding-block-end: 0;
+  display: flex;
 }
 
-@supports not blink-feature(SelectMobileDesktopParity) {
-  select:not(:-internal-list-box):not([multiple]) option:enabled:hover {
-    background-color: color-mix(in lab, currentColor 10%, transparent);
-  }
-  select:not(:-internal-list-box):not([multiple]) option:enabled:active {
-    background-color: color-mix(in lab, currentColor 20%, transparent);
-  }
-  select:not(:-internal-list-box):not([multiple]) option:disabled {
-    color: -internal-auto-base(inherit, color-mix(in lab, currentColor 50%, transparent));
-  }
+select:not(:-internal-list-box) option:enabled:hover {
+  background-color: color-mix(in lab, currentColor 10%, transparent);
 }
-@supports blink-feature(SelectMobileDesktopParity) {
-  select:not(:-internal-list-box) option:enabled:hover {
-    background-color: color-mix(in lab, currentColor 10%, transparent);
-  }
-  select:not(:-internal-list-box) option:enabled:active {
-    background-color: color-mix(in lab, currentColor 20%, transparent);
-  }
-  select:not(:-internal-list-box) option:disabled {
-    color: -internal-auto-base(inherit, color-mix(in lab, currentColor 50%, transparent));
-  }
-  select:not(:-internal-list-box)[multiple] option:disabled {
-  /* This rule applies appearance:base styles to the appearance:auto
-   * <select multiple size=1>. Without it, disabled options would not appear disabled. */
-    color: color-mix(in lab, currentColor 50%, transparent);
-  }
+select:not(:-internal-list-box) option:enabled:active {
+  background-color: color-mix(in lab, currentColor 20%, transparent);
+}
+select:not(:-internal-list-box) option:disabled {
+  color: -internal-auto-base(inherit, color-mix(in lab, currentColor 50%, transparent));
+}
+select:not(:-internal-list-box)[multiple] option:disabled {
+/* This rule applies appearance:base styles to the appearance:auto
+ * <select multiple size=1>. Without it, disabled options would not appear disabled. */
+  color: color-mix(in lab, currentColor 50%, transparent);
 }
 @supports blink-feature(CustomizableSelectListbox) {
   /* :-internal-list-box is needed here in order to get precedence over this
@@ -2148,36 +2042,27 @@ dialog:where(:modal) {
   }
 }
 
-@supports blink-feature(SelectMobileDesktopParity) {
-  /* The svg data urls in the below ::checkmark rules are built to match the
-   * checkbox rendering in NativeThemeBase. */
-  select[multiple] option::checkmark {
-    /* The svg is 13px by 13px. Without this height rule, the svg would not be
-     * vertically centered within the ::checkmark. */
-    height: -internal-auto-base(13px, initial);
-    content: -internal-auto-base(url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20fill%3D%22none%22%3E%3Crect%20x%3D%220.5%22%20y%3D%220.5%22%20width%3D%2212%22%20height%3D%2212%22%20rx%3D%222%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23767676%22%20stroke-width%3D%221%22%2F%3E%3C%2Fsvg%3E), '\2713');
-  }
-  select[multiple] option:checked::checkmark {
-    content: -internal-auto-base(url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20fill%3D%22none%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2213%22%20height%3D%2213%22%20rx%3D%222%22%20fill%3D%22%230075FF%22%2F%3E%3Cpath%20d%3D%22M2.6%207%20l2.6%202.5%20L10.4%202.6%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E), '\2713');
-  }
-  select[multiple] option:disabled::checkmark {
-    content: -internal-auto-base(url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20fill%3D%22none%22%3E%3Crect%20x%3D%220.5%22%20y%3D%220.5%22%20width%3D%2212%22%20height%3D%2212%22%20rx%3D%222%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23767676%22%20stroke-opacity%3D%2260%25%22%20fill-opacity%3D%2260%25%22%20stroke-width%3D%221%22%2F%3E%3C%2Fsvg%3E), '\2713');
-  }
-  select[multiple] option:checked:disabled::checkmark {
-    content: -internal-auto-base(url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20fill%3D%22none%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2213%22%20height%3D%2213%22%20rx%3D%222%22%20fill%3D%22%23767676%22%20fill-opacity%3D%2260%25%22%2F%3E%3Cpath%20d%3D%22M2.6%207%20l2.6%202.5%20L10.4%202.6%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%2260%25%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E), '\2713');
-  }
+/* The svg data urls in the below ::checkmark rules are built to match the
+ * checkbox rendering in NativeThemeBase. */
+select[multiple] option::checkmark {
+  /* The svg is 13px by 13px. Without this height rule, the svg would not be
+   * vertically centered within the ::checkmark. */
+  height: -internal-auto-base(13px, initial);
+  content: -internal-auto-base(url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20fill%3D%22none%22%3E%3Crect%20x%3D%220.5%22%20y%3D%220.5%22%20width%3D%2212%22%20height%3D%2212%22%20rx%3D%222%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23767676%22%20stroke-width%3D%221%22%2F%3E%3C%2Fsvg%3E), '\2713');
+}
+select[multiple] option:checked::checkmark {
+  content: -internal-auto-base(url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20fill%3D%22none%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2213%22%20height%3D%2213%22%20rx%3D%222%22%20fill%3D%22%230075FF%22%2F%3E%3Cpath%20d%3D%22M2.6%207%20l2.6%202.5%20L10.4%202.6%22%20stroke%3D%22%23ffffff%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E), '\2713');
+}
+select[multiple] option:disabled::checkmark {
+  content: -internal-auto-base(url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20fill%3D%22none%22%3E%3Crect%20x%3D%220.5%22%20y%3D%220.5%22%20width%3D%2212%22%20height%3D%2212%22%20rx%3D%222%22%20fill%3D%22%23ffffff%22%20stroke%3D%22%23767676%22%20stroke-opacity%3D%2260%25%22%20fill-opacity%3D%2260%25%22%20stroke-width%3D%221%22%2F%3E%3C%2Fsvg%3E), '\2713');
+}
+select[multiple] option:checked:disabled::checkmark {
+  content: -internal-auto-base(url(data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2213%22%20height%3D%2213%22%20viewBox%3D%220%200%2013%2013%22%20fill%3D%22none%22%3E%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%2213%22%20height%3D%2213%22%20rx%3D%222%22%20fill%3D%22%23767676%22%20fill-opacity%3D%2260%25%22%2F%3E%3Cpath%20d%3D%22M2.6%207%20l2.6%202.5%20L10.4%202.6%22%20stroke%3D%22%23ffffff%22%20stroke-opacity%3D%2260%25%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E), '\2713');
 }
 
-@supports blink-feature(SelectMobileDesktopParity) {
-  select option:not(:checked)::checkmark {
-    /* appearance:auto renders an unchecked box instead of empty space. */
-    visibility: -internal-auto-base(visible, hidden);
-  }
-}
-@supports not blink-feature(SelectMobileDesktopParity) {
-  select option:not(:checked)::checkmark {
-    visibility: hidden;
-  }
+select option:not(:checked)::checkmark {
+  /* appearance:auto renders an unchecked box instead of empty space. */
+  visibility: -internal-auto-base(visible, hidden);
 }
 
 select:-internal-autofill-selected,
@@ -2259,19 +2144,18 @@ select::-internal-select-autofill-preview-text {
     font-weight: normal;
   }
 }
-@supports blink-feature(SelectMobileDesktopParity) {
-  /* This rule applies appearance:base styles to the appearance:auto
-   * <select multiple size=1> optgroups. Without it, the padding would look too
-   * small. */
-  select:not(:-internal-list-box)[multiple] optgroup::-internal-optgroup-label,
-  select:not(:-internal-list-box)[multiple] optgroup legend {
-    padding-inline: 0.5em;
-    padding-block: 0;
-  }
-  select:not(:-internal-list-box)[multiple] optgroup option {
-    padding-inline-start: -internal-auto-base(1em, 0.5em);
-    font-weight: normal;
-  }
+
+/* This rule applies appearance:base styles to the appearance:auto
+ * <select multiple size=1> optgroups. Without it, the padding would look too
+ * small. */
+select:not(:-internal-list-box)[multiple] optgroup::-internal-optgroup-label,
+select:not(:-internal-list-box)[multiple] optgroup legend {
+  padding-inline: 0.5em;
+  padding-block: 0;
+}
+select:not(:-internal-list-box)[multiple] optgroup option {
+  padding-inline-start: -internal-auto-base(1em, 0.5em);
+  font-weight: normal;
 }
 
 /* These style rules control whether the select's MenuListInnerElement or

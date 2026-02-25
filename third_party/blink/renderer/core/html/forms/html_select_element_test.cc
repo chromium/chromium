@@ -70,21 +70,14 @@ class HTMLSelectElementTest : public PageTestBase {
     auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
     return select->InnerElement().textContent();
   }
-
- private:
-  bool original_delegates_flag_;
 };
 
 void HTMLSelectElementTest::SetUp() {
   PageTestBase::SetUp();
   GetDocument().SetMimeType(AtomicString("text/html"));
-  original_delegates_flag_ =
-      LayoutTheme::GetTheme().DelegatesMenuListRendering();
 }
 
 void HTMLSelectElementTest::TearDown() {
-  LayoutTheme::GetTheme().SetDelegatesMenuListRenderingForTesting(
-      original_delegates_flag_);
   PageTestBase::TearDown();
 }
 
@@ -555,7 +548,6 @@ TEST_F(HTMLSelectElementTest, SlotAssignmentRecalcDuringOptionRemoval) {
 // crbug.com/1060039
 TEST_F(HTMLSelectElementTest, SelectMultipleOptions) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
-  LayoutTheme::GetTheme().SetDelegatesMenuListRenderingForTesting(true);
 
   // Select the same set of options.
   {
