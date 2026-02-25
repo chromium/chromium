@@ -832,10 +832,11 @@ is_chrome_untrusted: Set to true if testing a chrome-untrusted:// UI. Optional
 
 List of files params:
 files: Required parameter. List of all test related files.
-cc_files: Optional parameter. List of all C++ test files that invoke the Mocha
-          tests. When populated an additional ":check_tests_referenced" target
-          is defined which checks that each Mocha test file is referenced in at
-          least one C++ test file to guard against orphan Mocha tests.
+cc_test_files: Required parameter. List of all C++ test files that invoke the
+               Mocha tests. When populated an additional
+               ":check_tests_referenced" target is defined which checks that
+               each Mocha test file is referenced in at least one C++ test file
+               to guard against orphan Mocha tests.
 
 TypeScript (ts_library()) related params:
 ts_tsconfig_base: See |tsconfig_base| in ts_library(). Optional parameter. If

@@ -5,6 +5,11 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
+  cc_test_files = [
+    "tab_search_browsertest.cc",
+    "tab_search_focus_test.cc",
+  ]
+
   files = [
     "auto_tab_groups_page_test.ts",
     "declutter_page_test.ts",

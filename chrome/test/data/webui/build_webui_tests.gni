@@ -158,17 +158,15 @@ template("build_webui_tests") {
     }
   }
 
-  if (defined(cc_test_files)) {
-    check_tests_referenced("check_tests_referenced") {
-      visibility = [ ":build_grdp" ]
-      in_folder = "."
-      cc_files = cc_test_files
-      ts_files = filter_include(files,
-                                [
-                                  "*_test.ts",
-                                  "*_test.js",
-                                ])
-    }
+  check_tests_referenced("check_tests_referenced") {
+    visibility = [ ":build_grdp" ]
+    in_folder = "."
+    cc_files = cc_test_files
+    ts_files = filter_include(files,
+                              [
+                                "*_test.ts",
+                                "*_test.js",
+                              ])
   }
 
   # This target is public so that it can be depended on by
@@ -198,8 +196,6 @@ template("build_webui_tests") {
       deps += [ ":lint" ]
     }
 
-    if (defined(cc_test_files)) {
-      deps += [ ":check_tests_referenced" ]
-    }
+    deps += [ ":check_tests_referenced" ]
   }
 }
