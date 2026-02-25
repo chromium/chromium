@@ -14,6 +14,7 @@ import type {ContextualEntrypointButtonElement} from '//resources/cr_components/
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import {kDefaultSelection} from '//resources/cr_components/searchbox/searchbox_match.js';
+import {getInstance as getA11yAnnouncer} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assertNotReached} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
@@ -34,6 +35,22 @@ import {getHtml} from './app.html.js';
 // 675px ~= 449px (--cr-realbox-primary-side-min-width) * 1.5 + some margin.
 const canShowSecondarySideMediaQueryList =
     window.matchMedia('(min-width: 675px)');
+
+// Notifies an a11y announcer to read the aria-label for given element.
+function announceElementAriaLabel(element: HTMLElement) {
+  const message = element.getAttribute('aria-label');
+  if (message) {
+    // Note: ariaNotify is more efficient and appears to work more reliably, but
+    // support is not guaranteed in all browsers. Fall back on a11y announcer if
+    // the ariaNotify function is unavailable.
+    const ariaNotify = (element as any).ariaNotify;
+    if (ariaNotify) {
+      ariaNotify.call(element, message);
+    } else {
+      getA11yAnnouncer(element)?.announce(message);
+    }
+  }
+}
 
 // Not all selection states of the webui popup are supported on the native
 // browser side.
@@ -370,6 +387,10 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     if (entrypoint) {
       entrypoint.hasPopupFocus = this.selection_.state ===
           SelectionLineState.kFocusedButtonContextEntrypoint;
+      if (entrypoint.hasPopupFocus) {
+        announceElementAriaLabel(
+            entrypoint.shadowRoot.querySelector('#entrypoint')!);
+      }
     }
   }
 
