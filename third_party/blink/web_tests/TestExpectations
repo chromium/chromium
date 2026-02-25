@@ -2826,6 +2826,9 @@ crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService
 # `-expected.txt` pathname is too long to check in.
 crbug.com/475042067 external/wpt/webrtc-encoded-transform/idlharness.https.window.html?include=(SFrameDecrypterStream|SFrameEncrypterStream|SFrameSenderTransform|SFrameReceiverTransform|SFrameTransform.\*) [ Failure ]
 
+# Unstable memory addresses dumped into test output.
+crbug.com/476344902 virtual/webui-browser/external/wpt/html/browsers/windows/nested-browsing-contexts/window-top.html [ Failure ]
+
 # ====== New tests from wpt-importer added here ======
 crbug.com/485394851 external/wpt/navigation-api/navigate-event/traverseTo-detach.html [ Crash ]
 crbug.com/484675900 [ Android ] external/wpt/webdriver/tests/classic/new_session/unhandled_prompt_behavior.py [ Timeout ]
