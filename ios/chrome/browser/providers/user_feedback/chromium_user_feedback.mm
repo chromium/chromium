@@ -14,16 +14,7 @@ bool IsUserFeedbackSupported() {
   return false;
 }
 
-UIViewController* CreateUserFeedbackViewController(
-    UserFeedbackConfiguration* configuration) {
-  NOTREACHED() << "User feedback reporting not supported.";
-}
-
 void UploadAllPendingUserFeedback() {
-  NOTREACHED() << "User feedback reporting not supported.";
-}
-
-bool CanUseStartUserFeedbackFlow() {
   NOTREACHED() << "User feedback reporting not supported.";
 }
 

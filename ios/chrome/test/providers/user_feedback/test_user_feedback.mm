@@ -14,18 +14,8 @@ bool IsUserFeedbackSupported() {
   return false;
 }
 
-UIViewController* CreateUserFeedbackViewController(
-    UserFeedbackConfiguration* configuration) {
-  NOTREACHED() << "User feedback not supported in unit tests.";
-}
-
 void UploadAllPendingUserFeedback() {
   NOTREACHED() << "User feedback not supported in unit tests.";
-}
-
-bool CanUseStartUserFeedbackFlow() {
-  // Supports user feedback flow in unit tests.
-  return true;
 }
 
 bool StartUserFeedbackFlow(UserFeedbackConfiguration* configuration,
