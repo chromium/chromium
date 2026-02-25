@@ -270,24 +270,19 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     public void checkIsSubjectToParentalControls(
             CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener) {
 
+        final AccountCapabilities accountCapabilities;
         if (!SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
             AccountHolder accountHolder = getAccountHolder(coreAccountInfo.getId());
-            if (accountHolder.getAccountCapabilities().isSubjectToParentalControls()
-                    == Tribool.TRUE) {
-                listener.onStatusReady(true, coreAccountInfo);
-            } else {
-                listener.onStatusReady(false, /* childAccount= */ null);
-            }
-            return;
+            accountCapabilities = accountHolder.getAccountCapabilities();
+        } else {
+            FakePlatformAccount account = getPlatformAccount(coreAccountInfo.getGaiaId());
+            accountCapabilities = account.getAccountInfo().getAccountCapabilities();
         }
 
-        FakePlatformAccount account = getPlatformAccount(coreAccountInfo.getGaiaId());
-        if (account.getAccountInfo().getAccountCapabilities().isSubjectToParentalControls()
-                == Tribool.TRUE) {
-            listener.onStatusReady(true, coreAccountInfo);
-        } else {
-            listener.onStatusReady(false, /* childAccount= */ null);
-        }
+        boolean isChild = accountCapabilities.isSubjectToParentalControls() == Tribool.TRUE;
+        // Emulate the same behavior as production code and post on the UI thread.
+        ThreadUtils.postOnUiThread(
+                () -> listener.onStatusReady(isChild, isChild ? coreAccountInfo : null));
     }
 
     @Override

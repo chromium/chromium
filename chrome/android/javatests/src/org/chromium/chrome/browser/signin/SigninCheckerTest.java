@@ -48,7 +48,9 @@ public class SigninCheckerTest {
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
 
-    private void signinWhenChildAccountIsTheOnlyAccount() {
+    @Test
+    @MediumTest
+    public void signinWhenChildAccountIsTheOnlyAccount() {
         mActivityTestRule.startOnBlankPage();
 
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
@@ -67,11 +69,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    public void signinWhenChildAccountIsTheOnlyAccountWithCapabilities() {
-        signinWhenChildAccountIsTheOnlyAccount();
-    }
-
-    private void noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowed() {
+    public void noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowed() {
         mActivityTestRule.startOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
         when(mExternalAuthUtilsMock.isGooglePlayServicesMissing(any())).thenReturn(true);
@@ -90,11 +88,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    public void noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowedWithCapabilities() {
-        noSigninWhenChildAccountIsTheOnlyAccountButSigninIsNotAllowed();
-    }
-
-    private void noSigninWhenChildAccountIsTheSecondaryAccount() {
+    public void noSigninWhenChildAccountIsTheSecondaryAccount() {
         // If a child account co-exists with another account on the device, then the child account
         // must be the first device (this is enforced by the Kids Module).  The behaviour in this
         // test case therefore is not currently hittable on a real device; however it is included
@@ -106,7 +100,7 @@ public class SigninCheckerTest {
         UserActionTester actionTester = new UserActionTester();
 
         Assert.assertEquals(
-                0,
+                1,
                 SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
                         .getNumOfChildAccountChecksDoneForTests());
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
@@ -116,11 +110,7 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    public void noSigninWhenChildAccountIsTheSecondaryAccountWithCapabilities() {
-        noSigninWhenChildAccountIsTheSecondaryAccount();
-    }
-
-    private void signinWhenChildAccountIsFirstAccount() {
+    public void signinWhenChildAccountIsFirstAccount() {
         mActivityTestRule.startOnBlankPage();
         mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
@@ -136,11 +126,5 @@ public class SigninCheckerTest {
                 3,
                 SigninCheckerProvider.get(mActivityTestRule.getProfile(false))
                         .getNumOfChildAccountChecksDoneForTests());
-    }
-
-    @Test
-    @MediumTest
-    public void signinWhenChildAccountIsFirstAccountWithCapabilities() {
-        signinWhenChildAccountIsFirstAccount();
     }
 }

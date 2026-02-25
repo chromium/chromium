@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
@@ -34,6 +35,7 @@ public class AccountUtilsTest {
     public void testIsSubjectToParentalControlsWhenNoAccountsOnDevice() {
         AccountUtils.checkIsSubjectToParentalControls(
                 mFakeFacade, Collections.emptyList(), mListenerMock);
+        ShadowLooper.idleMainLooper();
         verify(mListenerMock).onStatusReady(/* isChild= */ false, null);
     }
 
@@ -46,6 +48,7 @@ public class AccountUtilsTest {
                 mFakeFacade,
                 List.of(TestAccounts.CHILD_ACCOUNT, TestAccounts.ACCOUNT1),
                 mListenerMock);
+        ShadowLooper.idleMainLooper();
         verify(mListenerMock).onStatusReady(/* isChild= */ true, TestAccounts.CHILD_ACCOUNT);
     }
 
@@ -59,6 +62,7 @@ public class AccountUtilsTest {
                 mFakeFacade,
                 List.of(TestAccounts.ACCOUNT1, TestAccounts.CHILD_ACCOUNT),
                 mListenerMock);
+        ShadowLooper.idleMainLooper();
         verify(mListenerMock).onStatusReady(/* isChild= */ false, null);
     }
 
@@ -69,6 +73,7 @@ public class AccountUtilsTest {
 
         AccountUtils.checkIsSubjectToParentalControls(
                 mFakeFacade, List.of(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2), mListenerMock);
+        ShadowLooper.idleMainLooper();
         verify(mListenerMock).onStatusReady(/* isChild= */ false, null);
     }
 
@@ -77,6 +82,7 @@ public class AccountUtilsTest {
         mFakeFacade.addAccount(TestAccounts.ACCOUNT1);
         AccountUtils.checkIsSubjectToParentalControls(
                 mFakeFacade, List.of(TestAccounts.ACCOUNT1), mListenerMock);
+        ShadowLooper.idleMainLooper();
         verify(mListenerMock).onStatusReady(/* isChild= */ false, null);
     }
 
@@ -85,6 +91,7 @@ public class AccountUtilsTest {
         mFakeFacade.addAccount(TestAccounts.CHILD_ACCOUNT);
         AccountUtils.checkIsSubjectToParentalControls(
                 mFakeFacade, List.of(TestAccounts.CHILD_ACCOUNT), mListenerMock);
+        ShadowLooper.idleMainLooper();
         verify(mListenerMock).onStatusReady(/* isChild= */ true, TestAccounts.CHILD_ACCOUNT);
     }
 }
