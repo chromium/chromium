@@ -168,8 +168,9 @@ void PageCaptureSaveAsMHTMLFunction::TemporaryFileCreatedOnIO(bool success) {
   }
 
   // Let the delegate know the reference has been created.
-  if (test_delegate_)
+  if (test_delegate_) {
     test_delegate_->OnTemporaryFileCreated(mhtml_file_);
+  }
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

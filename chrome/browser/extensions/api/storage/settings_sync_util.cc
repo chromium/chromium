@@ -29,8 +29,9 @@ base::WeakPtr<syncer::SyncableService> GetSyncableServiceOnBackendSequence(
     base::WeakPtr<SyncValueStoreCache> sync_cache,
     syncer::DataType type) {
   DCHECK(IsOnBackendSequence());
-  if (!sync_cache)
+  if (!sync_cache) {
     return nullptr;
+  }
   return sync_cache->GetSyncableService(type)->AsWeakPtr();
 }
 

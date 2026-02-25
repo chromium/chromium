@@ -100,8 +100,9 @@ class PopupHostWatcher : public ExtensionHostRegistry::Observer {
   PopupHostWatcher& operator=(const PopupHostWatcher&) = delete;
 
   void Wait() {
-    if (created_ == destroyed_)
+    if (created_ == destroyed_) {
       return;
+    }
 
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();
@@ -118,8 +119,9 @@ class PopupHostWatcher : public ExtensionHostRegistry::Observer {
       content::BrowserContext* browser_context,
       ExtensionHost* host) override {
     // Only track lifetimes for popup window ExtensionHost instances.
-    if (host->extension_host_type() != mojom::ViewType::kExtensionPopup)
+    if (host->extension_host_type() != mojom::ViewType::kExtensionPopup) {
       return;
+    }
 
     ++created_;
     QuitIfSatisfied();
@@ -128,8 +130,9 @@ class PopupHostWatcher : public ExtensionHostRegistry::Observer {
   void OnExtensionHostDestroyed(content::BrowserContext* browser_context,
                                 ExtensionHost* host) override {
     // Only track lifetimes for popup window ExtensionHost instances.
-    if (host->extension_host_type() != mojom::ViewType::kExtensionPopup)
+    if (host->extension_host_type() != mojom::ViewType::kExtensionPopup) {
       return;
+    }
 
     ++destroyed_;
     QuitIfSatisfied();
@@ -137,8 +140,9 @@ class PopupHostWatcher : public ExtensionHostRegistry::Observer {
 
  private:
   void QuitIfSatisfied() {
-    if (!quit_closure_.is_null() && created_ == destroyed_)
+    if (!quit_closure_.is_null() && created_ == destroyed_) {
       quit_closure_.Run();
+    }
   }
 
   base::RepeatingClosure quit_closure_;
@@ -199,14 +203,16 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
     // Setup the observer to wait for the popup to finish loading.
     content::CreateAndLoadWebContentsObserver frame_observer;
     std::unique_ptr<ExtensionTestMessageListener> listener;
-    if (!will_reply)
+    if (!will_reply) {
       listener = std::make_unique<ExtensionTestMessageListener>("ready");
+    }
     // Show first popup in first window and expect it to have loaded.
     ASSERT_TRUE(RunExtensionTest("browser_action/open_popup",
                                  {.extension_url = "open_popup_succeeds.html"}))
         << message_;
-    if (listener)
+    if (listener) {
       EXPECT_TRUE(listener->WaitUntilSatisfied());
+    }
     frame_observer.Wait();
     EnsurePopupActive();
   }
@@ -622,8 +628,9 @@ class MainFrameSizeWaiter : public content::WebContentsObserver {
         size_to_wait_for_(size_to_wait_for) {}
 
   void Wait() {
-    if (current_size() != size_to_wait_for_)
+    if (current_size() != size_to_wait_for_) {
       run_loop_.Run();
+    }
   }
 
  private:
@@ -632,8 +639,9 @@ class MainFrameSizeWaiter : public content::WebContentsObserver {
   }
 
   void PrimaryMainFrameWasResized(bool width_changed) override {
-    if (current_size() == size_to_wait_for_)
+    if (current_size() == size_to_wait_for_) {
       run_loop_.Quit();
+    }
   }
 
   gfx::Size size_to_wait_for_;

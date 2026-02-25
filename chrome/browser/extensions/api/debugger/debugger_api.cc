@@ -148,10 +148,12 @@ bool ExtensionMayAttachToTargetProfile(Profile* extension_profile,
                                        DevToolsAgentHost& agent_host) {
   Profile* profile =
       Profile::FromBrowserContext(agent_host.GetBrowserContext());
-  if (!profile)
+  if (!profile) {
     return false;
-  if (!extension_profile->IsSameOrParent(profile))
+  }
+  if (!extension_profile->IsSameOrParent(profile)) {
     return false;
+  }
   return profile == extension_profile || allow_incognito_access;
 }
 
@@ -162,11 +164,13 @@ bool ExtensionMayAttachToURL(const Extension& extension,
                              const GURL& url,
                              std::string* error) {
   // Allow the extension to attach to about:blank and empty URLs.
-  if (url.is_empty() || url == "about:")
+  if (url.is_empty() || url == "about:") {
     return true;
+  }
 
-  if (url == content::kUnreachableWebDataURL)
+  if (url == content::kUnreachableWebDataURL) {
     return true;
+  }
 
   // NOTE: The `debugger` permission implies all URLs access (and indicates
   // such to the user), so we don't check explicit page access. However, we
@@ -574,8 +578,9 @@ void ExtensionDevToolsClientHost::RespondDetachedToPendingRequests() {
 }
 
 void ExtensionDevToolsClientHost::SendDetachedEvent() {
-  if (!EventRouter::Get(profile_))
+  if (!EventRouter::Get(profile_)) {
     return;
+  }
 
   auto args(OnDetach::Create(debuggee_, detach_reason_));
   auto event =
@@ -595,8 +600,9 @@ void ExtensionDevToolsClientHost::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  if (extension->id() == extension_id())
+  if (extension->id() == extension_id()) {
     Close();
+  }
 }
 
 void ExtensionDevToolsClientHost::OnAppTerminating() {
@@ -607,8 +613,9 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
     DevToolsAgentHost* agent_host,
     base::span<const uint8_t> message) {
   DCHECK(agent_host == agent_host_.get());
-  if (!EventRouter::Get(profile_))
+  if (!EventRouter::Get(profile_)) {
     return;
+  }
 
   std::string_view message_str = base::as_string_view(message);
   std::optional<base::Value> result = base::JSONReader::Read(
@@ -622,8 +629,9 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
   std::optional<int> id = dictionary.FindInt("id");
   if (!id) {
     std::string* method_name = dictionary.FindString("method");
-    if (!method_name)
+    if (!method_name) {
       return;
+    }
 
     OnEvent::Params params;
     if (base::DictValue* params_value = dictionary.FindDict("params")) {
@@ -642,8 +650,9 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
                                                          std::move(event));
   } else {
     auto it = pending_requests_.find(*id);
-    if (it == pending_requests_.end())
+    if (it == pending_requests_.end()) {
       return;
+    }
 
     it->second->SendResponseBody(base::Value(std::move(dictionary)));
     pending_requests_.erase(it);
@@ -659,8 +668,9 @@ bool ExtensionDevToolsClientHost::MayAttachToRenderFrameHost(
 
 bool ExtensionDevToolsClientHost::MayAttachToURL(const GURL& url,
                                                  bool is_webui) {
-  if (is_webui)
+  if (is_webui) {
     return false;
+  }
   std::string error;
   return ExtensionMayAttachToURLOrInnerURL(*extension_, profile_, url, nullptr,
                                            &error);
@@ -778,8 +788,9 @@ bool DebuggerFunction::InitAgentHost(std::string* error) {
 }
 
 bool DebuggerFunction::InitClientHost(std::string* error) {
-  if (!InitAgentHost(error))
+  if (!InitAgentHost(error)) {
     return false;
+  }
 
   client_host_ = FindClientHost();
   if (!client_host_) {
@@ -791,8 +802,9 @@ bool DebuggerFunction::InitClientHost(std::string* error) {
 }
 
 ExtensionDevToolsClientHost* DebuggerFunction::FindClientHost() {
-  if (!agent_host_.get())
+  if (!agent_host_.get()) {
     return nullptr;
+  }
 
   const ExtensionId& extension_id = extension()->id();
   DevToolsAgentHost* agent_host = agent_host_.get();
@@ -819,8 +831,9 @@ ExtensionFunction::ResponseAction DebuggerAttachFunction::Run() {
 
   CopyDebuggee(&debuggee_, params->target);
   std::string error;
-  if (!InitAgentHost(&error))
+  if (!InitAgentHost(&error)) {
     return RespondNow(Error(std::move(error)));
+  }
 
   if (!DevToolsAgentHost::IsSupportedProtocolVersion(
           params->required_version)) {
@@ -865,8 +878,9 @@ ExtensionFunction::ResponseAction DebuggerDetachFunction::Run() {
 
   CopyDebuggee(&debuggee_, params->target);
   std::string error;
-  if (!InitClientHost(&error))
+  if (!InitClientHost(&error)) {
     return RespondNow(Error(std::move(error)));
+  }
 
   client_host_->RespondDetachedToPendingRequests();
   client_host_->Close();
@@ -886,14 +900,16 @@ ExtensionFunction::ResponseAction DebuggerSendCommandFunction::Run() {
 
   DebuggeeFromDebuggerSession(debuggee_, params->target);
   std::string error;
-  if (!InitClientHost(&error))
+  if (!InitClientHost(&error)) {
     return RespondNow(Error(std::move(error)));
+  }
 
   client_host_->SendMessageToBackend(
       this, params->method, base::OptionalToPtr(params->command_params),
       params->target.session_id);
-  if (did_respond())
+  if (did_respond()) {
     return AlreadyResponded();
+  }
   return RespondLater();
 }
 
@@ -966,8 +982,9 @@ base::DictValue SerializeTarget(scoped_refptr<DevToolsAgentHost> host) {
   dictionary.Set(kTargetTypeField, target_type);
 
   GURL favicon_url = host->GetFaviconURL();
-  if (favicon_url.is_valid())
+  if (favicon_url.is_valid()) {
     dictionary.Set(kTargetFaviconUrlField, favicon_url.spec());
+  }
 
   return dictionary;
 }
@@ -986,8 +1003,9 @@ ExtensionFunction::ResponseAction DebuggerGetTargetsFunction::Run() {
     // TODO(crbug.com/40233332): hide all Tab targets for now to avoid
     // compatibility problems. Consider exposing them later when they're fully
     // supported, and compatibility considerations are better understood.
-    if (host->GetType() == DevToolsAgentHost::kTypeTab)
+    if (host->GetType() == DevToolsAgentHost::kTypeTab) {
       continue;
+    }
     if (!ExtensionMayAttachToTargetProfile(
             profile, include_incognito_information(), *host)) {
       continue;

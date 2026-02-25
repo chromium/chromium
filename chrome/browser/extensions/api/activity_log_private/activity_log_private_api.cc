@@ -74,8 +74,9 @@ void ActivityLogAPI::Shutdown() {
 }
 
 void ActivityLogAPI::OnListenerAdded(const EventListenerInfo& details) {
-  if (activity_log_->has_listeners())
+  if (activity_log_->has_listeners()) {
     return;
+  }
   StartOrStopListeningForExtensionActivities();
 }
 
@@ -138,8 +139,9 @@ ActivityLogPrivateGetExtensionActivitiesFunction::Run() {
   std::string page_url = filter.page_url ? *filter.page_url : std::string();
   std::string arg_url = filter.arg_url ? *filter.arg_url : std::string();
   int days_ago = -1;
-  if (filter.days_ago)
+  if (filter.days_ago) {
     days_ago = *filter.days_ago;
+  }
 
   // Call the ActivityLog.
   ActivityLog* activity_log = ActivityLog::GetInstance(browser_context());
@@ -178,8 +180,9 @@ ActivityLogPrivateDeleteActivitiesFunction::Run() {
   std::vector<int64_t> action_ids;
   int64_t value;
   for (const auto& activity_id : params->activity_ids) {
-    if (base::StringToInt64(activity_id, &value))
+    if (base::StringToInt64(activity_id, &value)) {
       action_ids.push_back(value);
+    }
   }
 
   ActivityLog* activity_log = ActivityLog::GetInstance(browser_context());

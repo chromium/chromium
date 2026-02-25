@@ -200,8 +200,9 @@ void DeclarativeContentApiTest::CheckIncognito(IncognitoMode mode,
   ASSERT_TRUE(incognito_action);
 
   ASSERT_TRUE(ready.WaitUntilSatisfied());
-  if (is_enabled_in_incognito && mode == SPLIT)
+  if (is_enabled_in_incognito && mode == SPLIT) {
     ASSERT_TRUE(ready_incognito.WaitUntilSatisfied());
+  }
 
   const int incognito_tab_id = ExtensionTabUtil::GetTabId(incognito_tab);
 

@@ -62,8 +62,9 @@ scoped_refptr<const Extension> CreateExtensionWithPermissions(
     const std::string& name,
     bool allow_file_access) {
   int creation_flags = Extension::NO_FLAGS;
-  if (allow_file_access)
+  if (allow_file_access) {
     creation_flags |= Extension::ALLOW_FILE_ACCESS;
+  }
   return ExtensionBuilder()
       .SetLocation(mojom::ManifestLocation::kInternal)
       .SetManifest(base::DictValue()

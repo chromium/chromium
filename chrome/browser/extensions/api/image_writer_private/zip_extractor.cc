@@ -28,8 +28,9 @@ bool ZipExtractor::IsZipFile(const base::FilePath& image_path) {
   base::File infile(image_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                                     base::File::FLAG_WIN_EXCLUSIVE_WRITE |
                                     base::File::FLAG_WIN_SHARE_DELETE);
-  if (!infile.IsValid())
+  if (!infile.IsValid()) {
     return false;
+  }
 
   constexpr size_t kExpectedSize = sizeof(kExpectedMagic);
   std::array<unsigned char, kExpectedSize> actual_magic = {};

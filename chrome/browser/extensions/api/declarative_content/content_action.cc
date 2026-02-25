@@ -249,8 +249,9 @@ std::unique_ptr<ContentAction> RequestContentScript::Create(
     const base::DictValue* dict,
     std::string* error) {
   ScriptData script_data;
-  if (!InitScriptData(dict, error, &script_data))
+  if (!InitScriptData(dict, error, &script_data)) {
     return nullptr;
+  }
 
   RecordContentActionCreated(
       declarative_content_constants::ContentActionType::kRequestContentScript);
@@ -283,15 +284,17 @@ bool RequestContentScript::InitScriptData(const base::DictValue* dict,
   }
   if (const base::Value* all_frames_val =
           dict->Find(declarative_content_constants::kAllFrames)) {
-    if (!all_frames_val->is_bool())
+    if (!all_frames_val->is_bool()) {
       return false;
+    }
 
     script_data->all_frames = all_frames_val->GetBool();
   }
   if (const base::Value* match_about_blank_val =
           dict->Find(declarative_content_constants::kMatchAboutBlank)) {
-    if (!match_about_blank_val->is_bool())
+    if (!match_about_blank_val->is_bool()) {
       return false;
+    }
 
     script_data->match_about_blank = match_about_blank_val->GetBool();
   }
@@ -456,9 +459,10 @@ std::unique_ptr<ContentAction> ContentAction::Create(
 
   ContentActionFactory& factory = GetContentActionFactory();
   auto factory_method_iter = factory.factory_methods.find(*instance_type);
-  if (factory_method_iter != factory.factory_methods.end())
+  if (factory_method_iter != factory.factory_methods.end()) {
     return (*factory_method_iter->second)(browser_context, extension,
                                           &json_action_dict, error);
+  }
 
   *error =
       base::StringPrintf(kInvalidInstanceTypeError, instance_type->c_str());

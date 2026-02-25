@@ -74,8 +74,9 @@ void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
   // anymore.
   std::vector<std::string> removed_keys;
   for (auto kv : previous_policy) {
-    if (!current_policy.Find(kv.first))
+    if (!current_policy.Find(kv.first)) {
       removed_keys.push_back(kv.first);
+    }
   }
 
   value_store::ValueStoreChangeList changes;

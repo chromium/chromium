@@ -139,8 +139,9 @@ class ExtensionContextMenuBrowserTest : public ExtensionBrowserTest {
     const ExtensionSet& extensions =
         ExtensionRegistry::Get(profile())->enabled_extensions();
     for (const auto& ext : extensions) {
-      if (ext->name() == name)
+      if (ext->name() == name) {
         return ext.get();
+      }
     }
     return nullptr;
   }
@@ -177,10 +178,11 @@ class ExtensionContextMenuBrowserTest : public ExtensionBrowserTest {
   std::string ClickMenuInFrame(content::RenderFrameHost* frame,
                                const std::string& target_menu_item_id) {
     content::ContextMenuParams params;
-    if (frame->GetParent())
+    if (frame->GetParent()) {
       params.frame_url = frame->GetLastCommittedURL();
-    else
+    } else {
       params.page_url = frame->GetLastCommittedURL();
+    }
 
     std::unique_ptr<PlatformContextMenu> menu =
         CreateContextMenu(frame, params);
@@ -194,8 +196,9 @@ class ExtensionContextMenuBrowserTest : public ExtensionBrowserTest {
 
     ExtensionTestMessageListener listener;
     menu->ExecuteCommand(command_id, 0);
-    if (!listener.WaitUntilSatisfied())
+    if (!listener.WaitUntilSatisfied()) {
       return "Onclick never fired for menu item: " + target_menu_item_id;
+    }
 
     return listener.message();
   }
@@ -207,8 +210,9 @@ class ExtensionContextMenuBrowserTest : public ExtensionBrowserTest {
       const MenuItem::Id& id = it.second;
       std::u16string tmp_label;
       EXPECT_TRUE(GetItemLabel(menu, id, &tmp_label));
-      if (tmp_label == label16)
+      if (tmp_label == label16) {
         return true;
+      }
     }
     return false;
   }
@@ -220,8 +224,9 @@ class ExtensionContextMenuBrowserTest : public ExtensionBrowserTest {
                     const MenuItem::Id& id,
                     std::u16string* result) const {
     int command_id = 0;
-    if (!FindCommandId(menu, id, &command_id))
+    if (!FindCommandId(menu, id, &command_id)) {
       return false;
+    }
 
     std::optional<std::pair<MenuModel*, size_t>> model_and_index =
         menu->GetMenuModelAndItemIndex(command_id);
@@ -325,10 +330,11 @@ class ExtensionContextMenuLazyTest
 
     ASSERT_TRUE(begin.WaitUntilSatisfied());
 
-    if (enabled)
+    if (enabled) {
       begin.Reply("start enabled");
-    else
+    } else {
       begin.Reply("start disabled");
+    }
 
     // Wait for the extension to tell us it's created an item.
     ASSERT_TRUE(create.WaitUntilSatisfied());
@@ -918,8 +924,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, StartDisabled) {
 // Not relevant on Android, which only supports service worker.
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, EventPage) {
   // This test is event page-specific.
-  if (GetParam() == ContextType::kServiceWorker)
+  if (GetParam() == ContextType::kServiceWorker) {
     return;
+  }
   GURL about_blank("about:blank");
   ExtensionHostTestHelper host_helper(profile());
   host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
@@ -967,8 +974,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, EventPage) {
 IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest,
                        MAYBE_IncognitoSplitContextMenuCount) {
   // TODO(crbug.com/40617251): Not yet implemented.
-  if (GetParam() == ContextType::kServiceWorker)
+  if (GetParam() == ContextType::kServiceWorker) {
     return;
+  }
   ExtensionTestMessageListener created("created item regular");
   ExtensionTestMessageListener created_incognito("created item incognito");
 

@@ -133,8 +133,9 @@ bool RsaSignPrehashed(uint16_t openssl_signature_algorithm,
   // RSA-PSS is not supported for prehashed data.
   EXPECT_FALSE(SSL_is_signature_algorithm_rsa_pss(openssl_signature_algorithm));
   RSA* rsa_key = EVP_PKEY_get0_RSA(key.key());
-  if (!rsa_key)
+  if (!rsa_key) {
     return false;
+  }
   const int digest_algorithm_nid = EVP_MD_type(
       SSL_get_signature_algorithm_digest(openssl_signature_algorithm));
   unsigned len = 0;
@@ -298,8 +299,9 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
 
   std::unique_ptr<net::test_server::HttpResponse> OnHttpsServerRequested(
       const net::test_server::HttpRequest& request) const {
-    if (request.relative_url != kClientCertUrl)
+    if (request.relative_url != kClientCertUrl) {
       return nullptr;
+    }
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     if (!request.ssl_info || !request.ssl_info->cert) {
       response->set_code(net::HTTP_FORBIDDEN);
@@ -563,8 +565,9 @@ class CertificateProviderRequestPinTest : public CertificateProviderApiTest {
   }
 
   bool SendCommand(const std::string& command) {
-    if (!command_request_listener_->WaitUntilSatisfied())
+    if (!command_request_listener_->WaitUntilSatisfied()) {
       return false;
+    }
     command_request_listener_->Reply(command);
     command_request_listener_->Reset();
     return true;
@@ -573,8 +576,9 @@ class CertificateProviderRequestPinTest : public CertificateProviderApiTest {
   bool SendCommandAndWaitForMessage(const std::string& command,
                                     const std::string& expected_message) {
     ExtensionTestMessageListener listener(expected_message);
-    if (!SendCommand(command))
+    if (!SendCommand(command)) {
       return false;
+    }
     return listener.WaitUntilSatisfied();
   }
 

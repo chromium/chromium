@@ -38,8 +38,9 @@ scoped_refptr<const Extension> CreateExtensionWithBookmarksPermission(
     bool include_bookmarks) {
   base::ListValue permissions;
   permissions.Append("declarativeContent");
-  if (include_bookmarks)
+  if (include_bookmarks) {
     permissions.Append("bookmarks");
+  }
   return ExtensionBuilder()
       .SetManifest(base::DictValue()
                        .Set("name", "Test extension")
@@ -136,8 +137,10 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
         page_is_bookmarked !=
         tracker_->EvaluatePredicate(is_not_bookmarked_predicate_.get(), tab);
 
-    if (is_bookmarked_predicate_success && is_not_bookmarked_predicate_success)
+    if (is_bookmarked_predicate_success &&
+        is_not_bookmarked_predicate_success) {
       return testing::AssertionSuccess();
+    }
 
     testing::AssertionResult result = testing::AssertionFailure();
     if (!is_bookmarked_predicate_success) {

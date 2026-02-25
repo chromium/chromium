@@ -139,8 +139,9 @@ class ExtensionManagementApiTest
     ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(app_path),
                               {.context_type = ContextType::kFromManifest}));
 
-    if (out_app_id)
+    if (out_app_id) {
       *out_app_id = last_loaded_extension_id();
+    }
 
     ASSERT_TRUE(launched_app.WaitUntilSatisfied());
   }

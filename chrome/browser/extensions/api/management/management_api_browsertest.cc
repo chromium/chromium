@@ -82,8 +82,9 @@ class ExtensionManagementApiBrowserTest : public ExtensionBrowserTest {
     ExtensionHost* background_host =
         ProcessManager::Get(profile())->GetBackgroundHostForExtension(
             extension_id);
-    if (!background_host)
+    if (!background_host) {
       return false;
+    }
     content::CrashTab(background_host->host_contents());
     return true;
   }
@@ -376,8 +377,9 @@ class ExtensionManagementApiEscalationTest :
     scoped_refptr<ManagementSetEnabledFunction> function(
         new ManagementSetEnabledFunction);
     function->set_extension(extension);
-    if (user_gesture)
+    if (user_gesture) {
       function->set_user_gesture(true);
+    }
     function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
     bool response = test_utils::RunFunction(
         function.get(),
