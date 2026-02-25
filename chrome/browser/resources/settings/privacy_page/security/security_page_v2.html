@@ -180,9 +180,16 @@
     display: flex;
     justify-content: space-between;
     padding-bottom: var(--cr-section-vertical-padding);
-    padding-inline-end: 16px;
-    padding-inline-start: 20px;
+    padding-inline: var(--cr-section-padding);
     padding-top: var(--cr-section-vertical-padding);
+  }
+
+  #javascriptGuardrailsRow [slot=collapse] {
+    padding: 0;
+  }
+
+  #javascriptGuardrailsRadioGroup {
+    padding-inline: var(--cr-section-padding);
   }
 </style>
 <settings-subpage page-title="$i18n{securityPageTitle}"
