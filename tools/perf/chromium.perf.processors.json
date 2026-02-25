@@ -9,7 +9,7 @@
       "script": "//tools/perf/process_perf_results.py"
     }
   },
-  "linux-processor-perf": {
+  "linux-r350-processor-perf": {
     "merge": {
       "args": [
         "--lightweight",

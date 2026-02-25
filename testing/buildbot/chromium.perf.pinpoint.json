@@ -1195,7 +1195,6 @@
       }
     ]
   },
-  "linux-processor-perf": {},
   "linux-r350-perf": {
     "isolated_scripts": [
       {
@@ -1244,6 +1243,7 @@
       }
     ]
   },
+  "linux-r350-processor-perf": {},
   "mac-arm-builder-perf": {},
   "mac-arm-builder-perf-pgo": {},
   "mac-builder-perf": {},

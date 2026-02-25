@@ -1354,7 +1354,6 @@
       }
     ]
   },
-  "linux-processor-perf": {},
   "linux-r350-perf": {
     "isolated_scripts": [
       {
@@ -1403,6 +1402,7 @@
       }
     ]
   },
+  "linux-r350-processor-perf": {},
   "mac-arm-builder-perf": {
     "additional_compile_targets": [
       "chromedriver"
