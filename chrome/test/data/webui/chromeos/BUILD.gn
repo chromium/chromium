@@ -124,6 +124,16 @@ group("closure_compile") {
 build_webui_tests("build") {
   ts_composite = true
   ts_tsconfig_base = "tsconfig_base.json"
+  cc_test_files = [
+    "account_manager/account_manager_browsertest.js",
+    "cr_components_chromeos_v3_browsertest.js",
+    "cr_focus_row_behavior_interactive_test.js",
+    "crostini_installer_browsertest.js",
+    "internet_config_dialog_browsertest.js",
+    "internet_detail_dialog_browsertest.js",
+    "set_time_dialog/set_time_dialog_browsertest.js",
+    "sys_internals/all_tests.js",
+  ]
   files = [
     "chai_assert.js",
     "cr_focus_row_behavior_test.ts",

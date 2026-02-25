@@ -5,6 +5,7 @@
 
 import argparse
 import os
+import re
 import sys
 
 
@@ -28,7 +29,7 @@ def main():
     missing_files = []
     for ts_file in ts_files:
         basename = os.path.basename(ts_file).replace('.ts', '.js')
-        if '/' + basename not in cc_content and '"' + basename not in cc_content:
+        if re.search(rf'\b{basename}\b', cc_content) is None:
             missing_files.append(basename)
 
     if missing_files:

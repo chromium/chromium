@@ -8,6 +8,7 @@ build_webui_tests("build_webui_tests") {
   ts_path_mappings = [ "chrome://borealis-installer/*|" + rebase_path(
                            "$root_gen_dir/chrome/browser/resources/chromeos/borealis_installer/tsc/*",
                            target_gen_dir) ]
+  cc_test_files = [ "borealis_installer_browsertest.js" ]
   files = [
     "borealis_installer_app_test.ts",
     "borealis_installer_error_dialog_test.ts",
