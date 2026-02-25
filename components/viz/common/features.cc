@@ -189,6 +189,11 @@ BASE_FEATURE(kVSyncAlignedPresent, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAckCopyOutputRequestEarlyForViewTransition,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, other frame sinks are throttled when a frame sink is handling
+// user interaction.
+BASE_FEATURE(kThrottleFrameSinksOnInteraction,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
 #if BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -459,6 +464,11 @@ int MaxOverlaysConsidered() {
 
 bool ShouldOnBeginFrameThrottleVideo() {
   return base::FeatureList::IsEnabled(features::kOnBeginFrameThrottleVideo);
+}
+
+bool ShouldThrottleWhenInteractiveFrameSinks() {
+  return base::FeatureList::IsEnabled(
+      features::kThrottleFrameSinksOnInteraction);
 }
 
 bool ShouldAckOnSurfaceActivationWhenInteractive() {

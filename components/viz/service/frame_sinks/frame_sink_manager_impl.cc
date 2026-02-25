@@ -723,9 +723,19 @@ void FrameSinkManagerImpl::UnregisterCompositorFrameSinkSupport(
   }
 
   captured_frame_sink_ids_.erase(frame_sink_id);
-  interactive_frame_sink_ids_.erase(frame_sink_id);
+  const bool was_interactive = interactive_frame_sink_ids_.erase(frame_sink_id);
 
   support_map_.erase(frame_sink_id);
+
+  // If we delete the last interactive frame sink we must do a global update
+  // since it was causing all other frame sinks to throttle.
+  if (was_interactive && interactive_frame_sink_ids_.empty()) {
+    UpdateThrottling();
+  } else {
+    // The standard path only updates the sub tree to avoid N^2 time complexity
+    // when unregistering all frame sinks
+    UpdateThrottlingRecursively(frame_sink_id);
+  }
 }
 
 void FrameSinkManagerImpl::RegisterBeginFrameSource(
@@ -1136,9 +1146,9 @@ void FrameSinkManagerImpl::OnFrameSinkInteractionChanged(
     interactive_frame_sink_ids_.erase(frame_sink_id);
   }
 
-  // TODO(crbug.com/467315115): Interaction throttling changes global
-  // state, so do a full throttling update.
-  // UpdateThrottling();
+  // Interaction throttling changes global state, so do a full throttling
+  // update.
+  UpdateThrottling();
 }
 
 void FrameSinkManagerImpl::UpdateThrottlingRecursively(
@@ -1152,18 +1162,26 @@ void FrameSinkManagerImpl::UpdateThrottlingRecursively(
                     if (auto* support = GetFrameSinkForId(child_id)) {
                       support->SetThrottleInterval(default_throttle);
                       support->SetAllowThrottling(true);
+                      if (features::ShouldThrottleWhenInteractiveFrameSinks()) {
+                        support->SetThrottledDueToInteraction(
+                            !interactive_frame_sink_ids_.empty());
+                      }
                     }
                   });
 
   bool check_throttles = ThrottleIntervalHasEffect();
   bool check_captures = !captured_frame_sink_ids_.empty();
+  bool check_interactions = base::FeatureList::IsEnabled(
+                                features::kThrottleFrameSinksOnInteraction) &&
+                            !interactive_frame_sink_ids_.empty();
 
-  if (!check_throttles && !check_captures) {
+  if (!check_throttles && !check_captures && !check_interactions) {
     return;
   }
 
   base::flat_set<FrameSinkId> throttles;
   base::flat_set<FrameSinkId> captures;
+  base::flat_set<FrameSinkId> interactions;
 
   // Identify anything which would affect throttling from ancestors or
   // descendants.
@@ -1181,6 +1199,11 @@ void FrameSinkManagerImpl::UpdateThrottlingRecursively(
     if (check_captures && captured_frame_sink_ids_.contains(id)) {
       captures.insert(root);
     }
+
+    // Throttle all clients which are not interactive.
+    if (check_interactions && interactive_frame_sink_ids_.contains(id)) {
+      interactions.insert(id);
+    }
   };
 
   RecurseParents(frame_sink_id, [&](const FrameSinkId& parent) {
@@ -1194,7 +1217,7 @@ void FrameSinkManagerImpl::UpdateThrottlingRecursively(
   });
 
   // Apply the identified rules.
-  ApplyThrottlingRules(throttles, captures);
+  ApplyThrottlingRules(throttles, captures, interactions);
 }
 
 void FrameSinkManagerImpl::Throttle(const std::vector<FrameSinkId>& ids,
@@ -1217,7 +1240,8 @@ void FrameSinkManagerImpl::StopThrottlingAllFrameSinks() {
 
 void FrameSinkManagerImpl::ApplyThrottlingRules(
     const base::flat_set<FrameSinkId>& throttled_roots,
-    const base::flat_set<FrameSinkId>& captured_roots) {
+    const base::flat_set<FrameSinkId>& captured_roots,
+    const base::flat_set<FrameSinkId>& interacting_roots) {
   // Apply throttling
   if (ThrottleIntervalHasEffect()) {
     for (const auto& id : throttled_roots) {
@@ -1237,18 +1261,32 @@ void FrameSinkManagerImpl::ApplyThrottlingRules(
       }
     });
   }
+
+  // Interacting clients should not be throttled.
+  for (const FrameSinkId& id : interacting_roots) {
+    if (auto* support = GetFrameSinkForId(id)) {
+      support->SetThrottledDueToInteraction(false);
+    }
+  }
 }
 
 void FrameSinkManagerImpl::UpdateThrottling() {
-  // Clear previous throttling on all frame sinks.
-  const base::TimeDelta default_throttle =
+  // Update throttling on all frame sinks to an initial state, which is
+  // either the global state or the unthrottled state.
+  const base::TimeDelta gloabl_throttle =
       global_throttle_interval_.value_or(base::TimeDelta());
+
   for (auto& [id, support] : support_map_) {
-    support->SetThrottleInterval(default_throttle);
+    support->SetThrottleInterval(gloabl_throttle);
     support->SetAllowThrottling(true);
+    if (features::ShouldThrottleWhenInteractiveFrameSinks()) {
+      support->SetThrottledDueToInteraction(
+          !interactive_frame_sink_ids_.empty());
+    }
   }
 
-  ApplyThrottlingRules(frame_sink_ids_to_throttle_, captured_frame_sink_ids_);
+  ApplyThrottlingRules(frame_sink_ids_to_throttle_, captured_frame_sink_ids_,
+                       interactive_frame_sink_ids_);
 }
 
 bool FrameSinkManagerImpl::ThrottleIntervalHasEffect() const {

@@ -629,6 +629,7 @@ viz_source_set("unit_tests") {
     "frame_sinks/begin_frame_tracker_unittest.cc",
     "frame_sinks/compositor_frame_sink_support_unittest.cc",
     "frame_sinks/frame_sink_bundle_impl_unittest.cc",
+    "frame_sinks/frame_sink_manager_priority_unittest.cc",
     "frame_sinks/frame_sink_manager_unittest.cc",
     "frame_sinks/frame_sink_throttler_unittest.cc",
     "frame_sinks/surface_references_unittest.cc",

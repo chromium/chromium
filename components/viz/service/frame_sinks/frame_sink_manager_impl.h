@@ -541,8 +541,10 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // Applies throttling to all descendants of `throttled_roots`, and disables
   // throttling for all descendants of `captured_roots` (e.g. during video
   // capture).
-  void ApplyThrottlingRules(const base::flat_set<FrameSinkId>& throttled_roots,
-                            const base::flat_set<FrameSinkId>& captured_roots);
+  void ApplyThrottlingRules(
+      const base::flat_set<FrameSinkId>& throttled_roots,
+      const base::flat_set<FrameSinkId>& captured_roots,
+      const base::flat_set<FrameSinkId>& interacting_roots);
 
   // Check to see if |throttle_interval_| has any effect. For example if
   // |global_throttle_interval_| is longer then |throttle_interval| it will
