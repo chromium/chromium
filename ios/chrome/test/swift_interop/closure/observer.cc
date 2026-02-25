@@ -4,24 +4,55 @@
 
 #include "ios/chrome/test/swift_interop/closure/observer.h"
 
-SWIFT_DEFINE_INTEROP_WRAPPER(ValueDidChangeCallback,
-                             base::RepeatingCallback<void(int)>)
-SWIFT_DEFINE_REF_COUNTED_HELPERS(ValueObserver)
+#include "base/apple/swift_callback_helpers.h"
+#include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 
-ValueObserver::ValueObserver() = default;
+class ValueObserverImpl final
+    : public ValueObserver,
+      public base::RefCountedThreadSafe<ValueObserverImpl> {
+ public:
+  ValueObserverImpl() = default;
 
-ValueObserver::~ValueObserver() = default;
+  ValueDidChangeCallback GetValueDidChangeCallback() override;
+  void ValueDidChange(int value) override { value_ = value; }
+  int value() override { return value_; }
 
-ValueDidChangeCallback ValueObserver::GetValueDidChangeCallback() {
-  return base::BindRepeating(&ValueObserver::ValueDidChange,
-                             weak_ptr_factory_.GetWeakPtr());
+ private:
+  friend class base::RefCountedThreadSafe<ValueObserverImpl>;
+  ~ValueObserverImpl() override = default;
+
+  int value_ = 0;
+
+  base::WeakPtrFactory<ValueObserverImpl> weak_ptr_factory_{this};
+};
+
+ValueObserverImpl::ValueDidChangeCallback
+ValueObserverImpl::GetValueDidChangeCallback() {
+  base::RepeatingCallback<void(int)> cb = base::BindRepeating(
+      &ValueObserverImpl::ValueDidChange, weak_ptr_factory_.GetWeakPtr());
+  return base::swift_helpers::ToStdFunction(std::move(cb));
 }
 
-void ValueObserver::ValueDidChange(int value) {
-  value_ = value;
+ValueObserver* ValueObserver::MakeForSwift() {
+  scoped_refptr<ValueObserverImpl> ptr =
+      base::MakeRefCounted<ValueObserverImpl>();
+  // The SWIFT_RETURNS_RETAINED annotation requires that the returned value is
+  // passed with +1 ownership.
+  Retain_ValueObserver(ptr.get());
+  // We intentionally leak the reference, which is adopted by swift.
+  return ptr.release();
 }
 
-ValueObserver* ValueObserver::makeForSwift() {
-  // We inentionally leak the reference, which is adopted by swift.
-  return base::MakeRefCounted<ValueObserver>().release();
+void Retain_ValueObserver(ValueObserver* provider) {
+  if (provider) {
+    static_cast<ValueObserverImpl*>(provider)->AddRef();
+  }
+}
+
+void Release_ValueObserver(ValueObserver* provider) {
+  if (provider) {
+    static_cast<ValueObserverImpl*>(provider)->Release();
+  }
 }

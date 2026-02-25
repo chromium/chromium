@@ -19,10 +19,10 @@ class PlainValueSubject {
 // A subject that directly invokes an observer that is a
 // base::RepeatingCallback<void(int)>
 class CxxCallbackValueSubject {
-  var valueDidChangeCallback: ValueDidChangeCallback?
+  var valueDidChangeCallback: ValueObserver.ValueDidChangeCallback?
   var value: Int32 = 0 {
     didSet {
-      valueDidChangeCallback?.Run(value)
+      valueDidChangeCallback?(value)
     }
   }
 }
@@ -35,10 +35,10 @@ class PublishedValueSubject {
 
   var subscriptions: [AnyCancellable] = []
 
-  func registerObserver(observer: ValueDidChangeCallback) {
+  func registerObserver(observer: ValueObserver.ValueDidChangeCallback) {
     self.$value
       .sink { [observer] newValue in
-        observer.Run(newValue)
+        observer(newValue)
       }
       .store(in: &subscriptions)
   }
@@ -52,7 +52,7 @@ class ObserverTest: XCTestCase {
   func testPlainValueObserver() {
     let valueSubject = PlainValueSubject()
     valueSubject.value = 1
-    guard let valueObserver = ValueObserver.makeForSwift() else {
+    guard let valueObserver = ValueObserver.MakeForSwift() else {
       XCTFail()
       return
     }
@@ -72,7 +72,7 @@ class ObserverTest: XCTestCase {
   func testCxxCallbackValueObserver() {
     let valueSubject = CxxCallbackValueSubject()
     valueSubject.value = 1
-    guard let valueObserver = ValueObserver.makeForSwift() else {
+    guard let valueObserver = ValueObserver.MakeForSwift() else {
       XCTFail()
       return
     }
@@ -91,7 +91,7 @@ class ObserverTest: XCTestCase {
   func testCombinePublisherValueObserver() {
     let valueSubject = PublishedValueSubject()
     valueSubject.value = 1
-    guard let valueObserver = ValueObserver.makeForSwift() else {
+    guard let valueObserver = ValueObserver.MakeForSwift() else {
       XCTFail()
       return
     }
@@ -106,11 +106,11 @@ class ObserverTest: XCTestCase {
 
   func testCombinePublisherWithMultipleObservers() {
     let valueSubject = PublishedValueSubject()
-    guard let valueObserver1 = ValueObserver.makeForSwift() else {
+    guard let valueObserver1 = ValueObserver.MakeForSwift() else {
       XCTFail()
       return
     }
-    guard let valueObserver2 = ValueObserver.makeForSwift() else {
+    guard let valueObserver2 = ValueObserver.MakeForSwift() else {
       XCTFail()
       return
     }
