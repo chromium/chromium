@@ -1264,7 +1264,6 @@ source_set("web_applications_browser_tests") {
     "web_app_automation_browsertest.cc",
     "web_app_browser_controller_browsertest.cc",
     "web_app_icon_manager_browsertest.cc",
-    "web_app_internals_browsertest.cc",
     "web_app_link_capturing_parameterized_browsertest.cc",
     "web_app_navigation_capturing_browsertest_base.cc",
     "web_app_navigation_capturing_browsertest_base.h",
@@ -1272,6 +1271,10 @@ source_set("web_applications_browser_tests") {
     "web_app_scope_extensions_browsertest.cc",
     "web_install_browsertest.cc",
   ]
+
+  if (!is_win) {
+    sources += [ "web_app_internals_browsertest.cc" ]
+  }
 
   if (!is_chromeos) {
     sources += [
