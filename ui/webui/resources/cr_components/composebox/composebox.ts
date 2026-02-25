@@ -1276,11 +1276,6 @@ export class ComposeboxElement extends I18nMixinLit
   protected submitCleanup_() {
     // Update states after submitting:
     this.animationState = GlowAnimationState.SUBMITTING;
-    // Nano banana and deep search allow for follow ups, so
-    // do not clear them.
-    if (this.activeToolMode_ === ToolMode.kCanvas) {
-      this.resetModes();
-    }
 
     // If the composebox is expandable or we should clear it, clear the input
     // after submitting the query.

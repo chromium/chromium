@@ -958,7 +958,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
             'after submitting');
   });
 
-  test('Canvas tool is reset after submitting a query', async () => {
+  test('Canvas tool is not reset after submitting a query', async () => {
     // Context menu and toolchips should show with this setting:
     composebox.$.context.setInitialMode(ComposeboxToolMode.kUnspecified);
 
@@ -986,7 +986,8 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     await microtasksFinished();
 
     canvasChip = composebox.$.context.shadowRoot.querySelector('#canvasChip');
-    assertFalse(!!canvasChip, 'Canvas chip should be hidden after submitting');
+    assertTrue(
+        !!canvasChip, 'Canvas chip should not be hidden after submitting');
   });
 
   test('Deepsearch mode: cancel resets mode', async () => {
