@@ -172,7 +172,7 @@ network::mojom::blink::RestrictedCanonicalCookieParamsPtr ToCookieParams(
       exception_state.ThrowTypeError("Cookie path must start with \"/\"");
       return nullptr;
     }
-    if (!path.EndsWith("/")) {
+    if (!path.ends_with('/')) {
       path = StrCat({path, "/"});
     }
   }

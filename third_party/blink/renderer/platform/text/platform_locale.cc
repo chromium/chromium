@@ -339,7 +339,7 @@ bool Locale::DetectSignAndGetDigitRange(const String& input,
   end_index = input.length();
   const auto adjust_for_affixes = [&](const String& prefix,
                                       const String& suffix) {
-    if (!input.StartsWith(prefix) || !input.EndsWith(suffix)) {
+    if (!input.StartsWith(prefix) || !input.ends_with(suffix)) {
       return false;
     }
     start_index = prefix.length();

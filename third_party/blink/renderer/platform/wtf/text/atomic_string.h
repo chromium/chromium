@@ -169,9 +169,9 @@ class WTF_EXPORT AtomicString {
   }
 
   bool ends_with(const StringView& suffix) const {
-    return string_.EndsWith(suffix);
+    return string_.ends_with(suffix);
   }
-  bool ends_with(UChar character) const { return string_.EndsWith(character); }
+  bool ends_with(UChar character) const { return string_.ends_with(character); }
   // Returns true if this string ends with the specified `suffix`, using ASCII
   // case-insensitive matching. If `suffix` is empty, this returns `true`.
   bool EndsWithIgnoringAsciiCase(const StringView& suffix) const {

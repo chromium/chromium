@@ -164,7 +164,7 @@ static String BuildCSSText(const String& expression) {
   // ends with a ")" (close parenthesis), remove those characters from the
   // result.”
   if (expression.StartsWith('(')) {
-    DCHECK(expression.EndsWith(')'));
+    DCHECK(expression.ends_with(')'));
     result.Append(expression);
   } else {
     result.Append('(');

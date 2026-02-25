@@ -70,7 +70,7 @@ bool VerifyIsValidExtension(const String& extension,
         StrCat({"Extension '", extension, "' contains invalid characters."}));
     return false;
   }
-  if (extension.EndsWith(".")) {
+  if (extension.ends_with('.')) {
     exception_state.ThrowTypeError(
         StrCat({"Extension '", extension, "' must not end with '.'."}));
     return false;

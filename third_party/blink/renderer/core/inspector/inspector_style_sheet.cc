@@ -1342,7 +1342,7 @@ CSSRule* InspectorStyleSheet::SetStyleText(
     auto old_suffix = text_.Substring(
         range.end, parent_source_data->rule_body_range.end - range.end);
 
-    if (!(old_prefix.EndsWith("{") && old_suffix.StartsWith("}"))) {
+    if (!(old_prefix.ends_with('{') && old_suffix.StartsWith("}"))) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
           "Source range didn't match existing style source range");

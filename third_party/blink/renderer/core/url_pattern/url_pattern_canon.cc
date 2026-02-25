@@ -26,8 +26,9 @@ String MaybeStripPrefix(const String& value, StringView prefix) {
 }
 
 String MaybeStripSuffix(const String& value, StringView suffix) {
-  if (value.EndsWith(suffix))
+  if (value.ends_with(suffix)) {
     return value.Substring(0, value.length() - 1);
+  }
   return value;
 }
 

@@ -478,8 +478,9 @@ KURL MHTMLParser::ConvertContentIDToURI(const String& content_id) {
   if (content_id.length() <= 2)
     return KURL();
 
-  if (!content_id.StartsWith('<') || !content_id.EndsWith('>'))
+  if (!content_id.StartsWith('<') || !content_id.ends_with('>')) {
     return KURL();
+  }
 
   StringBuilder uri_builder;
   uri_builder.Append("cid:");

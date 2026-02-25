@@ -4574,8 +4574,9 @@ protocol::Response InspectorCSSAgent::setEffectivePropertyValueForNode(
     String new_property_text =
         StrCat({"\n", longhand, ": ", value,
                 (force_important ? " !important" : ""), ";"});
-    if (!style_text.empty() && !style_text.StripWhiteSpace().EndsWith(';'))
+    if (!style_text.empty() && !style_text.StripWhiteSpace().ends_with(';')) {
       new_property_text = StrCat({";", new_property_text});
+    }
     style_text = StrCat({style_text, new_property_text});
     change_range.start = body_range.end;
     change_range.end = body_range.end + new_property_text.length();

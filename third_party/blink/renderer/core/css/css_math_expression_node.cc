@@ -3191,7 +3191,7 @@ static void SerializeTopLevelNode(const CSSMathExpressionNode* node,
                                   StringBuilder& result) {
   String text = node->CustomCSSText();
   if (text.StartsWith('(')) {
-    DCHECK(text.EndsWith(')'));
+    DCHECK(text.ends_with(')'));
     result.Append(StringView(text, 1, text.length() - 2));
   } else {
     result.Append(text);

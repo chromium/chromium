@@ -219,7 +219,7 @@ void InspectorCSSParserObserver::ObserveProperty(unsigned start_offset,
   String property_string =
       parsed_text_.Substring(start_offset, end_offset - start_offset)
           .StripWhiteSpace();
-  if (property_string.EndsWith(';')) {
+  if (property_string.ends_with(';')) {
     property_string = property_string.Left(property_string.length() - 1);
   }
   wtf_size_t colon_index = FindColonIndex(property_string);
@@ -263,7 +263,7 @@ void InspectorCSSParserObserver::ObserveComment(unsigned start_offset,
   comment_text = comment_text.Substring(2);
 
   // Require well-formed comments.
-  if (!comment_text.EndsWith("*/")) {
+  if (!comment_text.ends_with("*/")) {
     return;
   }
   comment_text =

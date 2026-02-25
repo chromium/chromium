@@ -168,8 +168,9 @@ double ParseToDoubleForNumberType(const String& string, double fallback_value) {
   if (first_character != '-' && first_character != '.' &&
       !IsASCIIDigit(first_character))
     return fallback_value;
-  if (string.EndsWith('.'))
+  if (string.ends_with('.')) {
     return fallback_value;
+  }
 
   auto value = StringToDouble(string);
   return CheckDoubleValue(value.value_or(0), value.has_value(), fallback_value);

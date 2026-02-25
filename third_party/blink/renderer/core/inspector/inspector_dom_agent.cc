@@ -1399,7 +1399,7 @@ protocol::Response InspectorDOMAgent::performSearch(
     start_tag_found = true;
   }
   bool end_tag_found = false;
-  if (whitespace_trimmed_query.EndsWith('>')) {
+  if (whitespace_trimmed_query.ends_with('>')) {
     tag_name_query.remove_suffix(1);
     end_tag_found = true;
   }
@@ -1437,7 +1437,7 @@ protocol::Response InspectorDOMAgent::performSearch(
     start_quote_found = true;
   }
   bool end_quote_found = false;
-  if (whitespace_trimmed_query.EndsWith('"')) {
+  if (whitespace_trimmed_query.ends_with('"')) {
     attribute_query.remove_suffix(1);
     end_quote_found = true;
   }

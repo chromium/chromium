@@ -3359,9 +3359,9 @@ void NavigatorAuction::AuctionHandle::DeprecatedRenderURLReplacementsResolved::
           ConvertNonPromiseDeprecatedRenderURLReplacementsFromV8ToMojo(value);
   for (const auto& replacement : deprecated_render_url_replacements) {
     if (!(replacement->match.StartsWith("${") &&
-          replacement->match.EndsWith("}")) &&
+          replacement->match.ends_with('}')) &&
         !(replacement->match.StartsWith("%%") &&
-          replacement->match.EndsWith("%%"))) {
+          replacement->match.ends_with("%%"))) {
       V8ThrowException::ThrowTypeError(
           script_state->GetIsolate(),
           "Replacements must be of the form '${...}' or '%%...%%'");
@@ -4211,9 +4211,9 @@ ScriptPromise<IDLUndefined> NavigatorAuction::deprecatedReplaceInURN(
   Vector<mojom::blink::AdKeywordReplacementPtr> replacements_list;
   for (const auto& replacement : replacements) {
     if (!(replacement.first.StartsWith("${") &&
-          replacement.first.EndsWith("}")) &&
+          replacement.first.ends_with('}')) &&
         !(replacement.first.StartsWith("%%") &&
-          replacement.first.EndsWith("%%"))) {
+          replacement.first.ends_with("%%"))) {
       exception_state.ThrowTypeError(
           "Replacements must be of the form '${...}' or '%%...%%'");
       return EmptyPromise();

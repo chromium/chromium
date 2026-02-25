@@ -41,7 +41,7 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
     }
     String resource_string = resource_url.GetString();
     for (const String& suffix : blocklisted_suffixes_) {
-      if (resource_string.EndsWith(suffix)) {
+      if (resource_string.ends_with(suffix)) {
         return load_policy_;
       }
     }

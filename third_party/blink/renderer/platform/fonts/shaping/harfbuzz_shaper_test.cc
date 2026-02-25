@@ -172,7 +172,7 @@ class HarfBuzzShaperTest : public FontTestBase {
   String GetShapedFontFamilyNameForEmojiVS(Font& font, String text) {
     DCHECK(text.length() == 1 ||
            (text.length() == 2 &&
-            (text.EndsWith(u"\ufe0e") || text.EndsWith(u"\ufe0f"))));
+            (text.ends_with(u"\ufe0e") || text.ends_with(u"\ufe0f"))));
     HeapVector<ShapeResult::RunFontData> run_font_data;
     HarfBuzzShaper shaper(text);
     const ShapeResult* result = shaper.Shape(&font, TextDirection::kLtr);

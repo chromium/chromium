@@ -4387,8 +4387,9 @@ ScriptValue WebGLRenderingContextBase::getUniform(
       return ScriptValue::CreateNull(script_state->GetIsolate());
     String name(name_impl->Substring(0, name_length));
     // Strip "[0]" from the name if it's an array.
-    if (size > 1 && name.EndsWith("[0]"))
+    if (size > 1 && name.ends_with("[0]")) {
       name = name.Left(name.length() - 3);
+    }
     // If it's an array, we need to iterate through each element, appending
     // "[index]" to the name.
     StringBuilder name_builder;

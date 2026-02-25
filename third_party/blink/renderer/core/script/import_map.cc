@@ -113,7 +113,7 @@ KURL NormalizeValue(const String& key,
     case ParsedSpecifier::Type::kURL:
       // <spec step="2.6">If specifierKey ends with U+002F (/), and the
       // serialization of addressURL does not end with U+002F (/), then:</spec>
-      if (key.EndsWith("/") && !value.GetUrl().GetString().ends_with("/")) {
+      if (key.ends_with('/') && !value.GetUrl().GetString().ends_with("/")) {
         // <spec step="2.6.1">Report a warning to the console that an invalid
         // address was given for the specifier key specifierKey; since
         // specifierKey ended in a slash, so must the address.</spec>

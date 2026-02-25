@@ -300,7 +300,7 @@ class WTF_EXPORT String {
     return impl_ ? impl_->StartsWith(character) : false;
   }
 
-  bool EndsWith(const StringView& suffix) const {
+  bool ends_with(const StringView& suffix) const {
     return impl_ ? impl_->EndsWith(suffix) : suffix.empty();
   }
   // Unicode aware case insensitive string matching. Non-ASCII characters might
@@ -315,7 +315,7 @@ class WTF_EXPORT String {
   bool EndsWithIgnoringAsciiCase(const StringView& suffix) const {
     return impl_ ? impl_->EndsWithIgnoringAsciiCase(suffix) : suffix.empty();
   }
-  bool EndsWith(UChar character) const {
+  bool ends_with(UChar character) const {
     return impl_ ? impl_->EndsWith(character) : false;
   }
 

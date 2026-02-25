@@ -620,7 +620,7 @@ DocumentFragment* CreateFragmentFromText(const EphemeralRange& context,
   if (!IsRichlyEditablePosition(context.StartPosition()) ||
       ShouldPreserveNewline(context)) {
     fragment->AppendChild(document.createTextNode(string));
-    if (string.EndsWith('\n')) {
+    if (string.ends_with('\n')) {
       auto* element = MakeGarbageCollected<HTMLBRElement>(document);
       element->setAttribute(html_names::kClassAttr,
                             AtomicString(AppleInterchangeNewline));

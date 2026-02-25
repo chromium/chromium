@@ -126,7 +126,7 @@ TEST(DeferredImageDecoderTestWoPlatform, fragmentedSignature) {
                                      ImageDecoder::kAlphaPremultiplied,
                                      ColorBehavior::kIgnore);
     ASSERT_NE(decoder, nullptr);
-    EXPECT_TRUE(String(test_file).EndsWith(decoder->FilenameExtension()));
+    EXPECT_TRUE(String(test_file).ends_with(decoder->FilenameExtension()));
   }
 }
 

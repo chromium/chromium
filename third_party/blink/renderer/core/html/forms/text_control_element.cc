@@ -982,9 +982,10 @@ void TextControlElement::AdjustPlaceholderBreakElement() {
   auto* last_child_text_node = DynamicTo<Text>(last_child);
   if (!last_child_text_node)
     return;
-  if (last_child_text_node->data().EndsWith('\n') ||
-      last_child_text_node->data().EndsWith('\r'))
+  if (last_child_text_node->data().ends_with('\n') ||
+      last_child_text_node->data().ends_with('\r')) {
     inner_editor->AppendChild(CreatePlaceholderBreakElement());
+  }
 }
 
 void TextControlElement::SetInnerEditorValue(const String& value) {

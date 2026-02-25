@@ -30,7 +30,7 @@ InternalsProtectedAudience::setProtectedAudienceKAnonymity(
 
   scoped_refptr<const SecurityOrigin> owner_origin =
       SecurityOrigin::CreateFromString(owner_origin_str);
-  if (!owner_origin->Host().EndsWith(".test")) {
+  if (!owner_origin->Host().ends_with(".test")) {
     resolver->Reject("owner origin must be on a .test domain");
     return promise;
   }
