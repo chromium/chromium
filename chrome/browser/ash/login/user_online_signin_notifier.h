@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_USER_ONLINE_SIGNIN_NOTIFIER_H_
 #define CHROME_BROWSER_ASH_LOGIN_USER_ONLINE_SIGNIN_NOTIFIER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -24,7 +27,9 @@ class UserOnlineSigninNotifier {
     virtual void OnOnlineSigninEnforced(const AccountId& account_id) = 0;
   };
 
-  explicit UserOnlineSigninNotifier(const user_manager::UserList& users);
+  // `local_state` must be non-null and must outlive `this`.
+  UserOnlineSigninNotifier(PrefService* local_state,
+                           const user_manager::UserList& users);
   ~UserOnlineSigninNotifier();
 
   UserOnlineSigninNotifier(const UserOnlineSigninNotifier&) = delete;
@@ -40,6 +45,8 @@ class UserOnlineSigninNotifier {
   friend class UserOnlineSigninNotifierTest;
 
   void NotifyObservers(const AccountId& account_id);
+
+  const raw_ref<PrefService> local_state_;
 
   base::ObserverList<Observer> observer_list_;
   user_manager::UserList users_;

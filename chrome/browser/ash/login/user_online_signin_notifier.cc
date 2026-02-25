@@ -4,23 +4,25 @@
 
 #include "chrome/browser/ash/login/user_online_signin_notifier.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/login/helper.h"
-#include "chrome/browser/browser_process.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
 
 UserOnlineSigninNotifier::UserOnlineSigninNotifier(
+    PrefService* local_state,
     const user_manager::UserList& users)
-    : users_(users),
+    : local_state_(CHECK_DEREF(local_state)),
+      users_(users),
       online_login_refresh_timer_(std::make_unique<base::OneShotTimer>()) {}
 
 UserOnlineSigninNotifier::~UserOnlineSigninNotifier() = default;
 
 void UserOnlineSigninNotifier::CheckForPolicyEnforcedOnlineSignin() {
   base::TimeDelta min_delta = base::TimeDelta::Max();
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   for (user_manager::User* user : users_) {
     const std::optional<base::TimeDelta> offline_signin_limit =
         known_user.GetOfflineSigninLimit(user->GetAccountId());

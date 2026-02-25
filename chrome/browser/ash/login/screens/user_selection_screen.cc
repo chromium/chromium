@@ -539,7 +539,8 @@ void UserSelectionScreen::Init(const user_manager::UserList& users) {
   // In-session (including the lock screen) is handled by
   // InSessionPasswordSyncManager.
   if (users.size() > 0 && display_type_ == DisplayedScreen::SIGN_IN_SCREEN) {
-    online_signin_notifier_ = std::make_unique<UserOnlineSigninNotifier>(users);
+    online_signin_notifier_ =
+        std::make_unique<UserOnlineSigninNotifier>(&local_state_.get(), users);
     scoped_observation_.Observe(online_signin_notifier_.get());
     online_signin_notifier_->CheckForPolicyEnforcedOnlineSignin();
     sync_token_checkers_ =
