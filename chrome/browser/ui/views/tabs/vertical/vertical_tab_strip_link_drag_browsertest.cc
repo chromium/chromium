@@ -237,6 +237,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest, DropInSplitTabs) {
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest, DropInGroups) {
   EnsureTabCount(3);
+  auto tab_views = WaitForTabs(3);
   tab_strip_model()->AddToNewGroup({0, 1});
   RunScheduledLayouts();
 
@@ -261,6 +262,16 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest, DropInGroups) {
     EXPECT_EQ(drop_index->index, 0);
     EXPECT_EQ(drop_index->group_inclusion,
               BrowserRootView::DropIndex::GroupInclusion::kIncludeInGroup);
+  }
+
+  // Drop at the bottom of the last tab in the group -> ungrouped.
+  {
+    gfx::Point location(tab_views[1]->width() / 2, tab_views[1]->height() - 2);
+    auto drop_index = GetDropIndexAt(tab_views[1], location);
+    ASSERT_TRUE(drop_index.has_value());
+    EXPECT_EQ(drop_index->index, 2);
+    EXPECT_EQ(drop_index->group_inclusion,
+              BrowserRootView::DropIndex::GroupInclusion::kDontIncludeInGroup);
   }
 }
 

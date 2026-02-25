@@ -71,8 +71,19 @@ VerticalTabLinkDropHandler::GetDropIndexForTab(
       BrowserRootView::DropIndex::GroupInclusion::kDontIncludeInGroup;
 
   if (auto group_id = tab->GetGroup()) {
-    group_inclusion =
-        BrowserRootView::DropIndex::GroupInclusion::kIncludeInGroup;
+    const TabGroup* group =
+        tab_strip_model_->group_model()->GetTabGroup(*group_id);
+    if (position_hint == DragPositionHint::kBottom &&
+        tab == group->GetLastTab()) {
+      // If dropping after the last tab in the group, then don't include the
+      // new tab in the group. Otherwise, there is ambiguity around which
+      // group to insert into if there are consecutive groups.
+      group_inclusion =
+          BrowserRootView::DropIndex::GroupInclusion::kDontIncludeInGroup;
+    } else {
+      group_inclusion =
+          BrowserRootView::DropIndex::GroupInclusion::kIncludeInGroup;
+    }
   }
 
   if (position_hint == DragPositionHint::kBottom) {
