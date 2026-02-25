@@ -103,7 +103,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
         return (tab == null || mIsDefaultColorUsed) ? fallbackColor : getThemeColor();
     }
 
-    protected void updateColor(Tab tab, int themeColor, boolean shouldAnimate) {
+    protected void updateColor(Tab tab, @ColorInt int themeColor, boolean shouldAnimate) {
         updatePrimaryColor(calculateColor(tab, themeColor), shouldAnimate);
         mIsDefaultColorUsed = isUsingDefaultColor(tab, themeColor);
         final @BrandedColorScheme int brandedColorScheme =

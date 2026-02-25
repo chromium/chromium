@@ -9,11 +9,13 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.content.res.ColorStateList;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
@@ -22,6 +24,9 @@ import java.util.function.Supplier;
 /** A subclass of TopUiThemeColorProvider which allows for adjustments to the tint color. */
 @NullMarked
 public class AdjustedTopUiThemeColorProvider extends TopUiThemeColorProvider {
+    private final NullableObservableSupplier<Tab> mTabSupplier;
+    private final NtpThemeStateProvider.Observer mThemeStateObserver;
+
     /**
      * @param context {@link Context} to access the theme and the resources.
      * @param tabSupplier Supplier of the current tab.
@@ -48,12 +53,25 @@ public class AdjustedTopUiThemeColorProvider extends TopUiThemeColorProvider {
                 allowThemingInNightMode,
                 allowBrightThemeColors,
                 allowThemingOnTablets);
+        mTabSupplier = tabSupplier;
+
+        mThemeStateObserver =
+                new NtpThemeStateProvider.Observer() {
+                    @Override
+                    public void applyThemeChanges() {}
+
+                    @Override
+                    public void onCustomBackgroundChanged() {
+                        onBackgroundChangedImpl();
+                    }
+                };
+        NtpThemeStateProvider.getInstance().addObserver(mThemeStateObserver);
     }
 
     /** Updates tint colors of the given tab. */
     @VisibleForTesting
     @Override
-    protected void updateColor(Tab tab, int themeColor, boolean shouldAnimate) {
+    protected void updateColor(Tab tab, @ColorInt int themeColor, boolean shouldAnimate) {
         if (!tab.isNativePage() || !assumeNonNull(tab.getNativePage()).useLightIconTint()) {
             super.updateColor(tab, themeColor, shouldAnimate);
             return;
@@ -64,5 +82,20 @@ public class AdjustedTopUiThemeColorProvider extends TopUiThemeColorProvider {
                 AppCompatResources.getColorStateList(
                         mContext, R.color.default_icon_color_white_tint_list);
         super.updateTint(iconTint, iconTint, BrandedColorScheme.DARK_BRANDED_THEME);
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        NtpThemeStateProvider.getInstance().removeObserver(mThemeStateObserver);
+    }
+
+    private void onBackgroundChangedImpl() {
+        Tab tab = mTabSupplier.get();
+        if (tab == null) {
+            return;
+        }
+
+        updateColor(tab, tab.getThemeColor(), /* shouldAnimate= */ false);
     }
 }

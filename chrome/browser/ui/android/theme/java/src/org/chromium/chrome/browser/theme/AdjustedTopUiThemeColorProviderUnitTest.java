@@ -6,8 +6,11 @@ package org.chromium.chrome.browser.theme;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -24,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -32,7 +36,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -47,6 +53,8 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
     @Mock private Tab mTab;
     @Mock private TintObserver mTintObserver;
     @Mock private NativePage mNativePage;
+    @Mock private NtpThemeStateProvider mNtpThemeStateProvider;
+    @Captor private ArgumentCaptor<NtpThemeStateProvider.Observer> mObserverCaptor;
 
     private static final @ColorInt int TAB_COLOR = Color.RED;
 
@@ -55,6 +63,7 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
 
     private Context mContext;
     private AdjustedTopUiThemeColorProvider mAdjustedTopUiThemeColorProvider;
+    private SettableNullableObservableSupplier<Tab> mTabSupplier;
 
     @Before
     public void setUp() {
@@ -66,11 +75,15 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
         when(mTab.isNativePage()).thenReturn(true);
         when(mTab.getNativePage()).thenReturn(mNativePage);
         when(mTab.isThemingAllowed()).thenReturn(true);
+        when(mTab.getThemeColor()).thenReturn(TAB_COLOR);
+
+        mTabSupplier = ObservableSuppliers.createNullable(mTab);
+        NtpThemeStateProvider.setInstanceForTesting(mNtpThemeStateProvider);
 
         mAdjustedTopUiThemeColorProvider =
                 new AdjustedTopUiThemeColorProvider(
                         mContext,
-                        /* tabSupplier= */ ObservableSuppliers.alwaysNull(),
+                        mTabSupplier,
                         mActivityThemeColorSupplier,
                         /* isTablet= */ false,
                         /* allowThemingInNightMode= */ true,
@@ -78,6 +91,7 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
                         /* allowThemingOnTablets= */ true);
 
         mAdjustedTopUiThemeColorProvider.addTintObserver(mTintObserver);
+        verify(mNtpThemeStateProvider).addObserver(mObserverCaptor.capture());
     }
 
     @Test
@@ -104,6 +118,76 @@ public class AdjustedTopUiThemeColorProviderUnitTest {
                 /* useLightIconTint= */ false,
                 themeColor,
                 BrandedColorScheme.APP_DEFAULT);
+    }
+
+    @Test
+    public void testDestroy() {
+        mAdjustedTopUiThemeColorProvider.destroy();
+        verify(mNtpThemeStateProvider).removeObserver(eq(mObserverCaptor.getValue()));
+    }
+
+    @Test
+    public void testOnCustomBackgroundChanged_nonNtp() {
+        when(mNativePage.useLightIconTint()).thenReturn(true);
+        when(mNativePage.supportsEdgeToEdge()).thenReturn(true);
+
+        // 1. Tab is null.
+        mTabSupplier.set(null);
+        clearInvocations(mTintObserver);
+        mObserverCaptor.getValue().onCustomBackgroundChanged();
+        verify(mTintObserver, never()).onTintChanged(any(), any(), anyInt());
+
+        // 2. Tab is not native page.
+        mTabSupplier.set(mTab);
+        when(mTab.isNativePage()).thenReturn(false);
+        clearInvocations(mTintObserver);
+        mObserverCaptor.getValue().onCustomBackgroundChanged();
+        verify(mTintObserver, never()).onTintChanged(any(), any(), anyInt());
+
+        // 3. Tab is native page but doesn't support edge-to-edge.
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mNativePage.supportsEdgeToEdge()).thenReturn(false);
+        clearInvocations(mTintObserver);
+        mObserverCaptor.getValue().onCustomBackgroundChanged();
+        verify(mTintObserver, never()).onTintChanged(any(), any(), anyInt());
+    }
+
+    @Test
+    public void testOnCustomBackgroundChanged_Ntp() {
+        ColorStateList adjustedTint =
+                AppCompatResources.getColorStateList(
+                        mContext, R.color.default_icon_color_white_tint_list);
+        @BrandedColorScheme int adjustedBrandedColorScheme = BrandedColorScheme.DARK_BRANDED_THEME;
+        when(mNativePage.supportsEdgeToEdge()).thenReturn(true);
+
+        // Case NTP uses light tint color.
+        when(mNativePage.useLightIconTint()).thenReturn(true);
+        clearInvocations(mTintObserver);
+        mObserverCaptor.getValue().onCustomBackgroundChanged();
+
+        ArgumentCaptor<ColorStateList> tintCaptor = ArgumentCaptor.forClass(ColorStateList.class);
+        ArgumentCaptor<ColorStateList> activityTintCaptor =
+                ArgumentCaptor.forClass(ColorStateList.class);
+        verify(mTintObserver)
+                .onTintChanged(
+                        tintCaptor.capture(),
+                        activityTintCaptor.capture(),
+                        eq(adjustedBrandedColorScheme));
+        assertEquals(adjustedTint, tintCaptor.getValue());
+
+        // Case NTP uses regular Tab's tint color.
+        var themeColor =
+                ThemeUtils.getThemedToolbarIconTint(mContext, BrandedColorScheme.APP_DEFAULT);
+        when(mNativePage.useLightIconTint()).thenReturn(false);
+        clearInvocations(mTintObserver);
+        mObserverCaptor.getValue().onCustomBackgroundChanged();
+
+        verify(mTintObserver)
+                .onTintChanged(
+                        tintCaptor.capture(),
+                        activityTintCaptor.capture(),
+                        eq(BrandedColorScheme.APP_DEFAULT));
+        assertEquals(themeColor.getDefaultColor(), tintCaptor.getValue().getDefaultColor());
     }
 
     private void updateColorAndVerifyOnTintChange(

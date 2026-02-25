@@ -24,6 +24,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
@@ -50,6 +51,7 @@ public class NtpCustomizationConfigManager {
     private @Nullable BackgroundImageInfo mBackgroundImageInfo;
     private @Nullable NtpThemeColorInfo mNtpThemeColorInfo;
     private @Nullable Bitmap mDefaultSearchEngineLogoImage;
+    private @Nullable NtpThemeStateProvider mNtpThemeStateProvider;
     private boolean mIsMvtToggleOn;
 
     /** An interface to get NewTabPage's configuration updates. */
@@ -404,6 +406,8 @@ public class NtpCustomizationConfigManager {
                     oldType,
                     mBackgroundType);
         }
+
+        notifyNtpThemeStateProvider();
     }
 
     /**
@@ -428,6 +432,8 @@ public class NtpCustomizationConfigManager {
                     oldType,
                     mBackgroundType);
         }
+
+        notifyNtpThemeStateProvider();
     }
 
     /**
@@ -440,6 +446,8 @@ public class NtpCustomizationConfigManager {
         for (HomepageStateListener listener : mHomepageStateListeners) {
             listener.onBackgroundReset(oldType);
         }
+
+        notifyNtpThemeStateProvider();
     }
 
     /** Returns the user's preference for whether the Most Visited Tiles section is visible. */
@@ -547,6 +555,20 @@ public class NtpCustomizationConfigManager {
             case CHROME_COLOR -> cleanupChromeColors();
             case IMAGE_FROM_DISK, THEME_COLLECTION -> cleanupBackgroundImage();
         }
+    }
+
+    /**
+     * Notifies the NtpThemeStateProvider when the NTP's customize background is changed. This
+     * should be called after notifying NTPs.
+     */
+    private void notifyNtpThemeStateProvider() {
+        // Notifies NtpThemeStateProvider last to ensure the NTP Tab has already processed its
+        // update. The Tab must first recompute its light icon tint state, as this state is
+        // subsequently queried by AdjustedTopUiThemeColorProvider.
+        if (mNtpThemeStateProvider == null) {
+            mNtpThemeStateProvider = NtpThemeStateProvider.getInstance();
+        }
+        mNtpThemeStateProvider.notifyCustomBackgroundChanged();
     }
 
     public void resetForTesting() {

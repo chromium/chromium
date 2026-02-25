@@ -4,20 +4,21 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
-/** Manages the NTP's theme state and notifies observers of changes. */
+/** A class to notify observers when NTP's customize background changes. */
 @NullMarked
 public class NtpThemeStateProvider {
     /** An interface to get NTP theme state updates. */
-    @FunctionalInterface
     public interface Observer {
         /** Notify observers to apply a new theme. */
         void applyThemeChanges();
+
+        /** Notify observers that the NTP's customize background is changed. */
+        default void onCustomBackgroundChanged() {}
     }
 
     private static @Nullable NtpThemeStateProvider sInstanceForTesting;
@@ -41,7 +42,9 @@ public class NtpThemeStateProvider {
         mObservers = new ObserverList<>();
     }
 
-    /** Adds an {@link Observer} to receive updates when the NTP theme state changes. */
+    /**
+     * Adds an {@link Observer} to receive updates when the NTP theme state or background changes.
+     */
     public void addObserver(Observer observer) {
         mObservers.addObserver(observer);
     }
@@ -59,6 +62,13 @@ public class NtpThemeStateProvider {
     public void notifyApplyThemeChanges() {
         for (Observer observer : mObservers) {
             observer.applyThemeChanges();
+        }
+    }
+
+    /** Notifies observers that NTP's custom background is changed. */
+    public void notifyCustomBackgroundChanged() {
+        for (Observer observer : mObservers) {
+            observer.onCustomBackgroundChanged();
         }
     }
 
