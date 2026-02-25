@@ -19,8 +19,8 @@ export function getHtml(this: ContextualTasksFaviconGroupElement) {
       </cr-icon>
     ` : ''}
     ${item.image && !item.tab && !item.file ? html`
-      <div class="favicon-item" style="background-image: ${
-          this.getImageUrl_(item.image.url)}"></div>
+      <cr-icon icon="contextual_tasks:img_icon" class="favicon-item">
+      </cr-icon>
     ` : ''}
   `)}
   ${this.remainingCount_ > 0 ? html`

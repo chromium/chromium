@@ -55,10 +55,6 @@ export class ContextualTasksFaviconGroupElement extends CrLitElement {
   protected getFaviconUrl_(url: string): string {
     return getFaviconForPageURL(url, false);
   }
-
-  protected getImageUrl_(url: string): string {
-    return `url('chrome://image?url=${encodeURIComponent(url)}')`;
-  }
 }
 
 declare global {

@@ -31,9 +31,3 @@ cr-action-menu {
   color: #b3261e;
   border-radius: 8px;
 }
-
-.dropdown-item img[slot='customIcon'] {
-  height: 100%;
-  object-fit: cover;
-  width: 100%;
-}
