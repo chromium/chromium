@@ -26,6 +26,8 @@ chromium-metrics-reviews@google.com.
 
 <variants name="AimEligibilityRequestSource">
   <variant name="" summary="Aggregated across all request sources"/>
+  <variant name=".CoBrowseAimUrlDetection"
+      summary="Requests triggered by the co-browse AIM URL detection logic"/>
   <variant name=".CookieChange" summary="Requests triggered by cookie changes"/>
   <variant name=".NetworkChange"
       summary="Requests triggered by network changes (expected at most once
@@ -468,7 +470,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
     features the user is eligible for. The requests are triggered on profile
-    startup and when the primary account changes.
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
 
     This metric logs whether the primary account exists when the request was
     sent, sliced by request source.
@@ -485,7 +488,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
     features the user is eligible for. The requests are triggered on profile
-    startup and when the primary account changes.
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
 
     This metric logs whether the primary account was found in the cookie jar
     when the request was sent, sliced by request source. Logged only if the
@@ -503,7 +507,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
     features the user is eligible for. The requests are triggered on profile
-    startup and when the primary account changes.
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
 
     This metric logs the index of the primary account in the cookie jar when the
     request was sent, sliced by request source. Logged only if the primary
@@ -540,11 +545,32 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
     features the user is eligible for. The requests are triggered on profile
-    startup and when the primary account changes.
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
 
     This metric logs the status of the request, sliced by request source.
   </summary>
   <token key="RequestSource" variants="AimEligibilityRequestSource"/>
+</histogram>
+
+<histogram
+    name="Omnibox.AimEligibility.EligibilityResponseChange.is_cobrowse_eligible"
+    enum="Boolean" expires_after="2026-11-12">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The AIM Eligibility service makes HTTP requests to determine which AIM
+    features the user is eligible for. The requests are triggered on profile
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
+
+    This metric is logged only when the server response changes compared to the
+    previous value (e.g., the value of the &quot;is_cobrowse_eligible&quot;
+    field differs from the last logged response). If the response fails (e.g.
+    server is down or response is poorly formatted), this metric will not be
+    logged.
+  </summary>
 </histogram>
 
 <histogram
@@ -556,7 +582,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
     features the user is eligible for. The requests are triggered on profile
-    startup and when the primary account changes.
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
 
     This metric is logged only when the server response changes compared to the
     previous value (e.g., the value of the &quot;is_deep_search_eligible&quot;
@@ -574,7 +601,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
     features the user is eligible for. The requests are triggered on profile
-    startup and when the primary account changes.
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
 
     This metric is logged only when the server response changes compared to the
     previous value (e.g., the value of the &quot;is_eligible&quot; field differs
@@ -592,7 +620,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
     features the user is eligible for. The requests are triggered on profile
-    startup and when the primary account changes.
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
 
     This metric is logged only when the server response changes compared to the
     previous value (e.g., the value of the
@@ -611,7 +640,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
     features the user is eligible for. The requests are triggered on profile
-    startup and when the primary account changes.
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
 
     This metric is logged only when the server response changes compared to the
     previous value (e.g., the value of the &quot;is_pdf_upload_eligible&quot;
@@ -630,7 +660,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
     features the user is eligible for. The requests are triggered on profile
-    startup and when the primary account changes.
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
 
     This metric is logged only when the server response changes compared to the
     previous value (e.g., the value of the &quot;session_index&quot; field
@@ -647,7 +678,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
     features the user is eligible for. The requests are triggered on profile
-    startup and when the primary account changes.
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
 
     This metric logs the HTTP response code, sliced by request source.
   </summary>
@@ -662,13 +694,35 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
     features the user is eligible for. The requests are triggered on profile
-    startup and when the primary account changes.
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
 
     This metric logs the source of the eligibility response when the service is
     queried by its clients for the server eligibility status. It helps determine
     how often the clients are receiving a fresh response from the server, a
     stale response stored in the prefs, or the default value.
   </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.AimEligibility.EligibilityResponse{RequestSource}.is_cobrowse_eligible"
+    enum="Boolean" expires_after="2026-11-12">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The AIM Eligibility service makes HTTP requests to determine which AIM
+    features the user is eligible for. The requests are triggered on profile
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
+
+    This metric logs whether the response contained a
+    &quot;is_cobrowse_eligible&quot; field set to true, sliced by request
+    source. If the field is missing or false, this metric will log false. If the
+    response fails (e.g. server is down or response is poorly formatted), this
+    metric will not be logged.
+  </summary>
+  <token key="RequestSource" variants="AimEligibilityRequestSource"/>
 </histogram>
 
 <histogram
@@ -680,7 +734,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
     features the user is eligible for. The requests are triggered on profile
-    startup and when the primary account changes.
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
 
     This metric logs whether the response contained a &quot;is_eligible&quot;
     field set to true, sliced by request source. If the field is missing or
@@ -699,7 +754,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
     features the user is eligible for. The requests are triggered on profile
-    startup and when the primary account changes.
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
 
     This metric logs whether the response contained a
     &quot;is_pdf_upload_eligible&quot; field set to true, sliced by request
@@ -719,7 +775,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     The AIM Eligibility service makes HTTP requests to determine which AIM
     features the user is eligible for. The requests are triggered on profile
-    startup and when the primary account changes.
+    startup, when the primary account changes, or whenever an AIM interception
+    may happen.
 
     This metric logs the selected session index (index of the account in the
     cookie jar selected by the server for authentication), sliced by request

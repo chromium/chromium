@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -34,6 +35,16 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+class AimEligibilityServiceFriend {
+ public:
+  static void UpdateMostRecentResponse(
+      AimEligibilityService* service,
+      const omnibox::AimEligibilityResponse& response) {
+    service->UpdateMostRecentResponse(
+        response, AimEligibilityService::EligibilityResponseSource::kUser);
+  }
+};
+
 namespace {
 // A mock AimEligibilityService that provides a mock response for member
 // functions to use.
@@ -51,21 +62,12 @@ class MockAimEligibilityServiceForInterception : public AimEligibilityService {
                               "en-US") {}
   ~MockAimEligibilityServiceForInterception() override = default;
 
-  MOCK_METHOD(const omnibox::AimEligibilityResponse&,
-              GetMostRecentResponse,
-              (),
-              (const, override));
   MOCK_METHOD(std::string, GetCountryCode, (), (const, override));
   MOCK_METHOD(std::string, GetLocale, (), (const, override));
 
   void SetAimEligibilityResponse(omnibox::AimEligibilityResponse response) {
-    eligibility_response_ = std::move(response);
-    ON_CALL(*this, GetMostRecentResponse())
-        .WillByDefault(ReturnRef(eligibility_response_));
+    AimEligibilityServiceFriend::UpdateMostRecentResponse(this, response);
   }
-
- private:
-  omnibox::AimEligibilityResponse eligibility_response_;
 };
 
 omnibox::AimEligibilityResponse::QueryParam CreateRequiredParam(
@@ -305,4 +307,76 @@ TEST_F(AimEligibilityServiceTest, RequestMode_PostWithProto) {
   omnibox::AimEligibilityClientRequest client_request;
   EXPECT_TRUE(client_request.ParseFromString(body));
   EXPECT_EQ(client_request.client_locale(), "es-419");
+}
+
+TEST_F(AimEligibilityServiceTest, IsCobrowseEligible) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      omnibox::kAimCoBrowseEligibilityCheckEnabled);
+
+  omnibox::AimEligibilityResponse response;
+  response.set_is_cobrowse_eligible(true);
+  aim_eligibility_service_->SetAimEligibilityResponse(std::move(response));
+  EXPECT_TRUE(aim_eligibility_service_->IsCobrowseEligible());
+
+  omnibox::AimEligibilityResponse response2;
+  response2.set_is_cobrowse_eligible(false);
+  aim_eligibility_service_->SetAimEligibilityResponse(std::move(response2));
+  EXPECT_FALSE(aim_eligibility_service_->IsCobrowseEligible());
+}
+
+TEST_F(AimEligibilityServiceTest, FetchEligibility_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      omnibox::kAimCoBrowseAutomatedFetchRequestEnabled);
+
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->FetchEligibility(
+      AimEligibilityService::RequestSource::kCoBrowseAimUrlDetection);
+
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+}
+
+TEST_F(AimEligibilityServiceTest, FetchEligibility_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox::kAimCoBrowseAutomatedFetchRequestEnabled);
+
+  test_url_loader_factory_.pending_requests()->clear();
+  aim_eligibility_service_->FetchEligibility(
+      AimEligibilityService::RequestSource::kCoBrowseAimUrlDetection);
+
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+TEST_F(AimEligibilityServiceTest, IsCobrowseEligible_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      omnibox::kAimCoBrowseEligibilityCheckEnabled);
+
+  omnibox::AimEligibilityResponse response;
+  response.set_is_cobrowse_eligible(false);
+  aim_eligibility_service_->SetAimEligibilityResponse(std::move(response));
+
+  // Should be true regardless of response if feature is disabled.
+  EXPECT_TRUE(aim_eligibility_service_->IsCobrowseEligible());
+}
+
+TEST_F(AimEligibilityServiceTest, ParsingResponse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kAimEnabled, omnibox::kAimServerEligibilityEnabled}, {});
+
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+  response.set_is_cobrowse_eligible(true);
+
+  std::string response_string;
+  response.SerializeToString(&response_string);
+  std::string encoded_response = base::Base64Encode(response_string);
+
+  EXPECT_TRUE(aim_eligibility_service_->SetEligibilityResponseForDebugging(
+      encoded_response));
+  EXPECT_TRUE(aim_eligibility_service_->IsAimEligible());
+  EXPECT_TRUE(aim_eligibility_service_->IsCobrowseEligible());
 }

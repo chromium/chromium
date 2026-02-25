@@ -16,6 +16,14 @@ BASE_DECLARE_FEATURE(kAimEnabled);
 // If enabled, uses the server response for AIM eligibility for all locales.
 BASE_DECLARE_FEATURE(kAimServerEligibilityEnabled);
 
+// If enabled, requires the AIM Eligibility Service to provide a positive answer
+// to whether Co-Browse eligibility is enabled.
+BASE_DECLARE_FEATURE(kAimCoBrowseEligibilityCheckEnabled);
+
+// If enabled, allows the RequestType kCoBrowseAimUrlDetection to actually
+// fetch new AIM Eligibility responses.
+BASE_DECLARE_FEATURE(kAimCoBrowseAutomatedFetchRequestEnabled);
+
 // If enabled, uses a custom retry policy for the server request.
 BASE_DECLARE_FEATURE(kAimServerEligibilityCustomRetryPolicyEnabled);
 

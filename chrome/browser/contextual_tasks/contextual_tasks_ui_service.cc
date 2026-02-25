@@ -777,6 +777,17 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   // Navigations to the AI URL in the topmost frame should always be
   // intercepted.
   if (is_nav_to_ai) {
+    // Matches Co-Browse URL pattern. Trigger background eligibility fetch.
+    // Since this eligibility check triggers asynchronous network activity, the
+    // result from this will not be applied until after the result is ready,
+    // e.g. in pratice typically the next time we get here.
+    aim_eligibility_service_->FetchEligibility(
+        AimEligibilityService::RequestSource::kCoBrowseAimUrlDetection);
+
+    if (!aim_eligibility_service_->IsCobrowseEligible()) {
+      return false;
+    }
+
     // This needs to be posted in case the called method triggers a navigation
     // in the same WebContents, invalidating the nav handle used up the chain.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

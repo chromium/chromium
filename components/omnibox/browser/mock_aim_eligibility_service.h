@@ -21,6 +21,7 @@ class MockAimEligibilityService : public AimEligibilityService {
   MOCK_METHOD(bool, IsServerEligibilityEnabled, (), (const, override));
   MOCK_METHOD(bool, IsAimLocallyEligible, (), (const, override));
   MOCK_METHOD(bool, IsAimEligible, (), (const, override));
+  MOCK_METHOD(bool, IsCobrowseEligible, (), (const, override));
   MOCK_METHOD(bool, IsDeepSearchEligible, (), (const, override));
   MOCK_METHOD(bool, IsCreateImagesEligible, (), (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
@@ -34,6 +35,7 @@ class MockAimEligibilityService : public AimEligibilityService {
               GetMostRecentResponse,
               (),
               (const, override));
+  MOCK_METHOD(void, FetchEligibility, (RequestSource), (override));
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_MOCK_AIM_ELIGIBILITY_SERVICE_H_

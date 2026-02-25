@@ -496,6 +496,14 @@ bool AimEligibilityService::IsCanvasEligible() const {
   return IsEligibleByServer(server_eligible);
 }
 
+bool AimEligibilityService::IsCobrowseEligible() const {
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kAimCoBrowseEligibilityCheckEnabled)) {
+    return true;
+  }
+  return GetMostRecentResponse().is_cobrowse_eligible();
+}
+
 bool AimEligibilityService::HasAimUrlParams(const GURL& url) const {
   for (const auto& rule : GetMostRecentResponse().aim_detection_url_rule()) {
     int matched_params = 0;
@@ -543,6 +551,15 @@ void AimEligibilityService::StartServerEligibilityRequestForDebugging() {
   StartServerEligibilityRequest(RequestSource::kUser, GetLocale());
 }
 
+void AimEligibilityService::FetchEligibility(RequestSource source) {
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kAimCoBrowseAutomatedFetchRequestEnabled)) {
+    // Ignoring request.
+    return;
+  }
+  StartServerEligibilityRequest(source, GetLocale());
+}
+
 bool AimEligibilityService::SetEligibilityResponseForDebugging(
     const std::string& base64_encoded_response) {
   std::string response_string;
@@ -572,6 +589,8 @@ std::string AimEligibilityService::RequestSourceToString(RequestSource source) {
       return "NetworkChange";
     case RequestSource::kUser:
       return "User";
+    case RequestSource::kCoBrowseAimUrlDetection:
+      return "CoBrowseAimUrlDetection";
   }
 }
 
@@ -972,6 +991,11 @@ void AimEligibilityService::LogEligibilityResponse(
   base::UmaHistogramBoolean(
       base::StrCat({sliced_prefix, ".is_image_generation_eligible"}),
       most_recent_response_.is_image_generation_eligible());
+  base::UmaHistogramBoolean(
+      base::StrCat({sliced_prefix, ".is_cobrowse_eligible"}),
+      most_recent_response_.is_cobrowse_eligible());
+  base::UmaHistogramBoolean(base::StrCat({prefix, ".is_cobrowse_eligible"}),
+                            most_recent_response_.is_cobrowse_eligible());
 }
 
 void AimEligibilityService::LogEligibilityResponseChanges(
@@ -994,4 +1018,7 @@ void AimEligibilityService::LogEligibilityResponseChanges(
       base::StrCat({prefix, ".is_image_generation_eligible"}),
       old_response.is_image_generation_eligible() !=
           new_response.is_image_generation_eligible());
+  base::UmaHistogramBoolean(base::StrCat({prefix, ".is_cobrowse_eligible"}),
+                            old_response.is_cobrowse_eligible() !=
+                                new_response.is_cobrowse_eligible());
 }
