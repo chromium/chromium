@@ -119,13 +119,14 @@ void WebRtcAudioDeviceImpl::RenderData(
       audio_data, &elapsed_time_ms, &ntp_time_ms);
   TRACE_EVENT_END2("audio", "VoE::PullRenderData", "elapsed_time_ms",
                    elapsed_time_ms, "ntp_time_ms", ntp_time_ms);
-  if (elapsed_time_ms >= 0)
+  if (elapsed_time_ms >= 0) {
     *current_time = base::Milliseconds(elapsed_time_ms);
+  }
 
   // De-interleave each channel and convert to 32-bit floating-point
   // with nominal range -1.0 -> +1.0 to match the callback format.
   audio_bus->FromInterleaved<media::SignedInt16SampleTypeTraits>(
-      audio_data, audio_bus->frames());
+      render_buffer_);
 
   // Pass the render data to the playout sinks.
   base::AutoLock auto_lock(lock_);
