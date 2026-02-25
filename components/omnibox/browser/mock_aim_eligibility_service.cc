@@ -17,6 +17,9 @@ MockAimEligibilityService::MockAimEligibilityService(
                             url_loader_factory,
                             identity_manager,
                             "en-US",
-                            std::move(configuration)) {}
+                            std::move(configuration)) {
+  ON_CALL(*this, GetSearchboxConfig())
+      .WillByDefault(testing::Return(&mock_config));
+}
 
 MockAimEligibilityService::~MockAimEligibilityService() = default;

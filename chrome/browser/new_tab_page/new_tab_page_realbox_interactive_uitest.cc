@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/check_deref.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
@@ -19,6 +21,10 @@
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/model_mode.pb.h"
+#include "third_party/omnibox_proto/searchbox_config.pb.h"
+#include "third_party/omnibox_proto/tool_mode.pb.h"
+#include "third_party/omnibox_proto/types.pb.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 
 // To debug locally, you can run the test via:
@@ -42,6 +48,15 @@ using ::testing::ValuesIn;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNtpElementId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kGooglePageId);
+
+static constexpr std::string_view kModelFastLabel = "Fast";
+static constexpr std::string_view kModelAutoLabel = "Auto";
+static constexpr std::string_view kModelProLabel = "Pro";
+static constexpr std::string_view kHintText = "Ask anything";
+static constexpr std::string_view kInputTypeAddImage = "Add image";
+static constexpr std::string_view kInputTypeAddFile = "Add file";
+static constexpr std::string_view kToolCreateImages = "Create images";
+static constexpr std::string_view kToolCanvas = "Canvas";
 
 // Contains variables on which these tests may be parameterized. This approach
 // makes it easy to build sets of relevant tests, vs. the brute-force
@@ -78,11 +93,41 @@ std::unique_ptr<KeyedService> BuildMockAimServiceEligibilityServiceInstance(
           /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr,
           AimEligibilityService::Configuration{});
 
+  auto* rule_set = mock_aim_eligibility_service->config().mutable_rule_set();
+  for (const auto input_type : {omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
+                                omnibox::InputType::INPUT_TYPE_LENS_FILE}) {
+    rule_set->add_allowed_input_types(input_type);
+  }
+  for (const auto tool : {omnibox::ToolMode::TOOL_MODE_CANVAS,
+                          omnibox::ToolMode::TOOL_MODE_IMAGE_GEN}) {
+    rule_set->add_allowed_tools(tool);
+  }
+  for (const auto model : {omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR,
+                           omnibox::ModelMode::MODEL_MODE_GEMINI_PRO}) {
+    rule_set->add_allowed_models(model);
+  }
+
+  auto* regular_config =
+      mock_aim_eligibility_service->config().add_model_configs();
+  regular_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  regular_config->set_menu_label(std::string(kModelFastLabel));
+
+  auto* pro_config = mock_aim_eligibility_service->config().add_model_configs();
+  pro_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  pro_config->set_menu_label(std::string(kModelProLabel));
+  mock_aim_eligibility_service->config().set_hint_text(std::string(kHintText));
+
   ON_CALL(*mock_aim_eligibility_service, IsAimEligible())
       .WillByDefault(testing::Return(true));
   ON_CALL(*mock_aim_eligibility_service, IsAimLocallyEligible())
       .WillByDefault(testing::Return(true));
   ON_CALL(*mock_aim_eligibility_service, IsServerEligibilityEnabled())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_eligibility_service, IsCanvasEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_eligibility_service, IsDeepSearchEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_eligibility_service, IsCreateImagesEligible())
       .WillByDefault(testing::Return(true));
 
   return std::move(mock_aim_eligibility_service);
@@ -221,6 +266,20 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.ToString();
     });
 
+using NtpRealboxNextUiTest = NtpRealboxUiTest;
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    NtpRealboxNextUiTest,
+    ValuesIn(std::vector<NtpRealboxUiTestParams>{
+        {
+            .layout_mode = RealboxLayoutMode::kCompact,
+        },
+    }),
+    [](const testing::TestParamInfo<NtpRealboxUiTestParams>& info) {
+      return info.param.ToString();
+    });
+
 // TODO(crbug.com/454761015): Re-enable after fixing.
 IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, DISABLED_Screenshots) {
   // Force a consistent window size to exercise realbox layout within New Tab
@@ -266,11 +325,7 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, DISABLED_Screenshots) {
                           /*baseline_cl=*/"7055903")));
 }
 
-IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, ContextualEntrypointOpensComposebox) {
-  if (!GetParam().compose_button_enabled) {
-    GTEST_SKIP() << "Compose button not enabled for this parameter set";
-  }
-
+IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest, AimButtonOpensComposebox) {
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kComposeboxDialogOpenEvent);
 
   const DeepQuery kRealbox = {"ntp-app", "cr-searchbox", "#inputWrapper"};
@@ -289,10 +344,108 @@ IN_PROC_BROWSER_TEST_P(NtpRealboxUiTest, ContextualEntrypointOpensComposebox) {
       AddInstrumentedTab(kGooglePageId, GURL("https://www.google.com")),
       // 2. Load NTP.
       AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
-      // 3. Assert NTP has loaded by waiting for the realbox to render.
+      // 3. Assert NTP has loaded by waiting for the realbox and compose button
+      // to render.
       WaitForElementToRender(kNtpElementId, kRealbox),
+      WaitForElementToRender(kNtpElementId, kComposeButton),
       // 4. Click on the compose button.
       ClickElement(kNtpElementId, kComposeButton),
       // 5. Observe/assert that the contextual dialog is open.
       WaitForStateChange(kNtpElementId, composebox_dialog_open));
+}
+
+IN_PROC_BROWSER_TEST_P(NtpRealboxNextUiTest,
+                       ContextualEntrypointMenuHasOptions) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kContextMenuOpenEvent);
+
+  const DeepQuery kRealbox = {"ntp-app", "cr-searchbox", "#inputWrapper"};
+  const DeepQuery kContextualEntrypoint = {"ntp-app",
+                                           "cr-searchbox",
+                                           "contextual-entrypoint-and-carousel",
+                                           "#contextEntrypoint",
+                                           "#entrypointButton",
+                                           "#entrypoint"};
+  const DeepQuery kContextMenuDialog = {"ntp-app",
+                                        "cr-searchbox",
+                                        "contextual-entrypoint-and-carousel",
+                                        "#contextEntrypoint",
+                                        "#menu",
+                                        "#menu",
+                                        "#dialog"};
+
+  WebContentsInteractionTestUtil::StateChange context_menu_open;
+  context_menu_open.event = kContextMenuOpenEvent;
+  context_menu_open.where = kContextMenuDialog;
+  context_menu_open.test_function = "(el) => el && el.open";
+
+  const DeepQuery kImageUploadItem = {"ntp-app",
+                                      "cr-searchbox",
+                                      "contextual-entrypoint-and-carousel",
+                                      "#contextEntrypoint",
+                                      "#menu",
+                                      "#imageUpload"};
+  const DeepQuery kFileUploadItem = {"ntp-app",
+                                     "cr-searchbox",
+                                     "contextual-entrypoint-and-carousel",
+                                     "#contextEntrypoint",
+                                     "#menu",
+                                     "#fileUpload"};
+  const DeepQuery kCreateImagesItem = {"ntp-app",
+                                       "cr-searchbox",
+                                       "contextual-entrypoint-and-carousel",
+                                       "#contextEntrypoint",
+                                       "#menu",
+                                       "button[data-mode='4']"};
+  const DeepQuery kCanvasItem = {"ntp-app",
+                                 "cr-searchbox",
+                                 "contextual-entrypoint-and-carousel",
+                                 "#contextEntrypoint",
+                                 "#menu",
+                                 "button[data-mode='2']"};
+  const DeepQuery kFastModelItem = {"ntp-app",
+                                    "cr-searchbox",
+                                    "contextual-entrypoint-and-carousel",
+                                    "#contextEntrypoint",
+                                    "#menu",
+                                    "button[data-model='1']"};
+  const DeepQuery kProModelItem = {"ntp-app",
+                                   "cr-searchbox",
+                                   "contextual-entrypoint-and-carousel",
+                                   "#contextEntrypoint",
+                                   "#menu",
+                                   "button[data-model='2']"};
+
+  RunTestSequence(
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      WaitForElementToRender(kNtpElementId, kRealbox),
+      WaitForElementToRender(kNtpElementId, kContextualEntrypoint),
+      ClickElement(kNtpElementId, kContextualEntrypoint),
+      WaitForStateChange(kNtpElementId, context_menu_open),
+      WaitForElementToRender(kNtpElementId, kImageUploadItem),
+      CheckJsResultAt(kNtpElementId, kImageUploadItem,
+                      "(el) => el.textContent.includes('" +
+                          std::string(kInputTypeAddImage) + "')"),
+      WaitForElementToRender(kNtpElementId, kFileUploadItem),
+      CheckJsResultAt(kNtpElementId, kFileUploadItem,
+                      "(el) => el.textContent.includes('" +
+                          std::string(kInputTypeAddFile) + "')"),
+      WaitForElementToRender(kNtpElementId, kCreateImagesItem),
+      CheckJsResultAt(kNtpElementId, kCreateImagesItem,
+                      "(el) => el.textContent.includes('" +
+                          std::string(kToolCreateImages) + "')"),
+      WaitForElementToRender(kNtpElementId, kCanvasItem),
+      CheckJsResultAt(kNtpElementId, kCanvasItem,
+                      "(el) => el.textContent.includes('" +
+                          std::string(kToolCanvas) + "')"),
+      WaitForElementToRender(kNtpElementId, kFastModelItem),
+      CheckJsResultAt(kNtpElementId, kFastModelItem,
+                      "(el) => el.textContent.includes('" +
+                          std::string(kModelFastLabel) +
+                          "') || "
+                          "el.textContent.includes('" +
+                          std::string(kModelAutoLabel) + "')"),
+      WaitForElementToRender(kNtpElementId, kProModelItem),
+      CheckJsResultAt(kNtpElementId, kProModelItem,
+                      "(el) => el.textContent.includes('" +
+                          std::string(kModelProLabel) + "')"));
 }
