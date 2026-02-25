@@ -79,7 +79,7 @@ public class MemoryPurgeManagerTest {
         ThreadUtils.setUiThread(Looper.getMainLooper());
 
         // Pause main thread to get control over when tasks are run (see runUiThreadFor()).
-        ShadowLooper.pauseMainLooper();
+
     }
 
     @Test

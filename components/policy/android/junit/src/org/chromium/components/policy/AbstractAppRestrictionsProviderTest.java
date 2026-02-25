@@ -24,10 +24,8 @@ import androidx.test.core.app.ApplicationProvider;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -37,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Robolectric test for AbstractAppRestrictionsProvider. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class AbstractAppRestrictionsProviderTest {
     /** Minimal concrete class implementing AbstractAppRestrictionsProvider. */
     private static class DummyAppRestrictionsProvider extends AbstractAppRestrictionsProvider {
@@ -129,9 +126,6 @@ public class AbstractAppRestrictionsProviderTest {
     /** Test method for {@link AbstractAppRestrictionsProvider#refresh()}. */
     @Test
     public void testRefresh() {
-        // We want to control precisely when background tasks run
-        Robolectric.getBackgroundThreadScheduler().pause();
-
         Context context = RuntimeEnvironment.application;
 
         // Clear the preferences

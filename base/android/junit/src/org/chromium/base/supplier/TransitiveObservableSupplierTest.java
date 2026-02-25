@@ -22,11 +22,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -154,7 +154,7 @@ public class TransitiveObservableSupplierTest {
         assertEquals(
                 "valueA", transitiveSupplier.addSyncObserverAndPostIfNonNull(mOnChangeCallback));
         assertEquals("valueA", transitiveSupplier.get());
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mOnChangeCallback).onResult(eq("valueA"));
     }
 
@@ -179,7 +179,7 @@ public class TransitiveObservableSupplierTest {
 
         assertEquals(
                 "valueA", transitiveSupplier.addSyncObserverAndCallIfNonNull(mOnChangeCallback));
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mOnChangeCallback).onResult(eq("valueA"));
     }
 
@@ -203,7 +203,7 @@ public class TransitiveObservableSupplierTest {
         verifyNoInteractions(mOnChangeCallback);
 
         assertEquals("valueA", transitiveSupplier.addSyncObserver(mOnChangeCallback));
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyNoInteractions(mOnChangeCallback);
 
         targetSupplier1.set("valueB");

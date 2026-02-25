@@ -21,6 +21,13 @@ import java.util.concurrent.atomic.AtomicReference;
 public class RobolectricUtil {
     private RobolectricUtil() {}
 
+    /** Returns the executor used by PostTask for background tasks. */
+    public static PausedExecutorService getPausedExecutor() {
+        PausedExecutorService executor = BaseRobolectricTestRule.sPausedExecutor;
+        assert executor != null;
+        return executor;
+    }
+
     /** Runs a single queued background task */
     public static void runOneBackgroundTask() {
         if (!BaseRobolectricTestRule.sPausedExecutor.runNext()) {

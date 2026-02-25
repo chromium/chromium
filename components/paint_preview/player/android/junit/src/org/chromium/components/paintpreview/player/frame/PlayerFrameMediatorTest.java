@@ -33,13 +33,13 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.components.paintpreview.player.PlayerCompositorDelegate;
 import org.chromium.components.paintpreview.player.PlayerGestureListener;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -776,7 +776,7 @@ public class PlayerFrameMediatorTest {
 
         mScrollController.onFling(100, 0);
         expectedViewPort.offsetTo(mScroller.getFinalX(), mScroller.getFinalY());
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertTrue(mScroller.isFinished());
         Assert.assertEquals(expectedViewPort, mModel.get(PlayerFrameProperties.VIEWPORT));
     }

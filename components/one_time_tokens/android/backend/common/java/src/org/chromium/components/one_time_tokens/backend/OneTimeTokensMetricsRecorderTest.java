@@ -11,10 +11,10 @@ import com.google.android.gms.common.api.Status;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 
 /** Unit tests for {@link OneTimeTokensMetricsRecorder}. */
@@ -40,7 +40,7 @@ public class OneTimeTokensMetricsRecorderTest {
                         .build();
 
         mMetricsRecorder.recordMetrics(null);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         watcher.assertExpected();
     }
 
@@ -60,7 +60,7 @@ public class OneTimeTokensMetricsRecorderTest {
         mMetricsRecorder.recordMetrics(
                 new OneTimeTokensBackendException(
                         "test error", OneTimeTokensBackendErrorCode.GMSCORE_VERSION_NOT_SUPPORTED));
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         watcher.assertExpected();
     }
 
@@ -78,7 +78,7 @@ public class OneTimeTokensMetricsRecorderTest {
                         .build();
 
         mMetricsRecorder.recordMetrics(new ApiException(new Status(CommonStatusCodes.TIMEOUT)));
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         watcher.assertExpected();
     }
 
@@ -96,7 +96,7 @@ public class OneTimeTokensMetricsRecorderTest {
                         .build();
 
         mMetricsRecorder.recordMetrics(new Exception("test"));
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         watcher.assertExpected();
     }
 }

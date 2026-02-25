@@ -19,13 +19,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 /** Test AnimationLooper class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class AnimationLooperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -61,6 +60,7 @@ public class AnimationLooperTest {
         final Animatable2.AnimationCallback callback = captor.getValue();
 
         callback.onAnimationEnd(mAnimatableMock);
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mAnimatableMock, times(2)).start();
 
         mAnimationLooper.stop();

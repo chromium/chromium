@@ -11,17 +11,16 @@ import static org.junit.Assert.assertNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 /** Unit tests for the ApplicationViewportInsetSupplier. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class ApplicationViewportInsetTrackerTest {
     /** A callback with the ability to get the last value pushed to it. */
     private static class CapturingCallback<T> implements Callback<T> {
@@ -54,6 +53,7 @@ public class ApplicationViewportInsetTrackerTest {
                 .getSupplier()
                 .addSyncObserverAndPostIfNonNull(mInsetObserver);
 
+        RobolectricUtil.runAllBackgroundAndUi();
         // Clear the observer initially so tests can check whether it was called.
         mInsetObserver.onResult(null);
     }
@@ -187,6 +187,7 @@ public class ApplicationViewportInsetTrackerTest {
 
         mWindowApplicationInsetSupplier.setKeyboardAccessoryInsetSupplier(supplier);
 
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(
                 "The observer should have been triggered when the supplier was added.",
                 20,

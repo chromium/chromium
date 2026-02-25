@@ -21,6 +21,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -66,7 +67,7 @@ public class ObservableSupplierImplTest {
         Callback<String> supplierObserver = ignored -> called.set(true);
 
         mSupplier.addSyncObserverAndPostIfNonNull(supplierObserver);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(called.get());
     }
 
@@ -78,11 +79,11 @@ public class ObservableSupplierImplTest {
         Callback<String> supplierObserver = ignored -> called.set(true);
 
         mSupplier.addSyncObserver(supplierObserver);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertFalse(called.get());
 
         mSupplier.set(TEST_STRING_2);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(called.get());
     }
 
@@ -92,11 +93,11 @@ public class ObservableSupplierImplTest {
         Callback<String> supplierObserver = ignored -> called.set(true);
 
         mSupplier.addSyncObserverAndCallIfNonNull(supplierObserver);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertFalse(called.get());
 
         mSupplier.set(TEST_STRING_2);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(called.get());
     }
 
@@ -107,7 +108,7 @@ public class ObservableSupplierImplTest {
         Callback<String> supplierObserver = ignored -> called.set(true);
 
         mSupplier.addSyncObserverAndPostIfNonNull(supplierObserver);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(called.get());
     }
 

@@ -23,9 +23,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -33,7 +33,6 @@ import java.lang.ref.WeakReference;
 
 /** A robolectric test for {@link InputMethodManagerWrapperImpl} class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class InputMethodManagerWrapperImplTest {
     private static final boolean DEBUG = false;
 
@@ -147,6 +146,7 @@ public class InputMethodManagerWrapperImplTest {
         mInOrder.verifyNoMoreInteractions();
 
         mImmw.onInputConnectionCreated();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Post task: note that PostTask actually does not require
         // Robolectric.getForegroundThreadScheduler().runOneTask() to be called.
@@ -177,6 +177,7 @@ public class InputMethodManagerWrapperImplTest {
         mImmw.hideSoftInputFromWindow(null, 0, null);
 
         mImmw.onInputConnectionCreated();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mInOrder.verify(mInputMethodManager).hideSoftInputFromWindow(null, 0, null);
         // Do not call showSoftInput.
@@ -201,6 +202,7 @@ public class InputMethodManagerWrapperImplTest {
         mImmw.showSoftInput(mView, 1, null);
 
         mImmw.onInputConnectionCreated();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Post task: note that PostTask actually does not require
         // Robolectric.getForegroundThreadScheduler().runOneTask() to be called.
@@ -230,6 +232,7 @@ public class InputMethodManagerWrapperImplTest {
         mImmw.showSoftInput(mView, 1, null);
 
         mImmw.onInputConnectionCreated();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Post task: note that PostTask actually does not require
         // Robolectric.getForegroundThreadScheduler().runOneTask() to be called.

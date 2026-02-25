@@ -16,10 +16,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.ui.shadows.ShadowAsyncLayoutInflater;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -56,7 +56,7 @@ public class AsyncViewStubTest {
                     mEventCount.incrementAndGet();
                 });
         mAsyncViewStub.inflate();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         // ensure callback gets called.
         assertEquals(1, mEventCount.get());
     }
@@ -77,7 +77,7 @@ public class AsyncViewStubTest {
                 });
         assertEquals(0, mEventCount.get());
         mAsyncViewStub.inflate();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertEquals(1, mEventCount.get());
     }
 }

@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
-import static org.robolectric.Shadows.shadowOf;
 
 import android.Manifest;
 import android.app.Activity;
@@ -25,14 +24,12 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Looper;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.webkit.MimeTypeMap;
 
 import androidx.core.content.ContextCompat;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +40,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
-import org.robolectric.android.util.concurrent.PausedExecutorService;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowMimeTypeMap;
 
@@ -53,8 +49,8 @@ import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.FileUtilsJni;
 import org.chromium.base.task.AsyncTask;
-import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -84,22 +80,10 @@ public class SelectFileDialogTest {
     // A callback that fires when the file selection pipeline shuts down as a result of an action.
     public final CallbackHelper mOnActionCallback = new CallbackHelper();
 
-    // The Executor to run tasks on during the test.
-    private final PausedExecutorService mExecutor = new PausedExecutorService();
-
     @Mock FileUtils.Natives mFileUtilsMocks;
 
-    @Before
-    public void setUp() throws Exception {
-        PostTask.setPrenativeThreadPoolExecutorForTesting(mExecutor);
-    }
-
     private void runAllAsyncTasks() {
-        // Run AsyncTasks
-        mExecutor.runAll();
-
-        // Wait for onPostExecute() of the AsyncTasks to run on the UI Thread.
-        shadowOf(Looper.getMainLooper()).idle();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     /** Argument matcher that matches Intents with the same action. */
@@ -1412,7 +1396,7 @@ public class SelectFileDialogTest {
                                     : ContextUtils.getApplicationContext().getContentResolver(),
                             filesSelected,
                             useMediaPicker);
-            task.executeOnExecutor(mExecutor);
+            task.executeOnExecutor(RobolectricUtil.getPausedExecutor());
             runAllAsyncTasks();
             histogramWatcher.assertExpected(
                     "File: "

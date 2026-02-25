@@ -84,7 +84,6 @@ public class MemoryPressureMonitorTest {
         ThreadUtils.setUiThread(Looper.getMainLooper());
 
         // Pause main thread to get control over when tasks are run (see runUiThreadFor()).
-        ShadowLooper.pauseMainLooper();
 
         mMonitor = new MemoryPressureMonitor(THROTTLING_INTERVAL_MS);
         mMonitor.setCurrentPressureSupplierForTesting(null);

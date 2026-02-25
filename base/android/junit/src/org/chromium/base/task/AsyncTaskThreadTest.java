@@ -18,11 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
-import org.robolectric.android.util.concurrent.RoboExecutorService;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.util.Scheduler;
 
 import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask.Status;
@@ -36,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 /** Tests for {@link AsyncTask}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class AsyncTaskThreadTest {
     private static final String TAG = "AsyncTaskThreadTest";
     private static final boolean DEBUG = false;
@@ -91,8 +86,6 @@ public class AsyncTaskThreadTest {
     }
 
     private final BlockAndGetFeedDataTask mTask = new BlockAndGetFeedDataTask();
-    private final RoboExecutorService mRoboExecutorService = new RoboExecutorService();
-    private final Scheduler mBackgroundScheduler = Robolectric.getBackgroundThreadScheduler();
 
     @Rule public ExpectedException thrown = ExpectedException.none();
 
@@ -101,7 +94,6 @@ public class AsyncTaskThreadTest {
     @Before
     public void setUp() {
         RobolectricUtil.uninstallPausedExecutorService();
-        mBackgroundScheduler.pause();
         assertEquals(Status.PENDING, mTask.getStatus());
     }
 
@@ -109,7 +101,6 @@ public class AsyncTaskThreadTest {
     public void tearDown() {
         // No unexpected interrupted exception.
         assertNull(mTask.getInterruptedExceptionQueue().poll());
-        Assert.assertTrue(mRoboExecutorService.shutdownNow().isEmpty());
     }
 
     @Test
@@ -117,12 +108,12 @@ public class AsyncTaskThreadTest {
     public void testCancel_ReturnsFalseOnceTaskFinishes() throws Exception {
         // This test requires robo executor service such that we can run
         // one background task.
-        mTask.executeOnExecutor(mRoboExecutorService);
+        mTask.executeOnExecutor(RobolectricUtil.getPausedExecutor());
 
         // Ensure that the background thread is not blocked.
         mTask.feedData(true);
 
-        mBackgroundScheduler.runOneTask();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Cannot cancel. The task is already run.
         assertFalse(mTask.cancel(/* mayInterruptIfRunning= */ false));
@@ -138,7 +129,7 @@ public class AsyncTaskThreadTest {
     @SmallTest
     public void testCancel_InPreExecute() throws Exception {
         // Note that background loop is paused.
-        mTask.executeOnExecutor(mRoboExecutorService);
+        mTask.executeOnExecutor(RobolectricUtil.getPausedExecutor());
 
         // Ensure that the background thread is not blocked.
         mTask.feedData(true);
@@ -146,7 +137,7 @@ public class AsyncTaskThreadTest {
         // cancel() can still return true
         assertTrue(mTask.cancel(false));
 
-        mBackgroundScheduler.runOneTask();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         try {
             assertTrue(mTask.get());
@@ -193,12 +184,12 @@ public class AsyncTaskThreadTest {
     public void testCancel_MayInterrupt_ReturnsFalseOnceTaskFinishes() throws Exception {
         // This test requires robo executor service such that we can run
         // one background task.
-        mTask.executeOnExecutor(mRoboExecutorService);
+        mTask.executeOnExecutor(RobolectricUtil.getPausedExecutor());
 
         // Ensure that the background thread is not blocked.
         mTask.feedData(true);
 
-        mBackgroundScheduler.runOneTask();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Cannot cancel. The task is already run.
         assertFalse(mTask.cancel(/* mayInterruptIfRunning= */ true));
@@ -246,15 +237,15 @@ public class AsyncTaskThreadTest {
     @Test
     @SmallTest
     public void testExecuteTwiceRaisesException() throws Exception {
-        mTask.executeOnExecutor(mRoboExecutorService);
+        mTask.executeOnExecutor(RobolectricUtil.getPausedExecutor());
         // Note that background loop is paused.
         try {
             // A second run should cause an exception.
-            mTask.executeOnExecutor(mRoboExecutorService);
+            mTask.executeOnExecutor(RobolectricUtil.getPausedExecutor());
             Assert.fail();
         } catch (IllegalStateException e) {
             // expected
         }
-        mBackgroundScheduler.runOneTask(); // ensure to pass tearDown check
+        RobolectricUtil.runAllBackgroundAndUi(); // ensure to pass tearDown check
     }
 }

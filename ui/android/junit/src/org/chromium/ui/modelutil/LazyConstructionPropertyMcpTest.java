@@ -27,9 +27,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -79,7 +79,7 @@ public class LazyConstructionPropertyMcpTest {
 
         assertTrue(mViewProvider.inflationHasStarted());
         mViewProvider.finishInflation(mView);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verifyBind(VISIBILITY);
     }
@@ -91,7 +91,7 @@ public class LazyConstructionPropertyMcpTest {
         mModel.set(VISIBILITY, true);
         assertTrue(mViewProvider.inflationHasStarted());
         mViewProvider.finishInflation(mView);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyBind(STRING_PROPERTY, VISIBILITY);
     }
 
@@ -103,7 +103,7 @@ public class LazyConstructionPropertyMcpTest {
         mModel.set(VISIBILITY, true);
         assertTrue(mViewProvider.inflationHasStarted());
         mViewProvider.finishInflation(mView);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyBind(VISIBILITY);
         Mockito.<ViewBinder>reset(mViewBinder);
 
@@ -122,7 +122,7 @@ public class LazyConstructionPropertyMcpTest {
         mModel.set(VISIBILITY, true);
         assertTrue(mViewProvider.inflationHasStarted());
         mViewProvider.finishInflation(mView);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyBind(VISIBILITY);
 
         mModel.set(VISIBILITY, false);
@@ -155,7 +155,7 @@ public class LazyConstructionPropertyMcpTest {
 
         mModel.set(VISIBILITY, true);
         mViewProvider.finishInflation(mView);
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verifyBind(VISIBILITY, INT_PROPERTY);
         assertThat(mModel.get(INT_PROPERTY)).isEqualTo(1);
         Mockito.<ViewBinder>reset(mViewBinder);

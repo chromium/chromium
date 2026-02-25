@@ -36,6 +36,7 @@ import org.chromium.base.Promise;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.components.search_engines.SearchEngineChoiceService.RefreshReason;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DefaultBrowserPromoSuppressionDelayType;
 import org.chromium.components.search_engines.SearchEngineCountryDelegate.DeviceChoiceEventType;
@@ -73,7 +74,7 @@ public class SearchEngineChoiceServiceUnitTest {
         service.launchDeviceChoiceScreens();
         service.refreshDeviceChoiceRequiredNow(RefreshReason.APP_RESUME);
         service.notifyDeviceChoiceBlockCleared();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test
@@ -88,7 +89,7 @@ public class SearchEngineChoiceServiceUnitTest {
         assertTrue(service.isDeviceChoiceDialogEligible());
 
         var supplier = service.getIsDeviceChoiceRequiredSupplier();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         ShadowLooper.idleMainLooper(3000, TimeUnit.MILLISECONDS);
         assertTrue(supplier.get());
 
@@ -98,7 +99,7 @@ public class SearchEngineChoiceServiceUnitTest {
         service.launchDeviceChoiceScreens();
         service.refreshDeviceChoiceRequiredNow(RefreshReason.APP_RESUME);
         service.notifyDeviceChoiceBlockCleared();
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test
@@ -284,7 +285,7 @@ public class SearchEngineChoiceServiceUnitTest {
         // On resolution, the delegate is freed up, but the default browser selection timestamp is
         // proactively checked, in case we need it later.
         deviceCountryPromise.fulfill("deviceCountry");
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mDelegate).getDeviceBrowserSelectedTimestamp();
 
         // The delegate is not checked anymore, because it was freed up.
@@ -310,7 +311,7 @@ public class SearchEngineChoiceServiceUnitTest {
         // On resolution, the delegate is not freed up, so we don't need to check the default
         // browser selection timestamp.
         deviceCountryPromise.fulfill("deviceCountry");
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mDelegate, never()).getDeviceBrowserSelectedTimestamp();
 
         // The delegate is still checked, the service kept it.

@@ -20,6 +20,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifierAutoDetect;
 
@@ -63,7 +64,7 @@ public class NetworkStatusListenerAndroidTest {
 
     private void runBackgroundThread() {
         // Flush any UI thread tasks first.
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Run the background thread.
         ShadowLooper shadowLooper =
@@ -74,7 +75,7 @@ public class NetworkStatusListenerAndroidTest {
         shadowLooper.runToEndOfTasks();
 
         // Flush any UI thread tasks created by the background thread.
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     private void initWithConnectionType(@ConnectionType int connectionType) {

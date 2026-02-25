@@ -19,10 +19,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.ui.shadows.ShadowAsyncLayoutInflater;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -66,7 +66,7 @@ public class AsyncViewProviderTest {
     @Test
     public void testCreatesLoadedProviderIfInflated() {
         mAsyncViewStub.inflate();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         AsyncViewProvider provider = AsyncViewProvider.of(mAsyncViewStub, INFLATED_VIEW_ID);
         assertNotNull(provider.get());
     }
@@ -80,7 +80,7 @@ public class AsyncViewProviderTest {
     @Test
     public void testCreatesLoadedProviderUsingResourceIds() {
         mAsyncViewStub.inflate();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         AsyncViewProvider provider = AsyncViewProvider.of(mRoot, STUB_ID, INFLATED_VIEW_ID);
         assertNotNull(provider.get());
     }
@@ -95,7 +95,7 @@ public class AsyncViewProviderTest {
     @Test
     public void testRunsCallbackImmediatelyIfLoaded() {
         mAsyncViewStub.inflate();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         AsyncViewProvider<View> provider = AsyncViewProvider.of(mAsyncViewStub, INFLATED_VIEW_ID);
         assertEquals(0, mEventCount.get());
         provider.whenLoaded(
@@ -118,7 +118,7 @@ public class AsyncViewProviderTest {
                     mEventCount.incrementAndGet();
                 });
         mAsyncViewStub.inflate();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         // ensure callback gets called.
         assertEquals(1, mEventCount.get());
     }
@@ -139,7 +139,7 @@ public class AsyncViewProviderTest {
                 });
         assertEquals(0, mEventCount.get());
         mAsyncViewStub.inflate();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertEquals(1, mEventCount.get());
     }
 }

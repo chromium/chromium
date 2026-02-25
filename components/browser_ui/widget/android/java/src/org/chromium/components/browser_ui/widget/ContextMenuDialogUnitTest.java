@@ -36,10 +36,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowPhoneWindow;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
 import org.chromium.ui.widget.UiWidgetFactory;
@@ -49,7 +49,6 @@ import org.chromium.ui.widget.UiWidgetFactory;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowPhoneWindow.class})
-@LooperMode(LooperMode.Mode.LEGACY)
 public class ContextMenuDialogUnitTest {
     private static final int DIALOG_SIZE_DIP = 50;
 
@@ -292,6 +291,7 @@ public class ContextMenuDialogUnitTest {
         // Change layout params and request layout so #onLayoutChange is triggered.
         mRootView.setRight(mRootView.getRight() + 1);
         mRootView.requestLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     private MotionEvent createMockMotionEventWithActionType(int actionType) {

@@ -35,12 +35,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.content_public.browser.ContentFeatureList;
@@ -51,7 +51,6 @@ import java.util.concurrent.Callable;
 /** Unit tests for {@ThreadedInputConnection}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class ThreadedInputConnectionTest {
     @Mock ImeAdapterImpl mImeAdapter;
 
@@ -91,15 +90,18 @@ public class ThreadedInputConnectionTest {
     public void testComposeGetTextFinishGetText() {
         // IME app calls setComposingText().
         mConnection.setComposingText("hello", 1);
+        RobolectricUtil.runAllBackgroundAndUi();
         mInOrder.verify(mImeAdapter).sendCompositionToNative("hello", 1, false, 0, false);
 
         // Renderer updates states asynchronously.
         mConnection.updateStateOnUiThread("hello", 5, 5, 0, 5, true, false);
+        RobolectricUtil.runAllBackgroundAndUi();
         mInOrder.verify(mImeAdapter).updateSelection(5, 5, 0, 5);
         assertEquals(0, mConnection.getQueueForTest().size());
 
         // Prepare to call requestTextInputStateUpdate.
         mConnection.updateStateOnUiThread("hello", 5, 5, 0, 5, true, true);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(1, mConnection.getQueueForTest().size());
         when(mImeAdapter.requestTextInputStateUpdate()).thenReturn(true);
 
@@ -108,12 +110,15 @@ public class ThreadedInputConnectionTest {
 
         // IME app calls finishComposingText().
         mConnection.finishComposingText();
+        RobolectricUtil.runAllBackgroundAndUi();
         mInOrder.verify(mImeAdapter).finishComposingText();
         mConnection.updateStateOnUiThread("hello", 5, 5, -1, -1, true, false);
+        RobolectricUtil.runAllBackgroundAndUi();
         mInOrder.verify(mImeAdapter).updateSelection(5, 5, -1, -1);
 
         // Prepare to call requestTextInputStateUpdate.
         mConnection.updateStateOnUiThread("hello", 5, 5, -1, -1, true, true);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(1, mConnection.getQueueForTest().size());
         when(mImeAdapter.requestTextInputStateUpdate()).thenReturn(true);
 
@@ -129,6 +134,7 @@ public class ThreadedInputConnectionTest {
         // On default keyboard "Alt+i" produces a dead key '\u0302'.
         mConnection.setCombiningAccentOnUiThread(0x0302);
         mConnection.updateComposingText("\u0302", 1, true, false);
+        RobolectricUtil.runAllBackgroundAndUi();
         mInOrder.verify(mImeAdapter)
                 .sendCompositionToNative(
                         "\u0302", 1, false, 0x0302 | KeyCharacterMap.COMBINING_ACCENT, false);
@@ -139,6 +145,7 @@ public class ThreadedInputConnectionTest {
     public void testRenderChangeUpdatesSelection() {
         // User moves the cursor.
         mConnection.updateStateOnUiThread("hello", 4, 4, -1, -1, true, false);
+        RobolectricUtil.runAllBackgroundAndUi();
         mInOrder.verify(mImeAdapter).updateSelection(4, 4, -1, -1);
         assertEquals(0, mConnection.getQueueForTest().size());
     }
@@ -150,10 +157,12 @@ public class ThreadedInputConnectionTest {
         assertTrue(mConnection.beginBatchEdit());
         // Type hello real fast.
         mConnection.commitText("hello", 1);
+        RobolectricUtil.runAllBackgroundAndUi();
         mInOrder.verify(mImeAdapter).sendCompositionToNative("hello", 1, true, 0);
 
         // Renderer updates states asynchronously.
         mConnection.updateStateOnUiThread("hello", 5, 5, -1, -1, true, false);
+        RobolectricUtil.runAllBackgroundAndUi();
         mInOrder.verify(mImeAdapter, never()).updateSelection(5, 5, -1, -1);
         assertEquals(0, mConnection.getQueueForTest().size());
 
@@ -162,6 +171,7 @@ public class ThreadedInputConnectionTest {
             assertTrue(mConnection.beginBatchEdit());
             // Move the cursor to the left.
             mConnection.setSelection(4, 4);
+            RobolectricUtil.runAllBackgroundAndUi();
             assertTrue(mConnection.endBatchEdit());
         }
         // We still have one outer batch edit, so should not update selection yet.
@@ -169,11 +179,13 @@ public class ThreadedInputConnectionTest {
 
         // Prepare to call requestTextInputStateUpdate.
         mConnection.updateStateOnUiThread("hello", 4, 4, -1, -1, true, true);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(1, mConnection.getQueueForTest().size());
         when(mImeAdapter.requestTextInputStateUpdate()).thenReturn(true);
 
         // IME app calls endBatchEdit().
         assertFalse(mConnection.endBatchEdit());
+        RobolectricUtil.runAllBackgroundAndUi();
         // Batch edit is finished, now update selection.
         mInOrder.verify(mImeAdapter).updateSelection(4, 4, -1, -1);
         assertEquals(0, mConnection.getQueueForTest().size());
@@ -257,6 +269,7 @@ public class ThreadedInputConnectionTest {
 
         // Populate the TextInputState BlockingQueue for the getExtractedText() call.
         mConnection.updateStateOnUiThread("bello", 1, 1, -1, -1, true, true);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Act.
         final ExtractedText extractedText =
@@ -272,10 +285,12 @@ public class ThreadedInputConnectionTest {
         // Ensure that the next updateState events will invoke
         // both updateExtractedText() and updateSelection().
         mConnection.updateStateOnUiThread("mello", 2, 2, -1, -1, true, false);
+        RobolectricUtil.runAllBackgroundAndUi();
         mInOrder.verify(mImeAdapter).updateExtractedText(anyInt(), any(ExtractedText.class));
         mInOrder.verify(mImeAdapter).updateSelection(2, 2, -1, -1);
 
         mConnection.updateStateOnUiThread("cello", 3, 3, -1, -1, true, false);
+        RobolectricUtil.runAllBackgroundAndUi();
         mInOrder.verify(mImeAdapter).updateExtractedText(anyInt(), any(ExtractedText.class));
         mInOrder.verify(mImeAdapter).updateSelection(3, 3, -1, -1);
     }
@@ -290,12 +305,14 @@ public class ThreadedInputConnectionTest {
 
         // Populate the TextInputState BlockingQueue for the getExtractedText() call.
         mConnection.updateStateOnUiThread("hello", 1, 2, 3, 4, true, true);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Initially we want to monitor extracted text updates.
         final ExtractedText extractedText1 =
                 mConnection.getExtractedText(request, InputConnection.GET_EXTRACTED_TEXT_MONITOR);
 
         mConnection.updateStateOnUiThread("bello", 1, 1, 3, 4, true, false);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Assert.
         assertEquals("hello", extractedText1.text);
@@ -309,6 +326,7 @@ public class ThreadedInputConnectionTest {
 
         // Populate the TextInputState BlockingQueue for the getExtractedText() call.
         mConnection.updateStateOnUiThread("cello", 2, 2, 3, 4, true, true);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Act: Now we want to stop monitoring extracted text changes.
         final ExtractedText extractedText2 = mConnection.getExtractedText(request, 0);
@@ -322,6 +340,7 @@ public class ThreadedInputConnectionTest {
 
         // Perform another updateState
         mConnection.updateStateOnUiThread("ello", 0, 0, -1, -1, true, false);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Assert: No more update extracted text updates sent to ImeAdapter.
         mInOrder.verify(mImeAdapter, never())
@@ -339,6 +358,7 @@ public class ThreadedInputConnectionTest {
 
         // Populate the TextInputState BlockingQueue for the getExtractedText() call.
         mConnection.updateStateOnUiThread("hello", 1, 2, 3, 4, true, true);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Start monitoring for extracted text updates
         final ExtractedText extractedText =
@@ -352,6 +372,7 @@ public class ThreadedInputConnectionTest {
         assertEquals(2, extractedText.selectionEnd);
 
         mConnection.updateStateOnUiThread("bello", 1, 1, 3, 4, true, false);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mInOrder.verify(mImeAdapter).updateExtractedText(anyInt(), any(ExtractedText.class));
         mInOrder.verify(mImeAdapter).updateSelection(1, 1, 3, 4);
@@ -359,9 +380,11 @@ public class ThreadedInputConnectionTest {
         // Act: Force a connection reset Instead of calling ImeAdapter#onCreateInputConnection()
         // To stop monitoring extracted text changes.
         mConnection.resetOnUiThread();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Perform another updateState
         mConnection.updateStateOnUiThread("ello", 0, 0, -1, -1, true, false);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Assert: No more update extracted text updates sent to ImeAdapter.
         mInOrder.verify(mImeAdapter, never())
@@ -373,6 +396,7 @@ public class ThreadedInputConnectionTest {
     @EnableFeatures(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)
     public void testCommitCorrection() {
         assertTrue(mConnection.commitCorrection(mCorrectionInfo));
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mInOrder.verify(mImeAdapter).commitCorrection(mCorrectionInfo);
     }

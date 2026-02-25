@@ -24,13 +24,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.TestChildProcessConnection;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 
 import java.util.ArrayList;
@@ -40,12 +39,11 @@ import java.util.List;
 /**
  * Unit tests for BindingManager and ChildProcessConnection.
  *
- * Default property of being low-end device is overriden, so that both low-end and high-end policies
- * are tested.
+ * <p>Default property of being low-end device is overriden, so that both low-end and high-end
+ * policies are tested.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class BindingManagerTest {
     private static final int BINDING_COUNT_LIMIT = 5;
 
@@ -141,14 +139,14 @@ public class BindingManagerTest {
         // binding.
         checkConnections(connections, /* isConnected= */ true);
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         // Verify that leaving the application for a short time doesn't clear the moderate bindings.
         manager.onSentToBackground();
         checkConnections(connections, /* isConnected= */ true);
 
         manager.onBroughtToForeground();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         checkConnections(connections, /* isConnected= */ true);
 
         // Call onSentToBackground() and verify that all the moderate bindings drop after some
@@ -156,7 +154,7 @@ public class BindingManagerTest {
         manager.onSentToBackground();
         checkConnections(connections, /* isConnected= */ true);
 
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         checkConnections(connections, /* isConnected= */ false);
 
         // Call onBroughtToForeground() and verify that the previous moderate bindings aren't
@@ -189,6 +187,7 @@ public class BindingManagerTest {
 
         // Call onLowMemory() and verify that all the moderate bindings drop.
         app.onLowMemory();
+        RobolectricUtil.runAllBackgroundAndUi();
         checkConnections(connections, /* isConnected= */ false);
     }
 
@@ -234,6 +233,7 @@ public class BindingManagerTest {
             checkConnections(connections, /* isConnected= */ true);
 
             app.onTrimMemory(pair.first);
+            RobolectricUtil.runAllBackgroundAndUi();
             // Verify that some of the moderate bindings have been dropped.
             for (int i = 0; i < connections.length; i++) {
                 Assert.assertEquals(
@@ -266,7 +266,7 @@ public class BindingManagerTest {
         checkConnections(connection, /* isConnected= */ true);
 
         manager.onSentToBackground();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         checkConnections(connection, /* isConnected= */ false);
 
         // Bringing Chrome to the foreground should not re-add the moderate bindings.
@@ -428,7 +428,7 @@ public class BindingManagerTest {
 
         // TRIM_MEMORY_RUNNING_MODERATE should trigger the callback.
         manager.onTrimMemory(TRIM_MEMORY_RUNNING_MODERATE);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         // connection 0, 1 are removed. But connections[0] is already unbound, so only
         // connections[1] is unbound.
         Assert.assertEquals(Arrays.asList(connections[1]), changedConnections);
@@ -443,7 +443,7 @@ public class BindingManagerTest {
 
         // TRIM_MEMORY_RUNNING_LOW should trigger the callback.
         manager.onTrimMemory(TRIM_MEMORY_RUNNING_LOW);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         // connection 0, 1, 2 are removed. And connection 1, 2 are unbound and the first unbound
         // connections[1] is reported.
         Assert.assertEquals(Arrays.asList(connections[1]), changedConnections);
@@ -451,19 +451,19 @@ public class BindingManagerTest {
 
         // TRIM_MEMORY_BACKGROUND should trigger the callback and clear all connections.
         manager.onTrimMemory(TRIM_MEMORY_BACKGROUND);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertEquals(Arrays.asList(connections[3]), changedConnections);
         changedConnections.clear();
 
         // TRIM_MEMORY_RUNNING_MODERATE should not trigger the callback because there are no
         // connections.
         manager.onTrimMemory(TRIM_MEMORY_RUNNING_MODERATE);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertTrue(changedConnections.isEmpty());
 
         // TRIM_MEMORY_BACKGROUND should not trigger the callback because there are no connections.
         manager.onTrimMemory(TRIM_MEMORY_BACKGROUND);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         Assert.assertTrue(changedConnections.isEmpty());
 
         // Add connections back for the next test.

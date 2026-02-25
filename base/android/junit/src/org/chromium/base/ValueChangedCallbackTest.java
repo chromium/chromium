@@ -8,11 +8,11 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 /** Unit tests for {@link ValueChangedCallback}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -36,7 +36,7 @@ public class ValueChangedCallbackTest {
                             mOldSuppliedString = oldValue;
                         });
         mSupplier.addSyncObserverAndPostIfNonNull(observer);
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         checkState(0, null, null, "before setting first string.");
 

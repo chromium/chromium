@@ -14,16 +14,15 @@ import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowProcess;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 /** Unit tests for {@link OneshotSupplierImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowProcess.class})
-@LooperMode(LooperMode.Mode.LEGACY)
 public class OneshotSupplierImplTest {
     private final OneshotSupplierImpl<String> mSupplier = new OneshotSupplierImpl<>();
 
@@ -41,6 +40,7 @@ public class OneshotSupplierImplTest {
         assertNull(mSupplier.onAvailable(mCallback2));
         mSupplier.set("answer");
 
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mCallback1).onResult("answer");
         verify(mCallback2).onResult("answer");
     }
@@ -52,6 +52,7 @@ public class OneshotSupplierImplTest {
         assertEquals("answer", mSupplier.onAvailable(mCallback1));
         assertEquals("answer", mSupplier.onAvailable(mCallback2));
 
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mCallback1).onResult("answer");
         verify(mCallback2).onResult("answer");
     }
@@ -60,8 +61,10 @@ public class OneshotSupplierImplTest {
     public void testInterleaved() {
         assertNull(mSupplier.onAvailable(mCallback1));
         mSupplier.set("answer");
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals("answer", mSupplier.onAvailable(mCallback2));
 
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mCallback1).onResult("answer");
         verify(mCallback2).onResult("answer");
     }

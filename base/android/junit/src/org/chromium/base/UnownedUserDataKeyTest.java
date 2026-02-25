@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -93,7 +92,7 @@ public class UnownedUserDataKeyTest {
 
     @Before
     public void setUp() {
-        ShadowLooper.pauseMainLooper();
+
         mHost1 = new UnownedUserDataHost(new Handler(Looper.getMainLooper()));
         mHost2 = new UnownedUserDataHost(new Handler(Looper.getMainLooper()));
     }

@@ -17,10 +17,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 /** Unit tests for {@link LazyOneshotSupplier}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -40,7 +40,7 @@ public class LazyOneshotSupplierTest {
         assertEquals(foo, lazyOneshotSupplier.get());
         assertTrue(lazyOneshotSupplier.hasValue());
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mOnAvailable).onResult(eq(foo));
     }
 
@@ -53,7 +53,7 @@ public class LazyOneshotSupplierTest {
         assertNull(lazyOneshotSupplier.get());
         assertTrue(lazyOneshotSupplier.hasValue());
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mOnAvailable).onResult(eq(null));
     }
 
@@ -67,7 +67,7 @@ public class LazyOneshotSupplierTest {
         assertEquals(foo, lazyOneshotSupplier.get());
         assertTrue(lazyOneshotSupplier.hasValue());
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mOnAvailable).onResult(eq(foo));
     }
 
@@ -80,7 +80,7 @@ public class LazyOneshotSupplierTest {
         assertNull(lazyOneshotSupplier.get());
         assertTrue(lazyOneshotSupplier.hasValue());
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         verify(mOnAvailable).onResult(eq(null));
     }
 }

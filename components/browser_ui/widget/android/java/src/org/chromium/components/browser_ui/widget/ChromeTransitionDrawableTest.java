@@ -24,6 +24,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -105,7 +106,7 @@ public class ChromeTransitionDrawableTest {
         assertEquals(255, mInitialDrawableAlpha);
         assertEquals(0, mFinalDrawableAlpha);
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(255, mFinalDrawableAlpha);
         assertEquals(0, mInitialDrawableAlpha);
     }
@@ -189,7 +190,7 @@ public class ChromeTransitionDrawableTest {
         assertEquals(255 - mFinalDrawableAlpha, mInitialDrawableAlpha);
         assertFalse(endActionRan.get());
 
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(255, mInitialDrawableAlpha);
         assertEquals(0, mFinalDrawableAlpha);
     }
@@ -206,7 +207,7 @@ public class ChromeTransitionDrawableTest {
         ShadowLooper.runMainLooperOneTask();
 
         mTransitionDrawable.reverseTransition().withEndAction(() -> endActionRan2.set(true));
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertFalse(endActionRan.get());
         assertTrue(endActionRan2.get());
     }
