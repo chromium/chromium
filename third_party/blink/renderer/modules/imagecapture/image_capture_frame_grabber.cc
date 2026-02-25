@@ -187,14 +187,7 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
     cached_draw_info_.reset();
     sw_draw_surface_.reset();
     snapshot_provider_.reset();
-    if (!ShouldCreateAcceleratedImages(GetRasterContextProvider().get())) {
-      if (base::FeatureList::IsEnabled(
-              kImageCaptureFrameGrabberDrawCacheSkSurface)) {
-        sw_draw_surface_ = CanvasNon2DSnapshotProviderBitmap::CreateSurface(
-            required_provider_info);
-      }
-      cached_draw_info_ = required_provider_info;
-    } else {
+    if (ShouldCreateAcceleratedImages(GetRasterContextProvider().get())) {
       snapshot_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
           required_provider_info.size, required_provider_info.format,
           required_provider_info.alpha_type, required_provider_info.color_space,
@@ -203,6 +196,13 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
       if (snapshot_provider_) {
         cached_draw_info_ = required_provider_info;
       }
+    } else {
+      if (base::FeatureList::IsEnabled(
+              kImageCaptureFrameGrabberDrawCacheSkSurface)) {
+        sw_draw_surface_ = CanvasNon2DSnapshotProviderBitmap::CreateSurface(
+            required_provider_info);
+      }
+      cached_draw_info_ = required_provider_info;
     }
   }
 
