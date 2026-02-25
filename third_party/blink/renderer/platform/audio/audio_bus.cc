@@ -63,6 +63,24 @@ scoped_refptr<AudioBus> AudioBus::Create(unsigned number_of_channels,
   return base::AdoptRef(new AudioBus(number_of_channels, length, allocate));
 }
 
+scoped_refptr<AudioBus> AudioBus::TryCreate(unsigned number_of_channels,
+                                            uint32_t length) {
+  if (number_of_channels > kMaxBusChannels) {
+    return nullptr;
+  }
+
+  scoped_refptr<AudioBus> bus =
+      base::AdoptRef(new AudioBus(number_of_channels, length, false));
+
+  for (unsigned i = 0; i < number_of_channels; ++i) {
+    if (!bus->Channel(i)->TryAllocate(length)) {
+      return nullptr;
+    }
+  }
+
+  return bus;
+}
+
 AudioBus::AudioBus(unsigned number_of_channels, uint32_t length, bool allocate)
     : length_(length), sample_rate_(0) {
   channels_.ReserveInitialCapacity(number_of_channels);

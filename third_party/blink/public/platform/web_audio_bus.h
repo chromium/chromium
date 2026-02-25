@@ -52,6 +52,11 @@ class BLINK_PLATFORM_EXPORT WebAudioBus {
                   size_t length,
                   double sample_rate);
 
+  // Similar to Initialize, but returns false if allocation fails.
+  bool TryInitialize(unsigned number_of_channels,
+                     size_t length,
+                     double sample_rate);
+
   // ResizeSmaller() can only be called after Initialize() with a new length <=
   // the initialization length.  The data stored in the bus will remain
   // undisturbed.

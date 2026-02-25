@@ -38,6 +38,19 @@
 
 namespace blink {
 
+bool AudioChannel::TryAllocate(uint32_t length) {
+  if (!mem_buffer_) {
+    mem_buffer_ = std::make_unique<AudioFloatArray>();
+  }
+  if (!mem_buffer_->TryAllocate(length)) {
+    length_ = 0;
+    return false;
+  }
+  length_ = length;
+  silent_ = true;
+  return true;
+}
+
 void AudioChannel::ResizeSmaller(uint32_t new_length) {
   DCHECK_LE(new_length, length_);
   length_ = new_length;
