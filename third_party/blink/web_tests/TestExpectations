@@ -1330,7 +1330,6 @@ crbug.com/1068610 external/wpt/css/css-color/at-color-profile-001.html [ Failure
 crbug.com/1343361 external/wpt/css/css-color/currentcolor-003.html [ Failure ]
 
 # css-color
-crbug.com/1520748 external/wpt/css/css-color/deprecated-sameas-002.html [ Failure ]
 crbug.com/329106317 external/wpt/css/css-color/lch-009.html [ Failure ]
 crbug.com/329106317 external/wpt/css/css-color/lch-010.html [ Failure ]
 crbug.com/329106317 external/wpt/css/css-color/oklch-009.html [ Failure ]

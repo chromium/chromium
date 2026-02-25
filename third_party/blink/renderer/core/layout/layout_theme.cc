@@ -629,6 +629,17 @@ Color LayoutTheme::DefaultSystemColor(CSSValueID css_value_id,
                  : Color::FromRGBA32(0xFF000000);
     case CSSValueID::kCanvas:
     // The following system colors were deprecated to default to Canvas.
+    case CSSValueID::kActivecaption:
+      if (RuntimeEnabledFeatures::CSSActiveCaptionMapsToCanvasEnabled()) {
+        return color_scheme == mojom::blink::ColorScheme::kDark
+                   ? Color::FromRGBA32(0xFF121212)
+                   : Color::FromRGBA32(0xFFFFFFFF);
+      } else {
+        // The old behavior maps to CanvasText
+        return color_scheme == mojom::blink::ColorScheme::kDark
+                   ? Color::FromRGBA32(0xFFFFFFFF)
+                   : Color::FromRGBA32(0xFF000000);
+      }
     case CSSValueID::kAppworkspace:
     case CSSValueID::kBackground:
     case CSSValueID::kInactivecaption:
@@ -641,7 +652,6 @@ Color LayoutTheme::DefaultSystemColor(CSSValueID css_value_id,
                  : Color::FromRGBA32(0xFFFFFFFF);
     case CSSValueID::kCanvastext:
     // The following system colors were deprecated to default to CanvasText.
-    case CSSValueID::kActivecaption:
     case CSSValueID::kCaptiontext:
     case CSSValueID::kInfotext:
     case CSSValueID::kMenutext:
@@ -778,6 +788,12 @@ Color LayoutTheme::SystemColorFromColorProvider(
       break;
     case CSSValueID::kCanvas:
     // Deprecated colors, see DefaultSystemColor().
+    case CSSValueID::kActivecaption:
+      system_theme_color = color_provider->GetColor(
+          RuntimeEnabledFeatures::CSSActiveCaptionMapsToCanvasEnabled()
+              ? ui::kColorCssSystemWindow
+              : ui::kColorCssSystemWindowText);
+      break;
     case CSSValueID::kAppworkspace:
     case CSSValueID::kBackground:
     case CSSValueID::kInactivecaption:
@@ -789,7 +805,6 @@ Color LayoutTheme::SystemColorFromColorProvider(
       break;
     case CSSValueID::kCanvastext:
     // Deprecated colors, see DefaultSystemColor().
-    case CSSValueID::kActivecaption:
     case CSSValueID::kCaptiontext:
     case CSSValueID::kInfotext:
     case CSSValueID::kMenutext:

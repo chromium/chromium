@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest, GetSystemColor) {
                                   "windowFrame",
                                   "windowText"};
   const std::vector<std::string> expected_colors = {
-      "rgb(0, 0, 0)",       "rgb(0, 0, 0)",       "rgb(0, 102, 204)",
+      "rgb(0, 0, 0)",       "rgb(255, 255, 255)", "rgb(0, 102, 204)",
       "rgb(255, 255, 255)", "rgb(255, 255, 255)", "rgb(240, 240, 240)",
       "rgb(240, 240, 240)", "rgb(240, 240, 240)", "rgb(0, 0, 0)",
       "rgb(255, 255, 255)", "rgb(0, 0, 0)",       "rgb(0, 0, 0)",

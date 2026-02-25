@@ -1359,6 +1359,13 @@
       status: "experimental",
     },
     {
+      // Maps deprecated ActiveCaption to Canvas instead of CanvasText.
+      // https://drafts.csswg.org/css-color-4/#deprecated-system-colors
+      // https://crbug.com/41493724
+      name: "CSSActiveCaptionMapsToCanvas",
+      status: "stable",
+    },
+    {
       // Allows using counter() and counters() in alt text (after / in content property).
       name: "CSSAltCounter",
       status: "stable",
