@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/public/js_messaging/compile_ts.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
 source_set("actuation_interface") {
   sources = [ "actuation_tool.h" ]
 
@@ -30,11 +33,47 @@ source_set("navigate_tool") {
   ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "navigate_tool_unittest.mm" ]
+compile_ts("actuation_utils_ts") {
+  sources = [ "resources/actuation_utils.ts" ]
+}
+
+optimize_ts("click_tool_ts") {
+  sources = [ "resources/click_tool.ts" ]
+  output_name = "click_tool"
+
+  deps = [
+    "//ios/chrome/browser/intelligence/actuation/model/tools:actuation_utils_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
+source_set("java_script_features") {
+  sources = [
+    "click_tool_java_script_feature.h",
+    "click_tool_java_script_feature.mm",
+  ]
+
   deps = [
     ":actuation_interface",
+    ":click_tool_ts",
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "click_tool_java_script_feature_unittest.mm",
+    "click_tool_js_unittest.mm",
+    "navigate_tool_unittest.mm",
+  ]
+
+  deps = [
+    ":actuation_interface",
+    ":java_script_features",
     ":navigate_tool",
     "//base/test:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -45,7 +84,13 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/web/common:features",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test",
+    "//ios/web/public/test:javascript_test",
+    "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",
+    "//net:test_support",
     "//testing/gtest",
   ]
 }

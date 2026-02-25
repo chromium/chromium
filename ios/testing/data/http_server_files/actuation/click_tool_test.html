@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to test the ClickToolJavaScriptFeature.
+It captures touch and mouse events and exposes them via `window.capturedEvents`.
+The button with id 'target_button' also changes its text to 'Clicked' when clicked.
+-->
+<html>
+  <head>
+  <script>
+    window.capturedEvents = [];
+    function record(e) {
+      let x = e.clientX;
+      let y = e.clientY;
+      if (e.type.startsWith('touch')) {
+        const touch = e.touches[0];
+        if (touch) {
+          x = touch.clientX;
+          y = touch.clientY;
+        }
+      }
+      const info = {
+        type: e.type,
+        x: x,
+        y: y,
+        bubbles: e.bubbles,
+        cancelable: e.cancelable,
+        button: e.button,
+        detail: e.detail
+      };
+      window.capturedEvents.push(info);
+    }
+    const events = ['touchstart', 'touchend', 'mousemove', 'mousedown',
+                    'mouseup', 'click', 'dblclick'];
+    events.forEach(type => document.addEventListener(type, record));
+  </script>
+  <style>
+    body { margin: 0; padding: 0; height: 100%; }
+    .centered {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      transform: translate(-50%,-50%);
+    }
+    #target_button { left: 50px; top: 50px; }
+    #target_iframe { left: 50px; top: 200px; }
+  </style>
+  </head>
+  <body>
+    <button id='target_button' class='centered' onclick="this.innerText='Clicked'">Button</button>
+    <iframe id='target_iframe' class='centered' src='about:blank'></iframe>
+  </body>
+</html>

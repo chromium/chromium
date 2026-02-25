@@ -46,6 +46,8 @@
 #import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
+#import "ios/chrome/browser/intelligence/actuation/model/tools/click_tool_java_script_feature.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_java_script_feature.h"
 #import "ios/chrome/browser/ntp/model/browser_policy_new_tab_page_rewriter.h"
@@ -443,6 +445,10 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(WebPerformanceMetricsJavaScriptFeature::GetInstance());
   features.push_back(ChooseFileJavaScriptFeature::GetInstance());
   features.push_back(PageContextExtractorJavaScriptFeature::GetInstance());
+
+  if (base::FeatureList::IsEnabled(kActuationTools)) {
+    features.push_back(ClickToolJavaScriptFeature::GetInstance());
+  }
 
   features.push_back(
       SupervisedUserInterstitialJavaScriptFeature::GetInstance());

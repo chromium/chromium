@@ -47,10 +47,15 @@ enum class ActuationErrorCode {
 
   // JavaScript Feature Errors (200-299).
 
-  // The tool failed during JavaScript execution.
+  // The JavaScript feature received a result from the JavaScript that didn't
+  // match the format it expected.
+  kJavascriptFeatureGotInvalidResult = 200,
+  // The JavaScriptFeature::CallJavaScriptFunction call failed.
+  kJavascriptFeatureFailedToCallJavaScriptFunction = 201,
+  // The JavaScript function failed during execution.
   // When this is used, the ActuationError.message should be populated with an
-  // error message from the JavaScript to provide more context.
-  kJavascriptExecutionFailed = 200,
+  // error message from the JavaScript that provides more context.
+  kJavascriptFeatureFailedInJavaScriptExecution = 202,
 
   // Navigation Tool Errors (300-399).
 

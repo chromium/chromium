@@ -30,8 +30,8 @@ std::string GetActuationErrorMessage(const ActuationError& error) {
       return "There isn't a tool to support this action.";
     case ActuationErrorCode::kToolDisabledByFeature:
       return "Tool is disabled via feature parameter.";
-    case ActuationErrorCode::kJavascriptExecutionFailed:
-      return "JavaScript execution failed.";
+    case ActuationErrorCode::kExecutionMissingDependencies:
+      return "On tool execution, required dependencies were missing.";
     case ActuationErrorCode::kCreationMissingRequiredFields:
       return "On tool creation, required fields were missing.";
     case ActuationErrorCode::kCreationTargetTabNotFound:
@@ -40,8 +40,13 @@ std::string GetActuationErrorMessage(const ActuationError& error) {
       return "On tool creation, failed to get WebStateList.";
     case ActuationErrorCode::kCreationMissingWebState:
       return "On tool creation, failed to get WebState.";
-    case ActuationErrorCode::kExecutionMissingDependencies:
-      return "On tool execution, required dependencies were missing.";
+    case ActuationErrorCode::kJavascriptFeatureGotInvalidResult:
+      return "The JavaScriptFeature got an unexpected response from the "
+             "JavaScript function.";
+    case ActuationErrorCode::kJavascriptFeatureFailedToCallJavaScriptFunction:
+      return "The JavaScriptFeature::CallJavaScriptFunction call failed.";
+    case ActuationErrorCode::kJavascriptFeatureFailedInJavaScriptExecution:
+      return "The JavaScriptFeature failed when executing the JavaScript.";
     case ActuationErrorCode::kNavigationInvalidURL:
       return "Navigation failed due to invalid destination URL.";
     case ActuationErrorCode::kNavigationTabNotRealized:
