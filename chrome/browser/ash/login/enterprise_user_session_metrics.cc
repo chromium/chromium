@@ -10,7 +10,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -38,7 +37,8 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(prefs::kLastSessionLength, 0);
 }
 
-void StoreSessionLength(user_manager::UserType session_type,
+void StoreSessionLength(PrefService& local_state,
+                        user_manager::UserType session_type,
                         const base::TimeDelta& session_length) {
   DCHECK(ash::InstallAttributes::Get()->IsEnterpriseManaged());
 
@@ -48,31 +48,29 @@ void StoreSessionLength(user_manager::UserType session_type,
     return;
   }
 
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetInteger(prefs::kLastSessionType,
-                          static_cast<int>(session_type));
-  local_state->SetInt64(prefs::kLastSessionLength,
-                        session_length.ToInternalValue());
-  local_state->CommitPendingWrite();
+  local_state.SetInteger(prefs::kLastSessionType,
+                         static_cast<int>(session_type));
+  local_state.SetInt64(prefs::kLastSessionLength,
+                       session_length.ToInternalValue());
+  local_state.CommitPendingWrite();
 }
 
-void RecordStoredSessionLength() {
+void RecordStoredSessionLength(PrefService& local_state) {
   DCHECK(ash::InstallAttributes::Get()->IsEnterpriseManaged());
 
-  PrefService* local_state = g_browser_process->local_state();
-  if (!local_state->HasPrefPath(prefs::kLastSessionType) ||
-      !local_state->HasPrefPath(prefs::kLastSessionLength)) {
+  if (!local_state.HasPrefPath(prefs::kLastSessionType) ||
+      !local_state.HasPrefPath(prefs::kLastSessionLength)) {
     return;
   }
 
   const user_manager::UserType session_type =
       static_cast<user_manager::UserType>(
-          local_state->GetInteger(prefs::kLastSessionType));
+          local_state.GetInteger(prefs::kLastSessionType));
   const base::TimeDelta session_length = base::TimeDelta::FromInternalValue(
-      local_state->GetInt64(prefs::kLastSessionLength));
+      local_state.GetInt64(prefs::kLastSessionLength));
 
-  local_state->ClearPref(prefs::kLastSessionType);
-  local_state->ClearPref(prefs::kLastSessionLength);
+  local_state.ClearPref(prefs::kLastSessionType);
+  local_state.ClearPref(prefs::kLastSessionLength);
 
   if (session_length.is_zero())
     return;

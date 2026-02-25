@@ -9,6 +9,7 @@
 #include "components/user_manager/user_type.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace ash {
 
@@ -48,11 +49,12 @@ void RecordSignInEvent(const UserContext& user_context, bool is_auto_login);
 // state pref instead of sending it to metrics code directly because it is
 // called on shutdown path and metrics are likely to be lost. The stored value
 // would be reported on the next run.
-void StoreSessionLength(user_manager::UserType session_type,
+void StoreSessionLength(PrefService& local_state,
+                        user_manager::UserType session_type,
                         const base::TimeDelta& session_length);
 
 // Records the stored session length and clears it.
-void RecordStoredSessionLength();
+void RecordStoredSessionLength(PrefService& local_state);
 
 }  // namespace enterprise_user_session_metrics
 }  // namespace ash

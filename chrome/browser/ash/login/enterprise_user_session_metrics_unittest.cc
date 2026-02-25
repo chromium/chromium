@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -46,8 +47,10 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordSessionLength) {
     SCOPED_TRACE("");
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::StoreSessionLength(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
         user_manager::UserType::kPublicAccount, base::Minutes(25));
-    enterprise_user_session_metrics::RecordStoredSessionLength();
+    enterprise_user_session_metrics::RecordStoredSessionLength(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
 
     // Time is rounded down to the nearest 10.
     histogram_tester.ExpectUniqueSample(
@@ -63,8 +66,10 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordSessionLength) {
     // Test with a regular user session.
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::StoreSessionLength(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
         user_manager::UserType::kRegular, base::Minutes(149));
-    enterprise_user_session_metrics::RecordStoredSessionLength();
+    enterprise_user_session_metrics::RecordStoredSessionLength(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
     histogram_tester.ExpectUniqueSample(
         "Enterprise.RegularUserSession.SessionLength", 140, 1);
 
@@ -77,8 +82,10 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordSessionLength) {
     SCOPED_TRACE("");
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::StoreSessionLength(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
         user_manager::UserType::kRegular, base::Days(10));
-    enterprise_user_session_metrics::RecordStoredSessionLength();
+    enterprise_user_session_metrics::RecordStoredSessionLength(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
 
     // Reported length is capped at 24 hours.
     histogram_tester.ExpectUniqueSample(
@@ -95,7 +102,8 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordSessionLength) {
     // Test with no session. This verifies the same metric isn't recorded twice
     // if something goes wrong.
     base::HistogramTester histogram_tester;
-    enterprise_user_session_metrics::RecordStoredSessionLength();
+    enterprise_user_session_metrics::RecordStoredSessionLength(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
     histogram_tester.ExpectTotalCount("Enterprise.PublicSession.SessionLength",
                                       0);
     histogram_tester.ExpectTotalCount(
@@ -112,8 +120,10 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordDemoSessionLength) {
     SCOPED_TRACE("");
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::StoreSessionLength(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
         user_manager::UserType::kPublicAccount, base::Seconds(25 * 60 + 59));
-    enterprise_user_session_metrics::RecordStoredSessionLength();
+    enterprise_user_session_metrics::RecordStoredSessionLength(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
 
     // Time is rounded down to the nearest 10 minutes.
     histogram_tester.ExpectUniqueSample(
@@ -127,8 +137,10 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordDemoSessionLength) {
     SCOPED_TRACE("");
     base::HistogramTester histogram_tester;
     enterprise_user_session_metrics::StoreSessionLength(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
         user_manager::UserType::kPublicAccount, base::Days(10));
-    enterprise_user_session_metrics::RecordStoredSessionLength();
+    enterprise_user_session_metrics::RecordStoredSessionLength(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
 
     // Reported length is capped at 24 hours.
     histogram_tester.ExpectUniqueSample(
@@ -144,7 +156,8 @@ TEST_F(EnterpriseUserSessionMetricsTest, RecordDemoSessionLength) {
     // Test with no session. This verifies the same metric isn't recorded twice
     // if something goes wrong.
     base::HistogramTester histogram_tester;
-    enterprise_user_session_metrics::RecordStoredSessionLength();
+    enterprise_user_session_metrics::RecordStoredSessionLength(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
     histogram_tester.ExpectTotalCount("Enterprise.PublicSession.SessionLength",
                                       0);
     histogram_tester.ExpectTotalCount(

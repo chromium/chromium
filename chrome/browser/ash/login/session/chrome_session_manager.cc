@@ -397,7 +397,8 @@ void ChromeSessionManager::OnUserManagerCreated(
 
   // Record the stored session length for enrolled device.
   if (ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
-    enterprise_user_session_metrics::RecordStoredSessionLength();
+    enterprise_user_session_metrics::RecordStoredSessionLength(
+        local_state_.get());
   }
 }
 
@@ -477,7 +478,8 @@ void ChromeSessionManager::Shutdown() {
         session_length_limiter_->GetSessionDuration();
     if (!session_length.is_zero()) {
       enterprise_user_session_metrics::StoreSessionLength(
-          user_manager_->GetActiveUser()->GetType(), session_length);
+          local_state_.get(), user_manager_->GetActiveUser()->GetType(),
+          session_length);
     }
   }
   session_length_limiter_.reset();
