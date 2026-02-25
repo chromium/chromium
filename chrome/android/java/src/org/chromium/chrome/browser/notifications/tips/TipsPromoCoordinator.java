@@ -306,6 +306,9 @@ public class TipsPromoCoordinator {
                 TabSwitcherUtils.navigateToTabSwitcher(
                         mLayoutManager, /* animate= */ true, /* onNavigationFinished= */ null);
                 break;
+            case TipsNotificationsFeatureType.CUSTOMIZE_MVT:
+                // No-op since there is no page to travel to.
+                break;
             default:
                 assert false : "Invalid feature type: " + featureType;
         }
@@ -351,6 +354,9 @@ public class TipsPromoCoordinator {
             case TipsNotificationsFeatureType.CREATE_TAB_GROUPS:
                 logoView.setImageResource(logoViewRes);
                 break;
+            case TipsNotificationsFeatureType.CUSTOMIZE_MVT:
+                logoView.setImageResource(logoViewRes);
+                break;
             default:
                 assert false : "Invalid feature type: " + featureType;
         }
@@ -372,6 +378,8 @@ public class TipsPromoCoordinator {
                 return ".Signin";
             case TipsNotificationsFeatureType.CREATE_TAB_GROUPS:
                 return ".CreateTabGroups";
+            case TipsNotificationsFeatureType.CUSTOMIZE_MVT:
+                return ".CustomizeMVT";
             default:
                 assert false : "Invalid feature type: " + featureType;
                 return "";

@@ -19956,6 +19956,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_TIPS_NOTIFICATIONS_CREATE_TAB_GROUPS_SUBTITLE" desc="Subtitle for the create tab groups tip notification.">
       Create tab groups that automatically save and update across all your devices
     </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_CUSTOMIZE_MVT_TITLE" desc="Title for the customize MVT tip notification. [CHAR_LIMIT=32]">
+      Customize your shortcuts
+    </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_CUSTOMIZE_MVT_SUBTITLE" desc="Subtitle for the customize MVT tip notification.">
+      Tap and hold to pin your most visited websites for easy access next time
+    </message>
 
     <!-- chrome://updater -->
     <if expr="is_linux or is_macosx or is_win">

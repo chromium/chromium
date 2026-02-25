@@ -206,6 +206,22 @@ public class TipsUtils {
                         context.getString(
                                 R.string.tips_promo_bottom_sheet_third_step_create_tab_groups));
                 break;
+            case TipsNotificationsFeatureType.CUSTOMIZE_MVT:
+                positiveButtonTextRes = R.string.tips_promo_bottom_sheet_positive_button_text_noop;
+                mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_customize_mvt;
+                mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_customize_mvt;
+                mainPageLogoViewRes = R.drawable.tips_promo_customize_mvt_logo;
+                detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_customize_mvt;
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_first_step_customize_mvt));
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_second_step_customize_mvt));
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_third_step_customize_mvt));
+                break;
             default:
                 assert false : "Invalid feature type: " + featureType;
 

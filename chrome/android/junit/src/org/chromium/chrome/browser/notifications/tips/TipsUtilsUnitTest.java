@@ -262,6 +262,37 @@ public class TipsUtilsUnitTest {
 
     @SmallTest
     @Test
+    public void testGetFeatureTipPromoDataForType_CustomizeMVT() {
+        FeatureTipPromoData promoData =
+                TipsUtils.getFeatureTipPromoDataForType(
+                        mActivity,
+                        TipsNotificationsFeatureType.CUSTOMIZE_MVT,
+                        /* isUserSignedIn= */ false);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_positive_button_text_noop),
+                promoData.positiveButtonText);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_title_customize_mvt),
+                promoData.mainPageTitle);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_description_customize_mvt),
+                promoData.mainPageDescription);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_first_step_customize_mvt),
+                promoData.detailPageSteps.get(0));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_second_step_customize_mvt),
+                promoData.detailPageSteps.get(1));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_third_step_customize_mvt),
+                promoData.detailPageSteps.get(2));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_title_customize_mvt),
+                promoData.detailPageTitle);
+    }
+
+    @SmallTest
+    @Test
     public void testGetDetailStepBackground_SingleStep() {
         assertEquals(
                 R.drawable.view_list_single_item_background,

@@ -402,6 +402,7 @@ chrome_java_resources = [
   "java/res/drawable/tips_opt_in_logo.xml",
   "java/res/drawable/tips_promo_bottom_omnibox_logo.xml",
   "java/res/drawable/tips_promo_create_tab_groups_logo.xml",
+  "java/res/drawable/tips_promo_customize_mvt_logo.xml",
   "java/res/drawable/tips_promo_esb_logo.xml",
   "java/res/drawable/tips_promo_lens_logo.xml",
   "java/res/drawable/tips_promo_password_autofill_logo.xml",

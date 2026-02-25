@@ -7539,6 +7539,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_PASSWORD_AUTOFILL" desc="Description of the Password Autofill feature tip main page promo.">
         Create, save, and manage your passwords so you can easily sign in to sites and apps using Chrome
       </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_CUSTOMIZE_MVT" desc="Title of the Customize MVT feature tip main page promo. [CHAR_LIMIT=32]">
+        Customize your shortcuts
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_CUSTOMIZE_MVT" desc="Description of the Customize MVT feature tip main page promo.">
+        Tap and hold to pin your most visited websites for easy access next time
+      </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_SIGNIN_SIGNED_IN" desc="Title of the Sign in feature tip main page promo when the user is already signed in. [CHAR_LIMIT=32]">
         You\u2019re already signed in
       </message>
@@ -7604,6 +7610,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_THIRD_STEP_CREATE_TAB_GROUPS" desc="Description of the Create Tab Groups feature tip third step detail page promo.">
         Customize tab group and hit Done
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_FIRST_STEP_CUSTOMIZE_MVT" desc="Description of the Customize MVT feature tip first step detail page promo.">
+        Open a new tab page
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_SECOND_STEP_CUSTOMIZE_MVT" desc="Description of the Customize MVT feature tip second step detail page promo.">
+        Long press on website and open menu
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_THIRD_STEP_CUSTOMIZE_MVT" desc="Description of the Customize MVT feature tip third step detail page promo.">
+        Tap Pin this shortcut
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_QUICK_DELETE_SHORT" desc="Title of the Quick Delete feature tip detail page promo. [CHAR_LIMIT=32]">
         Quickly delete browsing data
