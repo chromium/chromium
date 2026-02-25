@@ -29,7 +29,10 @@
   --glif-rotation-duration_: var(--search-animated-glif-rotation-duration,
       2s);
 
-  --glow-stroke-width_: 2px;
+  /* Define animated glow stroke width outside of this class to customize
+   * per surface.
+   */
+  --glow-stroke-width_: var(--animated-glow-stroke-width, 2px);
 
   --search-animated-glow-background-z-index: 103;
   --search-animated-glow-drag-drop-placeholder-z-index: 104;
@@ -115,6 +118,7 @@
   border-radius: 50%;
   contain: paint;
   content: '';
+  filter: blur(20px);
   height: auto; /* Controlled by aspect-ratio. */
   left: 50%;
   opacity: 0;
@@ -125,7 +129,7 @@
   * making it a glow, not a pinwheel. Too much, and it will be too
   * tall of a glow.
   */
-  scale: 1 0.6;
+  scale: 1 0.4;
   top: 50%;
   translate: -50% -50%;
   /*
@@ -252,7 +256,7 @@
     opacity: 0;
     transform: rotate(var(--start-angle-expand_));
   }
-  17% {
+  12% {
     opacity: var(--gradient-spin-expand-peak-opacity_, 1);
   }
   100% {
@@ -374,8 +378,8 @@
   0% {
     filter: blur(0);
   }
-  17% {
-    filter: blur(2px);
+  11% {
+    filter: blur(7px);
   }
   100% {
     filter: blur(0);
@@ -387,10 +391,10 @@
     filter: blur(0);
   }
   12% {
-    filter: blur(2px);
+    filter: blur(7px);
   }
   30% {
-    filter: blur(0.1px);
+    filter: blur(0.5px);
   }
   100% {
     filter: blur(0);
@@ -440,7 +444,7 @@
   /* Frosted glass color; overlays the actual composebox background: */
   background-color: var(--color-search-animated-glow-dragging-opaque-frost,
       var(--color-dragging-opaque-frost-backup_));
-  filter: blur(28px);
+  filter: blur(25px);
   z-index: var(--search-animated-glow-background-z-index, 3);
 }
 
