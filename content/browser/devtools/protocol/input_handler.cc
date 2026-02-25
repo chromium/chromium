@@ -1116,8 +1116,8 @@ void InputHandler::SetRenderer(int process_host_id,
 
   if (ignore_input_events_ && old_web_contents != web_contents_) {
     if (web_contents_) {
-      scoped_ignore_input_events_ =
-          web_contents_->IgnoreInputEvents(std::nullopt);
+      scoped_ignore_input_events_ = web_contents_->IgnoreInputEvents(
+          std::nullopt, /*should_ignore_a11y_input=*/true);
     } else {
       scoped_ignore_input_events_.reset();
     }
