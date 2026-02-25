@@ -230,9 +230,12 @@ message AnnotatedPageContent {
   // be unique within the browsing session.
   int32 tab_id = 7 [features = { field_presence: EXPLICIT }];
 
-  // A page can only have one popup window open at a time. If one is open, its
-  // details are populated here. The popup window draws on top of the tab and as
-  // such has a higher z order than the main frame's Document.
+  // Provides APC for internal popup widgets created by elements like <select>
+  // and <input type="color"> . Does not provide APC for separate windows opened
+  // via window.open() or similar. A page can only have one popup window open at
+  // a time. If one is open, its details are populated here. The popup window
+  // draws on top of the tab and as such has a higher z order than the main
+  // frame's Document.
   PopupWindow popup_window = 8 [features = { field_presence: EXPLICIT }];
 
   // Information that pertains to the user's profile, not the page.

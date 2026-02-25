@@ -9,10 +9,12 @@ package optimization_guide.proto;
 import "components/optimization_guide/proto/features/actor_login.proto";
 import "components/optimization_guide/proto/features/amount_extraction.proto";
 import "components/optimization_guide/proto/features/bling_prototyping.proto";
+import "components/optimization_guide/proto/features/classify_api.proto";
 import "components/optimization_guide/proto/features/compose.proto";
 import "components/optimization_guide/proto/features/contextual_tasks_context.proto";
 import "components/optimization_guide/proto/features/default.proto";
 import "components/optimization_guide/proto/features/enhanced_calendar.proto";
+import "components/optimization_guide/proto/features/finds.proto";
 import "components/optimization_guide/proto/features/forms_classifications.proto";
 import "components/optimization_guide/proto/features/gemini_antiscam_protection.proto";
 import "components/optimization_guide/proto/features/history_answer.proto";
@@ -108,6 +110,10 @@ message LogAiDataRequest {
     SkillsLoggingData skills = 33;
 
     GeminiAntiscamProtectionLoggingData gemini_antiscam_protection = 34;
+
+    ClassifyApiLoggingData classify_api = 35;
+
+    FindsLoggingData finds = 36;
 
     DefaultLoggingData default = 1000;
   }
