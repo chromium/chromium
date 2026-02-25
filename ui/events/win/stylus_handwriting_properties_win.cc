@@ -15,7 +15,8 @@ namespace ui {
 
 namespace {
 
-using GetHandwritingStrokeIdForPointerFunc = HRESULT (*)(uint32_t, uint64_t*);
+using GetHandwritingStrokeIdForPointerFunc = HRESULT(WINAPI*)(uint32_t,
+                                                              uint64_t*);
 
 constexpr char kPropertyHandwritingPointerId[] = "handwriting_pointer_id";
 constexpr char kPropertyHandwritingStrokeId[] = "handwriting_stroke_id";
