@@ -7,6 +7,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
@@ -81,6 +82,13 @@ class PhoneHubUiReadinessRecorder
 
   ConnectionFlowState connection_flow_state_ =
       ConnectionFlowState::kSecureChannelNotConnected;
+
+  base::ScopedObservation<FeatureStatusProvider,
+                          FeatureStatusProvider::Observer>
+      feature_status_provider_observation_{this};
+  base::ScopedObservation<secure_channel::ConnectionManager,
+                          secure_channel::ConnectionManager::Observer>
+      connection_manager_observation_{this};
 };
 
 }  // namespace ash::phonehub

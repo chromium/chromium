@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/notification_manager.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
@@ -44,6 +45,10 @@ class NotificationManagerImpl
   raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
   std::optional<multidevice_setup::mojom::FeatureState>
       notifications_feature_status_;
+
+  base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
+                          multidevice_setup::MultiDeviceSetupClient::Observer>
+      multidevice_setup_client_observation_{this};
 };
 
 }  // namespace ash::phonehub

@@ -149,16 +149,15 @@ FeatureStatusProviderImpl::FeatureStatusProviderImpl(
       multidevice_setup_client_(multidevice_setup_client),
       connection_manager_(connection_manager),
       session_manager_(session_manager),
-      power_manager_client_(power_manager_client),
       phone_hub_structured_metrics_logger_(
           phone_hub_structured_metrics_logger) {
   DCHECK(session_manager_);
-  DCHECK(power_manager_client_);
-  device_sync_client_->AddObserver(this);
-  multidevice_setup_client_->AddObserver(this);
-  connection_manager_->AddObserver(this);
-  session_manager_->AddObserver(this);
-  power_manager_client_->AddObserver(this);
+  DCHECK(power_manager_client);
+  device_sync_client_observation_.Observe(device_sync_client);
+  multidevice_setup_client_observation_.Observe(multidevice_setup_client);
+  connection_manager_observation_.Observe(connection_manager);
+  session_manager_observation_.Observe(session_manager);
+  power_manager_client_observation_.Observe(power_manager_client);
 
   device::BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&FeatureStatusProviderImpl::OnBluetoothAdapterReceived,
@@ -167,16 +166,7 @@ FeatureStatusProviderImpl::FeatureStatusProviderImpl(
   status_ = ComputeStatus();
 }
 
-FeatureStatusProviderImpl::~FeatureStatusProviderImpl() {
-  device_sync_client_->RemoveObserver(this);
-  multidevice_setup_client_->RemoveObserver(this);
-  connection_manager_->RemoveObserver(this);
-  if (bluetooth_adapter_) {
-    bluetooth_adapter_->RemoveObserver(this);
-  }
-  session_manager_->RemoveObserver(this);
-  power_manager_client_->RemoveObserver(this);
-}
+FeatureStatusProviderImpl::~FeatureStatusProviderImpl() = default;
 
 FeatureStatus FeatureStatusProviderImpl::GetStatus() const {
   PA_LOG(VERBOSE) << __func__ << ": status = " << *status_;
@@ -221,7 +211,7 @@ void FeatureStatusProviderImpl::AdapterPoweredChanged(
 void FeatureStatusProviderImpl::OnBluetoothAdapterReceived(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {
   bluetooth_adapter_ = std::move(bluetooth_adapter);
-  bluetooth_adapter_->AddObserver(this);
+  bluetooth_adapter_observation_.Observe(bluetooth_adapter_.get());
 
   // If |status_| has not yet been set, this call occurred synchronously in the
   // constructor, so status_ has not yet been initialized.

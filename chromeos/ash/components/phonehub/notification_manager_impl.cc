@@ -25,12 +25,10 @@ NotificationManagerImpl::NotificationManagerImpl(
   DCHECK(message_sender_);
   DCHECK(multidevice_setup_client_);
 
-  multidevice_setup_client_->AddObserver(this);
+  multidevice_setup_client_observation_.Observe(multidevice_setup_client);
 }
 
-NotificationManagerImpl::~NotificationManagerImpl() {
-  multidevice_setup_client_->RemoveObserver(this);
-}
+NotificationManagerImpl::~NotificationManagerImpl() = default;
 
 void NotificationManagerImpl::DismissNotification(int64_t notification_id) {
   PA_LOG(INFO) << "Dismissing notification with ID " << notification_id << ".";

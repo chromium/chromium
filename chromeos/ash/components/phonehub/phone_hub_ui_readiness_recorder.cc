@@ -14,14 +14,11 @@ PhoneHubUiReadinessRecorder::PhoneHubUiReadinessRecorder(
     secure_channel::ConnectionManager* connection_manager)
     : feature_status_provider_(feature_status_provider),
       connection_manager_(connection_manager) {
-  feature_status_provider_->AddObserver(this);
-  connection_manager_->AddObserver(this);
+  feature_status_provider_observation_.Observe(feature_status_provider);
+  connection_manager_observation_.Observe(connection_manager);
 }
 
-PhoneHubUiReadinessRecorder::~PhoneHubUiReadinessRecorder() {
-  feature_status_provider_->RemoveObserver(this);
-  connection_manager_->RemoveObserver(this);
-}
+PhoneHubUiReadinessRecorder::~PhoneHubUiReadinessRecorder() = default;
 
 void PhoneHubUiReadinessRecorder::OnFeatureStatusChanged() {
   switch (feature_status_provider_->GetStatus()) {

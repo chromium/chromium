@@ -236,7 +236,6 @@ PhoneStatusProcessor::PhoneStatusProcessor(
     PhoneHubStructuredMetricsLogger* phone_hub_structured_metrics_logger)
     : do_not_disturb_controller_(do_not_disturb_controller),
       feature_status_provider_(feature_status_provider),
-      message_receiver_(message_receiver),
       find_my_device_controller_(find_my_device_controller),
       multidevice_feature_access_manager_(multidevice_feature_access_manager),
       screen_lock_manager_(screen_lock_manager),
@@ -253,7 +252,7 @@ PhoneStatusProcessor::PhoneStatusProcessor(
           phone_hub_structured_metrics_logger) {
   DCHECK(do_not_disturb_controller_);
   DCHECK(feature_status_provider_);
-  DCHECK(message_receiver_);
+  DCHECK(message_receiver);
   DCHECK(find_my_device_controller_);
   DCHECK(multidevice_feature_access_manager_);
   DCHECK(notification_processor_);
@@ -265,18 +264,14 @@ PhoneStatusProcessor::PhoneStatusProcessor(
   DCHECK(phone_hub_ui_readiness_recorder_);
   DCHECK(phone_hub_structured_metrics_logger_);
 
-  message_receiver_->AddObserver(this);
-  feature_status_provider_->AddObserver(this);
-  multidevice_setup_client_->AddObserver(this);
+  message_receiver_observation_.Observe(message_receiver);
+  feature_status_provider_observation_.Observe(feature_status_provider_);
+  multidevice_setup_client_observation_.Observe(multidevice_setup_client_);
 
   MaybeSetPhoneModelName(multidevice_setup_client_->GetHostStatus().second);
 }
 
-PhoneStatusProcessor::~PhoneStatusProcessor() {
-  message_receiver_->RemoveObserver(this);
-  feature_status_provider_->RemoveObserver(this);
-  multidevice_setup_client_->RemoveObserver(this);
-}
+PhoneStatusProcessor::~PhoneStatusProcessor() = default;
 
 void PhoneStatusProcessor::ProcessReceivedNotifications(
     const RepeatedPtrField<proto::Notification>& notification_protos) {

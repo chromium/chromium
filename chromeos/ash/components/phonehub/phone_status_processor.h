@@ -8,6 +8,7 @@
 #include <google/protobuf/repeated_field.h>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
@@ -116,7 +117,6 @@ class PhoneStatusProcessor
 
   raw_ptr<DoNotDisturbController> do_not_disturb_controller_;
   raw_ptr<FeatureStatusProvider> feature_status_provider_;
-  raw_ptr<MessageReceiver> message_receiver_;
   raw_ptr<FindMyDeviceController> find_my_device_controller_;
   raw_ptr<MultideviceFeatureAccessManager> multidevice_feature_access_manager_;
   raw_ptr<ScreenLockManager> screen_lock_manager_;
@@ -132,6 +132,15 @@ class PhoneStatusProcessor
   raw_ptr<PhoneHubStructuredMetricsLogger> phone_hub_structured_metrics_logger_;
   base::TimeTicks connection_initialized_timestamp_ = base::TimeTicks();
   bool has_received_first_app_list_update_ = false;
+
+  base::ScopedObservation<MessageReceiver, MessageReceiver::Observer>
+      message_receiver_observation_{this};
+  base::ScopedObservation<FeatureStatusProvider,
+                          FeatureStatusProvider::Observer>
+      feature_status_provider_observation_{this};
+  base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
+                          multidevice_setup::MultiDeviceSetupClient::Observer>
+      multidevice_setup_client_observation_{this};
 
   base::WeakPtrFactory<PhoneStatusProcessor> weak_ptr_factory_{this};
 };

@@ -19,16 +19,12 @@ BrowserTabsModelController::BrowserTabsModelController(
     MutablePhoneModel* mutable_phone_model)
     : multidevice_setup_client_(multidevice_setup_client),
       cached_model_(/*is_tab_sync_enabled=*/false),
-      browser_tabs_model_provider_(browser_tabs_model_provider),
       mutable_phone_model_(mutable_phone_model) {
-  multidevice_setup_client_->AddObserver(this);
-  browser_tabs_model_provider_->AddObserver(this);
+  multidevice_setup_client_observation_.Observe(multidevice_setup_client_);
+  browser_tabs_model_provider_observation_.Observe(browser_tabs_model_provider);
 }
 
-BrowserTabsModelController::~BrowserTabsModelController() {
-  multidevice_setup_client_->RemoveObserver(this);
-  browser_tabs_model_provider_->RemoveObserver(this);
-}
+BrowserTabsModelController::~BrowserTabsModelController() = default;
 
 void BrowserTabsModelController::OnBrowserTabsUpdated(
     bool is_sync_enabled,

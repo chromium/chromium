@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
 #include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_client.h"
@@ -86,12 +87,30 @@ class FeatureStatusProviderImpl
   raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
   raw_ptr<secure_channel::ConnectionManager> connection_manager_;
   raw_ptr<session_manager::SessionManager> session_manager_;
-  raw_ptr<chromeos::PowerManagerClient> power_manager_client_;
   raw_ptr<PhoneHubStructuredMetricsLogger> phone_hub_structured_metrics_logger_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   std::optional<FeatureStatus> status_;
   bool is_suspended_ = false;
+
+  base::ScopedObservation<device_sync::DeviceSyncClient,
+                          device_sync::DeviceSyncClient::Observer>
+      device_sync_client_observation_{this};
+  base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
+                          multidevice_setup::MultiDeviceSetupClient::Observer>
+      multidevice_setup_client_observation_{this};
+  base::ScopedObservation<device::BluetoothAdapter,
+                          device::BluetoothAdapter::Observer>
+      bluetooth_adapter_observation_{this};
+  base::ScopedObservation<secure_channel::ConnectionManager,
+                          secure_channel::ConnectionManager::Observer>
+      connection_manager_observation_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_client_observation_{this};
 
   base::WeakPtrFactory<FeatureStatusProviderImpl> weak_ptr_factory_{this};
 };
