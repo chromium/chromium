@@ -303,26 +303,35 @@ void OcclusionCuller::UpdateDeviceScaleFactor(float device_scale_factor) {
 }
 
 void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
-  base::flat_map<AggregatedRenderPassId, gfx::Rect> backdrop_filter_rects;
-  base::flat_map<AggregatedRenderPassId, raw_ptr<cc::FilterOperations>>
-      foreground_filters;
-
+  base::flat_set<AggregatedRenderPassId> render_passes_affected_by_any_filters;
+  base::flat_set<AggregatedRenderPassId>
+      render_passes_affected_by_pixel_moving_backdrop_filters;
   for (const auto& pass : frame->render_pass_list) {
-    if (!pass->backdrop_filters.IsEmpty() &&
-        pass->backdrop_filters.HasFilterThatMovesPixels()) {
-      // For the pixel-moving backdrop filters, all effects are limited to the
-      // size of the RenderPassDrawQuad rect. So unlike pixel-moving foregroud
-      // filters, we can safely use the output rect.
+    for (auto quad = pass->quad_list.begin(); quad != pass->quad_list.end();
+         ++quad) {
+      if (auto* rpdq = quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
+        if (!rpdq->filters.IsEmpty() || !rpdq->backdrop_filters.IsEmpty()) {
+          render_passes_affected_by_any_filters.insert(rpdq->render_pass_id);
+        }
+        if (rpdq->backdrop_filters.HasFilterThatMovesPixels()) {
+          render_passes_affected_by_pixel_moving_backdrop_filters.insert(
+              rpdq->render_pass_id);
+        }
+      }
+    }
+  }
+
+  base::flat_map<AggregatedRenderPassId, gfx::Rect> backdrop_filter_rects;
+  for (const auto& pass : frame->render_pass_list) {
+    if (render_passes_affected_by_pixel_moving_backdrop_filters.contains(
+            pass->id)) {
+      // For the pixel-moving backdrop filters, all effects are limited to
+      // the size of the RenderPassDrawQuad rect. So unlike pixel-moving
+      // foreground filters, we can safely use the output rect.
       backdrop_filter_rects[pass->id] = cc::MathUtil::MapEnclosingClippedRect(
           pass->transform_to_root_target, pass->output_rect);
     }
 
-    if (!pass->filters.IsEmpty() && pass->filters.HasFilterThatMovesPixels()) {
-      foreground_filters[pass->id] = &pass->filters;
-    }
-  }
-
-  for (const auto& pass : frame->render_pass_list) {
     const SharedQuadState* last_sqs = nullptr;
     bool last_sqs_is_for_rpdq = false;
 
@@ -330,7 +339,7 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
     bool current_sqs_intersects_occlusion = false;
 
     // TODO(yiyix): Add filter effects to draw occlusion calculation
-    if (!pass->filters.IsEmpty() || !pass->backdrop_filters.IsEmpty()) {
+    if (render_passes_affected_by_any_filters.contains(pass->id)) {
       continue;
     }
 
@@ -465,14 +474,10 @@ void OcclusionCuller::RemoveOverdrawQuads(AggregatedFrame* frame) {
       }
 
       gfx::Rect visible_rect = quad->visible_rect;
-      if (rpdq) {
-        // Render pass draw quads can have pixel-moving filters that expand
-        // their visible bounds.
-        auto filter_it = foreground_filters.find(rpdq->render_pass_id);
-        if (filter_it != foreground_filters.end()) {
-          visible_rect =
-              GetExpandedRectForPixelMovingFilters(*rpdq, *filter_it->second);
-        }
+      // Render pass draw quads can have pixel-moving filters that expand
+      // their visible bounds.
+      if (rpdq && rpdq->filters.HasFilterThatMovesPixels()) {
+        visible_rect = GetExpandedRectForPixelMovingFilters(*rpdq);
       }
 
       if (occlusion_in_quad_content_space.Contains(visible_rect)) {

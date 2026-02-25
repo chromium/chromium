@@ -29,9 +29,6 @@ class VIZ_SERVICE_EXPORT OverlayStrategySingleOnTop
 
   void Propose(
       const SkM44& output_color_matrix,
-      const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
-      const OverlayProcessorInterface::FilterOperationsMap&
-          render_pass_backdrop_filters,
       const DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
@@ -41,9 +38,6 @@ class VIZ_SERVICE_EXPORT OverlayStrategySingleOnTop
 
   bool Attempt(
       const SkM44& output_color_matrix,
-      const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
-      const OverlayProcessorInterface::FilterOperationsMap&
-          render_pass_backdrop_filters,
       const DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,

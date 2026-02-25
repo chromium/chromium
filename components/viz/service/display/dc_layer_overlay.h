@@ -75,16 +75,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // pass, with positive z-orders being overlays and negative z-orders being
   // underlays. The caller must aggregate overlays from all render passes into
   // a global overlay list, taking into account the render pass's z-order.
-  // TODO(crbug.com/444264038): Delete this overload when the RPDQ refactor is
-  // finished.
-  void Process(
-      const DisplayResourceProvider* resource_provider,
-      const FilterOperationsMap& render_pass_filters,
-      const FilterOperationsMap& render_pass_backdrop_filters,
-      const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
-      bool is_page_fullscreen_mode,
-      RenderPassOverlayDataMap& render_pass_overlay_data_map);
-
   void Process(
       const DisplayResourceProvider* resource_provider,
       const SurfaceDamageRectList& surface_damage_rect_list_in_root_space,
@@ -274,7 +264,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   void CollectCandidates(
       const DisplayResourceProvider* resource_provider,
       AggregatedRenderPass* render_pass,
-      const FilterOperationsMap& render_pass_backdrop_filters,
       RenderPassOverlayData& overlay_data,
       RenderPassCurrentFrameState& render_pass_state,
       GlobalOverlayState& global_overlay_state);
@@ -293,7 +282,6 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   void PromoteCandidates(
       const DisplayResourceProvider* resource_provider,
       AggregatedRenderPass* render_pass,
-      const FilterOperationsMap& render_pass_filters,
       const RenderPassPreviousFrameState& previous_frame_state,
       bool is_page_fullscreen_mode,
       RenderPassOverlayData& overlay_data,

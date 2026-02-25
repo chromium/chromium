@@ -13,6 +13,8 @@
 #include "cc/base/features.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/render_pass_draw_quad_internal.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -111,7 +113,7 @@ gfx::Rect ClippedQuadRectangle(const DrawQuad* quad) {
 }
 
 gfx::Rect GetTargetExpandedRectForPixelMovingFilters(
-    const RenderPassDrawQuadInternal& rpdq,
+    const CompositorRenderPassDrawQuad& rpdq,
     const cc::FilterOperations& filters) {
   const SharedQuadState* shared_quad_state = rpdq.shared_quad_state;
   gfx::Rect expanded_rect = GetExpandedRectForPixelMovingFilters(rpdq, filters);
@@ -120,13 +122,30 @@ gfx::Rect GetTargetExpandedRectForPixelMovingFilters(
 }
 
 gfx::Rect GetExpandedRectForPixelMovingFilters(
-    const RenderPassDrawQuadInternal& rpdq,
+    const CompositorRenderPassDrawQuad& rpdq,
     const cc::FilterOperations& filters) {
   SkMatrix local_matrix =
       SkMatrix::Translate(rpdq.filters_origin.x(), rpdq.filters_origin.y());
   local_matrix.postScale(rpdq.filters_scale.x(), rpdq.filters_scale.y());
 
   return filters.MapRect(rpdq.visible_rect, local_matrix);
+}
+
+gfx::Rect GetTargetExpandedRectForPixelMovingFilters(
+    const AggregatedRenderPassDrawQuad& rpdq) {
+  const SharedQuadState* shared_quad_state = rpdq.shared_quad_state;
+  gfx::Rect expanded_rect = GetExpandedRectForPixelMovingFilters(rpdq);
+  return cc::MathUtil::MapEnclosingClippedRect(
+      shared_quad_state->quad_to_target_transform, expanded_rect);
+}
+
+gfx::Rect GetExpandedRectForPixelMovingFilters(
+    const AggregatedRenderPassDrawQuad& rpdq) {
+  SkMatrix local_matrix =
+      SkMatrix::Translate(rpdq.filters_origin.x(), rpdq.filters_origin.y());
+  local_matrix.postScale(rpdq.filters_scale.x(), rpdq.filters_scale.y());
+
+  return rpdq.filters.MapRect(rpdq.visible_rect, local_matrix);
 }
 
 gfx::Transform GetViewTransitionTransform(

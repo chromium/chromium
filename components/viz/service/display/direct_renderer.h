@@ -34,10 +34,6 @@
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/latency/latency_info.h"
 
-namespace cc {
-class FilterOperations;
-}  // namespace cc
-
 namespace gfx {
 class ColorSpace;
 }  // namespace gfx
@@ -264,13 +260,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
                      const gfx::Rect& render_pass_scissor,
                      bool use_render_pass_scissor);
 
-  const cc::FilterOperations* FiltersForPass(
-      AggregatedRenderPassId render_pass_id) const;
-  const cc::FilterOperations* BackdropFiltersForPass(
-      AggregatedRenderPassId render_pass_id) const;
-  const std::optional<SkPath> BackdropFilterBoundsForPass(
-      AggregatedRenderPassId render_pass_id) const;
-
   virtual void SetRenderPassBackingDrawnRect(
       const AggregatedRenderPassId& render_pass_id,
       const gfx::Rect& drawn_rect) = 0;
@@ -368,14 +357,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   base::flat_map<AggregatedRenderPassId,
                  raw_ptr<const DrawQuad, CtnExperimental>>
       render_pass_bypass_quads_;
-
-  // A map from RenderPass id to the filters used when drawing the RenderPass.
-  base::flat_map<AggregatedRenderPassId,
-                 raw_ptr<cc::FilterOperations, CtnExperimental>>
-      render_pass_filters_;
-  base::flat_map<AggregatedRenderPassId,
-                 raw_ptr<cc::FilterOperations, CtnExperimental>>
-      render_pass_backdrop_filters_;
   base::flat_map<AggregatedRenderPassId, std::optional<SkPath>>
       render_pass_backdrop_filter_bounds_;
   base::flat_map<AggregatedRenderPassId, gfx::Rect>

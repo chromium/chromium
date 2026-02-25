@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
+#include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "components/viz/service/display/display_resource_provider.h"
@@ -64,9 +65,6 @@ constexpr size_t kTooManyQuads = 64;
 
 bool OverlayProcessorDelegated::AttemptWithStrategies(
     const SkM44& output_color_matrix,
-    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
-    const OverlayProcessorInterface::FilterOperationsMap&
-        render_pass_backdrop_filters,
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
@@ -101,11 +99,6 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
     return false;
   }
 
-  if (!render_pass_backdrop_filters.empty()) {
-    delegated_status_ = DelegationStatus::kCompositedBackdropFilter;
-    return false;
-  }
-
   OverlayCandidateFactory::OverlayContext context;
   context.is_delegated_context = true;
   context.supports_clip_rect = false;
@@ -117,8 +110,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
-      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
-      &render_pass_filters, context);
+      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane), context);
 
   unassigned_damage_ = gfx::RectF(candidate_factory.GetUnassignedDamage());
 
@@ -183,9 +175,6 @@ void OverlayProcessorDelegated::ProcessForOverlays(
     DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_passes,
     const SkM44& output_color_matrix,
-    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
-    const OverlayProcessorInterface::FilterOperationsMap&
-        render_pass_backdrop_filters,
     SurfaceDamageRectList surface_damage_rect_list,
     const PrimaryPlaneParams& primary_plane_params,
     CandidateList* candidates,
@@ -199,10 +188,9 @@ void OverlayProcessorDelegated::ProcessForOverlays(
   std::optional<OverlayCandidate> primary_plane =
       CreatePrimaryPlane(primary_plane_params);
 
-  success = AttemptWithStrategies(
-      output_color_matrix, render_pass_filters, render_pass_backdrop_filters,
-      resource_provider, render_passes, &surface_damage_rect_list,
-      primary_plane, candidates, content_bounds);
+  success = AttemptWithStrategies(output_color_matrix, resource_provider,
+                                  render_passes, &surface_damage_rect_list,
+                                  primary_plane, candidates, content_bounds);
 
   DCHECK(candidates->empty() || success);
 

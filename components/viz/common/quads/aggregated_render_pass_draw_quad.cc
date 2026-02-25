@@ -4,6 +4,8 @@
 
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 
+#include <utility>
+
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
@@ -27,6 +29,9 @@ bool AggregatedRenderPassDrawQuad::Equals(
          // RenderPassDrawQuadInternal
          mask_uv_rect == other.mask_uv_rect &&
          mask_texture_size == other.mask_texture_size &&
+         filters == other.filters &&
+         backdrop_filters == other.backdrop_filters &&
+         backdrop_filter_bounds == other.backdrop_filter_bounds &&
          filters_scale == other.filters_scale &&
          filters_origin == other.filters_origin &&
          tex_coord_rect == other.tex_coord_rect &&
@@ -57,10 +62,29 @@ void AggregatedRenderPassDrawQuad::SetNew(
   filters_scale = gfx::Vector2dF(1.0f, 1.0f);
   filters_origin = gfx::PointF();
   float backdrop_filter_quality = 1.0f;
+  cc::FilterOperations pass_filters = cc::FilterOperations();
+  cc::FilterOperations pass_backdrop_filters = cc::FilterOperations();
+  std::optional<SkPath> pass_backdrop_filter_bounds;
   SetAll(shared_quad_state, rect, visible_rect, needs_blending, render_pass,
          mask_resource_id, mask_uv_rect, mask_texture_size, filters_scale,
          filters_origin, tex_coord_rect, force_anti_aliasing_off,
-         backdrop_filter_quality, intersects_damage_under);
+         backdrop_filter_quality, intersects_damage_under, pass_filters,
+         pass_backdrop_filters, pass_backdrop_filter_bounds);
+}
+
+void AggregatedRenderPassDrawQuad::SetFilters(
+    cc::FilterOperations pass_filters,
+    cc::FilterOperations pass_backdrop_filters,
+    std::optional<SkPath> pass_backdrop_filter_bounds,
+    const gfx::Vector2dF& filters_scale,
+    const gfx::PointF& filters_origin,
+    const float backdrop_filter_quality) {
+  this->filters = std::move(pass_filters);
+  this->backdrop_filters = std::move(pass_backdrop_filters);
+  this->backdrop_filter_bounds = std::move(pass_backdrop_filter_bounds);
+  this->filters_scale = filters_scale;
+  this->filters_origin = filters_origin;
+  this->backdrop_filter_quality = backdrop_filter_quality;
 }
 
 void AggregatedRenderPassDrawQuad::SetAll(
@@ -82,6 +106,9 @@ void AggregatedRenderPassDrawQuad::SetAll(
   force_anti_aliasing_off = other.force_anti_aliasing_off;
   backdrop_filter_quality = other.backdrop_filter_quality;
   intersects_damage_under = other.intersects_damage_under;
+  filters = other.filters;
+  backdrop_filters = other.backdrop_filters;
+  backdrop_filter_bounds = other.backdrop_filter_bounds;
 }
 
 void AggregatedRenderPassDrawQuad::SetAll(
@@ -98,7 +125,10 @@ void AggregatedRenderPassDrawQuad::SetAll(
     const gfx::RectF& tex_coord_rect,
     bool force_anti_aliasing_off,
     float backdrop_filter_quality,
-    bool intersects_damage_under) {
+    bool intersects_damage_under,
+    cc::FilterOperations pass_filters,
+    cc::FilterOperations pass_backdrop_filters,
+    std::optional<SkPath> pass_backdrop_filter_bounds) {
   DCHECK(render_pass);
 
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kAggregatedRenderPass,
@@ -113,6 +143,9 @@ void AggregatedRenderPassDrawQuad::SetAll(
   this->force_anti_aliasing_off = force_anti_aliasing_off;
   this->backdrop_filter_quality = backdrop_filter_quality;
   this->intersects_damage_under = intersects_damage_under;
+  this->filters = std::move(pass_filters);
+  this->backdrop_filters = std::move(pass_backdrop_filters);
+  this->backdrop_filter_bounds = std::move(pass_backdrop_filter_bounds);
 }
 
 const AggregatedRenderPassDrawQuad* AggregatedRenderPassDrawQuad::MaterialCast(
@@ -128,6 +161,19 @@ void AggregatedRenderPassDrawQuad::ExtendValue(
   TracedValue::SetIDRef(
       TracedValue::Id(reinterpret_cast<void*>(render_pass_id.value())), value,
       "render_pass_id");
+
+  value->BeginArray("filters");
+  filters.AsValueInto(value);
+  value->EndArray();
+
+  value->BeginArray("backdrop_filters");
+  backdrop_filters.AsValueInto(value);
+  value->EndArray();
+
+  if (backdrop_filter_bounds.has_value()) {
+    cc::MathUtil::AddToTracedValue("backdrop_filter_bounds",
+                                   *backdrop_filter_bounds, value);
+  }
   RenderPassDrawQuadInternal::ExtendValue(value);
 }
 
