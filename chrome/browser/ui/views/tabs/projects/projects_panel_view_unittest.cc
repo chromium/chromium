@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,6 +48,15 @@ class ProjectsPanelViewTest : public ChromeViewsTestBase {
         profile(), base::BindRepeating(
                        &ProjectsPanelViewTest::CreateMockTabGroupSyncService,
                        base::Unretained(this)));
+
+    contextual_tasks::ContextualTasksServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            profile(),
+            base::BindRepeating(
+                [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+                  return std::make_unique<testing::NiceMock<
+                      contextual_tasks::MockContextualTasksService>>();
+                }));
 
     // Create a real State Controller.
     EXPECT_CALL(mock_browser_window_interface_, GetUnownedUserDataHost())

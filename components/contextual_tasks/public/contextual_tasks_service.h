@@ -64,7 +64,7 @@ class ContextualTasksService : public KeyedService {
 
     // The service is initialized and ready to take calls and return stored
     // tasks and threads.
-    virtual void OnInitialized() {}
+    virtual void OnContextualTasksServiceInitialized() {}
 
     // A new task was added at the given |source|.
     virtual void OnTaskAdded(const ContextualTask& task, TriggerSource source) {
