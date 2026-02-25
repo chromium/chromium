@@ -82,6 +82,7 @@ class EcheTrayStreamStatusObserverTest : public AshTestBase {
     apps_launch_info_provider_.reset();
     stream_status_change_handler_.reset();
     connection_status_handler_.reset();
+    eche_tray_ = nullptr;
     AshTestBase::TearDown();
   }
 
@@ -99,7 +100,7 @@ class EcheTrayStreamStatusObserverTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<EcheTray, DanglingUntriaged> eche_tray_ = nullptr;
+  raw_ptr<EcheTray> eche_tray_ = nullptr;
   std::unique_ptr<EcheConnectionStatusHandler> connection_status_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
   std::unique_ptr<EcheStreamStatusChangeHandler> stream_status_change_handler_;
