@@ -322,6 +322,7 @@ static_library("ui") {
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:impl",
     "//chrome/browser/plus_addresses",
+    "//chrome/browser/predictors",
     "//chrome/browser/prefs",
     "//chrome/browser/prefs:impl",
     "//chrome/browser/preloading",

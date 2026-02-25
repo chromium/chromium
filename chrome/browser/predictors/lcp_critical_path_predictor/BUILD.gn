@@ -1,0 +1,82 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+proto_library("lcp_critical_path_predictor_proto") {
+  sources = [ "lcp_critical_path_predictor.proto" ]
+}
+
+source_set("headers") {
+  sources = [
+    "lcp_critical_path_predictor_util.h",
+    "prewarm_http_disk_cache_manager.h",
+  ]
+  public_deps = [
+    ":lcp_critical_path_predictor_proto",
+    "//chrome/browser/predictors:config",
+    "//chrome/browser/profiles:profile",
+    "//components/sqlite_proto",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "lcp_critical_path_predictor_host.cc",
+    "lcp_critical_path_predictor_host.h",
+    "lcp_critical_path_predictor_util.cc",
+    "prewarm_http_disk_cache_manager.cc",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":headers",
+    "//chrome/browser/predictors",
+    "//net",
+    "//third_party/blink/public/common:headers",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "lcp_critical_path_predictor_test_util.cc",
+    "lcp_critical_path_predictor_test_util.h",
+  ]
+  public_deps = [
+    ":lcp_critical_path_predictor_proto",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "lcp_critical_path_predictor_util_unittest.cc",
+    "prewarm_http_disk_cache_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":impl",
+    ":test_support",
+    "//base/test:test_support",
+    "//chrome/browser/predictors",
+    "//chrome/browser/predictors:test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+  ]
+}

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 
+#include <stdint.h>
+
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,8 +21,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-
-using testing::StrictMock;
 
 namespace predictors {
 
@@ -1471,12 +1471,24 @@ class LcppDataMapTest : public testing::Test {
   std::unique_ptr<LcppDataMap> lcpp_data_map_;
 };
 
-class LcppDataMapFeatures
-    : public LcppDataMapTest,
-      public testing::WithParamInterface<std::vector<base::test::FeatureRef>> {
+constexpr uint8_t kLcppFeatureSetDefault = 0;
+constexpr uint8_t kLcppFeatureSetInitiatorOrigin = 1 << 0;
+constexpr uint8_t kLcppFeatureSetMultipleKey = 1 << 1;
+constexpr uint8_t kLcppFeatureSetInitiatorOriginAndMultipleKey =
+    kLcppFeatureSetInitiatorOrigin | kLcppFeatureSetMultipleKey;
+
+class LcppDataMapFeatures : public LcppDataMapTest,
+                            public testing::WithParamInterface<uint8_t> {
  public:
   LcppDataMapFeatures() {
-    scoped_feature_list_.InitWithFeatures(GetParam(),
+    std::vector<base::test::FeatureRef> enabled_features;
+    if (GetParam() & kLcppFeatureSetInitiatorOrigin) {
+      enabled_features.push_back(blink::features::kLCPPInitiatorOrigin);
+    }
+    if (GetParam() & kLcppFeatureSetMultipleKey) {
+      enabled_features.push_back(blink::features::kLCPPMultipleKey);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features,
                                           /*disabled_features=*/{});
     constexpr char kSlidingWindowSize[] = "5";
     constexpr char kMaxHistogramBuckets[] = "2";
@@ -1535,36 +1547,32 @@ class LcppDataMapFeatures
       scoped_feature_list_for_sliding_window_and_buckets_;
 };
 
-auto& kLCPPInitiatorOrigin = blink::features::kLCPPInitiatorOrigin;
-auto& kLCPPMultipleKey = blink::features::kLCPPMultipleKey;
-const std::vector<base::test::FeatureRef> featureset1[] = {
-    {},
-    {kLCPPInitiatorOrigin},
-    {kLCPPMultipleKey},
-    {kLCPPInitiatorOrigin, kLCPPMultipleKey}};
 inline std::string CustomParamNameFunction(
     const testing::TestParamInfo<LcppDataMapFeatures::ParamType>& info) {
-  const auto& features = info.param;
-  if (features.empty()) {
+  const uint8_t feature_set = info.param;
+  if (feature_set == kLcppFeatureSetDefault) {
     return std::string("Default");
   }
   std::string name;
-  for (size_t i = 0; i < features.size(); i++) {
-    if (features[i] == kLCPPInitiatorOrigin) {
-      name += "InitiatorOrigin";
-    } else {
-      name += "MultipleKey";
-    }
-    if (i < features.size() - 1) {
+  if (feature_set & kLcppFeatureSetInitiatorOrigin) {
+    name += "InitiatorOrigin";
+  }
+  if (feature_set & kLcppFeatureSetMultipleKey) {
+    if (!name.empty()) {
       name += "_";
     }
+    name += "MultipleKey";
   }
   return name;
 }
-INSTANTIATE_TEST_SUITE_P(LcppFeatureSet1,
-                         LcppDataMapFeatures,
-                         testing::ValuesIn(featureset1),
-                         &CustomParamNameFunction);
+INSTANTIATE_TEST_SUITE_P(
+    LcppFeatureSet1,
+    LcppDataMapFeatures,
+    testing::Values(kLcppFeatureSetDefault,
+                    kLcppFeatureSetInitiatorOrigin,
+                    kLcppFeatureSetMultipleKey,
+                    kLcppFeatureSetInitiatorOriginAndMultipleKey),
+    &CustomParamNameFunction);
 
 TEST_P(LcppDataMapFeatures, Base) {
   LoadingPredictorConfig config;
@@ -1894,12 +1902,10 @@ TEST_P(LcppDataMapFeatures, LcppMaxHosts) {
 
 class LcppDataMapFeatures2 : public LcppDataMapFeatures {};
 
-const std::vector<base::test::FeatureRef> featureset2[] = {
-    {},
-    {kLCPPInitiatorOrigin}};
 INSTANTIATE_TEST_SUITE_P(LcppFeatureSet2,
                          LcppDataMapFeatures2,
-                         testing::ValuesIn(featureset2),
+                         testing::Values(kLcppFeatureSetDefault,
+                                         kLcppFeatureSetInitiatorOrigin),
                          &CustomParamNameFunction);
 
 TEST_P(LcppDataMapFeatures2, LcppLearnURL) {
@@ -1953,7 +1959,8 @@ class LcppMultipleKeyTest
          {{kLcppMultipleKeyType.name,
            kLcppMultipleKeyType.GetName(std::get<1>(GetParam()))}}}};
     if (std::get<0>(GetParam())) {
-      base::test::FeatureRefAndParams params = {kLCPPInitiatorOrigin, {}};
+      base::test::FeatureRefAndParams params = {
+          blink::features::kLCPPInitiatorOrigin, {}};
       enabled_features.push_back(params);
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -2073,7 +2080,8 @@ class LcppMultipleKeyTestDefault : public LcppDataMapTest,
            kLcppMultipleKeyType.GetName(
                blink::features::LcppMultipleKeyTypes::kDefault)}}}};
     if (GetParam()) {
-      base::test::FeatureRefAndParams params = {kLCPPInitiatorOrigin, {}};
+      base::test::FeatureRefAndParams params = {
+          blink::features::kLCPPInitiatorOrigin, {}};
       enabled_features.push_back(params);
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -2145,7 +2153,8 @@ class LcppMultipleKeyTestKeyStat : public LcppDataMapTest,
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         ScopedLcppKeyStatFeature::GetParam()};
     if (GetParam()) {
-      base::test::FeatureRefAndParams params = {kLCPPInitiatorOrigin, {}};
+      base::test::FeatureRefAndParams params = {
+          blink::features::kLCPPInitiatorOrigin, {}};
       enabled_features.push_back(params);
     }
     scoped_feature_list_.InitWithFeaturesAndParameters(

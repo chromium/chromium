@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/predictors/loading_stats_collector.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"

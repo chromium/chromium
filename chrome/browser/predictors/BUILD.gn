@@ -1,0 +1,214 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+proto_library("resource_prefetch_predictor_proto") {
+  sources = [ "resource_prefetch_predictor.proto" ]
+}
+
+source_set("config") {
+  sources = [
+    "loading_predictor_config.cc",
+    "loading_predictor_config.h",
+    "predictors_features.cc",
+    "predictors_features.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//chrome/browser/preloading:prefs",
+    "//chrome/browser/profiles:profile",
+    "//third_party/blink/public/common:headers",
+  ]
+}
+
+source_set("predictors") {
+  sources = [
+    "autocomplete_action_predictor.h",
+    "autocomplete_action_predictor_factory.h",
+    "autocomplete_action_predictor_table.h",
+    "loading_data_collector.h",
+    "loading_predictor.h",
+    "loading_predictor_factory.h",
+    "loading_predictor_tab_helper.h",
+    "loading_stats_collector.h",
+    "network_hints_handler_impl.h",
+    "perform_network_context_prefetch.h",
+    "predictor_database.h",
+    "predictor_database_factory.h",
+    "predictors_enums.h",
+    "predictors_switches.h",
+    "predictors_traffic_annotations.h",
+    "prefetch_manager.h",
+    "prefetch_traffic_annotation.h",
+    "resource_prefetch_predictor.h",
+    "resource_prefetch_predictor_tables.h",
+  ]
+  public_deps = [
+    ":resource_prefetch_predictor_proto",
+    "lcp_critical_path_predictor:headers",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/history/core/browser",
+    "//components/keyed_service/core",
+    "//components/network_hints/common:mojo_bindings",
+    "//components/optimization_guide/core",
+    "//components/sqlite_proto",
+    "//content/public/browser",
+    "//net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/network/public/mojom",
+    "//third_party/blink/public/common:headers",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "autocomplete_action_predictor.cc",
+    "autocomplete_action_predictor_factory.cc",
+    "autocomplete_action_predictor_table.cc",
+    "loading_data_collector.cc",
+    "loading_predictor.cc",
+    "loading_predictor_factory.cc",
+    "loading_predictor_tab_helper.cc",
+    "loading_stats_collector.cc",
+    "network_hints_handler_impl.cc",
+    "perform_network_context_prefetch.cc",
+    "predictor_database.cc",
+    "predictor_database_factory.cc",
+    "predictors_switches.cc",
+    "prefetch_manager.cc",
+    "resource_prefetch_predictor.cc",
+    "resource_prefetch_predictor_tables.cc",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":config",
+    ":predictors",
+    "lcp_critical_path_predictor:impl",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/history",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/preloading",
+    "//chrome/browser/preloading:prefs",
+    "//chrome/browser/preloading/prefetch/no_state_prefetch",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/embedder_support",
+    "//components/embedder_support:user_agent",
+    "//components/google/core/common",
+    "//components/language/core/browser",
+    "//components/no_state_prefetch/browser",
+    "//components/omnibox/browser",
+    "//components/omnibox/common",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs",
+    "//components/variations/net",
+    "//extensions/buildflags",
+    "//services/network/public/cpp",
+    "//sql",
+    "//third_party/blink/public/common:headers",
+    "//ui/base",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "loading_test_util.cc",
+    "loading_test_util.h",
+  ]
+  public_deps = [
+    ":predictors",
+    "lcp_critical_path_predictor:test_support",
+    "//components/sessions:session_id",
+  ]
+  deps = [
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "autocomplete_action_predictor_table_unittest.cc",
+    "autocomplete_action_predictor_unittest.cc",
+    "loading_data_collector_unittest.cc",
+    "loading_predictor_config_unittest.cc",
+    "loading_predictor_tab_helper_unittest.cc",
+    "loading_predictor_unittest.cc",
+    "loading_stats_collector_unittest.cc",
+    "perform_network_context_prefetch_unittest.cc",
+    "prefetch_manager_unittest.cc",
+    "resource_prefetch_predictor_tables_unittest.cc",
+    "resource_prefetch_predictor_unittest.cc",
+  ]
+
+  deps = [
+    ":impl",
+    ":predictors",
+    ":test_support",
+    "//base/test:test_support",
+    "//chrome/browser/history",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/preloading",
+    "//chrome/browser/preloading:prefs",
+    "//chrome/browser/sessions",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/no_state_prefetch/browser",
+    "//components/omnibox/browser",
+    "//components/omnibox/common",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/sessions",
+    "//components/ukm:test_support",
+    "//components/variations",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "loading_predictor_browsertest.cc" ]
+    deps = [
+      ":predictors",
+      ":test_support",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/optimization_guide",
+      "//chrome/browser/ui",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/no_state_prefetch/browser",
+      "//components/optimization_guide/core",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/page_load_metrics/browser:test_support",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+      "//third_party/blink/public/common:headers",
+    ]
+  }
+}

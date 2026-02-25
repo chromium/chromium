@@ -68,6 +68,7 @@ static_library("flags_android_impl") {
     "//chrome/browser/contextmenu",
     "//chrome/browser/glic/public:features",
     "//chrome/browser/notifications/chime/android",
+    "//chrome/browser/predictors",
     "//chrome/browser/task_manager/common",
     "//chrome/browser/ui:ui_features",
     "//chrome/common:chrome_features",

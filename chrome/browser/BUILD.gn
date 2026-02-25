@@ -1021,51 +1021,6 @@ static_library("browser") {
     "policy/webusb_allow_devices_for_urls_policy_handler.h",
     "power_bookmarks/power_bookmark_service_factory.cc",
     "power_bookmarks/power_bookmark_service_factory.h",
-    "predictors/autocomplete_action_predictor.cc",
-    "predictors/autocomplete_action_predictor.h",
-    "predictors/autocomplete_action_predictor_factory.cc",
-    "predictors/autocomplete_action_predictor_factory.h",
-    "predictors/autocomplete_action_predictor_table.cc",
-    "predictors/autocomplete_action_predictor_table.h",
-    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_host.cc",
-    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_host.h",
-    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.cc",
-    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h",
-    "predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager.cc",
-    "predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager.h",
-    "predictors/loading_data_collector.cc",
-    "predictors/loading_data_collector.h",
-    "predictors/loading_predictor.cc",
-    "predictors/loading_predictor.h",
-    "predictors/loading_predictor_config.cc",
-    "predictors/loading_predictor_config.h",
-    "predictors/loading_predictor_factory.cc",
-    "predictors/loading_predictor_factory.h",
-    "predictors/loading_predictor_tab_helper.cc",
-    "predictors/loading_predictor_tab_helper.h",
-    "predictors/loading_stats_collector.cc",
-    "predictors/loading_stats_collector.h",
-    "predictors/network_hints_handler_impl.cc",
-    "predictors/network_hints_handler_impl.h",
-    "predictors/perform_network_context_prefetch.cc",
-    "predictors/perform_network_context_prefetch.h",
-    "predictors/predictor_database.cc",
-    "predictors/predictor_database.h",
-    "predictors/predictor_database_factory.cc",
-    "predictors/predictor_database_factory.h",
-    "predictors/predictors_enums.h",
-    "predictors/predictors_features.cc",
-    "predictors/predictors_features.h",
-    "predictors/predictors_switches.cc",
-    "predictors/predictors_switches.h",
-    "predictors/predictors_traffic_annotations.h",
-    "predictors/prefetch_manager.cc",
-    "predictors/prefetch_manager.h",
-    "predictors/prefetch_traffic_annotation.h",
-    "predictors/resource_prefetch_predictor.cc",
-    "predictors/resource_prefetch_predictor.h",
-    "predictors/resource_prefetch_predictor_tables.cc",
-    "predictors/resource_prefetch_predictor_tables.h",
     "preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline.cc",
     "preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline.h",
     "preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.cc",
@@ -1572,8 +1527,18 @@ static_library("browser") {
     # - c/b/tab_contents/
     "//chrome/browser/ui/login:impl",
 
-    # TODO(crbug.com/486498788): Remove when c/b/predictors get modularized.
-    "//chrome/browser/preloading/prefetch/no_state_prefetch:impl",
+    # TODO(crbug.com/408146612): Remove this circular dependency when the
+    # following headers get modularized:
+    # - c/b/browser_features.h
+    # - c/b/preloading/prerender/prerender_manager.h
+    # - c/b/preloading/prerender/prerender_utils.h
+    "//chrome/browser/predictors:impl",
+
+    # TODO(crbug.com/487357837): Remove this circular dependency when the
+    # following headers get modularized:
+    # - c/b/after_startup_task_utils.h
+    # - c/b/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h
+    "//chrome/browser/predictors/lcp_critical_path_predictor:impl",
 
     # TODO(crbug.com/): This is needed because tab_contents code
     # includes c/b/enterprise/connectors/analysis/content_analysis_delegate.h
@@ -1686,9 +1651,7 @@ static_library("browser") {
     ":flags",
     ":font_pref",
     ":global_features",
-    ":lcp_critical_path_predictor_proto",
     ":main_extra_parts",
-    ":resource_prefetch_predictor_proto",
     ":shell_integration",
     ":unexpire_flags",
     "//base",
@@ -1836,6 +1799,9 @@ static_library("browser") {
     "//chrome/browser/policy:path_parser",
     "//chrome/browser/policy:policy_util",
     "//chrome/browser/policy/messaging_layer/storage_selector",
+    "//chrome/browser/predictors",
+    "//chrome/browser/predictors:impl",
+    "//chrome/browser/predictors/lcp_critical_path_predictor:impl",
     "//chrome/browser/prefetch",
     "//chrome/browser/prefs",
     "//chrome/browser/prefs:impl",
@@ -3584,7 +3550,6 @@ static_library("browser") {
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the following
       # headers get componentized:
-      # - c/b/predictors/predictors_features.h
       # - c/b/browser_features.h
       "//chrome/browser/flags:flags_android_impl",
 
@@ -8533,8 +8498,6 @@ static_library("browser_public_dependencies") {
 static_library("browser_generated_files") {
   public_deps = [
     ":buildflags",
-    "//chrome/browser:lcp_critical_path_predictor_proto",
-    "//chrome/browser:resource_prefetch_predictor_proto",
     "//chrome/browser/media:media_engagement_preload_proto",
     "//chrome/browser/media:mojo_bindings",
     "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
@@ -8542,6 +8505,8 @@ static_library("browser_generated_files") {
     "//chrome/browser/net:probe_message_proto",
     "//chrome/browser/page_info:page_info_buildflags",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/predictors:resource_prefetch_predictor_proto",
+    "//chrome/browser/predictors/lcp_critical_path_predictor:lcp_critical_path_predictor_proto",
     "//chrome/browser/push_messaging:budget_proto",
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/resource_coordinator:mojo_bindings",
@@ -8818,16 +8783,6 @@ if (is_win) {
   }
 }
 
-proto_library("resource_prefetch_predictor_proto") {
-  sources = [ "predictors/resource_prefetch_predictor.proto" ]
-}
-
-proto_library("lcp_critical_path_predictor_proto") {
-  sources = [
-    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor.proto",
-  ]
-}
-
 if (enable_bound_session_credentials) {
   proto_library("bound_session_credentials_proto") {
     sources = [
@@ -8978,10 +8933,6 @@ static_library("test_support") {
     "plugins/plugin_test_utils.h",
     "policy/messaging_layer/upload/fake_upload_client.cc",
     "policy/messaging_layer/upload/fake_upload_client.h",
-    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_test_util.cc",
-    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_test_util.h",
-    "predictors/loading_test_util.cc",
-    "predictors/loading_test_util.h",
     "resource_coordinator/tab_load_tracker_test_support.cc",
     "resource_coordinator/tab_load_tracker_test_support.h",
     "safe_browsing/notification_content_detection/mock_notification_content_detection_service.cc",
@@ -9007,6 +8958,7 @@ static_library("test_support") {
     "//chrome/browser/autofill:test_support",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/notifications",
+    "//chrome/browser/predictors:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resource_coordinator",
     "//chrome/browser/safe_browsing:test_support",
@@ -9016,7 +8968,6 @@ static_library("test_support") {
   deps = [
     ":browser_process",
     ":global_features",
-    ":lcp_critical_path_predictor_proto",
     "//build:chromeos_buildflags",
     "//chrome/app/theme:theme_resources",
     "//chrome/browser/history",

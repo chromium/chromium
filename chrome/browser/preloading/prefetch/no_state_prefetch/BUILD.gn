@@ -40,6 +40,7 @@ source_set("impl") {
     "//base",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/history",
+    "//chrome/browser/predictors",
     "//chrome/browser/preloading:prefs",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",

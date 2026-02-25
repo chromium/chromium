@@ -26,6 +26,7 @@ source_set("impl") {
   deps = [
     ":navigation_predictor",
     "//chrome/browser/battery",
+    "//chrome/browser/predictors",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//content/public/browser",
