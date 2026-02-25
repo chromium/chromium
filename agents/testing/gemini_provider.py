@@ -35,6 +35,8 @@ DEFAULT_EXTENSIONS = [
 ]
 DEFAULT_SKILLS = []
 
+MODEL = 'gemini-3.1-pro-preview'
+
 
 @dataclasses.dataclass
 class GeminiCliArguments:
@@ -337,7 +339,7 @@ def _get_gemini_cli_arguments(
         command.append(node_bin)
     gemini_cli_bin = provider_vars.get('gemini_cli_bin',
                                        gemini_helpers.get_gemini_executable())
-    command.extend([gemini_cli_bin, '-y', '--model', 'gemini-2.5-pro'])
+    command.extend([gemini_cli_bin, '-y', '--model', MODEL])
 
     sandbox_flags = []
     if provider_vars.get('sandbox', False):
