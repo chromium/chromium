@@ -58,7 +58,7 @@ class WebUIToolbarUI : public TopChromeWebUIController {
   // 1. Decide which resources to expose, e.g. only expose "chrome://theme"
   //    resources to trusted "chrome://" origins.
   // 2. Generate correct CORS headers. Since resources added here often belong
-  //    to a different origin than the page loading the, they need a CORS header
+  //    to a different origin than the page loading them, they need a CORS header
   //    that explicitly allow `current_origin`.
   void PopulateLocalResourceLoaderConfig(
       blink::mojom::LocalResourceLoaderConfig* config,
