@@ -186,8 +186,16 @@ void JSExecutionComplete(base::WeakPtr<web::WebState> web_state,
                          id value,
                          NSError* error) {
   if (error) {
-    LogScriptResultError(web_state, api, script, security_origin, is_main_frame,
-                         error);
+    bool unsupportedResultError =
+        [error.domain isEqualToString:WKErrorDomain] &&
+        error.code == WKErrorJavaScriptResultTypeIsUnsupported;
+    // `JSExecutionComplete` is only called if the caller is NOT interested in
+    // the returned value from JS so we can safely ignore unsupported type
+    // errors and do not need to report them.
+    if (!unsupportedResultError) {
+      LogScriptResultError(web_state, api, script, security_origin,
+                           is_main_frame, error);
+    }
   }
 }
 
