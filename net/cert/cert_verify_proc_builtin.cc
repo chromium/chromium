@@ -705,8 +705,32 @@ class PathBuilderDelegateImpl : public bssl::SimplePathBuilderDelegate {
     // confusing when there are multiple ChromeRootCertConstraints objects,
     // would need to clearly distinguish which set of constraints had errors.)
 
-    /// TODO(crbug.com/452986180): should there be a different interpretaction
-    /// of Sct constraints for MTCs?
+    if (constraint.validity_starts_not_after.has_value()) {
+      bssl::der::GeneralizedTime starts_not_after_generalizedtime;
+      if (!EncodeTimeAsGeneralizedTime(
+              constraint.validity_starts_not_after.value(),
+              &starts_not_after_generalizedtime)) {
+        // This should never happen, so just failing is fine.
+        return false;
+      }
+      if (path->certs.front()->tbs().validity_not_before >
+          starts_not_after_generalizedtime) {
+        return false;
+      }
+    }
+    if (constraint.validity_starts_after.has_value()) {
+      bssl::der::GeneralizedTime starts_after_generalizedtime;
+      if (!EncodeTimeAsGeneralizedTime(constraint.validity_starts_after.value(),
+                                       &starts_after_generalizedtime)) {
+        // This should never happen, so just failing is fine.
+        return false;
+      }
+      if (path->certs.front()->tbs().validity_not_before <=
+          starts_after_generalizedtime) {
+        return false;
+      }
+    }
+
     if (ct_policy_enforcer_->IsCtEnabled()) {
       if (constraint.sct_not_after.has_value()) {
         bool found_matching_sct = false;

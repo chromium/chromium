@@ -39,14 +39,18 @@ ChromeRootCertConstraints::ChromeRootCertConstraints(
     std::optional<base::Version> max_version_exclusive,
     std::vector<std::string> permitted_dns_names,
     std::optional<uint64_t> index_not_after,
-    std::optional<uint64_t> index_after)
+    std::optional<uint64_t> index_after,
+    std::optional<base::Time> validity_starts_not_after,
+    std::optional<base::Time> validity_starts_after)
     : sct_not_after(sct_not_after),
       sct_all_after(sct_all_after),
       min_version(std::move(min_version)),
       max_version_exclusive(std::move(max_version_exclusive)),
       permitted_dns_names(std::move(permitted_dns_names)),
       index_not_after(index_not_after),
-      index_after(index_after) {}
+      index_after(index_after),
+      validity_starts_not_after(validity_starts_not_after),
+      validity_starts_after(validity_starts_after) {}
 
 ChromeRootCertConstraints::ChromeRootCertConstraints(
     const StaticChromeRootCertConstraints& constraints)
@@ -55,7 +59,9 @@ ChromeRootCertConstraints::ChromeRootCertConstraints(
       min_version(constraints.min_version),
       max_version_exclusive(constraints.max_version_exclusive),
       index_not_after(constraints.index_not_after),
-      index_after(constraints.index_after) {
+      index_after(constraints.index_after),
+      validity_starts_not_after(constraints.validity_starts_not_after),
+      validity_starts_after(constraints.validity_starts_after) {
   for (std::string_view name : constraints.permitted_dns_names) {
     permitted_dns_names.emplace_back(name);
   }
@@ -168,7 +174,19 @@ std::optional<std::vector<ChromeRootCertConstraints>> CreateConstraints(
             ? std::optional(constraint.index_not_after())
             : std::nullopt,
         constraint.has_index_after() ? std::optional(constraint.index_after())
-                                     : std::nullopt);
+                                     : std::nullopt,
+        constraint.has_validity_starts_not_after_sec()
+            ? std::optional(
+                  base::Time::UnixEpoch() +
+                  base::Seconds(constraint.validity_starts_not_after_sec()))
+            : std::nullopt,
+        constraint.has_validity_starts_after_sec()
+            ? std::optional(
+                  base::Time::UnixEpoch() +
+                  base::Seconds(constraint.validity_starts_after_sec()))
+            : std::nullopt
+
+    );
   }
 
   return constraints;

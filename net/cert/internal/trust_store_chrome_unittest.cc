@@ -348,6 +348,20 @@ TEST(TrustStoreChromeTestNoFixture, MTCConstraints) {
   EXPECT_EQ(constraints[0].index_not_after, 1234U);
   EXPECT_EQ(constraints[0].index_after, 987U);
 
+  ASSERT_TRUE(constraints[0].validity_starts_not_after.has_value());
+  EXPECT_EQ(constraints[0]
+                    .validity_starts_not_after.value()
+                    .InMillisecondsSinceUnixEpoch() /
+                1000,
+            56781);
+
+  ASSERT_TRUE(constraints[0].validity_starts_after.has_value());
+  EXPECT_EQ(constraints[0]
+                    .validity_starts_after.value()
+                    .InMillisecondsSinceUnixEpoch() /
+                1000,
+            1236890);
+
   EXPECT_THAT(constraints[1].permitted_dns_names,
               testing::ElementsAre("mtc.example.com"));
 
@@ -398,6 +412,8 @@ TEST(TrustStoreChromeTestNoFixture, MTCConstraintsFromProto) {
   proto_constraints->add_permitted_dns_names("name2.org");
   proto_constraints->set_index_not_after(34567);
   proto_constraints->set_index_after(34566);
+  proto_constraints->set_validity_starts_not_after_sec(43456);
+  proto_constraints->set_validity_starts_after_sec(43455);
 
   std::optional<ChromeRootStoreData> root_store_data =
       ChromeRootStoreData::CreateFromRootStoreProto(root_store);
@@ -450,6 +466,20 @@ TEST(TrustStoreChromeTestNoFixture, MTCConstraintsFromProto) {
 
   EXPECT_EQ(constraints[1].index_not_after, 34567U);
   EXPECT_EQ(constraints[1].index_after, 34566U);
+
+  ASSERT_TRUE(constraints[1].validity_starts_not_after.has_value());
+  EXPECT_EQ(constraints[1]
+                    .validity_starts_not_after.value()
+                    .InMillisecondsSinceUnixEpoch() /
+                1000,
+            43456);
+
+  ASSERT_TRUE(constraints[1].validity_starts_after.has_value());
+  EXPECT_EQ(constraints[1]
+                    .validity_starts_after.value()
+                    .InMillisecondsSinceUnixEpoch() /
+                1000,
+            43455);
 }
 
 // TODO(crbug.com/452986179): test MTC anchor constraint overrides once
@@ -882,6 +912,8 @@ TEST(TrustStoreChromeTestNoFixture, OverrideConstraints) {
        /*max_version_exclusive=*/std::make_optional(base::Version("31")),
        {},
        std::nullopt,
+       std::nullopt,
+       std::nullopt,
        std::nullopt}};
 
   override_constraints[crypto::SHA256Hash(root4->cert_span())] = {
@@ -891,6 +923,8 @@ TEST(TrustStoreChromeTestNoFixture, OverrideConstraints) {
        /*max_version_exclusive=*/std::make_optional(base::Version("41")),
        {},
        std::nullopt,
+       std::nullopt,
+       std::nullopt,
        std::nullopt}};
 
   override_constraints[crypto::SHA256Hash(root6->cert_span())] = {
@@ -899,6 +933,8 @@ TEST(TrustStoreChromeTestNoFixture, OverrideConstraints) {
        std::nullopt,
        /*max_version_exclusive=*/std::make_optional(base::Version("61")),
        {},
+       std::nullopt,
+       std::nullopt,
        std::nullopt,
        std::nullopt}};
 

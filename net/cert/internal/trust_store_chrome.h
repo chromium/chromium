@@ -42,6 +42,9 @@ struct StaticChromeRootCertConstraints {
 
   std::optional<uint64_t> index_not_after;
   std::optional<uint64_t> index_after;
+
+  std::optional<base::Time> validity_starts_not_after;
+  std::optional<base::Time> validity_starts_after;
 };
 
 struct ChromeRootCertInfo {
@@ -74,7 +77,9 @@ struct NET_EXPORT ChromeRootCertConstraints {
                             std::optional<base::Version> max_version_exclusive,
                             std::vector<std::string> permitted_dns_names,
                             std::optional<uint64_t> index_not_after,
-                            std::optional<uint64_t> index_after);
+                            std::optional<uint64_t> index_after,
+                            std::optional<base::Time> validity_starts_not_after,
+                            std::optional<base::Time> validity_starts_after);
   explicit ChromeRootCertConstraints(
       const StaticChromeRootCertConstraints& constraints);
   ~ChromeRootCertConstraints();
@@ -93,6 +98,9 @@ struct NET_EXPORT ChromeRootCertConstraints {
 
   std::optional<uint64_t> index_not_after;
   std::optional<uint64_t> index_after;
+
+  std::optional<base::Time> validity_starts_not_after;
+  std::optional<base::Time> validity_starts_after;
 };
 
 // ChromeRootStoreData is a container class that stores the Chrome Root Store

@@ -87,6 +87,8 @@ mtc_anchors {
     permitted_dns_names: "bar.example.com"
     index_not_after: 1234
     index_after: 987
+    validity_starts_not_after_sec: 56781,
+    validity_starts_after_sec: 1236890,
   }
   constraints: {
     permitted_dns_names: "mtc.example.com"

@@ -51,6 +51,14 @@ message ConstraintSet {
   // higher than the specified value. Ignored if specified on a classical
   // TrustAnchor.
   optional uint64 index_after = 9;
+
+  // The leaf certificate validity notBefore time must not be after the
+  // specified value, specified in seconds since the unix epoch.
+  optional int64 validity_starts_not_after_sec = 10;
+
+  // The leaf certificate validity notBefore time must be after the specified
+  // value, specified in seconds since the unix epoch.
+  optional int64 validity_starts_after_sec = 11;
 }
 
 message TrustAnchor {
