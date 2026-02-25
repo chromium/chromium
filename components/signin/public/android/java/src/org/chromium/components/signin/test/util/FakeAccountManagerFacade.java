@@ -506,18 +506,6 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     /**
-     * @deprecated Please use {@link #blockGetAccounts()} or {@link
-     *     #blockGetAccountsAndPopulateCache()} below.
-     */
-    @Deprecated
-    public UpdateBlocker blockGetAccounts(boolean populateCache) {
-        if (populateCache) {
-            return blockGetAccountsAndPopulateCache();
-        }
-        return blockGetAccounts();
-    }
-
-    /**
      * Blocks updates to the account lists returned by and {@link #getAccounts}. After this method
      * is called, subsequent calls to {@link #getAccounts} will return promises that won't be
      * updated until the returned {@link AutoCloseable} is closed. Any account addition/removal

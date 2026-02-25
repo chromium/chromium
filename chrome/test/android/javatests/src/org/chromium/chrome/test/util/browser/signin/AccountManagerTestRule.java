@@ -103,15 +103,6 @@ public class AccountManagerTestRule implements TestRule {
     }
 
     /**
-     * @deprecated Please use {@link #blockGetAccountsUpdate()} or {@link
-     *     #blockGetAccountsAndPopulateCache()} below.
-     */
-    @Deprecated
-    public FakeAccountManagerFacade.UpdateBlocker blockGetAccountsUpdate(boolean populateCache) {
-        return mFakeAccountManagerFacade.blockGetAccounts(populateCache);
-    }
-
-    /**
      * Block updates from {@link FakeAccountManagerFacade}. See {@link
      * FakeAccountManagerFacade#blockGetAccounts()}.
      */
