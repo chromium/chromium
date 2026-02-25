@@ -1167,11 +1167,11 @@ int UDPSocketWin::InternalSendToNonBlocking(IOBuffer* buf,
     control_buffer.buf = raw_control_buffer;
     control_buffer.len = sizeof(raw_control_buffer);
     WSAMSG message;
-    DWORD bytes_read;
+    DWORD bytes_sent;
     PopulateWSAMSG(message, storage, &write_buffer, control_buffer, true);
-    rv = wsa_send_msg_(socket_, &message, 0, &bytes_read, nullptr, nullptr);
+    rv = wsa_send_msg_(socket_, &message, 0, &bytes_sent, nullptr, nullptr);
     if (rv == 0) {
-      rv = bytes_read;
+      rv = bytes_sent;
     }
   } else {
     rv = sendto(socket_, buf->data(), buf_len, 0, addr, storage.addr_len);
@@ -1437,6 +1437,12 @@ int UDPSocketWin::SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) {
   if (!is_connected()) {
     return ERR_SOCKET_NOT_CONNECTED;
   }
+  if (ecn != ECN_NO_CHANGE) {
+    send_ecn_ = ecn;
+  }
+  if (wsa_send_msg_ == nullptr) {
+    wsa_send_msg_ = GetSendMsgPointer();
+  }
 
   if (dscp != DSCP_NO_CHANGE) {
     QwaveApi* api = GetQwaveApi();
@@ -1457,13 +1463,6 @@ int UDPSocketWin::SetTos(DiffServCodePoint dscp, EcnCodePoint ecn) {
       }
     }
   }
-  if (ecn == ECN_NO_CHANGE) {
-    return OK;
-  }
-  if (wsa_send_msg_ == nullptr) {
-    wsa_send_msg_ = GetSendMsgPointer();
-  }
-  send_ecn_ = ecn;
   return OK;
 }
 
