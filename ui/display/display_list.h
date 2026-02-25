@@ -70,8 +70,20 @@ class DISPLAY_EXPORT DisplayList {
   // or invalid ids.
   bool IsValid() const;
 
-  base::ObserverList<DisplayObserver>* observers() { return &observers_; }
-  const base::ObserverList<DisplayObserver>* observers() const {
+  base::ObserverList<
+      DisplayObserver,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>*
+  observers() {
+    return &observers_;
+  }
+  const base::ObserverList<
+      DisplayObserver,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>*
+  observers() const {
     return &observers_;
   }
 
@@ -83,7 +95,13 @@ class DISPLAY_EXPORT DisplayList {
   std::vector<Display> displays_;
   // The id of the primary Display in `displays_` for the display::Screen.
   int64_t primary_id_ = kInvalidDisplayId;
-  base::ObserverList<DisplayObserver> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      DisplayObserver,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 };
 
 }  // namespace display

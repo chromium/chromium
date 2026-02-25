@@ -354,7 +354,13 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   // The config from the most recent call to Start().
   PlaybackConfig playback_config_;
 
-  base::ObserverList<AnimationObserver> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      AnimationObserver,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   scoped_refptr<cc::SkottieWrapper> skottie_;
   cc::SkottieColorMap color_map_;
