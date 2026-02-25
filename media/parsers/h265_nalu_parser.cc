@@ -10,34 +10,20 @@
 #include <cmath>
 #include <cstring>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/types/to_address.h"
 #include "media/base/decrypt_config.h"
+#include "media/base/media_switches.h"
+#include "media/parsers/bit_reader_macros.h"
 
 namespace media {
 
-#define READ_BITS_OR_RETURN(num_bits, out)                                 \
-  do {                                                                     \
-    uint32_t _out;                                                         \
-    if (!br_.ReadBits(num_bits, &_out)) {                                  \
-      DVLOG(1)                                                             \
-          << "Error in stream: unexpected EOS while trying to read " #out; \
-      return kInvalidStream;                                               \
-    }                                                                      \
-    *out = _out;                                                           \
-  } while (0)
-
-#define TRUE_OR_RETURN(a)                                            \
-  do {                                                               \
-    if (!(a)) {                                                      \
-      DVLOG(1) << "Error in stream: invalid value, expected " << #a; \
-      return kInvalidStream;                                         \
-    }                                                                \
-  } while (0)
-
 H265NALU::H265NALU() = default;
 
-H265NaluParser::H265NaluParser() {
+H265NaluParser::H265NaluParser()
+    : validate_extended_bitstream_(
+          base::FeatureList::IsEnabled(kExtendedVideoBitstreamValidation)) {
   Reset();
 }
 
@@ -145,6 +131,8 @@ H265NaluParser::Result H265NaluParser::AdvanceToNextNALU(H265NALU* nalu) {
 
   READ_BITS_OR_RETURN(6, &nalu->nal_unit_type);
   READ_BITS_OR_RETURN(6, &nalu->nuh_layer_id);
+  IN_RANGE_IF_OR_RETURN(nalu->nuh_layer_id, 0, 62,
+                        validate_extended_bitstream_);
   READ_BITS_OR_RETURN(3, &nalu->nuh_temporal_id_plus1);
   TRUE_OR_RETURN(nalu->nuh_temporal_id_plus1 != 0);
 

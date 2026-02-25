@@ -368,6 +368,10 @@ BASE_FEATURE(kVideoPipForceTrustedForMediaPlaybackForTesting,
 BASE_FEATURE(kEncryptedMediaOcclusionTracking,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables extended video bitstream validation for H.264 and H.265.
+BASE_FEATURE(kExtendedVideoBitstreamValidation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables user control over muting tab audio from the tab strip.
 BASE_FEATURE(kEnableTabMuting, base::FEATURE_DISABLED_BY_DEFAULT);
 

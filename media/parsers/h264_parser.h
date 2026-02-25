@@ -620,6 +620,9 @@ class MEDIA_EXPORT H264Parser {
   // This contains the range of the previous NALU found in
   // AdvanceToNextNalu(). Holds exactly one range.
   Ranges<const uint8_t*> previous_nalu_range_;
+
+  // Cached value of kExtendedVideoBitstreamValidation feature.
+  const bool validate_extended_bitstream_;
 };
 
 }  // namespace media

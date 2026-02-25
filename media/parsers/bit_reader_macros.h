@@ -136,6 +136,13 @@
     }                                                                       \
   } while (0)
 
+#define IN_RANGE_IF_OR_RETURN(val, min, max, condition) \
+  do {                                                  \
+    if (condition) {                                    \
+      IN_RANGE_OR_RETURN(val, min, max);                \
+    }                                                   \
+  } while (0)
+
 #define TRUE_OR_RETURN(a)                                            \
   do {                                                               \
     if (!(a)) {                                                      \

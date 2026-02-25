@@ -290,6 +290,10 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(
 // Enables tracking the occlusion of encrypted video elements.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kEncryptedMediaOcclusionTracking);
 
+// Enables extended video bitstream validation for H.264 and H.265.
+// Remove after M149, once we're sure that this doesn't break anyone.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kExtendedVideoBitstreamValidation);
+
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kPlatformAudioEncoder);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kEnableRtcpReporting);
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)

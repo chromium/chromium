@@ -14,11 +14,13 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/types/to_address.h"
+#include "media/base/media_switches.h"
 #include "media/base/subsample_entry.h"
 #include "media/parsers/bit_reader_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -293,7 +295,9 @@ const auto kTableSarHeight = std::to_array<int>({
 static_assert(std::size(kTableSarWidth) == std::size(kTableSarHeight),
               "sar tables must have the same size");
 
-H264Parser::H264Parser() {
+H264Parser::H264Parser()
+    : validate_extended_bitstream_(
+          base::FeatureList::IsEnabled(kExtendedVideoBitstreamValidation)) {
   Reset();
 }
 
@@ -893,7 +897,9 @@ H264Parser::Result H264Parser::ParseVUIParameters(H264SPS* sps) {
   READ_BOOL_OR_RETURN(&data);  // chroma_loc_info_present_flag
   if (data) {
     READ_UE_OR_RETURN(&data);  // chroma_sample_loc_type_top_field
+    IN_RANGE_IF_OR_RETURN(data, 0, 5, validate_extended_bitstream_);
     READ_UE_OR_RETURN(&data);  // chroma_sample_loc_type_bottom_field
+    IN_RANGE_IF_OR_RETURN(data, 0, 5, validate_extended_bitstream_);
   }
 
   // Read and ignore timing info.
@@ -925,9 +931,13 @@ H264Parser::Result H264Parser::ParseVUIParameters(H264SPS* sps) {
   if (sps->bitstream_restriction_flag) {
     READ_BOOL_OR_RETURN(&data);  // motion_vectors_over_pic_boundaries_flag
     READ_UE_OR_RETURN(&data);    // max_bytes_per_pic_denom
+    IN_RANGE_IF_OR_RETURN(data, 0, 16, validate_extended_bitstream_);
     READ_UE_OR_RETURN(&data);    // max_bits_per_mb_denom
+    IN_RANGE_IF_OR_RETURN(data, 0, 16, validate_extended_bitstream_);
     READ_UE_OR_RETURN(&data);    // log2_max_mv_length_horizontal
+    IN_RANGE_IF_OR_RETURN(data, 0, 16, validate_extended_bitstream_);
     READ_UE_OR_RETURN(&data);    // log2_max_mv_length_vertical
+    IN_RANGE_IF_OR_RETURN(data, 0, 16, validate_extended_bitstream_);
     READ_UE_OR_RETURN(&sps->max_num_reorder_frames);
     READ_UE_OR_RETURN(&sps->max_dec_frame_buffering);
     TRUE_OR_RETURN(sps->max_dec_frame_buffering >= sps->max_num_ref_frames);
@@ -1034,6 +1044,8 @@ H264Parser::Result H264Parser::ParseSPS(int* sps_id) {
   }
 
   READ_UE_OR_RETURN(&sps->max_num_ref_frames);
+  IN_RANGE_IF_OR_RETURN(sps->max_num_ref_frames, 0, 16,
+                        validate_extended_bitstream_);
   READ_BOOL_OR_RETURN(&sps->gaps_in_frame_num_value_allowed_flag);
 
   READ_UE_OR_RETURN(&sps->pic_width_in_mbs_minus1);
@@ -1595,6 +1607,8 @@ H264Parser::Result H264Parser::ParseSEI(H264SEI* sei) {
         auto& recovery_point = sei_msg.emplace<H264SEIRecoveryPoint>();
         READ_UE_AND_MINUS_BITS_READ_OR_RETURN(
             &recovery_point.recovery_frame_cnt, &num_bits_remain);
+        IN_RANGE_IF_OR_RETURN(recovery_point.recovery_frame_cnt, 0, 65535,
+                              validate_extended_bitstream_);
         READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(
             &recovery_point.exact_match_flag, &num_bits_remain);
         READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(

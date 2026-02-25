@@ -149,6 +149,9 @@ class MEDIA_EXPORT H265NaluParser {
  protected:
   H264BitReader br_;
 
+  // Cached value of kExtendedVideoBitstreamValidation feature.
+  const bool validate_extended_bitstream_;
+
  private:
   // Move the stream pointer to the beginning of the next NALU,
   // i.e. pointing at the next start code.
