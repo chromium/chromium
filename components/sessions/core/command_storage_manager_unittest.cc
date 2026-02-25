@@ -15,6 +15,8 @@
 
 namespace sessions {
 
+using SessionType = CommandStorageManager::SessionType;
+
 class CommandStorageManagerTest : public testing::Test {
  protected:
   // testing::TestWithParam:
@@ -47,8 +49,7 @@ class TestCommandStorageManagerDelegate : public CommandStorageManagerDelegate {
 
 TEST_F(CommandStorageManagerTest, OnErrorWritingSessionCommands) {
   TestCommandStorageManagerDelegate delegate;
-  CommandStorageManager manager(CommandStorageManager::kOther, path_,
-                                &delegate);
+  CommandStorageManager manager(SessionType::kOther, path_, &delegate);
   CommandStorageManagerTestHelper test_helper(&manager);
   manager.set_pending_reset(true);
   // Write a command, the delegate should not be notified of an error.

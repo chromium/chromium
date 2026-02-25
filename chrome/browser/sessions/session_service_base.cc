@@ -155,8 +155,8 @@ SessionServiceBase::SessionServiceBase(Profile* profile,
   // Covert SessionServiceType to backend CSM::SessionType enum.
   sessions::CommandStorageManager::SessionType backend_type =
       type == SessionServiceType::kSessionRestore
-          ? sessions::CommandStorageManager::kSessionRestore
-          : sessions::CommandStorageManager::kAppRestore;
+          ? sessions::CommandStorageManager::SessionType::kSessionRestore
+          : sessions::CommandStorageManager::SessionType::kAppRestore;
 
   command_storage_manager_ = std::make_unique<sessions::CommandStorageManager>(
       backend_type, profile->GetPath(), this,

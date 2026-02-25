@@ -40,6 +40,7 @@ using size_type = SessionCommand::size_type;
 namespace {
 
 using SessionCommands = std::vector<std::unique_ptr<SessionCommand>>;
+using SessionType = CommandStorageManager::SessionType;
 
 struct TestData {
   SessionCommand::id_type command_id;
@@ -592,8 +593,8 @@ TEST_F(CommandStorageBackendTest,
 }
 
 TEST_F(CommandStorageBackendTest, GetSessionFiles) {
-  EXPECT_TRUE(CommandStorageBackend::GetSessionFilePaths(
-                  file_path(), CommandStorageManager::kOther)
+  EXPECT_TRUE(CommandStorageBackend::GetSessionFilePaths(file_path(),
+                                                         SessionType::kOther)
                   .empty());
   ASSERT_TRUE(base::WriteFile(file_path(), ""));
   // Not a valid name, as doesn't contain timestamp separator.
@@ -605,8 +606,8 @@ TEST_F(CommandStorageBackendTest, GetSessionFiles) {
   // Valid name, but should not be returned as beginning doesn't match.
   ASSERT_TRUE(
       base::WriteFile(file_path().DirName().AppendASCII("Foo_125"), ""));
-  auto paths = CommandStorageBackend::GetSessionFilePaths(
-      file_path(), CommandStorageManager::kOther);
+  auto paths = CommandStorageBackend::GetSessionFilePaths(file_path(),
+                                                          SessionType::kOther);
   ASSERT_EQ(1u, paths.size());
   EXPECT_EQ("Session_124", paths.begin()->BaseName().MaybeAsASCII());
 }

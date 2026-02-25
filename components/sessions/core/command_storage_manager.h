@@ -48,7 +48,7 @@ class SESSIONS_EXPORT CommandStorageManager {
   // TODO(sky): this enum is purely for legacy reasons, and should be replaced
   // with consumers building the path. Remove in approximately a year (1/2022),
   // when we shouldn't need to worry too much about migrating older data.
-  enum SessionType { kAppRestore, kSessionRestore, kTabRestore, kOther };
+  enum class SessionType { kAppRestore, kSessionRestore, kTabRestore, kOther };
 
   // Creates a new CommandStorageManager. `delegate` is not owned by this and
   // must outlive this.

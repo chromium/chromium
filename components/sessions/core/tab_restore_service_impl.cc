@@ -639,7 +639,7 @@ TabRestoreServiceImpl::PersistenceDelegate::PersistenceDelegate(
     TabRestoreServiceClient* client)
     : client_(client),
       command_storage_manager_(std::make_unique<CommandStorageManager>(
-          CommandStorageManager::kTabRestore,
+          CommandStorageManager::SessionType::kTabRestore,
           client_->GetPathToSaveTo(),
           this)),
       tab_restore_service_helper_(nullptr),

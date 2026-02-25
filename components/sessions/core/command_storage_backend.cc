@@ -34,9 +34,9 @@
 
 namespace sessions {
 
-using SessionType = CommandStorageManager::SessionType;
-
 namespace {
+
+using SessionType = CommandStorageManager::SessionType;
 
 // File version numbers:
 // kFileVersion1 = 1; No longer supported. Used in production prior to commit
@@ -365,31 +365,31 @@ base::FilePath::StringType TimestampToString(const base::Time time) {
 }
 
 // Returns the directory the files are stored in.
-base::FilePath GetSessionDirName(CommandStorageManager::SessionType type,
+base::FilePath GetSessionDirName(SessionType type,
                                  const base::FilePath& supplied_path) {
-  if (type == CommandStorageManager::kOther) {
+  if (type == SessionType::kOther) {
     return supplied_path.DirName();
   }
   return supplied_path.Append(kSessionsDirectory);
 }
 
 base::FilePath::StringType GetSessionBaseName(
-    CommandStorageManager::SessionType type,
+    SessionType type,
     const base::FilePath& supplied_path) {
   switch (type) {
-    case CommandStorageManager::kAppRestore:
+    case SessionType::kAppRestore:
       return kAppSessionFileNamePrefix;
-    case CommandStorageManager::kTabRestore:
+    case SessionType::kTabRestore:
       return kTabSessionFileNamePrefix;
-    case CommandStorageManager::kSessionRestore:
+    case SessionType::kSessionRestore:
       return kSessionFileNamePrefix;
-    case CommandStorageManager::kOther:
+    case SessionType::kOther:
       return supplied_path.BaseName().value();
   }
 }
 
 base::FilePath::StringType GetSessionFilename(
-    CommandStorageManager::SessionType type,
+    SessionType type,
     const base::FilePath& supplied_path,
     const base::FilePath::StringType& timestamp_str) {
   return base::JoinString(
@@ -519,7 +519,7 @@ bool CommandStorageBackend::TimestampFromPath(const base::FilePath& path,
 // static
 std::set<base::FilePath> CommandStorageBackend::GetSessionFilePaths(
     const base::FilePath& path,
-    CommandStorageManager::SessionType type) {
+    SessionType type) {
   std::set<base::FilePath> result;
   for (const auto& info : GetSessionFilesSortedByReverseTimestamp(path, type)) {
     result.insert(info.path);
@@ -553,7 +553,7 @@ void CommandStorageBackend::DeleteLastSession() {
 
 void CommandStorageBackend::MoveCurrentSessionToLastSession() {
   // TODO(sky): make this work for kOther.
-  DCHECK_NE(CommandStorageManager::SessionType::kOther, type_);
+  DCHECK_NE(SessionType::kOther, type_);
 
   InitIfNecessary();
   CloseFile();
@@ -744,7 +744,7 @@ void CommandStorageBackend::DeleteLastSessionFiles() const {
 std::vector<CommandStorageBackend::SessionInfo>
 CommandStorageBackend::GetSessionFilesSortedByReverseTimestamp(
     const base::FilePath& path,
-    CommandStorageManager::SessionType type) {
+    SessionType type) {
   std::vector<SessionInfo> sessions;
   base::FileEnumerator file_enum(
       GetSessionDirName(type, path), false, base::FileEnumerator::FILES,
