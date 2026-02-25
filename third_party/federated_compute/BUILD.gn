@@ -15,6 +15,7 @@ config("confidential_compute_include") {
 proto_library("confidential_compute_proto") {
   sources = [
     "src/fcp/protos/confidentialcompute/data_upload_config.proto",
+    "src/fcp/protos/confidentialcompute/key.proto",
     "src/fcp/protos/confidentialcompute/signed_endorsements.proto",
     "src/fcp/protos/federatedcompute/confidential_encryption_config.proto",
   ]

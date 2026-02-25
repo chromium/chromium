@@ -170,7 +170,9 @@ absl::Status ParseProtectedHeader(
   // Process the parameters map.
   const cbor::Value::MapValue& map = header->GetMap();
   for (const auto& [key, value] : map) {
-    if (!key.is_integer()) continue;
+    if (!key.is_integer()) {
+      continue;
+    }
     switch (key.GetInteger()) {
       case CoseHeaderParameter::kHdrAlg:
         if (algorithm) {
@@ -224,7 +226,9 @@ absl::Status ParseCwtPayload(const std::vector<uint8_t>& serialized_payload,
   // Process the claims map.
   const cbor::Value::MapValue& map = payload->GetMap();
   for (const auto& [key, value] : map) {
-    if (!key.is_integer()) continue;
+    if (!key.is_integer()) {
+      continue;
+    }
     switch (key.GetInteger()) {
       case CwtClaim::kExp:
         if (!value.is_integer()) {
@@ -280,7 +284,8 @@ absl::Status ParseCwtPayload(const std::vector<uint8_t>& serialized_payload,
 // See RFC 9052 section 4.4 for the contents of the Sig_structure.
 std::string BuildSigStructure(
     std::vector<uint8_t> body_protected,
-    std::optional<std::vector<uint8_t>> sign_protected, absl::string_view aad,
+    std::optional<std::vector<uint8_t>> sign_protected,
+    absl::string_view aad,
     std::vector<uint8_t> payload) {
   cbor::Value::ArrayValue sig_structure;
   sig_structure.emplace_back(sign_protected ? "Signature" : "Signature1");
@@ -303,9 +308,10 @@ std::string BuildSigStructure(
 // Parses a serialized COSE_Sign or COSE_Sign1 structure and returns the
 // protected header, signer protected header (COSE_Sign only), payload, and
 // signature.
-absl::StatusOr<
-    std::tuple<std::vector<uint8_t>, std::optional<std::vector<uint8_t>>,
-               std::vector<uint8_t>, std::vector<uint8_t>>>
+absl::StatusOr<std::tuple<std::vector<uint8_t>,
+                          std::optional<std::vector<uint8_t>>,
+                          std::vector<uint8_t>,
+                          std::vector<uint8_t>>>
 ParseCoseSign(absl::string_view encoded) {
   std::optional<cbor::Value> value =
       cbor::Reader::Read(std::vector<uint8_t>(encoded.begin(), encoded.end()));
@@ -432,7 +438,9 @@ absl::StatusOr<OkpKey> OkpKey::Decode(absl::string_view encoded) {
   OkpKey okp_key;
   const cbor::Value::MapValue& map = encoded_value->GetMap();
   for (const auto& [key, value] : map) {
-    if (!key.is_integer()) continue;
+    if (!key.is_integer()) {
+      continue;
+    }
     switch (key.GetInteger()) {
       case CoseKeyParameter::kKty:
         if (!value.is_integer()) {
@@ -557,7 +565,9 @@ absl::StatusOr<SymmetricKey> SymmetricKey::Decode(absl::string_view encoded) {
   SymmetricKey symmetric_key;
   const cbor::Value::MapValue& map = symmetric_key_value->GetMap();
   for (const auto& [key, value] : map) {
-    if (!key.is_integer()) continue;
+    if (!key.is_integer()) {
+      continue;
+    }
     switch (key.GetInteger()) {
       case CoseKeyParameter::kKty:
         if (!value.is_integer()) {
@@ -608,33 +618,6 @@ absl::StatusOr<SymmetricKey> SymmetricKey::Decode(absl::string_view encoded) {
   return symmetric_key;
 }
 
-absl::StatusOr<std::string> SymmetricKey::Encode() const {
-  cbor::Value::MapValue map;
-  map.emplace(cbor::Value(CoseKeyParameter::kKty),
-              cbor::Value(CoseKeyType::kSymmetric));
-  if (algorithm) {
-    map.emplace(cbor::Value(CoseKeyParameter::kAlg), cbor::Value(*algorithm));
-  }
-  if (!key_ops.empty()) {
-    cbor::Value::ArrayValue array;
-    for (int64_t key_op : key_ops) {
-      array.emplace_back(key_op);
-    }
-    map.emplace(cbor::Value(CoseKeyParameter::kKeyOps),
-                cbor::Value(std::move(array)));
-  }
-  if (!k.empty()) {
-    map.emplace(cbor::Value(CoseKeyParameter::kSymmetricK),
-                cbor::Value(k, cbor::Value::Type::BYTE_STRING));
-  }
-  std::optional<std::vector<uint8_t>> encoded_key =
-      cbor::Writer::Write(cbor::Value(std::move(map)));
-  if (!encoded_key) {
-    return absl::InternalError("failed to encode SymmetricKey");
-  }
-  return std::string(encoded_key->begin(), encoded_key->end());
-}
-
 absl::StatusOr<std::string> OkpCwt::BuildSigStructureForSigning(
     absl::string_view aad) const {
   std::vector<uint8_t> protected_header =
@@ -646,7 +629,8 @@ absl::StatusOr<std::string> OkpCwt::BuildSigStructureForSigning(
 }
 
 absl::StatusOr<std::string> OkpCwt::GetSigStructureForVerifying(
-    absl::string_view encoded, absl::string_view aad) {
+    absl::string_view encoded,
+    absl::string_view aad) {
   std::vector<uint8_t> body_protected, payload;
   std::optional<std::vector<uint8_t>> sign_protected;
   FCP_ASSIGN_OR_RETURN(
@@ -699,7 +683,8 @@ absl::StatusOr<std::string> ReleaseToken::BuildEncStructureForEncrypting(
 }
 
 absl::StatusOr<std::string> ReleaseToken::GetEncStructureForDecrypting(
-    absl::string_view encoded, absl::string_view aad) {
+    absl::string_view encoded,
+    absl::string_view aad) {
   std::vector<uint8_t> payload;
   FCP_ASSIGN_OR_RETURN(std::tie(std::ignore, std::ignore, payload, std::ignore),
                        ParseCoseSign(encoded));
@@ -720,7 +705,8 @@ absl::StatusOr<std::string> ReleaseToken::BuildSigStructureForSigning(
 }
 
 absl::StatusOr<std::string> ReleaseToken::GetSigStructureForVerifying(
-    absl::string_view encoded, absl::string_view aad) {
+    absl::string_view encoded,
+    absl::string_view aad) {
   // Like a CWT, a ReleaseToken is also a COSE_Sign1 object, so the
   // Sig_structure is the same.
   return OkpCwt::GetSigStructureForVerifying(encoded, aad);
@@ -805,6 +791,36 @@ absl::StatusOr<std::string> ReleaseToken::Encode() const {
     return absl::InternalError("failed to build release token");
   }
   return std::string(encoded_array->begin(), encoded_array->end());
+}
+
+absl::StatusOr<std::string> SymmetricKey::Encode(
+    bool _encode_without_libcppbor) const {
+  // Note: we're not using libcppbor in Chromium anyway, so just use cbor.
+
+  cbor::Value::MapValue map;
+  map.emplace(cbor::Value(CoseKeyParameter::kKty),
+              cbor::Value(CoseKeyType::kSymmetric));
+  if (algorithm) {
+    map.emplace(cbor::Value(CoseKeyParameter::kAlg), cbor::Value(*algorithm));
+  }
+  if (!key_ops.empty()) {
+    cbor::Value::ArrayValue array;
+    for (int64_t key_op : key_ops) {
+      array.emplace_back(key_op);
+    }
+    map.emplace(cbor::Value(CoseKeyParameter::kKeyOps),
+                cbor::Value(std::move(array)));
+  }
+  if (!k.empty()) {
+    map.emplace(cbor::Value(CoseKeyParameter::kSymmetricK),
+                cbor::Value(k, cbor::Value::Type::BYTE_STRING));
+  }
+  std::optional<std::vector<uint8_t>> encoded_key =
+      cbor::Writer::Write(cbor::Value(std::move(map)));
+  if (!encoded_key) {
+    return absl::InternalError("failed to encode SymmetricKey");
+  }
+  return std::string(encoded_key->begin(), encoded_key->end());
 }
 
 }  // namespace fcp::confidential_compute
