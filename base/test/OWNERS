@@ -3,6 +3,7 @@ per-file *scoped_feature_list*=file://base/metrics/OWNERS
 
 # Tracing test utilities:
 per-file trace_*=file://base/trace_event/OWNERS
+per-file test_trace_*=file://base/trace_event/OWNERS
 
 #For Windows-specific test utilities:
 per-file *_win*=file://base/win/OWNERS
