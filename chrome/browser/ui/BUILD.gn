@@ -1428,6 +1428,7 @@ static_library("ui") {
       "//chrome/browser:shell_integration",
       "//chrome/browser/actor/ui",
       "//chrome/browser/actor/ui:actor_overlay",
+      "//chrome/browser/actor/ui:actor_overlay_web_view",
       "//chrome/browser/app_mode",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service/app_icon",

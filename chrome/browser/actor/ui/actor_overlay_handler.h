@@ -7,12 +7,15 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/actor/ui/actor_overlay.mojom.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_observer.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_observer.h"
+#endif
 
 namespace content {
 class WebContents;
@@ -21,7 +24,9 @@ class WebContents;
 namespace actor::ui {
 
 class ActorOverlayHandler : public mojom::ActorOverlayPageHandler,
+#if !BUILDFLAG(IS_ANDROID)
                             public ThemeServiceObserver,
+#endif
                             public ::ui::NativeThemeObserver {
  public:
   ActorOverlayHandler(
@@ -59,16 +64,25 @@ class ActorOverlayHandler : public mojom::ActorOverlayPageHandler,
  private:
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(::ui::NativeTheme* observed_theme) override;
+#if !BUILDFLAG(IS_ANDROID)
   // ThemeServiceObserver:
   void OnThemeChanged() override;
+#endif
+  // Sets the theme colors for the actor overlay.
+  void UpdateActorTheme();
   // Is the user hovering over the actor overlay.
   bool is_hovering_ = false;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
+#if !BUILDFLAG(IS_ANDROID)
   raw_ptr<ThemeService> theme_service_;
+#endif
   base::ScopedObservation<::ui::NativeTheme, ::ui::NativeThemeObserver>
       native_theme_observation_{this};
+
+#if !BUILDFLAG(IS_ANDROID)
   base::ScopedObservation<ThemeService, ThemeServiceObserver>
       theme_service_observation_{this};
+#endif
 
   mojo::Remote<mojom::ActorOverlayPage> page_;
   mojo::Receiver<mojom::ActorOverlayPageHandler> receiver_{this};

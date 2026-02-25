@@ -12,6 +12,7 @@
 namespace webui {
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 // Tracks changes to the wrapped `browser_window_interface_`, notifying clients
 // of changes as approprirate.
 class EmbeddingBrowserTracker {
@@ -60,6 +61,7 @@ class EmbeddingBrowserTracker {
   // Notifies clients of changes to `browser_window_interface_`.
   base::RepeatingClosure browser_change_cb_;
 };
+#endif
 
 // Tracks changes to the wrapped `tab_interface_`, notifying clients of changes
 // as approprirate.
@@ -144,6 +146,7 @@ class EmbedderContextData
     return EmbedderContextData::FromWebContents(web_contents);
   }
 
+#if !BUILDFLAG(IS_ANDROID)
   void SetBrowserWindowInterface(
       BrowserWindowInterface* browser_window_interface) {
     // Tabs will always belong to a browser and are tracked together, both
@@ -163,12 +166,31 @@ class EmbedderContextData
       browser_tracker_.reset();
     }
   }
+#endif
+
+  BrowserWindowInterface* GetBrowserWindowInterface() {
+#if !BUILDFLAG(IS_ANDROID)
+    // Source the browser interface either directly from the tracked browser or
+    // via the tracked tab.
+    if (tab_tracker_) {
+      return tab_tracker_->tab_interface()
+                 ? tab_tracker_->tab_interface()->GetBrowserWindowInterface()
+                 : nullptr;
+    }
+    if (browser_tracker_) {
+      return browser_tracker_->browser_window_interface();
+    }
+#endif
+    return nullptr;
+  }
 
   void SetTabInterface(tabs::TabInterface* tab_interface) {
+#if !BUILDFLAG(IS_ANDROID)
     // Tabs will always belong to a browser and are tracked together, both
     // browser and tab trackers should not be set independently.
     CHECK(!browser_tracker_)
         << "Browser and tab trackers should not be set independently";
+#endif
     if (!tab_tracker_) {
       tab_tracker_ = std::make_unique<EmbeddingTabTracker>(
           base::BindRepeating(&EmbedderContextData::NotifyTabChanged,
@@ -183,20 +205,6 @@ class EmbedderContextData
     if (!tab_interface) {
       tab_tracker_.reset();
     }
-  }
-
-  BrowserWindowInterface* GetBrowserWindowInterface() {
-    // Source the browser interface either directly from the tracked browser or
-    // via the tracked tab.
-    if (tab_tracker_) {
-      return tab_tracker_->tab_interface()
-                 ? tab_tracker_->tab_interface()->GetBrowserWindowInterface()
-                 : nullptr;
-    }
-    if (browser_tracker_) {
-      return browser_tracker_->browser_window_interface();
-    }
-    return nullptr;
   }
 
   tabs::TabInterface* GetTabInterface() {
@@ -225,8 +233,10 @@ class EmbedderContextData
   // Notifies clients their embedding tab has changed.
   void NotifyTabChanged() { tab_change_callbacks_.Notify(); }
 
+#if !BUILDFLAG(IS_ANDROID)
   // Defined only if actively tracking an embedding browser.
   std::unique_ptr<EmbeddingBrowserTracker> browser_tracker_;
+#endif
 
   // Defined only if actively tracking an embedding tab.
   std::unique_ptr<EmbeddingTabTracker> tab_tracker_;
@@ -258,23 +268,25 @@ base::CallbackListSubscription InitEmbeddingContext(
       }));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void SetBrowserWindowInterface(
     content::WebContents* host_contents,
     BrowserWindowInterface* browser_window_interface) {
   EmbedderContextData::GetOrCreate(host_contents)
       ->SetBrowserWindowInterface(browser_window_interface);
 }
-
-void SetTabInterface(content::WebContents* host_contents,
-                     tabs::TabInterface* tab_interface) {
-  EmbedderContextData::GetOrCreate(host_contents)
-      ->SetTabInterface(tab_interface);
-}
+#endif
 
 BrowserWindowInterface* GetBrowserWindowInterface(
     content::WebContents* host_contents) {
   return EmbedderContextData::GetOrCreate(host_contents)
       ->GetBrowserWindowInterface();
+}
+
+void SetTabInterface(content::WebContents* host_contents,
+                     tabs::TabInterface* tab_interface) {
+  EmbedderContextData::GetOrCreate(host_contents)
+      ->SetTabInterface(tab_interface);
 }
 
 tabs::TabInterface* GetTabInterface(content::WebContents* host_contents) {
