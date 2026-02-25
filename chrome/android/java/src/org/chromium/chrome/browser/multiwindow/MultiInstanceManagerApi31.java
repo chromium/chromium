@@ -1124,11 +1124,22 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         // notification is tapped while the target activity is backgrounded (minimized).
         AppTask appTask = AndroidTaskUtils.getAppTaskFromId(activity, taskId);
         if (appTask != null) {
-            // Remove NEW_TASK to prevent the OS from spawning a duplicate instance,
-            // and strictly target the existing activity class.
-            intent.removeFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.setClass(ContextUtils.getApplicationContext(), activity.getClass());
-            appTask.startActivity(ContextUtils.getApplicationContext(), intent, null);
+            if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+                // Remove NEW_TASK to prevent the OS from spawning a duplicate instance,
+                // and strictly target the existing activity class.
+                intent.removeFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                appTask.startActivity(ContextUtils.getApplicationContext(), intent, null);
+            } else {
+                // On older Android versions or devices where multi-instance is not enabled, the OS
+                // enforces strict singleTask checks on AppTask.startActivity() and throws an
+                // exception if the task is not empty. However, since these versions do not support
+                // multiple tasks for the same ChromeTabbedActivity class, we can safely fallback
+                // to Context.startActivity() with NEW_TASK, which will inherently route to the
+                // correct task and still bypass BAL restrictions.
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                IntentUtils.safeStartActivity(ContextUtils.getApplicationContext(), intent);
+            }
             return true;
         }
 
