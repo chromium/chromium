@@ -182,8 +182,9 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
 
   auto required_provider_info = CreateSnapshotProviderInfoForVideoFrame(*frame);
 
-  if (!snapshot_provider_ ||
-      !required_provider_info.Matches(*snapshot_provider_)) {
+  if (!cached_draw_info_ ||
+      !required_provider_info.Matches(*cached_draw_info_)) {
+    cached_draw_info_.reset();
     if (!ShouldCreateAcceleratedImages(GetRasterContextProvider().get())) {
       snapshot_provider_ =
           CanvasNon2DSnapshotProviderBitmap::Create(required_provider_info);
@@ -194,11 +195,14 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
           SharedGpuContext::ContextProviderWrapper(),
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
     }
+    if (snapshot_provider_) {
+      cached_draw_info_ = required_provider_info;
+    }
   }
 
   scoped_refptr<StaticBitmapImage> image;
 
-  if (snapshot_provider_) {
+  if (cached_draw_info_) {
     std::optional<CanvasSnapshotProvider::Info> sw_draw_info;
     CanvasNon2DResourceProviderSharedImage* snapshot_provider_si = nullptr;
     sk_sp<SkSurface> sw_draw_surface;
