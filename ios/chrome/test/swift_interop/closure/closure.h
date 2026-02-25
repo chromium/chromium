@@ -5,35 +5,25 @@
 #ifndef IOS_CHROME_TEST_SWIFT_INTEROP_CLOSURE_CLOSURE_H_
 #define IOS_CHROME_TEST_SWIFT_INTEROP_CLOSURE_CLOSURE_H_
 
+#include <functional>
+
 #include "base/apple/swift_interop_util.h"
-#include "base/functional/callback.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 
-SWIFT_DECLARE_INTEROP_WRAPPER(CxxRepeatingClosure, base::RepeatingClosure)
-SWIFT_DECLARE_MOVE_ONLY_INTEROP_WRAPPER(CxxOnceClosure, base::OnceClosure)
-SWIFT_DECLARE_REF_COUNTED_HELPERS(ClosureProvider)
+class ClosureProvider;
 
-class ClosureProvider final : public base::RefCounted<ClosureProvider> {
+void Retain_ClosureProvider(ClosureProvider* provider);
+void Release_ClosureProvider(ClosureProvider* provider);
+
+class ClosureProvider {
  public:
-  ClosureProvider();
-  CxxRepeatingClosure GetRepeatingClosure();
-  CxxOnceClosure GetOnceClosure();
-  int call_count() { return call_count_; }
+  ClosureProvider() = default;
+  virtual ~ClosureProvider() = default;
+
   static ClosureProvider* MakeForSwift() SWIFT_RETURNS_RETAINED;
 
- private:
-  friend class base::RefCounted<ClosureProvider>;
-
-  ~ClosureProvider();
-  void Callback();
-  int call_count_ = 0;
-  base::WeakPtrFactory<ClosureProvider> weak_ptr_factory_{this};
-} SWIFT_REF_COUNTED(ClosureProvider);
-
-// We need a helper function to be able to call a OnceClosure from swift
-// Unfortunately `(consume cb).Run()` in swift does not correctly convert
-// `cb` to a non-const r-value for the C++ interop bindings.
-void RunCxxOnceClosure(CxxOnceClosure&& cb);
+  virtual std::function<void()> GetRepeatingClosure() = 0;
+  virtual std::function<void()> GetOnceClosure() = 0;
+  virtual int call_count() = 0;
+} SWIFT_SHARED_REFERENCE(Retain_ClosureProvider, Release_ClosureProvider);
 
 #endif  // IOS_CHROME_TEST_SWIFT_INTEROP_CLOSURE_CLOSURE_H_

@@ -1129,13 +1129,17 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             # TODO(https://crbug.com/1364579): Remove usage and exception list
             # entry.
             r'ui/views/controls/focus_ring\.h',
-
             # Various pre-existing uses in //tools that is low-priority to fix.
             r'tools/binary_size/libsupersize/viewer/caspian/diff\.cc',
             r'tools/binary_size/libsupersize/viewer/caspian/model\.cc',
             r'tools/binary_size/libsupersize/viewer/caspian/model\.h',
             r'tools/binary_size/libsupersize/viewer/caspian/tree_builder\.h',
             r'tools/clang/base_bind_rewriters/BaseBindRewriters\.cpp',
+            # Required for C++/Swift interop. std::function is used as a wrapper
+            # to transport base::{Once,Repeating}Callback objects across the
+            # C++/Swift boundary.
+            r'base/apple/swift_callback_helpers\.h',
+            r'.*/swift_interop/.*',
 
             # Not an error in third_party folders.
             _THIRD_PARTY_EXCEPT_BLINK

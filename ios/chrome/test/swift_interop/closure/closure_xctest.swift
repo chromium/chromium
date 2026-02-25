@@ -9,36 +9,36 @@ class ClosureTest: XCTestCase {
 
   func testRepeatingClosureSingleCall() {
     let closureProvider = ClosureProvider.MakeForSwift()
-    let closure: CxxRepeatingClosure = closureProvider!.GetRepeatingClosure()
+    let closure = closureProvider!.GetRepeatingClosure()
     XCTAssertEqual(closureProvider!.call_count(), 0)
-    closure.Run()
+    closure()
     XCTAssertEqual(closureProvider!.call_count(), 1)
   }
 
   func testRepeatingClosureMultipleCalls() {
     let closureProvider = ClosureProvider.MakeForSwift()
-    let closure: CxxRepeatingClosure = closureProvider!.GetRepeatingClosure()
+    let closure = closureProvider!.GetRepeatingClosure()
     XCTAssertEqual(closureProvider!.call_count(), 0)
-    closure.Run()
-    closure.Run()
-    closure.Run()
+    closure()
+    closure()
+    closure()
     XCTAssertEqual(closureProvider!.call_count(), 3)
   }
 
   func testRepeatingClosureCallAfterUnref() {
     var closureProvider: ClosureProvider? = ClosureProvider.MakeForSwift()
-    let closure: CxxRepeatingClosure = closureProvider!.GetRepeatingClosure()
+    let closure = closureProvider!.GetRepeatingClosure()
     closureProvider = nil
     // Test passes by not crashing. The closure's weak binding should prevent
     // use after free.
-    closure.Run()
+    closure()
   }
 
   func testOnceClosureSingleCall() {
     let closureProvider = ClosureProvider.MakeForSwift()
-    let closure: CxxOnceClosure = closureProvider!.GetOnceClosure()
+    let closure = closureProvider!.GetOnceClosure()
     XCTAssertEqual(closureProvider!.call_count(), 0)
-    RunCxxOnceClosure(consuming: closure)
+    closure()
     XCTAssertEqual(closureProvider!.call_count(), 1)
   }
 }
