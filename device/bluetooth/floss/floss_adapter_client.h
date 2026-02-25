@@ -484,7 +484,12 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   void OnUnregisterCallbacks(DBusResult<bool> ret);
 
   // List of observers interested in event notifications from this client.
-  base::ObserverList<Observer> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   // Managed by FlossDBusManager - we keep local pointer to access object proxy.
   raw_ptr<dbus::Bus> bus_ = nullptr;

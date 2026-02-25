@@ -365,7 +365,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothDeviceClient
       BluetoothProfileServiceProvider::Delegate::Status status);
 
   // List of observers interested in event notifications from us.
-  base::ObserverList<Observer>::Unchecked observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observers_;
 
   using PropertiesMap =
       std::map<const dbus::ObjectPath, std::unique_ptr<Properties>>;

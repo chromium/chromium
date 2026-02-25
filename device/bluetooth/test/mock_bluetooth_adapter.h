@@ -179,8 +179,11 @@ class MockBluetoothAdapter : public BluetoothAdapter {
   // RemoveObserver(). Test fakes can use this function to notify the observers
   // about events.
   base::ObserverList<
-      device::BluetoothAdapter::Observer>::UncheckedAndDanglingUntriaged&
-  GetObservers() {
+      device::BluetoothAdapter::Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::
+      UncheckedAndDanglingUntriaged&
+      GetObservers() {
     return observers_;
   }
 

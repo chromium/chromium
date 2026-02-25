@@ -122,7 +122,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothAdapterClient
   void UpdateDiscoveringProperty(bool discovering);
 
   // List of observers interested in event notifications from us.
-  base::ObserverList<Observer>::Unchecked observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observers_;
 
   // Static properties we return.
   std::unique_ptr<Properties> properties_;
