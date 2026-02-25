@@ -388,9 +388,7 @@ NSString* CreationText(base::Time creation_date) {
         IDS_IOS_TAB_GROUP_TABS_NUMBER, numberOfTabs);
   }
   if (IsTabGroupColorOnSurfaceEnabled()) {
-    itemData.color =
-        [[TabGroupColorPalette alloc] initWithColorId:group->color()]
-            .commonColor;
+    itemData.color = [TabGroupColorPalette commonColor:group->color()];
   } else {
     itemData.color = tab_groups::ColorForTabGroupColorId(group->color());
   }

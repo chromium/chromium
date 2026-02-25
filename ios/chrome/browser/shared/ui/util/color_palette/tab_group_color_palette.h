@@ -36,6 +36,8 @@ enum class TabGroupColorId;
 // which is the same in light and dark theme.
 @property(nonatomic, readonly) UIColor* commonColor;
 
++ (UIColor*)commonColor:(tab_groups::TabGroupColorId)tab_group_color_id;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_COLOR_PALETTE_TAB_GROUP_COLOR_PALETTE_H_
