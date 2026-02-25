@@ -362,6 +362,11 @@ lens::AddedInputs ComposeboxQueryController::CreateAddedInputs(
     }
 
     if (file_info->input_data &&
+        !file_info->input_data->has_lens_usage_intent) {
+      continue;
+    }
+
+    if (file_info->input_data &&
         file_info->input_data->modality_chip_props.has_value()) {
       // Process modality chips.
       added_inputs.add_added_inputs()->CopyFrom(
