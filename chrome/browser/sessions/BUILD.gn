@@ -15,8 +15,5 @@ source_set("sessions") {
     "//ui/base:types",
   ]
 
-  deps = []
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic" ]
-  }
+  deps = [ "//chrome/browser/glic" ]
 }
