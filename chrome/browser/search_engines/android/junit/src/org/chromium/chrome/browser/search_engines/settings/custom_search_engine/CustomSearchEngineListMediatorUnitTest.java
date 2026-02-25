@@ -32,6 +32,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -107,7 +108,7 @@ public class CustomSearchEngineListMediatorUnitTest {
         verify(mModelList).add(itemCaptor.capture());
 
         PropertyModel model = itemCaptor.getValue().model;
-        ListMenuDelegate delegate = model.get(CustomSearchEngineProperties.MENU_DELEGATE);
+        ListMenuDelegate delegate = model.get(SiteSearchProperties.MENU_DELEGATE);
 
         assertNotNull(delegate);
 
@@ -152,7 +153,7 @@ public class CustomSearchEngineListMediatorUnitTest {
         verify(mModelList).add(itemCaptor.capture());
 
         PropertyModel model = itemCaptor.getValue().model;
-        ListMenuDelegate delegate = model.get(CustomSearchEngineProperties.MENU_DELEGATE);
+        ListMenuDelegate delegate = model.get(SiteSearchProperties.MENU_DELEGATE);
 
         assertNull(delegate);
     }

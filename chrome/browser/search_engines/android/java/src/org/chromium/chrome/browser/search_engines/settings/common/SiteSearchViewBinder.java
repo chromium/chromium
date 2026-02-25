@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.search_engines.R;
+import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -52,6 +54,11 @@ public class SiteSearchViewBinder {
                             ? R.drawable.ic_expand_less_black_24dp
                             : R.drawable.ic_expand_more_black_24dp;
             holder.mActionIcon.setImageResource(iconRes);
+        } else if (SiteSearchProperties.MENU_DELEGATE == propertyKey) {
+            ListMenuButton button = (ListMenuButton) view.findViewById(R.id.overflow_menu_button);
+            ListMenuDelegate delegate = model.get(SiteSearchProperties.MENU_DELEGATE);
+            button.setDelegate(delegate);
+            button.setEnabled(delegate != null);
         }
     }
 

@@ -46,7 +46,7 @@ found in the LICENSE file.
 
     </LinearLayout>
 
-    <org.chromium.ui.widget.ChromeImageView
+    <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/overflow_menu_button"
         android:layout_width="48dp"
         android:layout_height="48dp"
@@ -55,6 +55,8 @@ found in the LICENSE file.
         android:padding="12dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="10dp"
+        android:contentDescription="@string/more"
+        app:tint="@color/default_icon_color_tint_list"
         app:srcCompat="@drawable/ic_more_vert_24dp"/>
 
 </org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout>

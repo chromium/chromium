@@ -11,6 +11,7 @@ import androidx.annotation.IntDef;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
@@ -39,8 +40,10 @@ public class SiteSearchProperties {
     public static final WritableObjectPropertyKey<String> TEXT = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Boolean> IS_EXPANDED =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<ListMenuDelegate> MENU_DELEGATE =
+            new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {
-        ADAPTER, ICON, IS_EXPANDED, ON_CLICK, SITE_NAME, SITE_SHORTCUT, TEXT,
+        ADAPTER, ICON, IS_EXPANDED, MENU_DELEGATE, ON_CLICK, SITE_NAME, SITE_SHORTCUT, TEXT,
     };
 }

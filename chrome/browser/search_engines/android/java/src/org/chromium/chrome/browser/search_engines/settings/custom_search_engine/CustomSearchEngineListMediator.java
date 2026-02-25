@@ -15,7 +15,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineIconUtils;
-import org.chromium.chrome.browser.search_engines.settings.custom_search_engine.CustomSearchEngineProperties.CustomSearchEngineRecyclerViewItems;
+import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
@@ -82,22 +82,22 @@ public class CustomSearchEngineListMediator
         TemplateUrl defaultSearchEngine = mTemplateUrlService.getDefaultSearchEngineTemplateUrl();
         for (TemplateUrl url : urls) {
             PropertyModel model =
-                    new PropertyModel.Builder(CustomSearchEngineProperties.ALL_KEYS)
-                            .with(CustomSearchEngineProperties.NAME, url.getShortName())
-                            .with(CustomSearchEngineProperties.URL, url.getKeyword())
+                    new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)
+                            .with(SiteSearchProperties.SITE_NAME, url.getShortName())
+                            .with(SiteSearchProperties.SITE_SHORTCUT, url.getKeyword())
                             .with(
-                                    CustomSearchEngineProperties.MENU_DELEGATE,
+                                    SiteSearchProperties.MENU_DELEGATE,
                                     url.equals(defaultSearchEngine)
                                             ? null
                                             : createMenuDelegate(url))
                             .with(
-                                    CustomSearchEngineProperties.ICON,
+                                    SiteSearchProperties.ICON,
                                     FaviconUtils.createGenericFaviconBitmap(
                                             mContext, mFaviconSize, null))
                             .build();
 
             fetchFavicon(url, model);
-            mModelList.add(new ListItem(CustomSearchEngineRecyclerViewItems.DEFAULT, model));
+            mModelList.add(new ListItem(SiteSearchProperties.ViewType.SEARCH_ENGINE, model));
         }
     }
 
@@ -108,7 +108,7 @@ public class CustomSearchEngineListMediator
         SearchEngineIconUtils.updateIcon(
                 mContext,
                 model,
-                CustomSearchEngineProperties.ICON,
+                SiteSearchProperties.ICON,
                 url,
                 faviconUrl,
                 mLargeIconBridge,
