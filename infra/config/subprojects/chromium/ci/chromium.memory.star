@@ -1421,6 +1421,11 @@ ci.builder(
                     shards = 4,
                 ),
             ),
+            "updater_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
             "updater_tests_system": targets.mixin(
                 # crbug.com/369478225: These are slow and could timeout on the ASAN
                 swarming = targets.swarming(
