@@ -8,13 +8,15 @@ import android.graphics.Bitmap;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 @NullMarked
 public class ExtensionsMenuItemProperties {
 
-    public static final WritableObjectPropertyKey<Bitmap> ICON = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<@Nullable Bitmap> ICON =
+            new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
 

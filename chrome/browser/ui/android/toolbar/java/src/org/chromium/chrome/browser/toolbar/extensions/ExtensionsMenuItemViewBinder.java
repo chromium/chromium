@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -26,10 +27,12 @@ public class ExtensionsMenuItemViewBinder {
             titleView.setText(model.get(ExtensionsMenuItemProperties.TITLE));
         } else if (key == ExtensionsMenuItemProperties.ICON) {
             ImageView iconView = view.findViewById(R.id.extensions_menu_item_icon);
-            Bitmap bitmap = model.get(ExtensionsMenuItemProperties.ICON);
-            // TODO: Investigate the correct resizing method.
-            bitmap.setDensity(120);
+            @Nullable Bitmap bitmap = model.get(ExtensionsMenuItemProperties.ICON);
             iconView.setImageBitmap(bitmap);
+            if (bitmap != null) {
+                // TODO: Investigate the correct resizing method.
+                bitmap.setDensity(120);
+            }
         } else if (key == ExtensionsMenuItemProperties.CLICK_LISTENER) {
             view.findViewById(R.id.extensions_menu_item_context_menu)
                     .setOnClickListener(model.get(ExtensionsMenuItemProperties.CLICK_LISTENER));

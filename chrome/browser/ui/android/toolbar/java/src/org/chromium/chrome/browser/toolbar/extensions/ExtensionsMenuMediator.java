@@ -195,20 +195,16 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         List<ExtensionsMenuTypes.MenuEntryState> entries = mMenuBridge.getMenuEntries();
 
         for (ExtensionsMenuTypes.MenuEntryState entry : entries) {
-            PropertyModel.Builder modelBuilder =
+            PropertyModel model =
                     new PropertyModel.Builder(ExtensionsMenuItemProperties.ALL_KEYS)
                             .with(ExtensionsMenuItemProperties.TITLE, entry.actionButton.text)
                             .with(
                                     ExtensionsMenuItemProperties.CLICK_LISTENER,
                                     (view) ->
                                             onContextMenuButtonClicked(
-                                                    (ListMenuButton) view, entry.id));
-
-            if (entry.actionButton.icon != null) {
-                modelBuilder.with(ExtensionsMenuItemProperties.ICON, entry.actionButton.icon);
-            }
-
-            PropertyModel model = modelBuilder.build();
+                                                    (ListMenuButton) view, entry.id))
+                            .with(ExtensionsMenuItemProperties.ICON, entry.actionButton.icon)
+                            .build();
             mActionModels.add(new ListItem(0, model));
         }
 
@@ -224,9 +220,7 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         }
 
         Bitmap icon = mMenuBridge.getActionIcon(actionIndex);
-        if (icon != null) {
-            model.set(ExtensionsMenuItemProperties.ICON, icon);
-        }
+        model.set(ExtensionsMenuItemProperties.ICON, icon);
     }
 
     private boolean isMainPageVisible() {
