@@ -131,13 +131,13 @@ StyleColor::UnresolvedRelativeColor::UnresolvedRelativeColor(
     const CSSValue& channel1,
     const CSSValue& channel2,
     const CSSValue* alpha,
-    const CSSToLengthConversionData& conversion_data)
+    const CSSLengthResolver& length_resolver)
     : UnresolvedColorFunction(UnresolvedColorFunction::Type::kRelativeColor),
       origin_color_(origin_color.color_or_unresolved_color_function_),
       origin_color_type_(ResolveColorOperandType(origin_color)),
       color_interpolation_space_(color_interpolation_space) {
   auto to_channel =
-      [&conversion_data](const CSSValue& value) -> const CalculationValue* {
+      [&length_resolver](const CSSValue& value) -> const CalculationValue* {
     if (const CSSNumericLiteralValue* numeric =
             DynamicTo<CSSNumericLiteralValue>(value)) {
       if (numeric->IsAngle()) {
@@ -167,9 +167,13 @@ StyleColor::UnresolvedRelativeColor::UnresolvedRelativeColor(
                                                 Length::ValueRange::kAll);
     } else if (const CSSMathFunctionValue* function =
                    DynamicTo<CSSMathFunctionValue>(value)) {
-      // TODO(crbug.com/428657802): This is a temporary fix, we shouldn't mix
-      // SVG "user units" and <number> type, as "user units" should be zoomed.
-      return function->ToCalcValue(conversion_data.Unzoomed());
+      // TODO(crbug.com/487357825): ToCalcValue() should know when to not
+      // apply zoom.
+      float saved_zoom = length_resolver.Zoom();
+      const_cast<CSSLengthResolver&>(length_resolver).SetZoom(1.0f);
+      auto* result = function->ToCalcValue(length_resolver);
+      const_cast<CSSLengthResolver&>(length_resolver).SetZoom(saved_zoom);
+      return result;
     } else {
       NOTREACHED();
     }

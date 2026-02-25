@@ -745,6 +745,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void SetPageColorSchemes(const CSSValue* color_scheme);
   ColorSchemeFlags GetPageColorSchemes() const { return page_color_schemes_; }
+  bool SupportsDarkColorScheme() const;
   mojom::blink::PreferredColorScheme GetPreferredColorScheme() const {
     return preferred_color_scheme_;
   }
@@ -939,7 +940,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   CounterStyleMap& EnsureUserCounterStyleMap();
 
   void UpdateColorScheme();
-  bool SupportsDarkColorScheme();
   void UpdateForcedBackgroundColor();
 
   void UpdateColorSchemeMetrics();

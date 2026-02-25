@@ -4337,7 +4337,7 @@ bool StyleEngine::MarkStyleDirtyAllowed() const {
   return !InRebuildLayoutTree();
 }
 
-bool StyleEngine::SupportsDarkColorScheme() {
+bool StyleEngine::SupportsDarkColorScheme() const {
   return (page_color_schemes_ &
           static_cast<ColorSchemeFlags>(ColorSchemeFlag::kDark)) &&
          (!(page_color_schemes_ &

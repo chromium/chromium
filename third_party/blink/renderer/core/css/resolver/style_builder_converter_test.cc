@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/css_color_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_relative_color_value.h"
+#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 
 namespace blink {
 
@@ -39,7 +40,7 @@ TEST(StyleBuilderConverterTest,
           StyleColor(), 0.5f, 1.));
 
   const ResolveColorValueContext context{
-      .conversion_data = CSSToLengthConversionData(/*element=*/nullptr),
+      .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
       .text_link_colors = TextLinkColors()};
   EXPECT_EQ(ResolveColorValue(*color_mix_value, context), expected);
 }
@@ -70,7 +71,7 @@ TEST(StyleBuilderConverterTest,
           StyleColor(), 0.5f, 1.));
 
   const ResolveColorValueContext context{
-      .conversion_data = CSSToLengthConversionData(/*element=*/nullptr),
+      .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
       .text_link_colors = TextLinkColors()};
   EXPECT_EQ(ResolveColorValue(*color_mix_value, context), expected);
 }

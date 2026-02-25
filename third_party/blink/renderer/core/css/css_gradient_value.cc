@@ -388,7 +388,7 @@ static Color ResolveStopColor(const CSSToLengthConversionData& conversion_data,
                               const ComputedStyle& style) {
   mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   const ResolveColorValueContext context{
-      .conversion_data = conversion_data,
+      .length_resolver = conversion_data,
       .text_link_colors = document.GetTextLinkColors(),
       .used_color_scheme = color_scheme,
       .color_provider = document.GetColorProviderForPainting(color_scheme),
@@ -443,7 +443,7 @@ static const CSSValue* GetComputedStopColor(const CSSValue& color,
   const mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   // TODO(40946458): Don't use default length resolver here!
   const ResolveColorValueContext context{
-      .conversion_data = CSSToLengthConversionData(/*element=*/nullptr),
+      .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
       .text_link_colors = TextLinkColors(),
       .used_color_scheme = color_scheme};
   const StyleColor style_stop_color = ResolveColorValue(color, context);

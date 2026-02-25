@@ -2685,7 +2685,7 @@ ShadowData StyleBuilderConverter::ConvertShadow(
       black_text_link_colors.SetActiveLinkColor(Color::kBlack);
 
       const ResolveColorValueContext context{
-          .conversion_data = conversion_data,
+          .length_resolver = conversion_data,
           .text_link_colors = black_text_link_colors};
       color = ResolveColorValue(*shadow.color, context);
       if (!color.IsAbsoluteColor()) {
@@ -2904,7 +2904,7 @@ StyleColor ResolveColorValueImpl(const CSSValue& value,
     // TODO(crbug.com/40238188): Not sure what is appropriate to return when
     // both mix amounts are zero.
     color_mix_value->NormalizePercentages(mix_amount, alpha_multiplier,
-                                          context.conversion_data);
+                                          context.length_resolver);
     const StyleColor::UnresolvedColorMix* unresolved_color_mix =
         MakeGarbageCollected<StyleColor::UnresolvedColorMix>(
             color_mix_value->ColorInterpolationSpace(),
@@ -2930,7 +2930,7 @@ StyleColor ResolveColorValueImpl(const CSSValue& value,
             origin_color, relative_color_value->ColorInterpolationSpace(),
             relative_color_value->Channel0(), relative_color_value->Channel1(),
             relative_color_value->Channel2(), relative_color_value->Alpha(),
-            context.conversion_data);
+            context.length_resolver);
     // https://drafts.csswg.org/css-color-5/#resolving-rcs
     // If the origin color is resolvable at computed-value time, the relative
     // color function should be resolved at computed-value time as well.
@@ -2951,7 +2951,7 @@ StyleColor ResolveColorValueImpl(const CSSValue& value,
 
   if (auto* unresolved_color_value =
           DynamicTo<cssvalue::CSSUnresolvedColorValue>(value)) {
-    return StyleColor(unresolved_color_value->Resolve(context.conversion_data));
+    return StyleColor(unresolved_color_value->Resolve(context.length_resolver));
   }
 
   auto& light_dark_pair = To<CSSLightDarkValuePair>(value);
@@ -3009,7 +3009,7 @@ StyleColor StyleBuilderConverter::ConvertStyleColor(
       state.StyleBuilder().UsedColorScheme();
   auto& document = state.GetDocument();
   const ResolveColorValueContext context{
-      .conversion_data = state.CssToLengthConversionData(),
+      .length_resolver = state.CssToLengthConversionData(),
       .text_link_colors = document.GetTextLinkColors(),
       .used_color_scheme = color_scheme,
       .color_provider = document.GetColorProviderForPainting(color_scheme),
@@ -3436,7 +3436,7 @@ static const CSSValue& ComputeColorValue(
     const Document& document,
     mojom::blink::ColorScheme color_scheme) {
   const ResolveColorValueContext context{
-      .conversion_data = conversion_data,
+      .length_resolver = conversion_data,
       .text_link_colors = document.GetTextLinkColors(),
       .used_color_scheme = color_scheme,
       .color_provider = document.GetColorProviderForPainting(color_scheme),

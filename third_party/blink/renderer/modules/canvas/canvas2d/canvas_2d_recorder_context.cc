@@ -1005,7 +1005,7 @@ ColorParseResult Canvas2DRecorderContext::ParseColorOrCurrentColor(
                : kDefaultTextLinkColors;
     // TODO(40946458): Don't use default length resolver here!
     const ResolveColorValueContext context{
-        .conversion_data = CSSToLengthConversionData(/*element=*/nullptr),
+        .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
         .text_link_colors = text_link_colors,
         .used_color_scheme = color_scheme_,
         .color_provider = GetColorProvider(),

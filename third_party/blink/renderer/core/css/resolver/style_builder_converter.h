@@ -585,7 +585,7 @@ struct ResolveColorValueContext {
   STACK_ALLOCATED();
 
  public:
-  const CSSToLengthConversionData& conversion_data;
+  const CSSLengthResolver& length_resolver;
   const TextLinkColors& text_link_colors;
   const mojom::blink::ColorScheme used_color_scheme =
       mojom::blink::ColorScheme::kLight;

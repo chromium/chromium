@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
+#include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 
@@ -76,40 +77,43 @@ StyleRuleFontPaletteValues::GetOverrideColorsAsVector(
   if (!override_colors || !override_colors->IsValueList()) {
     return {};
   }
-
-  // Note: This function should not allocate Oilpan object, e.g. `CSSValue`,
-  // because this function is called in font threads to determine primary
-  // font data via `CSSFontSelector::GetFontData()`.
-  // The test[1] reaches here.
-  // [1] https://wpt.live/css/css-fonts/font-palette-35.html
-  // TODO(yosin): Should we use ` ThreadState::NoAllocationScope` for main
-  // thread? Font threads hit `DCHECK` because they don't have `ThreadState'.
-
-  auto ConvertToColor =
-      [](const CSSValuePair& override_pair) -> std::optional<Color> {
-    if (override_pair.Second().IsIdentifierValue()) {
-      const CSSIdentifierValue& color_identifier =
-          To<CSSIdentifierValue>(override_pair.Second());
-      // The value won't be a system color according to parsing, so we can pass
-      // a fixed color scheme, color provider and `false` to indicate that we
-      // are not within a WebApp context.
-      return StyleColor::ColorFromKeyword(
-          color_identifier.GetValueID(), mojom::blink::ColorScheme::kLight,
-          /*color_provider=*/nullptr, /*is_in_web_app_scope=*/false);
-    }
-    if (const cssvalue::CSSColor* css_color =
-            DynamicTo<cssvalue::CSSColor>(override_pair.Second())) {
-      return css_color->Value();
-    }
-    // TODO(crbug.com/417398613): The code above needs to call
-    // ResolveColorValue() with an appropriate context to resolve all kinds of
-    // absolute colors here.
-    // Ignore complex colors for now to avoid crashing.
-    return std::nullopt;
-  };
-
+  // Colors depending on color scheme are not valid here, so this value
+  // doesn't matter.
+  // https://drafts.csswg.org/css-fonts/#override-color
+  const mojom::blink::ColorScheme used_color_scheme =
+      mojom::blink::ColorScheme::kLight;
   MediaValues* media_values =
       MediaValues::CreateDynamicIfFrameExists(document.GetFrame());
+  const ResolveColorValueContext color_context{
+      .length_resolver = *media_values,
+      .text_link_colors = document.GetTextLinkColors(),
+      .used_color_scheme = used_color_scheme,
+      .color_provider = document.GetColorProviderForPainting(used_color_scheme),
+      .is_in_web_app_scope = document.IsInWebAppScope(),
+      .for_visited_link = false};
+
+  auto ConvertToColor =
+      [&color_context](
+          const CSSValuePair& override_pair) -> std::optional<Color> {
+    const CSSValue& color_value = override_pair.Second();
+
+    if (color_value.IsIdentifierValue()) {
+      const CSSIdentifierValue& color_identifier =
+          To<CSSIdentifierValue>(color_value);
+      return StyleColor::ColorFromKeyword(
+          color_identifier.GetValueID(), color_context.used_color_scheme,
+          color_context.color_provider, color_context.is_in_web_app_scope);
+    }
+    if (const cssvalue::CSSColor* css_color =
+            DynamicTo<cssvalue::CSSColor>(color_value)) {
+      return css_color->Value();
+    }
+    StyleColor style_color = ResolveColorValue(color_value, color_context);
+    if (style_color.IsAbsoluteColor()) {
+      return style_color.GetColor();
+    }
+    return std::nullopt;
+  };
 
   Vector<FontPalette::FontPaletteOverride> return_overrides;
   const CSSValueList& overrides_list = To<CSSValueList>(*override_colors);
