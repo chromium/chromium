@@ -12644,11 +12644,11 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
 
         <message name="IDS_RESUMPTION_RAIL_IPH_TITLE" desc="The title text of an IPH that shows up to educate users about the Resumption Rail feature entrypoint.">
-          Continue your tasks
+          Tab groups have moved
         </message>
 
-        <message name="IDS_RESUMPTION_RAIL_IPH_BODY" desc="The text of an IPH that shows up to educate users about the Resumption Rail feature entrypoint.">
-          Quickly switch between your tab groups and your recent AI conversations without losing your place.
+        <message name="IDS_RESUMPTION_RAIL_IPH_BODY" desc="The body text of an IPH that shows up to educate users about the Resumption Rail feature entrypoint.">
+          We’re moving tab groups to give your bookmarks more breathing room.
         </message>
 
       <!-- Saved Tab Group Error -->
