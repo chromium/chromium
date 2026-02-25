@@ -14,7 +14,7 @@
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (relative positioned, relayout-boundary) DIV class='container'",
+      "name": "LayoutBlockFlow (relative positioned) DIV class='container'",
       "position": [58, 230],
       "bounds": [122, 462],
       "contentsOpaque": true,
