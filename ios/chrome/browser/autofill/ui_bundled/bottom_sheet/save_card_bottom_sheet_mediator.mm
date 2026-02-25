@@ -213,6 +213,16 @@ static constexpr base::TimeDelta kConfirmationDismissDelayIfVoiceOverRunning =
       SaveCreditCardPromptOverlayType::kBottomSheet);
 }
 
+- (SaveCardActionType)actionType {
+  if (_saveCardBottomSheetModel->save_card_delegate()->is_for_upload()) {
+    return SaveCardActionType::kUpload;
+  }
+  if (_saveCardBottomSheetModel->save_card_delegate()->is_for_local_save()) {
+    return SaveCardActionType::kLocal;
+  }
+  return SaveCardActionType::kSaveScanAndFill;
+}
+
 #pragma mark - SaveCardBottomSheetDataSource
 
 - (AboveTitleImageLogoType)logoType {

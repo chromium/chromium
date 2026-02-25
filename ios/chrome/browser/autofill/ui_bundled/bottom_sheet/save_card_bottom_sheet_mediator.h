@@ -15,6 +15,14 @@
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_mutator.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 
+// Represents the different types of save card actions that the bottom sheet can
+// handle.
+enum class SaveCardActionType {
+  kLocal,
+  kUpload,
+  kSaveScanAndFill,
+};
+
 // This mediator tracks SaveCardBottomSheetModel to update the view. It also
 // receives user actions to be communicated to the model.
 @interface SaveCardBottomSheetMediator
@@ -40,6 +48,11 @@
 
 // Returns whether bottomsheet is already in the process of dismissing.
 - (BOOL)isDismissingForTesting;
+
+// Returns the specific type of save card action for this bottom sheet.
+// This is used by the coordinator to determine which view controller flow to
+// present.
+- (SaveCardActionType)actionType;
 
 #pragma mark - SaveCardBottomSheetModel Observer methods
 
