@@ -224,6 +224,8 @@ public class AndroidTaskUtils {
         }
 
         ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (am == null) return null;
+
         for (var appTask : am.getAppTasks()) {
             var taskInfo = appTask.getTaskInfo();
             if (taskInfo == null) continue;

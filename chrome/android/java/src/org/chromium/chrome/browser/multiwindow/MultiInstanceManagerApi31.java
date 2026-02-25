@@ -788,7 +788,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             ActivityManager.RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
             taskData.append(
                     "Task with id: "
-                            + (info != null ? info.id : "NOT_SET")
+                            + (info != null ? info.taskId : "NOT_SET")
                             + " has base activity: "
                             + baseActivity
                             + ".\n");
@@ -1119,7 +1119,21 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         if (taskId == INVALID_TASK_ID) return false;
 
         // Launch the intent in the existing activity and bring the task to foreground if it is
-        // alive.
+        // alive. AppTask.startActivity() is used to robustly bring specific tasks to the front,
+        // which helps bypass Android's Background Activity Launch (BAL) restrictions when a
+        // notification is tapped while the target activity is backgrounded (minimized).
+        AppTask appTask = AndroidTaskUtils.getAppTaskFromId(activity, taskId);
+        if (appTask != null) {
+            // Remove NEW_TASK to prevent the OS from spawning a duplicate instance,
+            // and strictly target the existing activity class.
+            intent.removeFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.setClass(ContextUtils.getApplicationContext(), activity.getClass());
+            appTask.startActivity(ContextUtils.getApplicationContext(), intent, null);
+            return true;
+        }
+
+        // Fallback: If the OS lost the AppTask record but our Activity is still alive,
+        // manually inject the intent and attempt a best effort move to front.
         ((ChromeTabbedActivity) activity).onNewIntent(intent);
         ApiCompatibilityUtils.moveTaskToFront(activity, taskId, 0);
         return true;
