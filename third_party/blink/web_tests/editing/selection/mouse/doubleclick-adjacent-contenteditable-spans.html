@@ -1,0 +1,49 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+// Test to check if double-click selects the whole word in adjacent
+// contenteditable spans without whitespace between them.
+// https://crbug.com/40848794
+
+function computePoint(selection) {
+  const target = selection.document.getElementById('target');
+  const width = target.offsetWidth;
+  const height = target.offsetHeight;
+  const left = selection.computeLeft(target);
+  const top = selection.computeTop(target);
+  return {x: left + width / 2, y: top + height / 2};
+}
+
+async function doubleClick(selection) {
+  const point = computePoint(selection);
+  await new Promise(resolve => {
+    chrome.gpuBenchmarking.pointerActionSequence([{
+      source: 'mouse',
+      actions: [
+        {name: 'pointerMove', x: point.x, y: point.y},
+        {name: 'pointerDown', x: point.x, y: point.y},
+        {name: 'pointerUp'},
+        {name: 'pointerDown', x: point.x, y: point.y},
+        {name: 'pointerUp'},
+      ],
+    }], resolve);
+  });
+}
+
+// Double-clicking on the middle adjacent contenteditable span should select
+// only its text, not crossing into sibling spans.
+selection_test(
+    '<div><span contenteditable>SpanNumber1</span><span contenteditable id="target">SpanNumber2</span><span contenteditable>SpanNumber3</span></div>',
+    selection => doubleClick(selection),
+    '<div><span contenteditable>SpanNumber1</span><span contenteditable id="target">^SpanNumber2|</span><span contenteditable>SpanNumber3</span></div>',
+    'Double-click selects word within middle adjacent contenteditable span');
+
+// Double-clicking on the first adjacent contenteditable span.
+selection_test(
+    '<div><span contenteditable id="target">SpanNumber1</span><span contenteditable>SpanNumber2</span><span contenteditable>SpanNumber3</span></div>',
+    selection => doubleClick(selection),
+    '<div><span contenteditable id="target">^SpanNumber1|</span><span contenteditable>SpanNumber2</span><span contenteditable>SpanNumber3</span></div>',
+    'Double-click selects word within first adjacent contenteditable span');
+</script>

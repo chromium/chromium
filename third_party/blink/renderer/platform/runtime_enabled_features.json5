@@ -1026,6 +1026,13 @@
       status: "stable",
     },
     {
+      // Clamps word boundary detection to the contenteditable scope when
+      // adjacent contenteditable spans have no whitespace between them.
+      // See https://crbug.com/40848794.
+      name: "ClampWordBoundaryToContentEditableScope",
+      status: "stable",
+    },
+    {
       // Set currentTarget to null after dispatch for EventTarget.
       // This was added in M142 and can be removed after M144.
       // https://issues.chromium.org/issues/346766786

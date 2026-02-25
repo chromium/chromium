@@ -144,6 +144,38 @@ TEST_F(VisibleUnitsWordTest, StartOfWordCrossing) {
   EXPECT_EQ("<b>abc</b><i>def|</i>", DoStartOfWord("<b>abc</b><i>def</i>|"));
 }
 
+// https://crbug.com/40848794
+TEST_F(VisibleUnitsWordTest, StartOfWordAdjacentContentEditableSpans) {
+  SetBodyContent(
+      "<div>"
+      "<span contenteditable=\"true\">SpanNumber1</span>"
+      "<span contenteditable=\"true\" id=\"target\">SpanNumber2</span>"
+      "<span contenteditable=\"true\">SpanNumber3</span>"
+      "</div>");
+  const Element* target = GetDocument().getElementById(AtomicString("target"));
+  const Position position(target->firstChild(), 5);
+  const Position result = StartOfWordPosition(position);
+  ASSERT_FALSE(result.IsNull());
+  ASSERT_TRUE(result.IsConnected());
+  EXPECT_EQ(Position(target->firstChild(), 0), result);
+}
+
+// https://crbug.com/40848794
+TEST_F(VisibleUnitsWordTest, EndOfWordAdjacentContentEditableSpans) {
+  SetBodyContent(
+      "<div>"
+      "<span contenteditable=\"true\">SpanNumber1</span>"
+      "<span contenteditable=\"true\" id=\"target\">SpanNumber2</span>"
+      "<span contenteditable=\"true\">SpanNumber3</span>"
+      "</div>");
+  const Element* target = GetDocument().getElementById(AtomicString("target"));
+  const Position position(target->firstChild(), 5);
+  const Position result = EndOfWordPosition(position);
+  ASSERT_FALSE(result.IsNull());
+  ASSERT_TRUE(result.IsConnected());
+  EXPECT_EQ(Position(target->firstChild(), 11), result);
+}
+
 TEST_F(VisibleUnitsWordTest, StartOfWordFirstLetter) {
   InsertStyleElement("p::first-letter {font-size:200%;}");
   // Note: Expectations should match with |StartOfWordBasic|.
