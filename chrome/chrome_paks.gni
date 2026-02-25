@@ -572,11 +572,6 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/glic/fre:resources",
         "//chrome/browser/resources/glic/shared:resources",
       ]
-      if (!is_android) {
-        sources += [ "$root_gen_dir/chrome/glic_untrusted_resources.pak" ]
-        deps +=
-            [ "//chrome/browser/resources/glic/selection_overlay:resources" ]
-      }
     }
 
     if (enterprise_watermark) {
