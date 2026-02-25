@@ -1258,8 +1258,7 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   // If is_waiting_for_pdf_frame_ is true, we know the current page is a pdf,
   // but we don't have the necessary info to call OnActiveAXTreeIDChanged
   // accurately, so wait until the pdf frame is loaded.
-  if (is_pdf_with_frame_ || (features::IsReadAnythingWithReadabilityEnabled() &&
-                             is_waiting_for_pdf_frame_)) {
+  if (is_pdf_with_frame_ || is_waiting_for_pdf_frame_) {
     return;
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
