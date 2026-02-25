@@ -56,6 +56,24 @@ class TestingAimEligibilityService : public ChromeAimEligibilityService {
   ~TestingAimEligibilityService() override = default;
 
   bool IsAimEligible() const override { return true; }
+  bool IsCobrowseEligible() const override { return is_cobrowse_eligible_; }
+
+  void SetIsCobrowseEligible(bool eligible) {
+    if (is_cobrowse_eligible_ == eligible) {
+      return;
+    }
+    is_cobrowse_eligible_ = eligible;
+    callbacks_.Notify();
+  }
+
+  base::CallbackListSubscription RegisterEligibilityChangedCallback(
+      base::RepeatingClosure callback) override {
+    return callbacks_.Add(std::move(callback));
+  }
+
+ private:
+  bool is_cobrowse_eligible_ = true;
+  base::RepeatingClosureList callbacks_;
 };
 
 class TestingContextualTasksUiService
@@ -183,6 +201,14 @@ class ContextualTasksButtonInteractiveTestBase : public InteractiveBrowserTest {
   contextual_tasks::ContextualTasksUiService* GetUiService() {
     return contextual_tasks::ContextualTasksUiServiceFactory::
         GetForBrowserContext(browser()->profile());
+  }
+
+  auto SetIsCobrowseEligible(bool eligible) {
+    return Do([&, eligible]() {
+      auto* service = static_cast<TestingAimEligibilityService*>(
+          AimEligibilityServiceFactory::GetForProfile(browser()->profile()));
+      service->SetIsCobrowseEligible(eligible);
+    });
   }
 
  private:
@@ -428,6 +454,22 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton),
       RemoveTaskFromTab(0),
       WaitForHide(ContextualTasksButton::kContextualTasksToolbarButton));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
+                       ButtonVisibilityIsTiedToAimCobrowseEligibility) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(ContextualTasksButton::kContextualTasksToolbarButton),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton),
+      SetIsCobrowseEligible(false),
+      WaitForHide(ContextualTasksButton::kContextualTasksToolbarButton),
+      SetIsCobrowseEligible(true),
+      WaitForShow(ContextualTasksButton::kContextualTasksToolbarButton));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
