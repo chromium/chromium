@@ -19,6 +19,7 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/client_data_delegate_android.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_delegate_factory.h"
 #include "components/enterprise/client_certificates/core/browser_cloud_management_delegate.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/dm_server_client.h"
@@ -198,6 +199,13 @@ std::unique_ptr<enterprise_reporting::ReportingDelegateFactory>
 ChromeBrowserCloudManagementControllerAndroid::GetReportingDelegateFactory() {
   return std::make_unique<
       enterprise_reporting::ReportingDelegateFactoryAndroid>();
+}
+
+std::unique_ptr<enterprise_reporting::SaasUsageReportingDelegateFactory>
+ChromeBrowserCloudManagementControllerAndroid::
+    GetSaasUsageReportingDelegateFactory() {
+  // SaaS usage reporting is not supported on Android.
+  return nullptr;
 }
 
 void ChromeBrowserCloudManagementControllerAndroid::SetGaiaURLLoaderFactory(

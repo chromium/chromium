@@ -11,6 +11,7 @@
 #import "base/task/task_traits.h"
 #import "components/enterprise/browser/reporting/report_generator.h"
 #import "components/enterprise/browser/reporting/report_scheduler.h"
+#import "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_delegate_factory.h"
 #import "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #import "components/enterprise/client_certificates/core/certificate_store.h"
 #import "components/enterprise/client_certificates/core/features.h"
@@ -120,6 +121,13 @@ ChromeBrowserCloudManagementControllerIOS::GetBestEffortTaskRunner() {
 std::unique_ptr<enterprise_reporting::ReportingDelegateFactory>
 ChromeBrowserCloudManagementControllerIOS::GetReportingDelegateFactory() {
   return std::make_unique<enterprise_reporting::ReportingDelegateFactoryIOS>();
+}
+
+std::unique_ptr<enterprise_reporting::SaasUsageReportingDelegateFactory>
+ChromeBrowserCloudManagementControllerIOS::
+    GetSaasUsageReportingDelegateFactory() {
+  // SaaS usage reporting is not supported on iOS.
+  return nullptr;
 }
 
 void ChromeBrowserCloudManagementControllerIOS::SetGaiaURLLoaderFactory(

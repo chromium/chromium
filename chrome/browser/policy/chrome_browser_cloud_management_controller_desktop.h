@@ -74,6 +74,8 @@ class ChromeBrowserCloudManagementControllerDesktop
       override;
   std::unique_ptr<enterprise_reporting::ReportingDelegateFactory>
   GetReportingDelegateFactory() override;
+  std::unique_ptr<enterprise_reporting::SaasUsageReportingDelegateFactory>
+  GetSaasUsageReportingDelegateFactory() override;
   void SetGaiaURLLoaderFactory(scoped_refptr<network::SharedURLLoaderFactory>
                                    url_loader_factory) override;
   bool ReadyToCreatePolicyManager() override;

@@ -73,6 +73,8 @@
 #include "chrome/browser/enterprise/client_certificates/cert_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/device_trust_key_manager_impl.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
+#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_reporting_delegate_factory_desktop.h"
+#include "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_delegate_factory.h"
 #include "components/enterprise/client_certificates/core/browser_cloud_management_delegate.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/client_certificates/core/dm_server_client.h"
@@ -262,6 +264,17 @@ std::unique_ptr<enterprise_reporting::ReportingDelegateFactory>
 ChromeBrowserCloudManagementControllerDesktop::GetReportingDelegateFactory() {
   return std::make_unique<
       enterprise_reporting::ReportingDelegateFactoryDesktop>();
+}
+
+std::unique_ptr<enterprise_reporting::SaasUsageReportingDelegateFactory>
+ChromeBrowserCloudManagementControllerDesktop::
+    GetSaasUsageReportingDelegateFactory() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return nullptr;
+#else
+  return std::make_unique<
+      enterprise_reporting::SaasUsageReportingDelegateFactoryDesktop>();
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void ChromeBrowserCloudManagementControllerDesktop::SetGaiaURLLoaderFactory(

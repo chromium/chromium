@@ -15,10 +15,23 @@
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_aggregation_utils.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_factory.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_uploader.h"
+#include "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_delegate_factory.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
 
 namespace enterprise_reporting {
+
+// static
+std::unique_ptr<SaasUsageReportScheduler> SaasUsageReportScheduler::Create(
+    const SaasUsageReportingDelegateFactory* delegate_factory) {
+  PrefService* pref_service = delegate_factory->GetPrefService();
+  return std::make_unique<SaasUsageReportScheduler>(
+      pref_service,
+      std::make_unique<SaasUsageReportFactory>(
+          pref_service, delegate_factory->GetSaasUsageReportFactoryDelegate()),
+      delegate_factory->GetSaasUsageReportUploader(),
+      delegate_factory->GetSaasUsageReportSchedulerDelegate());
+}
 
 SaasUsageReportScheduler::SaasUsageReportScheduler(
     PrefService* pref_service,

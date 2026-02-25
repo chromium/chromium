@@ -25,6 +25,8 @@
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
+#include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_scheduler.h"
+#include "components/enterprise/browser/reporting/saas_usage/saas_usage_reporting_delegate_factory.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
@@ -208,12 +210,12 @@ void ChromeBrowserCloudManagementController::Init(
     std::move(create_cloud_policy_manager_callback_).Run();
   }
 
-  // Post the task of CreateReportScheduler to run on best effort after launch
+  // Post the task of InitializeReporting to run on best effort after launch
   // is completed.
   delegate_->GetBestEffortTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &ChromeBrowserCloudManagementController::CreateReportScheduler,
+          &ChromeBrowserCloudManagementController::InitializeReporting,
           weak_factory_.GetWeakPtr()));
 
   MachineLevelUserCloudPolicyManager* policy_manager =
@@ -397,8 +399,8 @@ void ChromeBrowserCloudManagementController::OnServiceAccountSet(
 void ChromeBrowserCloudManagementController::ShutDown() {
   NotifyShutdown();
   delegate_->ShutDown();
-  if (report_scheduler_)
-    report_scheduler_.reset();
+  report_scheduler_.reset();
+  saas_usage_report_scheduler_.reset();
 }
 
 enterprise_connectors::DeviceTrustKeyManager*
@@ -517,7 +519,7 @@ void ChromeBrowserCloudManagementController::
   NotifyPolicyRegisterFinished(true);
 }
 
-void ChromeBrowserCloudManagementController::CreateReportScheduler() {
+void ChromeBrowserCloudManagementController::InitializeReporting() {
   cloud_policy_client_ = std::make_unique<policy::CloudPolicyClient>(
       delegate_->GetDeviceManagementService(),
       delegate_->GetSharedURLLoaderFactory(),
@@ -537,6 +539,13 @@ void ChromeBrowserCloudManagementController::CreateReportScheduler() {
 
   report_scheduler_ = std::make_unique<enterprise_reporting::ReportScheduler>(
       std::move(params));
+
+  if (auto saas_usage_reporting_delegate_factory =
+          delegate_->GetSaasUsageReportingDelegateFactory()) {
+    saas_usage_report_scheduler_ =
+        enterprise_reporting::SaasUsageReportScheduler::Create(
+            saas_usage_reporting_delegate_factory.get());
+  }
 
   NotifyCloudReportingLaunched();
 }

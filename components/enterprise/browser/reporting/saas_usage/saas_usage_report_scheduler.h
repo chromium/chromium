@@ -18,6 +18,8 @@
 
 namespace enterprise_reporting {
 
+class SaasUsageReportingDelegateFactory;
+
 // Schedules generation and upload of SaaS usage reports.
 //
 // Reports are generated and uploaded every 4 hours, provided the delegate
@@ -39,6 +41,9 @@ class SaasUsageReportScheduler {
         base::RepeatingClosure callback) = 0;
     virtual bool IsReady() = 0;
   };
+
+  static std::unique_ptr<SaasUsageReportScheduler> Create(
+      const SaasUsageReportingDelegateFactory* delegate_factory);
 
   explicit SaasUsageReportScheduler(
       PrefService* pref_service,
