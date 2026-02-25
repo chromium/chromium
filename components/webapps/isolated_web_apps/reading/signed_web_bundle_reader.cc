@@ -492,12 +492,6 @@ class SignedWebBundleReaderImpl : public SignedWebBundleReader {
   std::optional<GURL> primary_url_;
   base::flat_map<GURL, web_package::mojom::BundleResponseLocationPtr> entries_;
 
-  // Accumulates `ReadResponse` requests while the parser is disconnected, and
-  // runs them after reconnection of the parser succeeds or fails.
-  std::vector<std::pair<web_package::mojom::BundleResponseLocationPtr,
-                        ResponseCallback>>
-      pending_read_responses_;
-
   base::FilePath web_bundle_path_;
   std::optional<GURL> base_url_;
   std::unique_ptr<data_decoder::SafeWebBundleParser> parser_;
