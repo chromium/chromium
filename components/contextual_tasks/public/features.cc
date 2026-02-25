@@ -69,6 +69,11 @@ const base::FeatureParam<bool> kContextualTasksLockAndUnlockInputCapability(
     "ContextualTasksLockAndUnlockInputCapability",
     true);
 
+const base::FeatureParam<bool> kContextualTasksEnableBasicMode(
+    &kContextualTasks,
+    "ContextualTasksEnableBasicMode",
+    true);
+
 const base::FeatureParam<bool> kContextualTasksBasicModeZOrder(
     &kContextualTasks,
     "ContextualTasksBasicModeZOrder",
@@ -359,6 +364,10 @@ bool GetEnableNativeZeroStateSuggestions() {
 
 bool ShouldUseSearchResultsScope() {
   return base::FeatureList::IsEnabled(kContextualTasksScopeChange);
+}
+
+bool GetIsBasicModeEnabled() {
+  return kContextualTasksEnableBasicMode.Get();
 }
 
 bool ShouldEnableBasicModeZOrder() {

@@ -183,6 +183,10 @@ export class ContextualTasksAppElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      enableBasicMode_: {
+        type: Boolean,
+        reflect: true,
+      },
       enableBasicModeZOrder_: {
         type: Boolean,
         reflect: true,
@@ -209,6 +213,10 @@ export class ContextualTasksAppElement extends CrLitElement {
   protected accessor friendlyZeroStateTitleAfterName_: string =
       loadTimeData.getString('friendlyZeroStateTitleAfterName');
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  // Whether basic mode is enabled. If disabled, isInBasicMode_,
+  // isNavigatingFromAiPage_, and pendingBasicMode_ will not be updated.
+  protected accessor enableBasicMode_: boolean =
+      loadTimeData.getBoolean('enableBasicMode');
   protected accessor enableBasicModeZOrder_: boolean =
       loadTimeData.getBoolean('enableBasicModeZOrder');
   protected accessor isAiPage_: boolean = true;
@@ -299,6 +307,9 @@ export class ContextualTasksAppElement extends CrLitElement {
       // TODO(crbug.com/474359572): Rename this to be more descriptive of what
       // it actually does.
       callbackRouter.hideInput.addListener(() => {
+        if (!this.enableBasicMode_) {
+          return;
+        }
         // OnBeforeRequest will trigger before the navigation, so this is needed
         // to prevent the input from being hidden when navigating to a new
         // page. However, while this guard prevents flickering, it also
@@ -313,6 +324,9 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.isInBasicMode_ = true;
       }),
       callbackRouter.restoreInput.addListener(() => {
+        if (!this.enableBasicMode_) {
+          return;
+        }
         // OnBeforeRequest will trigger before the navigation, so this is needed
         // to prevent the input from being restored when navigating to a new
         // page. However, while this guard prevents flickering, it also
@@ -445,7 +459,7 @@ export class ContextualTasksAppElement extends CrLitElement {
 
     const threadUrlAsUrl = new URL(threadUrl);
     // If the thread URL has parameters to open history, set basic mode.
-    if (this.hasThreadHistoryParams(threadUrlAsUrl) &&
+    if (this.enableBasicMode_ && this.hasThreadHistoryParams(threadUrlAsUrl) &&
         this.forceBasicModeIfOpeningThreadHistory_) {
       this.isInBasicMode_ = true;
     }
@@ -554,7 +568,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (!isAiPage) {
       // If this is not an AI page, show the ghost loader.
       this.setIsGhostLoaderVisible(true);
-    } else if (wasAiPage) {
+    } else if (this.enableBasicMode_ && wasAiPage) {
       // Since this is a navigation from one AI page to another,
       // enter basic mode to avoid flickering between navigations.
       this.isNavigatingFromAiPage_ = true;
@@ -847,7 +861,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   private updateBasicModeAfterNavigation() {
-    if (!this.isNavigatingFromAiPage_) {
+    if (!this.enableBasicMode_ || !this.isNavigatingFromAiPage_) {
       return;
     }
     // If basic mode was changed while loading the

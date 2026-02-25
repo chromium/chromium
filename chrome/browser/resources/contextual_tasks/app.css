@@ -256,12 +256,12 @@
   background: transparent;
 }
 
-:host([is-in-basic-mode_][enable-basic-mode-zorder_]) #threadFrame {
+:host([enable-basic-mode_][is-in-basic-mode_][enable-basic-mode-zorder_]) #threadFrame {
   z-index: 1;
   position: relative;
 }
 
-:host([is-in-basic-mode_][enable-basic-mode-zorder_]) #flexCenterContainer {
+:host([enable-basic-mode_][is-in-basic-mode_][enable-basic-mode-zorder_]) #flexCenterContainer {
   z-index: 0;
 }
 
@@ -516,7 +516,7 @@ error-page {
 }
 
 /* Pseudo element to cover the AIM filter bar while in zero state. */
-:host([is-zero-state_]:not([is-in-basic-mode_])) #toolbarOverlay::after {
+:host([is-zero-state_]:not([enable-basic-mode_][is-in-basic-mode_])) #toolbarOverlay::after {
   background-color: var(--search-background-color);
   content: '';
   display: block;

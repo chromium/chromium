@@ -202,6 +202,9 @@ extern bool GetEnableNativeZeroStateSuggestions();
 // kChromeSyncOAuth2Scope.
 extern bool ShouldUseSearchResultsScope();
 
+// Returns whether basic mode should be enabled.
+extern bool GetIsBasicModeEnabled();
+
 // Returns whether the z-order of the composebox should be changed in basic mode.
 extern bool ShouldEnableBasicModeZOrder();
 
