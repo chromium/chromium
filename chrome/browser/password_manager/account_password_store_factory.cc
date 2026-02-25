@@ -28,6 +28,9 @@
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync/base/data_type_histogram.h"
+#include "components/sync/base/pref_names.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace {
@@ -41,6 +44,36 @@ network::mojom::NetworkContext* GetNetworkContext(Profile* profile) {
              ? profile->GetDefaultStoragePartition()->GetNetworkContext()
              : nullptr;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void MaybeClearStatsTableForSyncToSigninMigration(
+    scoped_refptr<PasswordStoreInterface> store,
+    PrefService* prefs) {
+  if (!prefs->GetBoolean(
+          syncer::prefs::kCleanUpStatsTableFromAccountPasswordStore)) {
+    return;
+  }
+  syncer::RecordSyncToSigninMigrationStatsTableCleanupStep(
+      syncer::SyncToSigninMigrationStatsTableCleanupStep::kCleanupStarted);
+  base::OnceClosure callback = base::BindOnce(
+      [](PrefService* prefs) {
+        prefs->ClearPref(
+            syncer::prefs::kCleanUpStatsTableFromAccountPasswordStore);
+        syncer::RecordSyncToSigninMigrationStatsTableCleanupStep(
+            syncer::SyncToSigninMigrationStatsTableCleanupStep::
+                kCleanupFinishedAndPrefCleared);
+      },
+      prefs);
+  if (auto* stats_store = store->GetSmartBubbleStatsStore()) {
+    stats_store->RemoveStatisticsByOriginAndTime(
+        base::NullCallback(), base::Time::Min(), base::Time::Max(),
+        std::move(callback));
+  } else {
+    // Mark the cleanup as finished if there's no stats store.
+    std::move(callback).Run();
+  }
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     content::BrowserContext* context) {
@@ -63,7 +96,9 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
       std::make_unique<password_manager::PasswordAffiliationSourceAdapter>();
   password_affiliation_adapter->RegisterPasswordStore(ps.get());
   affiliation_service->RegisterSource(std::move(password_affiliation_adapter));
-#endif
+  // Clear the stats table from the account store, if marked.
+  MaybeClearStatsTableForSyncToSigninMigration(ps, profile->GetPrefs());
+#endif  // !BUILDFLAG(IS_ANDROID)
   return ps;
 }
 
