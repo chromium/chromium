@@ -65,6 +65,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/clap_builder-v4/src/parser/validator.rs",
     "//third_party/rust/chromium_crates_io/vendor/clap_builder-v4/src/util/any_value.rs",
     "//third_party/rust/chromium_crates_io/vendor/clap_builder-v4/src/util/color.rs",
+    "//third_party/rust/chromium_crates_io/vendor/clap_builder-v4/src/util/escape.rs",
     "//third_party/rust/chromium_crates_io/vendor/clap_builder-v4/src/util/flat_map.rs",
     "//third_party/rust/chromium_crates_io/vendor/clap_builder-v4/src/util/flat_set.rs",
     "//third_party/rust/chromium_crates_io/vendor/clap_builder-v4/src/util/graph.rs",
@@ -79,7 +80,7 @@ cargo_crate("lib") {
   cargo_pkg_name = "clap_builder"
   cargo_pkg_description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
   cargo_pkg_repository = "https://github.com/clap-rs/clap"
-  cargo_pkg_version = "4.5.59"
+  cargo_pkg_version = "4.5.60"
 
   allow_unsafe = false
 

@@ -14,6 +14,7 @@ use crate::error::ContextKind;
 use crate::error::ContextValue;
 use crate::error::ErrorKind;
 use crate::output::TAB;
+use crate::util::Escape;
 use crate::ArgAction;
 
 /// Defines how to format an error for displaying to the user
@@ -488,18 +489,6 @@ fn did_you_mean(styled: &mut StyledStr, styles: &Styles, context: &str, possible
                 styled.push_str(", ");
             }
             let _ = write!(styled, "'{valid}{possible}{valid:#}'",);
-        }
-    }
-}
-
-struct Escape<'s>(&'s str);
-
-impl std::fmt::Display for Escape<'_> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        if self.0.contains(char::is_whitespace) {
-            std::fmt::Debug::fmt(self.0, f)
-        } else {
-            self.0.fmt(f)
         }
     }
 }
