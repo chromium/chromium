@@ -4,12 +4,16 @@
 
 #include "remoting/codec/audio_encoder_opus.h"
 
+#include <memory>
+
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/numerics/safe_math.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/base/multi_channel_resampler.h"
 #include "third_party/opus/src/include/opus.h"
 
@@ -18,37 +22,31 @@ namespace remoting {
 namespace {
 
 // Output 160 kb/s bitrate.
-const int kOutputBitrateBps = 160 * 1024;
+constexpr int kOutputBitrateBps = 160 * 1024;
 
 // Opus doesn't support 44100 sampling rate so we always resample to 48kHz.
-const AudioPacket::SamplingRate kOpusSamplingRate =
+constexpr AudioPacket::SamplingRate kOpusSamplingRate =
     AudioPacket::SAMPLING_RATE_48000;
 
 // Opus supports frame sizes of 2.5, 5, 10, 20, 40 and 60 ms. We use 20 ms
 // frames to balance latency and efficiency.
-const int kFrameSizeMs = 20;
+constexpr base::TimeDelta kFrameDuration = base::Milliseconds(20);
 
-// Number of samples per frame when using default sampling rate.
-const int kFrameSamples =
-    kOpusSamplingRate * kFrameSizeMs / base::Time::kMillisecondsPerSecond;
+// Number of audio frames per "opus frame" when using default sampling rate.
+constexpr size_t kOpusFrameCount = kOpusSamplingRate *
+                                   kFrameDuration.InMilliseconds() /
+                                   base::Time::kMillisecondsPerSecond;
 
-const AudioPacket::BytesPerSample kBytesPerSample =
+constexpr AudioPacket::BytesPerSample kBytesPerSample =
     AudioPacket::BYTES_PER_SAMPLE_2;
 
-bool IsSupportedSampleRate(int rate) {
+constexpr bool IsSupportedSampleRate(int rate) {
   return rate == 44100 || rate == 48000;
 }
 
 }  // namespace
 
-AudioEncoderOpus::AudioEncoderOpus()
-    : sampling_rate_(0),
-      channels_(AudioPacket::CHANNELS_STEREO),
-      encoder_(nullptr),
-      frame_size_(0),
-      resampling_data_(nullptr),
-      resampling_data_size_(0),
-      resampling_data_pos_(0) {}
+AudioEncoderOpus::AudioEncoderOpus() = default;
 
 AudioEncoderOpus::~AudioEncoderOpus() {
   DestroyEncoder();
@@ -67,11 +65,13 @@ void AudioEncoderOpus::InitEncoder() {
   opus_encoder_ctl(encoder_.get(), OPUS_SET_BITRATE(kOutputBitrateBps));
 
   frame_size_ =
-      sampling_rate_ * kFrameSizeMs / base::Time::kMillisecondsPerSecond;
+      media::AudioTimestampHelper::TimeToFrames(kFrameDuration, sampling_rate_);
 
   if (sampling_rate_ != kOpusSamplingRate) {
-    resample_buffer_.reset(
-        new char[kFrameSamples * kBytesPerSample * channels_]);
+    size_t total_samples =
+        base::CheckMul(kOpusFrameCount, channels_).ValueOrDie<size_t>();
+    resample_buffer_ = base::AlignedUninit<int16_t>(
+        total_samples, media::AudioBus::kChannelAlignment);
     // TODO(sergeyu): Figure out the right buffer size to use per packet instead
     // of using media::SincResampler::kDefaultRequestSize.
     resampler_ = std::make_unique<media::MultiChannelResampler>(
@@ -79,7 +79,7 @@ void AudioEncoderOpus::InitEncoder() {
         media::SincResampler::kDefaultRequestSize,
         base::BindRepeating(&AudioEncoderOpus::FetchBytesToResample,
                             base::Unretained(this)));
-    resampler_bus_ = media::AudioBus::Create(channels_, kFrameSamples);
+    resampler_bus_ = media::AudioBus::Create(channels_, kOpusFrameCount);
   }
 
   // Drop leftover data because it's for different sampling rate.
@@ -155,7 +155,7 @@ std::unique_ptr<AudioPacket> AudioEncoderOpus::Encode(
       UNSAFE_TODO(reinterpret_cast<const int16_t*>(packet->data(0).data()));
 
   // Create a new packet of encoded data.
-  std::unique_ptr<AudioPacket> encoded_packet(new AudioPacket());
+  auto encoded_packet = std::make_unique<AudioPacket>();
   encoded_packet->set_encoding(AudioPacket::ENCODING_OPUS);
   encoded_packet->set_sampling_rate(kOpusSamplingRate);
   encoded_packet->set_channels(channels_);
@@ -184,25 +184,25 @@ std::unique_ptr<AudioPacket> AudioEncoderOpus::Encode(
       resampling_data_ = reinterpret_cast<const char*>(pcm_buffer);
       resampling_data_pos_ = 0;
       resampling_data_size_ = samples_wanted * channels_ * kBytesPerSample;
-      resampler_->Resample(kFrameSamples, resampler_bus_.get());
+      resampler_->Resample(kOpusFrameCount, resampler_bus_.get());
       resampling_data_ = nullptr;
       samples_consumed = resampling_data_pos_ / channels_ / kBytesPerSample;
 
       static_assert(kBytesPerSample == 2, "ToInterleaved expects 2 bytes.");
       resampler_bus_->ToInterleaved<media::SignedInt16SampleTypeTraits>(
-          kFrameSamples, reinterpret_cast<int16_t*>(resample_buffer_.get()));
-      pcm_buffer = reinterpret_cast<int16_t*>(resample_buffer_.get());
+          resample_buffer_);
+      pcm_buffer = resample_buffer_.data();
     } else {
       samples_consumed = frame_size_;
     }
 
     // Initialize output buffer.
     std::string* data = encoded_packet->add_data();
-    data->resize(kFrameSamples * kBytesPerSample * channels_);
+    data->resize(kOpusFrameCount * kBytesPerSample * channels_);
 
     // Encode.
     unsigned char* buffer = reinterpret_cast<unsigned char*>(std::data(*data));
-    int result = opus_encode(encoder_, pcm_buffer, kFrameSamples, buffer,
+    int result = opus_encode(encoder_, pcm_buffer, kOpusFrameCount, buffer,
                              data->length());
     if (result < 0) {
       LOG(ERROR) << "opus_encode() failed with error code: " << result;
