@@ -164,7 +164,7 @@ TEST_F(RemoteCommandsInvalidatorTest, StartsWhenRemoteCommandsServiceStarts) {
 // Tests that remote commands invalidtor does initial fetch request when
 // InvalidationListener subscribes for invalidations.
 TEST_F(RemoteCommandsInvalidatorTest,
-       DoesInitialFetchWhenInvaldiationsAreEnabled) {
+       DoesInitialFetchWhenInvalidationsAreEnabled) {
   auto* mock_client = PrepareCoreForRemoteCommands();
   fake_invalidation_listener_.Start();
 

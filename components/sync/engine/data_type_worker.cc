@@ -343,7 +343,7 @@ DataTypeWorker::DataTypeWorker(DataType type,
                   "invalidations overflow.";
       data_type_state_.clear_invalidations();
     }
-    // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
+    // TODO(crbug.com/40239360): Persisted invalidations are loaded in
     // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync
     // cycle has to be triggered right after we loaded persisted
     // invalidations.

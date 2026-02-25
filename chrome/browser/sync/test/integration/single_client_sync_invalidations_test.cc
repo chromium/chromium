@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
-  // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
+  // TODO(crbug.com/40239360): Persisted invalidations are loaded in
   // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync cycle
   // has to be triggered right after we loaded persisted invalidations.
   GetSyncService(0)->TriggerRefresh(
@@ -628,7 +628,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
-  // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
+  // TODO(crbug.com/40239360): Persisted invalidations are loaded in
   // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync cycle
   // has to be triggered right after we loaded persisted invalidations.
   GetSyncService(0)->TriggerRefresh(
