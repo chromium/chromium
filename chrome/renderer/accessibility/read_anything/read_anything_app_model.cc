@@ -1095,8 +1095,10 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::FOCUS_CHANGED:
       case ui::AXEventGenerator::Event::FLOW_FROM_CHANGED:
       case ui::AXEventGenerator::Event::FLOW_TO_CHANGED:
+      case ui::AXEventGenerator::Event::GRAMMAR_MARKER_CHANGED:
       case ui::AXEventGenerator::Event::HASPOPUP_CHANGED:
       case ui::AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
+      case ui::AXEventGenerator::Event::HIGHLIGHT_MARKER_CHANGED:
       case ui::AXEventGenerator::Event::IGNORED_CHANGED:
       case ui::AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED:
       case ui::AXEventGenerator::Event::INVALID_STATUS_CHANGED:
@@ -1135,6 +1137,7 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
       case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
       case ui::AXEventGenerator::Event::SORT_CHANGED:
+      case ui::AXEventGenerator::Event::SPELLING_MARKER_CHANGED:
       case ui::AXEventGenerator::Event::STATE_CHANGED:
       case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
       case ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED:

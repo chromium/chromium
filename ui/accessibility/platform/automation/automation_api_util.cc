@@ -126,8 +126,10 @@ bool ShouldIgnoreGeneratedEventForAutomation(
     case AXEventGenerator::Event::FOCUS_CHANGED:
     case AXEventGenerator::Event::FLOW_FROM_CHANGED:
     case AXEventGenerator::Event::FLOW_TO_CHANGED:
+    case AXEventGenerator::Event::GRAMMAR_MARKER_CHANGED:
     case AXEventGenerator::Event::HASPOPUP_CHANGED:
     case AXEventGenerator::Event::HIERARCHICAL_LEVEL_CHANGED:
+    case AXEventGenerator::Event::HIGHLIGHT_MARKER_CHANGED:
     case AXEventGenerator::Event::IGNORED_CHANGED:
     case AXEventGenerator::Event::IMAGE_ANNOTATION_CHANGED:
     case AXEventGenerator::Event::INVALID_STATUS_CHANGED:
@@ -164,6 +166,7 @@ bool ShouldIgnoreGeneratedEventForAutomation(
     case AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
     case AXEventGenerator::Event::SET_SIZE_CHANGED:
     case AXEventGenerator::Event::SORT_CHANGED:
+    case AXEventGenerator::Event::SPELLING_MARKER_CHANGED:
     case AXEventGenerator::Event::STATE_CHANGED:
     case AXEventGenerator::Event::SUBTREE_CREATED:
     case AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:

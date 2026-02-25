@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWinUia
     HWND hwnd_ = NULL;
     EVENTID shutdown_sentinel_ = 0;
 
-    Microsoft::WRL::ComPtr<IUIAutomation> uia_;
+    Microsoft::WRL::ComPtr<IUIAutomation4> uia_;
     Microsoft::WRL::ComPtr<IUIAutomationElement> root_;
     Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> cache_request_;
 
@@ -84,7 +84,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWinUia
                          public IUIAutomationFocusChangedEventHandler,
                          public IUIAutomationPropertyChangedEventHandler,
                          public IUIAutomationStructureChangedEventHandler,
-                         public IUIAutomationEventHandler {
+                         public IUIAutomationEventHandler,
+                         public IUIAutomationChangesEventHandler {
      public:
       EventHandler();
 
@@ -102,6 +103,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWinUia
       COM_INTERFACE_ENTRY(IUIAutomationPropertyChangedEventHandler)
       COM_INTERFACE_ENTRY(IUIAutomationStructureChangedEventHandler)
       COM_INTERFACE_ENTRY(IUIAutomationEventHandler)
+      COM_INTERFACE_ENTRY(IUIAutomationChangesEventHandler)
       END_COM_MAP()
 
       // IUIAutomationFocusChangedEventHandler interface.
@@ -122,6 +124,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWinUia
       // IUIAutomationEventHandler interface.
       IFACEMETHODIMP HandleAutomationEvent(IUIAutomationElement* sender,
                                            EVENTID event_id) override;
+
+      // IUIAutomationChangesEventHandler interface.
+      IFACEMETHODIMP HandleChangesEvent(IUIAutomationElement* sender,
+                                        UiaChangeInfo* uia_changes,
+                                        int changes_count) override;
 
       // Points to the event recorder to receive notifications.
       raw_ptr<AXEventRecorderWinUia::Thread> owner_ = nullptr;

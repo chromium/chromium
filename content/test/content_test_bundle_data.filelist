@@ -2663,6 +2663,12 @@ data/accessibility/event/css-flex-text-update-expected-mac.txt
 data/accessibility/event/css-flex-text-update-expected-uia-win.txt
 data/accessibility/event/css-flex-text-update-expected-win.txt
 data/accessibility/event/css-flex-text-update.html
+data/accessibility/event/css-highlight-added-expected-uia-win.txt
+data/accessibility/event/css-highlight-added.html
+data/accessibility/event/css-highlight-grammar-error-expected-uia-win.txt
+data/accessibility/event/css-highlight-grammar-error.html
+data/accessibility/event/css-highlight-spelling-error-expected-uia-win.txt
+data/accessibility/event/css-highlight-spelling-error.html
 data/accessibility/event/css-visibility-collapse-expected-android.txt
 data/accessibility/event/css-visibility-collapse-expected-win.txt
 data/accessibility/event/css-visibility-collapse.html

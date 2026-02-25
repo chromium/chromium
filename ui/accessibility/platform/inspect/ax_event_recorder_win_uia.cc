@@ -10,6 +10,8 @@
 #include <numeric>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -134,9 +136,10 @@ void AXEventRecorderWinUia::Thread::ThreadMain() {
   base::win::ScopedCOMInitializer com_init{
       base::win::ScopedCOMInitializer::kMTA};
 
-  // Create an instance of the CUIAutomation class.
-  CoCreateInstance(CLSID_CUIAutomation, NULL, CLSCTX_INPROC_SERVER,
-                   IID_IUIAutomation, &uia_);
+  // Create an instance of the CUIAutomation8 class, which natively supports the
+  // IUIAutomation4 interface needed for AddChangesEventHandler.
+  CoCreateInstance(CLSID_CUIAutomation8, nullptr, CLSCTX_INPROC_SERVER,
+                   IID_PPV_ARGS(&uia_));
   CHECK(uia_.Get());
 
   // Register the custom event to mark the end of the test.
@@ -182,17 +185,30 @@ void AXEventRecorderWinUia::Thread::ThreadMain() {
                                         cache_request_.Get(),
                                         uia_event_handler_.Get());
 
-  // Subscribe to all automation events (except structure-change events and
-  // live-region events, which are handled elsewhere).
+  // Subscribe to all automation events (except structure-change events,
+  // live-region events, and changes events, which are handled elsewhere).
   static const EVENTID kMinEvent = UIA_ToolTipOpenedEventId;
   static const EVENTID kMaxEvent = UIA_ActiveTextPositionChangedEventId;
   for (EVENTID event_id = kMinEvent; event_id <= kMaxEvent; ++event_id) {
     if (event_id != UIA_StructureChangedEventId &&
-        event_id != UIA_LiveRegionChangedEventId) {
+        event_id != UIA_LiveRegionChangedEventId &&
+        event_id != UIA_ChangesEventId) {
       uia_->AddAutomationEventHandler(
           event_id, root_.Get(), TreeScope::TreeScope_Subtree,
           cache_request_.Get(), uia_event_handler_.Get());
     }
+  }
+
+  // Subscribe to changes events (e.g., annotation type changes for spelling,
+  // grammar, and highlights).
+  {
+    int change_types[] = {AnnotationType_SpellingError,
+                          AnnotationType_GrammarError,
+                          AnnotationType_Highlighted};
+    uia_->AddChangesEventHandler(root_.Get(), TreeScope::TreeScope_Subtree,
+                                 change_types, std::size(change_types),
+                                 cache_request_.Get(),
+                                 uia_event_handler_.Get());
   }
 
   // Subscribe to live-region change events.  This must be the last event we
@@ -401,6 +417,45 @@ AXEventRecorderWinUia::Thread::EventHandler::HandleAutomationEvent(
         base::StringPrintf("%s %s", event_str.c_str(), sender_info.c_str());
     owner_->OnEvent(log);
   }
+  return S_OK;
+}
+
+IFACEMETHODIMP
+AXEventRecorderWinUia::Thread::EventHandler::HandleChangesEvent(
+    IUIAutomationElement* sender,
+    UiaChangeInfo* uia_changes,
+    int changes_count) {
+  if (!owner_ || !IsCallerFromAllowedModule(RETURN_ADDRESS())) {
+    return S_OK;
+  }
+
+  // SAFETY: `uia_changes` points to an array of `changes_count` elements
+  // provided by the UIA framework.
+  auto changes = UNSAFE_BUFFERS(base::span<UiaChangeInfo>(
+      uia_changes, static_cast<size_t>(changes_count)));
+  for (const auto& change : changes) {
+    std::string change_type_str;
+    switch (change.uiaId) {
+      case AnnotationType_SpellingError:
+        change_type_str = "AnnotationType_SpellingError";
+        break;
+      case AnnotationType_GrammarError:
+        change_type_str = "AnnotationType_GrammarError";
+        break;
+      case AnnotationType_Highlighted:
+        change_type_str = "AnnotationType_Highlighted";
+        break;
+      default:
+        change_type_str = base::StringPrintf("ChangeId_%d", change.uiaId);
+        break;
+    }
+
+    std::string log =
+        base::StringPrintf("Changes/%s %s", change_type_str.c_str(),
+                           GetSenderInfo(sender).c_str());
+    owner_->OnEvent(log);
+  }
+
   return S_OK;
 }
 

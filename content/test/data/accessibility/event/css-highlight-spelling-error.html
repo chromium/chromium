@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="edit" contenteditable="true" aria-label="edit">Some text here</div>
+<script>
+  function go() {
+    const textNode = document.getElementById('edit').firstChild;
+    const range = new Range();
+    range.setStart(textNode, 0);
+    range.setEnd(textNode, 4);
+    const highlight = new Highlight(range);
+    highlight.type = "spelling-error";
+    CSS.highlights.set("test-spelling", highlight);
+  }
+</script>
+</body>
+</html>

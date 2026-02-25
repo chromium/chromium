@@ -82,6 +82,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManagerWin
                                    BrowserAccessibility* node);
   void FireUiaStructureChangedEvent(StructureChangeType change_type,
                                     BrowserAccessibility* node);
+  void FireUiaChangesEvent(BrowserAccessibility* node, int annotation_type_id);
 
   gfx::Rect GetViewBoundsInScreenCoordinates() const override;
 
