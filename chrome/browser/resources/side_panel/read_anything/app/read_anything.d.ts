@@ -9,6 +9,15 @@ interface Element {
   scrollIntoViewIfNeeded: () => void;
 }
 
+interface AxTreeAnchorMetadata {
+  axId: number;
+  htmlId?: string;
+  target?: string;
+  title?: string;
+  name?: string;
+  textBefore?: string;
+  textAfter?: string;
+}
 declare namespace chrome {
   export namespace readingMode {
     /////////////////////////////////////////////////////////////////////
@@ -151,6 +160,8 @@ declare namespace chrome {
     // Distiled html content from DOM distiller distillation.
     let htmlContent: string;
 
+    let axTreeAnchors: Record<string, AxTreeAnchorMetadata[]>;
+
     // The active distillation method currently showing in page content.
     // Possible values are distillationTypeScreen2x or
     // distillationTypeReadability.
@@ -265,6 +276,8 @@ declare namespace chrome {
     // Called when reading mode is closed.
     function readingModeWillClose(): void;
 
+    function onAnchorsReadyForReadability(): void;
+
     // Called when the speech rate is changed via the webui toolbar.
     function onSpeechRateChange(rate: number): void;
 
@@ -336,6 +349,10 @@ declare namespace chrome {
     //     ],
     //   };
     function setContentForTesting(
+        snapshotLite: Object, contentNodeIds: number[]): void;
+    // Sets the same structure as setContentForTesting but forces
+    // the processing of the AX Tree Anchors.
+    function setAnchorsForTesting(
         snapshotLite: Object, contentNodeIds: number[]): void;
 
     // Set the theme. Used by tests only.

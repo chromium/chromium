@@ -634,6 +634,40 @@ export class ContentController {
     }
   }
 
+  updateAnchorsForReadability(root: ParentNode) {
+    if (!chrome.readingMode.isReadabilityEnabled ||
+        !chrome.readingMode.isReadabilityWithLinksEnabled ||
+        !isDistilledByReadability()) {
+      return;
+    }
+
+    if (!root || !this.hasContent()) {
+      return;
+    }
+
+    const anchors = Array.from(root.querySelectorAll<HTMLAnchorElement>('a'));
+    const originalAnchors: Record<string, AxTreeAnchorMetadata[]> =
+        chrome.readingMode.axTreeAnchors;
+    for (const anchor of anchors) {
+      const url = anchor.href;
+      if (!url) {
+        continue;
+      }
+
+      const options = originalAnchors[url];
+      if (!options) {
+        continue;
+      }
+
+      if (options.length === 1 && options[0]) {
+        const nodeID = options[0].axId;
+        this.nodeStore_.setDomNode(anchor, nodeID);
+        this.setLinkAttributes_(anchor, url, nodeID);
+        continue;
+      }
+    }
+  }
+
   updateImagesForAxTree(shadowRoot: ParentNode) {
     if (!chrome.readingMode.imagesFeatureEnabled) {
       return;

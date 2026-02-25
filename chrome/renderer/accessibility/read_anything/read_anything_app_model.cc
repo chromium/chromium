@@ -1263,24 +1263,25 @@ bool ReadAnythingAppModel::SelectionNodesContainedInDistilledContent() const {
                        selection_node_ids_.begin(), selection_node_ids_.end());
 }
 
-void ReadAnythingAppModel::ProcessAXTreeAnchors() {
+bool ReadAnythingAppModel::ProcessAXTreeAnchors() {
   DUMP_WILL_BE_CHECK(
       features::IsReadAnythingWithReadabilityAllowLinksEnabled());
   if (!should_extract_anchors_from_tree_for_readability_) {
-    return;
+    return false;
   }
 
   if (active_tree_id_ == ui::AXTreeIDUnknown() || !ContainsActiveTree()) {
-    return;
+    return false;
   }
 
   ui::AXSerializableTree* tree = GetActiveTree();
   if (!tree || !tree->root()) {
-    return;
+    return false;
   }
 
   should_extract_anchors_from_tree_for_readability_ = false;
   ax_tree_anchors_ = CollectAnchorsFromAXTree(tree);
+  return true;
 }
 
 std::map<std::string, std::vector<ReadAnythingAppModel::AnchorData>>

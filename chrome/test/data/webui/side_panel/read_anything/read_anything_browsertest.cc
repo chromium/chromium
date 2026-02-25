@@ -368,7 +368,8 @@ class ImmersiveReadAnythingWithReadabilityMochaTest
   ImmersiveReadAnythingWithReadabilityMochaTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kImmersiveReadAnything,
-         features::kReadAnythingWithReadability},
+         features::kReadAnythingWithReadability,
+         features::kReadAnythingWithReadabilityAllowLinks},
         {});
   }
 
@@ -380,5 +381,12 @@ IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingWithReadabilityMochaTest,
                        ReadabilityImageClassifier) {
   RunSidePanelTest(
       "side_panel/read_anything/readability_image_classifier_test.js",
+      "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ImmersiveReadAnythingWithReadabilityMochaTest,
+                       ReadabilityAnchorsIntegration) {
+  RunSidePanelTest(
+      "side_panel/read_anything/readability_anchors_integration_test.js",
       "mocha.run()");
 }
