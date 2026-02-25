@@ -1,6 +1,11 @@
 python_version: "3.11"
 
 wheel: <
+  name: "infra/python/wheels/click-py2_py3"
+  version: "version:7.0"
+>
+
+wheel: <
   name: "infra/python/wheels/colorama-py2_py3"
   version: "version:0.4.1"
 >
@@ -29,6 +34,7 @@ wheel: <
   name: "infra/python/wheels/rich-py3"
   version: "version:13.2.0"
 >
+
 wheel: <
   name: "infra/python/wheels/typing-extensions-py3"
   version: "version:4.0.1"

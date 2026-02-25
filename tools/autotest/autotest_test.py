@@ -263,10 +263,6 @@ class FindTestTargetsTest(TestCase):
     self.mock_cache.Find.return_value = None
     self.mock_cache.GetBuildNinjaMtime.return_value = 100
 
-    self.args = argparse.Namespace(run_all=False,
-                                   run_changed=False,
-                                   target_index=None)
-
   def test_mixed_targets(self):
     # Simulate `gn refs` output for the command:
     # $ gn refs out_/Default --all --relation=source --relation=input \
@@ -281,9 +277,9 @@ class FindTestTargetsTest(TestCase):
 //third_party/blink/renderer/platform/wtf:wtf_unittests
 //third_party/blink/renderer/platform/wtf:wtf_unittests_sources
 """
-    self.args.run_all = True
-    targets, _ = target_finder.FindTestTargets(self.mock_cache, self.out_dir,
-                                               ['foo.cc'], self.args)
+    targets, _ = target_finder.FindTestTargets(self.mock_cache,
+                                               self.out_dir, ['foo.cc'],
+                                               run_all=True)
 
     self.assertIn('chrome/test:browser_tests', targets)
     self.assertIn('third_party/blink/renderer/platform/wtf:wtf_unittests',
@@ -296,7 +292,7 @@ class FindTestTargetsTest(TestCase):
 //chrome/android:chrome_public_test_apk__test_apk
 """
     targets, _ = target_finder.FindTestTargets(self.mock_cache, self.out_dir,
-                                               ['foo.java'], self.args)
+                                               ['foo.java'])
     # Should strip suffix
     self.assertIn('chrome/android:chrome_public_test_apk', targets)
 
@@ -305,7 +301,7 @@ class FindTestTargetsTest(TestCase):
 //chrome/test:browser_tests
 """
     targets, _ = target_finder.FindTestTargets(self.mock_cache, self.out_dir,
-                                               ['foo.cc'], self.args)
+                                               ['foo.cc'])
     self.assertIn('chrome/test:browser_tests', targets)
 
   def test_target_ambiguity_prompt(self):
@@ -316,7 +312,7 @@ class FindTestTargetsTest(TestCase):
     with mock.patch('utils.command_util.HaveUserPickTarget',
                     return_value='//chrome/test:unit_tests') as mock_pick:
       targets, _ = target_finder.FindTestTargets(self.mock_cache, self.out_dir,
-                                                 ['foo.cc'], self.args)
+                                                 ['foo.cc'])
       self.assertEqual(['chrome/test:unit_tests'], targets)
       mock_pick.assert_called_once()
 
@@ -326,9 +322,9 @@ class FindTestTargetsTest(TestCase):
 //chrome/test:browser_tests
 """
     # Sorted: browser_tests, unit_tests. Index 0 -> browser_tests
-    self.args.target_index = 0
-    targets, _ = target_finder.FindTestTargets(self.mock_cache, self.out_dir,
-                                               ['foo.cc'], self.args)
+    targets, _ = target_finder.FindTestTargets(self.mock_cache,
+                                               self.out_dir, ['foo.cc'],
+                                               target_index=0)
     self.assertEqual(['chrome/test:browser_tests'], targets)
 
   def test_run_all(self):
@@ -336,9 +332,9 @@ class FindTestTargetsTest(TestCase):
 //chrome/test:unit_tests
 //chrome/test:browser_tests
 """
-    self.args.run_all = True
-    targets, _ = target_finder.FindTestTargets(self.mock_cache, self.out_dir,
-                                               ['foo.cc'], self.args)
+    targets, _ = target_finder.FindTestTargets(self.mock_cache,
+                                               self.out_dir, ['foo.cc'],
+                                               run_all=True)
     self.assertEqual(len(targets), 2)
     self.assertIn('chrome/test:browser_tests', targets)
     self.assertIn('chrome/test:unit_tests', targets)

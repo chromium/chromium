@@ -78,10 +78,13 @@ def _ParseRefsOutput(output: str) -> list[str]:
   return targets
 
 
-def FindTestTargets(target_cache: TargetCache, out_dir: str, paths: list[str],
-                    args: argparse.Namespace) -> tuple[list[str], bool]:
-  run_all: bool = args.run_all or args.run_changed
-  target_index: int | None = args.target_index
+def FindTestTargets(target_cache: TargetCache,
+                    out_dir: str,
+                    paths: list[str],
+                    run_all: bool = False,
+                    run_changed: bool = False,
+                    target_index: int | None = None) -> tuple[list[str], bool]:
+  run_all: bool = run_all or run_changed
 
   # Normalize paths, so they can be cached.
   paths = [os.path.realpath(p) for p in paths]
