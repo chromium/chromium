@@ -314,14 +314,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest, Accessibility) {
                    ax::mojom::IntAttribute::kHasPopup));
 }
 
-// TODO(crbug.com/479341115): Failing on mac-bots.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CheckReloadButtonColor DISABLED_CheckReloadButtonColor
-#else
-#define MAYBE_CheckReloadButtonColor CheckReloadButtonColor
-#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       MAYBE_CheckReloadButtonColor) {
+                       CheckReloadButtonColor) {
   ui::TrackedElement* element = nullptr;
   WebUIToolbarWebView* webui_toolbar_view = nullptr;
   views::WebView* web_view = nullptr;
@@ -362,14 +356,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   }));
 }
 
-// TODO(crbug.com/479341115): Failing on mac-bots.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CheckSplitTabsButtonColor DISABLED_CheckSplitTabsButtonColor
-#else
-#define MAYBE_CheckSplitTabsButtonColor CheckSplitTabsButtonColor
-#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       MAYBE_CheckSplitTabsButtonColor) {
+                       CheckSplitTabsButtonColor) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton, true);
 
   ui::TrackedElement* element = nullptr;
@@ -1071,14 +1059,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   }));
 }
 
-// TODO(crbug.com/479341115): Failing on mac-bots.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_RightClickSplitTabsButton DISABLED_RightClickSplitTabsButton
-#else
-#define MAYBE_RightClickSplitTabsButton RightClickSplitTabsButton
-#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
-                       MAYBE_RightClickSplitTabsButton) {
+                       RightClickSplitTabsButton) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   PinSplitTabsButton(browser(), web_view);
@@ -1091,15 +1073,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   // Verify no crash.
 }
 
-// TODO(crbug.com/479341115): Failing on mac-bots.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ClickSplitTabsButtonWhileSplit \
-  DISABLED_ClickSplitTabsButtonWhileSplit
-#else
-#define MAYBE_ClickSplitTabsButtonWhileSplit ClickSplitTabsButtonWhileSplit
-#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
-                       MAYBE_ClickSplitTabsButtonWhileSplit) {
+                       ClickSplitTabsButtonWhileSplit) {
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
   PinSplitTabsButton(browser(), web_view);
