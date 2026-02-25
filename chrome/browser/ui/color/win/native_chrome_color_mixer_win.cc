@@ -211,6 +211,7 @@ void AddNativeHighContrastColors(ui::ColorMixer& mixer) {
   mixer[kColorFindBarButtonIcon] = {ui::kColorNativeWindowText};
   mixer[kColorFindBarButtonIconHovered] = {ui::kColorNativeHighlightText};
   mixer[kColorFindBarButtonIconDisabled] = {ui::kColorNativeGrayText};
+  mixer[kColorInfoBarButtonIconHovered] = {ui::kColorNativeHighlightText};
 }
 
 void AddNativeNonHighContrastColors(ui::ColorMixer& mixer,

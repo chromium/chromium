@@ -199,7 +199,8 @@ InfoBarView::InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate)
         &InfoBarView::CloseButtonPressed, base::Unretained(this)));
     views::SetImageFromVectorIconWithColor(
         close_button.get(), vector_icons::kCloseChromeRefreshIcon,
-        {kColorInfoBarButtonIcon, kColorInfoBarForeground});
+        {kColorInfoBarButtonIcon, kColorInfoBarForeground,
+         kColorInfoBarButtonIconHovered});
     close_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
     close_button->SetProperty(views::kElementIdentifierKey,
                               kDismissButtonElementId);
