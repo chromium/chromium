@@ -22,6 +22,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
@@ -102,6 +103,7 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/486858979: Temporarily disabled to avoid crashes.")
     public void startWebappActivity_addsExtensionWindowControllerBridgeToChromeAndroidTask() {
         // Act.
         mWebappActivityTestRule.startWebappActivity();
@@ -116,6 +118,7 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/486858979: Temporarily disabled to avoid crashes.")
     public void startTwa_addsExtensionWindowControllerBridgeToChromeAndroidTask() throws Exception {
         // Act.
         CustomTabActivityTypeTestUtils.launchActivity(
@@ -243,6 +246,7 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/486858979: Temporarily disabled to avoid crashes.")
     public void startWebappActivity_notifyExtensionInternalsOfWindowCreation() {
         // Arrange:
         // (1) Launch ChromeTabbedActivity. We need this to initialize native
@@ -276,6 +280,7 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/486858979: Temporarily disabled to avoid crashes.")
     public void startTwa_notifyExtensionInternalsOfWindowCreation() throws Exception {
         // Arrange:
         // (1) Launch ChromeTabbedActivity. We need this to initialize native
@@ -433,6 +438,7 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/486858979: Temporarily disabled to avoid crashes.")
     public void destroyWebappActivity_destroysExtensionWindowControllerBridge() {
         // Arrange.
         mWebappActivityTestRule.startWebappActivity();
@@ -452,6 +458,7 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/486858979: Temporarily disabled to avoid crashes.")
     public void destroyTwa_destroysExtensionWindowControllerBridge() throws Exception {
         // Arrange.
         CustomTabActivityTypeTestUtils.launchActivity(
@@ -532,6 +539,7 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/486858979: Temporarily disabled to avoid crashes.")
     public void destroyWebActivity_notifyExtensionInternalsOfWindowDestruction() {
         // Arrange:
         // (1) Start WebappActivity.
@@ -562,6 +570,7 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/486858979: Temporarily disabled to avoid crashes.")
     public void destroyTwa_notifyExtensionInternalsOfWindowDestruction() throws Exception {
         // Arrange:
         // (1) Start TWA.
