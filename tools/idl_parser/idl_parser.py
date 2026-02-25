@@ -1050,11 +1050,13 @@ class IDLParser(object):
   #    [ identifier ]
   #    [ identifier ( ArgumentList ) ]
   #    [ identifier = identifier ]
+  #    [ identifier = * ]
   #    [ identifier = ( IdentifierList ) ]
   #    [ identifier = identifier ( ArgumentList ) ]
+  #    [ identifier = integer ]
   #    [ identifier = StringLiteral ]
   #    [ identifier = ( StringList ) ]
-  # The first five patterns are specified in the Web IDL spec and the last two
+  # The first seven patterns are specified in the Web IDL spec and the last two
   # patterns are Blink's custom extension to support [ReflectOnly].
   def p_ExtendedAttribute(self, p):
     """ExtendedAttribute : ExtendedAttributeNoArgs
@@ -1063,6 +1065,7 @@ class IDLParser(object):
                          | ExtendedAttributeWildcard
                          | ExtendedAttributeIdentList
                          | ExtendedAttributeNamedArgList
+                         | ExtendedAttributeInteger
                          | ExtendedAttributeStringLiteral
                          | ExtendedAttributeStringLiteralList"""
     p[0] = p[1]
@@ -1111,6 +1114,11 @@ class IDLParser(object):
     """ExtendedAttributeNamedArgList : identifier '=' identifier '(' ArgumentList ')'"""
     args = self.BuildProduction('Arguments', p, 4, p[5])
     value = self.BuildNamed('Call', p, 3, args)
+    p[0] = self.BuildNamed('ExtAttribute', p, 1, value)
+
+  def p_ExtendedAttributeInteger(self, p):
+    """ExtendedAttributeInteger : identifier '=' integer"""
+    value = self.BuildAttribute('VALUE', p[3])
     p[0] = self.BuildNamed('ExtAttribute', p, 1, value)
 
   # Blink extension: Add support for string literal Extended Attribute values
