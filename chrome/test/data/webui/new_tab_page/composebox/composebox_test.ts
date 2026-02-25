@@ -226,6 +226,33 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(fileInfo.fileName, file.name);
     assertDeepEquals(fileData.bytes, fileArray);
   }
+  test(
+      'submit disabled when tool is Deep Search (default entrypoint)',
+      async () => {
+        createComposeboxElement();
+
+        assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
+
+        // Default: submit is disabled with empty input, clicking does nothing.
+        composeboxElement.$.submitContainer.click();
+        await microtasksFinished();
+        assertEquals(searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
+
+        // Change tool to Deep Search
+        const inputState = Object.assign({}, mockInputState, {
+          activeTool: ComposeboxToolMode.kDeepSearch,
+        });
+        searchboxCallbackRouterRemote.onInputStateChanged(inputState);
+        await searchboxCallbackRouterRemote.$.flushForTesting();
+
+        await microtasksFinished();
+
+        // Submit should still be DISABLED because entrypoint is not
+        // ContextualTasks.
+        composeboxElement.$.submitContainer.click();
+        await microtasksFinished();
+        assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
+      });
 
   test('clear functionality', async () => {
     loadTimeData.overrideValues({composeboxShowSubmit: true});

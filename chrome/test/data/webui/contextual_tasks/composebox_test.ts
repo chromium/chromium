@@ -9,7 +9,7 @@ import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_brows
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import {FileUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {FileUploadStatus, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -268,6 +268,53 @@ suite('ContextualTasksComposeboxTest', () => {
         submitContainer.querySelector('#submitIcon');
     return submitButton;
   }
+
+  test('submit enabled when tool is Deep Search', async () => {
+    const submitContainer = getSubmitContainer();
+    assertFalse(
+        isVisible(submitContainer), 'Submit container should be hidden');
+
+    // Ensure we start in Zero State (disabled).
+    contextualTasksApp.setIsZeroStateForTesting(true);
+    await microtasksFinished();
+
+    // Verify submit button is disabled and clicking it does nothing.
+    const submitButton = getSubmitButton();
+    assertTrue(submitButton!.disabled, 'Submit button should be disabled');
+    submitButton!.click();
+    await microtasksFinished();
+    assertEquals(
+        mockSearchboxPageHandler.getCallCount('submitQuery'), 0,
+        'Submit query should not be called when button is disabled');
+
+    // Change tool to Deep Search
+    const inputState = Object.assign({}, mockInputState, {
+      activeTool: ToolMode.kDeepSearch,
+    });
+    searchboxCallbackRouterRemote.onInputStateChanged(inputState);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+
+    await microtasksFinished();
+
+    // Verify submit button is disabled and clicking it still does nothing.
+    assertTrue(submitButton!.disabled, 'Submit button should be disabled');
+    submitButton!.click();
+    await microtasksFinished();
+    assertEquals(
+        mockSearchboxPageHandler.getCallCount('submitQuery'), 0,
+        'Submit query should not be called when button is disabled');
+
+    // Set isZeroState to false (simulating follow-up) to allow empty query
+    // for Deep Search.
+    contextualTasksApp.setIsZeroStateForTesting(false);
+    await microtasksFinished();
+    await composebox.updateComplete;
+
+    // Submit should be enabled now, clicking triggers the action.
+    submitButton!.click();
+    await microtasksFinished();
+    assertEquals(mockSearchboxPageHandler.getCallCount('submitQuery'), 1);
+  });
 
   test('ComposeboxSubmitSendsQueryAndClearsInput', async () => {
     mockTimer.install();

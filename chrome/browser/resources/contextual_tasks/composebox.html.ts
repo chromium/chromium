@@ -60,6 +60,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .isInCoBrowsingZeroState="${this.isZeroState}"
           .lensButtonTriggersOverlay="${true}"
           .enableCarouselScrolling="${true}"
+          .isFollowupQuery="${!this.isZeroState}"
           @result-changed="${this.onSuggestionsResultReceived_}"
           @open-image-upload="${this.handleImageUpload_}"
           @open-file-upload="${this.handleFileUpload_}"

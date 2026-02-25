@@ -921,6 +921,10 @@ export class ContextualTasksAppElement extends CrLitElement {
   onThreadFrameLoadAbortForTesting() {
     this.onThreadFrameLoadAbort();
   }
+
+  setIsZeroStateForTesting(isZeroState: boolean) {
+    this.isZeroState_ = isZeroState;
+  }
 }
 
 declare global {
