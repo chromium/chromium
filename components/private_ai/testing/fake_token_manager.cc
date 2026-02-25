@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/test/run_until.h"
 #include "base/time/time.h"
 
 namespace private_ai {
@@ -53,6 +54,10 @@ void FakeTokenManager::RunPendingProxyCallbacks() {
     std::move(pending_proxy_callbacks_.front()).Run(std::move(token));
     pending_proxy_callbacks_.pop_front();
   }
+}
+
+void FakeTokenManager::WaitForPendingCallback() {
+  CHECK(base::test::RunUntil([&]() { return !pending_callbacks_.empty(); }));
 }
 
 size_t FakeTokenManager::GetPendingCallbackCount() {
