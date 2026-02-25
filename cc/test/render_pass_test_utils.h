@@ -43,7 +43,8 @@ viz::AggregatedRenderPass* AddRenderPass(
     viz::AggregatedRenderPassList* pass_list,
     viz::AggregatedRenderPassId render_pass_id,
     const gfx::Rect& output_rect,
-    const gfx::Transform& root_transform);
+    const gfx::Transform& root_transform,
+    const FilterOperations& filters);
 
 // Adds a new render pass with the provided properties to the given
 // render pass list.
@@ -59,7 +60,8 @@ viz::AggregatedRenderPass* AddRenderPassWithDamage(
     viz::AggregatedRenderPassId render_pass_id,
     const gfx::Rect& output_rect,
     const gfx::Rect& damage_rect,
-    const gfx::Transform& root_transform);
+    const gfx::Transform& root_transform,
+    const FilterOperations& filters);
 
 // Adds a solid quad to a given render pass.
 template <typename RenderPassType>

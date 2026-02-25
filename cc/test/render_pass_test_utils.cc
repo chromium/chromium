@@ -67,9 +67,11 @@ viz::AggregatedRenderPass* AddRenderPass(
     viz::AggregatedRenderPassList* pass_list,
     viz::AggregatedRenderPassId render_pass_id,
     const gfx::Rect& output_rect,
-    const gfx::Transform& root_transform) {
+    const gfx::Transform& root_transform,
+    const FilterOperations& filters) {
   auto pass = std::make_unique<viz::AggregatedRenderPass>();
   pass->SetNew(render_pass_id, output_rect, output_rect, root_transform);
+  pass->filters = filters;
   auto* saved = pass.get();
   pass_list->push_back(std::move(pass));
   return saved;
@@ -95,9 +97,11 @@ viz::AggregatedRenderPass* AddRenderPassWithDamage(
     viz::AggregatedRenderPassId render_pass_id,
     const gfx::Rect& output_rect,
     const gfx::Rect& damage_rect,
-    const gfx::Transform& root_transform) {
+    const gfx::Transform& root_transform,
+    const FilterOperations& filters) {
   auto pass = std::make_unique<viz::AggregatedRenderPass>();
   pass->SetNew(render_pass_id, output_rect, damage_rect, root_transform);
+  pass->filters = filters;
   auto* saved = pass.get();
   pass_list->push_back(std::move(pass));
   return saved;
@@ -180,6 +184,7 @@ void AddRenderPassQuad(viz::AggregatedRenderPass* to_pass,
   quad->SetNew(shared_state, output_rect, output_rect, contributing_pass->id,
                mask_resource_id, gfx::RectF(output_rect),
                arbitrary_nonzero_size, gfx::RectF(), false);
+  quad->SetFilters(gfx::Vector2dF(), gfx::PointF(), 1.0f);
 }
 
 std::vector<viz::ResourceId> AddOneOfEveryQuadType(
@@ -297,7 +302,9 @@ std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(
   auto copy_pass = std::make_unique<viz::AggregatedRenderPass>(
       from_pass->shared_quad_state_list.size(), from_pass->quad_list.size());
   copy_pass->SetAll(to_id, from_pass->output_rect, from_pass->damage_rect,
-                    from_pass->transform_to_root_target, content_usage,
+                    from_pass->transform_to_root_target, from_pass->filters,
+                    from_pass->backdrop_filters,
+                    from_pass->backdrop_filter_bounds, content_usage,
                     from_pass->has_transparent_background,
                     from_pass->cache_render_pass,
                     from_pass->has_damage_from_contributing_content,
@@ -319,8 +326,7 @@ std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(
       const viz::CompositorRenderPassDrawQuad* src =
           viz::CompositorRenderPassDrawQuad::MaterialCast(src_quad);
       quad = copy_pass->CopyFromAndAppendRenderPassDrawQuad(
-          src, *from_pass,
-          viz::AggregatedRenderPassId(src->render_pass_id.value()));
+          src, viz::AggregatedRenderPassId(src->render_pass_id.value()));
     } else {
       quad = copy_pass->CopyFromAndAppendDrawQuad(src_quad);
       if (!quad->resource_id.is_null()) {

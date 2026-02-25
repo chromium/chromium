@@ -25,6 +25,9 @@ OverlayStrategyUnderlay::~OverlayStrategyUnderlay() = default;
 
 void OverlayStrategyUnderlay::Propose(
     const SkM44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
+    const OverlayProcessorInterface::FilterOperationsMap&
+        render_pass_backdrop_filters,
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
@@ -41,7 +44,8 @@ void OverlayStrategyUnderlay::Propose(
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
-      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane), context);
+      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
+      &render_pass_filters, context);
 
   for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
     OverlayCandidate candidate;
@@ -60,7 +64,7 @@ void OverlayStrategyUnderlay::Propose(
     // condition.
     if (!candidate.requires_overlay &&
         OverlayCandidateFactory::IsOccludedByFilteredQuad(
-            **it, quad_list.begin(), it)) {
+            **it, quad_list.begin(), it, render_pass_backdrop_filters)) {
       continue;
     }
 
@@ -73,6 +77,9 @@ void OverlayStrategyUnderlay::Propose(
 
 bool OverlayStrategyUnderlay::Attempt(
     const SkM44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
+    const OverlayProcessorInterface::FilterOperationsMap&
+        render_pass_backdrop_filters,
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,

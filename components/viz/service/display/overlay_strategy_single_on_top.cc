@@ -81,6 +81,9 @@ OverlayStrategySingleOnTop::~OverlayStrategySingleOnTop() = default;
 
 void OverlayStrategySingleOnTop::Propose(
     const SkM44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
+    const OverlayProcessorInterface::FilterOperationsMap&
+        render_pass_backdrop_filters,
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
@@ -99,7 +102,8 @@ void OverlayStrategySingleOnTop::Propose(
   // Build a list of candidates with the associated quad.
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
       render_pass, resource_provider, surface_damage_rect_list,
-      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane), context);
+      &output_color_matrix, GetPrimaryPlaneDisplayRect(primary_plane),
+      &render_pass_filters, context);
 
   std::vector<OverlayProposedCandidate> candidates_with_masks;
 
@@ -169,6 +173,9 @@ void OverlayStrategySingleOnTop::Propose(
 
 bool OverlayStrategySingleOnTop::Attempt(
     const SkM44& output_color_matrix,
+    const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
+    const OverlayProcessorInterface::FilterOperationsMap&
+        render_pass_backdrop_filters,
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,

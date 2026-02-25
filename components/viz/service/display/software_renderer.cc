@@ -553,9 +553,10 @@ void SoftwareRenderer::DrawRenderPassQuad(
   }
 
   sk_sp<SkImage> filter_image;
-  if (!quad->filters.IsEmpty()) {
-    auto paint_filter =
-        cc::RenderSurfaceFilters::BuildImageFilter(quad->filters);
+  const cc::FilterOperations* filters = FiltersForPass(quad->render_pass_id);
+  if (filters) {
+    DCHECK(!filters->IsEmpty());
+    auto paint_filter = cc::RenderSurfaceFilters::BuildImageFilter(*filters);
     auto image_filter =
         paint_filter ? paint_filter->cached_sk_filter_ : nullptr;
     if (image_filter) {
@@ -889,7 +890,7 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
     const AggregatedRenderPassDrawQuad* quad,
     SkTileMode content_tile_mode) const {
   const cc::FilterOperations* backdrop_filters =
-      quad->backdrop_filters.IsEmpty() ? nullptr : &quad->backdrop_filters;
+      BackdropFiltersForPass(quad->render_pass_id);
   if (!ShouldApplyBackdropFilters(backdrop_filters, quad)) {
     return nullptr;
   }
@@ -907,7 +908,8 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
   // Get the backdrop-filter-bounds as defined by the renderer. This is usually
   // the area defined by the border box of the element of the backdrop filter.
   // It will be in content space. This defines the area needed to be filtered.
-  std::optional<SkPath> backdrop_filter_bounds = quad->backdrop_filter_bounds;
+  std::optional<SkPath> backdrop_filter_bounds =
+      BackdropFilterBoundsForPass(quad->render_pass_id);
 
   gfx::Rect content_backdrop_rect;
   if (backdrop_filter_bounds.has_value()) {
@@ -962,7 +964,7 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
   // the magnifier widget does so, which mixes a ZOOM backdrop filter with an
   // OFFSET filter. Due to crbug.com/1451898, that scenario never reaches this
   // check.
-  DCHECK(quad->filters.IsEmpty())
+  DCHECK(!FiltersForPass(quad->render_pass_id))
       << "Filters should always be in a separate Effect node";
 
   // We keep calculations in content space as to not break any crop filters

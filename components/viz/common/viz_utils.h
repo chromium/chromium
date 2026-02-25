@@ -23,9 +23,8 @@ namespace viz {
 VIZ_COMMON_EXPORT bool AlwaysUseWideColorGamut();
 #endif
 
-class CompositorRenderPassDrawQuad;
 class CopyOutputRequest;
-class AggregatedRenderPassDrawQuad;
+class RenderPassDrawQuadInternal;
 
 // Returns File Descriptor (FD) stats for current process.
 // Rendering resources can consume FDs. This this function can be used to
@@ -39,41 +38,19 @@ VIZ_COMMON_EXPORT bool GatherFDStats(base::TimeDelta* delta_time_taken,
 VIZ_COMMON_EXPORT gfx::Rect ClippedQuadRectangle(const DrawQuad* quad);
 VIZ_COMMON_EXPORT gfx::RectF ClippedQuadRectangleF(const DrawQuad* quad);
 
-// TODO(crbug.com/444264038): Remove this overload after
-// CompositorRenderPassDrawQuad is updated to contain filters. We should
-// consolidate the two overloads into one that accepts
-// `RenderPassDrawQuadInternal`.
-VIZ_COMMON_EXPORT gfx::Rect GetTargetExpandedRectForPixelMovingFilters(
-    const CompositorRenderPassDrawQuad& rpdq,
-    const cc::FilterOperations& filters);
-
-// TODO(crbug.com/444264038): Remove this overload after
-// CompositorRenderPassDrawQuad is updated to contain filters. We should
-// consolidate the two overloads into one that accepts
-// `RenderPassDrawQuadInternal`.
-VIZ_COMMON_EXPORT gfx::Rect GetExpandedRectForPixelMovingFilters(
-    const CompositorRenderPassDrawQuad& rpdq,
-    const cc::FilterOperations& filters);
-
 // The expanded area that will be changed by a render pass draw quad with a
 // pixel-moving foreground filter. The returned bounds are in the quad's target
 // coordinate space.
-// TODO(crbug.com/444264038): Remove this overload after
-// CompositorRenderPassDrawQuad is updated to contain filters. We should
-// consolidate the two overloads into one that accepts
-// `RenderPassDrawQuadInternal`.
 VIZ_COMMON_EXPORT gfx::Rect GetTargetExpandedRectForPixelMovingFilters(
-    const AggregatedRenderPassDrawQuad& rpdq);
+    const RenderPassDrawQuadInternal& rpdq,
+    const cc::FilterOperations& filters);
 
 // The expanded area that will be changed by a render pass draw quad with a
 // pixel-moving foreground filter. The returned bounds are in the quad's
 // original coordinate space.
-// TODO(crbug.com/444264038): Remove this overload after
-// CompositorRenderPassDrawQuad is updated to contain filters. We should
-// consolidate the two overloads into one that accepts
-// `RenderPassDrawQuadInternal`.
 VIZ_COMMON_EXPORT gfx::Rect GetExpandedRectForPixelMovingFilters(
-    const AggregatedRenderPassDrawQuad& rpdq);
+    const RenderPassDrawQuadInternal& rpdq,
+    const cc::FilterOperations& filters);
 
 // This transforms a rect from the view transition content surface/render_pass
 // space to the shared element quad space.

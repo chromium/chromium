@@ -30,6 +30,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStub
       DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_passes,
       const SkM44& output_color_matrix,
+      const FilterOperationsMap& render_pass_filters,
+      const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
       const PrimaryPlaneParams& primary_plane_params,
       CandidateList* overlay_candidates,

@@ -962,9 +962,11 @@ void SurfaceAggregator::EmitSurfaceContent(
     }
     copy_pass->SetAll(
         resolved_pass.remapped_id(), output_rect, output_rect,
-        source.transform_to_root_target, root_content_color_usage_,
-        source.has_transparent_background, source.cache_render_pass,
-        resolved_pass.aggregation().has_damage, source.generate_mipmap);
+        source.transform_to_root_target, source.filters,
+        source.backdrop_filters, source.backdrop_filter_bounds,
+        root_content_color_usage_, source.has_transparent_background,
+        source.cache_render_pass, resolved_pass.aggregation().has_damage,
+        source.generate_mipmap);
 
     copy_pass->is_from_surface_root_pass = resolved_pass.is_root();
 
@@ -1092,12 +1094,6 @@ void SurfaceAggregator::EmitSurfaceContent(
                    remapped_pass_id, kInvalidResourceId, gfx::RectF(),
                    gfx::Size(), tex_coord_rect,
                    /*force_anti_aliasing_off=*/false);
-      quad->SetFilters(resolved_root_pass.render_pass().filters,
-                       resolved_root_pass.render_pass().backdrop_filters,
-                       resolved_root_pass.render_pass().backdrop_filter_bounds,
-                       /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
-                       /*filters_origin=*/gfx::PointF(),
-                       /*backdrop_filter_quality=*/1.0f);
     }
   }
 
@@ -1191,10 +1187,18 @@ void SurfaceAggregator::AddRootReadbackPass() {
   bool needs_readback_pass = false;
   // Check if there are any render passes that draw into the root pass with
   // a backdrop filter.
+  base::flat_set<AggregatedRenderPassId> pass_ids_drawing_to_root;
   for (auto* quad : root_render_pass->quad_list) {
     if (auto* render_pass_quad =
             quad->DynamicCast<AggregatedRenderPassDrawQuad>()) {
-      if (!render_pass_quad->backdrop_filters.IsEmpty()) {
+      pass_ids_drawing_to_root.insert(render_pass_quad->render_pass_id);
+    }
+  }
+  if (!pass_ids_drawing_to_root.empty()) {
+    for (auto& render_pass : *dest_pass_list_) {
+      if (!pass_ids_drawing_to_root.contains(render_pass->id))
+        continue;
+      if (!render_pass->backdrop_filters.IsEmpty()) {
         needs_readback_pass = true;
         break;
       }
@@ -1275,7 +1279,10 @@ void SurfaceAggregator::AddRenderPassHelper(
   auto render_pass = std::make_unique<AggregatedRenderPass>(1, 1);
   render_pass->SetAll(render_pass_id, render_pass_output_rect,
                       render_pass_damage_rect, gfx::Transform(),
-                      pass_color_usage, pass_has_transparent_background,
+                      /*filters=*/cc::FilterOperations(),
+                      /*backdrop_filters=*/cc::FilterOperations(),
+                      /*backdrop_filter_bounds=*/SkPath(), pass_color_usage,
+                      pass_has_transparent_background,
                       /*cache_render_pass=*/false,
                       /*has_damage_from_contributing_content=*/false,
                       /*generate_mipmap=*/false);
@@ -1431,12 +1438,12 @@ void SurfaceAggregator::CopyQuadsToPass(
       if (const auto* pass_quad =
               quad->DynamicCast<CompositorRenderPassDrawQuad>()) {
         CompositorRenderPassId original_pass_id = pass_quad->render_pass_id;
-        const ResolvedPassData& resolved_pass_data =
-            resolved_frame.GetRenderPassDataById(original_pass_id);
+        AggregatedRenderPassId remapped_pass_id =
+            resolved_frame.GetRenderPassDataById(original_pass_id)
+                .remapped_id();
 
         dest_quad = dest_pass->CopyFromAndAppendRenderPassDrawQuad(
-            pass_quad, resolved_pass_data.render_pass(),
-            resolved_pass_data.remapped_id());
+            pass_quad, remapped_pass_id);
 
         if (needs_surface_damage_rect_list_ &&
             resolved_pass.aggregation().will_draw) {
@@ -1545,7 +1552,8 @@ void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame) {
 
     copy_pass->SetAll(
         resolved_pass.remapped_id(), output_rect, output_rect,
-        transform_to_root_target, root_content_color_usage_,
+        transform_to_root_target, source.filters, source.backdrop_filters,
+        source.backdrop_filter_bounds, root_content_color_usage_,
         source.has_transparent_background, source.cache_render_pass,
         resolved_pass.aggregation().has_damage, source.generate_mipmap);
 

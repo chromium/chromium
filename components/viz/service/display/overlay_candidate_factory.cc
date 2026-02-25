@@ -213,11 +213,13 @@ OverlayCandidateFactory::OverlayCandidateFactory(
     const SurfaceDamageRectList* surface_damage_rect_list,
     const SkM44* output_color_matrix,
     const gfx::RectF primary_rect,
+    const OverlayProcessorInterface::FilterOperationsMap* render_pass_filters,
     const OverlayContext& context)
     : render_pass_(render_pass),
       resource_provider_(resource_provider),
       surface_damage_rect_list_(surface_damage_rect_list),
       primary_rect_(primary_rect),
+      render_pass_filters_(render_pass_filters),
       context_(context) {
   DCHECK(context_.supports_clip_rect || !context_.supports_arbitrary_transform);
   DCHECK(!context_.disable_wire_size_optimization ||
@@ -280,7 +282,10 @@ float OverlayCandidateFactory::EstimateVisibleDamage(
 bool OverlayCandidateFactory::IsOccludedByFilteredQuad(
     const DrawQuad& quad,
     QuadList::ConstIterator quad_list_begin,
-    QuadList::ConstIterator quad_list_end) {
+    QuadList::ConstIterator quad_list_end,
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
+        render_pass_backdrop_filters) {
   const gfx::RectF target_rect =
       quad.shared_quad_state->quad_to_target_transform.MapRect(
           gfx::RectF(quad.visible_rect));
@@ -291,8 +296,10 @@ bool OverlayCandidateFactory::IsOccludedByFilteredQuad(
       gfx::RectF overlap_rect = cc::MathUtil::MapClippedRect(
           overlap_iter->shared_quad_state->quad_to_target_transform,
           gfx::RectF(overlap_iter->rect));
+
       if (target_rect.Intersects(overlap_rect) &&
-          !render_pass_draw_quad->backdrop_filters.IsEmpty()) {
+          render_pass_backdrop_filters.count(
+              render_pass_draw_quad->render_pass_id)) {
         return true;
       }
     }
@@ -473,9 +480,10 @@ void OverlayCandidateFactory::SetDisplayRect(
     // Expand display_rect if quad is a render pass with a filter that expands
     // its bounds.
     if (auto* rpdq = quad.DynamicCast<AggregatedRenderPassDrawQuad>()) {
-      if (!rpdq->filters.IsEmpty()) {
-        candidate.display_rect =
-            gfx::RectF(GetExpandedRectForPixelMovingFilters(*rpdq));
+      auto filter_it = render_pass_filters_->find(rpdq->render_pass_id);
+      if (filter_it != render_pass_filters_->end()) {
+        candidate.display_rect = gfx::RectF(
+            GetExpandedRectForPixelMovingFilters(*rpdq, *filter_it->second));
         // uv_rect will be updated in SkiaRenderer because the buffer size will
         // be rounded up some.
       }
@@ -546,10 +554,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::ApplyTransform(
 OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromAggregateQuad(
     const AggregatedRenderPassDrawQuad* quad,
     OverlayCandidate& candidate) const {
-  if (!quad->backdrop_filters.IsEmpty()) {
-    return CandidateStatus::kFailBackdropFilter;
-  }
-
   auto rtn = FromDrawQuadResource(quad, kInvalidResourceId, false, candidate);
   if (rtn == CandidateStatus::kSuccess) {
     candidate.rpdq = quad;

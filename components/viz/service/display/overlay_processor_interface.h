@@ -113,15 +113,28 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
 
   // Attempts to replace quads from the specified root render pass with overlays
   // or CALayers. This must be called every frame.
+  // TODO(crbug.com/444264038): Delete this overload when the RPDQ refactor is
+  // finished.
   virtual void ProcessForOverlays(
       DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_passes,
       const SkM44& output_color_matrix,
+      const FilterOperationsMap& render_pass_filters,
+      const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
       const PrimaryPlaneParams& primary_plane_params,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) = 0;
+
+  void ProcessForOverlays(DisplayResourceProvider* resource_provider,
+                          AggregatedRenderPassList* render_passes,
+                          const SkM44& output_color_matrix,
+                          SurfaceDamageRectList surface_damage_rect_list,
+                          const PrimaryPlaneParams& primary_plane_params,
+                          CandidateList* overlay_candidates,
+                          gfx::Rect* damage_rect,
+                          std::vector<gfx::Rect>* content_bounds);
 
   // Before the overlay refactor to use OverlayProcessorOnGpu, overlay
   // candidates are stored inside DirectRenderer. Those overlay candidates are

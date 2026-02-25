@@ -206,8 +206,7 @@ SharedQuadState* CreateTestSharedQuadStateClipped(
 void CreateTestRenderPassDrawQuad(const SharedQuadState* shared_state,
                                   const gfx::Rect& rect,
                                   AggregatedRenderPassId pass_id,
-                                  AggregatedRenderPass* render_pass,
-                                  cc::FilterOperations filters = {}) {
+                                  AggregatedRenderPass* render_pass) {
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   // The full `rect` is drawn (visible_rect == rect) but texture coords
@@ -215,16 +214,11 @@ void CreateTestRenderPassDrawQuad(const SharedQuadState* shared_state,
   gfx::RectF tex_coords{static_cast<float>(rect.width()),
                         static_cast<float>(rect.height())};
   quad->SetNew(shared_state, rect, rect, pass_id,
-               kInvalidResourceId,        // mask_resource_id
-               gfx::RectF(),              // mask_uv_rect
-               gfx::Size(),               // mask_texture_size
-               tex_coords,                // tex_coord_rect
-               false);                    // force_anti_aliasing_off
-  quad->SetFilters(filters, {},           // backdrop_filters
-                   std::nullopt,          // backdrop_filter_bounds
-                   gfx::Vector2dF(1, 1),  // filters scale
-                   gfx::PointF(),         // filter origin
-                   1.0f);                 // backdrop_filter_quality
+               kInvalidResourceId,  // mask_resource_id
+               gfx::RectF(),        // mask_uv_rect
+               gfx::Size(),         // mask_texture_size
+               tex_coords,          // tex_coord_rect
+               false);              // force_anti_aliasing_off
 }
 
 // Create a TextureDrawDrawQuad with two given colors.
@@ -1479,6 +1473,8 @@ TEST_P(RendererPixelTest, BypassableRenderPassQuad_BackdropFilter_Extents) {
     backdrop_pass->SetNew(backdrop_pass_id, backdrop_pass_rect,
                           backdrop_pass_rect,
                           transform_root_to_backdrop_pass.GetCheckedInverse());
+    backdrop_pass->backdrop_filters.Append(
+        cc::FilterOperation::CreateBlurFilter(8.f, SkTileMode::kMirror));
 
     gfx::Transform transform_child_to_backdrop_pass;
     transform_child_to_backdrop_pass.Translate(
@@ -1525,13 +1521,6 @@ TEST_P(RendererPixelTest, BypassableRenderPassQuad_BackdropFilter_Extents) {
       pass_quad->SetNew(sqs, backdrop_pass_rect, backdrop_pass_rect,
                         backdrop_pass_id, kInvalidResourceId, gfx::RectF(),
                         gfx::Size(), gfx::RectF(backdrop_pass_rect), false);
-      pass_quad->SetFilters(
-          /*filters=*/{}, /*backdrop_filters=*/
-          cc::FilterOperations({cc::FilterOperation::CreateBlurFilter(
-              8.f, SkTileMode::kMirror)}),
-          /*backdrop_filter_bounds=*/std::nullopt,
-          /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
-          /*filters_origin=*/gfx::PointF(), /*backdrop_filter_quality=*/1.0f);
     }
     {
       auto* sqs =
@@ -1682,16 +1671,16 @@ TEST_P(GPURendererPixelTest, SolidColorWithTemperatureNonRootRenderPass) {
 
   // Child pass.
   AggregatedRenderPassId child_pass_id{2};
-  AggregatedRenderPass* child_pass =
-      cc::AddRenderPass(&render_passes_in_draw_order, child_pass_id,
-                        viewport_rect, gfx::Transform());
+  AggregatedRenderPass* child_pass = cc::AddRenderPass(
+      &render_passes_in_draw_order, child_pass_id, viewport_rect,
+      gfx::Transform(), cc::FilterOperations());
   cc::AddQuad(child_pass, child_rect, SkColors::kGreen);
 
   // Root pass.
   AggregatedRenderPassId root_pass_id{1};
-  AggregatedRenderPass* root_pass =
-      cc::AddRenderPass(&render_passes_in_draw_order, root_pass_id,
-                        viewport_rect, gfx::Transform());
+  AggregatedRenderPass* root_pass = cc::AddRenderPass(
+      &render_passes_in_draw_order, root_pass_id, viewport_rect,
+      gfx::Transform(), cc::FilterOperations());
   cc::AddQuad(root_pass, root_rect, SkColors::kYellow);
 
   SharedQuadState* pass_shared_state =
@@ -3005,37 +2994,6 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlpha) {
   AggregatedRenderPassId child_pass_id{2};
   gfx::Rect pass_rect(this->device_viewport_size_);
   gfx::Transform transform_to_root;
-
-  auto child_pass =
-      CreateTestRenderPass(child_pass_id, pass_rect, transform_to_root);
-
-  gfx::Transform quad_to_target_transform;
-  SharedQuadState* shared_state = CreateTestSharedQuadState(
-      quad_to_target_transform, viewport_rect, child_pass.get(), gfx::MaskFilterInfo());
-  shared_state->opacity = 0.5f;
-
-  gfx::Rect blue_rect(0, 0, this->device_viewport_size_.width(),
-                      this->device_viewport_size_.height() / 2);
-  auto* blue = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  blue->SetNew(shared_state, blue_rect, blue_rect, SkColors::kBlue, false);
-  gfx::Rect yellow_rect(0, this->device_viewport_size_.height() / 2,
-                        this->device_viewport_size_.width(),
-                        this->device_viewport_size_.height() / 2);
-  auto* yellow = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  yellow->SetNew(shared_state, yellow_rect, yellow_rect, SkColors::kYellow,
-                 false);
-
-  SharedQuadState* blank_state = CreateTestSharedQuadState(
-      quad_to_target_transform, viewport_rect, child_pass.get(), gfx::MaskFilterInfo());
-
-  auto* white = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  white->SetNew(blank_state, viewport_rect, viewport_rect, SkColors::kWhite,
-                false);
-
-  SharedQuadState* pass_shared_state =
-      CreateTestSharedQuadState(gfx::Transform(), pass_rect, root_pass.get(),
-                                gfx::MaskFilterInfo());
-
   float matrix[20];
   float amount = 0.5f;
   matrix[0] = 0.213f + 0.787f * amount;
@@ -3057,16 +3015,42 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlpha) {
       sk_make_sp<cc::ColorFilterPaintFilter>(
           cc::ColorFilter::MakeMatrix(matrix), nullptr)));
 
+  auto child_pass =
+      CreateTestRenderPass(child_pass_id, pass_rect, transform_to_root);
+  child_pass->filters = filters;
+
+  gfx::Transform quad_to_target_transform;
+  SharedQuadState* shared_state = CreateTestSharedQuadState(
+      quad_to_target_transform, viewport_rect, child_pass.get(), gfx::MaskFilterInfo());
+  shared_state->opacity = 0.5f;
+
+  gfx::Rect blue_rect(0, 0, this->device_viewport_size_.width(),
+                      this->device_viewport_size_.height() / 2);
+  auto* blue = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  blue->SetNew(shared_state, blue_rect, blue_rect, SkColors::kBlue, false);
+  gfx::Rect yellow_rect(0, this->device_viewport_size_.height() / 2,
+                        this->device_viewport_size_.width(),
+                        this->device_viewport_size_.height() / 2);
+  auto* yellow = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  yellow->SetNew(shared_state, yellow_rect, yellow_rect, SkColors::kYellow,
+                 false);
+
+  SharedQuadState* blank_state = CreateTestSharedQuadState(
+      quad_to_target_transform, viewport_rect, child_pass.get(), gfx::MaskFilterInfo());
+
+  auto* white = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  white->SetNew(blank_state, viewport_rect, viewport_rect, SkColors::kWhite,
+                false);
+
+  SharedQuadState* pass_shared_state =
+      CreateTestSharedQuadState(gfx::Transform(), pass_rect, root_pass.get(),
+                                gfx::MaskFilterInfo());
+
   auto* render_pass_quad =
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
                            child_pass_id, kInvalidResourceId, gfx::RectF(),
                            gfx::Size(), gfx::RectF(pass_rect), false);
-  render_pass_quad->SetFilters(filters, /*backdrop_filters=*/{},
-                               /*backdrop_filter_bounds=*/std::nullopt,
-                               /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
-                               /*filters_origin=*/gfx::PointF(),
-                               /*backdrop_filter_quality=*/1.0f);
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(child_pass));
@@ -3088,9 +3072,12 @@ TEST_P(RendererPixelTest, FastPassSaturateFilter) {
   AggregatedRenderPassId child_pass_id{2};
   gfx::Rect pass_rect(this->device_viewport_size_);
   gfx::Transform transform_to_root;
+  cc::FilterOperations filters;
+  filters.Append(cc::FilterOperation::CreateSaturateFilter(0.5f));
 
   auto child_pass =
       CreateTestRenderPass(child_pass_id, pass_rect, transform_to_root);
+  child_pass->filters = filters;
 
   gfx::Transform quad_to_target_transform;
   SharedQuadState* shared_state = CreateTestSharedQuadState(
@@ -3124,13 +3111,6 @@ TEST_P(RendererPixelTest, FastPassSaturateFilter) {
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
                            child_pass_id, kInvalidResourceId, gfx::RectF(),
                            gfx::Size(), gfx::RectF(pass_rect), false);
-  render_pass_quad->SetFilters(
-      /*filters=*/cc::FilterOperations(
-          {cc::FilterOperation::CreateSaturateFilter(0.5f)}),
-      /*backdrop_filters=*/{},
-      /*backdrop_filter_bounds=*/std::nullopt,
-      /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
-      /*filters_origin=*/gfx::PointF(), /*backdrop_filter_quality=*/1.0f);
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(child_pass));
@@ -3152,9 +3132,13 @@ TEST_P(RendererPixelTest, FastPassFilterChain) {
   AggregatedRenderPassId child_pass_id{2};
   gfx::Rect pass_rect(this->device_viewport_size_);
   gfx::Transform transform_to_root;
+  cc::FilterOperations filters;
+  filters.Append(cc::FilterOperation::CreateGrayscaleFilter(1.f));
+  filters.Append(cc::FilterOperation::CreateBrightnessFilter(0.5f));
 
   auto child_pass =
       CreateTestRenderPass(child_pass_id, pass_rect, transform_to_root);
+  child_pass->filters = filters;
 
   gfx::Transform quad_to_target_transform;
   SharedQuadState* shared_state = CreateTestSharedQuadState(
@@ -3183,20 +3167,11 @@ TEST_P(RendererPixelTest, FastPassFilterChain) {
       CreateTestSharedQuadState(gfx::Transform(), pass_rect, root_pass.get(),
                                 gfx::MaskFilterInfo());
 
-  cc::FilterOperations filters;
-  filters.Append(cc::FilterOperation::CreateGrayscaleFilter(1.f));
-  filters.Append(cc::FilterOperation::CreateBrightnessFilter(0.5f));
-
   auto* render_pass_quad =
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
                            child_pass_id, kInvalidResourceId, gfx::RectF(),
                            gfx::Size(), gfx::RectF(pass_rect), false);
-  render_pass_quad->SetFilters(filters, /*backdrop_filters=*/{},
-                               /*backdrop_filter_bounds=*/std::nullopt,
-                               /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
-                               /*filters_origin=*/gfx::PointF(),
-                               /*backdrop_filter_quality=*/1.0f);
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(child_pass));
@@ -3219,37 +3194,6 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlphaTranslation) {
   AggregatedRenderPassId child_pass_id{2};
   gfx::Rect pass_rect(this->device_viewport_size_);
   gfx::Transform transform_to_root;
-
-  auto child_pass =
-      CreateTestRenderPass(child_pass_id, pass_rect, transform_to_root);
-
-  gfx::Transform quad_to_target_transform;
-  SharedQuadState* shared_state = CreateTestSharedQuadState(
-      quad_to_target_transform, viewport_rect, child_pass.get(), gfx::MaskFilterInfo());
-  shared_state->opacity = 0.5f;
-
-  gfx::Rect blue_rect(0, 0, this->device_viewport_size_.width(),
-                      this->device_viewport_size_.height() / 2);
-  auto* blue = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  blue->SetNew(shared_state, blue_rect, blue_rect, SkColors::kBlue, false);
-  gfx::Rect yellow_rect(0, this->device_viewport_size_.height() / 2,
-                        this->device_viewport_size_.width(),
-                        this->device_viewport_size_.height() / 2);
-  auto* yellow = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  yellow->SetNew(shared_state, yellow_rect, yellow_rect, SkColors::kYellow,
-                 false);
-
-  SharedQuadState* blank_state = CreateTestSharedQuadState(
-      quad_to_target_transform, viewport_rect, child_pass.get(), gfx::MaskFilterInfo());
-
-  auto* white = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  white->SetNew(blank_state, viewport_rect, viewport_rect, SkColors::kWhite,
-                false);
-
-  SharedQuadState* pass_shared_state =
-      CreateTestSharedQuadState(gfx::Transform(), pass_rect, root_pass.get(),
-                                gfx::MaskFilterInfo());
-
   float matrix[20];
   float amount = 0.5f;
   matrix[0] = 0.213f + 0.787f * amount;
@@ -3273,16 +3217,43 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlphaTranslation) {
   filters.Append(cc::FilterOperation::CreateReferenceFilter(
       sk_make_sp<cc::ColorFilterPaintFilter>(
           cc::ColorFilter::MakeMatrix(matrix), nullptr)));
+
+  auto child_pass =
+      CreateTestRenderPass(child_pass_id, pass_rect, transform_to_root);
+  child_pass->filters = filters;
+
+  gfx::Transform quad_to_target_transform;
+  SharedQuadState* shared_state = CreateTestSharedQuadState(
+      quad_to_target_transform, viewport_rect, child_pass.get(), gfx::MaskFilterInfo());
+  shared_state->opacity = 0.5f;
+
+  gfx::Rect blue_rect(0, 0, this->device_viewport_size_.width(),
+                      this->device_viewport_size_.height() / 2);
+  auto* blue = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  blue->SetNew(shared_state, blue_rect, blue_rect, SkColors::kBlue, false);
+  gfx::Rect yellow_rect(0, this->device_viewport_size_.height() / 2,
+                        this->device_viewport_size_.width(),
+                        this->device_viewport_size_.height() / 2);
+  auto* yellow = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  yellow->SetNew(shared_state, yellow_rect, yellow_rect, SkColors::kYellow,
+                 false);
+
+  SharedQuadState* blank_state = CreateTestSharedQuadState(
+      quad_to_target_transform, viewport_rect, child_pass.get(), gfx::MaskFilterInfo());
+
+  auto* white = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  white->SetNew(blank_state, viewport_rect, viewport_rect, SkColors::kWhite,
+                false);
+
+  SharedQuadState* pass_shared_state =
+      CreateTestSharedQuadState(gfx::Transform(), pass_rect, root_pass.get(),
+                                gfx::MaskFilterInfo());
+
   auto* render_pass_quad =
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
                            child_pass_id, kInvalidResourceId, gfx::RectF(),
                            gfx::Size(), gfx::RectF(pass_rect), false);
-  render_pass_quad->SetFilters(filters, /*backdrop_filters=*/{},
-                               /*backdrop_filter_bounds=*/std::nullopt,
-                               /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
-                               /*filters_origin=*/gfx::PointF(),
-                               /*backdrop_filter_quality=*/1.0f);
 
   AggregatedRenderPassList pass_list;
 
@@ -3313,10 +3284,19 @@ TEST_P(RendererPixelTest, NonEmptyFilterClipRectOnEmptyRenderPassQuad) {
   // Zero-sized render pass with a reference filter that fills an area green.
   AggregatedRenderPassId child_pass_id{2};
   {
+    cc::FilterOperations filters;
+    const SkRect filter_clip_rect = gfx::RectToSkRect(
+        gfx::Rect(gfx::Point() - rpdq_offset, this->device_viewport_size_));
+    filters.Append(cc::FilterOperation::CreateReferenceFilter(
+        sk_make_sp<cc::ColorFilterPaintFilter>(
+            cc::ColorFilter::MakeBlend(SkColors::kGreen, SkBlendMode::kSrc),
+            nullptr, &filter_clip_rect)));
+
     auto child_pass =
         CreateTestRenderPass(child_pass_id, empty_rpdq_rect,
                              /*transform_to_root_target=*/
                              gfx::Transform::MakeTranslation(rpdq_offset));
+    child_pass->filters = filters;
 
     pass_list.push_back(std::move(child_pass));
   }
@@ -3326,21 +3306,13 @@ TEST_P(RendererPixelTest, NonEmptyFilterClipRectOnEmptyRenderPassQuad) {
     AggregatedRenderPassId root_pass_id{1};
     auto root_pass = CreateTestRootRenderPass(root_pass_id, viewport_rect);
 
-    cc::FilterOperations filters;
-    const SkRect filter_clip_rect = gfx::RectToSkRect(
-        gfx::Rect(gfx::Point() - rpdq_offset, this->device_viewport_size_));
-    filters.Append(cc::FilterOperation::CreateReferenceFilter(
-        sk_make_sp<cc::ColorFilterPaintFilter>(
-            cc::ColorFilter::MakeBlend(SkColors::kGreen, SkBlendMode::kSrc),
-            nullptr, &filter_clip_rect)));
-
     CreateTestRenderPassDrawQuad(
         CreateTestSharedQuadState(
             /*quad_to_target_transform=*/gfx::Transform::MakeTranslation(
                 rpdq_offset),
             gfx::Rect(gfx::Point() - rpdq_offset, this->device_viewport_size_),
             root_pass.get(), gfx::MaskFilterInfo()),
-        empty_rpdq_rect, child_pass_id, root_pass.get(), filters);
+        empty_rpdq_rect, child_pass_id, root_pass.get());
 
     // Add a red background to make it clear when the test is failing.
     auto* color_quad = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -3821,6 +3793,9 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCornerMultiRadii) {
       gfx::Size(mask_rect.size()),               // mask_texture_size
       gfx::RectF(viewport_rect),                 // tex_coord_rect
       false);                                    // force_anti_aliasing_off
+  mask_quad->SetFilters(/*scale=*/gfx::Vector2dF(),
+                        /*origin=*/gfx::PointF(),
+                        /*backdrop_quality=*/1.0f);
   // White background behind the masked render pass.
   auto* white = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
   white->SetNew(root_pass_shared_state, viewport_rect, viewport_rect,
@@ -3860,6 +3835,8 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
     gfx::Transform transform_to_root;
     auto filter_pass = CreateTestRenderPass(
         filter_pass_id, filter_pass_layer_rect_, transform_to_root);
+    filter_pass->backdrop_filters = this->backdrop_filters_;
+    filter_pass->backdrop_filter_bounds = this->backdrop_filter_bounds_;
 
     // A non-visible quad in the filtering render pass.
     {
@@ -3940,11 +3917,6 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
                                mask_texture_size,
                                gfx::RectF(),  // tex_coord_rect
                                false);        // force_anti_aliasing_off
-      filter_pass_quad->SetFilters(
-          /*filters=*/{}, this->backdrop_filters_,
-          this->backdrop_filter_bounds_,
-          /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
-          /*filters_origin=*/gfx::PointF(), /*backdrop_filter_quality=*/1.0f);
     }
 
     const int kColumnWidth = device_viewport_rect.width() / 3;
@@ -4252,10 +4224,7 @@ TEST_P(GPURendererPixelTest, RenderPassDrawQuadForceAntiAliasingOff) {
                     child_pass_id, kInvalidResourceId, gfx::RectF(),
                     gfx::Size(), gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
                     gfx::RectF(rect), force_anti_aliasing_off,
-                    backdrop_filter_quality, intersects_damage_under,
-                    /*filters=*/cc::FilterOperations(),
-                    /*backdrop_filters=*/cc::FilterOperations(),
-                    /*backdrop_filter_bounds=*/std::nullopt);
+                    backdrop_filter_quality, intersects_damage_under);
 
   gfx::Transform green_quad_to_target_transform;
   SharedQuadState* green_shared_state = CreateTestSharedQuadState(
@@ -4397,6 +4366,7 @@ TEST_P(GPURendererPixelTest, TrilinearFiltering) {
   auto child_pass = std::make_unique<AggregatedRenderPass>();
   child_pass->SetAll(
       child_pass_id, child_pass_rect, child_pass_rect, transform_to_root,
+      cc::FilterOperations(), cc::FilterOperations(), SkPath(),
       gfx::ContentColorUsage::kSRGB, false, false, false, generate_mipmap);
 
   gfx::Rect red_rect(child_pass_rect);
@@ -5862,6 +5832,8 @@ TEST_P(RendererPixelTest, BlurExpandsBounds) {
   gfx::Rect pass_rect(this->device_viewport_size_);
   auto child_pass =
       CreateTestRenderPass(child_pass_id, pass_rect, gfx::Transform());
+  // Add 60px blur to child pass.
+  child_pass->filters.Append(cc::FilterOperation::CreateBlurFilter(20.0f));
 
   // Add blue and yellow rect to child render pass.
   SharedQuadState* shared_state = CreateTestSharedQuadState(
@@ -5886,14 +5858,6 @@ TEST_P(RendererPixelTest, BlurExpandsBounds) {
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
                            child_pass_id, kInvalidResourceId, gfx::RectF(),
                            gfx::Size(), gfx::RectF(pass_rect), false);
-  // Add 60px blur to draw quad.
-  render_pass_quad->SetFilters(
-      /*filters=*/cc::FilterOperations(
-          {cc::FilterOperation::CreateBlurFilter(20.0f)}),
-      /*backdrop_filters=*/{},
-      /*backdrop_filter_bounds=*/std::nullopt,
-      /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
-      /*filters_origin=*/gfx::PointF(), /*backdrop_filter_quality=*/1.0f);
 
   // White background underneath
   SharedQuadState* blank_state = CreateTestSharedQuadState(

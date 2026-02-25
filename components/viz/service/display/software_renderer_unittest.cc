@@ -364,8 +364,9 @@ TEST_F(SoftwareRendererTestShouldClearRootRenderPass,
 
   // Draw a fullscreen green quad in a first frame.
   AggregatedRenderPassId root_clear_pass_id{1};
-  AggregatedRenderPass* root_clear_pass = cc::AddRenderPass(
-      &list, root_clear_pass_id, gfx::Rect(viewport_size), gfx::Transform());
+  AggregatedRenderPass* root_clear_pass =
+      cc::AddRenderPass(&list, root_clear_pass_id, gfx::Rect(viewport_size),
+                        gfx::Transform(), cc::FilterOperations());
   cc::AddQuad(root_clear_pass, gfx::Rect(viewport_size), SkColors::kGreen);
 
   EXPECT_TRUE(RunPixelTest(
@@ -382,8 +383,9 @@ TEST_F(SoftwareRendererTestShouldClearRootRenderPass,
   gfx::Rect smaller_rect(20, 20, 60, 60);
 
   AggregatedRenderPassId root_smaller_pass_id{2};
-  AggregatedRenderPass* root_smaller_pass = cc::AddRenderPass(
-      &list, root_smaller_pass_id, gfx::Rect(viewport_size), gfx::Transform());
+  AggregatedRenderPass* root_smaller_pass =
+      cc::AddRenderPass(&list, root_smaller_pass_id, gfx::Rect(viewport_size),
+                        gfx::Transform(), cc::FilterOperations());
   cc::AddQuad(root_smaller_pass, smaller_rect, SkColors::kMagenta);
 
   EXPECT_TRUE(RunPixelTest(
@@ -407,13 +409,15 @@ TEST_F(SoftwareRendererTest, RenderPassVisibleRect) {
   gfx::Rect smaller_rect(20, 20, 60, 60);
   AggregatedRenderPassId smaller_pass_id{2};
   auto* smaller_pass =
-      cc::AddRenderPass(&list, smaller_pass_id, smaller_rect, gfx::Transform());
+      cc::AddRenderPass(&list, smaller_pass_id, smaller_rect, gfx::Transform(),
+                        cc::FilterOperations());
   cc::AddQuad(smaller_pass, smaller_rect, SkColors::kMagenta);
 
   // Root pass is green.
   AggregatedRenderPassId root_clear_pass_id{1};
-  AggregatedRenderPass* root_clear_pass = cc::AddRenderPass(
-      &list, root_clear_pass_id, gfx::Rect(viewport_size), gfx::Transform());
+  AggregatedRenderPass* root_clear_pass =
+      AddRenderPass(&list, root_clear_pass_id, gfx::Rect(viewport_size),
+                    gfx::Transform(), cc::FilterOperations());
   cc::AddRenderPassQuad(root_clear_pass, smaller_pass);
   cc::AddQuad(root_clear_pass, gfx::Rect(viewport_size), SkColors::kGreen);
 
@@ -438,8 +442,9 @@ TEST_F(SoftwareRendererTest, ClipRoundRect) {
 
   AggregatedRenderPassList list;
   AggregatedRenderPassId root_pass_id{1};
-  AggregatedRenderPass* root_pass = cc::AddRenderPass(
-      &list, root_pass_id, gfx::Rect(viewport_size), gfx::Transform());
+  AggregatedRenderPass* root_pass =
+      AddRenderPass(&list, root_pass_id, gfx::Rect(viewport_size),
+                    gfx::Transform(), cc::FilterOperations());
 
   // Draw outer rect with clipping.
   {
@@ -501,8 +506,9 @@ TEST_F(SoftwareRendererTestPartialSwap, PartialSwap) {
     AggregatedRenderPassList list;
     AggregatedRenderPassId root_pass_id{1};
     SurfaceDamageRectList surface_damage_rect_list;
-    auto* root_pass = cc::AddRenderPass(
-        &list, root_pass_id, gfx::Rect(viewport_size), gfx::Transform());
+    auto* root_pass =
+        AddRenderPass(&list, root_pass_id, gfx::Rect(viewport_size),
+                      gfx::Transform(), cc::FilterOperations());
     cc::AddQuad(root_pass, gfx::Rect(viewport_size), SkColors::kBlack);
 
     // Partial frame, we should pass this rect to the SoftwareOutputDevice.
@@ -522,8 +528,9 @@ TEST_F(SoftwareRendererTestPartialSwap, PartialSwap) {
     AggregatedRenderPassList list;
     AggregatedRenderPassId root_pass_id{1};
     SurfaceDamageRectList surface_damage_rect_list;
-    auto* root_pass = cc::AddRenderPass(
-        &list, root_pass_id, gfx::Rect(viewport_size), gfx::Transform());
+    auto* root_pass =
+        AddRenderPass(&list, root_pass_id, gfx::Rect(viewport_size),
+                      gfx::Transform(), cc::FilterOperations());
     cc::AddQuad(root_pass, gfx::Rect(viewport_size), SkColors::kGreen);
 
     // Partial frame, only this region will draw, even though the quad covers

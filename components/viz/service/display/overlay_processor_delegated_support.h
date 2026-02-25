@@ -26,7 +26,7 @@ enum class DelegationStatus {
   kCompositedCheckOverlayFail = 3,
   kCompositedNotOverlay = 4,
   kCompositedTooManyQuads = 5,
-  kCompositedCandidateBackdropFilter = 6,
+  kCompositedBackdropFilter = 6,
   kCompositedCopyRequest = 7,
   kCompositedHas3dTransform = 8,
   kCompositedHas2dShear = 9,

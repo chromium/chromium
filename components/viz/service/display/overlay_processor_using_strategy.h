@@ -47,6 +47,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
     : public OverlayProcessorInterface {
  public:
   using CandidateList = OverlayCandidateList;
+  // TODO(crbug.com/444264038): Delete this declaration when the RPDQ refactor
+  // is finished. Need to avoid hiding the base class' overload.
+  using OverlayProcessorInterface::ProcessForOverlays;
 
   OverlayProcessorUsingStrategy(const OverlayProcessorUsingStrategy&) = delete;
   OverlayProcessorUsingStrategy& operator=(
@@ -66,6 +69,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_passes,
       const SkM44& output_color_matrix,
+      const FilterOperationsMap& render_pass_filters,
+      const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
       const PrimaryPlaneParams& primary_plane_params,
       CandidateList* overlay_candidates,
@@ -203,6 +208,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // |primary_plane|'s blending setting.
   bool AttemptWithStrategies(
       const SkM44& output_color_matrix,
+      const OverlayProcessorInterface::FilterOperationsMap& render_pass_filters,
+      const OverlayProcessorInterface::FilterOperationsMap&
+          render_pass_backdrop_filters,
       const DisplayResourceProvider* resource_provider,
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
