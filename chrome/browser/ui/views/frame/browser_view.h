@@ -124,6 +124,8 @@ enum class InstallableWebAppCheckResult;
 struct WebAppBannerData;
 }  // namespace webapps
 
+class CustomFloatingCorner;
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserView
 //
@@ -1306,8 +1308,8 @@ class BrowserView : public BrowserWindow,
   raw_ptr<VerticalTabStripRegionView> vertical_tab_strip_region_view_ = nullptr;
 
   // Outward-projecting corners of the vertical tab strip.
-  raw_ptr<views::View> vertical_tab_strip_top_corner_ = nullptr;
-  raw_ptr<views::View> vertical_tab_strip_bottom_corner_ = nullptr;
+  raw_ptr<CustomFloatingCorner> vertical_tab_strip_top_corner_ = nullptr;
+  raw_ptr<CustomFloatingCorner> vertical_tab_strip_bottom_corner_ = nullptr;
 
   // The view responsible for housing the contents of the projects panel.
   raw_ptr<ProjectsPanelView> projects_panel_container_ = nullptr;

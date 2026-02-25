@@ -272,5 +272,9 @@ void CustomFloatingCorner::OnBrowserPaintAsActiveChanged() {
   }
 }
 
+void CustomFloatingCorner::SchedulePaintHost() {
+  SchedulePaint();
+}
+
 BEGIN_METADATA(CustomFloatingCorner)
 END_METADATA

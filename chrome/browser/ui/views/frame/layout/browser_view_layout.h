@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/frame/custom_floating_corner.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_ui_types.h"
@@ -58,8 +59,8 @@ struct BrowserViewLayoutViews {
   raw_ptr<HorizontalTabStripRegionView> horizontal_tab_strip_region_view =
       nullptr;
   raw_ptr<VerticalTabStripRegionView> vertical_tab_strip_region_view = nullptr;
-  raw_ptr<views::View> vertical_tab_strip_bottom_corner = nullptr;
-  raw_ptr<views::View> vertical_tab_strip_top_corner = nullptr;
+  raw_ptr<CustomFloatingCorner> vertical_tab_strip_bottom_corner = nullptr;
+  raw_ptr<CustomFloatingCorner> vertical_tab_strip_top_corner = nullptr;
   raw_ptr<ProjectsPanelView> projects_panel_container = nullptr;
   raw_ptr<views::View> toolbar = nullptr;
   raw_ptr<InfoBarContainerView> infobar_container = nullptr;

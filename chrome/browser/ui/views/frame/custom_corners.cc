@@ -34,33 +34,68 @@ void CustomCorners::OnViewAddedToWidget(views::View* view) {
                               base::Unretained(this)));
 }
 
+void CustomCorners::SetFadeBackground(
+    std::optional<FadeBackground> fade_background) {
+  if (fade_background_ == fade_background) {
+    return;
+  }
+
+  fade_background_ = std::move(fade_background);
+  SchedulePaintHost();
+}
+
 void CustomCorners::PaintPath(gfx::Canvas* canvas,
                               const SkPath& path,
                               ColorChoice color_choice,
                               bool anti_alias) const {
-  if (std::holds_alternative<ToolbarTheme>(color_choice)) {
-    gfx::ScopedCanvas scoped(canvas);
-    canvas->ClipPath(path, anti_alias);
-    ThemedBackground::PaintBackground(
-        canvas, &GetView(), &browser_view(),
-        ThemedBackground::ThemeChoice::kToolbarTheme);
+  auto paint_color = [&](ColorChoice choice, float alpha) {
+    if (std::holds_alternative<ToolbarTheme>(choice) ||
+        std::holds_alternative<FrameTheme>(choice)) {
+      gfx::ScopedCanvas scoped(canvas);
+      canvas->ClipPath(path, anti_alias);
+      // If this theme color should have any transparency, we paint it to a
+      // layer so we can adjust the layer's transparency.
+      bool has_transparency = alpha < 1.0f;
+      if (has_transparency) {
+        cc::PaintFlags layer_flags;
+        layer_flags.setAlphaf(alpha);
+        canvas->SaveLayerWithFlags(layer_flags);
+      }
+      ThemedBackground::PaintBackground(
+          canvas, &GetView(), &browser_view(),
+          std::holds_alternative<ToolbarTheme>(choice)
+              ? ThemedBackground::ThemeChoice::kToolbarTheme
+              : ThemedBackground::ThemeChoice::kFrameTheme);
+    } else {
+      ui::ColorId color_id = std::get<ui::ColorId>(choice);
+
+      cc::PaintFlags flags;
+      flags.setAntiAlias(anti_alias);
+      flags.setStyle(cc::PaintFlags::kFill_Style);
+      flags.setColor(
+          SkColorSetA(GetView().GetColorProvider()->GetColor(color_id),
+                      std::clamp(static_cast<int>(255 * alpha), 0, 255)));
+      canvas->DrawPath(path, flags);
+    }
+  };
+
+  // A fade background may be drawn with some transparency over the original
+  // background. If the fade background is fully transparent, we only draw the
+  // original background. If the fade background is fully opaque, we only draw
+  // the fade background. If the fade background is partially transparent, we
+  // draw the original background at full opacity with the partially transparent
+  // fade background on top.
+  if (fade_background_.has_value()) {
+    if (fade_background_->opacity <= 0.0f) {
+      paint_color(color_choice, 1.0f);
+    } else if (fade_background_->opacity < 1.0f) {
+      paint_color(color_choice, 1.0f);
+      paint_color(fade_background_->color, fade_background_->opacity);
+    } else {
+      paint_color(fade_background_->color, 1.0f);
+    }
     return;
   }
 
-  if (std::holds_alternative<FrameTheme>(color_choice)) {
-    gfx::ScopedCanvas scoped(canvas);
-    canvas->ClipPath(path, anti_alias);
-    ThemedBackground::PaintBackground(
-        canvas, &GetView(), &browser_view(),
-        ThemedBackground::ThemeChoice::kFrameTheme);
-    return;
-  }
-
-  ui::ColorVariant color = std::get<ui::ColorId>(color_choice);
-
-  cc::PaintFlags flags;
-  flags.setAntiAlias(anti_alias);
-  flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(color.ResolveToSkColor(GetView().GetColorProvider()));
-  canvas->DrawPath(path, flags);
+  paint_color(color_choice, 1.0f);
 }

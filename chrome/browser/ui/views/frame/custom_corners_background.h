@@ -101,6 +101,7 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
   // CustomCorners:
   const views::View& GetView() const override;
   void OnBrowserPaintAsActiveChanged() override;
+  void SchedulePaintHost() override;
 
   int default_radius() const { return default_radius_; }
 

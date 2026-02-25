@@ -69,6 +69,9 @@ class ProjectsPanelView : public views::View,
   // Set whether the panel should appear elevated with rounded borders.
   void SetIsElevated(bool elevated);
 
+  // Whether the panel appears elevated with rounded borders.
+  bool is_elevated() { return elevated_; }
+
   // views::View:
   void Layout(PassKey) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;

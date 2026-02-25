@@ -71,6 +71,7 @@ class CustomFloatingCorner : public views::View, public CustomCorners {
   // CustomCorners:
   const views::View& GetView() const override;
   void OnBrowserPaintAsActiveChanged() override;
+  void SchedulePaintHost() override;
 
   CornerOrientation orientation_;
   views::ShapeContextTokens corner_radius_token_;

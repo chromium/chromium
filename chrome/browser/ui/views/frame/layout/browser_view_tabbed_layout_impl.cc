@@ -679,18 +679,20 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   if (IsParentedToAndVisible(views().projects_panel_container,
                              views().browser_view)) {
     int target_width = projects_panel::kProjectsPanelMinWidth;
-    bool elevated = true;
+    bool projects_panel_should_appear_elevated = true;
     if (tab_strip_type == TabStripType::kVertical) {
-      elevated = horizontal_layout.vertical_tab_strip_width <
-                 projects_panel::kProjectsPanelMinWidth;
-      if (!elevated) {
+      projects_panel_should_appear_elevated =
+          horizontal_layout.vertical_tab_strip_width <
+          projects_panel::kProjectsPanelMinWidth;
+      if (!projects_panel_should_appear_elevated) {
         target_width = std::max(target_width - views::Separator::kThickness,
                                 horizontal_layout.vertical_tab_strip_width -
                                     views::Separator::kThickness);
       }
     }
     views().projects_panel_container->SetTargetWidth(target_width);
-    views().projects_panel_container->SetIsElevated(elevated);
+    views().projects_panel_container->SetIsElevated(
+        projects_panel_should_appear_elevated);
 
     const double reveal_amount =
         views().projects_panel_container->GetResizeAnimationValue();
@@ -1225,6 +1227,30 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
       }
     }
     vertical_tabs_background->SetCorners(vertical_tabs_corners);
+
+    // When the projects panel is animating open or closed and does not appear
+    // elevated, the background of vertical tabs should fade to match the
+    // background color of the panel.
+    if (tab_groups::IsProjectsPanelFeatureEnabled()) {
+      CustomFloatingCorner* const vertical_tabs_top_corner =
+          views().vertical_tab_strip_top_corner;
+      CustomFloatingCorner* const vertical_tabs_bottom_corner =
+          views().vertical_tab_strip_bottom_corner;
+      if (!views().projects_panel_container->is_elevated()) {
+        auto projects_panel_reveal_amount =
+            views().projects_panel_container->GetResizeAnimationValue();
+        CustomCorners::FadeBackground const fade_background{
+            .color = projects_panel::kProjectsPanelBackgroundColor,
+            .opacity = static_cast<float>(projects_panel_reveal_amount)};
+        vertical_tabs_background->SetFadeBackground(fade_background);
+        vertical_tabs_top_corner->SetFadeBackground(fade_background);
+        vertical_tabs_bottom_corner->SetFadeBackground(fade_background);
+      } else {
+        vertical_tabs_background->SetFadeBackground(std::nullopt);
+        vertical_tabs_top_corner->SetFadeBackground(std::nullopt);
+        vertical_tabs_bottom_corner->SetFadeBackground(std::nullopt);
+      }
+    }
 
     // Vertical tabs outline always draws trailing edge.
     CustomCornersBackground::Outline vertical_tabs_outline;

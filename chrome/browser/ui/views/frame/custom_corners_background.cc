@@ -293,6 +293,10 @@ void CustomCornersBackground::OnBrowserPaintAsActiveChanged() {
   }
 }
 
+void CustomCornersBackground::SchedulePaintHost() {
+  view_->SchedulePaint();
+}
+
 CustomCornersBackground::Corners CustomCornersBackground::GetMirroredCorners()
     const {
   Corners corners = corners_;

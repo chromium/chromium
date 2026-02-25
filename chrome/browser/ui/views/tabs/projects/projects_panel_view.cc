@@ -50,7 +50,6 @@
 
 namespace {
 constexpr int kClipRectRightMarginForShadow = 32;
-constexpr ui::ColorId kProjectPanelBackgroundColor = ui::kColorSysSurface2;
 constexpr int kProjectPanelRightCornerRadius = 16;
 constexpr gfx::Insets kRegionInteriorMargins = gfx::Insets::VH(12, 12);
 constexpr int kShadowElevation = 2;
@@ -70,7 +69,7 @@ void SetListTitleProperties(views::Label& label) {
 }
 
 void SetScrollViewProperties(views::ScrollView& scroll_view) {
-  scroll_view.SetBackgroundColor(kProjectPanelBackgroundColor);
+  scroll_view.SetBackgroundColor(projects_panel::kProjectsPanelBackgroundColor);
   scroll_view.SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
   scroll_view.SetVerticalScrollBarMode(
@@ -279,7 +278,7 @@ void ProjectsPanelView::SetIsElevated(bool elevated) {
   content_container_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(0, corner_radius, corner_radius, 0));
   content_container_->SetBackground(views::CreateRoundedRectBackground(
-      kProjectPanelBackgroundColor,
+      projects_panel::kProjectsPanelBackgroundColor,
       gfx::RoundedCornersF(0, corner_radius, corner_radius, 0)));
 
   InvalidateLayout();

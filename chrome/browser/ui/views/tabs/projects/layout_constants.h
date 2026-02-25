@@ -34,6 +34,10 @@ inline constexpr gfx::Insets kListPadding = gfx::Insets::VH(0, 4);
 // Minimum width of the projects panel.
 inline constexpr int kProjectsPanelMinWidth = 240;
 
+// Background color of the projects panel.
+inline constexpr ui::ColorId kProjectsPanelBackgroundColor =
+    ui::kColorSysSurface2;
+
 }  // namespace projects_panel
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_PROJECTS_LAYOUT_CONSTANTS_H_
