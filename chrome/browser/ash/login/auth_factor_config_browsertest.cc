@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(result, mojom::PasswordComplexity::kOk);
 }
 
-// Checks that CheckLocalPasswordComplexity returns kErrHigh for a password
+// Checks that CheckLocalPasswordComplexity returns kTooShort for a password
 // that doesn't pass the complexity requirements.
 IN_PROC_BROWSER_TEST_F(
     AuthFactorConfigTestWithLocalPasswordAndLocalAuthFactorsComplexity,
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(
 
   auto result = CheckLocalPasswordComplexity(*auth_token, kSimplePassword);
 
-  EXPECT_EQ(result, mojom::PasswordComplexity::kErrHigh);
+  EXPECT_EQ(result, mojom::PasswordComplexity::kTooShort);
 }
 
 // Checks that CheckLocalPasswordComplexity returns kOk for a password

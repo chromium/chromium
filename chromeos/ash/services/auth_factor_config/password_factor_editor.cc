@@ -34,20 +34,6 @@ namespace {
 
 const std::size_t kLocalPasswordMinimumLength = 8;
 
-mojom::PasswordComplexity LocalAuthFactorsComplexityToMojom(
-    LocalAuthFactorsComplexity complexity) {
-  switch (complexity) {
-    case LocalAuthFactorsComplexity::kNone:
-      return mojom::PasswordComplexity::kErrNone;
-    case LocalAuthFactorsComplexity::kLow:
-      return mojom::PasswordComplexity::kErrLow;
-    case LocalAuthFactorsComplexity::kMedium:
-      return mojom::PasswordComplexity::kErrMedium;
-    case LocalAuthFactorsComplexity::kHigh:
-      return mojom::PasswordComplexity::kErrHigh;
-  }
-}
-
 void ObtainContextImpl(
     base::Location from_here,
     const std::string& auth_token,
@@ -80,7 +66,7 @@ mojom::PasswordComplexity CheckLocalPasswordComplexityImpl(
     bool ok = policy::local_auth_factors::CheckPasswordComplexity(
         password, policy.value());
     return ok ? mojom::PasswordComplexity::kOk
-              : LocalAuthFactorsComplexityToMojom(policy.value());
+              : mojom::PasswordComplexity::kTooShort;
   }
 
   // We're counting unicode points here because we already have a function for
