@@ -38,6 +38,28 @@ experimental domain Extensions
     returns
       # Extension id.
       string id
+
+  # Detailed information about an extension.
+  type ExtensionInfo extends object
+    properties
+      # Extension id.
+      string id
+      # Extension name.
+      string name
+      # Extension version.
+      string version
+      # The path from which the extension was loaded.
+      string path
+      # Extension enabled status.
+      boolean enabled
+
+  # Gets a list of all unpacked extensions.
+  # Available if the client is connected using the --remote-debugging-pipe flag
+  # and the --enable-unsafe-extension-debugging flag is set.
+  command getExtensions
+    returns
+      array of ExtensionInfo extensions
+
   # Uninstalls an unpacked extension (others not supported) from the profile.
   # Available if the client is connected using the --remote-debugging-pipe flag
   # and the --enable-unsafe-extension-debugging.

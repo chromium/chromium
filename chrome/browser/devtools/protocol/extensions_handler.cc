@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
+#include "chrome/browser/devtools/devtools_browser_context_manager.h"
 #include "chrome/browser/devtools/protocol/extensions.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
 #include "chrome/browser/extensions/browser_window_util.h"
@@ -25,6 +26,7 @@
 #include "extensions/browser/api/storage/storage_utils.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/unpacked_installer.h"
+#include "extensions/common/manifest.h"
 
 namespace {
 
@@ -244,6 +246,49 @@ void ExtensionsHandler::OnLoaded(std::unique_ptr<LoadUnpackedCallback> callback,
 
   std::move(callback)->sendFailure(
       protocol::Response::InvalidRequest(base::UTF16ToUTF8(err)));
+}
+
+protocol::Response ExtensionsHandler::GetExtensions(
+    std::unique_ptr<protocol::Array<protocol::Extensions::ExtensionInfo>>*
+        out_result) {
+  if (!allow_loading_extensions_) {
+    return protocol::Response::ServerError("Method not available.");
+  }
+  content::BrowserContext* context =
+      DevToolsBrowserContextManager::GetInstance().GetDefaultBrowserContext();
+
+  if (!context) {
+    return protocol::Response::ServerError("Could not find browser context.");
+  }
+
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(context);
+  if (!registry) {
+    return protocol::Response::ServerError(
+        "Could not find extension registry.");
+  }
+
+  auto result =
+      std::make_unique<protocol::Array<protocol::Extensions::ExtensionInfo>>();
+  extensions::ExtensionSet all_extensions =
+      registry->GenerateInstalledExtensionsSet();
+
+  for (const auto& extension : all_extensions) {
+    if (extensions::Manifest::IsUnpackedLocation(extension->location())) {
+      bool is_enabled =
+          registry->enabled_extensions().Contains(extension->id());
+      result->emplace_back(protocol::Extensions::ExtensionInfo::Create()
+                               .SetId(extension->id())
+                               .SetName(extension->name())
+                               .SetVersion(extension->VersionString())
+                               .SetEnabled(is_enabled)
+                               .SetPath(extension->path().AsUTF8Unsafe())
+                               .Build());
+    }
+  }
+
+  *out_result = std::move(result);
+  return protocol::Response::Success();
 }
 
 void ExtensionsHandler::Uninstall(const protocol::String& id,

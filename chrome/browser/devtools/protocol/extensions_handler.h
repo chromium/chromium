@@ -34,6 +34,9 @@ class ExtensionsHandler : public protocol::Extensions::Backend {
                 const extensions::Extension* extension,
                 const base::FilePath&,
                 const std::u16string& err);
+  protocol::Response GetExtensions(
+      std::unique_ptr<protocol::Array<protocol::Extensions::ExtensionInfo>>*
+          out_result) override;
   void Uninstall(const protocol::String& id,
                  std::unique_ptr<UninstallCallback> callback) override;
   void OnUninstalled(std::unique_ptr<UninstallCallback> callback);

@@ -5,6 +5,7 @@
 #include "base/features.h"
 #include "base/files/file.h"
 #include "base/path_service.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/extensions/browser_window_util.h"
@@ -509,6 +510,56 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
   // Command should fail as target does not have access.
   EXPECT_FALSE(get_result);
   ASSERT_EQ(*error()->FindString("message"), "Extension not found.");
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       CanGetExtensions) {
+  base::FilePath extensions_dir =
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+          .AppendASCII("devtools")
+          .AppendASCII("extensions");
+
+  base::FilePath unpacked_path =
+      extensions_dir.AppendASCII("simple_background_page");
+  base::FilePath packed_path = extensions_dir.AppendASCII("service_worker");
+
+  // Load an unpacked extension.
+  const base::DictValue* result =
+      SendLoadUnpackedCommand("simple_background_page");
+  std::string id = *result->FindString("id");
+  ASSERT_FALSE(id.empty());
+
+  // Load packed extension
+  extensions::ChromeTestExtensionLoader loader(browser()->profile());
+  loader.set_location(extensions::mojom::ManifestLocation::kInternal);
+  loader.set_pack_extension(true);
+  auto packed_extension = loader.LoadExtension(packed_path);
+  ASSERT_TRUE(packed_extension);
+  std::string packed_id = packed_extension->id();
+  ASSERT_FALSE(packed_id.empty());
+
+  // Verify the internal extension is actually in the registry.
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+  ASSERT_TRUE(registry->enabled_extensions().Contains(packed_id));
+
+  content::RunAllTasksUntilIdle();
+  const base::DictValue* list_result =
+      SendCommandSync("Extensions.getExtensions", base::DictValue());
+  ASSERT_TRUE(list_result);
+
+  const base::ListValue* extensions = list_result->FindList("extensions");
+  ASSERT_TRUE(extensions);
+  EXPECT_EQ(extensions->size(), 1u);
+
+  const base::DictValue& extension_info = (*extensions)[0].GetDict();
+  EXPECT_EQ(*extension_info.FindString("id"), id);
+  EXPECT_EQ(*extension_info.FindString("name"),
+            "Test Extension - Simple Background Page");
+  EXPECT_EQ(*extension_info.FindString("version"), "0.1");
+  EXPECT_TRUE(*extension_info.FindBool("enabled"));
+  EXPECT_EQ(*extension_info.FindStringByDottedPath("path"),
+            unpacked_path.AsUTF8Unsafe());
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
