@@ -73,8 +73,12 @@ class EVENTS_EXPORT PlatformEventSource {
   virtual void ResetStateForTesting() {}
 
  protected:
-  typedef base::ObserverList<PlatformEventObserver>::Unchecked
-      PlatformEventObserverList;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  // See comment for `PlatformEventDispatcherList`.
+  using PlatformEventObserverList = base::ObserverList<
+      PlatformEventObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked;
 
   PlatformEventSource();
 
@@ -93,8 +97,13 @@ class EVENTS_EXPORT PlatformEventSource {
   // Use a base::ObserverList<> instead of an std::vector<> to store the list of
   // dispatchers, so that adding/removing dispatchers during an event dispatch
   // is well-defined.
-  using PlatformEventDispatcherList =
-      base::ObserverList<PlatformEventDispatcher>::Unchecked;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  // `WaylandTestBase::PostToServerAndWait` can trigger nested dispatch while
+  // waiting for another event's result.
+  using PlatformEventDispatcherList = base::ObserverList<
+      PlatformEventDispatcher,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked;
 
   // This is invoked when the list of dispatchers changes (i.e. a new dispatcher
   // is added, or a dispatcher is removed).
