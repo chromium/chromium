@@ -131,6 +131,7 @@ android_library("javatests") {
     "//chrome/test/android:chrome_java_integration_test_support",
     "//chrome/test/android:chrome_java_transit",
     "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java_test_support",
     "//third_party/androidx:androidx_test_espresso_espresso_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
