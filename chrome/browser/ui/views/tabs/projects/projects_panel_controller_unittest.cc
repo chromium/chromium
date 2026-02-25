@@ -10,8 +10,6 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "components/contextual_tasks/public/contextual_task.h"
-#include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -90,10 +88,6 @@ class MockProjectsPanelControllerObserver
               OnTabGroupsReordered,
               (const std::vector<tab_groups::SavedTabGroup>& tab_groups),
               (override));
-  MOCK_METHOD(void,
-              OnThreadsInitialized,
-              (const std::vector<contextual_tasks::Thread>& threads),
-              (override));
 };
 
 MATCHER_P(GroupIs, expected_group, "") {
@@ -106,14 +100,12 @@ class ProjectsPanelControllerTest : public testing::Test {
  protected:
   std::unique_ptr<ProjectsPanelController> GetInitializedController() {
     auto controller = std::make_unique<ProjectsPanelController>(
-        &mock_tab_group_sync_service_, &mock_contextual_tasks_service_);
+        &mock_tab_group_sync_service_);
     controller->OnInitialized();
     return controller;
   }
   testing::NiceMock<tab_groups::MockTabGroupSyncService>
       mock_tab_group_sync_service_;
-  testing::NiceMock<contextual_tasks::MockContextualTasksService>
-      mock_contextual_tasks_service_;
 };
 
 TEST_F(ProjectsPanelControllerTest, PreservesOrderOnConstruction) {
@@ -214,7 +206,7 @@ class ProjectsPanelControllerObserverTest : public ProjectsPanelControllerTest {
  public:
   void SetUp() override {
     controller_ = std::make_unique<ProjectsPanelController>(
-        &mock_tab_group_sync_service_, &mock_contextual_tasks_service_);
+        &mock_tab_group_sync_service_);
     controller_->AddObserver(&observer_);
   }
 

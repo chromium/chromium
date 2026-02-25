@@ -4,12 +4,10 @@
 
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
@@ -134,8 +132,6 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
 
   panel_controller_ = std::make_unique<ProjectsPanelController>(
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser->GetProfile()),
-      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
           browser->GetProfile()));
   panel_controller_observer_.Observe(panel_controller_.get());
 
@@ -178,9 +174,10 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
     views::ScrollView* threads_scroll_view =
         content_container_->AddChildView(std::make_unique<views::ScrollView>(
             views::ScrollView::ScrollWithLayers::kEnabled));
-    auto threads_view = std::make_unique<ProjectsPanelRecentThreadsView>(
-        panel_controller_->GetThreads());
-    threads_view_ = threads_scroll_view->SetContents(std::move(threads_view));
+    // TODO(crbug.com/475300882): Fetch thread data from the controller once
+    // available.
+    threads_scroll_view->SetContents(
+        std::make_unique<ProjectsPanelRecentThreadsView>(threads_));
     SetScrollViewProperties(*threads_scroll_view);
   }
 
@@ -222,9 +219,6 @@ void ProjectsPanelView::OnProjectsPanelStateChanged(
     // TODO(crbug.com/477602874): Have the panel view observe the controller and
     // pipe updates to the list.
     tab_groups_view_->SetTabGroups(panel_controller_->GetTabGroups());
-    if (threads_view_) {
-      threads_view_->SetThreads(panel_controller_->GetThreads());
-    }
   } else {
     event_monitor_.reset();
   }
@@ -340,13 +334,6 @@ void ProjectsPanelView::OnTabGroupRemoved(const base::Uuid& sync_id,
 void ProjectsPanelView::OnTabGroupsReordered(
     const std::vector<tab_groups::SavedTabGroup>& tab_groups) {
   tab_groups_view_->SetTabGroups(tab_groups);
-}
-
-void ProjectsPanelView::OnThreadsInitialized(
-    const std::vector<contextual_tasks::Thread>& threads) {
-  if (threads_view_) {
-    threads_view_->SetThreads(threads);
-  }
 }
 
 // static

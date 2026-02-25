@@ -780,7 +780,7 @@ void ContextualTasksServiceImpl::OnDataStoresLoaded() {
     tasks_.emplace(task.GetTaskId(), task);
   }
   for (auto& observer : observers_) {
-    observer.OnContextualTasksServiceInitialized();
+    observer.OnInitialized();
   }
 }
 
