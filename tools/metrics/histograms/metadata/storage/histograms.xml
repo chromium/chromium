@@ -756,6 +756,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IndexedDB.SQLite.FreelistPercentageAtClose" units="%"
+    expires_after="2026-09-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>abhishek.shanthkumar@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The percentage of pages in the SQLite database that are on the freelist
+    (unused) at the time the database connection is closed. Logged once per
+    on-disk database close.
+  </summary>
+</histogram>
+
 <histogram name="IndexedDB.SQLite.OpenRetryResult" enum="IndexedDbStatusType"
     expires_after="2026-10-01">
   <owner>leimy@chromium.org</owner>
@@ -829,6 +842,20 @@ chromium-metrics-reviews@google.com.
     <variant name="InMemory"/>
     <variant name="OnDisk"/>
   </token>
+</histogram>
+
+<histogram name="IndexedDB.SQLite.VacuumEvent"
+    enum="IndexedDbSqliteVacuumEvent" expires_after="2026-09-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>abhishek.shanthkumar@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Tracks the vacuum funnel for SQLite-backed IndexedDB databases. The first
+    event is logged when a database is closed and the conditions for vacuuming
+    are met. Multiple events may be logged subsequently as the funnel
+    progresses.
+  </summary>
 </histogram>
 
 <histogram name="IndexedDB.SqliteMigration.RenameBlobResult"

@@ -10,6 +10,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "build/build_config.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/backing_store_test_base.h"
@@ -22,7 +23,9 @@
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-shared.h"
 
 namespace content::indexed_db::sqlite {
 
@@ -151,10 +154,9 @@ class BackingStoreSqliteTest : public BackingStoreTestBase {
       std::u16string_view name) {
     AcquireDatabaseLocks(std::u16string(name));
     base::FilePath db_path = GetDatabasePath(name);
-    sql::Database db(sql::DatabaseOptions()
-                         .set_wal_mode(true)
-                         .set_enable_triggers(true),
-                     sql::test::kTestTag);
+    sql::Database db(
+        sql::DatabaseOptions().set_wal_mode(true).set_enable_triggers(true),
+        sql::test::kTestTag);
 
     EXPECT_TRUE(db.Open(db_path));
 
@@ -504,6 +506,87 @@ TEST_F(BackingStoreSqliteTest,
   // Nothing is logged for "basic_db" since it reads from `cached_versions_`.
   histogram_tester.ExpectUniqueSample(
       "IndexedDB.SQLite.OpenToReadMetadataResult.OnDisk", 2 /*kCorruption*/, 1);
+}
+
+TEST_F(BackingStoreSqliteTest, VacuumOnClose) {
+  base::HistogramTester histograms;
+
+  const std::u16string db_name(u"vacuum_test");
+  const int64_t object_store_id = 1;
+
+  // Create an object store and write enough data to create many pages.
+  {
+    ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
+                         backing_store()->CreateOrOpenDatabase(db_name));
+    std::unique_ptr<BackingStore::Transaction> transaction =
+        CreateAndBeginTransaction(
+            *db, blink::mojom::IDBTransactionMode::VersionChange);
+    EXPECT_TRUE(transaction
+                    ->CreateObjectStore(object_store_id, u"store",
+                                        IndexedDBKeyPath(u"key"),
+                                        /*auto_increment=*/true)
+                    .ok());
+    EXPECT_TRUE(transaction->SetDatabaseVersion(1).ok());
+    // Blobs are not compressed, so this will increase page usage.
+    std::string blob_data(1000, 'x');
+    for (int i = 0; i < 100; ++i) {
+      EXPECT_TRUE(
+          transaction
+              ->PutRecord(object_store_id,
+                          IndexedDBKey(i, blink::mojom::IDBKeyType::Number),
+                          IndexedDBValue("non_blob_payload",
+                                         {CreateBlobInfo(u"type", blob_data)}))
+              .has_value());
+    }
+    CommitTransactionAndVerify(*transaction);
+  }
+
+  // Wait for database close and measure the size of the database file.
+  AcquireDatabaseLocks(db_name);
+  base::FilePath db_path = GetDatabasePath(db_name);
+  int64_t initial_size = 0;
+  ASSERT_OK_AND_ASSIGN(initial_size, base::GetFileSize(db_path));
+
+  histograms.ExpectBucketCount("IndexedDB.SQLite.FreelistPercentageAtClose", 0,
+                               1);
+  histograms.ExpectTotalCount("IndexedDB.SQLite.VacuumEvent", 0);
+
+  // Now clear the object store to create freelist pages.
+  {
+    ASSERT_OK_AND_ASSIGN(std::unique_ptr<BackingStore::Database> db,
+                         backing_store()->CreateOrOpenDatabase(db_name));
+
+    std::unique_ptr<BackingStore::Transaction> transaction =
+        db->CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
+                              blink::mojom::IDBTransactionMode::ReadWrite);
+    transaction->Begin(CreateDummyLock());
+    EXPECT_TRUE(transaction->ClearObjectStore(object_store_id).ok());
+    CommitTransactionAndVerify(*transaction);
+  }
+
+  // The database size should have reduced.
+  AcquireDatabaseLocks(db_name);
+  int64_t post_vacuum_size = 0;
+  ASSERT_OK_AND_ASSIGN(post_vacuum_size, base::GetFileSize(db_path));
+  EXPECT_LT(post_vacuum_size, initial_size);
+
+  histograms.ExpectTotalCount("IndexedDB.SQLite.FreelistPercentageAtClose", 2);
+#if BUILDFLAG(IS_ANDROID)
+  // Autovacuum is enabled by default on Android.
+  histograms.ExpectBucketCount("IndexedDB.SQLite.FreelistPercentageAtClose", 0,
+                               2);
+  histograms.ExpectTotalCount("IndexedDB.SQLite.VacuumEvent", 0);
+#else
+  histograms.ExpectBucketCount("IndexedDB.SQLite.FreelistPercentageAtClose", 0,
+                               1);
+  histograms.ExpectTotalCount("IndexedDB.SQLite.VacuumEvent", 3);
+  histograms.ExpectBucketCount("IndexedDB.SQLite.VacuumEvent", 0 /*kNeeded*/,
+                               1);
+  histograms.ExpectBucketCount("IndexedDB.SQLite.VacuumEvent", 2 /*kRequested*/,
+                               1);
+  histograms.ExpectBucketCount("IndexedDB.SQLite.VacuumEvent", 3 /*kSucceeded*/,
+                               1);
+#endif
 }
 
 }  // namespace content::indexed_db::sqlite

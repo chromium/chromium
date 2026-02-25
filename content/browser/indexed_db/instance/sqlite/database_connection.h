@@ -282,9 +282,11 @@ class CONTENT_EXPORT DatabaseConnection {
 
   static void CloseDatabase(
       std::unique_ptr<sql::Database> db,
+      const base::FilePath& db_path,
       const base::FilePath& legacy_blob_directory,
       bool should_delete,
       bool should_attempt_recovery,
+      bool should_vacuum,
       std::optional<std::set<int64_t>> known_legacy_blob_ids);
 
   DatabaseConnection(base::FilePath path, BackingStoreImpl& backing_store);
@@ -365,7 +367,7 @@ class CONTENT_EXPORT DatabaseConnection {
     kAddActiveBlobReferenceFailed = 4,
     kRemoveActiveBlobReferenceFailed = 5,
     kPragmaPageCountFailed = 6,
-    kPragmaPageSizeFailed = 7,
+    kPragmaPageSizeFailed = 7,  // Not logged currently.
 
     // Events associated with various callers of `Fatal()`.
     kMissingMetadataTable = 8,

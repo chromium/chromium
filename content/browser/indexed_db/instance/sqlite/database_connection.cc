@@ -11,6 +11,7 @@
 #include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -21,10 +22,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/numerics/clamped_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
@@ -136,6 +139,42 @@ std::optional<int64_t> GetBlobIdFromLegacyFilePath(
   return std::nullopt;
 }
 
+uint32_t GetPageCount(sql::Database& db) {
+  // The maximum page count is ~2^32: https://www.sqlite.org/limits.html.
+  sql::Statement statement(db.GetReadonlyStatement("PRAGMA page_count"));
+  if (!statement.Step()) {
+    return 0;
+  }
+  return static_cast<uint32_t>(statement.ColumnInt(0));
+}
+
+uint32_t GetFreelistCount(sql::Database& db) {
+  sql::Statement statement(db.GetReadonlyStatement("PRAGMA freelist_count"));
+  if (!statement.Step()) {
+    return 0;
+  }
+  return static_cast<uint32_t>(statement.ColumnInt(0));
+}
+
+uint16_t GetPageSize(sql::Database& db) {
+  // The maximum page size is 65536 bytes.
+  sql::Statement statement(db.GetReadonlyStatement("PRAGMA page_size"));
+  if (!statement.Step()) {
+    return 0;
+  }
+  return static_cast<uint16_t>(statement.ColumnInt(0));
+}
+
+// Returns the size of the used portion of the database (excluding free pages).
+uint64_t GetUsedSize(sql::Database& db) {
+  uint32_t page_count = GetPageCount(db);
+  uint32_t freelist_count = GetFreelistCount(db);
+  if (page_count < freelist_count) {
+    return 0;
+  }
+  return static_cast<uint64_t>(page_count - freelist_count) * GetPageSize(db);
+}
+
 // The separator used to join the strings when encoding an `IndexedDBKeyPath` of
 // type array. Spaces are not allowed in the individual strings, which makes
 // this a convenient choice.
@@ -228,13 +267,43 @@ StatusOr<mojo_base::BigBuffer> DoDecompress(
   return base::unexpected(Status::Corruption("unknown compression type"));
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(VacuumEvent)
+enum class VacuumEvent {
+  // First level of the funnel, logged when the threshold for vacuuming is met.
+  kNeeded = 0,
+
+  // Second level.
+  // Vacuuming not requested since the backing store was force-closing.
+  kForceClosing = 1,
+  // Vacuuming requested in the cleanup task.
+  kRequested = 2,
+
+  // Third level, reached only if vacuuming was requested.
+  // Vacuuming succeeded.
+  kSucceeded = 3,
+  // Error occurred while determining required/available disk space
+  kErrorComputingSpaceRequirements = 4,
+  // Not performed because of insufficient disk space.
+  kInsufficientDiskSpace = 5,
+  // Attempted but failed at the SQLite layer.
+  kFailed = 6,
+  kMaxValue = kFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:IndexedDbSqliteVacuumEvent)
+void LogVacuumEvent(VacuumEvent event) {
+  base::UmaHistogramEnumeration("IndexedDB.SQLite.VacuumEvent", event);
+}
+
 // Key used in MetaTable to track the data encoding version used by Blink/V8.
 constexpr std::string_view kV8DataVersionKey = "v8_data_version";
 
+// Key used in MetaTable to store the created timestamp of the database.
+constexpr std::string_view kCreationTimestampKey = "created_time";
+
 // These are schema versions of our implementation of `sql::Database`; not the
 // version supplied by the application for the IndexedDB database.
-//
-// The version used to initialize the meta table for the first time.
 constexpr int kCurrentSchemaVersion = 1;
 constexpr int kCompatibleSchemaVersion = kCurrentSchemaVersion;
 
@@ -907,9 +976,11 @@ void DatabaseConnection::Release(base::WeakPtr<DatabaseConnection> db) {
 // static
 void DatabaseConnection::CloseDatabase(
     std::unique_ptr<sql::Database> db,
+    const base::FilePath& db_path,
     const base::FilePath& legacy_blob_directory,
     bool should_delete,
     bool should_attempt_recovery,
+    bool should_vacuum,
     std::optional<std::set<int64_t>> known_legacy_blob_ids) {
   if (should_delete) {
     db->CloseAndDelete();
@@ -928,6 +999,34 @@ void DatabaseConnection::CloseDatabase(
         db.get(), db->GetErrorCode(),
         sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze);
     return;
+  }
+
+  // TODO(crbug.com/436880909): Skip vacuuming and other intensive tasks if the
+  // bucket started force-closing after the task was posted.
+  if (should_vacuum) {
+    // VACUUM copies the used pages into a temp database and then overwrites the
+    // original, requiring approximately twice the used size in free space:
+    // https://www.sqlite.org/lang_vacuum.html.
+    uint64_t needed_space = 2 * GetUsedSize(*db);
+    std::optional<int64_t> free_space =
+        base::SysInfo::AmountOfFreeDiskSpace(db_path.DirName());
+    std::optional<int64_t> total_space =
+        base::SysInfo::AmountOfTotalDiskSpace(db_path.DirName());
+    if (needed_space == 0 || !free_space || *free_space < 0 || !total_space ||
+        *total_space < 0 || *total_space < *free_space) {
+      LogVacuumEvent(VacuumEvent::kErrorComputingSpaceRequirements);
+    } else {
+      // Leave a buffer of 1% of total disk space since other write operations
+      // may be in progress.
+      uint64_t used_space = static_cast<uint64_t>(*total_space - *free_space);
+      if (used_space + needed_space > 99.0 / 100 * *total_space) {
+        LogVacuumEvent(VacuumEvent::kInsufficientDiskSpace);
+      } else {
+        bool success = db->Execute("VACUUM");
+        LogVacuumEvent(success ? VacuumEvent::kSucceeded
+                               : VacuumEvent::kFailed);
+      }
+    }
   }
 
   if (known_legacy_blob_ids) {
@@ -981,6 +1080,7 @@ base::OnceClosure DatabaseConnection::GetCleanupTask(bool force_closing) && {
 
   bool should_delete_db = false;
   bool should_attempt_recovery = false;
+  bool should_vacuum = false;
   bool should_delete_legacy_blobs = false;
 
   if (!in_memory()) {
@@ -1009,6 +1109,33 @@ base::OnceClosure DatabaseConnection::GetCleanupTask(bool force_closing) && {
     should_attempt_recovery = !force_closing && had_sql_error;
 #endif
 
+    // Determine whether to vacuum.
+    if (!should_delete_db && !should_attempt_recovery) {
+      unsigned int freelist_percentage =
+          base::ClampDiv(GetFreelistCount(*db_) * 100, GetPageCount(*db_));
+      base::UmaHistogramPercentage("IndexedDB.SQLite.FreelistPercentageAtClose",
+                                   freelist_percentage);
+      // Default autovacuum is enabled on Android, so reclaiming free space is
+      // not a reason to vacuum.
+      // TODO(crbug.com/436880909): consider vacuuming old-ish databases that
+      // may be fragmented.
+#if !BUILDFLAG(IS_ANDROID)
+      // Note that //sql configures a multi-page chunk size for large DBs, so if
+      // this threshold is too low (<25%), vacuuming may not always reduce the
+      // file size. See SQLITE_FCNTL_CHUNK_SIZE.
+      constexpr const unsigned int kMinFreelistPercentageForVacuum = 33;
+      if (freelist_percentage >= kMinFreelistPercentageForVacuum) {
+        LogVacuumEvent(VacuumEvent::kNeeded);
+        if (force_closing) {
+          LogVacuumEvent(VacuumEvent::kForceClosing);
+        } else {
+          should_vacuum = true;
+          LogVacuumEvent(VacuumEvent::kRequested);
+        }
+      }
+#endif
+    }
+
     // Don't clean up legacy blobs if force closing.
     // Also skip if `legacy_blob_files_to_move_` is non-empty, which would
     // indicate that there was a migration executed by this instance of
@@ -1018,11 +1145,12 @@ base::OnceClosure DatabaseConnection::GetCleanupTask(bool force_closing) && {
   }
 
   db_->DetachFromSequence();
-  return base::BindOnce(
-      &DatabaseConnection::CloseDatabase, std::move(db_),
-      GetLegacyBlobDirectory(), should_delete_db, should_attempt_recovery,
-      should_delete_legacy_blobs ? std::move(legacy_blob_files_)
-                                 : std::nullopt);
+  return base::BindOnce(&DatabaseConnection::CloseDatabase, std::move(db_),
+                        path_, GetLegacyBlobDirectory(), should_delete_db,
+                        should_attempt_recovery, should_vacuum,
+                        should_delete_legacy_blobs
+                            ? std::move(legacy_blob_files_)
+                            : std::nullopt);
 }
 
 Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
@@ -1090,6 +1218,14 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
   }
   meta_table_->SetValue(kV8DataVersionKey, current_data_format.Encode());
 
+  if (is_new_db) {
+    // Store the creation timestamp. This may be used for heuristics-based
+    // decisions such as defragmenting the DB in the future.
+    meta_table_->SetValue(
+        kCreationTimestampKey,
+        base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  }
+
   switch (meta_table_->GetVersionNumber()) {
     // ...
     // Schema upgrades go here.
@@ -1138,39 +1274,12 @@ int64_t DatabaseConnection::GetCommittedVersion() const {
 }
 
 uint64_t DatabaseConnection::GetSize() const {
-  // The maximum page count is ~2^32: https://www.sqlite.org/limits.html.
-  uint32_t page_count = 0;
-  uint32_t freelist_count = 0;
-  // The maximum page size is 65536 bytes.
-  uint16_t page_size = 0;
-  {
-    sql::Statement statement(db_->GetReadonlyStatement("PRAGMA page_count"));
-    if (!statement.Step()) {
-      LogEvent(SpecificEvent::kPragmaPageCountFailed);
-      return 0;
-    }
-    page_count = static_cast<uint32_t>(statement.ColumnInt(0));
+  uint64_t used_size = GetUsedSize(*db_);
+  if (used_size == 0) {
+    // Can only happen if one of the pragmas failed. Log under a common bucket.
+    LogEvent(SpecificEvent::kPragmaPageCountFailed);
   }
-  {
-    sql::Statement statement(
-        db_->GetReadonlyStatement("PRAGMA freelist_count"));
-    if (!statement.Step()) {
-      // The rate of failure for this PRAGMA is not expected to be different
-      // from `page_count`, so count failures under the same event type.
-      LogEvent(SpecificEvent::kPragmaPageCountFailed);
-      return 0;
-    }
-    freelist_count = static_cast<uint32_t>(statement.ColumnInt(0));
-  }
-  {
-    sql::Statement statement(db_->GetReadonlyStatement("PRAGMA page_size"));
-    if (!statement.Step()) {
-      LogEvent(SpecificEvent::kPragmaPageSizeFailed);
-      return 0;
-    }
-    page_size = static_cast<uint16_t>(statement.ColumnInt(0));
-  }
-  return static_cast<uint64_t>(page_count - freelist_count) * page_size;
+  return used_size;
 }
 
 std::unique_ptr<BackingStoreDatabaseImpl>

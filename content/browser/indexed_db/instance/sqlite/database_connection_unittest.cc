@@ -100,7 +100,10 @@ class DatabaseConnectionTest : public testing::Test {
                             base::Unretained(this)));
   }
 
-  void TearDown() override { backing_store_.reset(); }
+  void TearDown() override {
+    backing_store_->FlushForTesting();
+    backing_store_.reset();
+  }
 
   DatabaseConnection* GetDatabaseConnection(const std::u16string& name) {
     auto it = backing_store()->open_connections_.find(name);
