@@ -51,11 +51,11 @@ class COMPONENT_EXPORT(COLOR) ColorVariant {
   bool operator==(const SkColor& other) const { return GetSkColor() == other; }
   bool operator==(const ColorId& other) const { return GetColorId() == other; }
 
-  // Returns true if this ColorVariant currently holds a semantic color
+  // Returns true if this ColorVariant currently holds a logical color
   // reference (i.e., a ui::ColorId) rather than a physical color value
   // (SkColor). Semantic colors represent theme-based colors that require
   // resolution using a ui::ColorProvider via ResolveToSkColor().
-  bool IsSemantic() const;
+  bool IsLogical() const;
 
   // Returns true if this ColorVariant currently holds a physical color
   // reference (i.e., a SkColor)

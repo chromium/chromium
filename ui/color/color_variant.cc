@@ -24,7 +24,7 @@ ColorVariant::ColorVariant(ColorId color_id) : color_variant_(color_id) {}
 
 ColorVariant::~ColorVariant() = default;
 
-bool ColorVariant::IsSemantic() const {
+bool ColorVariant::IsLogical() const {
   return !!GetColorId();
 }
 

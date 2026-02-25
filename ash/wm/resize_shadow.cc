@@ -172,13 +172,13 @@ ResizeShadow::~ResizeShadow() = default;
 void ResizeShadow::OnColorProviderChanged() {
   // This function will also be called when the color provider source is
   // destroyed. We should guarantee the color provider exists.
-  if (params_.color.IsSemantic() && GetColorProviderSource()) {
+  if (params_.color.IsLogical() && GetColorProviderSource()) {
     UpdateShadowLayer();
   }
 }
 
 void ResizeShadow::OnWindowParentToRootWindow() {
-  if (params_.color.IsSemantic()) {
+  if (params_.color.IsLogical()) {
     Observe(RootWindowController::ForWindow(window_)->color_provider_source());
   }
 }
