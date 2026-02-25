@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_destination.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_history_entry.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_transition.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_type_util.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
@@ -94,22 +95,6 @@ NavigationResult* EarlySuccessResult(ScriptState* script_state,
   return result;
 }
 
-V8NavigationType::Enum DetermineNavigationType(WebFrameLoadType type) {
-  switch (type) {
-    case WebFrameLoadType::kStandard:
-      return V8NavigationType::Enum::kPush;
-    case WebFrameLoadType::kBackForward:
-    case WebFrameLoadType::kRestore:
-      return V8NavigationType::Enum::kTraverse;
-    case WebFrameLoadType::kReload:
-    case WebFrameLoadType::kReloadBypassingCache:
-      return V8NavigationType::Enum::kReload;
-    case WebFrameLoadType::kReplaceCurrentItem:
-      return V8NavigationType::Enum::kReplace;
-  }
-  NOTREACHED();
-}
-
 NavigationApi::NavigationApi(LocalDOMWindow* window)
     : window_(window),
       activation_(MakeGarbageCollected<NavigationActivation>()) {}
@@ -144,7 +129,7 @@ void NavigationApi::UpdateActivation(HistoryItem* previous_item,
   V8NavigationType::Enum navigation_type =
       window_->GetFrame()->GetPage()->IsPrerendering()
           ? V8NavigationType::Enum::kPush
-          : DetermineNavigationType(load_type);
+          : ToV8NavigationType(load_type);
   activation_->Update(currentEntry(), previous_history_entry, navigation_type);
 }
 
@@ -296,7 +281,7 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
                             v8::MicrotasksScope::kRunMicrotasks);
 
   auto* init = NavigationCurrentEntryChangeEventInit::Create();
-  init->setNavigationType(DetermineNavigationType(type));
+  init->setNavigationType(ToV8NavigationType(type));
   init->setFrom(old_current);
   DispatchEvent(*NavigationCurrentEntryChangeEvent::Create(
       event_type_names::kCurrententrychange, init));
@@ -787,7 +772,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
 
   auto* init = NavigateEventInit::Create();
   V8NavigationType::Enum navigation_type =
-      DetermineNavigationType(params->frame_load_type);
+      ToV8NavigationType(params->frame_load_type);
   init->setNavigationType(navigation_type);
 
   SerializedScriptValue* destination_state = nullptr;

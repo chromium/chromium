@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_defer_page_swap_controller.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_destination.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_precommit_controller.h"
+#include "third_party/blink/renderer/core/navigation_api/navigation_type_util.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -51,21 +52,6 @@
 #include "v8-function.h"
 
 namespace blink {
-
-WebFrameLoadType LoadTypeFromNavigation(
-    V8NavigationType::Enum navigation_type) {
-  switch (navigation_type) {
-    case V8NavigationType::Enum::kPush:
-      return WebFrameLoadType::kStandard;
-    case V8NavigationType::Enum::kReplace:
-      return WebFrameLoadType::kReplaceCurrentItem;
-    case V8NavigationType::Enum::kTraverse:
-      return WebFrameLoadType::kBackForward;
-    case V8NavigationType::Enum::kReload:
-      return WebFrameLoadType::kReload;
-  }
-  NOTREACHED();
-}
 
 enum class HandlerPhase { kPrecommit, kPostcommit };
 
@@ -504,7 +490,7 @@ void NavigateEvent::CommitNow(ScriptState* script_state) {
   DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
       dispatch_params_->url, dispatch_params_->destination_item,
       mojom::blink::SameDocumentNavigationType::kNavigationApiIntercept,
-      state_object, LoadTypeFromNavigation(navigation_type_), fire_popstate,
+      state_object, ToWebFrameLoadType(navigation_type_), fire_popstate,
       dispatch_params_->should_skip_screenshot,
       dispatch_params_->is_browser_initiated,
       dispatch_params_->is_synchronously_committed_same_document,
@@ -738,8 +724,8 @@ void NavigateEvent::ProcessScrollBehavior() {
   // point. Using mojom::blink::ScrollRestorationType::kManual would block the
   // scroll.
   DomWindow()->GetFrame()->Loader().ProcessScrollForSameDocumentNavigation(
-      dispatch_params_->url, LoadTypeFromNavigation(navigation_type_),
-      view_state, mojom::blink::ScrollRestorationType::kAuto, scroll_behavior);
+      dispatch_params_->url, ToWebFrameLoadType(navigation_type_), view_state,
+      mojom::blink::ScrollRestorationType::kAuto, scroll_behavior);
 }
 
 const AtomicString& NavigateEvent::InterfaceName() const {
