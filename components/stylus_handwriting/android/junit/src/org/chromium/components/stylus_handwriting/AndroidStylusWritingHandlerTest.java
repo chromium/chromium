@@ -15,7 +15,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.openMocks;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -27,9 +26,12 @@ import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -48,6 +50,8 @@ import java.util.List;
         sdk = Build.VERSION_CODES.TIRAMISU,
         shadows = {ShadowGlobalSettings.class, ShadowSecureSettings.class})
 public class AndroidStylusWritingHandlerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Context mContext;
     @Mock private InputMethodManager mInputMethodManager;
     @Mock private InputMethodInfo mInputMethodInfo;
@@ -56,7 +60,6 @@ public class AndroidStylusWritingHandlerTest {
 
     @Before
     public void setUp() {
-        openMocks(this);
         when(mContext.getSystemService(InputMethodManager.class)).thenReturn(mInputMethodManager);
         when(mInputMethodManager.getInputMethodList()).thenReturn(List.of(mInputMethodInfo));
         when(mInputMethodInfo.getComponent())

@@ -28,11 +28,13 @@ import android.view.ViewGroup;
 import androidx.annotation.RequiresApi;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -43,6 +45,8 @@ import org.chromium.content_public.browser.WebContents;
 /** Unit tests for {@link DirectWritingTrigger}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DirectWritingTriggerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private WebContents mWebContents;
     @Mock private DirectWritingServiceBinder mDwServiceBinder;
     @Mock private StylusWritingImeCallback mStylusWritingImeCallback;
@@ -54,7 +58,6 @@ public class DirectWritingTriggerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mDwTrigger = spy(new DirectWritingTrigger());
         mDwTrigger.setServiceBinderForTest(mDwServiceBinder);
         doReturn(mContainerView).when(mStylusWritingImeCallback).getContainerView();

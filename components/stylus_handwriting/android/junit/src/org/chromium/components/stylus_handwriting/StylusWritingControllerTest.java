@@ -13,7 +13,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.openMocks;
 
 import android.content.Context;
 import android.os.Build;
@@ -23,9 +22,12 @@ import androidx.annotation.RequiresApi;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -41,6 +43,8 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 @RunWith(BaseRobolectricTestRunner.class)
 @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
 public class StylusWritingControllerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private final Context mContext =
             InstrumentationRegistry.getInstrumentation().getTargetContext();
     private StylusWritingController mStylusWritingController;
@@ -50,7 +54,6 @@ public class StylusWritingControllerTest {
 
     @Before
     public void setUp() {
-        openMocks(this);
         // Use a pointer type different to the default and different to what's used in production.
         mPointerIcon = PointerIcon.getSystemIcon(mContext, PointerIcon.TYPE_GRAB);
         mStylusWritingController =

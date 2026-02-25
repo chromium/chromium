@@ -30,11 +30,13 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -57,6 +59,8 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DirectWritingServiceCallbackTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final String SAMPLE_INPUT = "sample input";
     private static final String FALLBACK_TEXT = "fallback";
     private static final float[] GESTURE_START_POINT = new float[] {20.f, 50.f};
@@ -158,7 +162,6 @@ public class DirectWritingServiceCallbackTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         mContext = RuntimeEnvironment.application;
         doReturn(mContainerView).when(mImeCallback).getContainerView();
         doReturn(mContext).when(mContainerView).getContext();

@@ -16,11 +16,13 @@ import android.os.RemoteException;
 import android.widget.directwriting.IDirectWritingService;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -31,6 +33,8 @@ import org.chromium.base.test.util.Feature;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DirectWritingServiceBinderTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Spy private DirectWritingServiceBinder mDwServiceBinder;
     @Mock private DirectWritingServiceBinder.DirectWritingTriggerCallback mTriggerCallback;
     @Mock private IDirectWritingService mRemoteDwService;
@@ -40,7 +44,6 @@ public class DirectWritingServiceBinderTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mContext = RuntimeEnvironment.application;
         doReturn(mDwCallback).when(mTriggerCallback).getServiceCallback();
     }
