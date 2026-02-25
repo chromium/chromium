@@ -905,6 +905,8 @@ extern const base::FeatureParam<std::string>
 BASE_FEATURE(kGlicRecordMemoryFootprintMetrics,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicRegionSelectionNew, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicWebClientUnresponsiveMetrics,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

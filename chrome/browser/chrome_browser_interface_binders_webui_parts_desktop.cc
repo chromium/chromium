@@ -204,7 +204,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/selection/selection_overlay_features.h"
 #include "chrome/browser/glic/selection/selection_overlay_untrusted_ui.h"
 #endif
 
@@ -717,7 +716,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
                MicrosoftAuthUntrustedDocumentInterfacesFactory>();
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (base::FeatureList::IsEnabled(glic::features::kGlicRegionSelectionNew)) {
+  if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew)) {
     registry.ForWebUI<glic::SelectionOverlayUntrustedUI>()
         .Add<glic::selection::SelectionOverlayPageHandlerFactory>();
   }

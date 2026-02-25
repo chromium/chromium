@@ -48,7 +48,6 @@
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view.h"
 #include "chrome/browser/glic/browser_ui/context_sharing_border_view_controller_impl.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/selection/selection_overlay_features.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -123,7 +122,7 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
   }
 
 #if BUILDFLAG(ENABLE_GLIC)
-  if (base::FeatureList::IsEnabled(glic::features::kGlicRegionSelectionNew)) {
+  if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew)) {
     auto glic_selection_overlay_view = std::make_unique<views::WebView>();
     glic_selection_overlay_view->SetProperty(
         views::kElementIdentifierKey, kGlicSelectionOverlayViewElementId);

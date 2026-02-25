@@ -7,7 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/selection/selection_overlay_features.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 
