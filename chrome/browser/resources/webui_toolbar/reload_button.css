@@ -14,7 +14,7 @@
   display: inline-flex;
   justify-content: center;
   position: relative;
-  --cr-icon-button-size: 34px;
+  --cr-icon-button-size: var(--toolbar-button-height);
   height: var(--cr-icon-button-size);
   width: var(--cr-icon-button-size);
 }
@@ -22,7 +22,7 @@
 cr-icon-button {
   margin: 0;
   cursor: default;
-  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-icon-size: var(--toolbar-button-icon-size);
   --cr-icon-button-fill-color: var(--color-toolbar-button-icon);
 }
 
