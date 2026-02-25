@@ -2108,7 +2108,8 @@ void BackForwardTransitionAnimator::StartInputSuppression(
   ignore_input_scope_.emplace(animation_manager_->web_contents_view_android()
                                   ->web_contents()
                                   ->IgnoreInputEvents(
-                                      /*audit_callback=*/std::nullopt));
+                                      /*audit_callback=*/std::nullopt,
+                                      /*should_ignore_a11y_input=*/true));
 }
 
 void BackForwardTransitionAnimator::InsertLayersInOrder() {
