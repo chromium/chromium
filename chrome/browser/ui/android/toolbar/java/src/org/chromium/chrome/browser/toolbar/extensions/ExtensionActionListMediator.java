@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -294,26 +295,17 @@ class ExtensionActionListMediator implements Destroyable {
     }
 
     private void showPopupOnReadyAnchor(String actionId, ExtensionActionPopupContents contents) {
-        ListMenuButton buttonView =
-                (ListMenuButton) mActionAnchorViewProvider.getButtonViewForId(actionId);
+        View buttonView = mActionAnchorViewProvider.getButtonViewForId(actionId);
         if (buttonView == null) {
             contents.destroy();
             return;
         }
 
-        // We set the button state to "pressed" before showing the popup, because we want it to have
-        // the "pressed" look while loading the action popup too.
-        buttonView.setIsPressed(true);
-
         assert mCurrentPopup == null;
         mCurrentPopup =
                 new ExtensionActionPopup(mContext, mWindowAndroid, buttonView, actionId, contents);
         mCurrentPopup.loadInitialPage();
-        mCurrentPopup.addOnDismissListener(
-                () -> {
-                    closePopup();
-                    buttonView.setIsPressed(false);
-                });
+        mCurrentPopup.addOnDismissListener(this::closePopup);
         assert mCurrentContextMenuActionId == null;
         mCurrentPopupActionId = actionId;
     }
