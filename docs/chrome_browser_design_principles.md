@@ -54,7 +54,7 @@ documentation](http://go/chrome-project-bedrock). Public contributors can visit
 Public](https://docs.google.com/document/d/1aQRPDX9RjWHE48rAHntsV64VU1-4uZO_nkL6A7ohr2k/).
 
 To keep the dependency graph as precise as possible, we use a pattern called
-[UnownedUserData](ui/base/unowned_user_data/README.md). This allows consumers of
+[UnownedUserData](../ui/base/unowned_user_data/README.md). This allows consumers of
 `BrowserWindowInterface` and `TabInterface` to depend on a specific
 `BrowserWindowFeature` or `TabFeature` without depending on features. This also
 allows for easier unit and integration testing.
