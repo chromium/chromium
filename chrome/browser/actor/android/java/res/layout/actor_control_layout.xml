@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.actor.ui.ActorControlView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="16dp"
+    android:background="@macro/default_bg_color">
+
+    <!-- TODO(crbug.com/486281299): Move hardcoded dp values to dimens.xml -->
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/actor_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="12dp"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_spark_24dp"
+        app:indicatorColor="@macro/default_icon_color_accent1"
+        app:tint="@color/default_icon_color_tint_list"
+        android:scaleType="centerInside"/>
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/actor_control_close_button"
+        android:layout_width="?attr/minInteractTargetSize"
+        android:layout_height="?attr/minInteractTargetSize"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/material_ic_close_24dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:tint="@color/default_icon_color_tint_list" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/actor_control_status_button"
+        android:layout_width="?attr/minInteractTargetSize"
+        android:layout_height="?attr/minInteractTargetSize"
+        android:src="@drawable/ic_pause_white_24dp"
+        android:layout_toStartOf="@id/actor_control_close_button"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="12dp"
+        app:tint="@color/default_icon_color_tint_list" />
+
+    <TextView
+        android:id="@+id/actor_control_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/actor_icon"
+        android:layout_toStartOf="@id/actor_control_status_button"
+        android:textAppearance="@style/TextAppearance.TextMediumThick"
+        android:ellipsize="end"
+        android:singleLine="true" />
+
+    <TextView
+        android:id="@+id/actor_control_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/actor_control_title"
+        android:layout_toEndOf="@id/actor_icon"
+        android:layout_toStartOf="@id/actor_control_status_button"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="2dp"
+        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+        android:ellipsize="end"
+        android:singleLine="true" />
+</org.chromium.chrome.browser.actor.ui.ActorControlView>

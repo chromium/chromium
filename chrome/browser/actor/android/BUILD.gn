@@ -10,6 +10,11 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedService.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedServiceFactory.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTask.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorControlCoordinator.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorControlMediator.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorControlProperties.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorControlView.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorControlViewBinder.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayCoordinator.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayMediator.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayProperties.java",
@@ -26,6 +31,7 @@ android_library("java") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//components/browser_ui/styles/android:java_resources",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
@@ -36,6 +42,8 @@ android_library("java") {
     "//chrome/browser/actor:enums_java",
     "//chrome/browser/actor/ui:enums_java",
   ]
+
+  resources_package = "org.chromium.chrome.browser.actor.ui"
 }
 
 generate_jni("jni_headers") {
@@ -72,21 +80,35 @@ source_set("android") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/layout/actor_overlay.xml" ]
+  sources = [
+    "java/res/layout/actor_control_layout.xml",
+    "java/res/layout/actor_overlay.xml",
+  ]
+  deps = [ "//chrome/browser/ui/android/strings:ui_strings_grd" ]
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayCoordinatorTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorControlCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayCoordinatorTest.java",
+  ]
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_junit_test_support",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/theme:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/theme/android:java_resources",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
   ]
+  resources_package = "org.chromium.chrome.browser.actor.ui"
 }
