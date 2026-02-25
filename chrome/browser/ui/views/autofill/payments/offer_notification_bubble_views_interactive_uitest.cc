@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h"
 #include "chrome/browser/ui/views/autofill/payments/promo_code_label_button.h"
 #include "chrome/browser/ui/views/controls/subpage_view.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -57,7 +58,6 @@ namespace autofill {
 struct OfferNotificationBubbleViewsInteractiveUiTestData {
   std::string name;
   AutofillOfferData::OfferType offer_type;
-  bool is_page_actions_migration_enabled = false;
 };
 
 std::string GetTestName(
@@ -77,7 +77,6 @@ class OfferNotificationBubbleViewsInteractiveUiTest
  public:
   OfferNotificationBubbleViewsInteractiveUiTest()
       : test_offer_type_(std::get<0>(GetParam()).offer_type) {
-    const auto& params = std::get<0>(GetParam());
     bool bubble_manager_enabled = std::get<1>(GetParam());
 
     std::vector<base::test::FeatureRefAndParams> enabled_features;
@@ -90,11 +89,6 @@ class OfferNotificationBubbleViewsInteractiveUiTest
       disabled_features.push_back(
           features::kAutofillShowBubblesBasedOnPriorities);
     }
-
-    enabled_features.push_back(
-        {::features::kPageActionsMigration,
-         {{::features::kPageActionsMigrationOfferNotification.name,
-           params.is_page_actions_migration_enabled ? "true" : "false"}}});
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
@@ -211,25 +205,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 // TODO(crbug.com/416010106): Flaky failures.
 #if BUILDFLAG(IS_MAC)
-#define MAYBE_GPayCardLinkedWithNewPageAction \
-  DISABLED_GPayCardLinkedWithNewPageAction
-#else
-#define MAYBE_GPayCardLinkedWithNewPageAction GPayCardLinkedWithNewPageAction
-#endif
-INSTANTIATE_TEST_SUITE_P(
-    MAYBE_GPayCardLinkedWithNewPageAction,
-    OfferNotificationBubbleViewsInteractiveUiTest,
-    testing::Combine(
-        testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
-            "GPayCardLinkedWithNewPageAction",
-            AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER,
-            /*is_page_actions_migration_enabled=*/true,
-        }),
-        testing::Bool()),
-    &GetTestName);
-
-// TODO(crbug.com/416010106): Flaky failures.
-#if BUILDFLAG(IS_MAC)
 #define MAYBE_GPayPromoCode DISABLED_GPayPromoCode
 #else
 #define MAYBE_GPayPromoCode GPayPromoCode
@@ -241,24 +216,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
             "GPayPromoCode",
             AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}),
-        testing::Bool()),
-    &GetTestName);
-
-// TODO(crbug.com/416010106): Flaky failures.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_GPayPromoCodeWithNewPageAction \
-  DISABLED_GPayPromoCodeWithNewPageAction
-#else
-#define MAYBE_GPayPromoCodeWithNewPageAction GPayPromoCodeWithNewPageAction
-#endif
-INSTANTIATE_TEST_SUITE_P(
-    MAYBE_GPayPromoCodeWithNewPageAction,
-    OfferNotificationBubbleViewsInteractiveUiTest,
-    testing::Combine(
-        testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
-            "GPayPromoCodeWithNewPageAction",
-            AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER,
-            /*is_page_actions_migration_enabled=*/true}),
         testing::Bool()),
     &GetTestName);
 
@@ -286,24 +243,6 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
             "GPayPromoCode",
             AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}),
-        testing::Bool()),
-    &GetTestName);
-
-// TODO(crbug.com/416010106): Flaky failures.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_GPayPromoCodeWithNewPageAction \
-  DISABLED_GPayPromoCodeWithNewPageAction
-#else
-#define MAYBE_GPayPromoCodeWithNewPageAction GPayPromoCodeWithNewPageAction
-#endif
-INSTANTIATE_TEST_SUITE_P(
-    MAYBE_GPayPromoCodeWithNewPageAction,
-    OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig,
-    testing::Combine(
-        testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
-            "GPayPromoCodeWithNewPageAction",
-            AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER,
-            /*is_page_actions_migration_enabled=*/true}),
         testing::Bool()),
     &GetTestName);
 

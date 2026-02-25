@@ -284,8 +284,7 @@ void OfferNotificationBubbleControllerImpl::UpdatePageActionIcon() {
 #if !BUILDFLAG(IS_ANDROID)
   AutofillBubbleControllerBase::UpdatePageActionIcon();
 
-  if (!IsPageActionMigrated(*GetPageActionIconType()) ||
-      web_contents()->IsBeingDestroyed()) {
+  if (web_contents()->IsBeingDestroyed()) {
     return;
   }
   actions::ActionId action_id = *GetActionIdForPageAction();

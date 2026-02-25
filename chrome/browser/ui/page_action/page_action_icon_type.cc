@@ -16,8 +16,6 @@ const base::FeatureParam<bool>* GetPageActionsMigrationParam(
       return &features::kPageActionsMigrationIntentPicker;
     case PageActionIconType::kZoom:
       return &features::kPageActionsMigrationZoom;
-    case PageActionIconType::kPaymentsOfferNotification:
-      return &features::kPageActionsMigrationOfferNotification;
     case PageActionIconType::kFileSystemAccess:
       return &features::kPageActionsMigrationFileSystemAccess;
     case PageActionIconType::kPwaInstall:
@@ -77,6 +75,7 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
     case PageActionIconType::kLensOverlay:
     case PageActionIconType::kMemorySaver:
     case PageActionIconType::kTranslate:
+    case PageActionIconType::kPaymentsOfferNotification:
     case PageActionIconType::kContextualSidePanel:
     case PageActionIconType::kJsOptimizations:
     case PageActionIconType::kIndigo:

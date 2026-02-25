@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
-
 #include <optional>
 
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -34,7 +32,6 @@ constexpr char kTestPromoCode[] = "FREEFALL1234";
 
 struct UiTestData {
   std::string name;
-  std::optional<std::vector<base::test::FeatureRefAndParams>> enabled_features;
 };
 
 std::string GetTestName(const ::testing::TestParamInfo<UiTestData>& info) {
@@ -59,13 +56,8 @@ class OfferNotificationIconViewBrowserTest
     : public UiBrowserTest,
       public testing::WithParamInterface<UiTestData> {
  public:
-  OfferNotificationIconViewBrowserTest() {
-    if (GetParam().enabled_features.has_value()) {
-      feature_list_.InitWithFeaturesAndParameters(
-          GetParam().enabled_features.value(),
-          /*disabled_features=*/{});
-    }
-  }
+  OfferNotificationIconViewBrowserTest() = default;
+
   // UiBrowserTest:
   void ShowUi(const std::string& name) override {
     AutofillOfferData offer = CreateTestOffer(
@@ -112,31 +104,12 @@ class OfferNotificationIconViewBrowserTest
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  IconLabelBubbleView* GetIcon() {
+  page_actions::PageActionView* GetIcon() {
     const ui::ElementContext context =
         views::ElementTrackerViews::GetContextForView(GetLocationBarView());
-    views::ElementTrackerViews::ViewList matched_views =
-        views::ElementTrackerViews::GetInstance()->GetAllMatchingViews(
+    return views::ElementTrackerViews::GetInstance()
+        ->GetFirstMatchingViewAs<page_actions::PageActionView>(
             kOfferNotificationChipElementId, context);
-
-    for (auto* matched_view : matched_views) {
-      // During the migration, there will be two views with the same element
-      // id. If the migration is enabled, we want the view that is a
-      // PageActionView.
-      if (IsPageActionMigrated(
-              PageActionIconType::kPaymentsOfferNotification) ==
-          views::IsViewClass<page_actions::PageActionView>(matched_view)) {
-        return views::AsViewClass<IconLabelBubbleView>(matched_view);
-      }
-    }
-
-    return nullptr;
-  }
-
-  void WaitForIconToFinishAnimating(OfferNotificationIconView* icon_view) {
-    while (icon_view->is_animating_label()) {
-      base::RunLoop().RunUntilIdle();
-    }
   }
 
  private:
@@ -147,8 +120,6 @@ class OfferNotificationIconViewBrowserTest
   LocationBarView* GetLocationBarView() {
     return GetBrowserView()->toolbar()->location_bar_view();
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
