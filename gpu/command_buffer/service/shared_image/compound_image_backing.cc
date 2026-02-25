@@ -1512,7 +1512,26 @@ base::trace_event::MemoryAllocatorDump* CompoundImageBacking::OnMemoryDump(
     if (!backing)
       continue;
 
-    auto element_client_guid = GetSubBackingGUIDForTracing(mailbox(), i + 1);
+    // When CompoundImageBacking wraps a single backing, use the client's global
+    // Mailbox GUID instead of sub-backing GUID. This ensures correct effective
+    // size attribution to the client process where client claims all of the
+    // memory/effective_size(since client usually has higher
+    // TracingImportance(2) than service side (0)).
+    // This does not work well when CompoundImageBacking has multiple gpu
+    // backings. In that case, each child element creates its own sub-backing
+    // GUID and links to it rather than linking to global mailbox GUID. However,
+    // the client only knows about the single Global Mailbox GUID. As a result,
+    // the client claims the Global GUID, but the GPU service claims the memory
+    // for the individual Sub-Backing GUIDs. This leads to over-reporting
+    // (actual effective_size = Client Size + Sum of Sub-Backings instead of
+    // expected effective_size = Sum of Sub-Backings). This is currently a known
+    // architectural limitation that requires further design to unify memory
+    // attribution (e.g., via dynamic IPC updates to the client about total
+    // elements OR by shifting total ownership to the service with higher
+    // importance).
+    auto element_client_guid =
+        elements_.size() == 1 ? client_guid
+                              : GetSubBackingGUIDForTracing(mailbox(), i + 1);
     std::string element_dump_name =
         base::StringPrintf("%s/element_%d", dump_name.c_str(), i);
     backing->OnMemoryDump(element_dump_name, element_client_guid, pmd,
