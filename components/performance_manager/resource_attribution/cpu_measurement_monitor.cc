@@ -10,7 +10,6 @@
 #include <set>
 #include <utility>
 #include <variant>
-#include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/variant_map.h"
@@ -22,16 +21,13 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/numerics/clamped_math.h"
 #include "base/sequence_checker.h"
-#include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "base/types/pass_key.h"
-#include "base/types/variant_util.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -343,137 +339,6 @@ QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements(
   }
 
   return results;
-}
-
-void CPUMeasurementMonitor::RecordMemoryMetrics() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!graph_) {
-    // Don't record any metrics if not currently monitoring.
-    return;
-  }
-
-  constexpr size_t kNumContextTypes = std::variant_size<ResourceContext>::value;
-
-  // Estimates for each live ResourceContext type by index into the
-  // ResourceContext variant.
-  std::set<ScopedCPUTimeResult*> visited_result_ptrs;
-  std::vector<base::ClampedNumeric<size_t>> live_context_estimates(
-      kNumContextTypes);
-  base::ClampedNumeric<size_t> total_live_estimate = 0;
-  auto update_live_estimates =
-      [&](const ResourceContext& context,
-          const scoped_refptr<ScopedCPUTimeResult>& result_ptr,
-          size_t overhead) {
-        base::ClampedNumeric<size_t> estimate = overhead;
-        if (result_ptr) {
-          const auto [_, inserted] =
-              visited_result_ptrs.insert(result_ptr.get());
-          CHECK(inserted);
-
-          // Each result has a single reference.
-          estimate += result_ptr->EstimateMemoryUsage();
-        }
-        live_context_estimates.at(context.index()) += estimate;
-        total_live_estimate += estimate;
-      };
-
-  // Overhead in NodeInlineData is one pointer per node.
-  for (const FrameNode* node : graph_->GetAllFrameNodes()) {
-    update_live_estimates(node->GetResourceContext(), GetNodeResultPtr(node),
-                          sizeof(scoped_refptr<ScopedCPUTimeResult>));
-  }
-  for (const PageNode* node : graph_->GetAllPageNodes()) {
-    update_live_estimates(node->GetResourceContext(), GetNodeResultPtr(node),
-                          sizeof(scoped_refptr<ScopedCPUTimeResult>));
-  }
-  for (const ProcessNode* node : graph_->GetAllProcessNodes()) {
-    update_live_estimates(node->GetResourceContext(), GetNodeResultPtr(node),
-                          sizeof(scoped_refptr<ScopedCPUTimeResult>));
-  }
-  for (const WorkerNode* node : graph_->GetAllWorkerNodes()) {
-    update_live_estimates(node->GetResourceContext(), GetNodeResultPtr(node),
-                          sizeof(scoped_refptr<ScopedCPUTimeResult>));
-  }
-
-  // Overhead in `origin_results_` is one pair (value_type) per map entry.
-  for (const auto& [context, result_ptr] : origin_results_) {
-    CHECK(result_ptr);
-    update_live_estimates(context, result_ptr,
-                          sizeof(decltype(origin_results_)::value_type));
-  }
-
-  // Estimates for each dead ResourceContext type by index into the
-  // ResourceContext variant.
-  std::vector<base::ClampedNumeric<size_t>> dead_context_estimates(
-      kNumContextTypes);
-  base::ClampedNumeric<size_t> total_dead_estimate = 0;
-  for (const auto& [_, dead_context_results_for_query] :
-       dead_context_results_) {
-    for (const auto& dead_context_results_set :
-         {dead_context_results_for_query.kept_alive,
-          dead_context_results_for_query.to_report}) {
-      for (const auto& result : dead_context_results_set) {
-        const auto [_, inserted] = visited_result_ptrs.insert(result.get());
-
-        // There can be multiple references to the same `ScopedCPUTimeResult`.
-        // Only include the size of the `ScopedCPUTimeResult` object the first
-        // time it's seen, but always include the size of the pointer.
-        auto estimate = sizeof(scoped_refptr<ScopedCPUTimeResult>);
-        if (inserted) {
-          estimate += result->EstimateMemoryUsage();
-        }
-
-        dead_context_estimates.at(result->context().index()) += estimate;
-        total_dead_estimate += estimate;
-      }
-    }
-  }
-
-  for (size_t index = 0; index < kNumContextTypes; ++index) {
-    const char* context_name = nullptr;
-    switch (index) {
-      case base::VariantIndexOfType<ResourceContext, FrameContext>():
-        context_name = "FrameContexts";
-        break;
-      case base::VariantIndexOfType<ResourceContext, PageContext>():
-        context_name = "PageContexts";
-        break;
-      case base::VariantIndexOfType<ResourceContext, ProcessContext>():
-        context_name = "ProcessContexts";
-        break;
-      case base::VariantIndexOfType<ResourceContext, WorkerContext>():
-        context_name = "WorkerContexts";
-        break;
-      case base::VariantIndexOfType<ResourceContext,
-                                    OriginInBrowsingInstanceContext>():
-        context_name = "OriginInBrowsingInstanceContexts";
-        break;
-    }
-    CHECK(context_name);
-
-    base::UmaHistogramMemoryKB(
-        base::StrCat(
-            {"PerformanceManager.CPUMonitorMemoryUse.", context_name, ".Live"}),
-        live_context_estimates.at(index) / 1024);
-    base::UmaHistogramMemoryKB(
-        base::StrCat(
-            {"PerformanceManager.CPUMonitorMemoryUse.", context_name, ".Dead"}),
-        dead_context_estimates.at(index) / 1024);
-    base::UmaHistogramMemoryKB(
-        base::StrCat({"PerformanceManager.CPUMonitorMemoryUse.", context_name,
-                      ".Total"}),
-        (live_context_estimates.at(index) + dead_context_estimates.at(index)) /
-            1024);
-  }
-  base::UmaHistogramMemoryKB(
-      "PerformanceManager.CPUMonitorMemoryUse.AllContexts.Live",
-      total_live_estimate / 1024);
-  base::UmaHistogramMemoryKB(
-      "PerformanceManager.CPUMonitorMemoryUse.AllContexts.Dead",
-      total_dead_estimate / 1024);
-  base::UmaHistogramMemoryKB(
-      "PerformanceManager.CPUMonitorMemoryUse.AllContexts.Total",
-      (total_live_estimate + total_dead_estimate) / 1024);
 }
 
 void CPUMeasurementMonitor::OnBeforeFrameNodeAdded(
@@ -1112,18 +977,6 @@ ScopedCPUTimeResult::~ScopedCPUTimeResult() {
         AsContext<OriginInBrowsingInstanceContext>(context_));
     CHECK_EQ(num_erased, 1U);
   }
-}
-
-size_t ScopedCPUTimeResult::EstimateMemoryUsage() const {
-  size_t size = sizeof(*this);
-  if (ContextIs<OriginInBrowsingInstanceContext>(context_)) {
-    // OriginInBrowsingInstanceContext includes an url::Origin, which has
-    // variable-size data.
-    size += AsContext<OriginInBrowsingInstanceContext>(context_)
-                .GetOrigin()
-                .EstimateMemoryUsage();
-  }
-  return size;
 }
 
 }  // namespace resource_attribution

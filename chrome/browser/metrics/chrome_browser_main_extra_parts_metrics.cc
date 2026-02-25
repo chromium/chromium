@@ -50,7 +50,6 @@
 #include "chrome/browser/web_applications/sampling_metrics_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/metrics/android_metrics_helper.h"
-#include "components/performance_manager/public/performance_manager.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -161,8 +160,6 @@ void RecordMemoryMetrics() {
   scoped_refptr<ProcessMemoryMetricsEmitter> emitter(
       new ProcessMemoryMetricsEmitter);
   emitter->FetchAndEmitProcessMemoryMetrics();
-
-  performance_manager::PerformanceManager::RecordMemoryMetrics();
 
   RecordMemoryMetricsAfterDelay();
 }

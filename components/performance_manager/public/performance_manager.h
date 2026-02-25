@@ -110,10 +110,6 @@ class PerformanceManager {
   static void AddObserver(PerformanceManagerObserver* observer);
   static void RemoveObserver(PerformanceManagerObserver* observer);
 
-  // Logs metrics on Performance Manager's memory usage to UMA. Does nothing
-  // when IsAvailable() returns false
-  static void RecordMemoryMetrics();
-
  protected:
   PerformanceManager();
 };

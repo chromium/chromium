@@ -95,9 +95,6 @@ class CPUMeasurementMonitor
   QueryResultMap UpdateAndGetCPUMeasurements(
       std::optional<internal::QueryId> query_id = std::nullopt);
 
-  // Logs metrics on CPUMeasurementMonitor's memory usage to UMA.
-  void RecordMemoryMetrics();
-
   // FrameNode::Observer:
   void OnBeforeFrameNodeAdded(
       const FrameNode* frame_node,
@@ -295,7 +292,6 @@ class ScopedCPUTimeResult : public base::RefCounted<ScopedCPUTimeResult> {
 
   CPUTimeResult& result() { return result_; }
   const ResourceContext& context() const { return context_; }
-  size_t EstimateMemoryUsage() const;
 
  private:
   friend class base::RefCounted<ScopedCPUTimeResult>;

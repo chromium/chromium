@@ -11,7 +11,6 @@
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/performance_manager_registry_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
-#include "components/performance_manager/resource_attribution/query_scheduler.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
@@ -134,14 +133,6 @@ void PerformanceManager::AddObserver(PerformanceManagerObserver* observer) {
 // static
 void PerformanceManager::RemoveObserver(PerformanceManagerObserver* observer) {
   PerformanceManagerRegistryImpl::GetInstance()->RemoveObserver(observer);
-}
-
-// static
-void PerformanceManager::RecordMemoryMetrics() {
-  if (IsAvailable()) {
-    resource_attribution::internal::QueryScheduler::GetFromGraph()
-        ->RecordMemoryMetrics();
-  }
 }
 
 }  // namespace performance_manager
