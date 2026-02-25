@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/phonehub/feature_status_provider.h"
 #include "chromeos/ash/components/phonehub/onboarding_ui_tracker.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
@@ -57,6 +58,13 @@ class OnboardingUiTrackerImpl
   raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
   bool should_show_onboarding_ui_;
   base::RepeatingClosure show_multidevice_setup_dialog_callback_;
+
+  base::ScopedObservation<FeatureStatusProvider,
+                          FeatureStatusProvider::Observer>
+      feature_status_provider_observation_{this};
+  base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
+                          multidevice_setup::MultiDeviceSetupClient::Observer>
+      multidevice_setup_client_observation_{this};
 };
 
 }  // namespace ash::phonehub

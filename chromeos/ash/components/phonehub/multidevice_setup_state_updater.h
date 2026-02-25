@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_SETUP_STATE_UPDATER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
@@ -55,6 +56,13 @@ class MultideviceSetupStateUpdater
   raw_ptr<MultideviceFeatureAccessManager> multidevice_feature_access_manager_;
   MultideviceFeatureAccessManager::AccessStatus notification_access_status_;
   MultideviceFeatureAccessManager::AccessStatus camera_roll_access_status_;
+
+  base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
+                          multidevice_setup::MultiDeviceSetupClient::Observer>
+      multidevice_setup_client_observation_{this};
+  base::ScopedObservation<MultideviceFeatureAccessManager,
+                          MultideviceFeatureAccessManager::Observer>
+      multidevice_feature_access_manager_observation_{this};
 };
 
 }  // namespace ash::phonehub

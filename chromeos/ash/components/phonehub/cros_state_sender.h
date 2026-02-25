@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_CROS_STATE_SENDER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/phonehub/public/cpp/attestation_certificate_generator.h"
@@ -76,6 +77,17 @@ class CrosStateSender
   std::unique_ptr<AttestationCertificateGenerator>
       attestation_certificate_generator_;
   base::Time attestation_generating_start_time_;
+
+  base::ScopedObservation<secure_channel::ConnectionManager,
+                          secure_channel::ConnectionManager::Observer>
+      connection_manager_observation_{this};
+  base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
+                          multidevice_setup::MultiDeviceSetupClient::Observer>
+      multidevice_setup_client_observation_{this};
+  base::ScopedObservation<AttestationCertificateGenerator,
+                          AttestationCertificateGenerator::Observer>
+      attestation_certificate_generator_observation_{this};
+
   base::WeakPtrFactory<CrosStateSender> weak_ptr_factory_{this};
 };
 

@@ -28,16 +28,13 @@ OnboardingUiTrackerImpl::OnboardingUiTrackerImpl(
       multidevice_setup_client_(multidevice_setup_client),
       show_multidevice_setup_dialog_callback_(
           std::move(show_multidevice_setup_dialog_callback)) {
-  feature_status_provider_->AddObserver(this);
-  multidevice_setup_client_->AddObserver(this);
+  feature_status_provider_observation_.Observe(feature_status_provider);
+  multidevice_setup_client_observation_.Observe(multidevice_setup_client);
 
   should_show_onboarding_ui_ = ComputeShouldShowOnboardingUi();
 }
 
-OnboardingUiTrackerImpl::~OnboardingUiTrackerImpl() {
-  feature_status_provider_->RemoveObserver(this);
-  multidevice_setup_client_->RemoveObserver(this);
-}
+OnboardingUiTrackerImpl::~OnboardingUiTrackerImpl() = default;
 
 bool OnboardingUiTrackerImpl::ShouldShowOnboardingUi() const {
   return should_show_onboarding_ui_;

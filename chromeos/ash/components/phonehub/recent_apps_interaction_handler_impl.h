@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/multidevice_feature_access_manager.h"
 #include "chromeos/ash/components/phonehub/notification.h"
@@ -110,8 +111,16 @@ class RecentAppsInteractionHandlerImpl
   raw_ptr<PrefService> pref_service_;
   raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
   raw_ptr<MultideviceFeatureAccessManager> multidevice_feature_access_manager_;
-  raw_ptr<eche_app::EcheConnectionStatusHandler>
-      eche_connection_status_handler_ = nullptr;
+
+  base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
+                          multidevice_setup::MultiDeviceSetupClient::Observer>
+      multidevice_setup_client_observation_{this};
+  base::ScopedObservation<MultideviceFeatureAccessManager,
+                          MultideviceFeatureAccessManager::Observer>
+      multidevice_feature_access_manager_observation_{this};
+  base::ScopedObservation<eche_app::EcheConnectionStatusHandler,
+                          eche_app::EcheConnectionStatusHandler::Observer>
+      eche_connection_status_handler_observation_{this};
 
   base::WeakPtrFactory<RecentAppsInteractionHandlerImpl> weak_ptr_factory_{
       this};

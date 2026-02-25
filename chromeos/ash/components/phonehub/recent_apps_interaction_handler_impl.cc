@@ -49,18 +49,12 @@ RecentAppsInteractionHandlerImpl::RecentAppsInteractionHandlerImpl(
     : pref_service_(pref_service),
       multidevice_setup_client_(multidevice_setup_client),
       multidevice_feature_access_manager_(multidevice_feature_access_manager) {
-  multidevice_setup_client_->AddObserver(this);
-  multidevice_feature_access_manager_->AddObserver(this);
+  multidevice_setup_client_observation_.Observe(multidevice_setup_client);
+  multidevice_feature_access_manager_observation_.Observe(
+      multidevice_feature_access_manager);
 }
 
-RecentAppsInteractionHandlerImpl::~RecentAppsInteractionHandlerImpl() {
-  if (eche_connection_status_handler_) {
-    eche_connection_status_handler_->RemoveObserver(this);
-  }
-
-  multidevice_setup_client_->RemoveObserver(this);
-  multidevice_feature_access_manager_->RemoveObserver(this);
-}
+RecentAppsInteractionHandlerImpl::~RecentAppsInteractionHandlerImpl() = default;
 
 void RecentAppsInteractionHandlerImpl::AddRecentAppClickObserver(
     RecentAppClickObserver* observer) {
@@ -108,14 +102,11 @@ void RecentAppsInteractionHandlerImpl::NotifyRecentAppAddedOrUpdated(
 
 void RecentAppsInteractionHandlerImpl::SetConnectionStatusHandler(
     eche_app::EcheConnectionStatusHandler* eche_connection_status_handler) {
-  if (eche_connection_status_handler_) {
-    eche_connection_status_handler_->RemoveObserver(this);
-  }
+  eche_connection_status_handler_observation_.Reset();
 
-  eche_connection_status_handler_ = eche_connection_status_handler;
-
-  if (eche_connection_status_handler_) {
-    eche_connection_status_handler_->AddObserver(this);
+  if (eche_connection_status_handler) {
+    eche_connection_status_handler_observation_.Observe(
+        eche_connection_status_handler);
   }
 }
 

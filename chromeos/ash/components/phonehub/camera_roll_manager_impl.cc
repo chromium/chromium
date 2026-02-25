@@ -37,22 +37,17 @@ CameraRollManagerImpl::CameraRollManagerImpl(
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     secure_channel::ConnectionManager* connection_manager,
     std::unique_ptr<CameraRollDownloadManager> camera_roll_download_manager)
-    : message_receiver_(message_receiver),
-      message_sender_(message_sender),
+    : message_sender_(message_sender),
       multidevice_setup_client_(multidevice_setup_client),
       connection_manager_(connection_manager),
       camera_roll_download_manager_(std::move(camera_roll_download_manager)),
       thumbnail_decoder_(std::make_unique<CameraRollThumbnailDecoderImpl>()) {
-  message_receiver->AddObserver(this);
-  multidevice_setup_client_->AddObserver(this);
-  connection_manager_->AddObserver(this);
+  message_receiver_observation_.Observe(message_receiver);
+  multidevice_setup_client_observation_.Observe(multidevice_setup_client);
+  connection_manager_observation_.Observe(connection_manager);
 }
 
-CameraRollManagerImpl::~CameraRollManagerImpl() {
-  message_receiver_->RemoveObserver(this);
-  multidevice_setup_client_->RemoveObserver(this);
-  connection_manager_->RemoveObserver(this);
-}
+CameraRollManagerImpl::~CameraRollManagerImpl() = default;
 
 void CameraRollManagerImpl::DownloadItem(
     const proto::CameraRollItemMetadata& item_metadata) {

@@ -34,18 +34,16 @@ MultideviceSetupStateUpdater::MultideviceSetupStateUpdater(
     : pref_service_(pref_service),
       multidevice_setup_client_(multidevice_setup_client),
       multidevice_feature_access_manager_(multidevice_feature_access_manager) {
-  multidevice_setup_client_->AddObserver(this);
-  multidevice_feature_access_manager_->AddObserver(this);
+  multidevice_setup_client_observation_.Observe(multidevice_setup_client);
+  multidevice_feature_access_manager_observation_.Observe(
+      multidevice_feature_access_manager);
   notification_access_status_ =
       multidevice_feature_access_manager_->GetNotificationAccessStatus();
   camera_roll_access_status_ =
       multidevice_feature_access_manager_->GetCameraRollAccessStatus();
 }
 
-MultideviceSetupStateUpdater::~MultideviceSetupStateUpdater() {
-  multidevice_setup_client_->RemoveObserver(this);
-  multidevice_feature_access_manager_->RemoveObserver(this);
-}
+MultideviceSetupStateUpdater::~MultideviceSetupStateUpdater() = default;
 
 void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
   MultideviceFeatureAccessManager::AccessStatus pervious_access_status =

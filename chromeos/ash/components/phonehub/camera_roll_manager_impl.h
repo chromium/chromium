@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/camera_roll_download_manager.h"
 #include "chromeos/ash/components/phonehub/camera_roll_manager.h"
@@ -95,13 +96,21 @@ class CameraRollManagerImpl
   bool is_android_storage_granted_ = false;
   std::optional<base::TimeTicks> fetch_items_request_start_timestamp_;
 
-  raw_ptr<MessageReceiver> message_receiver_;
   raw_ptr<MessageSender> message_sender_;
   raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
   raw_ptr<secure_channel::ConnectionManager> connection_manager_;
 
   std::unique_ptr<CameraRollDownloadManager> camera_roll_download_manager_;
   std::unique_ptr<CameraRollThumbnailDecoder> thumbnail_decoder_;
+
+  base::ScopedObservation<MessageReceiver, MessageReceiver::Observer>
+      message_receiver_observation_{this};
+  base::ScopedObservation<multidevice_setup::MultiDeviceSetupClient,
+                          multidevice_setup::MultiDeviceSetupClient::Observer>
+      multidevice_setup_client_observation_{this};
+  base::ScopedObservation<secure_channel::ConnectionManager,
+                          secure_channel::ConnectionManager::Observer>
+      connection_manager_observation_{this};
 
   base::WeakPtrFactory<CameraRollManagerImpl> weak_ptr_factory_{this};
   // WeakPtrFactory dedicated to thumbanil decoder callbacks that need to be

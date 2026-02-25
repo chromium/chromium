@@ -67,20 +67,15 @@ CrosStateSender::CrosStateSender(
   DCHECK(phone_model_);
   DCHECK(retry_timer_);
 
-  connection_manager_->AddObserver(this);
-  multidevice_setup_client_->AddObserver(this);
+  connection_manager_observation_.Observe(connection_manager);
+  multidevice_setup_client_observation_.Observe(multidevice_setup_client);
   if (attestation_certificate_generator_) {
-    attestation_certificate_generator_->AddObserver(this);
+    attestation_certificate_generator_observation_.Observe(
+        attestation_certificate_generator_.get());
   }
 }
 
-CrosStateSender::~CrosStateSender() {
-  connection_manager_->RemoveObserver(this);
-  multidevice_setup_client_->RemoveObserver(this);
-  if (attestation_certificate_generator_) {
-    attestation_certificate_generator_->RemoveObserver(this);
-  }
-}
+CrosStateSender::~CrosStateSender() = default;
 
 void CrosStateSender::AttemptUpdateCrosState() {
   // Stop and cancel old timer if it is running, and reset the |retry_delay_| to
