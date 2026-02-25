@@ -120,11 +120,20 @@ export class EventListElement extends CrLitElement {
 
       const pluralStringProxy = PluralStringProxyImpl.getInstance();
 
-      pluralStringProxy
-          .getPluralString('undatedEvents', unsortedEventsWithoutDates.length)
-          .then(label => this.eventsWithoutDatesLabel = label);
-      pluralStringProxy.getPluralString('parseErrorEvents', invalid.length)
-          .then(label => this.eventsWithParseErrorsLabel = label);
+      if (unsortedEventsWithoutDates.length === 0) {
+        this.eventsWithoutDatesLabel = '';
+      } else {
+        pluralStringProxy
+            .getPluralString('undatedEvents', unsortedEventsWithoutDates.length)
+            .then(label => this.eventsWithoutDatesLabel = label);
+      }
+
+      if (invalid.length === 0) {
+        this.eventsWithParseErrorsLabel = '';
+      } else {
+        pluralStringProxy.getPluralString('parseErrorEvents', invalid.length)
+            .then(label => this.eventsWithParseErrorsLabel = label);
+      }
     }
 
     if (changedProperties.has('messages') ||
