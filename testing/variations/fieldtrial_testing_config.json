@@ -28080,6 +28080,12 @@
             ],
             "experiments": [
                 {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "V8Flag_turbolev"
+                    ]
+                },
+                {
                     "name": "Enabled",
                     "enable_features": [
                         "V8Flag_turbolev"
