@@ -101,7 +101,9 @@ class GlicFloatingUi : public GlicUiEmbedder,
   bool HasFocus() override;
   bool ActivateBrowser() override;
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
+#if !BUILDFLAG(IS_ANDROID)
   base::WeakPtr<views::View> GetView() override;
+#endif
 
   // web_modal::WebContentsModalDialogManagerDelegate:
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(

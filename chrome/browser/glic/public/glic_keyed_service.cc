@@ -28,6 +28,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
+#include "chrome/browser/glic/common/application_hotkey_delegate.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_enums.h"

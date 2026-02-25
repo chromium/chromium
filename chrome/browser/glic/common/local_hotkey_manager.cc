@@ -135,6 +135,7 @@ ui::Accelerator LocalHotkeyManager::GetConfigurableAccelerator(Hotkey hotkey) {
   auto pref_name_iter = kHotkeyToPrefMap.find(hotkey);
   CHECK(pref_name_iter != kHotkeyToPrefMap.end());
 
+  // NEEDS_ANDROID_IMPL: StringToAccelerator does not work on Android.
   const ui::Accelerator accelerator = ui::Command::StringToAccelerator(
       g_browser_process->local_state()->GetString(pref_name_iter->second));
 

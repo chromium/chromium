@@ -46,9 +46,11 @@ void GlicInactiveFloatingUi::Close(const CloseOptions& options) {
   NOTIMPLEMENTED();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 base::WeakPtr<views::View> GlicInactiveFloatingUi::GetView() {
   return nullptr;
 }
+#endif
 
 gfx::Size GlicInactiveFloatingUi::GetPanelSize() {
   return gfx::Size();

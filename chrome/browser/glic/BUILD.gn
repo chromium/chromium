@@ -428,6 +428,7 @@ source_set("impl") {
       ":actor_types_for_migration",
       "//chrome/browser/context_sharing/tab_bottom_sheet/android:jni_headers",
       "//chrome/browser/glic/android",
+      "//ui/android",
     ]
   }
 

@@ -116,9 +116,11 @@ void GlicInactiveSidePanelUi::Close(const CloseOptions& options) {
   glic_side_panel_coordinator->Close(options);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 base::WeakPtr<views::View> GlicInactiveSidePanelUi::GetView() {
   return nullptr;
 }
+#endif
 
 void GlicInactiveSidePanelUi::Focus() {
   // Do nothing. Inactive view doesn't have webcontents to set focus on.

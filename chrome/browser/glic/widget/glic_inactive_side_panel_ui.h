@@ -7,7 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/widget/inactive_view_controller.h"
 #include "ui/gfx/image/image_skia.h"
@@ -18,6 +17,8 @@ class View;
 }  // namespace views
 
 namespace glic {
+
+class GlicSidePanelCoordinator;
 
 // A GlicUiEmbedder for inactive Glic instances. This will show a
 // blurred screenshot of the previously active UI.
@@ -43,7 +44,9 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder,
   bool HasFocus() override;
   std::string DescribeForTesting() override;
 
+#if !BUILDFLAG(IS_ANDROID)
   base::WeakPtr<views::View> GetView() override;
+#endif
   mojom::PanelState GetPanelState() const override;
   gfx::Size GetPanelSize() override;
 

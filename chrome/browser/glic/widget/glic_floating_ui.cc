@@ -451,12 +451,14 @@ std::unique_ptr<GlicUiEmbedder> GlicFloatingUi::CreateInactiveEmbedder() const {
   return GlicInactiveFloatingUi::From(*this);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 base::WeakPtr<views::View> GlicFloatingUi::GetView() {
   if (auto* glic_view = GetGlicView()) {
     return glic_view->GetWeakPtr();
   }
   return nullptr;
 }
+#endif
 
 void GlicFloatingUi::SwitchConversation(
     glic::mojom::ConversationInfoPtr info,

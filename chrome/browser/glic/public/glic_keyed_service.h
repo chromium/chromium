@@ -15,6 +15,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_zero_state_suggestions_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"

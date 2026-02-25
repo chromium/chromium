@@ -86,6 +86,9 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorManager {
   // Whether the given |accelerator| has a priority handler associated with it.
   bool HasPriorityHandler(const Accelerator& accelerator) const;
 
+  // Returns true if there are no accelerators registered.
+  bool IsEmpty() const { return accelerators_.empty(); }
+
 #if BUILDFLAG(IS_CHROMEOS)
   void SetUsePositionalLookup(bool use_positional_lookup) {
     DCHECK(::features::IsImprovedKeyboardShortcutsEnabled());

@@ -28,7 +28,9 @@ class GlicInactiveFloatingUi : public GlicUiEmbedder {
   std::unique_ptr<GlicUiEmbedder> CreateInactiveEmbedder() const override;
   void Focus() override;
   bool HasFocus() override;
+#if !BUILDFLAG(IS_ANDROID)
   base::WeakPtr<views::View> GetView() override;
+#endif
   mojom::PanelState GetPanelState() const override;
   gfx::Size GetPanelSize() override;
   std::string DescribeForTesting() override;

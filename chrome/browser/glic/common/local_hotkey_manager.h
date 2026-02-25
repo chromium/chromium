@@ -13,18 +13,15 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/accelerators/accelerator.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
-#endif
-
 namespace gfx {
 class Point;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 namespace views {
 class View;
 }
+#endif
 
 namespace glic {
 
@@ -57,7 +54,9 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
     virtual void Close(const CloseOptions& options) = 0;
     virtual bool ActivateBrowser() = 0;
     virtual void ShowTitleBarContextMenuAt(gfx::Point event_loc) = 0;
+#if !BUILDFLAG(IS_ANDROID)
     virtual base::WeakPtr<views::View> GetView() = 0;
+#endif
   };
 
   constexpr static const char* HotkeyToString(Hotkey hotkey) {
