@@ -23,9 +23,8 @@ void ThroughputMetricLogger::OnTransferStarted(const ShareTarget& share_target,
 
   // An upgrade may have occurred before the transfer starts, so only set the
   // default medium if it has not already been set.
-  if (!last_medium_.contains(share_target.id)) {
-    last_medium_[share_target.id] = connections::mojom::Medium::kBluetooth;
-  }
+  last_medium_.try_emplace(share_target.id,
+                           connections::mojom::Medium::kBluetooth);
 }
 
 void ThroughputMetricLogger::OnTransferUpdated(const ShareTarget& share_target,
@@ -49,8 +48,9 @@ void ThroughputMetricLogger::OnTransferUpdated(const ShareTarget& share_target,
 
   // Do not emit events for recently upgraded share targets to deal with partial
   // updates across the medium upgrade.
-  if (recently_upgraded_.contains(share_target.id)) {
-    recently_upgraded_.erase(share_target.id);
+  if (auto it = recently_upgraded_.find(share_target.id);
+      it != recently_upgraded_.end()) {
+    recently_upgraded_.erase(it);
     return;
   }
 
@@ -61,12 +61,14 @@ void ThroughputMetricLogger::OnTransferUpdated(const ShareTarget& share_target,
   }
 
   // We must have either started the transfer or triggered a bandwidth upgrade.
-  CHECK(last_medium_.contains(share_target.id));
-  connections::mojom::Medium medium = last_medium_[share_target.id];
+  auto medium_it = last_medium_.find(share_target.id);
+  CHECK(medium_it != last_medium_.end());
+  connections::mojom::Medium medium = medium_it->second;
 
   // We must have started a transfer.
-  CHECK(transfer_sizes_.contains(share_target.id));
-  long transfer_size = transfer_sizes_[share_target.id];
+  auto transfer_size_it = transfer_sizes_.find(share_target.id);
+  CHECK(transfer_size_it != transfer_sizes_.end());
+  long transfer_size = transfer_size_it->second;
 
   Platform platform = GetPlatform(share_target);
   DeviceRelationship relationship = GetDeviceRelationship(share_target);
