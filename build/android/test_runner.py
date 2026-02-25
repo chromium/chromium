@@ -906,7 +906,6 @@ def AddJUnitTestOptions(parser):
                       help='Path to search for native libraries.')
   parser.add_argument(
       '--resource-apk',
-      required=True,
       help='Path to .ap_ containing binary resources for Robolectric.')
   parser.add_argument('--shadows-allowlist',
                       help='Path to Allowlist file for Shadows.')

@@ -1114,6 +1114,10 @@ if (!is_robolectric && enable_java_templates) {
   #
   # Supports all variables of java_binary().
   #
+  # Arguments:
+  #   enable_android_resources: If false, skip manifest merging and resource
+  #     packaging. Defaults to true.
+  #
   # Example
   #   robolectric_binary("foo") {
   #     sources = [ "org/chromium/foo/FooTest.java" ]
@@ -1123,10 +1127,6 @@ if (!is_robolectric && enable_java_templates) {
     testonly = true
 
     _main_class = "org.chromium.testing.local.JunitTestMain"
-    _build_config = "$target_gen_dir/$target_name.build_config.json"
-    _res_build_config = "$target_gen_dir/$target_name.res.build_config.json"
-    _manifest_build_config =
-        "$target_gen_dir/$target_name.manifest.build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
     _java_binary_target_name = "${target_name}__java_binary"
 
@@ -1139,74 +1139,84 @@ if (!is_robolectric && enable_java_templates) {
     if (defined(invoker.deps)) {
       _invoker_deps += invoker.deps
     }
-    _non_java_deps = filter_exclude(_invoker_deps, java_target_patterns)
-    _java_assetres_deps = [ ":${_java_binary_target_name}__assetres" ]
 
-    # A package name or a manifest is required to have resources. This is
-    # added so that junit tests that do not care about the package name can
-    # still use resources without having to explicitly set one.
-    if (defined(invoker.package_name)) {
-      _package_name = invoker.package_name
-    } else if (!defined(invoker.android_manifest)) {
-      _package_name = "no.manifest.configured"
-    }
+    _enable_resources = !defined(invoker.enable_android_resources) ||
+                        invoker.enable_android_resources
 
-    _merge_manifest_target_name = "${target_name}__merge_manifests"
-    _android_manifest =
-        "$target_gen_dir/$target_name.AndroidManifest.merged.xml"
+    if (_enable_resources) {
+      _build_config = "$target_gen_dir/$target_name.build_config.json"
+      _res_build_config = "$target_gen_dir/$target_name.res.build_config.json"
+      _manifest_build_config =
+          "$target_gen_dir/$target_name.manifest.build_config.json"
+      _non_java_deps = filter_exclude(_invoker_deps, java_target_patterns)
+      _java_assetres_deps = [ ":${_java_binary_target_name}__assetres" ]
 
-    merge_manifests(_merge_manifest_target_name) {
-      if (defined(invoker.android_manifest)) {
-        input_manifest = invoker.android_manifest
-      } else {
-        input_manifest = "//build/android/AndroidManifest.xml"
+      # A package name or a manifest is required to have resources. This is
+      # added so that junit tests that do not care about the package name can
+      # still use resources without having to explicitly set one.
+      if (defined(invoker.package_name)) {
+        _package_name = invoker.package_name
+      } else if (!defined(invoker.android_manifest)) {
+        _package_name = "no.manifest.configured"
       }
 
-      if (defined(_package_name)) {
-        manifest_package = _package_name
-      }
-      output_manifest = _android_manifest
-      manifest_build_config = _manifest_build_config
-      min_sdk_version = default_min_sdk_version
-      target_sdk_version = default_target_sdk_version
-      deps = _non_java_deps + _java_assetres_deps +
-             [ ":$_build_config_target_name" ]
-      if (defined(invoker.android_manifest_dep)) {
-        deps += [ invoker.android_manifest_dep ]
-      }
-    }
+      _merge_manifest_target_name = "${target_name}__merge_manifests"
+      _android_manifest =
+          "$target_gen_dir/$target_name.AndroidManifest.merged.xml"
 
-    _resource_arsc_output = "${target_out_dir}/${target_name}.ap_"
-    _compile_resources_target_name = "${target_name}__compile_resources"
-    compile_resources(_compile_resources_target_name) {
-      deps = _non_java_deps + _java_assetres_deps +
-             [ ":$_merge_manifest_target_name" ]
-      build_config_dep = ":$_build_config_target_name"
-      build_config = _res_build_config
-      if (defined(_package_name)) {
-        rename_manifest_package = _package_name
+      merge_manifests(_merge_manifest_target_name) {
+        if (defined(invoker.android_manifest)) {
+          input_manifest = invoker.android_manifest
+        } else {
+          input_manifest = "//build/android/AndroidManifest.xml"
+        }
+
+        if (defined(_package_name)) {
+          manifest_package = _package_name
+        }
+        output_manifest = _android_manifest
+        manifest_build_config = _manifest_build_config
+        min_sdk_version = default_min_sdk_version
+        target_sdk_version = default_target_sdk_version
+        deps = _non_java_deps + _java_assetres_deps +
+               [ ":$_build_config_target_name" ]
+        if (defined(invoker.android_manifest_dep)) {
+          deps += [ invoker.android_manifest_dep ]
+        }
       }
-      android_manifest = _android_manifest
-      arsc_output = _resource_arsc_output
-      min_sdk_version = default_min_sdk_version
-      target_sdk_version = default_target_sdk_version
-      forward_variables_from(invoker, [ "override_target_sdk" ])
-    }
 
-    # apkbuilder step needed only to add android assets to the .ap_ file.
-    _apkbuilder_output = "${target_out_dir}/${target_name}.robo.ap_"
-    _apkbuilder_target_name = "${target_name}__apkbuilder"
-    package_apk("$_apkbuilder_target_name") {
-      build_config = _build_config
-      min_sdk_version = default_min_sdk_version
-      deps = _java_assetres_deps + [
-               ":$_build_config_target_name",
-               ":$_compile_resources_target_name",
-             ]
+      _resource_arsc_output = "${target_out_dir}/${target_name}.ap_"
+      _compile_resources_target_name = "${target_name}__compile_resources"
+      compile_resources(_compile_resources_target_name) {
+        deps = _non_java_deps + _java_assetres_deps +
+               [ ":$_merge_manifest_target_name" ]
+        build_config_dep = ":$_build_config_target_name"
+        build_config = _res_build_config
+        if (defined(_package_name)) {
+          rename_manifest_package = _package_name
+        }
+        android_manifest = _android_manifest
+        arsc_output = _resource_arsc_output
+        min_sdk_version = default_min_sdk_version
+        target_sdk_version = default_target_sdk_version
+        forward_variables_from(invoker, [ "override_target_sdk" ])
+      }
 
-      is_robolectric_apk = true
-      packaged_resources_path = _resource_arsc_output
-      output_apk_path = _apkbuilder_output
+      # apkbuilder step needed only to add android assets to the .ap_ file.
+      _apkbuilder_output = "${target_out_dir}/${target_name}.robo.ap_"
+      _apkbuilder_target_name = "${target_name}__apkbuilder"
+      package_apk("$_apkbuilder_target_name") {
+        build_config = _build_config
+        min_sdk_version = default_min_sdk_version
+        deps = _java_assetres_deps + [
+                 ":$_build_config_target_name",
+                 ":$_compile_resources_target_name",
+               ]
+
+        is_robolectric_apk = true
+        packaged_resources_path = _resource_arsc_output
+        output_apk_path = _apkbuilder_output
+      }
     }
 
     # Some may want to disable this to remove dependency on //base
@@ -1288,10 +1298,10 @@ if (!is_robolectric && enable_java_templates) {
       if (!defined(srcjar_deps)) {
         srcjar_deps = []
       }
-      srcjar_deps += [
-        ":$_compile_resources_target_name",
-        "//build/android:build_config_for_robolectric_srcjar",
-      ]
+      srcjar_deps += [ "//build/android:build_config_for_robolectric_srcjar" ]
+      if (_enable_resources) {
+        srcjar_deps += [ ":$_compile_resources_target_name" ]
+      }
       if (_generate_final_jni) {
         srcjar_deps += [ ":$_native_libraries_target_name" ] + _jni_srcjar_deps
       }
@@ -1308,15 +1318,21 @@ if (!is_robolectric && enable_java_templates) {
       test_suite = invoker.target_name
       test_type = "junit"
       ignore_all_data_deps = true
-      resource_apk = _apkbuilder_output
+      if (_enable_resources) {
+        resource_apk = _apkbuilder_output
+      } else {
+        resource_apk = ""
+      }
       deps = [
-        ":$_apkbuilder_target_name",
         ":$_build_config_target_name",
         ":${_java_binary_target_name}__host",
         ":${_java_binary_target_name}__java_binary_script",
         ":${_java_binary_target_name}__validate",
         "//third_party/robolectric:robolectric_runtime_jars",
       ]
+      if (_enable_resources) {
+        deps += [ ":$_apkbuilder_target_name" ]
+      }
       if (defined(invoker.shared_libraries)) {
         data_deps = invoker.shared_libraries
       }

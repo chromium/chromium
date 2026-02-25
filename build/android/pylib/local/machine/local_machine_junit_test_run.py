@@ -90,8 +90,9 @@ class LocalMachineJunitTestRun(test_run.TestRun):
     properties_jar_path = os.path.join(temp_dir, 'properties.jar')
     resource_apk = self._test_instance.resource_apk
     with zipfile.ZipFile(properties_jar_path, 'w') as z:
-      z.writestr('com/android/tools/test_config.properties',
-                 'android_resource_apk=%s\n' % resource_apk)
+      if resource_apk:
+        z.writestr('com/android/tools/test_config.properties',
+                   'android_resource_apk=%s\n' % resource_apk)
       props = [
           'application = android.app.Application',
           'sdk = %s' %
@@ -99,6 +100,12 @@ class LocalMachineJunitTestRun(test_run.TestRun):
           ('shadows = org.chromium.testing.local.'
            'CustomShadowApplicationPackageManager'),
       ]
+
+      if not resource_apk:
+        # Setting manifest = NONE improves performance by avoiding Robolectric
+        # having to scan for and parse a dummy manifest.
+        props.append('manifest = NONE')
+
       z.writestr('robolectric.properties', '\n'.join(props))
     return properties_jar_path
 

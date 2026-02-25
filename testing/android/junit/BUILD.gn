@@ -34,6 +34,7 @@ robolectric_library("junit_test_support") {
 }
 
 robolectric_binary("junit_unit_tests") {
+  enable_android_resources = false
   sources = [
     "javatests/src/org/chromium/testing/local/GtestFilterTest.java",
     "javatests/src/org/chromium/testing/local/GtestLoggerTest.java",
