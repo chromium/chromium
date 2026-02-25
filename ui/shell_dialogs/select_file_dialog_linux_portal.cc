@@ -80,10 +80,8 @@ std::vector<base::FilePath> ConvertUrisToPaths(
     std::string_view encoded_path(uri);
     encoded_path.remove_prefix(strlen(kFileUriPrefix));
 
-    url::RawCanonOutputT<char16_t> decoded_path;
-    url::DecodeUrlEscapeSequences(
-        encoded_path, url::DecodeUrlMode::kUtf8OrIsomorphic, &decoded_path);
-    paths.emplace_back(base::UTF16ToUTF8(decoded_path.view()));
+    paths.emplace_back(url::DecodeUrlEscapeSequences(
+        encoded_path, url::DecodeUrlMode::kUtf8OrIsomorphic));
   }
   return paths;
 }

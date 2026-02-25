@@ -286,6 +286,12 @@ void DecodeUrlEscapeSequences(std::string_view input,
                               DecodeUrlMode mode,
                               CanonOutputW* output);
 
+// Unescapes the given string using URL escaping rules.  The resultant string
+// is encoded in UTF-8.
+COMPONENT_EXPORT(URL)
+std::string DecodeUrlEscapeSequences(std::string_view input,
+                                     DecodeUrlMode mode);
+
 // Escapes the given string as defined by the JS method encodeURIComponent. See
 // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/encodeURIComponent
 //

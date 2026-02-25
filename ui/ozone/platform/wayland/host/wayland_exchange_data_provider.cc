@@ -145,11 +145,8 @@ void AddFiles(PlatformClipboard::Data data, OSExchangeDataProvider* provider) {
       continue;
     }
 
-    url::RawCanonOutputT<char16_t> unescaped;
-    url::DecodeUrlEscapeSequences(
-        url.path(), url::DecodeUrlMode::kUtf8OrIsomorphic, &unescaped);
-
-    const base::FilePath path(base::UTF16ToUTF8(unescaped.view()));
+    const base::FilePath path(url::DecodeUrlEscapeSequences(
+        url.path(), url::DecodeUrlMode::kUtf8OrIsomorphic));
     filenames.emplace_back(path, path.BaseName());
   }
   if (filenames.empty())

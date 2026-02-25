@@ -269,17 +269,17 @@ TEST(KURLTest, DecodeURLEscapeSequences) {
   }
 
   // Our decode should decode %00
-  String zero = DecodeUrlEscapeSequences("%00", kMode);
+  String zero = blink::DecodeUrlEscapeSequences("%00", kMode);
   EXPECT_NE("%00", zero.Utf8());
 
   // Decode UTF-8.
-  String decoded = DecodeUrlEscapeSequences("%e6%bc%a2%e5%ad%97", kMode);
+  String decoded = blink::DecodeUrlEscapeSequences("%e6%bc%a2%e5%ad%97", kMode);
   const UChar kDecodedExpected[] = {0x6F22, 0x5b57};
   EXPECT_EQ(String(base::span(kDecodedExpected)), decoded);
 
   // Test the error behavior for invalid UTF-8 (we differ from WebKit here).
   // %e4 %a0 are invalid for UTF-8, but %e5%a5%bd is valid.
-  String invalid = DecodeUrlEscapeSequences("%e4%a0%e5%a5%bd", kMode);
+  String invalid = blink::DecodeUrlEscapeSequences("%e4%a0%e5%a5%bd", kMode);
   UChar invalid_expected_helper[] = {0x00e4, 0x00a0, 0x00e5, 0x00a5, 0x00bd};
   String invalid_expected{base::span(invalid_expected_helper)};
   EXPECT_EQ(invalid_expected, invalid);

@@ -224,10 +224,7 @@ HandleSharedStorageRequestMultiple(
   const std::string& query = request.GetURL().GetQuery();
   if (base::StartsWith(path, MakeSharedStorageRedirectPrefix()) &&
       !query.empty()) {
-    url::RawCanonOutputT<char16_t> decode_output;
-    url::DecodeUrlEscapeSequences(query, url::DecodeUrlMode::kUtf8,
-                                  &decode_output);
-    location = base::UTF16ToUTF8(decode_output.view());
+    location = url::DecodeUrlEscapeSequences(query, url::DecodeUrlMode::kUtf8);
   }
   if (write_header.has_value()) {
     return location.has_value()

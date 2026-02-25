@@ -17,7 +17,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/cpp/content_security_policy/csp_source.h"
@@ -490,10 +489,8 @@ bool ParsePath(std::string_view path, mojom::CSPSource* csp_source) {
   if (path[0] != '/')
     return false;
 
-  url::RawCanonOutputT<char16_t> unescaped;
-  url::DecodeUrlEscapeSequences(path, url::DecodeUrlMode::kUtf8OrIsomorphic,
-                                &unescaped);
-  csp_source->path = base::UTF16ToUTF8(unescaped.view());
+  csp_source->path = url::DecodeUrlEscapeSequences(
+      path, url::DecodeUrlMode::kUtf8OrIsomorphic);
 
   return true;
 }

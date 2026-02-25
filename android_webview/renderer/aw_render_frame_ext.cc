@@ -91,11 +91,8 @@ bool RemovePrefixAndAssignIfMatches(std::string_view prefix,
   const std::string_view spec(url.possibly_invalid_spec());
 
   if (base::StartsWith(spec, prefix)) {
-    url::RawCanonOutputW<1024> output;
-    url::DecodeUrlEscapeSequences(spec.substr(prefix.length()),
-                                  url::DecodeUrlMode::kUtf8OrIsomorphic,
-                                  &output);
-    *dest = base::UTF16ToUTF8(output.view());
+    *dest = url::DecodeUrlEscapeSequences(
+        spec.substr(prefix.length()), url::DecodeUrlMode::kUtf8OrIsomorphic);
     return true;
   }
   return false;

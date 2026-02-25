@@ -167,16 +167,11 @@ void DevToolsFileHelper::Save(const std::string& url,
     GURL gurl(url);
     std::string suggested_file_name;
     if (gurl.is_valid()) {
-      url::RawCanonOutputW<1024> unescaped_content;
       std::string escaped_content = gurl.ExtractFileName();
-      url::DecodeUrlEscapeSequences(escaped_content,
-                                    url::DecodeUrlMode::kUtf8OrIsomorphic,
-                                    &unescaped_content);
       // TODO(crbug.com/40839171): Due to filename encoding on Windows we can't
       // expect to always be able to convert to UTF8 and back
-      std::string unescaped_content_string =
-          base::UTF16ToUTF8(unescaped_content.view());
-      suggested_file_name = unescaped_content_string;
+      suggested_file_name = url::DecodeUrlEscapeSequences(
+          escaped_content, url::DecodeUrlMode::kUtf8OrIsomorphic);
     } else {
       suggested_file_name = url;
     }

@@ -302,11 +302,16 @@ TEST_F(URLUtilTest, DecodeURLEscapeSequences) {
     DecodeUrlEscapeSequences(decode_case.input,
                              DecodeUrlMode::kUtf8OrIsomorphic, &output);
     EXPECT_EQ(decode_case.output, base::UTF16ToUTF8(output.view()));
+    EXPECT_EQ(decode_case.output,
+              DecodeUrlEscapeSequences(decode_case.input,
+                                       DecodeUrlMode::kUtf8OrIsomorphic));
 
     RawCanonOutputT<char16_t> output_utf8;
     DecodeUrlEscapeSequences(decode_case.input, DecodeUrlMode::kUtf8,
                              &output_utf8);
     EXPECT_EQ(decode_case.output, base::UTF16ToUTF8(output_utf8.view()));
+    EXPECT_EQ(decode_case.output, DecodeUrlEscapeSequences(
+                                      decode_case.input, DecodeUrlMode::kUtf8));
   }
 
   // Our decode should decode %00
@@ -314,6 +319,7 @@ TEST_F(URLUtilTest, DecodeURLEscapeSequences) {
   RawCanonOutputT<char16_t> zero_output;
   DecodeUrlEscapeSequences(zero_input, DecodeUrlMode::kUtf8, &zero_output);
   EXPECT_NE("%00", base::UTF16ToUTF8(zero_output.view()));
+  EXPECT_NE("%00", DecodeUrlEscapeSequences(zero_input, DecodeUrlMode::kUtf8));
 
   // Test the error behavior for invalid UTF-8.
   struct Utf8DecodeCase {
