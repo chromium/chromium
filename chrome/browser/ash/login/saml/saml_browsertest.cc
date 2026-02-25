@@ -2810,8 +2810,9 @@ class SamlTestWithManagedLocalPinAndPassword : public SAMLPolicyTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/487601425): Disabled due to consistent test failures.
 IN_PROC_BROWSER_TEST_F(SamlTestWithManagedLocalPinAndPassword,
-                       SkipsSamlConfirmPasswordScreenOnPolicySet) {
+                       DISABLED_SkipsSamlConfirmPasswordScreenOnPolicySet) {
   SetLocalPasswordAsAllowedAuthFactorsPolicy();
 
   ShowGAIALoginForm();
