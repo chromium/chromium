@@ -82,9 +82,6 @@ enum class GeminiPageContextAttachmentState {
   kEnterpriseDisabled,
 };
 
-// TODO(crbug.com/467341184): Remove this alias once all callers have migrated.
-using BWGPageContextAttachmentState = GeminiPageContextAttachmentState;
-
 // Enum representing the Gemini view state.
 // This needs to stay in sync with GCRGeminiViewState (and its SDK counterpart).
 enum class GeminiViewState {

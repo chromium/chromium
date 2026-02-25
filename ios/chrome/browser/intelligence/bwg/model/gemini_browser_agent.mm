@@ -918,21 +918,15 @@ void GeminiBrowserAgent::ApplyUserPrefsToPageContext(
   // Disable the page context attachment state based on user prefs.
   PrefService* pref_service = browser_->GetProfile()->GetPrefs();
   if (!pref_service->GetBoolean(prefs::kIOSBWGPageContentSetting)) {
-    // TODO(crbug.com/467341184): Remove the chain assignment after the
-    // migration.
     gemini_page_context.geminiPageContextAttachmentState =
-        gemini_page_context.BWGPageContextAttachmentState =
-            ios::provider::GeminiPageContextAttachmentState::kUserDisabled;
+        ios::provider::GeminiPageContextAttachmentState::kUserDisabled;
   } else {
     // If page context is not disabled by the user, page context is always
     // available and should be attached. Note page context is only partially
     // available (e.g. title, url, favicon) while
     // `GeminiPageContextComputationState` is pending.
-    // TODO(crbug.com/467341184): Remove the chain assignment after the
-    // migration.
     gemini_page_context.geminiPageContextAttachmentState =
-        gemini_page_context.BWGPageContextAttachmentState =
-            ios::provider::GeminiPageContextAttachmentState::kAttached;
+        ios::provider::GeminiPageContextAttachmentState::kAttached;
   }
 }
 
