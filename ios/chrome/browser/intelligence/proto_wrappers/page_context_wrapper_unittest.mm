@@ -3391,6 +3391,77 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Text_Size) {
   }
 }
 
+// Tests that Canvas Metadata is extracted correctly.
+TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Canvas) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure =
+      HtmlPage("RichExtraction_Canvas",
+               RawHtml("<canvas width=\"200\" height=\"100\"></canvas>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  // Root -> Canvas
+  ASSERT_EQ(root_node.children_nodes_size(), 1);
+  const auto& canvas_node = root_node.children_nodes(0);
+  EXPECT_EQ(canvas_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_CANVAS);
+  EXPECT_EQ(canvas_node.content_attributes().canvas_data().layout_width(), 200);
+  EXPECT_EQ(canvas_node.content_attributes().canvas_data().layout_height(),
+            100);
+}
+
+// Tests that Video Metadata is extracted correctly.
+TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Video) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage(
+      "RichExtraction_Video",
+      RawHtml("<video src=\"https://example.com/video.mp4\"></video>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  // Root -> Video
+  ASSERT_EQ(root_node.children_nodes_size(), 1);
+  const auto& video_node = root_node.children_nodes(0);
+  EXPECT_EQ(video_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_VIDEO);
+  EXPECT_EQ(video_node.content_attributes().video_data().url(),
+            "https://example.com/video.mp4");
+}
+
 // Tests that attempting to trigger two extractions on one wrapper fails.
 TEST_P(PageContextWrapperTest, EnforcesOneTimeUse_Populate) {
   PageContextWrapper* wrapper =

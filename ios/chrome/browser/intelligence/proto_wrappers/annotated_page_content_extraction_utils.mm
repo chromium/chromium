@@ -33,6 +33,11 @@ constexpr char kImageInfoKey[] = "imageInfo";
 constexpr char kImageCaptionKey[] = "imageCaption";
 constexpr char kAnnotatedRolesKey[] = "annotatedRoles";
 constexpr char kIframeDataKey[] = "iframeData";
+constexpr char kCanvasDataKey[] = "canvasData";
+constexpr char kVideoDataKey[] = "videoData";
+constexpr char kLayoutSizeKey[] = "layoutSize";
+constexpr char kWidthKey[] = "width";
+constexpr char kHeightKey[] = "height";
 constexpr char kFrameTokenKey[] = "frameToken";
 constexpr char kTokenValueKey[] = "value";
 constexpr char kContentKey[] = "content";
@@ -132,6 +137,38 @@ void PopulateImageData(
     destination_node->mutable_content_attributes()
         ->mutable_image_data()
         ->set_image_caption(*image_caption);
+  }
+}
+
+// Populates the canvas data of the `destination_node` from the
+// `canvas_data` content.
+void PopulateCanvasData(
+    const base::DictValue& canvas_data,
+    optimization_guide::proto::ContentNode* destination_node) {
+  if (const base::DictValue* layout_size =
+          canvas_data.FindDict(kLayoutSizeKey)) {
+    if (std::optional<int> width = ReadJsNumber(*layout_size, kWidthKey)) {
+      destination_node->mutable_content_attributes()
+          ->mutable_canvas_data()
+          ->set_layout_width(*width);
+    }
+    if (std::optional<int> height = ReadJsNumber(*layout_size, kHeightKey)) {
+      destination_node->mutable_content_attributes()
+          ->mutable_canvas_data()
+          ->set_layout_height(*height);
+    }
+  }
+}
+
+// Populates the video data of the `destination_node` from the
+// `video_data` content.
+void PopulateVideoData(
+    const base::DictValue& video_data,
+    optimization_guide::proto::ContentNode* destination_node) {
+  if (const std::string* url = video_data.FindString(kUrlKey)) {
+    destination_node->mutable_content_attributes()
+        ->mutable_video_data()
+        ->set_url(*url);
   }
 }
 
@@ -287,11 +324,23 @@ void PopulateAPCNodeFromContentTree(
       }
       break;
     }
+    case optimization_guide::proto::CONTENT_ATTRIBUTE_CANVAS: {
+      if (const base::DictValue* canvas_data =
+              content_attributes->FindDict(kCanvasDataKey)) {
+        PopulateCanvasData(*canvas_data, destination_node);
+      }
+      break;
+    }
+    case optimization_guide::proto::CONTENT_ATTRIBUTE_VIDEO: {
+      if (const base::DictValue* video_data =
+              content_attributes->FindDict(kVideoDataKey)) {
+        PopulateVideoData(*video_data, destination_node);
+      }
+      break;
+    }
     case optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME: {
-      const base::DictValue* iframe_data =
-          content_attributes->FindDict(kIframeDataKey);
-
-      if (iframe_data) {
+      if (const base::DictValue* iframe_data =
+              content_attributes->FindDict(kIframeDataKey)) {
         // TODO(crbug.com/464473686): Record anomaly if there is a remote token
         // and children for an iframe node (which has content attribute of type
         // iframe and a number of children nodes > 0); those 2 should be

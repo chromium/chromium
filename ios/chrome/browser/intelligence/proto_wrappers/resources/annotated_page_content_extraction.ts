@@ -87,7 +87,7 @@ const TAGS_TO_REJECT = [
 // Tags that contain valid content but are not yet extracted.
 // TODO(crbug.com/468852704): Remove tags from this list as they are
 // implemented.
-const TAGS_TO_SUPPORT_EVENTUALLY = [TAG_SVG, TAG_CANVAS, TAG_VIDEO];
+const TAGS_TO_SUPPORT_EVENTUALLY = [TAG_SVG];
 
 // Tags that should be strictly rejected if they are invisible,
 // because they are considered "leaf" nodes.
@@ -576,6 +576,40 @@ function getBasicContentForNonGenericElement(
           },
         },
       };
+    case TAG_CANVAS: {
+      const rect = domNode.getBoundingClientRect();
+      return {
+        childrenNodes: [],
+        contentAttributes: {
+          ...BASIC_CONTENT_ATTRIBUTES,
+          attributeType: PageContentAttributeType.CANVAS,
+          canvasData: {
+            layoutSize: {
+              width: rect.width,
+              height: rect.height,
+            },
+          },
+        },
+      };
+    }
+    case TAG_VIDEO: {
+      const videoElement = domNode as HTMLVideoElement;
+      // Use currentSrc if present (can be populated natively or by <source>
+      // children). Fallback to src (even if empty string) to match Blink parity
+      // where URL is extracted.
+      const url = videoElement.currentSrc || videoElement.src || '';
+      return {
+        childrenNodes: [],
+        contentAttributes: {
+          ...BASIC_CONTENT_ATTRIBUTES,
+          attributeType: PageContentAttributeType.VIDEO,
+          videoData: {
+            url: url,
+            // TODO(crbug.com/382558422): Include video source origin.
+          },
+        },
+      };
+    }
 
     // 2. Structural & Layout Elements.
     case TAG_TABLE:
