@@ -1,3 +1,4 @@
 *
+per-file supported_platforms.md=set noparent
 per-file supported_platforms.md=file://ATL_OWNERS
 per-file supported_platforms.md=blundell@chromium.org
