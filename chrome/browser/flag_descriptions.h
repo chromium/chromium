@@ -564,9 +564,10 @@ inline constexpr char kFRESignInAlternativeSecondaryButtonTextDescription[] =
     "If enabled, the FRE sign-in promo will use the alternative secondary "
     "button text.";
 
-inline constexpr char kFluidResizeName[] = "Enable AL device fluid resize";
+inline constexpr char kFluidResizeName[] =
+    "Enable Android desktop fluid resize";
 inline constexpr char kFluidResizeDescription[] =
-    "Enable AL device fluid resize to improve UX.";
+    "Enable Android desktop fluid resize to improve UX.";
 
 inline constexpr char kForceStartupSigninPromoName[] =
     "Force Start-up Signin Promo";
