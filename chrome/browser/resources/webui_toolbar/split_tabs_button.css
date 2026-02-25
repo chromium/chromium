@@ -5,26 +5,10 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=./toolbar_button.css.js
  * #scheme=relative
- * #include=cr-hidden-style-lit
+ * #include=cr-hidden-style-lit toolbar-button
  * #css_wrapper_metadata_end */
-
-:host {
-  align-items: center;
-  display: inline-flex;
-  justify-content: center;
-  position: relative;
-  height: var(--toolbar-button-height);
-  width: var(--toolbar-button-height);
-}
-
-cr-icon-button {
-  cursor: default;
-  margin: 0;
-  --cr-icon-button-size: var(--toolbar-button-height);
-  --cr-icon-button-icon-size: var(--toolbar-button-icon-size);
-  --cr-icon-button-fill-color: var(--color-toolbar-button-icon);
-}
 
 /* The "Blue Bar" status indicator that appears when a split is active */
 .status-indicator {
@@ -52,8 +36,4 @@ cr-icon-button {
 cr-icon-button[is-split=true] {
   --cr-icon-button-fill-color: var(--color-toolbar-action-item-engaged,
       var(--google-blue-600));
-}
-
-cr-icon-button[is-menu-open=true] {
-  background-color: var(--cr-active-background-color);
 }

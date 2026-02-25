@@ -1,0 +1,29 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  position: relative;
+  height: var(--toolbar-button-height);
+  width: var(--toolbar-button-height);
+}
+
+cr-icon-button {
+  cursor: default;
+  margin: 0;
+  --cr-icon-button-size: var(--toolbar-button-height);
+  --cr-icon-button-icon-size: var(--toolbar-button-icon-size);
+  --cr-icon-button-fill-color: var(--color-toolbar-button-icon);
+}
+
+cr-icon-button[is-menu-open=true] {
+  background-color: var(--cr-active-background-color);
+}
