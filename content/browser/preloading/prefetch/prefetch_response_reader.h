@@ -103,6 +103,13 @@ class CONTENT_EXPORT PrefetchResponseReader final
 
   bool Servable(base::TimeDelta cacheable_duration) const;
   bool IsWaitingForResponse() const;
+
+  // Returns non-null on:
+  // - `LoadState::kResponseReceived` (always)
+  // - `LoadState::kCompleted` (always)
+  // - `LoadState::kFailedResponseReceived` (always)
+  // - `LoadState::kFailed` (only when transitioning from
+  //   `LoadState::kResponseReceived` or `LoadState::kFailedResponseReceived`).
   const network::mojom::URLResponseHeadPtr& GetHead() const { return head_; }
 
   // True if this response had Vary: Cookie (or Vary: *), and a Cookie-Indices

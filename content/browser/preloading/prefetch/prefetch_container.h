@@ -402,11 +402,23 @@ class CONTENT_EXPORT PrefetchContainer {
 
   bool IsStreamingURLLoaderDeletionScheduledForTesting() const;
 
-  // Returns the PrefetchResponseReader of the prefetched non-redirect response
-  // if already received its head. Ruturns nullptr otherwise.
+  // `GetNonRedirect*()` methods return the `PrefetchResponseReader` or
+  // `ResponseHead` of the prefetched non-redirect response, respectively, if
+  // already received its head. Ruturns nullptr otherwise.
+  // Note: These can return null even on `PrefetchContainerLoadState::kFailed`.
+  //
+  // More precisely, returns non-null on:
+  // - `PrefetchContainerLoadState::kDeterminedHead` (always)
+  // - `PrefetchContainerLoadState::kCompleted` (always)
+  // - `PrefetchContainerLoadState::kFailedDeterminedHead` (in some cases)
+  // - `PrefetchContainerLoadState::kFailed` (in some cases)
+  // (See also the comment of `PrefetchResponseReader::GetHead()`)
+  //
+  // Note: When `GetNonRedirect*()` methods return non-null, it always points to
+  // the final `PrefetchResponseReader` and isn't affected by
+  // https://crbug.com/432518638, because when the non-redirect response is
+  // received all redirects are already completed.
   const PrefetchResponseReader* GetNonRedirectResponseReader() const;
-  // Returns the head of the prefetched non-redirect response if already
-  // received. Ruturns nullptr otherwise.
   const network::mojom::URLResponseHead* GetNonRedirectHead() const;
 
   // Clears |streaming_loader_| and cancels its loading, if any of its

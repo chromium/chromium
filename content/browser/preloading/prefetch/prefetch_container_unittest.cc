@@ -1257,18 +1257,12 @@ TEST_P(PrefetchContainerTest, RecordRedirectChainSize) {
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
   prefetch_container->MakeInitialResourceRequest();
-
   prefetch_container->SimulatePrefetchEligibleForTest();
-  prefetch_container->SimulatePrefetchStartedForTest();
-
-  AddRedirectHop(prefetch_container.get(), GURL("https://redirect1.com"));
-  AddRedirectHop(prefetch_container.get(), GURL("https://redirect2.com"));
-  prefetch_container->OnDeterminedHead(/*is_successful_determined_head=*/true);
-  prefetch_container->OnPrefetchComplete(/*is_success=*/true,
-                                         network::URLLoaderCompletionStatus());
-
+  MakeServableStreamingURLLoaderWithRedirectForTest(
+      prefetch_container.get(), GURL("https://test.com"),
+      GURL("https://redirect1.com"));
   histogram_tester.ExpectUniqueSample(
-      "PrefetchProxy.Prefetch.RedirectChainSize", 3, 1);
+      "PrefetchProxy.Prefetch.RedirectChainSize", 2, 1);
 }
 
 TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequired) {
