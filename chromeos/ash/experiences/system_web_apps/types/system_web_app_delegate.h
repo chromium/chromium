@@ -5,7 +5,9 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_DELEGATE_H_
 #define CHROMEOS_ASH_EXPERIENCES_SYSTEM_WEB_APPS_TYPES_SYSTEM_WEB_APP_DELEGATE_H_
 
+#include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
