@@ -439,6 +439,39 @@ suite('ContentController', () => {
       assertFalse(!!root.getAttribute('href'));
     });
 
+    test('builds an input as a <div> tag', () => {
+      const rootId = 5;
+      const childId = 7;
+      const inputText = 'For her';
+
+      // Set up the AX Tree with an input that has a text child.
+      readingMode.rootId = rootId;
+      readingMode.getHtmlTag = (id: number) => {
+        if (id === rootId) {
+          return 'input';
+        }
+        if (id === childId) {
+          return '';  // Text node
+        }
+        return '';
+      };
+      readingMode.getTextContent = (id: number) => {
+        if (id === childId) {
+          return inputText;
+        }
+        return '';
+      };
+      readingMode.getChildren = (id: number) => {
+        if (id === rootId) {
+          return [childId];
+        }
+        return [];
+      };
+      const root = contentController.updateContent();
+      assertTrue(root instanceof HTMLDivElement);
+      assertEquals(inputText, root.textContent);
+    });
+
     test('link visibility toggled toggles links with Readability', async () => {
       const url = 'https://www.relsilicon.com/';
       chrome.readingMode.activeDistillationMethod =

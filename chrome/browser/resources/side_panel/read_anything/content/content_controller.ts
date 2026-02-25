@@ -46,6 +46,10 @@ const SCREEN2X_TAG_TO_RM_TAG: Map<string, string> = new Map([
   // Buttons are sometimes distilled but button click logic isn't handled
   // by reading mode, so these shouldn't be distilled as clickable elements.
   ['button', 'div'],
+  // Reading mode shouldn't be distilling input elements, but if this ever
+  // happens, ensure they're converted to divs so that an interactable
+  // element isn't shown on the reading mode panel.
+  ['input', 'div'],
 ]);
 
 // Readability doesn't need to replace as many tags as Screen2x. If there's
