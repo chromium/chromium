@@ -9,6 +9,7 @@
 
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/browser_content/model/edit_menu_builder.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 
 @protocol SceneCommands;
@@ -19,6 +20,9 @@
 
 // The handler for SceneCommands commands.
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
+
+// The handler for Gemini commands.
+@property(nonatomic, weak) id<BWGCommands> BWGHandler;
 
 // Initializer for a mediator.
 - (instancetype)initWithIdentityManager:

@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_app_interface.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_matchers.h"
-#import "ios/chrome/browser/intelligence/explain_with_gemini/coordinator/explain_with_gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
@@ -107,6 +106,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   config.features_enabled_and_params.push_back(
       {kBWGPromoConsent, {{{kBWGPromoConsentParams, "3"}}}});
   config.features_enabled_and_params.push_back({kPageActionMenu, {}});
+  config.features_disabled.push_back(kZeroStateSuggestions);
   if ([self isRunningTest:@selector(testExplainWithGeminiInReadingMode)]) {
     config.features_enabled_and_params.push_back({kEnableReaderModeInUS, {}});
   }
@@ -137,36 +137,19 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 // Checks if Explain With Gemini button in the Edit Menu and when clicking on it
 // forwards to the Gemini page. This is done with an account matching
 // `kCanUseModelExecutionFeaturesName` capability.
-- (void)testExplainWithGemini {
+// TODO(crbug.com/483004001): Fix this once the EG tests for floaty are working
+// (crbug.com/448430433)
+- (void)DISABLED_testExplainWithGemini {
   [self loadPage];
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
-  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel([NSString
-      stringWithFormat:@"✦ %@", l10n_util::GetNSString(
-                                    IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
-  GREYAssertNotEqual(matcher, nil, @"✦ Explain button not found");
+  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU));
+  GREYAssertNotNil(matcher, @"Explain button not found");
 
-  // Scope for the synchronization disabled.
-  {
-    ScopedSynchronizationDisabler syncDisabler;
-
-    [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
-
-    ConditionBlock condition = ^{
-      NSError* error = nil;
-
-      GREYAssertEqual([ChromeEarlGrey webStateVisibleURL],
-                      GURL(kExplainWithGeminiURL),
-                      @"Does not redirect to Gemini URL.");
-      return !error;
-    };
-    GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
-               @"Does not redirect to Gemini URL");
-
-    GREYAssertEqual(2UL, [ChromeEarlGrey mainTabCount],
-                    @"Search Should be in new tab");
-    [ChromeEarlGrey closeCurrentTab];
-  }
-  // End of the sync disabler scope.
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
+  id<GREYMatcher> gemini_matcher = grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_EXPLAIN_GEMINI_PROMPT_PREFIX));
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:gemini_matcher];
 }
 
 // Checks if Explain With Gemini button does not appear in the Edit Menu in
@@ -175,10 +158,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey openNewIncognitoTab];
   [self loadPage];
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
-  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel([NSString
-      stringWithFormat:@"✦ %@", l10n_util::GetNSString(
-                                    IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
-  GREYAssertEqual(matcher, nil, @"✦ Explain button was found");
+  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU));
+  GREYAssertEqual(matcher, nil, @"Explain button was found");
 }
 
 // Checks if Explain With Gemini button does not appear in Edit Menu when signed
@@ -188,10 +170,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [SigninEarlGrey verifySignedOut];
   [self loadPage];
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
-  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel([NSString
-      stringWithFormat:@"✦ %@", l10n_util::GetNSString(
-                                    IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
-  GREYAssertEqual(matcher, nil, @"✦ Explain button was found");
+  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU));
+  GREYAssertEqual(matcher, nil, @"Explain button was found");
 }
 
 // Checks if Explain With Gemini button does not appear in Edit Menu when the
@@ -207,10 +188,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [self loadPage];
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
-  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel([NSString
-      stringWithFormat:@"✦ %@", l10n_util::GetNSString(
-                                    IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
-  GREYAssertEqual(matcher, nil, @"✦ Explain button was found");
+  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU));
+  GREYAssertEqual(matcher, nil, @"Explain button was found");
 }
 
 // Checks if Explain With Gemini button does not appear in Edit Menu with a
@@ -225,10 +205,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       signinWithFakeManagedIdentityInPersonalProfile:fakeManagedIdentity];
   [self loadPage];
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
-  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel([NSString
-      stringWithFormat:@"✦ %@", l10n_util::GetNSString(
-                                    IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
-  GREYAssertEqual(matcher, nil, @"✦ Explain button was found");
+  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU));
+  GREYAssertEqual(matcher, nil, @"Explain button was found");
 }
 
 // Checks if Explain With Gemini button is present in Reading Mode.
@@ -247,10 +226,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
           grey_accessibilityID(kReaderModeChipViewAccessibilityIdentifier)];
 
   [ChromeEarlGreyUI triggerEditMenu:ElementToLongPressSelector()];
-  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel([NSString
-      stringWithFormat:@"✦ %@", l10n_util::GetNSString(
-                                    IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)]);
-  GREYAssertNotEqual(matcher, nil, @"✦ Explain button not found");
+  id<GREYMatcher> matcher = FindEditMenuActionWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU));
+  GREYAssertNotEqual(matcher, nil, @"Explain button not found");
 }
 
 @end

@@ -8,7 +8,6 @@ source_set("coordinator") {
     "explain_with_gemini_mediator.mm",
   ]
   deps = [
-    ":constants",
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -16,6 +15,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/browser_content/ui_bundled:edit_menu_utils",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
+    "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
@@ -26,19 +27,11 @@ source_set("coordinator") {
   ]
 }
 
-source_set("constants") {
-  sources = [
-    "explain_with_gemini_constants.h",
-    "explain_with_gemini_constants.mm",
-  ]
-}
-
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "explain_with_gemini_mediator_egtest.mm" ]
   deps = [
-    ":constants",
     "//components/signin/internal/identity_manager",
     "//components/signin/internal/identity_manager:capabilities",
     "//ios/chrome/app/strings:ios_strings_grit",

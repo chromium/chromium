@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -133,7 +134,9 @@
   _dataControlsEditMenuBuilder = [[DataControlsEditMenuBuilder alloc] init];
   _browserEditMenuHandler.dataControlsDelegate = _dataControlsEditMenuBuilder;
 
-  if (ExplainGeminiEditMenuPosition() !=
+  // Only add Explain with Gemini if Gemini for this user is enabled.
+  if (IsPageActionMenuEnabled() &&
+      ExplainGeminiEditMenuPosition() !=
           PositionForExplainGeminiEditMenu::kDisabled &&
       !incognito) {
     _explainWithGeminiMediator = [[ExplainWithGeminiMediator alloc]
@@ -142,6 +145,8 @@
                                     profile)];
 
     _explainWithGeminiMediator.sceneHandler = sceneHandler;
+    _explainWithGeminiMediator.BWGHandler =
+        HandlerForProtocol(dispatcher, BWGCommands);
     _browserEditMenuHandler.explainWithGeminiDelegate =
         _explainWithGeminiMediator;
   }

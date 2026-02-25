@@ -14,9 +14,11 @@
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
-#import "ios/chrome/browser/intelligence/explain_with_gemini/coordinator/explain_with_gemini_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -50,17 +52,6 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 
 #pragma mark - Private
 
-// Checks if Explain With Gemini can be performed generally.
-- (BOOL)canPerformExplainWithGemini {
-  CHECK(ExplainGeminiEditMenuPosition() !=
-        PositionForExplainGeminiEditMenu::kDisabled);
-  if (![self isSignIn] || ![self isAccountEligibleForModelExecution] ||
-      [self isManagedAccount]) {
-    return NO;
-  };
-  return YES;
-}
-
 // Checks if Explain With Gemini can be performed in `webState`.
 - (BOOL)canPerformExplainWithGeminiInWebState:(web::WebState*)webState {
   ProfileIOS* profile =
@@ -76,40 +67,9 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   return tabHelper && tabHelper->CanRetrieveSelectedText() && self.sceneHandler;
 }
 
-// Returns YES if the user is signIn.
-- (BOOL)isSignIn {
-  return _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-}
-
-// Returns YES if account is eligible for model execution.
-- (BOOL)isAccountEligibleForModelExecution {
-  if (!_identityManager) {
-    return NO;
-  }
-
-  AccountCapabilities capabilities =
-      _identityManager
-          ->FindExtendedAccountInfo(_identityManager->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSignin))
-          .capabilities;
-
-  return capabilities.can_use_model_execution_features() ==
-         signin::Tribool::kTrue;
-}
-
-// Returns YES if the account is managed.
-- (BOOL)isManagedAccount {
-  if (!_identityManager) {
-    return NO;
-  }
-  return _authService->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
-}
-
 // Returns the title of button Explain With Gemini.
 - (NSString*)buttonTitle {
-  return [NSString
-      stringWithFormat:@"✦ %@", l10n_util::GetNSString(
-                                    IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU)];
+  return l10n_util::GetNSString(IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU);
 }
 
 // Fetches the selection in the web page. On success, trigger a "Explain with
@@ -165,7 +125,8 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 - (void)addItemWithResponse:(WebSelectionResponse*)response
                  completion:(ProceduralBlockWithItemArray)completion
                    webState:(web::WebState*)webState {
-  if (!response.valid || ![self canPerformExplainWithGemini]) {
+  if (!response.valid ||
+      ![self canPerformExplainWithGeminiInWebState:webState]) {
     completion(@[]);
     return;
   }
@@ -193,28 +154,18 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   if (![self canPerformExplainWithGeminiInWebState:webState]) {
     return;
   }
-
-  const GURL explainWithGeminiURL = GURL(kExplainWithGeminiURL);
-
-  OpenNewTabCommand* command =
-      [[OpenNewTabCommand alloc] initWithURL:explainWithGeminiURL
-                                    referrer:web::Referrer()
-                                 inIncognito:NO
-                                inBackground:NO
-                                    appendTo:OpenPosition::kCurrentTab];
-
-  command.extraHeaders = @{
-    kExplainWithGeminiHeader :
-        [[NSString stringWithFormat:@"%@ : %@",
-                                    l10n_util::GetNSString(
-                                        IDS_IOS_EXPLAIN_GEMINI_PROMPT_PREFIX),
-                                    text]
-            stringByAddingPercentEncodingWithAllowedCharacters:
-                [NSCharacterSet URLQueryAllowedCharacterSet]]
-  };
-  base::UmaHistogramCounts10000("IOS.ExplainWithGemini.CharSelected",
-                                [text length]);
-  [self.sceneHandler openURLInNewTab:command];
+  BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
+  if (BWGTabHelper) {
+    // TODO(crbug.com/483004001): set the entry point to edit menu on the gemini
+    // configuration once the field is added.
+    BWGTabHelper->SetContextualCueLabel(
+        [NSString stringWithFormat:@"%@ : %@",
+                                   l10n_util::GetNSString(
+                                       IDS_IOS_EXPLAIN_GEMINI_PROMPT_PREFIX),
+                                   text]);
+  }
+  // TODO(crbug.com/483004001): Add metrics logging.
+  [self.BWGHandler startGeminiFlowWithEntryPoint:gemini::EntryPoint::EditMenu];
 }
 
 // Returns the action to trigger the search with feature. Calls `handler` on
