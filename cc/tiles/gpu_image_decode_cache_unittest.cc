@@ -2988,10 +2988,8 @@ TEST_P(GpuImageDecodeCacheTest, KeepOnlyLast2ContentIds) {
     cache->DrawWithImageFinished(draw_images[i], decoded_draw_images[i]);
   }
 
-  // We have a single tracked entry, that gets cleared once we purge the cache.
+  // We have a single tracked entry.
   EXPECT_EQ(cache->paint_image_entries_count_for_testing(), 1u);
-  cache->OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  EXPECT_EQ(cache->paint_image_entries_count_for_testing(), 0u);
 }
 
 TEST_P(GpuImageDecodeCacheTest, DecodeToScale) {

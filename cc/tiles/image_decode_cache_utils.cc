@@ -8,31 +8,13 @@
 #include "cc/tiles/image_decode_cache_utils.h"
 
 #include "base/byte_count.h"
-#include "base/check.h"
-#include "base/notreached.h"
-#include "cc/paint/paint_flags.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkImageInfo.h"
-#include "third_party/skia/include/core/SkPixmap.h"
+#include "build/build_config.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/system/sys_info.h"
 #endif
 
 namespace cc {
-
-// static
-bool ImageDecodeCacheUtils::ShouldEvictCaches(
-    base::MemoryPressureLevel memory_pressure_level) {
-  switch (memory_pressure_level) {
-    case base::MEMORY_PRESSURE_LEVEL_NONE:
-    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      return false;
-    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      return true;
-  }
-  NOTREACHED();
-}
 
 // static
 size_t ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(

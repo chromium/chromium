@@ -10,7 +10,6 @@
 #include <limits>
 #include <string>
 
-#include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
@@ -996,10 +995,6 @@ GpuImageDecodeCache::GpuImageDecodeCache(
         this, "cc::GpuImageDecodeCache",
         base::SingleThreadTaskRunner::GetCurrentDefault());
   }
-  memory_pressure_listener_registration_ =
-      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kGpuImageDecodeCache,
-          this);
 
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::DarkModeFilter", "dark_mode_filter",
@@ -2693,15 +2688,6 @@ void GpuImageDecodeCache::TouchCacheEntryForTesting(
   ImageData* image_data = GetImageDataForDrawImage(
       draw_image, InUseCacheKeyFromDrawImage(draw_image));
   image_data->last_use = base::TimeTicks::Now();
-}
-
-void GpuImageDecodeCache::OnMemoryPressure(base::MemoryPressureLevel level) {
-  if (!ImageDecodeCacheUtils::ShouldEvictCaches(level))
-    return;
-
-  base::AutoLock lock(lock_);
-  base::AutoReset<bool> reset(&aggressively_freeing_resources_, true);
-  ReduceCacheUsageLocked();
 }
 
 bool GpuImageDecodeCache::AcquireContextLockForTesting() {
