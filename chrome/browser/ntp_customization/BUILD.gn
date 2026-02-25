@@ -5,6 +5,15 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+android_library("public_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeStateProvider.java" ]
+  deps = [
+    "//base:resetters_java",
+    "//base:tasks_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
@@ -46,7 +55,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeListThemeCollectionItemIconView.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeMediator.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeProperty.java",
-    "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeStateProvider.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/NtpThemeViewBinder.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/chrome_colors/NtpChromeColorGridRecyclerView.java",
     "java/src/org/chromium/chrome/browser/ntp_customization/theme/chrome_colors/NtpChromeColorsAdapter.java",
@@ -75,6 +83,7 @@ android_library("java") {
   ]
   deps = [
     ":java_resources",
+    ":public_java",
     "//base:base_java",
     "//base:callback_java",
     "//base:log_java",
@@ -265,6 +274,7 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":java_resources",
+    ":public_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
