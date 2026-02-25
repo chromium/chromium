@@ -51,17 +51,6 @@ namespace page_content_annotations {
 
 namespace {
 
-template <typename T, typename E>
-// Conditionally emits to a given timing histogram, given the start_time.
-base::expected<T, E> EmitTimingHistogram(const std::string& histogram_name,
-                                         base::ElapsedTimer timer,
-                                         base::expected<T, E> result) {
-  if (result.has_value()) {
-    base::UmaHistogramTimes(histogram_name, timer.Elapsed());
-  }
-  return std::move(result);
-}
-
 gfx::Size GetScreenshotSize(const gfx::Size& original_size) {
   // By default, no scaling.
   if (!base::FeatureList::IsEnabled(kGlicTabScreenshotExperiment)) {
@@ -429,12 +418,8 @@ void PageContextFetcher::GetTabScreenshot(
     };
     service->RequestScreenshot(
         &web_contents, std::move(request_params),
-        base::BindOnce(EmitTimingHistogram<const SkBitmap*, std::string>,
-                       "Glic.PageContextFetcher.GetScreenshot.TimeoutAgnostic",
-                       elapsed_timer_)
-            .Then(base::BindOnce(
-                &PageContextFetcher::ReceivedViewportBitmapOrError,
-                GetWeakPtr())));
+        base::BindOnce(&PageContextFetcher::ReceivedViewportBitmapOrError,
+                       GetWeakPtr()));
   } else {
     SetCaptureCountLock(web_contents);
     ScheduleScreenshotTimeout();
@@ -540,12 +525,8 @@ void PageContextFetcher::RedactAndEncodeScreenshot(
           },
           *screenshot_bitmap_, std::move(visible_bounding_boxes_for_redaction),
           screenshot_redaction_color_),
-      base::BindOnce(
-          EmitTimingHistogram<std::vector<uint8_t>, std::string>,
-          "Glic.PageContextFetcher.GetEncodedScreenshot.TimeoutAgnostic",
-          elapsed_timer_)
-          .Then(base::BindOnce(&PageContextFetcher::ReceivedEncodedScreenshot,
-                               GetWeakPtr())));
+      base::BindOnce(&PageContextFetcher::ReceivedEncodedScreenshot,
+                     GetWeakPtr()));
   screenshot_bitmap_.reset();
 }
 
