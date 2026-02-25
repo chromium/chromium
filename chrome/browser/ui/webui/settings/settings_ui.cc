@@ -118,6 +118,7 @@
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -669,6 +670,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("unoPhase2FollowUp", base::FeatureList::IsEnabled(
                                                    syncer::kUnoPhase2FollowUp));
 #endif
+
+  html_source->AddBoolean(
+      "searchSettingsUpdate",
+      base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate));
 
   TryShowHatsSurveyWithTimeout();
 }

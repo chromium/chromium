@@ -8584,6 +8584,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "search-settings-update",
+    "owners": [ "amelies@google.com", "chrome-signin-desktop-team@google.com" ],
+    "expiry_milestone": 158
+  },
+  {
     "name" : "search-web-in-side-panel",
     "owners": [ "chrome-cros@google.com", "pengchaocai@chromium.org" ],
     "expiry_milestone" : 115

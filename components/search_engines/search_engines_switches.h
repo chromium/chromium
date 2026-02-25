@@ -87,6 +87,12 @@ BASE_DECLARE_FEATURE(kResetTamperedDefaultSearchEngine);
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kClankDefaultSearchApi);
 
+#if !BUILDFLAG(IS_ANDROID)
+// Restructuring of the search settings pages.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kSearchSettingsUpdate);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace switches
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_SWITCHES_H_

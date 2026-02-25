@@ -12459,6 +12459,12 @@ const FeatureEntry kFeatureEntries[] = {
              kProfileCreationFrictionReductionExperimentSkipCustomizeProfile)},
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"search-settings-update", flag_descriptions::kSearchSettingsUpdateName,
+     flag_descriptions::kSearchSettingsUpdateDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(switches::kSearchSettingsUpdate)},
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     {"show-profile-picker-to-all-users-experiment",
      flag_descriptions::kShowProfilePickerToAllUsersExperimentName,

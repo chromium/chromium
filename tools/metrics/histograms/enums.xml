@@ -8081,6 +8081,7 @@ from previous Chrome versions.
   <int value="-2139379065" label="StoragePressureUI:enabled"/>
   <int value="-2139096597" label="HubBackButton:enabled"/>
   <int value="-2138883960" label="AutofillRejectCompanyBirthyearName:disabled"/>
+  <int value="-2138762434" label="SearchSettingsUpdate:disabled"/>
   <int value="-2138128164" label="FeedbackOnContinueSectionRemove:enabled"/>
   <int value="-2137491678" label="TabGroupsSaveV2:disabled"/>
   <int value="-2136173537" label="QuickAnswers:enabled"/>
@@ -8944,6 +8945,7 @@ from previous Chrome versions.
   <int value="-1863079830" label="DeviceBoundSessionsDevTools:enabled"/>
   <int value="-1863066403" label="MoveThemePrefsToSpecifics:disabled"/>
   <int value="-1863020461" label="PasswordChangeInSettings:enabled"/>
+  <int value="-1862402195" label="SearchSettingsUpdate:enabled"/>
   <int value="-1862309711" label="ChromeNativeUrlOverriding:disabled"/>
   <int value="-1861814223" label="MidiManagerDynamicInstantiation:enabled"/>
   <int value="-1861712507" label="MediaAppImageMantisMakeASticker:disabled"/>

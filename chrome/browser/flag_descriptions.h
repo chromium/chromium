@@ -3548,6 +3548,11 @@ inline constexpr char kShowRelatedWebsiteSetsPermissionGrantsDescription[] =
     "Settings UI and Page Info Bubble, "
     "default is hidden";
 
+inline constexpr char kSearchSettingsUpdateName[] = "Search Settings Update";
+inline constexpr char kSearchSettingsUpdateDescription[] =
+    "Enables refactoring of the search settings pages in "
+    "chrome://settings/search";
+
 inline constexpr char kShowWarningsForSuspiciousNotificationsName[] =
     "Show Warnings for Suspicious Notifications";
 inline constexpr char kShowWarningsForSuspiciousNotificationsDescription[] =
