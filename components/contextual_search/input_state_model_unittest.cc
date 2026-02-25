@@ -735,4 +735,20 @@ TEST_F(InputStateModelTest, FiltersImageGenInIncognito) {
       testing::UnorderedElementsAre(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH));
 }
 
+// Regression test for crbug.com/487677445. Ensures that the model doesn't crash
+// if it's updated after the session handle has been destroyed.
+TEST_F(InputStateModelTest,
+       Regression_Bug487677445_CrashOnDanglingSessionHandle) {
+  auto local_session = std::make_unique<MockContextualSearchSessionHandle>();
+  omnibox::SearchboxConfig config;
+
+  auto local_model = std::make_unique<InputStateModel>(
+      *local_session, config, /*is_off_the_record=*/false);
+
+  local_session.reset();  // Destroy session.
+
+  // This should not crash.
+  local_model->OnContextChanged();
+}
+
 }  // namespace contextual_search
