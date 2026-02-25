@@ -6,7 +6,27 @@ import {ComposeboxContextAddedMethod} from '//resources/cr_components/search/con
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
+import {FileUploadErrorType} from './composebox_query.mojom-webui.js';
 import type {FileUploadStatus} from './composebox_query.mojom-webui.js';
+
+export const FILE_VALIDATION_ERRORS_MAP = new Map<FileUploadErrorType, string>([
+  [
+    FileUploadErrorType.kBrowserProcessingError,
+    'composeboxFileUploadFailed',
+  ],
+  [
+    FileUploadErrorType.kImageProcessingError,
+    'composeFileTypesAllowedError',
+  ],
+  [
+    FileUploadErrorType.kServerSizeLimitExceeded,
+    'composeboxFileUploadInvalidTooLarge',
+  ],
+  [
+    FileUploadErrorType.kUnknown,
+    'composeboxFileUploadValidationFailed',
+  ],
+]);
 
 export interface ComposeboxFile {
   uuid: UnguessableToken;

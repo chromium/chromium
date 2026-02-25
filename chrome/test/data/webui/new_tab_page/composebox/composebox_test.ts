@@ -507,6 +507,12 @@ suite('NewTabPageComposeboxTest', () => {
           // Assert no files in the carousel.
           assertFalse(
               !!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
+
+          if (fileUploadErrorType !== null) {
+            assertEquals(
+                loadTimeData.getString('composeFileTypesAllowedError'),
+                composeboxElement.$.errorScrim.errorMessage);
+          }
         });
   });
 
@@ -2771,7 +2777,7 @@ suite('NewTabPageComposeboxTest', () => {
       createComposeboxElement();
       // Set the promise to reject to simulate a failure.
       searchboxHandler.setResultMapperFor(ADD_TAB_CONTEXT_FN, () => {
-        return Promise.reject(new Error('fail'));
+        return Promise.reject(FileUploadErrorType.kBrowserProcessingError);
       });
 
       // Assert no files.
@@ -2798,6 +2804,10 @@ suite('NewTabPageComposeboxTest', () => {
       // Assert callback was not called and no files in carousel.
       assertFalse(contextAdded);
       assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
+
+      assertEquals(
+          loadTimeData.getString('composeboxFileUploadFailed'),
+          composeboxElement.$.errorScrim.errorMessage);
     });
 
     test('add file context fails', async () => {
@@ -2805,7 +2815,7 @@ suite('NewTabPageComposeboxTest', () => {
       createComposeboxElement();
       // Set the promise to reject to simulate a failure.
       searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
-        return Promise.reject(new Error('fail'));
+        return Promise.reject(FileUploadErrorType.kBrowserProcessingError);
       });
 
       // Assert no files.
@@ -2824,6 +2834,10 @@ suite('NewTabPageComposeboxTest', () => {
 
       // Assert no files in carousel.
       assertFalse(!!$$<HTMLElement>(composeboxElement.$.context, '#carousel'));
+
+      assertEquals(
+          loadTimeData.getString('composeboxFileUploadFailed'),
+          composeboxElement.$.errorScrim.errorMessage);
     });
 
     test('setSearchContext sets input and queries autocomplete', async () => {
