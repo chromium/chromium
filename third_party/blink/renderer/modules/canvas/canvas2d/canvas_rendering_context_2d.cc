@@ -1337,12 +1337,12 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
   const SkAlphaType alpha_type = GetAlphaType();
   const viz::SharedImageFormat format = GetSharedImageFormat();
   const gfx::ColorSpace color_space = GetColorSpace();
-  const bool use_gpu = canvas()->ShouldTryToUseGpuRaster() &&
-                       canvas()->ShouldAccelerate2dContext();
+  const bool use_gpu_raster = canvas()->ShouldTryToUseGpuRaster() &&
+                              canvas()->ShouldAccelerate2dContext();
   const bool is_gpu_compositing_enabled =
       SharedGpuContext::IsGpuCompositingEnabled();
   if (is_gpu_compositing_enabled) {
-    if (use_gpu) {
+    if (use_gpu_raster) {
       gpu::SharedImageUsageSet shared_image_usage_flags =
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
       if (canvas()->LowLatencyEnabled()) {
