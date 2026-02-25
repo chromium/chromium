@@ -9,8 +9,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/numerics/clamped_math.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_traits.h"
@@ -30,10 +30,16 @@ namespace {
 // Loads and deserializes a JSON file determined by `file_path` and returns it
 // in the form of a dictionary, or nullopt if something fails.
 std::optional<base::DictValue> LoadFileToDict(const base::FilePath& file_path) {
+  std::string json_string;
+  if (!base::ReadFileToString(file_path, &json_string)) {
+    return std::nullopt;
+  }
+
   // Titles may end up containing invalid utf and we shouldn't throw away
   // all bookmarks if some titles have invalid utf.
-  JSONFileValueDeserializer deserializer(file_path,
-                                         base::JSON_REPLACE_INVALID_CHARACTERS);
+  JSONStringValueDeserializer deserializer(
+      json_string, base::JSON_REPLACE_INVALID_CHARACTERS);
+
   std::unique_ptr<base::Value> root = deserializer.Deserialize(
       /*error_code=*/nullptr, /*error_message=*/nullptr);
   if (!root || !root->is_dict()) {
@@ -65,14 +71,13 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
     int64_t max_node_id = 0;
 
     std::unique_ptr<BookmarkPermanentNode> account_bb_node =
-        BookmarkPermanentNode::CreateBookmarkBar(
-            0, /*is_account_node=*/true);
+        BookmarkPermanentNode::CreateBookmarkBar(0, /*is_account_node=*/true);
     std::unique_ptr<BookmarkPermanentNode> account_other_folder_node =
-        BookmarkPermanentNode::CreateOtherBookmarks(
-            0, /*is_account_node=*/true);
+        BookmarkPermanentNode::CreateOtherBookmarks(0,
+                                                    /*is_account_node=*/true);
     std::unique_ptr<BookmarkPermanentNode> account_mobile_folder_node =
-        BookmarkPermanentNode::CreateMobileBookmarks(
-            0, /*is_account_node=*/true);
+        BookmarkPermanentNode::CreateMobileBookmarks(0,
+                                                     /*is_account_node=*/true);
 
     std::optional<base::DictValue> root_dict =
         LoadFileToDict(account_file_path);
