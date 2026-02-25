@@ -93,6 +93,8 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer {
   // Sets a callback that tests can use to wait for the server to be ready to
   // accept connections.
   void SetOnSocketConnectedForTesting(base::OnceClosure on_socket_connected);
+  // Sets a callback that tests can use to wait for a client to connect.
+  void SetOnClientConnectedForTesting(base::OnceClosure on_client_connected);
   // Allows calling OnWebSocketRequest() with unexpected connection IDs for
   // tests, bypassing the HttpServer.
   void OnWebSocketRequestForTesting(int connection_id,
@@ -154,6 +156,9 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer {
 
   // Invoked once the server has been started.
   base::OnceClosure on_socket_connected_ GUARDED_BY_CONTEXT(main_sequence_);
+
+  // Invoked when a client connects.
+  base::OnceClosure on_client_connected_ GUARDED_BY_CONTEXT(main_sequence_);
 
   // The server (owned by Chrome for now)
   static UiDevToolsServer* devtools_server_;

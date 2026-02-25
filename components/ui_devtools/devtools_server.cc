@@ -260,6 +260,12 @@ void UiDevToolsServer::SetOnSocketConnectedForTesting(
   on_socket_connected_ = std::move(on_socket_connected);
 }
 
+void UiDevToolsServer::SetOnClientConnectedForTesting(
+    base::OnceClosure on_client_connected) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
+  on_client_connected_ = std::move(on_client_connected);
+}
+
 void UiDevToolsServer::OnWebSocketRequestForTesting(
     int connection_id,
     net::HttpServerRequestInfo info) {
@@ -345,6 +351,9 @@ void UiDevToolsServer::OnWebSocketRequest(int connection_id,
       FROM_HERE, base::BindOnce(&IOThreadData::AcceptWebSocket,
                                 base::Unretained(io_thread_data_.get()),
                                 connection_id, std::move(info)));
+  if (on_client_connected_) {
+    std::move(on_client_connected_).Run();
+  }
 }
 
 void UiDevToolsServer::OnWebSocketMessage(int connection_id, std::string data) {
