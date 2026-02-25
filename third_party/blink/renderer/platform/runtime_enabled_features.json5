@@ -5197,7 +5197,7 @@
     },
     {
       name: "SoftNavigationEagerIcpEntryEmission",
-      status: "test",
+      status: "stable",
     },
     {
       name: "SoftNavigationHeuristics",
