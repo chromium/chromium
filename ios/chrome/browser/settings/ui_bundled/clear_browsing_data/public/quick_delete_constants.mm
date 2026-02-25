@@ -33,3 +33,12 @@ NSString* const kQuickDeleteBrowsingDataFooterIdentifier =
 
 NSString* const kQuickDeleteManageOtherDataCellIdentifier =
     @"QuickDeleteManageOtherDataCellIdentifier";
+
+NSString* const kQuickDeleteOtherDataPasswordsAndPasskeysIdentifier =
+    @"QuickDeleteOtherDataPasswordsAndPasskeysIdentifier";
+NSString* const kQuickDeleteOtherDataSearchHistoryIdentifier =
+    @"QuickDeleteOtherDataSearchHistoryIdentifier";
+NSString* const kQuickDeleteOtherDataMyActivityIdentifier =
+    @"QuickDeleteOtherDataMyActivityIdentifier";
+NSString* const kQuickDeleteOtherDataFooterIdentifier =
+    @"QuickDeleteOtherDataFooterIdentifier";

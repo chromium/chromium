@@ -50,6 +50,22 @@ extern NSString* const kQuickDeleteBrowsingDataFooterIdentifier;
 // delete browsing data page.
 extern NSString* const kQuickDeleteManageOtherDataCellIdentifier;
 
+// The accessibility identifier for the passwords and passkeys cell in the quick
+// delete other data page.
+extern NSString* const kQuickDeleteOtherDataPasswordsAndPasskeysIdentifier;
+
+// The accessibility identifier for the search history cell in the quick delete
+// other data page.
+extern NSString* const kQuickDeleteOtherDataSearchHistoryIdentifier;
+
+// The accessibility identifier for the "my activity" cell in the quick delete
+// other data page.
+extern NSString* const kQuickDeleteOtherDataMyActivityIdentifier;
+
+// The accessibility identifier for the footer string in the quick delete other
+// data page.
+extern NSString* const kQuickDeleteOtherDataFooterIdentifier;
+
 /* UMA histogram values for My Activity Navigiation.
  * Note: this should stay in sync with
  * ClearBrowsingDataMyActivityNavigation in enums.xml. */

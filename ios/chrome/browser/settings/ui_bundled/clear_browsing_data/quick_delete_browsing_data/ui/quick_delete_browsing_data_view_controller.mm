@@ -162,6 +162,7 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
 }
 
 #pragma mark - UITableViewDelegate
+
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -170,8 +171,7 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
 
   switch (itemIdentifier) {
     case ItemIdentifierManageOtherData: {
-      // TODO(crbug.com/464552107): Link this tap to navigating to Other Data
-      // Page.
+      [_delegate showOtherDataPage];
       return;
     }
     case ItemIdentifierHistory:
