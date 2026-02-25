@@ -32,9 +32,7 @@ void CreateTestMessagePayload(std::vector<uint8_t>* bytes,
   }
 
   bytes->resize(message.data_num_bytes());
-  std::copy(message.data(),
-            UNSAFE_TODO(message.data() + message.data_num_bytes()),
-            bytes->begin());
+  std::ranges::copy(message.data_as_span(), bytes->begin());
 
   MessagePipe pipe;
   handles->resize(2);

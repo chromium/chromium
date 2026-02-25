@@ -58,10 +58,9 @@ class MessageDumper : public mojo::MessageFilter {
       return false;
     }
 
-    size_t size = message->data_num_bytes();
-    const uint8_t* data = message->data();
-    if (!file.WriteAtCurrentPosAndCheck(UNSAFE_TODO(base::span(data, size)))) {
-      LOG(ERROR) << "Failed to write " << size << " bytes.";
+    if (!file.WriteAtCurrentPosAndCheck(message->data_as_span())) {
+      LOG(ERROR) << "Failed to write " << message->data_num_bytes()
+                 << " bytes.";
       return false;
     }
     return true;

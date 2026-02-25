@@ -7,7 +7,6 @@
 #include <limits>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace mojo_base {
@@ -57,8 +56,7 @@ bool ProtoWrapper::DeserializeToMessage(
   } else {
     // Make an in-process copy here as protobuf is not designed to
     // safely parse data that might be changing underneath it.
-    auto as_span = UNSAFE_TODO(base::span(bytes_->data(), bytes_->size()));
-    const std::vector<uint8_t> copy(as_span.begin(), as_span.end());
+    const std::vector<uint8_t> copy(std::from_range, *bytes_);
     return message.ParseFromArray(copy.data(), copy.size());
   }
 }

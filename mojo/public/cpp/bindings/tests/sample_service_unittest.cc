@@ -11,7 +11,7 @@
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -237,10 +237,10 @@ void Print(int depth, const char* name, const FooPtr& foo) {
   }
 }
 
-void DumpHex(const uint8_t* bytes, size_t num_bytes) {
-  for (size_t i = 0; i < num_bytes; ++i) {
+void DumpHex(base::span<const uint8_t> bytes) {
+  for (size_t i = 0; i < bytes.size(); ++i) {
     std::cout << std::setw(2) << std::setfill('0') << std::hex
-              << uint32_t(UNSAFE_TODO(bytes[i]));
+              << static_cast<uint32_t>(bytes[i]);
 
     if (i % 16 == 15) {
       std::cout << std::endl;
@@ -300,8 +300,7 @@ class SimpleMessageReceiver : public mojo::MessageReceiverWithResponder {
     // Imagine some IPC happened here.
 
     if (g_dump_message_as_hex) {
-      DumpHex(reinterpret_cast<const uint8_t*>(message->data()),
-              message->data_num_bytes());
+      DumpHex(message->data_as_span());
     }
 
     // In the receiving process, an implementation of ServiceStub is known to

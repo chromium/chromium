@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/run_loop.h"
@@ -59,10 +60,14 @@ Message CreateRawMessage(size_t size) {
 }
 
 template <typename T>
-void Append(std::vector<uint8_t>* data_vector, T data) {
-  size_t pos = data_vector->size();
-  data_vector->resize(pos + sizeof(T));
-  UNSAFE_TODO(memcpy(&(*data_vector)[pos], &data, sizeof(T)));
+void Append(std::vector<uint8_t>* data_vector, const T data) {
+  base::span<const uint8_t> bytes;
+  if constexpr (std::is_same_v<T, double> || std::is_same_v<T, float>) {
+    bytes = base::byte_span_from_ref(base::allow_nonunique_obj, data);
+  } else {
+    bytes = base::byte_span_from_ref(data);
+  }
+  data_vector->append_range(bytes);
 }
 
 bool TestInputParser(const std::string& input,

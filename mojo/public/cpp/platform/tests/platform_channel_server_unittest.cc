@@ -8,7 +8,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
@@ -68,9 +67,7 @@ class TestChannel : public core::Channel::Delegate {
   }
 
   void SendMessage(const std::string& message) {
-    auto data = UNSAFE_TODO(base::span(
-        reinterpret_cast<const uint8_t*>(message.data()), message.size()));
-    channel_->WriteNextIpczMessage(data, {});
+    channel_->WriteNextIpczMessage(base::as_byte_span(message), {});
   }
 
   std::string WaitForSingleMessage() {
