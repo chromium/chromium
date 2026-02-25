@@ -12,10 +12,6 @@ public final class ChromeItemPickerExtras {
     // Prevent instantiation
     private ChromeItemPickerExtras() {}
 
-    /** The class name for launching the ChromeItemPickerActivity. */
-    public static final String CHROME_ITEM_PICKER_ACTIVITY_CLASS =
-            "org.chromium.chrome.browser.chrome_item_picker.ChromeItemPickerActivity";
-
     /** Intent extra for the list of tab IDs that should be preselected on startup. */
     public static final String EXTRA_PRESELECTED_TAB_IDS = "EXTRA_PRESELECTED_TAB_IDS";
 

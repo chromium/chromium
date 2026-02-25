@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
+import org.chromium.components.browser_ui.util.ChromeItemPickerUtils;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -435,37 +436,20 @@ public class FuseboxMediator {
     void onTabPickerClicked() {
         mPopup.dismiss();
         FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.TAB_PICKER);
-        int remainingAttachments = mModelList.getRemainingAttachments();
         if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB)) return;
 
-        Intent intent;
-        ArrayList<Integer> preselectedTabIds = new ArrayList<>(mModelList.getAttachedTabIds());
-        try {
-            intent =
-                    new Intent(
-                                    mContext,
-                                    Class.forName(
-                                            ChromeItemPickerExtras
-                                                    .CHROME_ITEM_PICKER_ACTIVITY_CLASS))
-                            .putIntegerArrayListExtra(
-                                    ChromeItemPickerExtras.EXTRA_PRESELECTED_TAB_IDS,
-                                    preselectedTabIds);
-            ProfileIntentUtils.addProfileToIntent(mProfile, intent);
+        Intent intent = ChromeItemPickerUtils.createChromeItemPickerIntent(mContext);
+        if (intent == null) return;
+        ProfileIntentUtils.addProfileToIntent(mProfile, intent);
 
-            TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-            boolean isIncognitoBrandedModelSelected = false;
-            if (tabModelSelector != null) {
-                isIncognitoBrandedModelSelected =
-                        tabModelSelector.isIncognitoBrandedModelSelected();
-            }
-            intent.putExtra(
-                    ChromeItemPickerExtras.EXTRA_IS_INCOGNITO_BRANDED,
-                    isIncognitoBrandedModelSelected);
-        } catch (ClassNotFoundException e) {
-            return;
-        }
+        ArrayList<Integer> tabIds = new ArrayList<>(mModelList.getAttachedTabIds());
+        intent.putIntegerArrayListExtra(ChromeItemPickerExtras.EXTRA_PRESELECTED_TAB_IDS, tabIds);
 
-        int maxAllowedTabs = preselectedTabIds.size() + remainingAttachments;
+        TabModelSelector selector = mTabModelSelectorSupplier.get();
+        boolean isIncognito = selector != null && selector.isIncognitoBrandedModelSelected();
+        intent.putExtra(ChromeItemPickerExtras.EXTRA_IS_INCOGNITO_BRANDED, isIncognito);
+
+        int maxAllowedTabs = tabIds.size() + mModelList.getRemainingAttachments();
         intent.putExtra(ChromeItemPickerExtras.EXTRA_ALLOWED_SELECTION_COUNT, maxAllowedTabs);
 
         boolean isSingleContextMode = !OmniboxFeatures.sMultiattachmentFusebox.getValue();

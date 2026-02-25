@@ -12,6 +12,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/util/BrowserControlsVisibilityDelegate.java",
     "java/src/org/chromium/components/browser_ui/util/BrowserUiUtilsCachedFlags.java",
     "java/src/org/chromium/components/browser_ui/util/ChromeItemPickerExtras.java",
+    "java/src/org/chromium/components/browser_ui/util/ChromeItemPickerUtils.java",
     "java/src/org/chromium/components/browser_ui/util/ComposedBrowserControlsVisibilityDelegate.java",
     "java/src/org/chromium/components/browser_ui/util/ConversionUtils.java",
     "java/src/org/chromium/components/browser_ui/util/DimensionCompat.java",
