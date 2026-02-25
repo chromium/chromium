@@ -8,6 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/logo/DoodleCache.java",
     "java/src/org/chromium/chrome/browser/logo/LogoBridge.java",
     "java/src/org/chromium/chrome/browser/logo/LogoCoordinator.java",
     "java/src/org/chromium/chrome/browser/logo/LogoMediator.java",
@@ -73,6 +74,7 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.logo"
   sources = [
+    "java/src/org/chromium/chrome/browser/logo/DoodleCacheUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/logo/LogoUtilsUnitTest.java",
@@ -85,6 +87,7 @@ robolectric_library("junit") {
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:base_java_test_support_uncommon",
     "//base:base_junit_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",

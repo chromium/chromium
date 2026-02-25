@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.logo;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.doesDefaultSearchEngineHaveLogo;
 
 import android.graphics.ImageDecoder;
@@ -35,6 +36,7 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
@@ -140,6 +142,13 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         }
 
         mProfile = profile;
+
+        TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
+        TemplateUrl templateUrl = templateUrlService.getDefaultSearchEngineTemplateUrl();
+        if (templateUrl != null) {
+            mSearchEngineKeyword = templateUrl.getKeyword();
+        }
+
         updateVisibility();
 
         if (mShouldShowLogo) {
@@ -147,7 +156,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
             if (mIsLoadPending) loadSearchProviderLogo(/* animationEnabled= */ false);
         }
 
-        TemplateUrlServiceFactory.getForProfile(mProfile).addObserver(this);
+        templateUrlService.addObserver(this);
     }
 
     /** Update the logo based on default search engine changes. */
@@ -239,8 +248,25 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         // record, don't bother loading the logo image.
         if (mHasLogoLoadedForCurrentSearchEngine || mProfile == null || !mShouldShowLogo) return;
 
+        @Nullable Logo cachedDoodle =
+                DoodleCache.getInstance().getCachedDoodle(mSearchEngineKeyword);
+        boolean isCacheHit = cachedDoodle != null;
+
         mHasLogoLoadedForCurrentSearchEngine = true;
-        mLogoModel.set(LogoProperties.ANIMATION_ENABLED, animationEnabled);
+        // Disable animation if it's a cache hit.
+        mLogoModel.set(LogoProperties.ANIMATION_ENABLED, animationEnabled && !isCacheHit);
+
+        if (isCacheHit) {
+            updateModelWithLogo(cachedDoodle);
+            RecordHistogram.recordEnumeratedHistogram(
+                    LOGO_SHOWN_FROM_CACHE_UMA_NAME,
+                    assumeNonNull(cachedDoodle).animatedLogoUrl == null
+                            ? LogoShownId.STATIC_LOGO_SHOWN
+                            : LogoShownId.CTA_IMAGE_SHOWN,
+                    LogoShownId.LOGO_SHOWN_COUNT);
+            return;
+        }
+
         showSearchProviderInitialView();
 
         if (mLogoBridge == null) {
@@ -270,12 +296,20 @@ public class LogoMediator implements TemplateUrlServiceObserver {
                                     LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE,
                                     getDefaultGoogleLogoDrawable());
                         }
-                        mLogoModel.set(
-                                LogoProperties.LOGO_CLICK_HANDLER,
-                                LogoMediator.this::onLogoClicked);
-                        mLogoModel.set(LogoProperties.LOGO, logo);
+                        updateModelWithLogo(logo);
+                        DoodleCache.getInstance().updateCachedDoodle(logo, mSearchEngineKeyword);
                     }
                 });
+    }
+
+    /**
+     * Updates the model with the provided logo and sets the click handler.
+     *
+     * @param logo The logo to set in the model.
+     */
+    private void updateModelWithLogo(@Nullable Logo logo) {
+        mLogoModel.set(LogoProperties.LOGO_CLICK_HANDLER, LogoMediator.this::onLogoClicked);
+        mLogoModel.set(LogoProperties.LOGO, logo);
     }
 
     private void showSearchProviderInitialView() {

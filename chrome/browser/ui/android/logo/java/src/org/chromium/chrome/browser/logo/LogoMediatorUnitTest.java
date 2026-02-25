@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -66,9 +67,13 @@ public class LogoMediatorUnitTest {
 
     @Mock Callback<Logo> mOnLogoAvailableCallback;
 
+    @Mock DoodleCache mDoodleCache;
+
     @Captor
     private ArgumentCaptor<TemplateUrlService.TemplateUrlServiceObserver>
             mTemplateUrlServiceObserverArgumentCaptor;
+
+    @Captor private ArgumentCaptor<LogoBridge.LogoObserver> mLogoObserverArgumentCaptor;
 
     private Context mContext;
     private PropertyModel mLogoModel;
@@ -83,12 +88,18 @@ public class LogoMediatorUnitTest {
         when(mTemplateUrlService.getDefaultSearchEngineTemplateUrl()).thenReturn(mTemplateUrl);
         when(mTemplateUrl.getKeyword()).thenReturn(null);
 
+        DoodleCache.setInstanceForTesting(mDoodleCache);
         LogoBridgeJni.setInstanceForTesting(mLogoBridgeJniMock);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> HomepageManager.getInstance().setJavaPrefHomepageEnabled(true));
 
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
+    }
+
+    @After
+    public void tearDown() {
+        DoodleCache.setInstanceForTesting(null);
     }
 
     @Test
@@ -137,6 +148,37 @@ public class LogoMediatorUnitTest {
         logoMediator.updateVisibility(/* animationEnabled= */ false);
 
         verify(mLogoBridge, times(1)).getCurrentLogo(any());
+    }
+
+    @Test
+    public void testLoadLogoUpdatesCache() {
+        LogoMediator logoMediator = createMediator();
+        logoMediator.setHasLogoLoadedForCurrentSearchEngineForTesting(false);
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        Logo logo = mock(Logo.class);
+
+        logoMediator.updateVisibility(/* animationEnabled= */ false);
+
+        verify(mLogoBridge).getCurrentLogo(mLogoObserverArgumentCaptor.capture());
+        mLogoObserverArgumentCaptor.getValue().onLogoAvailable(logo, false);
+
+        verify(mDoodleCache).updateCachedDoodle(logo, null);
+    }
+
+    @Test
+    public void testLoadLogoFromCache() {
+        LogoMediator logoMediator = createMediator();
+        logoMediator.setHasLogoLoadedForCurrentSearchEngineForTesting(false);
+        Logo cachedLogo = mock(Logo.class);
+        when(mDoodleCache.getCachedDoodle(any())).thenReturn(cachedLogo);
+
+        logoMediator.updateVisibility(/* animationEnabled= */ true);
+
+        // Should use cached logo and not call bridge
+        verify(mLogoBridge, never()).getCurrentLogo(any());
+        assertEquals(cachedLogo, mLogoModel.get(LogoProperties.LOGO));
+        // Animation should be disabled when loading from cache
+        Assert.assertFalse(mLogoModel.get(LogoProperties.ANIMATION_ENABLED));
     }
 
     @Test
