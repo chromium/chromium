@@ -43,15 +43,6 @@ struct NET_EXPORT DohProviderEntry {
  public:
   using List = std::vector<raw_ptr<const DohProviderEntry, VectorExperimental>>;
 
-  enum class LoggingLevel {
-    // Indicates the normal amount of logging, monitoring, and metrics.
-    kNormal,
-
-    // Indicates that a provider is of extra interest and eligible for
-    // additional logging, monitoring, and metrics.
-    kExtra,
-  };
-
   std::string_view provider;
   // Avoid using base::Feature& and use raw_ref instead. Use feature.get()
   // for accessing the raw reference.
@@ -63,7 +54,6 @@ struct NET_EXPORT DohProviderEntry {
   std::string_view privacy_policy;
   bool display_globally;
   base::flat_set<std::string> display_countries;
-  LoggingLevel logging_level;
 
   // Returns the full list of DoH providers. A subset of this list may be used
   // to support upgrade in automatic mode or to populate the dropdown menu for
@@ -79,8 +69,7 @@ struct NET_EXPORT DohProviderEntry {
       std::string_view ui_name,
       std::string_view privacy_policy,
       bool display_globally,
-      base::flat_set<std::string> display_countries,
-      LoggingLevel logging_level = LoggingLevel::kNormal);
+      base::flat_set<std::string> display_countries);
 
   // Entries are neither copyable nor moveable. This allows tests to construct a
   // List but ensures that `const DohProviderEntry*` is a safe type for
@@ -105,7 +94,6 @@ struct NET_EXPORT DohProviderEntry {
       std::string_view privacy_policy,
       bool display_globally,
       base::flat_set<std::string> display_countries,
-      LoggingLevel logging_level,
       std::initializer_list<std::string_view> dns_over_https_server_ip_strs =
           {});
 };

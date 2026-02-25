@@ -2623,30 +2623,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.DNS.DnsTransaction.SecureNotValidated.{DohProviderId}FailureTime"
-    units="ms" expires_after="2024-07-22">
-  <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
-  <summary>
-    Duration of time taken by a secure DnsTransaction to a DoH server that is
-    unavailable or has unknown availability to fail. These transactions may be
-    probe queries or queries issued in the secure DNS mode. {DohProviderId}
-  </summary>
-</histogram>
-
-<histogram
-    name="Net.DNS.DnsTransaction.SecureNotValidated.{DohProviderId}SuccessTime"
-    units="ms" expires_after="2024-07-22">
-  <owner>awillia@chromium.org</owner>
-  <owner>src/net/dns/OWNERS</owner>
-  <summary>
-    Duration of time taken by a secure DnsTransaction to a DoH server that is
-    unavailable or has unknown availability to succeed. These transactions may
-    be probe queries or queries issued in the secure DNS mode. {DohProviderId}
-  </summary>
-</histogram>
-
-<histogram
     name="Net.DNS.DnsTransaction.SecureValidated.{DohProviderId}FailureError"
     enum="NetErrorCodes" expires_after="2026-07-26">
   <owner>awillia@chromium.org</owner>
