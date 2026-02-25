@@ -43,6 +43,7 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -436,6 +437,7 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/399128533")
     public void testOpenArchivedTabFromHubSearch() {
         finishLoading();
         String declutterUrl = mActivityTestRule.getTestServer().getURL(TEST_PATH);
