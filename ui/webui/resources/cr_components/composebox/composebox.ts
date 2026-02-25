@@ -967,10 +967,6 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
-  protected onOpenFileDialog_(e: CustomEvent<{isImage: boolean}>) {
-    this.pageHandler_.handleFileUpload(e.detail.isImage);
-  }
-
   protected onLensIconMouseDown_(e: MouseEvent) {
     // Prevent the composebox from expanding due to being focused by capturing
     // the mousedown event. This is needed to allow the Lens icon to be

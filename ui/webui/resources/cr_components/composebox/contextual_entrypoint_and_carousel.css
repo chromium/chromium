@@ -44,19 +44,10 @@
   padding-inline-start: 16px;
 }
 
-#uploadContainer {
-  display: flex;
-  padding-inline-start: var(--text-input-inline-start-spacing);
-}
-
 :host(:not([file-uploads-complete])) .upload-button {
   cursor: not-allowed;
 }
 
 :host([upload-button-disabled_]) .upload-button {
   color: var(--color-composebox-upload-button-disabled);
-}
-
-#imageUploadButton {
-  --cr-icon-button-margin-start: -12px;
 }

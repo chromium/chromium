@@ -46,28 +46,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
     </div>
   ` : ''}
   ${this.searchboxLayoutMode === 'TallBottomContext' || this.searchboxLayoutMode === '' || this.isOmniboxInCompactMode_ ? html`
-    ${this.contextMenuEnabled_ ? getContextMenuHtml.bind(this)() : html`
-      <div part="upload-container" id="uploadContainer" class="icon-fade">
-          <cr-icon-button
-              class="upload-button no-overlap"
-              id="imageUploadButton"
-              iron-icon="composebox:imageUpload"
-              title="${this.i18n('composeboxImageUploadButtonTitle')}"
-              .disabled="${this.uploadButtonDisabled_}"
-              @click="${this.openImageUpload_}">
-          </cr-icon-button>
-          ${this.composeboxShowPdfUpload_ ? html`
-          <cr-icon-button
-              class="upload-button no-overlap"
-              id="fileUploadButton"
-              iron-icon="composebox:fileUpload"
-              title="${this.i18n('composeboxPdfUploadButtonTitle')}"
-              .disabled="${this.uploadButtonDisabled_}"
-              @click="${this.openFileUpload_}">
-          </cr-icon-button>
-          `: ''}
-      </div>
-    `}
+    ${this.contextMenuEnabled_ ? getContextMenuHtml.bind(this)() : ''}
   `: ''}
   <input type="file"
       accept="${this.imageFileTypes_}"

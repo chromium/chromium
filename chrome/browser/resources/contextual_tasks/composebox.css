@@ -229,10 +229,6 @@
   color: revert;
 }
 
-#composebox::part(upload-container) {
-  display: none;
-}
-
 #composebox::part(context-menu-entrypoint-icon) {
   --cr-icon-button-fill-color: var(--composebox-context-menu-entrypoint-button-color);
   --cr-icon-button-icon-size: var(--icon-menu-icon-size);
