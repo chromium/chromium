@@ -119,9 +119,17 @@ where
         Remote::new(self.endpoint)
     }
 
-    /// Bind this pending remote to the provided sequence.
-    pub fn bind_with_runner(self, runner: SequencedTaskRunnerHandle) -> Remote<T> {
-        Remote::new_with_runner(self.endpoint, runner)
+    /// Bind this pending remote with the provided options.
+    pub fn bind_with_options(
+        self,
+        runner: Option<SequencedTaskRunnerHandle>,
+        disconnect_handler: Option<Box<dyn FnOnce() + Send + 'static>>,
+    ) -> Remote<T> {
+        let runner = runner.unwrap_or_else(|| {
+            SequencedTaskRunnerHandle::get_current_default()
+                .expect("Must be called in a context with a default SequencedTaskRunner")
+        });
+        Remote::new_with_options(self.endpoint, runner, disconnect_handler)
     }
 
     /// Create a new Mojo message pipe corresponding to `T`'s interface, and
@@ -147,10 +155,11 @@ where
     // This function isn't `pub` because users should always get their `Remote`s
     // by `bind`ing a `PendingRemote`.
     fn new(endpoint: MessageEndpoint) -> Self {
-        Self::new_with_runner(
+        Self::new_with_options(
             endpoint,
             SequencedTaskRunnerHandle::get_current_default()
                 .expect("Must be called in a context with a default SequencedTaskRunner"),
+            None,
         )
     }
 
@@ -158,15 +167,23 @@ where
     /// sequence.
     /// This function isn't `pub` because users should always get their
     /// `Remote`s by `bind`ing a `PendingRemote`.
-    fn new_with_runner(endpoint: MessageEndpoint, runner: SequencedTaskRunnerHandle) -> Self {
+    fn new_with_options(
+        endpoint: MessageEndpoint,
+        runner: SequencedTaskRunnerHandle,
+        disconnect_handler: Option<Box<dyn FnOnce() + Send + 'static>>,
+    ) -> Self {
         let pending_responses = Arc::new(Mutex::new(HashMap::new()));
         let pending_responses_clone = pending_responses.clone();
         let message_handler = move |raw_message, _sender| {
             Self::incoming_message_handler(raw_message, &pending_responses_clone)
         };
-        let endpoint_watcher =
-            MessagePipeWatcher::new_with_runner(endpoint, runner, message_handler, None)
-                .expect("FOR_RELEASE: Figure out how to handle errors here");
+        let endpoint_watcher = MessagePipeWatcher::new_with_runner(
+            endpoint,
+            runner,
+            message_handler,
+            disconnect_handler,
+        )
+        .expect("FOR_RELEASE: Figure out how to handle errors here");
         // FOR_RELEASE: We should clear out any existing messages in the endpoint
         // in case it's being re-used, so the new remote doesn't see responses to
         // the previous remote's messages.

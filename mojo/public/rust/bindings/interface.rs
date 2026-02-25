@@ -58,7 +58,8 @@
 //!
 //! ```
 //! // Binds to the current default sequence
-//! // `bind_with_runner` can be used to specify a different sequence
+//! // `bind_with_options` can be used to specify a different sequence,
+//! // or add a disconnect handler.
 //! let math_remote: Remote<dyn MathService> = p_rem.bind();
 //! ```
 //!
@@ -143,8 +144,8 @@
 //! p_rec.bind(count_state); ... // Process some messages
 //! // Undbind the receiver, getting the state object out
 //! let (p_rec, count_state) = counting_receiver.unbind();
-//! // Rebind the receiver to a different state object: now it has different
-//! behavior! let saturating_receiver: Receiver<SaturatingMathService>
+//! // Rebind the receiver to a different state object: now it has different behavior!
+//! let saturating_receiver: Receiver<SaturatingMathService> =
 //! p_rec.bind(SaturatingMathService {});
 //!
 //! Note that receivers can receive messages while they are pending, but those

@@ -16,6 +16,8 @@ chromium::import! {
 use bindings_unittests_mojom_rust::bindings_unittests as test_mojom;
 use test_mojom::{HandleService, MathService, TwoInts};
 
+use std::sync::{Arc, Mutex};
+
 use bindings::register_mojom_state_object_impls;
 
 // Various implementers of the `MathService` interface
@@ -118,3 +120,23 @@ register_mojom_state_object_impls!(
         system::mojo_types::UntypedHandle,
     ) + Send
 );
+
+// A service that notifies when it is dropped.
+pub struct DropNotifyingService {
+    pub dropped: Arc<Mutex<bool>>,
+    pub quit_loop: Box<dyn Fn() + Send>,
+}
+
+impl MathService for DropNotifyingService {
+    fn Add(&mut self, _a: u32, _b: u32, _send_response: impl FnOnce(u32)) {}
+    fn AddTwoInts(&mut self, _ns: TwoInts, _send_response: impl FnOnce(u32)) {}
+}
+
+impl Drop for DropNotifyingService {
+    fn drop(&mut self) {
+        *self.dropped.lock().expect("Mutex poisoned") = true;
+        (self.quit_loop)();
+    }
+}
+
+register_mojom_state_object_impls!(impl MathService for DropNotifyingService);

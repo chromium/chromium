@@ -377,3 +377,60 @@ fn test_handle_passing() {
 
     expect_eq!(*responses_received.lock().unwrap(), 4);
 }
+
+#[gtest(RustBindingsAPI, DisconnectHandlersTest)]
+fn test_disconnect_handlers() {
+    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+
+    // Test Receiver disconnect handler
+    let run_loop = RunLoop::new();
+    let quit_loop = run_loop.get_quit_closure();
+
+    let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
+    let _receiver = pending_receiver.bind_with_options(
+        SaturatingMathService {},
+        None,
+        Some(Box::new(move || (quit_loop)())),
+    );
+    drop(pending_remote);
+
+    run_loop.run();
+
+    // Test Remote disconnect handler
+    let run_loop = RunLoop::new();
+    let quit_loop = run_loop.get_quit_closure();
+
+    // Test Receiver disconnect handler
+    let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
+    let _remote = pending_remote.bind_with_options(None, Some(Box::new(move || (quit_loop)())));
+    drop(pending_receiver);
+
+    run_loop.run();
+}
+
+#[gtest(RustBindingsAPI, SelfOwnedReceiverTest)]
+fn test_self_owned_receiver() {
+    let _task_env = test_cxx::ffi::CreateTaskEnvironment();
+
+    let (pending_remote, pending_receiver) = PendingRemote::<dyn MathService>::new_pipe().unwrap();
+
+    let run_loop = RunLoop::new();
+    let quit_loop = Box::new(run_loop.get_quit_closure());
+
+    let dropped = Arc::new(Mutex::new(false));
+    let dropped_clone = Arc::clone(&dropped);
+
+    let service = DropNotifyingService { dropped, quit_loop };
+
+    // Create a self-owned receiver.
+    let self_owned = pending_receiver.bind_self_owned(service);
+
+    // Disconnect the pipe. This should trigger the disconnect handler, which
+    // will drop the receiver, which will drop the service.
+    drop(pending_remote);
+
+    run_loop.run();
+
+    expect_true!(*dropped_clone.lock().unwrap());
+    expect_true!(self_owned.upgrade().is_none());
+}

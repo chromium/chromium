@@ -66,6 +66,11 @@ where
     _phantom: PhantomData<T>,
 }
 
+/// This type is used to represent a self-owned receiver, which keeps itself
+/// alive until the other endpoint is disconnected.
+pub type SelfOwnedReceiver<StateTy> = Arc<Receiver<StateTy>>;
+pub type SelfOwnedReceiverWeak<StateTy> = Weak<Receiver<StateTy>>;
+
 impl<T> PendingReceiver<T>
 where
     T: DynMojomInterface + ?Sized,
@@ -92,22 +97,74 @@ where
     /// current default sequence.
     pub fn bind<StateTy>(self, state: StateTy) -> Receiver<StateTy>
     where
-        StateTy: MojomInterface<DynTy = T::DynTy> + Send + 'static,
+        StateTy: MojomInterface<DynTy = T> + Send + 'static,
     {
         Receiver::new(self.endpoint, state)
     }
 
-    /// Bind this `PendingReceiver` to the provided state object and the
-    /// provided sequence.
-    pub fn bind_with_runner<StateTy>(
+    /// Bind this `PendingReceiver` to the provided state object with the
+    /// provided options.
+    pub fn bind_with_options<StateTy>(
         self,
         state: StateTy,
-        runner: SequencedTaskRunnerHandle,
+        runner: Option<SequencedTaskRunnerHandle>,
+        disconnect_handler: Option<Box<dyn FnOnce() + Send + 'static>>,
     ) -> Receiver<StateTy>
     where
-        StateTy: MojomInterface<DynTy = T::DynTy> + Send + 'static,
+        StateTy: MojomInterface<DynTy = T> + Send + 'static,
     {
-        Receiver::new_with_runner(self.endpoint, state, runner)
+        let runner = runner.unwrap_or_else(|| {
+            SequencedTaskRunnerHandle::get_current_default()
+                .expect("Must be called in a context with a default SequencedTaskRunner")
+        });
+        Receiver::new_with_options(self.endpoint, state, runner, disconnect_handler)
+    }
+
+    /// Create a new Receiver which owns itself; it will continue to live until
+    /// the other end is disconnected.
+    pub fn bind_self_owned<StateTy>(self, state: StateTy) -> SelfOwnedReceiverWeak<StateTy>
+    where
+        StateTy: MojomInterface<DynTy = T> + Sized + Send + 'static,
+    {
+        // In order to provide a convenient user interface and also be fully memory
+        // safe, the types here get a little convoluted. We begin by constructing
+        // an `Arc<Mutex<Option<SelfOwnedReceiver>>`. We then pass a strong ref to
+        // that arc into the disconnect handler, so that it will get dropped when
+        // the handler runs. We then initialize the receiver with that handler, and
+        // swap it into the `Option`.
+        //
+        // However, to hide the details from the user, we want to only return a
+        // reference to the receiver itself. To do that, the `SelfOwnedReceiver`
+        // type _also_ has an `Arc`, so we can return a weak reference to just that
+        // part and hide the `Mutex` and `Option` from the user.
+        //
+        // Note that if we ever refit this class to be `unsafe`, then we could
+        // eliminate the outer `Arc` and `Mutex`, and possible the `Option` as well.
+
+        let receiver_holder = Arc::new(Mutex::new(None));
+        let receiver_holder_clone = Arc::clone(&receiver_holder);
+
+        let disconnect_handler = move || {
+            // Drop our self-reference. This will cause the receiver
+            // itself to be dropped, unless the user is holding a strong reference
+            // (which it can get by `upgrade`ing the returned `Weak`).
+            drop(receiver_holder_clone);
+        };
+
+        let receiver_strong =
+            Arc::new(self.bind_with_options(state, None, Some(Box::new(disconnect_handler))));
+        let receiver_weak = Arc::downgrade(&receiver_strong);
+
+        *receiver_holder.lock().expect("Mutex should never be poisoned") = Some(receiver_strong);
+
+        // At this point, the references are:
+        // - receiver_holder: The ref we just wrote to is about to be dropped, but
+        //   there's another strong ref in the disconnect handler, which is the only
+        //   other reference to the holder.
+        // - receiver: There's a strong reference inside the holder, and a weak
+        //   reference which we return here.
+
+        return receiver_weak;
     }
 }
 
@@ -120,11 +177,12 @@ where
     // This function isn't `pub` because users should always get their `Receiver`s
     // by `bind`ing a `PendingReceiver`.
     fn new(endpoint: MessageEndpoint, state: StateTy) -> Self {
-        Self::new_with_runner(
+        Self::new_with_options(
             endpoint,
             state,
             SequencedTaskRunnerHandle::get_current_default()
                 .expect("Must be called in a context with a default SequencedTaskRunner"),
+            None,
         )
     }
 
@@ -132,10 +190,11 @@ where
     /// provided sequence.
     // This function isn't `pub` because users should always get their `Receiver`s
     // by `bind`ing a `PendingReceiver`.
-    fn new_with_runner(
+    fn new_with_options(
         endpoint: MessageEndpoint,
         state: StateTy,
         runner: SequencedTaskRunnerHandle,
+        disconnect_handler: Option<Box<dyn FnOnce() + Send + 'static>>,
     ) -> Self {
         let state = Arc::new(Mutex::new(state));
         let state_weak = Arc::downgrade(&state);
@@ -144,8 +203,9 @@ where
             Self::incoming_message_handler(raw_message, &state_weak, sender)
         };
 
-        let endpoint_watcher = MessagePipeWatcher::new_with_runner(endpoint, runner, handler, None)
-            .expect("FOR_RELEASE: Figure out how to handle errors here");
+        let endpoint_watcher =
+            MessagePipeWatcher::new_with_runner(endpoint, runner, handler, disconnect_handler)
+                .expect("FOR_RELEASE: Figure out how to handle errors here");
 
         Self { endpoint_watcher, state }
     }
