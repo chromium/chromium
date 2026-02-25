@@ -59,6 +59,12 @@ BASE_FEATURE(kAutofillActorRewriteCreditCardTriggerField,
 // saving to Autocomplete.
 BASE_FEATURE(kAutofillActorSuppressImport, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, other Autofill AI data types are controlled by the
+// autofillOtherDatatypesEnabled policy and extension API. Previously, these
+// were controlled by autofillAddressesEnabled; consequently, Autofill AI no
+// longer depends on address-based Autofill being enabled.
+BASE_FEATURE(kAutofillAddOtherDatatypesPref, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to improve the building number regex.
 // TODO(crbug.com/376084078): Cleanup when launched.
 BASE_FEATURE(kAutofillAddressImproveBuildingNumberRegex,
@@ -204,11 +210,6 @@ BASE_FEATURE_PARAM(std::string,
                    &kAutofillAiIgnoreGeoIp,
                    "autofill_ai_geo_ip_blocklist",
                    "");
-
-// If enabled, Autofill AI does not depend on Autofill for addresses being
-// enabled.
-BASE_FEATURE(kAutofillAiIgnoresWhetherAddressPrefIsEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, Autofill AI will use a new update prompt on Desktop that shows
 // both the previous and the new value of an updated entity attribute.

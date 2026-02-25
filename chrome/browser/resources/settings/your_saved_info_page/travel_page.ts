@@ -112,11 +112,11 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
       */
       // TODO(crbug.com/466345561): remove when enhanced autofill will stop
       // depending on addresses autofill
-      autofillAiIgnoresWhetherAddressFillingIsEnabled_: {
+      autofillAddOtherDatatypesPrefIsEnabled_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean(
-              'AutofillAiIgnoresWhetherAddressFillingIsEnabled');
+              'AutofillAddOtherDatatypesPrefIsEnabled');
         },
       },
     };
@@ -131,7 +131,7 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
   declare private enhancedAutofillEligibleUser_: boolean;
   declare private enhancedAutofillOptedIn_: boolean;
   declare private travelOptedIn_: chrome.settingsPrivate.PrefObject;
-  declare private autofillAiIgnoresWhetherAddressFillingIsEnabled_: boolean;
+  declare private autofillAddOtherDatatypesPrefIsEnabled_: boolean;
   declare private autofillAiAvailableByDefault_: boolean;
   declare private canEnableOrDisableAutofillAi_: boolean;
 
@@ -146,8 +146,7 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
   private optInToggleDisabled_(): boolean {
     const addressAutofillOptInStatus =
         this.getPref<boolean>('autofill.profile_enabled').value;
-    const ignoreAddressAutofill =
-        this.autofillAiIgnoresWhetherAddressFillingIsEnabled_;
+    const ignoreAddressAutofill = this.autofillAddOtherDatatypesPrefIsEnabled_;
     if (this.autofillAiAvailableByDefault_) {
       return !this.canEnableOrDisableAutofillAi_ ||
           (!ignoreAddressAutofill && !addressAutofillOptInStatus);

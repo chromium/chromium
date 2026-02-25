@@ -186,11 +186,11 @@ export class SettingsAutofillAiEntriesListElement extends
         If true, Autofill AI does not depend on whether Autofill for addresses
         is enabled.
       */
-      autofillAiIgnoresWhetherAddressFillingIsEnabled_: {
+      autofillAddOtherDatatypesPrefIsEnabled_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean(
-              'AutofillAiIgnoresWhetherAddressFillingIsEnabled');
+              'AutofillAddOtherDatatypesPrefIsEnabled');
         },
       },
     };
@@ -217,7 +217,7 @@ export class SettingsAutofillAiEntriesListElement extends
   declare private showRemoveEntityInstanceDialog_: boolean;
   declare private activeEntityInstanceDeleteTitle_: string;
   declare private entityInstances_: EntityInstanceWithLabels[];
-  declare private autofillAiIgnoresWhetherAddressFillingIsEnabled_: boolean;
+  declare private autofillAddOtherDatatypesPrefIsEnabled_: boolean;
   declare private autofillAiAvailableByDefault_: boolean;
   declare private canEnableOrDisableAutofillAi_: boolean;
 
@@ -231,7 +231,7 @@ export class SettingsAutofillAiEntriesListElement extends
     super.connectedCallback();
 
     this.entityDataManager_.getOptInStatus().then(optedIntoAutofillAi => {
-      if (!this.autofillAiIgnoresWhetherAddressFillingIsEnabled_ &&
+      if (!this.autofillAddOtherDatatypesPrefIsEnabled_ &&
           !this.getPref('autofill.profile_enabled').value) {
         this.allowEditing_ = false;
         return;
@@ -428,7 +428,7 @@ export class SettingsAutofillAiEntriesListElement extends
   // entry, but just set the opt-in to false. Note that other
   // preconditions (e.g., sync) are not covered.
   private async onAutofillAddressPrefChanged_(prefValue: boolean) {
-    if (this.autofillAiIgnoresWhetherAddressFillingIsEnabled_) {
+    if (this.autofillAddOtherDatatypesPrefIsEnabled_) {
       return;
     }
 

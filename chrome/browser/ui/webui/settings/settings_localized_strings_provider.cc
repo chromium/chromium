@@ -1373,9 +1373,9 @@ bool IsWalletServerStorageEnabled() {
          base::FeatureList::IsEnabled(syncer::kSyncWalletVehicleRegistrations);
 }
 
-bool AutofillAiIgnoresWhetherAddressFillingIsEnabled() {
+bool AutofillAddOtherDatatypesPrefIsEnabled() {
   return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillAiIgnoresWhetherAddressPrefIsEnabled);
+      autofill::features::kAutofillAddOtherDatatypesPref);
 }
 
 void AddAutofillStrings(content::WebUIDataSource* html_source,
@@ -1805,8 +1805,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
           autofill::features::kAutofillAiAvailableByDefault));
   html_source->AddBoolean("isWalletServerStorageEnabled",
                           IsWalletServerStorageEnabled());
-  html_source->AddBoolean("AutofillAiIgnoresWhetherAddressFillingIsEnabled",
-                          AutofillAiIgnoresWhetherAddressFillingIsEnabled());
+  html_source->AddBoolean("AutofillAddOtherDatatypesPrefIsEnabled",
+                          AutofillAddOtherDatatypesPrefIsEnabled());
 
   html_source->AddBoolean(
       "isUserEligibleForWalletablePassDetection",

@@ -57,15 +57,15 @@ suite('CollapsibleAutofillSettingsCard', function() {
 
   async function createCollapsibleAutofillSettingsCard(
       eligibleUser: boolean = true,
-      autofillAiIgnoresWhetherAddressFillingIsEnabled: boolean = false,
+      autofillAddOtherDatatypesPrefIsEnabled: boolean = false,
       optInStatusResponse: boolean = true,
       autofillAiAvailableByDefault: boolean =
           false): Promise<CollapsibleCardElement> {
     entityDataManager.setGetOptInStatusResponse(optInStatusResponse);
     loadTimeData.overrideValues({
       userEligibleForAutofillAi: eligibleUser,
-      AutofillAiIgnoresWhetherAddressFillingIsEnabled:
-          autofillAiIgnoresWhetherAddressFillingIsEnabled,
+      AutofillAddOtherDatatypesPrefIsEnabled:
+          autofillAddOtherDatatypesPrefIsEnabled,
       autofillAiAvailableByDefault: autofillAiAvailableByDefault,
     });
 
@@ -114,7 +114,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
     test(params.title, async function() {
       const card = await createCollapsibleAutofillSettingsCard(
           params.enhancedAutofillEligibleUser,
-          /*autofillAiIgnoresWhetherAddressFillingIsEnabled=*/ false,
+          /*autofillAddOtherDatatypesPrefIsEnabled=*/ false,
           params.enhancedAutofillOptedIn);
 
       const toggle =
@@ -131,7 +131,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
   test('AutofillAiAvailableByDefaultFalseRendersExpectedUI', async function() {
     const card = await createCollapsibleAutofillSettingsCard(
         /*eligibleUser=*/ true,
-        /*autofillAiIgnoresWhetherAddressFillingIsEnabled=*/ false,
+        /*autofillAddOtherDatatypesPrefIsEnabled=*/ false,
         /*optInStatusResponse=*/ true,
         /*autofillAiAvailableByDefault=*/ false);
 
@@ -164,7 +164,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
   test('AutofillAiAvailableByDefaultTrueRendersExpectedUI', async function() {
     const card = await createCollapsibleAutofillSettingsCard(
         /*eligibleUser=*/ true,
-        /*autofillAiIgnoresWhetherAddressFillingIsEnabled=*/ false,
+        /*autofillAddOtherDatatypesPrefIsEnabled=*/ false,
         /*optInStatusResponse=*/ true,
         /*autofillAiAvailableByDefault=*/ true);
 
@@ -207,7 +207,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
     // opted in.
     const card = await createCollapsibleAutofillSettingsCard(
         /*eligibleUser=*/ true,
-        /*autofillAiIgnoresWhetherAddressFillingIsEnabled=*/ false,
+        /*autofillAddOtherDatatypesPrefIsEnabled=*/ false,
         /*optInStatusResponse=*/ false);
 
     const toggle = card.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -366,7 +366,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
       async function() {
         const card = await createCollapsibleAutofillSettingsCard(
             /*eligibleUser=*/ true,
-            /*autofillAiIgnoresWhetherAddressFillingIsEnabled=*/ true);
+            /*autofillAddOtherDatatypesPrefIsEnabled=*/ true);
 
         const toggle =
             card.shadowRoot!.querySelector<SettingsToggleButtonElement>(

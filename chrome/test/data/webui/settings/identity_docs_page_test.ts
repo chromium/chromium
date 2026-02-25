@@ -190,7 +190,7 @@ suite('IdentityDocsPage', function() {
         async function() {
           loadTimeData.overrideValues({
             userEligibleForAutofillAi: true,
-            AutofillAiIgnoresWhetherAddressFillingIsEnabled: experimentEnabled,
+            AutofillAddOtherDatatypesPrefIsEnabled: experimentEnabled,
             autofillAiAvailableByDefault: false,
           });
 

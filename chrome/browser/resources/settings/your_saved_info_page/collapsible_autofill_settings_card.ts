@@ -116,11 +116,11 @@ export class CollapsibleCardElement extends SettingsViewMixin
         If true, Autofill AI does not depend on whether Autofill for addresses
         is enabled.
       */
-      autofillAiIgnoresWhetherAddressFillingIsEnabled_: {
+      autofillAddOtherDatatypesPrefIsEnabled_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean(
-              'AutofillAiIgnoresWhetherAddressFillingIsEnabled');
+              'AutofillAddOtherDatatypesPrefIsEnabled');
         },
       },
 
@@ -153,7 +153,7 @@ export class CollapsibleCardElement extends SettingsViewMixin
   // </if>
   declare private enhancedAutofillOptedIn_: chrome.settingsPrivate.PrefObject;
   declare private isUserEligibleForWalletablePassDetection_: boolean;
-  declare private autofillAiIgnoresWhetherAddressFillingIsEnabled_: boolean;
+  declare private autofillAddOtherDatatypesPrefIsEnabled_: boolean;
   declare private autofillAiAvailableByDefault_: boolean;
 
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
@@ -228,7 +228,7 @@ export class CollapsibleCardElement extends SettingsViewMixin
   // entry, but just set the opt-in to false. Note that other
   // preconditions (e.g., sync) are not covered.
   private async onAutofillAddressPrefChanged_(prefValue: boolean) {
-    if (this.autofillAiIgnoresWhetherAddressFillingIsEnabled_) {
+    if (this.autofillAddOtherDatatypesPrefIsEnabled_) {
       return;
     }
     const enhancedAutofillOptedIn =

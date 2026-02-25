@@ -679,10 +679,12 @@ TEST_F(AutofillAiPermissionUtilsTest,
                                           std::nullopt));
 }
 
-TEST_F(AutofillAiPermissionUtilsTest,
-       UsersCanOptInIfAutofillForAddressesIsDisabledWhenFeatureIsEnabled) {
+// TODO(crbug.com/482301350): Remove this test
+TEST_F(
+    AutofillAiPermissionUtilsTest,
+    UsersCanOptInIfAutofillForAddressesIsDisabledWhenOtherDatatypesPrefEnabled) {
   base::test::ScopedFeatureList feature_list{
-      features::kAutofillAiIgnoresWhetherAddressPrefIsEnabled};
+      features::kAutofillAddOtherDatatypesPref};
   ASSERT_TRUE(MayPerformAutofillAiAction(client(), AutofillAiAction::kOptIn,
                                          std::nullopt));
   client().GetPrefs()->SetBoolean(prefs::kAutofillProfileEnabled, false);

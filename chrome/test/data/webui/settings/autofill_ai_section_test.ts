@@ -77,12 +77,12 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
 
   async function createSection(
       eligibleUser: boolean = true,
-      autofillAiIgnoresWhetherAddressFillingIsEnabled: boolean =
+      autofillAddOtherDatatypesPrefIsEnabled: boolean =
           false): Promise<SettingsAutofillAiSectionElement> {
     loadTimeData.overrideValues({
       userEligibleForAutofillAi: eligibleUser,
-      AutofillAiIgnoresWhetherAddressFillingIsEnabled:
-          autofillAiIgnoresWhetherAddressFillingIsEnabled,
+      AutofillAddOtherDatatypesPrefIsEnabled:
+          autofillAddOtherDatatypesPrefIsEnabled,
     });
     const section: SettingsAutofillAiSectionElement =
         document.createElement('settings-autofill-ai-section');
@@ -164,12 +164,12 @@ suite('AutofillAiSectionUiReflectsEligibilityStatus', function() {
   });
 
   test(
-      'DisablingClassicAutofillPrefDoesNotDisabledTheFeatureIfOverrideBehaviourIsEnabled',
+      'DisablingClassicAutofillPrefDoesNotDisablTheFeatureIfOtherDatatypesPrefIsEnabled',
       async function() {
         entityDataManager.setGetOptInStatusResponse(true);
         const section = await createSection(
             /*eligibleUser=*/ true,
-            /*autofillAiIgnoresWhetherAddressFillingIsEnable=*/ true);
+            /*autofillAddOtherDatatypesPrefIsEnabled=*/ true);
 
         const toggle =
             section.shadowRoot!.querySelector<SettingsToggleButtonElement>(

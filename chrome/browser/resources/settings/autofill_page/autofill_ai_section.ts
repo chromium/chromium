@@ -126,11 +126,11 @@ export class SettingsAutofillAiSectionElement extends
         If true, Autofill AI does not depend on whether Autofill for addresses
         is enabled.
       */
-      autofillAiIgnoresWhetherAddressFillingIsEnabled_: {
+      autofillAddOtherDatatypesPrefIsEnabled_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean(
-              'AutofillAiIgnoresWhetherAddressFillingIsEnabled');
+              'AutofillAddOtherDatatypesPrefIsEnabled');
         },
       },
 
@@ -162,7 +162,7 @@ export class SettingsAutofillAiSectionElement extends
   declare private optedIn_: chrome.settingsPrivate.PrefObject;
   declare private isWalletServerStorageEnabled_: boolean;
   declare private isUserEligibleForWalletablePassDetection_: boolean;
-  declare private autofillAiIgnoresWhetherAddressFillingIsEnabled_: boolean;
+  declare private autofillAddOtherDatatypesPrefIsEnabled_: boolean;
   declare private autofillAiAvailableByDefault_: boolean;
 
   private entityDataManager_: EntityDataManagerProxy =
@@ -224,7 +224,7 @@ export class SettingsAutofillAiSectionElement extends
   // entry, but just set the opt-in to false. Note that other
   // preconditions (e.g., sync) are not covered.
   private async onAutofillAddressPrefChanged_(prefValue: boolean) {
-    if (this.autofillAiIgnoresWhetherAddressFillingIsEnabled_) {
+    if (this.autofillAddOtherDatatypesPrefIsEnabled_) {
       return;
     }
     const optedIn = await this.entityDataManager_.getOptInStatus();
