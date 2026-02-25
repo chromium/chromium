@@ -4,6 +4,8 @@
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
 
+#include <algorithm>
+
 #include "base/i18n/char_iterator.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -90,6 +92,14 @@ void ContextualCueingPageData::FindMatchingConfig() {
   bool needs_page_content = false;
   for (const auto& config : metadata_.cueing_configurations()) {
     if (!config.has_cue_label() && !config.has_dynamic_cue_label()) {
+      continue;
+    }
+    // Skip if config specifies allowed MIME types and the page doesn't match.
+    if (!config.allowed_mime_types().empty() &&
+        std::find(config.allowed_mime_types().begin(),
+                  config.allowed_mime_types().end(),
+                  page().GetContentsMimeType()) ==
+            config.allowed_mime_types().end()) {
       continue;
     }
     auto decision = DidMatchCueingConditions(config);
