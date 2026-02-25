@@ -33,12 +33,14 @@ import android.os.Handler;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
@@ -82,9 +84,10 @@ public class HttpNegotiateAuthenticatorTest {
     @Captor private ArgumentCaptor<AccountManagerCallback<Account[]>> mAccountCallbackCaptor;
     @Captor private ArgumentCaptor<Bundle> mBundleCaptor;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         HttpNegotiateAuthenticatorJni.setInstanceForTesting(mAuthenticatorJniMock);
     }
 

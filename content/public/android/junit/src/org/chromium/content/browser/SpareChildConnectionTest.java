@@ -21,10 +21,12 @@ import android.os.Bundle;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ChildBindingState;
@@ -104,9 +106,10 @@ public class SpareChildConnectionTest {
 
     private SpareChildConnection mSpareConnection;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         // The tests run on only one thread. Pretend that is the launcher thread so LauncherThread
         // asserts are not triggered.

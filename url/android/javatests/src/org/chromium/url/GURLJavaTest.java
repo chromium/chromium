@@ -11,10 +11,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -33,9 +35,10 @@ import java.net.URISyntaxException;
 public class GURLJavaTest {
     @Mock GURL.Natives mGURLMocks;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         GURLJavaTestHelper.nativeInitializeICU();

@@ -32,12 +32,14 @@ import android.nfc.TagLostException;
 import android.os.Bundle;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -125,9 +127,10 @@ public class NFCTest {
         public void stopTrackingActivityForHost(int hostId) {}
     }
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mDelegate = new TestNfcDelegate(mActivity);
         doReturn(mNfcManager).when(mContext).getSystemService(Context.NFC_SERVICE);
         doReturn(mNfcAdapter).when(mNfcManager).getDefaultAdapter();

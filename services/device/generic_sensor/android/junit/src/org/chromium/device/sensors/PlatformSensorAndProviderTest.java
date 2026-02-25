@@ -28,11 +28,13 @@ import android.os.Handler;
 import android.util.SparseArray;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
@@ -93,9 +95,10 @@ public class PlatformSensorAndProviderTest {
         protected void sensorError() {}
     }
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         // Remove all mock sensors before the test.
         mMockSensors.clear();
         doReturn(mSensorManager).when(mContext).getSystemService(Context.SENSOR_SERVICE);
