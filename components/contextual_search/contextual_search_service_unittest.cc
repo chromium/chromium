@@ -446,4 +446,60 @@ TEST_F(ContextualSearchServiceTest, CreateSessionAfterShutdown) {
   ASSERT_THAT(session_handle->GetController(), NotNull());
 }
 
+TEST_F(ContextualSearchServiceTest, DeleteFile) {
+  auto mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  auto metrics_recorder = std::make_unique<ContextualSearchMetricsRecorder>(
+      ContextualSearchSource::kUnknown);
+
+  MockContextualSearchContextController* mock_controller_ptr =
+      mock_controller.get();
+
+  auto session_handle = service_->CreateSessionForTesting(
+      std::move(mock_controller), std::move(metrics_recorder));
+  // Check the search content sharing settings to notify the session handle
+  // that the client is properly checking the pref value.
+  session_handle->CheckSearchContentSharingSettings(&pref_service_);
+
+  // Create a token.
+  base::UnguessableToken token1 = session_handle->CreateContextToken();
+  contextual_search::FileInfo file_info1;
+  file_info1.file_token = token1;
+
+  // Expect controller DeleteFile to be called.
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(token1))
+      .WillRepeatedly(testing::Return(&file_info1));
+  EXPECT_CALL(*mock_controller_ptr, DeleteFile(token1))
+      .WillOnce(testing::Return(true));
+
+  // Case 1: Delete uploaded file.
+  // The file has not been submitted yet, so it should be deleted.
+  EXPECT_TRUE(session_handle->DeleteFile(token1));
+
+  // Create another token.
+  base::UnguessableToken token2 = session_handle->CreateContextToken();
+  contextual_search::FileInfo file_info2;
+  file_info2.file_token = token2;
+
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(token2))
+      .WillRepeatedly(testing::Return(&file_info2));
+
+  // Submit the token.
+  EXPECT_CALL(*mock_controller_ptr, CreateClientToAimRequest(_))
+      .WillOnce(testing::Invoke(
+          this, &ContextualSearchServiceTest::CaptureClientToAimRequest));
+
+  auto request = std::make_unique<
+      ContextualSearchContextController::CreateClientToAimRequestInfo>();
+  session_handle->CreateClientToAimRequest(std::move(request));
+
+  // Token2 should now be in submitted tokens.
+  // Verify DeleteFile is NOT called on controller.
+  EXPECT_CALL(*mock_controller_ptr, DeleteFile(token2)).Times(0);
+
+  // Case 2: Delete submitted file.
+  // The file has been submitted, so it should NOT be deleted.
+  EXPECT_FALSE(session_handle->DeleteFile(token2));
+}
+
 }  // namespace contextual_search

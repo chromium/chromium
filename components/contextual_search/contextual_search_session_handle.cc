@@ -239,6 +239,17 @@ void ContextualSearchSessionHandle::StartModalityChipUploadFlow(
 
 bool ContextualSearchSessionHandle::DeleteFile(
     const base::UnguessableToken& file_token) {
+  // If the file was already submitted, don't delete it from the context
+  // controller, so that the file info can be looked up in the future.
+  // This prevents the file info for submitted content from being deleted
+  // prematurely, such as when controlling the auto-tab chip for the transition
+  // from the LensOverlay searchbox to the contextual tasks page.
+  if (std::find(submitted_context_tokens_.begin(),
+                submitted_context_tokens_.end(),
+                file_token) != submitted_context_tokens_.end()) {
+    return false;
+  }
+
   // Remove the file token from the list of uploaded context tokens.
   auto it = std::find(uploaded_context_tokens_.begin(),
                       uploaded_context_tokens_.end(), file_token);
