@@ -50,8 +50,9 @@ class DeveloperPrivateAPI::WebContentsTracker
   ~WebContentsTracker() override = default;
 
   void WebContentsDestroyed() override {
-    if (api_)
+    if (api_) {
       api_->web_contents_data_.erase(web_contents());
+    }
     delete this;
   }
 
@@ -112,8 +113,9 @@ DeveloperPrivateAPI::UnpackedRetryId DeveloperPrivateAPI::AddUnpackedPath(
   IdToPathMap& paths = data->allowed_unpacked_paths;
   auto existing =
       std::ranges::find(paths, path, &IdToPathMap::value_type::second);
-  if (existing != paths.end())
+  if (existing != paths.end()) {
     return existing->first;
+  }
 
   UnpackedRetryId id = base::Uuid::GenerateRandomV4().AsLowercaseString();
   paths[id] = path;
@@ -124,12 +126,14 @@ base::FilePath DeveloperPrivateAPI::GetUnpackedPath(
     content::WebContents* web_contents,
     const UnpackedRetryId& id) const {
   const WebContentsData* data = GetWebContentsData(web_contents);
-  if (!data)
+  if (!data) {
     return base::FilePath();
+  }
   const IdToPathMap& paths = data->allowed_unpacked_paths;
   auto path_iter = paths.find(id);
-  if (path_iter == paths.end())
+  if (path_iter == paths.end()) {
     return base::FilePath();
+  }
   return path_iter->second;
 }
 
@@ -163,8 +167,9 @@ DeveloperPrivateAPI::WebContentsData*
 DeveloperPrivateAPI::GetOrCreateWebContentsData(
     content::WebContents* web_contents) {
   auto iter = web_contents_data_.find(web_contents);
-  if (iter != web_contents_data_.end())
+  if (iter != web_contents_data_.end()) {
     return &iter->second;
+  }
 
   // This is the first we've added this WebContents. Track its lifetime so we
   // can clean up the paths when it is destroyed.

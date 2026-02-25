@@ -214,8 +214,9 @@ base::FilePath OperationManager::GetAssociatedDownloadFolder() {
 Operation* OperationManager::GetOperation(const ExtensionId& extension_id) {
   auto existing_operation = operations_.find(extension_id);
 
-  if (existing_operation == operations_.end())
+  if (existing_operation == operations_.end()) {
     return nullptr;
+  }
   return existing_operation->second.get();
 }
 

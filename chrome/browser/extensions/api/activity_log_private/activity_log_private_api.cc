@@ -159,8 +159,9 @@ void ActivityLogPrivateGetExtensionActivitiesFunction::OnLookupCompleted(
     std::unique_ptr<std::vector<scoped_refptr<Action>>> activities) {
   // Convert Actions to ExtensionActivities.
   std::vector<ExtensionActivity> result_arr;
-  for (const auto& activity : *activities)
+  for (const auto& activity : *activities) {
     result_arr.push_back(activity->ConvertToExtensionActivity());
+  }
 
   // Populate the return object.
   ActivityResultSet result_set;
@@ -222,8 +223,9 @@ ExtensionFunction::ResponseAction ActivityLogPrivateDeleteUrlsFunction::Run() {
   std::vector<GURL> gurls;
   const std::vector<std::string>& urls = params->urls;
   gurls.reserve(urls.size());
-  for (const std::string& url : urls)
+  for (const std::string& url : urls) {
     gurls.push_back(GURL(url));
+  }
 
   ActivityLog* activity_log = ActivityLog::GetInstance(browser_context());
   DCHECK(activity_log);

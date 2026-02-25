@@ -82,11 +82,13 @@ BrlapiConnection::ConnectResult BrlapiConnectionImpl::Connect(
   std::array path = {0, 0};
   int pathElements = 0;
 #if BUILDFLAG(IS_CHROMEOS)
-  if (base::SysInfo::IsRunningOnChromeOS())
+  if (base::SysInfo::IsRunningOnChromeOS()) {
     path[pathElements++] = kDefaultTtyChromeOS;
+  }
 #endif
-  if (pathElements == 0 && getenv("WINDOWPATH") == nullptr)
+  if (pathElements == 0 && getenv("WINDOWPATH") == nullptr) {
     path[pathElements++] = kDefaultTtyLinux;
+  }
   if (libbrlapi_loader_->brlapi__enterTtyModeWithPath(
           handle_.get(), &path[0], pathElements, nullptr) < 0) {
     LOG(ERROR) << "brlapi: couldn't enter tty mode: " << BrlapiStrError();
@@ -164,8 +166,9 @@ bool BrlapiConnectionImpl::GetDisplaySize(unsigned int* columns,
 
 bool BrlapiConnectionImpl::WriteDots(const std::vector<unsigned char>& cells) {
   // Cells is a 2D vector, compressed into 1D.
-  if (!CheckConnected())
+  if (!CheckConnected()) {
     return false;
+  }
   if (libbrlapi_loader_->brlapi__writeDots(handle_.get(), cells.data()) < 0) {
     VLOG(1) << "Couldn't write to brlapi: " << BrlapiStrError();
     return false;
@@ -174,8 +177,9 @@ bool BrlapiConnectionImpl::WriteDots(const std::vector<unsigned char>& cells) {
 }
 
 int BrlapiConnectionImpl::ReadKey(brlapi_keyCode_t* key_code) {
-  if (!CheckConnected())
+  if (!CheckConnected()) {
     return -1;
+  }
   return libbrlapi_loader_->brlapi__readKey(
       handle_.get(), 0 /*wait*/, key_code);
 }
@@ -190,8 +194,9 @@ bool BrlapiConnectionImpl::GetCellSize(unsigned int* cell_size) {
       handle_.get(), BRLAPI_PARAM_DEVICE_CELL_SIZE, 0, BRLAPI_PARAMF_GLOBAL,
       &device_cell_size, sizeof(device_cell_size));
 
-  if (result == -1 || result != sizeof(device_cell_size))
+  if (result == -1 || result != sizeof(device_cell_size)) {
     return false;
+  }
 
   *cell_size = device_cell_size;
   return true;

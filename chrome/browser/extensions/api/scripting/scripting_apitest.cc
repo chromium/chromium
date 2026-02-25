@@ -61,8 +61,9 @@ constexpr const char kSimulatedResourcePath[] = "/simulated-resource.html";
 // Returns the IDs of all divs in a page; used for testing script injections.
 constexpr char kGetDivIds[] =
     R"(let childIds = [];
-       for (const child of document.body.children)
+       for (const child of document.body.children) {
          childIds.push(child.id);
+       }
        JSON.stringify(childIds.sort());)";
 #endif
 

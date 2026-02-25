@@ -119,8 +119,9 @@ testing::AssertionResult RequestContentScriptAPITest::RunTest(
     bool should_inject) {
   testing::AssertionResult result = CreateAndLoadExtension(manifest_permission,
                                                            script_matcher);
-  if (!result)
+  if (!result) {
     return result;
+  }
 
   // Setup listener for actual injection of script.
   ExtensionTestMessageListener injection_succeeded_listener(
@@ -128,15 +129,17 @@ testing::AssertionResult RequestContentScriptAPITest::RunTest(
   injection_succeeded_listener.set_extension_id(extension_->id());
 
   content::WebContents* web_contents = GetActiveWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return testing::AssertionFailure() << "No web contents.";
+  }
 
   EXPECT_TRUE(NavigateToURL(web_contents, embedded_test_server()->GetURL(
                                               "/extensions/test_file.html")));
 
   // Give the extension plenty of time to inject.
-  if (!RunAllPendingInRenderer(web_contents))
+  if (!RunAllPendingInRenderer(web_contents)) {
     return testing::AssertionFailure() << "Could not run pending in renderer.";
+  }
 
   // Make sure all running tasks are complete.
   content::RunAllPendingInMessageLoop();
@@ -176,8 +179,9 @@ testing::AssertionResult RequestContentScriptAPITest::CreateAndLoadExtension(
                  kContentScriptSource);
 
   const Extension* extension = LoadExtension(dir->UnpackedPath());
-  if (!extension)
+  if (!extension) {
     return testing::AssertionFailure() << "Failed to load extension.";
+  }
 
   test_extension_dir_ = std::move(dir);
   extension_ = extension;

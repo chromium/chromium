@@ -462,8 +462,9 @@ class TestInputMethodManager : public input_method::MockInputMethodManager {
 
     void GetInputMethodExtensions(
         input_method::InputMethodDescriptors* descriptors) override {
-      for (const auto& descriptor : input_methods_)
+      for (const auto& descriptor : input_methods_) {
         descriptors->push_back(descriptor);
+      }
     }
 
     input_method::InputMethodDescriptors input_methods_;

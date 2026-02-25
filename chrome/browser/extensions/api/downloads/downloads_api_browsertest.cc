@@ -274,8 +274,9 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
   void OnWillDispatchEvent(const extensions::Event& event) override {
     // TestObserver receives notifications for all events but only needs to
     // check download events.
-    if (!base::StartsWith(event.event_name, "downloads"))
+    if (!base::StartsWith(event.event_name, "downloads")) {
       return;
+    }
 
     Event* new_event = new Event(
         Profile::FromBrowserContext(event.restrict_to_browser_context),
@@ -493,8 +494,9 @@ class DownloadExtensionTest : public ExtensionApiTest {
   void GoOnTheRecord() {
     current_browser_ = browser_window_interface();
     current_profile_ = profile();
-    if (events_listener_.get())
+    if (events_listener_.get()) {
       events_listener_->UpdateProfile(current_profile());
+    }
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -520,8 +522,9 @@ class DownloadExtensionTest : public ExtensionApiTest {
                                                false);
     current_browser_ = incognito_browser_;
     current_profile_ = incognito_profile_;
-    if (events_listener_.get())
+    if (events_listener_.get()) {
       events_listener_->UpdateProfile(current_profile());
+    }
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -532,8 +535,9 @@ class DownloadExtensionTest : public ExtensionApiTest {
   bool WaitForInterruption(DownloadItem* item,
                            download::DownloadInterruptReason expected_error,
                            const std::string& on_created_event) {
-    if (!WaitFor(downloads::OnCreated::kEventName, on_created_event))
+    if (!WaitFor(downloads::OnCreated::kEventName, on_created_event)) {
       return false;
+    }
     // Now, onCreated is always fired before interruption.
     return WaitFor(
         downloads::OnChanged::kEventName,
@@ -649,8 +653,9 @@ class DownloadExtensionTest : public ExtensionApiTest {
 
     EXPECT_EQ(0, manager->BlockingShutdownCount());
     EXPECT_EQ(0, manager->InProgressCount());
-    if (manager->InProgressCount() != 0)
+    if (manager->InProgressCount() != 0) {
       return nullptr;
+    }
     return CreateSlowTestDownload(first_download_.get(), kFirstDownloadUrl);
   }
 
@@ -661,8 +666,9 @@ class DownloadExtensionTest : public ExtensionApiTest {
   DownloadItem* CreateSlowTestDownload(
       net::test_server::ControllableHttpResponse* response,
       const std::string& path) {
-    if (!embedded_test_server()->Started())
+    if (!embedded_test_server()->Started()) {
       StartEmbeddedTestServer();
+    }
     std::unique_ptr<content::DownloadTestObserver> observer(
         CreateInProgressDownloadObserver(1));
     DownloadManager* manager = GetCurrentManager();
@@ -963,8 +969,9 @@ class ScopedItemVectorCanceller {
   ~ScopedItemVectorCanceller() {
     for (DownloadManager::DownloadVector::const_iterator item = items_->begin();
          item != items_->end(); ++item) {
-      if ((*item)->GetState() == DownloadItem::IN_PROGRESS)
+      if ((*item)->GetState() == DownloadItem::IN_PROGRESS) {
         (*item)->Cancel(true);
+      }
       content::DownloadUpdatedObserver observer(
           (*item), base::BindRepeating(&ItemNotInProgress));
       observer.WaitForEvent();

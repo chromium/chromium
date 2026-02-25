@@ -39,8 +39,9 @@ message_center::Notification*
 ExtensionNotificationDisplayHelper::GetByNotificationId(
     const std::string& notification_id) {
   for (const auto& notification : notifications_) {
-    if (notification->id() == notification_id)
+    if (notification->id() == notification_id) {
       return notification.get();
+    }
   }
 
   return nullptr;
@@ -51,8 +52,9 @@ ExtensionNotificationDisplayHelper::GetNotificationIdsForExtension(
     const GURL& extension_origin) const {
   std::set<std::string> notification_ids;
   for (const auto& notification : notifications_) {
-    if (notification->origin_url() == extension_origin)
+    if (notification->origin_url() == extension_origin) {
       notification_ids.insert(notification->id());
+    }
   }
 
   return notification_ids;
@@ -63,8 +65,9 @@ bool ExtensionNotificationDisplayHelper::EraseDataForNotificationId(
   auto iter = std::ranges::find(notifications_, notification_id,
                                 &message_center::Notification::id);
 
-  if (iter == notifications_.end())
+  if (iter == notifications_.end()) {
     return false;
+  }
 
   notifications_.erase(iter);
   return true;
@@ -72,8 +75,9 @@ bool ExtensionNotificationDisplayHelper::EraseDataForNotificationId(
 
 bool ExtensionNotificationDisplayHelper::Close(
     const std::string& notification_id) {
-  if (!EraseDataForNotificationId(notification_id))
+  if (!EraseDataForNotificationId(notification_id)) {
     return false;
+  }
 
   GetDisplayService()->Close(NotificationHandler::Type::EXTENSION,
                              notification_id);

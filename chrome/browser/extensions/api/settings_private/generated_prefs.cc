@@ -41,8 +41,9 @@ bool GeneratedPrefs::HasPref(const std::string& pref_name) {
 std::optional<api::settings_private::PrefObject> GeneratedPrefs::GetPref(
     const std::string& pref_name) {
   GeneratedPref* impl = FindPrefImpl(pref_name);
-  if (!impl)
+  if (!impl) {
     return std::nullopt;
+  }
 
   return impl->GetPrefObject();
 }
@@ -50,8 +51,9 @@ std::optional<api::settings_private::PrefObject> GeneratedPrefs::GetPref(
 SetPrefResult GeneratedPrefs::SetPref(const std::string& pref_name,
                                       const base::Value* value) {
   GeneratedPref* impl = FindPrefImpl(pref_name);
-  if (!impl)
+  if (!impl) {
     return SetPrefResult::PREF_NOT_FOUND;
+  }
 
   return impl->SetPref(value);
 }
@@ -67,8 +69,9 @@ void GeneratedPrefs::AddObserver(const std::string& pref_name,
 void GeneratedPrefs::RemoveObserver(const std::string& pref_name,
                                     GeneratedPref::Observer* observer) {
   GeneratedPref* impl = FindPrefImpl(pref_name);
-  if (!impl)
+  if (!impl) {
     return;
+  }
 
   impl->RemoveObserver(observer);
 }
@@ -80,12 +83,14 @@ void GeneratedPrefs::Shutdown() {
 }
 
 GeneratedPref* GeneratedPrefs::FindPrefImpl(const std::string& pref_name) {
-  if (prefs_.empty())
+  if (prefs_.empty()) {
     CreatePrefs();
+  }
 
   const PrefsMap::const_iterator it = prefs_.find(pref_name);
-  if (it == prefs_.end())
+  if (it == prefs_.end()) {
     return nullptr;
+  }
 
   return it->second.get();
 }

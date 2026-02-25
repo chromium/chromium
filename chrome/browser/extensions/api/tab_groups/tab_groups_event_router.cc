@@ -251,8 +251,9 @@ void TabGroupsEventRouter::DispatchEvent(events::HistogramValue histogram_value,
                                          const std::string& event_name,
                                          base::ListValue args) {
   // |event_router_| can be null in tests.
-  if (!event_router_)
+  if (!event_router_) {
     return;
+  }
 
   auto event = std::make_unique<Event>(histogram_value, event_name,
                                        std::move(args), profile_);

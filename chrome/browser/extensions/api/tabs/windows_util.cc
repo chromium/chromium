@@ -76,8 +76,9 @@ bool GetControllerFromWindowID(ExtensionFunction* function,
 bool CanOperateOnWindow(const ExtensionFunction* function,
                         const extensions::WindowController* controller,
                         extensions::WindowController::TypeFilter filter) {
-  if (filter && !controller->MatchesFilter(filter))
+  if (filter && !controller->MatchesFilter(filter)) {
     return false;
+  }
 
   // TODO(crbug.com/41367902): Remove this.
   bool allow_dev_tools_windows = !!filter;
@@ -87,11 +88,13 @@ bool CanOperateOnWindow(const ExtensionFunction* function,
     return false;
   }
 
-  if (function->browser_context() == controller->profile())
+  if (function->browser_context() == controller->profile()) {
     return true;
+  }
 
-  if (!function->include_incognito_information())
+  if (!function->include_incognito_information()) {
     return false;
+  }
 
   Profile* profile = Profile::FromBrowserContext(function->browser_context());
   return profile->HasPrimaryOTRProfile() &&
@@ -133,8 +136,9 @@ IncognitoResult ShouldOpenIncognitoWindow(Profile* profile,
       if (IsURLAllowedInIncognito((*urls)[i])) {
         i++;
       } else {
-        if (first_url_erased.empty())
+        if (first_url_erased.empty()) {
           first_url_erased = (*urls)[i].spec();
+        }
         urls->erase(urls->begin() + i);
       }
     }

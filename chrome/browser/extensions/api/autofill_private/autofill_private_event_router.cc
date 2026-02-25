@@ -51,8 +51,9 @@ AutofillPrivateEventRouter::AutofillPrivateEventRouter(
   // some unit tests try to create all context services, but don't initialize
   // the event router first.
   event_router_ = EventRouter::Get(context_);
-  if (!event_router_)
+  if (!event_router_) {
     return;
+  }
 
   personal_data_ =
       autofill::PersonalDataManagerFactory::GetForBrowserContext(context_);
@@ -132,8 +133,9 @@ void AutofillPrivateEventRouter::OnSyncShutdown(syncer::SyncService*) {
 
 void AutofillPrivateEventRouter::BroadcastCurrentData() {
   // Ignore any updates before data is loaded. This can happen in tests.
-  if (!(personal_data_ && personal_data_->IsDataLoaded()))
+  if (!(personal_data_ && personal_data_->IsDataLoaded())) {
     return;
+  }
 
   autofill_util::AddressEntryList address_list =
       extensions::autofill_util::GenerateAddressList(

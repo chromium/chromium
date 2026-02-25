@@ -65,8 +65,9 @@ GeneratedResolveTimezoneByGeolocationMethodShort::GetPrefObject() const {
 
 SetPrefResult GeneratedResolveTimezoneByGeolocationMethodShort::SetPref(
     const base::Value* value) {
-  if (!value->is_int())
+  if (!value->is_int()) {
     return SetPrefResult::PREF_TYPE_MISMATCH;
+  }
 
   // Check if preference is policy or primary-user controlled.
   if (ash::system::TimeZoneResolverManager::
@@ -91,8 +92,9 @@ SetPrefResult GeneratedResolveTimezoneByGeolocationMethodShort::SetPref(
                           ->GetTimezoneResolverManager()
                           ->GetEffectiveUserTimeZoneResolveMethod(
                               profile_->GetPrefs(), true);
-  if (new_value == current_value)
+  if (new_value == current_value) {
     return SetPrefResult::SUCCESS;
+  }
 
   profile_->GetPrefs()->SetInteger(::prefs::kResolveTimezoneByGeolocationMethod,
                                    static_cast<int>(new_value));

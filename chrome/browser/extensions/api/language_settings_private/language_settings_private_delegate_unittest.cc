@@ -90,8 +90,9 @@ class LanguageSettingsPrivateDelegateTest
       const std::string& language) override {}
   void OnHunspellDictionaryDownloadFailure(
       const std::string& language) override {
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
 #if BUILDFLAG(IS_WIN)

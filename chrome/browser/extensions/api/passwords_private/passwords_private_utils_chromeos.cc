@@ -21,16 +21,18 @@ bool IsOsReauthAllowedAsh(Profile* profile,
       !ash::password_visibility::AccountHasUserFacingPassword(
           g_browser_process->local_state(),
           ash::ProfileHelper::Get()->GetUserByProfile(profile)->GetAccountId());
-  if (user_cannot_manually_enter_password)
+  if (user_cannot_manually_enter_password) {
     return true;
+  }
   // TODO (b/238606050): This code branch does not seem to be used now.
   //  Clean up the code, or add token as a parameter to this method.
   ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
       ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile);
   const ash::quick_unlock::AuthToken* auth_token =
       quick_unlock_storage->GetAuthToken();
-  if (!auth_token || !auth_token->GetAge().has_value())
+  if (!auth_token || !auth_token->GetAge().has_value()) {
     return false;
+  }
 
   return auth_token->GetAge() <= auth_token_lifetime;
 }

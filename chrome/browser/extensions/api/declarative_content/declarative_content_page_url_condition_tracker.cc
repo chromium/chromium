@@ -51,8 +51,9 @@ DeclarativeContentPageUrlPredicate::Create(
   url_matcher_condition_set =
       url_matcher::URLMatcherFactory::CreateFromURLFilterDictionary(
           url_matcher_condition_factory, *dict, ++g_next_id, error);
-  if (!url_matcher_condition_set)
+  if (!url_matcher_condition_set) {
     return nullptr;
+  }
   return base::WrapUnique(new DeclarativeContentPageUrlPredicate(
       evaluator, url_matcher_condition_set));
 }
@@ -93,8 +94,9 @@ UpdateMatchesForCurrentUrl(bool request_evaluation_if_unchanged) {
   std::set<base::MatcherStringPattern::ID> new_matches =
       url_matcher_->MatchURL(web_contents()->GetVisibleURL());
   matches_.swap(new_matches);
-  if (matches_ != new_matches || request_evaluation_if_unchanged)
+  if (matches_ != new_matches || request_evaluation_if_unchanged) {
     request_evaluation_.Run(web_contents());
+  }
 }
 
 void DeclarativeContentPageUrlConditionTracker::PerWebContentsTracker::
@@ -160,8 +162,9 @@ void DeclarativeContentPageUrlConditionTracker::StopTrackingPredicates(
   std::vector<base::MatcherStringPattern::ID> condition_set_ids_to_remove;
   for (const void* group : predicate_groups) {
     auto loc = tracked_predicates_.find(group);
-    if (loc == tracked_predicates_.end())
+    if (loc == tracked_predicates_.end()) {
       continue;
+    }
     for (const DeclarativeContentPageUrlPredicate* predicate : loc->second) {
       condition_set_ids_to_remove.push_back(
           predicate->url_matcher_condition_set()->id());
@@ -223,8 +226,9 @@ void DeclarativeContentPageUrlConditionTracker::DeletePerWebContentsTracker(
 }
 
 void DeclarativeContentPageUrlConditionTracker::UpdateMatchesForAllTrackers() {
-  for (const auto& web_contents_tracker_pair : per_web_contents_tracker_)
+  for (const auto& web_contents_tracker_pair : per_web_contents_tracker_) {
     web_contents_tracker_pair.second->UpdateMatchesForCurrentUrl(false);
+  }
 }
 
 }  // namespace extensions

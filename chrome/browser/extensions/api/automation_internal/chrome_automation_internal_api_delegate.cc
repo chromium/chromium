@@ -43,8 +43,9 @@ bool ChromeAutomationInternalApiDelegate::CanRequestAutomation(
     const Extension* extension,
     const AutomationInfo* automation_info,
     content::WebContents* contents) {
-  if (automation_info->desktop)
+  if (automation_info->desktop) {
     return true;
+  }
 
   const GURL& url = contents->GetURL();
 
@@ -60,8 +61,9 @@ bool ChromeAutomationInternalApiDelegate::EnableTree(
   arc::ArcAccessibilityHelperBridge* bridge =
       arc::ArcAccessibilityHelperBridge::GetForBrowserContext(
           GetActiveUserContext());
-  if (bridge)
+  if (bridge) {
     return bridge->EnableTree(tree_id);
+  }
 #endif
   return false;
 }

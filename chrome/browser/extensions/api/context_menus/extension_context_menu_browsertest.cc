@@ -154,8 +154,9 @@ class ExtensionContextMenuBrowserTest : public ExtensionBrowserTest {
         menu_manager()->ExtensionIds();
     for (const auto& extension_id : extension_ids) {
       const MenuItem::OwnedList* list = menu_manager()->MenuItems(extension_id);
-      for (const auto& item : *list)
+      for (const auto& item : *list) {
         result.push_back(item.get());
+      }
     }
     return result;
   }

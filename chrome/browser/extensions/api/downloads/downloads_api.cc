@@ -365,8 +365,9 @@ base::DictValue DownloadItemToJSON(DownloadItem* download_item,
     const Extension* extension =
         ExtensionRegistry::Get(browser_context)
             ->GetExtensionById(by_ext->id(), ExtensionRegistry::EVERYTHING);
-    if (extension)
+    if (extension) {
       item.by_extension_name = extension->name();
+    }
   }
   // TODO(benjhayden): Implement fileSize.
   item.file_size = static_cast<double>(download_item->GetTotalBytes());
@@ -563,8 +564,9 @@ DownloadItem* GetDownload(content::BrowserContext* context,
   DownloadManager* incognito_manager = nullptr;
   GetManagers(context, include_incognito, &manager, &incognito_manager);
   DownloadItem* download_item = manager->GetDownload(id);
-  if (!download_item && incognito_manager)
+  if (!download_item && incognito_manager) {
     download_item = incognito_manager->GetDownload(id);
+  }
   return download_item;
 }
 
@@ -613,8 +615,9 @@ void CompileDownloadQueryOrderBy(const std::vector<std::string>& order_by_strs,
   }
 
   for (std::string_view term_str : order_by_strs) {
-    if (term_str.empty())
+    if (term_str.empty()) {
       continue;
+    }
     DownloadQuery::SortDirection direction = DownloadQuery::ASCENDING;
     if (term_str[0] == '-') {
       direction = DownloadQuery::DESCENDING;
@@ -681,8 +684,9 @@ void RunDownloadQuery(const downloads::DownloadQuery& query_in,
   }
   if (query_in.order_by) {
     CompileDownloadQueryOrderBy(*query_in.order_by, error, &query_out);
-    if (!error->empty())
+    if (!error->empty()) {
       return;
+    }
   }
 
   for (const auto query_json_field : query_in.ToValue()) {
@@ -699,14 +703,17 @@ void RunDownloadQuery(const downloads::DownloadQuery& query_in,
   DownloadQuery::DownloadVector all_items;
   if (query_in.id) {
     DownloadItem* download_item = manager->GetDownload(*query_in.id);
-    if (!download_item && incognito_manager)
+    if (!download_item && incognito_manager) {
       download_item = incognito_manager->GetDownload(*query_in.id);
-    if (download_item)
+    }
+    if (download_item) {
       all_items.push_back(download_item);
+    }
   } else {
     manager->GetAllDownloads(&all_items);
-    if (incognito_manager)
+    if (incognito_manager) {
       incognito_manager->GetAllDownloads(&all_items);
+    }
   }
   query_out.AddFilter(base::BindRepeating(&ShouldExport));
   query_out.Search(all_items.begin(), all_items.end(), results);
@@ -801,8 +808,9 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
   void DetermineFilenameTimeout() { CallFilenameCallback(); }
 
   void CallFilenameCallback() {
-    if (!filename_changed_)
+    if (!filename_changed_) {
       return;
+    }
 
     std::move(filename_changed_)
         .Run(determined_filename_,
@@ -889,8 +897,9 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
     for (auto& determiner : determiners_) {
       if (determiner.extension_id == extension_id) {
         found_info = true;
-        if (determiner.reported)
+        if (determiner.reported) {
           return false;
+        }
         determiner.reported = true;
         // Do not use filename if another determiner has already overridden the
         // filename and they take precedence. Extensions that were installed
@@ -904,16 +913,19 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
               determiner.install_time, determiner_.extension_id,
               determiner_.install_time, &winner_extension_id,
               &determined_filename_, &determined_conflict_action_, &warnings);
-          if (!warnings.empty())
+          if (!warnings.empty()) {
             WarningService::NotifyWarningsOnUI(browser_context, warnings);
-          if (winner_extension_id == determiner.extension_id)
+          }
+          if (winner_extension_id == determiner.extension_id) {
             determiner_ = determiner;
+          }
         }
         break;
       }
     }
-    if (!found_info)
+    if (!found_info) {
       return false;
+    }
     CheckAllDeterminersCalled();
     return true;
   }
@@ -938,8 +950,9 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
   // in that case, the callbacks will be null so they won't be Run.
   void CheckAllDeterminersCalled() {
     for (auto& determiner : determiners_) {
-      if (!determiner.reported)
+      if (!determiner.reported) {
         return;
+      }
     }
     CallFilenameCallback();
 
@@ -1019,8 +1032,9 @@ bool OnDeterminingFilenameWillDispatchCallback(
 }
 
 bool Fault(bool error, const char* message_in, std::string* message_out) {
-  if (!error)
+  if (!error) {
     return false;
+  }
   *message_out = message_in;
   return true;
 }
@@ -1123,8 +1137,9 @@ ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
     }
   }
 
-  if (options.save_as)
+  if (options.save_as) {
     download_params->set_prompt(*options.save_as);
+  }
 
   if (options.headers) {
     for (const downloads::HeaderNameValuePair& header : *options.headers) {
@@ -1144,8 +1159,9 @@ ExtensionFunction::ResponseAction DownloadsDownloadFunction::Run() {
   }
 
   std::string method_string = downloads::ToString(options.method);
-  if (!method_string.empty())
+  if (!method_string.empty()) {
     download_params->set_method(method_string);
+  }
   if (options.body) {
     download_params->set_post_body(
         network::ResourceRequestBody::CreateFromCopyOfBytes(
@@ -1223,8 +1239,9 @@ ExtensionFunction::ResponseAction DownloadsSearchFunction::Run() {
   DownloadQuery::DownloadVector results;
   std::string error;
   RunDownloadQuery(params->query, manager, incognito_manager, &error, &results);
-  if (!error.empty())
+  if (!error.empty()) {
     return RespondNow(Error(std::move(error)));
+  }
 
   base::ListValue json_results;
   for (DownloadManager::DownloadVector::const_iterator it = results.begin();
@@ -1303,8 +1320,10 @@ ExtensionFunction::ResponseAction DownloadsCancelFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
   DownloadItem* download_item = GetDownload(
       browser_context(), include_incognito_information(), params->download_id);
-  if (download_item && (download_item->GetState() == DownloadItem::IN_PROGRESS))
+  if (download_item &&
+      (download_item->GetState() == DownloadItem::IN_PROGRESS)) {
     download_item->Cancel(true);
+  }
   // |download_item| can be NULL if the download ID was invalid or if the
   // download is not currently active.  Either way, it's not a failure.
   RecordApiFunctions(DownloadsFunctionName::kDownloadsFunctionCancel);
@@ -1326,8 +1345,9 @@ ExtensionFunction::ResponseAction DownloadsEraseFunction::Run() {
   DownloadQuery::DownloadVector results;
   std::string error;
   RunDownloadQuery(params->query, manager, incognito_manager, &error, &results);
-  if (!error.empty())
+  if (!error.empty()) {
     return RespondNow(Error(std::move(error)));
+  }
   base::ListValue json_results;
   for (download::DownloadItem* result : results) {
     json_results.Append(static_cast<int>(result->GetId()));
@@ -1478,8 +1498,9 @@ ExtensionFunction::ResponseAction DownloadsShowFunction::Run() {
   DownloadItem* download_item = GetDownload(
       browser_context(), include_incognito_information(), params->download_id);
   std::string error;
-  if (InvalidId(download_item, &error))
+  if (InvalidId(download_item, &error)) {
     return RespondNow(Error(std::move(error)));
+  }
   download_item->ShowDownloadInShell();
   RecordApiFunctions(DownloadsFunctionName::kDownloadsFunctionShow);
   return RespondNow(NoArguments());
@@ -1734,8 +1755,9 @@ ExtensionFunction::ResponseAction DownloadsGetFileIconFunction::Run() {
   DCHECK(icon_size == 16 || icon_size == 32);
   float scale = 1.0;
   content::WebContents* web_contents = GetSenderWebContents();
-  if (web_contents && web_contents->GetRenderWidgetHostView())
+  if (web_contents && web_contents->GetRenderWidgetHostView()) {
     scale = web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor();
+  }
   EXTENSION_FUNCTION_VALIDATE(icon_extractor_->ExtractIconURLForPath(
       download_item->GetTargetFilePath(), scale,
       IconLoaderSizeFromPixelSize(icon_size),
@@ -1770,8 +1792,9 @@ ExtensionDownloadsEventRouter::ExtensionDownloadsEventRouter(
 ExtensionDownloadsEventRouter::~ExtensionDownloadsEventRouter() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   EventRouter* router = EventRouter::Get(profile_);
-  if (router)
+  if (router) {
     router->UnregisterObserver(this);
+  }
 }
 
 void ExtensionDownloadsEventRouter::SetDetermineFilenameTimeoutForTesting(
@@ -1784,8 +1807,9 @@ void ExtensionDownloadsEventRouter::SetUiEnabled(const Extension* extension,
                                                  bool enabled) {
   auto iter = ui_disabling_extensions_.find(extension);
   if (iter == ui_disabling_extensions_.end()) {
-    if (!enabled)
+    if (!enabled) {
       ui_disabling_extensions_.insert(extension);
+    }
   } else if (enabled) {
     ui_disabling_extensions_.erase(extension);
   }
@@ -1934,24 +1958,27 @@ void ExtensionDownloadsEventRouter::OnListenerRemoved(
     const EventListenerInfo& details) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DownloadManager* manager = notifier_.GetManager();
-  if (!manager)
+  if (!manager) {
     return;
+  }
   bool determiner_removed =
       (details.event_name == downloads::OnDeterminingFilename::kEventName);
   EventRouter* router = EventRouter::Get(profile_);
   bool any_listeners =
       router->HasEventListener(downloads::OnChanged::kEventName) ||
       router->HasEventListener(downloads::OnDeterminingFilename::kEventName);
-  if (!determiner_removed && any_listeners)
+  if (!determiner_removed && any_listeners) {
     return;
+  }
   DownloadManager::DownloadVector items;
   manager->GetAllDownloads(&items);
   for (DownloadManager::DownloadVector::const_iterator iter = items.begin();
        iter != items.end(); ++iter) {
     ExtensionDownloadsEventRouterData* data =
         ExtensionDownloadsEventRouterData::Get(*iter);
-    if (!data)
+    if (!data) {
       continue;
+    }
     if (determiner_removed) {
       // Notify any items that may be waiting for callbacks from this
       // extension/determiner.  This will almost always be a no-op, however, it
@@ -1973,8 +2000,9 @@ void ExtensionDownloadsEventRouter::OnDownloadCreated(
     DownloadManager* manager,
     DownloadItem* download_item) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!ShouldExport(*download_item))
+  if (!ShouldExport(*download_item)) {
     return;
+  }
 
   EventRouter* router = EventRouter::Get(profile_);
   // Avoid allocating a bunch of memory in DownloadItemToJSON if it isn't going
@@ -2092,8 +2120,9 @@ void ExtensionDownloadsEventRouter::OnDownloadRemoved(
     DownloadManager* manager,
     DownloadItem* download_item) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!ShouldExport(*download_item))
+  if (!ShouldExport(*download_item)) {
     return;
+  }
   DispatchEvent(events::DOWNLOADS_ON_ERASED, downloads::OnErased::kEventName,
                 true, Event::WillDispatchCallback(),
                 base::Value(static_cast<int>(download_item->GetId())));
@@ -2106,8 +2135,9 @@ void ExtensionDownloadsEventRouter::DispatchEvent(
     Event::WillDispatchCallback will_dispatch_callback,
     base::Value arg) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!EventRouter::Get(profile_))
+  if (!EventRouter::Get(profile_)) {
     return;
+  }
   base::ListValue args;
   args.Append(std::move(arg));
   // The downloads system wants to share on-record events with off-record
@@ -2135,19 +2165,22 @@ void ExtensionDownloadsEventRouter::OnExtensionUnloaded(
     UnloadedExtensionReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto iter = ui_disabling_extensions_.find(extension);
-  if (iter != ui_disabling_extensions_.end())
+  if (iter != ui_disabling_extensions_.end()) {
     ui_disabling_extensions_.erase(iter);
+  }
 }
 
 void ExtensionDownloadsEventRouter::CheckForHistoryFilesRemoval() {
   static const int kFileExistenceRateLimitSeconds = 10;
   DownloadManager* manager = notifier_.GetManager();
-  if (!manager)
+  if (!manager) {
     return;
+  }
   base::Time now(base::Time::Now());
   int delta = now.ToTimeT() - last_checked_removal_.ToTimeT();
-  if (delta <= kFileExistenceRateLimitSeconds)
+  if (delta <= kFileExistenceRateLimitSeconds) {
     return;
+  }
   last_checked_removal_ = now;
   manager->CheckForHistoryFilesRemoval();
 }

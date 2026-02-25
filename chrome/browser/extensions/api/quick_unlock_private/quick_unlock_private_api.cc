@@ -86,8 +86,9 @@ void ComputeActiveModes(Profile* profile, ActiveModeCallback result) {
       base::BindOnce(
           [](ActiveModeCallback result, bool is_set) {
             QuickUnlockModeList modes;
-            if (is_set)
+            if (is_set) {
               modes.push_back(quick_unlock_private::QuickUnlockMode::kPin);
+            }
             std::move(result).Run(modes);
           },
           std::move(result)));
@@ -96,8 +97,9 @@ void ComputeActiveModes(Profile* profile, ActiveModeCallback result) {
 // Returns true if |a| and |b| contain the same elements. The elements do not
 // need to be in the same order.
 bool AreModesEqual(const QuickUnlockModeList& a, const QuickUnlockModeList& b) {
-  if (a.size() != b.size())
+  if (a.size() != b.size()) {
     return false;
+  }
 
   // This is a slow comparison algorithm, but the number of entries in |a| and
   // |b| will always be very low (0-3 items) so it doesn't matter.
@@ -142,13 +144,15 @@ CredentialProblem GetCredentialProblemForPin(const std::string& pin,
       GetSanitizedPolicyPinMinMaxLength(pref_service);
 
   // Check if the PIN is shorter than the minimum specified length.
-  if (pin.size() < static_cast<size_t>(min_length))
+  if (pin.size() < static_cast<size_t>(min_length)) {
     return CredentialProblem::kTooShort;
+  }
 
   // If the maximum specified length is zero, there is no maximum length.
   // Otherwise check if the PIN is longer than the maximum specified length.
-  if (max_length != 0 && pin.size() > static_cast<size_t>(max_length))
+  if (max_length != 0 && pin.size() > static_cast<size_t>(max_length)) {
     return CredentialProblem::kTooLong;
+  }
 
   return CredentialProblem::kNone;
 }
@@ -163,8 +167,9 @@ CredentialProblem GetCredentialProblemForPin(const std::string& pin,
 bool IsPinDifficultEnough(const std::string& pin) {
   // If the pin length is |kMinLengthForNonWeakPin| or less, there is no need to
   // check for same character and increasing pin.
-  if (pin.size() <= kMinLengthForNonWeakPin)
+  if (pin.size() <= kMinLengthForNonWeakPin) {
     return true;
+  }
 
   // Check if it is on the list of most common PINs.
   if (std::ranges::contains(kMostCommonPins, pin)) {
@@ -185,8 +190,9 @@ bool IsPinDifficultEnough(const std::string& pin) {
   }
 
   // PIN is considered weak if any of these conditions is met.
-  if (is_same || is_increasing || is_decreasing)
+  if (is_same || is_increasing || is_decreasing) {
     return false;
+  }
 
   return true;
 }
@@ -195,8 +201,9 @@ Profile* GetActiveProfile(content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   // When OOBE continues in-session as Furst Run UI, it is still executed
   // under Sign-In profile.
-  if (ash::ProfileHelper::IsSigninProfile(profile))
+  if (ash::ProfileHelper::IsSigninProfile(profile)) {
     return profile_util::GetPrimaryUserProfile();
+  }
 
   return profile;
 }
@@ -424,8 +431,9 @@ QuickUnlockPrivateCheckCredentialFunction::Run() {
   // Check and return the problems.
   std::vector<CredentialProblem>& warnings = result->warnings;
   std::vector<CredentialProblem>& errors = result->errors;
-  if (!IsPinNumeric(credential))
+  if (!IsPinNumeric(credential)) {
     errors.push_back(CredentialProblem::kContainsNondigit);
+  }
 
   CredentialProblem length_problem =
       GetCredentialProblemForPin(credential, pref_service);
@@ -493,11 +501,13 @@ ExtensionFunction::ResponseAction QuickUnlockPrivateSetModesFunction::Run() {
   params_ = SetModes::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
-  if (params_->modes.size() != params_->credentials.size())
+  if (params_->modes.size() != params_->credentials.size()) {
     return RespondNow(Error(kModesAndCredentialsLengthMismatch));
+  }
 
-  if (params_->modes.size() > 1)
+  if (params_->modes.size() > 1) {
     return RespondNow(Error(kMultipleModesNotSupported));
+  }
 
   std::optional<std::string> error =
       CheckTokenValidity(browser_context(), params_->token);
@@ -522,15 +532,17 @@ ExtensionFunction::ResponseAction QuickUnlockPrivateSetModesFunction::Run() {
   bool allow_weak =
       pref_service->GetBoolean(ash::prefs::kPinUnlockWeakPinsAllowed);
   for (size_t i = 0; i < params_->modes.size(); ++i) {
-    if (params_->credentials[i].empty())
+    if (params_->credentials[i].empty()) {
       continue;
+    }
 
     if (params_->modes[i] != QuickUnlockMode::kPin) {
       continue;
     }
 
-    if (!IsPinNumeric(params_->credentials[i]))
+    if (!IsPinNumeric(params_->credentials[i])) {
       return RespondNow(Error(kInvalidPIN));
+    }
 
     CredentialProblem problem =
         GetCredentialProblemForPin(params_->credentials[i], pref_service);
@@ -538,8 +550,9 @@ ExtensionFunction::ResponseAction QuickUnlockPrivateSetModesFunction::Run() {
       return RespondNow(Error(kInvalidCredential));
     }
 
-    if (!allow_weak && !IsPinDifficultEnough(params_->credentials[i]))
+    if (!allow_weak && !IsPinDifficultEnough(params_->credentials[i])) {
       return RespondNow(Error(kWeakCredential));
+    }
   }
 
   ComputeActiveModes(
@@ -619,8 +632,9 @@ void QuickUnlockPrivateSetModesFunction::PinRemoveCallComplete(bool result) {
 
 void QuickUnlockPrivateSetModesFunction::ModeChangeComplete(
     const std::vector<QuickUnlockMode>& updated_modes) {
-  if (!AreModesEqual(initial_modes_, updated_modes))
+  if (!AreModesEqual(initial_modes_, updated_modes)) {
     FireEvent(updated_modes);
+  }
 
   const user_manager::User* const user =
       ash::ProfileHelper::Get()->GetUserByProfile(

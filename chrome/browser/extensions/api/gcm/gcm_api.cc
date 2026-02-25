@@ -184,8 +184,9 @@ ExtensionFunction::ResponseAction GcmSendFunction::Run() {
   gcm::OutgoingMessage outgoing_message;
   outgoing_message.id = params->message.message_id;
   outgoing_message.data = params->message.data.additional_properties;
-  if (params->message.time_to_live)
+  if (params->message.time_to_live) {
     outgoing_message.time_to_live = *params->message.time_to_live;
+  }
 
   GetGCMDriver()->Send(
       extension()->id(), params->message.destination_id, outgoing_message,
@@ -232,8 +233,9 @@ void GcmJsEventRouter::OnMessage(const std::string& app_id,
                                  const gcm::IncomingMessage& message) {
   api::gcm::OnMessage::Message message_arg;
   message_arg.data.additional_properties = message.data;
-  if (!message.sender_id.empty())
+  if (!message.sender_id.empty()) {
     message_arg.from = message.sender_id;
+  }
   if (!message.collapse_key.empty()) {
     message_arg.collapse_key = message.collapse_key;
   }

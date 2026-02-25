@@ -293,8 +293,9 @@ void WebAuthFlow::WebContentsDestroyed() {
 }
 
 void WebAuthFlow::TitleWasSet(content::NavigationEntry* entry) {
-  if (delegate_)
+  if (delegate_) {
     delegate_->OnAuthFlowTitleChange(base::UTF16ToUTF8(entry->GetTitle()));
+  }
 }
 
 void WebAuthFlow::DidStopLoading() {
@@ -327,8 +328,9 @@ void WebAuthFlow::DidFinishNavigation(
   // Websites may create and remove <iframe> during the auth flow. In
   // particular, to integrate CAPTCHA tests. Chrome shouldn't abort the auth
   // flow if a navigation failed in a sub-frame. https://crbug.com/1049565.
-  if (!navigation_handle->IsInPrimaryMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
+  }
 
   if (delegate_) {
     delegate_->OnNavigationFinished(navigation_handle);

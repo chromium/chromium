@@ -19,8 +19,9 @@ base::Value CopyBinaryValueToIntegerList(
     const base::Value::BlobStorage& input) {
   base::ListValue list;
   list.reserve(input.size());
-  for (int c : input)
+  for (int c : input) {
     list.Append(c);
+  }
   return base::Value(std::move(list));
 }
 

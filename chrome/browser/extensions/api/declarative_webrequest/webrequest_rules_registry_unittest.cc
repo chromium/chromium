@@ -218,8 +218,9 @@ class WebRequestRulesRegistryTest : public testing::Test {
     rule.id = rule_id;
     rule.priority = 1;
     rule.actions.Append(std::move(action_dict));
-    for (auto* attribute : attributes)
+    for (auto* attribute : attributes) {
       rule.conditions.Append(CreateCondition(*attribute));
+    }
     return rule;
   }
 
@@ -282,8 +283,9 @@ TEST_F(WebRequestRulesRegistryTest, AddRulesImpl) {
   EXPECT_EQ(2u, matches.size());
 
   std::set<WebRequestRule::GlobalRuleId> matches_ids;
-  for (const auto* match : matches)
+  for (const auto* match : matches) {
     matches_ids.insert(match->id());
+  }
   EXPECT_TRUE(matches_ids.contains(std::make_pair(kExtensionId, kRuleId1)));
   EXPECT_TRUE(matches_ids.contains(std::make_pair(kExtensionId, kRuleId2)));
 

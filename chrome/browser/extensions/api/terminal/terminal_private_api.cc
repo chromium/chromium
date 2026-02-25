@@ -196,8 +196,9 @@ std::string GetContainerFeaturesArg() {
   // sufficient.
   for (vm_tools::cicerone::ContainerFeature feature :
        crostini::GetContainerFeatures()) {
-    if (!result.empty())
+    if (!result.empty()) {
       result += ",";
+    }
     result += base::NumberToString(static_cast<int>(feature));
   }
   return result;
@@ -293,8 +294,9 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
       extensions::ExtensionsBrowserClient::Get()->GetUserIdHashFromContext(
           browser_context());
   content::WebContents* caller_contents = GetSenderWebContents();
-  if (!caller_contents)
+  if (!caller_contents) {
     return RespondNow(Error("No web contents."));
+  }
 
   // Passing --crosh-command overrides any JS process name.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -327,8 +329,9 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
     // command=vmshell: ensure --owner_id, --vm_name, --target_container, --cwd
     // are set, and the specified vm/container is running.
     base::CommandLine cmdline((base::FilePath(kVmShellCommand)));
-    if (!args)
+    if (!args) {
       args.emplace();
+    }
     args->insert(args->begin(), kVmShellCommand);
     base::CommandLine params_args(*args);
     VLOG(1) << "Original cmdline= " << params_args.GetCommandLineString();
@@ -346,8 +349,9 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
     // Unlike the other switches, this is computed here directly rather than
     // taken from |args|.
     std::string container_features = GetContainerFeaturesArg();
-    if (!container_features.empty())
+    if (!container_features.empty()) {
       cmdline.AppendSwitchASCII(kSwitchContainerFeatures, container_features);
+    }
 
     // Append trailing passthrough args if any.  E.g. `-- vim file.txt`
     auto passthrough_args = params_args.GetArgs();

@@ -239,8 +239,9 @@ void BrowsingDataRemoverFunction::OnBrowsingDataRemoverDone(
 void BrowsingDataRemoverFunction::OnTaskFinished() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_GT(pending_tasks_, 0);
-  if (--pending_tasks_ > 0)
+  if (--pending_tasks_ > 0) {
     return;
+  }
   observation_.Reset();
   Respond(NoArguments());
   Release();  // Balanced in StartRemoving.
@@ -369,8 +370,9 @@ void BrowsingDataRemoverFunction::StartRemoving() {
     for (const auto& origin : origins_) {
       std::string domain = GetDomainAndRegistry(
           origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-      if (domain.empty())
+      if (domain.empty()) {
         domain = origin.host();  // IP address or internal hostname.
+      }
       filter_builder->AddRegisterableDomain(domain);
     }
     remover->RemoveWithFilterAndReply(
@@ -400,11 +402,13 @@ bool BrowsingDataRemoverFunction::ParseOriginTypeMask(
 
   const base::Value* origin_type_dict =
       options.Find(extension_browsing_data_api_constants::kOriginTypesKey);
-  if (!origin_type_dict)
+  if (!origin_type_dict) {
     return true;
+  }
 
-  if (!origin_type_dict->is_dict())
+  if (!origin_type_dict->is_dict()) {
     return false;
+  }
 
   const base::DictValue& origin_type = origin_type_dict->GetDict();
 
@@ -415,8 +419,9 @@ bool BrowsingDataRemoverFunction::ParseOriginTypeMask(
   const base::Value* option = origin_type.Find(
       extension_browsing_data_api_constants::kUnprotectedWebKey);
   if (option) {
-    if (!option->is_bool())
+    if (!option->is_bool()) {
       return false;
+    }
 
     *origin_type_mask |=
         option->GetBool()
@@ -428,8 +433,9 @@ bool BrowsingDataRemoverFunction::ParseOriginTypeMask(
   option =
       origin_type.Find(extension_browsing_data_api_constants::kProtectedWebKey);
   if (option) {
-    if (!option->is_bool())
+    if (!option->is_bool()) {
       return false;
+    }
 
     *origin_type_mask |=
         option->GetBool()
@@ -441,8 +447,9 @@ bool BrowsingDataRemoverFunction::ParseOriginTypeMask(
   option =
       origin_type.Find(extension_browsing_data_api_constants::kExtensionsKey);
   if (option) {
-    if (!option->is_bool())
+    if (!option->is_bool()) {
       return false;
+    }
 
     *origin_type_mask |=
         option->GetBool() ? chrome_browsing_data_remover::ORIGIN_TYPE_EXTENSION
@@ -475,14 +482,16 @@ BrowsingDataRemoverFunction::ParseOrigins(const base::ListValue& list_value) {
 // Returns false if parse was not successful, i.e. if 'dataToRemove' is not
 // present or any data-type keys don't have supported (boolean) values.
 bool BrowsingDataRemoveFunction::GetRemovalMask(uint64_t* removal_mask) {
-  if (args().size() <= 1 || !args()[1].is_dict())
+  if (args().size() <= 1 || !args()[1].is_dict()) {
     return false;
+  }
 
   std::vector<std::string> unsupported_data_types;
   *removal_mask = 0;
   for (const auto kv : args()[1].GetDict()) {
-    if (!kv.second.is_bool())
+    if (!kv.second.is_bool()) {
       return false;
+    }
     if (kv.second.GetBool()) {
       uint64_t mask = MaskForKey(kv.first.c_str());
       if (mask == 0) {

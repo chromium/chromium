@@ -97,8 +97,9 @@ ValueStore::WriteResult SyncableSettingsStorage::Set(
     WriteOptions options, const std::string& key, const base::Value& value) {
   DCHECK(IsOnBackendSequence());
   WriteResult result = HandleResult(delegate_->Set(options, key, value));
-  if (!result.status().ok())
+  if (!result.status().ok()) {
     return result;
+  }
   SyncResultIfEnabled(result);
   return result;
 }
@@ -108,8 +109,9 @@ ValueStore::WriteResult SyncableSettingsStorage::Set(
     const base::DictValue& values) {
   DCHECK(IsOnBackendSequence());
   WriteResult result = HandleResult(delegate_->Set(options, values));
-  if (!result.status().ok())
+  if (!result.status().ok()) {
     return result;
+  }
   SyncResultIfEnabled(result);
   return result;
 }
@@ -118,8 +120,9 @@ ValueStore::WriteResult SyncableSettingsStorage::Remove(
     const std::string& key) {
   DCHECK(IsOnBackendSequence());
   WriteResult result = HandleResult(delegate_->Remove(key));
-  if (!result.status().ok())
+  if (!result.status().ok()) {
     return result;
+  }
   SyncResultIfEnabled(result);
   return result;
 }
@@ -128,8 +131,9 @@ ValueStore::WriteResult SyncableSettingsStorage::Remove(
     const std::vector<std::string>& keys) {
   DCHECK(IsOnBackendSequence());
   WriteResult result = HandleResult(delegate_->Remove(keys));
-  if (!result.status().ok())
+  if (!result.status().ok()) {
     return result;
+  }
   SyncResultIfEnabled(result);
   return result;
 }
@@ -137,22 +141,25 @@ ValueStore::WriteResult SyncableSettingsStorage::Remove(
 ValueStore::WriteResult SyncableSettingsStorage::Clear() {
   DCHECK(IsOnBackendSequence());
   WriteResult result = HandleResult(delegate_->Clear());
-  if (!result.status().ok())
+  if (!result.status().ok()) {
     return result;
+  }
   SyncResultIfEnabled(result);
   return result;
 }
 
 void SyncableSettingsStorage::SyncResultIfEnabled(
     const ValueStore::WriteResult& result) {
-  if (result.changes().empty())
+  if (result.changes().empty()) {
     return;
+  }
 
   if (sync_processor_.get()) {
     std::optional<syncer::ModelError> error =
         sync_processor_->SendChanges(result.changes());
-    if (error.has_value())
+    if (error.has_value()) {
       StopSyncing();
+    }
   } else {
     // Tell sync to try and start soon, because syncable changes to sync_type_
     // have started happening. This will cause sync to call us back
@@ -189,8 +196,9 @@ std::optional<syncer::ModelError>
 SyncableSettingsStorage::SendLocalSettingsToSync(base::DictValue local_state) {
   DCHECK(IsOnBackendSequence());
 
-  if (local_state.empty())
+  if (local_state.empty()) {
     return std::nullopt;
+  }
 
   // Transform the current settings into a list of sync changes.
   value_store::ValueStoreChangeList changes;
@@ -201,8 +209,9 @@ SyncableSettingsStorage::SendLocalSettingsToSync(base::DictValue local_state) {
 
   std::optional<syncer::ModelError> error =
       sync_processor_->SendChanges(std::move(changes));
-  if (error.has_value())
+  if (error.has_value()) {
     StopSyncing();
+  }
   return error;
 }
 
@@ -239,8 +248,9 @@ SyncableSettingsStorage::OverwriteLocalSettingsWithSync(
         std::move(pair.second)));
   }
 
-  if (changes->empty())
+  if (changes->empty()) {
     return std::nullopt;
+  }
   return ProcessSyncChanges(std::move(changes));
 }
 
@@ -332,8 +342,9 @@ std::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
                  value_store::ValueStoreChange::ToValue(std::move(changes)));
 
   // TODO(kalman): Something sensible with multiple errors.
-  if (errors.empty())
+  if (errors.empty()) {
     return std::nullopt;
+  }
   return errors[0];
 }
 

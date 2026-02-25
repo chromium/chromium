@@ -115,8 +115,9 @@ api::side_panel::PanelOptions SidePanelService::GetOptions(
   // The specific `tab_id` may have already been saved.
   if (tab_id != default_tab_id) {
     auto specific_tab_options = tab_panel_options.find(tab_id);
-    if (specific_tab_options != tab_panel_options.end())
+    if (specific_tab_options != tab_panel_options.end()) {
       return specific_tab_options->second.Clone();
+    }
   }
 
   // Fall back to the default tab if no tab ID was specified or entries for the
@@ -159,8 +160,9 @@ void SidePanelService::SetOptions(const Extension& extension,
       };
 
   TabId tab_id = SessionID::InvalidValue().id();
-  if (options.tab_id)
+  if (options.tab_id) {
     tab_id = *options.tab_id;
+  }
   TabPanelOptions& extension_panel_options = panels_[extension.id()];
   auto it = extension_panel_options.find(tab_id);
 

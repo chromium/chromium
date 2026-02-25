@@ -92,8 +92,9 @@ IdentityLaunchWebAuthFlowFunction::IdentityLaunchWebAuthFlowFunction() {
 }
 
 IdentityLaunchWebAuthFlowFunction::~IdentityLaunchWebAuthFlowFunction() {
-  if (auth_flow_)
+  if (auth_flow_) {
     auth_flow_.release()->DetachDelegateAndDelete();
+  }
 }
 
 ExtensionFunction::ResponseAction IdentityLaunchWebAuthFlowFunction::Run() {

@@ -28,8 +28,9 @@ namespace {
 void CheckExtensions(const std::vector<base::FilePath::StringType>& expected,
                      const std::vector<base::FilePath::StringType>& actual) {
   EXPECT_EQ(expected.size(), actual.size());
-  if (expected.size() != actual.size())
+  if (expected.size() != actual.size()) {
     return;
+  }
 
   for (size_t i = 0; i < expected.size(); ++i) {
     EXPECT_EQ(expected[i], actual[i]);
@@ -41,8 +42,9 @@ AcceptOption BuildAcceptOption(const std::string& description,
                                const std::string& extensions) {
   AcceptOption option;
 
-  if (!description.empty())
+  if (!description.empty()) {
     option.description = description;
+  }
 
   if (!mime_types.empty()) {
     option.mime_types = base::SplitString(

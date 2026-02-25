@@ -102,14 +102,16 @@ var rootNode = null;
 var url = '';
 
 function findAutomationNode(root, condition) {
-  if (condition(root))
+  if (condition(root)) {
     return root;
+  }
 
   var children = root.children;
   for (var i = 0; i < children.length; i++) {
     var result = findAutomationNode(children[i], condition);
-    if (result)
+    if (result) {
       return result;
+    }
   }
   return null;
 }
@@ -848,21 +850,26 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,
   int automation_total_dur = 0;
   for (const base::Value& event : *trace_events) {
     const std::string* cat = event.GetDict().FindString("cat");
-    if (!cat || *cat != "accessibility")
+    if (!cat || *cat != "accessibility") {
       continue;
+    }
 
     const std::string* name = event.GetDict().FindString("name");
-    if (!name)
+    if (!name) {
       continue;
+    }
 
     std::optional<int> dur = event.GetDict().FindInt("dur");
-    if (!dur)
+    if (!dur) {
       continue;
+    }
 
-    if (*name == "AutomationAXTreeWrapper::OnAccessibilityEvents")
+    if (*name == "AutomationAXTreeWrapper::OnAccessibilityEvents") {
       automation_total_dur += *dur;
-    else if (*name == "RenderAccessibilityImpl::SendPendingAccessibilityEvents")
+    } else if (*name ==
+               "RenderAccessibilityImpl::SendPendingAccessibilityEvents") {
       renderer_total_dur += *dur;
+    }
   }
 
   ASSERT_GT(automation_total_dur, 0);

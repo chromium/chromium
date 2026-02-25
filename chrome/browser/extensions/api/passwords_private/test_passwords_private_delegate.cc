@@ -149,8 +149,9 @@ void TestPasswordsPrivateDelegate::RemoveBackupPassword(int id) {
 }
 
 void TestPasswordsPrivateDelegate::RemovePasswordException(int id) {
-  if (current_exceptions_.empty())
+  if (current_exceptions_.empty()) {
     return;
+  }
 
   // Since this is just mock data, remove the first element regardless of the
   // data contained.
@@ -424,15 +425,17 @@ void TestPasswordsPrivateDelegate::SetSavedPasswordsPresenter(
 void TestPasswordsPrivateDelegate::SendSavedPasswordsList() {
   PasswordsPrivateEventRouter* router =
       PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
-  if (router)
+  if (router) {
     router->OnSavedPasswordsListChanged(current_entries_);
+  }
 }
 
 void TestPasswordsPrivateDelegate::SendPasswordExceptionsList() {
   PasswordsPrivateEventRouter* router =
       PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
-  if (router)
+  if (router) {
     router->OnPasswordExceptionsListChanged(current_exceptions_);
+  }
 }
 
 bool TestPasswordsPrivateDelegate::IsCredentialPresentInInsecureCredentialsList(

@@ -37,8 +37,9 @@ class AudioWaiter : public content::WebContentsObserver {
   void WaitForAudible() {
     DCHECK(!expected_state_);
 
-    if (web_contents()->IsCurrentlyAudible())
+    if (web_contents()->IsCurrentlyAudible()) {
       return;
+    }
 
     expected_state_ = true;
     run_loop_.Run();
@@ -47,8 +48,9 @@ class AudioWaiter : public content::WebContentsObserver {
   void WaitForInaudible() {
     DCHECK(!expected_state_);
 
-    if (!web_contents()->IsCurrentlyAudible())
+    if (!web_contents()->IsCurrentlyAudible()) {
       return;
+    }
 
     expected_state_ = false;
     run_loop_.Run();

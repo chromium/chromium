@@ -130,8 +130,9 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
         AppWindowRegistry::Get(profile())->GetAppWindowsForApp(app_id);
 
     AppWindowRegistry::const_iterator iter = app_windows.begin();
-    if (iter != app_windows.end())
+    if (iter != app_windows.end()) {
       return *iter;
+    }
 
     return nullptr;
   }
@@ -169,8 +170,9 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
 
     std::set<std::string> notifications =
         GetDisplayHelper()->GetNotificationIdsForExtension(extension->url());
-    if (notifications.size() != 1)
+    if (notifications.size() != 1) {
       return nullptr;
+    }
 
     return GetDisplayHelper()->GetByNotificationId(*notifications.begin());
   }

@@ -140,8 +140,9 @@ class MockSyncChangeProcessor : public syncer::SyncChangeProcessor {
                                  const std::string& key) {
     std::vector<SettingSyncData*> matching_changes;
     for (const std::unique_ptr<SettingSyncData>& change : changes_) {
-      if (change->extension_id() == extension_id && change->key() == key)
+      if (change->extension_id() == extension_id && change->key() == key) {
         matching_changes.push_back(change.get());
+      }
     }
     if (matching_changes.empty()) {
       ADD_FAILURE() << "No matching changes for " << extension_id << "/" <<
@@ -243,8 +244,9 @@ class ExtensionSettingsSyncTest : public testing::Test {
       std::unique_ptr<SettingSyncData> sync_data(new SettingSyncData(data));
       std::unique_ptr<SettingSyncDataList>& list_for_extension =
           as_map[sync_data->extension_id()];
-      if (!list_for_extension)
+      if (!list_for_extension) {
         list_for_extension = std::make_unique<SettingSyncDataList>();
+      }
       list_for_extension->push_back(std::move(sync_data));
     }
     return as_map;

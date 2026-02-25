@@ -108,8 +108,9 @@ IN_PROC_BROWSER_TEST_F(ProcessesApiTest, OnUpdatedWithMemoryRefreshTypes) {
       task_manager::REFRESH_TYPE_WEBCACHE_STATS,
   };
 
-  for (const auto& type : kOnUpdatedRefreshTypes)
+  for (const auto& type : kOnUpdatedRefreshTypes) {
     EXPECT_TRUE(task_manager->IsResourceRefreshEnabled(type));
+  }
 
   // Unload the extensions and make sure the listeners count is updated.
   UnloadExtension(extension->id());

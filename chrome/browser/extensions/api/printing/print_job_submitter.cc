@@ -71,8 +71,9 @@ bool g_skip_confirmation_dialog_for_testing = false;
 // Returns true if print job request dialog should be shown.
 bool IsUserConfirmationRequired(content::BrowserContext* browser_context,
                                 const std::string& extension_id) {
-  if (g_skip_confirmation_dialog_for_testing)
+  if (g_skip_confirmation_dialog_for_testing) {
     return false;
+  }
   const base::ListValue& list =
       Profile::FromBrowserContext(browser_context)
           ->GetPrefs()
@@ -100,8 +101,9 @@ PrintJobSubmitter::PrintJobSubmitter(
       local_printer_(local_printer),
       callback_(std::move(callback)) {
   DCHECK(extension);
-  if (native_window)
+  if (native_window) {
     native_window_tracker_ = ui::NativeWindowTracker::Create(native_window);
+  }
 }
 
 PrintJobSubmitter::~PrintJobSubmitter() = default;
@@ -136,8 +138,9 @@ bool PrintJobSubmitter::CheckContentType() const {
 
 bool PrintJobSubmitter::CheckPrintTicket() {
   settings_ = ParsePrintTicket(request_.job.ticket.ToValue());
-  if (!settings_)
+  if (!settings_) {
     return false;
+  }
   settings_->set_title(base::UTF8ToUTF16(request_.job.title));
   settings_->set_device_name(base::UTF8ToUTF16(request_.job.printer_id));
   return true;

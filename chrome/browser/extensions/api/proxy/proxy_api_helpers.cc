@@ -57,8 +57,9 @@ bool CreatePACScriptFromDataURL(
     const std::string& pac_script_url_base64_encoded,
     std::string* pac_script) {
   GURL url(pac_script_url_base64_encoded);
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return false;
+  }
 
   std::string mime_type;
   std::string charset;
@@ -118,8 +119,9 @@ bool GetPacUrlFromExtensionPref(const base::DictValue& proxy_config,
                                 bool* bad_message) {
   const base::DictValue* pac_dict =
       proxy_config.FindDict(proxy_api_constants::kProxyConfigPacScript);
-  if (!pac_dict)
+  if (!pac_dict) {
     return true;
+  }
 
   // TODO(battre): Handle UTF-8 URLs (http://crbug.com/72692).
   std::string pac_url;
@@ -148,8 +150,9 @@ bool GetPacDataFromExtensionPref(const base::DictValue& proxy_config,
                                  bool* bad_message) {
   const base::DictValue* pac_dict =
       proxy_config.FindDict(proxy_api_constants::kProxyConfigPacScript);
-  if (!pac_dict)
+  if (!pac_dict) {
     return true;
+  }
 
   std::string pac_data;
   const base::Value* pac_val =
@@ -188,8 +191,9 @@ bool GetProxyServer(const base::DictValue& proxy_server,
   }
 
   net::ProxyServer::Scheme scheme = net::GetSchemeFromUriScheme(scheme_string);
-  if (scheme == net::ProxyServer::SCHEME_INVALID)
+  if (scheme == net::ProxyServer::SCHEME_INVALID) {
     scheme = default_scheme;
+  }
 
   // TODO(battre): handle UTF-8 in hostnames (http://crbug.com/72692).
   std::u16string host16;
@@ -230,8 +234,9 @@ bool GetProxyRulesStringFromExtensionPref(const base::DictValue& proxy_config,
                                           bool* bad_message) {
   const base::DictValue* proxy_rules =
       proxy_config.FindDict(proxy_api_constants::kProxyConfigRules);
-  if (!proxy_rules)
+  if (!proxy_rules) {
     return true;
+  }
 
   // Local data into which the parameters will be parsed. has_proxy describes
   // whether a setting was found for the scheme; proxy_server holds the
@@ -277,8 +282,9 @@ bool GetProxyRulesStringFromExtensionPref(const base::DictValue& proxy_config,
   for (size_t i = 1; i <= SCHEME_MAX; ++i) {
     if (has_proxy[i]) {
       // http=foopy:4010;ftp=socks5://foopy2:80
-      if (!proxy_pref.empty())
+      if (!proxy_pref.empty()) {
         proxy_pref.append(";");
+      }
       proxy_pref.append(kSchemeNames[i]);
       proxy_pref.append("=");
       proxy_pref.append(net::ProxyServerToProxyUri(proxy_server[i]));
@@ -296,8 +302,9 @@ bool JoinUrlList(const base::ListValue& list,
                  bool* bad_message) {
   std::string result;
   for (const auto& val : list) {
-    if (!result.empty())
+    if (!result.empty()) {
       result.append(joiner);
+    }
 
     // TODO(battre): handle UTF-8 (http://crbug.com/72692).
     const std::string* entry = val.GetIfString();
@@ -323,8 +330,9 @@ bool GetBypassListFromExtensionPref(const base::DictValue& proxy_config,
                                     bool* bad_message) {
   const base::DictValue* proxy_rules =
       proxy_config.FindDict(proxy_api_constants::kProxyConfigRules);
-  if (!proxy_rules)
+  if (!proxy_rules) {
     return true;
+  }
 
   const base::Value* bypass_list =
       proxy_rules->Find(proxy_api_constants::kProxyConfigBypassList);
@@ -523,8 +531,9 @@ base::ListValue TokenizeToStringList(const std::string& in,
                                      const std::string& delims) {
   base::ListValue out;
   base::StringTokenizer entries(in, delims);
-  while (entries.GetNext())
+  while (entries.GetNext()) {
     out.Append(entries.token_piece());
+  }
   return out;
 }
 

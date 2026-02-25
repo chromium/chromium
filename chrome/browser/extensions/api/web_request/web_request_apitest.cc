@@ -4872,8 +4872,9 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
         self.numScriptRequests = 0;
         self.numUUIDInPackageScriptRequests = 0;
         chrome.webRequest.onBeforeRequest.addListener(function(details) {
-          if (details.url.includes('test.html'))
+          if (details.url.includes('test.html')) {
             self.numMainResourceRequests++;
+          }
           else if (details.url.includes('web_bundle.wbn'))
             self.numWebBundleRequests++;
           else if (details.url.includes('test.js'))
@@ -5462,8 +5463,9 @@ IN_PROC_BROWSER_TEST_P(SubresourceWebBundlesWebRequestApiTest,
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
                      base::StringPrintf(R"(
         chrome.webRequest.onBeforeRequest.addListener(function(details) {
-          if (!details.url.includes('redirect.wbn'))
+          if (!details.url.includes('redirect.wbn')) {
             return;
+          }
           const redirectUrl =
               details.url.replace('redirect.wbn', 'redirected.wbn');
           return {redirectUrl};
@@ -7054,8 +7056,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
          // test.
          async function flushStorage() {
            console.assert(!storageComplete);
-           if (!isUsingStorage)
+           if (!isUsingStorage) {
              return;
+           }
            await new Promise((resolve) => {
              storageComplete = resolve;
            });
@@ -7070,8 +7073,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
                requestCount++;
                await chrome.storage.local.set({requestCount});
                isUsingStorage = false;
-               if (storageComplete)
+               if (storageComplete) {
                  storageComplete();
+               }
                chrome.test.sendMessage('event received');
              },
              {urls: ['<all_urls>'], types: ['main_frame']});)";

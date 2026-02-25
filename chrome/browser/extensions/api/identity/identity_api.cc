@@ -98,13 +98,15 @@ void IdentityAPI::EraseGaiaIdForExtension(const std::string& extension_id) {
 void IdentityAPI::EraseStaleGaiaIdsForAllExtensions() {
   // Refresh tokens haven't been loaded yet. Wait for OnRefreshTokensLoaded() to
   // fire.
-  if (!identity_manager_->AreRefreshTokensLoaded())
+  if (!identity_manager_->AreRefreshTokensLoaded()) {
     return;
+  }
   auto accounts = GetAccountsWithRefreshTokensForExtensions();
   for (const ExtensionId& extension_id : extension_prefs_->GetExtensions()) {
     std::optional<GaiaId> gaia_id = GetGaiaIdForExtension(extension_id);
-    if (!gaia_id)
+    if (!gaia_id) {
       continue;
+    }
     if (!std::ranges::contains(accounts, *gaia_id, &CoreAccountInfo::gaia)) {
       EraseGaiaIdForExtension(extension_id);
     }
@@ -283,8 +285,9 @@ void IdentityAPI::FireOnAccountSignInChanged(const GaiaId& gaia_id,
       events::IDENTITY_ON_SIGN_IN_CHANGED,
       api::identity::OnSignInChanged::kEventName, std::move(args), profile_));
 
-  if (on_signin_changed_callback_for_testing_)
+  if (on_signin_changed_callback_for_testing_) {
     on_signin_changed_callback_for_testing_.Run(event.get());
+  }
 
   event_router_->BroadcastEvent(std::move(event));
 }

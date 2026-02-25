@@ -41,8 +41,9 @@ WebrtcAudioPrivateEventService::WebrtcAudioPrivateEventService(
     : browser_context_(context) {
   // In unit tests, the SystemMonitor may not be created.
   base::SystemMonitor* system_monitor = base::SystemMonitor::Get();
-  if (system_monitor)
+  if (system_monitor) {
     system_monitor->AddDevicesChangedObserver(this);
+  }
 }
 
 WebrtcAudioPrivateEventService::~WebrtcAudioPrivateEventService() = default;
@@ -50,8 +51,9 @@ WebrtcAudioPrivateEventService::~WebrtcAudioPrivateEventService() = default;
 void WebrtcAudioPrivateEventService::Shutdown() {
   // In unit tests, the SystemMonitor may not be created.
   base::SystemMonitor* system_monitor = base::SystemMonitor::Get();
-  if (system_monitor)
+  if (system_monitor) {
     system_monitor->RemoveDevicesChangedObserver(this);
+  }
 }
 
 // static
@@ -82,8 +84,9 @@ void WebrtcAudioPrivateEventService::SignalEvent() {
   using api::webrtc_audio_private::OnSinksChanged::kEventName;
 
   EventRouter* router = EventRouter::Get(browser_context_);
-  if (!router || !router->HasEventListener(kEventName))
+  if (!router || !router->HasEventListener(kEventName)) {
     return;
+  }
 
   for (const scoped_refptr<const extensions::Extension>& extension :
        ExtensionRegistry::Get(browser_context_)->enabled_extensions()) {
@@ -117,8 +120,9 @@ std::string WebrtcAudioPrivateFunction::CalculateHMAC(
   // that transforms "default" to the empty string, and code in
   // GetActiveSink that ensures we return "default" if we get the
   // empty string as the current device ID.
-  if (media::AudioDeviceDescription::IsDefaultDevice(raw_id))
+  if (media::AudioDeviceDescription::IsDefaultDevice(raw_id)) {
     return media::AudioDeviceDescription::kDefaultDeviceId;
+  }
 
   return content::GetHMACForMediaDeviceID(extension_salt, GetExtensionOrigin(),
                                           raw_id);
@@ -158,8 +162,9 @@ void WebrtcAudioPrivateFunction::GotSaltForDeviceDescriptions(
 
 media::AudioSystem* WebrtcAudioPrivateFunction::GetAudioSystem() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!audio_system_)
+  if (!audio_system_) {
     audio_system_ = content::CreateAudioSystemForAudioService();
+  }
   return audio_system_.get();
 }
 

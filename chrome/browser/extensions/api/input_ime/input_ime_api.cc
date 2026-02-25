@@ -80,8 +80,9 @@ InputImeEventRouterFactory::InputImeEventRouterFactory() = default;
 InputImeEventRouterFactory::~InputImeEventRouterFactory() = default;
 
 InputImeEventRouter* InputImeEventRouterFactory::GetRouter(Profile* profile) {
-  if (!profile)
+  if (!profile) {
     return nullptr;
+  }
   // The |router_map_| is keyed by the original profile.
   // Refers to the comments in |RemoveProfile| method for the reason.
   profile = profile->GetOriginalProfile();
@@ -101,8 +102,9 @@ InputImeEventRouter* InputImeEventRouterFactory::GetRouter(Profile* profile) {
 }
 
 void InputImeEventRouterFactory::RemoveProfile(Profile* profile) {
-  if (!profile || router_map_.empty())
+  if (!profile || router_map_.empty()) {
     return;
+  }
   auto it = router_map_.find(profile);
   // The routers are common between an incognito profile and its original
   // profile, and are keyed on the original profiles.
@@ -120,8 +122,9 @@ ExtensionFunction::ResponseAction InputImeKeyEventHandledFunction::Run() {
   std::string error;
   InputMethodEngine* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
-  if (!engine)
+  if (!engine) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
+  }
 
   engine->KeyEventHandled(extension_id(), params->request_id, params->response);
   return RespondNow(NoArguments());
@@ -131,8 +134,9 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
   std::string error;
   InputMethodEngine* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
-  if (!engine)
+  if (!engine) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
+  }
 
   std::optional<SetComposition::Params> parent_params =
       SetComposition::Params::Create(args());
@@ -175,8 +179,9 @@ ExtensionFunction::ResponseAction InputImeCommitTextFunction::Run() {
   std::string error;
   InputMethodEngine* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
-  if (!engine)
+  if (!engine) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
+  }
 
   std::optional<CommitText::Params> parent_params =
       CommitText::Params::Create(args());
@@ -195,8 +200,9 @@ ExtensionFunction::ResponseAction InputImeSendKeyEventsFunction::Run() {
   std::string error;
   InputMethodEngine* engine = GetEngineIfActive(
       Profile::FromBrowserContext(browser_context()), extension_id(), &error);
-  if (!engine)
+  if (!engine) {
     return RespondNow(Error(InformativeError(error, static_function_name())));
+  }
 
   std::optional<SendKeyEvents::Params> parent_params =
       SendKeyEvents::Params::Create(args());
@@ -246,8 +252,9 @@ BrowserContextKeyedAPIFactory<InputImeAPI>* InputImeAPI::GetFactoryInstance() {
 }
 
 InputImeEventRouter* GetInputImeEventRouter(Profile* profile) {
-  if (!profile)
+  if (!profile) {
     return nullptr;
+  }
   return InputImeEventRouterFactory::GetInstance()->GetRouter(profile);
 }
 

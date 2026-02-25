@@ -147,14 +147,18 @@ void DispatchOnCommitted(events::HistogramValue histogram_value,
   dict.Set(web_navigation_api_constants::kTransitionTypeKey,
            transition_type_string);
   base::ListValue qualifiers;
-  if (transition_type & ui::PAGE_TRANSITION_CLIENT_REDIRECT)
+  if (transition_type & ui::PAGE_TRANSITION_CLIENT_REDIRECT) {
     qualifiers.Append("client_redirect");
-  if (transition_type & ui::PAGE_TRANSITION_SERVER_REDIRECT)
+  }
+  if (transition_type & ui::PAGE_TRANSITION_SERVER_REDIRECT) {
     qualifiers.Append("server_redirect");
-  if (transition_type & ui::PAGE_TRANSITION_FORWARD_BACK)
+  }
+  if (transition_type & ui::PAGE_TRANSITION_FORWARD_BACK) {
     qualifiers.Append("forward_back");
-  if (transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)
+  }
+  if (transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) {
     qualifiers.Append("from_address_bar");
+  }
   dict.Set(web_navigation_api_constants::kTransitionQualifiersKey,
            std::move(qualifiers));
   dict.Set(web_navigation_api_constants::kTimeStampKey,

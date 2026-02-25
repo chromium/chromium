@@ -53,8 +53,9 @@ idl::PrinterSource PrinterSourceToIdl(chromeos::Printer::Source source) {
 bool DoesPrinterMatchDefaultPrinterRules(
     const chromeos::Printer& printer,
     const std::optional<DefaultPrinterRules>& rules) {
-  if (!rules.has_value())
+  if (!rules.has_value()) {
     return false;
+  }
   return (rules->kind.empty() || rules->kind == kLocal) &&
          (rules->id_pattern.empty() ||
           RE2::FullMatch(printer.id(), rules->id_pattern)) &&
@@ -100,8 +101,9 @@ bool ValidateVendorItem(const std::string& name,
 
 std::optional<DefaultPrinterRules> GetDefaultPrinterRules(
     const std::string& default_destination_selection_rules) {
-  if (default_destination_selection_rules.empty())
+  if (default_destination_selection_rules.empty()) {
     return std::nullopt;
+  }
 
   std::optional<base::Value> default_destination_selection_rules_value =
       base::JSONReader::Read(default_destination_selection_rules,
@@ -351,11 +353,13 @@ std::unique_ptr<printing::PrintSettings> ParsePrintTicket(
 bool CheckSettingsAndCapabilitiesCompatibility(
     const printing::PrintSettings& settings,
     const printing::PrinterSemanticCapsAndDefaults& capabilities) {
-  if (settings.collate() && !capabilities.collate_capable)
+  if (settings.collate() && !capabilities.collate_capable) {
     return false;
+  }
 
-  if (settings.copies() > capabilities.copies_max)
+  if (settings.copies() > capabilities.copies_max) {
     return false;
+  }
 
   if (!std::ranges::contains(capabilities.duplex_modes,
                              settings.duplex_mode())) {

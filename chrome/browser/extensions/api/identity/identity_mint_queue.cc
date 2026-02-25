@@ -40,8 +40,9 @@ void IdentityMintRequestQueue::RequestStart(
   request_queue.push_back(request);
   // If this is the first request, start it now. RequestComplete will start
   // all other requests.
-  if (request_queue.size() == 1)
+  if (request_queue.size() == 1) {
     RunRequest(type, request_queue);
+  }
 }
 
 void IdentityMintRequestQueue::RequestComplete(
@@ -53,8 +54,9 @@ void IdentityMintRequestQueue::RequestComplete(
   RequestQueue& request_queue = GetRequestQueueMap(type)[key];
   CHECK_EQ(request_queue.front(), request);
   request_queue.pop_front();
-  if (!request_queue.empty())
+  if (!request_queue.empty()) {
     RunRequest(type, request_queue);
+  }
 }
 
 void IdentityMintRequestQueue::RequestCancel(

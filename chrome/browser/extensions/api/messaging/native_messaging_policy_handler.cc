@@ -23,8 +23,9 @@ NativeMessagingHostListPolicyHandler::~NativeMessagingHostListPolicyHandler() =
 bool NativeMessagingHostListPolicyHandler::CheckListEntry(
     const base::Value& value) {
   const std::string& str = value.GetString();
-  if (allow_wildcards_ && str == "*")
+  if (allow_wildcards_ && str == "*") {
     return true;
+  }
 
   return NativeMessagingHostManifest::IsValidName(str);
 }

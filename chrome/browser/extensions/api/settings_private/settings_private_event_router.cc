@@ -55,10 +55,11 @@ void SettingsPrivateEventRouter::Shutdown() {
     settings_private::GeneratedPrefs* generated_prefs =
         settings_private::GeneratedPrefsFactory::GetForBrowserContext(context_);
     for (const auto& it : keys) {
-      if (generated_prefs && generated_prefs->HasPref(it.first))
+      if (generated_prefs && generated_prefs->HasPref(it.first)) {
         generated_prefs->RemoveObserver(it.first, this);
-      else if (!prefs_util_->IsCrosSetting(it.first))
+      } else if (!prefs_util_->IsCrosSetting(it.first)) {
         FindRegistrarForPref(it.first)->Remove(it.first);
+      }
     }
   }
   listening_ = false;
@@ -156,8 +157,9 @@ void SettingsPrivateEventRouter::SendPrefChange(const std::string& pref_name) {
       prefs_util_->GetPref(pref_name);
 
   std::vector<api::settings_private::PrefObject> prefs;
-  if (pref_object)
+  if (pref_object) {
     prefs.push_back(std::move(*pref_object));
+  }
 
   auto args(api::settings_private::OnPrefsChanged::Create(prefs));
 

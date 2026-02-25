@@ -52,11 +52,13 @@ LONG ReadEncryptedSecret(std::string* encrypted_secret) {
   DWORD raw_type;
   encrypted_secret->clear();
   LONG result = key.Open(HKEY_CURRENT_USER, kDefaultRegistryPath, KEY_READ);
-  if (result != ERROR_SUCCESS)
+  if (result != ERROR_SUCCESS) {
     return result;
+  }
   result = key.ReadValue(kValueName, raw_data, &raw_data_size, &raw_type);
-  if (result != ERROR_SUCCESS)
+  if (result != ERROR_SUCCESS) {
     return result;
+  }
   if (raw_type != REG_BINARY) {
     key.DeleteValue(kValueName);
     return ERROR_INVALID_DATATYPE;
@@ -77,8 +79,9 @@ LONG EncryptString(const std::string& plaintext, std::string* ciphertext) {
   DATA_BLOB output;
   BOOL result = ::CryptProtectData(&input, nullptr, nullptr, nullptr, nullptr,
                                    0, &output);
-  if (!result)
+  if (!result) {
     return ::GetLastError();
+  }
 
   // this does a copy
   ciphertext->assign(reinterpret_cast<std::string::value_type*>(output.pbData),
@@ -101,8 +104,9 @@ LONG DecryptString(const std::string& ciphertext, std::string* plaintext) {
   BOOL result =
       ::CryptUnprotectData(&input, nullptr, nullptr, nullptr, nullptr, 0,
                            &output);
-  if (!result)
+  if (!result) {
     return ::GetLastError();
+  }
 
   plaintext->assign(reinterpret_cast<char*>(output.pbData), output.cbData);
   LocalFree(output.pbData);
@@ -117,17 +121,20 @@ LONG CreateRandomSecret(std::string* secret) {
 
   std::string encrypted_secret;
   LONG result = EncryptString(generated_secret, &encrypted_secret);
-  if (result != ERROR_SUCCESS)
+  if (result != ERROR_SUCCESS) {
     return result;
+  }
 
   base::win::RegKey key;
   result = key.Create(HKEY_CURRENT_USER, kDefaultRegistryPath, KEY_WRITE);
-  if (result != ERROR_SUCCESS)
+  if (result != ERROR_SUCCESS) {
     return result;
+  }
   result = key.WriteValue(kValueName, encrypted_secret.data(),
                           encrypted_secret.size(), REG_BINARY);
-  if (result == ERROR_SUCCESS)
+  if (result == ERROR_SUCCESS) {
     *secret = generated_secret;
+  }
   return result;
 }
 
@@ -150,10 +157,11 @@ OSStatus AddRandomPasswordToKeychain(std::string* secret) {
   std::string password = base::Base64Encode(base::RandBytesAsVector(kBytes));
 
   OSStatus status = WriteKeychainItem(kServiceName, kAccountName, password);
-  if (status == noErr)
+  if (status == noErr) {
     *secret = password;
-  else
+  } else {
     secret->clear();
+  }
   return status;
 }
 
@@ -169,8 +177,9 @@ int32_t ReadEncryptedSecret(std::string* password, bool force_recreate) {
   OSStatus status;
   crypto::apple::ScopedKeychainUserInteractionAllowed user_interaction_allowed(
       FALSE, &status);
-  if (status != noErr)
+  if (status != noErr) {
     return status;
+  }
 
   base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
   UInt32 password_length = 0;
@@ -258,8 +267,9 @@ base::FilePath* GetEndpointVerificationDirOverride() {
 // Returns "AppData\Local\Google\Endpoint Verification".
 base::FilePath GetEndpointVerificationDir() {
   base::FilePath path;
-  if (!GetEndpointVerificationDirOverride()->empty())
+  if (!GetEndpointVerificationDirOverride()->empty()) {
     return *GetEndpointVerificationDirOverride();
+  }
 
   bool got_path = false;
 #if BUILDFLAG(IS_WIN)
@@ -272,8 +282,9 @@ base::FilePath GetEndpointVerificationDir() {
 #elif BUILDFLAG(IS_MAC)
   got_path = base::PathService::Get(base::DIR_APP_DATA, &path);
 #endif
-  if (!got_path)
+  if (!got_path) {
     return path;
+  }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   path = path.AppendASCII("google");
@@ -329,8 +340,9 @@ void StoreDeviceData(const std::string& id,
   } else {
     // Not passing a second parameter means clear the data sored under |id|.
     success = base::DeleteFile(data_file);
-    if (base::IsDirectoryEmpty(data_file.DirName()))
+    if (base::IsDirectoryEmpty(data_file.DirName())) {
       base::DeleteFile(data_file.DirName());
+    }
   }
 
   std::move(callback).Run(success);
@@ -371,13 +383,15 @@ void RetrieveDeviceSecret(
 #if BUILDFLAG(IS_WIN)
   std::string encrypted_secret;
   LONG result = ReadEncryptedSecret(&encrypted_secret);
-  if (result == ERROR_FILE_NOT_FOUND)
+  if (result == ERROR_FILE_NOT_FOUND) {
     result = CreateRandomSecret(&secret);
-  else if (result == ERROR_SUCCESS)
+  } else if (result == ERROR_SUCCESS) {
     result = DecryptString(encrypted_secret, &secret);
+  }
   // If something failed above [re]try creating the secret if forced.
-  if (result != ERROR_SUCCESS && force_recreate)
+  if (result != ERROR_SUCCESS && force_recreate) {
     result = CreateRandomSecret(&secret);
+  }
 #elif BUILDFLAG(IS_MAC)
   int32_t result = ReadEncryptedSecret(&secret, force_recreate);
 #else

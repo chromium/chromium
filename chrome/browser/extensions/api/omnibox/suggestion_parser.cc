@@ -34,8 +34,9 @@ std::string CheckedGetElementTag(const base::Value& node) {
 // Recursively walks an XML node, generating `result` as it goes along.
 void WalkNode(const base::Value& node, DescriptionAndStyles* result) {
   const base::ListValue* children = data_decoder::GetXmlElementChildren(node);
-  if (!children)
+  if (!children) {
     return;
+  }
 
   for (const base::Value& child : *children) {
     // Append text nodes to our description.
@@ -105,13 +106,15 @@ bool PopulateEntriesFromNode(const base::Value& root_node,
     return false;
   }
 
-  if (CheckedGetElementTag(root_node) != "fragment")
+  if (CheckedGetElementTag(root_node) != "fragment") {
     return false;
+  }
 
   const base::ListValue* children =
       data_decoder::GetXmlElementChildren(root_node);
-  if (!children)
+  if (!children) {
     return false;
+  }
 
   entries_out->reserve(children->size());
   for (const base::Value& child : *children) {
@@ -119,8 +122,9 @@ bool PopulateEntriesFromNode(const base::Value& root_node,
             child, data_decoder::mojom::XmlParser::kElementType)) {
       return false;
     }
-    if (CheckedGetElementTag(child) != "internal-suggestion")
+    if (CheckedGetElementTag(child) != "internal-suggestion") {
       return false;
+    }
     entries_out->push_back(&child);
   }
 

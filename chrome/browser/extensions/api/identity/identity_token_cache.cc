@@ -60,8 +60,9 @@ IdentityTokenCacheValue IdentityTokenCacheValue::CreateToken(
   time_to_live -= base::Minutes(20);
 
   base::TimeDelta zero_delta;
-  if (time_to_live < zero_delta)
+  if (time_to_live < zero_delta) {
     time_to_live = zero_delta;
+  }
 
   cache_value.expiration_time_ = base::Time::Now() + time_to_live;
   return cache_value;
@@ -69,8 +70,9 @@ IdentityTokenCacheValue IdentityTokenCacheValue::CreateToken(
 
 IdentityTokenCacheValue::CacheValueStatus IdentityTokenCacheValue::status()
     const {
-  if (is_expired())
+  if (is_expired()) {
     return IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND;
+  }
 
   return GetStatusInternal();
 }
@@ -151,8 +153,9 @@ IdentityTokenCache::~IdentityTokenCache() = default;
 
 void IdentityTokenCache::SetToken(const ExtensionTokenKey& key,
                                   const IdentityTokenCacheValue& token_data) {
-  if (token_data.status() == IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND)
+  if (token_data.status() == IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND) {
     return;
+  }
 
   if (token_data.status() != IdentityTokenCacheValue::CACHE_STATUS_TOKEN) {
     const IdentityTokenCacheValue& cached_value = GetToken(key);
@@ -187,8 +190,9 @@ void IdentityTokenCache::EraseAccessToken(const std::string& extension_id,
             return cached_token.token() == token;
           });
       if (num_erased > 0) {
-        if (cached_tokens.size() == 0)
+        if (cached_tokens.size() == 0) {
           access_tokens_cache_.erase(entry_it);
+        }
         // A token is in the cache at most once, so stop searching if erased.
         return;
       }
@@ -259,10 +263,11 @@ void IdentityTokenCache::EraseStaleTokens() {
       return value.status() == IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND;
     });
 
-    if (cached_tokens.empty())
+    if (cached_tokens.empty()) {
       it = access_tokens_cache_.erase(it);
-    else
+    } else {
       ++it;
+    }
   }
 
   std::erase_if(intermediate_value_cache_, [](const auto& key_value_pair) {

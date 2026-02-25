@@ -545,8 +545,9 @@ LanguageSettingsPrivateGetSpellcheckWordsFunction::Run() {
       SpellcheckServiceFactory::GetForContext(browser_context());
   SpellcheckCustomDictionary* dictionary = service->GetCustomDictionary();
 
-  if (dictionary->IsLoaded())
+  if (dictionary->IsLoaded()) {
     return RespondNow(WithArguments(GetSpellcheckWords()));
+  }
 
   dictionary->AddObserver(this);
   AddRef();  // Balanced in OnCustomDictionaryLoaded().
@@ -692,8 +693,9 @@ void PopulateInputMethodListFromDescriptors(
   InputMethodUtil* util = manager->GetInputMethodUtil();
   scoped_refptr<InputMethodManager::State> ime_state =
       manager->GetActiveIMEState();
-  if (!ime_state.get())
+  if (!ime_state.get()) {
     return;
+  }
 
   const base::flat_set<std::string> enabled_ids(
       ime_state->GetEnabledInputMethodIds());
@@ -719,8 +721,9 @@ void PopulateInputMethodListFromDescriptors(
     if (enabled_ids.contains(input_method.id)) {
       input_method.enabled = true;
     }
-    if (descriptor.options_page_url().is_valid())
+    if (descriptor.options_page_url().is_valid()) {
       input_method.has_options_page = true;
+    }
     if (!allowed_ids.empty() && !allowed_ids.contains(input_method.id)) {
       input_method.is_prohibited_by_policy = true;
     }
@@ -786,8 +789,9 @@ LanguageSettingsPrivateAddInputMethodFunction::Run() {
   InputMethodManager* manager = InputMethodManager::Get();
   scoped_refptr<InputMethodManager::State> ime_state =
       manager->GetActiveIMEState();
-  if (!ime_state.get())
+  if (!ime_state.get()) {
     return RespondNow(NoArguments());
+  }
 
   std::string new_input_method_id = params->input_method_id;
   bool is_component_extension_ime =
@@ -858,8 +862,9 @@ LanguageSettingsPrivateRemoveInputMethodFunction::Run() {
   InputMethodManager* manager = InputMethodManager::Get();
   scoped_refptr<InputMethodManager::State> ime_state =
       manager->GetActiveIMEState();
-  if (!ime_state.get())
+  if (!ime_state.get()) {
     return RespondNow(NoArguments());
+  }
 
   std::string input_method_id = params->input_method_id;
   bool is_component_extension_ime =

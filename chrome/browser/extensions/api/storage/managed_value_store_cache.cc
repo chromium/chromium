@@ -132,8 +132,9 @@ void ManagedValueStoreCache::ExtensionTracker::OnExtensionWillBeInstalled(
   // becomes ready. Wait until all of them are ready before registering the
   // schemas of managed extensions, so that the policy loaders are reloaded at
   // most once.
-  if (!ExtensionSystem::Get(profile_)->ready().is_signaled())
+  if (!ExtensionSystem::Get(profile_)->ready().is_signaled()) {
     return;
+  }
   ExtensionSet added;
   added.Insert(extension);
   LoadSchemas(std::move(added));
@@ -143,8 +144,9 @@ void ManagedValueStoreCache::ExtensionTracker::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UninstallReason reason) {
-  if (!ExtensionSystem::Get(profile_)->ready().is_signaled())
+  if (!ExtensionSystem::Get(profile_)->ready().is_signaled()) {
     return;
+  }
   if (extension && UsesManagedStorage(extension)) {
     schema_registry_->UnregisterComponent(
         policy::PolicyNamespace(policy_domain_, extension->id()));
@@ -162,11 +164,13 @@ void ManagedValueStoreCache::ExtensionTracker::LoadSchemas(ExtensionSet added) {
   ExtensionSet::const_iterator it = added.begin();
   while (it != added.end()) {
     std::string to_remove;
-    if (!UsesManagedStorage(it->get()))
+    if (!UsesManagedStorage(it->get())) {
       to_remove = (*it)->id();
+    }
     ++it;
-    if (!to_remove.empty())
+    if (!to_remove.empty()) {
       added.Remove(to_remove);
+    }
   }
 
   GetExtensionFileTaskRunner()->PostTask(
@@ -252,8 +256,9 @@ ManagedValueStoreCache::ManagedValueStoreCache(
   extension_tracker_ =
       std::make_unique<ExtensionTracker>(&profile, policy_domain_);
 
-  if (policy_service_->IsInitializationComplete(policy_domain_))
+  if (policy_service_->IsInitializationComplete(policy_domain_)) {
     OnPolicyServiceInitialized(policy_domain_);
+  }
 }
 
 ManagedValueStoreCache::~ManagedValueStoreCache() {
@@ -297,8 +302,9 @@ void ManagedValueStoreCache::DeleteStorageSoon(
   // It's possible that the store exists, but hasn't been loaded yet
   // (because the extension is unloaded, for example). Open the database to
   // clear it if it exists.
-  if (!HasStore(extension_id))
+  if (!HasStore(extension_id)) {
     return;
+  }
   GetOrCreateStore(extension_id).DeleteStorage();
   store_map_.erase(extension_id);
 }
@@ -307,8 +313,9 @@ void ManagedValueStoreCache::OnPolicyServiceInitialized(
     policy::PolicyDomain domain) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
-  if (domain != policy_domain_)
+  if (domain != policy_domain_) {
     return;
+  }
 
   // The PolicyService now has all the initial policies ready. Send policy
   // for all the managed extensions to their backing stores now.
@@ -389,8 +396,9 @@ void ManagedValueStoreCache::UpdatePolicyOnBackend(
 PolicyValueStore& ManagedValueStoreCache::GetOrCreateStore(
     const ExtensionId& extension_id) {
   const auto& it = store_map_.find(extension_id);
-  if (it != store_map_.end())
+  if (it != store_map_.end()) {
     return *it->second;
+  }
 
   // Create the store now, and serve the cached policy until the PolicyService
   // sends updated values.

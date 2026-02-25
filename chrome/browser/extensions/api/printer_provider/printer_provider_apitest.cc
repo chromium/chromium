@@ -169,8 +169,9 @@ class PrinterProviderApiTest : public ExtensionApiTest,
     ExtensionId extension_id;
     InitializePrinterProviderTestExtension("printer_provider/request_print",
                                            test_param, &extension_id);
-    if (extension_id.empty())
+    if (extension_id.empty()) {
       return;
+    }
 
     base::RunLoop run_loop;
     bool success;
@@ -188,8 +189,9 @@ class PrinterProviderApiTest : public ExtensionApiTest,
         break;
     }
 
-    if (data_type != PRINT_REQUEST_DATA_TYPE_NOT_SET)
+    if (data_type != PRINT_REQUEST_DATA_TYPE_NOT_SET) {
       ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+    }
 
     run_loop.Run();
     EXPECT_EQ(expected_result, status);
@@ -207,8 +209,9 @@ class PrinterProviderApiTest : public ExtensionApiTest,
     ExtensionId extension_id;
     InitializePrinterProviderTestExtension(
         "printer_provider/request_capability", test_param, &extension_id);
-    if (extension_id.empty())
+    if (extension_id.empty()) {
       return;
+    }
 
     base::test::TestFuture<base::DictValue> capability_future;
     StartCapabilityRequest(extension_id, capability_future.GetCallback());
@@ -225,8 +228,9 @@ class PrinterProviderApiTest : public ExtensionApiTest,
 
     scoped_refptr<const Extension> extension =
         extension_registry->enabled_extensions().GetByID(extension_id);
-    if (!extension)
+    if (!extension) {
       return false;
+    }
 
     extension_registry->RemoveEnabled(extension_id);
     extension_registry->TriggerOnUnloaded(extension.get(),

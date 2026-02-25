@@ -49,8 +49,9 @@ void AppendCookieToVectorIfMatchAndHasHostPermission(
   // Ignore any cookie whose domain doesn't match the extension's
   // host permissions.
   GURL cookie_domain_url = cookies_helpers::GetURLFromCanonicalCookie(cookie);
-  if (!extension->permissions_data()->HasHostPermission(cookie_domain_url))
+  if (!extension->permissions_data()->HasHostPermission(cookie_domain_url)) {
     return;
+  }
   // Filter the cookie using the match filter.
   cookies_helpers::MatchFilter filter(details);
   // There is an edge case where a getAll call that contains a
@@ -78,10 +79,12 @@ Profile* ChooseProfileFromStoreId(const std::string& store_id,
   bool allow_original = !profile->IsOffTheRecord();
   bool allow_incognito = profile->IsOffTheRecord() ||
                          (include_incognito && profile->HasPrimaryOTRProfile());
-  if (store_id == kOriginalProfileStoreId && allow_original)
+  if (store_id == kOriginalProfileStoreId && allow_original) {
     return profile->GetOriginalProfile();
-  if (store_id == kOffTheRecordProfileStoreId && allow_incognito)
+  }
+  if (store_id == kOffTheRecordProfileStoreId && allow_incognito) {
     return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  }
   return nullptr;
 }
 
@@ -455,21 +458,25 @@ bool MatchFilter::MatchesCookie(
     return true;
   }
 
-  if (details_->name && *details_->name != cookie.Name())
+  if (details_->name && *details_->name != cookie.Name()) {
     return false;
+  }
 
-  if (!MatchesDomain(cookie.Domain()))
+  if (!MatchesDomain(cookie.Domain())) {
     return false;
+  }
 
-  if (details_->path && *details_->path != cookie.Path())
+  if (details_->path && *details_->path != cookie.Path()) {
     return false;
+  }
 
   if (details_->secure && *details_->secure != cookie.SecureAttribute()) {
     return false;
   }
 
-  if (details_->session && *details_->session != !cookie.IsPersistent())
+  if (details_->session && *details_->session != !cookie.IsPersistent()) {
     return false;
+  }
 
   return true;
 }
@@ -480,23 +487,27 @@ void MatchFilter::SetCookiePartitionKeyCollection(
 }
 
 bool MatchFilter::MatchesDomain(const std::string& domain) {
-  if (!details_->domain)
+  if (!details_->domain) {
     return true;
+  }
 
   // Add a leading '.' character to the filter domain if it doesn't exist.
-  if (net::cookie_util::DomainIsHostOnly(*details_->domain))
+  if (net::cookie_util::DomainIsHostOnly(*details_->domain)) {
     details_->domain->insert(0, ".");
+  }
 
   std::string sub_domain(domain);
   // Strip any leading '.' character from the input cookie domain.
-  if (!net::cookie_util::DomainIsHostOnly(sub_domain))
+  if (!net::cookie_util::DomainIsHostOnly(sub_domain)) {
     sub_domain = sub_domain.substr(1);
+  }
 
   // Now check whether the domain argument is a subdomain of the filter domain.
   for (sub_domain.insert(0, ".");
        sub_domain.length() >= details_->domain->length();) {
-    if (sub_domain == *details_->domain)
+    if (sub_domain == *details_->domain) {
       return true;
+    }
     const size_t next_dot = sub_domain.find('.', 1);  // Skip over leading dot.
     sub_domain.erase(0, next_dot);
   }

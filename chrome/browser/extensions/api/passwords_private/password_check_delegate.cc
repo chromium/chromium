@@ -177,8 +177,9 @@ api::passwords_private::PasswordCheckState ConvertPasswordCheckState(
 
 std::string FormatElapsedTime(base::Time time) {
   const base::TimeDelta elapsed_time = base::Time::Now() - time;
-  if (elapsed_time < base::Minutes(1))
+  if (elapsed_time < base::Minutes(1)) {
     return l10n_util::GetStringUTF8(IDS_PASSWORD_MANAGER_UI_JUST_NOW);
+  }
 
   return base::UTF16ToUTF8(TimeFormat::SimpleWithMonthAndYear(
       TimeFormat::FORMAT_ELAPSED, TimeFormat::LENGTH_LONG, elapsed_time, true));
@@ -297,8 +298,9 @@ bool PasswordCheckDelegate::MuteInsecureCredential(
     const api::passwords_private::PasswordUiEntry& credential) {
   // Try to obtain the original CredentialUIEntry. Return false if fails.
   const CredentialUIEntry* entry = id_generator_->TryGetKey(credential.id);
-  if (!entry)
+  if (!entry) {
     return false;
+  }
 
   return insecure_credentials_manager_.MuteCredential(*entry);
 }
@@ -307,8 +309,9 @@ bool PasswordCheckDelegate::UnmuteInsecureCredential(
     const api::passwords_private::PasswordUiEntry& credential) {
   // Try to obtain the original CredentialUIEntry. Return false if fails.
   const CredentialUIEntry* entry = id_generator_->TryGetKey(credential.id);
-  if (!entry)
+  if (!entry) {
     return false;
+  }
 
   return insecure_credentials_manager_.UnmuteCredential(*entry);
 }
@@ -350,8 +353,9 @@ void PasswordCheckDelegate::StartPasswordAnalyses(
       base::BindOnce(&PasswordCheckDelegate::NotifyPasswordCheckStatusChanged,
                      weak_ptr_factory_.GetWeakPtr()));
   auto progress = base::MakeRefCounted<PasswordCheckProgress>();
-  for (const auto& password : saved_passwords_presenter_->GetSavedPasswords())
+  for (const auto& password : saved_passwords_presenter_->GetSavedPasswords()) {
     progress->IncrementCounts(password);
+  }
 
   password_check_progress_ = progress->GetWeakPtr();
   PasswordCheckData data(
@@ -430,8 +434,9 @@ void PasswordCheckDelegate::OnSavedPasswordsChanged(
   // that the delegate is initialized, and start check callbacks can be invoked,
   // if any.
   if (!std::exchange(is_initialized_, true)) {
-    for (auto&& callback : std::exchange(start_check_callbacks_, {}))
+    for (auto&& callback : std::exchange(start_check_callbacks_, {})) {
       StartPasswordCheck(password_check_initiator_, std::move(callback));
+    }
   }
 
   // A change in the saved passwords might result in leaving or entering the
@@ -474,8 +479,9 @@ void PasswordCheckDelegate::OnCredentialDone(
   }
 
   // Update the progress in case there is one.
-  if (password_check_progress_)
+  if (password_check_progress_) {
     password_check_progress_->OnProcessed(credential);
+  }
 
   // While the check is still running trigger an update of the check status,
   // considering that the progress has changed.

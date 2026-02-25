@@ -219,8 +219,9 @@ api::feedback_private::LandingPageType
 ChromeFeedbackPrivateDelegate::GetLandingPageType(
     const feedback::FeedbackData& feedback_data) const {
   // Googlers using eve get a custom landing page.
-  if (!gaia::IsGoogleInternalAccountEmail(feedback_data.user_email()))
+  if (!gaia::IsGoogleInternalAccountEmail(feedback_data.user_email())) {
     return api::feedback_private::LandingPageType::kNormal;
+  }
 
   const std::vector<std::string> board =
       base::SplitString(base::SysInfo::GetLsbReleaseBoard(), "-",
@@ -234,8 +235,9 @@ std::string ChromeFeedbackPrivateDelegate::GetSignedInUserEmail(
     content::BrowserContext* context) const {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(
       Profile::FromBrowserContext(context));
-  if (!identity_manager)
+  if (!identity_manager) {
     return std::string();
+  }
   // Browser sync consent is not required to use feedback.
   return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
       .email;

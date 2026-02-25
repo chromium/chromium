@@ -64,8 +64,9 @@ ExtensionFunction::ResponseAction PrintingCancelJobFunction::Run() {
       PrintingAPIHandler::Get(browser_context())
           ->CancelJob(extension_id(), params->job_id);
 
-  if (error.has_value())
+  if (error.has_value()) {
     return RespondNow(Error(error.value()));
+  }
   return RespondNow(NoArguments());
 }
 

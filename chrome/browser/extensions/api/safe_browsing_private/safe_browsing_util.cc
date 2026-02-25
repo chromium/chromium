@@ -52,8 +52,9 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
   if (referrer.ip_addresses_size() > 0) {
     entry.ip_addresses.emplace();
     entry.ip_addresses->reserve(referrer.ip_addresses_size());
-    for (const std::string& ip_address : referrer.ip_addresses())
+    for (const std::string& ip_address : referrer.ip_addresses()) {
       entry.ip_addresses->emplace_back(ip_address);
+    }
   }
   if (referrer.has_referrer_url()) {
     entry.referrer_url = referrer.referrer_url();
@@ -61,8 +62,9 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
   if (referrer.has_referrer_main_frame_url()) {
     entry.referrer_main_frame_url = referrer.referrer_main_frame_url();
   }
-  if (referrer.has_is_retargeting())
+  if (referrer.has_is_retargeting()) {
     entry.is_retargeting = referrer.is_retargeting();
+  }
   if (referrer.has_navigation_time_msec()) {
     entry.navigation_time_ms = referrer.navigation_time_msec();
   }

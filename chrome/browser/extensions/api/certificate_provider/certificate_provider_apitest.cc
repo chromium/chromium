@@ -990,8 +990,9 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderRequestPinTest,
                        ShowPinDialogWrongPinThreeTimes) {
   AddFakeSignRequest(kFakeSignRequestId);
   NavigateTo("basic.html");
-  for (int i = 0; i < kWrongPinAttemptsLimit; i++)
+  for (int i = 0; i < kWrongPinAttemptsLimit; i++) {
     EnterWrongPinAndWaitForMessage();
+  }
 
   // The textfield has to be disabled, as extension does not allow input now.
   EXPECT_FALSE(GetActivePinDialogView()->textfield_for_testing()->GetEnabled());

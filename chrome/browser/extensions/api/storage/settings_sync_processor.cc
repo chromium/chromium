@@ -82,13 +82,15 @@ std::optional<syncer::ModelError> SettingsSyncProcessor::SendChanges(
     }
   }
 
-  if (sync_changes.empty())
+  if (sync_changes.empty()) {
     return std::nullopt;
+  }
 
   std::optional<syncer::ModelError> error =
       sync_processor_->ProcessSyncChanges(FROM_HERE, sync_changes);
-  if (error.has_value())
+  if (error.has_value()) {
     return error;
+  }
 
   synced_keys_.insert(added_keys.begin(), added_keys.end());
   for (const auto& deleted_key : deleted_keys) {
@@ -104,10 +106,11 @@ void SettingsSyncProcessor::NotifyChanges(
   CHECK(initialized_) << "Init not called";
 
   for (const auto& i : changes) {
-    if (i.new_value)
+    if (i.new_value) {
       synced_keys_.insert(i.key);
-    else
+    } else {
       synced_keys_.erase(i.key);
+    }
   }
 }
 

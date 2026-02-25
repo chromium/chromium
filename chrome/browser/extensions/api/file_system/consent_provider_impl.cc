@@ -199,8 +199,9 @@ void ConsentProviderDelegate::ShowDialog(
 
   // If there is no web contents handle, then the method is most probably
   // executed from a background page.
-  if (!web_contents)
+  if (!web_contents) {
     web_contents = GetWebContentsForAppId(profile_, extension_id);
+  }
 
   if (!web_contents) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -230,8 +231,9 @@ void ConsentProviderDelegate::ShowNotification(
     const std::string& volume_label,
     bool writable) {
   // Skip if |profile_| is gone.
-  if (!profile_)
+  if (!profile_) {
     return;
+  }
 
   ShowNotificationForAutoGrantedRequestFileSystem(profile_, extension_id,
                                                   extension_name, volume_id,
@@ -247,8 +249,9 @@ bool ConsentProviderDelegate::IsAutoLaunched(const Extension& extension) {
 bool ConsentProviderDelegate::IsAllowlistedComponent(
     const Extension& extension) {
   for (auto* allowlisted_id : kRequestFileSystemComponentAllowlist) {
-    if (extension.id().compare(allowlisted_id) == 0)
+    if (extension.id().compare(allowlisted_id) == 0) {
       return true;
+    }
   }
   return false;
 }

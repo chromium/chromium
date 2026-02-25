@@ -118,10 +118,12 @@ void DeclarativeContentIsBookmarkedConditionTracker::PerWebContentsTracker::
 UpdateState(bool request_evaluation_if_unchanged) {
   bool state_changed =
       IsCurrentUrlBookmarked() != is_url_bookmarked_;
-  if (state_changed)
+  if (state_changed) {
     is_url_bookmarked_ = !is_url_bookmarked_;
-  if (state_changed || request_evaluation_if_unchanged)
+  }
+  if (state_changed || request_evaluation_if_unchanged) {
     request_evaluation_.Run(web_contents());
+  }
 }
 
 bool DeclarativeContentIsBookmarkedConditionTracker::PerWebContentsTracker::
@@ -151,8 +153,9 @@ DeclarativeContentIsBookmarkedConditionTracker::
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(context);
   // Can be null during unit test execution.
-  if (bookmark_model)
+  if (bookmark_model) {
     scoped_bookmarks_observation_.Observe(bookmark_model);
+  }
 }
 
 DeclarativeContentIsBookmarkedConditionTracker::
@@ -251,8 +254,9 @@ void DeclarativeContentIsBookmarkedConditionTracker::
 
 void DeclarativeContentIsBookmarkedConditionTracker::
     ExtensiveBookmarkChangesEnded() {
-  if (--extensive_bookmark_changes_in_progress_ == 0)
+  if (--extensive_bookmark_changes_in_progress_ == 0) {
     UpdateAllPerWebContentsTrackers();
+  }
 }
 
 void DeclarativeContentIsBookmarkedConditionTracker::
@@ -262,8 +266,9 @@ void DeclarativeContentIsBookmarkedConditionTracker::
 
 void DeclarativeContentIsBookmarkedConditionTracker::
     GroupedBookmarkChangesEnded() {
-  if (--extensive_bookmark_changes_in_progress_ == 0)
+  if (--extensive_bookmark_changes_in_progress_ == 0) {
     UpdateAllPerWebContentsTrackers();
+  }
 }
 
 void
@@ -275,8 +280,9 @@ DeclarativeContentIsBookmarkedConditionTracker::DeletePerWebContentsTracker(
 
 void DeclarativeContentIsBookmarkedConditionTracker::
 UpdateAllPerWebContentsTrackers() {
-  for (const auto& web_contents_tracker_pair : per_web_contents_tracker_)
+  for (const auto& web_contents_tracker_pair : per_web_contents_tracker_) {
     web_contents_tracker_pair.second->UpdateState(false);
+  }
 }
 
 }  // namespace extensions

@@ -136,8 +136,9 @@ bool NotificationBitmapToGfxImage(
   const size_t rgba_data_length = rgba_data.size();
   const size_t rgba_area = width * height;
 
-  if (rgba_data_length != rgba_area * kBytesPerPixel)
+  if (rgba_data_length != rgba_area * kBytesPerPixel) {
     return false;
+  }
 
   SkBitmap bitmap;
   // Allocate the actual backing store with the sanitized dimensions.
@@ -147,8 +148,9 @@ bool NotificationBitmapToGfxImage(
   bitmap.setPixels(&pixels[0]);
 
   // Ensure that our bitmap and our data now refer to the same number of pixels.
-  if (rgba_data_length != bitmap.computeByteSize())
+  if (rgba_data_length != bitmap.computeByteSize()) {
     return false;
+  }
 
   for (size_t t = 0; t < rgba_area; ++t) {
     // `rgba_data` is RGBA, pixels is ARGB.
@@ -189,8 +191,9 @@ bool ShouldShowOverCurrentFullscreenWindow(Profile* profile,
   AppWindowRegistry::AppWindowList windows =
       AppWindowRegistry::Get(profile)->GetAppWindowsForApp(extension_id);
   for (AppWindow* window : windows) {
-    if (window->IsFullscreen() && window->GetBaseWindow()->IsActive())
+    if (window->IsFullscreen() && window->GetBaseWindow()->IsActive()) {
       return true;
+    }
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
   return false;
@@ -264,15 +267,17 @@ bool NotificationsApiFunction::CreateNotification(
     optional_fields.small_image_needs_additional_masking = true;
   }
 
-  if (options->priority)
+  if (options->priority) {
     optional_fields.priority = *options->priority;
+  }
 
   if (options->event_time)
     optional_fields.timestamp =
         base::Time::FromMillisecondsSinceUnixEpoch(*options->event_time);
 
-  if (options->silent)
+  if (options->silent) {
     optional_fields.silent = *options->silent;
+  }
 
   if (options->buttons) {
     // Currently we allow up to 2 buttons.
@@ -397,10 +402,12 @@ bool NotificationsApiFunction::UpdateNotification(
   if (options->type != api::notifications::TemplateType::kNone) {
     notification->set_type(MapApiTemplateTypeToType(options->type));
   }
-  if (options->title)
+  if (options->title) {
     notification->set_title(base::UTF8ToUTF16(*options->title));
-  if (options->message)
+  }
+  if (options->message) {
     notification->set_message(base::UTF8ToUTF16(*options->message));
+  }
 
   if (options->icon_bitmap) {
     gfx::Image icon;
@@ -425,15 +432,17 @@ bool NotificationsApiFunction::UpdateNotification(
     notification->set_small_image_needs_additional_masking(true);
   }
 
-  if (options->priority)
+  if (options->priority) {
     notification->set_priority(*options->priority);
+  }
 
   if (options->event_time)
     notification->set_timestamp(
         base::Time::FromMillisecondsSinceUnixEpoch(*options->event_time));
 
-  if (options->silent)
+  if (options->silent) {
     notification->set_silent(*options->silent);
+  }
 
   if (options->buttons) {
     // Currently we allow up to 2 buttons.
@@ -591,8 +600,9 @@ NotificationsCreateFunction::RunNotificationsApi() {
     // Uuid::GenerateRandomV4().AsLowercaseString returns the empty string,
     // simply generate a random string.
     notification_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
-    if (notification_id.empty())
+    if (notification_id.empty()) {
       notification_id = base::RandBytesAsString(16);
+    }
   }
 
   // TODO(dewittj): Add more human-readable error strings if this fails.

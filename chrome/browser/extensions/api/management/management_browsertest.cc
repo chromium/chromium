@@ -165,8 +165,9 @@ class ExtensionManagementTest : public extensions::ExtensionBrowserTest {
     extensions::ExtensionHost* ext_host =
         manager->GetBackgroundHostForExtension(extension->id());
     EXPECT_TRUE(ext_host);
-    if (!ext_host)
+    if (!ext_host) {
       return false;
+    }
 
     std::string version_from_bg =
         content::EvalJs(ext_host->host_contents(), "version()").ExtractString();

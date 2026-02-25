@@ -190,8 +190,9 @@ class RulesetLoadObserver : public RulesMonitorService::TestObserver {
  private:
   // RulesMonitorService::TestObserver override:
   void OnRulesetLoadComplete(const ExtensionId& extension_id) override {
-    if (extension_id_ == extension_id)
+    if (extension_id_ == extension_id) {
       run_loop_.Quit();
+    }
   }
 
   const raw_ptr<RulesMonitorService> service_;
@@ -483,11 +484,13 @@ class DeclarativeNetRequestBrowserTest
 
   void VerifyNavigations(const std::vector<GURL>& expected_blocked_urls,
                          const std::vector<GURL>& expected_allowed_urls) {
-    for (const GURL& url : expected_blocked_urls)
+    for (const GURL& url : expected_blocked_urls) {
       EXPECT_TRUE(IsNavigationBlocked(url)) << url;
+    }
 
-    for (const GURL& url : expected_allowed_urls)
+    for (const GURL& url : expected_allowed_urls) {
       EXPECT_FALSE(IsNavigationBlocked(url)) << url;
+    }
   }
 
   // TODO(crbug.com/40804030): Update function name to reflect it's used in
@@ -844,8 +847,9 @@ class DeclarativeNetRequestBrowserTest
       DCHECK(url_to_wait_for_.is_empty());
       DCHECK(!wait_for_request_run_loop_);
 
-      if (requests_to_server_.count(url_to_wait_for))
+      if (requests_to_server_.count(url_to_wait_for)) {
         return;
+      }
       url_to_wait_for_ = url_to_wait_for;
       wait_for_request_run_loop_ = std::make_unique<base::RunLoop>();
     }
@@ -880,8 +884,9 @@ class DeclarativeNetRequestBrowserTest
   }
 
   net::EmbeddedTestServer* https_server() {
-    if (!https_server_)
+    if (!https_server_) {
       InitializeHttpsServer();
+    }
 
     return https_server_.get();
   }
@@ -959,10 +964,11 @@ class DeclarativeNetRequestBrowserTest
         base::FilePath crx_path = crx_dir.AppendASCII("temp.crx");
 
         base::FilePath pem_path;
-        if (is_extension_update)
+        if (is_extension_update) {
           pem_path = last_pem_path_;
-        else
+        } else {
           last_pem_path_ = crx_dir.AppendASCII("temp.pem");
+        }
 
         ASSERT_FALSE(base::PathExists(crx_dir));
         ASSERT_TRUE(base::CreateDirectory(crx_dir));
@@ -1189,10 +1195,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     TestRule rule = CreateGenericRule();
     rule.condition->url_filter.reset();
 
-    if (rule_data.is_regex_rule)
+    if (rule_data.is_regex_rule) {
       rule.condition->regex_filter = rule_data.filter;
-    else
+    } else {
       rule.condition->url_filter = rule_data.filter;
+    }
 
     rule.condition->resource_types = std::vector<std::string>({"main_frame"});
     rule.id = rule_data.id;
@@ -1352,8 +1359,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     rule.id = rule_data.id;
 
     // An empty list is not allowed for the "domains" property.
-    if (!rule_data.domains.empty())
+    if (!rule_data.domains.empty()) {
       rule.condition->domains = rule_data.domains;
+    }
 
     rule.condition->excluded_domains = rule_data.excluded_domains;
     rule.condition->resource_types = std::vector<std::string>({"sub_frame"});
@@ -1424,8 +1432,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     rule.id = rule_data.id;
 
     // An empty list is not allowed for the "request_domains" property.
-    if (!rule_data.request_domains.empty())
+    if (!rule_data.request_domains.empty()) {
       rule.condition->request_domains = rule_data.request_domains;
+    }
 
     rule.condition->excluded_request_domains =
         rule_data.excluded_request_domains;
@@ -2002,10 +2011,12 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     rule.condition->url_filter = rule_data.url_filter;
     rule.condition->resource_types = std::vector<std::string>({"main_frame"});
     rule.id = rule_data.id;
-    if (rule_data.add_to_first_extension)
+    if (rule_data.add_to_first_extension) {
       rules_1.push_back(rule);
-    if (rule_data.add_to_second_extension)
+    }
+    if (rule_data.add_to_second_extension) {
       rules_2.push_back(rule);
+    }
   }
 
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(
@@ -2653,10 +2664,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, MultipleRulesets) {
 
     // Enable even indexed rulesets by default.
     bool enabled = i % 2 == 0;
-    if (enabled)
+    if (enabled) {
       expected_blocked_urls.push_back(GetURLForFilter(id));
-    else
+    } else {
       expected_allowed_urls.push_back(GetURLForFilter(id));
+    }
 
     rulesets.emplace_back(id, ToListValue(rules), enabled);
   }
@@ -3095,11 +3107,13 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   // Finally verify that all rulesets still work fine.
   std::vector<GURL> expected_blocked_urls;
-  for (int index : non_corrupted_ruleset_indices)
+  for (int index : non_corrupted_ruleset_indices) {
     expected_blocked_urls.push_back(urls_for_indices[index]);
+  }
 
-  for (int index : corrupted_ruleset_indices)
+  for (int index : corrupted_ruleset_indices) {
     expected_blocked_urls.push_back(urls_for_indices[index]);
+  }
 
   VerifyNavigations(expected_blocked_urls,
                     /*expected_allowed_urls=*/std::vector<GURL>());
@@ -3181,8 +3195,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
 
   const int kNumStaticRulesets = 4;
   std::vector<TestRulesetInfo> rulesets;
-  for (int i = 0; i < kNumStaticRulesets; ++i)
+  for (int i = 0; i < kNumStaticRulesets; ++i) {
     rulesets.emplace_back(base::NumberToString(i), ToListValue({rule}));
+  }
 
   ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRulesets(
       rulesets, "extension_directory", {} /* hosts */));
@@ -3846,8 +3861,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, WebRequestEvents) {
 
     // The request will fail since it will be blocked by DNR.
     chrome.webRequest.onErrorOccurred.addListener(() => {
-      if (onBeforeRequestSeen)
+      if (onBeforeRequestSeen) {
         chrome.test.sendMessage('PASS');
+      }
     }, filter);
 
     chrome.test.sendMessage('INSTALLED');
@@ -5559,10 +5575,11 @@ class DeclarativeNetRequestAllowAllRequestsBrowserTest
       test_rule.priority = rule.priority;
       test_rule.action->type = rule.action_type;
       test_rule.condition->url_filter.reset();
-      if (rule.is_regex_rule)
+      if (rule.is_regex_rule) {
         test_rule.condition->regex_filter = rule.url_filter;
-      else
+      } else {
         test_rule.condition->url_filter = rule.url_filter;
+      }
       test_rule.condition->resource_types = rule.resource_types;
       test_rule.condition->request_methods = rule.request_methods;
       test_rules.push_back(test_rule);
@@ -6017,10 +6034,11 @@ class DeclarativeNetRequestResourceTypeBrowserTest
       // The "resourceTypes" property (i.e. |rule.condition->resource_types|)
       // should not be an empty list. It should either be omitted or be a non-
       // empty list.
-      if (rule_data.resource_types.empty())
+      if (rule_data.resource_types.empty()) {
         rule.condition->resource_types = std::nullopt;
-      else
+      } else {
         rule.condition->resource_types = rule_data.resource_types;
+      }
 
       rule.condition->excluded_resource_types =
           rule_data.excluded_resource_types;
@@ -6571,8 +6589,9 @@ class DeclarativeNetRequestGlobalRulesBrowserTest
         helper.GetAllocatedGlobalRuleCount(extension_id, actual_rules_count);
 
     EXPECT_EQ(expected_rules_count.has_value(), has_allocated_rules_count);
-    if (expected_rules_count.has_value())
+    if (expected_rules_count.has_value()) {
       EXPECT_EQ(*expected_rules_count, actual_rules_count);
+    }
   }
 
   void VerifyKeepExcessAllocation(const ExtensionId& extension_id,
@@ -6894,8 +6913,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
     rule.condition->url_filter = rule_data.url_filter;
 
     // An empty list is not allowed for the "requestMethods" property.
-    if (!rule_data.request_methods.empty())
+    if (!rule_data.request_methods.empty()) {
       rule.condition->request_methods = rule_data.request_methods;
+    }
 
     rule.condition->excluded_request_methods =
         rule_data.excluded_request_methods;

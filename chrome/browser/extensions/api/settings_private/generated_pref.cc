@@ -28,8 +28,9 @@ void GeneratedPref::RemoveObserver(Observer* observer) {
 }
 
 void GeneratedPref::NotifyObservers(const std::string& pref_name) {
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnGeneratedPrefChanged(pref_name);
+  }
 }
 
 /* static */

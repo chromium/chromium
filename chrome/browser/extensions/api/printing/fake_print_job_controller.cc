@@ -61,10 +61,11 @@ void FakePrintJobController::CreatePrintJobImpl(
       printing::PrintSettings::NewCookie());
   int observer_count = 0;
   for (auto& observer : job->GetObserversForTesting()) {
-    if (fail_)
+    if (fail_) {
       observer.OnFailed();
-    else
+    } else {
       observer.OnDocDone(job_id_, document.get());
+    }
     observer_count++;
   }
   EXPECT_EQ(1, observer_count);

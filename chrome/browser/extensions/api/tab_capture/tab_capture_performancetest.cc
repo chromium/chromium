@@ -130,12 +130,15 @@ class TabCapturePerformanceTest : public TabCapturePerformanceTestBase,
 
   std::string GetSuffixForTestFlags() const {
     std::string suffix;
-    if (HasFlag(kUseGpu))
+    if (HasFlag(kUseGpu)) {
       suffix += "_comp_gpu";
-    if (HasFlag(kTestThroughWebRTC))
+    }
+    if (HasFlag(kTestThroughWebRTC)) {
       suffix += "_webrtc";
-    if (HasFlag(kSmallWindow))
+    }
+    if (HasFlag(kSmallWindow)) {
       suffix += "_small";
+    }
     // Make sure we always have a story.
     if (suffix.size() == 0) {
       suffix = "_baseline_story";
@@ -153,8 +156,9 @@ class TabCapturePerformanceTest : public TabCapturePerformanceTestBase,
     CHECK(success) << "Failed to load test page at: "
                    << test_file.AsUTF8Unsafe();
 
-    if (!HasFlag(kUseGpu))
+    if (!HasFlag(kUseGpu)) {
       UseSoftwareCompositing();
+    }
 
     TabCapturePerformanceTestBase::SetUp();
   }
@@ -223,8 +227,9 @@ class TabCapturePerformanceTest : public TabCapturePerformanceTestBase,
     int count = 0;
     for (const auto* begin_event : events_to_analyze) {
       const auto* end_event = begin_event->other_event.get();
-      if (!end_event)
+      if (!end_event) {
         continue;
+      }
       const double latency = end_event->timestamp - begin_event->timestamp;
       sum += latency;
       sqr_sum += latency * latency;

@@ -237,8 +237,9 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   DCHECK(!id.is_empty());
 
   bool collapsed = visual_data.is_collapsed();
-  if (params->update_properties.collapsed)
+  if (params->update_properties.collapsed) {
     collapsed = *params->update_properties.collapsed;
+  }
 
   tab_groups::TabGroupColorId color = visual_data.color();
   if (params->update_properties.color != api::tab_groups::Color::kNone) {
@@ -246,8 +247,9 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   }
 
   std::u16string title = visual_data.title();
-  if (params->update_properties.title)
+  if (params->update_properties.title) {
     title = base::UTF8ToUTF16(*params->update_properties.title);
+  }
 
   if (!ExtensionTabUtil::IsTabStripEditable()) {
     return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
@@ -273,8 +275,9 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   tab_groups::TabGroupVisualData new_visual_data(title, color, collapsed);
   tab_list->SetTabGroupVisualData(id, new_visual_data);
 
-  if (!has_callback())
+  if (!has_callback()) {
     return RespondNow(NoArguments());
+  }
 
   return RespondNow(ArgumentList(api::tab_groups::Get::Results::Create(
       ExtensionTabUtil::CreateTabGroupObject(id, new_visual_data))));
@@ -335,8 +338,9 @@ ExtensionFunction::ResponseAction TabGroupsMoveFunction::Run() {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  if (!has_callback())
+  if (!has_callback()) {
     return RespondNow(NoArguments());
+  }
 
   auto group_object = ExtensionTabUtil::CreateTabGroupObject(group);
   CHECK(group_object);

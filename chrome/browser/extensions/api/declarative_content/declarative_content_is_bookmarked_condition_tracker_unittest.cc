@@ -150,8 +150,9 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
     }
 
     if (!is_not_bookmarked_predicate_success) {
-      if (!is_bookmarked_predicate_success)
+      if (!is_bookmarked_predicate_success) {
         result << "; ";
+      }
       result << "IsBookmarkedPredicate(false): expected "
              << base::ToString(!page_is_bookmarked) << " got "
              << base::ToString(page_is_bookmarked);

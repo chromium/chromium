@@ -158,8 +158,9 @@ ExtensionFunction::ResponseAction PermissionsContainsFunction::Run() {
               ->AllowFileAccess(extension()->id()),
           &error);
 
-  if (!unpack_result)
+  if (!unpack_result) {
     return RespondNow(Error(std::move(error)));
+  }
 
   const PermissionSet& active_permissions =
       extension()->permissions_data()->active_permissions();
@@ -217,8 +218,9 @@ ExtensionFunction::ResponseAction PermissionsRemoveFunction::Run() {
               ->AllowFileAccess(extension_->id()),
           &error);
 
-  if (!unpack_result)
+  if (!unpack_result) {
     return RespondNow(Error(std::move(error)));
+  }
 
   // We can't remove any permissions that weren't specified in the manifest.
   if (!unpack_result->unlisted_apis.empty() ||
@@ -337,8 +339,9 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
               ->AllowFileAccess(extension_->id()),
           &error);
 
-  if (!unpack_result)
+  if (!unpack_result) {
     return RespondNow(Error(std::move(error)));
+  }
 
   // Don't allow the extension to request any permissions that weren't specified
   // in the manifest.
@@ -511,8 +514,9 @@ void PermissionsRequestFunction::OnInstallPromptDone(
   }
 
   // Grant{Runtime|Optional}Permissions calls above can finish synchronously.
-  if (!did_respond())
+  if (!did_respond()) {
     RespondIfRequestsFinished();
+  }
 }
 
 void PermissionsRequestFunction::OnRuntimePermissionsGranted() {
@@ -526,8 +530,9 @@ void PermissionsRequestFunction::OnOptionalPermissionsGranted() {
 }
 
 void PermissionsRequestFunction::RespondIfRequestsFinished() {
-  if (requesting_withheld_permissions_ || requesting_optional_permissions_)
+  if (requesting_withheld_permissions_ || requesting_optional_permissions_) {
     return;
+  }
 
   Respond(ArgumentList(api::permissions::Request::Results::Create(true)));
 }

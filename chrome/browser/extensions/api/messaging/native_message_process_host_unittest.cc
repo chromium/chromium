@@ -162,14 +162,16 @@ class NativeMessagingTest : public ::testing::Test,
       last_message_parsed_ = std::move(*dict_value).TakeDict();
     }
 
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
   void CloseChannel(const std::string& error_message) override {
     channel_closed_ = true;
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->Quit();
+    }
   }
 
  protected:
@@ -180,12 +182,14 @@ class NativeMessagingTest : public ::testing::Test,
 
   base::FilePath CreateTempFileWithMessage(const std::string& message) {
     base::FilePath filename;
-    if (!base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &filename))
+    if (!base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &filename)) {
       return base::FilePath();
+    }
 
     std::string message_with_header = FormatMessage(message);
-    if (!base::WriteFile(filename, message_with_header))
+    if (!base::WriteFile(filename, message_with_header)) {
       return base::FilePath();
+    }
 
     return filename;
   }
@@ -283,8 +287,9 @@ TEST_F(NativeMessagingTest, SingleSendMessageWrite) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   while (base::TimeTicks::Now() - start_time < TestTimeouts::action_timeout()) {
     ASSERT_TRUE(base::ReadFileToString(temp_output_file, &output));
-    if (!output.empty())
+    if (!output.empty()) {
       break;
+    }
     base::PlatformThread::YieldCurrentThread();
   }
 

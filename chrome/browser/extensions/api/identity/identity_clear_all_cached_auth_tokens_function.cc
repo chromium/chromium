@@ -18,8 +18,9 @@ IdentityClearAllCachedAuthTokensFunction::
 ExtensionFunction::ResponseAction
 IdentityClearAllCachedAuthTokensFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (profile->IsOffTheRecord())
+  if (profile->IsOffTheRecord()) {
     return RespondNow(Error(identity_constants::kOffTheRecord));
+  }
 
   IdentityAPI* id_api = IdentityAPI::GetFactoryInstance()->Get(profile);
   id_api->EraseGaiaIdForExtension(extension()->id());

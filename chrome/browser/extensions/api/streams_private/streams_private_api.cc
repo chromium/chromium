@@ -40,8 +40,9 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
 
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   // If the request was for NoStatePrefetch, abort the prefetcher and do not
   // continue. This is because plugins cancel NoStatePrefetch, see
@@ -59,12 +60,14 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
   const Extension* extension = ExtensionRegistry::Get(browser_context)
                                    ->enabled_extensions()
                                    .GetByID(extension_id);
-  if (!extension)
+  if (!extension) {
     return;
+  }
 
   MimeTypesHandler* handler = MimeTypesHandler::GetHandler(extension);
-  if (!handler->HasPlugin())
+  if (!handler->HasPlugin()) {
     return;
+  }
 
   // If the mime handler uses MimeHandlerViewGuest, the MimeHandlerViewGuest
   // will take ownership of the stream.

@@ -64,8 +64,9 @@ std::unique_ptr<ContentCondition> CreateContentCondition(
   for (const auto iter : api_condition_dict) {
     const std::string& predicate_name = iter.first;
     const base::Value& predicate_value = iter.second;
-    if (predicate_name == declarative_content_constants::kInstanceType)
+    if (predicate_name == declarative_content_constants::kInstanceType) {
       continue;
+    }
 
     const auto loc = predicate_factories.find(predicate_name);
     if (loc != predicate_factories.end())
@@ -76,8 +77,9 @@ std::unique_ptr<ContentCondition> CreateContentCondition(
       *error = base::StringPrintf(kUnknownConditionAttribute,
                                   predicate_name.c_str());
 
-    if (!error->empty())
+    if (!error->empty()) {
       return nullptr;
+    }
   }
 
   return std::make_unique<ContentCondition>(std::move(predicates));

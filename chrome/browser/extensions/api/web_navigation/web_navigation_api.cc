@@ -52,8 +52,9 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
     ExtensionApiFrameIdMap::DocumentId document_id =
         ExtensionApiFrameIdMap::DocumentIdFromString(
             *params->details.document_id);
-    if (!document_id)
+    if (!document_id) {
       return RespondNow(Error("Invalid documentId."));
+    }
 
     // Note that we will globally find a RenderFrameHost but validate that
     // we are in the right context still as we may be in the wrong profile
@@ -62,8 +63,9 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
         ExtensionApiFrameIdMap::Get()->GetRenderFrameHostByDocumentId(
             document_id);
 
-    if (!render_frame_host)
+    if (!render_frame_host) {
       return RespondNow(WithArguments(base::Value()));
+    }
 
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(render_frame_host);
@@ -110,12 +112,14 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
       render_frame_host
           ? FrameNavigationState::GetForCurrentDocument(render_frame_host)
           : nullptr;
-  if (!frame_navigation_state)
+  if (!frame_navigation_state) {
     return RespondNow(WithArguments(base::Value()));
+  }
 
   GURL frame_url = frame_navigation_state->GetUrl();
-  if (!FrameNavigationState::IsValidUrl(frame_url))
+  if (!FrameNavigationState::IsValidUrl(frame_url)) {
     return RespondNow(WithArguments(base::Value()));
+  }
 
   GetFrame::Results::Details frame_details;
   frame_details.url = frame_url.spec();

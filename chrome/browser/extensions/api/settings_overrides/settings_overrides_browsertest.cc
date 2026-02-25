@@ -105,11 +105,13 @@ std::unique_ptr<TemplateURLData> TestExtensionSearchEngine(Profile* profile) {
 
 testing::AssertionResult VerifyTemplateURLServiceLoad(
     TemplateURLService* service) {
-  if (service->loaded())
+  if (service->loaded()) {
     return testing::AssertionSuccess();
+  }
   search_test_utils::WaitForTemplateURLServiceToLoad(service);
-  if (service->loaded())
+  if (service->loaded()) {
     return testing::AssertionSuccess();
+  }
   return testing::AssertionFailure() << "TemplateURLService isn't loaded";
 }
 

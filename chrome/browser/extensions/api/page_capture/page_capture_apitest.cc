@@ -39,16 +39,18 @@ class PageCaptureSaveAsMHTMLDelegate
   }
 
   void WaitForFinalRelease() {
-    if (temp_file_count_ > 0)
+    if (temp_file_count_ > 0) {
       run_loop_.Run();
+    }
   }
 
   int temp_file_count() const { return temp_file_count_; }
 
  private:
   void OnReleaseCallback(const base::FilePath& path) {
-    if (--temp_file_count_ == 0)
+    if (--temp_file_count_ == 0) {
       release_closure_.Run();
+    }
   }
 
   base::RunLoop run_loop_;
@@ -81,8 +83,9 @@ class ExtensionPageCaptureApiTest
   void WaitForFileCleanup(PageCaptureSaveAsMHTMLDelegate* delegate) {
     // Garbage collection in SW-based extensions doesn't clean up the temp
     // file.
-    if (GetParam() != ContextType::kServiceWorker)
+    if (GetParam() != ContextType::kServiceWorker) {
       delegate->WaitForFinalRelease();
+    }
   }
 };
 

@@ -88,8 +88,9 @@ class WebAuthFlowBrowserTest : public PlatformBrowserTest {
           WebAuthFlow::AbortOnLoad::kYes,
       std::optional<base::TimeDelta> timeout_for_non_interactive = std::nullopt,
       std::optional<gfx::Rect> popup_bounds = std::nullopt) {
-    if (!profile)
+    if (!profile) {
       profile = GetProfile();
+    }
 
     web_auth_flow_ = std::make_unique<WebAuthFlow>(
         &mock_web_auth_flow_delegate_, profile, url, mode,

@@ -289,8 +289,9 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
   }
 
   if (injection_.files) {
-    if (injection_.args)
+    if (injection_.args) {
       return RespondNow(Error("'args' may not be used with file injections."));
+    }
 
     // JS files don't require localization.
     constexpr bool kRequiresLocalization = false;
@@ -318,8 +319,9 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
     string_args.reserve(injection_.args->size());
     for (const auto& arg : *injection_.args) {
       std::string json;
-      if (!base::JSONWriter::Write(arg, &json))
+      if (!base::JSONWriter::Write(arg, &json)) {
         return RespondNow(Error("Unserializable argument passed."));
+      }
       string_args.push_back(std::move(json));
     }
     args_expression = base::JoinString(string_args, ",");
@@ -332,8 +334,9 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
   sources.push_back(mojom::JSSource::New(std::move(code_to_execute), GURL()));
 
   std::string error;
-  if (!Execute(std::move(sources), &error))
+  if (!Execute(std::move(sources), &error)) {
     return RespondNow(Error(std::move(error)));
+  }
 
   return RespondLater();
 }
@@ -399,13 +402,15 @@ void ScriptingExecuteScriptFunction::OnScriptExecuted(
   // to the extension.
   std::vector<api::scripting::InjectionResult> injection_results;
   for (auto& result : frame_results) {
-    if (!result.error.empty())
+    if (!result.error.empty()) {
       continue;
+    }
     api::scripting::InjectionResult injection_result;
     injection_result.result = std::move(result.value);
     injection_result.frame_id = result.frame_id;
-    if (result.document_id)
+    if (result.document_id) {
       injection_result.document_id = result.document_id.ToString();
+    }
 
     // Put the top frame first; otherwise, any order.
     if (result.frame_id == ExtensionApiFrameIdMap::kTopFrameId) {
@@ -481,8 +486,9 @@ void ScriptingInsertCSSFunction::DidLoadResources(
       FileSourcesToCSSSources(*extension(), std::move(file_sources));
 
   std::string error;
-  if (!Execute(std::move(sources), &error))
+  if (!Execute(std::move(sources), &error)) {
     Respond(Error(std::move(error)));
+  }
 }
 
 bool ScriptingInsertCSSFunction::Execute(
@@ -743,10 +749,11 @@ void ScriptingRegisterContentScriptsFunction::OnContentScriptFilesValidated(
 
 void ScriptingRegisterContentScriptsFunction::OnContentScriptsRegistered(
     const std::optional<std::string>& error) {
-  if (error.has_value())
+  if (error.has_value()) {
     Respond(Error(std::move(*error)));
-  else
+  } else {
     Respond(NoArguments());
+  }
   Release();  // Matches the `AddRef()` in `Run()`.
 }
 
@@ -843,10 +850,11 @@ ScriptingUnregisterContentScriptsFunction::Run() {
 
 void ScriptingUnregisterContentScriptsFunction::OnContentScriptsUnregistered(
     const std::optional<std::string>& error) {
-  if (error.has_value())
+  if (error.has_value()) {
     Respond(Error(std::move(*error)));
-  else
+  } else {
     Respond(NoArguments());
+  }
 }
 
 ScriptingUpdateContentScriptsFunction::ScriptingUpdateContentScriptsFunction() =
@@ -1023,10 +1031,11 @@ void ScriptingUpdateContentScriptsFunction::OnContentScriptFilesValidated(
 
 void ScriptingUpdateContentScriptsFunction::OnContentScriptsUpdated(
     const std::optional<std::string>& error) {
-  if (error.has_value())
+  if (error.has_value()) {
     Respond(Error(std::move(*error)));
-  else
+  } else {
     Respond(NoArguments());
+  }
   Release();  // Matches the `AddRef()` in `Run()`.
 }
 

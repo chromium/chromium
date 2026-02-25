@@ -155,14 +155,16 @@ void DeclarativeContentCssConditionTracker::TrackPredicates(
       tracked_predicates_[group_predicates_pair.first].push_back(
           typed_predicate);
       for (const std::string& selector : typed_predicate->css_selectors()) {
-        if (watched_css_selector_predicate_count_[selector]++ == 0)
+        if (watched_css_selector_predicate_count_[selector]++ == 0) {
           watched_selectors_updated = true;
+        }
       }
     }
   }
 
-  if (watched_selectors_updated)
+  if (watched_selectors_updated) {
     UpdateRenderersWatchedCssSelectors(GetWatchedCssSelectors());
+  }
 }
 
 void DeclarativeContentCssConditionTracker::StopTrackingPredicates(
@@ -170,8 +172,9 @@ void DeclarativeContentCssConditionTracker::StopTrackingPredicates(
   bool watched_selectors_updated = false;
   for (const void* group : predicate_groups) {
     auto it = tracked_predicates_.find(group);
-    if (it == tracked_predicates_.end())
+    if (it == tracked_predicates_.end()) {
       continue;
+    }
     for (const DeclarativeContentCssPredicate* predicate : it->second) {
       for (const std::string& selector : predicate->css_selectors()) {
         auto loc = watched_css_selector_predicate_count_.find(selector);
@@ -185,8 +188,9 @@ void DeclarativeContentCssConditionTracker::StopTrackingPredicates(
     tracked_predicates_.erase(group);
   }
 
-  if (watched_selectors_updated)
+  if (watched_selectors_updated) {
     UpdateRenderersWatchedCssSelectors(GetWatchedCssSelectors());
+  }
 }
 
 void DeclarativeContentCssConditionTracker::TrackForWebContents(
@@ -274,8 +278,9 @@ InstructRenderProcessIfManagingBrowserContext(
     mojom::Renderer* renderer =
         RendererStartupHelperFactory::GetForBrowserContext(browser_context)
             ->GetRenderer(process);
-    if (renderer)
+    if (renderer) {
       renderer->WatchPages(watched_css_selectors);
+    }
   }
 }
 

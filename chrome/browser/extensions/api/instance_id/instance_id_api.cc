@@ -122,10 +122,11 @@ ExtensionFunction::ResponseAction InstanceIDGetTokenFunction::DoWork() {
 void InstanceIDGetTokenFunction::GetTokenCompleted(
     const std::string& token,
     instance_id::InstanceID::Result result) {
-  if (result == instance_id::InstanceID::SUCCESS)
+  if (result == instance_id::InstanceID::SUCCESS) {
     Respond(WithArguments(token));
-  else
+  } else {
     Respond(Error(InstanceIDResultToError(result)));
+  }
 }
 
 InstanceIDDeleteTokenFunction::InstanceIDDeleteTokenFunction() = default;
@@ -148,10 +149,11 @@ ExtensionFunction::ResponseAction InstanceIDDeleteTokenFunction::DoWork() {
 
 void InstanceIDDeleteTokenFunction::DeleteTokenCompleted(
     instance_id::InstanceID::Result result) {
-  if (result == instance_id::InstanceID::SUCCESS)
+  if (result == instance_id::InstanceID::SUCCESS) {
     Respond(NoArguments());
-  else
+  } else {
     Respond(Error(InstanceIDResultToError(result)));
+  }
 }
 
 InstanceIDDeleteIDFunction::InstanceIDDeleteIDFunction() = default;
@@ -167,10 +169,11 @@ ExtensionFunction::ResponseAction InstanceIDDeleteIDFunction::DoWork() {
 
 void InstanceIDDeleteIDFunction::DeleteIDCompleted(
     instance_id::InstanceID::Result result) {
-  if (result == instance_id::InstanceID::SUCCESS)
+  if (result == instance_id::InstanceID::SUCCESS) {
     Respond(NoArguments());
-  else
+  } else {
     Respond(Error(InstanceIDResultToError(result)));
+  }
 }
 
 }  // namespace extensions

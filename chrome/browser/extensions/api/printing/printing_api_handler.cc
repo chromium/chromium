@@ -174,8 +174,9 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
   if (!result.has_value()) {
     std::optional<std::string> error = std::move(result).error();
     std::optional<api::printing::SubmitJobStatus> status;
-    if (!error)
+    if (!error) {
       status = api::printing::SubmitJobStatus::kUserRejected;
+    }
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), status, std::nullopt,
                                   std::move(error)));

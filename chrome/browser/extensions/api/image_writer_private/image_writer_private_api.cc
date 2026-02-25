@@ -63,10 +63,11 @@ ImageWriterPrivateBaseFunction::~ImageWriterPrivateBaseFunction() = default;
 
 void ImageWriterPrivateBaseFunction::OnComplete(bool success,
                                                 const std::string& error) {
-  if (success)
+  if (success) {
     Respond(NoArguments());
-  else
+  } else {
     Respond(Error(error));
+  }
 }
 
 ImageWriterPrivateWriteFromUrlFunction::
@@ -86,8 +87,9 @@ ImageWriterPrivateWriteFromUrlFunction::Run() {
   }
 
   GURL url(params->image_url);
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return RespondNow(Error(image_writer::error::kUrlInvalid));
+  }
 
   std::string hash;
   if (params->options && params->options->image_hash) {

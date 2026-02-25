@@ -33,8 +33,9 @@ std::optional<base::DictValue> SettingsPrivateDelegate::GetPref(
     const std::string& name) {
   std::optional<api::settings_private::PrefObject> pref =
       prefs_util_->GetPref(name);
-  if (!pref)
+  if (!pref) {
     return std::nullopt;
+  }
   return pref->ToValue();
 }
 
@@ -61,8 +62,9 @@ base::Value SettingsPrivateDelegate::GetDefaultZoom() {
   // Zoom level prefs aren't available for off-the-record profiles (like guest
   // mode on Chrome OS). The setting isn't visible to users anyway, so return a
   // default value.
-  if (profile_->IsOffTheRecord())
+  if (profile_->IsOffTheRecord()) {
     return base::Value(0.0);
+  }
   double zoom = blink::ZoomLevelToZoomFactor(
       profile_->GetZoomLevelPrefs()->GetDefaultZoomLevelPref());
   return base::Value(zoom);
@@ -71,8 +73,9 @@ base::Value SettingsPrivateDelegate::GetDefaultZoom() {
 settings_private::SetPrefResult SettingsPrivateDelegate::SetDefaultZoom(
     double zoom) {
   // See comment in GetDefaultZoom().
-  if (profile_->IsOffTheRecord())
+  if (profile_->IsOffTheRecord()) {
     return settings_private::SetPrefResult::PREF_NOT_MODIFIABLE;
+  }
   double zoom_factor = blink::ZoomFactorToZoomLevel(zoom);
   profile_->GetZoomLevelPrefs()->SetDefaultZoomLevelPref(zoom_factor);
   return settings_private::SetPrefResult::SUCCESS;

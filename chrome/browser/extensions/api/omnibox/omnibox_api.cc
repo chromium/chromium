@@ -81,8 +81,9 @@ bool SetOmniboxDefaultSuggestion(
     const ExtensionId& extension_id,
     const omnibox::DefaultSuggestResult& suggestion) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile);
-  if (!prefs)
+  if (!prefs) {
     return false;
+  }
 
   base::DictValue dict = suggestion.ToValue();
   // Add the content field so that the dictionary can be used to populate an
@@ -163,12 +164,13 @@ void ExtensionOmniboxEventRouter::OnInputEntered(
 
   base::ListValue args;
   args.Append(input);
-  if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB)
+  if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
     args.Append(kForegroundTabDisposition);
-  else if (disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB)
+  } else if (disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
     args.Append(kBackgroundTabDisposition);
-  else
+  } else {
     args.Append(kCurrentTabDisposition);
+  }
 
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_ENTERED,
                                        omnibox::OnInputEntered::kEventName,
@@ -543,8 +545,9 @@ ACMatchClassifications StyleTypesToACMatchClassifications(
           return match_classifications;
       }
 
-      for (size_t j = offset; j < offset + length && j < styles.size(); ++j)
+      for (size_t j = offset; j < offset + length && j < styles.size(); ++j) {
         styles[j] |= type_class;
+      }
     }
 
     for (size_t i = 0; i < styles.size(); ++i) {
@@ -569,8 +572,9 @@ void ApplyDefaultSuggestionForExtensionKeyword(
 
   std::optional<omnibox::SuggestResult> suggestion(
       GetOmniboxDefaultSuggestion(profile, keyword->GetExtensionId()));
-  if (!suggestion || suggestion->description.empty())
+  if (!suggestion || suggestion->description.empty()) {
     return;  // fall back to the universal default
+  }
 
   const std::u16string kPlaceholderText(u"%s");
   const std::u16string kReplacementText(u"<input>");
@@ -594,8 +598,9 @@ void ApplyDefaultSuggestionForExtensionKeyword(
     description.replace(placeholder, kPlaceholderText.length(), replacement);
 
     for (auto& description_style : description_styles) {
-      if (description_style.offset > placeholder)
+      if (description_style.offset > placeholder) {
         description_style.offset += replacement.length() - 2;
+      }
     }
   }
 

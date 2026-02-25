@@ -92,13 +92,15 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
     const std::u16string& target_name) {
   DCHECK(!picker_controller_);
 
-  if (!render_frame_host->IsActive())
+  if (!render_frame_host->IsActive()) {
     return RespondNow(Error(kTargetNotActiveError));
+  }
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
-  if (!web_contents)
+  if (!web_contents) {
     return RespondNow(Error(kTargetNotFoundError));
+  }
 
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
   // In case of coming from background extension page, |parent_window| will

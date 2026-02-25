@@ -436,13 +436,15 @@ class QuickUnlockPrivateUnitTest
     params.Append(token);
 
     base::ListValue serialized_modes;
-    for (QuickUnlockMode mode : modes)
+    for (QuickUnlockMode mode : modes) {
       serialized_modes.Append(quick_unlock_private::ToString(mode));
+    }
     params.Append(base::Value(std::move(serialized_modes)));
 
     base::ListValue serialized_passwords;
-    for (const std::string& password : passwords)
+    for (const std::string& password : passwords) {
       serialized_passwords.Append(password);
+    }
     params.Append(base::Value(std::move(serialized_passwords)));
 
     return params;

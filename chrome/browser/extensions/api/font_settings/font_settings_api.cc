@@ -79,8 +79,9 @@ std::string GetFontNamePrefPath(fonts::GenericFamily generic_family_enum,
   const char* script = fonts::ToString(script_enum);
   if (script[0] == 0)  // Empty string.
     result.append(prefs::kWebKitCommonScript);
-  else
+  else {
     result.append(script);
+  }
   return result;
 }
 
@@ -90,11 +91,13 @@ void MaybeUnlocalizeFontName(std::string* font_name) {
   // available.
   std::optional<std::string> localized_font_name =
       gfx::win::RetrieveLocalizedFontName(*font_name, "us-en");
-  if (!localized_font_name)
+  if (!localized_font_name) {
     localized_font_name = gfx::win::RetrieveLocalizedFontName(*font_name, "");
+  }
 
-  if (localized_font_name)
+  if (localized_font_name) {
     *font_name = std::move(localized_font_name.value());
+  }
 #endif  // BUILDFLAG(IS_WIN)
 }
 
@@ -262,8 +265,9 @@ FontSettingsAPI::GetFactoryInstance() {
 
 ExtensionFunction::ResponseAction FontSettingsClearFontFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (profile->IsOffTheRecord())
+  if (profile->IsOffTheRecord()) {
     return RespondNow(Error(kSetFromIncognitoError));
+  }
 
   std::optional<fonts::ClearFont::Params> params =
       fonts::ClearFont::Params::Create(args());
@@ -316,8 +320,9 @@ ExtensionFunction::ResponseAction FontSettingsGetFontFunction::Run() {
 
 ExtensionFunction::ResponseAction FontSettingsSetFontFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (profile->IsOffTheRecord())
+  if (profile->IsOffTheRecord()) {
     return RespondNow(Error(kSetFromIncognitoError));
+  }
 
   std::optional<fonts::SetFont::Params> params =
       fonts::SetFont::Params::Create(args());
@@ -380,8 +385,9 @@ FontSettingsGetFontListFunction::CopyFontsToResult(
 
 ExtensionFunction::ResponseAction ClearFontPrefExtensionFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (profile->IsOffTheRecord())
+  if (profile->IsOffTheRecord()) {
     return RespondNow(Error(kSetFromIncognitoError));
+  }
 
   ExtensionPrefsHelper::Get(profile)->RemoveExtensionControlledPref(
       extension_id(), GetPrefName(), ChromeSettingScope::kRegular);
@@ -410,8 +416,9 @@ ExtensionFunction::ResponseAction GetFontPrefExtensionFunction::Run() {
 
 ExtensionFunction::ResponseAction SetFontPrefExtensionFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  if (profile->IsOffTheRecord())
+  if (profile->IsOffTheRecord()) {
     return RespondNow(Error(kSetFromIncognitoError));
+  }
 
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_dict());

@@ -34,12 +34,15 @@ const brlapi_keyCode_t kMaxFunctionKey = BRLAPI_KEY_SYM_FUNCTION + 23;
 // Maps the keyboard modifier flags to their corresponding flags in a
 // |KeyEvent|.
 void MapModifierFlags(brlapi_keyCode_t code, KeyEvent* event) {
-  if (code & BRLAPI_KEY_FLG_CONTROL)
+  if (code & BRLAPI_KEY_FLG_CONTROL) {
     event->ctrl_key = true;
-  if (code & BRLAPI_KEY_FLG_META)
+  }
+  if (code & BRLAPI_KEY_FLG_META) {
     event->alt_key = true;
-  if (code & BRLAPI_KEY_FLG_SHIFT)
+  }
+  if (code & BRLAPI_KEY_FLG_SHIFT) {
     event->shift_key = true;
+  }
 }
 
 // Maps a brlapi keysym, which is similar to an X keysym into the
@@ -51,8 +54,9 @@ void MapKeySym(brlapi_keyCode_t code, KeyEvent* event) {
   if (key_sym < kMaxLatin1KeySym ||
       (key_sym & BRLAPI_KEY_SYM_UNICODE) != 0) {
     base_icu::UChar32 code_point = key_sym & ~BRLAPI_KEY_SYM_UNICODE;
-    if (!base::IsValidCharacter(code_point))
+    if (!base::IsValidCharacter(code_point)) {
       return;
+    }
     event->standard_key_char.emplace();
     base::WriteUnicodeCharacter(code_point, &*event->standard_key_char);
   } else if (key_sym >= kMinFunctionKey && key_sym <= kMaxFunctionKey) {
@@ -147,10 +151,11 @@ void MapCommand(brlapi_keyCode_t code, KeyEvent* event) {
           event->braille_dots = dots;
 
           // BRLAPI_DOTC represents when the braille space key is pressed.
-          if (dots && (argument & BRLAPI_DOTC))
+          if (dots && (argument & BRLAPI_DOTC)) {
             event->command = KeyCommand::kChord;
-          else
+          } else {
             event->command = KeyCommand::kDots;
+          }
           MapModifierFlags(code, event);
           break;
       }

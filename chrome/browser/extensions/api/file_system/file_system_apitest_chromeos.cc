@@ -109,8 +109,9 @@ class ScopedAddListenerObserver : public EventRouter::Observer {
   // EventRouter::Observer overrides.
   void OnListenerAdded(const EventListenerInfo& details) override {
     // Call the callback only once, as the listener may be added multiple times.
-    if (details.extension_id != extension_id_ || !callback_)
+    if (details.extension_id != extension_id_ || !callback_) {
       return;
+    }
 
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback_));

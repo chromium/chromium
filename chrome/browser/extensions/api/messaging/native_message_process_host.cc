@@ -182,8 +182,9 @@ void NativeMessageProcessHost::OnHostProcessLaunched(
 void NativeMessageProcessHost::OnMessage(const std::string& json) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  if (closed_)
+  if (closed_) {
     return;
+  }
 
   // Allocate new buffer for the message.
   scoped_refptr<net::IOBufferWithSize> buffer =
@@ -208,8 +209,9 @@ void NativeMessageProcessHost::OnMessage(const std::string& json) {
   // Send() may be called before the host process is started. In that case the
   // message will be written when OnHostProcessLaunched() is called. If it's
   // already started then write the message now.
-  if (write_stream_)
+  if (write_stream_) {
     DoWrite();
+  }
 }
 
 void NativeMessageProcessHost::Start(Client* client) {
@@ -227,8 +229,9 @@ NativeMessageProcessHost::task_runner() const {
 }
 
 void NativeMessageProcessHost::WaitRead() {
-  if (closed_)
+  if (closed_) {
     return;
+  }
 
   DCHECK(!read_pending_);
 
@@ -273,8 +276,9 @@ void NativeMessageProcessHost::HandleReadResult(
     base::expected<base::ByteSize, net::Error> result) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  if (closed_)
+  if (closed_) {
     return;
+  }
 
   if (result.has_value()) {
     if (result->is_positive()) {
@@ -301,8 +305,9 @@ void NativeMessageProcessHost::ProcessIncomingData(
   incoming_data_.append(data, data_size);
 
   while (true) {
-    if (incoming_data_.size() < kMessageHeaderSize)
+    if (incoming_data_.size() < kMessageHeaderSize) {
       return;
+    }
 
     // TODO(crbug.com/428945428): Fix unsafe uses of std::string::data().
     size_t message_size =
@@ -315,8 +320,9 @@ void NativeMessageProcessHost::ProcessIncomingData(
       return;
     }
 
-    if (incoming_data_.size() < message_size + kMessageHeaderSize)
+    if (incoming_data_.size() < message_size + kMessageHeaderSize) {
       return;
+    }
 
     client_->PostMessageFromNativeHost(
         incoming_data_.substr(kMessageHeaderSize, message_size));
@@ -331,8 +337,9 @@ void NativeMessageProcessHost::DoWrite() {
   while (!write_pending_ && !closed_) {
     if (!current_write_buffer_.get() ||
         !current_write_buffer_->BytesRemaining()) {
-      if (write_queue_.empty())
+      if (write_queue_.empty()) {
         return;
+      }
       scoped_refptr<net::IOBufferWithSize> buffer =
           std::move(write_queue_.front());
       int buffer_size = buffer->size();

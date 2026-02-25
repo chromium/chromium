@@ -1579,8 +1579,9 @@ TEST(ExtensionWebRequestHelpersTest,
   expected_cookies.insert(
       "uBound5=value12; max-age=600; expires=" + cookie_expiration+ "; secure");
   std::set<std::string> actual_cookies;
-  while (new_headers1->EnumerateHeader(&iter, "Set-Cookie", &cookie_string))
+  while (new_headers1->EnumerateHeader(&iter, "Set-Cookie", &cookie_string)) {
     actual_cookies.insert(cookie_string);
+  }
   EXPECT_EQ(expected_cookies, actual_cookies);
 }
 
@@ -1714,8 +1715,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
   EXPECT_TRUE(preserve_fragment_on_redirect_url3.is_empty());
   iter = 0;
   std::multimap<std::string, std::string> actual3;
-  while (new_headers3->EnumerateHeaderLines(&iter, &name, &value))
+  while (new_headers3->EnumerateHeaderLines(&iter, &name, &value)) {
     actual3.emplace(name, value);
+  }
   std::multimap<std::string, std::string> expected3;
   expected3.emplace("Key2", "Value4");
   expected3.emplace("Key1", "Value1");
@@ -1766,8 +1768,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
 
   iter = 0;
   std::multimap<std::string, std::string> actual4;
-  while (new_headers4->EnumerateHeaderLines(&iter, &name, &value))
+  while (new_headers4->EnumerateHeaderLines(&iter, &name, &value)) {
     actual4.emplace(name, value);
+  }
   std::multimap<std::string, std::string> expected4;
 
   expected4.emplace("Key2", "Value3");
@@ -2018,8 +2021,9 @@ TEST(ExtensionWebRequestHelpersTest,
   std::string name;
   std::string value;
   std::multimap<std::string, std::string> actual_headers;
-  while (new_headers->EnumerateHeaderLines(&iter, &name, &value))
+  while (new_headers->EnumerateHeaderLines(&iter, &name, &value)) {
     actual_headers.emplace(name, value);
+  }
 
   std::multimap<std::string, std::string> expected_headers;
   // An append operation should allow subsequent appends, but not any other
@@ -2124,8 +2128,9 @@ TEST(ExtensionWebRequestHelpersTest,
   std::string name;
   std::string value;
   std::multimap<std::string, std::string> actual_headers;
-  while (new_headers->EnumerateHeaderLines(&iter, &name, &value))
+  while (new_headers->EnumerateHeaderLines(&iter, &name, &value)) {
     actual_headers.emplace(name, value);
+  }
 
   std::multimap<std::string, std::string> expected_headers;
   expected_headers.emplace("connection", "dnr_action_1");

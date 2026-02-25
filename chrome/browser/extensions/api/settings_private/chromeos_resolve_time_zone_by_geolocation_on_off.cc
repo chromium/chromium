@@ -66,8 +66,9 @@ GeneratedResolveTimezoneByGeolocationOnOff::GetPrefObject() const {
 
 SetPrefResult GeneratedResolveTimezoneByGeolocationOnOff::SetPref(
     const base::Value* value) {
-  if (!value->is_bool())
+  if (!value->is_bool()) {
     return SetPrefResult::PREF_TYPE_MISMATCH;
+  }
 
   // Check if preference is policy or primary-user controlled, and therefore
   // cannot deactivate automatic timezone.
@@ -82,8 +83,9 @@ SetPrefResult GeneratedResolveTimezoneByGeolocationOnOff::SetPref(
       g_browser_process->platform_part()
           ->GetTimezoneResolverManager()
           ->TimeZoneResolverAllowedByTimeZoneConfigData();
-  if (new_value == current_value)
+  if (new_value == current_value) {
     return SetPrefResult::SUCCESS;
+  }
 
   profile_->GetPrefs()->SetInteger(
       ::prefs::kResolveTimezoneByGeolocationMethod,

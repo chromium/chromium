@@ -161,8 +161,9 @@ class RulesetManagerTest : public DNRTestBase {
     info.render_process_id = kRendererId;
 
     net::HttpRequestHeaders extra_request_headers;
-    for (const auto& header : request_headers)
+    for (const auto& header : request_headers) {
       extra_request_headers.SetHeaderIfMissing(header, "foo");
+    }
 
     info.extra_request_headers = extra_request_headers;
     return info;
@@ -242,10 +243,12 @@ TEST_P(RulesetManagerTest, MultipleRulesets) {
                                       "" /* extension_id */));
 
     // Remove the rulesets.
-    if (mask & kEnableRulesetOne)
+    if (mask & kEnableRulesetOne) {
       manager()->RemoveRuleset(extension_id_one);
-    if (mask & kEnableRulesetTwo)
+    }
+    if (mask & kEnableRulesetTwo) {
       manager()->RemoveRuleset(extension_id_two);
+    }
   }
 }
 

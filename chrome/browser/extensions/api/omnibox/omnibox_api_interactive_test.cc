@@ -98,8 +98,9 @@ using ExpectedMatchComponents = std::vector<ExpectedMatchComponent>;
 void VerifyMatchComponents(const ExpectedMatchComponents& expected,
                            const AutocompleteMatch& match) {
   std::u16string expected_string;
-  for (const auto& component : expected)
+  for (const auto& component : expected) {
     expected_string += component.text;
+  }
 
   EXPECT_EQ(expected_string, match.contents);
 

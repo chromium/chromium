@@ -493,12 +493,14 @@ IN_PROC_BROWSER_TEST_F(OffscreenApiTest, LifetimeEnforcement) {
          }
 
          chrome.runtime.onMessage.addListener((msg) => {
-           if (msg == 'play')
+           if (msg == 'play') {
              playAudio();
+           }
            else if (msg == 'stop')
              stopAudio();
-           else
+           else {
              console.error('Unexpected message: ' + msg);
+           }
          }))";
   TestExtensionDir test_dir;
   test_dir.WriteManifest(kManifest);

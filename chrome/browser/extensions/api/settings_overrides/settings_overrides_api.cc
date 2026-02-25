@@ -83,17 +83,20 @@ std::unique_ptr<TemplateURLData> ConvertSearchProvider(
     }
   }
 
-  if (!data)
+  if (!data) {
     data = std::make_unique<TemplateURLData>();
+  }
 
   // `prepopulate_id` must be 0 to avoid collisions with prepopulated
   // engines.
   DCHECK_EQ(0, data->prepopulate_id);
 
-  if (search_provider.name)
+  if (search_provider.name) {
     data->SetShortName(base::UTF8ToUTF16(*search_provider.name));
-  if (search_provider.keyword)
+  }
+  if (search_provider.keyword) {
     data->SetKeyword(base::UTF8ToUTF16(*search_provider.keyword));
+  }
   data->SetURL(
       SubstituteInstallParam(search_provider.search_url, install_parameter));
   if (search_provider.suggest_url) {
@@ -104,13 +107,15 @@ std::unique_ptr<TemplateURLData> ConvertSearchProvider(
     data->image_url =
         SubstituteInstallParam(*search_provider.image_url, install_parameter);
   }
-  if (search_provider.search_url_post_params)
+  if (search_provider.search_url_post_params) {
     data->search_url_post_params = *search_provider.search_url_post_params;
+  }
   if (search_provider.suggest_url_post_params)
     data->suggestions_url_post_params =
         *search_provider.suggest_url_post_params;
-  if (search_provider.image_url_post_params)
+  if (search_provider.image_url_post_params) {
     data->image_url_post_params = *search_provider.image_url_post_params;
+  }
   if (search_provider.favicon_url) {
     data->favicon_url = GURL(SubstituteInstallParam(
         *search_provider.favicon_url, install_parameter));
@@ -155,8 +160,9 @@ void SettingsOverridesAPI::SetPref(const ExtensionId& extension_id,
   // This is not instantiated in unit tests. Historically, the PreferenceAPI
   // instance provided this functionality, and it was not instantiated during
   // unit tests and some tests relied on that.
-  if (!prefs_helper)
+  if (!prefs_helper) {
     return;
+  }
 
   prefs_helper->SetExtensionControlledPref(
       extension_id, pref_key, ChromeSettingScope::kRegular, std::move(value));
@@ -166,8 +172,9 @@ void SettingsOverridesAPI::UnsetPref(const ExtensionId& extension_id,
                                      const std::string& pref_key) const {
   ExtensionPrefsHelper* prefs_helper = ExtensionPrefsHelper::Get(profile_);
   // Not instantiated in unit tests.
-  if (!prefs_helper)
+  if (!prefs_helper) {
     return;
+  }
   prefs_helper->RemoveExtensionControlledPref(extension_id, pref_key,
                                               ChromeSettingScope::kRegular);
 }

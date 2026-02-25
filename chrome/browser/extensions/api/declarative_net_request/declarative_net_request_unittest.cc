@@ -419,8 +419,9 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
 
     std::u16string error;
     std::vector<std::string> actual_ids;
-    for (const auto& val : result->GetList())
+    for (const auto& val : result->GetList()) {
       actual_ids.push_back(val.GetString());
+    }
 
     EXPECT_THAT(expected_ids, UnorderedElementsAreArray(actual_ids));
   }
@@ -546,8 +547,9 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
         helper.GetAllocatedGlobalRuleCount(extension_id, actual_rules_count);
 
     EXPECT_EQ(expected_rules_count.has_value(), has_allocated_rules_count);
-    if (expected_rules_count.has_value())
+    if (expected_rules_count.has_value()) {
       EXPECT_EQ(*expected_rules_count, actual_rules_count);
+    }
   }
 
   void VerifyGetAvailableStaticRuleCountFunction(
@@ -639,12 +641,13 @@ class SingleRulesetTest : public DeclarativeNetRequestUnittest {
   void LoadAndExpectSuccess(
       const std::optional<size_t>& expected_rules_count = std::nullopt) {
     size_t rules_count = 0;
-    if (expected_rules_count)
+    if (expected_rules_count) {
       rules_count = *expected_rules_count;
-    else if (rules_value_ && rules_value_->is_list())
+    } else if (rules_value_ && rules_value_->is_list()) {
       rules_count = rules_value_->GetList().size();
-    else
+    } else {
       rules_count = rules_list_.size();
+    }
 
     // We only index up to GetMaximumRulesPerRuleset() rules per ruleset.
     rules_count =
@@ -656,8 +659,9 @@ class SingleRulesetTest : public DeclarativeNetRequestUnittest {
  private:
   // DeclarativeNetRequestUnittest override:
   void WriteExtensionData() override {
-    if (!rules_value_)
+    if (!rules_value_) {
       rules_value_ = base::Value(ToListValue(rules_list_));
+    }
 
     WriteManifestAndRuleset(
         extension_dir(),
@@ -1749,10 +1753,12 @@ TEST_P(SingleRulesetTest, SharedDynamicAndSessionRegexRuleLimits) {
   // Add 50 session-scoped regex rules, along with 10 non-regex rules.
   std::vector<TestRule> session_rules;
   int rule_id = kMinValidID;
-  for (size_t i = 0; i < 50; ++i)
+  for (size_t i = 0; i < 50; ++i) {
     session_rules.push_back(CreateRegexRule(rule_id++));
-  for (size_t i = 0; i < 10; ++i)
+  }
+  for (size_t i = 0; i < 10; ++i) {
     session_rules.push_back(CreateGenericRule(rule_id++));
+  }
 
   ASSERT_NO_FATAL_FAILURE(
       RunUpdateRulesFunction(*extension(), /*rule_ids_to_remove=*/{},
@@ -1844,8 +1850,9 @@ class MultipleRulesetsTest : public DeclarativeNetRequestUnittest {
       rules.push_back(rule);
     }
 
-    for (size_t i = 0; i < num_regex_rules; ++i, ++id)
+    for (size_t i = 0; i < num_regex_rules; ++i, ++id) {
       rules.push_back(CreateRegexRule(id));
+    }
 
     return TestRulesetInfo(manifest_id_and_path, ToListValue(rules), enabled);
   }
@@ -1868,8 +1875,9 @@ class MultipleRulesetsTest : public DeclarativeNetRequestUnittest {
       count = std::min(count, static_rule_limit);
 
       rules_count += count;
-      if (info.enabled)
+      if (info.enabled) {
         rules_enabled_count += count;
+      }
     }
 
     DeclarativeNetRequestUnittest::LoadAndExpectSuccess(
@@ -1905,8 +1913,9 @@ TEST_P(MultipleRulesetsTest, ZeroRulesets) {
 TEST_P(MultipleRulesetsTest, EmptyRulesets) {
   size_t kNumRulesets = 7;
 
-  for (size_t i = 0; i < kNumRulesets; ++i)
+  for (size_t i = 0; i < kNumRulesets; ++i) {
     AddRuleset(CreateRuleset(base::NumberToString(i), 0, 0, true));
+  }
 
   LoadAndExpectSuccess();
 }
@@ -1977,8 +1986,9 @@ TEST_P(MultipleRulesetsTest, InstallWarnings) {
     std::vector<InstallWarning> warnings =
         GetFilteredInstallWarnings(*extension());
     std::vector<std::string> warning_strings;
-    for (const InstallWarning& warning : warnings)
+    for (const InstallWarning& warning : warnings) {
       warning_strings.push_back(warning.message);
+    }
 
     EXPECT_THAT(warning_strings, UnorderedElementsAreArray(expected_warnings));
   }
@@ -2103,8 +2113,9 @@ TEST_P(MultipleRulesetsTest,
     bool enabled = i < kMaxEnabledRulesetCount - 1;
     std::string id = base::StringPrintf("%d.json", i);
     ruleset_ids.push_back(id);
-    if (enabled)
+    if (enabled) {
       expected_enabled_ruleset_ids.push_back(id);
+    }
     AddRuleset(CreateRuleset(id, 1, 1, enabled));
   }
 

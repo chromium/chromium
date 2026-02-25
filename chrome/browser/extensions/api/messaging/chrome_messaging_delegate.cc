@@ -45,13 +45,16 @@ ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
   PolicyPermission allow_result = PolicyPermission::ALLOW_ALL;
   if (pref_service->IsManagedPreference(
           pref_names::kNativeMessagingUserLevelHosts)) {
-    if (!pref_service->GetBoolean(pref_names::kNativeMessagingUserLevelHosts))
+    if (!pref_service->GetBoolean(pref_names::kNativeMessagingUserLevelHosts)) {
       allow_result = PolicyPermission::ALLOW_SYSTEM_ONLY;
+    }
   }
 
   // All native messaging hosts are allowed if there is no blocklist.
-  if (!pref_service->IsManagedPreference(pref_names::kNativeMessagingBlocklist))
+  if (!pref_service->IsManagedPreference(
+          pref_names::kNativeMessagingBlocklist)) {
     return allow_result;
+  }
   const base::ListValue& blocklist =
       pref_service->GetList(pref_names::kNativeMessagingBlocklist);
 
@@ -123,8 +126,9 @@ ChromeMessagingDelegate::CreateReceiverForNativeApp(
   std::unique_ptr<NativeMessageHost> native_host =
       NativeMessageHost::Create(browser_context, native_view, extension_id,
                                 native_app_name, allow_user_level, error_out);
-  if (!native_host.get())
+  if (!native_host.get()) {
     return nullptr;
+  }
   return std::make_unique<NativeMessagePort>(channel_delegate, receiver_port_id,
                                              std::move(native_host));
 }
