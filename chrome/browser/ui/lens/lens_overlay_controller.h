@@ -612,6 +612,7 @@ class LensOverlayController : public OverlayBaseController,
   void NotifyOverlayClosing() override;
   void NotifyTabForegrounded() override;
   void NotifyTabWillEnterBackground() override;
+  bool IsOverlayViewShared() const override;
 
   // content::WebContentsDelegate:
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,

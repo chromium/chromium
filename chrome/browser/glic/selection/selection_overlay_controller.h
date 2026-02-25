@@ -73,6 +73,7 @@ class SelectionOverlayController
   void NotifyPageNavigated() override;
   void NotifyTabForegrounded() override;
   void NotifyTabWillEnterBackground() override;
+  bool IsOverlayViewShared() const override;
 
   // `selection::SelectionOverlayPageHandler`:
   void DismissOverlay(selection::DismissOverlayReason reason) override;

@@ -1499,6 +1499,12 @@ void LensOverlayController::NotifyTabWillEnterBackground() {
   UpdateEntryPointsState();
 }
 
+bool LensOverlayController::IsOverlayViewShared() const {
+  // The view that host's Lens's WebUI is a direct child of the BrowserView,
+  // which means it can be shared across different tabs.
+  return true;
+}
+
 void LensOverlayController::ActivityRequestedByOverlay(
     ui::mojom::ClickModifiersPtr click_modifiers) {
   // The tab is expected to be in the foreground.

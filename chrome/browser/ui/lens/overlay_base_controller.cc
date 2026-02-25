@@ -737,11 +737,14 @@ void OverlayBaseController::MaybeHideSharedOverlayView() {
   if (!overlay_view_) {
     return;
   }
-  for (views::View* child : overlay_view_->children()) {
-    if (child->GetVisible()) {
-      // If any child is visible, it is being used by another tab so do not hide
-      // the overlay view.
-      return;
+  // Only check the children's visibilities if the overlay is shared.
+  if (IsOverlayViewShared()) {
+    for (views::View* child : overlay_view_->children()) {
+      if (child->GetVisible()) {
+        // If any child is visible, it is being used by another tab so do not
+        // hide the overlay view.
+        return;
+      }
     }
   }
   overlay_view_->SetVisible(false);

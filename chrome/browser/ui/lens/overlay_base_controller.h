@@ -234,6 +234,9 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Notification that the tab was foregrounded.
   virtual void NotifyTabWillEnterBackground() = 0;
 
+  // Returns if the overlay view can be shared between multiple tabs.
+  virtual bool IsOverlayViewShared() const = 0;
+
   // If the side panel was closed, we wait for the reflow before beginning
   // the screenshot flow.
   virtual void FinishedWaitingForReflow(base::TimeTicks reflow_start_time);

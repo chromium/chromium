@@ -180,6 +180,12 @@ void SelectionOverlayController::NotifyTabForegrounded() {}
 
 void SelectionOverlayController::NotifyTabWillEnterBackground() {}
 
+bool SelectionOverlayController::IsOverlayViewShared() const {
+  // Glic's selection overlay's WebView is attached to the ContentsContainerView
+  // which cannot be shared across multiple tabs.
+  return false;
+}
+
 void SelectionOverlayController::DismissOverlay(
     selection::DismissOverlayReason reason) {
   CloseUI();
