@@ -495,6 +495,8 @@ void TreeScope::ClearAdoptedStyleSheets() {
 void TreeScope::AppendAdoptedStyleSheets(
     HeapVector<Member<CSSStyleSheet>>&& adopted_style_sheets) {
   EnsureAdoptedStyleSheets();
+  adopted_style_sheets_->reserve(adopted_style_sheets_->size() +
+                                 adopted_style_sheets.size());
   for (const auto& sheet : adopted_style_sheets) {
     DCHECK(sheet->IsConstructed());
     DCHECK_EQ(sheet->ConstructorDocument(), GetDocument());
