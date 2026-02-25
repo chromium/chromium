@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -97,8 +98,7 @@ class UdpPacketSocket : public webrtc::AsyncPacketSocket {
 
  private:
   struct PendingPacket {
-    PendingPacket(const void* buffer,
-                  int buffer_size,
+    PendingPacket(base::span<const uint8_t> buffer,
                   const net::IPEndPoint& address,
                   const webrtc::AsyncSocketPacketOptions& options);
 
@@ -142,14 +142,13 @@ class UdpPacketSocket : public webrtc::AsyncPacketSocket {
 };
 
 UdpPacketSocket::PendingPacket::PendingPacket(
-    const void* buffer,
-    int buffer_size,
+    base::span<const uint8_t> buffer,
     const net::IPEndPoint& address,
     const webrtc::AsyncSocketPacketOptions& options)
-    : data(base::MakeRefCounted<net::IOBufferWithSize>(buffer_size)),
+    : data(base::MakeRefCounted<net::IOBufferWithSize>(buffer.size())),
       address(address),
       options(options) {
-  UNSAFE_TODO(memcpy(data->data(), buffer, buffer_size));
+  data->span().copy_from(buffer);
 }
 
 UdpPacketSocket::UdpPacketSocket() {
@@ -247,7 +246,9 @@ int UdpPacketSocket::SendTo(const void* data,
     return EWOULDBLOCK;
   }
 
-  send_queue_.emplace_back(data, data_size, endpoint, options);
+  send_queue_.emplace_back(
+      UNSAFE_TODO(base::span(static_cast<const uint8_t*>(data), data_size)),
+      endpoint, options);
   send_queue_size_ += data_size;
 
   DoSend();

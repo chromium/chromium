@@ -59,7 +59,7 @@ void StreamConnectionTester::InitBuffers() {
       base::MakeRefCounted<net::IOBufferWithSize>(test_data_size_),
       test_data_size_);
   for (int i = 0; i < test_data_size_; ++i) {
-    UNSAFE_TODO(output_buffer_->data()[i]) = static_cast<char>(i);
+    output_buffer_->span()[i] = static_cast<char>(i);
   }
 
   input_buffer_ = base::MakeRefCounted<net::GrowableIOBuffer>();

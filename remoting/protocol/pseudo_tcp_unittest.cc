@@ -24,6 +24,7 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -158,22 +159,24 @@ class PseudoTcpTestBase : public ::testing::Test,
     }
   }
   WriteResult TcpWritePacket(PseudoTcp* tcp,
-                             const char* buffer,
-                             size_t len) override {
+                             base::span<const uint8_t> buffer) override {
     // Drop a packet if the test called DropNextPacket.
     if (drop_next_packet_) {
       drop_next_packet_ = false;
-      VLOG(1) << "Dropping packet due to DropNextPacket, size=" << len;
+      VLOG(1) << "Dropping packet due to DropNextPacket, size="
+              << buffer.size();
       return WR_SUCCESS;
     }
     // Randomly drop the desired percentage of packets.
     if (base::RandUint64() % 100 < static_cast<uint32_t>(loss_)) {
-      VLOG(1) << "Randomly dropping packet, size=" << len;
+      VLOG(1) << "Randomly dropping packet, size=" << buffer.size();
       return WR_SUCCESS;
     }
     // Also drop packets that are larger than the configured MTU.
-    if (len > static_cast<size_t>(std::min(local_mtu_, remote_mtu_))) {
-      VLOG(1) << "Dropping packet that exceeds path MTU, size=" << len;
+    if (buffer.size() >
+        static_cast<size_t>(std::min(local_mtu_, remote_mtu_))) {
+      VLOG(1) << "Dropping packet that exceeds path MTU, size="
+              << buffer.size();
       return WR_SUCCESS;
     }
     PseudoTcp* other;
@@ -182,7 +185,7 @@ class PseudoTcpTestBase : public ::testing::Test,
     } else {
       other = &local_;
     }
-    std::string packet(buffer, len);
+    std::string packet(base::as_string_view(buffer));
     ++packets_in_flight_;
 
     // Post delayed task using Chromium's task scheduling

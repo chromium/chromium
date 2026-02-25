@@ -5,6 +5,7 @@
 #ifndef REMOTING_PROTOCOL_FAKE_STREAM_SOCKET_H_
 #define REMOTING_PROTOCOL_FAKE_STREAM_SOCKET_H_
 
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <optional>
@@ -95,13 +96,13 @@ class FakeStreamSocket : public P2PStreamSocket {
 
   std::optional<int> next_read_error_;
   scoped_refptr<net::IOBuffer> read_buffer_;
-  int read_buffer_size_ = 0;
+  size_t read_buffer_size_ = 0;
   net::CompletionOnceCallback read_callback_;
   base::WeakPtr<FakeStreamSocket> peer_socket_;
 
   std::string written_data_;
   std::string input_data_;
-  int input_pos_ = 0;
+  size_t input_pos_ = 0;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtrFactory<FakeStreamSocket> weak_factory_{this};

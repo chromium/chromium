@@ -23,6 +23,8 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/sys_byteorder.h"
 #include "base/time/time.h"
@@ -588,24 +590,25 @@ IPseudoTcpNotify::WriteResult PseudoTcp::packet(uint32_t seq,
 
   uint32_t now = Now();
 
-  std::unique_ptr<uint8_t[]> buffer(new uint8_t[MAX_PACKET]);
-  long_to_bytes(m_conv, buffer.get());
-  long_to_bytes(seq, buffer.get() + 4);
-  long_to_bytes(m_rcv_nxt, buffer.get() + 8);
+  auto buffer = base::HeapArray<uint8_t>::Uninit(MAX_PACKET);
+  long_to_bytes(m_conv, buffer.data());
+  long_to_bytes(seq, buffer.subspan(4u).data());
+  long_to_bytes(m_rcv_nxt, buffer.subspan(8u).data());
   buffer[12] = 0;
   buffer[13] = flags;
   short_to_bytes(static_cast<uint16_t>(m_rcv_wnd >> m_rwnd_scale),
-                 buffer.get() + 14);
+                 buffer.subspan(14u).data());
 
   // Timestamp computations
-  long_to_bytes(now, buffer.get() + 16);
-  long_to_bytes(m_ts_recent, buffer.get() + 20);
+  long_to_bytes(now, buffer.subspan(16u).data());
+  long_to_bytes(m_ts_recent, buffer.subspan(20u).data());
   m_ts_lastack = m_rcv_nxt;
 
   if (len) {
     size_t bytes_read = 0;
+    auto payload = buffer.subspan(HEADER_SIZE, len);
     bool result =
-        m_sbuf.ReadOffset(buffer.get() + HEADER_SIZE, len, offset, &bytes_read);
+        m_sbuf.ReadOffset(payload.data(), payload.size(), offset, &bytes_read);
     DCHECK(result);
     DCHECK(static_cast<uint32_t>(bytes_read) == len);
   }
@@ -617,8 +620,8 @@ IPseudoTcpNotify::WriteResult PseudoTcp::packet(uint32_t seq,
           << "><TSR=" << (m_ts_recent % 10000) << "><LEN=" << len << ">";
 #endif  // _DEBUGMSG
 
-  IPseudoTcpNotify::WriteResult wres = m_notify->TcpWritePacket(
-      this, reinterpret_cast<char*>(buffer.get()), len + HEADER_SIZE);
+  IPseudoTcpNotify::WriteResult wres =
+      m_notify->TcpWritePacket(this, buffer.first(len + HEADER_SIZE));
   // Note: When len is 0, this is an ACK packet.  We don't read the return value
   // for those, and thus we won't retry.  So go ahead and treat the packet as a
   // success (basically simulate as if it were dropped), which will prevent our

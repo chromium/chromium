@@ -7,7 +7,7 @@
 #include <limits>
 
 #include "base/byte_size.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/types/expected.h"
@@ -155,8 +155,8 @@ void TransportChannelSocketAdapter::OnNewPacket(
       data_size = read_buffer_size_;
     }
 
-    UNSAFE_TODO(memcpy(read_buffer_->data(), packet.payload().data(),
-                       data_size.InBytes()));
+    read_buffer_->span().copy_prefix_from(
+        packet.payload().subspan(0, data_size.InBytes()));
 
     P2PDatagramSocket::Callback callback = read_callback_;
     read_callback_.Reset();

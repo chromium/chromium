@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "net/base/io_buffer.h"
 #include "third_party/webrtc/rtc_base/byte_order.h"
 
@@ -16,15 +15,14 @@ scoped_refptr<net::IOBufferWithSize> SerializeAndFrameMessage(
     const google::protobuf::MessageLite& msg) {
   // Create a buffer with 4 extra bytes. This is used as prefix to write an
   // int32_t of the serialized message size for framing.
-  const int kExtraBytes = sizeof(int32_t);
+  const size_t kExtraBytes = sizeof(int32_t);
   size_t size = msg.ByteSizeLong() + kExtraBytes;
   scoped_refptr<net::IOBufferWithSize> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(size);
   webrtc::SetBE32(
       webrtc::ArrayView<uint8_t>(buffer->bytes(), buffer->span().size()),
       msg.GetCachedSize());
-  msg.SerializeWithCachedSizesToArray(
-      UNSAFE_TODO(buffer->bytes() + kExtraBytes));
+  msg.SerializeWithCachedSizesToArray(buffer->span().get_at(kExtraBytes));
   return buffer;
 }
 

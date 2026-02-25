@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/byte_size.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -81,8 +81,7 @@ class PseudoTcpAdapter::Core : public IPseudoTcpNotify,
   void OnTcpClosed(PseudoTcp* tcp, uint32_t error) override;
   // This is triggered by NotifyClock, NotifyPacket, Recv and Send.
   WriteResult TcpWritePacket(PseudoTcp* tcp,
-                             const char* buffer,
-                             size_t len) override;
+                             base::span<const uint8_t> buffer) override;
 
   void SetAckDelay(int delay_ms);
   void SetNoDelay(bool no_delay);
@@ -356,8 +355,7 @@ void PseudoTcpAdapter::Core::DeleteSocket() {
 
 IPseudoTcpNotify::WriteResult PseudoTcpAdapter::Core::TcpWritePacket(
     PseudoTcp* tcp,
-    const char* buffer,
-    size_t len) {
+    base::span<const uint8_t> buffer) {
   DCHECK_EQ(tcp, &pseudo_tcp_);
 
   // If we already have a write pending, we behave like a congested network,
@@ -367,15 +365,16 @@ IPseudoTcpNotify::WriteResult PseudoTcpAdapter::Core::TcpWritePacket(
     return IPseudoTcpNotify::WR_SUCCESS;
   }
 
-  auto write_buffer = base::MakeRefCounted<net::IOBufferWithSize>(len);
-  UNSAFE_TODO(memcpy(write_buffer->data(), buffer, len));
+  auto write_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(buffer.size());
+  write_buffer->span().copy_from(buffer);
 
   // Our underlying socket is datagram-oriented, which means it should either
   // send exactly as many bytes as we requested, or fail.
   base::expected<base::ByteSize, net::Error> result;
   if (socket_) {
     result =
-        socket_->Send(write_buffer.get(), base::ByteSize(len),
+        socket_->Send(write_buffer.get(), base::ByteSize(buffer.size()),
                       base::BindRepeating(&PseudoTcpAdapter::Core::OnWritten,
                                           base::Unretained(this)));
   } else {

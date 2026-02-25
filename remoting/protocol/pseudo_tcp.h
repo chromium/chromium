@@ -10,6 +10,7 @@
 #include <list>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -33,8 +34,7 @@ class IPseudoTcpNotify {
   // Write the packet onto the network
   enum WriteResult { WR_SUCCESS, WR_TOO_LARGE, WR_FAIL };
   virtual WriteResult TcpWritePacket(PseudoTcp* tcp,
-                                     const char* buffer,
-                                     size_t len) = 0;
+                                     base::span<const uint8_t> buffer) = 0;
 
  protected:
   virtual ~IPseudoTcpNotify() {}
