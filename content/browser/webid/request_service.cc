@@ -1504,7 +1504,7 @@ void RequestService::ShowSingleIdpFailureDialog() {
   if (!request_dialog_controller_->ShowFailureDialog(
           CreateRpData(/*client_metadata_received=*/true),
           FormatOriginForDisplay(idp_origin), idp_info->rp_context, rp_mode_,
-          idp_info->metadata,
+          idp_info->metadata, filtered_accounts_,
           base::BindOnce(&RequestService::OnDismissFailureDialog,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindRepeating(&RequestService::LoginToIdP,

@@ -249,11 +249,33 @@ bool IdentityDialogController::ShowFailureDialog(
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
     const content::IdentityProviderMetadata& idp_metadata,
+    const std::vector<IdentityRequestAccountPtr>& filtered_accounts,
     DismissCallback dismiss_callback,
     LoginToIdPCallback login_callback) {
   const GURL rp_url = rp_web_contents_->GetLastCommittedURL();
   on_dismiss_ = std::move(dismiss_callback);
   on_login_ = std::move(login_callback);
+
+  // If there is an actor login request, check if the account is filtered.
+  FederatedActorLoginRequest* actor_login_request =
+      FederatedActorLoginRequest::Get(rp_web_contents_);
+  if (actor_login_request) {
+    url::Origin idp_origin = actor_login_request->idp_origin();
+    std::string account_id = actor_login_request->account_id();
+    // There were no available accounts, but the selected account may have been
+    // filtered out, in which case we want to send the correct message to the
+    // actor.
+    for (const auto& account : filtered_accounts) {
+      if (account->id == account_id &&
+          url::Origin::Create(
+              account->identity_provider->idp_metadata.config_url) ==
+              idp_origin) {
+        actor_login_request->OnFederatedResultReceived(
+            content::webid::FederatedLoginResult::kAccountNotAvailable);
+        return false;
+      }
+    }
+  }
 
   if (!TrySetAccountView()) {
     return false;

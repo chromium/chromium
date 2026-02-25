@@ -787,6 +787,38 @@ TEST_F(IdentityDialogControllerTest,
         /*dismiss_callback=*/base::DoNothing(),
         /*accounts_displayed_callback=*/base::DoNothing()));
   }
+
+  // Case 4: ShowFailureDialog with filtered_accounts.
+  {
+    base::MockCallback<OnFederatedResultReceivedCallback> result_callback;
+    EXPECT_CALL(result_callback,
+                Run(content::webid::FederatedLoginResult::kAccountNotAvailable))
+        .Times(1);
+
+    FederatedActorLoginRequest::Set(web_contents(), idp_origin, account_id,
+                                    result_callback.Get());
+
+    // Create an account with matching ID but in filtered_accounts list.
+    std::vector<IdentityRequestAccountPtr> filtered_accounts = CreateAccount();
+    filtered_accounts[0]->id = account_id;
+    filtered_accounts[0]->idp_claimed_login_state =
+        content::IdentityRequestAccount::LoginState::kSignIn;
+    filtered_accounts[0]->browser_trusted_login_state =
+        content::IdentityRequestAccount::LoginState::kSignIn;
+
+    IdentityProviderDataPtr idp_data =
+        CreateIdentityProviderData(filtered_accounts);
+    idp_data->idp_metadata.config_url = idp_url;
+
+    EXPECT_FALSE(controller->ShowFailureDialog(
+        content::RelyingPartyData(kTopFrameEtldPlusOne,
+                                  /*iframe_for_display=*/u""),
+        kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
+        blink::mojom::RpMode::kActive, idp_data->idp_metadata,
+        filtered_accounts,
+        /*dismiss_callback=*/base::DoNothing(),
+        /*login_callback=*/base::DoNothing()));
+  }
 }
 
 struct FederatedLoginResultTestParam {

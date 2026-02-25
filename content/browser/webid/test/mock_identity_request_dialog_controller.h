@@ -48,6 +48,7 @@ class MockIdentityRequestDialogController
                blink::mojom::RpContext rp_context,
                blink::mojom::RpMode rp_mode,
                const content::IdentityProviderMetadata&,
+               const std::vector<scoped_refptr<IdentityRequestAccount>>&,
                DismissCallback,
                LoginToIdPCallback),
               (override));

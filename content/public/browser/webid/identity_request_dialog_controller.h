@@ -245,16 +245,21 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // Shows a failure UI when the accounts fetch is failed such that it is
   // observable by users. This could happen when an IDP claims that the user is
   // signed in but not respond with any user account during browser fetches.
-  // Returns true if the method successfully showed UI. When false, the caller
-  // should assume that the API invocation was terminated and the cleanup
-  // methods invoked.
-  virtual bool ShowFailureDialog(const RelyingPartyData& rp_data,
-                                 const std::string& idp_for_display,
-                                 blink::mojom::RpContext rp_context,
-                                 blink::mojom::RpMode rp_mode,
-                                 const IdentityProviderMetadata& idp_metadata,
-                                 DismissCallback dismiss_callback,
-                                 LoginToIdPCallback login_callback);
+  // Returns true if the method successfully showed UI. It could also occur when
+  // there are logged in accounts but none are available due to filters such as
+  // login hint. When false, the caller should assume that the API invocation
+  // was terminated and the cleanup methods invoked. `filtered_accounts` are the
+  // accounts that are not available for selection due to filters.
+  virtual bool ShowFailureDialog(
+      const RelyingPartyData& rp_data,
+      const std::string& idp_for_display,
+      blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
+      const IdentityProviderMetadata& idp_metadata,
+      const std::vector<scoped_refptr<IdentityRequestAccount>>&
+          filtered_accounts,
+      DismissCallback dismiss_callback,
+      LoginToIdPCallback login_callback);
 
   // Shows an error UI when the user's sign-in attempt failed. Returns true if
   // the method successfully showed UI. When false, the caller should assume

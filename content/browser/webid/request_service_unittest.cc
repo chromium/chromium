@@ -715,6 +715,8 @@ class TestDialogController
       blink::mojom::RpContext rp_context,
       blink::mojom::RpMode rp_mode,
       const IdentityProviderMetadata& idp_metadata,
+      const std::vector<scoped_refptr<IdentityRequestAccount>>&
+          filtered_accounts,
       IdentityRequestDialogController::DismissCallback dismiss_callback,
       IdentityRequestDialogController::LoginToIdPCallback
           identity_registry_callback) override {
@@ -7848,6 +7850,8 @@ class TestDialogControllerWithImmediateDismiss : public TestDialogController {
       blink::mojom::RpContext rp_context,
       blink::mojom::RpMode rp_mode,
       const IdentityProviderMetadata& idp_metadata,
+      const std::vector<scoped_refptr<IdentityRequestAccount>>&
+          filtered_accounts,
       IdentityRequestDialogController::DismissCallback dismiss_callback,
       IdentityRequestDialogController::LoginToIdPCallback
           identity_registry_callback) override {

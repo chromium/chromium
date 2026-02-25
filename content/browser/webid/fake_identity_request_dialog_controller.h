@@ -47,13 +47,16 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       DismissCallback dismmiss_callback,
       AccountsDisplayedCallback accounts_displayed_callback) override;
 
-  bool ShowFailureDialog(const RelyingPartyData& rp_data,
-                         const std::string& idp_for_display,
-                         blink::mojom::RpContext rp_context,
-                         blink::mojom::RpMode rp_mode,
-                         const IdentityProviderMetadata& idp_metadata,
-                         DismissCallback dismiss_callback,
-                         LoginToIdPCallback login_callback) override;
+  bool ShowFailureDialog(
+      const RelyingPartyData& rp_data,
+      const std::string& idp_for_display,
+      blink::mojom::RpContext rp_context,
+      blink::mojom::RpMode rp_mode,
+      const IdentityProviderMetadata& idp_metadata,
+      const std::vector<scoped_refptr<IdentityRequestAccount>>&
+          filtered_accounts,
+      DismissCallback dismiss_callback,
+      LoginToIdPCallback login_callback) override;
 
   bool ShowErrorDialog(const RelyingPartyData& rp_data,
                        const std::string& idp_for_display,
