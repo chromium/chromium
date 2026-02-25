@@ -10,6 +10,7 @@ import type {ContextualTasksFaviconGroupElement} from 'chrome://contextual-tasks
 import type {SourcesMenuElement} from 'chrome://contextual-tasks/sources_menu.js';
 import type {TopToolbarElement} from 'chrome://contextual-tasks/top_toolbar.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -378,5 +379,84 @@ suite('TopToolbarTest', () => {
       const buttons = topToolbar.$.menu.get().querySelectorAll('button');
       assertEquals(3, buttons.length);
     });
+  });
+
+  test('shows mixed context types in favicon group', async () => {
+    // topToolbar is already defined in the outer suite.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    topToolbar = document.createElement('top-toolbar');
+    document.body.appendChild(topToolbar);
+
+    const sourcesButton =
+        topToolbar.shadowRoot.querySelector<ContextualTasksFaviconGroupElement>(
+            '#sources');
+    assertTrue(!!sourcesButton);
+
+    topToolbar.contextInfos = [
+      {
+        tab: {
+          title: 'Tab 1',
+          url: 'https://example.com/1',
+          tabId: 1,
+        },
+      },
+      {
+        file: {
+          title: 'Sample Document',
+          url: 'https://example/sample.pdf',
+        },
+      },
+      {
+        image: {
+          title: 'Test Image',
+          url: 'https://www.example.com/example.jpeg',
+        },
+      },
+      {
+        tab: {
+          title: 'Tab 2',
+          url: 'https://example.com/2',
+          tabId: 2,
+        },
+      },
+    ];
+    await microtasksFinished();
+
+    assertFalse(sourcesButton.hidden);
+    const faviconItems =
+        sourcesButton.shadowRoot.querySelectorAll('.favicon-item');
+    assertEquals(faviconItems.length, 4);  // 3 items + more
+
+    const items = sourcesButton.shadowRoot.querySelectorAll<HTMLElement>(
+        '.favicon-item:not(#more-items)');
+    assertEquals(items.length, 3);
+
+    // Check item 1 (tab).
+    const item1 = items[0];
+    assertHTMLElement(item1);
+    assertTrue(item1.classList.contains('favicon-item'));
+    assertFalse(
+        item1.classList.contains('file-icon'));  // Ensure it's not a file icon
+    assertTrue(item1.tagName !== 'CR-ICON');
+
+    // Check item 2 (file).
+    const item2 = items[1];
+    assertHTMLElement(item2);  // Assert first
+    assertTrue(item2.classList.contains('favicon-item'));
+    assertTrue(item2.classList.contains('file-icon'));
+    assertEquals(item2.tagName, 'CR-ICON');
+    assertEquals((item2 as CrIconElement).icon, 'contextual_tasks:pdf');
+
+    // Check item 3 (image).
+    const item3 = items[2];
+    assertHTMLElement(item3);  // Assert first
+    assertTrue(item3.classList.contains('favicon-item'));
+    assertFalse(item3.classList.contains('file-icon'));
+    assertTrue(item3.tagName !== 'CR-ICON');
+
+    const moreItems =
+        sourcesButton.shadowRoot.querySelector<HTMLElement>('#more-items');
+    assertTrue(!!moreItems);
+    assertEquals(moreItems.innerText, '+1');
   });
 });

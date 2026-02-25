@@ -47,6 +47,10 @@
   margin-inline-start: -4px; /* Negative margin for overlap */
 }
 
+.file-icon {
+  color: #b3261e;
+}
+
 #more-items {
   background-color: var(--toolbar-favicon-border-color);
 }
