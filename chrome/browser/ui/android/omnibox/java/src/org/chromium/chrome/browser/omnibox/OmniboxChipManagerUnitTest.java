@@ -52,6 +52,7 @@ public class OmniboxChipManagerUnitTest {
     private ToolbarWidthConsumer mExpandedConsumer;
     private Drawable mIcon;
     @Mock private OmniboxChipManager.ChipCallback mCallback;
+    @Mock private LocationBarEmbedder mLocationBarEmbedder;
 
     @Before
     public void setUp() {
@@ -59,7 +60,7 @@ public class OmniboxChipManagerUnitTest {
         var activity = mActivityController.setup().get();
         mRootView = new FrameLayout(activity);
         ((ViewGroup) activity.findViewById(android.R.id.content)).addView(mRootView);
-        mManager = new OmniboxChipManager(mRootView);
+        mManager = new OmniboxChipManager(mRootView, mLocationBarEmbedder);
         mCollapsedConsumer = mManager.getCollapsedToolbarWidthConsumer();
         mExpandedConsumer = mManager.getExpandedToolbarWidthConsumer();
         mIcon = activity.getDrawable(R.drawable.ic_open_in_new_20dp);
@@ -75,6 +76,7 @@ public class OmniboxChipManagerUnitTest {
         mManager.placeChip("text", mIcon, "contentDesc", () -> {}, mCallback);
         assertTrue(mManager.isChipPlaced());
         assertEquals(View.VISIBLE, mRootView.getVisibility());
+        verify(mLocationBarEmbedder).onWidthConsumerVisibilityChanged();
 
         {
             int available = mManager.getCollapsedWidthForTesting() + 10;
@@ -296,12 +298,14 @@ public class OmniboxChipManagerUnitTest {
     public void dismissChip() {
         mManager.placeChip("text", mIcon, "contentDesc", () -> {}, mCallback);
         assertTrue(mManager.isChipPlaced());
+        verify(mLocationBarEmbedder).onWidthConsumerVisibilityChanged();
         mManager.dismissChip();
         assertFalse(mManager.isChipPlaced());
         assertEquals(View.GONE, mRootView.getVisibility());
         assertFalse(mCollapsedConsumer.isVisible());
         assertFalse(mExpandedConsumer.isVisible());
         onView(withText("text")).check(doesNotExist());
+        verify(mLocationBarEmbedder, times(2)).onWidthConsumerVisibilityChanged();
     }
 
     @Test

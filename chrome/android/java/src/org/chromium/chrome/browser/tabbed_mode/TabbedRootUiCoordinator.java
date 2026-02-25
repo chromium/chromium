@@ -140,6 +140,7 @@ import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPoli
 import org.chromium.chrome.browser.ntp_customization.theme.NtpSyncedThemeManager;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
+import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
@@ -872,7 +873,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
             ViewGroup omniboxChipContainer =
                     controlContainer.findViewById(R.id.omnibox_chip_container);
-            mOmniboxChipManager = new OmniboxChipManager(omniboxChipContainer);
+            LocationBarEmbedder locationBarEmbedder = mActivity.findViewById(R.id.toolbar);
+            mOmniboxChipManager = new OmniboxChipManager(omniboxChipContainer, locationBarEmbedder);
         }
 
         super.initializeToolbar();
