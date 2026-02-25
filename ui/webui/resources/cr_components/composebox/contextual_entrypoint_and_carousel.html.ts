@@ -13,6 +13,9 @@ import {getHtml as getToolChipsHtml} from './contextual_entrypoint_and_carousel_
 export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
+<cr-composebox-file-inputs id="fileInputs"
+    @on-file-change="${this.onFileChange_}"
+    .disableFileInputs="${this.shouldDisableFileInputs_()}">
   ${this.searchboxLayoutMode === 'Compact' && !this.isOmniboxInCompactMode_ ?
     getContextMenuHtml.bind(this)()
   : ''}
@@ -48,18 +51,6 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   ${this.searchboxLayoutMode === 'TallBottomContext' || this.searchboxLayoutMode === '' || this.isOmniboxInCompactMode_ ? html`
     ${this.contextMenuEnabled_ ? getContextMenuHtml.bind(this)() : ''}
   `: ''}
-  <input type="file"
-      accept="${this.imageFileTypes_}"
-      id="imageInput"
-      @change="${this.onFileChange_}"
-      hidden>
-  </input>
-  <input type="file"
-      accept="${this.attachmentFileTypes_}"
-      id="fileInput"
-      @change="${this.onFileChange_}"
-      hidden>
-  </input>
   ${this.shouldShowVoiceSearchAtBottom_() ? html`
     <cr-icon-button id="voiceSearchButton" class="voice-icon" part="voice-icon"
         iron-icon="cr:mic" @click="${this.onVoiceSearchClick_}"
@@ -69,6 +60,7 @@ export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   ${this.submitButtonShown && this.searchboxLayoutMode === 'TallBottomContext' ?
       html`<slot name="submit-button"></slot>` :
       ''}
+</cr-composebox-file-inputs>
 <!--_html_template_end_-->`;
   // clang-format on
 }

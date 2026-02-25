@@ -156,28 +156,6 @@ suite('ContextualTasksComposeboxTest', () => {
     mockTimer.uninstall();
   });
 
-  /* Get file from `imageInput` if `fileType` is image;
-   * otherwise if pdf, then from files.
-   */
-  function getInputBasedOnFileType(fileType: string): HTMLInputElement {
-    return fileType === 'application/pdf' ? composebox.$.context.$.fileInput :
-                                            composebox.$.context.$.imageInput;
-  }
-
-  function getMockFileChangeEventForFileType(fileType: string): Event {
-    if (fileType === 'application/pdf') {
-      return new Event('change');
-    }
-
-    const mockFileChange = new Event('change', {bubbles: true});
-    // Read only.
-    Object.defineProperty(mockFileChange, 'target', {
-      writable: false,
-      value: composebox.$.context.$.imageInput,
-    });
-    return mockFileChange;
-  }
-
   async function uploadFileAndVerify(
       token: Object, file: File, expectedInitialFilesCount: number = 0) {
     // Assert initial file count if 0 -> carousel should not render.
@@ -193,9 +171,13 @@ suite('ContextualTasksComposeboxTest', () => {
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(file);
 
-    const input: HTMLInputElement = getInputBasedOnFileType(file.type);
-    input.files = dataTransfer.files;
-    input.dispatchEvent(getMockFileChangeEventForFileType(file.type));
+    composebox.$.context.$.fileInputs.dispatchEvent(
+      new CustomEvent('on-file-change', {
+          detail: {files: dataTransfer.files},
+          bubbles: true,
+          composed: true,
+        }));
+
     // Must call to upload. Await -> wait for it to be called once.
     await mockSearchboxPageHandler.whenCalled(ADD_FILE_CONTEXT_FN);
 

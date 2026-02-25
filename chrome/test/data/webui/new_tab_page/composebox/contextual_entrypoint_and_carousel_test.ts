@@ -75,9 +75,9 @@ suite('NewTabPageContextualEntrypointAndCarouselTest', () => {
     await microtasksFinished();
 
     const imageUploadClickEventPromise =
-        eventToPromise('click', element.$.imageInput);
+        eventToPromise('click', element.$.fileInputs.$.imageInput);
     element.$.contextEntrypoint.dispatchEvent(
-        new CustomEvent('open-image-upload'));
+        new CustomEvent('open-image-upload', {bubbles: true, composed: true}));
     await imageUploadClickEventPromise;
   });
 
@@ -91,9 +91,9 @@ suite('NewTabPageContextualEntrypointAndCarouselTest', () => {
     await microtasksFinished();
 
     const fileUploadClickEventPromise =
-        eventToPromise('click', element.$.fileInput);
+        eventToPromise('click', element.$.fileInputs.$.fileInput);
     element.$.contextEntrypoint.dispatchEvent(
-        new CustomEvent('open-file-upload'));
+        new CustomEvent('open-file-upload', {bubbles: true, composed: true}));
     await fileUploadClickEventPromise;
   });
 
