@@ -8510,35 +8510,17 @@ class URLLoaderFactoriesResetWaiter : public WebRequestAPI::TestObserver {
   base::RunLoop url_loader_factory_reset_runloop_;
 };
 
-class ManifestV3WebRequestApiTestWithSkipResetServiceWorkerURLLoaderFactories
-    : public ManifestV3WebRequestApiTest,
-      public testing::WithParamInterface<bool> {
- public:
-  ManifestV3WebRequestApiTestWithSkipResetServiceWorkerURLLoaderFactories() {
-    feature_list_.InitWithFeatureState(
-        extensions_features::kSkipResetServiceWorkerURLLoaderFactories,
-        GetParam());
-  }
-  ~ManifestV3WebRequestApiTestWithSkipResetServiceWorkerURLLoaderFactories()
-      override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests that the call to `ResetURLLoaderFactories()` performed by WebRequestAPI
 // doesn't break the registration process of other extensions.
 // Regression test for https://crbug.com/394523691.
-IN_PROC_BROWSER_TEST_P(
-    ManifestV3WebRequestApiTestWithSkipResetServiceWorkerURLLoaderFactories,
-    ResetURLLoaderFactoryDoesntBreakRegistration) {
+IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest,
+                       ResetURLLoaderFactoryDoesntBreakRegistration) {
   // Skip if the proxy is forced since factories will not be reset in that case.
   if (base::FeatureList::IsEnabled(
           extensions_features::kForceWebRequestProxyForTest)) {
     return;
   }
 
-  bool feature_enabled = GetParam();
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   // A simple extension that sends a message and waits for a response in its
@@ -8574,9 +8556,8 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(web_request_api);
 
   // Listen to "will_receive" message from the extension.
-  ExtensionTestMessageListener will_receive_listener(
-      "will_receive",
-      feature_enabled ? ReplyBehavior::kWillReply : ReplyBehavior::kWontReply);
+  ExtensionTestMessageListener will_receive_listener("will_receive",
+                                                     ReplyBehavior::kWillReply);
   // Listen to the completion of the registration storage.
   service_worker_test_utils::TestServiceWorkerContextObserver
       registration_observer(profile());
@@ -8611,34 +8592,19 @@ IN_PROC_BROWSER_TEST_P(
   // long and won't trigger the bug in all cases.
   web_request_api->ForceProxyForTesting();
 
-  if (feature_enabled) {
-    // SkipResetServiceWorkerURLLoaderFactories feature enabled: expect
-    // successful execution. Check that the worker is still running and
-    // functional.
-    registration_observer.WaitForWorkerStarted();
-    std::optional<WorkerId> worker_id = GetWorkerIdForExtension(extension_id);
-    EXPECT_TRUE(worker_id);
-    SCOPED_TRACE(
-        "Waiting for extension background to signal that it can send messages");
-    ASSERT_TRUE(will_receive_listener.WaitUntilSatisfied());
-    will_receive_listener.Reply("go");
-    url_loader_factories_reset_waiter.WaitForResetURLLoaderFactoriesCalled();
-    registration_observer.WaitForRegistrationStored();
-  } else {
-    // SkipResetServiceWorkerURLLoaderFactories feature disabled: expect worker
-    // registration to fail. We have observed that the registration can fail
-    // with either `kErrorStartWorkerFailed` or `kErrorNetwork` depending on
-    // when exactly it's interrupted.
-    auto status_code =
-        worker_failure_observer.WaitForWorkerRegistrationFailure();
-    EXPECT_NE(status_code, blink::ServiceWorkerStatusCode::kOk);
-  }
+  // SkipResetServiceWorkerURLLoaderFactories is now default behavior: expect
+  // successful execution. Check that the worker is still running and
+  // functional.
+  registration_observer.WaitForWorkerStarted();
+  std::optional<WorkerId> worker_id = GetWorkerIdForExtension(extension_id);
+  EXPECT_TRUE(worker_id);
+  SCOPED_TRACE(
+      "Waiting for extension background to signal that it can send messages");
+  ASSERT_TRUE(will_receive_listener.WaitUntilSatisfied());
+  will_receive_listener.Reply("go");
+  url_loader_factories_reset_waiter.WaitForResetURLLoaderFactoriesCalled();
+  registration_observer.WaitForRegistrationStored();
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ManifestV3WebRequestApiTestWithSkipResetServiceWorkerURLLoaderFactories,
-    testing::Bool());
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 

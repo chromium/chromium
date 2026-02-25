@@ -17,7 +17,6 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/cors_util.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/mojom/host_id.mojom.h"
@@ -123,9 +122,7 @@ void OverrideFactoryParams(const Extension& extension,
                            bool is_for_service_worker,
                            FactoryUser factory_user,
                            network::mojom::URLLoaderFactoryParams* params) {
-  if (is_for_service_worker &&
-      base::FeatureList::IsEnabled(
-          extensions_features::kSkipResetServiceWorkerURLLoaderFactories)) {
+  if (is_for_service_worker) {
     CHECK_EQ(factory_user, FactoryUser::kExtensionProcess);
     params->ignore_factory_reset = true;
   }

@@ -93,12 +93,6 @@ BASE_DECLARE_FEATURE(kAllowWithholdingExtensionPermissionsOnInstall);
 // extension).
 BASE_DECLARE_FEATURE(kCheckingNoExtensionIdInExtensionIpcs);
 
-// If enabled, `ResetURLLoaderFactories()` will not reset extensions'
-// service workers URLLoaderFactories used for fetching scripts and
-// sub-resources. This avoids disrupting the worker(s) registration(s)
-// when they are in flight.
-BASE_DECLARE_FEATURE(kSkipResetServiceWorkerURLLoaderFactories);
-
 // If enabled, <webview>s will be allowed to request permission from an
 // embedding Chrome App to request access to Human Interface Devices.
 BASE_DECLARE_FEATURE(kEnableWebHidInWebView);
