@@ -214,7 +214,7 @@ v8::StartupData SerializeAPIWrapperCallback(v8::Local<v8::Object> holder,
   const WrapperTypeInfo* wrapper_type_info = ToWrapperTypeInfo(wrappable);
   CHECK_EQ(wrappable, ToAnyScriptWrappable(v8::Isolate::GetCurrent(), holder));
   constexpr size_t kSize = 1;
-  static_assert(sizeof (InternalFieldSerializedValue) == kSize);
+  static_assert(sizeof(InternalFieldSerializedValue) == kSize);
   auto* serialized_value = new InternalFieldSerializedValue();
   if (wrapper_type_info == V8HTMLDocument::GetWrapperTypeInfo()) {
     *serialized_value = InternalFieldSerializedValue::kSwHTMLDocument;
@@ -314,8 +314,9 @@ v8::Local<v8::Context> V8ContextSnapshotImpl::CreateContext(
     v8::Local<v8::Object> global_proxy,
     Document* document) {
   DCHECK(document);
-  if (!IsUsingContextSnapshot())
+  if (!IsUsingContextSnapshot()) {
     return v8::Local<v8::Context>();
+  }
 
   V8PerIsolateData* per_isolate_data = V8PerIsolateData::From(isolate);
   if (per_isolate_data->GetV8ContextSnapshotMode() !=
@@ -327,8 +328,9 @@ v8::Local<v8::Context> V8ContextSnapshotImpl::CreateContext(
   CHECK(!html_document || html_document->GetWrapperTypeInfo() ==
                               V8HTMLDocument::GetWrapperTypeInfo());
   if (world.IsMainWorld()) {
-    if (!html_document)
+    if (!html_document) {
       return v8::Local<v8::Context>();
+    }
   } else {
     // Prevent an accidental misuse in a non-main world.
     html_document = nullptr;
@@ -349,8 +351,9 @@ v8::Local<v8::Context> V8ContextSnapshotImpl::CreateContext(
 
 void V8ContextSnapshotImpl::InstallContextIndependentProps(
     ScriptState* script_state) {
-  if (!IsUsingContextSnapshot())
+  if (!IsUsingContextSnapshot()) {
     return;
+  }
 
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::Local<v8::Context> context = script_state->GetContext();
@@ -360,8 +363,9 @@ void V8ContextSnapshotImpl::InstallContextIndependentProps(
   v8::Local<v8::String> prototype_string = V8AtomicString(isolate, "prototype");
 
   for (const auto& type_info : type_info_table) {
-    if (!type_info.needs_per_context_install[world_index])
+    if (!type_info.needs_per_context_install[world_index]) {
       continue;
+    }
 
     const auto* wrapper_type_info = type_info.wrapper_type_info;
     v8::Local<v8::Template> interface_template =
@@ -380,8 +384,9 @@ void V8ContextSnapshotImpl::InstallContextIndependentProps(
 }
 
 void V8ContextSnapshotImpl::InstallInterfaceTemplates(v8::Isolate* isolate) {
-  if (!IsUsingContextSnapshot())
+  if (!IsUsingContextSnapshot()) {
     return;
+  }
 
   V8PerIsolateData* per_isolate_data = V8PerIsolateData::From(isolate);
   if (per_isolate_data->GetV8ContextSnapshotMode() !=
@@ -448,12 +453,14 @@ v8::StartupData V8ContextSnapshotImpl::TakeSnapshot(v8::Isolate* isolate) {
 const intptr_t* V8ContextSnapshotImpl::GetReferenceTable() {
   DCHECK(IsMainThread());
 
-  if (!IsUsingContextSnapshot())
+  if (!IsUsingContextSnapshot()) {
     return nullptr;
+  }
 
   DEFINE_STATIC_LOCAL(const intptr_t*, reference_table, (nullptr));
-  if (reference_table)
+  if (reference_table) {
     return reference_table;
+  }
 
   intptr_t last_table[] = {
       reinterpret_cast<intptr_t>(V8ObjectConstructor::IsValidConstructorMode),
@@ -471,8 +478,9 @@ const intptr_t* V8ContextSnapshotImpl::GetReferenceTable() {
   DCHECK_EQ(std::size(tables), std::size(type_info_table) + 1);
 
   size_t size_bytes = 0;
-  for (const auto& table : tables)
+  for (const auto& table : tables) {
     size_bytes += table.size_bytes();
+  }
   intptr_t* unified_table = static_cast<intptr_t*>(Partitions::FastMalloc(
       size_bytes, "V8ContextSnapshotImpl::GetReferenceTable"));
   // SAFETY: `Partitions::FastMalloc` ensures `unified_table` points to
