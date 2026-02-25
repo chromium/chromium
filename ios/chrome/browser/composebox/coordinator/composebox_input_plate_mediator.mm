@@ -2005,6 +2005,30 @@ CreateInputDataFromAnnotatedPageContent(
 
 #pragma mark - Private helpers
 
+// Whether the user can ask about the current Tab.
+- (BOOL)canAskAboutCurrentTab {
+  return IsAimCobrowseEnabled() && [self canAttachActiveTab];
+}
+
+// Whether the current tab is attachable.
+- (BOOL)canAttachActiveTab {
+  web::WebState* webState = _webStateList->GetActiveWebState();
+  if (!webState) {
+    return NO;
+  }
+
+  std::set<web::WebStateID> alreadyProcessedIDs =
+      [self attachedWebStateIDsInCurrentContext];
+  BOOL isNTP = IsUrlNtp(webState->GetVisibleURL());
+  BOOL alreadyProcessed =
+      alreadyProcessedIDs.contains(webState->GetUniqueIdentifier());
+
+  BOOL canAttachTab =
+      !isNTP && !alreadyProcessed && [self isContentSharingEnabled];
+
+  return canAttachTab;
+}
+
 // Reacts to a change in the model choice.
 - (void)updateModelOnModeChange {
   using enum ComposeboxModelOption;
@@ -2082,6 +2106,15 @@ CreateInputDataFromAnnotatedPageContent(
       break;
   }
 
+  ComposeboxInputPlateControls askAboutThisPage;
+
+  if (!compactMode && [self canAskAboutCurrentTab] && allowsMultimodalActions &&
+      !modeSwitchButton) {
+    askAboutThisPage = kAskAboutThisPage;
+  } else {
+    askAboutThisPage = kNone;
+  }
+
   ComposeboxInputPlateControls trailingAction = kNone;
   if (canSend) {
     trailingAction = kSend;
@@ -2091,27 +2124,17 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   ComposeboxInputPlateControls visibleControls =
-      (leadingImage | leadingAction | modeSwitchButton | trailingAction);
+      (leadingImage | leadingAction | modeSwitchButton | askAboutThisPage |
+       trailingAction);
 
   [self.consumer updateVisibleControls:visibleControls];
 }
 
 - (BOOL)updateOptionToAttachCurrentTab {
-  web::WebState* webState = _webStateList->GetActiveWebState();
-  if (!webState) {
-    [_consumer hideAttachCurrentTabAction:YES];
-    return NO;
-  }
+  BOOL canAttachTab = [self canAttachActiveTab];
 
-  std::set<web::WebStateID> alreadyProcessedIDs =
-      [self attachedWebStateIDsInCurrentContext];
-  BOOL isNTP = IsUrlNtp(webState->GetVisibleURL());
-  BOOL alreadyProcessed =
-      alreadyProcessedIDs.contains(webState->GetUniqueIdentifier());
-
-  BOOL canAttachTab =
-      !isNTP && !alreadyProcessed && [self isContentSharingEnabled];
   [_consumer hideAttachCurrentTabAction:!canAttachTab];
+
   return canAttachTab;
 }
 

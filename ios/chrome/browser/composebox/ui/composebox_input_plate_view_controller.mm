@@ -205,6 +205,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   UIButton* _canvasButton;
   /// The button to toggle deep search mode.
   UIButton* _deepSearchButton;
+  /// The button to attach the current tab.
+  UIButton* _askAboutThisPageButton;
   /// The glow effect around the input plate container.
   UIView<GlowEffect>* _glowEffectView;
   /// The plus button.
@@ -316,6 +318,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   _imageGenerationButton = [self createImageGenerationButton];
   _canvasButton = [self createCanvasButton];
   _deepSearchButton = [self createDeepSearchButton];
+  _askAboutThisPageButton = [self createAskAboutThisPageButton];
   [self updatePlusButtonItems];
   [self setupCarouselContainer];
 
@@ -509,6 +512,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   [self updateToolbarVisibility];
 
   [self animateButton:_aimButton hidden:!(controls & kAIM)];
+  [self animateButton:_askAboutThisPageButton
+               hidden:!(controls & kAskAboutThisPage)];
   [self animateButton:_sendButton hidden:!(controls & kSend)];
   [self animateButton:_imageGenerationButton hidden:!(controls & kCreateImage)];
   [self animateButton:_canvasButton hidden:!(controls & kCanvas)];
@@ -831,6 +836,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 // Called when the deep search button in the input plate is tapped.
 - (void)deepSearchButtonTapped {
   [self.delegate composeboxViewControllerDidTapDeepSearchButton:self];
+}
+
+// Called when the Ask about this page button in the input plate is tapped.
+- (void)askAboutThisPageButtonTapped {
+  [self.mutator attachCurrentTabContent];
 }
 
 - (void)plusButtonTouchDown {
@@ -1360,7 +1370,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 - (void)updateToolbarVisibility {
   using enum ComposeboxInputPlateControls;
   ComposeboxInputPlateControls requiredControlsForVisibility =
-      (kPlus | kVoice | kLens | kSend);
+      (kPlus | kVoice | kLens | kSend | kAskAboutThisPage);
   _toolbarView.hidden = !(_visibleControls & requiredControlsForVisibility);
 
   if (!self.compact) {
@@ -1407,8 +1417,8 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   UIStackView* buttonsStackView =
       [[UIStackView alloc] initWithArrangedSubviews:@[
         _plusButton, _aimButton, _imageGenerationButton, _canvasButton,
-        _deepSearchButton, spacerView, _sendButton, _micButton,
-        _visualSearchButton
+        _deepSearchButton, _askAboutThisPageButton, spacerView, _sendButton,
+        _micButton, _visualSearchButton
       ]];
   buttonsStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [buttonsStackView setCustomSpacing:kShortcutsSpacing afterView:_micButton];
@@ -2070,6 +2080,39 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
   [self setupXMarkInButton:button];
+
+  return button;
+}
+
+// Creates an 'ask about this page' tab button to be displayed in the input
+// plate.
+- (UIButton*)createAskAboutThisPageButton {
+  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
+  button.configurationUpdateHandler =
+      [self configurationUpdateHandlerForModeIndicator];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  [button addTarget:self
+                action:@selector(askAboutThisPageButtonTapped)
+      forControlEvents:UIControlEventTouchUpInside];
+  button.tintColor = [_theme aimButtonTextColorWithAIMEnabled:NO];
+
+  [button
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+
+  UIButtonConfiguration* config = [self
+      modeIndicatorButtonConfigWithTitle:
+          l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_ASK_ABOUT_THIS_PAGE_ACTION)
+                                   image:CustomSymbolWithPointSize(
+                                             kMagnifyingglassSparkSymbol,
+                                             kAIMButtonSymbolPointSize)];
+  config.background.backgroundColor = [UIColor clearColor];
+  config.baseForegroundColor = [_theme aimButtonTextColorWithAIMEnabled:NO];
+  config.background.strokeWidth = 1;
+  config.background.strokeColor =
+      [_theme aimButtonBorderColorWithAIMEnabled:NO];
+
+  button.configuration = config;
 
   return button;
 }
