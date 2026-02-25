@@ -16,7 +16,6 @@
 #import "base/base64.h"
 #import "base/check.h"
 #import "base/command_line.h"
-#import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
@@ -29,12 +28,10 @@
 #import "base/path_service.h"
 #import "base/process/process_metrics.h"
 #import "base/rand_util.h"
-#import "base/strings/safe_sprintf.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/platform_thread.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/country_codes/country_codes.h"
-#import "components/crash/core/common/crash_key.h"
 #import "components/crash/core/common/crash_keys.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -502,17 +499,6 @@ void IOSChromeMetricsServiceClient::CollectFinalHistograms() {
             "Memory.Browser.MemoryFootprint.Background", footprint_mb);
         break;
     }
-  } else {
-    // Max kern_return_t is 0x100 = 256, plus trailing null.
-    // (https://opensource.apple.com/source/xnu/xnu-792.25.20/osfmk/mach/kern_return.h)
-    // TODO(crbug.com/40866217): Remove this when done debugging the uncaught
-    // memory regression.
-    static crash_reporter::CrashKeyString<4> task_info_kern_return(
-        "task-info-kern-return");
-    char kr_buf[4];
-    base::strings::SafeSPrintf(kr_buf, "%d", result.error());
-    task_info_kern_return.Set(kr_buf);
-    base::debug::DumpWithoutCrashing();
   }
 
   int open_tabs_count = 0;
