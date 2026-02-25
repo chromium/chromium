@@ -425,6 +425,7 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
             FileUploadStatus.kUploadReplaced,
           ].includes(status)) {
         this.files_.delete(token);
+
         if (file.tabId) {
           this.addedTabsIds_ = new Map([...this.addedTabsIds_.entries()].filter(
               ([id, _]) => id !== file!.tabId));
@@ -440,6 +441,14 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
             break;
           case FileUploadStatus.kUploadExpired:
             errorMessage = this.i18n('composeboxFileUploadExpired');
+            break;
+          case FileUploadStatus.kUploadReplaced:
+            // Update `composebox.ts` with the status since
+            // this should not return an error message for this
+            // 'non-uploaded' terminal file state, meaning
+            // its file status is still needed for understanding state
+            // when returned and back in the context of the function caller.
+            file = {...file, status: status};
             break;
           default:
             break;

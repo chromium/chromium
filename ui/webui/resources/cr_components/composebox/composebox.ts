@@ -1411,13 +1411,28 @@ export class ComposeboxElement extends I18nMixinLit
   private async onContextualInputStatusChanged_(
       token: UnguessableToken, status: FileUploadStatus,
       errorType: FileUploadErrorType) {
+    // If error message is updated, then the returned file is stale and removed
+    // from carousel. File is removed from carousel on `kUploadReplaced` as
+    // well despite no error message being returned (special case).
+    // Else, `file` below is updated to its most recent state,
+    // and `errorMessage` is null.
     const {file, errorMessage} =
         this.$.context.updateFileStatus(token, status, errorType);
-    if (errorMessage) {
+    if (errorMessage) {  // `file` value is definitely stale.
       this.errorMessage_ = errorMessage;
       this.pendingUploads_.delete(token);
       this.fileUploadsComplete = this.pendingUploads_.size === 0;
     } else if (file) {
+      // Treat `kUploadReplaced` like an error upload state
+      // (like `kUploadFailed`. `kValidationFailed`,
+      // `kUploadExpired`), just without setting `errorMessage_`.
+      // This means for `kUploadReplaced`, we do not fetch suggestions,
+      // etc.
+      if (file.status === FileUploadStatus.kUploadReplaced) {
+        this.pendingUploads_.delete(file.uuid);
+        this.fileUploadsComplete = this.pendingUploads_.size === 0;
+        return;
+      }
       if (status === FileUploadStatus.kProcessingSuggestSignalsReady &&
           this.showZps && !file.type.includes('image')) {
         // Query autocomplete to get contextual suggestions for files.

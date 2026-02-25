@@ -222,7 +222,8 @@ void ContextualTasksComposeboxHandler::OnFileUploadStatusChanged(
       file_upload_status == FileUploadStatus::kUploadSuccessful ||
       file_upload_status == FileUploadStatus::kUploadFailed ||
       file_upload_status == FileUploadStatus::kUploadExpired ||
-      file_upload_status == FileUploadStatus::kValidationFailed;
+      file_upload_status == FileUploadStatus::kValidationFailed ||
+      file_upload_status == FileUploadStatus::kUploadReplaced;
 
   if (is_terminal_upload_status) {
     MarkContextUploadFinished(file_token);
@@ -1105,8 +1106,6 @@ void ContextualTasksComposeboxHandler::DeleteContext(
   if (deleted_tab_url) {
     // Blocklist the URL so that it shouldn't show up in subsequent
     // auto-suggestions.
-    std::cout << "Adding URL to blocklist: " << deleted_tab_url.value()
-              << std::endl;
     blocklisted_suggestions_.insert(deleted_tab_url.value());
   }
 }
