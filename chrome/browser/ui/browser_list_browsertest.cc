@@ -82,15 +82,13 @@ class BrowserObserverChild : public BrowserListObserver, TabStripModelObserver {
  public:
   explicit BrowserObserverChild(Browser* created_for_browser)
       : created_for_browser_(created_for_browser) {
-    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-        [this](BrowserWindowInterface* browser) {
-          EXPECT_FALSE(observed_browsers_.contains(browser));
-          observed_browsers_.insert(browser);
-          // TODO(crbug.com/452120900): TabStripModelObserver auto-unregisters
-          // in dtor
-          browser->GetTabStripModel()->AddObserver(this);
-          return true;
-        });
+    for (auto browser : BrowserList::GetInstance()->browsers_) {
+      EXPECT_FALSE(observed_browsers_.contains(browser));
+      observed_browsers_.insert(browser);
+      // TODO(crbug.com/452120900): TabStripModelObserver auto-unregisters
+      // in dtor
+      browser->GetTabStripModel()->AddObserver(this);
+    }
     EXPECT_TRUE(observed_browsers_.contains(created_for_browser_));
     BrowserList::GetInstance()->AddObserver(this);
   }
@@ -139,13 +137,13 @@ class BrowserObserverParent : public BrowserListObserver {
 IN_PROC_BROWSER_TEST_F(BrowserListBrowserTest, ObserverAddedInFlight) {
   BrowserObserverParent parent_observer;
 
-  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1U, BrowserList::GetInstance()->browsers_.size());
 
   // Adding second browser should not trigger double-observation.
   Browser::Create(Browser::CreateParams(GetProfile(), true));
-  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(2U, BrowserList::GetInstance()->browsers_.size());
 
   // Create one more browser to trigger BrowserObserverChild::OnBrowserAdded.
   Browser::Create(Browser::CreateParams(GetProfile(), true));
-  EXPECT_EQ(3U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(3U, BrowserList::GetInstance()->browsers_.size());
 }

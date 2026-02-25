@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/function_ref.h"
+#include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -61,6 +62,9 @@ class BrowserList {
   static void NotifyBrowserNoLongerActive(Browser* browser);
 
  private:
+  friend class BrowserObserverChild;
+  FRIEND_TEST_ALL_PREFIXES(BrowserListBrowserTest, ObserverAddedInFlight);
+
   BrowserList();
   ~BrowserList();
 
