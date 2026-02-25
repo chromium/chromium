@@ -122,7 +122,14 @@ IN_PROC_BROWSER_TEST_F(StorageServiceRestartBrowserTest,
                          R"(getSessionStorageValue("foo"))"));
 }
 
-IN_PROC_BROWSER_TEST_F(StorageServiceRestartBrowserTest, LocalStorageRecovery) {
+// TODO(crbug.com/40678245): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_LocalStorageRecovery DISABLED_LocalStorageRecovery
+#else
+#define MAYBE_LocalStorageRecovery LocalStorageRecovery
+#endif
+IN_PROC_BROWSER_TEST_F(StorageServiceRestartBrowserTest,
+                       MAYBE_LocalStorageRecovery) {
   // Tests that the Local Storage API can recover and continue normal operation
   // after a Storage Service crash.
   EXPECT_TRUE(
