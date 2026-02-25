@@ -415,28 +415,12 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.updateCommonSearchParams();
 
     // Listeners for ghost loader
-    if (this.enableGhostLoader_) {
-      this.$.threadFrame.addEventListener('contentload', () => {
-        this.isFrameLoading = false;
-        this.setIsGhostLoaderVisible(false);
-      });
-      this.$.threadFrame.addEventListener('loadabort', () => {
-        this.isFrameLoading = false;
-        this.setIsGhostLoaderVisible(false);
-      });
-      this.$.threadFrame.addEventListener(
-          'loadstart', async (ev: chrome.webviewTag.LoadStartEvent) => {
-            if (!ev.isTopLevel) {
-              return;
-            }
-            this.isFrameLoading = true;
-            const {isAiPage} =
-                await this.browserProxy_.handler.isAiPage(ev.url);
-            if (this.isFrameLoading && !isAiPage) {
-              this.setIsGhostLoaderVisible(true);
-            }
-          });
-    }
+    this.$.threadFrame.addEventListener(
+        'loadstart', this.onThreadFrameLoadStart.bind(this));
+    this.$.threadFrame.addEventListener(
+        'contentload', this.onThreadFrameContentLoad.bind(this));
+    this.$.threadFrame.addEventListener(
+        'loadabort', this.onThreadFrameLoadAbort.bind(this));
 
     // Setup the webview request overrides before loading the first URL.
     this.setupWebviewRequestOverrides();
@@ -513,6 +497,43 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   private setStyleVariable(variable: string, value: string) {
     this.$.composebox.style.setProperty(variable, `${value}px`);
+  }
+
+  private async onThreadFrameLoadStart(ev: chrome.webviewTag.LoadStartEvent) {
+    if (!ev.isTopLevel) {
+      return;
+    }
+    // Set frame loading to true initially to avoid race conditions.
+    this.isFrameLoading = true;
+    const wasAiPage = this.isAiPage_;
+    const {isAiPage} = await this.browserProxy_.handler.isAiPage(ev.url);
+
+    // If the frame is no longer loading after waiting for isAiPage,
+    // then exit early to prevent racind.
+    if (!this.isFrameLoading) {
+      return;
+    }
+
+    if (!isAiPage) {
+      // If this is not an AI page, show the ghost loader.
+      this.setIsGhostLoaderVisible(true);
+    } else if (wasAiPage) {
+      // Since this is a navigation from one AI page to another,
+      // enter basic mode to avoid flickering between navigations.
+      this.isNavigatingFromAiPage_ = true;
+      this.basicModeBeforeNavigation_ = this.isInBasicMode_;
+      this.isInBasicMode_ = true;
+    }
+  }
+
+  private onThreadFrameContentLoad() {
+    this.setIsGhostLoaderVisible(false);
+    this.updateBasicModeAfterNavigation();
+  }
+
+  private onThreadFrameLoadAbort() {
+    this.setIsGhostLoaderVisible(false);
+    this.updateBasicModeAfterNavigation();
   }
 
   /* Adjust composebox based on server notifications. Negatives are used if
@@ -635,10 +656,6 @@ export class ContextualTasksAppElement extends CrLitElement {
           urls: ['<all_urls>'],
         },
         ['blocking']);
-    this.$.threadFrame.request.onCompleted.addListener(this.onCompleted, {
-      types: ['main_frame'] as any,
-      urls: ['<all_urls>'],
-    });
 
     // Allow downloading files. This is necessary since aim can generate images
     // for download.
@@ -659,7 +676,6 @@ export class ContextualTasksAppElement extends CrLitElement {
   private removeWebviewRequestOverrides() {
     this.$.threadFrame.request.onBeforeRequest.removeListener(
         this.onBeforeRequest);
-    this.$.threadFrame.request.onCompleted.removeListener(this.onCompleted);
   }
 
   private addCommonSearchParams(url: URL): URL {
@@ -694,11 +710,6 @@ export class ContextualTasksAppElement extends CrLitElement {
             const newUrl = this.addCommonSearchParams(url);
             const isSigninDomain =
                 !!this.signInDomains_.find((domain) => domain === url.host);
-            if (this.isAiPage_) {
-              this.isNavigatingFromAiPage_ = true;
-              this.basicModeBeforeNavigation_ = this.isInBasicMode_;
-              this.isInBasicMode_ = true;
-            }
             if (this.forcedEmbeddedPageHost && !isSigninDomain) {
               newUrl.host = this.forcedEmbeddedPageHost;
             }
@@ -708,15 +719,6 @@ export class ContextualTasksAppElement extends CrLitElement {
             return {};
           };
 
-  private onCompleted = (): void => {
-    if (!this.isNavigatingFromAiPage_) {
-      return;
-    }
-
-    this.isInBasicMode_ = this.basicModeBeforeNavigation_;
-    this.isNavigatingFromAiPage_ = false;
-  };
-
   getThreadUrlForTesting() {
     return this.$.threadFrame.src;
   }
@@ -725,8 +727,19 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.isErrorDialogVisible_ = false;
   }
 
+  private updateBasicModeAfterNavigation() {
+    if (!this.isNavigatingFromAiPage_) {
+      return;
+    }
+
+    this.isInBasicMode_ = this.basicModeBeforeNavigation_;
+    this.isNavigatingFromAiPage_ = false;
+  }
+
   private setIsGhostLoaderVisible(isVisible: boolean) {
-    this.isGhostLoaderVisible_ = isVisible;
+    if (this.enableGhostLoader_) {
+      this.isGhostLoaderVisible_ = isVisible;
+    }
   }
 
   private hasThreadHistoryParams(url: URL): boolean {
@@ -749,10 +762,6 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   onBeforeRequestForTesting(details: OnBeforeRequestDetails) {
     return this.onBeforeRequest(details);
-  }
-
-  onCompletedForTesting() {
-    this.onCompleted();
   }
 }
 
