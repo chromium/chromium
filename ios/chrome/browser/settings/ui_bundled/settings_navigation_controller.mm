@@ -404,41 +404,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 + (instancetype)
-    userFeedbackControllerForBrowser:(Browser*)browser
-                            delegate:(id<SettingsNavigationControllerDelegate>)
-                                         delegate
-                    userFeedbackData:(UserFeedbackData*)userFeedbackData {
-  DCHECK(ios::provider::IsUserFeedbackSupported());
-  id<SceneCommands> sceneHandler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
-  UserFeedbackConfiguration* configuration =
-      [[UserFeedbackConfiguration alloc] init];
-  configuration.data = userFeedbackData;
-  configuration.sceneHandler = sceneHandler;
-  configuration.singleSignOnService =
-      GetApplicationContext()->GetSingleSignOnService();
-
-  UIViewController* controller =
-      ios::provider::CreateUserFeedbackViewController(configuration);
-
-  DCHECK(controller);
-  SettingsNavigationController* navigationController =
-      [[SettingsNavigationController alloc]
-          initWithRootViewController:controller
-                             browser:browser
-                            delegate:delegate];
-
-  // Fix for https://crbug.com/1042741 (hide the double header display).
-  navigationController.navigationBarHidden = YES;
-
-  // If the controller overrides overrideUserInterfaceStyle, respect that in the
-  // SettingsNavigationController.
-  navigationController.overrideUserInterfaceStyle =
-      controller.overrideUserInterfaceStyle;
-  return navigationController;
-}
-
-+ (instancetype)
     privacyControllerForBrowser:(Browser*)browser
                        delegate:
                            (id<SettingsNavigationControllerDelegate>)delegate {

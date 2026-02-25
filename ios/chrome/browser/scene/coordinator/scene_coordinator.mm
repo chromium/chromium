@@ -1857,28 +1857,17 @@ void OnListFamilyMembersResponse(
   id<SceneCommands> handler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
 
-  if (ios::provider::CanUseStartUserFeedbackFlow()) {
-    UserFeedbackConfiguration* configuration =
-        [[UserFeedbackConfiguration alloc] init];
-    configuration.data = data;
-    configuration.sceneHandler = handler;
-    configuration.singleSignOnService =
-        GetApplicationContext()->GetSingleSignOnService();
+  UserFeedbackConfiguration* configuration =
+      [[UserFeedbackConfiguration alloc] init];
+  configuration.data = data;
+  configuration.sceneHandler = handler;
+  configuration.singleSignOnService =
+      GetApplicationContext()->GetSingleSignOnService();
 
-    NSError* error;
-    ios::provider::StartUserFeedbackFlow(configuration, baseViewController,
-                                         &error);
-    UMA_HISTOGRAM_BOOLEAN("IOS.FeedbackKit.UserFlowStartedSuccess",
-                          error == nil);
-  } else {
-    _settingsNavigationController =
-        [SettingsNavigationController userFeedbackControllerForBrowser:browser
-                                                              delegate:self
-                                                      userFeedbackData:data];
-    [baseViewController presentViewController:_settingsNavigationController
-                                     animated:YES
-                                   completion:nil];
-  }
+  NSError* error;
+  ios::provider::StartUserFeedbackFlow(configuration, baseViewController,
+                                       &error);
+  UMA_HISTOGRAM_BOOLEAN("IOS.FeedbackKit.UserFlowStartedSuccess", error == nil);
   std::move(completion).Run(data);
 }
 
