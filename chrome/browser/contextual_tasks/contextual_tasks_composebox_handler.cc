@@ -269,14 +269,18 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   // might be destroyed or reset during closure.
   std::optional<base::UnguessableToken> overlay_token = GetLensOverlayToken();
   bool has_visual_selection = overlay_token.has_value();
+  auto* session_handle = GetContextualSessionHandle();
 
   // Every time a query is submitted, close the Lens overlay if it's open.
   CloseLensOverlay(
       lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
   std::optional<base::Uuid> task_id = web_ui_interface_->GetTaskId();
   auto* contextual_tasks_service = GetContextualTasksService();
+  bool is_only_visual_selection =
+      has_visual_selection && !IsAnyContextUploading() && session_handle &&
+      session_handle->GetUploadedContextTokens().empty();
   if (!task_id.has_value() || !contextual_tasks_service ||
-      (has_visual_selection && !IsAnyContextUploading())) {
+      is_only_visual_selection) {
     ContinueCreateAndSendQueryMessage(query, task_id, overlay_token);
     return;
   }
@@ -309,7 +313,7 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   // session handle.
   auto context_decoration_params =
       std::make_unique<contextual_tasks::ContextDecorationParams>();
-  if (auto* session_handle = GetContextualSessionHandle()) {
+  if (session_handle) {
     context_decoration_params->contextual_search_session_handle =
         session_handle->AsWeakPtr();
   }
