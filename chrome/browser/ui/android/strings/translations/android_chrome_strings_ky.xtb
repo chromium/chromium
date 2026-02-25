@@ -397,7 +397,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="2702516483241149200">Жаңы: Бул текстке сыдырылган шилтемени бөлүшө аласыз</translation>
 <translation id="2708226184420201102"><ph name="PRODUCT_NAME" /> серепчисинде ачуу</translation>
 <translation id="271033894570825754">Жаңы</translation>
-<translation id="2710883118091822664">Бардык түзмөктөрүңүздө улантуу үчүн аккаунтуңузга кириңиз</translation>
 <translation id="2718352093833049315">Wi-Fi'да гана</translation>
 <translation id="2718846868787000099">Мазмунду тандаган тилдериңизде көрсөтүү үчүн сиз баш баккан сайттар параметрлериңизди көрө алат</translation>
 <translation id="2723001399770238859">audio</translation>
@@ -533,7 +532,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3268048651973962414">Табылган нерселерди көрүү үчүн жогору сүйрөңүз</translation>
 <translation id="3269093882174072735">Сүрөттү жүктөө</translation>
 <translation id="3280562213547448728">Айтып издөө</translation>
-<translation id="3282568296779691940">Chrome'го кириңиз</translation>
 <translation id="3285065882678541460">{TAB_COUNT,plural, =1{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_ONE" /> өтмөк}other{<ph name="TAB_GROUPS_PART" />, <ph name="TAB_COUNT_MANY" /> өтмөк}}</translation>
 <translation id="3286508210927575634">{PASSWORDS_COUNT,plural, =1{1 сырсөз ушул түзмөккө гана сакталды. Аны башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда сактаңыз.}other{# сырсөз ушул түзмөккө гана сакталды. Аларды башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузда сактаңыз.}}</translation>
 <translation id="3293181007446299124">Серепчиден көргөн нерселериңиз түзмөктө сакталып, өзүңүзгө гана көрүнөт. Жеке маалыматыңызды сактоо үчүн отчёттор бир аз кечигип жөнөтүлөт.</translation>
@@ -1202,6 +1200,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="610630277578876674">Билдирүүлөрдөгү шилтемелерди жана башкаларды ыкчам ачыңыз</translation>
 <translation id="6108923351542677676">Орнотулуп жатат…</translation>
 <translation id="6112702117600201073">Баракты жаңыртуу</translation>
+<translation id="612221930823678863">Сурамдын ордуна <ph name="QUERY" /> белгиси бар URL көрсөтүлүшү керек</translation>
 <translation id="6122831415929794347">Коопсуз серептөө өчүрүлсүнбү?</translation>
 <translation id="6124936178263837501">Спам эмес деп кабарлоо</translation>
 <translation id="6125202119952209826"><ph name="OWNER_FIRST_NAME" /> бар өтмөктөр тобуна кошулуңуз</translation>
@@ -1562,6 +1561,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7363349185727752629">Купуялык тандоолору боюнча жетектеме</translation>
 <translation id="7364103838544876661">Серептөө дайындарын өчүрүү үчүн көбүрөөк параметрлер</translation>
 <translation id="7365073365123878797">Сырсөздөрдү башкаргыч менен сырсөздөрдү сактап жана колдонуп баштоо үчүн Google Play кызматтарын жаңыртыңыз</translation>
+<translation id="7368927539449986686">Сайттан издөөнү түзөтүү</translation>
 <translation id="7375125077091615385">Түрү:</translation>
 <translation id="7376560087009844242">Барактагы көбүрөөк текст камтылса, тийип издегенде жакшыраак натыйжалар көрсөтүлүшү мүмкүн. Муну <ph name="BEGIN_LINK" />жөндөөлөрдөн<ph name="END_LINK" /> каалаган убакта өзгөртө аласыз.</translation>
 <translation id="7379900596734708416">Сайттар үчүн Караңгы тема жеткиликтүү</translation>

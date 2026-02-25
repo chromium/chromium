@@ -381,7 +381,6 @@
 <translation id="1239841552505950173">启动应用</translation>
 <translation id="1241066500170667906">为实验“<ph name="EXPERIMENT_NAME" />”选择实验状态</translation>
 <translation id="124116460088058876">更多语言</translation>
-<translation id="1241381048229838873">显示所有书签</translation>
 <translation id="1241968867980182121">关闭顶部视图</translation>
 <translation id="1242044645101871359">重新登录</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" />要重置您的设置。</translation>
@@ -2377,6 +2376,7 @@
 <translation id="2584974473573720127">在 Chrome 中管理网站的麦克风权限</translation>
 <translation id="2586561813241011046">无法安装 <ph name="APP_NAME" />。请重试，或与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="2586672484245266891">请输入一个较短的网址</translation>
+<translation id="2588271083332682494">使用标签页分组整理标签页</translation>
 <translation id="2588636910004461974">来自<ph name="VENDOR_NAME" />的设备</translation>
 <translation id="2589658397149952302">一律不显示云端硬盘文件</translation>
 <translation id="2593499352046705383">在开始之前，请确保已备份数据。安装 <ph name="DEVICE_OS" /> 会覆盖您的硬盘。如需了解详情，请访问 g.co/flex/InstallGuide。</translation>
@@ -3014,7 +3014,6 @@
 <translation id="3010234549896186761">{COUNT,plural, =0{您的密码看似安全系数较高}=1{有 {COUNT} 个安全系数低的密码}other{有 {COUNT} 个安全系数低的密码}}</translation>
 <translation id="3010279545267083280">密码已删除</translation>
 <translation id="3010389206479238935">会被强制在…中打开</translation>
-<translation id="3010961843303056486">显示所有书签</translation>
 <translation id="3011384993885886186">暖灰色</translation>
 <translation id="3011488081941333749">系统将在您退出时清除来自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -5860,7 +5859,6 @@
 <translation id="4946215577126251136">显示“项目面板”按钮</translation>
 <translation id="4946998421534856407">启动器键 + 向上键</translation>
 <translation id="4947376546135294974">来自您当前访问网站的数据</translation>
-<translation id="4948370357877377178">继续处理任务</translation>
 <translation id="4950100687509657457">创建个人资料</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 个文件}other{# 个文件}}</translation>
 <translation id="495170559598752135">操作</translation>
@@ -6084,7 +6082,6 @@
 <translation id="511147239888121455">要备份您的资料吗？</translation>
 <translation id="5111474831474629851">贵组织不允许您使用此账号登录</translation>
 <translation id="5111646998522066203">退出无痕模式</translation>
-<translation id="5111692334209731439">书签管理器(&amp;B)</translation>
 <translation id="5111794652433847656">在此设备上未发现<ph name="APP_NAME" />的任何通行密钥</translation>
 <translation id="5112577000029535889">开发者工具(&amp;D)</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{已移动 1 个文件}other{已移动 {NUM_OF_FILES} 个文件}}</translation>
@@ -6905,7 +6902,6 @@
 <translation id="5684181005476681636">Wi-Fi 详细信息</translation>
 <translation id="5684661240348539843">资产标识符</translation>
 <translation id="5684950556880280580">您的密码已更新</translation>
-<translation id="5687307865755379257">浅褐色</translation>
 <translation id="5687326903064479980">时区</translation>
 <translation id="5687340364605915800">网站可自行决定是否响应此请求</translation>
 <translation id="5687606994963670306">Chrome 会自动删除保留时长超过 30 天的网站。您再次访问的网站可能会重新出现在列表中。您还可禁止某个网站向您展示建议的广告。详细了解如何<ph name="BEGIN_LINK" />在 Chrome 中管理广告隐私权设置<ph name="END_LINK" />。</translation>
@@ -7310,7 +7306,6 @@
 <translation id="5961545272769624207">指定手势</translation>
 <translation id="5963413905009737549">章节标记</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> 个（峰值：<ph name="NUM_KILOBYTES_LIVE" />）</translation>
-<translation id="5964086374943649343">低对比度</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{在新窗口中打开全部书签(&amp;N)}=1{在新窗口中打开(&amp;N)}other{在新窗口中打开全部（{COUNT} 个）书签(&amp;N)}}</translation>
 <translation id="5964247741333118902">嵌入式内容</translation>
 <translation id="5965607173855879702">正在删除数据…</translation>
@@ -7729,7 +7724,6 @@
 <translation id="6251924700383757765">隐私权政策</translation>
 <translation id="625369703868467034">网络状况</translation>
 <translation id="6253801023880399036">系统会将密码保存到 <ph name="GOOGLE_PASSWORD_MANAGER" />中。</translation>
-<translation id="6254306574403090248">深褐色</translation>
 <translation id="6254503684448816922">密钥泄漏</translation>
 <translation id="6254892857036829079">完美</translation>
 <translation id="6257602895346497974">开启同步功能…</translation>
@@ -8668,6 +8662,7 @@
 <translation id="6900632443249221072">使用 Gemini 制作图片</translation>
 <translation id="6900651018461749106">重新登录后即可更新 <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">确定要删除此搜索引擎吗？</translation>
+<translation id="6900883974539674431">创建标签页分组，这些分组会在您的所有设备上自动保存和更新</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6901130673208235020">当您搜索浏览记录时，您的历史搜索、最匹配的网页内容以及生成的模型输出会发送给 Google</translation>
 <translation id="6902066522699286937">要试听的语音</translation>
@@ -9961,7 +9956,6 @@
 <translation id="7784067724422331729">您计算机的安全设置阻止了此文件。</translation>
 <translation id="7784796923038949829">无法读取或更改网站的数据</translation>
 <translation id="778480864305029524">要使用即时网络共享功能，请开启 Google Play 服务通知功能。</translation>
-<translation id="7785471469930192436">查看您所用搜索引擎的说明，了解如何删除您的搜索记录（若适用）</translation>
 <translation id="77855763949601045">打开访客资料(&amp;O)</translation>
 <translation id="7786663536153819505">按照手机上的说明扫描二维码。确保手机已开启蓝牙。
     <ph name="BR" />
@@ -10458,7 +10452,6 @@
 <translation id="8110489095782891123">正在下载联系人列表…</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> 麦克风使用权限</translation>
 <translation id="8116497846156149">请家长批准</translation>
-<translation id="8116972784401310538">书签管理器(&amp;B)</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />会记住您的登录信息，并在情况允许时为您自动登录。若关闭此功能，系统每次都会请您确认是否登录。</translation>
 <translation id="8118362518458010043">已被 Chrome 停用。此扩展程序可能不安全。</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# 个书签}other{# 个书签}}</translation>
@@ -10721,7 +10714,6 @@
 <translation id="8288032458496410887">卸载 <ph name="APP" />…</translation>
 <translation id="8288553158681886528">提取 PDF 文件中的文本</translation>
 <translation id="8289128870594824098">磁盘大小</translation>
-<translation id="8289200713453671499">在不丢失当前浏览位置的情况下，快速在标签页分组和最近的 AI 对话之间切换。</translation>
 <translation id="8289509909262565712">欢迎使用 <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">下载 Chrome</translation>
 <translation id="8291942417224950075">个人使用</translation>

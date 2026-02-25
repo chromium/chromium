@@ -589,6 +589,9 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7384121030444253939">Toto rozšíření už není podporováno. Chromium vám doporučuje odstranit ho.</translation>
 <translation id="7413153308467572558">Pokračujte od stavu, ve kterém jste skončili: Chromium při restartech obnovuje karty. Tuto funkci můžete vypnout v</translation>
 <translation id="7427879960656355200">Import hesel do prohlížeče Chromium</translation>
+<translation id="744815265653811511">1. Níže klikněte na <ph name="BUTTON_LABEL" />.
+2. V nastavení systému Windows klikněte na <ph name="BUTTON_2" />
+3. Kliknutím na <ph name="BUTTON_3" /> v oznámení systému Windows připněte prohlížeč Chromium na hlavní panel, aby byl kdykoli rychle k dispozici.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Text byl zkopírován</translation>
 <translation id="7451052299415159299">Chromium pro tento web potřebuje oprávnění k přístupu k fotoaparátu</translation>
@@ -604,6 +607,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="761356813943268536">Chromium používá vaši kameru a mikrofon.</translation>
 <translation id="7617377681829253106">Prohlížeč Chromium je opět o něco lepší</translation>
 <translation id="7622753900276619808">V Chromiu teď máte k dispozici víc funkcí</translation>
+<translation id="7624307931717240213">Informace používáme ke zlepšování této služby. Prostudujte si zásady ochrany soukromí a smluvní podmínky.</translation>
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7656340475565475526">Nechte Chromium procházet internet za vás</translation>
 <translation id="7658239707568436148">Zrušit</translation>

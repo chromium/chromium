@@ -428,6 +428,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1664389769577564606">Fotopolímero flexográfico</translation>
 <translation id="1667730174533834274">confirmar sua identidade antes de mudar configurações</translation>
 <translation id="1668071460721346172">Receber um e-mail</translation>
+<translation id="1670861525135254448">Salvar veículo</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> para <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Borda menor primeiro</translation>
 <translation id="168693727862418163">Houve uma falha na validação do valor da política em relação ao esquema, e ele será ignorado.</translation>
@@ -470,6 +471,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1734878702283171397">Tente entrar em contato com o administrador do sistema.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expira em <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Computador</translation>
+<translation id="1739364174357629566">Atualizar o número de passageiro conhecido</translation>
 <translation id="1740404923954980840">Para sair da tela cheia, arraste de cima para baixo da tela e toque no botão de voltar</translation>
 <translation id="1741474054575634405">Gerencie cartões fidelidade…</translation>
 <translation id="1741613555002899862">Precisa ser especificada e ser uma string válida quando DnsOverHttpsMode for <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -995,6 +997,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2553352788023127673">O histórico de pesquisa e as senhas podem ser excluídos nas configurações de gerenciamento</translation>
 <translation id="2553853292994445426">Verifique suas configurações de DNS seguro. Você pode ter configurado um servidor DNS seguro em que as conexões estão falhando.</translation>
 <translation id="255497580849974774">Mantenha seu dispositivo conectado a um carregador durante a atualização.</translation>
+<translation id="2555855727505718984">O preenchimento automático não terá essas informações neste dispositivo para completar formulários</translation>
 <translation id="2556876185419854533">&amp;Desfazer editar</translation>
 <translation id="2559566667529177711">Multicamadas</translation>
 <translation id="2570734079541893434">Gerenciar configurações</translation>
@@ -1319,6 +1322,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3115363211799416195">{0,plural, =1{Baixar o arquivo confidencial?}one{Baixar o arquivo confidencial?}other{Baixar os arquivos confidenciais?}}</translation>
 <translation id="3115874930288085374"><ph name="ENROLLMENT_DOMAIN" /> precisa que você faça backup dos seus dados e devolva este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Laminar</translation>
+<translation id="3116695032231023709">Salvar documento de identidade</translation>
 <translation id="3119689199889622589">Alimentos orgânicos e naturais</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Tente executar o Diagnóstico de Conectividade<ph name="END_LINK" />.</translation>
@@ -1326,6 +1330,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3121994479408824897">Ir para <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Mostrar resultados dos últimos 30 dias</translation>
 <translation id="3126023634486644099">Rótulos (permanentes)</translation>
+<translation id="3132345256151444894">Salvar número de reparação</translation>
 <translation id="3133565499688974786">Agora <ph name="SEARCH_ENGINE_NAME" /> é seu mecanismo de pesquisa padrão</translation>
 <translation id="3134859781443140237">Rede local</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" />: pesquisar <ph name="KEYWORD_SHORT_NAME" /></translation>
@@ -1399,6 +1404,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="323585066388831737">Vermelho-claro</translation>
 <translation id="3235902901585019063">Os arquivos locais serão excluídos em <ph name="DATE_TIME" />. Verifique se todos os dados pessoais ou empresariais importantes estão armazenados externamente.</translation>
 <translation id="3236212803136366317">Benefícios do cartão</translation>
+<translation id="3237427677128462778">Não foi possível salvar na Carteira do Google</translation>
 <translation id="3238395604961564389">Abrir link em uma janela anônima</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para personalizar a aparência do navegador</translation>
 <translation id="3240791268468473923">A página de credenciais para pagamento seguro sem correspondência está aberta</translation>
@@ -1508,7 +1514,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3427342743765426898">&amp;Refazer editar</translation>
 <translation id="342781501876943858">O Chromium recomenda redefinir sua senha se você a reutilizou em outros sites.</translation>
 <translation id="3428151540071562330">Um ou mais dos URIs de modelo de servidor da DnsOverHttpsTemplates é inválido e não será usado.</translation>
-<translation id="3428789896412418755">Histórico agrupado</translation>
 <translation id="3432601291244612633">Fechar página</translation>
 <translation id="3433111389595862568">Software para conferências e colaboração</translation>
 <translation id="3433144818443565002">Chat por voz e vídeo</translation>
@@ -2043,6 +2048,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4233220688695460165">O Chrome exclui automaticamente temas e sites que sugerem anúncios depois de 30 dias. Também é possível bloquear temas e sites específicos de que você não gosta.</translation>
 <translation id="4235360514405112390">Válido</translation>
 <translation id="4239799716689808527">Rótulos</translation>
+<translation id="424063167283213501">Salvar o número de passageiro conhecido</translation>
 <translation id="4241830393007970744">Invasores no site que você tentou acessar podem induzir você a instalar um software ou compartilhar dados como senhas, telefone ou números de cartões de crédito.</translation>
 <translation id="4242380780309416996">Envelope (grosso)</translation>
 <translation id="4242981939686657948">Para pesquisar seu histórico de navegação com mais eficiência, ative o</translation>
@@ -2305,6 +2311,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4691093235373904540">Serviços de telhadista</translation>
 <translation id="4692623383562244444">Mecanismos de pesquisa</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" />: perguntar ao <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4698308118265482293">Atualizar passaporte</translation>
 <translation id="4698692901173737941">Lutas</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Lado</translation>
@@ -2346,7 +2353,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4751249061288707459">Última atualização do consentimento:</translation>
 <translation id="4751476147751820511">Sensores de luz ou movimento</translation>
 <translation id="4754461935447132332">Sem permissão em sites não seguros</translation>
-<translation id="4756388243121344051">&amp;Histórico</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">O código é inválido</translation>
 <translation id="4757993714154412917">Você acabou de digitar sua senha em um site suspeito. Para proteger suas contas, o Chromium recomenda conferir as senhas salvas.</translation>
@@ -2536,6 +2542,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5045550434625856497">Senha incorreta</translation>
 <translation id="5048293684454354469">Os temas são apenas um dos vários recursos que um site pode usar para personalizar anúncios. Os sites ainda podem mostrar anúncios mesmo sem esse recurso, mas talvez eles não sejam tão personalizados. Aprenda a <ph name="BEGIN_LINK" />gerenciar a privacidade de anúncios<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />. Pressione Tab para ver mais atalhos de pesquisa disponíveis após esta sugestão</translation>
+<translation id="5052488928733955073">Erro ao preencher as informações. Verifique sua conexão.</translation>
 <translation id="5052517576853118371">Temas ativos</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este arquivo usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}one{Para enviar este arquivo usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes arquivos usando o Compartilhar por proximidade, libere espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
 <translation id="5056587122125565772">Criar imagem</translation>
@@ -2834,6 +2841,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5521782189689806907">Fabricação de armários</translation>
 <translation id="5523118979700054094">Nome da política</translation>
 <translation id="5523588073846127669">O comerciante não aceita este cartão virtual</translation>
+<translation id="5524476634211040742">Saiba mais sobre IA e privacidade</translation>
 <translation id="5525755241743357906">O arquivo foi copiado ou movido</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para personalizar as ferramentas de acessibilidade nas configurações do ChromeOS</translation>
 <translation id="55293785478302737">Costurar borda</translation>
@@ -3271,6 +3279,8 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6236290670123303279">Gerenciar configurações</translation>
 <translation id="623825323736974198">Gerencie sites que sempre vão ficar ativos e não terão memória liberada</translation>
 <translation id="6240447795304464094">Logotipo do Google Pay</translation>
+<translation id="6240553182907836376">Atualizar documento de identidade</translation>
+<translation id="6240601837375010619">Salvar passaporte</translation>
 <translation id="6240964651812394252">Para usar o Gerenciador de senhas do Google com seu sistema operacional, reinicie o Chrome e permita o acesso ao gerenciador de senhas do computador. Suas guias serão reabertas após a reinicialização.</translation>
 <translation id="6241121617266208201">Ocultar sugestões</translation>
 <translation id="624499991300733384">Serviço de criação de impressão</translation>
@@ -3635,6 +3645,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="681021252041861472">Campo obrigatório</translation>
 <translation id="6810899417690483278">Código de personalização</translation>
 <translation id="6816109178681043245">Artigos esportivos</translation>
+<translation id="681631578600400068">Salvar carteira de habilitação</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">portas seriais</translation>
 <translation id="6820686453637990663">CVC</translation>
@@ -3654,6 +3665,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6850286078059909152">Cor do texto</translation>
 <translation id="6852204201400771460">Recarregar app?</translation>
 <translation id="6854691830678097752">Para agilizar a finalização de compras, salve este CVC na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="6855951327659224749">Limpe o formulário para usar a opção "Pagar depois"</translation>
 <translation id="6857776781123259569">Gerenciar senhas…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Pode pedir para entrar no picture-in-picture</translation>
@@ -3846,6 +3858,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="7143668445748322952">arquivos da câmera, downloads e capturas de tela</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
+<translation id="7145337554745942724">Atualizar carteira de habilitação</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
 <translation id="7152230779180489711">Última visita</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}one{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}other{<ph name="PAYMENT_METHOD_PREVIEW" /> e mais <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" />}}</translation>
@@ -4039,6 +4052,7 @@ Mais detalhes:
 <translation id="7444176988908839653">{COUNT,plural, =0{Os cookies serão bloqueados de novo hoje}=1{Os cookies serão bloqueados de novo amanhã}one{# dia até que os cookies sejam bloqueados de novo}other{# dias até que os cookies sejam bloqueados de novo}}</translation>
 <translation id="7447234474237738389">Serviços de vestuário</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> mm)</translation>
+<translation id="7450486349221991286">Atualizar veículo</translation>
 <translation id="7450577240311017924">Botão "Gerenciar sincronização". Ative para gerenciar quais informações são sincronizadas nas configurações do Chrome</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Saber mais<ph name="END_LINK" /> sobre esse problema.</translation>
 <translation id="745208957946308667">Jogo do dinossauro. Pressione a barra de espaço para jogar.</translation>
@@ -4273,6 +4287,7 @@ Mais detalhes:
 <translation id="7779418012194492374">Revogue o acesso ao dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Ontem</translation>
 <translation id="7782465647372057580">As informações da conta são criptografadas e a privacidade delas é protegida</translation>
+<translation id="7785471469930192436">Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável</translation>
 <translation id="7785790577395078482">este tablet</translation>
 <translation id="7786368602962652765">Um campo obrigatório está em branco. Preencha antes de salvar.</translation>
 <translation id="7791011319128895129">Não lançada</translation>
@@ -4303,7 +4318,6 @@ Mais detalhes:
 <translation id="7840103971441592723">A captura de tela foi iniciada</translation>
 <translation id="784137052867620416">Insights de compras</translation>
 <translation id="7841633276323004751">Formas de pagamento disponíveis para selecionar e continuar com o pagamento. Teclado oculto.</translation>
-<translation id="784404208867107517">Histórico agrupado</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Nenhum}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Ocorreu um erro. Tente de novo.</translation>
 <translation id="784623644169604270">Nenhuma atividade recente</translation>
@@ -4887,6 +4901,7 @@ Mais detalhes:
 <translation id="8811725516933141693">Digite @gemini para conversar com o Gemini</translation>
 <translation id="8813277370772331957">Lembrar mais tarde</translation>
 <translation id="8814707942599948500">Envelope C8</translation>
+<translation id="881559332211266856">Atualizar número de reparação</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para atualizar o Chrome pelas configurações dele</translation>
 <translation id="8819855907485254989">Salvar bilhete de transporte na Carteira</translation>
 <translation id="8820817407110198400">Favoritos</translation>

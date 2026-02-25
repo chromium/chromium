@@ -731,6 +731,7 @@
 <translation id="2166049586286450108">প্ৰশাসকৰ সম্পূর্ণ এক্সেছ</translation>
 <translation id="2166378884831602661">এই ছাইটটোৱে সুৰক্ষিত সংযোগ প্ৰদান কৰিব নোৱাৰে</translation>
 <translation id="2168151236314517198">এই সমল প্ৰিণ্ট কৰাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
+<translation id="2171244127100824330"><ph name="ACCOUNT" />ৰ বাবে <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />ত</translation>
 <translation id="2172089022819052306">বাহনৰ মেৰামতি আৰু তত্ত্বাৱধান</translation>
 <translation id="2173302385160625112">আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক</translation>
 <translation id="2174875517416416684">আপোনাৰ লেনদেনটো সফল হোৱা নাই। আপোনাৰ একাউণ্টৰ পৰা কোনো পুঁজি লোৱা নাই।</translation>
@@ -997,6 +998,7 @@
 <translation id="2553352788023127673">সন্ধানৰ ইতিহাস আৰু পাছৱৰ্ডসমূহ সেইসমূহৰ পৰিচালনাৰ ছেটিঙত মচি পেলাব পাৰি</translation>
 <translation id="2553853292994445426">আপোনাৰ সুৰক্ষিত DNS ছেটিংসমূহ পৰীক্ষা কৰক। আপুনি চাগে এটা সুৰক্ষিত DNS ছার্ভাৰ কনফিগাৰ কৰিছে, যিটোলৈ সংযোগসমূহ কৰিব পৰা নাই।</translation>
 <translation id="255497580849974774">অনুগ্ৰহ কৰি আপডে’টৰ প্ৰক্ৰিয়াটো চলি থকাৰ সময়ত আপোনাৰ ডিভাইচটো চাৰ্জাৰৰ সৈতে সংযুক্ত কৰি ৰাখক।</translation>
+<translation id="2555855727505718984">ফৰ্ম পূৰ কৰাত সহায় কৰিবলৈ এই ডিভাইচত স্বয়ংক্রিয়ভাৱে পূৰ হোৱাৰ সুবিধাৰ এই তথ্য নাথাকিব</translation>
 <translation id="2556876185419854533">&amp;সম্পাদনা আনডু কৰক</translation>
 <translation id="2559566667529177711">মাল্টি-লেয়াৰ</translation>
 <translation id="2570734079541893434">ছেটিংসমূহ পৰিচালনা কৰক</translation>
@@ -1511,7 +1513,6 @@
 <translation id="3427342743765426898">সম্পাদনা &amp;ৰিডু কৰক</translation>
 <translation id="342781501876943858">আপুনি যদি নিজৰ পাছৱৰ্ডটো অন্য ছাইটত পুনৰ ব্যৱহাৰ কৰিছিল Chromiumএ আপোনাৰ পাছৱর্ডটো ৰিছেট কৰিবলৈ চুপাৰিছ কৰে।</translation>
 <translation id="3428151540071562330">এটা অথবা একাধিক DnsOverHttpsTemplates ছার্ভাৰ টেম্পলে’টৰ URIসমূহ মান্য নহয় আৰু সেয়া ব্যৱহাৰ কৰা নহ’ব।</translation>
-<translation id="3428789896412418755">গোট হিচাপে ৰখা ইতিহাস</translation>
 <translation id="3432601291244612633">পৃষ্ঠাখন বন্ধ কৰক</translation>
 <translation id="3433111389595862568">সহযোগিতা আৰু কনফাৰেন্সিং ছফ্টৱেৰ</translation>
 <translation id="3433144818443565002">ভইচ আৰু ভিডিঅ’ চাট</translation>
@@ -2349,7 +2350,6 @@
 <translation id="4751249061288707459">অন্তিম বাৰ আপডে’ট কৰা সন্মতি:</translation>
 <translation id="4751476147751820511">গতি বা পোহৰ ধৰা পেলাব পৰা ছেন্সৰ</translation>
 <translation id="4754461935447132332">অসুৰক্ষিত ছাইটসমূহৰ বাবে অনুমতি নাই</translation>
-<translation id="4756388243121344051">&amp;ইতিহাস</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">ক’ডটো অমান্য</translation>
 <translation id="4757993714154412917">আপুনি এটা প্ৰৱঞ্চনামূলক ছাইটত এইমাত্ৰ নিজৰ পাছৱৰ্ডটো দিছে। আপোনাৰ একাউণ্টসমূহ সুৰক্ষিত কৰিবলৈ Chromiumএ আপোনাৰ ছেভ হৈ থকা পাছৱৰ্ডসমূহ পৰীক্ষা কৰিবলৈ চুপাৰিছ কৰে।</translation>
@@ -2403,6 +2403,7 @@
 <translation id="4832388034239846146">টেবৰ গোট শ্বেয়াৰ কৰিবলৈ Chrome আপডে’ট কৰক</translation>
 <translation id="483241715238664915">সকীয়নি অন কৰক</translation>
 <translation id="4832961164064927107">BBQ আৰু গ্ৰিলিং</translation>
+<translation id="4839984801146463230">আপোনাৰ তথ্য ছেভ কৰক আৰু Googleৰ সমগ্ৰ প্ৰ’ডাক্টত ফৰ্ম পূৰ কৰাৰ দৰে কামবোৰ দ্ৰুততাৰে কৰক। আপুনি <ph name="ACCOUNT" />ৰ বাবে <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />ত <ph name="BEGIN_LINK" />আপোনাৰ তথ্য পৰিচালনা<ph name="END_LINK" /> কৰিব পাৰে</translation>
 <translation id="4840250757394056958">আপোনাৰ Chromeৰ ইতিহাস চাওক</translation>
 <translation id="484462545196658690">স্বয়ংক্ৰিয়</translation>
 <translation id="4844937814014739139">শ্বেয়াৰ কৰা টেবসমূহ স্ক্ৰ’ল কৰা আৰু জুম কৰা</translation>
@@ -2752,6 +2753,7 @@
 <translation id="5392506727170022660">মেটেল (ছেমি-গ্লছ)</translation>
 <translation id="5394069166371280357">পৰিয়ালৰ বাবে নিৰ্মাণ কৰা টিভি শ্ব’</translation>
 <translation id="5396631636586785122">সোঁফালে কাষত চিলাওক</translation>
+<translation id="5396837962335265787"><ph name="ATTRIBUTE_NAME" />, পূৰ্বে <ph name="OLD_ATTRIBUTE_ATTRIBUTE" /> আছিল</translation>
 <translation id="5397794290049113714">আপুনি</translation>
 <translation id="5398461103557553443">পৰৱৰ্তী সময়ত এই IBANটো স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিবলৈ, এইটো Google Walletত ছেভ কৰক</translation>
 <translation id="5398772614898833570">বিজ্ঞাপন অৱৰোধ কৰা হৈছে</translation>
@@ -3485,6 +3487,7 @@
 <translation id="6547208576736763147">বাওঁফালে দুবাৰ পাঞ্চ কৰক</translation>
 <translation id="6549443526281184652">কাষ্টম</translation>
 <translation id="6550245281449521513">মাউছ লক কৰাৰ অনুমতি নাই</translation>
+<translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, নতুন</translation>
 <translation id="6552566579578780089">পৰিশোধ</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> দিনৰ পূৰ্বে শেষবাৰ চাইছিল</translation>
 <translation id="6556866813142980365">ৰিডু</translation>
@@ -4282,6 +4285,7 @@
 <translation id="7779418012194492374"><ph name="DEVICE_NAME" />ৰ এক্সেছ প্ৰত্যাহাৰ কৰক</translation>
 <translation id="7781829728241885113">কালি</translation>
 <translation id="7782465647372057580">একাউণ্টৰ তথ্য এনক্ৰিপ্ট কৰা হয় আৰু ব্যক্তিগত হিচাপে ৰখা হয়</translation>
+<translation id="7785471469930192436">যদি প্ৰযোজ্য হয়, আপোনাৰ সন্ধানৰ ইতিহাস মচিবলৈ আপোনাৰ সন্ধানৰ ইঞ্জিনৰ নিৰ্দেশাৱলী চাওক</translation>
 <translation id="7785790577395078482">এই টেবলেটটো</translation>
 <translation id="7786368602962652765">এটা আৱশ্যকীয় ক্ষেত্ৰ খালী হৈ আছে। ছেভ কৰাৰ আগতে এইটো পূৰ কৰক।</translation>
 <translation id="7791011319128895129">ৰিলীজ নকৰা</translation>
@@ -4312,7 +4316,6 @@
 <translation id="7840103971441592723">স্ক্ৰীন কেপচাৰ কৰাটো আৰম্ভ কৰা হ’ল</translation>
 <translation id="784137052867620416">শ্বপিং ইনছাইট</translation>
 <translation id="7841633276323004751">পৰিশোধ প্ৰক্ৰিয়াকৰণ কৰিবলৈ উপলব্ধ পৰিশোধ পদ্ধতি বাছনি কৰিব লাগিব। কীব’ৰ্ড লুকুওৱা হৈছে।</translation>
-<translation id="784404208867107517">গোট হিচাপে ৰখা ইতিহাস</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{এটাও নহয়}=1{১টা এপ্ (<ph name="EXAMPLE_APP_1" />)}=2{২টা এপ্ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{#টা এপ্ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{#টা এপ্ (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">কিবা আসোঁৱাহ হৈছে। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="784623644169604270">কোনো শেহতীয়া কাৰ্যকলাপ নাই</translation>
@@ -4742,6 +4745,7 @@
 <translation id="8544217240017914508">Google Chromeএ পৰিশোধ পদ্ধতি পূৰ কৰাৰ বাবে ছেটিং সংশোধন কৰিবলৈ চেষ্টা কৰি আছে।</translation>
 <translation id="8544303911974837265">পলিয়েষ্টাৰ</translation>
 <translation id="854548366864113872">উচ্চ মূল্যৰ বিকল্প</translation>
+<translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">আপল’ড কৰাৰ কাৰণ দিয়ক (আৱশ্যকীয়)</translation>
 <translation id="8546350655047701518">JSONলৈ লগ ৰপ্তানি কৰক</translation>
 <translation id="8546667245446052521">কাগজ (আৰ্কাইভেল)</translation>

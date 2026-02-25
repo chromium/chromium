@@ -995,6 +995,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2553352788023127673">El historial de búsqueda y las contraseñas se pueden borrar en la configuración de administración</translation>
 <translation id="2553853292994445426">Revisa la configuración de DNS seguro. Es posible que hayas configurado un servidor DNS seguro y que sus conexiones estén fallando.</translation>
 <translation id="255497580849974774">Mantén el dispositivo conectado a un cargador durante la actualización.</translation>
+<translation id="2555855727505718984">Autocompletar no tendrá esta información en este dispositivo para ayudarte a completar formularios</translation>
 <translation id="2556876185419854533">&amp;Deshacer Editar</translation>
 <translation id="2559566667529177711">Multicapa</translation>
 <translation id="2570734079541893434">Administrar configuración</translation>
@@ -1400,6 +1401,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="323585066388831737">Rojo claro</translation>
 <translation id="3235902901585019063">Los archivos locales se borrarán el <ph name="DATE_TIME" />. Asegúrate de que los datos personales o comerciales importantes se almacenen de forma externa.</translation>
 <translation id="3236212803136366317">Beneficios de tarjeta</translation>
+<translation id="3237427677128462778">No se pudo guardar en la Billetera de Google</translation>
 <translation id="3238395604961564389">Abrir el vínculo en una ventana de incógnito</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para personalizar el estilo del navegador</translation>
 <translation id="3240791268468473923">Se abrió la hoja inferior para indicar que las credenciales de pago seguro no coinciden</translation>
@@ -1509,7 +1511,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3427342743765426898">&amp;Rehacer Editar</translation>
 <translation id="342781501876943858">Chromium te recomienda que restablezcas tu contraseña si la volviste a usar en otros sitios.</translation>
 <translation id="3428151540071562330">Una o más URI de plantillas del servidor de la política DnsOverHttpsTemplates no son válidas, por lo que no se usarán.</translation>
-<translation id="3428789896412418755">Historial agrupado</translation>
 <translation id="3432601291244612633">Cerrar página</translation>
 <translation id="3433111389595862568">Software para colaboración y conferencias</translation>
 <translation id="3433144818443565002">Chat de voz y videochat</translation>
@@ -2347,7 +2348,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4751249061288707459">Última actualización del consentimiento:</translation>
 <translation id="4751476147751820511">Sensores de luz o movimiento</translation>
 <translation id="4754461935447132332">No se permite para los sitios no seguros</translation>
-<translation id="4756388243121344051">&amp;Historial</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">El código no es válido</translation>
 <translation id="4757993714154412917">Ingresaste tu contraseña en un sitio engañoso. Para proteger tus cuentas, Chromium te recomienda revisar las contraseñas que tengas guardadas.</translation>
@@ -2537,6 +2537,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5045550434625856497">Contraseña incorrecta</translation>
 <translation id="5048293684454354469">Los temas de anuncios son solo una de las muchas opciones que un sitio puede usar para personalizar los anuncios. Incluso sin estos temas, los sitios pueden seguir mostrándote anuncios, pero es posible que estén menos personalizados. Obtén más información para <ph name="BEGIN_LINK" />administrar tu privacidad en los anuncios<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, presiona Tab para ver más atajos de búsqueda disponibles después de esta sugerencia de búsqueda</translation>
+<translation id="5052488928733955073">No se pudo completar tu información. Revisa la conexión.</translation>
 <translation id="5052517576853118371">Temas activos</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este archivo mediante Compartir con Nearby, libera espacio (<ph name="DISK_SPACE_SIZE" />) en el dispositivo.}other{Para enviar estos archivos mediante Compartir con Nearby, libera espacio (<ph name="DISK_SPACE_SIZE" />) en el dispositivo.}}</translation>
 <translation id="5056587122125565772">Crear imagen</translation>
@@ -2835,6 +2836,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5521782189689806907">Ebanistería</translation>
 <translation id="5523118979700054094">Nombre de la política</translation>
 <translation id="5523588073846127669">El comercio no acepta esta tarjeta virtual</translation>
+<translation id="5524476634211040742">Más información sobre la IA y la privacidad</translation>
 <translation id="5525755241743357906">Se copió o movió el archivo</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para personalizar tus herramientas de accesibilidad en la configuración de ChromeOS</translation>
 <translation id="55293785478302737">Costura de borde</translation>
@@ -3655,6 +3657,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6850286078059909152">Color del texto</translation>
 <translation id="6852204201400771460">¿Deseas volver a cargar la app?</translation>
 <translation id="6854691830678097752">Para confirmar compras más rápido, guarda este CVC en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="6855951327659224749">Borrar el formulario para usar la opción de pago más tarde</translation>
 <translation id="6857776781123259569">Administrar contraseñas…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Puede solicitar permiso para ingresar al modo de pantalla en pantalla</translation>
@@ -4274,6 +4277,7 @@ Detalles adicionales:
 <translation id="7779418012194492374">Revocar el acceso a <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7782465647372057580">La información de la cuenta se encripta y se mantiene privada</translation>
+<translation id="7785471469930192436">Consulta las instrucciones de tu motor de búsqueda para borrar el historial de búsqueda (si corresponde).</translation>
 <translation id="7785790577395078482">esta tablet</translation>
 <translation id="7786368602962652765">Un campo obligatorio está vacío. Llénalo antes de guardar.</translation>
 <translation id="7791011319128895129">No publicada</translation>
@@ -4304,7 +4308,6 @@ Detalles adicionales:
 <translation id="7840103971441592723">Comenzó la captura de pantalla</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">Formas de pago disponibles para seleccionar y continuar con el pago. Teclado oculto.</translation>
-<translation id="784404208867107517">Historial agrupado</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ninguna}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Se produjo un error. Vuelve a intentarlo.</translation>
 <translation id="784623644169604270">No hay actividad reciente</translation>

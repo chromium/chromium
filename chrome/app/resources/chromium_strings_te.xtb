@@ -584,6 +584,9 @@
 <translation id="7384121030444253939">ఈ ఎక్స్‌టెన్షన్ ఇకపై సపోర్ట్ చేయదు. బదులుగా దాన్ని తీసివేయమని Chromium సిఫార్సు చేస్తోంది.</translation>
 <translation id="7413153308467572558">మీరు ఆపివేసిన చోట నుండి కొనసాగించండి: మీరు రీస్టార్ట్ చేసిన ప్రతిసారీ Chromium మీ ట్యాబ్‌లను రీస్టోర్ చేస్తుంది. దీన్ని ఆఫ్ చేసి, ఇక్కడికి వెళ్లండి</translation>
 <translation id="7427879960656355200">Chromiumకు పాస్‌వర్డ్‌లను దిగుమతి చేయండి</translation>
+<translation id="744815265653811511">1. దిగువున <ph name="BUTTON_LABEL" /> ఆప్షన్‌ను క్లిక్ చేయండి
+2. మీ Windows సెట్టింగ్‌లలో <ph name="BUTTON_2" />‌ను క్లిక్ చేయండి
+3. క్విక్ యాక్సెస్ కోసం Chromiumను మీ టాస్క్‌బార్‌కు పిన్ చేయడానికి, Windows నోటిఫికేషన్‌లో <ph name="BUTTON_3" />‌ను క్లిక్ చేయండి</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">టెక్స్ట్ కాపీ చేయబడింది</translation>
 <translation id="7451052299415159299">ఈ సైట్ కోసం మీ కెమెరాను యాక్సెస్ చేయడానికి Chromiumకు అనుమతి అవసరం</translation>
@@ -599,6 +602,7 @@
 <translation id="761356813943268536">Chromium మీ కెమెరా మరియు మైక్రోఫోన్‌ని ఉపయోగిస్తోంది.</translation>
 <translation id="7617377681829253106">Chromium ఇప్పుడు మెరుగైంది</translation>
 <translation id="7622753900276619808">ఇప్పుడు మీకు Chromiumలో మరిన్ని ఫీచర్లు అందుబాటులో ఉన్నాయి</translation>
+<translation id="7624307931717240213">ఈ సర్వీస్‌ను మెరుగుపరచడానికి మేము సమాచారాన్ని ఉపయోగిస్తాము. గోప్యతా పాలసీని, సర్వీస్ నియమాలను చూడండి.</translation>
 <translation id="7649070708921625228">సహాయం</translation>
 <translation id="7656340475565475526">మీ కోసం బ్రౌజ్ చేయడానికి Chromiumను అనుమతించండి</translation>
 <translation id="7658239707568436148">రద్దు చేయండి</translation>

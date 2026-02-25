@@ -382,7 +382,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1239841552505950173">Ræsa forrit</translation>
 <translation id="1241066500170667906">Velja tilraunastöðu fyrir <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Fleiri tungumál</translation>
-<translation id="1241381048229838873">Sýna öll bókamerki</translation>
 <translation id="1241968867980182121">Loka efri yfirliti</translation>
 <translation id="1242044645101871359">Skrá inn aftur</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> vill endurstilla stillingarnar þínar.</translation>
@@ -2399,6 +2398,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2584974473573720127">Stjórna hljóðnemaheimildum vefsvæða í Chrome</translation>
 <translation id="2586561813241011046">Ekki tókst að setja <ph name="APP_NAME" /> upp. Reyndu aftur eða hafðu samband við kerfisstjórann þinn. Villukóði: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586672484245266891">Sláðu inn styttri vefslóð</translation>
+<translation id="2588271083332682494">Taktu til með flipahópum</translation>
 <translation id="2588636910004461974">Tæki frá <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Sýna aldrei Drive skrár</translation>
 <translation id="2593499352046705383">Gættu þess að afrita gögnin þín áður en þú hefst handa. Uppsetning <ph name="DEVICE_OS" /> skrifar yfir öll gögn á harða diskinum. Nánar á g.co/flex/InstallGuide.</translation>
@@ -3036,7 +3036,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3010234549896186761">{COUNT,plural, =0{Aðgangsorðin þín virðast traust}=1{{COUNT} lélegt aðgangsorð}one{{COUNT} lélegt aðgangsorð}other{{COUNT} léleg aðgangsorð}}</translation>
 <translation id="3010279545267083280">Aðgangsorði eytt</translation>
 <translation id="3010389206479238935">Þvinga opnun í</translation>
-<translation id="3010961843303056486">Sýna öll bókamerki</translation>
 <translation id="3011384993885886186">Hlýgrár</translation>
 <translation id="3011488081941333749">Fótspor frá <ph name="DOMAIN" /> verða hreinsuð við lokun</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -5886,7 +5885,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4946215577126251136">Hnappurinn „Sýna verkefnasvæði“</translation>
 <translation id="4946998421534856407">ræsilykill + ör upp</translation>
 <translation id="4947376546135294974">Gögn frá vefsvæðinu sem þú heimsækir</translation>
-<translation id="4948370357877377178">Haltu áfram með verkefnin þín</translation>
 <translation id="4950100687509657457">Búa til prófíl</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{skrá}one{# skrá}other{# skrár}}</translation>
 <translation id="495170559598752135">Aðgerðir</translation>
@@ -6110,7 +6108,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="511147239888121455">Taka öryggisafrit af efninu þínu?</translation>
 <translation id="5111474831474629851">Fyrirtækið þitt leyfir þér ekki að skrá þig inn með þessum reikningi</translation>
 <translation id="5111646998522066203">Fara úr huliðsstillingu</translation>
-<translation id="5111692334209731439">&amp;Bókamerkjastjórnun</translation>
 <translation id="5111794652433847656">Það eru engir aðgangslyklar fyrir <ph name="APP_NAME" /> í tækinu</translation>
 <translation id="5112577000029535889">Forritunartól</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{Færði 1 skrá}one{Færði {NUM_OF_FILES} skrá}other{Færði {NUM_OF_FILES} skrár}}</translation>
@@ -6934,7 +6931,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5684181005476681636">Upplýsingar um Wi-Fi</translation>
 <translation id="5684661240348539843">Auðkenni eignar</translation>
 <translation id="5684950556880280580">Aðgangsorðið þitt var uppfært</translation>
-<translation id="5687307865755379257">Ljósbrúnt</translation>
 <translation id="5687326903064479980">Tímabelti</translation>
 <translation id="5687340364605915800">Vefsvæði svara þessari beiðni að eigin ákvörðun</translation>
 <translation id="5687606994963670306">Chrome eyðir vefsvæðum sem eru eldri en 30 daga sjálfkrafa. Vefsvæði sem þú heimsækir aftur gæti birst aftur á listanum. Þú getur einnig bannað vefsvæði að birta þér tillögur að auglýsingum. Nánar um <ph name="BEGIN_LINK" />umsjón með persónuvernd auglýsinga í Chrome.<ph name="END_LINK" /></translation>
@@ -7340,7 +7336,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5961545272769624207">Velja bendingu</translation>
 <translation id="5963413905009737549">Hluti</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> mest)</translation>
-<translation id="5964086374943649343">Lítil birtuskil</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Opna allt í &amp;nýjum glugga}=1{Opna í &amp;nýjum glugga}one{Opna allt ({COUNT}) í &amp;nýjum glugga}other{Opna allt ({COUNT}) í &amp;nýjum glugga}}</translation>
 <translation id="5964247741333118902">Innfellt efni</translation>
 <translation id="5965607173855879702">Eyðir gögnum...</translation>
@@ -7759,7 +7754,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6251924700383757765">Persónuverndarstefna</translation>
 <translation id="625369703868467034">Ástand nets</translation>
 <translation id="6253801023880399036">Aðgangsorð eru vistuð í <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
-<translation id="6254306574403090248">Dökkbrúnt</translation>
 <translation id="6254503684448816922">Lykli stofnað í hættu</translation>
 <translation id="6254892857036829079">Fullkomið</translation>
 <translation id="6257602895346497974">Kveikja á samstillingu...</translation>
@@ -8701,6 +8695,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6900632443249221072">Búa til mynd með Gemini</translation>
 <translation id="6900651018461749106">Skráðu þig inn aftur til að uppfæra <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Viltu örugglega eyða þessari leitarvél?</translation>
+<translation id="6900883974539674431">Búa til flipahópa sem vistast og uppfærast sjálfkrafa í öllum tækjunum þínum</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6901130673208235020">Leitarfyrirspurnirnar þínar, efnið á síðunni sem á best við fyrirspurnina og frálög sem líkön búa til eru send til Google þegar þú leitar í vafraferlinum þínum</translation>
 <translation id="6902066522699286937">Rödd til að nota sem sýnishorn</translation>
@@ -9993,7 +9988,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7784067724422331729">Öryggisstillingar tölvunnar þinnar útilokuðu þessa skrá.</translation>
 <translation id="7784796923038949829">Ekki er hægt að lesa eða breyta gögnum vefsvæðis</translation>
 <translation id="778480864305029524">Til að nota skynditjóðrun þarftu að kveikja á tilkynningum fyrir þjónustu Google Play.</translation>
-<translation id="7785471469930192436">Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það á við</translation>
 <translation id="77855763949601045">&amp;Opna gestaprófíl</translation>
 <translation id="7786663536153819505">Fylgdu leiðbeiningunum í símanum til að skanna QR-kóðann. Gakktu úr skugga um að kveikt sé á Bluetooth í símanum.
     <ph name="BR" />
@@ -10489,7 +10483,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8110489095782891123">Sækir tengiliðalista...</translation>
 <translation id="8114925369073821854">Hljóðnemaheimild fyrir <ph name="APP_NAME" /></translation>
 <translation id="8116497846156149">Biðja foreldri um samþykki</translation>
-<translation id="8116972784401310538">&amp;Bókamerkjastjórnun</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> man hvernig þú skráðir þig inn og skráir þig inn sjálfkrafa þegar hægt er. Þegar slökkt er á þessu færðu beiðni um að staðfesta í hvert skipti.</translation>
 <translation id="8118362518458010043">Chrome slökkti á viðbótinni þar sem hún kann að vera ótraust.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# bókamerki}one{# bókamerki}other{# bókamerki}}</translation>
@@ -10752,7 +10745,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8288032458496410887">Fjarlægja <ph name="APP" />...</translation>
 <translation id="8288553158681886528">Draga texta út úr PDF-skjali</translation>
 <translation id="8289128870594824098">Diskstærð</translation>
-<translation id="8289200713453671499">Skiptu á fljótlegan hátt á milli flipahópanna þinna og nýlegra gervigreindarsamtala án þess að glata þræðinum.</translation>
 <translation id="8289509909262565712">Velkomin(n) í <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Sækja Chrome</translation>
 <translation id="8291942417224950075">Til einkanota</translation>

@@ -428,6 +428,7 @@
 <translation id="1664389769577564606">Фотополимер для флексопечати</translation>
 <translation id="1667730174533834274">подтвердить вашу личность, прежде чем позволить менять настройки</translation>
 <translation id="1668071460721346172">Получить электронное письмо</translation>
+<translation id="1670861525135254448">Сохранить данные о транспортном средстве?</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1682696192498422849">Начиная с короткого края</translation>
 <translation id="168693727862418163">Такое значение правила не предусмотрено и будет проигнорировано.</translation>
@@ -470,6 +471,7 @@
 <translation id="1734878702283171397">Обратитесь за помощью к системному администратору.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, действительна до <ph name="CARD_EXPIRATION" /></translation>
 <translation id="1736420071277903564">Компьютер</translation>
+<translation id="1739364174357629566">Обновить личный номер пассажира, присвоенный TSA?</translation>
 <translation id="1740404923954980840">Чтобы выйти из полноэкранного режима, проведите по экрану сверху вниз и нажмите кнопку "Назад".</translation>
 <translation id="1741474054575634405">Перейти к картам постоянного клиента</translation>
 <translation id="1741613555002899862">Необходимо указать значение и ввести действительную строку, если для правила DnsOverHttpsMode выбрано значение <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
@@ -729,6 +731,7 @@
 <translation id="2166049586286450108">Доступ администратора ко всем данным</translation>
 <translation id="2166378884831602661">Этот сайт не может обеспечить безопасное подключение</translation>
 <translation id="2168151236314517198">Администратор запретил печатать этот контент.</translation>
+<translation id="2171244127100824330">Информация будет сохранена в сервисе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" для аккаунта <ph name="ACCOUNT" />.</translation>
 <translation id="2172089022819052306">Ремонт и обслуживание транспортных средств</translation>
 <translation id="2173302385160625112">Проверьте подключение к интернету.</translation>
 <translation id="2174875517416416684">Не удалось завершить транзакцию. Средства списаны не были.</translation>
@@ -995,6 +998,7 @@
 <translation id="2553352788023127673">Историю Поиска и пароли можно удалить в соответствующих разделах настроек.</translation>
 <translation id="2553853292994445426">Проверьте параметры безопасных DNS-серверов. Возможно, к настроенному вами DNS-серверу невозможно подключиться.</translation>
 <translation id="255497580849974774">Необходимо, чтобы во время обновления устройство заряжалось.</translation>
+<translation id="2555855727505718984">Информация для автозаполнения форм не будет храниться на этом устройстве.</translation>
 <translation id="2556876185419854533">&amp;Отменить изменения</translation>
 <translation id="2559566667529177711">Многослойный материал</translation>
 <translation id="2570734079541893434">Настройки</translation>
@@ -1319,6 +1323,7 @@
 <translation id="3115363211799416195">{0,plural, =1{Скачать конфиденциальный файл?}one{Скачать конфиденциальные файлы?}few{Скачать конфиденциальные файлы?}many{Скачать конфиденциальные файлы?}other{Скачать конфиденциальные файлы?}}</translation>
 <translation id="3115874930288085374">По правилам домена <ph name="ENROLLMENT_DOMAIN" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Ламинация</translation>
+<translation id="3116695032231023709">Сохранить информацию об удостоверении личности?</translation>
 <translation id="3119689199889622589">Органические и натуральные продукты</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Выполните диагностику подключения<ph name="END_LINK" />.</translation>
@@ -1326,6 +1331,7 @@
 <translation id="3121994479408824897">Перейти на страницу <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Показать результаты за последние 30 дней</translation>
 <translation id="3126023634486644099">Этикетки (самоклеящиеся)</translation>
+<translation id="3132345256151444894">Сохранить идентификатор Redress Number?</translation>
 <translation id="3133565499688974786">Теперь поисковая система по умолчанию – <ph name="SEARCH_ENGINE_NAME" />.</translation>
 <translation id="3134859781443140237">Локальная сеть</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Поиск по разделу "<ph name="KEYWORD_SHORT_NAME" />"</translation>
@@ -1508,7 +1514,6 @@
 <translation id="3427342743765426898">&amp;Повторить изменения</translation>
 <translation id="342781501876943858">Chromium рекомендует сбросить пароль, если вы использовали его на других сайтах.</translation>
 <translation id="3428151540071562330">Один или несколько серверных шаблонов URI DnsOverHttpsTemplates недействительны и не будут использоваться.</translation>
-<translation id="3428789896412418755">История с распределением по группам</translation>
 <translation id="3432601291244612633">Закрыть страницу</translation>
 <translation id="3433111389595862568">ПО для конференц-связи и совместной работы</translation>
 <translation id="3433144818443565002">Голосовой и видеочат</translation>
@@ -2043,6 +2048,7 @@
 <translation id="4233220688695460165">Chrome автоматически удаляет темы и предлагающие рекламу сайты в течение 30 дней. Также вы можете самостоятельно блокировать темы и сайты.</translation>
 <translation id="4235360514405112390">Действительный</translation>
 <translation id="4239799716689808527">Этикетки</translation>
+<translation id="424063167283213501">Сохранить личный номер пассажира, присвоенный TSA?</translation>
 <translation id="4241830393007970744">На этом сайте злоумышленники могут обманом заставить вас установить ПО или раскрыть личную информацию, например пароль, номер телефона или данные кредитной карты.</translation>
 <translation id="4242380780309416996">Конверт (плотный)</translation>
 <translation id="4242981939686657948">Чтобы ещё эффективнее искать информацию в истории браузера, включите параметр</translation>
@@ -2305,6 +2311,7 @@
 <translation id="4691093235373904540">Кровельные работы</translation>
 <translation id="4692623383562244444">Поисковые системы</translation>
 <translation id="4695702626068620848"><ph name="KEYWORD" /> – Задайте вопрос: <ph name="KEYWORD_SHORT_NAME" /></translation>
+<translation id="4698308118265482293">Обновить паспортные данные?</translation>
 <translation id="4698692901173737941">Спортивные единоборства</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Сторона</translation>
@@ -2346,7 +2353,6 @@
 <translation id="4751249061288707459">Последнее обновление данных о согласии:</translation>
 <translation id="4751476147751820511">Датчики движения и освещенности</translation>
 <translation id="4754461935447132332">Запрещено для незащищенных сайтов</translation>
-<translation id="4756388243121344051">&amp;История</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Недопустимый код.</translation>
 <translation id="4757993714154412917">Вы только что ввели пароль на поддельном сайте. Чтобы защитить свои аккаунты, проверьте сохраненные пароли в браузере Chromium.</translation>
@@ -2400,6 +2406,7 @@
 <translation id="4832388034239846146">Чтобы делиться группами вкладок, обновите Chrome.</translation>
 <translation id="483241715238664915">Включить предупреждения</translation>
 <translation id="4832961164064927107">Барбекю и гриль</translation>
+<translation id="4839984801146463230">Сохраните информацию, чтобы быстрее выполнять действия, например заполнять формы в продуктах Google. Вы можете <ph name="BEGIN_LINK" />управлять своими данными<ph name="END_LINK" /> в сервисе "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" для аккаунта <ph name="ACCOUNT" />.</translation>
 <translation id="4840250757394056958">Посмотреть историю Chrome</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="4844937814014739139">Изменение масштаба общих вкладок и их пролистывание</translation>
@@ -2749,6 +2756,7 @@
 <translation id="5392506727170022660">Металл (полуглянцевый)</translation>
 <translation id="5394069166371280357">Семейные телешоу</translation>
 <translation id="5396631636586785122">Скобы по правому краю</translation>
+<translation id="5396837962335265787"><ph name="ATTRIBUTE_NAME" /> вместо <ph name="OLD_ATTRIBUTE_ATTRIBUTE" /></translation>
 <translation id="5397794290049113714">Вы</translation>
 <translation id="5398461103557553443">Чтобы в следующий раз этот код IBAN подставился автоматически, сохраните его в Google Кошельке.</translation>
 <translation id="5398772614898833570">Реклама заблокирована</translation>
@@ -3273,6 +3281,8 @@
 <translation id="6236290670123303279">Настройки</translation>
 <translation id="623825323736974198">Настройте список сайтов, которые всегда будут активными. Выделенная для них память не будет освобождаться.</translation>
 <translation id="6240447795304464094">Логотип Google Pay</translation>
+<translation id="6240553182907836376">Изменить информацию об удостоверении личности?</translation>
+<translation id="6240601837375010619">Сохранить паспортные данные?</translation>
 <translation id="6240964651812394252">Чтобы использовать Google Менеджер паролей с вашей операционной системой, перезапустите Chrome и предоставьте доступ к менеджеру паролей на компьютере. После перезапуска вкладки будут снова открыты.</translation>
 <translation id="6241121617266208201">Скрыть варианты заполнения</translation>
 <translation id="624499991300733384">Сервис для компоновки печатных материалов</translation>
@@ -3481,6 +3491,7 @@
 <translation id="6547208576736763147">Два отверстия слева</translation>
 <translation id="6549443526281184652">Костюмы</translation>
 <translation id="6550245281449521513">Блокировка мыши запрещена</translation>
+<translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, новый атрибут</translation>
 <translation id="6552566579578780089">Способы оплаты</translation>
 <translation id="6554732001434021288">Последнее посещение: <ph name="NUM_DAYS" /> дн. назад</translation>
 <translation id="6556866813142980365">Повторить</translation>
@@ -3637,6 +3648,7 @@
 <translation id="681021252041861472">Обязательное поле</translation>
 <translation id="6810899417690483278">Идентификатор персонализации</translation>
 <translation id="6816109178681043245">Спортивные товары</translation>
+<translation id="681631578600400068">Сохранить данные водительского удостоверения?</translation>
 <translation id="6817217109584391709">JavaScript</translation>
 <translation id="6820143000046097424">последовательные порты</translation>
 <translation id="6820686453637990663">CVC-код</translation>
@@ -3849,6 +3861,7 @@
 <translation id="7143668445748322952">файлов с камеры, скачанных файлов и скриншотов</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
 <translation id="7144878232160441200">Повторить</translation>
+<translation id="7145337554745942724">Обновить данные водительского удостоверения?</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
 <translation id="7152230779180489711">Последнее посещение</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}one{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способ оплаты}few{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}many{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способов оплаты}other{<ph name="PAYMENT_METHOD_PREVIEW" /> и ещё <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> способа оплаты}}</translation>
@@ -4042,6 +4055,7 @@
 <translation id="7444176988908839653">{COUNT,plural, =0{Сегодня файлы cookie снова будут заблокированы}=1{Завтра файлы cookie снова будут заблокированы}one{Файлы cookie будут снова заблокированы через # день}few{Файлы cookie будут снова заблокированы через # дня}many{Файлы cookie будут снова заблокированы через # дней}other{Файлы cookie будут снова заблокированы через # дня}}</translation>
 <translation id="7447234474237738389">Услуги пошива и ухода за одеждой</translation>
 <translation id="7447625772313191651"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> мм)</translation>
+<translation id="7450486349221991286">Обновить данные о транспортном средстве?</translation>
 <translation id="7450577240311017924">Кнопка "Настройки синхронизации". Нажмите ее, чтобы задать параметры синхронизации в настройках Chrome.</translation>
 <translation id="7451311239929941790"><ph name="BEGIN_LINK" />Узнайте больше<ph name="END_LINK" /> об этой проблеме.</translation>
 <translation id="745208957946308667">Игра Chrome Dino. Чтобы начать, нажмите Пробел.</translation>
@@ -4276,6 +4290,7 @@
 <translation id="7779418012194492374">Отменить доступ к устройству "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7782465647372057580">Данные аккаунта шифруются и доступны только вам.</translation>
+<translation id="7785471469930192436">Изучите инструкции по удалению истории поиска, для этого ознакомьтесь со справочными материалами используемой поисковой системы.</translation>
 <translation id="7785790577395078482">этот планшет</translation>
 <translation id="7786368602962652765">Пропущено обязательное поле. Заполните его.</translation>
 <translation id="7791011319128895129">Не выпущено</translation>
@@ -4306,7 +4321,6 @@
 <translation id="7840103971441592723">Запись экрана начата</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">Список способов оплаты, из которых нужно выбрать вариант для совершения платежа. Клавиатура скрыта.</translation>
-<translation id="784404208867107517">История с распределением по группам</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Нет}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# приложение (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# приложений (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Произошла ошибка. Повторите попытку.</translation>
 <translation id="784623644169604270">Нет недавних действий.</translation>
@@ -4736,6 +4750,7 @@
 <translation id="8544217240017914508">Google Chrome пытается изменить настройки автоматического ввода платежных данных.</translation>
 <translation id="8544303911974837265">Полиэстер</translation>
 <translation id="854548366864113872">Дорогой вариант</translation>
+<translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />Новый атрибут<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">Укажите, зачем вы хотите загрузить файл (обязательно)</translation>
 <translation id="8546350655047701518">Экспортировать журналы в JSON-файл</translation>
 <translation id="8546667245446052521">Бумага (архивная)</translation>
@@ -4889,6 +4904,7 @@
 <translation id="8811725516933141693">Чтобы начать чат с Gemini, введите "@gemini"</translation>
 <translation id="8813277370772331957">Напомнить позже</translation>
 <translation id="8814707942599948500">Конверт C8</translation>
+<translation id="881559332211266856">Обновить идентификатор Redress Number?</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы обновить Chrome.</translation>
 <translation id="8819855907485254989">Сохраните транспортный билет в Кошельке</translation>
 <translation id="8820817407110198400">Закладки</translation>

@@ -382,7 +382,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1239841552505950173">Lancer l'application</translation>
 <translation id="1241066500170667906">Sélectionner l'état des tests pour <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Plus de langues</translation>
-<translation id="1241381048229838873">Afficher tous les favoris</translation>
 <translation id="1241968867980182121">Fermer l'affichage du haut</translation>
 <translation id="1242044645101871359">Reconnectez-vous</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> souhaite que vous réinitialisiez vos paramètres.</translation>
@@ -2387,6 +2386,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2584974473573720127">Gérer les autorisations d'accès au microphone du site Web dans Chrome</translation>
 <translation id="2586561813241011046">Impossible d'installer <ph name="APP_NAME" />. Veuillez essayer de nouveau ou bien communiquez avec votre administrateur. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="2586672484245266891">Veuillez entrer une URL plus courte</translation>
+<translation id="2588271083332682494">Rester organisé avec des groupes d'onglets</translation>
 <translation id="2588636910004461974">Appareils appartenant à <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Ne jamais afficher les fichiers Disque</translation>
 <translation id="2593499352046705383">Avant de commencer, assurez-vous d'avoir une sauvegarde de vos données. L'installation de <ph name="DEVICE_OS" /> écrasera les données présentes sur votre disque dur. Apprenez-en plus à la page g.co/flex/InstallGuide.</translation>
@@ -3025,7 +3025,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3010234549896186761">{COUNT,plural, =0{Vos mots de passe semblent forts}=1{{COUNT} mot de passe faible}one{{COUNT} mot de passe faible}other{{COUNT} mots de passe faibles}}</translation>
 <translation id="3010279545267083280">Mot de passe supprimé</translation>
 <translation id="3010389206479238935">Forcer l'ouverture dans</translation>
-<translation id="3010961843303056486">Afficher tous les favoris</translation>
 <translation id="3011384993885886186">Gris chaud</translation>
 <translation id="3011488081941333749">Les témoins du domaine <ph name="DOMAIN" /> seront effacés à la fin de la session</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -5874,7 +5873,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4946215577126251136">Afficher le bouton du panneau des projets</translation>
 <translation id="4946998421534856407">lanceur+flèche vers le haut</translation>
 <translation id="4947376546135294974">Données du site que vous visitez</translation>
-<translation id="4948370357877377178">Continuez vos tâches</translation>
 <translation id="4950100687509657457">Créer le profil</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{un fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="495170559598752135">Actions</translation>
@@ -6098,7 +6096,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="511147239888121455">Sauvegarder vos données?</translation>
 <translation id="5111474831474629851">Votre organisation ne vous autorise pas à vous connecter avec ce compte</translation>
 <translation id="5111646998522066203">Quitter les fenêtres de navigation privée</translation>
-<translation id="5111692334209731439">&amp;Gestionnaire de favoris</translation>
 <translation id="5111794652433847656">Il n'existe aucune clé d'accès pour <ph name="APP_NAME" /> sur cet appareil</translation>
 <translation id="5112577000029535889">Outils de &amp;développement</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{1 fichier déplacé}one{{NUM_OF_FILES} fichier déplacé}other{{NUM_OF_FILES} fichiers déplacés}}</translation>
@@ -6921,7 +6918,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5684181005476681636">Renseignements sur la connexion Wi-Fi</translation>
 <translation id="5684661240348539843">Identifiant de ressource</translation>
 <translation id="5684950556880280580">Votre mot de passe a été mis à jour</translation>
-<translation id="5687307865755379257">Sépia clair</translation>
 <translation id="5687326903064479980">Fuseau horaire</translation>
 <translation id="5687340364605915800">Les sites répondent à cette demande à leur discrétion</translation>
 <translation id="5687606994963670306">Chrome supprime automatiquement les sites datant de plus de 30 jours. Un site que vous revisitez pourrait réapparaître dans la liste. Vous avez également la possibilité d'empêcher un site de vous suggérer des annonces. Apprenez-en plus sur comment <ph name="BEGIN_LINK" />gérer la confidentialité des annonces dans Chrome<ph name="END_LINK" />.</translation>
@@ -7327,7 +7323,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5961545272769624207">Attribuer un geste</translation>
 <translation id="5963413905009737549">Section</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (pointe : <ph name="NUM_KILOBYTES_LIVE" />)</translation>
-<translation id="5964086374943649343">Contraste faible</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Tout ouvrir dans une &amp;nouvelle fenêtre}=1{Ouvrir dans une &amp;nouvelle fenêtre}one{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}other{Tout ouvrir ({COUNT}) dans une &amp;nouvelle fenêtre}}</translation>
 <translation id="5964247741333118902">Contenu intégré</translation>
 <translation id="5965607173855879702">Suppression des données en cours…</translation>
@@ -7746,7 +7741,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="6251924700383757765">Politique de confidentialité</translation>
 <translation id="625369703868467034">Santé du réseau</translation>
 <translation id="6253801023880399036">Les mots de passe sont enregistrés dans le <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
-<translation id="6254306574403090248">Sépia foncé</translation>
 <translation id="6254503684448816922">Clé compromise</translation>
 <translation id="6254892857036829079">Parfaite</translation>
 <translation id="6257602895346497974">Activer la synchronisation…</translation>
@@ -8499,6 +8493,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="678520006562636090">Essayez Lentille Google sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6785594991951195537">Utiliser votre <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">Affichage des bureaux enregistrés. Appuyez sur l'onglet pour naviguer.</translation>
+<translation id="6785779729084003225">Utilisez <ph name="FOCUS_TOGGLE_HOTKEY" /> pour ouvrir Gemini dans Chrome</translation>
 <translation id="6785915470941880363">Défilement inversé <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786480815699355166">Seules les langues prises en charge par les Sous-titres instantanés peuvent être traduites</translation>
@@ -8687,6 +8682,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="6900632443249221072">Créer une image avec Gemini</translation>
 <translation id="6900651018461749106">Connectez-vous à nouveau pour mettre à jour <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Voulez-vous vraiment supprimer ce moteur de recherche?</translation>
+<translation id="6900883974539674431">Créez des groupes d'onglets qui s'enregistrent et se mettent à jour automatiquement sur tous vos appareils</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6901130673208235020">Lorsque vous effectuez une recherche dans l'historique de navigation, vos recherches dans l'historique, le contenu des pages des meilleurs résultats et les sorties du modèle générées sont envoyés à Google.</translation>
 <translation id="6902066522699286937">Voix à écouter</translation>
@@ -9979,7 +9975,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7784067724422331729">Les paramètres de sécurité de votre ordinateur ont entraîné le blocage de ce fichier.</translation>
 <translation id="7784796923038949829">Impossible de lire ou de modifier les données du site</translation>
 <translation id="778480864305029524">Pour utiliser la fonction Partage de connexion instantané, activez les notifications pour les services Google Play.</translation>
-<translation id="7785471469930192436">Le cas échéant, consultez les instructions de votre moteur de recherche pour supprimer votre historique de recherche</translation>
 <translation id="77855763949601045">&amp;Ouvrir le profil d'invité</translation>
 <translation id="7786663536153819505">Suivez les instructions sur votre téléphone pour balayer le code QR. Assurez-vous que la connectivité Bluetooth est activée sur votre téléphone.
     <ph name="BR" />
@@ -10475,7 +10470,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8110489095782891123">Téléchargement de la liste de contacts en cours…</translation>
 <translation id="8114925369073821854">Autorisation d'accès au microphone pour <ph name="APP_NAME" /></translation>
 <translation id="8116497846156149">Demande l'approbation de ton parent</translation>
-<translation id="8116972784401310538">&amp;Gestionnaire de favoris</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> se souvient de la façon dont vous vous êtes connecté et vous connecte automatiquement lorsque cela est possible. Lorsqu'il est désactivé, une confirmation vous sera demandée à chaque fois.</translation>
 <translation id="8118362518458010043">Désactivée par Chrome. Cette extension est peut-être dangereuse.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# favori}one{# favori}other{# favoris}}</translation>
@@ -10738,7 +10732,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8288032458496410887">Désinstaller <ph name="APP" />…</translation>
 <translation id="8288553158681886528">Extraire le texte d'un fichier PDF</translation>
 <translation id="8289128870594824098">Taille du disque</translation>
-<translation id="8289200713453671499">Passez rapidement d'un groupe d'onglets à vos conversations récentes avec l'IA sans perdre votre place.</translation>
 <translation id="8289509909262565712">Bienvenue dans <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Télécharger Chrome</translation>
 <translation id="8291942417224950075">Pour un usage personnel</translation>

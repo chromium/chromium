@@ -995,6 +995,7 @@
 <translation id="2553352788023127673">Іздеу тарихы мен құпия сөздерді олардың басқару параметрлерінде жоюға болады.</translation>
 <translation id="2553853292994445426">Қауіпсіз DNS параметрлерін тексеріңіз. Сіз байланыс орната алмайтын қауіпсіз DNS серверін конфигурациялаған сияқтысыз.</translation>
 <translation id="255497580849974774">Жаңарту кезінде құрылғыны зарядтағышқа қосып қойыңыз.</translation>
+<translation id="2555855727505718984">Автотолтыру функциясы бұл ақпаратты осы құрылғыдағы үлгілерді толтыру үшін пайдалана алмайтын болады.</translation>
 <translation id="2556876185419854533">&amp;Өзгертуді болдырмау</translation>
 <translation id="2559566667529177711">Көпқабатты</translation>
 <translation id="2570734079541893434">Параметрлерді басқару</translation>
@@ -1398,6 +1399,7 @@
 <translation id="323585066388831737">Ашық қызыл</translation>
 <translation id="3235902901585019063">Жергілікті файлдар мына күні жойылады: <ph name="DATE_TIME" />. Маңызды жеке немесе жұмыс деректерін басқа жерге сақтап алыңыз.</translation>
 <translation id="3236212803136366317">Карта бонустары</translation>
+<translation id="3237427677128462778">Google Wallet-ке сақталмады.</translation>
 <translation id="3238395604961564389">Сілтемені инкогнито терезесінде ашу</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Браузер көрінісін реттеу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="3240791268468473923">Қауіпсіз төлемге арналған деректердің сәйкес келмейтіндігі көрсетілген парақ ашылды.</translation>
@@ -1507,7 +1509,6 @@
 <translation id="3427342743765426898">&amp;Өзгертуді қайталау</translation>
 <translation id="342781501876943858">Chromium басқа сайттарда пайдаланылған құпия сөзіңізді қайта орнатуды ұсынады.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates серверінің бір немесе бірнеше URI үлгісі жарамсыз және пайдаланылмайды.</translation>
-<translation id="3428789896412418755">Топтастырылған тарих</translation>
 <translation id="3432601291244612633">Бетті жабу</translation>
 <translation id="3433111389595862568">Конференция мен бірлесе жұмыс істеуге арналған бағдарламалық құралдар</translation>
 <translation id="3433144818443565002">Дауыс және бейнечат</translation>
@@ -2345,7 +2346,6 @@
 <translation id="4751249061288707459">Соңғы жаңартылған келісім:</translation>
 <translation id="4751476147751820511">Қозғалыс не жарық датчиктері</translation>
 <translation id="4754461935447132332">Қауіпсіз емес сайттар үшін рұқсат етілмеген.</translation>
-<translation id="4756388243121344051">&amp;Тарих</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Код жарамсыз.</translation>
 <translation id="4757993714154412917">Жаңа ғана құпия сөзіңізді жалған сайтқа енгіздіңіз. Аккаунттарыңызды қорғау үшін Chromium сақталған құпия сөздеріңізді тексеруді ұсынады.</translation>
@@ -2535,6 +2535,7 @@
 <translation id="5045550434625856497">Құпия сөз дұрыс емес</translation>
 <translation id="5048293684454354469">Жарнама тақырыптары — сайт жарнамаларды жекелендіру үшін қолдана алатын көп нәрсенің бірі ғана. Бұл тақырыптар болмаса да, сайттарда сізге жарнамалар көрсетіле береді, бірақ оларды жекелендіру азаюы мүмкін. <ph name="BEGIN_LINK" />Жарнамадағы құпиялықты басқару<ph name="LINK_END" /> туралы толық ақпарат алыңыз.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />. Осы іздеу ұсынысынан кейін қолжетімді қосымша іздеу жылдам пәрмендерін алу үшін Tab пернесін басыңыз</translation>
+<translation id="5052488928733955073">Ақпаратыңызды толтыру кезінде қате шықты. Байланысты тексеріңіз.</translation>
 <translation id="5052517576853118371">Қолданыстағы тақырыптар</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Бұл файлды Nearby Share арқылы жіберу үшін құрылғыңыздан орын (<ph name="DISK_SPACE_SIZE" />) босатыңыз.}other{Бұл файлдарды Nearby Share арқылы жіберу үшін құрылғыңыздан орын (<ph name="DISK_SPACE_SIZE" />) босатыңыз.}}</translation>
 <translation id="5056587122125565772">Сурет жасау</translation>
@@ -2833,6 +2834,7 @@
 <translation id="5521782189689806907">Корпустық жиһаз</translation>
 <translation id="5523118979700054094">Саясат атауы</translation>
 <translation id="5523588073846127669">Сатушы бұл виртуалдық картаны қабылдамайды</translation>
+<translation id="5524476634211040742">Жасанды интеллект және құпиялық туралы толық ақпарат</translation>
 <translation id="5525755241743357906">Файл көшіріледі немесе жылжытылады.</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. ChromeOS параметрлерінен арнайы мүмкіндіктер құралдарын жекелендіру үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="55293785478302737">Жиекті тігу</translation>
@@ -3653,6 +3655,7 @@
 <translation id="6850286078059909152">Мәтін түсі</translation>
 <translation id="6852204201400771460">Қолданба қайта жүктелсін бе?</translation>
 <translation id="6854691830678097752">Жылдамырақ төлеу үшін осы CVC кодын <ph name="ACCOUNT_EMAIL" /> аккаунтыңызға сақтаңыз.</translation>
+<translation id="6855951327659224749">Кейін төлеу опциясын пайдалану үшін үлгіні тазалаңыз</translation>
 <translation id="6857776781123259569">Құпия сөздерді басқару...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">"Суреттегі сурет" режимін ашу туралы сұрай алады</translation>
@@ -4271,6 +4274,7 @@
 <translation id="7779418012194492374"><ph name="DEVICE_NAME" /> құрылғысына кіру рұқсатын қайтару</translation>
 <translation id="7781829728241885113">Кеше</translation>
 <translation id="7782465647372057580">Аккаунт туралы ақпарат шифрланады және құпия сақталады.</translation>
+<translation id="7785471469930192436">Қажет болса, іздеу жүйесінде берілген іздеу тарихын жою туралы нұсқауларды қараңыз.</translation>
 <translation id="7785790577395078482">осы планшет</translation>
 <translation id="7786368602962652765">Міндетті өріс бос. Оны сақтау алдында толтырыңыз.</translation>
 <translation id="7791011319128895129">Шығарылмаған</translation>
@@ -4301,7 +4305,6 @@
 <translation id="7840103971441592723">Экранды түсіру басталды</translation>
 <translation id="784137052867620416">Сауда-саттық статистикасы</translation>
 <translation id="7841633276323004751">Төлемді жалғастыру үшін таңдауға болатын төлеу әдістері. Пернетақта жасырылды.</translation>
-<translation id="784404208867107517">Топтастырылған тарих</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Жоқ}=1{1 қолданба (<ph name="EXAMPLE_APP_1" />)}=2{2 қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Қате пайда болды. Қайталап көріңіз.</translation>
 <translation id="784623644169604270">Соңғы іс-әрекеттер жоқ.</translation>

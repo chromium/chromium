@@ -995,6 +995,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2553352788023127673">Search history and passwords can be deleted in their management settings</translation>
 <translation id="2553853292994445426">Check your secure DNS settings. You may have configured a secure DNS server to which connections are failing.</translation>
 <translation id="255497580849974774">Please keep your device connected to a charger during the update.</translation>
+<translation id="2555855727505718984">Autofill won't have this info on this device to help fill in forms</translation>
 <translation id="2556876185419854533">&amp;Undo Edit</translation>
 <translation id="2559566667529177711">Multi-layer</translation>
 <translation id="2570734079541893434">Manage settings</translation>
@@ -1399,6 +1400,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="323585066388831737">Light red</translation>
 <translation id="3235902901585019063">Local files will be deleted on <ph name="DATE_TIME" />. Make sure that any critical business or personal data is stored externally.</translation>
 <translation id="3236212803136366317">Card benefits</translation>
+<translation id="3237427677128462778">Couldn't save to Google Wallet</translation>
 <translation id="3238395604961564389">Open link in Incognito window</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to customise the look of your browser</translation>
 <translation id="3240791268468473923">Secure payment credential no matching credential sheet is opened</translation>
@@ -1508,7 +1510,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3427342743765426898">&amp;Redo Edit</translation>
 <translation id="342781501876943858">Chromium recommends resetting your password if you reused it on other sites.</translation>
 <translation id="3428151540071562330">One or more of the DnsOverHttpsTemplates server template URIs is invalid and will not be used.</translation>
-<translation id="3428789896412418755">Grouped history</translation>
 <translation id="3432601291244612633">Close page</translation>
 <translation id="3433111389595862568">Collaboration and Conferencing Software</translation>
 <translation id="3433144818443565002">Voice and Video Chat</translation>
@@ -2346,7 +2347,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4751249061288707459">Consent last updated:</translation>
 <translation id="4751476147751820511">Motion or light sensors</translation>
 <translation id="4754461935447132332">Not allowed for non-secure sites</translation>
-<translation id="4756388243121344051">&amp;History</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Code is invalid</translation>
 <translation id="4757993714154412917">You just entered your password on a deceptive site. To secure your accounts, Chromium recommends checking your saved passwords.</translation>
@@ -2536,6 +2536,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5045550434625856497">Incorrect password</translation>
 <translation id="5048293684454354469">Ad topics are just one of many things that a site can use to personalise ads. Even without ad topics, sites can still show you ads but they may be less personalised. Learn more about <ph name="BEGIN_LINK" />managing your ad privacy<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, Press tab for more search shortcuts available after this search suggestion</translation>
+<translation id="5052488928733955073">Trouble filling in your info. Check your connection.</translation>
 <translation id="5052517576853118371">Active topics</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{To send this file using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}other{To send these files using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE" />) on your device}}</translation>
 <translation id="5056587122125565772">Create image</translation>
@@ -2834,6 +2835,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5521782189689806907">Cabinetry</translation>
 <translation id="5523118979700054094">Policy name</translation>
 <translation id="5523588073846127669">Merchant doesn't accept this virtual card</translation>
+<translation id="5524476634211040742">Learn more about AI and privacy</translation>
 <translation id="5525755241743357906">File is copied or moved</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to personalise your accessibility tools in Chrome OS settings</translation>
 <translation id="55293785478302737">Edge stitch</translation>
@@ -3654,6 +3656,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6850286078059909152">Text colour</translation>
 <translation id="6852204201400771460">Reload app?</translation>
 <translation id="6854691830678097752">For faster checkout, save this CVC in your account, <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="6855951327659224749">Clear form to use pay later option</translation>
 <translation id="6857776781123259569">Manage Passwords…</translation>
 <translation id="6858034839887287663">A2 x 4</translation>
 <translation id="6860888819347870819">Can ask to enter picture-in-picture</translation>
@@ -4273,6 +4276,7 @@ Additional details:
 <translation id="7779418012194492374">Revoke access for <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Yesterday</translation>
 <translation id="7782465647372057580">Account info is encrypted and kept private</translation>
+<translation id="7785471469930192436">See your search engine's instructions for deleting your search history, if applicable</translation>
 <translation id="7785790577395078482">this tablet</translation>
 <translation id="7786368602962652765">A required field is empty. Fill it before saving.</translation>
 <translation id="7791011319128895129">Unreleased</translation>
@@ -4303,7 +4307,6 @@ Additional details:
 <translation id="7840103971441592723">Screen capture has started</translation>
 <translation id="784137052867620416">Shopping insights</translation>
 <translation id="7841633276323004751">Payment methods available to be selected for proceeding with the payment. Keyboard hidden.</translation>
-<translation id="784404208867107517">Grouped history</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{None}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">There was an error. Try again.</translation>
 <translation id="784623644169604270">No recent activity</translation>

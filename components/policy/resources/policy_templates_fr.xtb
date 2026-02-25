@@ -403,17 +403,6 @@ Pour en savoir plus sur les contextes sécurisés, consultez la page https://www
 <translation id="1305400589435476516">Si cette règle est activée, l'itinérance des données est autorisée sur l'appareil.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, l'itinérance des données n'est pas disponible.</translation>
-<translation id="1308102257035078529">Les formats d'URL sont mis en correspondance avec l'URL de la page inspectée. Si une correspondance est trouvée, les <ph name="CHROME_DEVTOOLS_NAME" /> sont bloqués. Pour en savoir plus sur le format d'URL, consultez https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Si la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> est configurée et que cette règle ne l'est pas, toute URL ne figurant pas sur la liste d'autorisation sera bloquée.
-
-Si cette règle et la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> sont toutes deux configurées, la liste d'autorisation prévaut. Si une URL correspond à un format de la liste d'autorisation, elle est autorisée. Si elle correspond à un format de cette liste de blocage (mais pas à un format de la liste d'autorisation), elle est bloquée. Si une URL ne correspond à aucun format des deux listes, la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> est utilisée comme règle de remplacement.
-
-Si aucune règle n'est configurée, la disponibilité est déterminée par la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Cette règle s'applique également aux <ph name="CHROME_DEVTOOLS_NAME" /> ouverts pour les extensions et les applis Web.
-
-Cette règle est limitée à 1 000 entrées.</translation>
 <translation id="1309259005392595570">Désactiver l'accord de clé post-quantique pour TLS</translation>
 <translation id="1309465583050255779">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> vous permet de spécifier le nom du moteur de recherche par défaut.
 
@@ -913,7 +902,7 @@ Une "entrée utilisateur" est définie par les API du système d'exploitation et
 <translation id="162162247775156979">Désactiver les rapports sur l'état du stockage de l'appareil</translation>
 <translation id="1622982680869126605">Autoriser l'organiseur d'onglets et améliorer les modèles d'IA.</translation>
 <translation id="1625700732886306811">Autoriser <ph name="PRODUCT_NAME" /> à se connecter aux appareils sur toutes les adresses IP</translation>
-<translation id="1626379196197114720">Autoriser l'utilisation du cache amélioré</translation>
+<translation id="1626379196197114720">Autoriser l'utilisation du cache back/forward</translation>
 <translation id="1628974048137236820">Fiches non affichées sur la page Nouvel onglet</translation>
 <translation id="163200210584085447">Les formats de cette liste seront mis en correspondance avec la source
       de sécurité de l'URL à l'origine de la demande. En cas de correspondance,
@@ -1980,7 +1969,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
       </translation>
 <translation id="2336822410658374491">Désactiver l'accès au menu contextuel du moteur de recherche par défaut</translation>
 <translation id="233726003666026610">Paramètres des groupes suggérés</translation>
-<translation id="2337859888277013371">Ne pas autoriser l'utilisation du cache amélioré</translation>
+<translation id="2337859888277013371">Ne pas autoriser l'utilisation du cache back/forward</translation>
 <translation id="2341509917222115272">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent choisir d'associer les clients et les hôtes au moment de la connexion, ce qui évite d'avoir à saisir systématiquement un code.
 
       Si cette règle est désactivée, cette fonctionnalité n'est pas disponible.</translation>
@@ -5032,25 +5021,6 @@ Si cette règle n'est pas configurée, les origines d'applis Web isolées peuven
 
       Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns/.</translation>
 <translation id="4485425108474077672">Configurer l'URL de la page "Nouvel onglet"</translation>
-<translation id="4485667899983529614">Cette règle configure <ph name="PRODUCT_OS_NAME" /> afin que, lors de l'envoi de requêtes réseau depuis l'écran de connexion, soient ordonnées ses algorithmes d'accord de clé préférés (groupes compatibles) dans TLS 1.3 selon une préférence pour les algorithmes qui ont été approuvés par un régime de conformité spécifique.
-
-Si elle est configurée, cela ne garantit pas que des algorithmes spécifiques seront négociés.
-
-Elle permet aux opérateurs de serveurs, qui souhaitent prendre en charge les clients avec et sans exigences de conformité, de faire la distinction entre ces clients et d'appliquer uniquement certains algorithmes non définis par défaut avec une force cryptographique accrue aux clients explicitement configurés pour les privilégier.
-
-Si vous définissez la règle sur "<ph name="CNSA2_NAME" />", <ph name="PRODUCT_OS_NAME" /> privilégie les méthodes d'échange de clés requises pour la conformité avec la suite Commercial National Security Algorithm 2.0 (CNSA 2.0, suite d'algorithmes de sécurité nationale commerciale).
-
-Si vous ne configurez pas la règle ou si vous la définissez sur "<ph name="DEFAULT_NAME" />", <ph name="PRODUCT_OS_NAME" /> utilise ses méthodes d'échange de clés par défaut.
-
-Si cette règle est définie sur une valeur qui configure <ph name="PRODUCT_OS_NAME" /> de sorte à privilégier un algorithme d'accord de clé post-quantique, mais que <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> est désactivé, le paramètre de <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> prévaut.
-
-La configuration de cette règle n'est pas requise pour la sécurité. La cryptographie par défaut utilisée par <ph name="PRODUCT_OS_NAME" /> est suffisamment robuste pour résister à une attaque par force brute utilisant toute la puissance du Soleil.
-
-Si vous configurez cette règle, <ph name="PRODUCT_OS_NAME" /> sera plus lent lors de l'envoi de requêtes réseau depuis l'écran de connexion.
-
-Cette règle n'affecte que TLS 1.3 et QUIC. Elle n'affecte pas les versions antérieures de TLS.
-
-Cette règle relative aux appareils est équivalente à la règle relative aux utilisateurs <ph name="PREFER_SLOW_KEX_ALGORITHMS_POLICY_NAME" />, à la différence qu'elle s'applique au profil de connexion sur l'écran de connexion.</translation>
 <translation id="4488959486611931919">Remarque : Aucune panne de site n'a été signalée depuis que Chrome a commencé à bloquer ces cookies par défaut à partir de M118. Cette fonctionnalité ne sera donc plus configurable (et cette règle n'aura aucun effet) à partir de M127.
 
 Cette règle permet de désactiver temporairement les modifications apportées à la façon dont Chrome traite les cookies définis via JavaScript qui contiennent certains caractères de contrôle (NULL, retour chariot et saut de ligne).
@@ -6630,9 +6600,9 @@ Plusieurs règles listent des origines qui ont un impact sur les requêtes adres
       Si la règle n'est pas définie, l'utilisateur peut choisir l'image de l'avatar qui le représente dans l'écran de connexion.</translation>
 <translation id="5428716437928918274">Contrôles des paramètres de Privacy Sandbox</translation>
 <translation id="5430760800138878127">Le nouveau comportement de l'analyseur HTML, permettant d'utiliser plus de balises, sera activé.</translation>
-<translation id="5431392643649571773">Lorsque cette règle est activée, la fonctionnalité <ph name="PRODUCT_NAME" /> permet d'utiliser le cache amélioré. Si l'utilisateur change de page, celle qui est quittée peut être conservée en l'état (arborescence de documents, script, etc.) dans le cache amélioré. Par exemple, si l'utilisateur retourne sur cette page, celle-ci peut ainsi être restaurée à partir de ce cache et affichée telle qu'elle était avant sa mise en cache.
+<translation id="5431392643649571773">Lorsque cette règle est activée, la fonctionnalité <ph name="PRODUCT_NAME" /> permet d'utiliser le cache back/forward. Si l'utilisateur change de page, celle qui est quittée peut être conservée en l'état (arborescence de documents, script, etc.) dans le cache back/forward. Par exemple, si l'utilisateur retourne sur cette page, celle-ci peut ainsi être restaurée à partir de ce cache et affichée telle qu'elle était avant sa mise en cache.
 
-          Toutefois, cette fonctionnalité peut entraîner des dysfonctionnements pour certains sites Web qui ne s'attendent pas à ce que leurs pages soient mises en cache, en particulier ceux qui reposent sur le déclenchement de l'événement "<ph name="UNLOAD_HANDLER_NAME" />" en cas de changement de page. L'événement "<ph name="UNLOAD_HANDLER_NAME" />" ne se déclenche pas si la page concernée est stockée dans le cache amélioré.
+          Toutefois, cette fonctionnalité peut entraîner des dysfonctionnements pour certains sites Web qui ne s'attendent pas à ce que leurs pages soient mises en cache, en particulier ceux qui reposent sur le déclenchement de l'événement "<ph name="UNLOAD_HANDLER_NAME" />" en cas de changement de page. L'événement "<ph name="UNLOAD_HANDLER_NAME" />" ne se déclenche pas si la page concernée est stockée dans le cache back/forward.
 
           Si cette règle est activée ou qu'elle n'est pas configurée,
 
@@ -7587,7 +7557,7 @@ Cette règle a été abandonnée dans la version M124.</translation>
 
       Si elle est désactivée, ils ne peuvent pas en bénéficier.</translation>
 <translation id="603779881955332593">Google Sheets (compatible depuis la version 135)</translation>
-<translation id="6042407236638640864">Autoriser les pages avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> à accéder au cache amélioré</translation>
+<translation id="6042407236638640864">Autoriser les pages avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> à accéder au cache back/forward</translation>
 <translation id="604243460476563291">Désactiver le transfert de fichiers dans les connexions d'assistance à distance avec les administrateurs de l'entreprise</translation>
 <translation id="6042629184389251062">La collecte de métriques avec clé d'URL  n'est pas autorisée</translation>
 <translation id="6046615715547751255">Ne pas autoriser les contrôles de rapports précis</translation>
@@ -8222,23 +8192,6 @@ Voir également la règle <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translatio
           Si elle est désactivée, l'appareil <ph name="PRODUCT_OS_NAME" /> ne peut pas récupérer les événements <ph name="GOOGLE_CALENDAR_NAME" /> pour remplir le widget d'agenda <ph name="PRODUCT_OS_NAME" /> dans la barre d'état système pour l'utilisateur connecté.
 
           Si elle n'est pas configurée, la fonctionnalité <ph name="GOOGLE_CALENDAR_NAME" /> est activée par défaut pour les utilisateurs de la version Enterprise.</translation>
-<translation id="6450557649904429321">Cette règle configure <ph name="PRODUCT_NAME" /> pour qu'il ordonne ses algorithmes d'accord de clé préférés (groupes compatibles) dans TLS 1.3 afin de refléter une préférence pour les algorithmes approuvés par un régime de conformité spécifique.
-
-Configurer cette règle ne garantit pas que des algorithmes spécifiques seront négociés.
-
-Cette règle permet aux opérateurs de serveur qui souhaitent prendre en charge les clients avec et sans exigences de conformité de faire la distinction entre ces clients, et d'utiliser uniquement certains algorithmes non définis par défaut avec une force cryptographique accrue pour ceux dont la préférence est explicitement configurée.
-
-Si vous définissez la règle sur "<ph name="CNSA2_NAME" />", <ph name="PRODUCT_NAME" /> privilégie les méthodes d'échange de clés requises pour la conformité avec la suite Commercial National Security Algorithm 2.0 (CNSA 2.0, suite d'algorithmes de sécurité nationale commerciale).
-
-Si vous ne configurez pas la règle ou si vous la définissez sur "<ph name="DEFAULT_NAME" />", <ph name="PRODUCT_NAME" /> utilise ses méthodes d'échange de clés par défaut.
-
-Si cette règle est définie sur une valeur qui configure <ph name="PRODUCT_NAME" /> de sorte à privilégier un algorithme d'accord de clé post-quantique, mais que <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> est désactivé, le paramètre de <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> prévaut.
-
-La configuration de cette règle n'est pas requise pour la sécurité. La cryptographie par défaut utilisée par <ph name="PRODUCT_NAME" /> est suffisamment robuste pour résister à une attaque par force brute utilisant toute la puissance du Soleil.
-
-Si vous configurez cette règle, <ph name="PRODUCT_NAME" /> sera plus lent lors de l'accès aux sites Web.
-
-Cette règle n'affecte que TLS 1.3 et QUIC. Elle n'affecte pas les versions antérieures de TLS.</translation>
 <translation id="6452882999388592166">Si cette règle est activée, l'extension de composant CryptoToken intégrée sera chargée au démarrage. Si elle est désactivée ou n'est pas configurée, CryptoToken ne sera pas chargée au démarrage du navigateur. Cette règle est une solution temporaire pour les sites qui ne fonctionnent pas lorsque `chrome.runtime` n'est pas défini à la suite de la suppression de CryptoToken dans M106. Les sites Web ne doivent pas compter sur le fait que `chrome.runtime` soit défini sans conditions.</translation>
 <translation id="6453641799812499182">Atténuer les vérifications <ph name="CORS" /> dans la nouvelle mise en œuvre de <ph name="CORS" /></translation>
 <translation id="645425387487868471">Activer la connexion forcée pour <ph name="PRODUCT_NAME" /></translation>
@@ -10721,21 +10674,6 @@ Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE"
 <translation id="8035570672225663428">Activez le modèle de recharge adaptative pour suspendre le processus de charge et allonger la durée de vie de la batterie.</translation>
 <translation id="8038007682032315784">Désactiver <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> sur toutes les pages Web</translation>
 <translation id="8044493735196713914">Indiquer le mode de démarrage de l'appareil</translation>
-<translation id="8044943551137872312">Cette règle peut être utilisée pour autoriser les <ph name="CHROME_DEVTOOLS_NAME" /> sur des URL spécifiques.
-
-Les formats d'URL sont mis en correspondance avec l'URL de la page inspectée. Si une correspondance est trouvée, les <ph name="CHROME_DEVTOOLS_NAME" /> sont autorisés. Cela s'applique même si l'URL correspond également à la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, et même si la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> est définie sur "Interdire" (valeur 2). Pour en savoir plus sur le format d'URL, consultez https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Si cette règle n'est pas configurée, cette liste d'autorisation n'a aucun effet.
-
-Si cette règle est configurée et que <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> ne l'est pas, toute URL ne figurant pas dans cette liste est bloquée.
-
-Si cette règle et la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> sont toutes deux configurées, cette liste d'autorisation prévaut. Si une URL correspond à un format de la liste d'autorisation, elle est autorisée. Si elle correspond à un format de la liste de blocage (mais pas à un format de la liste d'autorisation), elle est bloquée. Si une URL ne correspond à aucun format des deux listes, la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> est utilisée comme règle de remplacement.
-
-Si aucune règle n'est configurée, la disponibilité est déterminée par la règle <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Cette règle s'applique également aux <ph name="CHROME_DEVTOOLS_NAME" /> ouverts pour les extensions et les applis Web.
-
-Cette règle est limitée à 1 000 entrées.</translation>
 <translation id="80453040817068401">Rendre le navigateur <ph name="LACROS_NAME" /> disponible</translation>
 <translation id="804619600634661088">Autoriser l'utilisation du débogage à distance</translation>
 <translation id="8047264240841615226">Paramètres des fonctionnalités d'IA générative des <ph name="CHROME_DEVTOOLS_NAME" /></translation>

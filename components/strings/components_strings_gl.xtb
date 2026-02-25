@@ -995,6 +995,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2553352788023127673">O historial de busca e os contrasinais poden eliminarse na súa configuración de xestión</translation>
 <translation id="2553853292994445426">Comproba a configuración do DNS seguro. Poden producirse erros ao conectar co DNS seguro que configurases.</translation>
 <translation id="255497580849974774">Conecta o dispositivo a un cargador durante a actualización.</translation>
+<translation id="2555855727505718984">A función de autocompletar non terá esta información neste dispositivo para axudarche a encher formularios</translation>
 <translation id="2556876185419854533">&amp;Desfacer modificación</translation>
 <translation id="2559566667529177711">Varias capas</translation>
 <translation id="2570734079541893434">Xestionar configuración</translation>
@@ -1399,6 +1400,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="323585066388831737">Vermello claro</translation>
 <translation id="3235902901585019063">O ficheiros locais eliminaranse o <ph name="DATE_TIME" />. Se tes algún dato persoal ou empresarial importante, asegúrate de gardalo externamente.</translation>
 <translation id="3236212803136366317">Beneficios das tarxetas</translation>
+<translation id="3237427677128462778">Non se puido gardar en Google Wallet</translation>
 <translation id="3238395604961564389">Abrir ligazón nunha ventá do modo de incógnito</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para personalizar o aspecto do navegador, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3240791268468473923">A folla da credencial de pagos seguros correspondente ás credenciais non coincidentes está aberta</translation>
@@ -1508,7 +1510,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3427342743765426898">&amp;Refacer modificación</translation>
 <translation id="342781501876943858">Chromium recoméndache que restablezas o contrasinal se o reutilizaches noutros sitios.</translation>
 <translation id="3428151540071562330">Un ou varios URI do modelo do servidor DnsOverHttpsTemplates non son válidos e non se utilizarán.</translation>
-<translation id="3428789896412418755">Historial agrupado</translation>
 <translation id="3432601291244612633">Pechar páxina</translation>
 <translation id="3433111389595862568">Software de colaboración e conferencia</translation>
 <translation id="3433144818443565002">Chat de voz e vídeo</translation>
@@ -2346,7 +2347,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4751249061288707459">Última actualización do consentimento:</translation>
 <translation id="4751476147751820511">Sensores de movemento ou de luz</translation>
 <translation id="4754461935447132332">Non se permite para os sitios non seguros</translation>
-<translation id="4756388243121344051">&amp;Historial</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">O código non é válido</translation>
 <translation id="4757993714154412917">Acabas de escribir o teu contrasinal nun sitio enganoso. Para protexer as túas contas, Chromium recoméndache que comprobes os contrasinais que tes gardados.</translation>
@@ -2536,6 +2536,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5045550434625856497">Contrasinal incorrecto</translation>
 <translation id="5048293684454354469">O tema dos anuncios é só unha das moitas opcións que poden usar os sitios para personalizar os anuncios. Mesmo sen temas, os sitios poden seguir mostrándoche anuncios, pero é posible que sexan menos personalizados. Máis información sobre <ph name="BEGIN_LINK" />como xestionar a privacidade nos anuncios<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />; preme Tabulador para consultar máis atallos de busca dispoñibles despois desta suxestión de busca</translation>
+<translation id="5052488928733955073">Produciuse un problema ao completar a túa información. Comproba a conexión.</translation>
 <translation id="5052517576853118371">Temas activos</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}other{Para enviar estes ficheiros usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}}</translation>
 <translation id="5056587122125565772">Crear imaxe</translation>
@@ -2834,6 +2835,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5521782189689806907">Deseño e instalación de armarios</translation>
 <translation id="5523118979700054094">Nome da política</translation>
 <translation id="5523588073846127669">O comerciante non acepta esta tarxeta virtual</translation>
+<translation id="5524476634211040742">Máis información sobre a IA e a privacidade</translation>
 <translation id="5525755241743357906">Cópiase ou móvese un ficheiro</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para personalizar as ferramentas de accesibilidade na configuración de Chrome OS, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="55293785478302737">Grampa no bordo</translation>
@@ -3654,6 +3656,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6850286078059909152">Cor do texto</translation>
 <translation id="6852204201400771460">Queres volver cargar a aplicación?</translation>
 <translation id="6854691830678097752">Para tramitar as compras máis rápido, garda este CVC na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
+<translation id="6855951327659224749">Borrar formulario para usar a opción de pago aprazado</translation>
 <translation id="6857776781123259569">Xestiona os contrasinais…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Pode pedir permiso para acceder ao modo de pantalla superposta</translation>
@@ -4272,6 +4275,7 @@ Detalles adicionais:
 <translation id="7779418012194492374">Revogar o acceso a <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Onte</translation>
 <translation id="7782465647372057580">A información da conta incríptase e mantense privada</translation>
+<translation id="7785471469930192436">En caso aplicable, consulta as instrucións do teu motor de busca para eliminar o historial de busca</translation>
 <translation id="7785790577395078482">esta tableta</translation>
 <translation id="7786368602962652765">Un campo obrigatorio está en branco. Cúbreo antes de gardar o formulario.</translation>
 <translation id="7791011319128895129">Sen publicar</translation>
@@ -4302,7 +4306,6 @@ Detalles adicionais:
 <translation id="7840103971441592723">Comezou a captura de pantalla</translation>
 <translation id="784137052867620416">Estatísticas de compras</translation>
 <translation id="7841633276323004751">Métodos de pago que se poden seleccionar para proceder co pagamento. Teclado oculto.</translation>
-<translation id="784404208867107517">Historial agrupado</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ningunha}=1{1 aplicación (<ph name="EXAMPLE_APP_1" />)}=2{2 aplicacións (<ph name="EXAMPLE_APP_1" /> e <ph name="EXAMPLE_APP_2" />)}other{# aplicacións (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> e <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Produciuse un erro. Téntao de novo.</translation>
 <translation id="784623644169604270">Ningunha actividade recente</translation>

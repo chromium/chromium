@@ -381,7 +381,6 @@
 <translation id="1239841552505950173">აპლიკაციის გაშვება</translation>
 <translation id="1241066500170667906">აირჩიეთ მდგომარეობა ექსპერიმენტისთვის „<ph name="EXPERIMENT_NAME" />“</translation>
 <translation id="124116460088058876">სხვა ენები</translation>
-<translation id="1241381048229838873">ყველა სანიშნის ჩვენება</translation>
 <translation id="1241968867980182121">ზედა ხედის დახურვა</translation>
 <translation id="1242044645101871359">შედით ხელახლა</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" />-ს თქვენი პარამეტრების გადაყენება სურს.</translation>
@@ -2385,6 +2384,7 @@
 <translation id="2584974473573720127">ვებსაიტზე მიკროფონის წვდომის ნებართვების მართვა Chrome-ში</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" />-ის ინსტალაცია ვერ მოხერხდა. ცადეთ ხელახლა ან დაუკავშირდით ადმინისტრატორს. შეცდომის კოდი: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586672484245266891">გთხოვთ, შეიყვანოთ უფრო მოკლე URL.</translation>
+<translation id="2588271083332682494">ორგანიზება ჩანართების ჯგუფებით</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" />-ის მოწყობილობები</translation>
 <translation id="2589658397149952302">არასოდეს გამოჩნდეს ფაილები Drive-იდან</translation>
 <translation id="2593499352046705383">დაწყებამდე დარწმუნდით, რომ თქვენი მონაცემების სარეზერვო ასლი გაქვთ შექმნილი. <ph name="DEVICE_OS" />-ის ინსტალაციის შემთხვევაში, თქვენი მყარი დისკი გადაიწერება. დამატებითი ინფორმაცია ხელმისაწვდომია მისამართზე g.co/flex/InstallGuide.</translation>
@@ -3022,7 +3022,6 @@
 <translation id="3010234549896186761">{COUNT,plural, =0{თქვენი პაროლები ძლიერი ჩანს}=1{{COUNT} სუსტი პაროლი}other{{COUNT} სუსტი პაროლი}}</translation>
 <translation id="3010279545267083280">პაროლი წაიშალა</translation>
 <translation id="3010389206479238935">იძულებით გახსნა ბრაუზერში</translation>
-<translation id="3010961843303056486">ყველა სანიშნის ჩვენება</translation>
 <translation id="3011384993885886186">თბილი ნაცრისფერი</translation>
 <translation id="3011488081941333749"><ph name="DOMAIN" />-იდან შენახული ქუქი-ჩანაწერები წაიშლება გასვლისას</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -5872,7 +5871,6 @@
 <translation id="4946215577126251136">პროექტების არის ღილაკის ჩვენება</translation>
 <translation id="4946998421534856407">launcher + ზემოთ მიმართული ისარი</translation>
 <translation id="4947376546135294974">მონაცემები თქვენ მიერ მონახულებული საიტიდან</translation>
-<translation id="4948370357877377178">განაგრძეთ თქვენი ამოცანები</translation>
 <translation id="4950100687509657457">პროფილის შექმნა</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ფაილი}other{# ფაილი}}</translation>
 <translation id="495170559598752135">ქმედებები</translation>
@@ -6096,7 +6094,6 @@
 <translation id="511147239888121455">გსურთ თქვენი კონტენტის სარეზერვო კოპირება?</translation>
 <translation id="5111474831474629851">თქვენი ორგანიზაცია არ გაძლევთ ამ ანგარიშით შესვლის ნებართვას</translation>
 <translation id="5111646998522066203">ინკოგნიტო რეჟიმიდან გასვლა</translation>
-<translation id="5111692334209731439">&amp;და მონიშნულების მმართველი</translation>
 <translation id="5111794652433847656">ამ მოწყობილობაზე არ არის წვდომის გასაღებები <ph name="APP_NAME" />-ისთვის</translation>
 <translation id="5112577000029535889">შემ&amp;მუშავებლის ხელსაწყოები</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{1 ფაილი გადატანილია}other{{NUM_OF_FILES} ფაილი გადატანილია}}</translation>
@@ -6920,7 +6917,6 @@
 <translation id="5684181005476681636">Wi‑Fi ქსელის დეტალები</translation>
 <translation id="5684661240348539843">საინვენტარო იდენტიფიკატორი</translation>
 <translation id="5684950556880280580">თქვენი პაროლი განახლდა</translation>
-<translation id="5687307865755379257">ღია Sepia</translation>
 <translation id="5687326903064479980">დროის სარტყელი</translation>
 <translation id="5687340364605915800">საიტები თავიანთი შეხედულებისამებრ იღებენ გადაწყვეტილებას ამ მოთხოვნაზე რეაგირებისას</translation>
 <translation id="5687606994963670306">Chrome ავტომატურად შლის 30 დღეზე ძველ საიტებს. საიტი, რომელსაც ხელახლა ეწვევით, შესაძლოა, კვლავ გამოჩნდეს სიაში. ალტერნატივის სახით, შეგიძლიათ დაუბლოკოთ საიტს თქვენთვის რეკლამის შემოთავაზების შესაძლებლობა. შეიტყვეთ მეტი <ph name="BEGIN_LINK" />Chrome-ში რეკლამის კონფიდენციალურობის მართვის შესახებ.<ph name="END_LINK" /></translation>
@@ -7326,7 +7322,6 @@
 <translation id="5961545272769624207">ჟესტის მინიჭება</translation>
 <translation id="5963413905009737549">სექცია</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> პიკი)</translation>
-<translation id="5964086374943649343">დაბალი კონტრასტი</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{ყველას ა&amp;ხალ ფანჯარაში გახსნა}=1{ა&amp;ხალ ფანჯარაში გახსნა}other{{COUNT}-ვეს ა&amp;ხალ ფანჯარაში გახსნა}}</translation>
 <translation id="5964247741333118902">ჩაშენებული კონტენტი</translation>
 <translation id="5965607173855879702">მონაცემების წაშლა...</translation>
@@ -7745,7 +7740,6 @@
 <translation id="6251924700383757765">კონფიდენციალურობის პოლიტიკა</translation>
 <translation id="625369703868467034">ქსელის სტატუსი</translation>
 <translation id="6253801023880399036">პაროლები შეინახება სექციაში „<ph name="GOOGLE_PASSWORD_MANAGER" />“.</translation>
-<translation id="6254306574403090248">მუქი Sepia</translation>
 <translation id="6254503684448816922">გასაღების კომპრომეტაცია</translation>
 <translation id="6254892857036829079">იდეალური</translation>
 <translation id="6257602895346497974">სინქრონიზაციის ჩართვა...</translation>
@@ -8684,6 +8678,7 @@
 <translation id="6900632443249221072">შექმენით სურათი Gemini-ს დახმარებით</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" />-ის გასაახლებლად ხელახლა შედით სისტემაში</translation>
 <translation id="6900654715912436255">ნამდვილად გსურთ, წაშალოთ ეს საძიებო სისტემა?</translation>
+<translation id="6900883974539674431">შექმენით ჩანართების ჯგუფები, რომლებიც ავტომატურად შეინახება და განახლდება თქვენს ყველა მოწყობილობაზე</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6901130673208235020">დათვალიერების ისტორიაში ძიებისას გამოყენებული საძიებო ფრაზები, საუკეთესო დამთხვევების გვერდების კონტენტი და გენერირებული მოდელები, ამ ფუნქციის გაუმჯობესების მიზნით, გაეგზავნება Google-ს</translation>
 <translation id="6902066522699286937">გადასახედი ხმა</translation>
@@ -9975,7 +9970,6 @@
 <translation id="7784067724422331729">თქვენს კომპიუტერში არსებულმა უსაფრთხოების პარამეტრებმა გამოწვია ამ ფაილების დაბლოკვა.</translation>
 <translation id="7784796923038949829">საიტის მონაცემების წაკითხვა თუ შეცვლა ვერ ხერხდება</translation>
 <translation id="778480864305029524">მყისიერი ტეტერინგის გამოსაყენებლად ჩართეთ შეტყობინებები Google Play Services-ისთვის.</translation>
-<translation id="7785471469930192436">გაეცანით თქვენი საძიებო სისტემის ინსტრუქციას იმის თაობაზე, როგორ წაშალოთ თქვენი ძიების ისტორია, თუ ეს შესაძლებელია</translation>
 <translation id="77855763949601045">სტუმრის პროფილის &amp;გახსნა</translation>
 <translation id="7786663536153819505">შეასრულეთ მითითებები თქვენს ტელეფონზე QR კოდის სკანირებისთვის. დარწმუნდით, რომ თქვენს ტელეფონზე ჩართულია Bluetooth.
     <ph name="BR" />
@@ -10471,7 +10465,6 @@
 <translation id="8110489095782891123">მიმდინარეობს კონტაქტების სიის ჩამოტვირთვა...</translation>
 <translation id="8114925369073821854">მიკროფონზე წვდომის ნებართვა <ph name="APP_NAME" />-ისთვის</translation>
 <translation id="8116497846156149">მშობლისგან დადასტურების თხოვნა</translation>
-<translation id="8116972784401310538">&amp;სანიშნეების მმართველი</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> დაიმახსოვრებს სისტემაში შესვლის ხერხს და ავტომატურად შეგიყვანთ სისტემაში, როცა ეს შესაძლებელია. გამორთვის შემთხვევაში, ყოველ ჯერზე საჭირო იქნება თქვენი დასტური.</translation>
 <translation id="8118362518458010043">გათიშულია Chrome-ის მიერ. ეს გაფართოება შეიძლება არ იყოს უსაფრთხო.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# სანიშნე}other{# სანიშნე}}</translation>
@@ -10734,7 +10727,6 @@
 <translation id="8288032458496410887"><ph name="APP" />-ის დეინსტალაცია...</translation>
 <translation id="8288553158681886528">ტექსტის ამოღება PDF-იდან</translation>
 <translation id="8289128870594824098">დისკის ზომა</translation>
-<translation id="8289200713453671499">სწრაფად გადართეთ ჩანართების ჯგუფებსა და ბოლო AI საუბრებს შორის, ადგილის დაკარგვის გარეშე.</translation>
 <translation id="8289509909262565712">მოგესალმებათ <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Chrome-ის ჩამოტვირთვა</translation>
 <translation id="8291942417224950075">პირადი გამოყენებისთვის</translation>

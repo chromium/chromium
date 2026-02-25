@@ -384,7 +384,6 @@
 <translation id="1239841552505950173">Запусціць праграму</translation>
 <translation id="1241066500170667906">Выберыце стан для эксперымента "<ph name="EXPERIMENT_NAME" />"</translation>
 <translation id="124116460088058876">Іншыя мовы</translation>
-<translation id="1241381048229838873">Паказаць усе закладкі</translation>
 <translation id="1241968867980182121">Закрыць верхні экран</translation>
 <translation id="1242044645101871359">Увайдзіце яшчэ раз</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> запытвае дазвол скінуць налады.</translation>
@@ -2385,6 +2384,7 @@
 <translation id="2584974473573720127">Кіраваць дазволамі вэб-сайтаў на доступ да мікрафона ў Chrome</translation>
 <translation id="2586561813241011046">Не ўдалося ўсталяваць праграму <ph name="APP_NAME" />. Паўтарыце спробу або звярніцеся да адміністратара. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586672484245266891">Увядзіце карацейшы URL-адрас</translation>
+<translation id="2588271083332682494">Навядзіце парадак з дапамогай груп укладак</translation>
 <translation id="2588636910004461974">Прылады ад пастаўшчыка "<ph name="VENDOR_NAME" />"</translation>
 <translation id="2589658397149952302">Ніколі не паказваць файлы Дыска</translation>
 <translation id="2593499352046705383">Перад запускам упэўніцеся, што вашы даныя маюць рэзервовую копію. Пры ўсталяванні <ph name="DEVICE_OS" /> даныя на цвёрдым дыску будуць перазапісаны. Даведайцеся больш на старонцы g.co/flex/InstallGuide.</translation>
@@ -3022,7 +3022,6 @@
 <translation id="3010234549896186761">{COUNT,plural, =0{Вы выкарыстоўваеце надзейныя паролі}=1{{COUNT} ненадзейны пароль}one{{COUNT} ненадзейны пароль}few{{COUNT} ненадзейныя паролі}many{{COUNT} ненадзейных пароляў}other{{COUNT} ненадзейнага пароля}}</translation>
 <translation id="3010279545267083280">Пароль выдалены.</translation>
 <translation id="3010389206479238935">Прымусова адкрыць у:</translation>
-<translation id="3010961843303056486">Паказаць усе закладкі</translation>
 <translation id="3011384993885886186">Бэжава-шэры</translation>
 <translation id="3011488081941333749">Файлы з дамена <ph name="DOMAIN" /> будуць выдалены пры выхадзе</translation>
 <translation id="3012631534724231212">(акно iframe)</translation>
@@ -3350,6 +3349,7 @@
 <translation id="3248902735035392926">Бяспека мае значэнне. Удзяліце некаторы час і <ph name="BEGIN_LINK" />праверце пашырэнні<ph name="END_LINK" /></translation>
 <translation id="3251119461199395237">Сінхранізацыя файлаў</translation>
 <translation id="3251759466064201842">&lt;Не з'яўляецца часткай сертыфіката&gt;</translation>
+<translation id="3252169590975855820">Ён даступны праз Менеджар пароляў Google</translation>
 <translation id="325238099842880997">Вызначыце асноўныя правілы карыстання лічбавым змесцівам, каб збалансаваць для дзіцяці гадзіны, адведзеныя для гульняў, карыстання інтэрнэтам і дамашніх заданняў</translation>
 <translation id="3253225298092156258">Недаступна</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{Каб скапіраваць гэты файл, вызваліце месца ў сэрвісе "<ph name="CLOUD_PROVIDER" />"}one{Каб скапіраваць гэтыя файлы, вызваліце месца ў сэрвісе "<ph name="CLOUD_PROVIDER" />"}few{Каб скапіраваць гэтыя файлы, вызваліце месца ў сэрвісе "<ph name="CLOUD_PROVIDER" />"}many{Каб скапіраваць гэтыя файлы, вызваліце месца ў сэрвісе "<ph name="CLOUD_PROVIDER" />"}other{Каб скапіраваць гэтыя файлы, вызваліце месца ў сэрвісе "<ph name="CLOUD_PROVIDER" />"}}</translation>
@@ -5869,7 +5869,6 @@
 <translation id="4946215577126251136">Паказваць кнопку панэлі праектаў</translation>
 <translation id="4946998421534856407">Клавіша панэлі запуску + стрэлка ўверх</translation>
 <translation id="4947376546135294974">Даныя з сайта, на якім вы знаходзіцеся</translation>
-<translation id="4948370357877377178">Працягвайце выконваць задачы</translation>
 <translation id="4950100687509657457">Стварыць профіль</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{файл}one{# файл}few{# файлы}many{# файлаў}other{# файла}}</translation>
 <translation id="495170559598752135">Дзеянні</translation>
@@ -6093,7 +6092,6 @@
 <translation id="511147239888121455">Стварыць рэзервовую копію даных?</translation>
 <translation id="5111474831474629851">Ваша арганізацыя не дазваляе вам уваходзіць праз гэты ўліковы запіс</translation>
 <translation id="5111646998522066203">Выйсці з рэжыму інкогніта</translation>
-<translation id="5111692334209731439">&amp;Менеджар закладак</translation>
 <translation id="5111794652433847656">Для сайта <ph name="APP_NAME" /> на гэтай прыладзе няма ключоў доступу</translation>
 <translation id="5112577000029535889">&amp;Інструменты распрацоўшчыка</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{Перамешчаны 1 файл}one{Перамешчаны {NUM_OF_FILES} файл}few{Перамешчана {NUM_OF_FILES} файлы}many{Перамешчана {NUM_OF_FILES} файлаў}other{Перамешчана {NUM_OF_FILES} файла}}</translation>
@@ -6916,7 +6914,6 @@
 <translation id="5684181005476681636">Звесткі пра Wi-Fi</translation>
 <translation id="5684661240348539843">Ідэнтыфікатар аб’екта ўласнасці</translation>
 <translation id="5684950556880280580">Ваш пароль абноўлены</translation>
-<translation id="5687307865755379257">Светлая сепія</translation>
 <translation id="5687326903064479980">Часавы пояс</translation>
 <translation id="5687340364605915800">Некаторыя сайты могуць не рэагаваць на гэты запыт</translation>
 <translation id="5687606994963670306">Chrome аўтаматычна выдаляе сайты, наведаныя больш чым 30 дзён таму назад. Сайт, які вы наведаеце паўторна, можа з’явіцца ў спісе зноў, але вы можаце забараніць яму прапаноўваць вам рэкламу. Даведайцеся больш пра кіраванне <ph name="BEGIN_LINK" />прыватнасцю ў рэкламе ў Chrome.<ph name="END_LINK" /></translation>
@@ -7322,7 +7319,6 @@
 <translation id="5961545272769624207">Прызначыць жэст</translation>
 <translation id="5963413905009737549">Раздзел</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> максімум)</translation>
-<translation id="5964086374943649343">Нізкая кантраснасць</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Адкрыць усе ў &amp;новым акне}=1{Адкрыць у &amp;новым акне}one{Адкрыць усе ({COUNT}) у &amp;новым акне}few{Адкрыць усе ({COUNT}) у &amp;новым акне}many{Адкрыць усе ({COUNT}) у &amp;новым акне}other{Адкрыць усе ({COUNT}) у &amp;новым акне}}</translation>
 <translation id="5964247741333118902">Убудаванае змесціва</translation>
 <translation id="5965607173855879702">Ідзе выдаленне даных…</translation>
@@ -7741,7 +7737,6 @@
 <translation id="6251924700383757765">Палітыка прыватнасці</translation>
 <translation id="625369703868467034">Стан сеткі</translation>
 <translation id="6253801023880399036">Паролі захоўваюцца ў сэрвісе "<ph name="GOOGLE_PASSWORD_MANAGER" />".</translation>
-<translation id="6254306574403090248">Цёмная сепія</translation>
 <translation id="6254503684448816922">Кампраметацыя ключа</translation>
 <translation id="6254892857036829079">Выдатная</translation>
 <translation id="6257602895346497974">Уключыць сінхранізацыю...</translation>
@@ -8686,6 +8681,7 @@
 <translation id="6900632443249221072">Стварыць відарыс з дапамогай Gemini</translation>
 <translation id="6900651018461749106">Увайдзіце яшчэ раз, каб абнавіць <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Вы ўпэўненыя, што хочаце выдаліць гэту пошукавую сістэму?</translation>
+<translation id="6900883974539674431">Стварайце групы ўкладак, якія аўтаматычна захоўваюцца і абнаўляюцца на ўсіх вашых прыладах</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" /> з <ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6901130673208235020">Пры пошуку ў гісторыі прагляду сайтаў вашы пошукавыя запыты ў гісторыі, змесціва старонак найлепшых супадзенняў і згенерыраваныя выходныя даныя мадэлі адпраўляюцца ў Google.</translation>
 <translation id="6902066522699286937">Голас для праслухоўвання</translation>
@@ -9978,7 +9974,6 @@
 <translation id="7784067724422331729">Гэты файл быў заблакіраваны згодна з наладамі бяспекі вашага камп’ютара.</translation>
 <translation id="7784796923038949829">Не ўдаецца праглядзець або змяніць даныя сайта</translation>
 <translation id="778480864305029524">Каб выкарыстоўваць Імгненны рэжым мадэма, уключыце апавяшчэнні для Сэрвісаў Google Play.</translation>
-<translation id="7785471469930192436">Каб выдаліць гісторыю пошуку, выканайце інструкцыі вашай пошукавай сістэмы (калі яны даступныя)</translation>
 <translation id="77855763949601045">&amp;Адкрыць гасцявы профіль</translation>
 <translation id="7786663536153819505">Каб адсканіраваць QR-код, выканайце ўказанні на тэлефоне. Пераканайцеся, што на тэлефоне ўключаны Bluetooth.
     <ph name="BR" />
@@ -10474,7 +10469,6 @@
 <translation id="8110489095782891123">Ідзе спампоўванне спіса кантактаў...</translation>
 <translation id="8114925369073821854">Доступ да мікрафона для праграмы "<ph name="APP_NAME" />"</translation>
 <translation id="8116497846156149">Запытай ухваленне ад бацькоў</translation>
-<translation id="8116972784401310538">&amp;Менеджар закладак</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> запамінае вашы даныя для ўваходу і, калі магчыма, будзе выконваць уваход аўтаматычна. Калі гэтая функцыя выключана, ад вас будзе патрабавацца пацвярджэнне пры кожным уваходзе.</translation>
 <translation id="8118362518458010043">Выключана браўзерам Chrome. Гэта пашырэнне можа быць небяспечным.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# закладка}one{# закладка}few{# закладкі}many{# закладак}other{# закладкі}}</translation>
@@ -10737,7 +10731,6 @@
 <translation id="8288032458496410887">Выдаліць <ph name="APP" />...</translation>
 <translation id="8288553158681886528">Выняць тэкст з PDF</translation>
 <translation id="8289128870594824098">Памер дыска</translation>
-<translation id="8289200713453671499">Хутка пераключайцеся паміж групамі ўкладак і нядаўнімі размовамі з AI, не губляючы месца.</translation>
 <translation id="8289509909262565712">Вітаем у <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Спампаваць Chrome</translation>
 <translation id="8291942417224950075">Для асабістага карыстання</translation>
@@ -11662,6 +11655,7 @@
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> патрабуе, каб вы стварылі рэзервовую копію сваіх даных і вярнулі прыладу <ph name="DEVICE_TYPE" /> сёння.}one{<ph name="MANAGER" /> патрабуе, каб вы стварылі рэзервовую копію сваіх даных і вярнулі прыладу <ph name="DEVICE_TYPE" /> да заканчэння тэрміну.}few{<ph name="MANAGER" /> патрабуе, каб вы стварылі рэзервовую копію сваіх даных і вярнулі прыладу <ph name="DEVICE_TYPE" /> да заканчэння тэрміну.}many{<ph name="MANAGER" /> патрабуе, каб вы стварылі рэзервовую копію сваіх даных і вярнулі прыладу <ph name="DEVICE_TYPE" /> да заканчэння тэрміну.}other{<ph name="MANAGER" /> патрабуе, каб вы стварылі рэзервовую копію сваіх даных і вярнулі прыладу <ph name="DEVICE_TYPE" /> да заканчэння тэрміну.}}</translation>
 <translation id="8902667442496790482">Адкрыць налады функцыі "Чытаць уголас"</translation>
 <translation id="8903733144777177139">Доступ да мікрафона заблакіраваны</translation>
+<translation id="8904787158537906492">Спасылка скапіравана ў буфер абмену</translation>
 <translation id="890518297681039136">Збой аперацыі па невядомай прычыне.</translation>
 <translation id="8905253417215700291">Праграма "<ph name="GOOGLE_PASSWORD_MANAGER" />" стварыла надзейны пароль для гэтага вэб-сайта</translation>
 <translation id="890616557918890486">Змяніць крыніцу</translation>

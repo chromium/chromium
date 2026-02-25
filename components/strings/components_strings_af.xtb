@@ -995,6 +995,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2553352788023127673">Soekgeskiedenis en wagwoorde kan in die bestuurinstelllings uitgevee word</translation>
 <translation id="2553853292994445426">Gaan jou veilige-DNS-instellings na. Jy het dalk 'n veilige-DNS-bediener opgestel waaraan verbindings misluk.</translation>
 <translation id="255497580849974774">Hou asseblief jou toestel tydens die opdatering aan ’n laaier gekoppel.</translation>
+<translation id="2555855727505718984">Outovul sal nie die inligting op hierdie toestel hê om vorms te help invul nie</translation>
 <translation id="2556876185419854533">Ontdoen wysiging</translation>
 <translation id="2559566667529177711">Multilaag</translation>
 <translation id="2570734079541893434">Bestuur instellings</translation>
@@ -1399,6 +1400,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="323585066388831737">Ligrooi</translation>
 <translation id="3235902901585019063">Plaaslike lêers sal op <ph name="DATE_TIME" /> uitgevee word. Maak seker dat enige kritieke besigheid- of persoonlike data ekstern geberg word.</translation>
 <translation id="3236212803136366317">Kaartvoordele</translation>
+<translation id="3237427677128462778">Kon nie in Google Wallet stoor nie</translation>
 <translation id="3238395604961564389">Maak skakel in Incognito-venster oop</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; druk Tab en dan Enter om die voorkoms van jou blaaier te pasmaak</translation>
 <translation id="3240791268468473923">Blad vir geen passende eiebewys vir veilige betalingeiebewys is oopgemaak</translation>
@@ -1508,7 +1510,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3427342743765426898">Herdoen wysiging</translation>
 <translation id="342781501876943858">Chromium beveel aan dat jy jou wagwoord terugstel as jy dit ook op ander werwe gebruik het.</translation>
 <translation id="3428151540071562330">Een of meer van die DnsOverHttpsTemplates-bedienertemplaat se URI's is ongeldig en sal nie gebruik word nie.</translation>
-<translation id="3428789896412418755">Gegroepeerde geskiedenis</translation>
 <translation id="3432601291244612633">Maak bladsy toe</translation>
 <translation id="3433111389595862568">Samewerking- en konferensiesagteware</translation>
 <translation id="3433144818443565002">Stem- en videoklets</translation>
@@ -2346,7 +2347,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4751249061288707459">Toestemming laas opgedateer:</translation>
 <translation id="4751476147751820511">Beweging- of ligsensors</translation>
 <translation id="4754461935447132332">Nie toegelaat vir onveilige werwe nie</translation>
-<translation id="4756388243121344051">Geskiedenis</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Kode is ongeldig</translation>
 <translation id="4757993714154412917">Jy het sopas jou wagwoord op 'n bedrieglike werf ingevoer. Chromium beveel aan dat jy jou gestoorde wagwoorde nagaan om jou rekeninge te beveilig.</translation>
@@ -2536,6 +2536,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5045550434625856497">Verkeerde wagwoord</translation>
 <translation id="5048293684454354469">Advertensie-onderwerpe is net een van baie dinge wat ’n werf kan gebruik om advertensies te personaliseer. Werwe kan selfs sonder advertensie-onderwerpe vir jou advertensies wys, maar hulle kan dalk minder gepersonaliseer wees. Meer inligting oor <ph name="BEGIN_LINK" />die bestuur van jou advertensieprivaatheid<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, Druk tab vir meer soekkortpaaie beskikbaar ná hierdie soekvoorstel</translation>
+<translation id="5052488928733955073">Kan nie jou inligting invul nie. Gaan jou verbinding na.</translation>
 <translation id="5052517576853118371">Aktiewe onderwerpe</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Maak spasie (<ph name="DISK_SPACE_SIZE" />) op jou toestel beskikbaar as jy hierdie lêer met Nabydeling wil stuur}other{Maak spasie (<ph name="DISK_SPACE_SIZE" />) op jou toestel beskikbaar as jy hierdie lêers met Nabydeling wil stuur}}</translation>
 <translation id="5056587122125565772">Skep prent</translation>
@@ -2834,6 +2835,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5521782189689806907">Kaste</translation>
 <translation id="5523118979700054094">Beleidnaam</translation>
 <translation id="5523588073846127669">Handelaar aanvaar nie hierdie virtuele kaart nie</translation>
+<translation id="5524476634211040742">Kry meer inligting oor KI en privaatheid</translation>
 <translation id="5525755241743357906">Lêer is gekopieer of geskuif</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; druk Tab en dan Enter om jou toeganklikheidsnutsgoed in Chrome-bedryfstelselinstellings te personaliseer</translation>
 <translation id="55293785478302737">Randhegting</translation>
@@ -3654,6 +3656,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6850286078059909152">Tekskleur</translation>
 <translation id="6852204201400771460">Herlaai app?</translation>
 <translation id="6854691830678097752">Stoor hierdie CVC in jou rekening, <ph name="ACCOUNT_EMAIL" />, sodat jy vinniger kan betaal</translation>
+<translation id="6855951327659224749">Maak vorm skoon om Betaal Later-opsie te gebruik</translation>
 <translation id="6857776781123259569">Bestuur wagwoorde …</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Kan vra om prent-in-prent in te gaan</translation>
@@ -4272,6 +4275,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7779418012194492374">Herroep toegang vir <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Gister</translation>
 <translation id="7782465647372057580">Rekeninginligting word geënkripteer en privaat gehou</translation>
+<translation id="7785471469930192436">Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien toepaslik</translation>
 <translation id="7785790577395078482">hierdie tablet</translation>
 <translation id="7786368602962652765">’n Vereiste veld is leeg. Vul dit in voordat jy stoor.</translation>
 <translation id="7791011319128895129">Onuitgereik</translation>
@@ -4302,7 +4306,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7840103971441592723">Skermskoot het begin</translation>
 <translation id="784137052867620416">Shopping-insigte</translation>
 <translation id="7841633276323004751">Betaalmetodes beskikbaar om gekies te word om met die betaling voort te gaan. Sleutelbord is versteek.</translation>
-<translation id="784404208867107517">Gegroepeerde geskiedenis</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Geen}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apps (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Iets is fout. Probeer weer.</translation>
 <translation id="784623644169604270">Geen onlangse aktiwiteit nie</translation>

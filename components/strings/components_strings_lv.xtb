@@ -995,6 +995,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2553352788023127673">Meklēšanas vēsturi un paroles var dzēst to pārvaldības iestatījumos.</translation>
 <translation id="2553853292994445426">Pārbaudiet droša DNS servera iestatījumus. Iespējams, esat konfigurējis drošu DNS serveri, ar kuru neizdodas izveidot savienojumu.</translation>
 <translation id="255497580849974774">Atjaunināšanas laikā neatvienojiet ierīci no lādētāja.</translation>
+<translation id="2555855727505718984">Automātiskā aizpilde nevarēs izmantot šo informāciju šajā ierīcē, lai aizpildītu veidlapas</translation>
 <translation id="2556876185419854533">&amp;Labojuma atsaukšana</translation>
 <translation id="2559566667529177711">Vairākslāņu</translation>
 <translation id="2570734079541893434">Pārvaldīt iestatījumus</translation>
@@ -1399,6 +1400,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="323585066388831737">Sārta</translation>
 <translation id="3235902901585019063">Lokālie faili tiks izdzēsti šādā datumā: <ph name="DATE_TIME" />. Noteikti saglabājiet visus svarīgos uzņēmuma vai personas datus ārēji.</translation>
 <translation id="3236212803136366317">Kartes priekšrocības</translation>
+<translation id="3237427677128462778">Nevarēja saglabāt lietotnē Google maks.</translation>
 <translation id="3238395604961564389">Atvērt saiti inkognito režīma logā</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai pielāgotu pārlūka izskatu, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="3240791268468473923">Ir atvērta lapa ar akreditācijas datiem, kas neatbilst drošu maksājumu akreditācijas datiem</translation>
@@ -1508,7 +1510,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3427342743765426898">&amp;Labojuma atsaukuma atcelšana</translation>
 <translation id="342781501876943858">Chromium iesaka atiestatīt jūsu paroli, ja izmantojāt to citās vietnēs.</translation>
 <translation id="3428151540071562330">Viens vai vairāki DnsOverHttpsTemplates servera veidņu identifikatori URI nav derīgi un netiks izmantoti.</translation>
-<translation id="3428789896412418755">Grupēta vēsture</translation>
 <translation id="3432601291244612633">Aizvērt lapu</translation>
 <translation id="3433111389595862568">Sadarbības un konferenču programmatūra</translation>
 <translation id="3433144818443565002">Balss un video tērzēšana</translation>
@@ -2344,7 +2345,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4751249061288707459">Piekrišanas pēdējās atjaunināšanas reize:</translation>
 <translation id="4751476147751820511">Kustību vai gaismas sensori</translation>
 <translation id="4754461935447132332">Nav atļauts nedrošām vietnēm</translation>
-<translation id="4756388243121344051">Vēsture</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Kods nav derīgs</translation>
 <translation id="4757993714154412917">Jūs tikko ievadījāt savu paroli maldinošā vietnē. Chromium ieteikums jūsu kontu aizsardzībai: pārbaudiet saglabātās paroles.</translation>
@@ -2534,6 +2534,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5045550434625856497">Nepareiza parole</translation>
 <translation id="5048293684454354469">Reklāmu tēmas ir tikai viena no daudzām funkcijām, ko vietnē var izmantot reklāmu personalizēšanai. Pat bez reklāmu tēmām vietnēs joprojām var tikt rādītas reklāmas, taču tās var būt mazāk personalizētas. Uzziniet vairāk par <ph name="BEGIN_LINK" />reklāmu konfidencialitātes pārvaldību<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />; nospiediet tabulēšanas taustiņu, lai skatītu citas meklēšanas saīsnes, kas pieejamas pēc šī meklēšanas ieteikuma.</translation>
+<translation id="5052488928733955073">Nevar aizpildīt jūsu informāciju. Pārbaudiet savienojumu.</translation>
 <translation id="5052517576853118371">Aktīvās tēmas</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Lai nosūtītu šo failu, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}zero{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}one{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}other{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="5056587122125565772">Izveidot attēlu</translation>
@@ -2832,6 +2833,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5521782189689806907">Skapji</translation>
 <translation id="5523118979700054094">Politikas nosaukums</translation>
 <translation id="5523588073846127669">Tirgotājs nepieņem šo virtuālo karti</translation>
+<translation id="5524476634211040742">Uzzināt vairāk par MI un konfidencialitāti</translation>
 <translation id="5525755241743357906">Fails tiek kopēts vai pārvietots</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai Chrome OS iestatījumos personalizētu pieejamības rīkus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
 <translation id="55293785478302737">Malu sašuvums</translation>
@@ -3652,6 +3654,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6850286078059909152">Teksta krāsa</translation>
 <translation id="6852204201400771460">Vai atkārtoti ielādēt lietotni?</translation>
 <translation id="6854691830678097752">Ātrākiem norēķiniem saglabājiet šo CVC kodu savā kontā (<ph name="ACCOUNT_EMAIL" />).</translation>
+<translation id="6855951327659224749">Notīriet veidlapu, lai izmantotu vēlākas maksāšanas iespēju</translation>
 <translation id="6857776781123259569">Pārvaldīt paroles…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Drīkst pieprasīt atļauju aktivizēt režīmu “Attēls attēlā”</translation>
@@ -4271,6 +4274,7 @@ Papildu informācija:
 <translation id="7779418012194492374">Atsaukt piešķirto atļauju piekļūt ierīcei <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Vakar</translation>
 <translation id="7782465647372057580">Konta informācija tiek šifrēta un aizsargāta.</translation>
+<translation id="7785471469930192436">Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzēšanu, ja šāda iespēja ir pieejama</translation>
 <translation id="7785790577395078482">šo planšetdatoru</translation>
 <translation id="7786368602962652765">Obligātais lauks ir tukšs. Pirms saglabāšanas aizpildiet to.</translation>
 <translation id="7791011319128895129">Nav izlaista</translation>
@@ -4301,7 +4305,6 @@ Papildu informācija:
 <translation id="7840103971441592723">Ekrānuzņēmumu izveide ir sākta</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">Maksājumu veidi, kurus var atlasīt maksājuma turpināšanai. Tastatūra ir paslēpta.</translation>
-<translation id="784404208867107517">Grupēta vēsture</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Nav}=1{1 lietotne (<ph name="EXAMPLE_APP_1" />)}=2{2 lietotnes (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}zero{# lietotnes (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}one{# lietotne (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# lietotnes (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Radās kļūda. Mēģiniet vēlreiz.</translation>
 <translation id="784623644169604270">Nav pēdējā laikā veiktu darbību</translation>

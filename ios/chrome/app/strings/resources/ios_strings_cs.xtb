@@ -96,6 +96,7 @@
 <translation id="1335767868357998043">Vyberte si pozici adresního řádku</translation>
 <translation id="1347468774581902829">Spravovat aktivitu</translation>
 <translation id="1348596747084433075">https://www.google.com/search?q=darek+pro+manzelku&amp;tbm=shop</translation>
+<translation id="1350281503816551185">Při vyplňování citlivých údajů ověřit vaši totožnost</translation>
 <translation id="1355337783640312381">Chcete pokud chcete přepínat mezi účty, klepněte na ikonu účtu</translation>
 <translation id="1358106883354237005">Spravovaný účet</translation>
 <translation id="1358214951266274152">Navštívit zkopírovaný odkaz</translation>
@@ -220,6 +221,7 @@
 <translation id="1767766085187034454">Překladač Google</translation>
 <translation id="1771016937398045251">Nabídka Nástroje</translation>
 <translation id="1772468122139624049">Karty nelze znovu načíst</translation>
+<translation id="1776240104318790173">Přepnout vylepšené automatické vyplňování</translation>
 <translation id="1779354709911146450">Chyba ověření</translation>
 <translation id="1780152987505130652">Zavřít skupinu</translation>
 <translation id="178400879184240105">Vaše hesla jsou unikátní</translation>
@@ -1146,6 +1148,7 @@
 <translation id="5186185447130319458">Soukromé</translation>
 <translation id="5189431381114029336">Uložte si svůj první přístupový klíč</translation>
 <translation id="518997337573684769">Odesílání zprávy o selhání…</translation>
+<translation id="519528950056409240">Povolte Peněžence sdílet data</translation>
 <translation id="519530786644929958">Stahování neúspěšné, nelze obnovit.</translation>
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5200894869889836319">Možnosti nastavení oprávnění</translation>
@@ -1348,6 +1351,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="5899314093904173337">Chcete-li obsah sdílet s lidmi z okolí, nechte je naskenovat tento QR kód (pomocí fotoaparátu nebo aplikace na skenování QR kódů)</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} nová karta}few{{count} nové karty}many{{count} nové karty}other{{count} nových karet}}</translation>
 <translation id="5911030830365207728">Překladač Google</translation>
+<translation id="5912796581727968237">Otevřít Peněženku Google</translation>
 <translation id="5922999516621365983">Pokud kartu chcete připnout, přetáhněte ji sem</translation>
 <translation id="5930982343430790032">{COUNT,plural, =1{Přidejte až 1 soubor, kartu nebo obrázek}few{Přidejte až {COUNT} soubory, karty nebo obrázky}many{Přidejte až {COUNT} souboru, karty nebo obrázku}other{Přidejte až {COUNT} souborů, karet nebo obrázků}}</translation>
 <translation id="5936006948844852401">Spravovat úložiště</translation>
@@ -1596,6 +1600,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6710079714193676716">Spravováno vaší organizací. Některé funkce mohou být nedostupné. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="6713676799463473249">Upraveno <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Přijaté karty</translation>
+<translation id="6722638373100589752">Pokud chcete automaticky vyplňovat své údaje, zapněte v nastavení Peněženky možnost Používat karty napříč Googlem</translation>
 <translation id="6723740634201835758">V účtu Google</translation>
 <translation id="6724024423419410528">Barvy</translation>
 <translation id="672735642903863329">Synchronizujte své záložky hesla a další obsah do všech svých zařízení.</translation>
@@ -1728,6 +1733,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7253951228444156601">Kontrola hesel…</translation>
 <translation id="7261217796641151584">Sdílet skupinu</translation>
 <translation id="7266578100016339897">Tahle funkce vám pomůže mít v kartách pořádek. V nastavení můžete toto chování kdykoli změnit.</translation>
+<translation id="7268294318904284516">Pokud toto zařízení sdílíte s dalšími lidmi, při používání citlivých údajů, jako jsou pasy, ověřujte svou totožnost pomocí zámku obrazovky</translation>
 <translation id="7272437679830969316">Vaši totožnost nelze ověřit. Heslo nebylo zkopírováno.</translation>
 <translation id="728025568708172005">Proveďte mě</translation>
 <translation id="7280980607183752256">Tento soubor nelze importovat</translation>

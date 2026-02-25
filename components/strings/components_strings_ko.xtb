@@ -995,6 +995,7 @@
 <translation id="2553352788023127673">관리 설정에서 검색 기록과 비밀번호를 삭제할 수 있습니다</translation>
 <translation id="2553853292994445426">보안 DNS 설정을 확인하세요. 연결되지 않는 보안 DNS 서버를 설정했을 수도 있습니다.</translation>
 <translation id="255497580849974774">업데이트 중에는 기기를 충전기에 연결해 두세요.</translation>
+<translation id="2555855727505718984">양식을 작성할 때 자동 완성에서 이 기기의 정보가 사용되지 않습니다.</translation>
 <translation id="2556876185419854533">수정 실행 취소(&amp;U)</translation>
 <translation id="2559566667529177711">멀티레이어</translation>
 <translation id="2570734079541893434">설정 관리</translation>
@@ -1399,6 +1400,7 @@
 <translation id="323585066388831737">연한 빨간색</translation>
 <translation id="3235902901585019063">로컬 파일이 <ph name="DATE_TIME" />에 삭제됩니다. 중요한 비즈니스 정보와 개인 정보는 외부에 저장해야 합니다.</translation>
 <translation id="3236212803136366317">카드 혜택</translation>
+<translation id="3237427677128462778">Google 월렛에 저장할 수 없습니다.</translation>
 <translation id="3238395604961564389">시크릿 창에서 링크 열기</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, 브라우저 테마를 맞춤설정하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="3240791268468473923">일치하는 결제 사용자 인증 정보 시트가 없는 보안 결제 사용자 인증 정보 열림</translation>
@@ -1508,7 +1510,6 @@
 <translation id="3427342743765426898">수정 다시 실행(&amp;R)</translation>
 <translation id="342781501876943858">다른 사이트에서 비밀번호를 재사용했다면 비밀번호를 재설정하는 것이 좋습니다.</translation>
 <translation id="3428151540071562330">하나 이상의 DnsOverHttpsTemplates 서버 템플릿 URI가 유효하지 않아 앞으로 사용되지 않습니다.</translation>
-<translation id="3428789896412418755">그룹화된 기록</translation>
 <translation id="3432601291244612633">페이지 닫기</translation>
 <translation id="3433111389595862568">협업 및 회의용 소프트웨어</translation>
 <translation id="3433144818443565002">음성 및 영상 채팅</translation>
@@ -2346,7 +2347,6 @@
 <translation id="4751249061288707459">동의 최종 업데이트:</translation>
 <translation id="4751476147751820511">모션 또는 조도 센서</translation>
 <translation id="4754461935447132332">안전하지 않은 사이트에서 허용되지 않음</translation>
-<translation id="4756388243121344051">방문 기록(&amp;H)</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">코드가 잘못되었습니다.</translation>
 <translation id="4757993714154412917">사기성 사이트에 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
@@ -2536,6 +2536,7 @@
 <translation id="5045550434625856497">비밀번호가 잘못되었습니다.</translation>
 <translation id="5048293684454354469">광고 주제는 사이트에서 광고를 맞춤설정하는 데 사용할 수 있는 여러 항목 중 하나일 뿐입니다. 광고 주제가 없어도 사이트에서 광고를 계속 표시할 수는 있지만, 관련성이 적을 수도 있습니다. <ph name="BEGIN_LINK" />광고 개인 정보 보호 관리<ph name="LINK_END" />에 관해 자세히 알아보세요.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, 이 추천 검색어 이후에 사용할 수 있는 더 많은 검색 바로가기를 보려면 Tab 키를 누르세요</translation>
+<translation id="5052488928733955073">정보를 입력하는 중에 문제가 발생했습니다. 연결 상태를 확인하세요.</translation>
 <translation id="5052517576853118371">활성 주제</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Nearby Share를 사용해 이 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}other{Nearby Share를 사용해 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}}</translation>
 <translation id="5056587122125565772">이미지 만들기</translation>
@@ -2834,6 +2835,7 @@
 <translation id="5521782189689806907">수납장</translation>
 <translation id="5523118979700054094">정책 이름</translation>
 <translation id="5523588073846127669">판매자가 이 가상 카드를 받지 않습니다.</translation>
+<translation id="5524476634211040742">AI 및 개인 정보 보호에 대해 자세히 알아보기</translation>
 <translation id="5525755241743357906">파일이 복사되거나 이동되었습니다.</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS 설정에서 접근성 도구를 맞춤설정하려면 Tab과 Enter를 차례로 누르세요</translation>
 <translation id="55293785478302737">에지 스티치</translation>
@@ -3654,6 +3656,7 @@
 <translation id="6850286078059909152">텍스트 색상</translation>
 <translation id="6852204201400771460">앱을 새로고침하시겠습니까?</translation>
 <translation id="6854691830678097752">더 빠르게 결제하려면 계정(<ph name="ACCOUNT_EMAIL" />)에 이 CVC를 저장하세요.</translation>
+<translation id="6855951327659224749">후불 결제 옵션을 사용하려면 양식을 지우세요.</translation>
 <translation id="6857776781123259569">비밀번호 관리...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">PIP 모드 입력을 요청할 수 있습니다</translation>
@@ -4272,6 +4275,7 @@
 <translation id="7779418012194492374"><ph name="DEVICE_NAME" />의 액세스 권한 취소</translation>
 <translation id="7781829728241885113">어제</translation>
 <translation id="7782465647372057580">계정 정보가 암호화되어 비공개로 유지됩니다.</translation>
+<translation id="7785471469930192436">Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진의 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="7785790577395078482">이 태블릿</translation>
 <translation id="7786368602962652765">필수 입력란이 비어 있습니다. 저장하기 전에 필수 입력란을 작성하세요.</translation>
 <translation id="7791011319128895129">미공개</translation>
@@ -4302,7 +4306,6 @@
 <translation id="7840103971441592723">화면 캡처가 시작되었습니다.</translation>
 <translation id="784137052867620416">쇼핑 통계</translation>
 <translation id="7841633276323004751">결제를 진행하기 위해 선택할 수 있는 결제 수단입니다. 키보드가 숨겨졌습니다.</translation>
-<translation id="784404208867107517">그룹화된 기록</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{없음}=1{앱 1개(<ph name="EXAMPLE_APP_1" />)}=2{앱 2개(<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{앱 #개(<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="784623644169604270">최근 활동 없음</translation>

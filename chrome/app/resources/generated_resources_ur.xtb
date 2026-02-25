@@ -381,7 +381,6 @@
 <translation id="1239841552505950173">ایپلیکیشن لانچ کریں</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> کے لیے تجربے کی حالت منتخب کریں</translation>
 <translation id="124116460088058876">مزید زبانیں</translation>
-<translation id="1241381048229838873">سبھی بُک مارکس دکھائیں</translation>
 <translation id="1241968867980182121">اوپر کے منظر کو بند کریں</translation>
 <translation id="1242044645101871359">دوبارہ سائن ان کریں</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> آپ کی ترتیبات کو دوبارہ ترتیب دینا چاہتا ہے۔</translation>
@@ -2387,6 +2386,7 @@
 <translation id="2584974473573720127">‏‫Chrome میں ویب سائٹ کے مائیکروفون کی اجازتوں کا نظم کریں</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> انسٹال نہیں کی جا سکی۔ براہ کرم دوبارہ کوشش کریں، یا اپنے منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="2586672484245266891">‏براہ کرم ایک مختصر تر URL درج کریں</translation>
+<translation id="2588271083332682494">ٹیب گروپس کے ساتھ صاف کریں</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> کے آلات</translation>
 <translation id="2589658397149952302">‏Drive فائلیں کبھی نہ دکھائیں</translation>
 <translation id="2593499352046705383">‏شروع کرنے سے پہلے ، یقینی بنائیں کہ آپ کے پاس اپنے ڈیٹا کا بیک اپ ہے۔ <ph name="DEVICE_OS" /> کو انسٹال کرنے سے آپ کی ہارڈ ڈرائیو اوور رائٹ ہو جائے گی۔ g.co/flex/InstallGuide پر مزید جانیں۔</translation>
@@ -3024,7 +3024,6 @@
 <translation id="3010234549896186761">{COUNT,plural, =0{آپ کے پاس ورڈ مضبوط لگ رہا ہے}=1{{COUNT} کمزور پاس ورڈ}other{{COUNT} کمزور پاس ورڈز}}</translation>
 <translation id="3010279545267083280">پاس ورڈ کو حذف کر دیا گیا</translation>
 <translation id="3010389206479238935">اسے زبردستی کھولیں</translation>
-<translation id="3010961843303056486">سبھی بُک مارکس دکھائیں</translation>
 <translation id="3011384993885886186">گرم خاکستری</translation>
 <translation id="3011488081941333749">باہر نلکنے پر <ph name="DOMAIN" /> کی جانب سے کوکیز صاف کر دی جائیں گی</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -3350,6 +3349,7 @@
 <translation id="3248902735035392926">حفاظتی معاملات۔ کچھ وقت نکالیں اور ابھی <ph name="BEGIN_LINK" />اپنی ایکسٹینشنز کو چیک کریں<ph name="END_LINK" /></translation>
 <translation id="3251119461199395237">فائل کی مطابقت پذیری</translation>
 <translation id="3251759466064201842">&lt;سرٹیفکیٹ کا حصہ نہیں ہے&gt;</translation>
+<translation id="3252169590975855820">‏آپ Google پاس ورڈ مینیجر پر اس تک رسائی حاصل کر سکتے ہیں۔</translation>
 <translation id="325238099842880997">بچوں کو گھر میں کھیلنے، دریافت کرنے اور اسکول کا کام کرنے میں مدد کے لئے ڈیجیٹل گراؤنڈ رولز سیٹ کریں</translation>
 <translation id="3253225298092156258">دستیاب نہیں ہے</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{اس فائل کو کاپی کرنے کے لیے <ph name="CLOUD_PROVIDER" /> میں اسپیس خالی کریں}other{ان فائلز کو کاپی کرنے کے لیے <ph name="CLOUD_PROVIDER" /> میں اسپیس خالی کریں}}</translation>
@@ -5870,7 +5870,6 @@
 <translation id="4946215577126251136">پروجیکٹس پینل بٹن دکھائیں</translation>
 <translation id="4946998421534856407">‏launcher + اوپر تیر کا نشان</translation>
 <translation id="4947376546135294974">آپ جس سائٹ پر جا رہے ہیں اس کا ڈیٹا</translation>
-<translation id="4948370357877377178">اپنے ٹاسکس جاری رکھیں</translation>
 <translation id="4950100687509657457">پروفائل بنائیں</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ایک فائل}other{# فائلز}}</translation>
 <translation id="495170559598752135">کارروائیاں</translation>
@@ -6094,7 +6093,6 @@
 <translation id="511147239888121455">اپنے مواد کا بیک اپ لیں؟</translation>
 <translation id="5111474831474629851">آپ کی تنظیم آپ کو اس اکاؤنٹ سے سائن ان کرنے کی اجازت نہیں دیتی ہے</translation>
 <translation id="5111646998522066203">پوشیدگی وضع سے باہر نکلیں</translation>
-<translation id="5111692334209731439">&amp;بک مارک مینیجر</translation>
 <translation id="5111794652433847656">اس آلے پر <ph name="APP_NAME" /> کے لیے کوئی پاس کی نہیں ہے۔</translation>
 <translation id="5112577000029535889">&amp;ڈیولپر ٹولز</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{1 فائل منتقل ہو گئی}other{{NUM_OF_FILES} فائلز منتقل ہو گئیں}}</translation>
@@ -6916,7 +6914,6 @@
 <translation id="5684181005476681636">‏Wi-Fi کی تفصیلات</translation>
 <translation id="5684661240348539843">اثاثہ شناخت کنندہ</translation>
 <translation id="5684950556880280580">آپ کا پاس ورڈ اپ ڈیٹ کر دیا گیا ہے</translation>
-<translation id="5687307865755379257">سیپیا لائٹ</translation>
 <translation id="5687326903064479980">ٹائم زون</translation>
 <translation id="5687340364605915800">اس درخواست کا جواب دیتے وقت سائٹس اپنی صوابدید استعمال کرتی ہیں</translation>
 <translation id="5687606994963670306">‏Chrome ‏30 دن سے زیادہ پرانی سائٹس کو خودکار طور پر حذف کر دیتا ہے۔ آپ کے کسی سائٹ کو دوبارہ ملاحظہ کرنے پر فہرست میں وہ دوبارہ نظر آ سکتی ہے۔ یا آپ کے لیے تجویز کردہ اشتہارات سے آپ سائٹ کو مسدود کر سکتے ہیں۔ <ph name="BEGIN_LINK" />Chrome میں اپنے اشتہار کی رازداری کا نظم کرنے<ph name="END_LINK" /> کے بارے میں مزید جانیں۔</translation>
@@ -7322,7 +7319,6 @@
 <translation id="5961545272769624207">اشارہ تفویض کریں</translation>
 <translation id="5963413905009737549">سیکشن</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> پیک)</translation>
-<translation id="5964086374943649343">کم کنٹراسٹ</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{سبھی کو &amp;نئی ونڈو میں کھولیں}=1{&amp;نئی ونڈو میں کھولیں}other{سبھی ({COUNT}) کو &amp;نئی ونڈو میں کھولیں}}</translation>
 <translation id="5964247741333118902">سرایت کردہ مواد</translation>
 <translation id="5965607173855879702">ڈیٹا حذف ہو رہا ہے...</translation>
@@ -7741,7 +7737,6 @@
 <translation id="6251924700383757765">رازداری کی پالیسی</translation>
 <translation id="625369703868467034">نیٹ ورک کی صحت</translation>
 <translation id="6253801023880399036">پاس ورڈز <ph name="GOOGLE_PASSWORD_MANAGER" /> میں محفوظ ہیں۔</translation>
-<translation id="6254306574403090248">سیپیا ڈارک</translation>
 <translation id="6254503684448816922">کلید سے سمجھوتہ</translation>
 <translation id="6254892857036829079">کامل</translation>
 <translation id="6257602895346497974">مطابقت پذیری آن کریں…</translation>
@@ -8680,6 +8675,7 @@
 <translation id="6900632443249221072">‏‫Gemini کا استعمال کر کے تصویر تخلیق کریں</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" /> کو اپ ڈیٹ کرنے کے لیے دوبارہ سائن ان کریں</translation>
 <translation id="6900654715912436255">کیا آپ واقعی اس سرچ انجن کو حذف کرنا چاہتے ہیں؟</translation>
+<translation id="6900883974539674431">ایسے ٹیب گروپس تخلیق کریں جو آپ کے تمام آلات پر خود کار طور پر محفوظ اور اپ ڈیٹ ہو جاتے ہوں</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6901130673208235020">‏جب آپ براؤزنگ کی سرگزشت تلاش کرتے ہیں تو آپ کی سرگزشت کی تلاشیں، بہترین مماثلت والے صفحے کا مواد اور تخلیق کردہ ماڈل آؤٹ پٹس Google کو بھیجے جاتے ہیں</translation>
 <translation id="6902066522699286937">پیش منظر کی آواز</translation>
@@ -9972,7 +9968,6 @@
 <translation id="7784067724422331729">آپ کے کمپیوٹر پر موجود سیکیورٹی ترتیبات نے اس فائل کو مسدود کر دیا ہے۔</translation>
 <translation id="7784796923038949829">سائٹ کا ڈیٹا پڑھا یا تبدیل نہیں کیا جا سکتا</translation>
 <translation id="778480864305029524">‏فوری ٹیدرنگ استعمال کرنے کے لیے، اطلاعات برائے Google Play سروسز کو آن کریں۔</translation>
-<translation id="7785471469930192436">قابل اطلاق ہونے پر اپنی تلاش کی سرگزشت کو حذف کرنے کے لیے اپنے سرچ انجن کی ہدایات دیکھیں</translation>
 <translation id="77855763949601045">مہمان پروفائل &amp;کھولیں</translation>
 <translation id="7786663536153819505">‏QR کوڈ اسکین کرنے کیلئے، اپنے فون پر ہدایات کی پیروی کریں۔ یہ یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ آن ہے۔
     <ph name="BR" />
@@ -10468,7 +10463,6 @@
 <translation id="8110489095782891123">رابطے کی فہرست ڈاؤن لوڈ ہو رہی ہے...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> کے لیے مائکروفون کی اجازت</translation>
 <translation id="8116497846156149">والدین سے منظوری طلب کریں</translation>
-<translation id="8116972784401310538">&amp;بک مارک مینیجر</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> آپ کے سائن ان کرنے کے طریقے کو یاد رکھتا ہے اور ممکن ہونے پر آپ کو خودکار طور پر سائن ان کرتا ہے۔ آف ہونے پر، آپ سے ہر بار توثیق کرنے کیلئے کہا جائے گا۔</translation>
 <translation id="8118362518458010043">‏Chrome کی جانب سے غیر فعال ہے۔ یہ ایکسٹینشن غیر محفوظ ہو سکتی ہے۔</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{‫# بُک مارک}other{‫# بُک مارکس}}</translation>
@@ -10731,7 +10725,6 @@
 <translation id="8288032458496410887"><ph name="APP" /> کو اَن انسٹال کریں…</translation>
 <translation id="8288553158681886528">‏PDF سے ٹیکسٹ نکالیں</translation>
 <translation id="8289128870594824098">ڈسک کا سائز</translation>
-<translation id="8289200713453671499">‏اپنی جگہ کھوئے بغیر اپنے ٹیب گروپس اور اپنی حالیہ AI گفتگوؤں کے درمیان تیزی سے سوئچ کریں۔</translation>
 <translation id="8289509909262565712"><ph name="DEVICE_OS" /> میں خوش آمدید</translation>
 <translation id="8291415872436043161">‏Chrome ڈاؤن لوڈ کریں</translation>
 <translation id="8291942417224950075">ذاتی استعمال کیلئے</translation>
@@ -11653,6 +11646,7 @@
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ اپنے ڈیٹا کا بیک اپ لیں اور اس <ph name="DEVICE_TYPE" /> کو آج ہی واپس کریں۔}other{<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ اپنے ڈیٹا کا بیک اپ ليں اور آخری تاریخ سے پہلے اس <ph name="DEVICE_TYPE" /> کو واپس کریں۔}}</translation>
 <translation id="8902667442496790482">'سننے کیلئے منتخب کریں' کی ترتیبات کھولیں</translation>
 <translation id="8903733144777177139">مائیکروفون تک رسائی مسدود ہے</translation>
+<translation id="8904787158537906492">لنک کلپ بورڈ پر کاپی ہو گیا</translation>
 <translation id="890518297681039136">آپریشن نامعلوم وجہ کی بناء پر ناکام ہو گیا۔</translation>
 <translation id="8905253417215700291">‫<ph name="GOOGLE_PASSWORD_MANAGER" /> نے اس ویب سائٹ کے لیے ایک مضبوط پاس ورڈ تخلیق کیا ہے</translation>
 <translation id="890616557918890486">ماخذ تبدیل کریں</translation>

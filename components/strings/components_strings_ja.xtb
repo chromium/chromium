@@ -995,6 +995,7 @@
 <translation id="2553352788023127673">検索履歴とパスワードは管理設定で削除できます</translation>
 <translation id="2553853292994445426">セキュア DNS の設定を確認してください。接続できないセキュア DNS サーバーを設定している可能性があります。</translation>
 <translation id="255497580849974774">更新中はデバイスを充電器に接続したままにしてください。</translation>
+<translation id="2555855727505718984">自動入力によるフォームの記入で、デバイスのこの情報は使用されなくなります</translation>
 <translation id="2556876185419854533">編集の取り消し（&amp;U）</translation>
 <translation id="2559566667529177711">マルチレイヤ</translation>
 <translation id="2570734079541893434">設定を管理</translation>
@@ -1399,6 +1400,7 @@
 <translation id="323585066388831737">ライトレッド</translation>
 <translation id="3235902901585019063">ローカル ファイルは <ph name="DATE_TIME" /> に削除されます。ビジネスや個人の重要なデータは外部に保存してください。</translation>
 <translation id="3236212803136366317">カードのメリット</translation>
+<translation id="3237427677128462778">Google ウォレットに保存できませんでした</translation>
 <translation id="3238395604961564389">シークレット ウインドウでリンクを開く</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、ブラウザのデザインをカスタマイズできます</translation>
 <translation id="3240791268468473923">保護されたお支払い認証情報（認証情報の一致なし）シートが開いています</translation>
@@ -1508,7 +1510,6 @@
 <translation id="3427342743765426898">編集のやり直し（&amp;R）</translation>
 <translation id="342781501876943858">パスワードを他のサイトで再使用した場合、Chromium ではパスワードの再設定を促すメッセージが表示されます。</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates サーバー テンプレートの一部の URI が無効なため、使用されません。</translation>
-<translation id="3428789896412418755">グループに分類した履歴</translation>
 <translation id="3432601291244612633">ページを閉じる</translation>
 <translation id="3433111389595862568">コラボレーション、会議用ソフトウェア</translation>
 <translation id="3433144818443565002">ボイスチャット、ビデオチャット</translation>
@@ -2346,7 +2347,6 @@
 <translation id="4751249061288707459">同意の最終更新日:</translation>
 <translation id="4751476147751820511">モーション センサーまたは光センサー</translation>
 <translation id="4754461935447132332">セキュアでないサイトでは許可されていません</translation>
-<translation id="4756388243121344051">履歴(&amp;H)</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">コードが無効です</translation>
 <translation id="4757993714154412917">偽のサイトでパスワードを入力しました。アカウントを保護するため、保存したパスワードをすぐに確認することをおすすめします。</translation>
@@ -2536,6 +2536,7 @@
 <translation id="5045550434625856497">パスワードが正しくありません</translation>
 <translation id="5048293684454354469">広告のトピックは、サイトが広告をパーソナライズするために使用できることの 1 つにすぎません。広告のトピックをオフにしても、サイトでは引き続き広告が表示されますが、パーソナライズされたものでない可能性があります。<ph name="BEGIN_LINK" />広告のプライバシー管理について<ph name="LINK_END" /></translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" /> です。Tab キーを押すと、この検索候補の後に使用できる検索ショートカットが表示されます</translation>
+<translation id="5052488928733955073">情報を入力できません。接続をご確認ください。</translation>
 <translation id="5052517576853118371">アクティブなトピック</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{ニアバイシェアを使用してこのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}other{ニアバイシェアを使用してこれらのファイルを送信するには、デバイスの空き容量を増やしてください（<ph name="DISK_SPACE_SIZE" /> 必要です）}}</translation>
 <translation id="5056587122125565772">画像を作成</translation>
@@ -2834,6 +2835,7 @@
 <translation id="5521782189689806907">キャビネット</translation>
 <translation id="5523118979700054094">ポリシー名</translation>
 <translation id="5523588073846127669">販売者がこの仮想カードに対応していません</translation>
+<translation id="5524476634211040742">AI とプライバシーの詳細</translation>
 <translation id="5525755241743357906">ファイルをコピーまたは移動しました</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、ChromeOS の設定でユーザー補助ツールをカスタマイズできます</translation>
 <translation id="55293785478302737">端綴じ</translation>
@@ -3654,6 +3656,7 @@
 <translation id="6850286078059909152">テキストの色</translation>
 <translation id="6852204201400771460">アプリを再読み込みしますか？</translation>
 <translation id="6854691830678097752">購入手続きをすばやく行うには、この CVC をアカウント（<ph name="ACCOUNT_EMAIL" />）に保存してください</translation>
+<translation id="6855951327659224749">後払いオプションを使用するには、フォームを消去してください</translation>
 <translation id="6857776781123259569">パスワードを管理...</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">ピクチャー イン ピクチャーの開始を要求できます</translation>
@@ -4274,6 +4277,7 @@
 <translation id="7779418012194492374"><ph name="DEVICE_NAME" /> へのアクセス権を取り消します</translation>
 <translation id="7781829728241885113">昨日</translation>
 <translation id="7782465647372057580">アカウント情報は暗号化され、機密性が保たれます</translation>
+<translation id="7785471469930192436">検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）</translation>
 <translation id="7785790577395078482">このタブレット</translation>
 <translation id="7786368602962652765">必須項目が空白です。保存する前に入力してください。</translation>
 <translation id="7791011319128895129">未公開</translation>
@@ -4304,7 +4308,6 @@
 <translation id="7840103971441592723">スクリーン キャプチャを開始しました</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">お支払い手続きで選択できるお支払い方法が表示されています。キーボードは非表示です。</translation>
-<translation id="784404208867107517">グループに分類した履歴</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{なし}=1{1 個のアプリ（<ph name="EXAMPLE_APP_1" />）}=2{2 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />）}other{# 個のアプリ（<ph name="EXAMPLE_APP_1" />、<ph name="EXAMPLE_APP_2" />、<ph name="AND_MORE" />）}}</translation>
 <translation id="7846161022626028328">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="784623644169604270">最近のアクティビティはありません</translation>

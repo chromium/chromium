@@ -382,7 +382,6 @@
 <translation id="1239841552505950173">ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> ಗಾಗಿ ಪ್ರಯೋಗದ ಸ್ಥಿತಿಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="124116460088058876">ಹೆಚ್ಚಿನ ಭಾಷೆಗಳು</translation>
-<translation id="1241381048229838873">ಎಲ್ಲ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ತೋರಿಸು</translation>
 <translation id="1241968867980182121">ಮೇಲಿನ ವೀಕ್ಷಣೆಯನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="1242044645101871359">ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮರುಹೊಂದಿಸಲು ಬಯಸುತ್ತದೆ.</translation>
@@ -2391,6 +2390,7 @@
 <translation id="2584974473573720127">Chrome ನಲ್ಲಿ ವೆಬ್‌ಸೈಟ್ ಮೈಕ್ರೊಫೋನ್‌ ಅನುಮತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ. ದೋಷ ಕೋಡ್: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586672484245266891">ಸಣ್ಣ URL ನಮೂದಿಸಿ</translation>
+<translation id="2588271083332682494">ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ವ್ಯವಸ್ಥಿತವಾಗಿರಿಸಿ</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> ನಿಂದ ಸಾಧನಗಳು</translation>
 <translation id="2589658397149952302">Drive ಫೈಲ್‌ಗಳನ್ನು ಎಂದಿಗೂ ತೋರಿಸಬೇಡಿ</translation>
 <translation id="2593499352046705383">ಪ್ರಾರಂಭಿಸುವ ಮೊದಲು, ನಿಮ್ಮ ಡೇಟಾದ ಬ್ಯಾಕಪ್ ನಿಮ್ಮ ಬಳಿ ಇದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. <ph name="DEVICE_OS" /> ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವುದರಿಂದ ನಿಮ್ಮ ಹಾರ್ಡ್ ಡ್ರೈವ್ ಓವರ್‌ರೈಟ್ ಆಗುತ್ತದೆ. g.co/flex/InstallGuide ನಲ್ಲಿ ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
@@ -3028,7 +3028,6 @@
 <translation id="3010234549896186761">{COUNT,plural, =0{ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಸದೃಢವಾಗಿರುವಂತೆ ತೋರುತ್ತಿವೆ}=1{{COUNT} ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್}one{{COUNT} ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{{COUNT} ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
 <translation id="3010279545267083280">ಪಾಸ್‌ವರ್ಡ್‌ ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="3010389206479238935">ಬಲವಂತವಾಗಿ ತೆರೆಯಲಾಗುತ್ತಿದೆ</translation>
-<translation id="3010961843303056486">ಎಲ್ಲಾ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3011384993885886186">ಎದ್ದುಕಾಣುವ ಬೂದು</translation>
 <translation id="3011488081941333749">ನಿರ್ಗಮಿಸುವಾಗ <ph name="DOMAIN" /> ನಿಂದ ಕುಕೀಗಳನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -5877,7 +5876,6 @@
 <translation id="4946215577126251136">ಪ್ರಾಜೆಕ್ಟ್‌ಗಳ ಪ್ಯಾನೆಲ್ ಬಟನ್ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4946998421534856407">ಲಾಂಚರ್ + ಅಪ್ ಆ್ಯರೋ</translation>
 <translation id="4947376546135294974">ನೀವು ಭೇಟಿ ನೀಡುತ್ತಿರುವ ಸೈಟ್‌ನಿಂದ ಡೇಟಾ</translation>
-<translation id="4948370357877377178">ನಿಮ್ಮ ಕಾರ್ಯಗಳನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="4950100687509657457">ಪ್ರೊಫೈಲ್ ರಚಿಸಿ</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ಒಂದು ಫೈಲ್}one{# ಫೈಲ್‌ಗಳು}other{# ಫೈಲ್‌ಗಳು}}</translation>
 <translation id="495170559598752135">ಕ್ರಿಯೆಗಳು</translation>
@@ -6101,7 +6099,6 @@
 <translation id="511147239888121455">ನಿಮ್ಮ ವಿಷಯವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="5111474831474629851">ಈ ಖಾತೆಯ ಮೂಲಕ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮಗೆ ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="5111646998522066203">ಅದೃಶ್ಯ ಮೋಡ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
-<translation id="5111692334209731439">&amp;ಬುಕ್‌ಮಾರ್ಕ್ ವ್ಯವಸ್ಥಾಪಕ</translation>
 <translation id="5111794652433847656">ಈ ಸಾಧನದಲ್ಲಿ <ph name="APP_NAME" /> ಅವರಿಗಾಗಿ ಯಾವುದೇ ಪಾಸ್‌ಕೀಗಳಿಲ್ಲ</translation>
 <translation id="5112577000029535889">&amp;ಡೆವಲಪರ್ ಟೂಲ್ಸ್</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{1 ಫೈಲ್ ಅನ್ನು ಸರಿಸಲಾಗಿದೆ}one{{NUM_OF_FILES} ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸಲಾಗಿದೆ}other{{NUM_OF_FILES} ಫೈಲ್‌ಗಳನ್ನು ಸರಿಸಲಾಗಿದೆ}}</translation>
@@ -6925,7 +6922,6 @@
 <translation id="5684181005476681636">ವೈ-ಫೈ ವಿವರಗಳು</translation>
 <translation id="5684661240348539843">ಅಸೆಟ್ ಗುರುತಿಸುವಿಕೆ</translation>
 <translation id="5684950556880280580">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="5687307865755379257">ಸೆಪಿಯಾ ಲೈಟ್</translation>
 <translation id="5687326903064479980">ಸಮಯ ವಲಯ</translation>
 <translation id="5687340364605915800">ಈ ವಿನಂತಿಗೆ ಪ್ರತಿಕ್ರಿಯಿಸುವಾಗ ಸೈಟ್‌ಗಳು ತಮ್ಮ ಸ್ವಂತ ವಿವೇಚನೆಯನ್ನು ಬಳಸುತ್ತವೆ</translation>
 <translation id="5687606994963670306">Chrome 30 ದಿನಗಳಿಗಿಂತ ಹಳೆಯದಾದ ಸೈಟ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅಳಿಸುತ್ತದೆ. ನೀವು ಪುನಃ ಭೇಟಿ ನೀಡುವ ಸೈಟ್, ಪಟ್ಟಿಯಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳಬಹುದು. ಅಥವಾ ನಿಮಗಾಗಿ ಜಾಹೀರಾತುಗಳನ್ನು ಸೂಚಿಸದಂತೆ ನೀವು ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಬಹುದು. <ph name="BEGIN_LINK" />Chrome ನಲ್ಲಿ ನಿಮ್ಮ ಜಾಹೀರಾತು ಗೌಪ್ಯತೆಯನ್ನು ನಿರ್ವಹಿಸುವ<ph name="END_LINK" /> ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
@@ -7331,7 +7327,6 @@
 <translation id="5961545272769624207">ಜೆಸ್ಚರ್ ಅನ್ನು ನಿಯೋಜಿಸಿ</translation>
 <translation id="5963413905009737549">ವಿಭಾಗ</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> ಪೀಕ್)</translation>
-<translation id="5964086374943649343">ಕಡಿಮೆ ಕಾಂಟ್ರಾಸ್ಟ್‌</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ}=1{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ}one{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು ತೆರೆಯಿರಿ}other{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು ತೆರೆಯಿರಿ}}</translation>
 <translation id="5964247741333118902">ಎಂಬೆಡ್ ಮಾಡಲಾದ ಕಂಟೆಂಟ್</translation>
 <translation id="5965607173855879702">ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -7750,7 +7745,6 @@
 <translation id="6251924700383757765">ಗೌಪ್ಯತಾ ನೀತಿ</translation>
 <translation id="625369703868467034">ನೆಟ್‌ವರ್ಕ್ ಹೆಲ್ತ್</translation>
 <translation id="6253801023880399036">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="GOOGLE_PASSWORD_MANAGER" /> ನಲ್ಲಿ ಉಳಿಸಲಾಗುತ್ತದೆ.</translation>
-<translation id="6254306574403090248">ಸೆಪಿಯಾ ಡಾರ್ಕ್</translation>
 <translation id="6254503684448816922">ಕೀಲಿ ಹೊಂದಾಣಿಕೆ</translation>
 <translation id="6254892857036829079">ಪರಿಪೂರ್ಣ</translation>
 <translation id="6257602895346497974">ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ...</translation>
@@ -8503,6 +8497,7 @@
 <translation id="678520006562636090">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ Google Lens ಅನ್ನು ಬಳಸಿ ನೋಡಿ</translation>
 <translation id="6785594991951195537">ನಿಮ್ಮ <ph name="PASSWORD_DOMAIN" /> ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="6785739405821760313">ಉಳಿಸಲಾದ ಡೆಸ್ಕ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ. ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು tab ಒತ್ತಿರಿ.</translation>
+<translation id="6785779729084003225">Chrome ನಲ್ಲಿ Gemini ಅನ್ನು ತೆರೆಯಲು <ph name="FOCUS_TOGGLE_HOTKEY" /> ಬಳಸಿ</translation>
 <translation id="6785915470941880363">ಹಿಮ್ಮುಖ ಸ್ಕ್ರಾಲಿಂಗ್ <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">ನೇರಳೆ</translation>
 <translation id="6786480815699355166">ಬೆಂಬಲಿತ ಲೈವ್ ಕ್ಯಾಪ್ಶನ್ ಭಾಷೆಗಳನ್ನು ಮಾತ್ರ ಅನುವಾದಿಸಬಹುದು</translation>
@@ -8691,6 +8686,7 @@
 <translation id="6900632443249221072">Gemini ಮೂಲಕ ಚಿತ್ರವನ್ನು ರಚಿಸಿ</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" /> ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6900654715912436255">ನೀವು ಖಂಡಿತವಾಗಿಯೂ ಈ ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ಅಳಿಸಲು ಬಯಸುತ್ತೀರಾ?</translation>
+<translation id="6900883974539674431">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೇವ್‌ ಮಾಡುವ ಮತ್ತು ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವ ಟ್ಯಾಬ್ ಗುಂಪುಗಳನ್ನು ರಚಿಸಿ</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6901130673208235020">ನೀವು ಬ್ರೌಸಿಂಗ್‌ ಇತಿಹಾಸವನ್ನು ಹುಡುಕಿದಾಗ, ನಿಮ್ಮ ಇತಿಹಾಸ ಹುಡುಕಾಟಗಳು, ಅತ್ಯುತ್ತಮ ಹೊಂದಾಣಿಕೆಗಳ ಪುಟದ ಕಂಟೆಂಟ್‌ ಮತ್ತು ರಚಿಸಲಾದ ಮಾಡಲ್‌ ಔಟ್‌ಪುಟ್‌ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="6902066522699286937">ಪೂರ್ವವೀಕ್ಷಣೆಗಾಗಿ ಧ್ವನಿ</translation>
@@ -9984,7 +9980,6 @@
 <translation id="7784067724422331729">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ ಭದ್ರತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಈ ಫೈಲ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ.</translation>
 <translation id="7784796923038949829">ಸೈಟ್‌ನ ಡೇಟಾವನ್ನು ಓದಲು ಅಥವಾ ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="778480864305029524">ತತ್‌ಕ್ಷಣ ಟೆಥರಿಂಗ್ ಅನ್ನು ಬಳಸಲು, Google Play ಸೇವೆಗಳ ಅಧಿಸೂಚನೆಗಳನ್ನು ಆನ್ ಮಾಡಿ.</translation>
-<translation id="7785471469930192436">ಅನ್ವಯವಾದರೆ, ನಿಮ್ಮ ಹುಡುಕಾಟದ ಇತಿಹಾಸವನ್ನು ಅಳಿಸುವುದಕ್ಕಾಗಿ ನಿಮ್ಮ ಸರ್ಚ್ ಎಂಜಿನ್‌ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="77855763949601045">ಅತಿಥಿ ಪ್ರೊಫೈಲ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7786663536153819505">QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲು ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿರುವ ಸೂಚನೆಗಳನ್ನು ಅನುಸರಿಸಿ. ನಿಮ್ಮ ಫೋನ್‌ನ ಬ್ಲೂಟೂತ್ ಆನ್‌ ಆಗಿದೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.
     <ph name="BR" />
@@ -10478,7 +10473,6 @@
 <translation id="8110489095782891123">ಸಂಪರ್ಕ ಪಟ್ಟಿಯನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> ಮೈಕ್ರೊಫೋನ್‌ ಅನುಮತಿ</translation>
 <translation id="8116497846156149">ಅನುಮೋದನೆಗಾಗಿ ಪೋಷಕರನ್ನು ಕೇಳಿ</translation>
-<translation id="8116972784401310538">&amp;ಬುಕ್‌ಮಾರ್ಕ್‌ ವ್ಯವಸ್ಥಾಪಕ</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> ನೀವು ಹೇಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿದ್ದೀರಿ ಎಂಬುದನ್ನು ನೆನಪಿಸುತ್ತದೆ ಮತ್ತು ಸಾಧ್ಯವಾದಾಗ ನಿಮ್ಮನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡುತ್ತದೆ. ಆಫ್ ಆಗಿರುವಾಗ, ಪ್ರತಿ ಬಾರಿ ದೃಢೀಕರಣಕ್ಕಾಗಿ ನಿಮ್ಮನ್ನು ಕೇಳಲಾಗುತ್ತದೆ.</translation>
 <translation id="8118362518458010043">Chrome ಮೂಲಕ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಈ ವಿಸ್ತರಣೆಯು ಸುರಕ್ಷಿತವಲ್ಲದಿರಬಹುದು.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# ಬುಕ್‌ಮಾರ್ಕ್}one{# ಬುಕ್‌ಮಾರ್ಕ್‌‌ಗಳು}other{# ಬುಕ್‌ಮಾರ್ಕ್‌‌ಗಳು}}</translation>
@@ -10741,7 +10735,6 @@
 <translation id="8288032458496410887"><ph name="APP" /> ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ...</translation>
 <translation id="8288553158681886528">PDF ನಿಂದ ಪಠ್ಯವನ್ನು ಹೊರತೆಗೆಯಿರಿ</translation>
 <translation id="8289128870594824098">ಡಿಸ್ಕ್ ಗಾತ್ರ</translation>
-<translation id="8289200713453671499">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ ಗುಂಪುಗಳು ಮತ್ತು ನಿಮ್ಮ ಇತ್ತೀಚಿನ AI ಸಂಭಾಷಣೆಗಳ ನಡುವೆ ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಕಳೆದುಕೊಳ್ಳದೆ ತ್ವರಿತವಾಗಿ ಬದಲಿಸಿ.</translation>
 <translation id="8289509909262565712"><ph name="DEVICE_OS" /> ಗೆ ಸುಸ್ವಾಗತ</translation>
 <translation id="8291415872436043161">Chrome ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="8291942417224950075">ವೈಯಕ್ತಿಕ ಬಳಕೆಗಾಗಿ</translation>

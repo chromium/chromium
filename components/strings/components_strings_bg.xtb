@@ -731,6 +731,7 @@
 <translation id="2166049586286450108">Пълен администраторски достъп</translation>
 <translation id="2166378884831602661">Този сайт не може да осигури защитена връзка</translation>
 <translation id="2168151236314517198">Отпечатването на това съдържание е блокирано чрез администраторско правило</translation>
+<translation id="2171244127100824330">В(ъв) <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> за <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Ремонт и поддръжка на превозни средства</translation>
 <translation id="2173302385160625112">Проверете връзката си с интернет</translation>
 <translation id="2174875517416416684">Транзакцията ви не бе успешна. Не са изтеглени средства от профила ви.</translation>
@@ -997,6 +998,7 @@
 <translation id="2553352788023127673">Историята в Търсене и паролите могат да бъдат изтрити от съответните настройки за управление</translation>
 <translation id="2553853292994445426">Проверете настройките си за защитен DNS. Възможно е да сте конфигурирали защитен DNS сървър, с който не може да бъде установена връзка.</translation>
 <translation id="255497580849974774">Устройството ви трябва да е свързано със зарядно по време на актуализацията.</translation>
+<translation id="2555855727505718984">Автоматичното попълване няма да разполага с тази информация на това устройство, за да ви помага при попълването на формуляри</translation>
 <translation id="2556876185419854533">&amp;Отмяна на редактирането</translation>
 <translation id="2559566667529177711">Многослоен носител</translation>
 <translation id="2570734079541893434">Управление на настройките</translation>
@@ -1513,7 +1515,6 @@
 <translation id="3427342743765426898">&amp;Възстановяване на редактирането</translation>
 <translation id="342781501876943858">Chromium препоръчва да зададете повторно паролата си, ако сте я използвали и на други сайтове.</translation>
 <translation id="3428151540071562330">Един или повече от URI адресите на шаблон за сървър в DnsOverHttpsTemplates са невалидни и няма да се използват.</translation>
-<translation id="3428789896412418755">Групирана история</translation>
 <translation id="3432601291244612633">Затваряне на страницата</translation>
 <translation id="3433111389595862568">Софтуер за съвместна и конферентна работа</translation>
 <translation id="3433144818443565002">Гласов и видеочат</translation>
@@ -2353,7 +2354,6 @@
 <translation id="4751249061288707459">Последно актуализиране на съгласието:</translation>
 <translation id="4751476147751820511">Сензори за движение или светлина</translation>
 <translation id="4754461935447132332">Не е разрешено за незащитени сайтове</translation>
-<translation id="4756388243121344051">&amp;История</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Кодът е невалиден</translation>
 <translation id="4757993714154412917">Току-що въведохте паролата си в измамнически сайт. За да защитите профилите си, Chromium препоръчва да проверите запазените си пароли.</translation>
@@ -2407,6 +2407,7 @@
 <translation id="4832388034239846146">За да споделяте групи раздели, актуализирайте Chrome</translation>
 <translation id="483241715238664915">Включване на предупрежденията</translation>
 <translation id="4832961164064927107">Готвене на барбекю и грил</translation>
+<translation id="4839984801146463230">Запазете информацията си и извършвайте по-бързо различни неща, като например попълване на формуляри в продуктите на Google. Можете <ph name="BEGIN_LINK" />да управлявате информацията си<ph name="END_LINK" /> в(ъв) <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> за <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Преглед на историята ви в Chrome</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4844937814014739139">Превъртане и промяна на мащаба на споделените раздели</translation>
@@ -2756,6 +2757,7 @@
 <translation id="5392506727170022660">Метал (полугланциран)</translation>
 <translation id="5394069166371280357">Семейни телевизионни предавания</translation>
 <translation id="5396631636586785122">Зашиване на десния ръб</translation>
+<translation id="5396837962335265787"><ph name="ATTRIBUTE_NAME" />, беше <ph name="OLD_ATTRIBUTE_ATTRIBUTE" /></translation>
 <translation id="5397794290049113714">Вие</translation>
 <translation id="5398461103557553443">За да се попълни автоматично този IBAN следващия път, запазете го в Google Wallet</translation>
 <translation id="5398772614898833570">Рекламите са блокирани</translation>
@@ -3490,6 +3492,7 @@
 <translation id="6547208576736763147">Двойно перфориране отляво</translation>
 <translation id="6549443526281184652">Костюми</translation>
 <translation id="6550245281449521513">Заключването на мишката е забранено</translation>
+<translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, ново</translation>
 <translation id="6552566579578780089">Плащания</translation>
 <translation id="6554732001434021288">Последно посещение: преди <ph name="NUM_DAYS" /> дни</translation>
 <translation id="6556866813142980365">Възстановяване</translation>
@@ -4288,6 +4291,7 @@
 <translation id="7779418012194492374">Отмяна на достъпа за <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7782465647372057580">Информацията за профила е шифрована и се пази частна</translation>
+<translation id="7785471469930192436">Вижте инструкциите на търсещата си машина относно изтриването на историята на търсенията ви (ако е приложимо)</translation>
 <translation id="7785790577395078482">този таблет</translation>
 <translation id="7786368602962652765">Едно от задължителните полета е празно. Попълнете го, преди да запазите.</translation>
 <translation id="7791011319128895129">Непубликувано</translation>
@@ -4318,7 +4322,6 @@
 <translation id="7840103971441592723">Функцията за заснемане на екрана стартира</translation>
 <translation id="784137052867620416">Статистика за Пазаруване</translation>
 <translation id="7841633276323004751">Налични начини на плащане, които могат да бъдат избрани за продължаване на плащането. Клавиатурата е скрита.</translation>
-<translation id="784404208867107517">Групирана история</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Няма}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Възникна грешка. Опитайте отново.</translation>
 <translation id="784623644169604270">Няма скорошна активност</translation>
@@ -4748,6 +4751,7 @@
 <translation id="8544217240017914508">Google Chrome се опитва да промени настройките за попълване на начините на плащане.</translation>
 <translation id="8544303911974837265">Полиестер</translation>
 <translation id="854548366864113872">Опция с висока цена</translation>
+<translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">Въведете причина за качването (задължително)</translation>
 <translation id="8546350655047701518">Експортиране на регистрационните файлове във формат JSON</translation>
 <translation id="8546667245446052521">Хартия (архивна)</translation>

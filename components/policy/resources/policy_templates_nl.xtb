@@ -402,17 +402,6 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="1305400589435476516">Als je het beleid toepast, is dataroaming toegestaan voor het apparaat.
 
       Als je het beleid niet toepast of niet instelt, is dataroaming niet beschikbaar.</translation>
-<translation id="1308102257035078529">URL-patronen worden vergeleken met de URL van de pagina die wordt geïnspecteerd. Als er een overeenkomst wordt gevonden, worden de <ph name="CHROME_DEVTOOLS_NAME" /> geblokkeerd. Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor informatie over de URL-indeling.
-
-Als je het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> instelt en dit beleid niet, wordt elke URL die niet op de toelatingslijst staat, geblokkeerd.
-
-Als je dit beleid en het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> beide instelt, heeft de toelatingslijst voorrang. Als een URL overeenkomt met een patroon op de toelatingslijst, wordt deze toegestaan. Als een URL overeenkomt met een patroon op deze blokkeerlijst (maar niet op de toelatingslijst), wordt deze geblokkeerd. Als een URL met geen van beide overeenkomt, wordt het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> gebruikt als reserve.
-
-Als je geen van beide beleidsregels instelt, wordt de beschikbaarheid bepaald door het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Dit beleid is ook van toepassing op <ph name="CHROME_DEVTOOLS_NAME" /> die worden geopend voor extensies en web-apps.
-
-Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="1309259005392595570">Post-quantum sleutelovereenkomst van TLS uitzetten</translation>
 <translation id="1309465583050255779">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> instelt, wordt de naam van de standaard zoekprovider gespecificeerd.
 
@@ -5026,25 +5015,6 @@ Als je het beleid niet instelt, kunnen geïsoleerde web-app-oorsprongen om toega
 
       Ga naar https://chromeenterprise.google/policies/url-patterns/ voor gedetailleerde informatie over geldige URL-patronen.</translation>
 <translation id="4485425108474077672">De URL van de pagina 'Nieuw tabblad' configureren</translation>
-<translation id="4485667899983529614">Met dit beleid stel je <ph name="PRODUCT_OS_NAME" /> in om de voorkeursalgoritmen voor sleutelovereenkomst (ondersteunde groepen) in TLS 1.3 te ordenen op basis van een voorkeur voor algoritmen die zijn goedgekeurd door een specifiek nalevingsregime, als je netwerkverzoeken doet vanaf het inlogscherm.
-
-Als je dit beleid instelt, garandeert dit niet dat er specifieke algoritmen worden onderhandeld.
-
-Dit beleid is bedoeld om serverbeheerders die clients met en zonder nalevingsvereisten willen ondersteunen, onderscheid te laten maken tussen deze clients en alleen bepaalde niet-standaard algoritmen met verhoogde cryptografische sterkte te laten gebruiken voor clients die expliciet zijn ingesteld om deze te gebruiken.
-
-Als je het beleid instelt op <ph name="CNSA2_NAME" />, wordt <ph name="PRODUCT_OS_NAME" /> zo ingesteld dat het de voorkeur geeft aan sleuteluitwisselingsmethoden die nodig zijn voor naleving van de Commercial National Security Algorithm Suite 2.0 (CNSA 2.0).
-
-Als je het beleid niet instelt of instelt op <ph name="DEFAULT_NAME" />, wordt <ph name="PRODUCT_OS_NAME" /> ingesteld om de standaardmethoden voor sleuteluitwisseling te gebruiken.
-
-Als je dit beleid instelt op een waarde waarmee je <ph name="PRODUCT_OS_NAME" /> instelt om een algoritme voor de post-quantum sleutelovereenkomst te gebruiken, maar <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> niet toepast, heeft de instelling van <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> voorrang.
-
-Het is niet nodig om dit beleid in te stellen voor de beveiliging. De standaardversleuteling die <ph name="PRODUCT_OS_NAME" /> gebruikt, is sterk genoeg om een brute-force-aanval te weerstaan met de hele kracht van de zon.
-
-Als je dit beleid instelt, wordt <ph name="PRODUCT_OS_NAME" /> trager als je netwerkverzoeken doet vanaf het inlogscherm.
-
-Dit beleid heeft alleen invloed op TLS 1.3 en QUIC. Het heeft geen invloed op eerdere versies van TLS.
-
-Dit apparaatbeleid is vergelijkbaar met het gebruikersbeleid <ph name="PREFER_SLOW_KEX_ALGORITHMS_POLICY_NAME" />, maar wordt in plaats daarvan toegepast op het inlogprofiel op het inlogscherm.</translation>
 <translation id="4488959486611931919">Opmerking: Er zijn geen sitebreuken gemeld sinds Chrome deze cookies standaard is gaan blokkeren vanaf M118. Deze functionaliteit is vanaf M127 dus niet meer instelbaar (en dit beleid heeft geen effect).
 
 Dit beleid biedt een tijdelijke afmelding voor wijzigingen in de manier waarop Chrome omgaat met cookies die zijn ingesteld via JavaScript en die bepaalde besturingstekens bevatten (NULL, regelterugloop en regelopschuiving).
@@ -8178,23 +8148,6 @@ Zie ook het beleid <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</translation>
           Als je dit beleid niet toepast, kan het <ph name="PRODUCT_OS_NAME" />-apparaat <ph name="GOOGLE_CALENDAR_NAME" />-afspraken niet ophalen om de <ph name="PRODUCT_OS_NAME" />-agendawidget in de systeemstatusbalk in te vullen voor de ingelogde gebruiker.
 
           Als je dit beleid niet instelt, staat de <ph name="GOOGLE_CALENDAR_NAME" />-functie standaard aan voor zakelijke gebruikers.</translation>
-<translation id="6450557649904429321">Met dit beleid stel je <ph name="PRODUCT_NAME" /> in om de voorkeursalgoritmen voor sleutelovereenkomst (ondersteunde groepen) in TLS 1.3 te ordenen op basis van een voorkeur voor algoritmen die zijn goedgekeurd door een specifiek nalevingsregime.
-
-Als je dit beleid instelt, garandeert dit niet dat er specifieke algoritmen worden onderhandeld.
-
-Dit beleid is bedoeld om serverbeheerders die clients met en zonder nalevingsvereisten willen ondersteunen, onderscheid te laten maken tussen deze clients en alleen bepaalde niet-standaard algoritmen met verhoogde cryptografische sterkte te laten gebruiken voor clients die expliciet zijn ingesteld om deze te gebruiken.
-
-Als je het beleid instelt op <ph name="CNSA2_NAME" />, wordt <ph name="PRODUCT_NAME" /> zo ingesteld dat het de voorkeur geeft aan sleuteluitwisselingsmethoden die nodig zijn voor naleving van de Commercial National Security Algorithm Suite 2.0 (CNSA 2.0).
-
-Als je het beleid niet instelt of instelt op <ph name="DEFAULT_NAME" />, wordt <ph name="PRODUCT_NAME" /> ingesteld om de standaardmethoden voor sleuteluitwisseling te gebruiken.
-
-Als je dit beleid instelt op een waarde waarmee je <ph name="PRODUCT_NAME" /> instelt om een algoritme voor de post-quantum sleutelovereenkomst te gebruiken, maar <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> niet toepast, heeft de instelling van <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> voorrang.
-
-Het is niet nodig om dit beleid in te stellen voor de beveiliging. De standaardversleuteling die <ph name="PRODUCT_NAME" /> gebruikt, is sterk genoeg om een brute-force-aanval te weerstaan met de hele kracht van de zon.
-
-Als je dit beleid instelt, wordt <ph name="PRODUCT_NAME" /> trager als je websites opent.
-
-Dit beleid heeft alleen invloed op TLS 1.3 en QUIC. Het heeft geen invloed op eerdere versies van TLS.</translation>
 <translation id="6452882999388592166">Als je dit beleid toepast, wordt de ingebouwde componentextensie CryptoToken geladen bij het opstarten. Als je het beleid niet toepast of niet instelt, wordt CryptoToken niet geladen als de browser opstart. Dit beleid is bedoeld als tijdelijke oplossing voor sites die problemen hebben doordat 'chrome.runtime' niet gedefinieerd is als gevolg van de verwijdering van CryptoToken in M106. Websites mogen niet afhankelijk zijn van een zonder voorwaarden gedefinieerde 'chrome.runtime'.</translation>
 <translation id="6453641799812499182"><ph name="CORS" />-controlebeperkingen voor de nieuwe <ph name="CORS" />-implementatie aanzetten</translation>
 <translation id="645425387487868471">Inloggen voor <ph name="PRODUCT_NAME" /> verplichten</translation>
@@ -10671,21 +10624,6 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
 <translation id="8035570672225663428">Het model voor aangepast opladen aanzetten om het oplaadproces te onderbreken om de batterijduur te verlengen</translation>
 <translation id="8038007682032315784"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> uitzetten op alle webpagina's</translation>
 <translation id="8044493735196713914">Opstartmodus van apparaat melden</translation>
-<translation id="8044943551137872312">Je kunt dit beleid gebruiken om <ph name="CHROME_DEVTOOLS_NAME" /> toe te staan voor specifieke URL's.
-
-URL-patronen worden vergeleken met de URL van de pagina die wordt geïnspecteerd. Als er een overeenkomst wordt gevonden, zijn de <ph name="CHROME_DEVTOOLS_NAME" /> toegestaan. Dit geldt ook als de URL overeenkomt met het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" />, zelfs als het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> is ingesteld op Niet toestaan (waarde 2). Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor informatie over de URL-indeling.
-
-Als je het beleid niet instelt, heeft deze toelatingslijst geen effect.
-
-Als je dit beleid instelt en <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> niet, wordt elke URL die niet op deze lijst staat, geblokkeerd.
-
-Als je dit beleid en het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> beide instelt, heeft deze toelatingslijst voorrang. Als een URL overeenkomt met een patroon op de toelatingslijst, wordt deze toegestaan. Als een URL overeenkomt met een patroon op de blokkeerlijst (maar niet op de toelatingslijst), wordt deze geblokkeerd. Als een URL met geen van beide overeenkomt, wordt het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> gebruikt als reserve.
-
-Als je geen van beide beleidsregels instelt, wordt de beschikbaarheid bepaald door het beleid <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Dit beleid is ook van toepassing op <ph name="CHROME_DEVTOOLS_NAME" /> die worden geopend voor extensies en web-apps.
-
-Dit beleid is beperkt tot 1000 items.</translation>
 <translation id="80453040817068401">De <ph name="LACROS_NAME" />-browser beschikbaar maken</translation>
 <translation id="804619600634661088">Het gebruik van foutopsporing op afstand toestaan</translation>
 <translation id="8047264240841615226">Instellingen voor generatieve AI-functies van <ph name="CHROME_DEVTOOLS_NAME" /></translation>

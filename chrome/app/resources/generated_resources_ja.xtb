@@ -381,7 +381,6 @@
 <translation id="1239841552505950173">アプリケーションを起動</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" /> の試験運用機能の状態を選択</translation>
 <translation id="124116460088058876">その他の言語</translation>
-<translation id="1241381048229838873">すべてのブックマークを表示</translation>
 <translation id="1241968867980182121">上のビューを閉じる</translation>
 <translation id="1242044645101871359">もう一度ログインしてください</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> が設定のリセットを求めています。</translation>
@@ -2379,6 +2378,7 @@
 <translation id="2584974473573720127">Chrome でウェブサイトのマイクへのアクセス権を管理する</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" /> をインストールできませんでした。もう一度お試しいただくか、管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="2586672484245266891">URL を短くしてください</translation>
+<translation id="2588271083332682494">タブグループで整理整頓</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> のデバイス</translation>
 <translation id="2589658397149952302">ドライブ ファイルを表示しない</translation>
 <translation id="2593499352046705383">開始する前に、データがバックアップされていることを確認してください。<ph name="DEVICE_OS" /> をインストールすると、ハードドライブは上書きされます。詳しくは、g.co/flex/InstallGuide をご覧ください。</translation>
@@ -3016,7 +3016,6 @@
 <translation id="3010234549896186761">{COUNT,plural, =0{安全なパスワードが使用されています}=1{脆弱なパスワード: {COUNT} 件}other{脆弱なパスワード: {COUNT} 件}}</translation>
 <translation id="3010279545267083280">パスワードを削除しました</translation>
 <translation id="3010389206479238935">次で強制的に開く</translation>
-<translation id="3010961843303056486">すべてのブックマークを表示する</translation>
 <translation id="3011384993885886186">暖色グレー</translation>
 <translation id="3011488081941333749">終了時に <ph name="DOMAIN" /> からの Cookie が削除されます</translation>
 <translation id="3012631534724231212">（iframe）</translation>
@@ -3342,6 +3341,7 @@
 <translation id="3248902735035392926">安全性に問題がないか、<ph name="BEGIN_LINK" />拡張機能を確認<ph name="END_LINK" />しましょう</translation>
 <translation id="3251119461199395237">ファイルの同期</translation>
 <translation id="3251759466064201842">&lt;証明書に含まれていません&gt;</translation>
+<translation id="3252169590975855820">Google パスワード マネージャーからアクセスできます</translation>
 <translation id="325238099842880997">お子様がゲームやインターネット、自宅学習にデバイスを利用する際のデジタルルールを設定できます</translation>
 <translation id="3253225298092156258">利用できません</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{このファイルをコピーするには、<ph name="CLOUD_PROVIDER" /> の空き容量を増やしてください}other{これらのファイルをコピーするには、<ph name="CLOUD_PROVIDER" /> の空き容量を増やしてください}}</translation>
@@ -5859,7 +5859,6 @@
 <translation id="4946215577126251136">プロジェクト パネルのボタンを表示する</translation>
 <translation id="4946998421534856407">ランチャー+上矢印</translation>
 <translation id="4947376546135294974">アクセスしているサイトのデータ</translation>
-<translation id="4948370357877377178">タスクを続行</translation>
 <translation id="4950100687509657457">プロフィールの作成</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ファイル}other{# 件のファイル}}</translation>
 <translation id="495170559598752135">操作</translation>
@@ -6083,7 +6082,6 @@
 <translation id="511147239888121455">データをバックアップしますか？</translation>
 <translation id="5111474831474629851">お客様の組織では、このアカウントでログインすることは許可されていません</translation>
 <translation id="5111646998522066203">シークレット モードを終了</translation>
-<translation id="5111692334209731439">ブックマーク マネージャ(&amp;B)</translation>
 <translation id="5111794652433847656">このデバイスに <ph name="APP_NAME" /> のパスキーがありません</translation>
 <translation id="5112577000029535889">デベロッパー ツール(&amp;D)</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{1 個のファイルを移動しました}other{{NUM_OF_FILES} 個のファイルを移動しました}}</translation>
@@ -6903,7 +6901,6 @@
 <translation id="5684181005476681636">Wi-Fi の詳細</translation>
 <translation id="5684661240348539843">アセット ID</translation>
 <translation id="5684950556880280580">パスワードが更新されました</translation>
-<translation id="5687307865755379257">セピア（ライト）</translation>
 <translation id="5687326903064479980">タイムゾーン</translation>
 <translation id="5687340364605915800">このリクエストへの対応はサイトが自らの裁量で決定します</translation>
 <translation id="5687606994963670306">Chrome では、30 日以上経過したウェブサイトは自動削除されます。ウェブサイトにもう一度アクセスすると、リストに再度表示される場合もあります。広告の提案を行わないようウェブサイトをブロックすることもできます。詳しくは、<ph name="BEGIN_LINK" />Chrome で広告のプライバシーを管理する<ph name="END_LINK" />をご確認ください。</translation>
@@ -7309,7 +7306,6 @@
 <translation id="5961545272769624207">ジェスチャーを割り当て</translation>
 <translation id="5963413905009737549">セクション</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" />（最大 <ph name="NUM_KILOBYTES_LIVE" />）</translation>
-<translation id="5964086374943649343">低コントラスト</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{すべてを新しいウィンドウで開く(&amp;N)}=1{新しいウィンドウで開く(&amp;N)}other{すべて（{COUNT} 個）を新しいウィンドウで開く(&amp;N)}}</translation>
 <translation id="5964247741333118902">埋め込みコンテンツ</translation>
 <translation id="5965607173855879702">データを削除しています...</translation>
@@ -7728,7 +7724,6 @@
 <translation id="6251924700383757765">プライバシー ポリシー</translation>
 <translation id="625369703868467034">ネットワークの健全性</translation>
 <translation id="6253801023880399036">パスワードは <ph name="GOOGLE_PASSWORD_MANAGER" /> に保存されています。</translation>
-<translation id="6254306574403090248">セピア（ダーク）</translation>
 <translation id="6254503684448816922">キーが侵害された</translation>
 <translation id="6254892857036829079">非常に良い</translation>
 <translation id="6257602895346497974">同期を有効にする...</translation>
@@ -8665,6 +8660,7 @@
 <translation id="6900632443249221072">Gemini で画像を作成</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" /> を更新するにはもう一度ログインしてください</translation>
 <translation id="6900654715912436255">この検索エンジンを削除してもよろしいですか？</translation>
+<translation id="6900883974539674431">タブグループを作成すると、お使いのすべてのデバイスで自動的に保存され、更新されます</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6901130673208235020">閲覧履歴を検索すると、過去の検索、最も一致したページのコンテンツ、生成モデルによる出力が Google に送信されます</translation>
 <translation id="6902066522699286937">プレビューする音声</translation>
@@ -9957,7 +9953,6 @@
 <translation id="7784067724422331729">お使いのパソコンのセキュリティ設定により、このファイルはブロックされました。</translation>
 <translation id="7784796923038949829">サイトのデータを読み取れないか、変更できません</translation>
 <translation id="778480864305029524">インスタント テザリングを使用するには、Google Play 開発者サービスの通知を有効にしてください。</translation>
-<translation id="7785471469930192436">検索履歴を削除する場合は、お使いの検索エンジンの手順をご確認ください（該当する場合）</translation>
 <translation id="77855763949601045">ゲスト プロフィールを開く(&amp;O)</translation>
 <translation id="7786663536153819505">スマートフォンの指示に沿って QR コードをスキャンします。スマートフォンの Bluetooth がオンになっていることをご確認ください。
     <ph name="BR" />
@@ -10454,7 +10449,6 @@
 <translation id="8110489095782891123">連絡先リストをダウンロードしています...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" /> のマイクへのアクセス権</translation>
 <translation id="8116497846156149">保護者に承認を依頼してください</translation>
-<translation id="8116972784401310538">ブックマーク マネージャ(&amp;B)</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> でログイン方法を記憶し、可能な場合は自動的にログインします。オフにすると、毎回確認を求められます。</translation>
 <translation id="8118362518458010043">Chrome によって無効にされました。この拡張機能は安全ではない可能性があります。</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# 件のブックマーク}other{# 件のブックマーク}}</translation>
@@ -10717,7 +10711,6 @@
 <translation id="8288032458496410887">「<ph name="APP" />」をアンインストール...</translation>
 <translation id="8288553158681886528">PDF からテキストを抽出</translation>
 <translation id="8289128870594824098">ディスクサイズ</translation>
-<translation id="8289200713453671499">タブグループと最近の AI との会話をその場ですばやく切り替えることができます。</translation>
 <translation id="8289509909262565712"><ph name="DEVICE_OS" /> へようこそ</translation>
 <translation id="8291415872436043161">Chrome をダウンロードする</translation>
 <translation id="8291942417224950075">個人でのご利用</translation>
@@ -11639,6 +11632,7 @@
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> が、データをバックアップして、今日中にこの <ph name="DEVICE_TYPE" />を返却するよう求めています。}other{<ph name="MANAGER" /> が、データをバックアップして、期限までにこの <ph name="DEVICE_TYPE" />を返却するよう求めています。}}</translation>
 <translation id="8902667442496790482">「選択して読み上げ」の設定を開く</translation>
 <translation id="8903733144777177139">マイクへのアクセスがブロックされています</translation>
+<translation id="8904787158537906492">リンクをクリップボードにコピーしました</translation>
 <translation id="890518297681039136">不明な理由により、処理に失敗しました。</translation>
 <translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" /> によりこのウェブサイトの安全なパスワードが作成されました</translation>
 <translation id="890616557918890486">ソースを変更</translation>

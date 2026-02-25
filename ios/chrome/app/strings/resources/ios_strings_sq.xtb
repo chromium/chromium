@@ -96,6 +96,7 @@
 <translation id="1335767868357998043">Zgjidh pozicionin e shiritit të adresave</translation>
 <translation id="1347468774581902829">Menaxho aktivitetin</translation>
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
+<translation id="1350281503816551185">Verifiko që je ti kur plotëson informacione delikate</translation>
 <translation id="1355337783640312381">Për të ndërruar llogaritë, trokit ikonën e llogarisë sate</translation>
 <translation id="1358106883354237005">Llogaria e menaxhuar</translation>
 <translation id="1358214951266274152">Vizito lidhjen që kopjove</translation>
@@ -1147,6 +1148,7 @@
 <translation id="5186185447130319458">Privat</translation>
 <translation id="5189431381114029336">Ruaj çelësin tënd të parë të kalimit</translation>
 <translation id="518997337573684769">Po dërgohet raporti i ndërprerjeve aksidentale…</translation>
+<translation id="519528950056409240">Lejo që "Portofoli" të ndajë të dhënat</translation>
 <translation id="519530786644929958">Shkarkimi dështoi dhe nuk mund të riprovohet.</translation>
 <translation id="5197255632782567636">Interneti</translation>
 <translation id="5200894869889836319">Opsionet për të caktuar lejet</translation>
@@ -1349,6 +1351,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="5899314093904173337">Për të ndarë me personat në afërsi, lejoji të skanojnë këtë kod QR me kamerën e tyre ose aplikacionin e skanerit të kodeve QR</translation>
 <translation id="5902752768726620872">{count,plural, =1{{count} skedë e re}other{{count} skeda të reja}}</translation>
 <translation id="5911030830365207728">Përkthe me Google</translation>
+<translation id="5912796581727968237">Hap "Portofolin e Google"</translation>
 <translation id="5922999516621365983">Zvarrite skedën këtu për ta gozhduar.</translation>
 <translation id="5930982343430790032">{COUNT,plural, =1{Shto deri në 1 skedar, skedë ose imazh}other{Shto deri në {COUNT} skedarë, skeda ose imazhe}}</translation>
 <translation id="5936006948844852401">Menaxho hapësirën e ruajtjes</translation>
@@ -1597,6 +1600,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6710079714193676716">Menaxhohet nga organizata jote. Disa veçori mund të jenë të padisponueshme. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="6713676799463473249">Modifikuar më <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">Skedat e marra</translation>
+<translation id="6722638373100589752">Për të plotësuar automatikisht informacionet e tua, aktivizo "Përdor dokumentet dixhitale nëpër Google" te cilësimet e "Portofolit"</translation>
 <translation id="6723740634201835758">Në "Llogarinë tënde të Google"</translation>
 <translation id="6724024423419410528">Ngjyrat</translation>
 <translation id="672735642903863329">Merr faqeshënuesit, fjalëkalimet etj. në të gjitha pajisjet e tua.</translation>
@@ -1729,6 +1733,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7253951228444156601">Po kontrollon fjalëkalimet…</translation>
 <translation id="7261217796641151584">Ndaj grupin</translation>
 <translation id="7266578100016339897">Kjo të ndihmon të qëndrosh i organizuar. Mund ta ndryshosh këtë te cilësimet në çdo kohë.</translation>
+<translation id="7268294318904284516">Nëse e ndan këtë pajisje, përdor kyçjen e ekranit për të verifikuar që je ti kur përdor informacione delikate si pasaportat</translation>
 <translation id="7272437679830969316">Nuk mund të verifikohet identiteti yt. Fjalëkalimi nuk u kopjua.</translation>
 <translation id="728025568708172005">Fillo turneun</translation>
 <translation id="7280980607183752256">Ky skedar nuk mund të importohet</translation>

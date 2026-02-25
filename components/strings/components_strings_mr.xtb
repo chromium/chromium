@@ -731,6 +731,7 @@
 <translation id="2166049586286450108">पूर्ण ॲडमिन ॲक्सेस</translation>
 <translation id="2166378884831602661">ही साइट सुरक्षित कनेक्शन प्रदान करू शकत नाही</translation>
 <translation id="2168151236314517198">अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे हा आशय प्रिंट करणे ब्लॉक केले आहे</translation>
+<translation id="2171244127100824330"><ph name="ACCOUNT" /> साठी <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> मध्ये</translation>
 <translation id="2172089022819052306">वाहनाची दुरुस्ती आणि देखभाल</translation>
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="2174875517416416684">तुमचा व्यवहार पूर्ण झाला नाही. तुमच्या खात्यामधून कोणतेही निधी काढले नाहीत.</translation>
@@ -997,6 +998,7 @@
 <translation id="2553352788023127673">Search इतिहास आणि पासवर्ड त्यांच्या व्यवस्थापन सेटिंग्जमधून हटवता येऊ शकतात</translation>
 <translation id="2553853292994445426">तुमची सुरक्षित DNS सेटिंग्ज तपासा. तुम्ही कदाचित कनेक्ट करता येत नसलेला एखादा सुरक्षित DNS सर्व्हर कॉन्फिगर केला आहे.</translation>
 <translation id="255497580849974774">अपडेटदरम्यान कृपया तुमचे डिव्हाइस चार्जरशी कनेक्ट केलेले ठेवा.</translation>
+<translation id="2555855727505718984">फॉर्म भरण्यात मदत करण्यासाठी ही माहिती या डिव्हाइसवरील ऑटोफिलमध्ये नसेल</translation>
 <translation id="2556876185419854533">&amp; संपादित करा पूर्ववत करा</translation>
 <translation id="2559566667529177711">मल्टी-लेअर</translation>
 <translation id="2570734079541893434">सेटिंग्ज व्यवस्थापित करा</translation>
@@ -1513,7 +1515,6 @@
 <translation id="3427342743765426898">&amp;संपादित करा पुन्हा करा</translation>
 <translation id="342781501876943858">तुम्ही तुमच्या पासवर्डचा इतर साइटवर पुन्हा वापर केला असेल तर Chromium तुम्हाला तो रीसेट करण्याची शिफारस करतो.</translation>
 <translation id="3428151540071562330">DnsOverHttpsTemplates चे एकाहून अधिक सर्व्हर टेम्पलेट URI चुकीचे आहेत आणि ते वापरले जाणार नाहीत.</translation>
-<translation id="3428789896412418755">गटबद्ध केलेला इतिहास</translation>
 <translation id="3432601291244612633">पेज बंद करा</translation>
 <translation id="3433111389595862568">सहयोग आणि कॉंफरन्सिंग सॉफ्टवेअर</translation>
 <translation id="3433144818443565002">व्हॉइस आणि व्हिडिओ चॅट</translation>
@@ -2352,7 +2353,6 @@
 <translation id="4751249061288707459">संमती शेवटची अपडेट केल्याची तारीख:</translation>
 <translation id="4751476147751820511">मोशन किंवा प्रकाश सेन्सर</translation>
 <translation id="4754461935447132332">सुरक्षित नसलेल्या साइटसाठी अनुमती नाही</translation>
-<translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">कोड चुकीचा आहे</translation>
 <translation id="4757993714154412917">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला. तुमची खाती सुरक्षित करण्यासाठी, Chromium तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करते.</translation>
@@ -2406,6 +2406,7 @@
 <translation id="4832388034239846146">टॅब गट शेअर करण्यासाठी, Chrome अपडेट करा</translation>
 <translation id="483241715238664915">चेतावण्या सुरू करा</translation>
 <translation id="4832961164064927107">BBQ आणि ग्रिलिंग</translation>
+<translation id="4839984801146463230">तुमची माहिती सेव्ह करा आणि सर्व Google उत्पादनांवर फॉर्म भरणे यासारखी कामे अधिक जलद पूर्ण करा. तुम्ही <ph name="ACCOUNT" /> साठी <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> मध्ये <ph name="BEGIN_LINK" />तुमची माहिती व्यवस्थापित करणे<ph name="END_LINK" /> हे करू शकता</translation>
 <translation id="4840250757394056958">तुमचा Chrome इतिहास पहा</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="4844937814014739139">शेअर केलेले टॅब स्क्रोल करा आणि झूम करा</translation>
@@ -2755,6 +2756,7 @@
 <translation id="5392506727170022660">मेटल (सेमी-ग्लॉस)</translation>
 <translation id="5394069166371280357">टीव्हीवरील कुटुंब अभिमुख शो</translation>
 <translation id="5396631636586785122">एज स्टिच राइट</translation>
+<translation id="5396837962335265787"><ph name="ATTRIBUTE_NAME" />, <ph name="OLD_ATTRIBUTE_ATTRIBUTE" /> होती</translation>
 <translation id="5397794290049113714">तुम्ही</translation>
 <translation id="5398461103557553443">पुढच्या वेळी हा IBAN ऑटोफिल करण्यासाठी, तो Google Wallet मध्ये सेव्ह करा</translation>
 <translation id="5398772614898833570">जाहिराती ब्लॉक केल्या</translation>
@@ -3490,6 +3492,7 @@
 <translation id="6547208576736763147">ड्युअल पंच लेफ्ट</translation>
 <translation id="6549443526281184652">पोशाख</translation>
 <translation id="6550245281449521513">माउस लॉकला अनुमती नाही</translation>
+<translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, नवीन</translation>
 <translation id="6552566579578780089">पेमेंट</translation>
 <translation id="6554732001434021288"><ph name="NUM_DAYS" /> दिवसांपूर्वी शेवटची भेट दिली</translation>
 <translation id="6556866813142980365">पुन्हा करा</translation>
@@ -4288,6 +4291,7 @@
 <translation id="7779418012194492374"><ph name="DEVICE_NAME" /> साठी अ‍ॅक्सेस मागे घ्या</translation>
 <translation id="7781829728241885113">काल</translation>
 <translation id="7782465647372057580">खाते माहिती एन्क्रिप्ट केलेली असते आणि खाजगी ठेवली जाते</translation>
+<translation id="7785471469930192436">लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी तुमच्या शोध इंजीनच्या सूचना पहा</translation>
 <translation id="7785790577395078482">हा टॅबलेट</translation>
 <translation id="7786368602962652765">भरणे आवश्यक असलेले फील्ड रिकामे आहे. सेव्ह करण्याआधी भरा.</translation>
 <translation id="7791011319128895129">रिलीझ न केलेले</translation>
@@ -4318,7 +4322,6 @@
 <translation id="7840103971441592723">स्क्रीन कॅप्चर सुरू झाले आहे</translation>
 <translation id="784137052867620416">खरेदीशी संबंधित इनसाइट</translation>
 <translation id="7841633276323004751">पेमेंटसह पुढे जाण्यासाठी निवडण्याकरिता पेमेंट पद्धती उपलब्ध आहेत. कीबोर्ड लपवलेला आहे.</translation>
-<translation id="784404208867107517">गटबद्ध केलेला इतिहास</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{काहीही नाही}=1{एक अ‍ॅप <ph name="EXAMPLE_APP_1" />}=2{२ अ‍ॅप्स <ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />}other{# अ‍ॅप्स <ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />}}</translation>
 <translation id="7846161022626028328">एरर आली. पुन्हा प्रयत्न करा.</translation>
 <translation id="784623644169604270">कोणतीही अलीकडील अ‍ॅक्टिव्हिटी नाही</translation>
@@ -4748,6 +4751,7 @@
 <translation id="8544217240017914508">Google Chrome पेमेंट पद्धती भरण्यासाठी सेटिंग्जमध्ये फेरबदल करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="8544303911974837265">पॉलिस्टर</translation>
 <translation id="854548366864113872">जास्त किमतीचे पर्याय</translation>
+<translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">अपलोड करण्याचे कारण द्या (आवश्यक)</translation>
 <translation id="8546350655047701518">JSON ला लॉग एक्सपोर्ट करा</translation>
 <translation id="8546667245446052521">पेपर (आर्कायव्हल)</translation>

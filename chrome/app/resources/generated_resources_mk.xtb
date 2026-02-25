@@ -382,7 +382,6 @@
 <translation id="1239841552505950173">Стартувај ја апликацијата</translation>
 <translation id="1241066500170667906">Изберете состојба на експериментот за <ph name="EXPERIMENT_NAME" /></translation>
 <translation id="124116460088058876">Повеќе јазици</translation>
-<translation id="1241381048229838873">Прикажи ги сите обележувачи</translation>
 <translation id="1241968867980182121">Затвори го приказот горе</translation>
 <translation id="1242044645101871359">Најавете се повторно</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> сака да ги ресетира вашите поставки.</translation>
@@ -2399,6 +2398,7 @@
 <translation id="2584974473573720127">Управувајте со дозволите за микрофон за веб-сајтовите во Chrome</translation>
 <translation id="2586561813241011046">Не може да се инсталира <ph name="APP_NAME" />. Обидете се повторно или контактирајте со администраторот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586672484245266891">Внесете пократка URL-адреса</translation>
+<translation id="2588271083332682494">Расчистете со групите картички</translation>
 <translation id="2588636910004461974">Уреди од <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Никогаш не прикажувај датотеки на Drive</translation>
 <translation id="2593499352046705383">Пред да започнете, уверете се дека имате направено бекап на вашите податоци. Инсталирањето на <ph name="DEVICE_OS" /> ќе го презапише вашиот хард диск. Дознајте повеќе на g.co/flex/InstallGuide.</translation>
@@ -3036,7 +3036,6 @@
 <translation id="3010234549896186761">{COUNT,plural, =0{Лозинките изгледаат силни}=1{{COUNT} слаба лозинка}one{{COUNT} слаба лозинка}other{{COUNT} слаби лозинки}}</translation>
 <translation id="3010279545267083280">Лозинката е избришана</translation>
 <translation id="3010389206479238935">Отвори присилно во</translation>
-<translation id="3010961843303056486">Прикажи ги сите обележувачи</translation>
 <translation id="3011384993885886186">Топлосива</translation>
 <translation id="3011488081941333749">Колачињата од <ph name="DOMAIN" /> ќе се избришат на излегување</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -5886,7 +5885,6 @@
 <translation id="4946215577126251136">Прикажувај го копчето за таблата со проекти</translation>
 <translation id="4946998421534856407">стартер + стрелка нагоре</translation>
 <translation id="4947376546135294974">Податоци од сајтот што го посетувате</translation>
-<translation id="4948370357877377178">Продолжете со задачите</translation>
 <translation id="4950100687509657457">Создајте профил</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="495170559598752135">Дејства</translation>
@@ -6110,7 +6108,6 @@
 <translation id="511147239888121455">Да се направи бекап на вашите работи?</translation>
 <translation id="5111474831474629851">Вашата организација не ви дозволува да се најавувате со сметкава</translation>
 <translation id="5111646998522066203">Излези од инкогнито</translation>
-<translation id="5111692334209731439">&amp;Управник со обележувачи</translation>
 <translation id="5111794652433847656">Нема криптографски клучеви за <ph name="APP_NAME" /> на уредов</translation>
 <translation id="5112577000029535889">&amp;Програмерски алатки</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{Преместена е 1 датотека}one{Преместени се {NUM_OF_FILES} датотека}other{Преместени се {NUM_OF_FILES} датотеки}}</translation>
@@ -6934,7 +6931,6 @@
 <translation id="5684181005476681636">Детали за Wi-Fi</translation>
 <translation id="5684661240348539843">Идентификатор на средства</translation>
 <translation id="5684950556880280580">Вашата лозинка е ажурирана</translation>
-<translation id="5687307865755379257">Светла тема – сепија</translation>
 <translation id="5687326903064479980">Временска зона</translation>
 <translation id="5687340364605915800">Сајтовите постапуваат според сопствено убедување при одговарање на барањево</translation>
 <translation id="5687606994963670306">Chrome автоматски ги брише сајтовите што се постари од 30 дена. Сајт што ќе го отворите повторно може одново да се појави на списокот. Или може да блокирате сајт да ви прикажува реклами. Дознајте повеќе за <ph name="BEGIN_LINK" />управувањето со вашата приватност за реклами на Chrome.<ph name="END_LINK" /></translation>
@@ -7340,7 +7336,6 @@
 <translation id="5961545272769624207">Назначете дејство</translation>
 <translation id="5963413905009737549">Секција</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> максимум)</translation>
-<translation id="5964086374943649343">Низок контраст</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Отвори ги сите во &amp;нов прозорец}=1{Отвори во &amp;нов прозорец}one{Отвори ги сите ({COUNT}) во &amp;нов прозорец}other{Отвори ги сите ({COUNT}) во &amp;нов прозорец}}</translation>
 <translation id="5964247741333118902">Вметнати содржини</translation>
 <translation id="5965607173855879702">Се бришат податоците…</translation>
@@ -7759,7 +7754,6 @@
 <translation id="6251924700383757765">Политика за приватност</translation>
 <translation id="625369703868467034">Состојба на мрежата</translation>
 <translation id="6253801023880399036">Лозинките се зачувуваат во <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
-<translation id="6254306574403090248">Темна тема – сепија</translation>
 <translation id="6254503684448816922">Клучот е доведен во опасност</translation>
 <translation id="6254892857036829079">Совршено</translation>
 <translation id="6257602895346497974">Вклучете синхронизација…</translation>
@@ -8700,6 +8694,7 @@
 <translation id="6900632443249221072">Создај слика со Gemini</translation>
 <translation id="6900651018461749106">Најавете се повторно за да ја ажурирате <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">Дали сигурно сакате да го избришете овој пребарувач?</translation>
+<translation id="6900883974539674431">Создајте групи картички што ќе се зачувуваат и ажурираат на сите ваши уреди автоматски</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6901130673208235020">Кога ја пребарувате историјата на прелистувањето, поимите за пребарување на историјата, содржините на страниците со најдобри совпаѓања и генерираните модели излезни податоци се испраќаат до Google</translation>
 <translation id="6902066522699286937">Глас за преглед</translation>
@@ -9992,7 +9987,6 @@
 <translation id="7784067724422331729">Безбедносните поставки на вашиот компјутер ја блокираа оваа датотека.</translation>
 <translation id="7784796923038949829">Не може да ги чита или менува податоците на сајтот</translation>
 <translation id="778480864305029524">За да користите инстант врзување, вклучете ги известувањата за услугите на Google Play.</translation>
-<translation id="7785471469930192436">Погледнете го упатството на пребарувачот за бришење на историјата на пребарување доколку е применливо</translation>
 <translation id="77855763949601045">Отворете гостински профил</translation>
 <translation id="7786663536153819505">Следете ги упатствата на телефонот за да го скенирате QR-кодот. Уверете се дека е вклучен Bluetooth на телефонот.
     <ph name="BR" />
@@ -10488,7 +10482,6 @@
 <translation id="8110489095782891123">Се презема списокот со контакти…</translation>
 <translation id="8114925369073821854">Дозвола за микрофон за <ph name="APP_NAME" /></translation>
 <translation id="8116497846156149">Побарај одобрување од родител</translation>
-<translation id="8116972784401310538">&amp;Управник со обележувачи</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> памти како сте се најавиле и кога е тоа можно, ве најавува автоматски. Кога е исклучен, ќе се бара потврда од вас при секое најавување.</translation>
 <translation id="8118362518458010043">Оневозможено од Chrome. Екстензијава може да биде небезбедна.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# обележувач}one{# обележувач}other{# обележувачи}}</translation>
@@ -10754,7 +10747,6 @@
 <translation id="8288032458496410887">Деинсталирајте ја <ph name="APP" />…</translation>
 <translation id="8288553158681886528">Извлекувај текст од PDF</translation>
 <translation id="8289128870594824098">Големина на диск</translation>
-<translation id="8289200713453671499">Брзо префрлајте се меѓу вашите групи картички и неодамнешни разговори со AI без да го изгубите фокусот.</translation>
 <translation id="8289509909262565712">Добре дојдовте во <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">Преземете го Chrome</translation>
 <translation id="8291942417224950075">За лична употреба</translation>

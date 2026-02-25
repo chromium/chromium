@@ -381,7 +381,6 @@
 <translation id="1239841552505950173">Аппликэйшнийг эхлүүлэх</translation>
 <translation id="1241066500170667906"><ph name="EXPERIMENT_NAME" />-д туршилтын муж сонгоно уу</translation>
 <translation id="124116460088058876">Бусад хэл</translation>
-<translation id="1241381048229838873">Бүх хавчуургыг харуулах</translation>
 <translation id="1241968867980182121">Дээд талын харагдах байдлыг хаах</translation>
 <translation id="1242044645101871359">Дахин нэвтэрнэ үү</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> таны тохиргоог шинэчлэхийг хүсэж байна.</translation>
@@ -2394,6 +2393,7 @@
 <translation id="2584974473573720127">Chrome-д вебсайтын микрофоны зөвшөөрлүүдийг удирдана уу</translation>
 <translation id="2586561813241011046"><ph name="APP_NAME" />-г суулгаж чадсангүй. Дахин оролдож үзнэ үү, эсвэл админтайгаа холбогдоно уу. Алдааны код: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586672484245266891">Богино URL оруулна уу</translation>
+<translation id="2588271083332682494">Табын бүлгүүдээр цэгцлээрэй</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" />-н төхөөрөмжүүд</translation>
 <translation id="2589658397149952302">Драйвын файлуудыг хэзээ ч бүү харуул</translation>
 <translation id="2593499352046705383">Эхлэхээсээ өмнө өгөгдлөө нөөцөлсөн эсэхээ шалгана уу. <ph name="DEVICE_OS" />-г суулгаснаар таны хатуу дискийг дарж бичнэ. Та g.co/flex/InstallGuide дээрээс нэмэлт мэдээлэл авна уу.</translation>
@@ -3031,7 +3031,6 @@
 <translation id="3010234549896186761">{COUNT,plural, =0{Таны нууц үгнүүд сайн харагдаж байна}=1{{COUNT} сул нууц үг}other{{COUNT} сул нууц үг}}</translation>
 <translation id="3010279545267083280">Нууц үг устгагдсан</translation>
 <translation id="3010389206479238935">Дараахад хүчээр нээх</translation>
-<translation id="3010961843303056486">Бүх хавчуургыг харуулах</translation>
 <translation id="3011384993885886186">Дулаан саарал</translation>
 <translation id="3011488081941333749"><ph name="DOMAIN" />-н күүкиийг гарах үед устгана</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -5880,7 +5879,6 @@
 <translation id="4946215577126251136">Төслийн түр зуурын самбарын товчийг харуулах</translation>
 <translation id="4946998421534856407">эхлүүлэгч + дээш сум</translation>
 <translation id="4947376546135294974">Таны зочилж буй сайтын өгөгдөл</translation>
-<translation id="4948370357877377178">Ажлаа үргэлжлүүлээрэй</translation>
 <translation id="4950100687509657457">Профайл үүсгэх</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 файл}other{# файл}}</translation>
 <translation id="495170559598752135">Авах арга хэмжээ</translation>
@@ -6104,7 +6102,6 @@
 <translation id="511147239888121455">Зүйлсээ нөөцлөх үү?</translation>
 <translation id="5111474831474629851">Танай байгууллага танд энэ бүртгэлээр нэвтрэхийг зөвшөөрдөггүй</translation>
 <translation id="5111646998522066203">Нууцлалын цонхыг хаах</translation>
-<translation id="5111692334209731439">&amp; Хадгалагдсан хуудсын менежер</translation>
 <translation id="5111794652433847656">Энэ төхөөрөмжид <ph name="APP_NAME" />-д зориулсан passkey байхгүй байна</translation>
 <translation id="5112577000029535889">&amp; Хөгжүүлэгч хэрэгслүүд</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{1 файлыг зөөсөн}other{{NUM_OF_FILES} файлыг зөөсөн}}</translation>
@@ -6929,7 +6926,6 @@
 <translation id="5684181005476681636">Wi-Fi-н дэлгэрэнгүй</translation>
 <translation id="5684661240348539843">Үндсэн мэдээлэл тодорхойлогч</translation>
 <translation id="5684950556880280580">Таны нууц үгийг шинэчилсэн</translation>
-<translation id="5687307865755379257">Бор гэрэл</translation>
 <translation id="5687326903064479980">Цагийн бүс</translation>
 <translation id="5687340364605915800">Сайтууд энэ хүсэлтэд хариулах үедээ өөрсдийн үзэмжээр ажилладаг</translation>
 <translation id="5687606994963670306">Chrome 30 хоногоос дээш удсан сайтуудыг автоматаар устгадаг. Таны дахин зочилсон сайт жагсаалтад дахин гарч ирж магадгүй. Эсвэл та сайтыг танд зар санал болгохыг блоклож болно. <ph name="BEGIN_LINK" />Зарын нууцлалаа Chrome-д удирдах<ph name="END_LINK" /> талаар нэмэлт мэдээлэл авна уу.</translation>
@@ -7334,7 +7330,6 @@
 <translation id="5961545272769624207">Зангаа оноох</translation>
 <translation id="5963413905009737549">Хэсэг</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> ( <ph name="NUM_KILOBYTES_LIVE" /> оргил)</translation>
-<translation id="5964086374943649343">Бага ялгарал</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Бүгдийг &amp;шинэ цонхонд нээх}=1{&amp;Шинэ цонхонд нээх}other{Бүгдийг ({COUNT}) &amp;шинэ цонхонд нээх}}</translation>
 <translation id="5964247741333118902">Оруулсан контент</translation>
 <translation id="5965607173855879702">Өгөгдлийг устгаж байна...</translation>
@@ -7753,7 +7748,6 @@
 <translation id="6251924700383757765">Аюулгүй байдлын бодлого</translation>
 <translation id="625369703868467034">Сүлжээний байдал</translation>
 <translation id="6253801023880399036">Нууц үгнүүдийг <ph name="GOOGLE_PASSWORD_MANAGER" />-д хадгалсан.</translation>
-<translation id="6254306574403090248">Бараан бор</translation>
 <translation id="6254503684448816922">Түлхүүр тааруулах</translation>
 <translation id="6254892857036829079">Төгс</translation>
 <translation id="6257602895346497974">Синкийг асаах...</translation>
@@ -8693,6 +8687,7 @@
 <translation id="6900632443249221072">Gemini-р зураг үүсгэх</translation>
 <translation id="6900651018461749106"><ph name="USER_EMAIL" />-г шинэчлэхийн тулд дахин нэвтэрнэ үү</translation>
 <translation id="6900654715912436255">Та энэ хайлтын системийг устгахдаа итгэлтэй байна уу?</translation>
+<translation id="6900883974539674431">Таны бүх төхөөрөмж дээр автоматаар хадгалж, шинэчилдэг табын бүлгүүд үүсгээрэй</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6901130673208235020">Таныг хөтчийн түүхээсээ хайх үед таны түүхийн хайлт, хамгийн сайн таарах илэрцийн хуудасны контент, хайх үед үүсгэсэн загварын гаралтыг Google рүү илгээдэг</translation>
 <translation id="6902066522699286937">Урьдчилан үзэх дуу хоолой</translation>
@@ -9985,7 +9980,6 @@
 <translation id="7784067724422331729">Таны компьютерийн хамгаалалтын тохиргоо энэ файлыг блоклосон байна.</translation>
 <translation id="7784796923038949829">Сайтын өгөгдлийг унших эсвэл өөрчлөх боломжгүй байна</translation>
 <translation id="778480864305029524">Шуурхай модем болголтыг ашиглахын тулд Google Play Үйлчилгээний мэдэгдлийг асаана уу.</translation>
-<translation id="7785471469930192436">Хэрэв боломжтой бол хайлтын түүхээ устгахын тулд хайлтын системийн зааварчилгаагаа харна уу</translation>
 <translation id="77855763949601045">&amp;Зочны профайлыг нээх</translation>
 <translation id="7786663536153819505">QR кодыг скан хийхийн тулд утасныхаа зааварчилгааг дагана уу. Утасны тань Bluetooth асаалттай эсэхийг шалгана уу.
     <ph name="BR" />
@@ -10480,7 +10474,6 @@
 <translation id="8110489095782891123">Харилцагчийн жагсаалтыг татаж байна...</translation>
 <translation id="8114925369073821854"><ph name="APP_NAME" />-н микрофоны зөвшөөрөл</translation>
 <translation id="8116497846156149">Эцэг эхээс зөвшөөрөл хүсэх</translation>
-<translation id="8116972784401310538">Хадгалагдсан хуудсын менежер</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" /> таныг хэрхэн нэвтэрсэн болохыг санадаг бөгөөд боломжтой үед нь таныг автоматаар нэвтрүүлнэ. Унтраалттай үед танаас баталгаажуулахыг үргэлж хүснэ.</translation>
 <translation id="8118362518458010043">Chrome-с идэвхгүй болгосон. Энэ өргөтгөл аюултай байж болзошгүй.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# хавчуурга}other{# хавчуурга}}</translation>
@@ -10743,7 +10736,6 @@
 <translation id="8288032458496410887"><ph name="APP" />-г устгах...</translation>
 <translation id="8288553158681886528">PDF-с текст задлах</translation>
 <translation id="8289128870594824098">Дискийн хэмжээ</translation>
-<translation id="8289200713453671499">Байрлалаа алдахгүйгээр табын бүлэг болон саяхны ХОУ-тай ярилцсан харилцан ярианыхаа хооронд шуурхай сэлгээрэй.</translation>
 <translation id="8289509909262565712"><ph name="DEVICE_OS" />-д тавтай морилно уу</translation>
 <translation id="8291415872436043161">Chrome-г татах</translation>
 <translation id="8291942417224950075">Хувийн хэрэглээнд зориулсан</translation>

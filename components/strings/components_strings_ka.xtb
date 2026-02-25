@@ -995,6 +995,7 @@
 <translation id="2553352788023127673">ძიების ისტორიისა და პაროლების წაშლა შესაძლებელია მათი მართვის პარამეტრებიდან</translation>
 <translation id="2553853292994445426">შეამოწმეთ თქვენი დაცული DNS-ის პარამეტრები. შესაძლოა, კონფიგურირებული გქონდეთ დაცული DNS სერვერი, რომელთანაც დაკავშირება ვერ ხერხდება.</translation>
 <translation id="255497580849974774">განახლების მიმდინარეობისას მიერთებული გქონდეთ მოწყობილობა დამტენთან.</translation>
+<translation id="2555855727505718984">ავტომატური შევსების სერვისს არ ექნება ეს ინფორმაცია ამ მოწყობილობაზე, რომ ფორმების შევსებაში დაგეხმაროთ</translation>
 <translation id="2556876185419854533">რედაქტირების &amp;მოქმედების გაუქმება</translation>
 <translation id="2559566667529177711">მრავალშრიანი</translation>
 <translation id="2570734079541893434">პარამეტრების მართვა</translation>
@@ -1509,7 +1510,6 @@
 <translation id="3427342743765426898">რედაქტირების &amp;გამეორება</translation>
 <translation id="342781501876943858">Chromium გირჩევთ, გადააყენოთ თქვენი პაროლი, თუ მას სხვა საიტებზეც იყენებთ.</translation>
 <translation id="3428151540071562330">„DnsOverHttpsTemplates“-ში სერვერების შაბლონების რამდენიმე URI არასწორია და არ იქნება გამოყენებული.</translation>
-<translation id="3428789896412418755">დაჯგუფებული ისტორია</translation>
 <translation id="3432601291244612633">გვერდის დახურვა</translation>
 <translation id="3433111389595862568">თანამშრომლობისა და საკონფერენციო პროგრამული უზრუნველყოფა</translation>
 <translation id="3433144818443565002">ხმოვანი და ვიდეოჩეთი</translation>
@@ -2347,7 +2347,6 @@
 <translation id="4751249061288707459">თანხმობის ბოლო განახლება:</translation>
 <translation id="4751476147751820511">მოძრაობის ან განათების სენსორები</translation>
 <translation id="4754461935447132332">დაუშვებელია დაუცველი საიტებისთვის</translation>
-<translation id="4756388243121344051">&amp;ისტორია</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">კოდი არასწორია</translation>
 <translation id="4757993714154412917">თქვენ ეს-ესაა შეიყვანეთ პაროლი შეცდომაში შემყვან საიტზე. თქვენი ანგარიშების დაცვის მიზნით, Chromium გირჩევთ, შეამოწმოთ თქვენი შენახული პაროლები.</translation>
@@ -4276,6 +4275,7 @@
 <translation id="7779418012194492374"><ph name="DEVICE_NAME" />-ის წვდომის გაუქმება</translation>
 <translation id="7781829728241885113">გუშინ</translation>
 <translation id="7782465647372057580">ანგარიშის ინფორმაცია დაშიფრულია და ცალკე ინახება</translation>
+<translation id="7785471469930192436">გაეცანით თქვენი საძიებო სისტემის ინსტრუქციას იმის თაობაზე, როგორ წაშალოთ თქვენი ძიების ისტორია, თუ ეს შესაძლებელია</translation>
 <translation id="7785790577395078482">ეს ტაბლეტი</translation>
 <translation id="7786368602962652765">აუცილებელი ველი ცარიელია. შეავსეთ ის შენახვამდე.</translation>
 <translation id="7791011319128895129">გამოუცემელი</translation>
@@ -4306,7 +4306,6 @@
 <translation id="7840103971441592723">ეკრანის აღბეჭდვა დაიწყო</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">გადახდის ხელმისაწვდომი მეთოდები, რომლებიც უნდა აირჩიოთ გადახდის გასაგრძელებლად. კლავიატურა დამალულია.</translation>
-<translation id="784404208867107517">დაჯგუფებული ისტორია</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{არცერთი}=1{1 აპი (<ph name="EXAMPLE_APP_1" />)}=2{2 აპი (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# აპი (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">შეცდომა მოხდა. ცადეთ ხელახლა.</translation>
 <translation id="784623644169604270">უახლესი აქტივობები არ არის</translation>

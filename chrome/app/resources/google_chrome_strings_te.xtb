@@ -687,6 +687,9 @@
 <translation id="8041795619940733262">ఈ ట్యాబ్ గురించి Google<ph name="LINE_BREAK" />ను అడగండి</translation>
 <translation id="80471789339884597">ఇన్‌స్టాల్ చేసినందుకు ధన్యవాదాలు. <ph name="BUNDLE_NAME" />‌ను ఉపయోగించే ముందు మీరు తప్పకుండా మీ అన్ని బ్రౌజర్‌లను రీస్టార్ట్ చేయాలి.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="8064965390968184078">1. దిగువున <ph name="BUTTON_LABEL" /> ఆప్షన్‌ను క్లిక్ చేయండి
+2. మీ Windows సెట్టింగ్‌లలో <ph name="BUTTON_2" />‌ను క్లిక్ చేయండి
+3. క్విక్ యాక్సెస్ కోసం Chromeను మీ టాస్క్‌బార్‌కు పిన్ చేయడానికి, Windows నోటిఫికేషన్‌లో <ph name="BUTTON_3" />‌ను క్లిక్ చేయండి</translation>
 <translation id="8077579734294125741">ఇతర Chrome ప్రొఫైల్స్</translation>
 <translation id="8086881907087796310">మీ కంప్యూటర్ కనీస హార్డ్‌వేర్ అవసరాలకు అనుగుణంగా లేనందున ఇన్‌స్టాలేషన్ విఫలమైంది.</translation>
 <translation id="8113883687556086139">మీ ఖాతా <ph name="ACCOUNT_EMAIL" />‌లో Chrome డేటాను ఉపయోగించింది, సేవ్ చేసింది మీరేనని వెరిఫై చేయండి</translation>
@@ -765,6 +768,7 @@
 <translation id="8914504000324227558">Chromeను పునఃప్రారంభించు</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" /> నుండి మీ Android ఫోన్‌కు నంబర్‌ను పంపడానికి, రెండు పరికరాలలోని Chromeకు సైన్ ఇన్ చేయండి.</translation>
 <translation id="8922998289262614701">Chrome నుండి ఈ యాప్ డేటాను తీసివేయండి</translation>
+<translation id="8925636929359899517">ఈ సర్వీస్‌ను మెరుగుపరచడానికి మేము సమాచారాన్ని ఉపయోగిస్తాము. <ph name="BEGIN_LINK1" />గోప్యతా పాలసీ<ph name="END_LINK1" />ని, <ph name="BEGIN_LINK2" />సర్వీస్ నియమాల<ph name="END_LINK2" />ను చూడండి.</translation>
 <translation id="8936233353620149764">Chromeలో Geminiని టోగుల్ చేయండి</translation>
 <translation id="8948460679427074738">ఈ ఎక్స్‌టెన్షన్ అది డేటాను ఎలా సేకరిస్తుంది, దాన్ని ఎలా ఉపయోగిస్తుంది వంటి గోప్యతా పద్ధతులను పబ్లిష్ చేయలేదు. మీరు దాన్ని తీసివేయవలసిందిగా Chrome సిఫార్సు చేస్తోంది.</translation>
 <translation id="8958307504142971576">ఇప్పుడు మీకు Chromeలో మరిన్ని ఫీచర్లు అందుబాటులో ఉన్నాయి</translation>

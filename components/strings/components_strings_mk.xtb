@@ -995,6 +995,7 @@
 <translation id="2553352788023127673">Историјата на пребарување и лозинките може да се избришат во нивните поставки за управување</translation>
 <translation id="2553853292994445426">Проверете ги поставките за безбеден DNS. Можеби имате конфигурирано безбеден DNS-сервер и врските со него не успеваат.</translation>
 <translation id="255497580849974774">Уредот нека остане поврзан на полнач во текот на ажурирањето.</translation>
+<translation id="2555855727505718984">„Автоматско пополнување“ нема да ги има податоциве на уредов за да ви помага да пополнувате формулари</translation>
 <translation id="2556876185419854533">&amp;Врати уредување</translation>
 <translation id="2559566667529177711">Повеќеслојно</translation>
 <translation id="2570734079541893434">Управувајте со поставките</translation>
@@ -1509,7 +1510,6 @@
 <translation id="3427342743765426898">&amp;Повтори уредување</translation>
 <translation id="342781501876943858">Chromium препорачува ресетирање на лозинката ако повторно сте ја употребиле на други сајтови.</translation>
 <translation id="3428151540071562330">Една или повеќе од шаблонските URI на серверот DnsOverHttpsTemplates се неважечки и нема да се користат.</translation>
-<translation id="3428789896412418755">Групирана историја</translation>
 <translation id="3432601291244612633">Затвори ја страницата</translation>
 <translation id="3433111389595862568">Софтвер за соработка и конференции</translation>
 <translation id="3433144818443565002">Гласовен и видеоразговор</translation>
@@ -2347,7 +2347,6 @@
 <translation id="4751249061288707459">Последно ажурирање на согласноста:</translation>
 <translation id="4751476147751820511">Сензори за движење или светлина</translation>
 <translation id="4754461935447132332">Не е дозволено за небезбедни сајтови</translation>
-<translation id="4756388243121344051">&amp;Историја</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Кодот е неважечки</translation>
 <translation id="4757993714154412917">Тукушто ја внесовте својата лозинка на измамнички сајт. За да ги заштитите сметките, Chromium ви препорачува да ги проверите зачуваните лозинки.</translation>
@@ -4276,6 +4275,7 @@
 <translation id="7779418012194492374">Повлечете го пристапот за <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Вчера</translation>
 <translation id="7782465647372057580">Податоците за сметката се шифрирани и им се штити приватноста</translation>
+<translation id="7785471469930192436">Погледнете го упатството на пребарувачот за бришење на историјата на пребарување доколку е применливо</translation>
 <translation id="7785790577395078482">овој таблет</translation>
 <translation id="7786368602962652765">Задолжително поле е празно. Пополнете го пред да зачувате.</translation>
 <translation id="7791011319128895129">Необјавено</translation>
@@ -4306,7 +4306,6 @@
 <translation id="7840103971441592723">Започна снимање на екранот</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">Начини на плаќање достапни за избирање за да се продолжи со плаќањето. Тастатурата е скриена.</translation>
-<translation id="784404208867107517">Групирана историја</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ништо}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Се јави грешка. Обидете се повторно.</translation>
 <translation id="784623644169604270">Нема неодамнешна активност</translation>

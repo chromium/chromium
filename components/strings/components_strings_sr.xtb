@@ -997,6 +997,7 @@
 <translation id="2553352788023127673">Историја претраге и лозинке могу да се бришу у подешавањима управљања</translation>
 <translation id="2553853292994445426">Проверите подешавања за безбедан DNS. Можда сте конфигурисали безбедан DNS сервер са којим не успевате да се повежете.</translation>
 <translation id="255497580849974774">Нека уређај буде повезан са пуњачем током ажурирања.</translation>
+<translation id="2555855727505718984">Аутоматско попуњавање неће имати ове информације на овом уређају да би вам помогло да попуњавате обрасце</translation>
 <translation id="2556876185419854533">&amp;Опозови измену</translation>
 <translation id="2559566667529177711">Више слојева</translation>
 <translation id="2570734079541893434">Управљајте подешавањима</translation>
@@ -1403,6 +1404,7 @@
 <translation id="323585066388831737">Светлоцрвена</translation>
 <translation id="3235902901585019063">Локални фајлови ће бити избрисани <ph name="DATE_TIME" />. Уверите се да су сви важни пословни или лични подаци сачувани на другом месту.</translation>
 <translation id="3236212803136366317">Предности картица</translation>
+<translation id="3237427677128462778">Чување података у Google Новчанику није успело</translation>
 <translation id="3238395604961564389">Отвори линк у прозору без архивирања</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте прилагодили изглед прегледача</translation>
 <translation id="3240791268468473923">Отворено је обавештење да нема акредитива који се подударају за безбедно плаћање</translation>
@@ -1512,7 +1514,6 @@
 <translation id="3427342743765426898">&amp;Понови измену</translation>
 <translation id="342781501876943858">Chromium вам препоручује да ресетујете лозинку ако сте је користили на другим сајтовима.</translation>
 <translation id="3428151540071562330">Један или више URI-ја шаблона DnsOverHttpsTemplates сервера су неважећи и неће се користити.</translation>
-<translation id="3428789896412418755">Груписана историја</translation>
 <translation id="3432601291244612633">Затвори страницу</translation>
 <translation id="3433111389595862568">Софтвер за сарадњу и конференције</translation>
 <translation id="3433144818443565002">Гласовни и видео чет</translation>
@@ -2352,7 +2353,6 @@
 <translation id="4751249061288707459">Последње ажурирање сагласности:</translation>
 <translation id="4751476147751820511">Сензори за покрет или светло</translation>
 <translation id="4754461935447132332">Није дозвољено за небезбедне сајтове</translation>
-<translation id="4756388243121344051">&amp;Историја</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Кôд је неважећи</translation>
 <translation id="4757993714154412917">Управо сте унели лозинку на обмањујућем сајту. Да бисте заштитили налоге, Chromium препоручује да проверите сачуване лозинке.</translation>
@@ -2542,6 +2542,7 @@
 <translation id="5045550434625856497">Неисправна лозинка</translation>
 <translation id="5048293684454354469">Теме огласа су само једна од многих ствари које сајт може да користи за персонализацију огласа. Чак и без тема огласа, сајтови и даље могу да вам приказују огласе, али они могу да буду мање персонализовани. Сазнајте више о <ph name="BEGIN_LINK" />управљању приватношћу са огласима<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, притисните Tab да бисте видели још пречица за претрагу које су доступне после овог предлога за претрагу</translation>
+<translation id="5052488928733955073">Проблем при попуњавању информација. Проверите везу.</translation>
 <translation id="5052517576853118371">Активне теме</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Да бисте послали овај фајл помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}one{Да бисте послали ове фајлове помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}few{Да бисте послали ове фајлове помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}other{Да бисте послали ове фајлове помоћу Дељења у близини, ослободите простор (<ph name="DISK_SPACE_SIZE" />) на уређају}}</translation>
 <translation id="5056587122125565772">Направи слику</translation>
@@ -2840,6 +2841,7 @@
 <translation id="5521782189689806907">Ормарићи</translation>
 <translation id="5523118979700054094">Назив смерница</translation>
 <translation id="5523588073846127669">Продавац не прихвата ову виртуелну картицу</translation>
+<translation id="5524476634211040742">Сазнајте више о вештачкој интелигенцији и приватности</translation>
 <translation id="5525755241743357906">Фајл је копиран или премештен</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте персонализовали алатке за приступачност у подешавањима Chrome ОС-а</translation>
 <translation id="55293785478302737">Спајање ивица шавом</translation>
@@ -3583,7 +3585,7 @@
 <translation id="6706678697074905703">Овај IBAN није сачуван на Google налогу. Уместо тога, сачуван је у Chrome-у на овом уређају.</translation>
 <translation id="6707388108229299854">Да бисте добили ову адресу на свим уређајима, потврдите свој идентитет</translation>
 <translation id="6709133671862442373">Вести</translation>
-<translation id="6710213216561001401">Претходно</translation>
+<translation id="6710213216561001401">Назад</translation>
 <translation id="6710594484020273272">&lt;Унесите термин за претрагу&gt;</translation>
 <translation id="671076103358959139">Токен за регистрацију:</translation>
 <translation id="6711464428925977395">Дошло је до грешке са прокси сервером или је адреса нетачна.</translation>
@@ -3662,6 +3664,7 @@
 <translation id="6850286078059909152">Боја текста</translation>
 <translation id="6852204201400771460">Желите ли да поново учитате апликацију?</translation>
 <translation id="6854691830678097752">Да бисте брже плаћали, сачувајте овај CVC на налогу <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="6855951327659224749">Обришите образац да бисте користили опцију плаћања касније</translation>
 <translation id="6857776781123259569">Управљајте лозинкама…</translation>
 <translation id="6858034839887287663">A2x4</translation>
 <translation id="6860888819347870819">Може да затражи да унесе слику у слици</translation>
@@ -4283,6 +4286,7 @@
 <translation id="7779418012194492374">Опозовите приступ за <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Јуче</translation>
 <translation id="7782465647372057580">Информације о налогу су шифрованe и чувају се као приватне</translation>
+<translation id="7785471469930192436">Погледајте упутства претраживача за брисање историје претраге ако је то примењиво</translation>
 <translation id="7785790577395078482">овог таблета</translation>
 <translation id="7786368602962652765">Обавезно поље је празно. Попуните га пре чувања.</translation>
 <translation id="7791011319128895129">Необјављено</translation>
@@ -4313,7 +4317,6 @@
 <translation id="7840103971441592723">Снимање екрана је почело</translation>
 <translation id="784137052867620416">Увид у куповину</translation>
 <translation id="7841633276323004751">Начини плаћања доступни за избор да би се наставило са плаћањем. Тастатура је сакривена.</translation>
-<translation id="784404208867107517">Груписана историја</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ниједна}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликације (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# апликације (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Дошло је до грешке. Пробајте поново.</translation>
 <translation id="784623644169604270">Нема недавних активности</translation>

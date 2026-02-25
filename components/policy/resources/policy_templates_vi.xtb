@@ -403,17 +403,6 @@ Việc lập danh sách URL trong chính sách này có tác dụng tương tự
 <translation id="1305400589435476516">Nếu bạn đặt chính sách này thành Bật, người dùng có thể sử dụng tính năng chuyển vùng dữ liệu trên thiết bị.
 
       Nếu bạn không đặt hoặc đặt chính sách này thành Tắt, thì người dùng không thể sử dụng tính năng chuyển vùng dữ liệu.</translation>
-<translation id="1308102257035078529">Các mẫu URL sẽ được so khớp với URL của trang đang được kiểm tra. Nếu tìm thấy kết quả trùng khớp thì <ph name="CHROME_DEVTOOLS_NAME" /> sẽ bị chặn. Để biết thông tin về định dạng URL, hãy truy cập https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Nếu bạn đặt chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> nhưng không đặt chính sách này thì mọi URL không có trong danh sách cho phép sẽ bị chặn.
-
-Nếu bạn đặt cả chính sách này và chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME" /> thì danh sách cho phép sẽ được ưu tiên áp dụng. Nếu một URL khớp với một mẫu trong danh sách cho phép thì URL đó sẽ được cho phép. Còn nếu URL đó khớp với một mẫu trong danh sách chặn này (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu một URL không khớp với cả hai danh sách thì chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
-
-Nếu bạn không đặt cả hai chính sách thì khả năng sử dụng sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Chính sách này cũng áp dụng cho <ph name="CHROME_DEVTOOLS_NAME" /> được mở cho các tiện ích và ứng dụng web.
-
-Chính sách này chỉ áp dụng cho 1.000 mục.</translation>
 <translation id="1309259005392595570">Vô hiệu hoá thoả thuận về khoá hậu lượng tử cho TLS</translation>
 <translation id="1309465583050255779">Nếu bạn bật <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, thì thao tác đặt <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> sẽ chỉ định tên của nhà cung cấp dịch vụ tìm kiếm mặc định.
 
@@ -5092,25 +5081,6 @@ Nếu bạn không đặt chính sách này, các nguồn gốc của Ứng dụ
 
       Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập vào https://chromeenterprise.google/policies/url-patterns/.</translation>
 <translation id="4485425108474077672">Định cấu hình URL trang Thẻ mới</translation>
-<translation id="4485667899983529614">Chính sách này định cấu hình <ph name="PRODUCT_OS_NAME" /> để sắp xếp thứ tự các thuật toán thoả thuận về khoá được ưu tiên (nhóm được hỗ trợ) trong giao thức TLS 1.3 nhằm thể hiện mức độ ưu tiên đối với các thuật toán đã được một cơ chế tuân thủ cụ thể phê duyệt khi gửi yêu cầu mạng từ màn hình đăng nhập.
-
-Việc đặt chính sách này không đảm bảo rằng thuật toán cụ thể sẽ được thương lượng.
-
-Chính sách này được thiết lập để cho phép các nhà điều hành máy chủ muốn hỗ trợ cả những máy khách có và không có yêu cầu tuân thủ phân biệt các máy khách đó, đồng thời chỉ sử dụng một số thuật toán không mặc định có độ mạnh mật mã cao hơn đối với những máy khách được định cấu hình rõ ràng để ưu tiên chúng.
-
-Việc đặt chính sách thành "<ph name="CNSA2_NAME" />" sẽ định cấu hình <ph name="PRODUCT_OS_NAME" /> để ưu tiên các phương thức trao đổi khoá cần thiết cho việc tuân thủ Bộ thuật toán bảo mật quốc gia thương mại 2.0 (CNSA 2.0).
-
-Nếu bạn không đặt chính sách này hoặc đặt thành "<ph name="DEFAULT_NAME" />", thì <ph name="PRODUCT_OS_NAME" /> sẽ được định cấu hình để sử dụng các phương thức trao đổi khoá mặc định.
-
-Nếu bạn đặt chính sách này thành một giá trị định cấu hình <ph name="PRODUCT_OS_NAME" /> để ưu tiên thuật toán thoả thuận về khoá hậu lượng tử nhưng Tắt <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" />, thì chế độ cài đặt của <ph name="DEVICE_POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> sẽ được ưu tiên.
-
-Bạn không cần đặt chính sách này để đảm bảo bảo mật. Mật mã mặc định mà <ph name="PRODUCT_OS_NAME" /> sử dụng đủ mạnh để chống chịu một cuộc tấn công brute force dùng toàn bộ năng lượng của Mặt trời.
-
-Nếu bạn đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ chậm hơn khi gửi yêu cầu mạng từ màn hình đăng nhập.
-
-Chính sách này chỉ ảnh hưởng đến TLS 1.3 và QUIC, chứ không ảnh hưởng đến các phiên bản TLS trước đó.
-
-Chính sách thiết bị này tương đương với chính sách người dùng <ph name="PREFER_SLOW_KEX_ALGORITHMS_POLICY_NAME" />, nhưng áp dụng cho hồ sơ đăng nhập trên màn hình đăng nhập.</translation>
 <translation id="4488959486611931919">Lưu ý: Chưa có báo cáo về sự cố trang web nào từ khi Chrome bắt đầu chặn những cookie này theo mặc định kể từ M118. Vì vậy, bạn sẽ không thể định cấu hình chức năng này (và chính sách này sẽ không có hiệu lực) kể từ M127.
 
 Chính sách này cung cấp tuỳ chọn tạm thời không áp dụng những thay đổi về cách Chrome xử lý cookie được đặt qua JavaScript có chứa một số ký tự điều khiển nhất định (NULL (Rỗng), trả lại vị trí đầu dòng và chuyển dòng).
@@ -8378,23 +8348,6 @@ Ngoài ra, hãy xem chính sách <ph name="HTTPS_ONLY_MODE_POLICY_NAME" />.</tra
           Nếu bạn tắt chính sách này thì thiết bị <ph name="PRODUCT_OS_NAME" /> không thể truy xuất các sự kiện <ph name="GOOGLE_CALENDAR_NAME" /> để điền sẵn vào tiện ích lịch <ph name="PRODUCT_OS_NAME" /> trong thanh trạng thái hệ thống cho người dùng đã đăng nhập.
 
           Nếu bạn không đặt chính sách này thì theo mặc định, tính năng <ph name="GOOGLE_CALENDAR_NAME" /> sẽ bật đối với người dùng doanh nghiệp.</translation>
-<translation id="6450557649904429321">Chính sách này định cấu hình <ph name="PRODUCT_NAME" /> để sắp xếp thứ tự thuật toán thoả thuận về khoá được ưu tiên (nhóm được hỗ trợ) trong giao thức TLS 1.3 nhằm thể hiện mức độ ưu tiên đối với các thuật toán đã được một cơ chế tuân thủ cụ thể phê duyệt.
-
-Việc đặt chính sách này không đảm bảo rằng thuật toán cụ thể sẽ được thương lượng.
-
-Chính sách này được thiết lập để cho phép các nhà điều hành máy chủ muốn hỗ trợ cả những máy khách có và không có yêu cầu tuân thủ phân biệt các máy khách đó, đồng thời chỉ sử dụng một số thuật toán không mặc định có độ mạnh mật mã cao hơn đối với những máy khách được định cấu hình rõ ràng để ưu tiên chúng.
-
-Việc đặt chính sách thành "<ph name="CNSA2_NAME" />" sẽ định cấu hình <ph name="PRODUCT_NAME" /> để ưu tiên các phương thức trao đổi khoá cần thiết cho việc tuân thủ Bộ thuật toán bảo mật quốc gia thương mại 2.0 (CNSA 2.0).
-
-Nếu bạn không đặt chính sách này hoặc đặt thành "<ph name="DEFAULT_NAME" />", thì <ph name="PRODUCT_NAME" /> sẽ được định cấu hình để sử dụng các phương thức trao đổi khoá mặc định.
-
-Nếu bạn đặt chính sách này thành một giá trị định cấu hình <ph name="PRODUCT_NAME" /> để ưu tiên thuật toán thoả thuận về khoá hậu lượng tử nhưng Tắt <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" />, thì chế độ cài đặt của <ph name="POST_QUANTUM_KEY_AGREEMENT_ENABLED_POLICY_NAME" /> sẽ được ưu tiên.
-
-Bạn không cần đặt chính sách này để đảm bảo bảo mật. Mật mã mặc định mà <ph name="PRODUCT_NAME" /> sử dụng đủ mạnh để chống chịu một cuộc tấn công brute force dùng toàn bộ năng lượng của Mặt trời.
-
-Nếu bạn đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ chậm hơn khi truy cập vào các trang web.
-
-Chính sách này chỉ ảnh hưởng đến TLS 1.3 và QUIC, chứ không ảnh hưởng đến các phiên bản TLS trước đó.</translation>
 <translation id="6452882999388592166">Nếu bạn bật chính sách này, thì tiện ích thành phần CryptoToken tích hợp sẵn sẽ được tải khi khởi động. Nếu bạn tắt hoặc không đặt chính sách này, thì CryptoToken sẽ không được tải khi khởi động trình duyệt. Chính sách này là giải pháp tạm thời cho những trang web không hoạt động do việc không xác định `chrome.runtime`, là tác dụng phụ của việc xoá CryptoToken trong M106. Các trang web không được phụ thuộc vô điều kiện vào việc xác định `chrome.runtime`.</translation>
 <translation id="6453641799812499182">Bật tùy chọn giảm thiểu kiểm tra <ph name="CORS" /> trong quy trình triển khai <ph name="CORS" /> mới</translation>
 <translation id="645425387487868471">Bật bắt buộc đăng nhập cho <ph name="PRODUCT_NAME" /></translation>
@@ -10911,19 +10864,6 @@ Việc sử dụng <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> hoặc <ph n
 <translation id="8035570672225663428">Bật mô hình sạc thích ứng để giữ quá trình sạc nhằm kéo dài thời lượng pin</translation>
 <translation id="8038007682032315784">Tắt <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> trên mọi trang web</translation>
 <translation id="8044493735196713914">Báo cáo chế độ khởi động thiết bị</translation>
-<translation id="8044943551137872312">Bạn có thể dùng chính sách này để cho phép <ph name="CHROME_DEVTOOLS_NAME" /> trên các URL cụ thể. Các mẫu URL sẽ được so khớp với URL của trang đang được kiểm tra. Nếu tìm thấy kết quả trùng khớp thì <ph name="CHROME_DEVTOOLS_NAME" /> sẽ được cho phép. Quy tắc này áp dụng ngay cả khi URL đó cũng khớp với chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> và chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> được đặt thành không cho phép (giá trị 2). Để biết thông tin về định dạng URL, hãy truy cập https://support.google.com/chrome/a?p=url_blocklist_filter_format.
-
-Nếu bạn không đặt chính sách thì danh sách cho phép này sẽ không có hiệu lực.
-
-Nếu bạn đặt chính sách này nhưng không đặt <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> thì mọi URL không có trong danh sách này sẽ bị chặn.
-
-Nếu bạn đặt cả chính sách này và chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME" /> thì danh sách cho phép này sẽ được ưu tiên áp dụng. Nếu một URL khớp với một mẫu trong danh sách cho phép thì URL đó sẽ được cho phép. Còn nếu URL đó khớp với một mẫu trong danh sách chặn (nhưng không khớp với mẫu nào trong danh sách cho phép) thì URL đó sẽ bị chặn. Nếu một URL không khớp với cả hai danh sách thì chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> sẽ được dùng làm chính sách dự phòng.
-
-Nếu bạn không đặt cả hai chính sách thì khả năng sử dụng sẽ được xác định theo chính sách <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />.
-
-Chính sách này cũng áp dụng cho <ph name="CHROME_DEVTOOLS_NAME" /> được mở cho các tiện ích và ứng dụng web.
-
-Chính sách này chỉ áp dụng cho 1.000 mục.</translation>
 <translation id="80453040817068401">Cho phép sử dụng trình duyệt <ph name="LACROS_NAME" /></translation>
 <translation id="804619600634661088">Cho phép sử dụng tính năng gỡ lỗi từ xa</translation>
 <translation id="8047264240841615226">Chế độ cài đặt cho các tính năng AI tạo sinh trong <ph name="CHROME_DEVTOOLS_NAME" /></translation>

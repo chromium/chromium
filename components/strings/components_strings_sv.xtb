@@ -995,6 +995,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2553352788023127673">Sökhistorik och lösenord kan raderas i hanteringsinställningarna</translation>
 <translation id="2553853292994445426">Kontrollera inställningarna för den säkra DNS-konfigurationen. Du kan ha konfigurerat en säker DNS-server som det inte går att ansluta till.</translation>
 <translation id="255497580849974774">Se till att enheten är ansluten till en laddare under uppdateringen.</translation>
+<translation id="2555855727505718984">Autofyll kommer inte att ha den här informationen på enheten som hjälp för att fylla i formulär</translation>
 <translation id="2556876185419854533">&amp;Ånga Redigera</translation>
 <translation id="2559566667529177711">Flera lager</translation>
 <translation id="2570734079541893434">Hantera inställningar</translation>
@@ -1399,6 +1400,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="323585066388831737">Ljusröd</translation>
 <translation id="3235902901585019063">Lokala filer raderas den <ph name="DATE_TIME" />. Se till att alla viktiga företags- och personuppgifter lagras externt.</translation>
 <translation id="3236212803136366317">Kortförmåner</translation>
+<translation id="3237427677128462778">Det gick inte att spara i Google Wallet</translation>
 <translation id="3238395604961564389">Öppna länk i inkognitofönster</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill anpassa webbläsarens utseende</translation>
 <translation id="3240791268468473923">Arbetsblad för användaruppgifter för säker betalning utan överensstämmande användaruppgifter är öppet</translation>
@@ -1508,7 +1510,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3427342743765426898">&amp;Gör om Redigera</translation>
 <translation id="342781501876943858">Du rekommenderas att återställa lösenordet om du har återanvänt det på andra webbplatser.</translation>
 <translation id="3428151540071562330">Minst en av URI:erna i servermallen för DnsOverHttpsTemplates är ogiltig och kommer inte att användas.</translation>
-<translation id="3428789896412418755">Grupperad historik</translation>
 <translation id="3432601291244612633">Stäng sidan</translation>
 <translation id="3433111389595862568">Mjukvara för samarbete och konferens</translation>
 <translation id="3433144818443565002">Röst- och videochatt</translation>
@@ -2346,7 +2347,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4751249061288707459">Samtycke uppdaterades senast:</translation>
 <translation id="4751476147751820511">Rörelse- eller ljussensorer</translation>
 <translation id="4754461935447132332">Tillåts inte för webbplatser som inte är säkra</translation>
-<translation id="4756388243121344051">&amp;Historik</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Koden är ogiltig</translation>
 <translation id="4757993714154412917">Du angav just ditt lösenord på en bedräglig webbplats. Du rekommenderas att kontrollera dina sparade lösenord i Chromium nu för att skydda dina konton.</translation>
@@ -2536,6 +2536,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5045550434625856497">Felaktigt lösenord</translation>
 <translation id="5048293684454354469">Annonsämnen är bara en av många saker som en webbplats kan använda för att anpassa annonser. Webbplatser kan visa annonser även utan annonsämnen, men de kanske är mindre anpassade. Läs mer om hur du <ph name="BEGIN_LINK" />hanterar annonsintegritet<ph name="LINK_END" />.</translation>
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" /> – tryck på Tabb för att visa fler sökgenvägar efter det här sökförslaget</translation>
+<translation id="5052488928733955073">Det gick inte att fylla i dina uppgifter. Kontrollera anslutningen.</translation>
 <translation id="5052517576853118371">Aktiva ämnen</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Om du vill skicka den här filen med Närdelning ska du frigöra utrymme (<ph name="DISK_SPACE_SIZE" />) på enheten}other{Om du vill skicka de här filerna med Närdelning ska du frigöra utrymme (<ph name="DISK_SPACE_SIZE" />) på enheten}}</translation>
 <translation id="5056587122125565772">Skapa bild</translation>
@@ -2834,6 +2835,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5521782189689806907">Skåp</translation>
 <translation id="5523118979700054094">Policynamn</translation>
 <translation id="5523588073846127669">Säljaren accepterar inte det här virtuella kortet</translation>
+<translation id="5524476634211040742">Läs mer om AI och integritet.</translation>
 <translation id="5525755241743357906">Filen har kopierats eller flyttats</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill anpassa tillgänglighetsverktygen i inställningarna för ChromeOS.</translation>
 <translation id="55293785478302737">Kanthäftning</translation>
@@ -3654,6 +3656,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6850286078059909152">Textfärg</translation>
 <translation id="6852204201400771460">Vill du läsa in appen igen?</translation>
 <translation id="6854691830678097752">Spara CVC-koden i kontot <ph name="ACCOUNT_EMAIL" /> så att det går snabbare i kassan</translation>
+<translation id="6855951327659224749">Rensa formuläret om du vill använda alternativet Betala senare</translation>
 <translation id="6857776781123259569">Hantera lösenord …</translation>
 <translation id="6858034839887287663">A2 x 4</translation>
 <translation id="6860888819347870819">Kan begära åtkomst till bild-i-bild</translation>
@@ -4273,6 +4276,7 @@ Mer information.
 <translation id="7779418012194492374">Återkalla åtkomst för <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Igår</translation>
 <translation id="7782465647372057580">Kontouppgifterna krypteras och hålls privata</translation>
+<translation id="7785471469930192436">Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt</translation>
 <translation id="7785790577395078482">den här surfplattan</translation>
 <translation id="7786368602962652765">Ett obligatoriskt fält är tomt. Fyll i det innan du sparar.</translation>
 <translation id="7791011319128895129">Opublicerat</translation>
@@ -4303,7 +4307,6 @@ Mer information.
 <translation id="7840103971441592723">Skärmbild/skärminspelning har startats</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7841633276323004751">De tillgängliga betalningsmetoderna som kan väljas för att fortsätta med betalningen. Tangentbordet är dolt.</translation>
-<translation id="784404208867107517">Grupperad historik</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Inga}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 appar (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# appar (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Något gick fel. Försök igen.</translation>
 <translation id="784623644169604270">Ingen aktivitet nyligen</translation>

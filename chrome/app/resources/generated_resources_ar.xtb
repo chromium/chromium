@@ -385,7 +385,6 @@
 <translation id="1239841552505950173">تشغيل التطبيق</translation>
 <translation id="1241066500170667906">اختَر حالة ميزة "<ph name="EXPERIMENT_NAME" />" التجريبية.</translation>
 <translation id="124116460088058876">مزيد من اللغات</translation>
-<translation id="1241381048229838873">عرض كل الإشارات المرجعية</translation>
 <translation id="1241968867980182121">إغلاق العرض العلوي</translation>
 <translation id="1242044645101871359">تسجيل الدخول مرة أخرى</translation>
 <translation id="1242633766021457174">يريد <ph name="THIRD_PARTY_TOOL_NAME" /> إعادة ضبط إعداداتك.</translation>
@@ -2390,6 +2389,7 @@
 <translation id="2584974473573720127">‏إدارة أذونات وصول المواقع الإلكترونية إلى الميكروفون في Chrome</translation>
 <translation id="2586561813241011046">تعذّر تثبيت <ph name="APP_NAME" />. يُرجى إعادة المحاولة أو التواصل مع المشرف. رمز الخطأ: <ph name="ERROR_CODE" />.</translation>
 <translation id="2586672484245266891">‏يُرجى إدخال عنوان URL أقصر.</translation>
+<translation id="2588271083332682494">نظِّم متصفّحك من خلال "مجموعات علامات التبويب"</translation>
 <translation id="2588636910004461974">أجهزة من <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">‏عدم عرض ملفات Drive مطلقًا</translation>
 <translation id="2593499352046705383">‏احرص قبل البدء على الاحتفاظ بنسخة احتياطية من بياناتك. سيؤدي تثبيت نظام التشغيل <ph name="DEVICE_OS" /> إلى استبدال جميع البيانات على محرّك الأقراص الثابتة. تعرّف على مزيد من المعلومات على الرابط g.co/flex/InstallGuide.</translation>
@@ -3027,7 +3027,6 @@
 <translation id="3010234549896186761">{COUNT,plural, =0{كلمات مرورك تبدو قوية}=1{كلمة مرور واحدة ({COUNT}) ضعيفة}two{كلمتا مرور ({COUNT}) ضعيفتان}few{{COUNT} كلمات مرور ضعيفة}many{{COUNT} كلمة مرور ضعيفة}other{{COUNT} كلمة مرور ضعيفة}}</translation>
 <translation id="3010279545267083280">تم حذف كلمة المرور</translation>
 <translation id="3010389206479238935">فرض الفتح في</translation>
-<translation id="3010961843303056486">عرض كل الإشارات المرجعية</translation>
 <translation id="3011384993885886186">رمادي فاتح</translation>
 <translation id="3011488081941333749">سيتم محو ملفات تعريف الارتباط من <ph name="DOMAIN" /> عند الخروج</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -3355,6 +3354,7 @@
 <translation id="3248902735035392926">الحفاظ على الأمان من أهم أولوياتنا. يُرجى <ph name="BEGIN_LINK" />التحقُّق من الإضافات الآن<ph name="END_LINK" />.</translation>
 <translation id="3251119461199395237">مزامنة الملفات</translation>
 <translation id="3251759466064201842">&lt;ليس جزءًا من الشهادة&gt;</translation>
+<translation id="3252169590975855820">‏بإمكانك الوصول إلى كلمة المرور من خلال "مدير كلمات المرور في Google"</translation>
 <translation id="325238099842880997">يمكنك ضبط القواعد الرقمية الأساسية لمساعدة الأطفال على اللعب والاستكشاف وأداء الواجبات المدرسية في المنزل.</translation>
 <translation id="3253225298092156258">غير متاح</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{يُرجى إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنسخ هذا الملف.}zero{يُرجى إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنسخ هذه الملفات.}two{يُرجى إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنسخ هذين الملفين.}few{يُرجى إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنسخ هذه الملفات.}many{يُرجى إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنسخ هذه الملفات.}other{يُرجى إخلاء بعض المساحة في <ph name="CLOUD_PROVIDER" /> لنسخ هذه الملفات.}}</translation>
@@ -5874,7 +5874,6 @@
 <translation id="4946215577126251136">عرض زر لوحة المشاريع</translation>
 <translation id="4946998421534856407">مفتاح مشغِّل التطبيقات + السهم المتّجه للأعلى</translation>
 <translation id="4947376546135294974">البيانات الواردة من الموقع الإلكتروني الذي تزوره حاليًا</translation>
-<translation id="4948370357877377178">بخطوات بسيطة يمكنك استكمال مهامك</translation>
 <translation id="4950100687509657457">إنشاء ملف شخصي</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ملفّ واحد}zero{# ملفّ}two{ملفّان}few{# ملفّات}many{# ملفًّا}other{# ملف}}</translation>
 <translation id="495170559598752135">إجراءات</translation>
@@ -6098,7 +6097,6 @@
 <translation id="511147239888121455">هل الاحتفاظ بنسخة احتياطية من بياناتك مطلوب؟</translation>
 <translation id="5111474831474629851">لا تسمح لك مؤسستك بتسجيل الدخول باستخدام هذا الحساب</translation>
 <translation id="5111646998522066203">الخروج من وضع التصفّح المتخفّي</translation>
-<translation id="5111692334209731439">&amp;مدير الإشارات</translation>
 <translation id="5111794652433847656">ما مِن مفاتيح مرور محفوظة على هذا الجهاز لـ "<ph name="APP_NAME" />".</translation>
 <translation id="5112577000029535889">&amp;أدوات المطورين</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{تم نقل ملف واحد}zero{تم نقل {NUM_OF_FILES} ملف}two{تم نقل ملفين ({NUM_OF_FILES})}few{تم نقل {NUM_OF_FILES} ملفات}many{تم نقل {NUM_OF_FILES} ملفًا}other{تم نقل {NUM_OF_FILES} ملف}}</translation>
@@ -6922,7 +6920,6 @@
 <translation id="5684181005476681636">‏تفاصيل شبكة Wi-Fi</translation>
 <translation id="5684661240348539843">معرّف الأصول</translation>
 <translation id="5684950556880280580">تم تغيير كلمة المرور</translation>
-<translation id="5687307865755379257">بني فاتح</translation>
 <translation id="5687326903064479980">المنطقة الزمنية</translation>
 <translation id="5687340364605915800">تردّ المواقع الإلكترونية على هذا الطلب وفق تقديرها الخاص</translation>
 <translation id="5687606994963670306">‏يحذف Chrome تلقائيًا المواقع الإلكترونية التي يمر أكثر من 30 يومًا على إضافتها إلى قائمة "المواقع الإلكترونية التي تقترح الإعلانات". وقد يظهر في القائمة مجددًا أي موقع إلكتروني تكرِّر زيارته. يمكنك أيضًا منع موقع إلكتروني معيّن من اقتراح إعلانات لك. مزيد من المعلومات حول <ph name="BEGIN_LINK" />إدارة الخصوصية في عرض الإعلانات في Chrome<ph name="END_LINK" /></translation>
@@ -7328,7 +7325,6 @@
 <translation id="5961545272769624207">تخصيص إيماءة</translation>
 <translation id="5963413905009737549">قسم</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> في الذروة)</translation>
-<translation id="5964086374943649343">التباين المنخفض</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{فتح كل العناوين في &amp;نافذة جديدة}=1{فتح في &amp;نافذة جديدة}two{فتح كِلا العنوانَين ({COUNT}) في &amp;نافذة جديدة}few{فتح كل الـ ({COUNT}) عناوين في &amp;نافذة جديدة}many{فتح كل الـ ({COUNT}) عنوانًا في &amp;نافذة جديدة}other{فتح كل الـ ({COUNT}) عنوان في &amp;نافذة جديدة}}</translation>
 <translation id="5964247741333118902">المحتوى المضمَّن</translation>
 <translation id="5965607173855879702">جارٍ حذف البيانات…</translation>
@@ -7747,7 +7743,6 @@
 <translation id="6251924700383757765">سياسة الخصوصية</translation>
 <translation id="625369703868467034">جودة الشبكة</translation>
 <translation id="6253801023880399036">يتم حفظ كلمات المرور في <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
-<translation id="6254306574403090248">بني داكن</translation>
 <translation id="6254503684448816922">اختراق المفتاح</translation>
 <translation id="6254892857036829079">ممتاز</translation>
 <translation id="6257602895346497974">تفعيل المزامنة...</translation>
@@ -8694,6 +8689,7 @@
 <translation id="6900632443249221072">‏إنشاء صورة باستخدام Gemini</translation>
 <translation id="6900651018461749106">تسجيل الدخول مرة أخرى لتحديث <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">هل تريد فعلاً حذف محرك البحث هذا؟</translation>
+<translation id="6900883974539674431">يمكنك إنشاء مجموعات علامات تبويب يتمّ حفظها وتعديلها تلقائيًا على جميع أجهزتك</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6901130673208235020">‏عند البحث في سجلّ التصفُّح، يتم إرسال عبارات البحث في السجلّ ومحتوى صفحة أفضل النتائج المطابِقة ومخرجات النماذج التي تمّ إنشاؤها إلى Google</translation>
 <translation id="6902066522699286937">صوت للمعاينة</translation>
@@ -9987,7 +9983,6 @@
 <translation id="7784067724422331729">حظرت إعدادات الأمان بجهاز الكمبيوتر هذا الملف.</translation>
 <translation id="7784796923038949829">يتعذَّر الاطِّلاع على بيانات الموقع الإلكتروني أو تغييرها</translation>
 <translation id="778480864305029524">‏فعّل الإشعارات لخدمات Google Play لاستخدام التوصيل الفوري</translation>
-<translation id="7785471469930192436">يمكنك الاطّلاع على تعليمات محرّك البحث بشأن حذف سجلّ البحث، إن أمكن.</translation>
 <translation id="77855763949601045">&amp;فتح الملف الشخصي للضيف</translation>
 <translation id="7786663536153819505">اتّبِع التعليمات التي تظهر على هاتفك لمسح رمز الاستجابة السريعة ضوئيًا. تأكَّد من تفعيل البلوتوث على هاتفك.
     <ph name="BR" />
@@ -10484,7 +10479,6 @@
 <translation id="8110489095782891123">جارٍ تنزيل قائمة جهات الاتصال...</translation>
 <translation id="8114925369073821854">إذن الوصول إلى الميكروفون لـ "<ph name="APP_NAME" />"</translation>
 <translation id="8116497846156149">يجب طلب الموافقة من أحد الوالدَين</translation>
-<translation id="8116972784401310538">م&amp;دير الإشارات</translation>
 <translation id="8118276691321086429">يتذكّر "<ph name="PASSWORD_MANAGER_BRAND" />" طريقة تسجيل دخولك ويسجِّل دخولك تلقائيًا إن أمكن ذلك. وعندما يكون هذا الخيار غير مفعّل، سيُطلَب منك تأكيد البيانات في كل مرّة.</translation>
 <translation id="8118362518458010043">‏تم إيقاف الإضافة بواسطة متصفح Chrome. ربما تكون هذه الإضافة غير آمنة.</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{إشارة مرجعية واحدة}zero{‫# إشارة مرجعية}two{إشارتان مرجعيتان}few{‫# إشارات مرجعية}many{‫# إشارة مرجعية}other{‫# إشارة مرجعية}}</translation>
@@ -10748,7 +10742,6 @@
 <translation id="8288032458496410887">إلغاء تثبيت <ph name="APP" />...</translation>
 <translation id="8288553158681886528">‏استخراج النص من PDF</translation>
 <translation id="8289128870594824098">حجم القرص</translation>
-<translation id="8289200713453671499">يمكنك التنقّل بسرعة بين مجموعات علامات التبويب ومحادثاتك الأخيرة مع الذكاء الاصطناعي بدون فقدان مكانك.</translation>
 <translation id="8289509909262565712">مرحبًا بك في <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">‏تنزيل Chrome</translation>
 <translation id="8291942417224950075">للاستخدام الشخصي</translation>
@@ -11674,6 +11667,7 @@
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> اليوم.}zero{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا قبل الموعد النهائي.}two{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا قبل الموعد النهائي.}few{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا قبل الموعد النهائي.}many{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا قبل الموعد النهائي.}other{يطلُب <ph name="MANAGER" /> منك الاحتفاظ بنسخة احتياطية من بياناتك وإرجاع جهاز <ph name="DEVICE_TYPE" /> هذا قبل الموعد النهائي.}}</translation>
 <translation id="8902667442496790482">فتح إعدادات سماع الاختيار</translation>
 <translation id="8903733144777177139">تم حظر الوصول إلى الميكروفون.</translation>
+<translation id="8904787158537906492">تم نسخ الرابط إلى الحافظة</translation>
 <translation id="890518297681039136">تعذَّر تنفيذ العملية لسبب غير معروف.</translation>
 <translation id="8905253417215700291">أنشأ "<ph name="GOOGLE_PASSWORD_MANAGER" />" كلمة مرور قوية لهذا الموقع الإلكتروني</translation>
 <translation id="890616557918890486">تغيير المصدر</translation>

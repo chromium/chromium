@@ -731,6 +731,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2166049586286450108">Akses Penuh Pentadbir</translation>
 <translation id="2166378884831602661">Tapak ini tidak dapat menyediakan sambungan yang selamat</translation>
 <translation id="2168151236314517198">Pencetakan kandungan ini disekat oleh dasar pentadbir anda</translation>
+<translation id="2171244127100824330">Dalam <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> untk <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Pembaikan &amp; Penyelenggaraan Kenderaan</translation>
 <translation id="2173302385160625112">Periksa sambungan Internet anda</translation>
 <translation id="2174875517416416684">Transaksi anda tidak berjaya. Tiada dana yang dikeluarkan daripada akaun anda.</translation>
@@ -997,6 +998,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2553352788023127673">Sejarah carian dan kata laluan boleh dipadamkan dalam tetapan pengurusan data tersebut</translation>
 <translation id="2553853292994445426">Semak tetapan DNS selamat anda. Anda mungkin telah mengkonfigurasikan pelayan DNS selamat yang menyebabkan sambungan gagal.</translation>
 <translation id="255497580849974774">Sila pastikan peranti anda disambungkan kepada pengecas semasa pengemaskinian.</translation>
+<translation id="2555855727505718984">Autolengkap tidak akan mengandungi maklumat ini pada peranti ini untuk membantu pengisian borang</translation>
 <translation id="2556876185419854533">&amp;Buat Asal Edit</translation>
 <translation id="2559566667529177711">Berbilang Lapisan</translation>
 <translation id="2570734079541893434">Urus tetapan</translation>
@@ -1513,7 +1515,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3427342743765426898">&amp;Buat Semula Edit</translation>
 <translation id="342781501876943858">Chromium mengesyorkan penetapan semula kata laluan jika anda menggunakan semula kata laluan itu di tapak lain.</translation>
 <translation id="3428151540071562330">Satu atau beberapa URI templat pelayan DnsOverHttpsTemplates URI tidak sah dan tidak akan digunakan.</translation>
-<translation id="3428789896412418755">Sejarah Kumpulan</translation>
 <translation id="3432601291244612633">Tutup halaman</translation>
 <translation id="3433111389595862568">Perisian Kerjasama &amp; Persidangan</translation>
 <translation id="3433144818443565002">Sembang Suara &amp; Video</translation>
@@ -2354,7 +2355,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4751249061288707459">Persetujuan terakhir dikemas kini:</translation>
 <translation id="4751476147751820511">Penderia gerakan atau cahaya</translation>
 <translation id="4754461935447132332">Tidak dibenarkan untuk laman yang tidak selamat</translation>
-<translation id="4756388243121344051">&amp;Sejarah</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
 <translation id="4757740693289347881">Kod tidak sah</translation>
 <translation id="4757993714154412917">Anda baru sahaja memasukkan kata laluan pada laman yang menipu. Untuk melindungi akaun anda, Chromium mengesyorkan agar anda menyemak kata laluan anda yang disimpan.</translation>
@@ -2408,6 +2408,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4832388034239846146">Untuk berkongsi kumpulan tab, kemas kinikan Chrome</translation>
 <translation id="483241715238664915">Hidupkan amaran</translation>
 <translation id="4832961164064927107">BBQ &amp; Gril</translation>
+<translation id="4839984801146463230">Simpan maklumat anda dan selesaikan tugasan dengan lebih pantas, seperti mengisi borang merentas produk Google. Anda boleh <ph name="BEGIN_LINK" />mengurus maklumat anda<ph name="END_LINK" /> dalam <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> untuk <ph name="ACCOUNT" /></translation>
 <translation id="4840250757394056958">Lihat sejarah Chrome anda</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Menatal dan mengezum tab dikongsi</translation>
@@ -2757,6 +2758,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5392506727170022660">Logam (Separa Kilat)</translation>
 <translation id="5394069166371280357">Rancangan TV berorientasikan Keluarga</translation>
 <translation id="5396631636586785122">Jahitan tepi kanan</translation>
+<translation id="5396837962335265787"><ph name="ATTRIBUTE_NAME" />, sebelum ini <ph name="OLD_ATTRIBUTE_ATTRIBUTE" /></translation>
 <translation id="5397794290049113714">Anda</translation>
 <translation id="5398461103557553443">Untuk membuat autolengkap IBAN ini pada masa hadapan, simpan maklumat IBAN ini dalam Google Wallet</translation>
 <translation id="5398772614898833570">Iklan disekat</translation>
@@ -3491,6 +3493,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6547208576736763147">Dua tebukan kiri</translation>
 <translation id="6549443526281184652">Kostum</translation>
 <translation id="6550245281449521513">Kunci tetikus tidak dibenarkan</translation>
+<translation id="6551737294564628267"><ph name="ATTRIBUTE_NAME" />, baharu</translation>
 <translation id="6552566579578780089">Pembayaran</translation>
 <translation id="6554732001434021288">Terakhir dilawati <ph name="NUM_DAYS" /> hari yang lalu</translation>
 <translation id="6556866813142980365">Buat semula</translation>
@@ -4289,6 +4292,7 @@ Butiran tambahan:
 <translation id="7779418012194492374">Batalkan akses untuk <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Semalam</translation>
 <translation id="7782465647372057580">Maklumat akaun disulitkan dan dirahsiakan</translation>
+<translation id="7785471469930192436">Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berkenaan</translation>
 <translation id="7785790577395078482">tablet ini</translation>
 <translation id="7786368602962652765">Medan yang diperlukan kosong. Isi sebelum menyimpan.</translation>
 <translation id="7791011319128895129">Belum dilancarkan</translation>
@@ -4319,7 +4323,6 @@ Butiran tambahan:
 <translation id="7840103971441592723">Tangkapan skrin telah bermula</translation>
 <translation id="784137052867620416">Cerapan Beli-belah</translation>
 <translation id="7841633276323004751">Kaedah pembayaran tersedia untuk dipilih bagi meneruskan pembayaran. Papan kekunci tersembunyi.</translation>
-<translation id="784404208867107517">Sejarah kumpulan</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Tiada}=1{1 apl (<ph name="EXAMPLE_APP_1" />)}=2{2 apl (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# apl (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7846161022626028328">Terdapat ralat. Cuba lagi.</translation>
 <translation id="784623644169604270">Tiada aktiviti terbaharu</translation>
@@ -4749,6 +4752,7 @@ Butiran tambahan:
 <translation id="8544217240017914508">Google Chrome sedang cuba mengubah suai tetapan untuk pengisian kaedah pembayaran.</translation>
 <translation id="8544303911974837265">Poliester</translation>
 <translation id="854548366864113872">Pilihan Harga Mahal</translation>
+<translation id="854583198371106098"><ph name="ATTRIBUTE_VALUE" />  <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
 <translation id="8546254312340305428">Berikan sebab untuk memuat naik fail (diperlukan)</translation>
 <translation id="8546350655047701518">Eksport Log ke JSON</translation>
 <translation id="8546667245446052521">Kertas (Arkib)</translation>

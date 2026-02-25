@@ -226,7 +226,7 @@
 <translation id="1145593918056169051">印表機已停止運作</translation>
 <translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{擴充功能}=1{擴充功能 ({SELECTED_ITEMS})}other{擴充功能 ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">頭部指標</translation>
-<translation id="114721135501989771">在 Chrome 中體驗 Google 智慧功能</translation>
+<translation id="114721135501989771">在 Chrome 體驗 Google 智慧功能</translation>
 <translation id="1147322039136785890">現在可交由「<ph name="SUPERVISED_USER_NAME" />」使用</translation>
 <translation id="1147991416141538220">如需要求存取權限，請與這個裝置的系統管理員聯絡。</translation>
 <translation id="1148464196693569530">允許使用者指令碼</translation>
@@ -381,7 +381,6 @@
 <translation id="1239841552505950173">啟動應用程式</translation>
 <translation id="1241066500170667906">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態</translation>
 <translation id="124116460088058876">更多語言</translation>
-<translation id="1241381048229838873">顯示所有書籤</translation>
 <translation id="1241968867980182121">關閉上方畫面</translation>
 <translation id="1242044645101871359">重新登入</translation>
 <translation id="1242633766021457174"><ph name="THIRD_PARTY_TOOL_NAME" /> 要求重設您的設定。</translation>
@@ -2385,6 +2384,7 @@
 <translation id="2584974473573720127">使用 Chrome 管理網站的麥克風權限</translation>
 <translation id="2586561813241011046">無法安裝「<ph name="APP_NAME" />」。請再試一次，或是與系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="2586672484245266891">請輸入較短的網址</translation>
+<translation id="2588271083332682494">使用分頁群組，分頁有條不紊</translation>
 <translation id="2588636910004461974">來自 <ph name="VENDOR_NAME" /> 的裝置</translation>
 <translation id="2589658397149952302">一律不顯示雲端硬碟檔案</translation>
 <translation id="2593499352046705383">開始操作前，請確認資料已備份。安裝 <ph name="DEVICE_OS" /> 會覆寫硬碟的資料。如要瞭解詳情，請前往 g.co/flex/InstallGuide。</translation>
@@ -3022,7 +3022,6 @@
 <translation id="3010234549896186761">{COUNT,plural, =0{你的密碼強度夠高}=1{{COUNT} 組密碼的強度太低}other{{COUNT} 組密碼的強度太低}}</translation>
 <translation id="3010279545267083280">已刪除密碼</translation>
 <translation id="3010389206479238935">強制開啟方式</translation>
-<translation id="3010961843303056486">顯示所有書籤</translation>
 <translation id="3011384993885886186">暖灰色</translation>
 <translation id="3011488081941333749">系統會在你離開時將 <ph name="DOMAIN" /> 產生的 Cookie 清除</translation>
 <translation id="3012631534724231212">(iframe)</translation>
@@ -3347,6 +3346,7 @@
 <translation id="3248902735035392926">安全至上。現在就花點時間<ph name="BEGIN_LINK" />檢查擴充功能<ph name="END_LINK" />吧</translation>
 <translation id="3251119461199395237">檔案同步處理</translation>
 <translation id="3251759466064201842">&lt;不是憑證的一部分&gt;</translation>
+<translation id="3252169590975855820">你可以透過 Google 密碼管理工具使用這組密碼</translation>
 <translation id="325238099842880997">設定數位裝置基本使用規則，協助孩子在家玩樂、探索及完成學校作業</translation>
 <translation id="3253225298092156258">無法使用</translation>
 <translation id="3253344772044554413">{NUM_OF_FILES,plural, =1{請釋出「<ph name="CLOUD_PROVIDER" />」的空間，才能複製檔案}other{請釋出「<ph name="CLOUD_PROVIDER" />」的空間，才能複製檔案}}</translation>
@@ -5863,7 +5863,6 @@
 <translation id="4946215577126251136">顯示「專案面板」按鈕</translation>
 <translation id="4946998421534856407">啟動鍵 + 向上鍵</translation>
 <translation id="4947376546135294974">所造訪網站的資料</translation>
-<translation id="4948370357877377178">繼續處理工作</translation>
 <translation id="4950100687509657457">建立設定檔</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{1 個檔案}other{# 個檔案}}</translation>
 <translation id="495170559598752135">動作</translation>
@@ -6087,7 +6086,6 @@
 <translation id="511147239888121455">要備份資料嗎？</translation>
 <translation id="5111474831474629851">貴機構不允許你使用這個帳戶登入</translation>
 <translation id="5111646998522066203">結束無痕模式</translation>
-<translation id="5111692334209731439">書籤管理員(&amp;B)</translation>
 <translation id="5111794652433847656">這部裝置上沒有「<ph name="APP_NAME" />」的任何密碼金鑰</translation>
 <translation id="5112577000029535889">開發人員工具(&amp;D)</translation>
 <translation id="5112686815928391420">{NUM_OF_FILES,plural, =1{已移動 1 個檔案}other{已移動 {NUM_OF_FILES} 個檔案}}</translation>
@@ -6908,7 +6906,6 @@
 <translation id="5684181005476681636">Wi-Fi 詳細資料</translation>
 <translation id="5684661240348539843">資產 ID</translation>
 <translation id="5684950556880280580">你的密碼已更新</translation>
-<translation id="5687307865755379257">深褐色 (亮)</translation>
 <translation id="5687326903064479980">時區</translation>
 <translation id="5687340364605915800">網站會自行判斷是否回應這項要求</translation>
 <translation id="5687606994963670306">Chrome 會自動刪除 30 天前的網站，你再次造訪的網站可能會重新顯示在清單中。你也可以封鎖網站，讓該網站無法為你提供建議廣告。進一步瞭解如何<ph name="BEGIN_LINK" />在 Chrome 中管理廣告隱私權<ph name="END_LINK" />。</translation>
@@ -7313,7 +7310,6 @@
 <translation id="5961545272769624207">指派表情</translation>
 <translation id="5963413905009737549">區段</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> 個 (最多 <ph name="NUM_KILOBYTES_LIVE" /> 個)</translation>
-<translation id="5964086374943649343">低對比</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{在新視窗中開啟所有網址(&amp;N)}=1{在新視窗中開啟(&amp;N)}other{在新視窗中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="5964247741333118902">嵌入的內容</translation>
 <translation id="5965607173855879702">正在刪除資料…</translation>
@@ -7731,7 +7727,6 @@
 <translation id="6251924700383757765">隱私權政策</translation>
 <translation id="625369703868467034">網路健康狀態</translation>
 <translation id="6253801023880399036">密碼已儲存至 <ph name="GOOGLE_PASSWORD_MANAGER" />。</translation>
-<translation id="6254306574403090248">深褐色 (暗)</translation>
 <translation id="6254503684448816922">金鑰洩露</translation>
 <translation id="6254892857036829079">完美</translation>
 <translation id="6257602895346497974">開啟同步功能...</translation>
@@ -8670,6 +8665,7 @@
 <translation id="6900632443249221072">使用 Gemini 生成圖像</translation>
 <translation id="6900651018461749106">請再次登入並更新 <ph name="USER_EMAIL" /></translation>
 <translation id="6900654715912436255">確定要刪除這個搜尋引擎嗎？</translation>
+<translation id="6900883974539674431">建立分頁群組後，系統會自動儲存群組，並同步到所有裝置</translation>
 <translation id="6901024547292737736"><ph name="ACTUAL_CHAR_COUNT" />/<ph name="MAX_CHAR_COUNT" /></translation>
 <translation id="6901130673208235020">搜尋瀏覽記錄時，歷史記錄搜尋項目、最相符結果的網頁內容和生成的模型輸出內容都會傳送給 Google</translation>
 <translation id="6902066522699286937">要預覽的語音</translation>
@@ -9962,7 +9958,6 @@
 <translation id="7784067724422331729">你的電腦安全性設定封鎖了這個檔案。</translation>
 <translation id="7784796923038949829">無法讀取或變更網站的資料</translation>
 <translation id="778480864305029524">如要使用即時網路共用功能，請開啟 Google Play 服務的通知。</translation>
-<translation id="7785471469930192436">如要刪除搜尋記錄，請參閱搜尋引擎的相關操作說明 (如果有的話)</translation>
 <translation id="77855763949601045">開啟訪客設定檔(&amp;O)</translation>
 <translation id="7786663536153819505">按照手機上的操作說明掃描 QR code。請確認手機的藍牙已開啟。
     <ph name="BR" />
@@ -10459,7 +10454,6 @@
 <translation id="8110489095782891123">正在下載聯絡人清單...</translation>
 <translation id="8114925369073821854">「<ph name="APP_NAME" />」的麥克風權限</translation>
 <translation id="8116497846156149">請家長核准</translation>
-<translation id="8116972784401310538">書籤管理員(&amp;B)</translation>
 <translation id="8118276691321086429"><ph name="PASSWORD_MANAGER_BRAND" />會記住你的登入資訊，並在情況允許時自動登入。如果關閉這項功能，系統每次都會詢問你是否要登入。</translation>
 <translation id="8118362518458010043">這個擴充功能可能不安全，因此遭到 Chrome 停用。</translation>
 <translation id="8118448640060360549">{EXTENSIONS_COUNT,plural, =1{# 個書籤}other{# 個書籤}}</translation>
@@ -10722,7 +10716,6 @@
 <translation id="8288032458496410887">解除安裝「<ph name="APP" />」...</translation>
 <translation id="8288553158681886528">擷取 PDF 中的文字</translation>
 <translation id="8289128870594824098">磁碟大小</translation>
-<translation id="8289200713453671499">快速切換分頁群組和最近的 AI 對話，不會遺失進度。</translation>
 <translation id="8289509909262565712">歡迎使用 <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">下載 Chrome</translation>
 <translation id="8291942417224950075">個人用途</translation>
@@ -11644,6 +11637,7 @@
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求你備份自己的資料，並且在今天內返還這部 <ph name="DEVICE_TYPE" />。}other{<ph name="MANAGER" /> 要求你備份自己的資料，並且在期限內返還這部 <ph name="DEVICE_TYPE" />。}}</translation>
 <translation id="8902667442496790482">開啟隨選朗讀設定</translation>
 <translation id="8903733144777177139">禁止存取麥克風</translation>
+<translation id="8904787158537906492">已將連結複製到剪貼簿</translation>
 <translation id="890518297681039136">因不明原因作業失敗。</translation>
 <translation id="8905253417215700291"><ph name="GOOGLE_PASSWORD_MANAGER" />已為這個網站設定高強度密碼</translation>
 <translation id="890616557918890486">變更來源</translation>
