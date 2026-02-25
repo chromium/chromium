@@ -256,7 +256,8 @@ std::string GlicMediaContext::GetContext() const {
 std::list<GlicMediaContext::TranscriptChunk>
 GlicMediaContext::GetTranscriptChunks() const {
   const Transcript* transcript = GetTranscriptIfExists();
-  if (!transcript) {
+  // Don't return transcripts if we don't have any final chunk.
+  if (!transcript || transcript->next_sequence_number_ == 0) {
     return {};
   }
   return transcript->transcript_chunks_;
