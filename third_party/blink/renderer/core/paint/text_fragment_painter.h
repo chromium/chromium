@@ -28,7 +28,6 @@ class TextFragmentPainter {
   STACK_ALLOCATED();
 
  public:
-  explicit TextFragmentPainter(const InlineCursor& cursor) : cursor_(cursor) {}
   TextFragmentPainter(const InlineCursor& cursor,
                       const PhysicalOffset& parent_offset,
                       InlinePaintContext* inline_context)

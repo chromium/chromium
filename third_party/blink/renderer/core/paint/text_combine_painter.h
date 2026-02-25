@@ -17,13 +17,6 @@ struct LineRelativeOffset;
 // LayoutTextCombine.
 class TextCombinePainter final : public TextPainter {
  public:
-  TextCombinePainter(GraphicsContext& context,
-                     const SvgContextPaints* svg_context_paints,
-                     const gfx::Rect& visual_rect,
-                     const ComputedStyle& style,
-                     const LineRelativeOffset& text_origin);
-  ~TextCombinePainter();
-
   static void Paint(const PaintInfo& paint_info,
                     const PhysicalOffset& paint_offset,
                     const LayoutTextCombine& text_combine);
@@ -37,6 +30,13 @@ class TextCombinePainter final : public TextPainter {
                           ETextDecorationSkipInk skip_ink) override;
 
  private:
+  TextCombinePainter(GraphicsContext& context,
+                     const SvgContextPaints* svg_context_paints,
+                     const gfx::Rect& visual_rect,
+                     const ComputedStyle& style,
+                     const LineRelativeOffset& text_origin);
+  ~TextCombinePainter();
+
   // Paints emphasis mark as for ideographic full stop character. Callers of
   // this function should rotate canvas to paint emphasis mark at left/right
   // side instead of top/bottom side.
