@@ -1045,19 +1045,17 @@ class LocationBarMediator
      *
      * @param activateNewSession Whether to begin a new input session if one is not already active.
      *     Active input sessions show Autocomplete and focused Omnibox.
-     * @return true if new input session has been activated.
      */
     @EnsuresNonNullIf("mCurrentInput")
     @VisibleForTesting
-    boolean beginOrResumeInput(boolean activateNewSession) {
-        if (mAutocompleteCoordinator == null) return false;
+    void beginOrResumeInput(boolean activateNewSession) {
         // Do not instantiate a new ephemeral session unless we're activating it as well.
         var session = FuseboxSessionState.from(mLocationBarDataProvider);
 
         // Target session must be either active, or activated.
         if (session == null || !(session.isSessionActive() || activateNewSession)) {
             endInputInternal();
-            return false;
+            return;
         }
 
         // If we're switching tab (active -> active), just reanchor observer.
@@ -1073,30 +1071,23 @@ class LocationBarMediator
         mUrlCoordinator.setUrlBarData(
                 data, UrlBar.ScrollType.NO_SCROLL, mCurrentInput.getSelection());
 
-        // In the event input session was activated before native initialization we cannot
-        // correctly determine the page classification, rendering the AutocompleteInput
-        // instance not sufficiently valid to facilitate Autocomplete.
-        if (mNativeInitialized) {
-            mAutocompleteCoordinator.beginInput(session);
-            mFuseboxCoordinator.beginInput(session);
-        } else {
-            mDeferredNativeRunnables.add(
-                    () -> {
-                        // mCurrentInput's timeline is fully contained within the mUrlHasFocus'
-                        // timeline. The check below confirms the mUrlHasFocus and ensures
-                        // mCurrentInput is not null.
-                        if (mCurrentInput == null) return;
-                        mCurrentInput.setPageClassification(
-                                mLocationBarDataProvider.getPageClassification(
-                                        /* prefetch= */ false));
-                        if (mAutocompleteCoordinator != null) {
-                            mAutocompleteCoordinator.beginInput(session);
-                            mFuseboxCoordinator.beginInput(session);
-                        }
-                    });
+        // URL bar is now focused with the user text. This may be still a bit early for the
+        // Autocomplete and Compose to kick in.
+        beginOrResumeInputWithNative();
+    }
+
+    private void beginOrResumeInputWithNative() {
+        if (!mNativeInitialized) {
+            mDeferredNativeRunnables.add(this::beginOrResumeInputWithNative);
+            return;
         }
 
-        return true;
+        if (mAutocompleteCoordinator == null) return;
+        var session = FuseboxSessionState.from(mLocationBarDataProvider);
+        if (session == null || !session.isSessionActive()) return;
+        session.setProfile(mProfileSupplier.get());
+        mAutocompleteCoordinator.beginInput(session);
+        mFuseboxCoordinator.beginInput(session);
     }
 
     /** Ends the current Omnibox input session. */
@@ -2014,11 +2005,6 @@ class LocationBarMediator
      */
     @Override
     public void beginInput(AutocompleteInput input) {
-        boolean isSearchQuery = input.getFocusReason() == OmniboxFocusReason.SEARCH_QUERY;
-        if (isSearchQuery && !mNativeInitialized) {
-            mDeferredNativeRunnables.add(() -> beginInput(input));
-            return;
-        }
         input.setPageClassification(mLocationBarDataProvider.getPageClassification(false));
         input.setPageUrl(mLocationBarDataProvider.getCurrentGurl());
         input.setPageTitle(mLocationBarDataProvider.getTitle());
@@ -2044,10 +2030,6 @@ class LocationBarMediator
 
         // Wait for the Url focus change before refreshing autocomplete.
         beginOrResumeInput(/* activateNewSession= */ true);
-
-        if (isSearchQuery) {
-            mUrlCoordinator.setKeyboardVisibility(true, false);
-        }
     }
 
     /**

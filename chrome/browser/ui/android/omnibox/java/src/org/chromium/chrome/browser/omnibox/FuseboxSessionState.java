@@ -10,13 +10,14 @@ import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFeatures;
 
 /**
  * Fusebox / Omnibox session state object. Captures controllers and state details needed to fulfill
- * or reconstruct the user input.
+ * or reconstruct the user input. This object is associated with a specific {@link Profile}.
  *
  * <p>Unlike the AutocompleteInput - this class is permitted to hold external controllers required
  * to fulfill navigation request.
@@ -29,6 +30,7 @@ public class FuseboxSessionState implements UserData {
      */
     private AutocompleteInput mAutocompleteInput = new AutocompleteInput();
 
+    private @Nullable Profile mProfile;
     private boolean mIsActive;
 
     /**
@@ -36,7 +38,8 @@ public class FuseboxSessionState implements UserData {
      * exists.
      *
      * @param dataProvider The {@link LocationBarDataProvider} to retrieve the current tab from.
-     * @return FuseboxSessionState appropriate for the supplied LocationBarDataProvider.
+     * @return FuseboxSessionState appropriate for the supplied LocationBarDataProvider, or `null`
+     *     if the UserData to host the persisted session state is not available.
      */
     public static @Nullable FuseboxSessionState from(LocationBarDataProvider dataProvider) {
         var userDataHost = dataProvider.getUserDataHost();
@@ -65,6 +68,26 @@ public class FuseboxSessionState implements UserData {
         return state;
     }
 
+    /** Constructs a new, empty FuseboxSessionState. */
+    private FuseboxSessionState() {}
+
+    /**
+     * Constructs a new FuseboxSessionState with a provided AutocompleteInput.
+     *
+     * @param input The initial AutocompleteInput for this session.
+     */
+    @VisibleForTesting
+    public FuseboxSessionState(AutocompleteInput input) {
+        mAutocompleteInput = input;
+    }
+
+    /**
+     * @return The current {@link Profile} for this session.
+     */
+    public @Nullable Profile getProfile() {
+        return mProfile;
+    }
+
     /**
      * Marks the session as active or inactive. When session is marked as inactive, the autocomplete
      * input is reset.
@@ -72,8 +95,7 @@ public class FuseboxSessionState implements UserData {
      * @param isActive Whether the session should be active.
      */
     public void setSessionActive(boolean isActive) {
-        if (isActive == mIsActive) return;
-
+        if (mIsActive == isActive) return;
         mIsActive = isActive;
         if (isActive) {
             mAutocompleteInput.setUrlFocusTime(System.currentTimeMillis());
@@ -87,7 +109,18 @@ public class FuseboxSessionState implements UserData {
             }
         } else {
             mAutocompleteInput.reset();
+            setProfile(null);
         }
+    }
+
+    /**
+     * Apply or reset profile to be used with the current Fusebox session.
+     *
+     * @param profile The profile the session is activated for; must be supplied to activate the
+     *     session.
+     */
+    public void setProfile(@Nullable Profile profile) {
+        mProfile = profile;
     }
 
     /**
@@ -108,17 +141,4 @@ public class FuseboxSessionState implements UserData {
     public AutocompleteInput getAutocompleteInput() {
         return mAutocompleteInput;
     }
-
-    /**
-     * Constructs a new FuseboxSessionState with a provided AutocompleteInput.
-     *
-     * @param input The initial AutocompleteInput for this session.
-     */
-    @VisibleForTesting
-    public FuseboxSessionState(AutocompleteInput input) {
-        mAutocompleteInput = input;
-    }
-
-    /** Constructs a new, empty FuseboxSessionState. */
-    FuseboxSessionState() {}
 }
