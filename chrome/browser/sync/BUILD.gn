@@ -87,6 +87,7 @@ source_set("sync") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser/accessibility_annotator",
     "//chrome/browser/bookmarks",
     "//chrome/browser/consent_auditor",
 

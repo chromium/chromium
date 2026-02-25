@@ -23,6 +23,10 @@ class PrefService;
 class SharingMessageBridge;
 class TemplateURLService;
 
+namespace accessibility_annotator {
+class AccessibilityAnnotatorBackend;
+}  // namespace accessibility_annotator
+
 namespace autofill {
 class AddressDataManager;
 class AutofillWebDataService;
@@ -139,6 +143,9 @@ class CommonControllerBuilder {
 
   // Setters to inject dependencies. Each of these setters must be invoked
   // before invoking `Build()`. In some cases it is allowed to inject nullptr.
+  void SetAccessibilityAnnotatorBackend(
+      accessibility_annotator::AccessibilityAnnotatorBackend*
+          accessibility_annotator_backend);
   void SetAccountSettingService(
       autofill::AccountSettingService* account_setting_service);
   void SetAddressDataManagerGetter(
@@ -261,6 +268,8 @@ class CommonControllerBuilder {
 
   // For all above, nullopt indicates the corresponding setter wasn't invoked.
   // nullptr indicates the setter was invoked with nullptr.
+  SafeOptional<raw_ptr<accessibility_annotator::AccessibilityAnnotatorBackend>>
+      accessibility_annotator_backend_;
   SafeOptional<raw_ptr<autofill::AccountSettingService>>
       account_setting_service_;
   base::RepeatingCallback<autofill::AddressDataManager*()>

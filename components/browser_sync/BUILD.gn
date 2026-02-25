@@ -25,6 +25,7 @@ static_library("browser_sync") {
 
   deps = [
     "//base",
+    "//components/accessibility_annotator/core/storage",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/bookmarks/browser",

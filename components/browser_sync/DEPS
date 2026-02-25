@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/constants",
+  "+components/accessibility_annotator/core/storage",
   "+components/autofill/core",
   "+components/bookmarks/browser",
   "+components/bookmarks/common",
