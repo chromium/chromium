@@ -335,9 +335,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetDevicesListEmpty) {
   EXPECT_TRUE(devices.empty());
 }
 
-// TODO(crbug.com/486849736): This test is currently disabled by filter file on
-// some Android bots. See the bug for details.
-IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreMostRecentlyClosedWindow) {
+// TODO(crbug.com/486915945): Flaky on desktop Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_RestoreMostRecentlyClosedWindow \
+  DISABLED_RestoreMostRecentlyClosedWindow
+#else
+#define MAYBE_RestoreMostRecentlyClosedWindow RestoreMostRecentlyClosedWindow
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest,
+                       MAYBE_RestoreMostRecentlyClosedWindow) {
   // Open a second window.
   BrowserWindowInterface* browser2 =
       CreateBrowserWindowWithType(BrowserWindowInterface::TYPE_NORMAL);
@@ -437,9 +443,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreMostRecentlyClosedWindow) {
   EXPECT_FALSE(tab_list3->GetTab(1)->IsActivated());
 }
 
-// TODO(crbug.com/482432028): This test is currently disabled by filter file on
-// some Android hardware bots. See bug for details.
-IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreWindowBySessionId) {
+// TODO(crbug.com/486915945): Flaky on desktop Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_RestoreWindowBySessionId DISABLED_RestoreWindowBySessionId
+#else
+#define MAYBE_RestoreWindowBySessionId RestoreWindowBySessionId
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, MAYBE_RestoreWindowBySessionId) {
   // Open a second window.
   BrowserWindowInterface* browser2 =
       CreateBrowserWindowWithType(BrowserWindowInterface::TYPE_NORMAL);
@@ -569,11 +579,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreNonEditableTabstrip) {
 // Tests chrome.sessions.getRecentlyClosed() for windows. Opens a second browser
 // window with two tabs, closes it, then calls the extension API function and
 // verifies one window with two tabs was recently closed.
-// TODO(crbug.com/482432028): This test is currently disabled by filter file on
-// some Android hardware bots. See bug for details.
-// TODO(crbug.com/486849736): This test is currently disabled by filter file on
-// some Android bots. See the bug for details.
-IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedWindow) {
+// TODO(crbug.com/486915945): Flaky on desktop Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_GetRecentlyClosedWindow DISABLED_GetRecentlyClosedWindow
+#else
+#define MAYBE_GetRecentlyClosedWindow GetRecentlyClosedWindow
+#endif
+IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, MAYBE_GetRecentlyClosedWindow) {
   // Open a second window.
   BrowserWindowInterface* browser2 =
       CreateBrowserWindowWithType(BrowserWindowInterface::TYPE_NORMAL);
@@ -728,10 +740,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
   }
 }
 
-// TODO(crbug.com/482432028): This test is currently disabled by filter file on
-// some Android hardware bots. See bug for details.
+// TODO(crbug.com/486915945): Flaky on desktop Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_GetRecentlyClosedMaxResultsWithWindow \
+  DISABLED_GetRecentlyClosedMaxResultsWithWindow
+#else
+#define MAYBE_GetRecentlyClosedMaxResultsWithWindow \
+  GetRecentlyClosedMaxResultsWithWindow
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest,
-                       GetRecentlyClosedMaxResultsWithWindow) {
+                       MAYBE_GetRecentlyClosedMaxResultsWithWindow) {
   // Start with an empty tab restore service.
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(GetProfile());
