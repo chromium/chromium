@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
+#include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_scheduler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -44,6 +45,7 @@ class CloudProfileReportingService : public KeyedService,
 
   std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client_;
   std::unique_ptr<ReportScheduler> report_scheduler_;
+  std::unique_ptr<SaasUsageReportScheduler> saas_usage_report_scheduler_;
   raw_ptr<Profile> profile_;
 
   base::ScopedObservation<policy::CloudPolicyCore,

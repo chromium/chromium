@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_factory.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_scheduler.h"
 #include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_uploader.h"
@@ -19,7 +20,11 @@ namespace enterprise_reporting {
 class SaasUsageReportingDelegateFactoryDesktop
     : public SaasUsageReportingDelegateFactory {
  public:
-  SaasUsageReportingDelegateFactoryDesktop() = default;
+  static std::unique_ptr<SaasUsageReportingDelegateFactoryDesktop>
+  CreateForBrowser();
+  static std::unique_ptr<SaasUsageReportingDelegateFactoryDesktop>
+  CreateForProfile(Profile* profile);
+
   SaasUsageReportingDelegateFactoryDesktop(
       const SaasUsageReportingDelegateFactoryDesktop&) = delete;
   SaasUsageReportingDelegateFactoryDesktop& operator=(
@@ -37,6 +42,12 @@ class SaasUsageReportingDelegateFactoryDesktop
 
   std::unique_ptr<SaasUsageReportScheduler::Delegate>
   GetSaasUsageReportSchedulerDelegate() const override;
+
+ private:
+  explicit SaasUsageReportingDelegateFactoryDesktop(Profile* profile);
+
+  // `profile_` is null for browser-level reporting.
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 }  // namespace enterprise_reporting

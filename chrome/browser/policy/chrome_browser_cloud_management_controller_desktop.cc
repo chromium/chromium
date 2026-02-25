@@ -272,8 +272,8 @@ ChromeBrowserCloudManagementControllerDesktop::
 #if BUILDFLAG(IS_CHROMEOS)
   return nullptr;
 #else
-  return std::make_unique<
-      enterprise_reporting::SaasUsageReportingDelegateFactoryDesktop>();
+  return enterprise_reporting::SaasUsageReportingDelegateFactoryDesktop::
+      CreateForBrowser();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
