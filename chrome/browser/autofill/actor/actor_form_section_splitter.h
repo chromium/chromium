@@ -76,7 +76,7 @@ enum class SectionSplitPart {
 // comes before any address-related field. The occurrence and position of name
 // fields does not matter here.
 bool ShouldSplitOutContactInfo(
-    base::span<const FieldGlobalId> representative_fields,
+    base::span<const FieldGlobalId> trigger_fields,
     const AutofillManager& autofill_manager,
     LogManager* log_manager);
 

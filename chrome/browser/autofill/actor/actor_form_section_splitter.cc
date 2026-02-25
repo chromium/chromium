@@ -98,7 +98,7 @@ const AutofillField* GetTriggerFieldForAddressPart(
 }  // namespace
 
 bool ShouldSplitOutContactInfo(
-    base::span<const FieldGlobalId> representative_fields,
+    base::span<const FieldGlobalId> trigger_fields,
     const AutofillManager& autofill_manager,
     LogManager* log_manager) {
   if (!base::FeatureList::IsEnabled(
@@ -106,13 +106,13 @@ bool ShouldSplitOutContactInfo(
     return false;
   }
 
-  if (representative_fields.empty()) {
+  if (trigger_fields.empty()) {
     return false;
   }
 
   // For now, we simply take the first field.
   const FormStructure* const form_structure =
-      autofill_manager.FindCachedFormById(representative_fields[0]);
+      autofill_manager.FindCachedFormById(trigger_fields[0]);
   if (!form_structure) {
     LOG_AF(log_manager)
         << LoggingScope::kAutofillActor
@@ -121,7 +121,7 @@ bool ShouldSplitOutContactInfo(
   }
 
   const AutofillField* trigger_field =
-      form_structure->GetFieldById(representative_fields[0]);
+      form_structure->GetFieldById(trigger_fields[0]);
 
   // Splitting occurs if the form section contains a phone number or email field
   // that comes before any address-related field.

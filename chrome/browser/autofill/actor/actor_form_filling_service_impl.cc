@@ -517,7 +517,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
 
   std::vector<ActorFormFillingRequest> requests;
   requests.reserve(fill_requests.size());
-  for (const auto& [requested_data, representative_fields] : fill_requests) {
+  for (const auto& [requested_data, trigger_fields] : fill_requests) {
     using enum ActorFormFillingRequest::RequestedData;
 
     // A single FillRequest can result in multiple ActorFormFillingRequests
@@ -544,7 +544,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
           return;
         }
 
-        if (actor::ShouldSplitOutContactInfo(representative_fields,
+        if (actor::ShouldSplitOutContactInfo(trigger_fields,
                                              autofill_manager, log_manager)) {
           sub_requests.push_back(
               {FormFillingRequest_RequestedData_CONTACT_INFORMATION,
@@ -596,12 +596,12 @@ void ActorFormFillingServiceImpl::GetSuggestions(
         case FormFillingRequest_RequestedData_WORK_ADDRESS:
         case FormFillingRequest_RequestedData_CONTACT_INFORMATION:
           suggestion_data =
-              GetAddressSuggestions(representative_fields, autofill_manager,
+              GetAddressSuggestions(trigger_fields, autofill_manager,
                                     log_manager, sub_request.split_part);
           break;
         case FormFillingRequest_RequestedData_CREDIT_CARD:
           suggestion_data = GetCreditCardSuggestions(
-              representative_fields, autofill_manager, log_manager);
+              trigger_fields, autofill_manager, log_manager);
           break;
         default:
           LOG_AF(log_manager)
