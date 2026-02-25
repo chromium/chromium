@@ -70,7 +70,11 @@ public interface SigninAndHistorySyncActivityLauncher {
             @AccessPoint int accessPoint);
 
     /**
-     * Creates a coordinator for the bottom-sheet sign-in and history sync flow.
+     * Creates a coordinator for the bottom-sheet sign-in and history sync flow and registers it to
+     * receive activity results using {@link ActivityResultTracker}. Should be called **early** in
+     * the embedding UI's creation (e.g. activity onCreate) so the coordinator can receive and
+     * handle in-flight activity result if the activity holding the coordinator is killed by the OS.
+     * See {@link ActivityResultTracker} for more details.
      *
      * @param windowAndroid The {@link WindowAndroid} for the current window.
      * @param activity The hosting {@link Activity}.
