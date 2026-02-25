@@ -110,6 +110,7 @@ android_resources("java_resources") {
     "java/res/values/ids.xml",
     "java/res/xml/custom_search_engine_preferences.xml",
     "java/res/xml/custom_site_search_preferences.xml",
+    "java/res/xml/inactive_shortcut_preferences.xml",
     "java/res/xml/keyboard_shortcut_preferences.xml",
   ]
   deps = [

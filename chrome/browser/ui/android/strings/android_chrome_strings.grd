@@ -527,6 +527,10 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_SITE_SEARCH_DIALOG_TITLE_EDIT" desc="Title for the Edit Site Search dialog.">
         Edit site search
       </message>
+      <message name="IDS_SITE_SEARCH_INACTIVE_SHORTCUTS_HEADER" desc="Header for 'Inactive Shortcuts' section">
+        Inactive shortcuts
+      </message>
+
       <message name="IDS_SITE_SEARCH_DIALOG_HINT_NAME" desc="Hint for the name field in the Edit Site Search dialog.">
         Name
       </message>

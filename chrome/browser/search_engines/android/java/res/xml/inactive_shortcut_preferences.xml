@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<androidx.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:key="inactive_shortcut_section"
+        android:title="@string/site_search_inactive_shortcuts_header"
+        app:allowDividerAbove="true">
+
+        <org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference
+            android:key="inactive_shortcut_list"
+            android:layout="@layout/preference_list_recycler_view"
+            app:allowDividerAbove="false" />
+
+    </PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>

@@ -71,6 +71,9 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
                                 getContext(), getProfile(), customSiteSearchPref);
             }
         }
+
+        // Inactive Shortcuts
+        SettingsUtils.addPreferencesFromResource(this, R.xml.inactive_shortcut_preferences);
     }
 
     @Override
