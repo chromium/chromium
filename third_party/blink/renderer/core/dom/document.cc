@@ -5748,9 +5748,16 @@ void Document::RemoveFocusedElementOfSubtree(Node& node,
   const auto& focused_element = *node.GetTreeScope().AdjustedFocusedElement();
   if (focused_element.IsDescendantOf(&node) ||
       (!among_children_only && node == focused_element)) {
-    bool omit_blur_events =
-        RuntimeEnabledFeatures::OmitBlurEventOnElementRemovalEnabled();
-    ClearFocusedElement(omit_blur_events);
+    if (StatePreservingAtomicMoveInProgress()) {
+      // With state-preserving atomic move (moveBefore), we don't actually
+      // unfocus the element, but we have to make sure the selection UI catches
+      // up with the new node's position in the DOM.
+      SetShouldUpdateSelectionAfterLayout(true);
+    } else {
+      bool omit_blur_events =
+          RuntimeEnabledFeatures::OmitBlurEventOnElementRemovalEnabled();
+      ClearFocusedElement(omit_blur_events);
+    }
   }
 }
 
