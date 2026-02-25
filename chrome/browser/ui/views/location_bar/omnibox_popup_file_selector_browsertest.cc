@@ -10,6 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -120,4 +121,42 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
   const auto& file_attachment = context->file_infos[0]->get_file_attachment();
   EXPECT_EQ(file_attachment->name, "test.txt");
   EXPECT_EQ(file_attachment->mime_type, "text/plain");
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupFileSelectorBrowserTest,
+                       RecordHistogramOnFileSelected) {
+  base::HistogramTester histogram_tester;
+
+  auto* omnibox_controller =
+      browser()->window()->GetLocationBar()->GetOmniboxController();
+  MockOmniboxEditModel mock_edit_model(omnibox_controller);
+
+  OmniboxPopupFileSelector file_selector(
+      browser()->window()->GetNativeWindow());
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  file_selector.OpenFileUploadDialog(web_contents,
+                                     /*is_image=*/false, &mock_edit_model,
+                                     std::nullopt,
+                                     /*was_ai_mode_open=*/true);
+
+  // Create a real temporary file.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath text_file_path = temp_dir.GetPath().AppendASCII("test.txt");
+  ASSERT_TRUE(base::WriteFile(text_file_path, "dummy data"));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_edit_model, OpenAiMode(false, true))
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+
+  // Trigger the file selection.
+  file_selector.FileSelected(
+      ui::SelectedFileInfo(text_file_path, text_file_path), 0);
+
+  run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox", 0, 1);
 }

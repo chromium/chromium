@@ -818,6 +818,9 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
   if (id >= kMinOmniboxContextMenuRecentTabsCommandId &&
       id < kMinOmniboxContextMenuRecentTabsCommandId +
                omnibox::kContextMenuMaxTabSuggestions.Get()) {
+    base::UmaHistogramExactLinear(
+        "ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox",
+        /*ContextMenu*/ 0, 4);
     std::vector<OmniboxContextMenuController::TabInfo> tabs = GetRecentTabs();
     int tab_index_in_menu = id - kMinOmniboxContextMenuRecentTabsCommandId;
     if (static_cast<size_t>(tab_index_in_menu) < tabs.size()) {
