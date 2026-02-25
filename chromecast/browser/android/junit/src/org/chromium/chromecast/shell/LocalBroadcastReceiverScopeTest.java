@@ -17,9 +17,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,6 @@ import java.util.List;
 /** Tests for LocalBroadcastReceiverScope. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class LocalBroadcastReceiverScopeTest {
     @Test
     public void testConstructorRegistersReceiver() {
@@ -43,6 +42,7 @@ public class LocalBroadcastReceiverScopeTest {
                 (Intent intent) -> result.add("Intent received: " + intent.getAction()));
         Intent intent = new Intent().setAction(action);
         broadcastManager.sendBroadcast(intent);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertThat(result, contains("Intent received: org.chromium.chromecast.test.ACTION_HELLO"));
     }
 

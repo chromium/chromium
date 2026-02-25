@@ -31,6 +31,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chromecast.base.Controller;
 import org.chromium.chromecast.base.Observer;
 import org.chromium.chromecast.base.Scope;
@@ -40,6 +41,7 @@ import org.chromium.chromecast.shell.CastWebContentsSurfaceHelper.StartParams;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /** Tests for CastWebContentsSurfaceHelper. */
@@ -96,10 +98,7 @@ public class CastWebContentsSurfaceHelperTest {
 
     private void sendSystemBroadcast(Intent intent) {
         ContextUtils.getApplicationContext().sendBroadcast(intent);
-        // Two looper flushes are required: the first executes the broadcast, and the next executes
-        // the delayed tasks that were queued by the broadcast receivers.
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
 
     @Before
@@ -112,7 +111,7 @@ public class CastWebContentsSurfaceHelperTest {
                         mWebContentsView, mFinishCallback, mSurfaceAvailable);
         mSurfaceHelper.setMediaSessionGetterForTesting(mMediaSessionGetter);
         // Ensure the BroadcastReceivers are registered.
-        ShadowLooper.runUiThreadTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     @Test
@@ -285,7 +284,7 @@ public class CastWebContentsSurfaceHelperTest {
         StartParams params = new StartParamsBuilder().withId("0").build();
         mSurfaceHelper.onNewStartParams(params);
         sendBroadcastSync(CastWebContentsIntentUtils.requestStopWebContents("0"));
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mFinishCallback).accept(CastWebContentsIntentUtils.getInstanceUri("0"));
     }
 
@@ -294,6 +293,7 @@ public class CastWebContentsSurfaceHelperTest {
         StartParams params = new StartParamsBuilder().withId("0").build();
         mSurfaceHelper.onNewStartParams(params);
         sendSystemBroadcast(new Intent(Intent.ACTION_SCREEN_OFF));
+        ShadowLooper.idleMainLooper(1, TimeUnit.SECONDS);
         verify(mFinishCallback).accept(CastWebContentsIntentUtils.getInstanceUri("0"));
     }
 
@@ -304,7 +304,7 @@ public class CastWebContentsSurfaceHelperTest {
         mSurfaceHelper.onNewStartParams(params1);
         sendBroadcastSync(CastWebContentsIntentUtils.requestStopWebContents("1"));
         mSurfaceHelper.onNewStartParams(params2);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mFinishCallback, never()).accept(any());
     }
 
