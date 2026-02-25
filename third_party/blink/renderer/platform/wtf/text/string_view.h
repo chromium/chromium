@@ -299,6 +299,20 @@ class WTF_EXPORT StringView {
   // Find the last occurrence of a character. Returns the index of the match, or
   // `kNotFound`.
   wtf_size_t rfind(UChar ch, wtf_size_t start = kNotFound) const;
+  // Searches for the last occurrence of a substring within this string.
+  //
+  // This method performs a backward search starting from the 'start' index.
+  // If 'start' is npos, the search begins from the end of the string.
+  //
+  // Returns the index of the start of the found substring, or npos if
+  // no match is found.
+  //
+  // Special Cases:
+  // - If 'value' is empty, the search always succeeds and returns
+  //   the minimum of 'start' and length().
+  // - Null strings and zero-length strings are treated as equivalent
+  //   for both `this` string and the 'value' parameter.
+  size_type rfind(const StringView& value, size_type start = npos) const;
 
   // Returns `true` if this StringView contains the specified character.
   bool contains(UChar ch) const;

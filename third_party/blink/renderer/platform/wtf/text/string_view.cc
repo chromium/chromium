@@ -238,6 +238,22 @@ wtf_size_t StringView::rfind(UChar ch, wtf_size_t start) const {
                   : blink::ReverseFind(Span16(), ch, start);
 }
 
+StringView::size_type StringView::rfind(const StringView& value,
+                                        size_type start) const {
+  size_type value_length = value.length();
+  if (value_length == 0u) {
+    return std::min(start, length());
+  }
+  return VisitCharacters(*this, [&](auto chars) {
+    if (value_length == 1u) {
+      return blink::ReverseFind(chars, value[0], start);
+    }
+    return VisitCharacters(value, [&](auto value_chars) {
+      return internal::ReverseFind(chars, value_chars, start);
+    });
+  });
+}
+
 bool StringView::contains(UChar ch) const {
   return find(ch) != kNotFound;
 }

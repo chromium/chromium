@@ -183,6 +183,47 @@ inline wtf_size_t Find(const StringView& string,
   return FindInternal(string.Span16().subspan(index), match.Span16(), index);
 }
 
+template <typename SearchCharacterType, typename MatchCharacterType>
+ALWAYS_INLINE wtf_size_t ReverseFind(
+    base::span<const SearchCharacterType> search,
+    base::span<const MatchCharacterType> match,
+    wtf_size_t index) {
+  // Optimization: keep a running hash of the strings,
+  // only call equal if the hashes match.
+
+  wtf_size_t match_length = base::checked_cast<wtf_size_t>(match.size());
+  // delta is the number of additional times to test; delta == 0 means test only
+  // once.
+  wtf_size_t delta = std::min(
+      index, base::checked_cast<wtf_size_t>(search.size() - match_length));
+
+  wtf_size_t search_hash = 0;
+  wtf_size_t match_hash = 0;
+  for (wtf_size_t i = 0; i < match_length; ++i) {
+    search_hash += search[delta + i];
+    match_hash += match[i];
+  }
+
+  // Keep looping until we match.
+  //
+  // We don't use base::span methods for better performance.
+  // SAFETY: This function ensures `search.data() + delta` and
+  // `search.data() + delta + match_length` are safe.
+  const SearchCharacterType* search_data =
+      UNSAFE_BUFFERS(search.data() + delta);
+  while (search_hash != match_hash ||
+         !std::equal(match.begin(), match.end(), search_data)) {
+    if (!delta) {
+      return kNotFound;
+    }
+    --delta;
+    UNSAFE_BUFFERS(--search_data);
+    search_hash -= UNSAFE_BUFFERS(search_data[match_length]);
+    search_hash += UNSAFE_BUFFERS(search_data[0]);
+  }
+  return delta;
+}
+
 }  // namespace blink::internal
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_INTERNAL_H_

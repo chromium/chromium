@@ -807,6 +807,18 @@ TEST(StringViewTest, RfindChar) {
   EXPECT_EQ(kNotFound, view16_with_null.rfind(UChar(0), 3));
 }
 
+TEST(StringViewTest, RfindSubstring) {
+  EXPECT_EQ(0u, StringView().rfind(""));
+  EXPECT_EQ(0u, StringView("").rfind(""));
+  EXPECT_EQ(0u, StringView().rfind(StringView()));
+  EXPECT_EQ(0u, StringView("").rfind(StringView()));
+  EXPECT_EQ(3u, StringView("abc").rfind(""));
+  EXPECT_EQ(3u, StringView("abc").rfind(StringView()));
+  EXPECT_EQ(3u, StringView("abcdef").rfind("def", 3u));
+  EXPECT_EQ(StringView::npos, StringView("abcdef").rfind("def", 2u));
+  EXPECT_EQ(0u, StringView("abcdef").rfind("abc", 3u));
+}
+
 TEST(StringViewTest, ContainsChar) {
   EXPECT_FALSE(StringView().contains(0));
   EXPECT_FALSE(StringView("").contains(0));

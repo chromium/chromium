@@ -569,6 +569,18 @@ TEST(StringTest, FindWithCallback) {
   EXPECT_EQ(1U, test_string2.Find(callback));
 }
 
+TEST(StringTest, RfindSubstring) {
+  EXPECT_EQ(0u, String().rfind(""));
+  EXPECT_EQ(0u, String("").rfind(""));
+  EXPECT_EQ(0u, String().rfind(StringView()));
+  EXPECT_EQ(0u, String("").rfind(StringView()));
+  EXPECT_EQ(3u, String("abc").rfind(""));
+  EXPECT_EQ(3u, String("abc").rfind(StringView()));
+  EXPECT_EQ(3u, String("abcdef").rfind("def", 3u));
+  EXPECT_EQ(String::npos, String("abcdef").rfind("def", 2u));
+  EXPECT_EQ(0u, String("abcdef").rfind("abc", 3u));
+}
+
 TEST(StringTest, StartsWithIgnoringCaseAndAccents) {
   EXPECT_TRUE(String(u"ÎÑŢÉRÑÅŢÎÖÑÅĻÎŽÅŢÎÖÑ")
                   .StartsWithIgnoringCaseAndAccents(String("international")));

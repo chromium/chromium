@@ -149,13 +149,32 @@ class WTF_EXPORT AtomicString {
   // If `value` is empty, this returns `true`.
   bool ContainsIgnoringAsciiCase(const StringView& value) const;
 
-  // Find the last instance of a single character or string.
+  // Find the last instance of a single character.
   wtf_size_t ReverseFind(UChar c, wtf_size_t start = UINT_MAX) const {
     return string_.ReverseFind(c, start);
   }
+  // Find the last instance of a substring.
+  // If `this` string is null, this function returns kNotFound even if
+  // `value` is empty.
   wtf_size_t ReverseFind(const StringView& value,
                          wtf_size_t start = UINT_MAX) const {
     return string_.ReverseFind(value, start);
+  }
+  // Searches for the last occurrence of a substring within this string.
+  //
+  // This method performs a backward search starting from the 'start' index.
+  // If 'start' is npos, the search begins from the end of the string.
+  //
+  // Returns the index of the start of the found substring, or npos if
+  // no match is found.
+  //
+  // Special Cases:
+  // - If 'value' is empty, the search always succeeds and returns
+  //   the minimum of 'start' and length().
+  // - Null strings and zero-length strings are treated as equivalent
+  //   for both `this` string and the 'value' parameter.
+  size_type rfind(const StringView& value, size_type start = npos) const {
+    return string_.rfind(value, start);
   }
 
   bool starts_with(const StringView& prefix) const {

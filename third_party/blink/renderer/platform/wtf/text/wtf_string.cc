@@ -121,6 +121,14 @@ String::size_type String::find(const StringView& value, size_type start) const {
   return internal::Find(impl_.get(), value, start);
 }
 
+String::size_type String::rfind(const StringView& value,
+                                size_type start) const {
+  if (value.empty()) {
+    return std::min(start, length());
+  }
+  return impl_ ? impl_->ReverseFind(value, start) : npos;
+}
+
 UChar32 String::CharacterStartingAt(unsigned i) const {
   if (!impl_ || i >= impl_->length())
     return 0;

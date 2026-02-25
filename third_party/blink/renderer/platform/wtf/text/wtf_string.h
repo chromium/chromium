@@ -265,14 +265,31 @@ class WTF_EXPORT String {
   bool contains(char c) const { return find(c) != kNotFound; }
   bool contains(const StringView& value) const { return find(value) != npos; }
 
-  // Find the last instance of a single character or string.
+  // Find the last instance of a single character.
   wtf_size_t ReverseFind(UChar c, unsigned start = UINT_MAX) const {
     return impl_ ? impl_->ReverseFind(c, start) : kNotFound;
   }
+  // Find the last instance of a substring.
+  // If `this` string is null, this function returns kNotFound even if
+  // `value` is empty.
   wtf_size_t ReverseFind(const StringView& value,
                          unsigned start = UINT_MAX) const {
     return impl_ ? impl_->ReverseFind(value, start) : kNotFound;
   }
+  // Searches for the last occurrence of a substring within this string.
+  //
+  // This method performs a backward search starting from the 'start' index.
+  // If 'start' is npos, the search begins from the end of the string.
+  //
+  // Returns the index of the start of the found substring, or npos if
+  // no match is found.
+  //
+  // Special Cases:
+  // - If 'value' is empty, the search always succeeds and returns
+  //   the minimum of 'start' and length().
+  // - Null strings and zero-length strings are treated as equivalent
+  //   for both `this` string and the 'value' parameter.
+  size_type rfind(const StringView& value, size_type start = npos) const;
 
   // Returns the Unicode code point starting at the specified offset of this
   // string. If the offset points an unpaired surrogate, this function returns

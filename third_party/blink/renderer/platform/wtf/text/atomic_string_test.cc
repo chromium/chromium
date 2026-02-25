@@ -76,6 +76,18 @@ TEST(AtomicStringTest, ImplEquality) {
   EXPECT_NE(bar.Impl(), baz.Impl());
 }
 
+TEST(AtomicStringTest, RfindSubstring) {
+  EXPECT_EQ(0u, AtomicString().rfind(""));
+  EXPECT_EQ(0u, AtomicString("").rfind(""));
+  EXPECT_EQ(0u, AtomicString().rfind(StringView()));
+  EXPECT_EQ(0u, AtomicString("").rfind(StringView()));
+  EXPECT_EQ(3u, AtomicString("abc").rfind(""));
+  EXPECT_EQ(3u, AtomicString("abc").rfind(StringView()));
+  EXPECT_EQ(3u, AtomicString("abcdef").rfind("def", 3u));
+  EXPECT_EQ(AtomicString::npos, AtomicString("abcdef").rfind("def", 2u));
+  EXPECT_EQ(0u, AtomicString("abcdef").rfind("abc", 3u));
+}
+
 TEST(AtomicStringTest, Contains) {
   EXPECT_TRUE(AtomicString("").contains(""));
   EXPECT_FALSE(AtomicString("").contains("a"));
