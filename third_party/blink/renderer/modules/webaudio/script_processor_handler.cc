@@ -46,8 +46,8 @@ ScriptProcessorHandler::ScriptProcessorHandler(
       internal_input_bus_(AudioBus::Create(number_of_input_channels,
                                            node.context()->renderQuantumSize(),
                                            false)) {
-  DCHECK_GE(buffer_size_, node.context()->renderQuantumSize());
-  DCHECK_LE(number_of_input_channels, BaseAudioContext::MaxNumberOfChannels());
+  CHECK_GE(buffer_size_, node.context()->renderQuantumSize());
+  CHECK_LE(number_of_input_channels, BaseAudioContext::MaxNumberOfChannels());
 
   AddInput();
   AddOutput(number_of_output_channels);
@@ -144,29 +144,22 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
     SharedAudioBuffer* shared_output_buffer =
         shared_output_buffers_.at(double_buffer_index).get();
 
-    bool buffers_are_good =
-        shared_output_buffer &&
-        BufferSize() == shared_output_buffer->length() &&
-        buffer_read_write_index_ + frames_to_process <= BufferSize();
-
+    DCHECK(shared_output_buffer);
+    DCHECK_EQ(BufferSize(), shared_output_buffer->length());
+    DCHECK_LE(buffer_read_write_index_ + frames_to_process, BufferSize());
     if (internal_input_bus_->NumberOfChannels()) {
       // If the number of input channels is zero, the zero length input buffer
       // is fine.
-      buffers_are_good = buffers_are_good && shared_input_buffer &&
-                         BufferSize() == shared_input_buffer->length();
+      DCHECK(shared_input_buffer);
+      DCHECK_EQ(BufferSize(), shared_input_buffer->length());
     }
-
-    DCHECK(buffers_are_good);
-
     // `BufferSize()` should be evenly divisible by `frames_to_process`.
     DCHECK_GT(frames_to_process, 0u);
     DCHECK_GE(BufferSize(), frames_to_process);
     DCHECK_EQ(BufferSize() % frames_to_process, 0u);
-
-    uint32_t number_of_input_channels = internal_input_bus_->NumberOfChannels();
-    uint32_t number_of_output_channels = output_bus->NumberOfChannels();
-    DCHECK_EQ(number_of_input_channels, number_of_input_channels_);
-    DCHECK_EQ(number_of_output_channels, number_of_output_channels_);
+    DCHECK_EQ(internal_input_bus_->NumberOfChannels(),
+              number_of_input_channels_);
+    DCHECK_EQ(output_bus->NumberOfChannels(), number_of_output_channels_);
 
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
                  "ScriptProcessorHandler::Process - data copy under lock",
@@ -174,7 +167,7 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
 
     // It is possible that the length of `internal_input_bus_` and
     // `input_bus` can be different. See crbug.com/1189528.
-    for (uint32_t i = 0; i < number_of_input_channels; ++i) {
+    for (uint32_t i = 0; i < number_of_input_channels_; ++i) {
       internal_input_bus_->SetChannelMemory(
           i,
           UNSAFE_TODO(
@@ -183,11 +176,11 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
           frames_to_process);
     }
 
-    if (number_of_input_channels) {
+    if (number_of_input_channels_) {
       internal_input_bus_->CopyFrom(*input_bus);
     }
 
-    for (uint32_t i = 0; i < number_of_output_channels; ++i) {
+    for (uint32_t i = 0; i < number_of_output_channels_; ++i) {
       float* destination = output_bus->Channel(i)->MutableData();
       const float* source = UNSAFE_TODO(
           static_cast<float*>(shared_output_buffer->channels()[i].Data()) +
@@ -237,13 +230,13 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
 }
 
 void ScriptProcessorHandler::FireProcessEvent(uint32_t double_buffer_index) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
 
   if (!Context() || !Context()->GetExecutionContext()) {
     return;
   }
 
-  DCHECK_LT(double_buffer_index, 2u);
+  CHECK_LT(double_buffer_index, 2u);
 
   // Avoid firing the event if the document has already gone away.
   if (GetNode()) {
@@ -261,13 +254,13 @@ void ScriptProcessorHandler::FireProcessEvent(uint32_t double_buffer_index) {
 void ScriptProcessorHandler::FireProcessEventForOfflineAudioContext(
     uint32_t double_buffer_index,
     base::WaitableEvent* waitable_event) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
 
   if (!Context() || !Context()->GetExecutionContext()) {
     return;
   }
 
-  DCHECK_LT(double_buffer_index, 2u);
+  CHECK_LT(double_buffer_index, 2u);
   if (double_buffer_index > 1) {
     waitable_event->Signal();
     return;
@@ -300,7 +293,7 @@ double ScriptProcessorHandler::LatencyTime() const {
 
 void ScriptProcessorHandler::SetChannelCount(uint32_t channel_count,
                                              ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
   DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   if (channel_count != channel_count_) {
@@ -315,7 +308,7 @@ void ScriptProcessorHandler::SetChannelCount(uint32_t channel_count,
 void ScriptProcessorHandler::SetChannelCountMode(
     V8ChannelCountMode::Enum mode,
     ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
   DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   if ((mode == V8ChannelCountMode::Enum::kMax) ||

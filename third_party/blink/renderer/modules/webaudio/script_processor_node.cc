@@ -143,7 +143,7 @@ ScriptProcessorNode::ScriptProcessorNode(BaseAudioContext& context,
 ScriptProcessorNode* ScriptProcessorNode::Create(
     BaseAudioContext& context,
     ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
 
   // Default buffer size is 0 (let WebAudio choose) with 2 inputs and 2
   // outputs.
@@ -154,7 +154,7 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
     BaseAudioContext& context,
     uint32_t requested_buffer_size,
     ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
 
   // Default is 2 inputs and 2 outputs.
   return Create(context, requested_buffer_size, 2, 2, exception_state);
@@ -165,7 +165,7 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
     uint32_t requested_buffer_size,
     uint32_t number_of_input_channels,
     ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
 
   // Default is 2 outputs.
   return Create(context, requested_buffer_size, number_of_input_channels, 2,
@@ -178,7 +178,7 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
     uint32_t number_of_input_channels,
     uint32_t number_of_output_channels,
     ExceptionState& exception_state) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
 
   if (number_of_input_channels == 0 && number_of_output_channels == 0) {
     exception_state.ThrowDOMException(
@@ -261,7 +261,7 @@ uint32_t ScriptProcessorNode::bufferSize() const {
 
 void ScriptProcessorNode::DispatchEvent(double playback_time,
                                         uint32_t double_buffer_index) {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
 
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
                "ScriptProcessorNode::DispatchEvent");
