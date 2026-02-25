@@ -61,6 +61,8 @@ class TabStripServiceImpl : public TabStripService {
   mojom::TabStripExperimentService::ShowTabContextMenuResult ShowTabContextMenu(
       const tabs_api::NodeId& tab_id,
       const gfx::Point& location) override;
+  mojom::TabStripExperimentService::GetAllTabsForProfileResult
+  GetAllTabsForProfile() override;
 
   void AddObserver(observation::TabStripApiBatchedObserver* observer) override;
   void RemoveObserver(

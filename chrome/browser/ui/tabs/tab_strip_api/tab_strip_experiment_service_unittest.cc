@@ -93,5 +93,23 @@ TEST_F(TabStripExperimentServiceImplTest, UpdateTabGroupVisual_NotFound) {
   ASSERT_EQ(result.error()->code, mojo_base::mojom::Code::kNotFound);
 }
 
+TEST_F(TabStripExperimentServiceImplTest, ShowTabContextMenu) {
+  tab_strip_->AddTab({tabs::TabHandle(123), GURL("title")});
+  tabs_api::NodeId tab_id(NodeId::Type::kContent, "123");
+
+  auto result = service_->ShowTabContextMenu(tab_id, gfx::Point(100, 100));
+  ASSERT_TRUE(result.has_value());
+}
+
+TEST_F(TabStripExperimentServiceImplTest, GetAllTabsForProfile_Empty) {
+  auto result = service_->GetAllTabsForProfile();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(1u, result.value().size());
+  auto it = result.value().find("1");
+  ASSERT_NE(it, result.value().end());
+  ASSERT_EQ(1u, it->second->children.size());
+  ASSERT_EQ(0u, it->second->children[0]->children.size());
+}
+
 }  // namespace
 }  // namespace tabs_api

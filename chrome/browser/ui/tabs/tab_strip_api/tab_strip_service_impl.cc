@@ -154,7 +154,8 @@ mojom::TabStripService::CreateTabAtResult TabStripServiceImpl::CreateTabAt(
 
   if (pos.has_value()) {
     RETURN_IF_ERROR(utils::CheckPath(
-        pos->path(), NodeId::FromWindowId(browser_adapter_->GetWindowId()),
+        pos->path(),
+        NodeId::FromWindowId(tab_strip_model_adapter_->GetWindowId()),
         NodeId::FromTabCollectionHandle(
             tab_strip_model_adapter_->GetRoot()->GetHandle())));
   }
@@ -286,7 +287,8 @@ mojom::TabStripService::MoveNodeResult TabStripServiceImpl::MoveNode(
   auto session = session_controller_->CreateSession();
 
   RETURN_IF_ERROR(utils::CheckPath(
-      position.path(), NodeId::FromWindowId(browser_adapter_->GetWindowId()),
+      position.path(),
+      NodeId::FromWindowId(tab_strip_model_adapter_->GetWindowId()),
       NodeId::FromTabCollectionHandle(
           tab_strip_model_adapter_->GetRoot()->GetHandle())));
 
@@ -373,6 +375,20 @@ TabStripServiceImpl::ShowTabContextMenu(const tabs_api::NodeId& tab_id,
 
   // TODO(crbug.com/470136275): Implement context menu logic.
   return std::monostate();
+}
+
+mojom::TabStripExperimentService::GetAllTabsForProfileResult
+TabStripServiceImpl::GetAllTabsForProfile() {
+  auto session = session_controller_->CreateSession();
+  base::flat_map<std::string, mojom::ContainerPtr> windows;
+  for (auto& adapter :
+       browser_adapter_->CreateAllTabStripModelAdaptersForProfile()) {
+    windows.emplace(
+        adapter->GetWindowId(),
+        adapter->GetTabStripTopology(adapter->GetRoot()->GetHandle()));
+  }
+
+  return windows;
 }
 
 void TabStripServiceImpl::AddObserver(

@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_ADAPTERS_BROWSER_ADAPTER_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_ADAPTERS_BROWSER_ADAPTER_H_
 
+#include <memory>
+#include <vector>
+
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
@@ -16,7 +20,8 @@ class BrowserAdapter {
  public:
   virtual ~BrowserAdapter() {}
 
-  virtual std::string GetWindowId() const = 0;
+  virtual std::vector<std::unique_ptr<TabStripModelAdapter>>
+  CreateAllTabStripModelAdaptersForProfile() = 0;
 
   // TabHandle could potentially be null to indicate that tab creation.
   virtual tabs::TabHandle AddTabAt(const GURL& url,

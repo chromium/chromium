@@ -950,3 +950,29 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ShowTabContextMenu) {
           }));
   run_loop.Run();
 }
+
+IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, GetAllTabsForProfile) {
+  mojo::Remote<TabStripExperimentService> experiment_remote;
+  tab_strip_service_mojo_handler_->AcceptExperimental(
+      experiment_remote.BindNewPipeAndPassReceiver());
+
+  CreateBrowser(browser()->profile());
+
+  base::RunLoop run_loop;
+  experiment_remote->GetAllTabsForProfile(base::BindLambdaForTesting(
+      [&](TabStripExperimentService::GetAllTabsForProfileResult result) {
+        ASSERT_TRUE(result.has_value());
+        const auto& windows = result.value();
+        ASSERT_GE(windows.size(), 2u);
+
+        for (const auto& [id, window_container] : windows) {
+          ASSERT_TRUE(window_container->data->is_window());
+          ASSERT_EQ(1u, window_container->children.size());
+
+          const auto& tab_strip_container = window_container->children[0];
+          ASSERT_TRUE(tab_strip_container->data->is_tab_strip());
+        }
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}

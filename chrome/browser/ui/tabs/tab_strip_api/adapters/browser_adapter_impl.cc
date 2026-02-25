@@ -6,6 +6,8 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter_impl.h"
 #include "components/sessions/core/session_id.h"
 
 namespace tabs_api {
@@ -13,8 +15,20 @@ namespace tabs_api {
 // Magic number to signal new tab should be appended.
 constexpr int kAppendNewTab = -1;
 
-std::string BrowserAdapterImpl::GetWindowId() const {
-  return base::NumberToString(browser_->GetSessionID().id());
+std::vector<std::unique_ptr<TabStripModelAdapter>>
+BrowserAdapterImpl::CreateAllTabStripModelAdaptersForProfile() {
+  std::vector<std::unique_ptr<TabStripModelAdapter>> results;
+  for (BrowserWindowInterface* window : GetAllBrowserWindowInterfaces()) {
+    if (window->GetProfile() == browser_->GetProfile()) {
+      TabStripModel* tab_strip_model = window->GetTabStripModel();
+      if (tab_strip_model) {
+        results.push_back(std::make_unique<TabStripModelAdapterImpl>(
+            tab_strip_model,
+            base::NumberToString(window->GetSessionID().id())));
+      }
+    }
+  }
+  return results;
 }
 
 tabs::TabHandle BrowserAdapterImpl::AddTabAt(

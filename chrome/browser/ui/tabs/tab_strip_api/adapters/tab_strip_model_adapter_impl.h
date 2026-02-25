@@ -18,11 +18,10 @@ namespace tabs_api {
 class TabStripModelAdapterImpl : public TabStripModelAdapter {
  public:
   explicit TabStripModelAdapterImpl(TabStripModel* tab_strip_model,
-                                    std::string window_id)
-      : tab_strip_model_(tab_strip_model), window_id_(std::move(window_id)) {}
+                                    std::string window_id);
   TabStripModelAdapterImpl(const TabStripModelAdapterImpl&&) = delete;
   TabStripModelAdapterImpl operator=(const TabStripModelAdapterImpl&) = delete;
-  ~TabStripModelAdapterImpl() override {}
+  ~TabStripModelAdapterImpl() override;
 
   void AddModelObserver(TabStripModelObserver* observer) override;
   void RemoveModelObserver(TabStripModelObserver* observer) override;
@@ -60,6 +59,7 @@ class TabStripModelAdapterImpl : public TabStripModelAdapter {
   InsertionParams CalculateInsertionParams(
       const std::optional<tabs_api::Position>& pos) const override;
   const tabs::TabCollection* GetRoot() const override;
+  std::string GetWindowId() const override;
 
   // TabStripModelAdapterImpl uses passkeys to access experimental API methods
   // in TabStripModel or TabCollections.

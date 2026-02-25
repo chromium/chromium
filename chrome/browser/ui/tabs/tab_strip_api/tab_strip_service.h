@@ -64,6 +64,8 @@ class TabStripService {
   virtual mojom::TabStripExperimentService::ShowTabContextMenuResult
   ShowTabContextMenu(const tabs_api::NodeId& tab_id,
                      const gfx::Point& location) = 0;
+  virtual mojom::TabStripExperimentService::GetAllTabsForProfileResult
+  GetAllTabsForProfile() = 0;
 
   virtual void AddObserver(
       observation::TabStripApiBatchedObserver* observer) = 0;

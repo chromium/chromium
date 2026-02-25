@@ -25,4 +25,8 @@ interface TabStripExperimentService {
   // Browser), the `location` will have different origins.
   ShowTabContextMenu(NodeId tab_id, gfx.mojom.Point location)
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+
+  // Returns all tabs for the profile, organized by window.
+  GetAllTabsForProfile()
+      => result<map<string, Container>, mojo_base.mojom.Error>;
 };

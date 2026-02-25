@@ -68,6 +68,7 @@ class TabStripModelAdapter {
   virtual InsertionParams CalculateInsertionParams(
       const std::optional<tabs_api::Position>& pos) const = 0;
   virtual const tabs::TabCollection* GetRoot() const = 0;
+  virtual std::string GetWindowId() const = 0;
 };
 
 }  // namespace tabs_api

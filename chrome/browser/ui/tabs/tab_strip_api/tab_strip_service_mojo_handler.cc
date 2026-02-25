@@ -108,6 +108,11 @@ void TabStripServiceMojoHandler::ShowTabContextMenu(
       tab_strip_service_->ShowTabContextMenu(tab_id, location));
 }
 
+void TabStripServiceMojoHandler::GetAllTabsForProfile(
+    GetAllTabsForProfileCallback callback) {
+  std::move(callback).Run(tab_strip_service_->GetAllTabsForProfile());
+}
+
 void TabStripServiceMojoHandler::OnTabEvents(
     const std::vector<tabs_api::mojom::TabsEventPtr>& events) {
   for (auto& observer : observers_) {

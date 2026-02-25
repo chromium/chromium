@@ -19,6 +19,8 @@ class ToyTabStripModelAdapter : public TabStripModelAdapter {
   ToyTabStripModelAdapter operator=(const ToyTabStripModelAdapter&&) = delete;
   ~ToyTabStripModelAdapter() override = default;
 
+  std::string GetWindowId() const override { return "1"; }
+
   void AddModelObserver(TabStripModelObserver* observer) override;
   void RemoveModelObserver(TabStripModelObserver* observer) override;
   void AddCollectionObserver(

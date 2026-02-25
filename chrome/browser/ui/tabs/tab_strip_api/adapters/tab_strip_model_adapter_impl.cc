@@ -18,6 +18,13 @@
 
 namespace tabs_api {
 
+TabStripModelAdapterImpl::TabStripModelAdapterImpl(
+    TabStripModel* tab_strip_model,
+    std::string window_id)
+    : tab_strip_model_(tab_strip_model), window_id_(window_id) {}
+
+TabStripModelAdapterImpl::~TabStripModelAdapterImpl() = default;
+
 void TabStripModelAdapterImpl::AddModelObserver(
     TabStripModelObserver* tab_strip_model_observer) {
   tab_strip_model_->AddObserver(tab_strip_model_observer);
@@ -322,6 +329,10 @@ tabs::TabCollectionHandle
 TabStripModelAdapterImpl::GetUnpinnedTabsCollectionHandle() const {
   return tab_strip_model_->GetUnpinnedTabsCollectionHandle(
       base::PassKey<TabStripModelAdapterImpl>());
+}
+
+std::string TabStripModelAdapterImpl::GetWindowId() const {
+  return window_id_;
 }
 
 }  // namespace tabs_api

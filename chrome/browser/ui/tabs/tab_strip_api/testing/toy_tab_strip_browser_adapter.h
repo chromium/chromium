@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TESTING_TOY_TAB_STRIP_BROWSER_ADAPTER_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TESTING_TOY_TAB_STRIP_BROWSER_ADAPTER_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/browser_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/testing/toy_tab_strip_model_adapter.h"
 
 namespace tabs_api::testing {
 
@@ -19,7 +23,13 @@ class ToyTabStripBrowserAdapter : public BrowserAdapter {
       delete;
   ~ToyTabStripBrowserAdapter() = default;
 
-  std::string GetWindowId() const override { return "1"; }
+  std::vector<std::unique_ptr<TabStripModelAdapter>>
+  CreateAllTabStripModelAdaptersForProfile() override {
+    std::vector<std::unique_ptr<TabStripModelAdapter>> results;
+    results.push_back(
+        std::make_unique<ToyTabStripModelAdapter>(tab_strip_.get()));
+    return results;
+  }
 
   tabs::TabHandle AddTabAt(const GURL& url,
                            std::optional<int> index,

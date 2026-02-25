@@ -21,7 +21,8 @@ class BrowserAdapterImpl : public BrowserAdapter {
   BrowserAdapterImpl operator=(const BrowserAdapterImpl&) = delete;
   ~BrowserAdapterImpl() override = default;
 
-  std::string GetWindowId() const override;
+  std::vector<std::unique_ptr<TabStripModelAdapter>>
+  CreateAllTabStripModelAdaptersForProfile() override;
 
   tabs::TabHandle AddTabAt(const GURL& url,
                            std::optional<int> index,
