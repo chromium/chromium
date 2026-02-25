@@ -4,10 +4,8 @@
 
 #include "components/page_load_metrics/browser/observers/performance_manager_metrics_observer.h"
 
-#include <map>
 #include <memory>
 #include <optional>
-#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -19,9 +17,7 @@
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
-#include "base/task/bind_post_task.h"
 #include "base/time/time.h"
-#include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
@@ -30,6 +26,7 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace {
 
@@ -41,12 +38,6 @@ using performance_manager::PageNode;
 using performance_manager::PageNodeObserver;
 using performance_manager::PerformanceManager;
 
-constexpr char kLCPToLoadedIdleHistogram[] =
-    "PageLoad.Clients.PerformanceManager.LCPToLoadedIdle";
-constexpr char kLCPWithoutLoadedIdleHistogram[] =
-    "PageLoad.Clients.PerformanceManager.LCPWithoutLoadedIdle";
-constexpr char kLoadedIdleWithoutLCPHistogram[] =
-    "PageLoad.Clients.PerformanceManager.LoadedIdleWithoutLCP";
 constexpr char kNavigationToLoadedIdleHistogram[] =
     "PageLoad.Clients.PerformanceManager.NavigationToLoadedIdle";
 constexpr char kNavigationWithoutLoadedIdleHistogram[] =
@@ -88,7 +79,8 @@ class LoadedIdleObserver final
 
   // Maps each PageNode to a callback to invoke with the time that it reaches
   // LoadedIdle.
-  std::map<const PageNode*, base::OnceCallback<void(base::TimeTicks)>>
+  absl::flat_hash_map<const PageNode*,
+                      base::OnceCallback<void(base::TimeTicks)>>
       watched_pages_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
@@ -263,6 +255,11 @@ PerformanceManagerMetricsObserver::DeltaFromNavigationStartTime(
 
 ObservePolicy PerformanceManagerMetricsObserver::LogMetricsIfAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (logged_load_metrics_) {
+    // Nothing more to log.
+    return STOP_OBSERVING;
+  }
+
   if (loaded_idle_time_.is_null()) {
     // Keep waiting for loaded idle time to come in.
     return CONTINUE_OBSERVING;
@@ -275,127 +272,48 @@ ObservePolicy PerformanceManagerMetricsObserver::LogMetricsIfAvailable() {
     return STOP_OBSERVING;
   }
 
-  // Log metrics about LoadedIdle time.
-  if (!logged_load_metrics_) {
-    // Broken down by visibility.
-    base::UmaHistogramMediumTimes(
-        base::StrCat({kNavigationToLoadedIdleHistogram,
-                      GetVisibilitySuffix(visibility_)}),
-        loaded_idle_delta.value());
-    // All page loads.
-    base::UmaHistogramMediumTimes(kNavigationToLoadedIdleHistogram,
-                                  loaded_idle_delta.value());
-    logged_load_metrics_ = true;
-  }
-
-  // Log time between LCP and LoadedIdle.
-  if (!logged_lcp_metrics_) {
-    const page_load_metrics::ContentfulPaintTimingInfo& lcp_info =
-        GetDelegate()
-            .GetLargestContentfulPaintHandler()
-            .MergeMainFrameAndSubframes();
-    if (!lcp_info.ContainsValidTime()) {
-      // Keep waiting for LCP to come in.
-      return CONTINUE_OBSERVING;
-    }
-
-    // If LoadedIdle came before LCP (unexpected) the negative TimeDelta will
-    // be logged in the 0 bucket.
-    CHECK(!lcp_info.Time()->is_negative());
-    CHECK(!loaded_idle_delta->is_negative());
-    base::TimeDelta loaded_idle_delta_from_lcp =
-        loaded_idle_delta.value() - lcp_info.Time().value();
-
-    // Broken down by visibility.
-    base::UmaHistogramMediumTimes(
-        base::StrCat(
-            {kLCPToLoadedIdleHistogram, GetVisibilitySuffix(visibility_)}),
-        loaded_idle_delta_from_lcp);
-    // All page loads.
-    base::UmaHistogramMediumTimes(kLCPToLoadedIdleHistogram,
-                                  loaded_idle_delta_from_lcp);
-
-    logged_lcp_metrics_ = true;
-  }
-
-  if (logged_load_metrics_ && logged_lcp_metrics_) {
-    // Nothing more to log.
-    return STOP_OBSERVING;
-  }
-  // Keep waiting.
-  return CONTINUE_OBSERVING;
+  // Broken down by visibility.
+  base::UmaHistogramMediumTimes(
+      base::StrCat(
+          {kNavigationToLoadedIdleHistogram, GetVisibilitySuffix(visibility_)}),
+      loaded_idle_delta.value());
+  // All page loads.
+  base::UmaHistogramMediumTimes(kNavigationToLoadedIdleHistogram,
+                                loaded_idle_delta.value());
+  logged_load_metrics_ = true;
+  return STOP_OBSERVING;
 }
 
 void PerformanceManagerMetricsObserver::LogFinalMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LogMetricsIfAvailable();
 
-  if (!logged_load_metrics_) {
-    // Log that navigation stopped without receiving LoadIdleTime.
-    if (!loaded_idle_time_.is_null()) {
-      // After calling LogMetricsIfAvailable() above, only expects non null
-      // loaded_idle_time_ when timestamps from different processes are out of
-      // order.
-      CHECK(!DeltaFromNavigationStartTime(loaded_idle_time_).has_value());
-      // Skip logging data, timestamps are not reliable.
-      return;
-    }
-
-    const std::optional<base::TimeDelta> navigation_delta =
-        DeltaFromNavigationStartTime(base::TimeTicks::Now());
-    if (navigation_delta.has_value()) {
-      // Broken down by visibility.
-      base::UmaHistogramMediumTimes(
-          base::StrCat({kNavigationWithoutLoadedIdleHistogram,
-                        GetVisibilitySuffix(visibility_)}),
-          navigation_delta.value());
-      // All page loads.
-      base::UmaHistogramMediumTimes(kNavigationWithoutLoadedIdleHistogram,
-                                    navigation_delta.value());
-      logged_load_metrics_ = true;
-    }
-  }
-
-  if (logged_lcp_metrics_) {
-    // Nothing more to log.
+  if (logged_load_metrics_) {
     return;
   }
 
-  const page_load_metrics::ContentfulPaintTimingInfo& lcp_info =
-      GetDelegate()
-          .GetLargestContentfulPaintHandler()
-          .MergeMainFrameAndSubframes();
-  if (lcp_info.ContainsValidTime()) {
-    // Page never reached LoadedIdle.
-    CHECK(loaded_idle_time_.is_null());
-    CHECK(!lcp_info.Time()->is_negative());
+  // Log that navigation stopped without receiving LoadIdleTime.
+  if (!loaded_idle_time_.is_null()) {
+    // After calling LogMetricsIfAvailable() above, only expects non null
+    // loaded_idle_time_ when timestamps from different processes are out of
+    // order.
+    CHECK(!DeltaFromNavigationStartTime(loaded_idle_time_).has_value());
+    // Skip logging data, timestamps are not reliable.
+    return;
+  }
 
+  const std::optional<base::TimeDelta> navigation_delta =
+      DeltaFromNavigationStartTime(base::TimeTicks::Now());
+  if (navigation_delta.has_value()) {
     // Broken down by visibility.
     base::UmaHistogramMediumTimes(
-        base::StrCat(
-            {kLCPWithoutLoadedIdleHistogram, GetVisibilitySuffix(visibility_)}),
-        lcp_info.Time().value());
+        base::StrCat({kNavigationWithoutLoadedIdleHistogram,
+                      GetVisibilitySuffix(visibility_)}),
+        navigation_delta.value());
     // All page loads.
-    base::UmaHistogramMediumTimes(kLCPWithoutLoadedIdleHistogram,
-                                  lcp_info.Time().value());
-
-    logged_lcp_metrics_ = true;
-  } else if (!loaded_idle_time_.is_null()) {
-    // Page reached LoadedIdle without recording LCP.
-    const std::optional<base::TimeDelta> loaded_idle_delta =
-        DeltaFromNavigationStartTime(loaded_idle_time_);
-    if (loaded_idle_delta.has_value()) {
-      // Broken down by visibility.
-      base::UmaHistogramMediumTimes(
-          base::StrCat({kLoadedIdleWithoutLCPHistogram,
-                        GetVisibilitySuffix(visibility_)}),
-          loaded_idle_delta.value());
-      // All page loads.
-      base::UmaHistogramMediumTimes(kLoadedIdleWithoutLCPHistogram,
-                                    loaded_idle_delta.value());
-
-      logged_lcp_metrics_ = true;
-    }
+    base::UmaHistogramMediumTimes(kNavigationWithoutLoadedIdleHistogram,
+                                  navigation_delta.value());
+    logged_load_metrics_ = true;
   }
 }
 

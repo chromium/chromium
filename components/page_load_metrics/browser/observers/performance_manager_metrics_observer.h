@@ -81,16 +81,14 @@ class PerformanceManagerMetricsObserver
   std::optional<base::TimeDelta> DeltaFromNavigationStartTime(
       base::TimeTicks time) const;
 
-  // Logs NavigationToLoadedIdle and LCPToLoadedIdle UMA metrics if the load
-  // times are available. Returns STOP_OBSERVING if all metrics are logged,
-  // since there's no need to continue observing, or CONTINUE_OBSERVING to keep
-  // waiting for load times.
+  // Logs NavigationToLoadedIdle UMA metrics if the load times are available.
+  // Returns STOP_OBSERVING if all metrics are logged, since there's no need to
+  // continue observing, or CONTINUE_OBSERVING to keep waiting for load times.
   ObservePolicy LogMetricsIfAvailable();
 
   // Logs UMA metrics when a load is finished or abandoned. This logs the same
-  // metrics as LogMetricsIfLoaded(), plus some of NavigationWithoutLoadedIdle,
-  // LCPWithoutLoadedIdle, and LoadedIdleWithoutLCP for any load times that
-  // aren't available.
+  // metrics as LogMetricsIfLoaded(), or NavigationWithoutLoadedIdle if the load
+  // times aren't available.
   void LogFinalMetrics();
 
   // Starts watching for `page_node`, the PerformanceManager node for this page
@@ -104,9 +102,8 @@ class PerformanceManagerMetricsObserver
   Visibility visibility_ GUARDED_BY_CONTEXT(sequence_checker_) =
       Visibility::kUnknown;
 
-  // True if various metrics were already logged, to prevent logging them twice.
+  // True if metrics were already logged, to prevent logging them twice.
   bool logged_load_metrics_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-  bool logged_lcp_metrics_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // The time that the page load reached LoadedIdle, or 0 if this wasn't
   // observed yet.
