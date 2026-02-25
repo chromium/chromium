@@ -46,6 +46,25 @@ class CONTENT_EXPORT SchedulerLoopQuarantineWebContentsObserver
       const SchedulerLoopQuarantineWebContentsObserver&) = delete;
 
   // WebContentsObserver methods:
+  // Note on the navigation lifecycle hooks used in this class:
+  //
+  // This observer behaves asymmetrically depending on whether it is the *first*
+  // navigation in the browser or a *subsequent* navigation:
+  //
+  // 1. First Navigation (Startup): We delay enabling the PartitionAlloc memory
+  //    quarantine until the browser has finished its initial startup and is
+  //    actually committing the first webpage, to avoid regressing startup
+  //    metrics. Because of this, `DidStartNavigation` exits early, and
+  //    `ReadyToCommitNavigation` does the one-time global setup and then
+  //    immediately pauses the quarantine for the remainder of that navigation.
+  //
+  // 2. Subsequent Navigations: Once the quarantine is configured and running
+  //    globally (`g_reconfiguration_done` == true), we want to pause it as
+  //    early as possible for all new navigations to prevent performance
+  //    regressions during the network phase and tab switching. Thus,
+  //    `DidStartNavigation` creates the exclusion immediately, and
+  //    `ReadyToCommitNavigation` does nothing (exits early).
+  void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
 
   static void MaybeCreateForWebContents(WebContents* web_contents);
