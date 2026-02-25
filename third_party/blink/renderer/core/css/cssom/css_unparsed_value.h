@@ -26,8 +26,8 @@ class CORE_EXPORT CSSUnparsedValue final : public CSSStyleValue {
 
  public:
   static CSSUnparsedValue* Create(
-      const HeapVector<Member<V8CSSUnparsedSegment>>& tokens) {
-    return MakeGarbageCollected<CSSUnparsedValue>(tokens);
+      const HeapVector<Member<V8CSSUnparsedSegment>>& segments) {
+    return MakeGarbageCollected<CSSUnparsedValue>(segments);
   }
 
   // Blink-internal constructor
@@ -37,14 +37,14 @@ class CORE_EXPORT CSSUnparsedValue final : public CSSStyleValue {
   static CSSUnparsedValue* FromCSSValue(const CSSUnparsedDeclarationValue&);
   static CSSUnparsedValue* FromCSSVariableData(const CSSVariableData&);
   static CSSUnparsedValue* FromString(const String& string) {
-    HeapVector<Member<V8CSSUnparsedSegment>> tokens;
-    tokens.push_back(MakeGarbageCollected<V8CSSUnparsedSegment>(string));
-    return Create(tokens);
+    HeapVector<Member<V8CSSUnparsedSegment>> segments;
+    segments.push_back(MakeGarbageCollected<V8CSSUnparsedSegment>(string));
+    return Create(segments);
   }
 
   explicit CSSUnparsedValue(
-      const HeapVector<Member<V8CSSUnparsedSegment>>& tokens)
-      : tokens_(tokens) {}
+      const HeapVector<Member<V8CSSUnparsedSegment>>& segments)
+      : segments_(segments) {}
   CSSUnparsedValue(const CSSUnparsedValue&) = delete;
   CSSUnparsedValue& operator=(const CSSUnparsedValue&) = delete;
 
@@ -60,10 +60,10 @@ class CORE_EXPORT CSSUnparsedValue final : public CSSStyleValue {
       V8CSSUnparsedSegment* segment,
       ExceptionState& exception_state);
 
-  wtf_size_t length() const { return tokens_.size(); }
+  wtf_size_t length() const { return segments_.size(); }
 
   void Trace(Visitor* visitor) const override {
-    visitor->Trace(tokens_);
+    visitor->Trace(segments_);
     CSSStyleValue::Trace(visitor);
   }
 
@@ -81,7 +81,7 @@ class CORE_EXPORT CSSUnparsedValue final : public CSSStyleValue {
       StringBuilder&,
       HeapHashSet<Member<const CSSUnparsedValue>>& values_on_stack) const;
 
-  HeapVector<Member<V8CSSUnparsedSegment>> tokens_;
+  HeapVector<Member<V8CSSUnparsedSegment>> segments_;
 
   FRIEND_TEST_ALL_PREFIXES(CSSUnparsedDeclarationValueTest, MixedList);
 };

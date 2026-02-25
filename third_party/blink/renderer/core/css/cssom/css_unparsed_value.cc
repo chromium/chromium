@@ -28,12 +28,12 @@ String FindVariableName(CSSParserTokenStream& stream) {
 
 V8CSSUnparsedSegment* VariableReferenceValue(
     const StringView& variable_name,
-    const HeapVector<Member<V8CSSUnparsedSegment>>& tokens) {
+    const HeapVector<Member<V8CSSUnparsedSegment>>& segments) {
   CSSUnparsedValue* unparsed_value;
-  if (tokens.size() == 0) {
+  if (segments.size() == 0) {
     unparsed_value = nullptr;
   } else {
-    unparsed_value = CSSUnparsedValue::Create(tokens);
+    unparsed_value = CSSUnparsedValue::Create(segments);
   }
 
   CSSStyleVariableReferenceValue* variable_reference =
@@ -50,13 +50,13 @@ V8CSSUnparsedSegment* VariableReferenceValue(
 HeapVector<Member<V8CSSUnparsedSegment>> ParserTokenStreamToTokens(
     CSSParserTokenStream& stream) {
   int nesting_level = 0;
-  HeapVector<Member<V8CSSUnparsedSegment>> tokens;
+  HeapVector<Member<V8CSSUnparsedSegment>> segments;
   StringBuilder builder;
   while (stream.Peek().GetType() != kEOFToken) {
     if (stream.Peek().FunctionId() == CSSValueID::kVar ||
         stream.Peek().FunctionId() == CSSValueID::kEnv) {
       if (!builder.empty()) {
-        tokens.push_back(MakeGarbageCollected<V8CSSUnparsedSegment>(
+        segments.push_back(MakeGarbageCollected<V8CSSUnparsedSegment>(
             builder.ReleaseString()));
       }
 
@@ -71,7 +71,7 @@ HeapVector<Member<V8CSSUnparsedSegment>> ParserTokenStreamToTokens(
       if (!ref) {
         break;
       }
-      tokens.push_back(ref);
+      segments.push_back(ref);
     } else {
       if (stream.Peek().GetBlockType() == CSSParserToken::kBlockStart) {
         ++nesting_level;
@@ -86,10 +86,10 @@ HeapVector<Member<V8CSSUnparsedSegment>> ParserTokenStreamToTokens(
     }
   }
   if (!builder.empty()) {
-    tokens.push_back(
+    segments.push_back(
         MakeGarbageCollected<V8CSSUnparsedSegment>(builder.ReleaseString()));
   }
-  return tokens;
+  return segments;
 }
 
 }  // namespace
@@ -109,8 +109,8 @@ CSSUnparsedValue* CSSUnparsedValue::FromCSSVariableData(
 V8CSSUnparsedSegment* CSSUnparsedValue::AnonymousIndexedGetter(
     uint32_t index,
     ExceptionState& exception_state) const {
-  if (index < tokens_.size()) {
-    return tokens_[index].Get();
+  if (index < segments_.size()) {
+    return segments_[index].Get();
   }
   return nullptr;
 }
@@ -119,20 +119,20 @@ IndexedPropertySetterResult CSSUnparsedValue::AnonymousIndexedSetter(
     uint32_t index,
     V8CSSUnparsedSegment* segment,
     ExceptionState& exception_state) {
-  if (index < tokens_.size()) {
-    tokens_[index] = segment;
+  if (index < segments_.size()) {
+    segments_[index] = segment;
     return IndexedPropertySetterResult::kIntercepted;
   }
 
-  if (index == tokens_.size()) {
-    tokens_.push_back(segment);
+  if (index == segments_.size()) {
+    segments_.push_back(segment);
     return IndexedPropertySetterResult::kIntercepted;
   }
 
   exception_state.ThrowRangeError(
       ExceptionMessages::IndexOutsideRange<unsigned>(
-          "index", index, 0, ExceptionMessages::kInclusiveBound, tokens_.size(),
-          ExceptionMessages::kInclusiveBound));
+          "index", index, 0, ExceptionMessages::kInclusiveBound,
+          segments_.size(), ExceptionMessages::kInclusiveBound));
   return IndexedPropertySetterResult::kIntercepted;
 }
 
@@ -195,14 +195,14 @@ bool CSSUnparsedValue::AppendUnparsedString(
     return false;  // Cycle.
   }
   values_on_stack.insert(this);
-  for (unsigned i = 0; i < tokens_.size(); i++) {
+  for (unsigned i = 0; i < segments_.size(); i++) {
     if (i) {
       builder.Append("/**/");
     }
-    switch (tokens_[i]->GetContentType()) {
+    switch (segments_[i]->GetContentType()) {
       case V8CSSUnparsedSegment::ContentType::kCSSVariableReferenceValue: {
         const auto* reference_value =
-            tokens_[i]->GetAsCSSVariableReferenceValue();
+            segments_[i]->GetAsCSSVariableReferenceValue();
         builder.Append("var(");
         builder.Append(reference_value->variable());
         if (reference_value->fallback()) {
@@ -216,7 +216,7 @@ bool CSSUnparsedValue::AppendUnparsedString(
         break;
       }
       case V8CSSUnparsedSegment::ContentType::kString:
-        builder.Append(tokens_[i]->GetAsString());
+        builder.Append(segments_[i]->GetAsString());
         break;
     }
   }
