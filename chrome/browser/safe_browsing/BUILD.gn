@@ -462,6 +462,7 @@ static_library("safe_browsing") {
           "incident_reporting/module_integrity_verifier_win.h",
           "incident_reporting/platform_state_store_win.cc",
         ]
+        deps += [ "//chrome/browser/install_verification" ]
       }
 
       deps += [

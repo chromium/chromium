@@ -1,0 +1,46 @@
+import("//build/config/compiler/compiler.gni")
+import("//testing/test.gni")
+
+source_set("install_verification") {
+  if (is_win) {
+    sources = [
+      "win/module_info.h",
+      "win/module_list.h",
+      "win/module_verification_common.h",
+    ]
+  }
+}
+
+source_set("impl") {
+  if (is_win) {
+    sources = [
+      "win/module_list.cc",
+      "win/module_verification_common.cc",
+    ]
+
+    deps = [
+      ":install_verification",
+      "//base",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  if (is_win) {
+    sources = [
+      "win/module_info_unittest.cc",
+      "win/module_list_unittest.cc",
+      "win/module_verification_test.cc",
+      "win/module_verification_test.h",
+    ]
+
+    deps = [
+      ":impl",
+      ":install_verification",
+      "//base",
+      "//testing/gtest",
+      "//third_party/abseil-cpp:absl",
+    ]
+  }
+}

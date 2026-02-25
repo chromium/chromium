@@ -9,9 +9,12 @@
 #include <vector>
 
 #include "base/win/win_util.h"
+#include "chrome/browser/install_verification/win/module_info.h"
 #include "chrome/browser/install_verification/win/module_list.h"
 
-std::set<size_t> ModuleVerificationTest::reported_module_ids_;
+ModuleVerificationTest::ModuleVerificationTest() = default;
+
+ModuleVerificationTest::~ModuleVerificationTest() = default;
 
 void ModuleVerificationTest::SetUp() {
   reported_module_ids_.clear();
@@ -27,7 +30,6 @@ bool ModuleVerificationTest::GetLoadedModuleInfoSet(
   return true;
 }
 
-// static
 void ModuleVerificationTest::ReportModule(size_t module_id) {
   reported_module_ids_.insert(module_id);
 }
