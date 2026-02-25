@@ -37,8 +37,8 @@ bool CheckValues(const std::string& name,
                  int minimum,
                  int maximum,
                  size_t bucket_count) {
-  if (!base::Histogram::InspectConstructionArguments(name, &minimum, &maximum,
-                                                     &bucket_count)) {
+  if (base::Histogram::InspectConstructionArguments(
+          name, &minimum, &maximum, &bucket_count) != base::Histogram::kOK) {
     return false;
   }
   base::HistogramBase* histogram =

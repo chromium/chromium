@@ -213,15 +213,23 @@ class BASE_EXPORT Histogram : public HistogramBase {
   virtual Sample32 ranges(size_t i) const;
   virtual size_t bucket_count() const;
 
-  // This function validates histogram construction arguments. It returns false
-  // if some of the arguments are bad but also corrects them so they should
-  // function on non-dcheck builds without crashing.
-  // Note. Currently it allow some bad input, e.g. 0 as minimum, but silently
-  // converts it to good input: 1.
-  static bool InspectConstructionArguments(std::string_view name,
-                                           Sample32* minimum,
-                                           Sample32* maximum,
-                                           size_t* bucket_count);
+  enum ConstructionArgumentsValidity {
+    kOK = 0,
+    kRangeSwapped,
+    kRangeTooBig,
+    kTooManyBuckets,
+    kBucketsInvalid,
+  };
+
+  // Validates histogram construction arguments, return kOK if they are valid.
+  // Otherwise, it returns a code for the first issue it finds.
+  // Note: It currently allows some bad inputs, e.g. 0 as minimum, silently
+  // converting it to 1.
+  static ConstructionArgumentsValidity InspectConstructionArguments(
+      std::string_view name,
+      Sample32* minimum,
+      Sample32* maximum,
+      size_t* bucket_count);
 
   // HistogramBase implementation:
   uint64_t name_hash() const override;

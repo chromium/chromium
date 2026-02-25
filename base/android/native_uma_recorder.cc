@@ -61,9 +61,9 @@ void CheckHistogramArgs(JNIEnv* env,
                         int32_t expected_max,
                         size_t expected_bucket_count,
                         HistogramBase* histogram) {
-  bool valid_arguments = Histogram::InspectConstructionArguments(
+  const auto validity = Histogram::InspectConstructionArguments(
       histogram_name, &expected_min, &expected_max, &expected_bucket_count);
-  DCHECK(valid_arguments);
+  DCHECK_EQ(validity, Histogram::kOK);
   DCHECK(histogram->HasConstructionArguments(expected_min, expected_max,
                                              expected_bucket_count))
       << histogram_name << "/" << expected_min << "/" << expected_max << "/"

@@ -130,7 +130,8 @@ void PreregisterHistogram(base::DurableStringView durable_name,
                           size_t bucket_count,
                           int32_t flags) {
   DCHECK(base::Histogram::InspectConstructionArguments(
-      *durable_name, &minimum, &maximum, &bucket_count));
+             *durable_name, &minimum, &maximum, &bucket_count) ==
+         base::Histogram::kOK);
   DCHECK(!base::StatisticsRecorder::FindHistogram(*durable_name))
       << "Failed to preregister " << *durable_name
       << ", Histogram already exists.";
@@ -153,7 +154,7 @@ void PreregisterHistogram(base::DurableStringView durable_name,
   DCHECK(histogram->HasConstructionArguments(minimum, maximum, bucket_count));
 }
 
-} // namespace
+}  // namespace
 
 void PreregisterAllGroupedHistograms() {
   for (const auto& histogram : kHistogramsToGroup) {
@@ -168,5 +169,5 @@ void TagAppStartForGroupedHistograms(const std::string& app_name) {
   GetCurrentApp().app_name = app_name;
 }
 
-} // namespace metrics
-} // namespace chromecast
+}  // namespace metrics
+}  // namespace chromecast
