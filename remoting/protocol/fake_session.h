@@ -50,8 +50,6 @@ class FakeSession : public Session {
 
   // Adds an |attachment| to |round|, which will be sent to plugins added by
   // AddPlugin() function.
-  void SetAttachment(size_t round,
-                     std::unique_ptr<jingle_xmpp::XmlElement> attachment);
   void SetAttachment(size_t round, const Attachment& attachment);
 
   // Session interface.

@@ -27,17 +27,17 @@ namespace remoting {
 
 class IqRequest;
 class JingleMessage;
+struct JingleMessageReply;
 class SignalStrategy;
 
 // IqSender handles sending iq requests and routing of responses to
 // those requests.
 class IqSender : public SignalStrategy::Listener {
  public:
-  // Callback that is called when an Iq response is received. Called
-  // with the |response| set to nullptr in case of a timeout.
+  // Callback that is called when an Iq response is received.
   using ReplyCallback =
       base::OnceCallback<void(IqRequest* request,
-                              const jingle_xmpp::XmlElement* response)>;
+                              const JingleMessageReply& response)>;
 
   explicit IqSender(SignalStrategy* signal_strategy);
 
@@ -96,13 +96,13 @@ class IqRequest {
  private:
   friend class IqSender;
 
-  void CallCallback(const jingle_xmpp::XmlElement* stanza);
+  void CallCallback(const JingleMessageReply& reply);
   void OnTimeout();
 
   // Called by IqSender when a response is received.
-  void OnResponse(const jingle_xmpp::XmlElement* stanza);
+  void OnResponse(const JingleMessageReply& reply);
 
-  void DeliverResponse(std::unique_ptr<jingle_xmpp::XmlElement> stanza);
+  void DeliverResponse(const JingleMessageReply& reply);
 
   raw_ptr<IqSender> sender_;
   IqSender::ReplyCallback callback_;

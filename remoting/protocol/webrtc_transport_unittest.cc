@@ -33,7 +33,6 @@
 #include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/jingle_message_xml_converter.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace remoting::protocol {
@@ -192,20 +191,6 @@ class WebrtcTransportTest : public testing::Test {
       bool normalize_line_endings,
       std::unique_ptr<JingleTransportInfo> transport_info) {
     ASSERT_TRUE(target_transport);
-
-    // Reformat the message to normalize line endings by removing CR symbol.
-    if (normalize_line_endings) {
-      std::unique_ptr<jingle_xmpp::XmlElement> xml =
-          JingleTransportInfoToXml(*transport_info);
-      std::string xml_str = xml->Str();
-      base::ReplaceChars(xml_str, "\r", std::string(), &xml_str);
-      std::unique_ptr<jingle_xmpp::XmlElement> normalized_xml(
-          jingle_xmpp::XmlElement::ForStr(xml_str));
-      transport_info = std::make_unique<JingleTransportInfo>();
-      EXPECT_TRUE(JingleTransportInfoFromXml(normalized_xml.get(),
-                                             transport_info.get()));
-    }
-
     EXPECT_TRUE((*target_transport)->ProcessTransportInfo(*transport_info));
   }
 

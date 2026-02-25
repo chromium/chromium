@@ -36,6 +36,8 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
 std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
     const JingleMessageReply& reply,
     const jingle_xmpp::XmlElement* request_stanza);
+bool JingleMessageReplyFromXml(const jingle_xmpp::XmlElement* stanza,
+                               JingleMessageReply* reply);
 
 // Helper to check if an XML element represents a Jingle message.
 bool IsJingleMessage(const jingle_xmpp::XmlElement* stanza);

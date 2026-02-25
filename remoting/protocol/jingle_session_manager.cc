@@ -19,10 +19,7 @@
 #include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/xmpp_constants.h"
-#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
-
-using jingle_xmpp::QName;
 
 namespace remoting::protocol {
 
@@ -80,17 +77,13 @@ void JingleSessionManager::OnSignalStrategyStateChange(
 bool JingleSessionManager::OnSignalStrategyIncomingMessage(
     const SignalingAddress& sender_address,
     const SignalingMessage& signaling_message) {
-  // TODO: joedow - Update JingleSessionManager to use JingleMessage.
-  auto stanza = SignalStrategy::GetXmlStanza(signaling_message);
-  if (!stanza || !IsJingleMessage(stanza.get())) {
-    return false;
-  }
-
   auto message = std::make_unique<JingleMessage>();
   std::string error_msg;
-  if (!JingleMessageFromXml(stanza.get(), message.get(), &error_msg)) {
-    SendReply(std::move(stanza), JingleMessageReply::BAD_REQUEST);
-    return true;
+  std::unique_ptr<jingle_xmpp::XmlElement> stanza =
+      SignalStrategy::GetXmlStanza(signaling_message);
+  if (!stanza || !IsJingleMessage(stanza.get()) ||
+      !JingleMessageFromXml(stanza.get(), message.get(), &error_msg)) {
+    return false;
   }
 
   // TODO: joedow - Use std::visit(absl::Overload(...),
@@ -100,8 +93,7 @@ bool JingleSessionManager::OnSignalStrategyIncomingMessage(
     // Description must be present in session-initiate messages.
     DCHECK(message->description.get());
 
-    SendReply(std::make_unique<jingle_xmpp::XmlElement>(*stanza),
-              JingleMessageReply::NONE);
+    SendReply(*message, JingleMessageReply::NONE);
 
     std::unique_ptr<Authenticator> authenticator =
         authenticator_factory_->CreateAuthenticator(
@@ -153,20 +145,20 @@ bool JingleSessionManager::OnSignalStrategyIncomingMessage(
 
   auto it = sessions_.find(message->sid);
   if (it == sessions_.end()) {
-    SendReply(std::move(stanza), JingleMessageReply::INVALID_SID);
+    SendReply(*message, JingleMessageReply::INVALID_SID);
     return true;
   }
 
   it->second->OnIncomingMessage(
       std::move(message),
-      base::BindOnce(&JingleSessionManager::SendReply, base::Unretained(this),
-                     std::move(stanza)));
+      base::BindOnce(&JingleSessionManager::SendReply, base::Unretained(this)));
   return true;
 }
 
-void JingleSessionManager::SendReply(
-    std::unique_ptr<jingle_xmpp::XmlElement> original_stanza,
-    JingleMessageReply::ErrorType error) {
+void JingleSessionManager::SendReply(const JingleMessage& original_message,
+                                     JingleMessageReply::ErrorType error) {
+  std::unique_ptr<jingle_xmpp::XmlElement> original_stanza =
+      JingleMessageToXml(original_message);
   std::unique_ptr<jingle_xmpp::XmlElement> reply_stanza =
       JingleMessageReplyToXml(JingleMessageReply(error), original_stanza.get());
   SignalingAddress to =

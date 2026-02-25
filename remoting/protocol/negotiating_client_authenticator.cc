@@ -21,7 +21,6 @@
 #include "remoting/protocol/host_authentication_config.h"
 #include "remoting/protocol/pairing_client_authenticator.h"
 #include "remoting/protocol/spake2_authenticator.h"
-#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 namespace remoting::protocol {
 

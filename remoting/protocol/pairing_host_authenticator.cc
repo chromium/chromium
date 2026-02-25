@@ -10,7 +10,6 @@
 #include "base/logging.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/channel_authenticator.h"
-#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 namespace remoting::protocol {
 

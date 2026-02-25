@@ -39,8 +39,9 @@ namespace {
 const char kStanzaId[] = "123";
 const char kTo[] = "user@domain.com";
 
-MATCHER_P(XmlEq, expected, "") {
-  return arg->Str() == expected->Str();
+MATCHER_P(ReplyEq, expected, "") {
+  return arg.type == expected.type && arg.error_type == expected.error_type &&
+         arg.text == expected.text;
 }
 
 }  // namespace
@@ -112,10 +113,13 @@ class IqSenderTest : public testing::Test {
 TEST_F(IqSenderTest, SendIq) {
   ASSERT_NO_FATAL_FAILURE({ SendTestMessage(); });
 
-  std::unique_ptr<XmlElement> response;
-  EXPECT_TRUE(FormatAndDeliverResponse(kTo, &response));
+  std::unique_ptr<XmlElement> response_xml;
+  EXPECT_TRUE(FormatAndDeliverResponse(kTo, &response_xml));
 
-  EXPECT_CALL(callback_, Run(request_.get(), XmlEq(response.get())));
+  JingleMessageReply expected_reply;
+  ASSERT_TRUE(JingleMessageReplyFromXml(response_xml.get(), &expected_reply));
+
+  EXPECT_CALL(callback_, Run(request_.get(), ReplyEq(expected_reply)));
   base::RunLoop().RunUntilIdle();
 }
 
@@ -124,8 +128,13 @@ TEST_F(IqSenderTest, Timeout) {
 
   request_->SetTimeout(base::Milliseconds(2));
 
+  JingleMessageReply expected_reply;
+  expected_reply.type = JingleMessageReply::REPLY_ERROR;
+  expected_reply.error_type = JingleMessageReply::UNEXPECTED_REQUEST;
+  expected_reply.text = "timeout";
+
   base::RunLoop run_loop;
-  EXPECT_CALL(callback_, Run(request_.get(), nullptr))
+  EXPECT_CALL(callback_, Run(request_.get(), ReplyEq(expected_reply)))
       .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::QuitWhenIdle));
   run_loop.Run();
 }
@@ -135,10 +144,13 @@ TEST_F(IqSenderTest, NotNormalizedJid) {
 
   // Set upper-case from value, which is equivalent to kTo in the original
   // message.
-  std::unique_ptr<XmlElement> response;
-  EXPECT_TRUE(FormatAndDeliverResponse("USER@domain.com", &response));
+  std::unique_ptr<XmlElement> response_xml;
+  EXPECT_TRUE(FormatAndDeliverResponse("USER@domain.com", &response_xml));
 
-  EXPECT_CALL(callback_, Run(request_.get(), XmlEq(response.get())));
+  JingleMessageReply expected_reply;
+  ASSERT_TRUE(JingleMessageReplyFromXml(response_xml.get(), &expected_reply));
+
+  EXPECT_CALL(callback_, Run(request_.get(), ReplyEq(expected_reply)));
   base::RunLoop().RunUntilIdle();
 }
 

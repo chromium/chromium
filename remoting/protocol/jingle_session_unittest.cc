@@ -398,14 +398,12 @@ TEST_F(JingleSessionTest, Connect) {
 
   // Verify that the client specified correct initiator value.
   ASSERT_GT(host_signal_strategy_->received_messages().size(), 0U);
-  const jingle_xmpp::XmlElement* initiate_xml =
-      host_signal_strategy_->received_messages().front().get();
-  const jingle_xmpp::XmlElement* jingle_element = initiate_xml->FirstNamed(
-      jingle_xmpp::QName("urn:xmpp:jingle:1", "jingle"));
-  ASSERT_TRUE(jingle_element);
-  ASSERT_EQ(
-      client_signal_strategy_->GetLocalAddress().id(),
-      jingle_element->Attr(jingle_xmpp::QName(std::string(), "initiator")));
+  JingleMessage message;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromXml(
+      host_signal_strategy_->received_messages().front().get(), &message,
+      &error));
+  ASSERT_EQ(client_signal_strategy_->GetLocalAddress().id(), message.initiator);
 }
 
 // Verify that we can connect two endpoints with multi-step authentication.

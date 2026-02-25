@@ -17,10 +17,6 @@
 #include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/signal_strategy.h"
 
-namespace jingle_xmpp {
-class XmlElement;
-}  // namespace jingle_xmpp
-
 namespace remoting {
 
 class IqSender;
@@ -71,7 +67,7 @@ class JingleSessionManager : public SessionManager,
       SessionsMap;
 
   IqSender* iq_sender() { return iq_sender_.get(); }
-  void SendReply(std::unique_ptr<jingle_xmpp::XmlElement> original_stanza,
+  void SendReply(const JingleMessage& original_message,
                  JingleMessageReply::ErrorType error);
 
   // Called by JingleSession when it is being destroyed.

@@ -37,10 +37,7 @@
 #include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/session_config.h"
 #include "remoting/signaling/xmpp_constants.h"
-#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 #include "third_party/webrtc/api/candidate.h"
-
-using jingle_xmpp::XmlElement;
 
 namespace remoting::protocol {
 
@@ -507,7 +504,7 @@ void JingleSession::SendMessage(std::unique_ptr<JingleMessage> message) {
 
 void JingleSession::OnMessageResponse(JingleMessage::ActionType request_type,
                                       IqRequest* request,
-                                      const jingle_xmpp::XmlElement* response) {
+                                      const JingleMessageReply& response) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Delete the request from the list of pending requests.
@@ -521,22 +518,18 @@ void JingleSession::OnMessageResponse(JingleMessage::ActionType request_type,
 
   std::string type_str = JingleMessage::GetActionName(request_type);
 
-  // |response| will be nullptr if the request timed out.
-  if (!response) {
-    Close(ErrorCode::SIGNALING_TIMEOUT,
-          base::StringPrintf("%s request timed out.", type_str), FROM_HERE);
-    return;
-  } else {
-    const std::string& type =
-        response->Attr(jingle_xmpp::QName(std::string(), "type"));
-    if (type != "result") {
+  if (response.type != JingleMessageReply::REPLY_RESULT) {
+    if (response.text == "timeout") {
+      Close(ErrorCode::SIGNALING_TIMEOUT,
+            base::StringPrintf("%s request timed out.", type_str), FROM_HERE);
+    } else {
       // TODO(sergeyu): There may be different reasons for error
       // here. Parse the response stanza to find failure reason.
       Close(ErrorCode::PEER_IS_OFFLINE,
             base::StringPrintf(
                 "Received error in response to %s message: \"%s\". "
                 "Terminating the session.",
-                type_str, response->Str()),
+                type_str, response.text.c_str()),
             FROM_HERE);
     }
   }
@@ -544,7 +537,7 @@ void JingleSession::OnMessageResponse(JingleMessage::ActionType request_type,
 
 void JingleSession::OnTransportInfoResponse(
     IqRequest* request,
-    const jingle_xmpp::XmlElement* response) {
+    const JingleMessageReply& response) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!transport_info_requests_.empty());
 
@@ -556,21 +549,17 @@ void JingleSession::OnTransportInfoResponse(
   transport_info_requests_.erase(transport_info_requests_.begin(),
                                  request_it + 1);
 
-  // Ignore transport-info timeouts.
-  if (!response) {
-    LOG(ERROR) << "transport-info request has timed out.";
-    return;
-  }
-
-  const std::string& type =
-      response->Attr(jingle_xmpp::QName(std::string(), "type"));
-  if (type != "result") {
-    Close(ErrorCode::PEER_IS_OFFLINE,
-          base::StringPrintf(
-              "Received error in response to transport-info message: \"%s\". "
-              "Terminating the session.",
-              response->Str()),
-          FROM_HERE);
+  if (response.type != JingleMessageReply::REPLY_RESULT) {
+    if (response.text == "timeout") {
+      LOG(ERROR) << "transport-info request has timed out.";
+    } else {
+      Close(ErrorCode::PEER_IS_OFFLINE,
+            base::StringPrintf(
+                "Received error in response to transport-info message: \"%s\". "
+                "Terminating the session.",
+                response.text.c_str()),
+            FROM_HERE);
+    }
   }
 }
 
@@ -596,7 +585,7 @@ void JingleSession::ProcessIncomingMessage(
 
   if (peer_address_ != message->from) {
     // Ignore messages received from a different Jid.
-    std::move(reply_callback).Run(JingleMessageReply::INVALID_SID);
+    std::move(reply_callback).Run(*message, JingleMessageReply::INVALID_SID);
     return;
   }
 
@@ -620,18 +609,20 @@ void JingleSession::ProcessIncomingMessage(
       break;
 
     default:
-      std::move(reply_callback).Run(JingleMessageReply::UNEXPECTED_REQUEST);
+      std::move(reply_callback)
+          .Run(*message, JingleMessageReply::UNEXPECTED_REQUEST);
   }
 }
 
 void JingleSession::OnAccept(std::unique_ptr<JingleMessage> message,
                              ReplyCallback reply_callback) {
   if (state_ != CONNECTING) {
-    std::move(reply_callback).Run(JingleMessageReply::UNEXPECTED_REQUEST);
+    std::move(reply_callback)
+        .Run(*message, JingleMessageReply::UNEXPECTED_REQUEST);
     return;
   }
 
-  std::move(reply_callback).Run(JingleMessageReply::NONE);
+  std::move(reply_callback).Run(*message, JingleMessageReply::NONE);
 
   const JingleAuthentication& auth_message =
       message->description->authentication();
@@ -668,19 +659,21 @@ void JingleSession::OnSessionInfo(std::unique_ptr<JingleMessage> message,
   }
 
   if (!auth_message) {
-    std::move(reply_callback).Run(JingleMessageReply::UNSUPPORTED_INFO);
+    std::move(reply_callback)
+        .Run(*message, JingleMessageReply::UNSUPPORTED_INFO);
     return;
   }
 
   if ((state_ != ACCEPTED && state_ != AUTHENTICATING) ||
       authenticator_->state() != Authenticator::WAITING_MESSAGE) {
-    std::move(reply_callback).Run(JingleMessageReply::UNEXPECTED_REQUEST);
+    std::move(reply_callback)
+        .Run(*message, JingleMessageReply::UNEXPECTED_REQUEST);
     Close(ErrorCode::INVALID_ARGUMENT,
           "Received unexpected authenticator message", FROM_HERE);
     return;
   }
 
-  std::move(reply_callback).Run(JingleMessageReply::NONE);
+  std::move(reply_callback).Run(*message, JingleMessageReply::NONE);
 
   authenticator_->ProcessMessage(
       *auth_message, base::BindOnce(&JingleSession::ProcessAuthenticationStep,
@@ -690,7 +683,7 @@ void JingleSession::OnSessionInfo(std::unique_ptr<JingleMessage> message,
 void JingleSession::OnTransportInfo(std::unique_ptr<JingleMessage> message,
                                     ReplyCallback reply_callback) {
   if (!std::holds_alternative<JingleTransportInfo>(message->payload())) {
-    std::move(reply_callback).Run(JingleMessageReply::BAD_REQUEST);
+    std::move(reply_callback).Run(*message, JingleMessageReply::BAD_REQUEST);
     return;
   }
 
@@ -699,13 +692,14 @@ void JingleSession::OnTransportInfo(std::unique_ptr<JingleMessage> message,
         PendingMessage{std::move(message), std::move(reply_callback)});
   } else if (state_ == AUTHENTICATED) {
     std::move(reply_callback)
-        .Run(transport_->ProcessTransportInfo(
-                 std::get<JingleTransportInfo>(message->payload()))
-                 ? JingleMessageReply::NONE
-                 : JingleMessageReply::BAD_REQUEST);
+        .Run(*message, transport_->ProcessTransportInfo(
+                           std::get<JingleTransportInfo>(message->payload()))
+                           ? JingleMessageReply::NONE
+                           : JingleMessageReply::BAD_REQUEST);
   } else {
     LOG(ERROR) << "Received unexpected transport-info message.";
-    std::move(reply_callback).Run(JingleMessageReply::UNEXPECTED_REQUEST);
+    std::move(reply_callback)
+        .Run(*message, JingleMessageReply::UNEXPECTED_REQUEST);
   }
 }
 
@@ -713,11 +707,12 @@ void JingleSession::OnTerminate(std::unique_ptr<JingleMessage> message,
                                 ReplyCallback reply_callback) {
   if (!is_session_active()) {
     LOG(WARNING) << "Received unexpected session-terminate message.";
-    std::move(reply_callback).Run(JingleMessageReply::UNEXPECTED_REQUEST);
+    std::move(reply_callback)
+        .Run(*message, JingleMessageReply::UNEXPECTED_REQUEST);
     return;
   }
 
-  std::move(reply_callback).Run(JingleMessageReply::NONE);
+  std::move(reply_callback).Run(*message, JingleMessageReply::NONE);
 
   error_ = message->error_code;
   if (error_ == ErrorCode::UNKNOWN_ERROR) {
@@ -855,7 +850,8 @@ void JingleSession::OnAuthenticated() {
   std::swap(messages_to_process, pending_transport_info_);
   for (auto& message : messages_to_process) {
     std::move(message.reply_callback)
-        .Run(transport_->ProcessTransportInfo(
+        .Run(*message.message,
+             transport_->ProcessTransportInfo(
                  std::get<JingleTransportInfo>(message.message->payload()))
                  ? JingleMessageReply::NONE
                  : JingleMessageReply::BAD_REQUEST);

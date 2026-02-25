@@ -683,6 +683,54 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
   return iq;
 }
 
+bool JingleMessageReplyFromXml(const jingle_xmpp::XmlElement* stanza,
+                               JingleMessageReply* reply) {
+  if (stanza->Name() != kQNameIq) {
+    return false;
+  }
+
+  const std::string& type = stanza->Attr(kQNameType);
+  if (type == "result") {
+    reply->type = JingleMessageReply::REPLY_RESULT;
+    reply->error_type = JingleMessageReply::NONE;
+    return true;
+  }
+
+  if (type != "error") {
+    return false;
+  }
+
+  reply->type = JingleMessageReply::REPLY_ERROR;
+
+  const XmlElement* error_tag =
+      stanza->FirstNamed(QName(kJabberNamespace, "error"));
+  if (error_tag) {
+    if (error_tag->FirstNamed(QName(kJabberNamespace, "bad-request"))) {
+      reply->error_type = JingleMessageReply::BAD_REQUEST;
+    } else if (error_tag->FirstNamed(
+                   QName(kJabberNamespace, "feature-bad-request"))) {
+      reply->error_type = JingleMessageReply::NOT_IMPLEMENTED;
+    } else if (error_tag->FirstNamed(
+                   QName(kJabberNamespace, "item-not-found"))) {
+      reply->error_type = JingleMessageReply::INVALID_SID;
+    } else if (error_tag->FirstNamed(
+                   QName(kJabberNamespace, "unexpected-request"))) {
+      reply->error_type = JingleMessageReply::UNEXPECTED_REQUEST;
+    } else if (error_tag->FirstNamed(
+                   QName(kJabberNamespace, "feature-not-implemented"))) {
+      reply->error_type = JingleMessageReply::UNSUPPORTED_INFO;
+    }
+
+    const XmlElement* text_tag =
+        error_tag->FirstNamed(QName(kJabberNamespace, "text"));
+    if (text_tag) {
+      reply->text = text_tag->BodyText();
+    }
+  }
+
+  return true;
+}
+
 bool IsJingleMessage(const jingle_xmpp::XmlElement* stanza) {
   return stanza->Name() == kQNameIq && stanza->Attr(kQNameType) == "set" &&
          stanza->FirstNamed(kQNameJingle) != nullptr;

@@ -120,7 +120,12 @@ bool IqSender::OnSignalStrategyIncomingMessage(
   }
 
   requests_.erase(it);
-  request->OnResponse(stanza.get());
+  JingleMessageReply reply;
+  if (!JingleMessageReplyFromXml(stanza.get(), &reply)) {
+    LOG(WARNING) << "Failed to parse IQ response " << stanza->Str();
+    return false;
+  }
+  request->OnResponse(reply);
 
   return true;
 }
@@ -141,30 +146,30 @@ void IqRequest::SetTimeout(base::TimeDelta timeout) {
       timeout);
 }
 
-void IqRequest::CallCallback(const jingle_xmpp::XmlElement* stanza) {
+void IqRequest::CallCallback(const JingleMessageReply& reply) {
   if (!callback_.is_null()) {
-    std::move(callback_).Run(this, stanza);
+    std::move(callback_).Run(this, reply);
   }
 }
 
 void IqRequest::OnTimeout() {
-  CallCallback(nullptr);
+  JingleMessageReply reply;
+  reply.type = JingleMessageReply::REPLY_ERROR;
+  reply.error_type = JingleMessageReply::UNEXPECTED_REQUEST;
+  reply.text = "timeout";
+  CallCallback(reply);
 }
 
-void IqRequest::OnResponse(const jingle_xmpp::XmlElement* stanza) {
+void IqRequest::OnResponse(const JingleMessageReply& reply) {
   // It's unsafe to delete signal strategy here, and the callback may
   // want to do that, so we post task to invoke the callback later.
-  std::unique_ptr<jingle_xmpp::XmlElement> stanza_copy(
-      new jingle_xmpp::XmlElement(*stanza));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&IqRequest::DeliverResponse, weak_factory_.GetWeakPtr(),
-                     std::move(stanza_copy)));
+      FROM_HERE, base::BindOnce(&IqRequest::DeliverResponse,
+                                weak_factory_.GetWeakPtr(), reply));
 }
 
-void IqRequest::DeliverResponse(
-    std::unique_ptr<jingle_xmpp::XmlElement> stanza) {
-  CallCallback(stanza.get());
+void IqRequest::DeliverResponse(const JingleMessageReply& reply) {
+  CallCallback(reply);
 }
 
 }  // namespace remoting
