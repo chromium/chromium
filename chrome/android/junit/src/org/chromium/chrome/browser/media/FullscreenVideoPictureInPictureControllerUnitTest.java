@@ -31,8 +31,8 @@ import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
@@ -41,13 +41,11 @@ import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Test FullscreenVideoPictureInPictureController. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowPackageManager.class, ShadowPostTask.class, ShadowSystemClock.class})
+@Config(shadows = {ShadowPackageManager.class, ShadowSystemClock.class})
 public class FullscreenVideoPictureInPictureControllerUnitTest {
     private static final int TAB_ID = 0;
 
@@ -68,9 +66,6 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
     @Captor private ArgumentCaptor<FullscreenManager.Observer> mFullscreenObserverCaptor;
     @Captor private ArgumentCaptor<WebContentsObserver> mWebContentsObserverCaptor;
-
-    /** List of tasks that were posted, including with delay. Run with runUntilIdle(). */
-    private List<Runnable> mRunnables = new ArrayList<>();
 
     /** Class to be tested, extended to allow us to provide some hooks. */
     class FullscreenVideoPictureInPictureControllerWithOverrides
@@ -98,15 +93,6 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
     @Before
     public void setUp() {
-
-        ShadowPostTask.setTestImpl(
-                new ShadowPostTask.TestImpl() {
-                    @Override
-                    public void postDelayedTask(int taskTraits, Runnable task, long delay) {
-                        mRunnables.add(task);
-                    }
-                });
-
         Context context = ContextUtils.getApplicationContext();
         ShadowPackageManager shadowPackageManager = Shadows.shadowOf(context.getPackageManager());
         shadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
@@ -141,13 +127,7 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
     /** Run any runnables, including any delayed ones. */
     private void runUntilIdle() {
-        // In case the tasks post more tasks, start a new list.
-        List<Runnable> runnables = mRunnables;
-        mRunnables = new ArrayList<>();
-
-        for (Runnable r : runnables) {
-            r.run();
-        }
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
 
     /** Verify that full screen video will try to enter PiP */

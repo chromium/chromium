@@ -14,17 +14,15 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.base.task.test.ShadowPostTask;
-import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.TabArchiveSettings.Observer;
 
 /** Tests for {@link TabArchiveSettings}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowPostTask.class})
+@Config(manifest = Config.NONE)
 public class TabArchiveSettingsTest {
     private static final int AUTO_DELETE_TIME_DELTA_HOURS_DEFAULT = 90 * 24; // 60 days.
 
@@ -33,16 +31,6 @@ public class TabArchiveSettingsTest {
 
     @Before
     public void setUp() {
-        // Run posted tasks immediately.
-        ShadowPostTask.setTestImpl(
-                new TestImpl() {
-                    @Override
-                    public void postDelayedTask(
-                            @TaskTraits int taskTraits, Runnable task, long delay) {
-                        task.run();
-                    }
-                });
-
         mPrefsManager = ChromeSharedPreferences.getInstance();
         mSettings = new TabArchiveSettings(mPrefsManager);
         mSettings.resetSettingsForTesting();
@@ -84,6 +72,7 @@ public class TabArchiveSettingsTest {
 
         mSettings.addObserver(obs);
         mSettings.setArchiveTimeDeltaHours(1);
+        RobolectricUtil.runAllBackgroundAndUi();
         callbackHelper.waitForNext();
     }
 }

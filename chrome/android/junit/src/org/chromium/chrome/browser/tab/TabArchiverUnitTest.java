@@ -24,7 +24,6 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -43,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link TabArchiverImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowPostTask.class})
+@Config(manifest = Config.NONE)
 public class TabArchiverUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
@@ -64,9 +63,6 @@ public class TabArchiverUnitTest {
 
     @Before
     public void setUp() {
-        // Run posted tasks immediately.
-        ShadowPostTask.setTestImpl((taskTraits, task, delay) -> task.run());
-
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
 
         // Testing setup is:

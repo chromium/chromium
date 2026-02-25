@@ -30,8 +30,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.InMemorySharedPreferences;
@@ -51,7 +49,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = ShadowPostTask.class)
+@Config(manifest = Config.NONE)
 public class SurveyClientUnitTest {
     private static final String TEST_SURVEY_TRIGGER = "test_survey_trigger";
     private static final String TEST_TRIGGER_ID = "triggerId1234";
@@ -87,14 +85,6 @@ public class SurveyClientUnitTest {
         SurveyClientFactory.initialize(mPrivacyPreferencesManager);
         SurveyMetadata.initializeForTesting(new InMemorySharedPreferences(), null);
 
-        ShadowPostTask.setTestImpl(
-                new ShadowPostTask.TestImpl() {
-                    @Override
-                    public void postDelayedTask(
-                            @TaskTraits int taskTraits, Runnable task, long delay) {
-                        task.run();
-                    }
-                });
         ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
     }
 

@@ -39,7 +39,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
-import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -51,7 +50,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link CustomTabOpenInAppEntryPoint}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowPostTask.class})
+@Config(manifest = Config.NONE)
 public class CustomTabOpenInAppEntryPointUnitTest {
     private static final String LABEL = "Label";
     private static final String PACKAGE = "com.example.package";
@@ -79,7 +78,6 @@ public class CustomTabOpenInAppEntryPointUnitTest {
 
     @Before
     public void setUp() throws PackageManager.NameNotFoundException {
-        ShadowPostTask.setTestImpl((taskTraits, task, delay) -> {});
         mContext = spy(Robolectric.buildActivity(Activity.class).setup().get());
         mTabSupplier = ObservableSuppliers.createNullable();
         mUserDataHost = new UserDataHost();

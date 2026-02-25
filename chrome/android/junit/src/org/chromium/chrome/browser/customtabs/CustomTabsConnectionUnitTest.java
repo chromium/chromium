@@ -47,9 +47,6 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowProcess;
 
-import org.chromium.base.task.TaskTraits;
-import org.chromium.base.task.test.ShadowPostTask;
-import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -66,7 +63,7 @@ import org.chromium.chrome.browser.tab.Tab;
 /** Tests for some parts of {@link CustomTabsConnection}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
-@Config(shadows = {ShadowPostTask.class})
+@Config(manifest = Config.NONE)
 public class CustomTabsConnectionUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -85,14 +82,6 @@ public class CustomTabsConnectionUnitTest {
 
     @Before
     public void setup() {
-        ShadowPostTask.setTestImpl(
-                new TestImpl() {
-                    @Override
-                    public void postDelayedTask(
-                            @TaskTraits int taskTraits, Runnable task, long delay) {
-                        task.run();
-                    }
-                });
         CustomTabsConnection.setInstanceForTesting(null);
         mConnection = CustomTabsConnection.getInstance();
         mSession = spy(CustomTabsSessionToken.createMockSessionTokenForTesting());

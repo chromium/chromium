@@ -56,7 +56,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
-import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -1481,8 +1480,7 @@ public class BookmarkManagerMediatorTest {
                 .when(mSelectionDelegate)
                 .getSelectedItemsAsList();
 
-        // Pretend to delete folder 2 and folder 3. Pause the looper to get the removes to dedupe.
-        ShadowPostTask.reset();
+        // Pretend to delete folder 2 and folder 3.
         doReturn(Arrays.asList(mBookmarkId21)).when(mBookmarkModel).getChildIds(mFolderId1);
         verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
         when(mBookmarkModel.searchBookmarks(eq(queryString), anyInt()))
@@ -2310,9 +2308,6 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     public void testModelChangesDeduped() {
-        // Remove test impl from setUp, to resume paused behavior.
-        ShadowPostTask.reset();
-
         finishLoading();
         mMediator.openFolder(mFolderId1);
         verify(mBookmarkModel, times(1)).getChildIds(mFolderId1);
@@ -2338,9 +2333,6 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     public void testDestroyDuringPendingRefresh() {
-        // Remove test impl from setUp, to resume paused behavior.
-        ShadowPostTask.reset();
-
         finishLoading();
         mMediator.openFolder(mFolderId1);
         verify(mBookmarkModel, times(1)).getChildIds(mFolderId1);

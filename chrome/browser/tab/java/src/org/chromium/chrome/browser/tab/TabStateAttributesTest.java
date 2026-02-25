@@ -18,9 +18,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,8 +33,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.Token;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -60,7 +55,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {ShadowLooper.class, ShadowPostTask.class})
+        shadows = {ShadowLooper.class})
 public class TabStateAttributesTest {
     @Rule public final MockitoRule mockito = MockitoJUnit.rule();
 
@@ -75,11 +70,6 @@ public class TabStateAttributesTest {
 
     @Before
     public void setUp() {
-        ShadowPostTask.setTestImpl(
-                (@TaskTraits int taskTraits, Runnable task, long delay) -> {
-                    new Handler(Looper.getMainLooper()).postDelayed(task, delay);
-                });
-
         mTab =
                 new MockTab(0, mProfile) {
                     @Override

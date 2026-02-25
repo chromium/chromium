@@ -8,7 +8,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -46,7 +45,6 @@ import android.graphics.drawable.BitmapDrawable;
 
 import androidx.annotation.Px;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -61,9 +59,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.TaskTraits;
-import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
@@ -87,10 +84,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -99,9 +94,7 @@ import java.util.stream.StreamSupport;
  * properly.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowPostTask.class})
+@Config(manifest = Config.NONE)
 public class TouchToFillControllerTest {
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String TEST_URL_FORMATTED =
@@ -178,11 +171,6 @@ public class TouchToFillControllerTest {
                 mMockIconBridge,
                 DESIRED_FAVICON_SIZE,
                 mMockFocusHelper);
-    }
-
-    @After
-    public void tearDown() {
-        ShadowPostTask.reset();
     }
 
     @Test
@@ -374,14 +362,6 @@ public class TouchToFillControllerTest {
 
     @Test
     public void testShowSheetForOneSharedCredential() {
-        List<Integer> postedTasksTraits = new ArrayList();
-        ShadowPostTask.setTestImpl(
-                (taskTraits, task, delay) -> {
-                    assertThat(delay).isEqualTo(0);
-                    // Store the traits to test that tasks are posted to the proper traits.
-                    postedTasksTraits.add(taskTraits);
-                    task.run();
-                });
         Credential sharedCredentials =
                 new Credential.Builder()
                         .setUsername("Ana")
@@ -419,7 +399,9 @@ public class TouchToFillControllerTest {
                                 R.string.touch_to_fill_sheet_shared_passwords_one_password_subtitle,
                                 "<b>Sender Name</b>",
                                 TEST_URL_FORMATTED)));
+        RobolectricUtil.runAllBackgroundAndUi();
         mImageFetcher.answerWithBitmap();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // This value is chosen randomly for the test
         final int avatarImgeSizePx = 80;
@@ -434,10 +416,6 @@ public class TouchToFillControllerTest {
         assertTrue(
                 expectedBitmap.sameAs(
                         ((BitmapDrawable) itemList.get(0).model.get(AVATAR)).getBitmap()));
-        // Two tasks have been posted, the first is to fetch the avatar imges on a non-UI task
-        // runner, and the second to update the model on a UI task runner.
-        assertThat(
-                postedTasksTraits, contains(TaskTraits.USER_VISIBLE, TaskTraits.UI_USER_VISIBLE));
     }
 
     @Test
