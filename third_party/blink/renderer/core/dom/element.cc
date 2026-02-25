@@ -10309,13 +10309,7 @@ PseudoElement* Element::UpdatePseudoElement(
       if (element->NeedsReattachLayoutTree() &&
           !PseudoElementLayoutObjectIsNeeded(
               pseudo_id, element->GetComputedStyle(), this)) {
-        // RecalcStyle will have cancelled any CSS animations on the element
-        // if the underlying base style had display:none. An animation to
-        // display: none keeps the element and the animation alive.
-        if (!element->HasAnimations()) {
-          generate_pseudo = false;
-        }
-
+        generate_pseudo = false;
         // If the content property is relying on attr() we should add the
         // originating element's ComputedStyle to the pseudo-element style
         // cache, so that when attribute value changes it will force style
@@ -10334,9 +10328,8 @@ PseudoElement* Element::UpdatePseudoElement(
       element = nullptr;
     }
 
-    // A pseudo-element without computed style can only exist if being
-    // kept alive by an animation.
-    DCHECK(!element || element->GetComputedStyle() || element->HasAnimations());
+    // A pseudo-element without computed style should not exist.
+    DCHECK(!element || element->GetComputedStyle());
   }
 
   return element;
@@ -10577,11 +10570,8 @@ bool Element::PseudoElementStylesAffectCounters() const {
   }
 
   for (PseudoElement* pseudo_element : rare_data->GetPseudoElements()) {
-    if (const ComputedStyle* pseudo_element_style =
-            pseudo_element->GetComputedStyle()) {
-      if (pseudo_element_style->GetCounterDirectives()) {
-        return true;
-      }
+    if (pseudo_element->GetComputedStyle()->GetCounterDirectives()) {
+      return true;
     }
   }
 
@@ -10636,11 +10626,8 @@ bool Element::PseudoElementStylesDependOnFunc(Functor& func) const {
   }
 
   for (PseudoElement* pseudo_element : rare_data->GetPseudoElements()) {
-    if (const ComputedStyle* pseudo_element_style =
-            pseudo_element->GetComputedStyle()) {
-      if (func(*pseudo_element_style)) {
-        return true;
-      }
+    if (func(*pseudo_element->GetComputedStyle())) {
+      return true;
     }
   }
 

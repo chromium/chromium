@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] A CSS Animation on a pseudo-element animating to "display: none" with "fill: forwards" remains active after animation completion.
+  assert_equals: The animation remains after completion expected 1 but got 0
+Harness: the test ran to completion.
+
