@@ -191,7 +191,11 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   const base::ObserverList<Observer>& observer_list() const {
     return observer_list_;
   }
-  const base::ObserverList<VmObserver>& vm_observer_list() const {
+  const base::ObserverList<
+      VmObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>&
+  vm_observer_list() const {
     return vm_observer_list_;
   }
   const base::ObserverList<DiskImageObserver>& disk_image_observer_list()
@@ -532,8 +536,12 @@ class COMPONENT_EXPORT(CONCIERGE) FakeConciergeClient : public ConciergeClient {
   base::ObserverList<Observer> observer_list_{
       ConciergeClient::kObserverListPolicy};
 
-  base::ObserverList<VmObserver> vm_observer_list_{
-      ConciergeClient::kObserverListPolicy};
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      VmObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      vm_observer_list_{ConciergeClient::kObserverListPolicy};
 
   base::ObserverList<DiskImageObserver> disk_image_observer_list_{
       ConciergeClient::kObserverListPolicy};
