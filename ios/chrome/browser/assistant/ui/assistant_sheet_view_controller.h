@@ -7,11 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/assistant/ui/assistant_sheet_consumer.h"
-
 // View Controller for the Assistant Sheet.
-@interface AssistantSheetViewController
-    : UIViewController <AssistantSheetConsumer>
+@interface AssistantSheetViewController : UIViewController
 
 // Whether the sheet is currently being animated by an external animator.
 @property(nonatomic, assign) BOOL isAnimating;
@@ -22,6 +19,14 @@
 // Whether to anchor to the bottom of the view (YES) or the top (NO).
 // Defaults to NO.
 @property(nonatomic, assign) BOOL anchorToBottom;
+
+// Default initializer.
+- (instancetype)initWithViewController:(UIViewController*)viewController
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 @end
 

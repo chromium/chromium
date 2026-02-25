@@ -5,19 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_ASSISTANT_COORDINATOR_ASSISTANT_SHEET_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_ASSISTANT_COORDINATOR_ASSISTANT_SHEET_COORDINATOR_H_
 
+#import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-// Modes for the assistant sheet.
-typedef NS_ENUM(NSUInteger, AssistantSheetMode) {
-  // Mode for the AI assistant.
-  AssistantSheetModeAI,
-};
+// Coordinator for the Assistant Sheet container.
+@interface AssistantSheetCoordinator
+    : ChromeCoordinator <AssistantContainerCommands>
 
-// Coordinator for the assistant sheet.
-@interface AssistantSheetCoordinator : ChromeCoordinator
-
-// The mode of the assistant sheet.
-@property(nonatomic, assign) AssistantSheetMode mode;
+// Stops the coordinator with optional animation and completion handler.
+- (void)stopAnimated:(BOOL)animated completion:(ProceduralBlock)completion;
 
 @end
 

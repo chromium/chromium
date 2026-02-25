@@ -83,7 +83,7 @@ UIColor* SheetBackgroundColor() {
 #pragma mark - Private
 
 // Configures the visual styling of the sheet.
-// TODO(crbug.com/390204874): Update the sheet styling to perfectly match the
+// TODO(crbug.com/469050167): Update the sheet styling to perfectly match the
 // design.
 - (void)configureSheetStyling {
   // Container for visual effects (Blur + Tint) that clips to corners.

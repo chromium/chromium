@@ -5,10 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_ASSISTANT_AIM_COORDINATOR_ASSISTANT_AIM_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_ASSISTANT_AIM_COORDINATOR_ASSISTANT_AIM_COORDINATOR_H_
 
-#import "ios/chrome/browser/assistant/coordinator/assistant_sheet_child_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 // Coordinator for the "AI Mode" flow.
-@interface AssistantAIMCoordinator : AssistantSheetChildCoordinator
+@interface AssistantAIMCoordinator : ChromeCoordinator
 
 @end
 

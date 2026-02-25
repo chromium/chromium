@@ -27,6 +27,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/ai_prototyping/coordinator/ai_prototyping_coordinator.h"
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_coordinator.h"
+#import "ios/chrome/browser/assistant/aim/coordinator/assistant_aim_coordinator.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
@@ -179,8 +180,10 @@ void OnListFamilyMembersResponse(
   IncognitoInterstitialCoordinator* _incognitoInterstitialCoordinator;
   // Coordinator for the AI prototyping menu.
   AIPrototypingCoordinator* _AIPrototypingCoordinator;
-  // The coordinator for the Assistant Sheet.
-  AssistantSheetCoordinator* _assistantSheetCoordinator;
+  // The coordinator for the AIM Assistant.
+  AssistantAIMCoordinator* _assistantAIMCoordinator;
+  // The coordinator for the Assistant Container.
+  AssistantSheetCoordinator* _assistantContainerCoordinator;
   // Observer for PolicyWatcherBrowserAgent.
   std::unique_ptr<PolicyWatcherBrowserAgentObserverBridge>
       _policyWatcherObserverBridge;
@@ -251,6 +254,13 @@ void OnListFamilyMembersResponse(
     [_appBarCoordinator start];
     [_viewController setAppBar:_appBarCoordinator.viewController];
   }
+
+  if (IsAssistantSheetEnabled()) {
+    _assistantContainerCoordinator = [[AssistantSheetCoordinator alloc]
+        initWithBaseViewController:self.activeViewController
+                           browser:_regularBrowser.get()];
+    [_assistantContainerCoordinator start];
+  }
 }
 
 - (void)stop {
@@ -270,7 +280,8 @@ void OnListFamilyMembersResponse(
   [self stopIncognitoInterstitialCoordinator];
   [_AIPrototypingCoordinator stop];
   _AIPrototypingCoordinator = nil;
-  [self stopAssistantSheetCoordinator];
+  [self stopAssistantAIMCoordinator];
+  [self stopAssistantContainerCoordinator];
   [_tabGridCoordinator stop];
   [_appBarCoordinator stop];
   self.UIHandler = nil;
@@ -507,6 +518,17 @@ void OnListFamilyMembersResponse(
   _historyCoordinator.loadStrategy = UrlLoadStrategy::NORMAL;
   _historyCoordinator.delegate = self;
   [_historyCoordinator start];
+}
+
+- (void)showAssistant {
+  if (!IsAssistantSheetEnabled()) {
+    return;
+  }
+  [_assistantAIMCoordinator stop];
+  _assistantAIMCoordinator = [[AssistantAIMCoordinator alloc]
+      initWithBaseViewController:self.activeViewController
+                         browser:self.currentBrowser];
+  [_assistantAIMCoordinator start];
 }
 
 - (void)closePresentedViewsAndOpenURL:(OpenNewTabCommand*)command {
@@ -793,17 +815,6 @@ void OnListFamilyMembersResponse(
   // Since this is only for internal prototyping, the coordinator remains active
   // once it's been started.
   [_AIPrototypingCoordinator start];
-}
-
-- (void)showAssistant {
-  if (!IsAssistantSheetEnabled()) {
-    return;
-  }
-  _assistantSheetCoordinator = [[AssistantSheetCoordinator alloc]
-      initWithBaseViewController:self.activeViewController
-                         browser:self.currentBrowser];
-  _assistantSheetCoordinator.mode = AssistantSheetModeAI;
-  [_assistantSheetCoordinator start];
 }
 
 - (void)showFullscreenSigninPromoWithCompletion:
@@ -1519,10 +1530,16 @@ void OnListFamilyMembersResponse(
   _youtubeIncognitoCoordinator = nil;
 }
 
-// Stops the AssistantSheetcoordinator;
-- (void)stopAssistantSheetCoordinator {
-  [_assistantSheetCoordinator stop];
-  _assistantSheetCoordinator = nil;
+// Stops the AssistantContainerCoordinator.
+- (void)stopAssistantContainerCoordinator {
+  [_assistantContainerCoordinator stopAnimated:NO completion:nil];
+  _assistantContainerCoordinator = nil;
+}
+
+// Stops the AssistantAIMCoordinator.
+- (void)stopAssistantAIMCoordinator {
+  [_assistantAIMCoordinator stop];
+  _assistantAIMCoordinator = nil;
 }
 
 // Stops the History coordinator.
@@ -1902,8 +1919,8 @@ void OnListFamilyMembersResponse(
   // If History is active, stop it.
   [self stopHistoryCoordinator];
 
-  // If Assistant Sheet is active, stop it.
-  [self stopAssistantSheetCoordinator];
+  // If AIM Assistant is active, stop it.
+  [self stopAssistantAIMCoordinator];
 
   // If the Safari data import workflow is active, stop it.
   [self stopSafariDataImportCoordinator];

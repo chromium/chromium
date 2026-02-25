@@ -39,6 +39,14 @@ constexpr CGFloat kSpringDamping = 0.85;
   BOOL _hasAppeared;
 }
 
+- (instancetype)initWithViewController:(UIViewController*)viewController {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    _childViewController = viewController;
+  }
+  return self;
+}
+
 - (void)loadView {
   _assistantSheetView = [[AssistantSheetView alloc] init];
   self.view = _assistantSheetView;
@@ -281,31 +289,6 @@ constexpr CGFloat kSpringDamping = 0.85;
     } else {
       _heightConstraint.constant = target;
     }
-  }
-}
-
-#pragma mark - AssistantSheetConsumer
-
-- (void)setChildViewController:(UIViewController*)viewController {
-  if (viewController == _childViewController) {
-    return;
-  }
-
-  // Remove existing child view controllers.
-  if (_childViewController) {
-    [_childViewController willMoveToParentViewController:nil];
-    [_childViewController.view removeFromSuperview];
-    [_childViewController removeFromParentViewController];
-  }
-
-  _childViewController = viewController;
-
-  if (self.isViewLoaded) {
-    [self addChildViewController:viewController];
-    viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [_assistantSheetView.contentView addSubview:viewController.view];
-    AddSameConstraints(viewController.view, _assistantSheetView.contentView);
-    [viewController didMoveToParentViewController:self];
   }
 }
 

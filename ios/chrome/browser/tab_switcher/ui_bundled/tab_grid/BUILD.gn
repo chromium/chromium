@@ -34,7 +34,6 @@ source_set("tab_grid") {
     "//ios/chrome/app/profile:first_run_profile_agent",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/app_bar/coordinator",
-    "//ios/chrome/browser/assistant/coordinator",
     "//ios/chrome/browser/authentication/history_sync/coordinator",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
