@@ -165,13 +165,12 @@ VerticalTabDragHandlerImpl::GetDragInitDataForTabDrag(
       std::get<const tabs::TabInterface*>(source_node.GetNodeData());
   CHECK(source_tab);
 
+  std::map<tab_groups::TabGroupId, TabSlotView*> dragged_groups;
   if (!source_tab->IsPinned()) {
     // A TabSlotView must be added for each dragged group, in addition to the
-    // tabs themselves.
-    auto dragged_groups = GetFullySelectedGroups(selected_tabs);
-    drag_init_data.dragged_views.insert(drag_init_data.dragged_views.end(),
-                                        dragged_groups.begin(),
-                                        dragged_groups.end());
+    // tabs themselves. These must be inserted into `dragged_views` in the
+    // order they appear within the tab strip.
+    dragged_groups = GetFullySelectedGroups(selected_tabs);
   }
 
   // Track the node and build a shim view for each selected node.
@@ -181,6 +180,17 @@ VerticalTabDragHandlerImpl::GetDragInitDataForTabDrag(
     if (source_tab->IsPinned() != tab->IsPinned()) {
       continue;
     }
+
+    if (auto group_id = tab->GetGroup()) {
+      // If the tab belongs to a group that is fully selected, then add the
+      // group's TabSlotView first.
+      if (auto it = dragged_groups.find(*group_id);
+          it != dragged_groups.end()) {
+        drag_init_data.dragged_views.push_back(it->second);
+        dragged_groups.erase(it);
+      }
+    }
+
     size_t index = tab_strip_model_->GetIndexOfTab(tab);
     drag_init_data.list_selection_model.AddIndexToSelection(index);
     TabCollectionNode* selected_node =
@@ -218,7 +228,8 @@ VerticalTabDragHandlerImpl::GetDragInitDataForGroupHeaderDrag(
   return drag_init_data;
 }
 
-std::vector<TabSlotView*> VerticalTabDragHandlerImpl::GetFullySelectedGroups(
+std::map<tab_groups::TabGroupId, TabSlotView*>
+VerticalTabDragHandlerImpl::GetFullySelectedGroups(
     const std::vector<tabs::TabInterface*>& selected_tabs) {
   std::map<tab_groups::TabGroupId, int> dragged_group_tab_counts;
   for (tabs::TabInterface* tab : selected_tabs) {
@@ -227,7 +238,7 @@ std::vector<TabSlotView*> VerticalTabDragHandlerImpl::GetFullySelectedGroups(
     }
   }
 
-  std::vector<TabSlotView*> selected_groups;
+  std::map<tab_groups::TabGroupId, TabSlotView*> selected_groups;
   for (const auto& [group_id, dragged_tab_count] : dragged_group_tab_counts) {
     const auto* group = tab_strip_model_->group_model()->GetTabGroup(group_id);
     CHECK(group);
@@ -235,7 +246,7 @@ std::vector<TabSlotView*> VerticalTabDragHandlerImpl::GetFullySelectedGroups(
       auto* selected_node = GetNodeForTabGroup(group_id);
       auto& slot_view = GetOrCreateSlotViewForNode(*selected_node);
       slot_view.SetBoundsRect(selected_node->view()->GetLocalBounds());
-      selected_groups.push_back(&slot_view);
+      selected_groups.insert({group_id, &slot_view});
     }
   }
   return selected_groups;
@@ -312,6 +323,10 @@ void VerticalTabDragHandlerImpl::HandleDraggedTabsIntoNode(
   int target_index;
   std::optional<tab_groups::TabGroupId> target_group_id = std::nullopt;
   if (node.type() == TabCollectionNode::Type::GROUP) {
+    // If dragging into a group, then either put the dragged tabs into the
+    // start/end if the source dragged tab is before/after the group, or move
+    // all dragged tabs to the source dragged tab's position if it's already
+    // in the group.
     const auto& group = TabGroupDataFromNode(node);
     target_group_id = group.id();
     int source_tab_index =
@@ -327,8 +342,10 @@ void VerticalTabDragHandlerImpl::HandleDraggedTabsIntoNode(
   } else if (auto source_tab_group_id =
                  tabs::TabInterface::GetFromContents(source_contents)
                      ->GetGroup()) {
+    // If the source dragged tab is in a group, and we're not entering a
+    // group, then move the dragged tabs to be after the group.
     const auto* group =
-        tab_strip_model_->group_model()->GetTabGroup(*target_group_id);
+        tab_strip_model_->group_model()->GetTabGroup(*source_tab_group_id);
     target_index = group->ListTabs().end();
   } else {
     target_index = tab_strip_model_->GetIndexOfWebContents(source_contents);
