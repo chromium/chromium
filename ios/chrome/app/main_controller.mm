@@ -77,7 +77,6 @@
 #import "ios/chrome/browser/accessibility/model/window_accessibility_change_notifier_app_agent.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
 #import "ios/chrome/browser/banner_promo/model/default_browser_banner_promo_app_agent.h"
-#import "ios/chrome/browser/browsing_data/model/sessions_storage_util.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/crash_report/model/crash_helper.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
@@ -271,12 +270,6 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
                                              ->GetProfileManager()
                                              ->GetProfileAttributesStorage();
 
-  // Prior to M-133, the list of sessions to discard was stored in a plist.
-  // If the file still exists, then copy the session identifiers, and then
-  // delete the file.
-  std::set<std::string> sessionIDs =
-      sessions_storage_util::GetDiscardedSessions();
-
   // Usually Chrome uses -[SceneState sceneSessionID] as identifier to properly
   // support devices that do not support multi-window (and which use a constant
   // identifier). For devices that do not support multi-window the session is
@@ -286,14 +279,13 @@ void MarkSessionsAsDiscardedForAllProfiles(NSSet<UISceneSession*>* sessions) {
   // session is garbage collected.
   //
   // Thus it is always correct to use -persistentIdentifier here.
+  std::set<std::string> sessionIDs;
   for (UISceneSession* session in sessions) {
     sessionIDs.insert(base::SysNSStringToUTF8(session.persistentIdentifier));
   }
 
   storage->IterateOverProfileAttributes(
       base::BindRepeating(&InsertDiscardedSessions, sessionIDs));
-
-  sessions_storage_util::ResetDiscardedSessions();
 }
 
 // It was found that -application:didDiscardSceneSessions: may be called with
