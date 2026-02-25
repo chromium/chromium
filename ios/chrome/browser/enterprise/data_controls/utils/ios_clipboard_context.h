@@ -35,7 +35,7 @@ class IOSClipboardContext : public ClipboardContext {
   GURL source_url_;
   GURL destination_url_;
   raw_ptr<ProfileIOS> source_profile_;
-  raw_ptr<ProfileIOS> destination_Profile_;
+  raw_ptr<ProfileIOS> destination_profile_;
   ui::ClipboardMetadata metadata_;
 };
 

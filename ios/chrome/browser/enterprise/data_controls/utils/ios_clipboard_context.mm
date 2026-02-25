@@ -21,7 +21,7 @@ IOSClipboardContext::IOSClipboardContext(const GURL& source_url,
     : source_url_(source_url),
       destination_url_(destination_url),
       source_profile_(source_profile),
-      destination_Profile_(destination_profile),
+      destination_profile_(destination_profile),
       metadata_(std::move(metadata)) {}
 
 GURL IOSClipboardContext::source_url() const {
@@ -34,7 +34,7 @@ GURL IOSClipboardContext::destination_url() const {
 
 enterprise_connectors::ContentMetaData::CopiedTextSource
 IOSClipboardContext::data_controls_copied_text_source() const {
-  CHECK(destination_Profile_);
+  CHECK(destination_profile_);
   using SourceType = enterprise_connectors::ContentMetaData::CopiedTextSource;
 
   SourceType copied_text_source;
@@ -42,7 +42,7 @@ IOSClipboardContext::data_controls_copied_text_source() const {
     copied_text_source.set_context(SourceType::CLIPBOARD);
   } else if (source_profile_->IsOffTheRecord()) {
     copied_text_source.set_context(SourceType::INCOGNITO);
-  } else if (source_profile_ == destination_Profile_) {
+  } else if (source_profile_ == destination_profile_) {
     copied_text_source.set_context(SourceType::SAME_PROFILE);
   } else {
     copied_text_source.set_context(SourceType::OTHER_PROFILE);
@@ -66,7 +66,7 @@ IOSClipboardContext::data_controls_copied_text_source() const {
     case SourceType::OTHER_PROFILE:
       // Only add a source URL if the other profile is getting the policy
       // applied at the machine scope, not the user scope.
-      if (destination_Profile_->GetPrefs()->GetInteger(
+      if (destination_profile_->GetPrefs()->GetInteger(
               kDataControlsRulesScopePref) == policy::POLICY_SCOPE_USER) {
         break;
       }
@@ -102,12 +102,12 @@ std::string IOSClipboardContext::source_active_user() const {
 }
 
 std::string IOSClipboardContext::destination_active_user() const {
-  if (!destination_Profile_) {
+  if (!destination_profile_) {
     return std::string();
   }
 
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(destination_Profile_);
+      IdentityManagerFactory::GetForProfile(destination_profile_);
   std::string active_user = enterprise_connectors::GetActiveContentAreaUser(
       identity_manager, destination_url_);
   return active_user;
