@@ -59,8 +59,9 @@ const char kApplyClientsideModelPredictionsForPasswordTypesDescription[] =
 const char kAskGeminiChipName[] = "Ask Gemini Chip";
 const char kAskGeminiChipDescription[] = "Enables the Ask Gemini Chip feature.";
 
-const char kAssistantSheetName[] = "AssistantSheet";
-const char kAssistantSheetDescription[] = "Enables the assistantSheet feature.";
+const char kAssistantContainerName[] = "Assistant Container";
+const char kAssistantContainerDescription[] =
+    "Enables the Assistant Container feature.";
 
 const char kAutofillAcrossIframesName[] = "Enables Autofill across iframes";
 const char kAutofillAcrossIframesDescription[] =

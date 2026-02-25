@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/assistant/ui/assistant_sheet_animator.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_animator.h"
 
-#import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 
 namespace {
 // Animation constants.
@@ -13,23 +13,23 @@ constexpr CGFloat kSpringDamping = 0.8;
 constexpr CGFloat kTranslationMargin = 20.0;
 }  // namespace
 
-@implementation AssistantSheetAnimator
+@implementation AssistantContainerAnimator
 
-- (void)animatePresentation:(AssistantSheetViewController*)viewController
+- (void)animatePresentation:(AssistantContainerViewController*)viewController
                  completion:(void (^)(void))completion {
   [self animate:viewController presentation:YES completion:completion];
 }
 
-- (void)animateDismissal:(AssistantSheetViewController*)viewController
+- (void)animateDismissal:(AssistantContainerViewController*)viewController
               completion:(void (^)(void))completion {
   [self animate:viewController presentation:NO completion:completion];
 }
 
 #pragma mark - Private
 
-// Animates the sheet view. If `presentation` is YES, the sheet slides up from
-// the bottom. Otherwise, it slides down.
-- (void)animate:(AssistantSheetViewController*)viewController
+// Animates the container view. If `presentation` is YES, the container slides
+// up from the bottom. Otherwise, it slides down.
+- (void)animate:(AssistantContainerViewController*)viewController
     presentation:(BOOL)presentation
       completion:(void (^)(void))completion {
   UIView* view = viewController.view;
@@ -45,9 +45,9 @@ constexpr CGFloat kTranslationMargin = 20.0;
   // Layout to ensure frame is valid.
   [view.superview layoutIfNeeded];
 
-  CGFloat sheetHeight = view.frame.size.height;
+  CGFloat containerHeight = view.frame.size.height;
   CGAffineTransform hiddenTransform =
-      CGAffineTransformMakeTranslation(0, sheetHeight + kTranslationMargin);
+      CGAffineTransformMakeTranslation(0, containerHeight + kTranslationMargin);
 
   CGAffineTransform targetTransform;
   UIViewAnimationOptions options;

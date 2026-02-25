@@ -637,14 +637,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "assistant-container",
+    "owners": [ "ewannpv@chromium.org", "bling-meridian@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "assistant-iph",
     "owners": ["wutao@chromium.org", "assistive-eng@google.com"],
     "expiry_milestone": 126
-  },
-  {
-    "name": "assistant-sheet",
-    "owners": [ "ewannpv@chromium.org", "bling-meridian@google.com" ],
-    "expiry_milestone": 150
   },
   {
     "name": "audio-ducking",

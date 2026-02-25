@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_ASSISTANT_UI_ASSISTANT_SHEET_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_ASSISTANT_UI_ASSISTANT_SHEET_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_ASSISTANT_UI_ASSISTANT_CONTAINER_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_ASSISTANT_UI_ASSISTANT_CONTAINER_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-// View Controller for the Assistant Sheet.
-@interface AssistantSheetViewController : UIViewController
+// View Controller for the Assistant Container.
+@interface AssistantContainerViewController : UIViewController
 
-// Whether the sheet is currently being animated by an external animator.
+// Whether the container is currently being animated by an external animator.
 @property(nonatomic, assign) BOOL isAnimating;
 
 // The view to anchor to. If nil, falls back to the bottom of the parent view.
@@ -30,4 +30,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_ASSISTANT_UI_ASSISTANT_SHEET_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_ASSISTANT_UI_ASSISTANT_CONTAINER_VIEW_CONTROLLER_H_

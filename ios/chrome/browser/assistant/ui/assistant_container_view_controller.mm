@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 
-#import "ios/chrome/browser/assistant/ui/assistant_sheet_view.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
 
-// Margin for the sheet content relative to the screen edges.
-constexpr CGFloat kSheetMargin = 5.0;
-constexpr CGFloat kMinSheetHeight = 60.0;
+// Margin for the container content relative to the screen edges.
+constexpr CGFloat kContainerMargin = 5.0;
+constexpr CGFloat kMinContainerHeight = 60.0;
 
-// Constants used for the sheet resizing animation.
+// Constants used for the container resizing animation.
 constexpr CGFloat kRubberBandCoefficient = 8.0;
 constexpr CGFloat kFlingVelocityThreshold = 1000.0;
 constexpr CGFloat kSpringDuration = 0.3;
@@ -22,18 +22,18 @@ constexpr CGFloat kSpringDamping = 0.85;
 
 }  // namespace
 
-@implementation AssistantSheetViewController {
+@implementation AssistantContainerViewController {
   NSLayoutConstraint* _heightConstraint;
-  AssistantSheetView* _assistantSheetView;
+  AssistantContainerView* _assistantContainerView;
 
   // State storage for configuration before view load.
   UIViewController* _childViewController;
 
-  // Gesture recognizer for resizing the sheet.
+  // Gesture recognizer for resizing the container.
   UIPanGestureRecognizer* _headerPanGesture;
-  // The height of the sheet when the gesture started.
+  // The height of the container when the gesture started.
   CGFloat _initialConstraintHeight;
-  // Whether the user has manually resized the sheet.
+  // Whether the user has manually resized the container.
   BOOL _hasUserResized;
   // Whether the view has appeared.
   BOOL _hasAppeared;
@@ -48,8 +48,8 @@ constexpr CGFloat kSpringDamping = 0.85;
 }
 
 - (void)loadView {
-  _assistantSheetView = [[AssistantSheetView alloc] init];
-  self.view = _assistantSheetView;
+  _assistantContainerView = [[AssistantContainerView alloc] init];
+  self.view = _assistantContainerView;
 }
 
 - (void)viewDidLoad {
@@ -62,15 +62,15 @@ constexpr CGFloat kSpringDamping = 0.85;
   if (_childViewController) {
     [self addChildViewController:_childViewController];
     _childViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [_assistantSheetView.contentView addSubview:_childViewController.view];
+    [_assistantContainerView.contentView addSubview:_childViewController.view];
     AddSameConstraints(_childViewController.view,
-                       _assistantSheetView.contentView);
+                       _assistantContainerView.contentView);
     [_childViewController didMoveToParentViewController:self];
   }
 
   // Create and activate the height constraint.
-  CGFloat preferredHeight = [_assistantSheetView preferredHeight];
-  CGFloat initialHeight = MAX(preferredHeight, kMinSheetHeight);
+  CGFloat preferredHeight = [_assistantContainerView preferredHeight];
+  CGFloat initialHeight = MAX(preferredHeight, kMinContainerHeight);
   _heightConstraint =
       [self.view.heightAnchor constraintEqualToConstant:initialHeight];
   _heightConstraint.active = YES;
@@ -100,10 +100,10 @@ constexpr CGFloat kSpringDamping = 0.85;
   _headerPanGesture = [[UIPanGestureRecognizer alloc]
       initWithTarget:self
               action:@selector(handlePanGesture:)];
-  [_assistantSheetView.headerView addGestureRecognizer:_headerPanGesture];
+  [_assistantContainerView.headerView addGestureRecognizer:_headerPanGesture];
 }
 
-// Handles the pan gesture on the header to resize the sheet.
+// Handles the pan gesture on the header to resize the container.
 - (void)handlePanGesture:(UIPanGestureRecognizer*)gesture {
   UIView* superview = self.view.superview;
   if (!superview) {
@@ -112,7 +112,7 @@ constexpr CGFloat kSpringDamping = 0.85;
 
   // Calculate limits.
   CGFloat maxHeight = [self maxHeight];
-  CGFloat minHeight = kMinSheetHeight;
+  CGFloat minHeight = kMinContainerHeight;
 
   if (gesture.state == UIGestureRecognizerStateBegan) {
     _initialConstraintHeight = _heightConstraint.constant;
@@ -166,11 +166,11 @@ constexpr CGFloat kSpringDamping = 0.85;
 
     // According to the gesture recognizer, positive velocity means gesture
     // moving down the screen (towards positive y), but it's easier to think
-    // about positive velocity meaning sheet getting taller.
-    CGFloat sheetVelocity = -velocity.y;
+    // about positive velocity meaning container getting taller.
+    CGFloat containerVelocity = -velocity.y;
 
     if (ABS(distance) > 1.0) {
-      springVelocity = sheetVelocity / distance;
+      springVelocity = containerVelocity / distance;
     }
 
     // Animate the snap.
@@ -178,20 +178,20 @@ constexpr CGFloat kSpringDamping = 0.85;
   }
 }
 
-// Calculates the maximum allowable height for the sheet, respecting the safe
-// area.
+// Calculates the maximum allowable height for the container, respecting the
+// safe area.
 - (CGFloat)maxHeight {
   UIView* superview = self.view.superview;
   if (!superview) {
     return 0.0;
   }
 
-  // We use the view's frame max Y because the sheet is anchored to a view (e.g.
-  // toolbar) that is above the screen bottom.
+  // We use the view's frame max Y because the container is anchored to a view
+  // (e.g. toolbar) that is above the screen bottom.
   CGFloat bottomY = CGRectGetMaxY(self.view.frame);
   CGFloat safeAreaTop = superview.safeAreaInsets.top;
 
-  return bottomY - safeAreaTop - kSheetMargin;
+  return bottomY - safeAreaTop - kContainerMargin;
 }
 
 // Lays out the view anchored to the guide/view within the parent view.
@@ -212,17 +212,17 @@ constexpr CGFloat kSpringDamping = 0.85;
 
   AddSameConstraintsToSidesWithInsets(
       self.view, parentView, LayoutSides::kLeading | LayoutSides::kTrailing,
-      NSDirectionalEdgeInsetsMake(0, kSheetMargin, 0, kSheetMargin));
+      NSDirectionalEdgeInsetsMake(0, kContainerMargin, 0, kContainerMargin));
 
   // Anchor to bottom.
   [self.view.bottomAnchor constraintEqualToAnchor:bottomAnchor
-                                         constant:-kSheetMargin]
+                                         constant:-kContainerMargin]
       .active = YES;
 
   // Update its value if the user hasn't resized it (e.g. content changed).
   if (!_hasUserResized) {
-    CGFloat preferredHeight = [_assistantSheetView preferredHeight];
-    CGFloat initialHeight = MAX(preferredHeight, kMinSheetHeight);
+    CGFloat preferredHeight = [_assistantContainerView preferredHeight];
+    CGFloat initialHeight = MAX(preferredHeight, kMinContainerHeight);
     _heightConstraint.constant = initialHeight;
   }
 }
@@ -258,8 +258,8 @@ constexpr CGFloat kSpringDamping = 0.85;
   // Calculate limits consistent with gesture logic.
   CGFloat maxHeight = [self maxHeight];
 
-  CGFloat preferredHeight = [_assistantSheetView preferredHeight];
-  CGFloat minHeight = kMinSheetHeight;
+  CGFloat preferredHeight = [_assistantContainerView preferredHeight];
+  CGFloat minHeight = kMinContainerHeight;
 
   // If user has never resized, we default to preferred height (min logic).
   // But strictly speaking, the initial state IS the preferred height.
@@ -280,7 +280,7 @@ constexpr CGFloat kSpringDamping = 0.85;
   }
 
   // Ensure we never break the min height limit.
-  target = MAX(target, kMinSheetHeight);
+  target = MAX(target, kMinContainerHeight);
   if (ABS(_heightConstraint.constant - target) > 0.1) {
     // Animate only if visible, auto-sizing, and idle.
     if (_hasAppeared && !_hasUserResized && !self.isAnimating) {

@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/ai_prototyping/coordinator/ai_prototyping_coordinator.h"
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_coordinator.h"
 #import "ios/chrome/browser/assistant/aim/coordinator/assistant_aim_coordinator.h"
-#import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
+#import "ios/chrome/browser/assistant/coordinator/assistant_container_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
@@ -183,7 +183,7 @@ void OnListFamilyMembersResponse(
   // The coordinator for the AIM Assistant.
   AssistantAIMCoordinator* _assistantAIMCoordinator;
   // The coordinator for the Assistant Container.
-  AssistantSheetCoordinator* _assistantContainerCoordinator;
+  AssistantContainerCoordinator* _assistantContainerCoordinator;
   // Observer for PolicyWatcherBrowserAgent.
   std::unique_ptr<PolicyWatcherBrowserAgentObserverBridge>
       _policyWatcherObserverBridge;
@@ -255,8 +255,8 @@ void OnListFamilyMembersResponse(
     [_viewController setAppBar:_appBarCoordinator.viewController];
   }
 
-  if (IsAssistantSheetEnabled()) {
-    _assistantContainerCoordinator = [[AssistantSheetCoordinator alloc]
+  if (IsAssistantContainerEnabled()) {
+    _assistantContainerCoordinator = [[AssistantContainerCoordinator alloc]
         initWithBaseViewController:self.activeViewController
                            browser:_regularBrowser.get()];
     [_assistantContainerCoordinator start];
@@ -521,7 +521,7 @@ void OnListFamilyMembersResponse(
 }
 
 - (void)showAssistant {
-  if (!IsAssistantSheetEnabled()) {
+  if (!IsAssistantContainerEnabled()) {
     return;
   }
   [_assistantAIMCoordinator stop];

@@ -1044,10 +1044,10 @@ bool IsCloseOtherTabsEnabled() {
   return base::FeatureList::IsEnabled(kCloseOtherTabs);
 }
 
-BASE_FEATURE(kAssistantSheet, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAssistantContainer, base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsAssistantSheetEnabled() {
-  return base::FeatureList::IsEnabled(kAssistantSheet);
+bool IsAssistantContainerEnabled() {
+  return base::FeatureList::IsEnabled(kAssistantContainer);
 }
 
 BASE_FEATURE(kComposeboxIpad, base::FEATURE_DISABLED_BY_DEFAULT);

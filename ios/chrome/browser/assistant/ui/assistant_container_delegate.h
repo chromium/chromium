@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class AssistantSheetViewController;
+@class AssistantContainerViewController;
 
 // Delegate for the Assistant Container to notify embedders of state changes.
 @protocol AssistantContainerDelegate <NSObject>
@@ -16,19 +16,19 @@
 #pragma mark - Lifecycle Events
 
 // Called before the container's view appears.
-- (void)assistantContainer:(AssistantSheetViewController*)container
+- (void)assistantContainer:(AssistantContainerViewController*)container
         willAppearAnimated:(BOOL)animated;
 
 // Called after the container's view has appeared.
-- (void)assistantContainer:(AssistantSheetViewController*)container
+- (void)assistantContainer:(AssistantContainerViewController*)container
          didAppearAnimated:(BOOL)animated;
 
 // Called before the container's view disappears.
-- (void)assistantContainer:(AssistantSheetViewController*)container
+- (void)assistantContainer:(AssistantContainerViewController*)container
      willDisappearAnimated:(BOOL)animated;
 
 // Called after the container's view has disappeared.
-- (void)assistantContainer:(AssistantSheetViewController*)container
+- (void)assistantContainer:(AssistantContainerViewController*)container
       didDisappearAnimated:(BOOL)animated;
 
 @end

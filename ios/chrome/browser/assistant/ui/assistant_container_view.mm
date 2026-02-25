@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/assistant/ui/assistant_sheet_view.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_view.h"
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -27,23 +27,23 @@ constexpr CGFloat kGrabberAlpha = 0.24;
 // Header styling.
 constexpr CGFloat kTitleVerticalMargin = 12.0;
 
-// Returns the background color for the sheet.
-constexpr CGFloat kSheetBackgroundAlpha = 0.5;
-UIColor* SheetBackgroundColor() {
+// Returns the background color for the container.
+constexpr CGFloat kContainerBackgroundAlpha = 0.5;
+UIColor* ContainerBackgroundColor() {
   return [[UIColor colorNamed:kSecondaryBackgroundColor]
-      colorWithAlphaComponent:kSheetBackgroundAlpha];
+      colorWithAlphaComponent:kContainerBackgroundAlpha];
 }
 
 }  // namespace
 
-@implementation AssistantSheetView {
+@implementation AssistantContainerView {
   UIScrollView* _scrollView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    [self configureSheetStyling];
+    [self configureContainerStyling];
     [self setUpSubviews];
   }
   return self;
@@ -82,10 +82,10 @@ UIColor* SheetBackgroundColor() {
 
 #pragma mark - Private
 
-// Configures the visual styling of the sheet.
-// TODO(crbug.com/469050167): Update the sheet styling to perfectly match the
-// design.
-- (void)configureSheetStyling {
+// Configures the visual styling of the container.
+// TODO(crbug.com/390204874): Update the container styling to perfectly match
+// the design.
+- (void)configureContainerStyling {
   // Container for visual effects (Blur + Tint) that clips to corners.
   UIBlurEffect* blurEffect =
       [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
@@ -101,7 +101,7 @@ UIColor* SheetBackgroundColor() {
   // Tint view overlaying the blur effect to provide the background color.
   UIView* tintView = [[UIView alloc] init];
   tintView.translatesAutoresizingMaskIntoConstraints = NO;
-  tintView.backgroundColor = SheetBackgroundColor();
+  tintView.backgroundColor = ContainerBackgroundColor();
   [blurView.contentView
       addSubview:tintView];  // Add to visual effect contentView.
 

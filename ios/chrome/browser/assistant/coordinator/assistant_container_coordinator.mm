@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/assistant/coordinator/assistant_sheet_coordinator.h"
+#import "ios/chrome/browser/assistant/coordinator/assistant_container_coordinator.h"
 
 #import "base/notreached.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_animator.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
-#import "ios/chrome/browser/assistant/ui/assistant_sheet_animator.h"
-#import "ios/chrome/browser/assistant/ui/assistant_sheet_view_controller.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -16,12 +16,12 @@
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 
-@implementation AssistantSheetCoordinator {
+@implementation AssistantContainerCoordinator {
   // The view controller for the assistant container.
-  AssistantSheetViewController* _containerViewController;
+  AssistantContainerViewController* _containerViewController;
   // The content view controller to be displayed inside the container.
   UIViewController* _contentViewController;
-  AssistantSheetAnimator* _animator;
+  AssistantContainerAnimator* _animator;
   __weak id<AssistantContainerDelegate> _delegate;
   // Whether a dismissal is currently in progress.
   BOOL _dismissalInProgress;
@@ -57,33 +57,30 @@
   _contentViewController = viewController;
   _delegate = delegate;
 
-  _containerViewController = [[AssistantSheetViewController alloc]
+  _containerViewController = [[AssistantContainerViewController alloc]
       initWithViewController:_contentViewController];
 
   // Resolve layout guide.
   GuideName* guideName = kAppBarGuide;
   LayoutGuideCenter* center = LayoutGuideCenterForBrowser(nil);
-  _containerViewController.anchorView =
-      [center referencedViewUnderName:guideName];
+  _containerViewController.anchorView = [center referencedViewUnderName:guideName];
 
   // Add the view controller as a child view controller.
   [self.baseViewController addChildViewController:_containerViewController];
 
   // Add the view to the hierarchy.
   [self.baseViewController.view addSubview:_containerViewController.view];
-  [_containerViewController
-      didMoveToParentViewController:self.baseViewController];
+  [_containerViewController didMoveToParentViewController:self.baseViewController];
 
   // Force layout to determine optimal size before animating.
   [self.baseViewController.view layoutIfNeeded];
 
   if ([_delegate respondsToSelector:@selector(assistantContainer:
                                               willAppearAnimated:)]) {
-    [_delegate assistantContainer:_containerViewController
-               willAppearAnimated:YES];
+    [_delegate assistantContainer:_containerViewController willAppearAnimated:YES];
   }
 
-  _animator = [[AssistantSheetAnimator alloc] init];
+  _animator = [[AssistantContainerAnimator alloc] init];
 
   __weak __typeof(self) weakSelf = self;
   [_animator animatePresentation:_containerViewController
@@ -144,8 +141,7 @@
 - (void)didCompletePresentationAnimation {
   if ([_delegate respondsToSelector:@selector(assistantContainer:
                                                didAppearAnimated:)]) {
-    [_delegate assistantContainer:_containerViewController
-                didAppearAnimated:YES];
+    [_delegate assistantContainer:_containerViewController didAppearAnimated:YES];
   }
 }
 
