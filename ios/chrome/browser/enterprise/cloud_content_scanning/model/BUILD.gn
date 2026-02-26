@@ -4,13 +4,19 @@
 
 source_set("model") {
   sources = [
+    "ios_analysis_request_handler.h",
+    "ios_analysis_request_handler.mm",
     "ios_content_analysis_request.h",
     "ios_content_analysis_request.mm",
   ]
   deps = [
+    "//components/enterprise/connectors/core",
     "//components/enterprise/connectors/core:cloud_content_scanning",
+    "//ios/chrome/browser/enterprise/connectors/analysis",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/components/enterprise/analysis:features",
   ]
 }
 
