@@ -178,4 +178,29 @@ std::vector<AccessibilityPrefBatchEntry> GetSyncableAccessibilityPrefsBatch3() {
   return v;
 }
 
+std::vector<AccessibilityPrefBatchEntry>
+GetAccessibilityPrefBatchesWithSyncEnabled() {
+  std::vector<AccessibilityPrefBatchEntry> prefs;
+
+  if (base::FeatureList::IsEnabled(
+          features::kOsSyncAccessibilitySettingsBatch1)) {
+    auto batch = GetSyncableAccessibilityPrefsBatch1();
+    std::move(batch.begin(), batch.end(), std::back_inserter(prefs));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kOsSyncAccessibilitySettingsBatch2)) {
+    auto batch = GetSyncableAccessibilityPrefsBatch2();
+    std::move(batch.begin(), batch.end(), std::back_inserter(prefs));
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kOsSyncAccessibilitySettingsBatch3)) {
+    auto batch = GetSyncableAccessibilityPrefsBatch3();
+    std::move(batch.begin(), batch.end(), std::back_inserter(prefs));
+  }
+
+  return prefs;
+}
+
 }  // namespace ash

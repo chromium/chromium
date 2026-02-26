@@ -3638,6 +3638,8 @@ component("ash") {
 
 source_set("accessibility_prefs_custom_associator") {
   sources = [
+    "accessibility/accessibility_prefs_custom_associator.cc",
+    "accessibility/accessibility_prefs_custom_associator.h",
     "accessibility/accessibility_sync_prefs_utils.cc",
     "accessibility/accessibility_sync_prefs_utils.h",
   ]
@@ -3712,6 +3714,8 @@ test("ash_unittests") {
     "accelerometer/accel_gyro_samples_observer_unittest.cc",
     "accelerometer/accelerometer_provider_mojo_unittest.cc",
     "accessibility/accessibility_controller_unittest.cc",
+    "accessibility/accessibility_prefs_custom_associator_unittest.cc",
+    "accessibility/accessibility_sync_prefs_utils_unittest.cc",
     "accessibility/autoclick/autoclick_unittest.cc",
     "accessibility/chromevox/key_accessibility_enabler_unittest.cc",
     "accessibility/chromevox/mock_touch_exploration_controller_delegate.cc",
@@ -4569,6 +4573,7 @@ test("ash_unittests") {
   configs += [ "//build/config:precompiled_headers" ]
 
   deps = [
+    ":accessibility_prefs_custom_associator",
     ":ash",
     ":run_ash_unittests",
     ":test_support",

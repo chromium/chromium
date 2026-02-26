@@ -61,6 +61,10 @@ GetSyncableAccessibilityPrefsBatch2();
 ASH_EXPORT std::vector<AccessibilityPrefBatchEntry>
 GetSyncableAccessibilityPrefsBatch3();
 
+// Returns the syncable accessibility prefs for the enabled batches.
+ASH_EXPORT std::vector<AccessibilityPrefBatchEntry>
+GetAccessibilityPrefBatchesWithSyncEnabled();
+
 }  // namespace ash
 
 #endif  // ASH_ACCESSIBILITY_ACCESSIBILITY_SYNC_PREFS_UTILS_H_
