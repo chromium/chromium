@@ -5,6 +5,8 @@ This is a testharness.js-based test.
   assert_equals: Default value. expected "baseline" but got "0px"
 [FAIL] Testing 'color-interpolation-filters'.
   assert_equals: Default value. expected "" but got "linearrgb"
+[FAIL] Testing 'dominant-baseline'.
+  assert_equals: Value Test. expected "text-bottom" but got "auto"
 [FAIL] Testing 'fill'.
   assert_equals: Default value. expected "black" but got "rgb(0, 0, 0)"
 [FAIL] Testing 'flood-color'.

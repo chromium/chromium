@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] location.ancestorOrigins new object semantics
+  assert_equals: should return the same object before removing the iframe expected object "[object DOMStringList]" but got object "[object DOMStringList]"
+Harness: the test ran to completion.
+

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Remote audio track ID is different on different PCs
+  assert_greater_than: Remote tracks should have their own id expected a number greater than 1 but got 1
+[FAIL] Remote video track ID is different on different PCs
+  assert_greater_than: Remote tracks should have their own id expected a number greater than 1 but got 1
+Harness: the test ran to completion.
+

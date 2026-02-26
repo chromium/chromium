@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Property display value 'inline grid-lanes'
+  assert_equals: expected "inline grid-lanes" but got "inline-grid"
+[FAIL] Property display value 'grid-lanes inline'
+  assert_equals: expected "inline grid-lanes" but got "inline-grid"
+[FAIL] position absolute affects computed display
+  assert_equals: inline grid-lanes -> grid-lanes expected "grid-lanes" but got "grid"
+[FAIL] position fixed affects computed display
+  assert_equals: inline grid-lanes -> grid-lanes expected "grid-lanes" but got "grid"
+[FAIL] float left affects computed display
+  assert_equals: inline grid-lanes -> grid-lanes expected "grid-lanes" but got "grid"
+[FAIL] float right affects computed display
+  assert_equals: inline grid-lanes -> grid-lanes expected "grid-lanes" but got "grid"
+Harness: the test ran to completion.
+

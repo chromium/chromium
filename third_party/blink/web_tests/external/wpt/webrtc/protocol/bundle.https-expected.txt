@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] max-bundle with an offer without bundle only negotiates the first m-line
-  promise_test: Unhandled rejection with value: object "InvalidAccessError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Failed to set remote offer sdp: max-bundle is used but no bundle group found."
-Harness: the test ran to completion.
-

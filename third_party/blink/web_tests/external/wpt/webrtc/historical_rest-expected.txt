@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] RTCPeerConnection member addStream should not exist
+  assert_false: expected false got true
+[FAIL] RTCPeerConnection member getLocalStreams should not exist
+  assert_false: expected false got true
+[FAIL] RTCPeerConnection member getRemoteStreams should not exist
+  assert_false: expected false got true
+[FAIL] RTCPeerConnection member onaddstream should not exist
+  assert_false: expected false got true
+[FAIL] new RTCPeerConnection(config) - with url field should throw TypeError
+  assert_throws_js: function "() =>\n    makePc({ iceServers: [{\n      url: 'stun:stun1.example.net'\n    }] })" did not throw
+[FAIL] setConfiguration(config) - with url field should throw TypeError
+  assert_throws_js: function "() =>\n    makePc({ iceServers: [{\n      url: 'stun:stun1.example.net'\n    }] })" did not throw
+Harness: the test ran to completion.
+

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Two connected iceTransports should has matching local/remote candidates returned
-  assert_true: Expect RTCIceRole to be either controlling or controlled, found null expected true got false
-Harness: the test ran to completion.
-

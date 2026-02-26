@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Worker with UTF-16BE BOM
+  assert_unreached: Worker with UTF-16BE BOM should result to a compile error Reached unreachable code
+[FAIL] Worker with UTF-16LE BOM
+  assert_unreached: Worker with UTF-16LE BOM should result to a compile error Reached unreachable code
+Harness: the test ran to completion.
+

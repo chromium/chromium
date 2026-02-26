@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Parameterless SLD() uses [[LastCreatedOffer]] if it is still valid
+  assert_true: offerer.pendingLocalDescription.sdp == offer.sdp expected true got false
+[FAIL] Parameterless SLD() uses [[LastCreatedAnswer]] if it is still valid
+  assert_true: answerer.currentLocalDescription.sdp == answer.sdp expected true got false
+Harness: the test ran to completion.
+

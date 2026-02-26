@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] sRD(recv simulcast answer) can narrow the simulcast envelope specified by addTransceiver
+  assert_array_equals: expected property 0 to be 2 but got undefined (expected array [2] got [undefined])
+[FAIL] sRD(recv simulcast answer) can narrow the simulcast envelope from a previous negotiation
+  assert_array_equals: expected property 0 to be 2 but got undefined (expected array [2] got [undefined])
+[FAIL] sRD(recv simulcast answer) can narrow the simulcast envelope specified by addTransceiver by removing the first encoding
+  assert_array_equals: expected property 0 to be 1 but got undefined (expected array [1] got [undefined])
+[FAIL] sRD(recv simulcast answer) can narrow the simulcast envelope from a previous negotiation by removing the first encoding
+  assert_array_equals: expected property 0 to be 1 but got undefined (expected array [1] got [undefined])
+Harness: the test ran to completion.
+

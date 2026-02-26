@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] e.style['display'] = "inline grid-lanes" should set the property value
+  assert_equals: serialization should be canonical expected "inline grid-lanes" but got "inline-grid"
+[FAIL] e.style['display'] = "grid-lanes inline" should set the property value
+  assert_equals: serialization should be canonical expected "inline grid-lanes" but got "inline-grid"
+Harness: the test ran to completion.
+

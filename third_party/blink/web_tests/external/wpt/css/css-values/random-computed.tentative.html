@@ -221,7 +221,8 @@ function test_random_computed_value_has_fixed(property, specified, minPercentage
       // split fixed component into its two components
       let [fixedString, fixedValue] = fixedComponent.split(' ');
 
-      test_random_equals(fixedString, 'fixed', `Computed value for ${specified} should include 'fixed'`);
+      // Use assert_true so that error message is deterministic.
+      assert_true(fixedString == 'fixed', `Computed value for ${specified} should include 'fixed'`);
       if (expectedFixedValue) {
         test_random_equals(parseFloat(fixedValue), expectedFixedValue, `Random value for ${specified} should be ${expectedFixedValue}`);
       } else {

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] close() causes the local transport to close immediately
-  assert_false: close() should not see a statechange event on close expected false got true
-Harness: the test ran to completion.
-

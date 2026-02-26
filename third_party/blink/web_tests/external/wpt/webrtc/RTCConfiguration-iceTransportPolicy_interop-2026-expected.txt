@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] new RTCPeerConnection({ iceTransports: 'relay' }) should have no effect
+  assert_equals: expected "all" but got "relay"
+[FAIL] new RTCPeerConnection({ iceTransports: 'invalid' }) should have no effect
+  Failed to construct 'RTCPeerConnection': Failed to read the 'iceTransports' property from 'RTCConfiguration': The provided value 'invalid' is not a valid enum value of type RTCIceTransportPolicy.
+[FAIL] new RTCPeerConnection({ iceTransports: null }) should have no effect
+  Failed to construct 'RTCPeerConnection': Failed to read the 'iceTransports' property from 'RTCConfiguration': The provided value 'null' is not a valid enum value of type RTCIceTransportPolicy.
+Harness: the test ran to completion.
+

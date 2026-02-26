@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] SLD(rollback) must detect InvalidStateError synchronously when chain is empty
+  assert_equals: promise rejected on same task expected "rejected" but got "pending"
+[FAIL] addIceCandidate must detect InvalidStateError synchronously when chain is empty
+  assert_equals: expected "InvalidStateError" but got "Error"
+[FAIL] setParameters does NOT use the operations chain
+  assert_true: Empty chain expected true got false
+Harness: the test ran to completion.
+

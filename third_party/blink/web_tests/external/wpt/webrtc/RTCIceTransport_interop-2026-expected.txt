@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] RTCIceTransport should transition to "gathering" then "complete", after sLD
+  assert_equals: expected "gathering" but got "complete"
+[FAIL] PC.close() should not cause the RTCIceTransport gathering state to transition to "complete"
+  assert_equals: expected "gathering" but got "complete"
+[FAIL] RTCIceTransport should transition to "gathering", then "complete" after sLD (DataChannel case)
+  assert_equals: expected "gathering" but got "complete"
+Harness: the test ran to completion.
+

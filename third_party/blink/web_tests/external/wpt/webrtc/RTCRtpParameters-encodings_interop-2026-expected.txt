@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] addTransceiver(video) should auto-set scaleResolutionDownBy to 1 when some encodings have it, but not all
+  assert_equals: expected (number) 1 but got (undefined) undefined
+[FAIL] addTransceiver should auto-set scaleResolutionDownBy to powers of 2 (descending) when absent
+  assert_equals: expected (number) 2 but got (undefined) undefined
+Harness: the test ran to completion.
+

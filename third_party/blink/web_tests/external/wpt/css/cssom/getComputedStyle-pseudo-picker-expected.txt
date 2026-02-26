@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] ::picker(select) on non-select element returns empty style
+  assert_equals: expected 0 but got 449
+[FAIL] Invalid pseudo-element should return empty style: ::picker(div)
+  assert_equals: expected 0 but got 449
+Harness: the test ran to completion.
+
