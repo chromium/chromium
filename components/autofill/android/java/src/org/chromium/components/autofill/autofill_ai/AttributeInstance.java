@@ -98,6 +98,15 @@ public class AttributeInstance {
             return mDate != null ? Integer.toString(mDate.getYear()) : "";
         }
 
+        public @Nullable LocalDate getDate() {
+            return mDate;
+        }
+
+        @Override
+        public String toString() {
+            return mDate == null ? "" : mDate.toString();
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;

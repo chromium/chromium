@@ -22,7 +22,7 @@ public class DateFieldViewBinder {
         if (key == LABEL || key == IS_REQUIRED) {
             view.setLabel(model.get(LABEL), model.get(IS_REQUIRED));
         } else if (key == VALUE) {
-            // TODO: crbug.com/476755159 - Implement value setting.
+            view.setValue(model.get(VALUE));
         } else if (key == VALIDATOR) {
             // TODO: crbug.com/476755159 - Implement validation.
         } else if (key == ERROR_MESSAGE) {

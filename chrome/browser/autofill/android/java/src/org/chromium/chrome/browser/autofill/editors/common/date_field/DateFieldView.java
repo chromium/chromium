@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
 
 import android.content.Context;
 import android.view.View;
@@ -15,12 +16,14 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties;
 import org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldView;
 import org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldViewBinder;
 import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
 import org.chromium.components.autofill.DropdownKeyValue;
+import org.chromium.components.autofill.autofill_ai.AttributeInstance;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -42,7 +45,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
     private final DropdownFieldView mDayDropdown;
     private final DropdownFieldView mYearDropdown;
 
-    public DateFieldView(Context context) {
+    public DateFieldView(Context context, String value) {
         super(context);
         setOrientation(LinearLayout.VERTICAL);
 
@@ -52,26 +55,45 @@ public class DateFieldView extends LinearLayout implements FieldView {
 
         mSpinnerGroup = new LinearLayout(context);
         mSpinnerGroup.setOrientation(LinearLayout.HORIZONTAL);
+        @Nullable LocalDate date = new AttributeInstance.DateValue(value).getDate();
+        final String monthValue = date == null ? "" : String.valueOf(date.getMonthValue());
         PropertyModel monthModel =
                 new PropertyModel.Builder(DropdownFieldProperties.DROPDOWN_ALL_KEYS)
                         .with(DROPDOWN_KEY_VALUE_LIST, getMonthDropdownValues())
                         .with(DROPDOWN_HINT, "Month")
                         .with(IS_REQUIRED, false)
                         .with(LABEL, "")
+                        .with(VALUE, monthValue)
                         .build();
+        final String dayValue = date == null ? "" : String.valueOf(date.getDayOfMonth());
         PropertyModel dayModel =
                 new PropertyModel.Builder(DropdownFieldProperties.DROPDOWN_ALL_KEYS)
                         .with(DROPDOWN_KEY_VALUE_LIST, getDayDropdownValues())
                         .with(DROPDOWN_HINT, "Day")
                         .with(IS_REQUIRED, false)
                         .with(LABEL, "")
+                        .with(VALUE, dayValue)
                         .build();
+        // LocalDate always returns the day within the [1; 31] range and month within [1, 12]. The
+        // year dropdown is a special case: it's values are always generated within the
+        // [X - 90; X + 15] range where X is the current year. The entity attribute's date value can
+        // exceed this range. In this case, the year value is used as a hint.
+        String yearValue = "";
+        String yearHint = "Year";
+        if (date != null) {
+            if (yearWithinLimits(date.getYear())) {
+                yearValue = String.valueOf(date.getYear());
+            } else {
+                yearHint = String.valueOf(date.getYear());
+            }
+        }
         PropertyModel yearModel =
                 new PropertyModel.Builder(DropdownFieldProperties.DROPDOWN_ALL_KEYS)
                         .with(DROPDOWN_KEY_VALUE_LIST, getYearDropdownValues())
-                        .with(DROPDOWN_HINT, "Year")
+                        .with(DROPDOWN_HINT, yearHint)
                         .with(IS_REQUIRED, false)
                         .with(LABEL, "")
+                        .with(VALUE, yearValue)
                         .build();
 
         mMonthDropdown = new DropdownFieldView(context, this, monthModel);
@@ -134,6 +156,28 @@ public class DateFieldView extends LinearLayout implements FieldView {
         mLabel.setText(isRequired ? label + FieldView.REQUIRED_FIELD_INDICATOR : label);
     }
 
+    public void setValue(String value) {
+        // VALUE of the date fields is implemented as a String instead of the LocalDate to keep
+        // it consistent with the VALUE property for other fields. That's why the parsing still
+        // needs to happen.
+        @Nullable LocalDate date = new AttributeInstance.DateValue(value).getDate();
+        if (date == null) {
+            mMonthDropdown.getFieldModel().set(VALUE, "");
+            mDayDropdown.getFieldModel().set(VALUE, "");
+            mYearDropdown.getFieldModel().set(VALUE, "");
+        } else {
+            mMonthDropdown.getFieldModel().set(VALUE, String.valueOf(date.getMonthValue()));
+            mDayDropdown.getFieldModel().set(VALUE, String.valueOf(date.getDayOfMonth()));
+            // Again, set the initial hint value if the year doesn't fall within the range. This
+            // scenario can't happen in the `EntityEditor`: the date fields are initialized with the
+            // initial attribute values. It's not possible to select a year which is outside the
+            // range afterwards.
+            String yearValue =
+                    yearWithinLimits(date.getYear()) ? String.valueOf(date.getYear()) : "";
+            mYearDropdown.getFieldModel().set(VALUE, yearValue);
+        }
+    }
+
     @Override
     public void scrollToAndFocus() {
         // TODO: crbug.com/467563819 - Implement.
@@ -176,14 +220,37 @@ public class DateFieldView extends LinearLayout implements FieldView {
 
     private static List<DropdownKeyValue> getYearDropdownValues() {
         List<DropdownKeyValue> yearList = new ArrayList<>();
-        final int currentYear = getCurrentYear();
-        for (int year = currentYear + 15; year > currentYear - 91; year--) {
+        for (int year = getMaxYear(); year >= getMinYear(); year--) {
             yearList.add(new DropdownKeyValue(String.valueOf(year), String.valueOf(year)));
         }
         return yearList;
     }
 
+    private static int getMinYear() {
+        return getCurrentYear() - 90;
+    }
+
+    private static int getMaxYear() {
+        return getCurrentYear() + 15;
+    }
+
+    private static boolean yearWithinLimits(int year) {
+        return year >= getMinYear() && year <= getMaxYear();
+    }
+
     private static int getCurrentYear() {
         return LocalDate.now(ZoneId.systemDefault()).getYear();
+    }
+
+    DropdownFieldView getMonthPickerForTest() {
+        return mMonthDropdown;
+    }
+
+    DropdownFieldView getDayPickerForTest() {
+        return mDayDropdown;
+    }
+
+    DropdownFieldView getYearPickerForTest() {
+        return mYearDropdown;
     }
 }

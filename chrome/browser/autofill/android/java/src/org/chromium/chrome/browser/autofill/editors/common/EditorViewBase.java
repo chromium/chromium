@@ -588,7 +588,9 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
                 }
             case DATE:
                 {
-                    DateFieldView dateField = new DateFieldView(getStyledContext());
+                    // TODO: crbug.com/467563819 - Set the initial date value.
+                    DateFieldView dateField =
+                            new DateFieldView(getStyledContext(), /* value= */ "");
                     mDateFieldMCPs.add(
                             PropertyModelChangeProcessor.create(
                                     editorItem.model,

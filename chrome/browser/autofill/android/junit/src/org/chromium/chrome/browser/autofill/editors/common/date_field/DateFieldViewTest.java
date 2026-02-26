@@ -29,11 +29,11 @@ public class DateFieldViewTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.setupActivity(Activity.class);
-        mDateFieldView = new DateFieldView(mActivity);
     }
 
     @Test
     public void testSetLabel() {
+        mDateFieldView = new DateFieldView(mActivity, /* value= */ "");
         mDateFieldView.setLabel("Test Label", /* isRequired= */ false);
         TextView labelView = mDateFieldView.findViewById(R.id.date_field_label);
         assertNotNull(labelView);
@@ -43,6 +43,7 @@ public class DateFieldViewTest {
 
     @Test
     public void testSetLabel_Required() {
+        mDateFieldView = new DateFieldView(mActivity, /* value= */ "");
         mDateFieldView.setLabel("Test Label", /* isRequired= */ true);
         TextView labelView = mDateFieldView.findViewById(R.id.date_field_label);
         assertNotNull(labelView);
@@ -52,8 +53,72 @@ public class DateFieldViewTest {
 
     @Test
     public void testDropdownsExistence() {
+        mDateFieldView = new DateFieldView(mActivity, /* value= */ "");
         assertNotNull(mDateFieldView.findViewById(R.id.date_field_month_dropdown));
         assertNotNull(mDateFieldView.findViewById(R.id.date_field_day_dropdown));
         assertNotNull(mDateFieldView.findViewById(R.id.date_field_year_dropdown));
+    }
+
+    @Test
+    public void testEmptyInitialValue() {
+        mDateFieldView = new DateFieldView(mActivity, /* value= */ "");
+        assertEquals(
+                "Month", mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
+        assertEquals("Day", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
+        assertEquals("Year", mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
+    }
+
+    @Test
+    public void testNonEmptyInitialValue() {
+        mDateFieldView = new DateFieldView(mActivity, /* value= */ "2026-02-15");
+        assertEquals("Feb", mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
+        assertEquals("15", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
+        assertEquals("2026", mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
+    }
+
+    @Test
+    public void testInitialValueNotInRange() {
+        mDateFieldView = new DateFieldView(mActivity, /* value= */ "1800-01-01");
+        assertEquals("Jan", mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
+        assertEquals("1", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
+        assertEquals("1800", mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
+        // Make sure the hint is selected by checking the the selected item position is 0.
+        assertEquals(
+                0, mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItemPosition());
+    }
+
+    @Test
+    public void testSetValue() {
+        mDateFieldView = new DateFieldView(mActivity, /* value= */ "");
+        mDateFieldView.setValue("2026-03-16");
+        assertEquals("Mar", mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
+        assertEquals("16", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
+        assertEquals("2026", mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
+    }
+
+    @Test
+    public void testSetValueNotInRange() {
+        mDateFieldView = new DateFieldView(mActivity, /* value= */ "2026-02-15");
+        mDateFieldView.setValue("1810-12-12");
+        assertEquals("Dec", mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
+        assertEquals("12", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
+        assertEquals("Year", mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
+        // Make sure the hint is selected by checking the the selected item position is 0.
+        assertEquals(
+                0, mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItemPosition());
+    }
+
+    @Test
+    public void testInitialAndUpdatedValuesNotInRange() {
+        mDateFieldView = new DateFieldView(mActivity, /* value= */ "1800-02-15");
+        mDateFieldView.setValue("1810-11-11");
+        assertEquals("Nov", mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
+        assertEquals("11", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
+        // The initial "1800" year should be selected because it's a hint which is used whenever the
+        // year is not within the range.
+        assertEquals("1800", mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
+        // Make sure the hint is selected by checking the the selected item position is 0.
+        assertEquals(
+                0, mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItemPosition());
     }
 }
