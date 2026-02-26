@@ -51,12 +51,21 @@ template("cpp_api_from_rust") {
   _crate_name = invoker.crate_name
   _rust_target = invoker.rust_target
   _rust_target_name = get_label_info(_rust_target, "name")
+  _rust_target_dir = get_label_info(_rust_target, "dir")
   _h_out = "${target_gen_dir}/${_rust_target_name}.h"
   _rs_out = "${_h_out}.impl.rs"
 
   _original_attributes = invoker.original_attributes
   assert(defined(_original_attributes.cpp_namespace))
   _cpp_namespace = _original_attributes.cpp_namespace
+
+  if (!defined(_original_attributes.deps)) {
+    _original_attributes.deps = []
+  }
+  _is_rust_stdlib_target = _rust_target_dir == "//build/rust/std/rules"
+  if (!_is_rust_stdlib_target) {
+    _original_attributes.deps += [ "//build/rust/std:std_bindings" ]
+  }
 
   _crubit_support_path_format =
       "\"third_party/rust-toolchain/lib/crubit/support/{header}\""

@@ -127,7 +127,11 @@ $ cat out/rel/gen/build/rust/tests/test_cpp_api_from_rust/rust_lib.h | head -3
 
 If public APIs of a crate depend on types from another crate, then the
 dependency on the other crate needs to be explicitly specified in `BUILD.gn`.
-For example:
+
+#### Bindings dependencies for 1st-party Rust libraries
+
+1st-party Rust libraries can specify dependencies of their bindings
+as follows:
 
 ```rust
 // build/rust/tests/test_cpp_api_from_rust/lib.rs:
@@ -166,11 +170,28 @@ rust_static_library("rust_lib") {
 ```
 
 Note how `other_lib_bindings` are listed in `deps` of `cpp_api_from_rust` above.
+
 Note that types from `internal_helper` are _not_ used in public APIs of
-`rust_lib` and therefore it is _not_ listed in `deps` attribute of
-`cpp_api_from_rust`.
+`rust_lib` and therefore `internal_helper` is _not_ listed
+in `deps` attribute of `cpp_api_from_rust`.
+
+#### Bindings dependencies for `//third_party/rust` libraries
 
 TODO: `gnrt_config.toml` equivalent for `//third_party/rust` libraries.
+
+#### Bindings dependencies for Rust standard library
+
+C++ bindings for Rust standard library
+(i.e. the `//build/rust/std:std_bindings` target)
+are automatically injected as a dependency of all other bindings
+(i.e. there is no need to specify them explicitly in a `deps` entry).
+
+C++ bindings for Rust standard library are placed in a C++ namespace
+that corresponds to the original Rust crate as follows:
+
+* `std` crate => `rs_std` namespace
+* `core` crate => `rs_core` namespace
+* `alloc` crate => `rs_alloc` namespace
 
 ## Troubleshooting
 

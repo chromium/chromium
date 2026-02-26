@@ -169,12 +169,28 @@ cargo_crate("{{../name}}") {
     {{/if}}
   ]
   output_dir = "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
-
-  {{#if extra_kv.raw_gn}}
-  {{#with extra_kv.raw_gn}}
-  {{this}}
-  {{/with}}
-  {{/if}}
+  cpp_api_from_rust = {
+    target_name = "{{../name}}_bindings"
+    cpp_namespace = "rs_{{../name}}"
+    deps = []
+    {{#each deps}}
+      {{#if @first}}
+        deps += [
+          {{#each this.packages}}
+          ":{{this.name}}_bindings",
+          {{/each}}
+        ]
+      {{else}}
+        if ({{this.cond}}) {
+          deps += [
+            {{#each this.packages}}
+            ":{{this.name}}_bindings",
+            {{/each}}
+          ]
+        }
+      {{/if}}
+    {{/each}}
+  }
 }
 {{/with}}
 {{/each}}

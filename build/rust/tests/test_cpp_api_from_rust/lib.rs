@@ -32,3 +32,11 @@ pub fn get_ascii_char_or_panic(code: u8) -> char {
 pub fn create_multiplier(x: i32) -> other_lib::Multiplier {
     other_lib::Multiplier::new(x)
 }
+
+/// Public function which returns an `std::time::Duration` object.
+///
+/// Used to test bindings which depend on types defined in Rust standard
+/// library.
+pub fn create_duration_from_seconds(seconds: u64) -> std::time::Duration {
+    std::time::Duration::from_secs(seconds)
+}

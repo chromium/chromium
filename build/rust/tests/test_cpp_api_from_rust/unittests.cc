@@ -27,3 +27,8 @@ TEST(RustCcBindingsFromRs, TransitiveDep) {
   auto multiplier = rust_lib::create_multiplier(5);
   EXPECT_EQ(30, multiplier.mul(6));
 }
+
+TEST(RustCcBindingsFromRs, TransitiveOnStandardLibrary) {
+  auto duration = rust_lib::create_duration_from_seconds(7);
+  EXPECT_EQ(7u, duration.as_secs());
+}

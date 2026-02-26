@@ -233,6 +233,15 @@ if (toolchain_has_rust) {
         deps += [ "rules:$libname" ]
       }
     }
+    if (enable_cpp_api_from_rust) {
+      group("std_bindings") {
+        deps = [ ":std" ]
+        public_deps = []
+        foreach(libname, stdlib_files + skip_stdlib_files) {
+          public_deps += [ "rules:${libname}_bindings" ]
+        }
+      }
+    }
   } else {
     action("find_stdlib") {
       # Collect prebuilt Rust libraries from toolchain package and copy to a

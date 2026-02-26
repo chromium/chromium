@@ -77,20 +77,25 @@ template("rust_target") {
   }
 
   _enable_cpp_api_from_rust_for_this_target = false
-  if (enable_cpp_api_from_rust && defined(invoker.cpp_api_from_rust)) {
-    _enable_cpp_api_from_rust_for_this_target = true
+  if (defined(invoker.cpp_api_from_rust)) {
     _cpp_api_from_rust_attributes = invoker.cpp_api_from_rust
-    assert(defined(_cpp_api_from_rust_attributes.target_name))
-    _cpp_api_from_rust_target_name = _cpp_api_from_rust_attributes.target_name
+    if (!enable_cpp_api_from_rust) {
+      not_needed(_cpp_api_from_rust_attributes, "*")
+    } else {
+      _enable_cpp_api_from_rust_for_this_target = true
+      assert(defined(_cpp_api_from_rust_attributes.target_name))
+      _cpp_api_from_rust_target_name = _cpp_api_from_rust_attributes.target_name
 
-    # The logic below is based on the thinking captured in section
-    # "Decision: namespace attr _mandatory_ for 1st-party" in
-    # https://docs.google.com/document/d/1I5uRfjC4xghqMgc8C0Jynt7ZmN9Dbn9qcIHfO_wpucA/edit?usp=sharing
-    if (!defined(_cpp_api_from_rust_attributes.cpp_namespace)) {
-      if (defined(invoker.crate_name)) {
-        _cpp_api_from_rust_attributes.cpp_namespace = invoker.crate_name
-      } else {
-        assert(false, "Please specify `cpp_namespace` for `cpp_api_from_rust`")
+      # The logic below is based on the thinking captured in section
+      # "Decision: namespace attr _mandatory_ for 1st-party" in
+      # https://docs.google.com/document/d/1I5uRfjC4xghqMgc8C0Jynt7ZmN9Dbn9qcIHfO_wpucA/edit?usp=sharing
+      if (!defined(_cpp_api_from_rust_attributes.cpp_namespace)) {
+        if (defined(invoker.crate_name)) {
+          _cpp_api_from_rust_attributes.cpp_namespace = invoker.crate_name
+        } else {
+          assert(false,
+                 "Please specify `cpp_namespace` for `cpp_api_from_rust`")
+        }
       }
     }
   }
