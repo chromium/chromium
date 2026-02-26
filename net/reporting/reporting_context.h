@@ -91,7 +91,11 @@ class NET_EXPORT ReportingContext {
   raw_ptr<const base::TickClock> tick_clock_;
   std::unique_ptr<ReportingUploader> uploader_;
 
-  base::ObserverList<ReportingCacheObserver, /* check_empty= */ true>::Unchecked
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      ReportingCacheObserver,
+      /*check_empty=*/true,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
       cache_observers_;
 
   std::unique_ptr<ReportingDelegate> delegate_;
