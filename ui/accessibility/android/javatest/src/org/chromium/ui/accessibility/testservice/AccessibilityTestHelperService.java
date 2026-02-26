@@ -7,13 +7,8 @@ package org.chromium.ui.accessibility.testservice;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.view.accessibility.AccessibilityEvent;
 
 import org.chromium.base.Log;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class AccessibilityTestHelperService extends Service {
     private static final String TAG = "A11yTestHelperSvc";
@@ -31,38 +26,8 @@ public class AccessibilityTestHelperService extends Service {
                                     + className
                                     + ", text: "
                                     + text);
-
-                    CompletableFuture<Boolean> eventFuture = new CompletableFuture<>();
-                    AccessibilityTestService.AccessibilityServiceListener listener =
-                            new AccessibilityTestService.AccessibilityServiceListener() {
-                                @Override
-                                public void onAccessibilityEvent(AccessibilityEvent event) {
-                                    if (AccessibilityTestService.eventMatches(
-                                            event, eventType, className, text)) {
-                                        Log.i(TAG, "  Event MATCHED.");
-                                        eventFuture.complete(true);
-                                    }
-                                }
-                            };
-
-                    if (AccessibilityTestService.tryConsumeCachedEvent(
-                            eventType, className, text, listener)) {
-                        return true;
-                    }
-
-                    // Did not find the event in the cache, so wait on the listener to return.
-                    try {
-                        return eventFuture.get(timeoutMs, TimeUnit.MILLISECONDS);
-                    } catch (TimeoutException e) {
-                        Log.w(TAG, "Timed out waiting for event");
-                        return false;
-                    } catch (Exception e) {
-                        Log.e(TAG, "Error waiting for event", e);
-                        return false;
-                    } finally {
-                        // Ensure the listener is cleared in all cases.
-                        AccessibilityTestService.clearListener();
-                    }
+                    return AccessibilityTestService.tryWaitForEvent(
+                            eventType, className, text, timeoutMs);
                 }
             };
 

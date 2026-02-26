@@ -14,6 +14,9 @@ import org.chromium.base.Log;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -37,65 +40,88 @@ public class AccessibilityTestService extends AccessibilityService {
         return sInstance;
     }
 
-    public static void setListener(AccessibilityServiceListener listener) {
-        synchronized (sLock) {
-            if (sListener != null && listener != null) {
-                Log.e(TAG, "Listener already set!");
-            }
-            sListener = listener;
-        }
-    }
+    public static boolean tryWaitForEvent(
+            int eventType, String className, String text, long timeoutMs) {
+        CompletableFuture<Boolean> eventFuture = new CompletableFuture<>();
+        AccessibilityServiceListener listener =
+                new AccessibilityServiceListener() {
+                    @Override
+                    public void onAccessibilityEvent(AccessibilityEvent event) {
+                        if (eventMatches(event, eventType, className, text)) {
+                            Log.i(TAG, "  Event MATCHED.");
+                            eventFuture.complete(true);
+                        }
+                    }
+                };
 
-    public static void clearListener() {
-        synchronized (sLock) {
-            sListener = null;
-        }
-    }
-
-    public static boolean searchAndConsumeEventCache(int eventType, String className, String text) {
-        synchronized (sLock) {
-            ListIterator<AccessibilityEvent> iterator = sEventCache.listIterator();
-            int foundIndex = -1;
-            while (iterator.hasNext()) {
-                int index = iterator.nextIndex();
-                AccessibilityEvent event = iterator.next();
-                if (eventMatches(event, eventType, className, text)) {
-                    foundIndex = index;
-                    break;
-                }
-            }
-
-            if (foundIndex != -1) {
-                sEventCache.subList(0, foundIndex + 1).clear();
-                return true;
-            }
-        }
-
-        clearEventCache();
-        return false;
-    }
-
-    public static void clearEventCache() {
-        synchronized (sLock) {
-            sEventCache.clear();
-        }
-    }
-
-    public static boolean tryConsumeCachedEvent(
-            int eventType, String className, String text, AccessibilityServiceListener listener) {
         synchronized (sLock) {
             // Clear any previous listener, as waitForEvent claims exclusive rights.
-            clearListener();
+            clearListenerLocked();
 
-            // Check the cache first.
-            if (searchAndConsumeEventCache(eventType, className, text)) {
+            if (searchAndConsumeEventCacheLocked(eventType, className, text)) {
                 Log.i(TAG, "Found event in cache.");
                 return true;
             }
 
-            setListener(listener);
-            return false;
+            // Not in cache, clear it and prepare to wait for new events.
+            clearEventCacheLocked();
+            setListenerLocked(listener);
         }
+
+        // Did not find the event in the cache, so wait on the listener to return.
+        try {
+            return eventFuture.get(timeoutMs, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException e) {
+            Log.w(TAG, "Timed out waiting for event");
+            return false;
+        } catch (Exception e) {
+            Log.e(TAG, "Error waiting for event", e);
+            return false;
+        } finally {
+            // Ensure the listener is cleared in all cases.
+            synchronized (sLock) {
+                clearListenerLocked();
+            }
+        }
+    }
+
+    @GuardedBy("sLock")
+    public static void setListenerLocked(AccessibilityServiceListener listener) {
+        if (sListener != null && listener != null) {
+            Log.e(TAG, "Listener already set!");
+        }
+        sListener = listener;
+    }
+
+    @GuardedBy("sLock")
+    public static void clearListenerLocked() {
+        sListener = null;
+    }
+
+    @GuardedBy("sLock")
+    public static boolean searchAndConsumeEventCacheLocked(
+            int eventType, String className, String text) {
+        ListIterator<AccessibilityEvent> iterator = sEventCache.listIterator();
+        int foundIndex = -1;
+        while (iterator.hasNext()) {
+            int index = iterator.nextIndex();
+            AccessibilityEvent event = iterator.next();
+            if (eventMatches(event, eventType, className, text)) {
+                foundIndex = index;
+                break;
+            }
+        }
+
+        if (foundIndex != -1) {
+            sEventCache.subList(0, foundIndex + 1).clear();
+            return true;
+        }
+        return false;
+    }
+
+    @GuardedBy("sLock")
+    public static void clearEventCacheLocked() {
+        sEventCache.clear();
     }
 
     static boolean eventMatches(
@@ -127,8 +153,8 @@ public class AccessibilityTestService extends AccessibilityService {
         Log.d(TAG, "onUnbind");
         sInstance = null;
         synchronized (sLock) {
-            clearListener();
-            clearEventCache();
+            clearListenerLocked();
+            clearEventCacheLocked();
         }
         return super.onUnbind(intent);
     }
