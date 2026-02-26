@@ -2113,6 +2113,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/487986729")
     public void testWindowRenavigation() throws Exception {
         String finalUrl = mTestServer.getURL(HELLO_PAGE);
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
@@ -2129,6 +2130,7 @@ public class UrlOverridingTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/487986729")
     public void testWindowRenavigationServerRedirect() throws Exception {
         String finalUrl = mTestServer.getURL(HELLO_PAGE);
         WebPageStation ctaPage = mTabbedActivityTestRule.startOnBlankPage();
