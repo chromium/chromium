@@ -32,6 +32,8 @@ BASE_DECLARE_FEATURE(kFewerUpdateConfirmations);
 
 BASE_DECLARE_FEATURE(kDesktopGlowUp);
 
+BASE_DECLARE_FEATURE(kDetachedTabs);
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Controls how extensions show up in the main menu. When enabled, if the

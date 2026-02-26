@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_style.h"
@@ -102,7 +103,10 @@ gfx::Insets TabGroupUnderline::GetInsetsForUnderline(
   DCHECK(tab);
 
   // Active tabs need the rounded bits of the underline poking out the sides.
-  if (tab->IsActive()) {
+  // This does not apply when kDetachedTabs is enabled, as the tab stroke does
+  // not intersect with the group outline.
+  if (tab->IsActive() &&
+      !base::FeatureList::IsEnabled(features::kDetachedTabs)) {
     return gfx::Insets::TLBR(0, -kStrokeThickness, 0, -kStrokeThickness);
   }
 

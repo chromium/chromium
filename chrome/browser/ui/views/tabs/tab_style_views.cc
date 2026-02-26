@@ -221,7 +221,10 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
                                   scale;
 
   // Selected, hover, and inactive tab fills are a detached squarcle tab.
-  if ((path_type == TabStyle::PathType::kFill &&
+  // If kDetachedTabs is enabled, the active tab fill and border are also a
+  // detached tab.
+  if (base::FeatureList::IsEnabled(features::kDetachedTabs) ||
+      (path_type == TabStyle::PathType::kFill &&
        state != TabStyle::TabSelectionState::kActive) ||
       path_type == TabStyle::PathType::kHighlight ||
       path_type == TabStyle::PathType::kInteriorClip ||

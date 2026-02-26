@@ -523,6 +523,10 @@ inline constexpr char kDesktopGlowUpName[] = "Desktop Glow Up";
 inline constexpr char kDesktopGlowUpDescription[] =
     "Enables the Glow Up feature on Desktop.";
 
+inline constexpr char kDetachedTabsName[] = "Detached Tabs";
+inline constexpr char kDetachedTabsDescription[] =
+    "Enables the Detached Tabs feature on Desktop.";
+
 inline constexpr char kDevToolsPrivacyUIName[] = "DevTools Privacy UI";
 inline constexpr char kDevToolsPrivacyUIDescription[] =
     "Enables the Privacy UI in the current 'Security' panel in DevTools.";

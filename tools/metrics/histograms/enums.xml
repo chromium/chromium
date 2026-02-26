@@ -10227,6 +10227,7 @@ from previous Chrome versions.
   <int value="-1430090822" label="EnableSharedImageForWebview:disabled"/>
   <int value="-1429211493" label="FeedSignedOutViewDemotion:enabled"/>
   <int value="-1428822216" label="TabSelectionEditorV2:disabled"/>
+  <int value="-1427130356" label="DetachedTabs:enabled"/>
   <int value="-1426911497" label="CCTIncognitoAvailableToThirdParty:enabled"/>
   <int value="-1426817842" label="BlockTabUnders:enabled"/>
   <int value="-1426150007" label="ignore-previews-blacklist"/>
@@ -17921,6 +17922,7 @@ from previous Chrome versions.
   <int value="1203821857" label="Vulkan:disabled"/>
   <int value="1204035326" label="DownloadsMigrateToJobsAPI:enabled"/>
   <int value="1204828623" label="DelayTempStripRemoval:disabled"/>
+  <int value="1205156390" label="DetachedTabs:disabled"/>
   <int value="1205315214"
       label="BlockRootWindowAccessibleNameChangeEvent:disabled"/>
   <int value="1205596770"
