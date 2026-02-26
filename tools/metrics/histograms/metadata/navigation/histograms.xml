@@ -915,6 +915,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.BrowserInitiated.DuplicateNavCookieStatus"
+    enum="DuplicateNavsCookieStatus" expires_after="2026-08-19">
+  <owner>annasato@google.com</owner>
+  <owner>rakina@google.com</owner>
+  <owner>chrome-navigation@google.com</owner>
+  <summary>
+    Records the cookie change status only for potential duplicate navigations
+    where criteria such as URL, initiator, method, and transition match. It
+    distinguishes whether a CookieChangeListener was missing, cookies actually
+    changed since the ongoing navigation started, or cookies remained the same.
+  </summary>
+</histogram>
+
+<histogram
+    name="Navigation.BrowserInitiated.DuplicateNavCookieStatus.UnderThreshold"
+    enum="DuplicateNavsCookieStatus" expires_after="2026-08-19">
+  <owner>annasato@google.com</owner>
+  <owner>rakina@google.com</owner>
+  <owner>chrome-navigation@google.com</owner>
+  <summary>
+    Records the cookie change status only for potential duplicate navigations
+    where criteria such as URL, initiator, method, and transition match, and
+    specifically for those that occurred within the duplicate navigation time
+    threshold. It distinguishes whether a CookieChangeListener was missing,
+    cookies actually changed since the ongoing navigation started, or cookies
+    remained the same.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.BrowserInitiatedSessionHistoryCount"
     enum="HistoryNavType" expires_after="2026-05-03">
   <owner>liuwilliam@chromium.org</owner>

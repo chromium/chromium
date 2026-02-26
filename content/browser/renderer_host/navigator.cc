@@ -822,6 +822,14 @@ void Navigator::DidNavigate(
 
   delegate_->DidNavigateAnyFramePostCommit(render_frame_host, details);
 }
+// LINT.IfChange(DuplicateNavsCookieStatus)
+enum class DuplicateNavsCookieStatus {
+  kNoListener = 0,
+  kCookiesChanged = 1,
+  kCookiesNotChanged = 2,
+  kMaxValue = kCookiesNotChanged,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:DuplicateNavsCookieStatus)
 
 void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
                          ReloadType reload_type) {
@@ -850,11 +858,9 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
   NavigationRequest* ongoing_navigation_request =
       frame_tree_node->navigation_request();
   bool is_duplicate_navigation = false;
+  bool start_diff_under_threshold = false;
   base::TimeDelta nav_start_diff;
   if (ongoing_navigation_request &&
-      ongoing_navigation_request->HasCookieChangeListener() &&
-      !ongoing_navigation_request->DidCookiesChangeAfterStart(
-          /*exclude_http_only=*/false) &&
       ongoing_navigation_request->IsRendererInitiated() ==
           request->IsRendererInitiated() &&
       request->GetURL() == ongoing_navigation_request->GetURL() &&
@@ -879,10 +885,28 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
           ongoing_navigation_request->common_params().referrer &&
       request->common_params().transition ==
           ongoing_navigation_request->common_params().transition) {
-    is_duplicate_navigation = true;
+    DuplicateNavsCookieStatus cookie_status;
+    if (!ongoing_navigation_request->HasCookieChangeListener()) {
+      cookie_status = DuplicateNavsCookieStatus::kNoListener;
+    } else if (ongoing_navigation_request->DidCookiesChangeAfterStart(
+                   /*exclude_http_only=*/false)) {
+      cookie_status = DuplicateNavsCookieStatus::kCookiesChanged;
+    } else {
+      cookie_status = DuplicateNavsCookieStatus::kCookiesNotChanged;
+      is_duplicate_navigation = true;
+    }
+    base::UmaHistogramEnumeration(
+        "Navigation.BrowserInitiated.DuplicateNavCookieStatus", cookie_status);
     nav_start_diff =
         (request->common_params().navigation_start -
          ongoing_navigation_request->common_params().navigation_start);
+    start_diff_under_threshold =
+        nav_start_diff <= features::kDuplicateNavThreshold.Get();
+    if (start_diff_under_threshold) {
+      base::UmaHistogramEnumeration(
+          "Navigation.BrowserInitiated.DuplicateNavCookieStatus.UnderThreshold",
+          cookie_status);
+    }
   }
   base::UmaHistogramBoolean(
       "Navigation.BrowserInitiated.IsDuplicateWithoutThresholdCheck2",
@@ -891,8 +915,6 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
     // The navigation is similar to a previous navigation. Check if it's started
     // close enough to the start of the previous navigation, in which case we
     // can just ignore the new navigation and keep the previous navigation.
-    bool start_diff_under_threshold =
-        (nav_start_diff <= features::kDuplicateNavThreshold.Get());
     base::UmaHistogramBoolean(
         "Navigation.BrowserInitiated.DuplicateNavIsUnderThreshold2",
         start_diff_under_threshold);

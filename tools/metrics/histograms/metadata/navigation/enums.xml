@@ -279,6 +279,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/render_frame_host_manager.h:DeferSpeculativeRFHAction) -->
 
+<!-- LINT.IfChange(DuplicateNavsCookieStatus) -->
+
+<enum name="DuplicateNavsCookieStatus">
+  <int value="0" label="No CookieChangeListener"/>
+  <int value="1" label="Cookies Changed"/>
+  <int value="2" label="Cookies Not Changed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/navigator.cc:DuplicateNavsCookieStatus) -->
+
 <enum name="EarlyRFHSwapType">
   <int value="0" label="No early swap"/>
   <int value="1" label="Early swap for the initial non-live RenderFrameHost"/>
