@@ -467,6 +467,21 @@ public class TemplateUrlService {
     }
 
     /**
+     * Adds a search engine.
+     *
+     * @param shortName The short name of the search engine to be added.
+     * @param keyword The keyword of the search engine to be added.
+     * @param searchUrl The search url of the search engine to be added.
+     * @return True if search engine was successfully added, false if add failed (e.g. search engine
+     *     with such keyword already exists).
+     */
+    public boolean addSearchEngine(String shortName, String keyword, String searchUrl) {
+        ThreadUtils.assertOnUiThread();
+        return TemplateUrlServiceJni.get()
+                .addSearchEngine(mNativeTemplateUrlServiceAndroid, shortName, keyword, searchUrl);
+    }
+
+    /**
      * Edits the search engine by keyword.
      *
      * @param keyword The keyword of the search engine to be edited.
@@ -499,6 +514,12 @@ public class TemplateUrlService {
 
         boolean removeSearchEngine(
                 long nativeTemplateUrlServiceAndroid, @JniType("std::u16string") String keyword);
+
+        boolean addSearchEngine(
+                long nativeTemplateUrlServiceAndroid,
+                @JniType("std::u16string") String shortName,
+                @JniType("std::u16string") String keyword,
+                @JniType("std::string") String searchUrl);
 
         boolean editSearchEngine(
                 long nativeTemplateUrlServiceAndroid,

@@ -487,6 +487,26 @@ bool TemplateUrlServiceAndroid::EditSearchEngine(
   return true;
 }
 
+bool TemplateUrlServiceAndroid::AddSearchEngine(
+    JNIEnv* env,
+    const std::u16string& short_name,
+    const std::u16string& keyword,
+    const std::string& search_url) {
+  if (template_url_service_->GetTemplateURLForKeyword(keyword)) {
+    return false;
+  }
+
+  TemplateURLData data;
+  data.SetShortName(short_name);
+  data.SetKeyword(keyword);
+  data.SetURL(search_url);
+  data.safe_for_autoreplace = false;
+  if (!template_url_service_->Add(std::make_unique<TemplateURL>(data))) {
+    return false;
+  }
+  return true;
+}
+
 base::android::ScopedJavaLocalRef<jstring>
 TemplateUrlServiceAndroid::AddSearchEngineForTesting(
     JNIEnv* env,
