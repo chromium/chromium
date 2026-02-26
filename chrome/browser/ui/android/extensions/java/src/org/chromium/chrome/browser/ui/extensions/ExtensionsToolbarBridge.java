@@ -30,15 +30,15 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 @JNINamespace("extensions")
 public class ExtensionsToolbarBridge implements Destroyable {
-    // TODO(crbug.com/423483658): Consider moving ExtensionsToolbarButtonState and related types
+    // TODO(crbug.com/423483658): Consider moving ExtensionsMenuButtonState and related types
     // (e.g., RequestAccessButtonParams) into a new ExtensionControls.java file.
     @IntDef({
-        ExtensionsToolbarButtonState.ALL_EXTENSIONS_BLOCKED,
-        ExtensionsToolbarButtonState.ANY_EXTENSION_HAS_ACCESS,
-        ExtensionsToolbarButtonState.DEFAULT
+        ExtensionsMenuButtonState.ALL_EXTENSIONS_BLOCKED,
+        ExtensionsMenuButtonState.ANY_EXTENSION_HAS_ACCESS,
+        ExtensionsMenuButtonState.DEFAULT
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ExtensionsToolbarButtonState {
+    public @interface ExtensionsMenuButtonState {
         int ALL_EXTENSIONS_BLOCKED = 0;
         int ANY_EXTENSION_HAS_ACCESS = 1;
         int DEFAULT = 2;
@@ -157,7 +157,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
                 .movePinnedAction(mNativeExtensionsToolbarAndroid, actionId, targetIndex);
     }
 
-    public @ExtensionsToolbarButtonState int getExtensionsMenuButtonState(WebContents webContents) {
+    public @ExtensionsMenuButtonState int getExtensionsMenuButtonState(WebContents webContents) {
         assert mNativeExtensionsToolbarAndroid != 0;
         return ExtensionsToolbarBridgeJni.get()
                 .getExtensionsMenuButtonState(mNativeExtensionsToolbarAndroid, webContents);

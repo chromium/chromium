@@ -119,7 +119,7 @@ public class ExtensionsMenuCoordinatorTest {
         // Set the current tab.
         mCurrentTabSupplier.set(mTab);
         when(mExtensionsToolbarBridge.getExtensionsMenuButtonState(any()))
-                .thenReturn(ExtensionsToolbarBridge.ExtensionsToolbarButtonState.DEFAULT);
+                .thenReturn(ExtensionsToolbarBridge.ExtensionsMenuButtonState.DEFAULT);
 
         mExtensionsMenuCoordinator =
                 new ExtensionsMenuCoordinator(

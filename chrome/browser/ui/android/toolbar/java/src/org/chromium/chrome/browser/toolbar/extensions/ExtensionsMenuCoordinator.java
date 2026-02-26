@@ -262,7 +262,7 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
         Tab currentTab = mCurrentTabSupplier.get();
         if (currentTab == null || currentTab.getWebContents() == null) return;
 
-        @ExtensionsToolbarBridge.ExtensionsToolbarButtonState
+        @ExtensionsToolbarBridge.ExtensionsMenuButtonState
         int state =
                 mExtensionsToolbarBridge.getExtensionsMenuButtonState(currentTab.getWebContents());
 
@@ -271,17 +271,17 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
         int accNameResId;
 
         switch (state) {
-            case ExtensionsToolbarBridge.ExtensionsToolbarButtonState.ALL_EXTENSIONS_BLOCKED:
+            case ExtensionsToolbarBridge.ExtensionsMenuButtonState.ALL_EXTENSIONS_BLOCKED:
                 iconResId = R.drawable.chrome_extension_off;
                 tooltipResId = R.string.tooltip_extensions_button_all_extensions_blocked;
                 accNameResId = R.string.acc_name_extensions_button_all_extensions_blocked;
                 break;
-            case ExtensionsToolbarBridge.ExtensionsToolbarButtonState.ANY_EXTENSION_HAS_ACCESS:
+            case ExtensionsToolbarBridge.ExtensionsMenuButtonState.ANY_EXTENSION_HAS_ACCESS:
                 iconResId = R.drawable.chrome_extension_on;
                 tooltipResId = R.string.tooltip_extensions_button_any_extension_has_access;
                 accNameResId = R.string.acc_name_extensions_button_any_extension_has_access;
                 break;
-            case ExtensionsToolbarBridge.ExtensionsToolbarButtonState.DEFAULT:
+            case ExtensionsToolbarBridge.ExtensionsMenuButtonState.DEFAULT:
             default:
                 iconResId = R.drawable.chrome_extension;
                 tooltipResId = R.string.accessibility_btn_extensions;
