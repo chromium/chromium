@@ -126,12 +126,14 @@
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "ui/base/base_window.h"
 #endif
 
 namespace mojo {
@@ -1446,10 +1448,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           "ShowManageSkillsUi cannot be called without Skills enabled.");
       return;
     }
-    NavigateParams params(profile_, GURL(chrome::kChromeUISkillsURL),
-                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    params.disposition = WindowOpenDisposition::SINGLETON_TAB;
-    Navigate(&params);
+
+    host().skills_manager().ShowManageSkillsUi();
 #else
     receiver_.ReportBadMessage(
         "ShowManageSkillsUi isn't supported on Android.");

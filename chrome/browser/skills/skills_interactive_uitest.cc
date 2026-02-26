@@ -14,7 +14,9 @@
 #include "chrome/browser/skills/skills_ui_window_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_window_test.h"
@@ -29,6 +31,12 @@
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabId);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<GURL>,
+                                    kOpenedTabUrlState);
+
+using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
+
+static constexpr char kClickFn[] = "el => el.click()";
 
 optimization_guide::OptimizationMetadata SkillVectorToOptimizationMetaData(
     std::vector<glic::mojom::SkillPtr> skills) {
@@ -51,7 +59,8 @@ optimization_guide::OptimizationMetadata SkillVectorToOptimizationMetaData(
 
 }  // namespace
 
-class SkillsInteractiveUiTest : public glic::test::InteractiveGlicTest {
+class SkillsInteractiveUiTest
+    : public TabStripInteractiveTestMixin<glic::test::InteractiveGlicTest> {
  public:
   SkillsInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -130,6 +139,12 @@ class SkillsInteractiveUiTest : public glic::test::InteractiveGlicTest {
                 expected_prompt.c_str())));
   }
 
+  auto ActivateTabAt(int tab_index) {
+    return Do([this, tab_index]() {
+      browser()->GetTabStripModel()->ActivateTabAt(tab_index);
+    });
+  }
+
   auto WaitForSkillPreviewShown(std::string_view skill_name) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kSkillPreviewShown);
     StateChange state_change;
@@ -141,6 +156,10 @@ class SkillsInteractiveUiTest : public glic::test::InteractiveGlicTest {
     return WaitForStateChange(glic::test::kGlicContentsElementId, state_change);
   }
 
+  auto ClickOnGlicClientElement(DeepQuery where) {
+    return ExecuteJsAt(glic::test::kGlicContentsElementId, where, kClickFn);
+  }
+
   auto PollForAndAcceptFre() {
     return Steps(
         PollUntil(
@@ -150,6 +169,22 @@ class SkillsInteractiveUiTest : public glic::test::InteractiveGlicTest {
             },
             "polling until the fre is ready"),
         Do([this]() { glic_service()->fre_controller().AcceptFre(nullptr); }));
+  }
+
+  // Waits for the nth `tab` to be open to `url`.
+  auto WaitForTabOpenedTo(int tab, GURL url) {
+    return Steps(
+        PollState(
+            kOpenedTabUrlState,
+            [this, tab]() {
+              auto* const model = browser()->tab_strip_model();
+              if (model->active_index() != tab) {
+                return GURL();
+              }
+              return model->GetTabAtIndex(tab)->GetContents()->GetVisibleURL();
+            }),
+        WaitForState(kOpenedTabUrlState, url),
+        StopObservingState(kOpenedTabUrlState));
   }
 
  private:
@@ -220,4 +255,20 @@ IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest, UpdateContextualSkill) {
       NavigateWebContents(kFirstTabId, GURL("https://enabled.com/")),
       WaitForWebContentsReady(kFirstTabId),
       WaitForSkillPreviewShown("contextual_skill_name"));
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest, ShowManageSkillsUi) {
+  const DeepQuery kManageSkillsBtn{{"#manageSkillsBtn"}};
+  RunTestSequence(
+      InstrumentTab(kFirstTabId), ToggleGlicWindow(GlicWindowMode::kAttached),
+      PollForAndAcceptFre(),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      ClickOnGlicClientElement(kManageSkillsBtn),
+      WaitForTabOpenedTo(1, GURL("chrome://skills/yourSkills")),
+      ActivateTabAt(0),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      // Click the manage skills button again and verify that it activates the
+      // existing tab on chrome://skills without opening a new tab.
+      ClickOnGlicClientElement(kManageSkillsBtn), WaitForActiveTabChange(1));
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 2);
 }

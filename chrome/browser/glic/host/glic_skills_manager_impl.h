@@ -42,6 +42,8 @@ class GlicSkillsManagerImpl : public GlicSkillsManager, public Host::Observer {
                           skills::Skill skill,
                           base::OnceCallback<void(bool)> callback) override;
 
+  void ShowManageSkillsUi() override;
+
   glic::mojom::SkillPtr GetContextualSkill(std::string_view skill_id) override;
 
  private:

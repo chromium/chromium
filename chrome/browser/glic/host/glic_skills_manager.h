@@ -42,6 +42,9 @@ class GlicSkillsManager {
                                   skills::Skill skill,
                                   base::OnceCallback<void(bool)> callback) = 0;
 
+  // Shows the Manage Skills UI.
+  virtual void ShowManageSkillsUi() = 0;
+
   // Get a contextual skill for the given tab.
   virtual glic::mojom::SkillPtr GetContextualSkill(
       std::string_view skill_id) = 0;
