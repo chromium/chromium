@@ -37,12 +37,10 @@ function containerCheckDeepEq(expected, actual) {
   return false;
 }
 
-/**
- * Asserts that two containers are equal by value (except `Map`s with objects
-   as keys: `new Map([['key', {'a': 1}]])`).
-  TODO(crbug.com/40321352): Swap with the enhanced `chrome.test.assertEq()` when
-  crbug.com/466303357 is resolved.
- */
+// Asserts that two containers are equal by value (except `Map`s with objects
+// as keys: `new Map([['key', {'a': 1}]])`).
+// TODO(crbug.com/40321352): Swap with the enhanced `chrome.test.assertEq()`
+// when crbug.com/466303357 is resolved.
 function containerAssertEq(expected, actual) {
   chrome.test.assertTrue(
       containerCheckDeepEq(actual, expected),
@@ -107,12 +105,10 @@ export function getMessageSerializationTestCases(
 
   return [
 
-    /**
-     * Tests to/from v8 message serialization for on-time messages by sending
-     * various message types and receiving a response with that same message.
-     * It's expected that the message sent should match what we get back for
-     * serialization to succeed.
-     */
+    // Tests to/from v8 message serialization for on-time messages by sending
+    // various message types and receiving a response with that same message.
+    // It's expected that the message sent should match what we get back for
+    // serialization to succeed.
     async function sendMessageMessageSerialization() {
       let testsSucceeded = 0;
       for (const test of serializationTestCases) {
@@ -128,18 +124,16 @@ export function getMessageSerializationTestCases(
       chrome.test.succeed();
     },
 
-    /**
-     * Tests to/from v8 message serialization for a sampling of various
-     * objects that are structured clone, but not JSON serializable. These
-     * objects also need manual verification since chrome.test.assertEq cannot
-     * compare them accurately.
-     *
-     * Note: Some types are not available in all contexts (e.g. Service
-     * Workers).
-     * - `FileList`: Requires `DataTransfer` to construct, which is not
-     * available in Service Workers. We skip this test if `DataTransfer` is
-     * undefined.
-     */
+    // Tests to/from v8 message serialization for a sampling of various
+    // objects that are structured clone, but not JSON serializable. These
+    // objects also need manual verification since chrome.test.assertEq cannot
+    // compare them accurately.
+    //
+    // Note: Some types are not available in all contexts (e.g. Service
+    // Workers).
+    // - `FileList`: Requires `DataTransfer` to construct, which is not
+    // available in Service Workers. We skip this test if `DataTransfer` is
+    // undefined.
     async function structuredCloneExpandedSerialization() {
       if (!structuredCloneFeatureEnabled) {
         // JSON serialization cannot handle these types well so we don't run
@@ -303,9 +297,7 @@ export function getMessageSerializationTestCases(
       chrome.test.succeed();
     },
 
-    /**
-     * Tests to/from v8 message serialization for Blob scenarios.
-     */
+    // Tests to/from v8 message serialization for Blob scenarios.
     async function structuredCloneBlobs() {
       if (!structuredCloneFeatureEnabled) {
         // JSON serialization cannot handle Blobs well so we don't run
@@ -346,11 +338,43 @@ export function getMessageSerializationTestCases(
       chrome.test.succeed();
     },
 
-    /**
-     * Tests to/from v8 message serialization for `object`-types  It's expected
-     * that the message sent should match (by value) what we get back for
-     * serialization to succeed.
-     */
+    // Tests to/from v8 message serialization for `SharedArrayBuffer`.
+    // SAB serialization is currently unsupported in extension messaging
+    // regardless of isolation status, so we do not expect the message to
+    // serialize.
+    async function structuredCloneSharedArrayBufferToNonIsolatedContext() {
+      if (!structuredCloneFeatureEnabled) {
+        chrome.test.succeed();
+        return;
+      }
+
+      chrome.test.assertFalse(self.crossOriginIsolated);
+
+      if (typeof SharedArrayBuffer === 'undefined') {
+        // In a tab (Content Script), `SharedArrayBuffer` is not defined
+        // so we do not test it.
+        chrome.test.succeed();
+        return;
+      }
+
+      const sab = new SharedArrayBuffer(16);
+      const int32 = new Int32Array(sab);
+      int32[0] = 42;
+
+      const response = await sendMessage(sab);
+
+      // In the service worker, `SharedArrayBuffer` is defined but fails to
+      // successfully serialize.
+      chrome.test.assertEq(
+          null, response,
+          'SharedArrayBuffer should fail serialization and return null');
+
+      chrome.test.succeed();
+    },
+
+    // Tests to/from v8 message serialization for `object`-types  It's expected
+    // that the message sent should match (by value) what we get back for
+    // serialization to succeed.
     async function objectTypeMessageSerialization() {
       let testsSucceeded = 0;
       for (const test of objectTypeTestCases) {
@@ -400,12 +424,10 @@ export function getMessageSerializationTestCases(
       chrome.test.succeed();
     },
 
-    /**
-     * Tests to/from v8 message serialization for long-lived connections by
-     * sending various message types and receiving a response with that same
-     * message. It's expected that the message sent should match what we get
-     * back for serialization to succeed.
-     */
+    // Tests to/from v8 message serialization for long-lived connections by
+    // sending various message types and receiving a response with that same
+    // message. It's expected that the message sent should match what we get
+    // back for serialization to succeed.
     async function connectMessageSerialization() {
       let testsSucceeded = 0;
       let port = connect();
@@ -424,10 +446,8 @@ export function getMessageSerializationTestCases(
       }
     },
 
-    /**
-     * Tests to/from v8 message serialization for one-time messages where
-     * serialization is expected to fail synchronously.
-     */
+    // Tests to/from v8 message serialization for one-time messages where
+    // serialization is expected to fail synchronously.
     async function sendMessageUnserializableError() {
       const expectedSerializationError =
           testTabsAPI ? unserializableTabsError : unserializableRuntimeError;
@@ -449,10 +469,8 @@ export function getMessageSerializationTestCases(
       chrome.test.succeed();
     },
 
-    /**
-     * Tests to/from v8 message serialization for long-lived connections where
-     * serialization is expected to fail synchronously.
-     */
+    // Tests to/from v8 message serialization for long-lived connections where
+    // serialization is expected to fail synchronously.
     async function connectUnserializableError() {
       let testsRun = 0;
       let port = connect();

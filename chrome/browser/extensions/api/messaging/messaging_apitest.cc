@@ -737,6 +737,21 @@ class StructuredCloneMessageSerializationApiTest : public MessagingApiTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Tests that `SharedArrayBuffer` cannot be serialized correctly with structured
+// clone even when the sending and receiving context are cross-origin isolated.
+//
+// Currently, sending a `SharedArrayBuffer` between two cross-origin isolated
+// extension resource pages via messaging APIs (`chrome.runtime.sendMessage` or
+// `chrome.tabs.sendMessage`) does not succeed. The underlying extension
+// messaging structured clone implementation fails to deserialize it (resulting
+// in `null` being received).
+IN_PROC_BROWSER_TEST_F(StructuredCloneMessageSerializationApiTest,
+                       MessageSerializationSharedArrayBuffer) {
+  ASSERT_TRUE(RunExtensionTest("messaging/serialization_sab",
+                               {.use_extensions_root_dir = true}))
+      << message_;
+}
+
 // Tests that the structured clone serialization format enforces the maximum
 // message size limit.
 // The JSON serialization version of this test is in
