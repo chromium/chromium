@@ -146,6 +146,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         tabStatesToMerge = tabPersistentStore.getTabListToMergeTasksForTesting();
         assertFalse("Should have a tab state file to merge", tabStatesToMerge.isEmpty());
 
+        MultiWindowTestUtils.enableMultiInstance();
         MultiWindowTestUtils.createInstance(/* instanceId= */ 0, "https://url.com", 1, 57);
         assertEquals(1, MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY));
 

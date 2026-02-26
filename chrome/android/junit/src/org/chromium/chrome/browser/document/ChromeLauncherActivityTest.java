@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerImpl;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -114,7 +114,7 @@ public class ChromeLauncherActivityTest {
         mTabbedActivity.mTabModelSelector = mTabModelSelector;
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-        MultiInstanceManagerImpl.setAdjacentWindowActivitySupplierForTesting(() -> mTabbedActivity);
+        MultiWindowUtils.setActivitySupplierForTesting(() -> mTabbedActivity);
     }
 
     @After
@@ -123,7 +123,6 @@ public class ChromeLauncherActivityTest {
             mTabbedActivity.finish();
         }
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
-        MultiInstanceManagerImpl.setAdjacentWindowActivitySupplierForTesting(null);
     }
 
     @Test

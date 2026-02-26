@@ -16,7 +16,6 @@ import android.provider.Browser;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.SparseBooleanArray;
-import android.util.SparseIntArray;
 
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -273,7 +272,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             }
         }
 
-        Activity destActivity = getActivityById(destWindowId);
+        Activity destActivity = MultiWindowUtils.getActivityById(destWindowId);
         // Reparent tabs to the activity associated with the specified instance if it is alive. If
         // the instance does not have a live activity, restore it in a new activity to reparent the
         // tabs into.
@@ -397,7 +396,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         showTargetSelectorDialog(
                 (instanceInfo) -> {
                     ChromeTabbedActivity selectedActivity =
-                            (ChromeTabbedActivity) getActivityById(instanceInfo.instanceId);
+                            (ChromeTabbedActivity)
+                                    MultiWindowUtils.getActivityById(instanceInfo.instanceId);
                     launchTabInOtherWindow(
                             /* isIncognito= */ selectedActivity != null
                                     && selectedActivity.isIncognitoWindow(),
@@ -481,7 +481,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 continue;
             }
             @InstanceInfo.Type int type = InstanceInfo.Type.OTHER;
-            Activity a = getActivityById(i);
+            Activity a = MultiWindowUtils.getActivityById(i);
             int persistedTaskId = MultiInstancePersistentStore.readTaskId(i);
             if (a != null && !a.isFinishing()) {
                 // The task for the activity must match the persisted task.
@@ -1007,18 +1007,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         ResettersForTesting.register(() -> sAppTaskIdsForTesting = null);
     }
 
-    @VisibleForTesting
-    static @Nullable Activity getActivityById(int id) {
-        if (sActivitySupplierForTesting != null) {
-            return sActivitySupplierForTesting.get();
-        }
-        TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
-        for (Activity activity : getAllRunningActivities()) {
-            if (id == windowManager.getIdForWindow(activity)) return activity;
-        }
-        return null;
-    }
-
     private int getInstanceByTask(int taskId) {
         for (int i : getAllPersistedInstanceIds()) {
             if (taskId == MultiInstancePersistentStore.readTaskId(i)) return i;
@@ -1084,69 +1072,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     /**
-     * @return The window IDs of the currently running ChromeTabbedActivity's. It is possible to
-     *     have more number of saved instances than the number of currently running activities (for
-     *     example, when an activity is killed from the Android app menu, its instance state still
-     *     persists for use by Chrome).
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    static SparseIntArray getWindowIdsOfRunningTabbedActivities() {
-        List<Activity> activities = ApplicationStatus.getRunningActivities();
-        var windowIdsOfRunningTabbedActivities = new SparseIntArray();
-        for (Activity activity : activities) {
-            if (!(activity instanceof ChromeTabbedActivity)) continue;
-            int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
-            windowIdsOfRunningTabbedActivities.put(windowId, windowId);
-        }
-        return windowIdsOfRunningTabbedActivities;
-    }
-
-    /**
-     * Launch the given intent in an existing ChromeTabbedActivity instance.
-     *
-     * @param intent The intent to launch.
-     * @param windowId ID of the window to launch the intent in.
-     * @return Whether the intent was launched successfully.
-     */
-    static boolean launchIntentInExistingActivity(Intent intent, @WindowId int windowId) {
-        Activity activity = getActivityById(windowId);
-        if (!(activity instanceof ChromeTabbedActivity)) return false;
-        int taskId = activity.getTaskId();
-        if (taskId == INVALID_TASK_ID) return false;
-
-        // Launch the intent in the existing activity and bring the task to foreground if it is
-        // alive. AppTask.startActivity() is used to robustly bring specific tasks to the front,
-        // which helps bypass Android's Background Activity Launch (BAL) restrictions when a
-        // notification is tapped while the target activity is backgrounded (minimized).
-        AppTask appTask = AndroidTaskUtils.getAppTaskFromId(activity, taskId);
-        if (appTask != null) {
-            intent.setClass(ContextUtils.getApplicationContext(), activity.getClass());
-            if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-                // Remove NEW_TASK to prevent the OS from spawning a duplicate instance,
-                // and strictly target the existing activity class.
-                intent.removeFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                appTask.startActivity(ContextUtils.getApplicationContext(), intent, null);
-            } else {
-                // On older Android versions or devices where multi-instance is not enabled, the OS
-                // enforces strict singleTask checks on AppTask.startActivity() and throws an
-                // exception if the task is not empty. However, since these versions do not support
-                // multiple tasks for the same ChromeTabbedActivity class, we can safely fallback
-                // to Context.startActivity() with NEW_TASK, which will inherently route to the
-                // correct task and still bypass BAL restrictions.
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                IntentUtils.safeStartActivity(ContextUtils.getApplicationContext(), intent);
-            }
-            return true;
-        }
-
-        // Fallback: If the OS lost the AppTask record but our Activity is still alive,
-        // manually inject the intent and attempt a best effort move to front.
-        ((ChromeTabbedActivity) activity).onNewIntent(intent);
-        ApiCompatibilityUtils.moveTaskToFront(activity, taskId, 0);
-        return true;
-    }
-
-    /**
      * Launch an intent in another window. It is unknown to our caller if the other window currently
      * has a live task associated with it. This method will attempt to discern this and take the
      * appropriate action.
@@ -1158,9 +1083,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     static void launchIntentInUnknown(Context context, Intent intent, @WindowId int windowId) {
         // TODO(https://crbug.com/415375532): Remove the need for this to be a public method, and
         // fold all of this functionality into a shared single public method with
-        // #launchIntentInExistingActivity.
+        // #launchIntentInInstance.
 
-        if (launchIntentInExistingActivity(intent, windowId)) return;
+        if (MultiWindowUtils.launchIntentInInstance(intent, windowId)) return;
 
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -1177,7 +1102,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             // Bring the task to foreground if the activity is alive, this completes the opening
             // of the instance. Otherwise, create a new activity for the instance and kill the
             // existing task.
-            Activity activity = getActivityById(instanceId);
+            Activity activity = MultiWindowUtils.getActivityById(instanceId);
             if (activity != null) {
                 ApiCompatibilityUtils.moveTaskToFront(mActivity, persistedTaskId, 0);
                 return;
@@ -1259,7 +1184,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             MultiInstancePersistentStore.writeClosureTime(instanceId);
             MultiInstancePersistentStore.removeTaskId(instanceId);
         }
-        Activity activity = getActivityById(instanceId);
+        Activity activity = MultiWindowUtils.getActivityById(instanceId);
         if (activity != null) {
             activity.finishAndRemoveTask();
         }
@@ -1541,7 +1466,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     @Override
     public void moveTabGroupToWindowByIdChecked(
             int destWindowId, TabGroupMetadata tabGroupMetadata, int destTabIndex) {
-        Activity destActivity = getActivityById(destWindowId);
+        Activity destActivity = MultiWindowUtils.getActivityById(destWindowId);
         if (destActivity != null) {
             mTabReparentingDelegate.reparentTabGroupToExistingWindow(
                     (ChromeTabbedActivity) destActivity, tabGroupMetadata, destTabIndex);

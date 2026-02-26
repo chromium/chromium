@@ -587,6 +587,7 @@ public class MultiWindowUtilsUnitTest {
 
     @Test
     public void testGetInstanceCountWithFallback() {
+        MultiWindowTestUtils.enableMultiInstance();
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
@@ -633,6 +634,7 @@ public class MultiWindowUtilsUnitTest {
 
     @Test
     public void getInstanceCount_ExceedsLimit() {
+        MultiWindowTestUtils.enableMultiInstance();
         when(mTabModelSelector.getModel(false)).thenReturn(mNormalTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
         int maxInstances = 3;
@@ -773,6 +775,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     @Config(sdk = 31)
     public void testRecordDesktopWindowCount_OnlyOnColdStart() {
+        MultiWindowTestUtils.enableMultiInstance();
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
 
         // Simulate persistence of 2 instances, running of 1.
@@ -809,6 +812,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     @Config(sdk = 31)
     public void testRecordDesktopWindowCount_ColdStartOfInstance() {
+        MultiWindowTestUtils.enableMultiInstance();
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
 
         // Simulate persistence of 2 instances, running of 1.
@@ -909,6 +913,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
     public void testInstanceRestorationMessage() {
+        MultiWindowTestUtils.enableMultiInstance();
         MultiWindowUtils.setInstanceCountForTesting(5);
         MultiWindowUtils.setMaxInstancesForTesting(3);
         MessageDispatcher messageDispatcher = mock(MessageDispatcher.class);
@@ -985,6 +990,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
     public void testInstanceRestorationMessage_ShownExactlyOnce() {
+        MultiWindowTestUtils.enableMultiInstance();
         MultiWindowUtils.setInstanceCountForTesting(5);
         MultiWindowUtils.setMaxInstancesForTesting(3);
         MessageDispatcher messageDispatcher = mock(MessageDispatcher.class);

@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerImpl;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
@@ -276,8 +275,6 @@ public class CustomTabActivityNavigationControllerTest {
     @Test
     public void finishes_whenDoneReparentingToAdjacentActivity() {
         ExternalNavigationDelegateImpl.setWillChromeHandleIntentHookForTesting(intent -> true);
-        MultiInstanceManagerImpl.setAdjacentWindowActivitySupplierForTesting(
-                () -> mAdjacentActivity);
         MultiWindowUtils.setActivitySupplierForTesting(() -> mAdjacentActivity);
 
         mNavigationController.openCurrentUrlInBrowser();

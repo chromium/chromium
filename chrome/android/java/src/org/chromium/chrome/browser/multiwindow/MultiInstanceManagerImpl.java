@@ -61,7 +61,6 @@ import org.chromium.ui.display.DisplayAndroidManager;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Manages multi-instance mode for an associated activity. After construction, call {@link
@@ -94,7 +93,6 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
 
     protected @Nullable TabModelSelectorTabModelObserver mTabModelObserver;
-    protected static @Nullable Supplier<ChromeTabbedActivity> sActivitySupplierForTesting;
 
     private int mActivityTaskId;
     private boolean mNativeInitialized;
@@ -578,11 +576,5 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
         if (tabGroupSyncService != null) {
             TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilter(tabGroupSyncService, filter);
         }
-    }
-
-    public static void setAdjacentWindowActivitySupplierForTesting(
-            Supplier<ChromeTabbedActivity> supplier) {
-        sActivitySupplierForTesting = supplier;
-        ResettersForTesting.register(() -> sActivitySupplierForTesting = null);
     }
 }

@@ -41,7 +41,6 @@ import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.SparseBooleanArray;
-import android.util.SparseIntArray;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -1331,29 +1330,6 @@ public class MultiInstanceManagerApi31UnitTest {
         assertTrue(
                 "URL was not cleared",
                 TextUtils.isEmpty(MultiInstancePersistentStore.readActiveTabUrl(INSTANCE_ID_1)));
-    }
-
-    @Test
-    public void testGetWindowIdsOfRunningTabbedActivities() {
-        // Create 1 activity that is not a ChromeTabbedActivity and 2 ChromeTabbedActivity's.
-        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));
-        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
-        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
-
-        // Remove ChromeTabbedActivity |mTabbedActivityTask62|, this will be considered a
-        // non-running activity subsequently.
-        removeTaskOnRecentsScreen(mTabbedActivityTask62);
-
-        SparseIntArray runningTabbedActivityIds =
-                MultiInstanceManagerApi31.getWindowIdsOfRunningTabbedActivities();
-        assertEquals(
-                "There should be only 1 running ChromeTabbedActivity.",
-                1,
-                runningTabbedActivityIds.size());
-        assertEquals(
-                "The window ID of the running ChromeTabbedActivity should match.",
-                2,
-                runningTabbedActivityIds.valueAt(0));
     }
 
     @Test
