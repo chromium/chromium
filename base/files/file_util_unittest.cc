@@ -3371,12 +3371,13 @@ TEST_F(FileUtilTest, AllocateFileRegionTest_ZeroOffset) {
   ASSERT_GE(file.GetLength(), 0);
   ASSERT_EQ(checked_cast<size_t>(file.GetLength()), test_data.size());
 
-  const int kExtendedFileLength = 23;
+  constexpr size_t kExtendedFileLength = 23;
   ASSERT_TRUE(AllocateFileRegion(&file, 0, kExtendedFileLength));
   EXPECT_EQ(file.GetLength(), kExtendedFileLength);
 
-  char data_read[32] = {};
-  int bytes_read = UNSAFE_TODO(file.Read(0, data_read, kExtendedFileLength));
+  std::array<char, 32> data_read = {};
+  std::optional<size_t> bytes_read =
+      file.Read(0, as_writable_byte_span(data_read).first(kExtendedFileLength));
   EXPECT_EQ(bytes_read, kExtendedFileLength);
   auto [front, back] = base::span(data_read).split_at(test_data.size());
   EXPECT_EQ(front, test_data);
@@ -3395,14 +3396,15 @@ TEST_F(FileUtilTest, AllocateFileRegionTest_NonZeroOffset) {
   ASSERT_GE(file.GetLength(), 0);
   ASSERT_EQ(checked_cast<size_t>(file.GetLength()), test_data.size());
 
-  const int kExtensionOffset = 5;
-  const int kExtensionSize = 10;
+  constexpr size_t kExtensionOffset = 5;
+  constexpr size_t kExtensionSize = 10;
   ASSERT_TRUE(AllocateFileRegion(&file, kExtensionOffset, kExtensionSize));
-  const int kExtendedFileLength = kExtensionOffset + kExtensionSize;
+  constexpr size_t kExtendedFileLength = kExtensionOffset + kExtensionSize;
   EXPECT_EQ(file.GetLength(), kExtendedFileLength);
 
-  char data_read[32] = {};
-  int bytes_read = UNSAFE_TODO(file.Read(0, data_read, kExtendedFileLength));
+  std::array<char, 32> data_read = {};
+  std::optional<size_t> bytes_read =
+      file.Read(0, as_writable_byte_span(data_read).first(kExtendedFileLength));
   EXPECT_EQ(bytes_read, kExtendedFileLength);
   auto [front, back] = base::span(data_read).split_at(test_data.size());
   EXPECT_EQ(front, test_data);
