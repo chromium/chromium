@@ -18,7 +18,6 @@
 #include "base/uuid.h"
 #include "base/version_info/channel.h"
 #include "components/contextual_tasks/internal/ai_thread_sync_bridge.h"
-#include "components/contextual_tasks/internal/contextual_task_sync_bridge.h"
 #include "components/contextual_tasks/internal/gemini_thread_sync_bridge.h"
 #include "components/contextual_tasks/internal/proto/ai_thread_entity.pb.h"
 #include "components/contextual_tasks/internal/proto/contextual_task_entity.pb.h"
@@ -44,7 +43,6 @@ struct ContextDecorationParams;
 
 class ContextualTasksServiceImpl : public ContextualTasksService,
                                    public AiThreadSyncBridge::Observer,
-                                   public ContextualTaskSyncBridge::Observer,
                                    public GeminiThreadSyncBridge::Observer {
  public:
   ContextualTasksServiceImpl(
@@ -128,8 +126,6 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
 
   void SetAiThreadSyncBridgeForTesting(
       std::unique_ptr<AiThreadSyncBridge> bridge);
-  void SetContextualTaskSyncBridgeForTesting(
-      std::unique_ptr<ContextualTaskSyncBridge> bridge);
 
   // AiThreadSyncBridge::Observer implementation.
   void OnThreadDataStoreLoaded() override;
@@ -137,12 +133,6 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
       const std::vector<proto::AiThreadEntity>& threads) override;
   void OnThreadRemovedRemotely(
       const std::vector<base::Uuid>& thread_ids) override;
-
-  // ContextualTaskSyncBridge::Observer implementation.
-  void OnContextualTaskDataStoreLoaded() override;
-  void OnTaskAddedOrUpdatedRemotely(
-      const std::vector<ContextualTask>& contextual_tasks) override;
-  void OnTaskRemovedRemotely(const std::vector<base::Uuid>& task_ids) override;
 
   // GeminiThreadSyncBridge::Observer implementation.
   void OnGeminiThreadDataStoreLoaded() override;
@@ -174,7 +164,6 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
   base::ObserverList<ContextualTasksService::Observer> observers_;
 
   std::unique_ptr<AiThreadSyncBridge> ai_thread_sync_bridge_;
-  std::unique_ptr<ContextualTaskSyncBridge> contextual_task_sync_bridge_;
   std::unique_ptr<GeminiThreadSyncBridge> gemini_thread_sync_bridge_;
 
   // Barrier to run OnDataStoresLoaded() after both sync bridges have loaded
@@ -196,10 +185,6 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
 
   base::ScopedObservation<AiThreadSyncBridge, AiThreadSyncBridge::Observer>
       ai_thread_observation_{this};
-  base::ScopedObservation<ContextualTaskSyncBridge,
-                          ContextualTaskSyncBridge::Observer>
-      task_observation_{this};
-
   base::ScopedObservation<GeminiThreadSyncBridge,
                           GeminiThreadSyncBridge::Observer>
       gemini_thread_observation_{this};
