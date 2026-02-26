@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_notifier_impl.h"
@@ -104,7 +105,8 @@ VerticalTabStripStateController* VerticalTabStripStateController::From(
 }
 
 bool VerticalTabStripStateController::ShouldDisplayVerticalTabs() const {
-  return pref_service_->GetBoolean(prefs::kVerticalTabsEnabled);
+  return IsVerticalTabsFeatureEnabled() &&
+         pref_service_->GetBoolean(prefs::kVerticalTabsEnabled);
 }
 
 void VerticalTabStripStateController::SetVerticalTabsEnabled(bool enabled) {

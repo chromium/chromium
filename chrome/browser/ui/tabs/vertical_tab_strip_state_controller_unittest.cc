@@ -7,7 +7,9 @@
 #include <optional>
 
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/common/pref_names.h"
@@ -32,6 +34,7 @@ class VerticalTabStripStateControllerTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
+    feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
     tabs::RegisterProfilePrefs(pref_service_.registry());
     SessionID test_session_id = SessionID::FromSerializedValue(kSessionIDValue);
 
@@ -58,6 +61,7 @@ class VerticalTabStripStateControllerTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<VerticalTabStripStateController> controller_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   ui::UnownedUserDataHost unowned_user_data_host_;
@@ -94,6 +98,17 @@ TEST_F(VerticalTabStripStateControllerTest, VerticalTabsEnabled) {
   controller()->SetVerticalTabsEnabled(false);
   EXPECT_FALSE(controller()->ShouldDisplayVerticalTabs());
   EXPECT_FALSE(pref_service()->GetBoolean(prefs::kVerticalTabsEnabled));
+}
+
+TEST_F(VerticalTabStripStateControllerTest, FeatureDisabled) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndDisableFeature(tabs::kVerticalTabs);
+
+  controller()->SetVerticalTabsEnabled(true);
+  EXPECT_TRUE(pref_service()->GetBoolean(prefs::kVerticalTabsEnabled));
+  // Even if pref is true, ShouldDisplayVerticalTabs should be false if feature
+  // is disabled.
+  EXPECT_FALSE(controller()->ShouldDisplayVerticalTabs());
 }
 
 TEST_F(VerticalTabStripStateControllerTest, VerticalTabsEnabledFirstTime) {
