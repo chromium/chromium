@@ -142,6 +142,11 @@
   border: none;
 }
 
+.immersive-toolbar-container cr-icon-button {
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-button-size: 28px;
+}
+
 .announce-block {
   width:1px;
   height:1px;
@@ -169,6 +174,11 @@
   min-width: 0;
   padding: 0;
   width: 24px;
+}
+
+.immersive-toolbar-container #rate {
+  height: 28px;
+  width: 28px;
 }
 
 .separator {
