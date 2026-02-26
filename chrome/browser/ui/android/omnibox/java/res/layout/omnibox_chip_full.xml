@@ -17,6 +17,7 @@ found in the LICENSE file.
     android:insetRight="@dimen/omnibox_chip_padding"
     android:lines="1"
     android:ellipsize="end"
+    android:includeFontPadding="false"
     app:iconTint="@null"
     app:iconPadding="@dimen/omnibox_chip_padding"
     app:materialSizeOverlay="@style/OmniboxChipSizeOverlay"
