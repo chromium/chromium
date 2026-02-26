@@ -427,7 +427,10 @@
 }
 
 :host([is-zero-state]) #contextualTasksSuggestionsContainer {
+  --cr-composebox-match-height: 100%;
+  --cr-composebox-match-line-height: 18px;
   --cr-composebox-match-match-padding-bottom: 0px;
+
   --color-searchbox-results-background-hovered: transparent;
   --color-searchbox-results-background-selected: transparent;
   --match-border-size: 2px;
@@ -439,6 +442,14 @@
   margin-top: 16px;
   padding-inline-end: 8px;
   padding-inline-start: 8px;
+  /* Start inline from .flex-center is 20px.
+   * Inner padding is 8px from above line.
+   * The first item in each suggestions block
+   * is the icon, which has 8px indent. This means
+   * that suggestions have full indentation of 20px from .flex-center,
+   * then 16px total within suggestions container after that,
+   * totaling 36px total indent.
+   */
   pointer-events: auto;
   /* Do not set width since we are using padding + fitting children content. */
 }
@@ -446,9 +457,8 @@
 :host([is-zero-state][is-side-panel]) #contextualTasksSuggestionsContainer  {
   margin-bottom: 24px;
   margin-top: 24px;
-  /* Becomes 44px from the 28px ending padding in child. */
-  padding-inline-end: 16px;
-  /* Start inline from .flex-center is 16px. */
+  /* Becomes 18px ending from width padding in child. */
+  padding-inline-end: 10px;
 }
 
 
@@ -463,24 +473,13 @@
   align-items: center;
   border-radius: 8px;
   box-sizing: border-box;
-  /* With bottom padding of host = 44px. */
-  height: 43px;
-  padding: 0 0 1px 0;
-  /* With right padding from dropdow (parent),
-   * and 8px right padding of this container's wrapper (:host),
-   * it is 44px.
-   */
-  padding-inline-end: 20px;
+  height: 100%;
+  padding: 6px 0 6px 0;
   width: calc(100% - 8px);
 }
 
 :host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-wrapper) {
   width: 100%;
-}
-
-:host([is-zero-state][is-side-panel]) #contextualTasksSuggestionsContainer::part(match-container) {
-  /* With bottom padding of host = 56px. */
-  height: 55px;
 }
 
 :host([is-loading_]) #contextualTasksSuggestionsContainer::part(match-container) {
@@ -508,6 +507,8 @@
 
 :host([is-zero-state]) #contextualTasksSuggestionsContainer::part(match-icon-container) {
   height: 24px;
+  /* Keep in mind .flex-container and the outer suggestions container
+   * indentation when changing this. */
   padding-inline-end: 8px;
   /* This + 8px from suggestion container's
    * indent start = 16px. */
@@ -534,6 +535,8 @@
   font-size: 16px;
   letter-spacing: 1%;
   inset-inline-start: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   width: 100%;
 }
 

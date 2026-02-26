@@ -56,6 +56,7 @@ export class ComposeboxDropdownElement extends CrLitElement {
       toolMode: {
         type: Number,
       },
+      overrideClampLineNum: {type: Number},
     };
   }
 
@@ -68,6 +69,7 @@ export class ComposeboxDropdownElement extends CrLitElement {
   // A value of null or -1 indicates that all suggestions should be shown.
   accessor maxSuggestions: number|null = null;
   accessor toolMode: ToolMode = ToolMode.kUnspecified;
+  accessor overrideClampLineNum: number = -1;
 
   //============================================================================
   // Public methods
