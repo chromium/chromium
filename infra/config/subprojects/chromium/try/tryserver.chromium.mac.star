@@ -340,12 +340,6 @@ try_.orchestrator_builder(
     compilator = "mac15-arm64-rel-compilator",
     contact_team_email = "bling-engprod@google.com",
     main_list_view = "try",
-    tryjob = try_.job(
-        # TODO (crbug.com/415099984): change to 100,
-        # then move out of experimental CQ after,
-        # mac15-arm64-rel replaces mac14-arm64-rel on CQ.
-        experiment_percentage = 100,
-    ),
 )
 
 try_.compilator_builder(
