@@ -373,7 +373,10 @@ public class FuseboxMediator {
         if (currentAttachedIds.contains(tab.getId())) return;
         var attachment =
                 FuseboxAttachment.forTab(
-                        tab, mContext.getResources(), FuseboxAttachmentButtonType.CURRENT_TAB);
+                        tab,
+                        isCurrentTab(tab),
+                        mContext.getResources(),
+                        FuseboxAttachmentButtonType.CURRENT_TAB);
 
         // Use FuseboxModelList's add method which handles upload automatically
         mModelList.add(attachment);
@@ -499,6 +502,7 @@ public class FuseboxMediator {
                             !mModelList.add(
                                     FuseboxAttachment.forTab(
                                             tab,
+                                            isCurrentTab(tab),
                                             mContext.getResources(),
                                             FuseboxAttachmentButtonType.TAB_PICKER));
                     if (addFailed) {
@@ -758,5 +762,12 @@ public class FuseboxMediator {
                         ? useCompactUi ? FuseboxState.COMPACT : FuseboxState.EXPANDED
                         : FuseboxState.DISABLED);
         mModel.set(FuseboxProperties.COMPACT_UI, useCompactUi);
+    }
+
+    private boolean isCurrentTab(Tab tab) {
+        if (mTabModelSelectorSupplier == null || mTabModelSelectorSupplier.get() == null) {
+            return false;
+        }
+        return mTabModelSelectorSupplier.get().getCurrentTab() == tab;
     }
 }

@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -84,10 +83,13 @@ public class FuseboxAttachmentUnitTest {
         setTabActive(true);
         FuseboxAttachment attachment =
                 FuseboxAttachment.forTab(
-                        mTab, mResources, FuseboxAttachmentButtonType.TAB_PICKER);
+                        mTab,
+                        /* bypassTabCache= */ true,
+                        mResources,
+                        FuseboxAttachmentButtonType.TAB_PICKER);
         when(mBridge.addTabContext(mTab)).thenReturn(CAPTURE_TOKEN);
 
-        boolean result = attachment.uploadToBackend(mBridge, mTab, false);
+        boolean result = attachment.uploadToBackend(mBridge, false);
 
         assertTrue(result);
         assertEquals(CAPTURE_TOKEN, attachment.getToken());
@@ -101,10 +103,13 @@ public class FuseboxAttachmentUnitTest {
         setTabActive(true);
         FuseboxAttachment attachment =
                 FuseboxAttachment.forTab(
-                        mTab, mResources, FuseboxAttachmentButtonType.TAB_PICKER);
+                        mTab,
+                        /* bypassTabCache= */ false,
+                        mResources,
+                        FuseboxAttachmentButtonType.TAB_PICKER);
         when(mBridge.addTabContext(mTab)).thenReturn(null);
 
-        boolean result = attachment.uploadToBackend(mBridge, mTab, false);
+        boolean result = attachment.uploadToBackend(mBridge, false);
 
         assertFalse(result);
         verify(mBridge).addTabContext(mTab);
@@ -115,10 +120,13 @@ public class FuseboxAttachmentUnitTest {
         setTabActive(false);
         FuseboxAttachment attachment =
                 FuseboxAttachment.forTab(
-                        mTab, mResources, FuseboxAttachmentButtonType.TAB_PICKER);
+                        mTab,
+                        /* bypassTabCache= */ false,
+                        mResources,
+                        FuseboxAttachmentButtonType.TAB_PICKER);
 
         // Force fetch is true, but capture not allowed and tab not active.
-        boolean result = attachment.uploadToBackend(mBridge, mock(Tab.class), true);
+        boolean result = attachment.uploadToBackend(mBridge, true);
 
         assertFalse(result);
         verify(mBridge, never()).addTabContext(any());
@@ -130,11 +138,14 @@ public class FuseboxAttachmentUnitTest {
         setTabActive(false);
         FuseboxAttachment attachment =
                 FuseboxAttachment.forTab(
-                        mTab, mResources, FuseboxAttachmentButtonType.TAB_PICKER);
+                        mTab,
+                        /* bypassTabCache= */ false,
+                        mResources,
+                        FuseboxAttachmentButtonType.TAB_PICKER);
         when(mBridge.addTabContextFromCache(TAB_ID)).thenReturn(CACHE_TOKEN);
 
         // Not forced, background capture disabled. Should try cache.
-        boolean result = attachment.uploadToBackend(mBridge, mock(Tab.class), false);
+        boolean result = attachment.uploadToBackend(mBridge, false);
 
         assertTrue(result);
         assertEquals(CACHE_TOKEN, attachment.getToken());
@@ -148,10 +159,13 @@ public class FuseboxAttachmentUnitTest {
         when(mTab.isIncognitoBranded()).thenReturn(true);
         FuseboxAttachment attachment =
                 FuseboxAttachment.forTab(
-                        mTab, mResources, FuseboxAttachmentButtonType.TAB_PICKER);
+                        mTab,
+                        /* bypassTabCache= */ false,
+                        mResources,
+                        FuseboxAttachmentButtonType.TAB_PICKER);
         when(mBridge.addTabContext(mTab)).thenReturn(CAPTURE_TOKEN);
 
-        boolean result = attachment.uploadToBackend(mBridge, mock(Tab.class), false);
+        boolean result = attachment.uploadToBackend(mBridge, false);
 
         assertTrue(result);
         assertEquals(CAPTURE_TOKEN, attachment.getToken());

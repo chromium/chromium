@@ -249,7 +249,10 @@ public class FuseboxAttachmentViewBinderUnitTest {
 
         FuseboxAttachment tabAttachment =
                 FuseboxAttachment.forTab(
-                        mTab, context.getResources(), FuseboxAttachmentButtonType.TAB_PICKER);
+                        mTab,
+                        /* bypassTabCache= */ false,
+                        context.getResources(),
+                        FuseboxAttachmentButtonType.TAB_PICKER);
         Drawable tabDrawable =
                 FuseboxAttachmentViewBinder.getThumbnailDrawable(mModel, tabAttachment, context);
         assertNotNull(tabDrawable);
@@ -258,7 +261,10 @@ public class FuseboxAttachmentViewBinderUnitTest {
         OmniboxResourceProvider.setTabFaviconFactory(t -> null);
         FuseboxAttachment tabAttachmentNoFavicon =
                 FuseboxAttachment.forTab(
-                        mTab, context.getResources(), FuseboxAttachmentButtonType.TAB_PICKER);
+                        mTab,
+                        /* bypassTabCache= */ false,
+                        context.getResources(),
+                        FuseboxAttachmentButtonType.TAB_PICKER);
         Drawable tabDrawableNoFavicon =
                 FuseboxAttachmentViewBinder.getThumbnailDrawable(
                         mModel, tabAttachmentNoFavicon, context);

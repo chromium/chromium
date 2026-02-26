@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerView
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -31,6 +30,7 @@ public final class FuseboxAttachment extends ListItem {
     public final String mimeType;
     public final byte[] data;
     public final @Nullable Tab tab;
+    public final boolean bypassTabCache;
     public final @Nullable Integer tabId;
     public final long startTime;
     public final @FuseboxAttachmentButtonType int buttonType;
@@ -46,6 +46,7 @@ public final class FuseboxAttachment extends ListItem {
             String mimeType,
             byte[] data,
             @Nullable Tab tab,
+            boolean bypassTabCache,
             @Nullable Long optionalStartTime,
             @FuseboxAttachmentButtonType int buttonType) {
         super(itemType, new PropertyModel(FuseboxAttachmentProperties.ALL_KEYS));
@@ -55,9 +56,11 @@ public final class FuseboxAttachment extends ListItem {
         this.data = data;
         if (tab != null && tab.getId() != Tab.INVALID_TAB_ID) {
             this.tab = tab;
+            this.bypassTabCache = bypassTabCache;
             this.tabId = tab.getId();
         } else {
             this.tab = null;
+            this.bypassTabCache = false;
             this.tabId = null;
         }
         mIsUploadComplete = false;
@@ -84,6 +87,7 @@ public final class FuseboxAttachment extends ListItem {
                 mimeType,
                 data,
                 /* tab= */ null,
+                /* bypassTabCache= */ false,
                 startTime,
                 buttonType);
     }
@@ -103,13 +107,17 @@ public final class FuseboxAttachment extends ListItem {
                 mimeType,
                 data,
                 /* tab= */ null,
+                /* bypassTabCache= */ false,
                 startTime,
                 buttonType);
     }
 
     /** Creates a FuseboxAttachment for a tab. */
     public static FuseboxAttachment forTab(
-            Tab tab, Resources res, @FuseboxAttachmentButtonType int buttonType) {
+            Tab tab,
+            boolean bypassTabCache,
+            Resources res,
+            @FuseboxAttachmentButtonType int buttonType) {
         return new FuseboxAttachment(
                 FuseboxAttachmentType.ATTACHMENT_TAB,
                 new BitmapDrawable(res, OmniboxResourceProvider.getFaviconBitmapForTab(tab)),
@@ -117,6 +125,7 @@ public final class FuseboxAttachment extends ListItem {
                 "",
                 new byte[0],
                 tab,
+                bypassTabCache,
                 /* optionalStartTime= */ null,
                 buttonType);
     }
@@ -125,15 +134,12 @@ public final class FuseboxAttachment extends ListItem {
      * Uploads this attachment using the provided bridge and sets its token.
      *
      * @param bridge The bridge to use for uploading
-     * @param currentlySelectedTab The currently selected tab, if any.
-     * @param forceFreshTabFetch Whether to to bypass the cache for a Tab attachment.
+     * @param bypassTabCacheThisTime Whether to bypass the tab cache.
      * @return true if upload succeeded, false otherwise
      */
     /* package */ boolean uploadToBackend(
-            ComposeboxQueryControllerBridge bridge,
-            @Nullable Tab currentlySelectedTab,
-            boolean forceFreshTabFetch) {
-        assert !hasToken() || forceFreshTabFetch
+            ComposeboxQueryControllerBridge bridge, boolean bypassTabCacheThisTime) {
+        assert !hasToken() || bypassTabCacheThisTime
                 : "Attachment should not have a token when uploaded except for tab data retries";
 
         if (type == FuseboxAttachmentType.ATTACHMENT_TAB) {
@@ -141,9 +147,9 @@ public final class FuseboxAttachment extends ListItem {
             // We must fetch fresh tab content for the active tab, incognito tabs (not in cache), or
             // if it is forced.
             boolean mustFetchFreshTabContent =
-                    (tab == currentlySelectedTab
+                    (bypassTabCache
                             || assumeNonNull(tab).isIncognitoBranded()
-                            || forceFreshTabFetch);
+                            || bypassTabCacheThisTime);
 
             // We can fetch fresh tab content for active tabs.
             boolean canFetchFreshTabContent = FuseboxTabUtils.isTabActive(tab);
@@ -209,16 +215,11 @@ public final class FuseboxAttachment extends ListItem {
         mIsUploadComplete = true;
     }
 
-    public boolean retryUpload(
-            @Nullable TabModelSelector tabModelSelector,
-            ComposeboxQueryControllerBridge composeBoxQueryControllerBridge) {
+    public boolean retryUpload(ComposeboxQueryControllerBridge composeBoxQueryControllerBridge) {
         if (type == FuseboxAttachmentType.ATTACHMENT_TAB && mIsFetchingTabDataFromCache) {
-            // Fetch from cache can fail with a delay. Try to fetch fresh data instead of
-            // giving up entirely.
-            @Nullable Tab currentlySelectedTab =
-                    tabModelSelector != null ? tabModelSelector.getCurrentTab() : null;
             uploadToBackend(
-                    assumeNonNull(composeBoxQueryControllerBridge), currentlySelectedTab, true);
+                    assumeNonNull(composeBoxQueryControllerBridge),
+                    /* bypassTabCacheThisTime= */ true);
             return true;
         }
         return false;

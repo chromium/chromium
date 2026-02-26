@@ -14,13 +14,10 @@ import androidx.annotation.VisibleForTesting;
 import com.google.errorprone.annotations.MustBeClosed;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge.FileUploadObserver;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.contextual_search.FileUploadStatus;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -51,7 +48,6 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
     }
 
     private final Set<Integer> mAttachedTabIds = new ArraySet<>();
-    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final ObserverList<FuseboxAttachmentChangeListener> mAttachmentChangeListeners =
             new ObserverList<>();
     private @Nullable ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
@@ -87,16 +83,6 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
             if (mBatchEditDepth > 0) return;
             maybeEmitListChangedEvent(/* asResultOfChange= */ false);
         }
-    }
-
-    /**
-     * Constructor for {@link FuseboxAttachmentModelList}.
-     *
-     * @param tabModelSelectorSupplier The supplier for the {@link TabModelSelector}.
-     */
-    /* package */ FuseboxAttachmentModelList(
-            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
-        mTabModelSelectorSupplier = tabModelSelectorSupplier;
     }
 
     /** Creates a new adapter for the attachments in this list. */
@@ -237,10 +223,8 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
         if (isEmpty()) mComposeboxQueryControllerBridge.notifySessionStarted();
 
         // Upload the attachment if it doesn't have a token
-        @Nullable TabModelSelector selector = mTabModelSelectorSupplier.get();
-        @Nullable Tab currentlySelectedTab = selector != null ? selector.getCurrentTab() : null;
         if (!attachment.uploadToBackend(
-                mComposeboxQueryControllerBridge, currentlySelectedTab, false)) {
+                mComposeboxQueryControllerBridge, /* bypassTabCacheThisTime= */ false)) {
             // Upload failed, abandon session if we just started it
             if (isEmpty()) mComposeboxQueryControllerBridge.notifySessionAbandoned();
             return false;
@@ -390,7 +374,6 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
             case FileUploadStatus.UPLOAD_FAILED:
             case FileUploadStatus.UPLOAD_EXPIRED:
                 if (pendingAttachment.retryUpload(
-                        mTabModelSelectorSupplier.get(),
                         assumeNonNull(mComposeboxQueryControllerBridge))) {
                     break;
                 }

@@ -155,7 +155,7 @@ public class FuseboxMediatorUnitTest {
         mModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
 
         mViewHolder = new FuseboxViewHolder(viewGroup, mPopup);
-        mAttachments = new FuseboxAttachmentModelList(mTabModelSelectorSupplier);
+        mAttachments = new FuseboxAttachmentModelList();
         mAttachments.setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
         Clipboard.setInstanceForTesting(mClipboard);
         OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFactory);
@@ -196,7 +196,11 @@ public class FuseboxMediatorUnitTest {
 
     private void addTabAttachment(Tab tab) {
         mMediator.uploadAndAddAttachment(
-                FuseboxAttachment.forTab(tab, mResources, FuseboxAttachmentButtonType.TAB_PICKER));
+                FuseboxAttachment.forTab(
+                        tab,
+                        /* bypassTabCache= */ false,
+                        mResources,
+                        FuseboxAttachmentButtonType.TAB_PICKER));
         RobolectricUtil.runAllBackgroundAndUi();
     }
 
@@ -213,7 +217,10 @@ public class FuseboxMediatorUnitTest {
             when(mComposeboxQueryControllerBridge.addTabContextFromCache(0)).thenReturn(token);
             attachment =
                     FuseboxAttachment.forTab(
-                            mockTab, mResources, FuseboxAttachmentButtonType.TAB_PICKER);
+                            mockTab,
+                            /* bypassTabCache= */ false,
+                            mResources,
+                            FuseboxAttachmentButtonType.TAB_PICKER);
         } else if (attachmentType == FuseboxAttachmentType.ATTACHMENT_FILE) {
             doReturn(token).when(mComposeboxQueryControllerBridge).addFile(eq(title), any(), any());
             attachment =

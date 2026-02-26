@@ -32,13 +32,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.contextual_search.FileUploadStatus;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.RenderWidgetHostView;
@@ -52,7 +50,6 @@ public class FuseboxAttachmentModelListUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
-    @Mock private TabModelSelector mTabModelSelector;
     @Mock private FuseboxAttachmentModelList.FuseboxAttachmentChangeListener mListener;
 
     private Resources mResources;
@@ -71,9 +68,7 @@ public class FuseboxAttachmentModelListUnitTest {
     @Before
     public void setUp() {
         OmniboxFeatures.sMultiattachmentFusebox.setForTesting(true);
-        mFuseboxAttachmentModelList =
-                new FuseboxAttachmentModelList(
-                        ObservableSuppliers.createNonNull(mTabModelSelector));
+        mFuseboxAttachmentModelList = new FuseboxAttachmentModelList();
         mFuseboxAttachmentModelList.setComposeboxQueryControllerBridge(
                 mComposeboxQueryControllerBridge);
         verify(mComposeboxQueryControllerBridge).setFileUploadObserver(mFuseboxAttachmentModelList);
@@ -82,7 +77,11 @@ public class FuseboxAttachmentModelListUnitTest {
     }
 
     private FuseboxAttachment createTabAttachment(Tab tab) {
-        return FuseboxAttachment.forTab(tab, mResources, FuseboxAttachmentButtonType.TAB_PICKER);
+        return FuseboxAttachment.forTab(
+                tab,
+                /* bypassTabCache= */ false,
+                mResources,
+                FuseboxAttachmentButtonType.TAB_PICKER);
     }
 
     private FuseboxAttachment createTabAttachment(int tabId, String token) {
@@ -460,7 +459,6 @@ public class FuseboxAttachmentModelListUnitTest {
         doReturn(webContents).when(tab).getWebContents();
         doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
         when(mComposeboxQueryControllerBridge.addTabContext(tab)).thenReturn("token");
-        doReturn(tab).when(mTabModelSelector).getCurrentTab();
 
         FuseboxAttachment tabAttachment = createTabAttachment(tab);
         mFuseboxAttachmentModelList.add(tabAttachment);
@@ -480,7 +478,6 @@ public class FuseboxAttachmentModelListUnitTest {
         doReturn(webContents).when(tab).getWebContents();
         doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
         when(mComposeboxQueryControllerBridge.addTabContext(tab)).thenReturn("token");
-        doReturn(null).when(mTabModelSelector).getCurrentTab();
 
         FuseboxAttachment tabAttachment = createTabAttachment(tab);
         mFuseboxAttachmentModelList.add(tabAttachment);
@@ -500,7 +497,6 @@ public class FuseboxAttachmentModelListUnitTest {
         doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
         when(mComposeboxQueryControllerBridge.addTabContext(tab)).thenReturn("token2");
         when(mComposeboxQueryControllerBridge.addTabContextFromCache(1)).thenReturn("");
-        doReturn(null).when(mTabModelSelector).getCurrentTab();
 
         FuseboxAttachment tabAttachment = createTabAttachment(tab);
         mFuseboxAttachmentModelList.add(tabAttachment);
@@ -518,7 +514,6 @@ public class FuseboxAttachmentModelListUnitTest {
         doReturn(webContents).when(tab).getWebContents();
         doReturn(renderWidgetHostView).when(webContents).getRenderWidgetHostView();
         when(mComposeboxQueryControllerBridge.addTabContextFromCache(1)).thenReturn("token");
-        doReturn(null).when(mTabModelSelector).getCurrentTab();
 
         FuseboxAttachment tabAttachment = createTabAttachment(tab);
         mFuseboxAttachmentModelList.add(tabAttachment);
