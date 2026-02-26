@@ -10,18 +10,6 @@ import type {ContextualEntrypointAndCarouselElement} from './contextual_entrypoi
 export function getHtml(this: ContextualEntrypointAndCarouselElement) {
   // clang-format off
   return html`
-${this.showRecentTabChip ? html`
-  <composebox-recent-tab-chip id="recentTabChip"
-      class="upload-button contextual-chip"
-      .recentTab="${this.recentTabForChip}"
-      @add-tab-context="${this.addTabContext_}">
-  </composebox-recent-tab-chip>
-` : ''}
-${this.shouldShowLensSearchChip_ ? html`
-  <cr-composebox-lens-search id="lensSearchChip"
-      class="upload-button contextual-chip">
-  </cr-composebox-lens-search>
-` : ''}
 ${this.activeTool_ === ComposeboxToolMode.kDeepSearch ? html`
   <cr-composebox-tool-chip
       id="deepSearchChip"
