@@ -497,8 +497,32 @@ message SecurityMetadata {
   repeated string added_writable_mainframe_origins = 1;
 }
 
-// A single set of actions to be taken by Chrome. The response is ActionsResult.
+// Options for screenshot collection.
 // Next ID: 5
+message ScreenshotCollectionOptions {
+  // The maximum width of the screenshot. If 0, the screenshot will be returned
+  // at the natural width of the screen.
+  // Screenshot will be scaled to fit the max width and height while
+  // maintaining the aspect ratio.
+  int32 max_width = 1 [features = { field_presence: EXPLICIT }];
+
+  // The maximum height of the screenshot. If 0, the screenshot will be returned
+  // at the natural height of the screen.
+  // Screenshot will be scaled to fit the max width and height while maintaining
+  // the aspect ratio.
+  int32 max_height = 2 [features = { field_presence: EXPLICIT }];
+
+  // The format of the screenshot. If not set, the screenshot will be returned
+  // as a jpeg image.
+  ScreenshotImageFormat screenshot_format = 3 [features = { field_presence: EXPLICIT }];
+
+  // The compression quality of the screenshot. If not set, the screenshot will
+  // be returned with medium compression quality.
+  CompressionQuality compression_quality = 4 [features = { field_presence: EXPLICIT }];
+}
+
+// A single set of actions to be taken by Chrome. The response is ActionsResult.
+// Next ID: 6
 message Actions {
   // The actions to be taken by Chrome.
   repeated Action actions = 1;
@@ -516,6 +540,9 @@ message Actions {
 
   // Metadata that is associated with a task.
   TaskMetadata task_metadata = 4 [features = { field_presence: EXPLICIT }];
+
+  // Options for screenshot collection.
+  ScreenshotCollectionOptions screenshot_options = 5 [features = { field_presence: EXPLICIT }];
 }
 
 // Information about a chrome window.
@@ -738,4 +765,38 @@ message BrowserStartTaskResult {
     // running.
     OVER_TASK_LIMIT = 2;
   }
+}
+
+enum ScreenshotImageFormat {
+  // Unknown screenshot format. This should not be used.
+  SCREENSHOT_IMAGE_FORMAT_UNKNOWN = 0;
+
+  // JPEG screenshot format. This is the default format.
+  SCREENSHOT_IMAGE_FORMAT_JPEG = 1;
+
+  // PNG screenshot format.
+  SCREENSHOT_IMAGE_FORMAT_PNG = 2;
+
+  // WEBP screenshot format.
+  SCREENSHOT_IMAGE_FORMAT_WEBP = 3;
+}
+
+// The compression quality of the screenshot. Depending on screenshot format,
+// the compression quality may not be respected or may mean something different.
+// The default value is MEDIUM.
+enum CompressionQuality {
+  // Unknown compression quality. This should not be used.
+  COMPRESSION_QUALITY_UNKNOWN = 0;
+
+  // Low compression quality.
+  COMPRESSION_QUALITY_LOW = 1;
+
+  // Medium compression quality.
+  COMPRESSION_QUALITY_MEDIUM = 2;
+
+  // High compression quality.
+  COMPRESSION_QUALITY_HIGH = 3;
+
+  // No compression.
+  COMPRESSION_QUALITY_NONE = 4;
 }
