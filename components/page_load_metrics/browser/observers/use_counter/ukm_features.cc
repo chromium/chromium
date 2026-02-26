@@ -471,6 +471,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kWebRTCLocalNetworkAccessPublicToLocal,
           WebFeature::kWebRTCLocalNetworkAccessPublicToLoopback,
           WebFeature::kWebRTCLocalNetworkAccessLocalToLoopback,
+          WebFeature::kWebSocketStreamConstructor,
           // NOTE: before adding new use counters here, verify in UMA that
           // their emissions are very rare, e.g. <1% of page loads.
       }));
