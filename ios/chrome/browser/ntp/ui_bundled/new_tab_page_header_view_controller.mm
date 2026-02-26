@@ -93,7 +93,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 @property(nonatomic, assign) BOOL voiceSearchIsEnabled;
 
 @property(nonatomic, strong) NewTabPageHeaderView* headerView;
-@property(nonatomic, strong) UIButton* fakeOmnibox;
+@property(nonatomic, strong) UIView* fakeOmnibox;
 @property(nonatomic, strong) UIButton* accessibilityButton;
 @property(nonatomic, copy) NSString* identityDiscAccessibilityLabel;
 @property(nonatomic, strong, readwrite) UIButton* identityDiscButton;
@@ -428,23 +428,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 // Initialize and add a search field tap target and a voice search button.
 - (void)addFakeOmnibox {
-  self.fakeOmnibox = [[UIButton alloc] init];
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  self.fakeOmnibox.configuration = buttonConfiguration;
-  self.fakeOmnibox.configurationUpdateHandler = ^(UIButton* incomingButton) {
-    UIButtonConfiguration* updatedConfig = incomingButton.configuration;
-    switch (incomingButton.state) {
-      case UIControlStateHighlighted:
-      case UIControlStateNormal:
-        // This overrides default logic which would highlight the image. This
-        // effectively disables highlighting.
-        break;
-      default:
-        break;
-    }
-    incomingButton.configuration = updatedConfig;
-  };
+  self.fakeOmnibox = [[UIView alloc] init];
 
   // Set isAccessibilityElement to NO so that Voice Search button is accessible.
   [self.fakeOmnibox setIsAccessibilityElement:NO];

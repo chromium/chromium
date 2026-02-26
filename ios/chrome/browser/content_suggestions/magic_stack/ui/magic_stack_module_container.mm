@@ -244,6 +244,7 @@ const CGFloat kSeparatorHeight = 0.5;
             NSFontAttributeName :
                 [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
           }];
+  buttonConfiguration.background.backgroundColor = [UIColor clearColor];
   button.configuration = buttonConfiguration;
 
   [button setTitleColor:[UIColor colorNamed:kBlueColor]

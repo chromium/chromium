@@ -325,6 +325,7 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
   UIButtonConfiguration* buttonConfig =
       [UIButtonConfiguration plainButtonConfiguration];
   buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+  buttonConfig.background.backgroundColor = [UIColor clearColor];
   voice_search_button.configuration = buttonConfig;
   UIImage* mic_image = CustomSymbolWithPointSize(
       kVoiceSymbol, kSymbolContentSuggestionsPointSize);
@@ -350,6 +351,7 @@ void ConfigureLensButtonAppearance(UIButton* lens_button,
   UIButtonConfiguration* buttonConfig =
       [UIButtonConfiguration plainButtonConfiguration];
   buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+  buttonConfig.background.backgroundColor = [UIColor clearColor];
   lens_button.configuration = buttonConfig;
   lens_button.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_LENS);
   lens_button.accessibilityIdentifier = @"Lens";
@@ -378,6 +380,7 @@ void ConfigureMIAButton(UIButton* mia_button, BOOL use_color_icon) {
   UIButtonConfiguration* buttonConfig =
       [UIButtonConfiguration plainButtonConfiguration];
   buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+  buttonConfig.background.backgroundColor = [UIColor clearColor];
   mia_button.configuration = buttonConfig;
 
   UIImage* magnifier_icon = CustomSymbolWithPointSize(
