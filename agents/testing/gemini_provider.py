@@ -35,7 +35,7 @@ DEFAULT_EXTENSIONS = [
 ]
 DEFAULT_SKILLS = []
 
-MODEL = 'gemini-3-flash-preview'
+MODEL = 'gemini-2.5-pro'
 
 
 @dataclasses.dataclass
