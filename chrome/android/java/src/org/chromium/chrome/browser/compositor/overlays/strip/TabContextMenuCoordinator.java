@@ -442,18 +442,27 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     }
 
     private ListItem createMoveToTabGroupItem(List<Tab> tabs, boolean isIncognito) {
-        String title =
-                mActivity
-                        .getResources()
-                        .getQuantityString(R.plurals.add_tab_to_group_menu_item, tabs.size());
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)) {
+        // Available tab groups.
+        @Nullable Token groupToNotBeIncluded = tabs.get(0).getTabGroupId();
+        List<ListItem> potentialGroups =
+                isIncognito
+                        ? getIncognitoTabGroups(tabs, groupToNotBeIncluded)
+                        : getRegularTabGroups(tabs, groupToNotBeIncluded);
+
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+                || potentialGroups.isEmpty()) {
+            String title =
+                    mActivity
+                            .getResources()
+                            .getQuantityString(
+                                    R.plurals.add_tab_to_new_group_menu_item, tabs.size());
             return new ListItemBuilder()
                     .withTitle(title)
-                    .withMenuId(R.id.add_to_tab_group)
+                    .withMenuId(R.id.add_to_new_tab_group)
                     .withIsIncognito(isIncognito)
                     .build();
         }
+
         List<ListItem> submenuItems = new ArrayList<>();
         // "Add to new group" item
         submenuItems.add(
@@ -475,16 +484,13 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                                                     mTabGroupCreationCallback);
                                         })
                                 .build()));
-        // Available tab groups.
-        @Nullable Token groupToNotBeIncluded = tabs.get(0).getTabGroupId();
-        List<ListItem> potentialGroups =
-                isIncognito
-                        ? getIncognitoTabGroups(tabs, groupToNotBeIncluded)
-                        : getRegularTabGroups(tabs, groupToNotBeIncluded);
-        if (!potentialGroups.isEmpty()) {
-            submenuItems.addAll(potentialGroups);
-        }
+        // Add all the potential groups to the list afterwards.
+        submenuItems.addAll(potentialGroups);
 
+        String title =
+                mActivity
+                        .getResources()
+                        .getQuantityString(R.plurals.add_tab_to_group_menu_item, tabs.size());
         return new ListItem(
                 MENU_ITEM_WITH_SUBMENU,
                 new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)

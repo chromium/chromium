@@ -336,35 +336,17 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 1
         var addToGroupItem = modelList.get(0);
-        var subMenu = addToGroupItem.model.get(SUBMENU_ITEMS);
-        assertNotNull("Submenu should be present", subMenu);
         assertEquals(
-                "Submenu should have 1 item, but was " + getDebugString(subMenu),
-                1,
-                subMenu.size());
-
-        addToGroupItem.model.get(CLICK_LISTENER).onClick(mView);
-        assertEquals(
-                "Expected 2 items to be displayed, but was " + getDebugString(modelList),
-                2,
-                modelList.size());
-        ListItem headerItem = modelList.get(0);
-        assertEquals(
-                "Expected 1st submenu item to be a back header", SUBMENU_HEADER, headerItem.type);
-        assertEquals(
-                "Expected submenu back header to have the same text as submenu parent item",
-                mActivity.getResources().getQuantityString(R.plurals.add_tab_to_group_menu_item, 1),
-                headerItem.model.get(TITLE));
-        assertEquals(
-                "Expected 2nd submenu item to have MENU_ITEM type",
+                "Expected 'Add to group' item to have no submenu when the anchor tab is in the only"
+                        + " existing group",
                 MENU_ITEM,
-                modelList.get(1).type);
+                addToGroupItem.type);
         assertEquals(
-                "Expected 2nd submenu item to be New Group",
-                R.string.create_new_group_row_title,
-                modelList.get(1).model.get(TITLE_ID));
-        headerItem.model.get(CLICK_LISTENER).onClick(mView);
-        assertEquals("Expected to navigate back to parent menu", 7, modelList.size());
+                "Expected title to be 'Add to new group'",
+                mActivity
+                        .getResources()
+                        .getQuantityString(R.plurals.add_tab_to_new_group_menu_item, 1),
+                addToGroupItem.model.get(TITLE));
 
         // List item 2
         assertEquals(
@@ -404,32 +386,6 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
-    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
-    public void testListMenuItems_submenuCreateNewTabGroup() {
-        ModelList modelList = new ModelList();
-        mTabContextMenuCoordinator.configureMenuItemsForTesting(
-                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
-
-        // Add to group submenu
-        ListItem addToGroupItem = modelList.get(0);
-        List<ListItem> subMenu = addToGroupItem.model.get(SUBMENU_ITEMS);
-        assertNotNull("Submenu should be present", subMenu);
-        addToGroupItem.model.get(CLICK_LISTENER).onClick(mView);
-
-        // Add to new group
-        ListItem addToNewGroupItem = modelList.get(1);
-        assertEquals(
-                "Expected 2nd submenu item to be New Group",
-                R.string.create_new_group_row_title,
-                addToNewGroupItem.model.get(TITLE_ID));
-        addToNewGroupItem.model.get(CLICK_LISTENER).onClick(mView);
-
-        // Verify
-        verify(mTabGroupCreationCallback).onTabGroupCreated(any());
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
     @EnableFeatures({
         ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP,
         ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING
@@ -444,35 +400,17 @@ public class TabContextMenuCoordinatorUnitTest {
 
         // List item 1
         var addToGroupItem = modelList.get(0);
-        var subMenu = addToGroupItem.model.get(SUBMENU_ITEMS);
-        assertNotNull("Submenu should be present", subMenu);
         assertEquals(
-                "Submenu should have 1 item, but was " + getDebugString(subMenu),
-                1,
-                subMenu.size());
-
-        addToGroupItem.model.get(CLICK_LISTENER).onClick(mView);
-        assertEquals(
-                "Expected 2 items to be displayed, but was " + getDebugString(modelList),
-                2,
-                modelList.size());
-        ListItem headerItem = modelList.get(0);
-        assertEquals(
-                "Expected 1st submenu item to be a back header", SUBMENU_HEADER, headerItem.type);
-        assertEquals(
-                "Expected submenu back header to have the same text as submenu parent item",
-                mActivity.getResources().getQuantityString(R.plurals.add_tab_to_group_menu_item, 2),
-                headerItem.model.get(TITLE));
-        assertEquals(
-                "Expected 2nd submenu item to have MENU_ITEM type",
+                "Expected 'Add to group' item to have no submenu when the anchor tab is in the only"
+                        + " existing group",
                 MENU_ITEM,
-                modelList.get(1).type);
+                addToGroupItem.type);
         assertEquals(
-                "Expected 2nd submenu item to be New Group",
-                R.string.create_new_group_row_title,
-                modelList.get(1).model.get(TITLE_ID));
-        headerItem.model.get(CLICK_LISTENER).onClick(mView);
-        assertEquals("Expected to navigate back to parent menu", 5, modelList.size());
+                "Expected title to be 'Add to new group'",
+                mActivity
+                        .getResources()
+                        .getQuantityString(R.plurals.add_tab_to_new_group_menu_item, 2),
+                addToGroupItem.model.get(TITLE));
 
         // List item 2
         assertEquals(
@@ -830,7 +768,8 @@ public class TabContextMenuCoordinatorUnitTest {
         verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 1);
 
         // List item 2
-        verifyAddToWindowSubmenu(modelList, List.of());
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList, 1, R.plurals.move_tab_to_another_window, List.of(), mActivity);
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
@@ -977,7 +916,8 @@ public class TabContextMenuCoordinatorUnitTest {
         verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 1);
 
         // List item 2
-        verifyAddToWindowSubmenu(modelList, List.of());
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList, 1, R.plurals.move_tab_to_another_window, List.of(), mActivity);
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
@@ -1069,7 +1009,8 @@ public class TabContextMenuCoordinatorUnitTest {
         verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 1);
 
         // List item 2
-        verifyAddToWindowSubmenu(modelList, List.of());
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList, 1, R.plurals.move_tab_to_another_window, List.of(), mActivity);
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
@@ -1238,12 +1179,15 @@ public class TabContextMenuCoordinatorUnitTest {
                 new AnchorInfo(
                         TAB_OUTSIDE_OF_GROUP_ID,
                         Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
-        StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(modelList, 1, mView);
+        StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(
+                modelList,
+                1,
+                mOnItemClickedCallback,
+                new AnchorInfo(TAB_OUTSIDE_OF_GROUP_ID, List.of(TAB_OUTSIDE_OF_GROUP_ID)),
+                COLLABORATION_ID);
         verify(mMultiInstanceManager)
-                .moveTabsToNewWindow(
-                        Collections.singletonList(mTabOutsideOfGroup),
-                        /* finalizeCallback= */ null,
-                        NewWindowAppSource.MENU);
+                .moveTabsToOtherWindow(
+                        Collections.singletonList(mTabOutsideOfGroup), NewWindowAppSource.MENU);
     }
 
     @Test
@@ -1566,6 +1510,52 @@ public class TabContextMenuCoordinatorUnitTest {
                 modelList.get(1).type);
     }
 
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testListMenuItems_noGroups_submenusEnabled() {
+        // No groups
+        when(mTabGroupModelFilter.getAllTabGroupIds()).thenReturn(Collections.emptySet());
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList, new AnchorInfo(TAB_ID, Collections.singletonList(TAB_ID)));
+
+        // Item 0 should be "Add tab to new group" and NOT have a submenu.
+        ListItem addToGroupItem = modelList.get(0);
+
+        assertEquals("Should be a regular menu item", MENU_ITEM, addToGroupItem.type);
+        assertEquals(
+                "Title should be 'Add tab to new group'",
+                mActivity
+                        .getResources()
+                        .getQuantityString(R.plurals.add_tab_to_new_group_menu_item, 1),
+                addToGroupItem.model.get(TITLE));
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testListMenuItems_moreThanOneWindow_submenusEnabled() {
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                1,
+                R.plurals.move_tab_to_another_window,
+                List.of(WINDOW_TITLE_2),
+                mActivity);
+    }
+
     private @Nullable ListItem findItemByMenuId(ModelList modelList, int menuId) {
         for (int i = 0; i < modelList.size(); i++) {
             ListItem item = modelList.get(i);
@@ -1629,71 +1619,6 @@ public class TabContextMenuCoordinatorUnitTest {
                         mActivity, TAB_GROUP_INDICATOR_COLOR_ID, /* isIncognito= */ false),
                 drawable.getColor().getDefaultColor());
         assertTrue("Expected tab group row to be enabled", tabGroupRowModel.get(ENABLED));
-        headerItem.model.get(CLICK_LISTENER).onClick(mView);
-        assertEquals(
-                "Expected to navigate back to parent menu",
-                modelListSizeBeforeNav,
-                modelList.size());
-    }
-
-    private void verifyAddToWindowSubmenu(ModelList modelList, List<String> otherWindowTitles) {
-        int modelListSizeBeforeNav = modelList.size();
-        var moveToOtherWindowItem = modelList.get(1);
-        var subMenu = moveToOtherWindowItem.model.get(SUBMENU_ITEMS);
-        int expectedNumberOfItems =
-                1 + (otherWindowTitles.isEmpty() ? 0 : 1 + otherWindowTitles.size());
-        assertEquals(
-                "Submenu should have "
-                        + expectedNumberOfItems
-                        + " item(s), but was "
-                        + getDebugString(subMenu),
-                expectedNumberOfItems,
-                subMenu.size());
-        moveToOtherWindowItem.model.get(CLICK_LISTENER).onClick(mView);
-        assertNotNull("Submenu should be present", subMenu);
-        assertEquals(
-                "Expected to display "
-                        + expectedNumberOfItems
-                        + 1 // Back header added
-                        + " item(s) after entering submenu, but was "
-                        + getDebugString(modelList),
-                expectedNumberOfItems + 1,
-                modelList.size());
-        ListItem headerItem = modelList.get(0);
-        assertEquals(
-                "Expected first item to have SUBMENU_HEADER type", SUBMENU_HEADER, headerItem.type);
-        assertEquals(
-                "Expected submenu back header to have the same text as submenu parent item",
-                mActivity.getResources().getQuantityString(R.plurals.move_tab_to_another_window, 2),
-                headerItem.model.get(TITLE));
-        assertTrue("Expected submenu header to be enabled", headerItem.model.get(ENABLED));
-        assertEquals("Expected 2nd item to have MENU_ITEM type", MENU_ITEM, modelList.get(1).type);
-        assertEquals(
-                "Expected 2nd item to be 'New window' row",
-                R.string.menu_new_window,
-                modelList.get(1).model.get(TITLE_ID));
-        if (!otherWindowTitles.isEmpty()) {
-            assertEquals(
-                    "Expected 3rd item to be divider, but was " + getDebugString(modelList),
-                    DIVIDER,
-                    modelList.get(2).type);
-            for (int i = 0; i < otherWindowTitles.size(); i++) {
-                assertEquals(
-                        "Expected window row at position " + (i + 3) + " to have MENU_ITEM type",
-                        MENU_ITEM,
-                        modelList.get(1).type);
-                assertEquals(
-                        "Expected window row at position "
-                                + (i + 2)
-                                + " to have text "
-                                + otherWindowTitles.get(i),
-                        otherWindowTitles.get(i),
-                        modelList.get(i + 3).model.get(TITLE));
-                assertTrue(
-                        "Expected window row at position " + (i + 3) + " to be enabled",
-                        modelList.get(i + 3).model.get(ENABLED));
-            }
-        }
         headerItem.model.get(CLICK_LISTENER).onClick(mView);
         assertEquals(
                 "Expected to navigate back to parent menu",

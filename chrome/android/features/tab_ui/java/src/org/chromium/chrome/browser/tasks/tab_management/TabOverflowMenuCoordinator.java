@@ -462,8 +462,10 @@ public abstract class TabOverflowMenuCoordinator<T>
     protected ListItem createMoveToWindowItem(
             T id, boolean isIncognito, @PluralsRes int pluralsRes, @IdRes int menuId) {
         // TODO(crbug.com/437418051): Clean up move_tab_to_another_window strings.
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)) {
+        List<InstanceInfo> activeInstances =
+                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ACTIVE);
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+                || activeInstances.size() <= 1) {
             return new ListItemBuilder()
                     .withTitle(
                             mActivity
@@ -489,8 +491,6 @@ public abstract class TabOverflowMenuCoordinator<T>
                                             moveToNewWindow(id);
                                         })
                                 .build()));
-        List<InstanceInfo> activeInstances =
-                mMultiInstanceManager.getInstanceInfo(PersistedInstanceType.ACTIVE);
         if (activeInstances.size() > 1) {
             for (InstanceInfo instanceInfo : activeInstances) {
                 if (mMultiInstanceManager.getCurrentInstanceId() == instanceInfo.instanceId) {

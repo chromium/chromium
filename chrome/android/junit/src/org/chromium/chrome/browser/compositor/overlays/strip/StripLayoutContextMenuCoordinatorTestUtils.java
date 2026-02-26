@@ -12,6 +12,7 @@ import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
 import static org.chromium.ui.listmenu.ListItemType.SUBMENU_HEADER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
@@ -23,6 +24,7 @@ import android.view.View;
 import androidx.annotation.PluralsRes;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -110,6 +112,13 @@ public class StripLayoutContextMenuCoordinatorTestUtils {
             @PluralsRes int label,
             List<String> otherWindowTitles,
             Activity activity) {
+        if (otherWindowTitles.size() == 0) {
+            assertEquals(
+                    "Expected title to be 'Move to new window'",
+                    activity.getResources().getQuantityString(label, 1),
+                    modelList.get(indexOfAddToWindow).model.get(TITLE));
+            return;
+        }
         int modelListSizeBeforeNav = modelList.size();
         var moveToOtherWindowItem = modelList.get(indexOfAddToWindow);
         var subMenu = moveToOtherWindowItem.model.get(SUBMENU_ITEMS);
@@ -169,22 +178,18 @@ public class StripLayoutContextMenuCoordinatorTestUtils {
                 modelList.size());
     }
 
-    public static void clickMoveToNewWindow(
-            ModelList modelList, int moveToOtherWindowIdx, View view) {
+    public static <T> void clickMoveToNewWindow(
+            ModelList modelList,
+            int moveToOtherWindowIdx,
+            OnItemClickedCallback<T> onItemClickedCallback,
+            T anchorId,
+            String collaborationId) {
         var moveToOtherWindowItem = modelList.get(moveToOtherWindowIdx);
-        moveToOtherWindowItem.model.get(CLICK_LISTENER).onClick(view);
-        assertTrue(
-                "Expected model list to have at least 2 items, but contents were "
-                        + getDebugString(modelList),
-                modelList.size() >= 2);
-        MVCListAdapter.ListItem newWindowItem = modelList.get(1);
-        assertEquals("Expected 2nd item to have MENU_ITEM type", MENU_ITEM, newWindowItem.type);
-        assertEquals(
-                "Expected 2nd item to be 'New window' row",
-                R.string.menu_new_window,
-                newWindowItem.model.get(TITLE_ID));
-
-        newWindowItem.model.get(CLICK_LISTENER).onClick(view);
+        onItemClickedCallback.onClick(
+                moveToOtherWindowItem.model.get(MENU_ITEM_ID),
+                anchorId,
+                collaborationId,
+                /* listViewTouchTracker= */ null);
     }
 
     public static void clickMoveToWindowRow(

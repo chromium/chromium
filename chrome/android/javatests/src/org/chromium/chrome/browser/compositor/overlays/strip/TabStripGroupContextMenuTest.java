@@ -461,9 +461,14 @@ public class TabStripGroupContextMenuTest {
     public void testSubMenuScrollability() throws InterruptedException {
         // Specifically test the drill-down case.
         HierarchicalMenuController.setDrillDownOverrideValueForTesting(true);
-        // Prepare standard state and show menu.
-        prepareStandardState();
-        showMenu();
+
+        // Open a new window so we'll get a submenu for "Move to another window"
+        mActivityTestRule.startOnBlankPage().openNewWindowFast();
+        // Switch the "main" activity to the newly-opened window, which is now focused.
+        mActivityTestRule
+                .getActivityTestRule()
+                .setActivity(
+                        (ChromeTabbedActivity) ApplicationStatus.getLastTrackedFocusedActivity());
 
         BaseMatcher<View> isScrollContainerMatcher =
                 new BaseMatcher<>() {
@@ -529,6 +534,12 @@ public class TabStripGroupContextMenuTest {
                         }
                     }
                 };
+
+        // Set up the test as usual.
+        prepareStandardState();
+
+        // Show the menu on the tab group now that it is in a new window.
+        showMenu();
 
         // Get the ListView of the context menu.
         onView(withId(R.id.tab_group_action_menu_list))

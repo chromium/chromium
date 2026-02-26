@@ -597,10 +597,12 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 List.of(),
                 mActivity);
 
-        StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(modelList, 4, mMenuView);
+        StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(
+                modelList, 4, mOnItemClickedCallback, TAB_GROUP_ID, COLLABORATION_ID);
 
         verify(mMultiInstanceManager, times(1))
-                .moveTabGroupToNewWindow(any(TabGroupMetadata.class), eq(NewWindowAppSource.MENU));
+                .moveTabGroupToOtherWindow(
+                        any(TabGroupMetadata.class), eq(NewWindowAppSource.MENU));
     }
 
     @Test
