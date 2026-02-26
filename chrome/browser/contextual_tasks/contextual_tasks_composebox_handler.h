@@ -193,6 +193,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
 
   void OnVisualSelectionAdded(
+      base::UnguessableToken overlay_token,
       base::expected<base::UnguessableToken,
                      contextual_search::FileUploadErrorType> token);
 
@@ -258,6 +259,11 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   std::set<base::UnguessableToken> pending_context_uploads_;
 
   std::optional<base::UnguessableToken> visual_selection_token_;
+  // The overlay token associated with the visual selection. This is stored
+  // alongside the visual selection token because the overlay controller may be
+  // reset or closed, but the visual selection should still be associated with
+  // the overlay token that created it.
+  std::optional<base::UnguessableToken> visual_selection_overlay_token_;
   base::WeakPtrFactory<ContextualTasksComposeboxHandler> weak_factory_{this};
 };
 
