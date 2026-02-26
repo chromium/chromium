@@ -4,10 +4,13 @@
 
 #include "chrome/browser/autofill/android/entity_data_manager_android.h"
 
+#include <algorithm>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/zip.h"
 #include "chrome/browser/autofill/account_setting_service_factory.h"
@@ -179,6 +182,17 @@ std::vector<EntityTypeAndroid> EntityDataManagerAndroid::GetWritableEntityTypes(
     entity_types.emplace_back(EntityTypeAndroid(entity_type));
   }
   return entity_types;
+}
+
+std::vector<EntityTypeAndroid>
+EntityDataManagerAndroid::GetSortedEntityTypesForListDisplay(
+    JNIEnv* env) const {
+  std::vector<EntityType> all_types =
+      base::ToVector(DenseSet<EntityType>::all());
+  std::ranges::sort(all_types, EntityType::ListOrder);
+  return base::ToVector(all_types, [](const EntityType& type) {
+    return EntityTypeAndroid(type);
+  });
 }
 
 void EntityDataManagerAndroid::OnEntityInstancesChanged() {

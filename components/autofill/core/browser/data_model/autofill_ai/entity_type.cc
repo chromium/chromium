@@ -25,108 +25,108 @@ FieldTypeSet AttributeType::storable_field_types(
 }
 
 std::u16string AttributeType::GetNameForI18n() const {
-    switch (name()) {
-      case AttributeTypeName::kDriversLicenseName:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_DRIVERS_LICENSE_NAME_ATTRIBUTE_NAME);
-      case AttributeTypeName::kDriversLicenseState:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_DRIVERS_LICENSE_STATE_ATTRIBUTE_NAME);
-      case AttributeTypeName::kDriversLicenseNumber:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_DRIVERS_LICENSE_NUMBER_ATTRIBUTE_NAME);
-      case AttributeTypeName::kDriversLicenseExpirationDate:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_DRIVERS_LICENSE_EXPIRATION_DATE_ATTRIBUTE_NAME);
-      case AttributeTypeName::kDriversLicenseIssueDate:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_DRIVERS_LICENSE_ISSUE_DATE_ATTRIBUTE_NAME);
-      case AttributeTypeName::kFlightReservationFlightNumber:
-      case AttributeTypeName::kFlightReservationTicketNumber:
-      case AttributeTypeName::kFlightReservationConfirmationCode:
-      case AttributeTypeName::kFlightReservationPassengerName:
-      case AttributeTypeName::kFlightReservationDepartureAirport:
-      case AttributeTypeName::kFlightReservationArrivalAirport:
-      case AttributeTypeName::kFlightReservationDepartureDate:
-        // Flight reservations are read-only and do not use attribute strings.
-        return u"";
-      case AttributeTypeName::kOrderDate:
-      case AttributeTypeName::kOrderAccount:
-      case AttributeTypeName::kOrderGrandTotal:
-      case AttributeTypeName::kOrderId:
-      case AttributeTypeName::kOrderMerchantDomain:
-      case AttributeTypeName::kOrderMerchantName:
-      case AttributeTypeName::kOrderProductNames:
-        // Orders are read-only and do not use attribute strings.
-        return u"";
-      case AttributeTypeName::kKnownTravelerNumberName:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_NAME_ATTRIBUTE_NAME);
-      case AttributeTypeName::kKnownTravelerNumberNumber:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ATTRIBUTE_NAME);
-      case AttributeTypeName::kKnownTravelerNumberExpirationDate:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE_ATTRIBUTE_NAME);
-      case AttributeTypeName::kNationalIdCardName:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NAME_ATTRIBUTE_NAME);
-      case AttributeTypeName::kNationalIdCardCountry:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_NATIONAL_ID_CARD_COUNTRY_ATTRIBUTE_NAME);
-      case AttributeTypeName::kNationalIdCardNumber:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NUMBER_ATTRIBUTE_NAME);
-      case AttributeTypeName::kNationalIdCardIssueDate:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ISSUE_DATE_ATTRIBUTE_NAME);
-      case AttributeTypeName::kNationalIdCardExpirationDate:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_NATIONAL_ID_CARD_EXPIRATION_DATE_ATTRIBUTE_NAME);
-      case AttributeTypeName::kPassportName:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_PASSPORT_NAME_ATTRIBUTE_NAME);
-      case AttributeTypeName::kPassportNumber:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_PASSPORT_NUMBER_ATTRIBUTE_NAME);
-      case AttributeTypeName::kPassportCountry:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_PASSPORT_COUNTRY_ATTRIBUTE_NAME);
-      case AttributeTypeName::kPassportExpirationDate:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_PASSPORT_EXPIRATION_DATE_ATTRIBUTE_NAME);
-      case AttributeTypeName::kPassportIssueDate:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_PASSPORT_ISSUE_DATE_ATTRIBUTE_NAME);
-      case AttributeTypeName::kRedressNumberName:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_REDRESS_NUMBER_NAME_ATTRIBUTE_NAME);
-      case AttributeTypeName::kRedressNumberNumber:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_REDRESS_NUMBER_ATTRIBUTE_NAME);
-      case AttributeTypeName::kVehicleOwner:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_VEHICLE_OWNER_ATTRIBUTE_NAME);
-      case AttributeTypeName::kVehiclePlateNumber:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_VEHICLE_PLATE_NUMBER_ATTRIBUTE_NAME);
-      case AttributeTypeName::kVehiclePlateState:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_VEHICLE_PLATE_STATE_ATTRIBUTE_NAME);
-      case AttributeTypeName::kVehicleVin:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_VEHICLE_VEHICLE_IDENTIFICATION_NUMBER_ATTRIBUTE_NAME);
-      case AttributeTypeName::kVehicleMake:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_VEHICLE_MAKE_ATTRIBUTE_NAME);
-      case AttributeTypeName::kVehicleModel:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_VEHICLE_MODEL_ATTRIBUTE_NAME);
-      case AttributeTypeName::kVehicleYear:
-        return l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_AI_VEHICLE_YEAR_ATTRIBUTE_NAME);
-    }
-    NOTREACHED();
+  switch (name()) {
+    case AttributeTypeName::kDriversLicenseName:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_DRIVERS_LICENSE_NAME_ATTRIBUTE_NAME);
+    case AttributeTypeName::kDriversLicenseState:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_DRIVERS_LICENSE_STATE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kDriversLicenseNumber:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_DRIVERS_LICENSE_NUMBER_ATTRIBUTE_NAME);
+    case AttributeTypeName::kDriversLicenseExpirationDate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_DRIVERS_LICENSE_EXPIRATION_DATE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kDriversLicenseIssueDate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_DRIVERS_LICENSE_ISSUE_DATE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kFlightReservationFlightNumber:
+    case AttributeTypeName::kFlightReservationTicketNumber:
+    case AttributeTypeName::kFlightReservationConfirmationCode:
+    case AttributeTypeName::kFlightReservationPassengerName:
+    case AttributeTypeName::kFlightReservationDepartureAirport:
+    case AttributeTypeName::kFlightReservationArrivalAirport:
+    case AttributeTypeName::kFlightReservationDepartureDate:
+      // Flight reservations are read-only and do not use attribute strings.
+      return u"";
+    case AttributeTypeName::kOrderDate:
+    case AttributeTypeName::kOrderAccount:
+    case AttributeTypeName::kOrderGrandTotal:
+    case AttributeTypeName::kOrderId:
+    case AttributeTypeName::kOrderMerchantDomain:
+    case AttributeTypeName::kOrderMerchantName:
+    case AttributeTypeName::kOrderProductNames:
+      // Orders are read-only and do not use attribute strings.
+      return u"";
+    case AttributeTypeName::kKnownTravelerNumberName:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_NAME_ATTRIBUTE_NAME);
+    case AttributeTypeName::kKnownTravelerNumberNumber:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ATTRIBUTE_NAME);
+    case AttributeTypeName::kKnownTravelerNumberExpirationDate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kNationalIdCardName:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NAME_ATTRIBUTE_NAME);
+    case AttributeTypeName::kNationalIdCardCountry:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_NATIONAL_ID_CARD_COUNTRY_ATTRIBUTE_NAME);
+    case AttributeTypeName::kNationalIdCardNumber:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NUMBER_ATTRIBUTE_NAME);
+    case AttributeTypeName::kNationalIdCardIssueDate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ISSUE_DATE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kNationalIdCardExpirationDate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_NATIONAL_ID_CARD_EXPIRATION_DATE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kPassportName:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_PASSPORT_NAME_ATTRIBUTE_NAME);
+    case AttributeTypeName::kPassportNumber:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_PASSPORT_NUMBER_ATTRIBUTE_NAME);
+    case AttributeTypeName::kPassportCountry:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_PASSPORT_COUNTRY_ATTRIBUTE_NAME);
+    case AttributeTypeName::kPassportExpirationDate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_PASSPORT_EXPIRATION_DATE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kPassportIssueDate:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_PASSPORT_ISSUE_DATE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kRedressNumberName:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_REDRESS_NUMBER_NAME_ATTRIBUTE_NAME);
+    case AttributeTypeName::kRedressNumberNumber:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_REDRESS_NUMBER_ATTRIBUTE_NAME);
+    case AttributeTypeName::kVehicleOwner:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_VEHICLE_OWNER_ATTRIBUTE_NAME);
+    case AttributeTypeName::kVehiclePlateNumber:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_VEHICLE_PLATE_NUMBER_ATTRIBUTE_NAME);
+    case AttributeTypeName::kVehiclePlateState:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_VEHICLE_PLATE_STATE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kVehicleVin:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_VEHICLE_VEHICLE_IDENTIFICATION_NUMBER_ATTRIBUTE_NAME);
+    case AttributeTypeName::kVehicleMake:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_VEHICLE_MAKE_ATTRIBUTE_NAME);
+    case AttributeTypeName::kVehicleModel:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_VEHICLE_MODEL_ATTRIBUTE_NAME);
+    case AttributeTypeName::kVehicleYear:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_VEHICLE_YEAR_ATTRIBUTE_NAME);
+  }
+  NOTREACHED();
 }
 
 // static
@@ -150,6 +150,39 @@ bool EntityType::ImportOrder(const EntityType& lhs, const EntityType& rhs) {
         return 6;
       case EntityTypeName::kVehicle:
         return 3;
+    }
+  };
+  // For a deterministic behavior, distinct types should have distinct ranks.
+  static_assert(
+      std::ranges::all_of(DenseSet<EntityType>::all(), [&](EntityType a) {
+        return std::ranges::all_of(
+            DenseSet<EntityType>::all(),
+            [&](EntityType b) { return a == b || rank(a) != rank(b); });
+      }));
+  return rank(lhs) < rank(rhs);
+}
+
+// static
+bool EntityType::ListOrder(const EntityType& lhs, const EntityType& rhs) {
+  auto rank = [](const EntityType& t) constexpr {
+    // Lower values indicate a higher priority.
+    switch (t.name()) {
+      case EntityTypeName::kDriversLicense:
+        return 1;
+      case EntityTypeName::kNationalIdCard:
+        return 2;
+      case EntityTypeName::kPassport:
+        return 3;
+      case EntityTypeName::kOrder:
+        return 4;
+      case EntityTypeName::kFlightReservation:
+        return 5;
+      case EntityTypeName::kKnownTravelerNumber:
+        return 6;
+      case EntityTypeName::kRedressNumber:
+        return 7;
+      case EntityTypeName::kVehicle:
+        return 8;
     }
   };
   // For a deterministic behavior, distinct types should have distinct ranks.

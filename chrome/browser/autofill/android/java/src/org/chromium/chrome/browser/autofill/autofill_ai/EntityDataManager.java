@@ -90,6 +90,12 @@ public class EntityDataManager implements Destroyable {
         return EntityDataManagerJni.get().getWritableEntityTypes(mNativeEntityDataManagerAndroid);
     }
 
+    public List<EntityType> getSortedEntityTypesForListDisplay() {
+        ThreadUtils.assertOnUiThread();
+        return EntityDataManagerJni.get()
+                .getSortedEntityTypesForListDisplay(mNativeEntityDataManagerAndroid);
+    }
+
     /** Called by C++ when there is a change in the instances. */
     @CalledByNative
     public void onEntityInstancesChanged() {
@@ -150,5 +156,8 @@ public class EntityDataManager implements Destroyable {
 
         @JniType("std::vector<autofill::EntityTypeAndroid>")
         List<EntityType> getWritableEntityTypes(long nativeEntityDataManagerAndroid);
+
+        @JniType("std::vector<autofill::EntityTypeAndroid>")
+        List<EntityType> getSortedEntityTypesForListDisplay(long nativeEntityDataManagerAndroid);
     }
 }

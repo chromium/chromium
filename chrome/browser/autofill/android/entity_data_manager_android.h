@@ -80,6 +80,11 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
   // Returns all types of entities that Autofill AI supports.
   std::vector<EntityTypeAndroid> GetWritableEntityTypes(JNIEnv* env);
 
+  // Returns all entity types that Autofill AI supports, sorted by
+  // usefulness.
+  std::vector<EntityTypeAndroid> GetSortedEntityTypesForListDisplay(
+      JNIEnv* env) const;
+
  private:
   ~EntityDataManagerAndroid() override;
 
