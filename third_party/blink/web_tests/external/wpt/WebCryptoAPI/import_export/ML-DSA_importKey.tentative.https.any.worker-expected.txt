@@ -9,9 +9,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-44 bits (jwk, object(kty, alg, pub), ML-DSA-44, true, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-public, buffer(1312), {name: ML-DSA-44}, true, [verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-public, buffer(1312), ML-DSA-44, true, [verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (spki, buffer(1334), {name: ML-DSA-44}, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (spki, buffer(1334), ML-DSA-44, true, [])
@@ -21,9 +21,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-44 bits (jwk, object(kty, alg, pub), ML-DSA-44, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-public, buffer(1312), {name: ML-DSA-44}, true, [])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-public, buffer(1312), ML-DSA-44, true, [])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (spki, buffer(1334), {name: ML-DSA-44}, true, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (spki, buffer(1334), ML-DSA-44, true, [verify, verify])
@@ -33,9 +33,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-44 bits (jwk, object(kty, alg, pub), ML-DSA-44, true, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-public, buffer(1312), {name: ML-DSA-44}, true, [verify, verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-public, buffer(1312), ML-DSA-44, true, [verify, verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (pkcs8, buffer(54), {name: ML-DSA-44}, true, [sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (pkcs8, buffer(54), ML-DSA-44, true, [sign])
@@ -45,9 +45,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-44 bits (jwk, object(priv, kty, alg, pub), ML-DSA-44, true, [sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-seed, buffer(32), {name: ML-DSA-44}, true, [sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-seed, buffer(32), ML-DSA-44, true, [sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (pkcs8, buffer(54), {name: ML-DSA-44}, true, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (pkcs8, buffer(54), ML-DSA-44, true, [sign, sign])
@@ -57,9 +57,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-44 bits (jwk, object(priv, kty, alg, pub), ML-DSA-44, true, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-seed, buffer(32), {name: ML-DSA-44}, true, [sign, sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-seed, buffer(32), ML-DSA-44, true, [sign, sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (spki, buffer(1334), {name: ML-DSA-44}, false, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (spki, buffer(1334), ML-DSA-44, false, [verify])
@@ -69,9 +69,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-44 bits (jwk, object(kty, alg, pub), ML-DSA-44, false, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-public, buffer(1312), {name: ML-DSA-44}, false, [verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-public, buffer(1312), ML-DSA-44, false, [verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (spki, buffer(1334), {name: ML-DSA-44}, false, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (spki, buffer(1334), ML-DSA-44, false, [])
@@ -81,9 +81,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-44 bits (jwk, object(kty, alg, pub), ML-DSA-44, false, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-public, buffer(1312), {name: ML-DSA-44}, false, [])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-public, buffer(1312), ML-DSA-44, false, [])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (spki, buffer(1334), {name: ML-DSA-44}, false, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (spki, buffer(1334), ML-DSA-44, false, [verify, verify])
@@ -93,9 +93,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-44 bits (jwk, object(kty, alg, pub), ML-DSA-44, false, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-public, buffer(1312), {name: ML-DSA-44}, false, [verify, verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-public, buffer(1312), ML-DSA-44, false, [verify, verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (pkcs8, buffer(54), {name: ML-DSA-44}, false, [sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (pkcs8, buffer(54), ML-DSA-44, false, [sign])
@@ -105,9 +105,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-44 bits (jwk, object(priv, kty, alg, pub), ML-DSA-44, false, [sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-seed, buffer(32), {name: ML-DSA-44}, false, [sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-seed, buffer(32), ML-DSA-44, false, [sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (pkcs8, buffer(54), {name: ML-DSA-44}, false, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (pkcs8, buffer(54), ML-DSA-44, false, [sign, sign])
@@ -117,9 +117,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-44 bits (jwk, object(priv, kty, alg, pub), ML-DSA-44, false, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-seed, buffer(32), {name: ML-DSA-44}, false, [sign, sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-44 bits (raw-seed, buffer(32), ML-DSA-44, false, [sign, sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (spki, buffer(1974), {name: ML-DSA-65}, true, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (spki, buffer(1974), ML-DSA-65, true, [verify])
@@ -129,9 +129,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-65 bits (jwk, object(kty, alg, pub), ML-DSA-65, true, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-public, buffer(1952), {name: ML-DSA-65}, true, [verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-public, buffer(1952), ML-DSA-65, true, [verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (spki, buffer(1974), {name: ML-DSA-65}, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (spki, buffer(1974), ML-DSA-65, true, [])
@@ -141,9 +141,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-65 bits (jwk, object(kty, alg, pub), ML-DSA-65, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-public, buffer(1952), {name: ML-DSA-65}, true, [])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-public, buffer(1952), ML-DSA-65, true, [])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (spki, buffer(1974), {name: ML-DSA-65}, true, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (spki, buffer(1974), ML-DSA-65, true, [verify, verify])
@@ -153,9 +153,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-65 bits (jwk, object(kty, alg, pub), ML-DSA-65, true, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-public, buffer(1952), {name: ML-DSA-65}, true, [verify, verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-public, buffer(1952), ML-DSA-65, true, [verify, verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (pkcs8, buffer(54), {name: ML-DSA-65}, true, [sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (pkcs8, buffer(54), ML-DSA-65, true, [sign])
@@ -165,9 +165,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-65 bits (jwk, object(priv, kty, alg, pub), ML-DSA-65, true, [sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-seed, buffer(32), {name: ML-DSA-65}, true, [sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-seed, buffer(32), ML-DSA-65, true, [sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (pkcs8, buffer(54), {name: ML-DSA-65}, true, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (pkcs8, buffer(54), ML-DSA-65, true, [sign, sign])
@@ -177,9 +177,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-65 bits (jwk, object(priv, kty, alg, pub), ML-DSA-65, true, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-seed, buffer(32), {name: ML-DSA-65}, true, [sign, sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-seed, buffer(32), ML-DSA-65, true, [sign, sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (spki, buffer(1974), {name: ML-DSA-65}, false, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (spki, buffer(1974), ML-DSA-65, false, [verify])
@@ -189,9 +189,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-65 bits (jwk, object(kty, alg, pub), ML-DSA-65, false, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-public, buffer(1952), {name: ML-DSA-65}, false, [verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-public, buffer(1952), ML-DSA-65, false, [verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (spki, buffer(1974), {name: ML-DSA-65}, false, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (spki, buffer(1974), ML-DSA-65, false, [])
@@ -201,9 +201,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-65 bits (jwk, object(kty, alg, pub), ML-DSA-65, false, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-public, buffer(1952), {name: ML-DSA-65}, false, [])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-public, buffer(1952), ML-DSA-65, false, [])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (spki, buffer(1974), {name: ML-DSA-65}, false, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (spki, buffer(1974), ML-DSA-65, false, [verify, verify])
@@ -213,9 +213,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-65 bits (jwk, object(kty, alg, pub), ML-DSA-65, false, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-public, buffer(1952), {name: ML-DSA-65}, false, [verify, verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-public, buffer(1952), ML-DSA-65, false, [verify, verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (pkcs8, buffer(54), {name: ML-DSA-65}, false, [sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (pkcs8, buffer(54), ML-DSA-65, false, [sign])
@@ -225,9 +225,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-65 bits (jwk, object(priv, kty, alg, pub), ML-DSA-65, false, [sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-seed, buffer(32), {name: ML-DSA-65}, false, [sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-seed, buffer(32), ML-DSA-65, false, [sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (pkcs8, buffer(54), {name: ML-DSA-65}, false, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (pkcs8, buffer(54), ML-DSA-65, false, [sign, sign])
@@ -237,9 +237,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-65 bits (jwk, object(priv, kty, alg, pub), ML-DSA-65, false, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-seed, buffer(32), {name: ML-DSA-65}, false, [sign, sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-65 bits (raw-seed, buffer(32), ML-DSA-65, false, [sign, sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (spki, buffer(2614), {name: ML-DSA-87}, true, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (spki, buffer(2614), ML-DSA-87, true, [verify])
@@ -249,9 +249,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-87 bits (jwk, object(kty, alg, pub), ML-DSA-87, true, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-public, buffer(2592), {name: ML-DSA-87}, true, [verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-public, buffer(2592), ML-DSA-87, true, [verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (spki, buffer(2614), {name: ML-DSA-87}, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (spki, buffer(2614), ML-DSA-87, true, [])
@@ -261,9 +261,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-87 bits (jwk, object(kty, alg, pub), ML-DSA-87, true, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-public, buffer(2592), {name: ML-DSA-87}, true, [])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-public, buffer(2592), ML-DSA-87, true, [])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (spki, buffer(2614), {name: ML-DSA-87}, true, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (spki, buffer(2614), ML-DSA-87, true, [verify, verify])
@@ -273,9 +273,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-87 bits (jwk, object(kty, alg, pub), ML-DSA-87, true, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-public, buffer(2592), {name: ML-DSA-87}, true, [verify, verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-public, buffer(2592), ML-DSA-87, true, [verify, verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (pkcs8, buffer(54), {name: ML-DSA-87}, true, [sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (pkcs8, buffer(54), ML-DSA-87, true, [sign])
@@ -285,9 +285,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-87 bits (jwk, object(priv, kty, alg, pub), ML-DSA-87, true, [sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-seed, buffer(32), {name: ML-DSA-87}, true, [sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-seed, buffer(32), ML-DSA-87, true, [sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (pkcs8, buffer(54), {name: ML-DSA-87}, true, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (pkcs8, buffer(54), ML-DSA-87, true, [sign, sign])
@@ -297,9 +297,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-87 bits (jwk, object(priv, kty, alg, pub), ML-DSA-87, true, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-seed, buffer(32), {name: ML-DSA-87}, true, [sign, sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-seed, buffer(32), ML-DSA-87, true, [sign, sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (spki, buffer(2614), {name: ML-DSA-87}, false, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (spki, buffer(2614), ML-DSA-87, false, [verify])
@@ -309,9 +309,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-87 bits (jwk, object(kty, alg, pub), ML-DSA-87, false, [verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-public, buffer(2592), {name: ML-DSA-87}, false, [verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-public, buffer(2592), ML-DSA-87, false, [verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (spki, buffer(2614), {name: ML-DSA-87}, false, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (spki, buffer(2614), ML-DSA-87, false, [])
@@ -321,9 +321,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-87 bits (jwk, object(kty, alg, pub), ML-DSA-87, false, [])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-public, buffer(2592), {name: ML-DSA-87}, false, [])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-public, buffer(2592), ML-DSA-87, false, [])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (spki, buffer(2614), {name: ML-DSA-87}, false, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (spki, buffer(2614), ML-DSA-87, false, [verify, verify])
@@ -333,9 +333,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-87 bits (jwk, object(kty, alg, pub), ML-DSA-87, false, [verify, verify])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-public, buffer(2592), {name: ML-DSA-87}, false, [verify, verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-public, buffer(2592), ML-DSA-87, false, [verify, verify])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (pkcs8, buffer(54), {name: ML-DSA-87}, false, [sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (pkcs8, buffer(54), ML-DSA-87, false, [sign])
@@ -345,9 +345,9 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-87 bits (jwk, object(priv, kty, alg, pub), ML-DSA-87, false, [sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-seed, buffer(32), {name: ML-DSA-87}, false, [sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-seed, buffer(32), ML-DSA-87, false, [sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (pkcs8, buffer(54), {name: ML-DSA-87}, false, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (pkcs8, buffer(54), ML-DSA-87, false, [sign, sign])
@@ -357,8 +357,8 @@ Found 180 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Good parameters: ML-DSA-87 bits (jwk, object(priv, kty, alg, pub), ML-DSA-87, false, [sign, sign])
   assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-seed, buffer(32), {name: ML-DSA-87}, false, [sign, sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 [FAIL] Good parameters: ML-DSA-87 bits (raw-seed, buffer(32), ML-DSA-87, false, [sign, sign])
-  assert_unreached: Threw an unexpected error: TypeError: Failed to execute 'importKey' on 'SubtleCrypto': Invalid keyFormat argument Reached unreachable code
+  assert_unreached: Threw an unexpected error: NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name Reached unreachable code
 Harness: the test ran to completion.
 

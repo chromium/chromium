@@ -309,7 +309,11 @@ Status DeriveKey(const blink::WebCryptoAlgorithm& algorithm,
   }
 
   // Create the key using the derived bytes.
-  return ImportKey(blink::kWebCryptoKeyFormatRaw, derived_bytes,
+  //
+  // Use "raw-secret" as the key format.
+  //
+  // https://wicg.github.io/webcrypto-modern-algos/#subtlecrypto-interface-keyformat
+  return ImportKey(blink::kWebCryptoKeyFormatRawSecret, derived_bytes,
                    import_algorithm, extractable, usages, derived_key);
 }
 

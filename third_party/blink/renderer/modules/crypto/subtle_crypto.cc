@@ -425,7 +425,15 @@ ScriptPromise<CryptoKey> SubtleCrypto::importKey(
     //
     //  (2) Let keyData be the result of getting a copy of the bytes held by
     //      the keyData parameter passed to the importKey method.
+    //
+    // This section doesn't mention the new key formats added in
+    // https://wicg.github.io/webcrypto-modern-algos/#subtlecrypto-interface-keyformat
+    // yet; assume for now that they should be treated in the same way.
     case kWebCryptoKeyFormatRaw:
+    case kWebCryptoKeyFormatRawPublic:
+    case kWebCryptoKeyFormatRawPrivate:
+    case kWebCryptoKeyFormatRawSeed:
+    case kWebCryptoKeyFormatRawSecret:
     case kWebCryptoKeyFormatPkcs8:
     case kWebCryptoKeyFormatSpki:
       switch (raw_key_data->GetContentType()) {

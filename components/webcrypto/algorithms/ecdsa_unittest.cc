@@ -158,6 +158,7 @@ blink::WebCryptoKeyUsageMask GetExpectedUsagesForKeyImport(
   switch (key_format) {
     case blink::kWebCryptoKeyFormatRaw:
     case blink::kWebCryptoKeyFormatSpki:
+    case blink::kWebCryptoKeyFormatRawPublic:
       return kPublicUsages;
     case blink::kWebCryptoKeyFormatPkcs8:
       return kPrivateUsages;
@@ -166,6 +167,11 @@ blink::WebCryptoKeyUsageMask GetExpectedUsagesForKeyImport(
       if (!key)
         ADD_FAILURE() << "Missing key property";
       return key->contains("d") ? kPrivateUsages : kPublicUsages;
+    }
+    case blink::kWebCryptoKeyFormatRawPrivate:
+    case blink::kWebCryptoKeyFormatRawSeed:
+    case blink::kWebCryptoKeyFormatRawSecret: {
+      ADD_FAILURE() << "Unexpected key format";
     }
   }
 

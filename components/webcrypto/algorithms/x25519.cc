@@ -141,6 +141,7 @@ Status X25519Implementation::ImportKey(
     blink::WebCryptoKey* key) const {
   switch (format) {
     case blink::kWebCryptoKeyFormatRaw:
+    case blink::kWebCryptoKeyFormatRawPublic:
       return ImportKeyRaw(key_data, algorithm, extractable, usages, key);
     case blink::kWebCryptoKeyFormatPkcs8:
       return ImportKeyPkcs8(key_data, algorithm, extractable, usages, key);
@@ -158,6 +159,7 @@ Status X25519Implementation::ExportKey(blink::WebCryptoKeyFormat format,
                                        std::vector<uint8_t>* buffer) const {
   switch (format) {
     case blink::kWebCryptoKeyFormatRaw:
+    case blink::kWebCryptoKeyFormatRawPublic:
       return ExportKeyRaw(key, buffer);
     case blink::kWebCryptoKeyFormatPkcs8:
       return ExportKeyPkcs8(key, buffer);

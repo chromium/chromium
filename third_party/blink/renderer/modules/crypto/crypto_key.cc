@@ -220,7 +220,25 @@ bool CryptoKey::ParseFormat(const String& format_string,
     return true;
   }
 
-  exception_state.ThrowTypeError("Invalid keyFormat argument");
+  if (format_string == "raw-public") {
+    format = kWebCryptoKeyFormatRawPublic;
+    return true;
+  }
+  if (format_string == "raw-private") {
+    format = kWebCryptoKeyFormatRawPrivate;
+    return true;
+  }
+  if (format_string == "raw-seed") {
+    format = kWebCryptoKeyFormatRawSeed;
+    return true;
+  }
+  if (format_string == "raw-secret") {
+    format = kWebCryptoKeyFormatRawSecret;
+    return true;
+  }
+
+  exception_state.ThrowTypeError("Invalid keyFormat argument: " +
+                                 format_string);
   return false;
 }
 

@@ -153,6 +153,7 @@ class HmacImplementation : public AlgorithmImplementation {
                    blink::WebCryptoKey* key) const override {
     switch (format) {
       case blink::kWebCryptoKeyFormatRaw:
+      case blink::kWebCryptoKeyFormatRawSecret:
         return ImportKeyRaw(key_data, algorithm, extractable, usages, key);
       case blink::kWebCryptoKeyFormatJwk:
         return ImportKeyJwk(key_data, algorithm, extractable, usages, key);
@@ -166,6 +167,7 @@ class HmacImplementation : public AlgorithmImplementation {
                    std::vector<uint8_t>* buffer) const override {
     switch (format) {
       case blink::kWebCryptoKeyFormatRaw:
+      case blink::kWebCryptoKeyFormatRawSecret:
         return ExportKeyRaw(key, buffer);
       case blink::kWebCryptoKeyFormatJwk:
         return ExportKeyJwk(key, buffer);

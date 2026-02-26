@@ -36,6 +36,7 @@ class HkdfImplementation : public AlgorithmImplementation {
                    blink::WebCryptoKey* key) const override {
     switch (format) {
       case blink::kWebCryptoKeyFormatRaw:
+      case blink::kWebCryptoKeyFormatRawSecret:
         return ImportKeyRaw(key_data, algorithm, extractable, usages, key);
       default:
         return Status::ErrorUnsupportedImportKeyFormat();

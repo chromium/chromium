@@ -62,6 +62,10 @@ enum WebCryptoKeyFormat {
   kWebCryptoKeyFormatPkcs8,
   kWebCryptoKeyFormatSpki,
   kWebCryptoKeyFormatJwk,
+  kWebCryptoKeyFormatRawPublic,
+  kWebCryptoKeyFormatRawPrivate,
+  kWebCryptoKeyFormatRawSeed,
+  kWebCryptoKeyFormatRawSecret,
 };
 
 class WebCryptoKeyAlgorithm;
