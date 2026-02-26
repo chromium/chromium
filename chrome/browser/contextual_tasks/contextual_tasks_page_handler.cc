@@ -67,8 +67,11 @@ PopulateContextualResources(contextual_tasks::ContextualTaskContext* context) {
     const GURL url = attachment.GetURL();
     const std::string title = base::UTF16ToUTF8(attachment.GetTitle());
 
-    // Skip if URL is invalid, or if title is empty.
-    if (!url.is_valid() || title.empty()) {
+    // Skip if the title is empty. Empty URLs are right now allowed for PDF /
+    // images.
+    if (title.empty() ||
+        (!url.is_valid() && attachment.GetResourceType() ==
+                                contextual_tasks::ResourceType::kWebpage)) {
       continue;
     }
 
