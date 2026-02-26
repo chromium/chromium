@@ -1075,6 +1075,8 @@ const base::FeatureParam<int> kGlicGuestUrlPresetType{
 
 BASE_FEATURE(kGlicContextualCueBubble, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicClientZoomControl, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kActorFormFillingServiceEnableAddress,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

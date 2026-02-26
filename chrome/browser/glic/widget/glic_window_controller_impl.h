@@ -178,6 +178,7 @@ class GlicWindowControllerImpl
   // LocalHotkeyManager::Panel:
   bool HasFocus() override;
   bool ActivateBrowser() override;
+  void Zoom(mojom::ZoomAction zoom_action) override;
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
 
   HostManager& host_manager() override;

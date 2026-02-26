@@ -72,6 +72,9 @@ TEST_F(GlicPanelHotkeyDelegateTest, GetSupportedHotkeys) {
   const std::vector<LocalHotkeyManager::Hotkey> kExpectedHotkeys = {
       LocalHotkeyManager::Hotkey::kClose,
       LocalHotkeyManager::Hotkey::kFocusToggle,
+      LocalHotkeyManager::Hotkey::kZoomIn,
+      LocalHotkeyManager::Hotkey::kZoomOut,
+      LocalHotkeyManager::Hotkey::kZoomReset,
 #if BUILDFLAG(IS_WIN)
       LocalHotkeyManager::Hotkey::kTitleBarContextMenu,
 #endif

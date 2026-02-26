@@ -7,6 +7,7 @@ import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
+import type {ZoomAction} from './glic.mojom-webui.js';
 import {PanelStateKind, PrepareForClientResult, ProfileReadyState, WebUiState} from './glic.mojom-webui.js';
 import type {ApiHostEmbedder} from './glic_api_impl/host/glic_api_host.js';
 import {WebClientState} from './glic_api_impl/host/glic_api_host.js';
@@ -750,6 +751,10 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
         'sidePanel', this.panelStateKind === PanelStateKind.kAttached);
     panelStateKindSection.classList.toggle(
         'floating', this.panelStateKind === PanelStateKind.kDetached);
+  }
+
+  zoom(zoomAction: ZoomAction) {
+    this.webview?.zoom(zoomAction);
   }
 
   // Called before the WebUI is shown. If we're in an error state, automatically

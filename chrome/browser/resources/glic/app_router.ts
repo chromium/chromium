@@ -8,7 +8,8 @@ import {FreAppController} from '/fre/fre_app_controller.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {type PanelStateKind, ProfileReadyState} from './glic.mojom-webui.js';
+import type {PanelStateKind, ZoomAction} from './glic.mojom-webui.js';
+import {ProfileReadyState} from './glic.mojom-webui.js';
 import {GlicAppController} from './glic_app_controller.js';
 
 export enum AppView {
@@ -38,6 +39,8 @@ export class AppRouter {
         this.intentToShow_.bind(this));
     this.browserProxy.pageCallbackRouter.updatePageState.addListener(
         this.updatePageState_.bind(this));
+    this.browserProxy.pageCallbackRouter.zoom.addListener(
+        this.zoom_.bind(this));
     // TODO(crbug.com/454120908): Remove this method after WebContents warming
     // is rolled out.
     this.browserProxy.pageCallbackRouter.setProfileReadyState.addListener(
@@ -107,6 +110,10 @@ export class AppRouter {
   private updatePageState_(panelStateKind: PanelStateKind) {
     this.currentPanelStateKind = panelStateKind;
     this.glicController?.updatePageState(panelStateKind);
+  }
+
+  private zoom_(zoomAction: ZoomAction) {
+    this.glicController?.zoom(zoomAction);
   }
 
   close(): void {

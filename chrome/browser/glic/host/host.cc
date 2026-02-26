@@ -465,6 +465,12 @@ void Host::NotifyWindowIntentToShow() {
   }
 }
 
+void Host::Zoom(mojom::ZoomAction zoom_action) {
+  if (GlicPageHandler* handler = page_handler()) {
+    handler->Zoom(zoom_action);
+  }
+}
+
 void Host::UnsetWebClient(GlicWebClientAccess* web_client) {
   if (!handler_info_ || handler_info_->web_client != web_client) {
     return;

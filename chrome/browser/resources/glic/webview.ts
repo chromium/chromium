@@ -10,6 +10,7 @@ import type {WebViewType} from '/shared/web_view_type.js';
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
+import {ZoomAction} from './glic.mojom-webui.js';
 import type {Subscriber} from './glic_api/glic_api.js';
 import {DetailedWebClientState, GlicApiCommunicator, GlicApiHost, WebClientState} from './glic_api_impl/host/glic_api_host.js';
 import type {ApiHostEmbedder} from './glic_api_impl/host/glic_api_host.js';
@@ -233,6 +234,52 @@ export class WebviewController {
       this.communicator = undefined;
     }
     this.webClientState.assignAndSignal(webClientState);
+  }
+
+  zoom(zoomAction: ZoomAction) {
+    // `WebViewType` is a union of `chrome.webviewTag.WebView` and
+    // `SlimWebViewElement`. Only full webviews support zoom.
+    if (!isFullWebView(this.webview)) {
+      return;
+    }
+
+    // Cast to any because the WebView type definition seems to be missing
+    // `getZoom` and `setZoom`. We've already checked that this.webview is a
+    // full WebView so this should be safe.
+    const webview = this.webview as any;
+
+    if (zoomAction === ZoomAction.kReset) {
+      webview.setZoom(1.0);
+      return;
+    }
+
+    const zoomFactors = [
+      0.25,
+      0.33,
+      0.5,
+      0.67,
+      0.75,
+      0.8,
+      0.9,
+      1.0,
+      1.1,
+      1.25,
+      1.5,
+      1.75,
+      2.0,
+    ];
+
+    webview.getZoom((currentZoom: number) => {
+      // Find the closest standard zoom level to move to given the current zoom
+      // level and zoom action.
+      const newFactor = zoomAction === ZoomAction.kZoomIn ?
+          zoomFactors.find(f => f - currentZoom >= 0.01) :
+          zoomFactors.findLast(f => currentZoom - f >= 0.01);
+
+      if (newFactor !== undefined) {
+        webview.setZoom(newFactor);
+      }
+    });
   }
 
   waitingOnPanelWillOpen(): boolean {

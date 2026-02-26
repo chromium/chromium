@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_close_options.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -39,6 +40,12 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
     // Toggle focus between the Glic window and the last active
     // browser window.
     kFocusToggle,
+    // Zoom in the web client.
+    kZoomIn,
+    // Zoom out the web client.
+    kZoomOut,
+    // Reset zoom level of the web client.
+    kZoomReset,
 #if BUILDFLAG(IS_WIN)
     // Show the title bar context menu
     kTitleBarContextMenu,
@@ -53,6 +60,7 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
     virtual bool IsShowing() const = 0;
     virtual void Close(const CloseOptions& options) = 0;
     virtual bool ActivateBrowser() = 0;
+    virtual void Zoom(mojom::ZoomAction action) = 0;
     virtual void ShowTitleBarContextMenuAt(gfx::Point event_loc) = 0;
 #if !BUILDFLAG(IS_ANDROID)
     virtual base::WeakPtr<views::View> GetView() = 0;
@@ -65,6 +73,12 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
         return "kClose";
       case Hotkey::kFocusToggle:
         return "kFocusToggle";
+      case Hotkey::kZoomIn:
+        return "kZoomIn";
+      case Hotkey::kZoomOut:
+        return "kZoomOut";
+      case Hotkey::kZoomReset:
+        return "kZoomReset";
 #if BUILDFLAG(IS_WIN)
       case Hotkey::kTitleBarContextMenu:
         return "kTitleBarContextMenu";

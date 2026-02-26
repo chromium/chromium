@@ -53,10 +53,31 @@ constexpr std::array kTitleBarContextMenuAccelerators = {
     ui::Accelerator{ui::VKEY_SPACE, ui::EF_ALT_DOWN}};
 #endif
 
+#if BUILDFLAG(IS_MAC)
+constexpr int kZoomModifier = ui::EF_COMMAND_DOWN;
+#else
+constexpr int kZoomModifier = ui::EF_CONTROL_DOWN;
+#endif
+
+constexpr std::array kZoomInAccelerators = {
+    ui::Accelerator{ui::VKEY_OEM_PLUS, kZoomModifier},
+    ui::Accelerator{ui::VKEY_ADD, kZoomModifier}};
+
+constexpr std::array kZoomOutAccelerators = {
+    ui::Accelerator{ui::VKEY_OEM_MINUS, kZoomModifier},
+    ui::Accelerator{ui::VKEY_SUBTRACT, kZoomModifier}};
+
+constexpr std::array kZoomResetAccelerators = {
+    ui::Accelerator{ui::VKEY_0, kZoomModifier},
+    ui::Accelerator{ui::VKEY_NUMPAD0, kZoomModifier}};
+
 constexpr auto kHotkeyToStaticAcceleratorsMap =
     base::MakeFixedFlatMap<LocalHotkeyManager::Hotkey,
                            base::span<const ui::Accelerator>>(
         {{LocalHotkeyManager::Hotkey::kClose, kCloseAccelerators},
+         {LocalHotkeyManager::Hotkey::kZoomIn, kZoomInAccelerators},
+         {LocalHotkeyManager::Hotkey::kZoomOut, kZoomOutAccelerators},
+         {LocalHotkeyManager::Hotkey::kZoomReset, kZoomResetAccelerators},
 #if BUILDFLAG(IS_WIN)
          {LocalHotkeyManager::Hotkey::kTitleBarContextMenu,
           kTitleBarContextMenuAccelerators}

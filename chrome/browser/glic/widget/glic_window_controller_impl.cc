@@ -969,6 +969,10 @@ bool GlicWindowControllerImpl::ActivateBrowser() {
   return false;
 }
 
+void GlicWindowControllerImpl::Zoom(mojom::ZoomAction zoom_action) {
+  host_.Zoom(zoom_action);
+}
+
 void GlicWindowControllerImpl::CloseInstanceWithFrame(
     content::RenderFrameHost* render_frame_host) {
   NOTREACHED();

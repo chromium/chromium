@@ -115,6 +115,13 @@ enum ProfileReadyState {
   kDisabledByAdmin,
 };
 
+// Directions for adjusting the zoom level of the WebUI page's hosted webview.
+enum ZoomAction {
+  kZoomIn,
+  kZoomOut,
+  kReset,
+};
+
 // A minimal interface for the initial handshake.
 interface PreloadPage {
   // The one and only method needed to unblock the frontend.
@@ -134,6 +141,9 @@ interface Page {
 
   // Called to inform the page of the UI surface it is being rendered in.
   UpdatePageState(PanelStateKind panelStateKind);
+
+  // Notifies the page to adjust the zoom level of its hosted webview.
+  Zoom(ZoomAction action);
 };
 
 // Page handler for pre-loading tasks.

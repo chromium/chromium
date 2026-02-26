@@ -190,6 +190,10 @@ bool GlicFloatingUi::ActivateBrowser() {
   return false;
 }
 
+void GlicFloatingUi::Zoom(mojom::ZoomAction zoom_action) {
+  delegate_->host().Zoom(zoom_action);
+}
+
 void GlicFloatingUi::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
 #if BUILDFLAG(IS_WIN)
   views::View::ConvertPointToScreen(GetGlicView(), &event_loc);

@@ -240,6 +240,9 @@ class Host : public GlicSharingManagerProvider {
   // Signals the glic WebUI that the glic window will be shown soon.
   void NotifyWindowIntentToShow();
 
+  // Signals the glic WebUI to adjust the zoom level of its hosted webview.
+  void Zoom(mojom::ZoomAction zoom_action);
+
   // GlicSharingManagerProvider Implementation.
   GlicSharingManager& sharing_manager() override;
 

@@ -2536,6 +2536,10 @@ void GlicPageHandler::NotifyWindowIntentToShow() {
   page_->IntentToShow();
 }
 
+void GlicPageHandler::Zoom(mojom::ZoomAction zoom_action) {
+  page_->Zoom(zoom_action);
+}
+
 content::RenderFrameHost* GlicPageHandler::GetGuestMainFrame() {
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   extensions::WebViewGuest* web_view_guest = nullptr;
