@@ -4,7 +4,6 @@
 
 #include "content/browser/media/media_internals_ui.h"
 
-#include "base/command_line.h"
 #include "base/version_info/version_info.h"
 #include "content/browser/media/media_internals_handler.h"
 #include "content/browser/resources/media/grit/media_internals_resources.h"
@@ -12,9 +11,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "media/base/media_switches.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace content {
