@@ -12,8 +12,19 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/password_favicon_loader.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 
 namespace autofill {
+
+// Creates the content view for regular suggestions like address and credit
+// cards. Views for suggestions of other types and special suggestions are
+// created by corresponding `Create*PopupRowContentView()` methods.
+std::unique_ptr<PopupRowContentView> CreatePopupRowContentView(
+    const Suggestion& suggestion,
+    std::optional<user_education::DisplayNewBadge> show_new_badge,
+    FillingProduct main_filling_product,
+    std::optional<AutofillPopupController::SuggestionFilterMatch> filter_match);
 
 // Creates a row view depending on the suggestion type at `line_number`.
 // If `filter_match` is provided, it is used for highlighting the suggestion

@@ -43,6 +43,7 @@ class AutofillSuggestionController;
 class PopupSeparatorView;
 class PopupTitleView;
 class PopupWarningView;
+class PopupLoadingView;
 
 // Sub-popups and their parent popups are connected by providing children
 // with links to their parents. This interface defines the API exposed by
@@ -88,7 +89,8 @@ class PopupViewViews : public PopupBaseView,
   using RowPointer = std::variant<PopupRowView*,
                                   PopupSeparatorView*,
                                   PopupTitleView*,
-                                  PopupWarningView*>;
+                                  PopupWarningView*,
+                                  PopupLoadingView*>;
 
   // The maximum width of the popup.
   static constexpr int kAutofillPopupMaxWidth = 456;

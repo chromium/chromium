@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_loading_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_no_suggestions_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
@@ -1052,6 +1053,13 @@ void PopupViewViews::CreateSuggestionViews() {
               body_container->AddChildView(std::make_unique<PopupWarningView>(
                   suggestions[current_line_number])));
           break;
+        case SuggestionType::kLoadingThrobber: {
+          rows_.push_back(
+              body_container->AddChildView(std::make_unique<PopupLoadingView>(
+                  suggestions[current_line_number]
+                      .expected_number_of_suggestions.value_or(1))));
+          break;
+        }
         // The default section contains all selectable rows and includes
         // autocomplete, address, credit cards and passwords.
         default:
