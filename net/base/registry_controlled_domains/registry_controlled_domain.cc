@@ -182,7 +182,7 @@ RegistryLengthOutput GetRegistryLengthInTrimmedHost(
     UnknownRegistryFilter unknown_filter,
     PrivateRegistryFilter private_filter) {
   size_t length;
-  std::optional<int> type = LookupSuffixInReversedSet(
+  std::optional<DomainRuleTags> type = LookupSuffixInReversedSet(
       g_graph, private_filter == INCLUDE_PRIVATE_REGISTRIES, host, &length);
 
   CHECK_LE(length, host.size());
@@ -202,7 +202,7 @@ RegistryLengthOutput GetRegistryLengthInTrimmedHost(
 
   // Exception rules override wildcard rules when the domain is an exact
   // match, but wildcards take precedence when there's a subdomain.
-  if (type.value() & kDafsaWildcardRule) {
+  if (type.value().Has(DomainRuleTag::kWildcard)) {
     // If the complete host matches, then the host is the wildcard suffix, so
     // return 0.
     if (length == host.size()) {
@@ -225,7 +225,7 @@ RegistryLengthOutput GetRegistryLengthInTrimmedHost(
     return {host.size() - preceding_dot - 1, false};
   }
 
-  if (type.value() & kDafsaExceptionRule) {
+  if (type.value().Has(DomainRuleTag::kException)) {
     size_t first_dot = host.find_first_of('.', host.size() - length);
     if (first_dot == std::string_view::npos) {
       // If we get here, we had an exception rule with no dots (e.g.

@@ -207,22 +207,25 @@ std::optional<int> LookupStringInFixedSet(base::span<const uint8_t> graph,
 // LookupStringInFixedSet::Advance() at compile time. Tests on x86_64 linux
 // indicated about 10% increased runtime cost for GetRegistryLength() in average
 // if the implementation of this function was separated from the lookup methods.
-std::optional<int> LookupSuffixInReversedSet(base::span<const uint8_t> graph,
-                                             bool include_private,
-                                             std::string_view host,
-                                             size_t* suffix_length) {
+std::optional<DomainRuleTags> LookupSuffixInReversedSet(
+    base::span<const uint8_t> graph,
+    bool include_private,
+    std::string_view host,
+    size_t* suffix_length) {
   FixedSetIncrementalLookup lookup(graph);
   *suffix_length = 0;
-  std::optional<int> result;
+  std::optional<DomainRuleTags> result;
   std::string_view::const_iterator pos = host.end();
   // Look up host from right to left.
   while (pos != host.begin() && lookup.Advance(*--pos)) {
     // Only host itself or a part that follows a dot can match.
     if (pos == host.begin() || *(pos - 1) == '.') {
-      std::optional<int> value = lookup.GetResultForCurrentSequence();
+      std::optional<DomainRuleTags> value =
+          lookup.GetResultForCurrentSequence().transform(
+              DomainRuleTags::FromEnumBitmask);
       if (value.has_value()) {
         // Break if private and private rules should be excluded.
-        if ((value.value() & kDafsaPrivateRule) && !include_private) {
+        if (value.value().Has(DomainRuleTag::kPrivate) && !include_private) {
           break;
         }
         // Save length and return value. Since hosts are looked up from right to

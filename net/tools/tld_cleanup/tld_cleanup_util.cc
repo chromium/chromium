@@ -42,16 +42,16 @@ constexpr char kGperfPreamble[] =
 }  // namespace
 
 int Rule::Serialize() const {
-  int type = 0;
+  DomainRuleTags type;
   if (exception) {
-    type = kDafsaExceptionRule;
+    type = {DomainRuleTag::kException};
   } else if (wildcard) {
-    type = kDafsaWildcardRule;
+    type = {DomainRuleTag::kWildcard};
   }
   if (is_private) {
-    type += kDafsaPrivateRule;
+    type.Put(DomainRuleTag::kPrivate);
   }
-  return type;
+  return type.ToEnumBitmask();
 }
 
 std::string RulesToGperf(const RuleMap& rules) {
