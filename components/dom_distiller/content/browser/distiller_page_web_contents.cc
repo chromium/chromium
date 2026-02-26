@@ -226,7 +226,12 @@ void DistillerPageWebContents::ExecuteJavaScript() {
   content::WebContentsObserver::Observe(nullptr);
   // Stop any pending navigation since the intent is to distill the current
   // page.
-  source_page_handle_->web_contents()->Stop();
+  // Don't stop the navigation of the WebContents we don't own, to prevent any
+  // negative impact to the embedder's WebContents (e.g. don't stop a PDF from
+  // loading in the main renderer).
+  if (source_page_handle_->owned()) {
+    source_page_handle_->web_contents()->Stop();
+  }
   RunIsolatedJavaScript(
       &TargetRenderFrameHost(), script_,
       base::BindOnce(&DistillerPageWebContents::OnWebContentsDistillationDone,

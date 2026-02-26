@@ -25,8 +25,10 @@ class SourcePageHandleWebContents : public SourcePageHandle {
   SourcePageHandleWebContents(content::WebContents* web_contents, bool owned);
   ~SourcePageHandleWebContents() override;
 
-  // Retreives the WebContents. The SourcePageHandleWebContents keeps ownership.
+  // Retrieves the WebContents. The SourcePageHandleWebContents keeps ownership.
   content::WebContents* web_contents() { return web_contents_; }
+
+  bool owned() { return owned_; }
 
  private:
   // The WebContents this class holds.
