@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/test/browser_event_waiter.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_test.h"
@@ -34,62 +35,6 @@ class MockBrowserCollectionObserver
   MOCK_METHOD(void, OnBrowserClosed, (BrowserWindowInterface * browser));
   MOCK_METHOD(void, OnBrowserActivated, (BrowserWindowInterface * browser));
   MOCK_METHOD(void, OnBrowserDeactivated, (BrowserWindowInterface * browser));
-};
-
-// TODO(crbug.com/480103891): Refactor this out with the rest of the utilities
-// with similar functionality in ui_test_utils and interactive_test_utils.
-class BrowserEventWaiter : public BrowserCollectionObserver {
- public:
-  enum class Event { CREATED, CLOSED, ACTIVATED, DEACTIVATED };
-
-  // Start observing a GlobalBrowserCollection for |event|. The destructor will
-  // wait for the event to happen (if it hasn't already).
-  explicit BrowserEventWaiter(Event event)
-      : BrowserEventWaiter(event, nullptr) {}
-
-  // Start observing a GlobalBrowserCollection for |event| on |browser|. The
-  // destructor will wait for the event to happen (if it hasn't already).
-  BrowserEventWaiter(Event event, BrowserWindowInterface* browser)
-      : event_(event), browser_(browser) {
-    browser_collection_observation_.Observe(
-        GlobalBrowserCollection::GetInstance());
-  }
-
-  // Block and wait for the desired event, or finish immediately if it has
-  // already happened.
-  ~BrowserEventWaiter() override { run_loop_.Run(); }
-
- private:
-  // BrowserCollectionObserver:
-  void OnBrowserCreated(BrowserWindowInterface* browser) override {
-    OnBrowserEvent(Event::CREATED, browser);
-  }
-
-  void OnBrowserClosed(BrowserWindowInterface* browser) override {
-    OnBrowserEvent(Event::CLOSED, browser);
-  }
-
-  void OnBrowserActivated(BrowserWindowInterface* browser) override {
-    OnBrowserEvent(Event::ACTIVATED, browser);
-  }
-
-  void OnBrowserDeactivated(BrowserWindowInterface* browser) override {
-    OnBrowserEvent(Event::DEACTIVATED, browser);
-  }
-
-  // Called when any event comes in. Causes the RunLoop to quit if the event is
-  // the one we're interested in.
-  void OnBrowserEvent(Event event, BrowserWindowInterface* browser) {
-    if (event == event_ && (browser_ == nullptr || browser == browser_)) {
-      run_loop_.Quit();
-    }
-  }
-
-  Event event_;
-  BrowserWindowInterface* browser_;
-  base::RunLoop run_loop_;
-  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
-      browser_collection_observation_{this};
 };
 
 // Runs on all desktop platforms except ChromeOS (including desktop Android),

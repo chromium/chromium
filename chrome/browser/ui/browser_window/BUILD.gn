@@ -64,6 +64,7 @@ if (!is_android) {
         "//base",
         "//base/test:test_support",
         "//chrome/browser/ui",
+        "//chrome/browser/ui/browser_window/test:test_support",
         "//chrome/test:test_support",
         "//content/test:test_support",
         "//testing/gtest",
@@ -77,7 +78,7 @@ if (!is_android) {
 if (!is_android || is_desktop_android) {
   source_set("browser_tests") {
     testonly = true
-    sources = []
+    sources = [ "internal/profile_browser_collection_browsertest.cc" ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     deps = [
       ":browser_window",
@@ -85,6 +86,7 @@ if (!is_android || is_desktop_android) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window/test:test_support",
       "//chrome/test:test_support",
       "//content/test:test_support",
       "//testing/gtest",
@@ -99,7 +101,6 @@ if (!is_android || is_desktop_android) {
     } else {
       sources += [
         "internal/create_browser_window_browsertest.cc",
-        "internal/profile_browser_collection_browsertest.cc",
         "public/browser_window_interface_iterator_browsertest.cc",
       ]
     }
