@@ -1148,16 +1148,18 @@ StyleRuleCustomMedia::StyleRuleCustomMedia(AtomicString name,
                                            MediaQuerySet* media_query_set)
     : StyleRuleBase(kCustomMedia),
       name_(std::move(name)),
-      value_(media_query_set) {}
+      media_query_value_(media_query_set) {
+  CHECK(media_query_set);
+}
 
 StyleRuleCustomMedia::StyleRuleCustomMedia(AtomicString name, bool value)
-    : StyleRuleBase(kCustomMedia), name_(std::move(name)), value_(value) {}
+    : StyleRuleBase(kCustomMedia),
+      name_(std::move(name)),
+      boolean_value_(value) {}
 
 void StyleRuleCustomMedia::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleBase::TraceAfterDispatch(visitor);
-  if (IsMediaQueryValue()) {
-    visitor->Trace(std::get<Member<const MediaQuerySet>>(value_));
-  }
+  visitor->Trace(media_query_value_);
 }
 
 unsigned MixinParameterBindings::ComputeHash() const {

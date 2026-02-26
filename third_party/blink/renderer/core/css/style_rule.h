@@ -743,34 +743,34 @@ class CORE_EXPORT StyleRuleContentsStatement : public StyleRuleBase {
   Member<StyleRule> fake_parent_rule_for_fallback_;
 };
 
+// https://drafts.csswg.org/mediaqueries-5/#at-ruledef-custom-media
 class CORE_EXPORT StyleRuleCustomMedia : public StyleRuleBase {
  public:
   StyleRuleCustomMedia(AtomicString name, MediaQuerySet* media_query_set);
   StyleRuleCustomMedia(AtomicString name, bool value);
 
   const String& GetName() const { return name_; }
-  bool IsMediaQueryValue() const {
-    return std::holds_alternative<Member<const MediaQuerySet>>(value_);
-  }
-  bool IsBooleanValue() const { return std::holds_alternative<bool>(value_); }
+  bool IsMediaQueryValue() const { return media_query_value_; }
+  bool IsBooleanValue() const { return !media_query_value_; }
   const MediaQuerySet* GetMediaQueryValue() const {
-    DCHECK(std::holds_alternative<Member<const MediaQuerySet>>(value_));
-    return std::get<Member<const MediaQuerySet>>(value_);
+    CHECK(IsMediaQueryValue());
+    return media_query_value_;
   }
   bool GetBooleanValue() const {
-    DCHECK(std::holds_alternative<bool>(value_));
-    return std::get<bool>(value_);
+    CHECK(IsBooleanValue());
+    return boolean_value_;
   }
   void SetMediaQueries(const MediaQuerySet* media_queries) {
-    value_ = media_queries;
+    CHECK(media_queries);
+    media_query_value_ = media_queries;
   }
 
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   AtomicString name_;
-  using CustomMediaValue = std::variant<Member<const MediaQuerySet>, bool>;
-  CustomMediaValue value_;
+  Member<const MediaQuerySet> media_query_value_;
+  bool boolean_value_ = false;
 };
 
 template <>
