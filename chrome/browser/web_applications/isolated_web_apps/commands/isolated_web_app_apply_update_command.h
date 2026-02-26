@@ -42,8 +42,6 @@ enum class InstallResultCode;
 
 namespace web_app {
 
-class FinalizeUpdateJob;
-
 // Represents an error during the application of a pending IWA update.
 struct IsolatedWebAppApplyUpdateCommandError {
   std::string message;
@@ -82,11 +80,6 @@ class IsolatedWebAppApplyUpdateCommand
       IsolatedWebAppApplyUpdateCommand&&) = delete;
 
   ~IsolatedWebAppApplyUpdateCommand() override;
-
-  void OnFinalizedForTesting(const webapps::AppId& app_id,
-                             webapps::InstallResultCode update_result_code) {
-    OnFinalized(app_id, update_result_code);
-  }
 
  protected:
   // WebAppCommand:
@@ -144,7 +137,6 @@ class IsolatedWebAppApplyUpdateCommand
   const std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;
 
   std::unique_ptr<PrepareInstallInfoJob> prepare_install_info_job_;
-  std::unique_ptr<FinalizeUpdateJob> install_update_job_;
 
   base::WeakPtrFactory<IsolatedWebAppApplyUpdateCommand> weak_factory_{this};
 };
