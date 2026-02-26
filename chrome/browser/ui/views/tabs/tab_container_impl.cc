@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
+#include "chrome/browser/ui/views/tabs/shared/drop_arrow.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
@@ -45,14 +46,6 @@
 #include "ui/views/view_utils.h"
 
 namespace {
-
-// Size of the drop indicator.
-int g_drop_indicator_width = 0;
-int g_drop_indicator_height = 0;
-
-int GetDropArrowImageResourceId(bool is_down) {
-  return is_down ? IDR_TAB_DROP_DOWN : IDR_TAB_DROP_UP;
-}
 
 }  // namespace
 
@@ -107,15 +100,6 @@ TabContainerImpl::TabContainerImpl(
   bounds_animator_.AddObserver(this);
 
   overall_bounds_view_->SetVisible(false);
-
-  if (g_drop_indicator_width == 0) {
-    // Direction doesn't matter, both images are the same size.
-    gfx::ImageSkia* drop_image =
-        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            GetDropArrowImageResourceId(true));
-    g_drop_indicator_width = drop_image->width();
-    g_drop_indicator_height = drop_image->height();
-  }
 }
 
 TabContainerImpl::~TabContainerImpl() {
@@ -1102,59 +1086,6 @@ void TabContainerImpl::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
   PreferredSizeChanged();
 }
 
-// TabContainerImpl::DropArrow:
-// ----------------------------------------------------------
-
-TabContainerImpl::DropArrow::DropArrow(const BrowserRootView::DropIndex& index,
-                                       bool point_down,
-                                       views::Widget* context)
-    : index_(index), point_down_(point_down) {
-  arrow_window_ = new views::Widget;
-  views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_POPUP);
-  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params.accept_events = false;
-  params.bounds = gfx::Rect(g_drop_indicator_width, g_drop_indicator_height);
-  params.context = context->GetNativeWindow();
-  arrow_window_->Init(std::move(params));
-  arrow_view_ =
-      arrow_window_->SetContentsView(std::make_unique<views::ImageView>());
-  arrow_view_->SetImage(
-      ui::ImageModel::FromResourceId(GetDropArrowImageResourceId(point_down_)));
-  scoped_observation_.Observe(arrow_window_.get());
-
-  arrow_window_->Show();
-}
-
-TabContainerImpl::DropArrow::~DropArrow() {
-  // Close eventually deletes the window, which deletes arrow_view too.
-  if (arrow_window_) {
-    arrow_window_->Close();
-  }
-}
-
-void TabContainerImpl::DropArrow::SetPointDown(bool down) {
-  if (point_down_ == down) {
-    return;
-  }
-
-  point_down_ = down;
-  arrow_view_->SetImage(
-      ui::ImageModel::FromResourceId(GetDropArrowImageResourceId(point_down_)));
-}
-
-void TabContainerImpl::DropArrow::SetWindowBounds(const gfx::Rect& bounds) {
-  arrow_window_->SetBounds(bounds);
-}
-
-void TabContainerImpl::DropArrow::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK(scoped_observation_.IsObservingSource(arrow_window_.get()));
-  scoped_observation_.Reset();
-  arrow_window_ = nullptr;
-}
-
 views::ViewModelT<Tab>* TabContainerImpl::GetTabsViewModel() {
   return &tabs_view_model_;
 }
@@ -1704,11 +1635,12 @@ gfx::Rect TabContainerImpl::GetDropBounds(int drop_index,
   center_x = GetMirroredXInView(center_x);
 
   // Determine the screen bounds.
-  gfx::Point drop_loc(center_x - g_drop_indicator_width / 2,
-                      -g_drop_indicator_height);
+  const gfx::Size drop_arrow_size = DropArrow::GetSize();
+  gfx::Point drop_loc(center_x - drop_arrow_size.width() / 2,
+                      -drop_arrow_size.height());
   ConvertPointToScreen(this, &drop_loc);
-  gfx::Rect drop_bounds(drop_loc.x(), drop_loc.y(), g_drop_indicator_width,
-                        g_drop_indicator_height);
+  gfx::Rect drop_bounds(drop_loc.x(), drop_loc.y(), drop_arrow_size.width(),
+                        drop_arrow_size.height());
 
   // If the rect doesn't fit on the monitor, push the arrow to the bottom.
   display::Screen* screen = display::Screen::Get();

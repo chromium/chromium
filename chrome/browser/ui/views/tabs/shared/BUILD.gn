@@ -4,12 +4,14 @@
 
 source_set("shared") {
   sources = [
+    "drop_arrow.h",
     "tab_strip_combo_button.h",
     "tab_strip_flat_edge_button.h",
   ]
 
   deps = [
     "//chrome/browser/ui/views",
+    "//chrome/browser/ui/views/frame",
     "//components/prefs",
     "//ui/base/metadata",
     "//ui/menus",
@@ -19,6 +21,7 @@ source_set("shared") {
 
 source_set("impl") {
   sources = [
+    "drop_arrow.cc",
     "tab_strip_combo_button.cc",
     "tab_strip_flat_edge_button.cc",
   ]
@@ -36,6 +39,7 @@ source_set("impl") {
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
+    "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/toolbar",
     "//components/prefs",
     "//ui/actions",

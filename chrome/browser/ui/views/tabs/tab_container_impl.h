@@ -33,6 +33,7 @@
 class TabStrip;
 class TabHoverCardController;
 class TabDragPositioningDelegateBase;
+class DropArrow;
 
 // A View that contains a sequence of Tabs for the TabStrip.
 class TabContainerImpl : public TabContainer,
@@ -170,48 +171,7 @@ class TabContainerImpl : public TabContainer,
   void UpdateZOrderCacheForTesting();
 
  private:
-  // Used during a drop session of a url. Tracks the position of the drop as
-  // well as a window used to highlight where the drop occurs.
-  class DropArrow : public views::WidgetObserver {
-   public:
-    DropArrow(const BrowserRootView::DropIndex& index,
-              bool point_down,
-              views::Widget* context);
-    DropArrow(const DropArrow&) = delete;
-    DropArrow& operator=(const DropArrow&) = delete;
-    ~DropArrow() override;
-
-    void set_index(const BrowserRootView::DropIndex& index) { index_ = index; }
-    BrowserRootView::DropIndex index() const { return index_; }
-
-    void SetPointDown(bool down);
-    bool point_down() const { return point_down_; }
-
-    void SetWindowBounds(const gfx::Rect& bounds);
-
-    // views::WidgetObserver:
-    void OnWidgetDestroying(views::Widget* widget) override;
-
-   private:
-    // Index of the tab to drop on.
-    BrowserRootView::DropIndex index_;
-
-    // Direction the arrow should point in. If true, the arrow is displayed
-    // above the tab and points down. If false, the arrow is displayed beneath
-    // the tab and points up.
-    bool point_down_ = false;
-
-    // Renders the drop indicator.
-    raw_ptr<views::Widget, DanglingUntriaged> arrow_window_ = nullptr;
-
-    raw_ptr<views::ImageView, DanglingUntriaged> arrow_view_ = nullptr;
-
-    base::ScopedObservation<views::Widget, views::WidgetObserver>
-        scoped_observation_{this};
-  };
-
   class RemoveTabDelegate;
-
   views::ViewModelT<Tab>* GetTabsViewModel();
 
   // Uses `bounds_animator_` to animate `view` to `target`. Use this rather than
