@@ -38,7 +38,6 @@
 #include "chrome/browser/ui/views/page_action/collaboration_messaging_page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
-#include "chrome/browser/ui/views/page_action/pwa_install_view.h"
 #include "chrome/browser/ui/views/page_action/zoom_view.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_icon_views.h"
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
@@ -174,13 +173,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
         add_page_action_icon(
             type, std::make_unique<PriceTrackingIconView>(
                       params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate, params.browser));
-        break;
-      case PageActionIconType::kPwaInstall:
-        DCHECK(params.command_updater);
-        add_page_action_icon(
-            type, std::make_unique<PwaInstallView>(
-                      params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate, params.browser));
         break;
       case PageActionIconType::kAutofillAddress:

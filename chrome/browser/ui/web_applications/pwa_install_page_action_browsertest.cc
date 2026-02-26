@@ -173,29 +173,18 @@ class MockRecordIgnoreDelegate : public page_actions::RecordIgnoreDelegate {
 
 // Tests various cases that effect the visibility of the install icon in the
 // omnibox.
-class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
-                                  public ::testing::WithParamInterface<bool> {
+class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   PwaInstallViewBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     // kIPHDemoMode will bypass IPH framework's triggering validation so that
     // we can test PWA specific triggering logic.
-    std::vector<base::test::FeatureRefAndParams> enabled_features{
-        {feature_engagement::kIPHDemoMode,
-         {{feature_engagement::kIPHDemoModeFeatureChoiceParam,
-           feature_engagement::kIPHDesktopPwaInstallFeature.name}}},
-        {feature_engagement::kIPHDesktopPwaInstallFeature, {}}};
-    if (IsMigrationEnabled()) {
-      enabled_features.push_back(
-          {features::kPageActionsMigration,
-           {{features::kPageActionsMigrationPwaInstall.name, "true"}}});
-    } else {
-      enabled_features.push_back(
-          {features::kPageActionsMigration,
-           {{features::kPageActionsMigrationPwaInstall.name, "false"}}});
-    }
-
-    features_.InitAndEnableFeaturesWithParameters(enabled_features, {});
+    features_.InitAndEnableFeaturesWithParameters(
+        {{feature_engagement::kIPHDemoMode,
+          {{feature_engagement::kIPHDemoModeFeatureChoiceParam,
+            feature_engagement::kIPHDesktopPwaInstallFeature.name}}},
+         {feature_engagement::kIPHDesktopPwaInstallFeature, {}}},
+        {});
   }
 
   PwaInstallViewBrowserTest(const PwaInstallViewBrowserTest&) = delete;
@@ -379,8 +368,6 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
     return pwa_confirmation_bubble_id_waiter.WaitIfNeededAndGet();
   }
 
-  bool IsMigrationEnabled() const { return GetParam(); }
-
  protected:
   IconLabelBubbleView* GetPageActionView() {
     return BrowserView::GetBrowserViewForBrowser(browser())
@@ -388,15 +375,7 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
         ->GetPageActionView(kActionInstallPwa);
   }
   void ExecuteForTesting() {
-    if (IsMigrationEnabled()) {
-      web_app::ShowPwaInstallDialog(browser());
-      return;
-    }
-    auto* pwa_install_view =
-        BrowserView::GetBrowserViewForBrowser(browser())
-            ->toolbar_button_provider()
-            ->GetPageActionIconView(PageActionIconType::kPwaInstall);
-    pwa_install_view->ExecuteForTesting();
+    web_app::ShowPwaInstallDialog(browser());
   }
   void FastForwardAnimation(IconLabelBubbleView* view) {
     auto animation = std::make_unique<gfx::AnimationTestApi>(
@@ -412,16 +391,6 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
   }
   void VerifyLabelVisibility(bool isVisible) {
     auto* page_action_view = GetPageActionView();
-
-    // In the legacy implementation, checking for is_animating_label is
-    // equivalent to checking that the label is visible or being animated in.
-    // This happens because while AnimateIn is used to show the label,
-    // ResetSlideAnimation, which doesn't animate the label out,
-    // is used to hide it.
-    if (!IsMigrationEnabled()) {
-      EXPECT_EQ(page_action_view->is_animating_label(), isVisible);
-      return;
-    }
 
     FastForwardAnimation(page_action_view);
     EXPECT_EQ(page_action_view->ShouldShowLabel(), isVisible);
@@ -441,13 +410,9 @@ class PwaInstallViewBrowserTest : public extensions::ExtensionBrowserTest,
   feature_engagement::test::ScopedIphFeatureList features_;
 };
 
-INSTANTIATE_TEST_SUITE_P(PwaInstallViewBrowserTestSuite,
-                         PwaInstallViewBrowserTest,
-                         ::testing::Values(false, true));
-
 // Tests that the plus icon is not shown when an existing app is installed and
 // set to open in a window.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        PwaSetToOpenInWindowIsNotInstallable) {
   bool installable = OpenTab(GetInstallableAppURL()).installable;
   ASSERT_TRUE(installable);
@@ -463,7 +428,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 
 // Tests that the plus icon is not shown when an outer app is installed and we
 // navigate to a nested app.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        NestedPwaIsNotInstallableWhenOuterPwaIsInstalled) {
   // When nothing is installed, the nested PWA should be installable.
   StartNavigateToUrl(GetNestedInstallableAppURL());
@@ -485,7 +450,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 
 // Tests that the install icon is shown when an existing app is installed and
 // set to open in a tab.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        PwaSetToOpenInTabIsInstallable) {
   bool installable = OpenTab(GetInstallableAppURL()).installable;
   ASSERT_TRUE(installable);
@@ -507,7 +472,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 
 // Tests that the plus icon updates its visibility when switching between
 // installable/non-installable tabs.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        IconVisibilityAfterTabSwitching) {
   content::WebContents* installable_web_contents;
   {
@@ -534,7 +499,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 
 // Tests that the plus icon updates its visibility when the PWA install bubble
 // is showing in installable tab and switching to non-installable tab.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     PwaInstallViewBrowserTest,
     IconVisibilityAfterTabSwitchingWhenPWAConfirmationBubbleViewShowing) {
   content::WebContents* installable_web_contents;
@@ -568,7 +533,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Tests that the icon's highlight is updated when the dialog is shown and
 // hidden.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, IconHighlightUpdated) {
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, IconHighlightUpdated) {
   auto scoped_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
       gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
   content::WebContents* installable_web_contents;
@@ -598,7 +563,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, IconHighlightUpdated) {
 }
 
 // Tests that the install icon updates its visibility when tab crashes.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        IconVisibilityAfterTabCrashed) {
   StartNavigateToUrl(GetInstallableAppURL());
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
@@ -617,7 +582,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 
 // Tests that the plus icon updates its visibility once the installability check
 // completes.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        IconVisibilityAfterInstallabilityCheck) {
   StartNavigateToUrl(GetInstallableAppURL());
   EXPECT_FALSE(GetPageActionView()->GetVisible());
@@ -631,7 +596,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 }
 
 // Tests that the plus icon updates its visibility after installation.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        IconVisibilityAfterInstallation) {
   StartNavigateToUrl(GetInstallableAppURL());
   content::WebContents* first_tab = GetCurrentTab();
@@ -649,24 +614,25 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 
 // Tests that the plus icon animates its label when the installability check
 // passes but doesn't animate more than once for the same installability check.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, LabelAnimation) {
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, LabelAnimation) {
   StartNavigateToUrl(GetInstallableAppURL());
   EXPECT_FALSE(GetPageActionView()->GetVisible());
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
   EXPECT_TRUE(GetPageActionView()->GetVisible());
-  EXPECT_TRUE(GetPageActionView()->is_animating_label());
+  FastForwardAnimation(GetPageActionView());
+  EXPECT_TRUE(GetPageActionView()->ShouldShowLabel());
 
   chrome::NewTab(browser());
   EXPECT_FALSE(GetPageActionView()->GetVisible());
 
   chrome::SelectPreviousTab(browser());
   EXPECT_TRUE(GetPageActionView()->GetVisible());
-  EXPECT_FALSE(GetPageActionView()->is_animating_label());
+  EXPECT_FALSE(GetPageActionView()->ShouldShowLabel());
 }
 
 // Tests that the plus icon becomes invisible when the user is typing in the
 // omnibox.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, InputInOmnibox) {
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, InputInOmnibox) {
   StartNavigateToUrl(GetInstallableAppURL());
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
   EXPECT_TRUE(GetPageActionView()->GetVisible());
@@ -679,7 +645,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, InputInOmnibox) {
 
 // Tests that the icon persists while loading the same scope and omits running
 // the label animation again.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, NavigateToSameScope) {
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, NavigateToSameScope) {
   StartNavigateToUrl(https_server_.GetURL("/banners/scope_a/page_1.html"));
   EXPECT_FALSE(GetPageActionView()->GetVisible());
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
@@ -694,7 +660,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, NavigateToSameScope) {
 
 // Tests that the icon persists while loading the same scope but goes away when
 // the installability check fails.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        NavigateToSameScopeNonInstallable) {
   StartNavigateToUrl(https_server_.GetURL("/banners/scope_a/page_1.html"));
   EXPECT_FALSE(GetPageActionView()->GetVisible());
@@ -711,7 +677,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 }
 
 // Tests that the icon updates its state after uninstallation.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        IconStateAfterUnInstallation) {
   GURL app_url = GetInstallableAppURL();
   bool installable = OpenTab(app_url).installable;
@@ -736,7 +702,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 }
 
 // Tests that the icon and animation resets while loading a different scope.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, NavigateToDifferentScope) {
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, NavigateToDifferentScope) {
   StartNavigateToUrl(https_server_.GetURL("/banners/scope_a/page_1.html"));
   EXPECT_FALSE(GetPageActionView()->GetVisible());
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
@@ -752,7 +718,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, NavigateToDifferentScope) {
 
 // Tests that the icon and animation resets while loading a different empty
 // scope.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        NavigateToDifferentEmptyScope) {
   StartNavigateToUrl(https_server_.GetURL("/banners/scope_a/page_1.html"));
   EXPECT_FALSE(GetPageActionView()->GetVisible());
@@ -769,7 +735,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 
 // Tests that the animation is suppressed for navigations within the same scope
 // for an exponentially increasing period of time.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, AnimationSuppression) {
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, AnimationSuppression) {
   std::vector<bool> animation_shown_for_day = {
       true,  true,  false, true,  false, false, false, true,
       false, false, false, false, false, false, false, true,
@@ -785,17 +751,17 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, AnimationSuppression) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, BouncedInstallMeasured) {
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, BouncedInstallMeasured) {
   TestInstallBounce(base::Minutes(50), 1);
 }
 
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, BouncedInstallIgnored) {
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, BouncedInstallIgnored) {
   TestInstallBounce(base::Minutes(70), 0);
 }
 
 // Omnibox install promotion should show if there are no viable related apps
 // even if prefer_related_applications is true.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PreferRelatedAppUnknown) {
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PreferRelatedAppUnknown) {
   StartNavigateToUrl(
       https_server_.GetURL("/banners/manifest_test_page.html?manifest="
                            "manifest_prefer_related_apps_unknown.json"));
@@ -806,7 +772,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PreferRelatedAppUnknown) {
 
 // Omnibox install promotion should not show if prefer_related_applications is
 // false but a related Chrome app is installed.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PreferRelatedChromeApp) {
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PreferRelatedChromeApp) {
   StartNavigateToUrl(
       https_server_.GetURL("/banners/manifest_test_page.html?manifest="
                            "manifest_prefer_related_chrome_app.json"));
@@ -820,7 +786,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PreferRelatedChromeApp) {
 
 // Omnibox install promotion should not show if prefer_related_applications is
 // true and a Chrome app listed as related.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        ListedRelatedChromeAppInstalled) {
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("app"));
@@ -861,7 +827,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
 }
 
 // TODO(crbug.com/40796769): Flaky.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        DISABLED_PwaIntallIphSiteEngagement) {
   GURL app_url = GetInstallableAppURL();
   bool installable = OpenTab(app_url).installable;
@@ -885,7 +851,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
   // check that the highlights on the icon are appropriately set.
 }
 
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
   GURL app_url = GetInstallableAppURL();
   site_engagement::SiteEngagementService::Get(profile())->AddPointsForTesting(
       app_url, web_app::kIphFieldTrialParamDefaultSiteEngagementThreshold + 1);
@@ -907,11 +873,8 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
                    feature_engagement::kIPHDesktopPwaInstallFeature));
 }
 
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        OnCloseDoesntRecordIgnoreIfExecuting) {
-  if (!IsMigrationEnabled()) {
-    return;
-  }
   PwaInstallPageActionController* pwa_install_controller =
       browser()
           ->GetActiveTabInterface()
@@ -925,11 +888,8 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
   EXPECT_FALSE(record_ignore.GetIgnoreWasCalled());
 }
 
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        OnCloseRecordsIgnoreIfNotExecuting) {
-  if (!IsMigrationEnabled()) {
-    return;
-  }
   PwaInstallPageActionController* pwa_install_controller =
       browser()
           ->GetActiveTabInterface()
@@ -943,7 +903,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
   EXPECT_TRUE(record_ignore.GetIgnoreWasCalled());
 }
 
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, IconViewAccessibleName) {
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest, IconViewAccessibleName) {
   StartNavigateToUrl(GetNestedInstallableAppURL());
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
   EXPECT_TRUE(GetPageActionView()->GetVisible());
@@ -958,7 +918,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, IconViewAccessibleName) {
 #if BUILDFLAG(IS_CHROMEOS)
 // Omnibox install promotion should not show if prefer_related_applications is
 // true and an ARC app listed as related.
-IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(PwaInstallViewBrowserTest,
                        ListedRelatedAndroidAppInstalled) {
   arc::SetArcPlayStoreEnabledForProfile(browser()->profile(), true);
   ArcAppListPrefs* arc_app_list_prefs =

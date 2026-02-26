@@ -383,12 +383,6 @@ BASE_FEATURE_PARAM(bool,
                    true);
 
 BASE_FEATURE_PARAM(bool,
-                   kPageActionsMigrationPwaInstall,
-                   &kPageActionsMigration,
-                   "pwa_install",
-                   true);
-
-BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationPriceInsights,
                    &kPageActionsMigration,
                    "price_insights",

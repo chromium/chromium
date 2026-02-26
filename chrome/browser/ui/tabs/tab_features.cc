@@ -218,11 +218,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           tab, *page_action_controller_);
     }
 
-    if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
-      pwa_install_page_action_controller_ =
-          std::make_unique<PwaInstallPageActionController>(
-              tab, *page_action_controller_);
-    }
+    pwa_install_page_action_controller_ =
+        std::make_unique<PwaInstallPageActionController>(
+            tab, *page_action_controller_);
 
     if (IsPageActionMigrated(PageActionIconType::kPriceInsights)) {
       commerce_price_insights_page_action_view_controller_ =
