@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineIconUtils;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
@@ -22,29 +23,34 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @NullMarked
 public class CustomSiteSearchMediator implements TemplateUrlService.TemplateUrlServiceObserver {
+    private static final int DEFAULT_MAX_ROWS = 5;
+
     private final Context mContext;
     private final ModelList mModelList;
     private final TemplateUrlService mTemplateUrlService;
     private final LargeIconBridge mLargeIconBridge;
     private final int mFaviconSize;
     private final Map<GURL, Bitmap> mIconCache = new HashMap<GURL, Bitmap>();
+    private final List<ListItem> mHiddenItems = new ArrayList<>();
+    private boolean mIsExpanded;
+
+    boolean isExpandedForTesting() {
+        return mIsExpanded;
+    }
 
     public CustomSiteSearchMediator(Context context, ModelList modelList, Profile profile) {
         mContext = context;
         mModelList = modelList;
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mLargeIconBridge = new LargeIconBridge(profile);
-        mFaviconSize =
-                context.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.search_engines.R.dimen
-                                        .default_favicon_size);
+        mFaviconSize = context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
 
         mTemplateUrlService.addObserver(this);
         mTemplateUrlService.runWhenLoaded(this::refreshList);
@@ -57,18 +63,26 @@ public class CustomSiteSearchMediator implements TemplateUrlService.TemplateUrlS
 
     @Override
     public void onTemplateURLServiceChanged() {
+        mIsExpanded = false;
         refreshList();
     }
 
     private void refreshList() {
         mModelList.clear();
+        mHiddenItems.clear();
 
         List<TemplateUrl> urls =
                 mTemplateUrlService.getTemplateUrlsByCategory(
                         TemplateUrlCategory.ACTIVE_SITE_SEARCH);
 
-        // TODO: Handle default number of rows shown and show more button
-        for (TemplateUrl url : urls) {
+        setUpSiteSearchList(urls);
+        setUpAddButton();
+        setUpMoreButtonIfNeeded(urls.size());
+    }
+
+    private void setUpSiteSearchList(List<TemplateUrl> urls) {
+        for (int i = 0; i < urls.size(); i++) {
+            TemplateUrl url = urls.get(i);
             PropertyModel model =
                     new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)
                             .with(SiteSearchProperties.SITE_NAME, url.getShortName())
@@ -85,7 +99,48 @@ public class CustomSiteSearchMediator implements TemplateUrlService.TemplateUrlS
                             .build();
 
             fetchFavicon(url, model);
-            mModelList.add(new ListItem(SiteSearchProperties.ViewType.SEARCH_ENGINE, model));
+            ListItem item = new ListItem(SiteSearchProperties.ViewType.SEARCH_ENGINE, model);
+            if (i < DEFAULT_MAX_ROWS) {
+                mModelList.add(item);
+            } else {
+                mHiddenItems.add(item);
+            }
+        }
+    }
+
+    private void setUpAddButton() {
+        // TODO: Handle add button click
+        PropertyModel addButtonModel =
+                new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS).build();
+        mModelList.add(new ListItem(SiteSearchProperties.ViewType.ADD, addButtonModel));
+    }
+
+    private void setUpMoreButtonIfNeeded(int numUrls) {
+        if (numUrls <= DEFAULT_MAX_ROWS) {
+            return;
+        }
+        PropertyModel moreButtonModel =
+                new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)
+                        .with(SiteSearchProperties.IS_EXPANDED, mIsExpanded)
+                        .build();
+        moreButtonModel.set(
+                SiteSearchProperties.ON_CLICK, v -> onMoreButtonClicked(moreButtonModel));
+        mModelList.add(new ListItem(SiteSearchProperties.ViewType.MORE, moreButtonModel));
+    }
+
+    private void onMoreButtonClicked(PropertyModel moreButtonModel) {
+        mIsExpanded = !mIsExpanded;
+        moreButtonModel.set(SiteSearchProperties.IS_EXPANDED, mIsExpanded);
+        if (mIsExpanded) {
+            mModelList.addAll(mHiddenItems);
+        } else {
+            // Remove items starting from index DEFAULT_MAX_ROWS + 2.
+            // Index layout:
+            // [0 to DEFAULT_MAX_ROWS - 1]                             : Site search list
+            // [DEFAULT_MAX_ROWS]                                      : 'Add' button
+            // [DEFAULT_MAX_ROWS + 1]                                  : 'More' button
+            // [DEFAULT_MAX_ROWS + 2 to ... + 1 + mHiddenItems.size()] : Hidden items
+            mModelList.removeRange(DEFAULT_MAX_ROWS + 2, mHiddenItems.size());
         }
     }
 

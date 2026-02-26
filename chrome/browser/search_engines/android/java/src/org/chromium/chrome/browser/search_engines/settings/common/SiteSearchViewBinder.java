@@ -44,7 +44,7 @@ public class SiteSearchViewBinder {
         } else if (SiteSearchProperties.ICON == propertyKey) {
             holder.mIcon.setImageBitmap(model.get(SiteSearchProperties.ICON));
         } else if (SiteSearchProperties.ON_CLICK == propertyKey) {
-            view.setOnClickListener(v -> model.get(SiteSearchProperties.ON_CLICK));
+            view.setOnClickListener(model.get(SiteSearchProperties.ON_CLICK));
         } else if (SiteSearchProperties.TEXT == propertyKey) {
             holder.mText.setText(model.get(SiteSearchProperties.TEXT));
         } else if (SiteSearchProperties.IS_EXPANDED == propertyKey) {
