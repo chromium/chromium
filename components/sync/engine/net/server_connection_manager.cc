@@ -13,6 +13,7 @@
 #include "base/metrics/histogram.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/net/url_translator.h"
 #include "components/sync/engine/syncer.h"
@@ -21,10 +22,6 @@
 
 namespace syncer {
 namespace {
-
-// A kill switch for validating the access token before sending the request to
-// the server.
-BASE_FEATURE(kSyncValidateAccessToken, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #define ENUM_CASE(x)    \
   case HttpResponse::x: \

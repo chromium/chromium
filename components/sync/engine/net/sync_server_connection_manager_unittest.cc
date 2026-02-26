@@ -8,9 +8,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/net/http_post_provider.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
@@ -133,6 +135,8 @@ TEST(SyncServerConnectionManagerTest, AbortPost) {
 // Fail request with expired credentials. Make sure server status is
 // SYNC_AUTH_ERROR.
 TEST(SyncServerConnectionManagerTest, FailPostWithExpiredCredentials) {
+  base::test::ScopedFeatureList feature_list(kSyncValidateAccessToken);
+
   CancelationSignal signal;
   SyncServerConnectionManager server(
       GURL("https://server"), std::make_unique<BlockingHttpPostFactory>(),

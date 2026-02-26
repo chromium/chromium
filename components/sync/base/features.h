@@ -224,6 +224,10 @@ BASE_DECLARE_FEATURE_PARAM(int, kSyncRecordDeviceStatisticsMetricsPeriodDays);
 // which is more resilient to device suspension.
 BASE_DECLARE_FEATURE(kSyncDeviceInfoUseWallClockTimer);
 
+// If enabled, validate the access token before sending the request to the
+// server.
+BASE_DECLARE_FEATURE(kSyncValidateAccessToken);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

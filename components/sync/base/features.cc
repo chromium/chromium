@@ -209,4 +209,6 @@ BASE_FEATURE_PARAM(int,
 BASE_FEATURE(kSyncDeviceInfoUseWallClockTimer,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncValidateAccessToken, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer
