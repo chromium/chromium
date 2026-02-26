@@ -27,6 +27,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_isolation_key.h"
+#include "net/dns/dns_attempt.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/dns_server_iterator.h"
 #include "net/dns/dns_session.h"
@@ -1601,6 +1602,47 @@ TEST_F(ResolveContextTest, ClassicDnsServerIndexRotation) {
   std::unique_ptr<DnsServerIterator> classic_itr2 =
       context.GetClassicDnsIterator(session2->config(), session2.get());
   EXPECT_LT(classic_itr2->GetNextAttemptIndex(), 2u);
+}
+
+TEST_F(ResolveContextTest, RecordDohSessionStatus) {
+  DnsConfig config = CreateDnsConfig(/*num_servers=*/0, /*num_doh_servers=*/1);
+  config.secure_dns_mode = SecureDnsMode::kAutomatic;
+  scoped_refptr<DnsSession> session = CreateDnsSession(config);
+
+  auto request_context = CreateTestURLRequestContextBuilder()->Build();
+  ResolveContext context(request_context.get(), /*enable_caching=*/true);
+  context.InvalidateCachesAndPerSessionData(session.get(),
+                                            /*network_change=*/false);
+
+  base::HistogramTester histogram_tester;
+
+  DnsHTTPAttempt::DnsHttpAttemptInfo info;
+  info.session_source = SessionSource::kNew;
+  info.connection_info = HttpConnectionInfoCoarse::kHTTP2;
+
+  context.RecordDohSessionStatus(/*server_index=*/0u, info,
+                                 base::Milliseconds(100), OK, session.get());
+
+  histogram_tester.ExpectBucketCount(
+      "Net.DNS.DnsTransaction.Other.Http2.SessionSource", SessionSource::kNew,
+      1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.DnsTransaction.Other.Http2.New.SuccessTime",
+      base::Milliseconds(100), 1);
+
+  info.session_source = SessionSource::kExisting;
+  info.connection_info = HttpConnectionInfoCoarse::kQUIC;
+  context.RecordDohSessionStatus(/*server_index=*/0u, info,
+                                 base::Milliseconds(50), ERR_FAILED,
+                                 session.get());
+
+  histogram_tester.ExpectBucketCount(
+      "Net.DNS.DnsTransaction.Other.Http3.SessionSource",
+      SessionSource::kExisting, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Net.DNS.DnsTransaction.Other.Http3.Existing."
+      "FailureTime",
+      base::Milliseconds(50), 1);
 }
 
 }  // namespace

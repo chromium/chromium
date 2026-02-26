@@ -22,7 +22,9 @@
 #include "net/base/isolation_info.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
+#include "net/dns/dns_attempt.h"
 #include "net/dns/dns_config.h"
+#include "net/dns/dns_http_attempt.h"
 #include "net/dns/public/secure_dns_mode.h"
 
 namespace net {
@@ -144,6 +146,14 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
                  base::TimeDelta rtt,
                  int rv,
                  const DnsSession* session);
+
+  // Record the session source and connection info for a DoH attempt. Noop if
+  // `session` is not the current session.
+  void RecordDohSessionStatus(size_t server_index,
+                              const DnsHTTPAttempt::DnsHttpAttemptInfo& info,
+                              base::TimeDelta rtt,
+                              int rv,
+                              const DnsSession* session);
 
   // Return the period the next query should run before fallback to next
   // attempt. (Not actually a "timeout" because queries are not typically

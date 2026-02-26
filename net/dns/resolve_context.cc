@@ -26,6 +26,7 @@
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"
+#include "net/dns/dns_attempt.h"
 #include "net/dns/dns_server_iterator.h"
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_util.h"
@@ -34,6 +35,7 @@
 #include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "net/http/http_connection_info.h"
 #include "net/url_request/url_request_context.h"
 
 namespace net {
@@ -275,6 +277,38 @@ void ResolveContext::RecordRtt(size_t server_index,
   stats->rtt_histogram->Accumulate(
       base::saturated_cast<base::HistogramBase::Sample32>(rtt.InMilliseconds()),
       1);
+}
+
+void ResolveContext::RecordDohSessionStatus(
+    size_t server_index,
+    const DnsHTTPAttempt::DnsHttpAttemptInfo& info,
+    base::TimeDelta rtt,
+    int rv,
+    const DnsSession* session) {
+  if (!IsCurrentSession(session) || !info.session_source.has_value()) {
+    return;
+  }
+
+  const std::string provider_id =
+      GetDohProviderIdForUma(server_index, /*is_doh_server=*/true, session);
+  const std::string_view protocol =
+      HttpConnectionInfoCoarseToString(info.connection_info);
+  const std::string_view session_source =
+      info.session_source.value() == SessionSource::kNew ? "New" : "Existing";
+
+  base::UmaHistogramEnumeration(
+      base::JoinString(
+          {"Net.DNS.DnsTransaction", provider_id, protocol, "SessionSource"},
+          "."),
+      info.session_source.value());
+
+  const std::string_view outcome =
+      (rv == OK || rv == ERR_NAME_NOT_RESOLVED) ? "SuccessTime" : "FailureTime";
+  base::UmaHistogramMediumTimes(
+      base::JoinString({"Net.DNS.DnsTransaction", provider_id, protocol,
+                        session_source, outcome},
+                       "."),
+      rtt);
 }
 
 base::TimeDelta ResolveContext::NextClassicFallbackPeriod(

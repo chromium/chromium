@@ -114,7 +114,8 @@ base::DictValue NetLogStartParams(const std::string& hostname, uint16_t qtype) {
   return dict;
 }
 
-void ConstructDnsHTTPAttempt(DnsSession* session,
+void ConstructDnsHTTPAttempt(base::WeakPtr<ResolveContext> resolve_context,
+                             DnsSession* session,
                              size_t doh_server_index,
                              base::span<const uint8_t> qname,
                              uint16_t qtype,
@@ -141,9 +142,10 @@ void ConstructDnsHTTPAttempt(DnsSession* session,
   GURL gurl_without_parameters(
       GetURLFromTemplateWithoutParameters(doh_server.server_template()));
   attempts->push_back(std::make_unique<DnsHTTPAttempt>(
-      doh_server_index, std::move(query), doh_server.server_template(),
-      gurl_without_parameters, doh_server.use_post(), url_request_context,
-      isolation_info, request_priority, is_probe));
+      std::move(resolve_context), session, doh_server_index, std::move(query),
+      doh_server.server_template(), gurl_without_parameters,
+      doh_server.use_post(), url_request_context, isolation_info,
+      request_priority, is_probe));
 }
 
 // ----------------------------------------------------------------------------
@@ -271,8 +273,8 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
 
     uint32_t attempt_number = probe_stats->probe_attempts.size();
     ConstructDnsHTTPAttempt(
-        session_.get(), doh_server_index, formatted_probe_qname_,
-        dns_protocol::kTypeA, /*opt_rdata=*/nullptr,
+        context_->GetWeakPtr(), session_.get(), doh_server_index,
+        formatted_probe_qname_, dns_protocol::kTypeA, /*opt_rdata=*/nullptr,
         &probe_stats->probe_attempts, context_->url_request_context(),
         context_->isolation_info(), RequestPriority::DEFAULT_PRIORITY,
         /*is_probe=*/true);
@@ -643,8 +645,9 @@ class DnsTransactionImpl final : public DnsTransaction {
     size_t doh_server_index = dns_server_iterator_->GetNextAttemptIndex();
 
     uint32_t attempt_number = attempts_.size();
-    ConstructDnsHTTPAttempt(session_.get(), doh_server_index, qnames_.front(),
-                            qtype_, opt_rdata_, &attempts_,
+    ConstructDnsHTTPAttempt(resolve_context_->GetWeakPtr(), session_.get(),
+                            doh_server_index, qnames_.front(), qtype_,
+                            opt_rdata_, &attempts_,
                             resolve_context_->url_request_context(),
                             resolve_context_->isolation_info(),
                             request_priority_, /*is_probe=*/false);
@@ -773,7 +776,8 @@ class DnsTransactionImpl final : public DnsTransaction {
     if (record_rtt && attempt->GetResponse()) {
       resolve_context_->RecordRtt(
           attempt->server_index(),
-          attempt_mode_ == DnsTransactionFactory::AttemptMode::kHttp /* is_doh_server */,
+          attempt_mode_ ==
+              DnsTransactionFactory::AttemptMode::kHttp /* is_doh_server */,
           base::TimeTicks::Now() - start, rv, session_.get());
     }
     if (callback_.is_null())

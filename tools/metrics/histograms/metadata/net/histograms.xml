@@ -87,6 +87,13 @@ chromium-metrics-reviews@google.com.
   <variant name=".GoogleHost" summary="Google Host"/>
 </variants>
 
+<variants name="HttpConnectionProtocol">
+  <variant name="Http1" summary="HTTP/1.1"/>
+  <variant name="Http2" summary="HTTP/2"/>
+  <variant name="Http3" summary="HTTP/3"/>
+  <variant name="Other" summary="Other protocols"/>
+</variants>
+
 <variants name="NegotiatedProtocolCoalesced">
   <variant name="H1"/>
   <variant name="H2"/>
@@ -2672,6 +2679,40 @@ chromium-metrics-reviews@google.com.
     &quot;low entropy&quot; situation for DNS over UDP and has switched to DNS
     over TCP.
   </summary>
+</histogram>
+
+<histogram
+    name="Net.DNS.DnsTransaction.{DohProviderId}{Protocol}.SessionSource"
+    enum="NetworkSessionSource" expires_after="2026-05-16">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Measures whether a DoH request used a new or an existing session. Recorded
+    when a non-probe, auto-upgrade mode DoH transaction completes.
+  </summary>
+  <token key="DohProviderId" variants="DohProviderId"/>
+  <token key="Protocol" variants="HttpConnectionProtocol"/>
+</histogram>
+
+<histogram
+    name="Net.DNS.DnsTransaction.{DohProviderId}{Protocol}.{SessionSource}.{Outcome}Time"
+    units="ms" expires_after="2026-05-16">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Duration of time taken by a DoH transaction to {Outcome}. Recorded when a
+    non-probe, auto-upgrade mode DoH transaction completes.
+  </summary>
+  <token key="DohProviderId" variants="DohProviderId"/>
+  <token key="Protocol" variants="HttpConnectionProtocol"/>
+  <token key="SessionSource">
+    <variant name="Existing"/>
+    <variant name="New"/>
+  </token>
+  <token key="Outcome">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
 </histogram>
 
 <histogram name="Net.DNS.HostCache.EraseStale.ExpiredBy{HostType}" units="ms"

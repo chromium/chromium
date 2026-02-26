@@ -12,6 +12,7 @@
 #include "base/base64url.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/elements_upload_data_stream.h"
@@ -24,6 +25,7 @@
 #include "net/dns/dns_query.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/resolve_context.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_values.h"
 #include "net/log/net_log_with_source.h"
@@ -46,7 +48,9 @@ constexpr base::ByteCount kDnsOverHttpResponseMaximumSize =
 
 }  // namespace
 
-DnsHTTPAttempt::DnsHTTPAttempt(size_t doh_server_index,
+DnsHTTPAttempt::DnsHTTPAttempt(base::WeakPtr<ResolveContext> resolve_context,
+                               DnsSession* session,
+                               size_t doh_server_index,
                                std::unique_ptr<DnsQuery> query,
                                const std::string& server_template,
                                const GURL& gurl_without_parameters,
@@ -56,9 +60,15 @@ DnsHTTPAttempt::DnsHTTPAttempt(size_t doh_server_index,
                                RequestPriority request_priority_,
                                bool is_probe)
     : DnsAttempt(doh_server_index),
+      is_probe_(is_probe),
       query_(std::move(query)),
       net_log_(NetLogWithSource::Make(NetLog::Get(),
                                       NetLogSourceType::DNS_OVER_HTTPS)) {
+  if (!is_probe) {
+    resolve_context_ = std::move(resolve_context);
+    session_ = session;
+  }
+
   GURL url;
   if (use_post) {
     // Set url for a POST request
@@ -158,6 +168,7 @@ DnsHTTPAttempt::DnsHTTPAttempt(size_t doh_server_index,
 DnsHTTPAttempt::~DnsHTTPAttempt() = default;
 
 int DnsHTTPAttempt::Start(CompletionOnceCallback callback) {
+  start_time_ = base::TimeTicks::Now();
   callback_ = std::move(callback);
   // Start the request asynchronously to avoid reentrancy in
   // the network stack.
@@ -308,8 +319,29 @@ void DnsHTTPAttempt::StartAsync() {
 }
 
 void DnsHTTPAttempt::ResponseCompleted(int net_error) {
+  DCHECK(request_);
+  DnsHttpAttemptInfo attempt_info;
+  attempt_info.session_source =
+      request_->GetLoadTimingInternalInfo().session_source;
+  attempt_info.connection_info =
+      HttpConnectionInfoToCoarse(request_->response_info().connection_info);
+
   request_.reset();
-  std::move(callback_).Run(CompleteResponse(net_error));
+
+  int rv = CompleteResponse(net_error);
+  // Skip DoH probe requests here since those are most likely to incur the cost
+  // of establishing the encrypted tunnel to the DoH server and also don't have
+  // an impact on page load time. Also ignore requests that aren't made in
+  // automatic secure DNS mode because for this metric we want to measure
+  // performance for users with the default setting.
+  if (!is_probe_ && resolve_context_ && session_ &&
+      session_->config().secure_dns_mode == SecureDnsMode::kAutomatic) {
+    resolve_context_->RecordDohSessionStatus(
+        server_index(), attempt_info, base::TimeTicks::Now() - start_time_, rv,
+        session_.get());
+  }
+  session_.reset();
+  std::move(callback_).Run(rv);
 }
 
 int DnsHTTPAttempt::CompleteResponse(int net_error) {
