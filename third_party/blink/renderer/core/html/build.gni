@@ -383,6 +383,8 @@ blink_core_sources_html = [
   "html_param_element.h",
   "html_capability_element_base.cc",
   "html_capability_element_base.h",
+  "html_capability_element_metrics_util.cc",
+  "html_capability_element_metrics_util.h",
   "html_permission_element_utils.cc",
   "html_permission_element_utils.h",
   "html_permission_icon_element.cc",

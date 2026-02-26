@@ -11,7 +11,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
@@ -279,11 +278,6 @@ bool IsBorderSufficientlyDistinctFromBackgroundColor(
   return true;
 }
 
-void RecordUserInteractionAccepted(bool accepted) {
-  base::UmaHistogramBoolean("Blink.PermissionElement.UserInteractionAccepted",
-                            accepted);
-}
-
 }  // namespace
 
 HTMLCapabilityElementBase::HTMLCapabilityElementBase(
@@ -304,7 +298,6 @@ HTMLCapabilityElementBase::HTMLCapabilityElementBase(
             document.GetExecutionContext()));
   SetHasCustomStyleCallbacks();
   EnsureUserAgentShadowRoot();
-  UseCounter::Count(document, WebFeature::kHTMLPermissionElement);
 }
 
 HTMLCapabilityElementBase::~HTMLCapabilityElementBase() = default;
@@ -631,7 +624,7 @@ String HTMLCapabilityElementBase::DisableReasonToString(DisableReason reason) {
 }
 
 // static
-HTMLCapabilityElementBase::UserInteractionDeniedReason
+UserInteractionDeniedReason
 HTMLCapabilityElementBase::DisableReasonToUserInteractionDeniedReason(
     DisableReason reason) {
   switch (reason) {
@@ -1058,12 +1051,13 @@ void HTMLCapabilityElementBase::HandleActivation(Event& event,
           GetExecutionContext(), GetDomNodeId(),
           protocol::Audits::PermissionElementIssueTypeEnum::RequestInProgress,
           GetType(), /*is_warning=*/false);
-      RecordUserInteractionAccepted(false);
+      RecordPermissionElementUserInteractionAccepted(TagQName(), false);
       return;
     }
 
     bool is_user_interaction_enabled = IsClickingEnabled();
-    RecordUserInteractionAccepted(is_user_interaction_enabled);
+    RecordPermissionElementUserInteractionAccepted(TagQName(),
+                                                   is_user_interaction_enabled);
     if (is_user_interaction_enabled) {
       std::move(on_success).Run();
     }
@@ -1075,10 +1069,10 @@ void HTMLCapabilityElementBase::HandleActivation(Event& event,
         GetExecutionContext(), GetDomNodeId(),
         protocol::Audits::PermissionElementIssueTypeEnum::UntrustedEvent,
         GetType(), /*is_warning=*/false);
-    RecordUserInteractionAccepted(false);
-    base::UmaHistogramEnumeration(
-        "Blink.PermissionElement.UserInteractionDeniedReason",
-        UserInteractionDeniedReason::kUntrustedEvent);
+    RecordPermissionElementUserInteractionAccepted(TagQName(), false);
+
+    RecordPermissionElementUserInteractionDeniedReason(
+        TagQName(), UserInteractionDeniedReason::kUntrustedEvent);
   }
 }
 
@@ -1150,6 +1144,7 @@ void HTMLCapabilityElementBase::OnEmbeddedPermissionControlRegistered(
 
   UpdatePermissionStatusAndAppearance();
   MaybeDispatchValidationChangeEvent();
+  RecordPermissionElementUseCounter(GetDocument(), TagQName());
 }
 
 void HTMLCapabilityElementBase::OnEmbeddedPermissionsDecided(
@@ -1211,9 +1206,9 @@ bool HTMLCapabilityElementBase::IsClickingEnabled() {
         GetExecutionContext(), GetDomNodeId(),
         protocol::Audits::PermissionElementIssueTypeEnum::InvalidTypeActivation,
         GetType(), /*is_warning=*/false);
-    base::UmaHistogramEnumeration(
-        "Blink.PermissionElement.UserInteractionDeniedReason",
-        UserInteractionDeniedReason::kInvalidType);
+
+    RecordPermissionElementUserInteractionDeniedReason(
+        TagQName(), UserInteractionDeniedReason::kInvalidType);
     return false;
   }
 
@@ -1228,9 +1223,9 @@ bool HTMLCapabilityElementBase::IsClickingEnabled() {
         GetExecutionContext(), GetDomNodeId(),
         protocol::Audits::PermissionElementIssueTypeEnum::SecurityChecksFailed,
         GetType(), /*is_warning=*/false);
-    base::UmaHistogramEnumeration(
-        "Blink.PermissionElement.UserInteractionDeniedReason",
-        UserInteractionDeniedReason::kFailedOrHasNotBeenRegistered);
+
+    RecordPermissionElementUserInteractionDeniedReason(
+        TagQName(), UserInteractionDeniedReason::kFailedOrHasNotBeenRegistered);
     return false;
   }
 
@@ -1243,9 +1238,8 @@ bool HTMLCapabilityElementBase::IsClickingEnabled() {
   for (const auto& it : clicking_disabled_reasons_) {
     ReportActivationDisabledAuditsIssue(it.key);
 
-    base::UmaHistogramEnumeration(
-        "Blink.PermissionElement.UserInteractionDeniedReason",
-        DisableReasonToUserInteractionDeniedReason(it.key));
+    RecordPermissionElementUserInteractionDeniedReason(
+        TagQName(), DisableReasonToUserInteractionDeniedReason(it.key));
   }
 
   return clicking_disabled_reasons_.empty();
@@ -1458,8 +1452,8 @@ bool HTMLCapabilityElementBase::IsStyleValid() {
 
   // No computed style when using `display: none`.
   if (!style) {
-    base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
-                                  InvalidStyleReason::kNoComputedStyle);
+    RecordPermissionElementInvalidStyleReason(
+        TagQName(), InvalidStyleReason::kNoComputedStyle);
     return false;
   }
 
@@ -1470,8 +1464,8 @@ bool HTMLCapabilityElementBase::IsStyleValid() {
         GetExecutionContext(), GetDomNodeId(),
         protocol::Audits::PermissionElementIssueTypeEnum::InvalidDisplayStyle,
         GetType(), /*is_warning=*/true);
-    base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
-                                  InvalidStyleReason::kInvalidDisplayProperty);
+    RecordPermissionElementInvalidStyleReason(
+        TagQName(), InvalidStyleReason::kInvalidDisplayProperty);
     return false;
   }
 
@@ -1480,9 +1474,8 @@ bool HTMLCapabilityElementBase::IsStyleValid() {
         GetExecutionContext(), GetDomNodeId(),
         protocol::Audits::PermissionElementIssueTypeEnum::NonOpaqueColor,
         GetType(), /*is_warning=*/true);
-    base::UmaHistogramEnumeration(
-        "Blink.PermissionElement.InvalidStyleReason",
-        InvalidStyleReason::kNonOpaqueColorOrBackgroundColor);
+    RecordPermissionElementInvalidStyleReason(
+        TagQName(), InvalidStyleReason::kNonOpaqueColorOrBackgroundColor);
     return false;
   }
 
@@ -1491,9 +1484,8 @@ bool HTMLCapabilityElementBase::IsStyleValid() {
         GetExecutionContext(), GetDomNodeId(),
         protocol::Audits::PermissionElementIssueTypeEnum::LowContrast,
         GetType(), /*is_warning=*/true);
-    base::UmaHistogramEnumeration(
-        "Blink.PermissionElement.InvalidStyleReason",
-        InvalidStyleReason::kLowConstrastColorAndBackgroundColor);
+    RecordPermissionElementInvalidStyleReason(
+        TagQName(), InvalidStyleReason::kLowConstrastColorAndBackgroundColor);
     return false;
   }
 
@@ -1524,8 +1516,8 @@ bool HTMLCapabilityElementBase::IsStyleValid() {
         GetExecutionContext(), GetDomNodeId(),
         protocol::Audits::PermissionElementIssueTypeEnum::FontSizeTooSmall,
         GetType(), /*is_warning=*/true);
-    base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
-                                  InvalidStyleReason::kTooSmallFontSize);
+    RecordPermissionElementInvalidStyleReason(
+        TagQName(), InvalidStyleReason::kTooSmallFontSize);
     return false;
   }
 
@@ -1540,8 +1532,8 @@ bool HTMLCapabilityElementBase::IsStyleValid() {
         GetExecutionContext(), GetDomNodeId(),
         protocol::Audits::PermissionElementIssueTypeEnum::FontSizeTooLarge,
         GetType(), /*is_warning=*/true);
-    base::UmaHistogramEnumeration("Blink.PermissionElement.InvalidStyleReason",
-                                  InvalidStyleReason::kTooLargeFontSize);
+    RecordPermissionElementInvalidStyleReason(
+        TagQName(), InvalidStyleReason::kTooLargeFontSize);
     return false;
   }
 

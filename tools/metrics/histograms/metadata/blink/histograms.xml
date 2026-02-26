@@ -62,6 +62,15 @@ chromium-metrics-reviews@google.com.
       summary="Update occurred before First Contentful Paint."/>
 </variants>
 
+<variants name="CapabilityType">
+  <variant name="Geolocation" summary="HTML element for accessing geolocation"/>
+  <variant name="Install" summary="HTML element for installing web apps"/>
+  <variant name="Permission"
+      summary="Default HTML element for accessing permissions"/>
+  <variant name="UserMedia"
+      summary="HTML element for accessing camera and microphone"/>
+</variants>
+
 <variants name="PerAnimationFrameInteractionType">
   <variant name="All"
       summary="all animation frames overlapping with any interaction type"/>
@@ -689,6 +698,42 @@ chromium-metrics-reviews@google.com.
   <summary>
     Distribution of WebGL1 and WebGL2 contexts and their ANGLE implementation.
     Recorded at first draw call time for each context.
+  </summary>
+</histogram>
+
+<histogram name="Blink.CapabilityElement.{CapabilityType}.InvalidStyleReason"
+    enum="PermissionElementInvalidStyleReason" expires_after="2026-08-11">
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the reason why the {CapabilityType} element's style is invalid. This
+    metric is emitted when the element's style is caculated/recaculated.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.CapabilityElement.{CapabilityType}.UserInteraction.Accepted"
+    enum="Boolean" expires_after="2026-08-11">
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded every time a user clicks on a {CapabilityType} element. True
+    indicates that the interaction was accepted, false indicates that the
+    interaction was denied. Check
+    Blink.CapabilityElement.{CapabilityType}.UserInteraction.DeniedReason for
+    the reason of denial.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.CapabilityElement.{CapabilityType}.UserInteraction.Denied.Reason"
+    enum="PermissionElementUserInteractionDeniedReason"
+    expires_after="2026-08-11">
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records the reason why the user interaction with the {CapabilityType}
+    element was denied. Recorded when the element is clicked by the user.
   </summary>
 </histogram>
 
@@ -4456,42 +4501,6 @@ chromium-metrics-reviews@google.com.
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
     {BlinkUpdateTimeSuffixes}
-  </summary>
-</histogram>
-
-<histogram name="Blink.PermissionElement.InvalidStyleReason"
-    enum="PermissionElementInvalidStyleReason" expires_after="2026-07-26">
-  <owner>tungnh@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the reason why the permission element's style is invalid. This
-    metric is emitted when the element's style is caculated/recaculated.
-  </summary>
-</histogram>
-
-<histogram name="Blink.PermissionElement.UserInteractionAccepted"
-    enum="Boolean" expires_after="2026-07-26">
-  <owner>tungnh@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records whether a user interaction (e.g., user click on the permission
-    element) is accepted. This metric is emitted once for every user interaction
-    that has been handled.
-
-    Warning: this histogram was expired from 2025-08-24 to M145; data may be
-    missing.
-  </summary>
-</histogram>
-
-<histogram name="Blink.PermissionElement.UserInteractionDeniedReason"
-    enum="PermissionElementUserInteractionDeniedReason"
-    expires_after="2026-07-26">
-  <owner>tungnh@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the cause of a user interaction (e.g., user click on the permission
-    element) that has been denied. This metric is emitted once for every user
-    interaction that has been denied.
   </summary>
 </histogram>
 

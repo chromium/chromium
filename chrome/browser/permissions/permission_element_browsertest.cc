@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/web_feature_histogram_tester.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
@@ -596,7 +597,8 @@ class MiscellaneousElementBrowserTest
     feature_list_.InitWithFeatures(
         {blink::features::kGeolocationElement,
          blink::features::kUserMediaElement,
-         blink::features::kBypassPepcSecurityForTesting},
+         blink::features::kBypassPepcSecurityForTesting,
+         blink::features::kInstallElement},
         {permissions::features::kPermissionElementPromptPositioning});
   }
 
@@ -735,4 +737,22 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
     observer.Wait();
     WaitForPromptActionEvent("geolocation");
   }
+}
+
+IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest, CountMetrics) {
+  WebFeatureHistogramTester histogram_tester;
+  NavigateToURL("/permissions/permission_element_count.html");
+
+  // Even though we have two geolocation elements in the page, the count only
+  // increments once.
+  histogram_tester.ExpectCounts(
+      {{blink::mojom::WebFeature::kHTMLGeolocationElement, 1}});
+  histogram_tester.ExpectCounts(
+      {{blink::mojom::WebFeature::kHTMLInstallElement, 1}});
+  histogram_tester.ExpectCounts(
+      {{blink::mojom::WebFeature::kHTMLUserMediaElement, 1}});
+  // Make sure that the count for the obsolete permission element is not
+  // incremented.
+  histogram_tester.ExpectCounts(
+      {{blink::mojom::WebFeature::kHTMLPermissionElement, 0}});
 }

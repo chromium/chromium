@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/frame/cached_permission_status.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html/html_capability_element_metrics_util.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_icon_element.h"
@@ -277,42 +278,6 @@ class CORE_EXPORT HTMLCapabilityElementBase
     // how to best surface this for <install>.
     kInstallDataError,
   };
-
-  // These values are used for histograms. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(UserInteractionDeniedReason)
-  enum class UserInteractionDeniedReason {
-    kInvalidType = 0,
-    kFailedOrHasNotBeenRegistered = 1,
-    kRecentlyAttachedToLayoutTree = 2,
-    // kIntersectionRecentlyFullyVisible = 3,    Deprecated.
-    kInvalidStyle = 4,
-    kUntrustedEvent = 5,
-    kIntersectionWithViewportChanged = 6,
-    kIntersectionVisibilityOutOfViewPortOrClipped = 7,
-    kIntersectionVisibilityOccludedOrDistorted = 8,
-    kAttributeChanged = 9,
-    kInstallDataError = 10,
-    kMaxValue = kInstallDataError,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:PermissionElementUserInteractionDeniedReason)
-
-  // These values are used for histograms. Entries should not be renumbered and
-  // numeric values should never be reused.
-  //
-  // LINT.IfChange(InvalidStyleReason)
-  enum class InvalidStyleReason {
-    kNoComputedStyle = 0,
-    kNonOpaqueColorOrBackgroundColor = 1,
-    kLowConstrastColorAndBackgroundColor = 1,
-    kTooSmallFontSize = 3,
-    kTooLargeFontSize = 4,
-    kInvalidDisplayProperty = 5,
-
-    kMaxValue = kInvalidDisplayProperty,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:PermissionElementInvalidStyleReason)
 
   // Define the different states of visibility depending on IntersectionObserver
   // tells us why an element is visible/invisible.
