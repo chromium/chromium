@@ -94,7 +94,7 @@ SVGURLReferenceResolver::SVGURLReferenceResolver(const String& url_string,
                                                  const Document& document)
     : relative_url_(url_string),
       document_(&document),
-      is_local_(url_string.StartsWith('#')) {}
+      is_local_(url_string.starts_with('#')) {}
 
 KURL SVGURLReferenceResolver::AbsoluteUrl() const {
   if (absolute_url_.IsNull())

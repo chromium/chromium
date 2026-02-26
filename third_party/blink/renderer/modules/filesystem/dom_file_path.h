@@ -63,7 +63,7 @@ class DOMFilePath {
   static String Append(const String& path, const String& component);
 
   static bool IsAbsolute(const String& path) {
-    return path.StartsWith(DOMFilePath::kRoot);
+    return path.starts_with(DOMFilePath::kRoot);
   }
 
   static bool EndsWithSeparator(const String& path) {

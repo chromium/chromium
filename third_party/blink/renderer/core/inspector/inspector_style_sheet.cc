@@ -807,7 +807,7 @@ bool InspectorStyle::CheckRegisteredPropertySyntaxWithVarSubstitution(
   if (!document) {
     return false;
   }
-  if (!property.name.StartsWith("--")) {
+  if (!property.name.starts_with("--")) {
     return false;
   }
   const PropertyRegistry* registry = document->GetPropertyRegistry();
@@ -1342,7 +1342,7 @@ CSSRule* InspectorStyleSheet::SetStyleText(
     auto old_suffix = text_.Substring(
         range.end, parent_source_data->rule_body_range.end - range.end);
 
-    if (!(old_prefix.ends_with('{') && old_suffix.StartsWith("}"))) {
+    if (!(old_prefix.ends_with('{') && old_suffix.starts_with('}'))) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
           "Source range didn't match existing style source range");
@@ -1870,7 +1870,7 @@ void InspectorStyleSheet::ParseText(const String& text) {
     if (property_registry) {
       for (const auto& rule_source_data : *source_data_) {
         for (auto& property_source_data : rule_source_data->property_data) {
-          if (!property_source_data.name.StartsWith("--") ||
+          if (!property_source_data.name.starts_with("--") ||
               !property_source_data.parsed_ok) {
             continue;
           }

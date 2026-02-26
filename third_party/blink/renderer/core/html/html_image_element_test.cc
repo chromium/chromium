@@ -114,7 +114,7 @@ TEST_F(HTMLImageElementSimTest,
 
   image_resource.Complete("image data");
   EXPECT_EQ(ConsoleMessages().size(), 1u);
-  EXPECT_TRUE(ConsoleMessages().front().StartsWith(
+  EXPECT_TRUE(ConsoleMessages().front().starts_with(
       "sharedStorageWritable: sharedStorage operations are only available in "
       "secure contexts."))
       << "Expect error that Shared Storage operations are not allowed in "

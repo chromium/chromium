@@ -499,8 +499,9 @@ std::optional<ImportMap::MatchResult> ImportMap::MatchPrefix(
       continue;
     }
 
-    if (!key.StartsWith(it->key))
+    if (!key.starts_with(it->key)) {
       continue;
+    }
 
     // https://wicg.github.io/import-maps/#longer-or-code-unit-less-than
     // We omit code unit comparison, because there can be at most one

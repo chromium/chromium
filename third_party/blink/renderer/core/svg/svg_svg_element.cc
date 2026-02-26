@@ -731,7 +731,7 @@ void SVGSVGElement::SetViewSpec(const SVGViewSpec* view_spec) {
 const SVGViewSpec* SVGSVGElement::ParseViewSpec(
     const String& fragment_identifier,
     Element* anchor_node) const {
-  if (fragment_identifier.StartsWith("svgView(")) {
+  if (fragment_identifier.starts_with("svgView(")) {
     const SVGViewSpec* view_spec =
         SVGViewSpec::CreateFromFragment(fragment_identifier);
     if (view_spec) {

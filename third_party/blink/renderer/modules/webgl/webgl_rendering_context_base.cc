@@ -7907,9 +7907,10 @@ bool WebGLRenderingContextBase::ValidateString(const char* function_name,
 }
 
 bool WebGLRenderingContextBase::IsPrefixReserved(const String& name) {
-  if (name.StartsWith("gl_") || name.StartsWith("webgl_") ||
-      name.StartsWith("_webgl_"))
+  if (name.starts_with("gl_") || name.starts_with("webgl_") ||
+      name.starts_with("_webgl_")) {
     return true;
+  }
   return false;
 }
 

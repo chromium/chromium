@@ -62,7 +62,7 @@ class ThrottlingTestBase : public SimTest {
     result.erase(
         std::remove_if(result.begin(), result.end(),
                        [](const String& element) {
-                         return !element.StartsWith(kTestConsoleMessagePrefix);
+                         return !element.starts_with(kTestConsoleMessagePrefix);
                        }),
         result.end());
 

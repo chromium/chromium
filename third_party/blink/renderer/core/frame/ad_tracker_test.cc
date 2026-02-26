@@ -2134,9 +2134,9 @@ TEST_F(AdTrackerSimTest, SelectivePermissionsInterventionOn) {
   )SCRIPT");
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return ConsoleMessages().size() == 3; }));
-  EXPECT_TRUE(ConsoleMessages()[0].StartsWith(
+  EXPECT_TRUE(ConsoleMessages()[0].starts_with(
       "Blocked call to geolocation because ad-script"));
-  EXPECT_TRUE(ConsoleMessages()[1].StartsWith(
+  EXPECT_TRUE(ConsoleMessages()[1].starts_with(
       "Permissions policy violation: Geolocation"));
   EXPECT_EQ("Failed", ConsoleMessages()[2]);
 }

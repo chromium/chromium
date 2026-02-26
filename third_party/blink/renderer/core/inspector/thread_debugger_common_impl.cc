@@ -138,7 +138,7 @@ unsigned ThreadDebuggerCommonImpl::PromiseRejected(
   String message = error_message;
   if (message.empty()) {
     message = "Uncaught (in promise)";
-  } else if (message.StartsWith("Uncaught ")) {
+  } else if (message.starts_with("Uncaught ")) {
     message = StrCat({"Uncaught (in promise)", StringView(message, 8)});
   }
 

@@ -88,7 +88,7 @@ TEST_F(DocumentPolicySimTest, ReportDocumentPolicyHeaderParsingError) {
 
   EXPECT_EQ(ConsoleMessages().size(), 1u);
   EXPECT_TRUE(
-      ConsoleMessages().front().StartsWith("Document-Policy HTTP header:"));
+      ConsoleMessages().front().starts_with("Document-Policy HTTP header:"));
 }
 
 TEST_F(DocumentPolicySimTest, ReportRequireDocumentPolicyHeaderParsingError) {
@@ -100,7 +100,7 @@ TEST_F(DocumentPolicySimTest, ReportRequireDocumentPolicyHeaderParsingError) {
   main_resource.Finish();
 
   EXPECT_EQ(ConsoleMessages().size(), 1u);
-  EXPECT_TRUE(ConsoleMessages().front().StartsWith(
+  EXPECT_TRUE(ConsoleMessages().front().starts_with(
       "Require-Document-Policy HTTP header:"));
 }
 

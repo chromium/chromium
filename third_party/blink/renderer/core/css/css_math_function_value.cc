@@ -163,7 +163,7 @@ static String BuildCSSText(const String& expression) {
   // “If a result of this serialization starts with a "(" (open parenthesis) and
   // ends with a ")" (close parenthesis), remove those characters from the
   // result.”
-  if (expression.StartsWith('(')) {
+  if (expression.starts_with('(')) {
     DCHECK(expression.ends_with(')'));
     result.Append(expression);
   } else {

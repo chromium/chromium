@@ -94,8 +94,9 @@ bool IsValidContextName(const String& name_or_keyword) {
   // an underscore are reserved for special keywords.)"
   if (name_or_keyword.empty())
     return false;
-  if (name_or_keyword.StartsWith("_"))
+  if (name_or_keyword.starts_with('_')) {
     return false;
+  }
   return true;
 }
 

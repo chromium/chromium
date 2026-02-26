@@ -38,8 +38,8 @@ ParsedSpecifier ParsedSpecifier::Create(const String& specifier,
   //
   // <spec label="import-specifier" step="1">If specifier starts with "/", "./",
   // or "../", then:</spec>
-  if (!specifier.StartsWith("/") && !specifier.StartsWith("./") &&
-      !specifier.StartsWith("../")) {
+  if (!specifier.starts_with('/') && !specifier.starts_with("./") &&
+      !specifier.starts_with("../")) {
     // Do not consider an empty specifier as a valid bare specifier.
     //
     // <spec

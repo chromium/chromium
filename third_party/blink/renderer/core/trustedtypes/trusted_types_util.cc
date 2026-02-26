@@ -158,12 +158,13 @@ String GetSamplePrefix(const AtomicString& interface_name,
   if (interface_name.empty()) {
     // No interface name? Then we have no prefix to use.
   } else if (interface_name == trusted_types_names::kEval) {
-    bool is_function = RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()
-                           ? (value.StartsWith(kFunctionAnonymousPrefix) ||
-                              value.StartsWith(kAsyncFunctionAnonymousPrefix) ||
-                              value.StartsWith(kGeneratorAnonymousPrefix) ||
-                              value.StartsWith(kAsyncGeneratorAnonymousPrefix))
-                           : value.StartsWith(kFunctionAnonymousPrefix);
+    bool is_function =
+        RuntimeEnabledFeatures::TrustedTypesHTMLEnabled()
+            ? (value.starts_with(kFunctionAnonymousPrefix) ||
+               value.starts_with(kAsyncFunctionAnonymousPrefix) ||
+               value.starts_with(kGeneratorAnonymousPrefix) ||
+               value.starts_with(kAsyncGeneratorAnonymousPrefix))
+            : value.starts_with(kFunctionAnonymousPrefix);
     sample_prefix.Append(is_function ? trusted_types_names::kFunction
                                      : trusted_types_names::kEval);
   } else if ((interface_name == trusted_types_names::kWorker ||
@@ -233,13 +234,13 @@ bool TrustedTypeFail(TrustedTypeViolationKind kind,
   // https://www.w3.org/TR/trusted-types/#should-block-sink-type-mismatch step 3
   size_t strip = 0;
   if (prefix == "Function") {
-    if (value.StartsWith(kFunctionAnonymousPrefix)) {
+    if (value.starts_with(kFunctionAnonymousPrefix)) {
       strip = strlen(kFunctionAnonymousPrefix);
-    } else if (value.StartsWith(kAsyncFunctionAnonymousPrefix)) {
+    } else if (value.starts_with(kAsyncFunctionAnonymousPrefix)) {
       strip = strlen(kAsyncFunctionAnonymousPrefix);
-    } else if (value.StartsWith(kGeneratorAnonymousPrefix)) {
+    } else if (value.starts_with(kGeneratorAnonymousPrefix)) {
       strip = strlen(kGeneratorAnonymousPrefix);
-    } else if (value.StartsWith(kAsyncGeneratorAnonymousPrefix)) {
+    } else if (value.starts_with(kAsyncGeneratorAnonymousPrefix)) {
       strip = strlen(kAsyncGeneratorAnonymousPrefix);
     };
   }

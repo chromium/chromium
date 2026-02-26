@@ -3190,7 +3190,7 @@ bool CSSMathExpressionOperation::MayHaveRelativeUnit() const {
 static void SerializeTopLevelNode(const CSSMathExpressionNode* node,
                                   StringBuilder& result) {
   String text = node->CustomCSSText();
-  if (text.StartsWith('(')) {
+  if (text.starts_with('(')) {
     DCHECK(text.ends_with(')'));
     result.Append(StringView(text, 1, text.length() - 2));
   } else {

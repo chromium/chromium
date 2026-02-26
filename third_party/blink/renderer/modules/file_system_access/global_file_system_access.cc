@@ -60,7 +60,7 @@ bool IsValidIdCodePoint(UChar chr) {
 
 bool VerifyIsValidExtension(const String& extension,
                             ExceptionState& exception_state) {
-  if (!extension.StartsWith(".")) {
+  if (!extension.starts_with('.')) {
     exception_state.ThrowTypeError(
         StrCat({"Extension '", extension, "' must start with '.'."}));
     return false;

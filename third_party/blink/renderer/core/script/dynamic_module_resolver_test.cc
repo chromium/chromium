@@ -299,7 +299,7 @@ TEST_F(DynamicModuleResolverTest, ResolveSpecifierFailure) {
   scope.PerformMicrotaskCheckpoint();
   EXPECT_TRUE(capture->WasCalled());
   EXPECT_EQ("TypeError", capture->Name());
-  EXPECT_TRUE(capture->Message().StartsWith("Failed to resolve"));
+  EXPECT_TRUE(capture->Message().starts_with("Failed to resolve"));
 }
 
 TEST_F(DynamicModuleResolverTest, ResolveModuleTypeFailure) {
@@ -360,7 +360,7 @@ TEST_F(DynamicModuleResolverTest, FetchFailure) {
   scope.PerformMicrotaskCheckpoint();
   EXPECT_TRUE(capture->WasCalled());
   EXPECT_EQ("TypeError", capture->Name());
-  EXPECT_TRUE(capture->Message().StartsWith("Failed to fetch"));
+  EXPECT_TRUE(capture->Message().starts_with("Failed to fetch"));
 }
 
 TEST_F(DynamicModuleResolverTest, ExceptionThrown) {

@@ -64,7 +64,7 @@ bool HasNoTranslate(const Document& document) {
 // languages with different locales have major difference, we return the value
 // include its locales.
 String GetLanguageCode(const String& language) {
-  if (language.StartsWith("zh")) {
+  if (language.starts_with("zh")) {
     return language;
   }
 

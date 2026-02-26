@@ -460,13 +460,13 @@ TEST_F(FrameSerializerTest, CSS) {
 
   // Ensure encodings are specified.
   EXPECT_TRUE(
-      GetSerializedData("link_styles.css", "text/css").StartsWith("@charset"));
+      GetSerializedData("link_styles.css", "text/css").starts_with("@charset"));
   EXPECT_TRUE(GetSerializedData("import_styles.css", "text/css")
-                  .StartsWith("@charset"));
+                  .starts_with("@charset"));
   EXPECT_TRUE(GetSerializedData("import_style_from_link.css", "text/css")
-                  .StartsWith("@charset"));
+                  .starts_with("@charset"));
   EXPECT_TRUE(GetSerializedData("encoding.css", "text/css")
-                  .StartsWith("@charset \"euc-kr\";"));
+                  .starts_with("@charset \"euc-kr\";"));
 
   // Ensure that stylesheet contents are not NFC-normalized before encoding.
   EXPECT_TRUE(GetSerializedData("encoding.css", "text/css")
@@ -499,7 +499,7 @@ TEST_F(FrameSerializerTest, XMLDeclaration) {
   Serialize("xmldecl.xml");
 
   String expected_start("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-  EXPECT_TRUE(GetSerializedData("xmldecl.xml").StartsWith(expected_start));
+  EXPECT_TRUE(GetSerializedData("xmldecl.xml").starts_with(expected_start));
 }
 
 TEST_F(FrameSerializerTest, DTD) {
@@ -509,7 +509,7 @@ TEST_F(FrameSerializerTest, DTD) {
   Serialize("html5.html");
 
   String expected_start("<!DOCTYPE html>");
-  EXPECT_TRUE(GetSerializedData("html5.html").StartsWith(expected_start));
+  EXPECT_TRUE(GetSerializedData("html5.html").starts_with(expected_start));
 }
 
 TEST_F(FrameSerializerTest, Font) {

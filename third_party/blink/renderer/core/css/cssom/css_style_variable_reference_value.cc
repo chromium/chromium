@@ -30,7 +30,7 @@ CSSStyleVariableReferenceValue* CSSStyleVariableReferenceValue::Create(
 CSSStyleVariableReferenceValue* CSSStyleVariableReferenceValue::Create(
     const String& variable,
     CSSUnparsedValue* fallback) {
-  if (!variable.StartsWith("--")) {
+  if (!variable.starts_with("--")) {
     return nullptr;
   }
   return MakeGarbageCollected<CSSStyleVariableReferenceValue>(variable,
@@ -40,7 +40,7 @@ CSSStyleVariableReferenceValue* CSSStyleVariableReferenceValue::Create(
 void CSSStyleVariableReferenceValue::setVariable(
     const String& value,
     ExceptionState& exception_state) {
-  if (!value.StartsWith("--")) {
+  if (!value.starts_with("--")) {
     exception_state.ThrowTypeError("Invalid custom property name");
     return;
   }

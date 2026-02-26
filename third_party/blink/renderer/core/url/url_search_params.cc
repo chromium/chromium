@@ -60,8 +60,9 @@ URLSearchParams* URLSearchParams::Create(const URLSearchParamsInit* init,
   switch (init->GetContentType()) {
     case URLSearchParamsInit::ContentType::kUSVString: {
       const String& query_string = init->GetAsUSVString();
-      if (query_string.StartsWith('?'))
+      if (query_string.starts_with('?')) {
         return MakeGarbageCollected<URLSearchParams>(query_string.Substring(1));
+      }
       return MakeGarbageCollected<URLSearchParams>(query_string);
     }
     case URLSearchParamsInit::ContentType::kUSVStringSequenceSequence:

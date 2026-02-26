@@ -139,7 +139,7 @@ bool ShouldLog(const LocalFrame& frame) {
 
   DCHECK(frame.GetDocument());
   const String& url = frame.GetDocument()->Url().GetString();
-  return !url.StartsWith("devtools:");
+  return !url.starts_with("devtools:");
 }
 
 }  // namespace

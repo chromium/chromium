@@ -151,7 +151,7 @@ void PrivateAggregation::contributeToHistogramOnEvent(
   }
 
   // If event does not start with "reserved.", throw a TypeError.
-  if (!event.StartsWith("reserved.")) {
+  if (!event.starts_with("reserved.")) {
     exception_state.ThrowTypeError("event must begin with \"reserved.\"");
     return;
   }

@@ -20,8 +20,9 @@ namespace url_pattern {
 namespace {
 
 String MaybeStripPrefix(const String& value, StringView prefix) {
-  if (value.StartsWith(prefix))
+  if (value.starts_with(prefix)) {
     return value.Substring(1, value.length() - 1);
+  }
   return value;
 }
 

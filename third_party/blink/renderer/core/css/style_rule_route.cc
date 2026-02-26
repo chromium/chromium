@@ -35,7 +35,7 @@ StyleRuleRoute::StyleRuleRoute(const String& name, CSSPropertyValueSet* values)
           values->GetPropertyCSSValue(CSSPropertyID::kHash))),
       base_url_(DynamicTo<CSSStringValue>(
           values->GetPropertyCSSValue(CSSPropertyID::kBaseUrl))) {
-  DCHECK(name.StartsWith("--"));
+  DCHECK(name.starts_with("--"));
 }
 
 StyleRuleRoute::StyleRuleRoute(const StyleRuleRoute& other)

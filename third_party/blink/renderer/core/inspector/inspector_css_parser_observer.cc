@@ -259,7 +259,7 @@ void InspectorCSSParserObserver::ObserveComment(unsigned start_offset,
   String comment_text =
       parsed_text_.Substring(start_offset, end_offset - start_offset);
 
-  DCHECK(comment_text.StartsWith("/*"));
+  DCHECK(comment_text.starts_with("/*"));
   comment_text = comment_text.Substring(2);
 
   // Require well-formed comments.
@@ -284,18 +284,17 @@ void InspectorCSSParserObserver::ObserveComment(unsigned start_offset,
     return;
   }
   CSSPropertySourceData& property_data = comment_property_data.at(0);
-  bool parsed_ok = property_data.parsed_ok ||
-                   property_data.name.StartsWith("-moz-") ||
-                   property_data.name.StartsWith("-o-") ||
-                   property_data.name.StartsWith("-webkit-") ||
-                   property_data.name.StartsWith("-ms-");
+  const String& name = property_data.name;
+  bool parsed_ok = property_data.parsed_ok || name.starts_with("-moz-") ||
+                   name.starts_with("-o-") || name.starts_with("-webkit-") ||
+                   name.starts_with("-ms-");
   if (!parsed_ok || property_data.range.length() != comment_text.length()) {
     return;
   }
 
   current_rule_data_stack_.back()->property_data.push_back(
-      CSSPropertySourceData(property_data.name, property_data.value, false,
-                            true, true, SourceRange(start_offset, end_offset)));
+      CSSPropertySourceData(name, property_data.value, false, true, true,
+                            SourceRange(start_offset, end_offset)));
 }
 
 static OrdinalNumber AddOrdinalNumbers(OrdinalNumber a, OrdinalNumber b) {

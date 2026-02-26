@@ -211,7 +211,7 @@ float JustifyResults(const String& text_content,
       !RuntimeEnabledFeatures::JustifyWithoutLineTextEnabled();
   if (!apply_line_text) {
     DCHECK_EQ(line_text_start_offset, 0u);
-    DCHECK(text_content.StartsWith(line_text));
+    DCHECK(text_content.starts_with(line_text));
   }
   float last_glyph_spacing = 0;
   for (wtf_size_t i = 0; i < results.size(); ++i) {

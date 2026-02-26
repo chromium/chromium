@@ -238,12 +238,13 @@ bool IsValidMimeType(const String& content_type,
   if (!parsed_content_type.IsValid())
     return false;
 
+  String mime_type = parsed_content_type.MimeType();
   // Valid ParsedContentType implies we have a mime type.
-  DCHECK(parsed_content_type.MimeType());
-  if (!parsed_content_type.MimeType().StartsWith(prefix) &&
-      (is_webrtc ||
-       !parsed_content_type.MimeType().StartsWith(kApplicationMimeTypePrefix)))
+  DCHECK(mime_type);
+  if (!mime_type.starts_with(prefix) &&
+      (is_webrtc || !mime_type.starts_with(kApplicationMimeTypePrefix))) {
     return false;
+  }
 
   // No requirement on parameters for RTP MIME types.
   if (is_webrtc)
@@ -729,8 +730,8 @@ bool ParseContentType(const String& content_type,
 
 #if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 bool IsDolbyVisionVideoCodec(const String& video_codec_str) {
-  return video_codec_str.StartsWith("dvh1.") ||
-         video_codec_str.StartsWith("dvhe.");
+  return video_codec_str.starts_with("dvh1.") ||
+         video_codec_str.starts_with("dvhe.");
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 

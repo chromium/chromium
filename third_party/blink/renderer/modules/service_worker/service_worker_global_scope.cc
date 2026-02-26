@@ -2423,7 +2423,7 @@ void ServiceWorkerGlobalScope::StartPaymentRequestEvent(
   if (std::ranges::any_of(
           event_data->method_data,
           [](const payments::mojom::blink::PaymentMethodDataPtr& datum) {
-            return datum && !datum->supported_method.StartsWith("http");
+            return datum && !datum->supported_method.starts_with("http");
           })) {
     UseCounter::Count(
         this, WebFeature::kPaymentHandlerStandardizedPaymentMethodIdentifier);

@@ -499,7 +499,7 @@ Value FunStartsWith::Evaluate(EvaluationContext& context) const {
   if (s2.empty())
     return true;
 
-  return s1.StartsWith(s2);
+  return s1.starts_with(s2);
 }
 
 Value FunContains::Evaluate(EvaluationContext& context) const {

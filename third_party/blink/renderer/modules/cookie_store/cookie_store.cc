@@ -140,7 +140,7 @@ network::mojom::blink::RestrictedCanonicalCookieParamsPtr ToCookieParams(
     // The leading dot (".") from the domain attribute is stripped in the
     // Set-Cookie header, for compatibility. This API doesn't have compatibility
     // constraints, so reject the edge case outright.
-    if (options->domain().StartsWith(".")) {
+    if (options->domain().starts_with('.')) {
       exception_state.ThrowTypeError("Cookie domain cannot start with \".\"");
       return nullptr;
     }
@@ -168,7 +168,7 @@ network::mojom::blink::RestrictedCanonicalCookieParamsPtr ToCookieParams(
           "Cookies with \"__Host-\" prefix cannot have a non-\"/\" path");
       return nullptr;
     }
-    if (!path.StartsWith("/")) {
+    if (!path.starts_with('/')) {
       exception_state.ThrowTypeError("Cookie path must start with \"/\"");
       return nullptr;
     }

@@ -92,7 +92,7 @@ void Fence::reportEvent(const FenceEvent* event,
     return;
   }
 
-  if (event->getEventTypeOr("").StartsWith(
+  if (event->getEventTypeOr("").starts_with(
           blink::kFencedFrameReservedPAEventPrefix)) {
     AddConsoleMessage("Reserved events cannot be triggered manually.");
     return;
@@ -399,7 +399,7 @@ void Fence::reportPrivateAggregationEvent(const String& event,
     return;
   }
 
-  if (event.StartsWith(blink::kFencedFrameReservedPAEventPrefix)) {
+  if (event.starts_with(blink::kFencedFrameReservedPAEventPrefix)) {
     AddConsoleMessage("Reserved events cannot be triggered manually.");
     return;
   }

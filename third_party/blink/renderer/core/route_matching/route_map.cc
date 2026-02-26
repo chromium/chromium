@@ -107,7 +107,7 @@ RouteMap::ParseResult RouteMap::ParseAndApplyRoutes(
                            "Invalid data type or missing name entry for route");
       }
 
-      if (name.StartsWith("--")) {
+      if (name.starts_with("--")) {
         // Don't clash with CSS @route rules.
         //
         // TODO(crbug.com/436805487): Add a test for this (if support for
@@ -163,7 +163,7 @@ RouteMap::ParseResult RouteMap::ParseAndApplyRoutes(
 
 void RouteMap::AddRouteFromRule(const String& dashed_ident,
                                 URLPattern* url_pattern) {
-  DCHECK(dashed_ident.StartsWith("--"));
+  DCHECK(dashed_ident.starts_with("--"));
 
   if (routes_.find(dashed_ident) != routes_.end()) {
     // TODO(crbug.com/436805487): Handle route modificiation and removal.

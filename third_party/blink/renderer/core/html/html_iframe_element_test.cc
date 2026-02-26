@@ -319,7 +319,7 @@ TEST_F(HTMLIFrameElementSimTest, PolicyAttributeParsingError) {
   EXPECT_EQ(ConsoleMessages().size(), 2u);
   for (const auto& message : ConsoleMessages()) {
     EXPECT_TRUE(
-        message.StartsWith("Unrecognized document policy feature name"));
+        message.starts_with("Unrecognized document policy feature name"));
   }
 }
 
@@ -338,7 +338,7 @@ TEST_F(HTMLIFrameElementSimTest, AllowAttributeParsingError) {
       << "Allow attribute parsing should only generate console message once, "
          "even though there might be multiple call to "
          "PermissionsPolicyParser::ParseAttribute.";
-  EXPECT_TRUE(ConsoleMessages().front().StartsWith("Unrecognized feature"))
+  EXPECT_TRUE(ConsoleMessages().front().starts_with("Unrecognized feature"))
       << "Expect permissions policy parser raising error for unrecognized "
          "feature but got: "
       << ConsoleMessages().front();
@@ -362,7 +362,7 @@ TEST_F(HTMLIFrameElementSimTest, Adauctionheaders_InsecureContext_NotAllowed) {
   )");
 
   EXPECT_EQ(ConsoleMessages().size(), 1u);
-  EXPECT_TRUE(ConsoleMessages().front().StartsWith(
+  EXPECT_TRUE(ConsoleMessages().front().starts_with(
       "adAuctionHeaders: Protected Audience APIs "
       "are only available in secure contexts."))
       << "Unexpected error; got: " << ConsoleMessages().front();
@@ -393,7 +393,7 @@ TEST_F(HTMLIFrameElementSimTest,
   )");
 
   EXPECT_EQ(ConsoleMessages().size(), 1u);
-  EXPECT_TRUE(ConsoleMessages().front().StartsWith(
+  EXPECT_TRUE(ConsoleMessages().front().starts_with(
       "sharedStorageWritable: sharedStorage operations are only available in "
       "secure contexts."))
       << "Expect error that Shared Storage operations are not allowed in "

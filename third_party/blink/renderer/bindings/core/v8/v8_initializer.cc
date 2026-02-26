@@ -408,9 +408,9 @@ void V8Initializer::ExceptionPropagationCallback(
   String class_name = ToCoreString(isolate, v8_message.GetInterfaceName());
   String property_name = ToCoreString(isolate, v8_message.GetPropertyName());
   if ((context_type == v8::ExceptionContext::kAttributeGet &&
-       property_name.StartsWith("get ")) ||
+       property_name.starts_with("get ")) ||
       (context_type == v8::ExceptionContext::kAttributeSet &&
-       property_name.StartsWith("set "))) {
+       property_name.starts_with("set "))) {
     property_name = property_name.Substring(4);
   }
   if (property_name == "[Symbol.toPrimitive]") {

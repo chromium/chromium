@@ -218,8 +218,9 @@ bool VTTParser::HasRequiredFileIdentifier(const String& line) {
   // do not exactly equal "WEBVTT", or the seventh character is not a U+0020
   // SPACE character, a U+0009 CHARACTER TABULATION (tab) character, or a
   // U+000A LINE FEED (LF) character, then abort these steps.
-  if (!line.StartsWith("WEBVTT"))
+  if (!line.starts_with("WEBVTT")) {
     return false;
+  }
   if (line.length() > kFileIdentifierLength) {
     UChar maybe_separator = line[kFileIdentifierLength];
     // The line reader handles the line break characters, so we don't need
@@ -278,8 +279,8 @@ VTTParser::ParseState VTTParser::CollectWebVTTBlock(const String& line) {
     // line starts with the substring "STYLE" and remaining characters
     // zero or more U+0020 SPACE characters or U+0009 CHARACTER TABULATION
     // (tab) characters expected other than these characters it is invalid.
-    if (line.StartsWith("STYLE") && StringView(line, kStyleIdentifierLength)
-                                        .IsAllSpecialCharacters<IsASpace>()) {
+    if (line.starts_with("STYLE") && StringView(line, kStyleIdentifierLength)
+                                         .IsAllSpecialCharacters<IsASpace>()) {
       contains_style_block_ = true;
       current_content_.Clear();
       return kStyle;
@@ -320,8 +321,8 @@ bool VTTParser::CheckAndCreateRegion(const String& line) {
   // line starts with the substring "REGION" and remaining characters
   // zero or more U+0020 SPACE characters or U+0009 CHARACTER TABULATION
   // (tab) characters expected other than these characters it is invalid.
-  if (line.StartsWith("REGION") && StringView(line, kRegionIdentifierLength)
-                                       .IsAllSpecialCharacters<IsASpace>()) {
+  if (line.starts_with("REGION") && StringView(line, kRegionIdentifierLength)
+                                        .IsAllSpecialCharacters<IsASpace>()) {
     current_region_ = VTTRegion::Create(*document_);
     return true;
   }

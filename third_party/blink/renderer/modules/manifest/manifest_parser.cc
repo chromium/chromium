@@ -83,7 +83,7 @@ const int kFileHandlerExtensionLimit = 300;
 int g_file_handler_extension_limit_for_testing = 0;
 
 bool IsValidMimeType(const String& mime_type) {
-  if (mime_type.StartsWith('.')) {
+  if (mime_type.starts_with('.')) {
     return true;
   }
   return net::ParseMimeTypeWithoutParameter(mime_type.Utf8(), nullptr, nullptr);
@@ -1799,7 +1799,7 @@ bool ManifestParser::ParseFileHandlerAcceptExtension(const JSONValue* extension,
     return false;
   }
 
-  if (!output->StartsWith(".")) {
+  if (!output->starts_with('.')) {
     AddErrorInfo(
         "property 'accept' file extension ignored, must start with a '.'.");
     return false;
@@ -2019,7 +2019,7 @@ ManifestParser::ParseScopeExtensionOrigin(const String& origin_string) {
   // Check for wildcard *.
   if (base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableScopeExtensionsBySite) &&
-      host.StartsWith(kOriginWildcardPrefix)) {
+      host.starts_with(kOriginWildcardPrefix)) {
     scope_extension->has_origin_wildcard = true;
     // Trim the wildcard prefix to get the effective host. Minus one to exclude
     // the length of the null terminator.

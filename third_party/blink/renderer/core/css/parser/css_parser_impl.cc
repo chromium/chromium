@@ -1950,7 +1950,7 @@ StyleRuleRoute* CSSParserImpl::ConsumeRouteRule(CSSParserTokenStream& stream) {
   String name;
   if (name_token.GetType() == kIdentToken) {
     name = name_token.Value().ToString();
-    if (!name.StartsWith("--")) {
+    if (!name.starts_with("--")) {
       ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleRoute);
       return nullptr;
     }
@@ -2348,8 +2348,8 @@ StyleRulePositionTry* CSSParserImpl::ConsumePositionTryRule(
   String name;
   if (name_token.GetType() == kIdentToken) {
     name = name_token.Value().ToString();
-    if (!name.StartsWith("--") &&
-        !(context_->Mode() == kUASheetMode && name.StartsWith("-internal-"))) {
+    if (!name.starts_with("--") &&
+        !(context_->Mode() == kUASheetMode && name.starts_with("-internal-"))) {
       ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRulePositionTry);
       return nullptr;
     }

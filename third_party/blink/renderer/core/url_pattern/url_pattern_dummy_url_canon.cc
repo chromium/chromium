@@ -24,7 +24,7 @@ constexpr char kDummyUrl[] = "https://dummy.invalid/";
 
 String MaybeStripPrefix(const String& value, StringView prefix) {
   CHECK_EQ(prefix.length(), 1u);
-  if (value.StartsWith(prefix)) {
+  if (value.starts_with(prefix)) {
     return value.Substring(1, value.length() - 1);
   }
   return value;
@@ -271,7 +271,7 @@ base::expected<String, String> CanonicalizePathnameInternal(
   // produce a match when the exact same fixed pathname string is passed
   // to both the constructor and test()/exec()
   if (standard) {
-    bool leading_slash = input.StartsWith("/");
+    bool leading_slash = input.starts_with('/');
     KURL dummy_url(kDummyUrl);
     String maybe_preprended_input = input;
 
@@ -292,7 +292,7 @@ base::expected<String, String> CanonicalizePathnameInternal(
         dummy_url.HasPath() ? dummy_url.GetPath().ToString() : String();
 
     if (!leading_slash) {
-      if (canonicalized_path.StartsWith("/-")) {
+      if (canonicalized_path.starts_with("/-")) {
         // If we prepended a slash then we need to remove it again since the
         // pathname canonicalization should not add a leading slash.
         canonicalized_path = canonicalized_path.Substring(2);

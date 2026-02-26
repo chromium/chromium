@@ -235,8 +235,9 @@ class CORE_EXPORT InspectorAgentState {
       // TODO(johannes): Avoid scanning all keys, let session_state_ provide
       // the keys that match a prefix.
       for (const auto& entry : reattach_state->entries) {
-        if (!entry.key.StartsWith(prefix_key_))
+        if (!entry.key.starts_with(prefix_key_)) {
           continue;
+        }
         blink::String suffix_key = entry.key.Substring(prefix_key_.length());
         ValueType v;
         if (Deserialize(

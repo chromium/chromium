@@ -89,7 +89,7 @@ bool PathMatches(const network::mojom::blink::CSPSource& source,
       DecodeUrlEscapeSequences(url_path, DecodeUrlMode::kUtf8OrIsomorphic);
 
   if (source.path.ends_with('/')) {
-    return path.StartsWith(source.path);
+    return path.starts_with(source.path);
   }
 
   return path == source.path;

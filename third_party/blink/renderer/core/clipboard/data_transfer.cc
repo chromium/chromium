@@ -261,7 +261,8 @@ String NormalizeType(const String& type, bool* convert_to_url = nullptr) {
   constexpr char kMimeTypePlainTextEtc[] = "text/plain;";
 
   String clean_type = type.StripWhiteSpace().LowerASCII();
-  if (clean_type == kTypeText || clean_type.StartsWith(kMimeTypePlainTextEtc)) {
+  if (clean_type == kTypeText ||
+      clean_type.starts_with(kMimeTypePlainTextEtc)) {
     return ui::kMimeTypePlainText;
   }
   if (clean_type == kTypeUrl) {

@@ -478,7 +478,7 @@ KURL MHTMLParser::ConvertContentIDToURI(const String& content_id) {
   if (content_id.length() <= 2)
     return KURL();
 
-  if (!content_id.StartsWith('<') || !content_id.ends_with('>')) {
+  if (!content_id.starts_with('<') || !content_id.ends_with('>')) {
     return KURL();
   }
 

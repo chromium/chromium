@@ -178,13 +178,13 @@ class WTF_EXPORT AtomicString {
   }
 
   bool starts_with(const StringView& prefix) const {
-    return string_.StartsWith(prefix);
+    return string_.starts_with(prefix);
   }
   bool StartsWithIgnoringAsciiCase(const StringView& prefix) const {
     return string_.StartsWithIgnoringAsciiCase(prefix);
   }
   bool starts_with(UChar character) const {
-    return string_.StartsWith(character);
+    return string_.starts_with(character);
   }
 
   bool ends_with(const StringView& suffix) const {

@@ -133,7 +133,7 @@ ExecutionContext* Clipboard::GetExecutionContext() const {
 
 // static
 String Clipboard::ParseWebCustomFormat(const String& format) {
-  if (format.StartsWith(ui::kWebClipboardFormatPrefix)) {
+  if (format.starts_with(ui::kWebClipboardFormatPrefix)) {
     String web_custom_format_suffix = format.Substring(
         static_cast<unsigned>(std::strlen(ui::kWebClipboardFormatPrefix)));
     std::string web_top_level_mime_type;

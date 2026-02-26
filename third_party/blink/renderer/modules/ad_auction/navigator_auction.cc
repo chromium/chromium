@@ -2350,7 +2350,7 @@ bool ConvertAuctionConfigPrioritySignalsFromIdlToMojo(
     const Vector<std::pair<String, double>>& priority_signals_in,
     HashMap<String, double>& priority_signals_out) {
   for (const auto& key_value_pair : priority_signals_in) {
-    if (key_value_pair.first.StartsWith("browserSignals.")) {
+    if (key_value_pair.first.starts_with("browserSignals.")) {
       exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
           input, "perBuyerPrioritySignals key", key_value_pair.first,
           "must not start with reserved \"browserSignals.\" prefix."));
@@ -3358,10 +3358,9 @@ void NavigatorAuction::AuctionHandle::DeprecatedRenderURLReplacementsResolved::
       deprecated_render_url_replacements =
           ConvertNonPromiseDeprecatedRenderURLReplacementsFromV8ToMojo(value);
   for (const auto& replacement : deprecated_render_url_replacements) {
-    if (!(replacement->match.StartsWith("${") &&
-          replacement->match.ends_with('}')) &&
-        !(replacement->match.StartsWith("%%") &&
-          replacement->match.ends_with("%%"))) {
+    const String& match = replacement->match;
+    if (!(match.starts_with("${") && match.ends_with('}')) &&
+        !(match.starts_with("%%") && match.ends_with("%%"))) {
       V8ThrowException::ThrowTypeError(
           script_state->GetIsolate(),
           "Replacements must be of the form '${...}' or '%%...%%'");
@@ -4210,16 +4209,15 @@ ScriptPromise<IDLUndefined> NavigatorAuction::deprecatedReplaceInURN(
   }
   Vector<mojom::blink::AdKeywordReplacementPtr> replacements_list;
   for (const auto& replacement : replacements) {
-    if (!(replacement.first.StartsWith("${") &&
-          replacement.first.ends_with('}')) &&
-        !(replacement.first.StartsWith("%%") &&
-          replacement.first.ends_with("%%"))) {
+    const String& first = replacement.first;
+    if (!(first.starts_with("${") && first.ends_with('}')) &&
+        !(first.starts_with("%%") && first.ends_with("%%"))) {
       exception_state.ThrowTypeError(
           "Replacements must be of the form '${...}' or '%%...%%'");
       return EmptyPromise();
     }
-    replacements_list.push_back(mojom::blink::AdKeywordReplacement::New(
-        replacement.first, replacement.second));
+    replacements_list.push_back(
+        mojom::blink::AdKeywordReplacement::New(first, replacement.second));
   }
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());

@@ -296,7 +296,7 @@ class WTF_EXPORT String {
   // 0.
   UChar32 CharacterStartingAt(unsigned) const;
 
-  bool StartsWith(const StringView& prefix) const {
+  bool starts_with(const StringView& prefix) const {
     return impl_ ? impl_->StartsWith(prefix) : prefix.empty();
   }
   // Unicode aware case insensitive string matching. Non-ASCII characters might
@@ -313,7 +313,7 @@ class WTF_EXPORT String {
   bool StartsWithIgnoringAsciiCase(const StringView& prefix) const {
     return impl_ ? impl_->StartsWithIgnoringAsciiCase(prefix) : prefix.empty();
   }
-  bool StartsWith(UChar character) const {
+  bool starts_with(UChar character) const {
     return impl_ ? impl_->StartsWith(character) : false;
   }
 

@@ -325,7 +325,7 @@ bool FindTaskController::ShouldFindMatches(
   if (last_find_request_completed_with_no_matches_ &&
       !last_search_string_.empty()) {
     // Check to see if the search string prefixes match.
-    if (search_text.StartsWith(last_search_string_)) {
+    if (search_text.starts_with(last_search_string_)) {
       return false;  // Don't search this frame, it will be fruitless.
     }
   }

@@ -214,7 +214,7 @@ void SVGUseElement::UpdateDocumentContent(
 void SVGUseElement::UpdateTargetReference() {
   const String& url_string = HrefString();
   element_url_ = GetDocument().CompleteURL(url_string);
-  element_url_is_local_ = url_string.StartsWith('#');
+  element_url_is_local_ = url_string.starts_with('#');
   if (!IsStructurallyExternal() || !GetDocument().IsActive() ||
       !element_url_.IsValid()) {
     UpdateDocumentContent(nullptr);
