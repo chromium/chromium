@@ -422,9 +422,23 @@ TEST_F(QuicEndToEndMTCTest, SimpleConnection) {
       /*sample=*/-net::OK,
       /*expected_bucket_count=*/1);
   histograms.ExpectUniqueSample(
+      "Net.QuicSession.CertVerificationResult.MTCAdvertised.NewConnection",
+      /*sample=*/-net::OK,
+      /*expected_bucket_count=*/1);
+  // TODO(crbug.com/482083310): add tests of histograms in the resumption case.
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.CertVerificationResult.MTCAdvertised.Resumption", 0);
+
+  histograms.ExpectUniqueSample(
       "Net.QuicSession.CertVerificationResult.MTCReceived",
       /*sample=*/-net::OK,
       /*expected_bucket_count=*/1);
+  histograms.ExpectUniqueSample(
+      "Net.QuicSession.CertVerificationResult.MTCReceived.NewConnection",
+      /*sample=*/-net::OK,
+      /*expected_bucket_count=*/1);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.CertVerificationResult.MTCReceived.Resumption", 0);
 
   // A mock time is used, and is not advanced during the test, but there was
   // still some flaky failures where the histogram had a non-zero number. I'm
@@ -435,10 +449,18 @@ TEST_F(QuicEndToEndMTCTest, SimpleConnection) {
   // Therefore we only check that the metric is present, but don't try to check
   // the value.
   histograms.ExpectTotalCount("Net.QuicSession.HandshakeConfirmedTime.MTC", 1);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.HandshakeConfirmedTime.MTC.NewConnection", 1);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.HandshakeConfirmedTime.MTC.Resumption", 0);
 
   // Should be logged, but we don't know what the exact value will be, so just
   // check that a sample is present.
   histograms.ExpectTotalCount("Net.QuicSession.TLSHandshakeBytes.MTC", 1);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.TLSHandshakeBytes.MTC.NewConnection", 1);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.TLSHandshakeBytes.MTC.Resumption", 0);
 }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 

@@ -3042,6 +3042,14 @@ static std::vector<std::vector<uint8_t>> ServerTrustAnchorIDs(SSL* ssl) {
 
 constexpr uint8_t kMtcExperimentBaseId[] = {0x82, 0xda, 0x4b, 0x30, 0x07};
 
+// Generates histogram names for histograms that have variants split by
+// session resumption.
+static std::string HistogramNameForResumptionVariant(std::string_view prefix,
+                                                     bool is_resumption) {
+  return base::StrCat(
+      {prefix, is_resumption ? ".Resumption" : ".NewConnection"});
+}
+
 // Logs the Net.QuicSession.MTCResult and Net.QuicSession.MTCLandmarkDelta
 // histograms.
 static void LogMTCCertVerifyMetrics(
@@ -3124,9 +3132,19 @@ static void LogMTCCertVerifyMetrics(
   base::UmaHistogramSparse(
       "Net.QuicSession.CertVerificationResult.MTCAdvertised",
       -verify_details->cert_verify_net_error_for_metrics_only);
+  base::UmaHistogramSparse(
+      HistogramNameForResumptionVariant(
+          "Net.QuicSession.CertVerificationResult.MTCAdvertised",
+          is_resumption),
+      -verify_details->cert_verify_net_error_for_metrics_only);
   if (cert_is_mtc) {
     base::UmaHistogramSparse(
         "Net.QuicSession.CertVerificationResult.MTCReceived",
+        -verify_details->cert_verify_net_error_for_metrics_only);
+    base::UmaHistogramSparse(
+        HistogramNameForResumptionVariant(
+            "Net.QuicSession.CertVerificationResult.MTCReceived",
+            is_resumption),
         -verify_details->cert_verify_net_error_for_metrics_only);
   }
 }
@@ -3983,13 +4001,23 @@ void QuicChromiumClientSession::OnCryptoHandshakeComplete() {
       connect_timing_.connect_end - connect_timing_.connect_start;
   UMA_HISTOGRAM_TIMES("Net.QuicSession.HandshakeConfirmedTime",
                       handshake_confirmed_time);
+  const bool is_resumption = SSL_session_reused(crypto_stream_->GetSsl());
   if (server_supports_mtc_tai_) {
     UMA_HISTOGRAM_TIMES("Net.QuicSession.HandshakeConfirmedTime.MTC",
                         handshake_confirmed_time);
+    base::UmaHistogramTimes(
+        HistogramNameForResumptionVariant(
+            "Net.QuicSession.HandshakeConfirmedTime.MTC", is_resumption),
+        handshake_confirmed_time);
+
     size_t handshake_bytes = crypto_stream_->crypto_bytes_read() +
                              crypto_stream_->crypto_bytes_written();
     UMA_HISTOGRAM_COUNTS_100000("Net.QuicSession.TLSHandshakeBytes.MTC",
                                 handshake_bytes);
+    base::UmaHistogramCounts10000(
+        HistogramNameForResumptionVariant(
+            "Net.QuicSession.TLSHandshakeBytes.MTC", is_resumption),
+        handshake_bytes);
   }
 
   // Indicate that the handshake is complete so that we can safely send pings
@@ -4015,6 +4043,11 @@ void QuicChromiumClientSession::OnCryptoHandshakeComplete() {
   if (!trust_anchor_ids_.empty()) {
     base::UmaHistogramTimes(
         "Net.QuicSession.HandshakeConfirmedTime.TrustAnchorIDs",
+        handshake_confirmed_time);
+    base::UmaHistogramTimes(
+        HistogramNameForResumptionVariant(
+            "Net.QuicSession.HandshakeConfirmedTime.TrustAnchorIDs",
+            is_resumption),
         handshake_confirmed_time);
   }
 

@@ -4999,7 +4999,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.CertVerificationResult.{Condition}"
+<histogram
+    name="Net.QuicSession.CertVerificationResult.{Condition}{IsResumption}"
     enum="NetErrorCodes" expires_after="2026-08-23">
   <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
@@ -5008,11 +5009,18 @@ chromium-metrics-reviews@google.com.
     The network error code returned to a QUIC session from the CertVerifier when
     a certification verification is attempted.
 
-    This metric is only recorded when {Condition}.
+    This metric is only recorded when {Condition} {IsResumption}.
   </summary>
   <token key="Condition">
     <variant name="MTCAdvertised" summary="server advertised MTC support"/>
     <variant name="MTCReceived" summary="server sent an MTC"/>
+  </token>
+  <token key="IsResumption">
+    <variant name=""
+        summary="aggregated across new connections and resumption"/>
+    <variant name=".NewConnection" summary="on a new connection"/>
+    <variant name=".Resumption"
+        summary="on a connection that Chrome is attempting to resume"/>
   </token>
 </histogram>
 
@@ -5548,7 +5556,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.HandshakeConfirmedTime.MTC"
+<histogram name="Net.QuicSession.HandshakeConfirmedTime.MTC{IsResumption}"
     units="Milliseconds" expires_after="2026-08-23">
   <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
@@ -5557,11 +5565,20 @@ chromium-metrics-reviews@google.com.
     The elapsed time between starting the crypto handshake, and receiving
     confirmation from the server, measured only for servers that sent a Trust
     Anchor ID corresponding to a Merkle Tree Certificate
-    (https://datatracker.ietf.org/doc/draft-davidben-tls-merkle-tree-certs/) CA.
+    (https://datatracker.ietf.org/doc/draft-davidben-tls-merkle-tree-certs/) CA,
+    {IsResumption}.
   </summary>
+  <token key="IsResumption">
+    <variant name=""
+        summary="aggregated across new connections and resumption"/>
+    <variant name=".NewConnection" summary="on a new connection"/>
+    <variant name=".Resumption"
+        summary="on a connection that Chrome is attempting to resume"/>
+  </token>
 </histogram>
 
-<histogram name="Net.QuicSession.HandshakeConfirmedTime.TrustAnchorIDs"
+<histogram
+    name="Net.QuicSession.HandshakeConfirmedTime.TrustAnchorIDs{IsResumption}"
     units="Milliseconds" expires_after="2026-08-02">
   <owner>estark@chromium.org</owner>
   <owner>davidben@chromium.org</owner>
@@ -5569,11 +5586,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     The elapsed time between starting the crypto handshake, and receiving
     confirmation from the server, measured only for servers that advertise TLS
-    Trust Anchor IDs in DNS.
+    Trust Anchor IDs in DNS, {IsResumption}.
 
     Warning: this histogram was expired from 2025-10-26 to 2026-02-12; data may
     be missing.
   </summary>
+  <token key="IsResumption">
+    <variant name=""
+        summary="aggregated across new connections and resumption"/>
+    <variant name=".NewConnection" summary="on a new connection"/>
+    <variant name=".Resumption"
+        summary="on a connection that Chrome is attempting to resume"/>
+  </token>
 </histogram>
 
 <histogram
@@ -6786,8 +6810,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.TLSHandshakeBytes.MTC" units="bytes"
-    expires_after="2026-08-23">
+<histogram name="Net.QuicSession.TLSHandshakeBytes.MTC{IsResumption}"
+    units="bytes" expires_after="2026-08-23">
   <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -6795,8 +6819,16 @@ chromium-metrics-reviews@google.com.
     The number of bytes sent and received in the TLS handshake. This metric is
     only recorded for servers that sent a Trust Anchor ID corresponding to a
     Merkle Tree Certificate
-    (https://datatracker.ietf.org/doc/draft-davidben-tls-merkle-tree-certs/) CA.
+    (https://datatracker.ietf.org/doc/draft-davidben-tls-merkle-tree-certs/) CA,
+    {IsResumption}.
   </summary>
+  <token key="IsResumption">
+    <variant name=""
+        summary="aggregated across new connections and resumption"/>
+    <variant name=".NewConnection" summary="on a new connection"/>
+    <variant name=".Resumption"
+        summary="on a connection that Chrome is attempting to resume"/>
+  </token>
 </histogram>
 
 <histogram name="Net.QuicSession.TooManyOpenStreams" enum="BooleanTooMany"
