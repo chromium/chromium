@@ -76,12 +76,14 @@ const CGFloat kNavigationIconImageViewWidth = 16;
     // Sets the title, subtitle and stack view to lay them out vertically.
     _title = [[UILabel alloc] init];
     _title.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    _title.adjustsFontForContentSizeCategory = YES;
     _title.numberOfLines = 0;
     _title.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
     _subtitle = [[UILabel alloc] init];
     _subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-    _subtitle.numberOfLines = 2;
+    _subtitle.adjustsFontForContentSizeCategory = YES;
+    _subtitle.numberOfLines = 0;
     _subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
     _textStackView =

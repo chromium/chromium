@@ -169,7 +169,7 @@ const CGFloat kMinimumBottomPadding = 20;
       sizeWithWidthDimension:[NSCollectionLayoutDimension
                                  fractionalWidthDimension:1.]
              heightDimension:[NSCollectionLayoutDimension
-                                 fractionalHeightDimension:1.]];
+                                 estimatedDimension:kVerticalListCellHeight]];
   NSCollectionLayoutItem* item =
       [NSCollectionLayoutItem itemWithLayoutSize:itemSize];
 
