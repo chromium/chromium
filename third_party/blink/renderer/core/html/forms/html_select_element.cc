@@ -405,15 +405,8 @@ void HTMLSelectElement::ParseAttribute(
       HTMLSelectedContentElement* new_selectedcontent =
           DynamicTo<HTMLSelectedContentElement>(
               getElementByIdIncludingDisconnected(*this, params.new_value));
-      if (old_selectedcontent != new_selectedcontent) {
-        if (old_selectedcontent) {
-          // Clear out the contents of any <selectedcontent> which we are
-          // removing the association from.
-          old_selectedcontent->CloneContentsFromOptionElement(nullptr);
-        }
-        if (new_selectedcontent) {
-          new_selectedcontent->CloneContentsFromOptionElement(SelectedOption());
-        }
+      if (old_selectedcontent != new_selectedcontent && new_selectedcontent) {
+        new_selectedcontent->CloneContentsFromOptionElement(SelectedOption());
       }
     }
   } else {
@@ -1842,22 +1835,6 @@ void HTMLSelectElement::SelectedContentElementInserted(
   descendant_selectedcontents_.Add(inserted_selectedcontent);
 }
 
-void HTMLSelectElement::UpdateDescendantSelectedcontentsForInsertion(
-    HTMLSelectedContentElement* inserted_selectedcontent) {
-  CHECK(RuntimeEnabledFeatures::SelectedcontentSpecEnabled());
-  DCHECK(descendant_selectedcontents_.Contains(inserted_selectedcontent));
-
-  // The collection may be modified while iterating, so make a copy if it.
-  VectorOf<HTMLSelectedContentElement> descendant_selectedcontents_copy(
-      descendant_selectedcontents_);
-  descendant_selectedcontents_copy[0]->CloneContentsFromOptionElement(
-      SelectedOption());
-  for (wtf_size_t i = 1; i < descendant_selectedcontents_copy.size(); i++) {
-    descendant_selectedcontents_copy[i]->CloneContentsFromOptionElement(
-        nullptr);
-  }
-}
-
 void HTMLSelectElement::SelectedContentElementInsertedLegacy(
     HTMLSelectedContentElement* selectedcontent) {
   CHECK(!RuntimeEnabledFeatures::SelectedcontentSpecEnabled());
@@ -1875,12 +1852,6 @@ void HTMLSelectElement::SelectedContentElementRemoved(
     HTMLSelectedContentElement* removed_selectedcontent) {
   if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
     descendant_selectedcontents_.Remove(removed_selectedcontent);
-    // Always update the first selectedcontent element if present.
-    if (descendant_selectedcontents_.begin() !=
-        descendant_selectedcontents_.end()) {
-      (*descendant_selectedcontents_.begin())
-          ->CloneContentsFromOptionElement(SelectedOption());
-    }
   } else {
     bool was_first =
         *descendant_selectedcontents_.begin() == removed_selectedcontent;
@@ -1968,15 +1939,8 @@ void HTMLSelectElement::setSelectedContentElement(
   SetElementAttribute(html_names::kSelectedcontentelementAttr,
                       new_selectedcontent);
 
-  if (old_selectedcontent != new_selectedcontent) {
-    if (old_selectedcontent) {
-      // Clear out the contents of any <selectedcontent> which we are removing
-      // the association from.
-      old_selectedcontent->CloneContentsFromOptionElement(nullptr);
-    }
-    if (new_selectedcontent) {
-      new_selectedcontent->CloneContentsFromOptionElement(SelectedOption());
-    }
+  if (old_selectedcontent != new_selectedcontent && new_selectedcontent) {
+    new_selectedcontent->CloneContentsFromOptionElement(SelectedOption());
   }
 }
 
@@ -1987,9 +1951,18 @@ void HTMLSelectElement::UpdateAllSelectedcontents(
   // we have a DCHECK() that they did so correctly.
   DCHECK_EQ(selected_option, SelectedOption());
 
-  if (!descendant_selectedcontents_.IsEmpty()) {
-    (*descendant_selectedcontents_.begin())
-        ->CloneContentsFromOptionElement(selected_option);
+  if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
+    VectorOf<HTMLSelectedContentElement> descendant_selectedcontents_copy(
+        descendant_selectedcontents_);
+    for (HTMLSelectedContentElement* selectedcontent :
+         descendant_selectedcontents_copy) {
+      selectedcontent->CloneContentsFromOptionElement(selected_option);
+    }
+  } else {
+    if (!descendant_selectedcontents_.IsEmpty()) {
+      (*descendant_selectedcontents_.begin())
+          ->CloneContentsFromOptionElement(selected_option);
+    }
   }
   if (RuntimeEnabledFeatures::SelectedcontentelementAttributeEnabled()) {
     if (auto* attr_selectedcontent = selectedContentElement()) {

@@ -4897,6 +4897,7 @@
       // https://github.com/openui/open-ui/issues/1063
       name: "SelectedcontentelementAttribute",
       status: "test",
+      depends_on: ["SelectedcontentSpec"],
     },
     {
       // Aligns the implementation of the <selectedcontent> element with the

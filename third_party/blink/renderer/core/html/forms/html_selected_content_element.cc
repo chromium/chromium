@@ -16,11 +16,7 @@ void HTMLSelectedContentElement::CloneContentsFromOptionElement(
     const HTMLOptionElement* option) {
   // TODO(crbug.com/458113204): This disabled check does not exist in the spec.
   // It should be added to the spec or removed.
-  if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
-    if (disabled_ && option) {
-      return;
-    }
-  } else if (disabled_) {
+  if (disabled_) {
     return;
   }
 
@@ -61,11 +57,12 @@ Node::InsertionNotificationRequest HTMLSelectedContentElement::InsertedInto(
 }
 
 void HTMLSelectedContentElement::DidNotifySubtreeInsertionsToDocument() {
-  // Call SelectedContentElementInserted on the first ancestor <select> if we
-  // just got inserted into a <select> and there are no other <select>s in
-  // between.
+  // Clone from the nearest ancestor select element if this element isn't
+  // disabled.
   // TODO(crbug.com/40236878): Use a flat tree traversal here.
   if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
+    // TODO(crbug.com/458113204): Calculate disabled state in InsertedInto
+    // instead of this method.
     disabled_ = false;
     HTMLSelectElement* first_ancestor_select = nullptr;
     for (auto* ancestor = parentNode(); ancestor;
@@ -91,8 +88,8 @@ void HTMLSelectedContentElement::DidNotifySubtreeInsertionsToDocument() {
 
     if (!disabled_ && nearest_ancestor_select_ &&
         !nearest_ancestor_select_->IsMultiple()) {
-      nearest_ancestor_select_->UpdateDescendantSelectedcontentsForInsertion(
-          this);
+      CloneContentsFromOptionElement(
+          nearest_ancestor_select_->SelectedOption());
     }
   } else {
     disabled_ = false;
@@ -121,22 +118,16 @@ void HTMLSelectedContentElement::DidNotifySubtreeInsertionsToDocument() {
 void HTMLSelectedContentElement::RemovedFrom(ContainerNode& removed_from) {
   HTMLElement::RemovedFrom(removed_from);
   if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
-    // TODO(crbug.com/458113204): Remove this disabled_ check after removing the
-    // code to trigger cloning during removal in order to make sure that
-    // nearest_ancestor_select_ stays up to date.
-    if (disabled_) {
+    auto* new_nearest_ancestor_select =
+        Traversal<HTMLSelectElement>::FirstAncestor(*this);
+    if (new_nearest_ancestor_select == nearest_ancestor_select_) {
       return;
     }
-    if (auto* new_nearest_ancestor_select =
-            Traversal<HTMLSelectElement>::FirstAncestor(*this)) {
-      nearest_ancestor_select_ = new_nearest_ancestor_select;
-      return;
-    }
-    if (auto* previous_ancestor_select =
-            Traversal<HTMLSelectElement>::FirstAncestorOrSelf(removed_from)) {
-      nearest_ancestor_select_ = nullptr;
-      previous_ancestor_select->SelectedContentElementRemoved(this);
-    }
+    CHECK(nearest_ancestor_select_);
+    CHECK(!new_nearest_ancestor_select);
+    nearest_ancestor_select_->SelectedContentElementRemoved(this);
+    nearest_ancestor_select_ = new_nearest_ancestor_select;
+    disabled_ = false;
   } else {
     if (!Traversal<HTMLSelectElement>::FirstAncestor(*this)) {
       if (auto* select =
