@@ -593,8 +593,8 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
 
   if (base::FeatureList::IsEnabled(private_ai::kPrivateAi)) {
     RegisterWebUIControllerInterfaceBinder<
-        legion_internals::mojom::LegionInternalsPageHandler, LegionInternalsUI>(
-        map);
+        private_ai_internals::mojom::PrivateAiInternalsPageHandler,
+        PrivateAiInternalsUI>(map);
   }
 
   auto* contextual_tasks_context_service =

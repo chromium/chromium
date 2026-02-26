@@ -27,12 +27,12 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/webui_util.h"
 
-LegionInternalsUIConfig::LegionInternalsUIConfig()
-    : DefaultInternalWebUIConfig(chrome::kChromeUILegionInternalsHost) {}
+PrivateAiInternalsUIConfig::PrivateAiInternalsUIConfig()
+    : DefaultInternalWebUIConfig(chrome::kChromeUIPrivateAiInternalsHost) {}
 
-LegionInternalsUIConfig::~LegionInternalsUIConfig() = default;
+PrivateAiInternalsUIConfig::~PrivateAiInternalsUIConfig() = default;
 
-bool LegionInternalsUIConfig::IsWebUIEnabled(
+bool PrivateAiInternalsUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   if (!base::FeatureList::IsEnabled(private_ai::kPrivateAi)) {
     return false;
@@ -44,13 +44,13 @@ bool LegionInternalsUIConfig::IsWebUIEnabled(
   return private_ai_service && private_ai_service->GetTokenManager();
 }
 
-LegionInternalsUI::LegionInternalsUI(content::WebUI* web_ui)
+PrivateAiInternalsUI::PrivateAiInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
 
-  // Set up the chrome://legion-internals source.
+  // Set up the chrome://private-ai-internals source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      profile, chrome::kChromeUILegionInternalsHost);
+      profile, chrome::kChromeUIPrivateAiInternalsHost);
 
   webui::SetupWebUIDataSource(
       source, base::span(kPrivateAiInternalsResources),
@@ -69,11 +69,11 @@ LegionInternalsUI::LegionInternalsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(private_ai::kPrivateAiUseTokenAttestation));
 }
 
-LegionInternalsUI::~LegionInternalsUI() = default;
+PrivateAiInternalsUI::~PrivateAiInternalsUI() = default;
 
-void LegionInternalsUI::BindInterface(
-    mojo::PendingReceiver<legion_internals::mojom::LegionInternalsPageHandler>
-        receiver) {
+void PrivateAiInternalsUI::BindInterface(
+    mojo::PendingReceiver<
+        private_ai_internals::mojom::PrivateAiInternalsPageHandler> receiver) {
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* private_ai_service =
       private_ai::PrivateAiServiceFactory::GetForProfile(profile);
@@ -86,9 +86,9 @@ void LegionInternalsUI::BindInterface(
 
   auto* network_context =
       profile->GetDefaultStoragePartition()->GetNetworkContext();
-  page_handler_ = std::make_unique<LegionInternalsPageHandler>(
+  page_handler_ = std::make_unique<PrivateAiInternalsPageHandler>(
       token_manager, network_context, private_ai_service->GetClient(),
       std::move(receiver));
 }
 
-WEB_UI_CONTROLLER_TYPE_IMPL(LegionInternalsUI)
+WEB_UI_CONTROLLER_TYPE_IMPL(PrivateAiInternalsUI)

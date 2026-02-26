@@ -24,25 +24,26 @@ namespace network::mojom {
 class NetworkContext;
 }  // namespace network::mojom
 
-class LegionInternalsPageHandler
-    : public legion_internals::mojom::LegionInternalsPageHandler,
+class PrivateAiInternalsPageHandler
+    : public private_ai_internals::mojom::PrivateAiInternalsPageHandler,
       public private_ai::PrivateAiLogger::Observer {
  public:
-  explicit LegionInternalsPageHandler(
+  explicit PrivateAiInternalsPageHandler(
       private_ai::phosphor::TokenManager* token_manager,
       network::mojom::NetworkContext* network_context,
       private_ai::Client* private_ai_client,
-      mojo::PendingReceiver<legion_internals::mojom::LegionInternalsPageHandler>
-          receiver);
-  ~LegionInternalsPageHandler() override;
+      mojo::PendingReceiver<
+          private_ai_internals::mojom::PrivateAiInternalsPageHandler> receiver);
+  ~PrivateAiInternalsPageHandler() override;
 
-  LegionInternalsPageHandler(const LegionInternalsPageHandler&) = delete;
-  LegionInternalsPageHandler& operator=(const LegionInternalsPageHandler&) =
-      delete;
+  PrivateAiInternalsPageHandler(const PrivateAiInternalsPageHandler&) = delete;
+  PrivateAiInternalsPageHandler& operator=(
+      const PrivateAiInternalsPageHandler&) = delete;
 
-  // legion_internals::mojom::LegionInternalsPageHandler:
-  void SetPage(mojo::PendingRemote<legion_internals::mojom::LegionInternalsPage>
-                   page) override;
+  // private_ai_internals::mojom::PrivateAiInternalsPageHandler:
+  void SetPage(
+      mojo::PendingRemote<private_ai_internals::mojom::PrivateAiInternalsPage>
+          page) override;
   void Connect(const std::string& url,
                const std::string& api_key,
                const std::string& proxy_url,
@@ -60,7 +61,7 @@ class LegionInternalsPageHandler
                   std::string_view message) override;
 
  private:
-  void LogToPage(legion_internals::mojom::LogLevel level,
+  void LogToPage(private_ai_internals::mojom::LogLevel level,
                  const base::Location& location,
                  std::string_view message);
 
@@ -70,8 +71,9 @@ class LegionInternalsPageHandler
   // The client created by webui. Used for testing.
   std::unique_ptr<private_ai::Client> webui_client_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
-  mojo::Receiver<legion_internals::mojom::LegionInternalsPageHandler> receiver_;
-  mojo::Remote<legion_internals::mojom::LegionInternalsPage> page_;
+  mojo::Receiver<private_ai_internals::mojom::PrivateAiInternalsPageHandler>
+      receiver_;
+  mojo::Remote<private_ai_internals::mojom::PrivateAiInternalsPage> page_;
 
   base::ScopedMultiSourceObservation<private_ai::PrivateAiLogger,
                                      private_ai::PrivateAiLogger::Observer>

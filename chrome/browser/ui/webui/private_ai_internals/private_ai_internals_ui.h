@@ -18,35 +18,35 @@ namespace content {
 class BrowserContext;
 }  // namespace content
 
-class LegionInternalsUI;
-class LegionInternalsPageHandler;
+class PrivateAiInternalsUI;
+class PrivateAiInternalsPageHandler;
 
-class LegionInternalsUIConfig
-    : public content::DefaultInternalWebUIConfig<LegionInternalsUI> {
+class PrivateAiInternalsUIConfig
+    : public content::DefaultInternalWebUIConfig<PrivateAiInternalsUI> {
  public:
-  LegionInternalsUIConfig();
+  PrivateAiInternalsUIConfig();
 
-  ~LegionInternalsUIConfig() override;
+  ~PrivateAiInternalsUIConfig() override;
 
   // content::WebUIConfig:
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
-// The WebUI for chrome://legion-internals.
-class LegionInternalsUI : public ui::MojoWebUIController {
+// The WebUI for chrome://private-ai-internals.
+class PrivateAiInternalsUI : public ui::MojoWebUIController {
  public:
-  explicit LegionInternalsUI(content::WebUI* web_ui);
-  ~LegionInternalsUI() override;
+  explicit PrivateAiInternalsUI(content::WebUI* web_ui);
+  ~PrivateAiInternalsUI() override;
 
-  LegionInternalsUI(const LegionInternalsUI&) = delete;
-  LegionInternalsUI& operator=(const LegionInternalsUI&) = delete;
+  PrivateAiInternalsUI(const PrivateAiInternalsUI&) = delete;
+  PrivateAiInternalsUI& operator=(const PrivateAiInternalsUI&) = delete;
 
   void BindInterface(
-      mojo::PendingReceiver<legion_internals::mojom::LegionInternalsPageHandler>
-          receiver);
+      mojo::PendingReceiver<
+          private_ai_internals::mojom::PrivateAiInternalsPageHandler> receiver);
 
  private:
-  std::unique_ptr<LegionInternalsPageHandler> page_handler_;
+  std::unique_ptr<PrivateAiInternalsPageHandler> page_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

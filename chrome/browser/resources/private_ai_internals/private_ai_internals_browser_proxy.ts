@@ -2,31 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {LegionInternalsPageHandlerRemote, LegionResponseMojoType} from './private_ai_internals.mojom-webui.js';
-import {LegionInternalsPageCallbackRouter, LegionInternalsPageHandler} from './private_ai_internals.mojom-webui.js';
+import type {PrivateAiInternalsPageHandlerRemote, PrivateAiResponseMojoType} from './private_ai_internals.mojom-webui.js';
+import {PrivateAiInternalsPageCallbackRouter, PrivateAiInternalsPageHandler} from './private_ai_internals.mojom-webui.js';
 
 /**
- * @fileoverview A browser proxy for the Legion Internals page.
+ * @fileoverview A browser proxy for the PrivateAi Internals page.
  */
 
-export interface LegionInternalsBrowserProxy {
+export interface PrivateAiInternalsBrowserProxy {
   connect(
       url: string, apiKey: string, proxyUrl: string,
       useTokenAttestation: boolean): Promise<void>;
   close(): Promise<void>;
   sendRequest(featureName: string, request: string):
-      Promise<LegionResponseMojoType>;
-  getCallbackRouter(): LegionInternalsPageCallbackRouter;
+      Promise<PrivateAiResponseMojoType>;
+  getCallbackRouter(): PrivateAiInternalsPageCallbackRouter;
 }
 
-export class LegionInternalsBrowserProxyImpl implements
-    LegionInternalsBrowserProxy {
-  handler: LegionInternalsPageHandlerRemote;
-  callbackRouter: LegionInternalsPageCallbackRouter;
+export class PrivateAiInternalsBrowserProxyImpl implements
+    PrivateAiInternalsBrowserProxy {
+  handler: PrivateAiInternalsPageHandlerRemote;
+  callbackRouter: PrivateAiInternalsPageCallbackRouter;
 
-  constructor(handler: LegionInternalsPageHandlerRemote) {
+  constructor(handler: PrivateAiInternalsPageHandlerRemote) {
     this.handler = handler;
-    this.callbackRouter = new LegionInternalsPageCallbackRouter();
+    this.callbackRouter = new PrivateAiInternalsPageCallbackRouter();
 
     this.handler.setPage(this.callbackRouter.$.bindNewPipeAndPassRemote());
   }
@@ -42,24 +42,24 @@ export class LegionInternalsBrowserProxyImpl implements
   }
 
   async sendRequest(featureName: string, request: string):
-      Promise<LegionResponseMojoType> {
+      Promise<PrivateAiResponseMojoType> {
     const {response} = await this.handler.sendRequest(featureName, request);
     return response;
   }
 
-  getCallbackRouter(): LegionInternalsPageCallbackRouter {
+  getCallbackRouter(): PrivateAiInternalsPageCallbackRouter {
     return this.callbackRouter;
   }
 
-  static getInstance(): LegionInternalsBrowserProxy {
+  static getInstance(): PrivateAiInternalsBrowserProxy {
     return instance ||
-        (instance = new LegionInternalsBrowserProxyImpl(
-             LegionInternalsPageHandler.getRemote()));
+        (instance = new PrivateAiInternalsBrowserProxyImpl(
+             PrivateAiInternalsPageHandler.getRemote()));
   }
 
-  static setInstance(newInstance: LegionInternalsBrowserProxy) {
+  static setInstance(newInstance: PrivateAiInternalsBrowserProxy) {
     instance = newInstance;
   }
 }
 
-let instance: LegionInternalsBrowserProxy|null = null;
+let instance: PrivateAiInternalsBrowserProxy|null = null;

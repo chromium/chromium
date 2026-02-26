@@ -88,7 +88,6 @@ static const char* const kChromeUrls[] = {
     "chrome://internals/session-service",
     "chrome://interstitials",
     "chrome://interstitials/ssl",
-    "chrome://legion-internals",
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
     "chrome://linux-proxy-config",
 #endif
@@ -122,6 +121,7 @@ static const char* const kChromeUrls[] = {
     "chrome://prefs-internals",
     "chrome://privacy-sandbox-internals",
     "chrome://private-aggregation-internals",
+    "chrome://private-ai-internals",
     "chrome://process-internals",
     "chrome://profile-internals",
     "chrome://quota-internals",

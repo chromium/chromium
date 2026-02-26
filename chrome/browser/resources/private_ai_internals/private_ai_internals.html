@@ -8,9 +8,9 @@ found in the LICENSE file.
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Legion internals</title>
-    <link rel="stylesheet" href="legion_internals.css">
-    <script type="module" src="legion_internals.js"></script>
+    <title>Private AI internals</title>
+    <link rel="stylesheet" href="private_ai_internals.css">
+    <script type="module" src="private_ai_internals.js"></script>
   </head>
   <body>
     <div id="main-container">
@@ -18,13 +18,14 @@ found in the LICENSE file.
         <div>
           <label>
             Server URL:
-            <input type="text" id="legionServerUrl" value="$i18n{default_url}">
+            <input type="text" id="privateAiServerUrl"
+                   value="$i18n{default_url}">
           </label>
         </div>
         <div>
           <label>
             API Key:
-            <input type="text" id="legionServerApiKey"
+            <input type="text" id="privateAiServerApiKey"
                    value="$i18n{default_api_key}">
           </label>
         </div>
@@ -37,7 +38,7 @@ found in the LICENSE file.
         <div id="proxy-url-container" class="hidden">
           <label>
             Proxy URL:
-            <input type="text" id="legionProxyUrl"
+            <input type="text" id="privateAiProxyUrl"
                    value="$i18n{default_proxy_url}">
           </label>
         </div>

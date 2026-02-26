@@ -390,7 +390,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".intro"/>
   <variant name=".kerberos-in-browser"/>
   <variant name=".launcher-internals"/>
-  <variant name=".legion-internals"/>
   <variant name=".lens"/>
   <variant name=".lens-overlay"/>
   <variant name=".linux-proxy-config"/>
@@ -443,6 +442,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".privacy-sandbox-dialog"/>
   <variant name=".privacy-sandbox-internals"/>
   <variant name=".private-aggregation-internals"/>
+  <variant name=".private-ai-internals"/>
   <variant name=".process-internals"/>
   <variant name=".profile-customization"/>
   <variant name=".profile-picker"/>

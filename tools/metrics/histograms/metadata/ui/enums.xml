@@ -673,6 +673,7 @@ chromium-metrics-reviews@google.com.
   <int value="-2024468885" label="chrome://ntp-tiles-internals/"/>
   <int value="-2020874093" label="chrome://lock-reauth/"/>
   <int value="-2008798042" label="chrome://extended-updates-dialog/"/>
+  <int value="-1995370569" label="chrome://private-ai-internals/"/>
   <int value="-1977692791" label="chrome://crash/"/>
   <int value="-1970917350" label="chrome-untrusted://compose/"/>
   <int value="-1969079493"
@@ -860,7 +861,6 @@ chromium-metrics-reviews@google.com.
   <int value="48333657" label="chrome://about/"/>
   <int value="57900378" label="chrome://conch/"/>
   <int value="58807865" label="chrome://local-state/"/>
-  <int value="67875391" label="chrome://legion-internals/"/>
   <int value="71502624" label="chrome://history-sync-optin/"/>
   <int value="84832110" label="chrome://fileicon/"/>
   <int value="104579118" label="chrome://boca-app/"/>

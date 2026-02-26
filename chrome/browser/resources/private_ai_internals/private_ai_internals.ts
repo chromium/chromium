@@ -7,9 +7,9 @@ import '/strings.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {LogLevel} from './private_ai_internals.mojom-webui.js';
-import {LegionInternalsBrowserProxyImpl} from './private_ai_internals_browser_proxy.js';
+import {PrivateAiInternalsBrowserProxyImpl} from './private_ai_internals_browser_proxy.js';
 
-const proxy = LegionInternalsBrowserProxyImpl.getInstance();
+const proxy = PrivateAiInternalsBrowserProxyImpl.getInstance();
 
 function registerOnLogMessageListener() {
   const logsContainer = document.getElementById('logs-container');
@@ -31,16 +31,16 @@ function setConnectedState(connected: boolean) {
   const createConnectionButton =
       document.getElementById('create-connection-button')!;
   const disconnectButton = document.getElementById('disconnect-button')!;
-  const legionServerUrl =
-      document.getElementById('legionServerUrl') as HTMLInputElement;
-  const legionServerApiKey =
-      document.getElementById('legionServerApiKey') as HTMLInputElement;
+  const privateAiServerUrl =
+      document.getElementById('privateAiServerUrl') as HTMLInputElement;
+  const privateAiServerApiKey =
+      document.getElementById('privateAiServerApiKey') as HTMLInputElement;
   const useTokenAttestationCheckbox =
       document.getElementById('use-token-attestation-checkbox') as
       HTMLInputElement;
 
-  legionServerUrl.disabled = connected;
-  legionServerApiKey.disabled = connected;
+  privateAiServerUrl.disabled = connected;
+  privateAiServerApiKey.disabled = connected;
   useTokenAttestationCheckbox.disabled = connected;
 
   connectionConsole.classList.toggle('hidden', !connected);
@@ -115,7 +115,7 @@ function onRequestSend() {
   userRequestElement.textContent = 'Request: ' + request;
   consoleContainer?.appendChild(userRequestElement);
 
-  // Send request to the legion client and get a response.
+  // Send request to the Private AI client and get a response.
   proxy.sendRequest(loadTimeData.getString('default_feature_name'), request)
       .then((response) => {
         const serverResponseElement = document.createElement('div');
@@ -129,21 +129,21 @@ function onRequestSend() {
 }
 
 function getServerURL() {
-  const legionServerUrl =
-      document.getElementById('legionServerUrl') as HTMLInputElement;
-  return legionServerUrl.value;
+  const privateAiServerUrl =
+      document.getElementById('privateAiServerUrl') as HTMLInputElement;
+  return privateAiServerUrl.value;
 }
 
 function getAPIKey() {
-  const legionServerApiKey =
-      document.getElementById('legionServerApiKey') as HTMLInputElement;
-  return legionServerApiKey.value;
+  const privateAiServerApiKey =
+      document.getElementById('privateAiServerApiKey') as HTMLInputElement;
+  return privateAiServerApiKey.value;
 }
 
 function getProxyUrl() {
-  const legionProxyUrl =
-      document.getElementById('legionProxyUrl') as HTMLInputElement;
-  return legionProxyUrl.value;
+  const privateAiProxyUrl =
+      document.getElementById('privateAiProxyUrl') as HTMLInputElement;
+  return privateAiProxyUrl.value;
 }
 
 function registerOnTokenCheckboxListener() {

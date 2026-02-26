@@ -24,32 +24,33 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
-LegionInternalsPageHandler::LegionInternalsPageHandler(
+PrivateAiInternalsPageHandler::PrivateAiInternalsPageHandler(
     private_ai::phosphor::TokenManager* token_manager,
     network::mojom::NetworkContext* network_context,
     private_ai::Client* private_ai_client,
-    mojo::PendingReceiver<legion_internals::mojom::LegionInternalsPageHandler>
-        receiver)
+    mojo::PendingReceiver<
+        private_ai_internals::mojom::PrivateAiInternalsPageHandler> receiver)
     : token_manager_(token_manager),
       private_ai_client_(private_ai_client),
       network_context_(network_context),
       receiver_(this, std::move(receiver)) {}
 
-LegionInternalsPageHandler::~LegionInternalsPageHandler() = default;
+PrivateAiInternalsPageHandler::~PrivateAiInternalsPageHandler() = default;
 
-void LegionInternalsPageHandler::SetPage(
-    mojo::PendingRemote<legion_internals::mojom::LegionInternalsPage> page) {
+void PrivateAiInternalsPageHandler::SetPage(
+    mojo::PendingRemote<private_ai_internals::mojom::PrivateAiInternalsPage>
+        page) {
   page_.Bind(std::move(page));
   if (private_ai_client_) {
     scoped_logger_observations_.AddObservation(private_ai_client_->GetLogger());
   }
 }
 
-void LegionInternalsPageHandler::Connect(const std::string& url,
-                                         const std::string& api_key,
-                                         const std::string& proxy_url,
-                                         bool use_token_attestation,
-                                         ConnectCallback callback) {
+void PrivateAiInternalsPageHandler::Connect(const std::string& url,
+                                            const std::string& api_key,
+                                            const std::string& proxy_url,
+                                            bool use_token_attestation,
+                                            ConnectCallback callback) {
   webui_client_ = private_ai::Client::Create(
       url, api_key, proxy_url, use_token_attestation, network_context_,
       token_manager_, content::GetNetworkService(),
@@ -59,7 +60,7 @@ void LegionInternalsPageHandler::Connect(const std::string& url,
   std::move(callback).Run();
 }
 
-void LegionInternalsPageHandler::Close(CloseCallback callback) {
+void PrivateAiInternalsPageHandler::Close(CloseCallback callback) {
   if (webui_client_) {
     scoped_logger_observations_.RemoveObservation(webui_client_->GetLogger());
     webui_client_.reset();
@@ -67,11 +68,11 @@ void LegionInternalsPageHandler::Close(CloseCallback callback) {
   std::move(callback).Run();
 }
 
-void LegionInternalsPageHandler::SendRequest(const std::string& feature_name,
-                                             const std::string& request,
-                                             SendRequestCallback callback) {
+void PrivateAiInternalsPageHandler::SendRequest(const std::string& feature_name,
+                                                const std::string& request,
+                                                SendRequestCallback callback) {
   if (!webui_client_) {
-    auto result = legion_internals::mojom::LegionResponse::New();
+    auto result = private_ai_internals::mojom::PrivateAiResponse::New();
     result->error = std::string("Error: not connected");
     std::move(callback).Run(std::move(result));
     return;
@@ -80,7 +81,7 @@ void LegionInternalsPageHandler::SendRequest(const std::string& feature_name,
   private_ai::proto::FeatureName feature_name_proto;
   if (!private_ai::proto::FeatureName_Parse(feature_name,
                                             &feature_name_proto)) {
-    auto result = legion_internals::mojom::LegionResponse::New();
+    auto result = private_ai_internals::mojom::PrivateAiResponse::New();
     result->error = std::string("Error: invalid feature_name: ") + feature_name;
     std::move(callback).Run(std::move(result));
     return;
@@ -91,7 +92,7 @@ void LegionInternalsPageHandler::SendRequest(const std::string& feature_name,
       base::BindOnce(
           [](SendRequestCallback callback,
              base::expected<std::string, private_ai::ErrorCode> response) {
-            auto result = legion_internals::mojom::LegionResponse::New();
+            auto result = private_ai_internals::mojom::PrivateAiResponse::New();
             if (response.has_value()) {
               result->response = *response;
             } else {
@@ -105,18 +106,18 @@ void LegionInternalsPageHandler::SendRequest(const std::string& feature_name,
       /*options=*/{});
 }
 
-void LegionInternalsPageHandler::OnLogInfo(const base::Location& location,
-                                           std::string_view message) {
-  LogToPage(legion_internals::mojom::LogLevel::kInfo, location, message);
+void PrivateAiInternalsPageHandler::OnLogInfo(const base::Location& location,
+                                              std::string_view message) {
+  LogToPage(private_ai_internals::mojom::LogLevel::kInfo, location, message);
 }
 
-void LegionInternalsPageHandler::OnLogError(const base::Location& location,
-                                            std::string_view message) {
-  LogToPage(legion_internals::mojom::LogLevel::kError, location, message);
+void PrivateAiInternalsPageHandler::OnLogError(const base::Location& location,
+                                               std::string_view message) {
+  LogToPage(private_ai_internals::mojom::LogLevel::kError, location, message);
 }
 
-void LegionInternalsPageHandler::LogToPage(
-    legion_internals::mojom::LogLevel level,
+void PrivateAiInternalsPageHandler::LogToPage(
+    private_ai_internals::mojom::LogLevel level,
     const base::Location& location,
     std::string_view message) {
   if (!page_) {

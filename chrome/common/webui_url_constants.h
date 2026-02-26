@@ -378,7 +378,6 @@ inline constexpr char kChromeUIHistoryClustersSidePanelHost[] =
     "history-clusters-side-panel.top-chrome";
 inline constexpr char kChromeUIHistoryClustersSidePanelURL[] =
     "chrome://history-clusters-side-panel.top-chrome/";
-inline constexpr char kChromeUILegionInternalsHost[] = "legion-internals";
 inline constexpr char kChromeUILensHost[] = "lens";
 inline constexpr char kChromeUILensSidePanelHost[] = "lens";
 inline constexpr char kChromeUILensUntrustedSidePanelAPIURL[] =
@@ -392,6 +391,8 @@ inline constexpr char kChromeUINearbyInternalsHost[] = "nearby-internals";
 inline constexpr char kChromeUINearbyShareHost[] = "nearby";
 inline constexpr char kChromeUINearbyShareURL[] = "chrome://nearby/";
 inline constexpr char kChromeUIOnDeviceInternalsHost[] = "on-device-internals";
+inline constexpr char kChromeUIPrivateAiInternalsHost[] =
+    "private-ai-internals";
 inline constexpr char kChromeUIReadLaterHost[] = "read-later.top-chrome";
 inline constexpr char kChromeUIReadLaterURL[] =
     "chrome://read-later.top-chrome/";
