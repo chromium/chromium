@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -91,6 +92,7 @@
 #include "chrome/browser/ui/webui/ash/login/user_allowlist_check_screen_handler.h"
 #include "components/account_id/account_id.h"
 
+class ApplicationLocaleStorage;
 class PrefService;
 struct AccessibilityStatusEventDetails;
 
@@ -120,7 +122,14 @@ class WizardController : public OobeUI::Observer {
     virtual void OnShutdown() = 0;
   };
 
-  explicit WizardController(WizardContext* wizard_context);
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
+  // `shared_url_loader_factory` must be non-null.
+  WizardController(
+      PrefService* local_state,
+      ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      WizardContext* wizard_context);
 
   WizardController(const WizardController&) = delete;
   WizardController& operator=(const WizardController&) = delete;
@@ -298,6 +307,24 @@ class WizardController : public OobeUI::Observer {
   static bool IsErrorScreen(OobeScreenId);
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(EnrollmentScreenTest, TestCancel);
+  FRIEND_TEST_ALL_PREFIXES(WizardControllerFlowTest, Accelerators);
+  FRIEND_TEST_ALL_PREFIXES(WizardControllerFlowTest,
+                           ControlFlowSkipUpdateEnroll);
+  FRIEND_TEST_ALL_PREFIXES(WizardControllerDeviceStateTest,
+                           ControlFlowNoForcedReEnrollmentOnFirstBoot);
+
+  friend class AutoEnrollmentLocalPolicyServer;
+  friend class WizardControllerBrokenLocalStateTest;
+  friend class WizardControllerDeviceStateTest;
+  friend class WizardControllerFlowTest;
+  friend class WizardControllerOobeConfigurationTest;
+  friend class WizardControllerOobeResumeTest;
+  friend class WizardControllerOnboardingResumeTest;
+  friend class WizardControllerScreenPriorityTest;
+  friend class WizardControllerManagementTransitionOobeTest;
+  friend class WizardControllerRemoteActivityNotificationTest;
+
   // Create BaseScreen instances. These are owned by `screen_manager_`.
   std::vector<std::pair<OobeScreenId, std::unique_ptr<BaseScreen>>>
   CreateScreens();
@@ -600,6 +627,11 @@ class WizardController : public OobeUI::Observer {
   void MaybeNotifyFjordOobeStateManager(
       fjord_oobe_state::proto::FjordOobeStateInfo::FjordOobeState state);
 
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
+  // Shared factory for outgoing network requests.
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+
   std::unique_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_;
   std::unique_ptr<ChoobeFlowController> choobe_flow_controller_;
   std::unique_ptr<quick_start::QuickStartController> quickstart_controller_;
@@ -629,23 +661,6 @@ class WizardController : public OobeUI::Observer {
   // Non-owning pointer to local state used for testing.
   static PrefService* local_state_for_testing_;
 
-  FRIEND_TEST_ALL_PREFIXES(EnrollmentScreenTest, TestCancel);
-  FRIEND_TEST_ALL_PREFIXES(WizardControllerFlowTest, Accelerators);
-  FRIEND_TEST_ALL_PREFIXES(WizardControllerFlowTest,
-                           ControlFlowSkipUpdateEnroll);
-  FRIEND_TEST_ALL_PREFIXES(WizardControllerDeviceStateTest,
-                           ControlFlowNoForcedReEnrollmentOnFirstBoot);
-
-  friend class AutoEnrollmentLocalPolicyServer;
-  friend class WizardControllerBrokenLocalStateTest;
-  friend class WizardControllerDeviceStateTest;
-  friend class WizardControllerFlowTest;
-  friend class WizardControllerOobeConfigurationTest;
-  friend class WizardControllerOobeResumeTest;
-  friend class WizardControllerOnboardingResumeTest;
-  friend class WizardControllerScreenPriorityTest;
-  friend class WizardControllerManagementTransitionOobeTest;
-  friend class WizardControllerRemoteActivityNotificationTest;
 
   base::CallbackListSubscription accessibility_subscription_;
 
@@ -664,9 +679,6 @@ class WizardController : public OobeUI::Observer {
   base::ScopedObservation<OobeUI, OobeUI::Observer> oobe_ui_observation_{this};
 
   base::ObserverList<ScreenObserver> screen_observers_;
-
-  // Shared factory for outgoing network requests.
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   base::WeakPtrFactory<WizardController> weak_factory_{this};
 };

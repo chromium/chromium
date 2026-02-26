@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
@@ -81,8 +82,13 @@ void FakeLoginDisplayHost::StartWizard(OobeScreenId first_screen) {
   if (wizard_controller_) {
     wizard_controller_->AdvanceToScreen(first_screen);
   } else {
-    wizard_controller_ =
-        std::make_unique<WizardController>(wizard_context_.get());
+    wizard_controller_ = std::make_unique<WizardController>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        wizard_context_.get());
 
     fake_screen_ = std::make_unique<FakeBaseScreen>(first_screen);
     wizard_controller_->SetCurrentScreenForTesting(fake_screen_.get());

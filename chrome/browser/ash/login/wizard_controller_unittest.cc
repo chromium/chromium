@@ -358,6 +358,11 @@ class WizardControllerTest : public WizardControllerTestBase {
     fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
 
     auto wizard_controller = std::make_unique<WizardController>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
         fake_login_display_host_->GetWizardContext());
     wizard_controller_ = wizard_controller.get();
     fake_login_display_host_->SetWizardController(std::move(wizard_controller));

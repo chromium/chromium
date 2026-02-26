@@ -18,6 +18,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -262,6 +263,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/services/cros_healthd/private/cpp/dlc_utils.h"
 #include "chromeos/ash/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -338,10 +340,6 @@ const StaticOobeScreenId kScreensWithHiddenStatusArea[] = {
     WrongHWIDScreenView::kScreenId,
     LocalStateErrorScreenView::kScreenId,
 };
-
-std::string GetApplicationLocale() {
-  return g_browser_process->GetApplicationLocale();
-}
 
 bool IsResumableOobeScreen(OobeScreenId screen_id) {
   for (const auto& resumable_screen : kResumableOobeScreens) {
@@ -422,13 +420,18 @@ WizardController* WizardController::default_controller() {
 
 PrefService* WizardController::local_state_for_testing_ = nullptr;
 
-WizardController::WizardController(WizardContext* wizard_context)
-    : quickstart_controller_(
+WizardController::WizardController(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    WizardContext* wizard_context)
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      quickstart_controller_(
           std::make_unique<quick_start::QuickStartController>()),
       screen_manager_(std::make_unique<ScreenManager>()),
-      wizard_context_(wizard_context),
-      shared_url_loader_factory_(
-          g_browser_process->shared_url_loader_factory()) {
+      wizard_context_(wizard_context) {
   const auto has_been_skipped =
       wizard_context_->skip_post_login_screens_for_tests;
   wizard_context_->skip_post_login_screens_for_tests =
@@ -650,9 +653,6 @@ void WizardController::SetSharedURLLoaderFactoryForTesting(
 std::vector<std::pair<OobeScreenId, std::unique_ptr<BaseScreen>>>
 WizardController::CreateScreens() {
   // TODO(crbug.com/404133029): Avoid using g_browser_process.
-  PrefService* local_state = g_browser_process->local_state();
-  ApplicationLocaleStorage* application_locale_storage =
-      g_browser_process->GetFeatures()->application_locale_storage();
   ::metrics::MetricsService* metrics_service =
       g_browser_process->metrics_service();
   const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
@@ -668,13 +668,13 @@ WizardController::CreateScreens() {
 
   if (oobe_ui->display_type() == OobeUI::kOobeDisplay) {
     append(std::make_unique<WelcomeScreen>(
-        local_state, application_locale_storage,
+        &local_state_.get(), &application_locale_storage_.get(),
         oobe_ui->GetView<WelcomeScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnWelcomeScreenExit,
                             weak_factory_.GetWeakPtr())));
 
     append(std::make_unique<DemoPreferencesScreen>(
-        local_state,
+        &local_state_.get(),
         oobe_ui->GetView<DemoPreferencesScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnDemoPreferencesScreenExit,
                             weak_factory_.GetWeakPtr())));
@@ -691,7 +691,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnNetworkScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<UpdateScreen>(
-      local_state, oobe_ui->GetView<UpdateScreenHandler>()->AsWeakPtr(),
+      &local_state_.get(), oobe_ui->GetView<UpdateScreenHandler>()->AsWeakPtr(),
       oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnUpdateScreenExit,
                           weak_factory_.GetWeakPtr())));
@@ -702,7 +702,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnEnrollmentScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<ResetScreen>(
-      local_state, oobe_ui->GetView<ResetScreenHandler>()->AsWeakPtr(),
+      &local_state_.get(), oobe_ui->GetView<ResetScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnResetScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<DemoSetupScreen>(
@@ -710,17 +710,17 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnDemoSetupScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<EnableAdbSideloadingScreen>(
-      local_state,
+      &local_state_.get(),
       oobe_ui->GetView<EnableAdbSideloadingScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnEnableAdbSideloadingScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<EnableDebuggingScreen>(
-      local_state,
+      &local_state_.get(),
       oobe_ui->GetView<EnableDebuggingScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnEnableDebuggingScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<LocaleSwitchScreen>(
-      local_state, application_locale_storage,
+      &local_state_.get(), &application_locale_storage_.get(),
       oobe_ui->GetView<LocaleSwitchScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnLocaleSwitchScreenExit,
                           weak_factory_.GetWeakPtr())));
@@ -728,7 +728,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnRecoveryEligibilityScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<CryptohomeRecoverySetupScreen>(
-      local_state,
+      &local_state_.get(),
       oobe_ui->GetView<CryptohomeRecoverySetupScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(
           &WizardController::OnCryptohomeRecoverySetupScreenExit,
@@ -783,7 +783,7 @@ WizardController::CreateScreens() {
   }
 
   append(std::make_unique<AutoEnrollmentCheckScreen>(
-      local_state,
+      &local_state_.get(),
       oobe_ui->GetView<AutoEnrollmentCheckScreenHandler>()->AsWeakPtr(),
       oobe_ui->GetErrorScreen(),
       base::BindRepeating(&WizardController::OnAutoEnrollmentCheckScreenExit,
@@ -808,7 +808,8 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnMultiDeviceSetupScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<PinSetupScreen>(
-      local_state, oobe_ui->GetView<PinSetupScreenHandler>()->AsWeakPtr(),
+      &local_state_.get(),
+      oobe_ui->GetView<PinSetupScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnPinSetupScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<FingerprintSetupScreen>(
@@ -820,7 +821,8 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnGestureNavigationScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<MarketingOptInScreen>(
-      local_state, oobe_ui->GetView<MarketingOptInScreenHandler>()->AsWeakPtr(),
+      &local_state_.get(),
+      oobe_ui->GetView<MarketingOptInScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnMarketingOptInScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<PackagedLicenseScreen>(
@@ -834,7 +836,7 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<GaiaScreen>(
-      local_state, oobe_ui->GetView<GaiaScreenHandler>()->AsWeakPtr(),
+      &local_state_.get(), oobe_ui->GetView<GaiaScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnGaiaScreenExit,
                           weak_factory_.GetWeakPtr())));
 
@@ -853,7 +855,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnSamlConfirmPasswordScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<OfflineLoginScreen>(
-      local_state, browser_policy_connector_ash,
+      &local_state_.get(), browser_policy_connector_ash,
       oobe_ui->GetView<OfflineLoginScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnOfflineLoginScreenExit,
                           weak_factory_.GetWeakPtr())));
@@ -896,13 +898,13 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<ConsolidatedConsentScreen>(
-      application_locale_storage, metrics_service,
+      &application_locale_storage_.get(), metrics_service,
       oobe_ui->GetView<ConsolidatedConsentScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnConsolidatedConsentScreenExit,
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<GuestTosScreen>(
-      local_state, application_locale_storage,
+      &local_state_.get(), &application_locale_storage_.get(),
       oobe_ui->GetView<GuestTosScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnGuestTosScreenExit,
                           weak_factory_.GetWeakPtr())));
@@ -976,7 +978,7 @@ WizardController::CreateScreens() {
 
   if (features::IsOobeSoftwareUpdateEnabled()) {
     append(std::make_unique<ConsumerUpdateScreen>(
-        local_state,
+        &local_state_.get(),
         oobe_ui->GetView<ConsumerUpdateScreenHandler>()->AsWeakPtr(),
         oobe_ui->GetErrorScreen(),
         base::BindRepeating(&WizardController::OnConsumerUpdateScreenExit,
@@ -1011,13 +1013,14 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<ApplyOnlinePasswordScreen>(
-      local_state,
+      &local_state_.get(),
       oobe_ui->GetView<ApplyOnlinePasswordScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnApplyOnlinePasswordScreenExit,
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<LocalPasswordSetupScreen>(
-      local_state, oobe_ui->GetView<LocalPasswordSetupHandler>()->AsWeakPtr(),
+      &local_state_.get(),
+      oobe_ui->GetView<LocalPasswordSetupHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnLocalPasswordSetupScreenExit,
                           weak_factory_.GetWeakPtr())));
 
@@ -2292,7 +2295,7 @@ void WizardController::OnUpdateScreenExit(UpdateScreen::Result result) {
 
 void WizardController::OnUpdateCompleted() {
   // Install language packs based on the user selected language.
-  const std::string locale = GetApplicationLocale();
+  const std::string locale = application_locale_storage_->Get();
   language_packs::LanguagePackManager::UpdatePacksForOobe(locale,
                                                           base::DoNothing());
 
@@ -3686,10 +3689,12 @@ void WizardController::PrepareFirstRunPrefs() {
 }
 
 PrefService* WizardController::GetLocalState() {
+  // TODO(crbug.com/487538533): Fix WizardControllerBrokenLocalStateTest and
+  // remove local_state_for_testing_.
   if (local_state_for_testing_) {
     return local_state_for_testing_;
   }
-  return g_browser_process->local_state();
+  return &local_state_.get();
 }
 
 void WizardController::OnTimezoneResolved(

@@ -71,6 +71,12 @@ specific_include_rules = {
   "login_display_host_mojo\\.cc": [
     "+chrome/browser/global_features.h",
   ],
+  "login_display_host_webui\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
+  "fake_login_display_host\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
 
   ".*_(browser|unit)test\\.cc": [
     "+chrome/browser/ui/browser_finder.h",
@@ -80,10 +86,5 @@ specific_include_rules = {
   ],
   "fake_.*\\.cc": [
     "+chrome/test/base",
-  ],
-
-  # TODO(crbug.com/396534588): Remove g_browser_process->GetFeatures() usage.
-  "login_display_host_webui\\.cc": [
-    "+chrome/browser/global_features.h",
   ],
 }
