@@ -75,7 +75,7 @@ class WebUIMetricsReporterTest : public testing::Test {
   MetricsReporter::HasMarkCallback TestHasMarkCallback(bool expected_has_mark) {
     return base::BindOnce(
         [](bool expected_has_mark, bool has_mark) {
-          EXPECT_EQ(expected_has_mark, expected_has_mark);
+          EXPECT_EQ(expected_has_mark, has_mark);
         },
         expected_has_mark);
   }
