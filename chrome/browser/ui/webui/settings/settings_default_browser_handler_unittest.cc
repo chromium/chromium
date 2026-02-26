@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -66,10 +67,12 @@ class DefaultBrowserHandlerTest : public testing::Test {
   void SetUp() override {
     scoped_override_ =
         GlobalFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
-            base::BindRepeating([](BrowserProcess& browser_process) {
+            base::BindLambdaForTesting([&](BrowserProcess& browser_process) {
               return std::make_unique<default_browser::DefaultBrowserManager>(
                   &browser_process,
-                  std::make_unique<default_browser::FakeShellDelegate>());
+                  std::make_unique<default_browser::FakeShellDelegate>(),
+                  base::BindLambdaForTesting(
+                      [&]() { return static_cast<Profile*>(profile_.get()); }));
             }));
     TestingBrowserProcess::GetGlobal()->SetUpGlobalFeaturesForTesting(
         /*profile_manager=*/false);

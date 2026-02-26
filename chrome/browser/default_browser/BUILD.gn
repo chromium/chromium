@@ -13,19 +13,21 @@ source_set("default_browser") {
   ]
 
   public = [
+    "default_browser_changed_notification_handler.h",
     "default_browser_controller.h",
     "default_browser_features.h",
     "default_browser_manager.h",
   ]
 
   sources = [
+    "default_browser_changed_notification_handler.cc",
     "default_browser_controller.cc",
     "default_browser_features.cc",
     "default_browser_manager.cc",
     "default_browser_monitor.cc",
     "default_browser_monitor.h",
-    "default_browser_notification_handler.cc",
-    "default_browser_notification_handler.h",
+    "default_browser_notification_observer.cc",
+    "default_browser_notification_observer.h",
     "default_browser_setter.h",
     "setters/shell_integration_default_browser_setter.cc",
     "setters/shell_integration_default_browser_setter.h",

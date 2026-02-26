@@ -44,6 +44,10 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/notifications/muted_notification_handler.h"
 #include "chrome/browser/notifications/screen_capture_notification_blocker.h"
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/default_browser/default_browser_changed_notification_handler.h"
+#include "chrome/browser/default_browser/default_browser_features.h"
+#endif
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -110,6 +114,16 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
                                screen_capture_blocker.get()));
     notification_queue_.AddNotificationBlocker(
         std::move(screen_capture_blocker));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+    if (default_browser::IsDefaultBrowserFrameworkEnabled() &&
+        default_browser::IsDefaultBrowserChangedOsNotificationEnabled()) {
+      AddNotificationHandler(
+          NotificationHandler::Type::DEFAULT_BROWSER_CHANGED,
+          std::make_unique<
+              default_browser::DefaultBrowserChangedNotificationHandler>());
+    }
+#endif
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)

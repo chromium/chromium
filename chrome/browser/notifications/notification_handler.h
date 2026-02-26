@@ -39,7 +39,8 @@ class NotificationHandler {
     NEARBY_SHARE = 8,
     NOTIFICATIONS_MUTED = 9,
     TAILORED_SECURITY = 10,
-    MAX = TAILORED_SECURITY,
+    DEFAULT_BROWSER_CHANGED = 11,
+    MAX = DEFAULT_BROWSER_CHANGED,
   };
 
   virtual ~NotificationHandler();

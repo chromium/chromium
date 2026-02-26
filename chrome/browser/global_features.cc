@@ -18,6 +18,7 @@
 #include "chrome/browser/media/audio_process_ml_model_forwarder.h"
 #include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/application_advanced_protection_status_detector.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/application_locale_storage/application_locale_storage.h"
@@ -169,7 +170,8 @@ void GlobalFeatures::PostBrowserProcessInitCore() {
       GetUserDataFactory()
           .CreateInstance<default_browser::DefaultBrowserManager>(
               *g_browser_process, g_browser_process,
-              default_browser::DefaultBrowserManager::CreateDefaultDelegate());
+              default_browser::DefaultBrowserManager::CreateDefaultDelegate(),
+              base::BindRepeating(&ProfileManager::GetLastUsedProfile));
 #endif
 
   application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();

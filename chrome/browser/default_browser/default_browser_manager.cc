@@ -20,7 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
 #include "chrome/browser/default_browser/default_browser_monitor.h"
-#include "chrome/browser/default_browser/default_browser_notification_handler.h"
+#include "chrome/browser/default_browser/default_browser_notification_observer.h"
 #include "chrome/browser/default_browser/setters/shell_integration_default_browser_setter.h"
 #include "chrome/browser/shell_integration.h"
 #include "url/gurl.h"
@@ -142,10 +142,13 @@ DEFINE_USER_DATA(DefaultBrowserManager);
 
 DefaultBrowserManager::DefaultBrowserManager(
     BrowserProcess* browser_process,
-    std::unique_ptr<ShellDelegate> shell_delegate)
+    std::unique_ptr<ShellDelegate> shell_delegate,
+    ProfileProviderCallback profile_provider_callback)
     : shell_delegate_(std::move(shell_delegate)),
+      profile_provider_callback_(std::move(profile_provider_callback)),
       scoped_unowned_user_data_(browser_process->GetUnownedUserDataHost(),
                                 *this) {
+  CHECK(!profile_provider_callback_.is_null());
   if (IsDefaultBrowserFrameworkEnabled()) {
     monitor_ = std::make_unique<DefaultBrowserMonitor>();
 
@@ -153,8 +156,8 @@ DefaultBrowserManager::DefaultBrowserManager(
         base::BindRepeating(&DefaultBrowserManager::OnMonitorDetectedChange,
                             base::Unretained(this)));
     if (IsDefaultBrowserChangedOsNotificationEnabled()) {
-      notification_handler_ =
-          std::make_unique<DefaultBrowserNotificationHandler>(*this);
+      notification_observer_ =
+          std::make_unique<DefaultBrowserNotificationObserver>(*this);
     }
 
     monitor_->StartMonitor();
@@ -182,6 +185,10 @@ DefaultBrowserManager::CreateControllerFor(
     DefaultBrowserEntrypointType entrypoint) {
   return std::make_unique<DefaultBrowserController>(
       std::make_unique<ShellIntegrationDefaultBrowserSetter>(), entrypoint);
+}
+
+Profile& DefaultBrowserManager::GetProfile() {
+  return *profile_provider_callback_.Run();
 }
 
 void DefaultBrowserManager::GetDefaultBrowserState(
