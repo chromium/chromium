@@ -584,7 +584,8 @@ PaintResult PaintLayerPainter::PaintChildren(
   }
 
   bool painting_canvas_child = false;
-  if (auto* canvas = DynamicTo<HTMLCanvasElement>(layout_object.GetNode())) {
+  auto* canvas = DynamicTo<HTMLCanvasElement>(layout_object.GetNode());
+  if (canvas) {
     if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
         canvas->layoutSubtree()) {
       // We need to paint the children for later use by drawElementImage, but
@@ -635,7 +636,7 @@ PaintResult PaintLayerPainter::PaintChildren(
 
     if (painting_canvas_child && child->SelfOrDescendantNeedsRepaint()) {
       const auto* child_el = To<Element>(child->GetLayoutObject().GetNode());
-      layout_object.GetFrameView()->DidPaintCanvasChild(*child_el);
+      layout_object.GetFrameView()->DidPaintCanvasChild(*canvas, *child_el);
     }
   }
 

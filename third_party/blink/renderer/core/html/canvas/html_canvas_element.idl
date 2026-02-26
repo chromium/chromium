@@ -38,6 +38,7 @@
 
     [RuntimeEnabled=CanvasDrawElement] attribute boolean layoutSubtree;
     [RuntimeEnabled=CanvasDrawElement] attribute EventHandler onpaint;
+    [RuntimeEnabled=CanvasDrawElement] void requestPaint();
     [RuntimeEnabled=CanvasDrawElement, RaisesException] DOMMatrix getElementTransform(Element element, DOMMatrix draw_transform);
 
     [MeasureAs=CanvasToDataURL, RaisesException] DOMString toDataURL(optional DOMString type = "image/png", optional any quality);

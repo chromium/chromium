@@ -3836,6 +3836,7 @@ interface HTMLCanvasElement : HTMLElement
     method constructor
     method getContext
     method getElementTransform
+    method requestPaint
     method toBlob
     method toDataURL
     method transferControlToOffscreen

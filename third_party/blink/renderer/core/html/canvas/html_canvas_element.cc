@@ -518,6 +518,12 @@ bool HTMLCanvasElement::layoutSubtree() const {
   return FastHasAttribute(html_names::kLayoutsubtreeAttr);
 }
 
+void HTMLCanvasElement::requestPaint() {
+  if (LocalFrameView* view = GetDocument().View()) {
+    view->RequestCanvasOnpaint(*this);
+  }
+}
+
 void HTMLCanvasElement::SetSize(gfx::Size new_size) {
   if (new_size == Size())
     return;

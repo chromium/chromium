@@ -97,6 +97,7 @@ class Element;
 class FragmentAnchor;
 class Frame;
 class FrameViewAutoSizeInfo;
+class HTMLCanvasElement;
 class HTMLVideoElement;
 class HitTestLocation;
 class HitTestResult;
@@ -826,7 +827,8 @@ class CORE_EXPORT LocalFrameView final
   void NotifyVideoIsDominantVisibleStatus(HTMLVideoElement* element,
                                           bool is_dominant);
 
-  void DidPaintCanvasChild(const Element&);
+  void DidPaintCanvasChild(HTMLCanvasElement& canvas, const Element& child);
+  void RequestCanvasOnpaint(HTMLCanvasElement&);
 
   bool HasDominantVideoElement() const;
 
@@ -1316,6 +1318,9 @@ class CORE_EXPORT LocalFrameView final
   // lifecycle update. This is cleared at the end of the lifecycle update. Used
   // for `CanvasDrawElement`.
   HeapHashSet<Member<const Element>> painted_canvas_child_elements_;
+  // Set of <canvas> elements which need to fire onpaint on the next lifecycle
+  // update.
+  HeapHashSet<Member<HTMLCanvasElement>> canvas_elements_needing_onpaint_;
   // True if we have canvas work, performed in the post-lifecycle steps, that
   // needs to happen prior to the impl commit. Cleared in DidBeginMainFrame.
   bool needs_post_lifecycle_steps_before_impl_commit_ = false;

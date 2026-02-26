@@ -344,6 +344,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(tap_friendliness_checker_);
   visitor->Trace(lifecycle_observers_);
   visitor->Trace(painted_canvas_child_elements_);
+  visitor->Trace(canvas_elements_needing_onpaint_);
   visitor->Trace(fullscreen_video_elements_);
   visitor->Trace(pending_transform_updates_);
   visitor->Trace(pending_opacity_updates_);
@@ -1026,17 +1027,14 @@ void LocalFrameView::RunPostLifecycleSteps() {
 
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
     ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-      if (frame_view.painted_canvas_child_elements_.empty()) {
+      if (frame_view.canvas_elements_needing_onpaint_.empty()) {
+        CHECK(frame_view.painted_canvas_child_elements_.empty());
         return;
       }
       HeapHashSet<Member<HTMLCanvasElement>> painted_canvases;
-      for (const auto& canvas_child :
-           frame_view.painted_canvas_child_elements_) {
-        if (auto* canvas =
-                DynamicTo<HTMLCanvasElement>(canvas_child->parentElement())) {
-          painted_canvases.insert(canvas);
-        }
-      }
+      painted_canvases.swap(frame_view.canvas_elements_needing_onpaint_);
+      // TODO(https://crbug.com/484345338): Pass the changed children to the
+      // onpaint event.
       frame_view.painted_canvas_child_elements_.clear();
 
       // Script is allowed during onpaint.
@@ -5026,12 +5024,23 @@ bool LocalFrameView::HasDominantVideoElement() const {
   return !fullscreen_video_elements_.empty();
 }
 
-void LocalFrameView::DidPaintCanvasChild(const Element& child) {
+void LocalFrameView::DidPaintCanvasChild(HTMLCanvasElement& canvas,
+                                         const Element& child) {
+  DCHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
   if (IsUpdatingLifecycle()) {
     painted_canvas_child_elements_.insert(&child);
+    canvas_elements_needing_onpaint_.insert(&canvas);
     LocalFrameView* root_view = GetFrame().LocalFrameRoot().View();
     root_view->needs_post_lifecycle_steps_before_impl_commit_ = true;
   }
+}
+
+void LocalFrameView::RequestCanvasOnpaint(HTMLCanvasElement& canvas) {
+  DCHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
+  canvas_elements_needing_onpaint_.insert(&canvas);
+  LocalFrameView* root_view = GetFrame().LocalFrameRoot().View();
+  root_view->needs_post_lifecycle_steps_before_impl_commit_ = true;
+  ScheduleAnimation();
 }
 
 #if DCHECK_IS_ON()

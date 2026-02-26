@@ -564,6 +564,7 @@ html element canvas
     property height
     property layoutSubtree
     property onpaint
+    property requestPaint
     property toBlob
     property toDataURL
     property transferControlToOffscreen
