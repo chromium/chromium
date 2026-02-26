@@ -1447,22 +1447,29 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
                       file_info->num_outstanding_network_requests_++))));
       break;
     case lens::MimeType::kImage:
-      CHECK(contextual_input_data->context_input.has_value() &&
-            contextual_input_data->context_input->size() == 1);
-      // TODO(crbug.com/441142455): Support image context via SkBitmap.
-      CreateImageUploadRequest(
-          file_info->request_id.value(),
-          // Pass ownership of the contextual input data to the callback.
-          std::move(contextual_input_data->context_input->front().bytes_),
-          std::move(image_options),
-          base::BindOnce(
-              &ComposeboxQueryController::
-                  AddLensUsageIntentToUploadRequestAndContinue,
-              weak_ptr_factory_.GetWeakPtr(), has_lens_usage_intent,
-              base::BindOnce(
-                  &ComposeboxQueryController::OnUploadRequestBodyReady,
-                  weak_ptr_factory_.GetWeakPtr(), file_token,
-                  file_info->num_outstanding_network_requests_++)));
+      if (contextual_input_data->context_input.has_value() &&
+          contextual_input_data->context_input->empty() &&
+          contextual_input_data->viewport_screenshot.has_value()) {
+        // In this case, the viewport screenshot should have already been
+        // uploaded above. It does not need to be uploaded again.
+        break;
+      } else {
+        CHECK(contextual_input_data->context_input.has_value() &&
+              contextual_input_data->context_input->size() == 1);
+        CreateImageUploadRequest(
+            file_info->request_id.value(),
+            // Pass ownership of the contextual input data to the callback.
+            std::move(contextual_input_data->context_input->front().bytes_),
+            std::move(image_options),
+            base::BindOnce(
+                &ComposeboxQueryController::
+                    AddLensUsageIntentToUploadRequestAndContinue,
+                weak_ptr_factory_.GetWeakPtr(), has_lens_usage_intent,
+                base::BindOnce(
+                    &ComposeboxQueryController::OnUploadRequestBodyReady,
+                    weak_ptr_factory_.GetWeakPtr(), file_token,
+                    file_info->num_outstanding_network_requests_++)));
+      }
       break;
     default:
       UpdateFileUploadStatus(
