@@ -1026,8 +1026,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(extension);
   EXPECT_EQ(extension->id(), extension_id);
 
-  ContentHashReader::InitStatus hashes_status = observer.WaitForOnHashesReady();
-  EXPECT_EQ(ContentHashReader::InitStatus::SUCCESS, hashes_status);
+  std::optional<ContentHashReaderInitStatus> hashes_status =
+      observer.WaitForOnHashesReady();
+  EXPECT_EQ(std::nullopt, hashes_status);
 }
 
 // Verifies that CRX with malformed verified contents injected into the header
@@ -1069,8 +1070,9 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
   ASSERT_TRUE(extension);
   EXPECT_EQ(extension->id(), extension_id);
 
-  ContentHashReader::InitStatus hashes_status = observer.WaitForOnHashesReady();
-  EXPECT_EQ(ContentHashReader::InitStatus::HASHES_MISSING, hashes_status);
+  std::optional<ContentHashReaderInitStatus> hashes_status =
+      observer.WaitForOnHashesReady();
+  EXPECT_EQ(ContentHashReaderInitStatus::HASHES_MISSING, hashes_status);
 }
 
 // Tests that tampering with a large resource fails content verification as

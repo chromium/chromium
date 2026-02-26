@@ -48,7 +48,9 @@ class TestContentVerifySingleJobObserver {
   [[nodiscard]] ContentVerifyJob::FailureReason WaitForJobFinished();
 
   // Waits for ContentVerifyJob to finish the attempt to read content hashes.
-  ContentHashReader::InitStatus WaitForOnHashesReady();
+  // Returns std::nullopt if hashes were successfully read, otherwise returns
+  // failure status.
+  std::optional<ContentHashReaderInitStatus> WaitForOnHashesReady();
 
  private:
   class ObserverClient : public ContentVerifyJob::TestObserver {
@@ -63,13 +65,15 @@ class TestContentVerifySingleJobObserver {
     void JobFinished(const ExtensionId& extension_id,
                      const base::FilePath& relative_path,
                      ContentVerifyJob::FailureReason reason) override;
-    void OnHashesReady(const ExtensionId& extension_id,
-                       const base::FilePath& relative_path,
-                       const ContentHashReader& hash_reader) override;
+    void OnHashesReady(
+        const ExtensionId& extension_id,
+        const base::FilePath& relative_path,
+        const base::expected<ContentHashData, ContentHashReaderInitStatus>&
+            hashes) override;
 
     // Passed methods from ContentVerifySingleJobObserver:
     [[nodiscard]] ContentVerifyJob::FailureReason WaitForJobFinished();
-    ContentHashReader::InitStatus WaitForOnHashesReady();
+    std::optional<ContentHashReaderInitStatus> WaitForOnHashesReady();
 
    private:
     ~ObserverClient() override;
@@ -77,7 +81,7 @@ class TestContentVerifySingleJobObserver {
     void OnHashesReadyOnCreationThread(
         const ExtensionId& extension_id,
         const base::FilePath& relative_path,
-        ContentHashReader::InitStatus content_hash_status);
+        std::optional<ContentHashReaderInitStatus> content_hash_status);
 
     content::BrowserThread::ID creation_thread_;
 
@@ -88,7 +92,7 @@ class TestContentVerifySingleJobObserver {
     base::FilePath relative_path_;
     std::optional<ContentVerifyJob::FailureReason> failure_reason_;
     bool seen_on_hashes_ready_ = false;
-    ContentHashReader::InitStatus hashes_status_;
+    std::optional<ContentHashReaderInitStatus> hashes_status_;
   };
 
   scoped_refptr<ObserverClient> client_;
@@ -127,9 +131,11 @@ class TestContentVerifyJobObserver {
     void JobFinished(const ExtensionId& extension_id,
                      const base::FilePath& relative_path,
                      ContentVerifyJob::FailureReason failure_reason) override;
-    void OnHashesReady(const ExtensionId& extension_id,
-                       const base::FilePath& relative_path,
-                       const ContentHashReader& hash_reader) override {}
+    void OnHashesReady(
+        const ExtensionId& extension_id,
+        const base::FilePath& relative_path,
+        const base::expected<ContentHashData, ContentHashReaderInitStatus>&
+            hashes) override {}
 
     // Passed methods from TestContentVerifyJobObserver:
     void ExpectJobResult(const ExtensionId& extension_id,

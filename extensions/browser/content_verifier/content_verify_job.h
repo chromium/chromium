@@ -16,8 +16,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/version.h"
 #include "crypto/hash.h"
+#include "extensions/browser/content_hash_reader.h"
 #include "extensions/browser/content_verifier/content_verifier_key.h"
 #include "extensions/common/extension_id.h"
 #include "mojo/public/c/system/types.h"
@@ -29,7 +31,6 @@ class FilePath;
 namespace extensions {
 
 class ContentHash;
-class ContentHashReader;
 class ContentVerifier;
 
 // Objects of this class are responsible for verifying that the actual content
@@ -116,9 +117,11 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
                              const base::FilePath& relative_path,
                              FailureReason failure_reason) = 0;
 
-    virtual void OnHashesReady(const ExtensionId& extension_id,
-                               const base::FilePath& relative_path,
-                               const ContentHashReader& hash_reader) = 0;
+    virtual void OnHashesReady(
+        const ExtensionId& extension_id,
+        const base::FilePath& relative_path,
+        const base::expected<ContentHashData, ContentHashReaderInitStatus>&
+            hashes) = 0;
 
    protected:
     virtual ~TestObserver() = default;
@@ -168,7 +171,7 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   // Indicates whether the caller has told us they are done calling BytesRead.
   bool done_reading_ = false;
 
-  // Set to true once hash_reader_ has read its expected hashes.
+  // Set to true once we have expected hashes.
   bool hashes_ready_ = false;
 
   // In between when the job is created and when it is started, the caller can
@@ -189,7 +192,8 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   int current_hash_byte_count_ = 0;
 
   // Valid and set after `hashes_ready_` is set to true.
-  std::unique_ptr<const ContentHashReader> hash_reader_;
+  base::expected<ContentHashData, ContentHashReaderInitStatus> hashes_ =
+      base::unexpected(ContentHashReaderInitStatus::FETCH_NOT_ATTEMPTED_YET);
 
   // Resource info for this verify job.
   const ExtensionId extension_id_;

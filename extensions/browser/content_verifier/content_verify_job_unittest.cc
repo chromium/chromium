@@ -596,9 +596,9 @@ TEST_F(ContentVerifyJobWithoutSignedHashesUnittest, ComputedHashesLoad) {
     TestContentVerifySingleJobObserver observer(extension->id(), kResourcePath);
     content_verifier()->ClearCacheForTesting();
     StartContentVerifyJob(*extension, kResourcePath);
-    ContentHashReader::InitStatus hashes_status =
+    std::optional<ContentHashReaderInitStatus> hashes_status =
         observer.WaitForOnHashesReady();
-    EXPECT_EQ(ContentHashReader::InitStatus::SUCCESS, hashes_status);
+    EXPECT_FALSE(hashes_status.has_value());
   }
 
   {
@@ -609,9 +609,9 @@ TEST_F(ContentVerifyJobWithoutSignedHashesUnittest, ComputedHashesLoad) {
     TestContentVerifySingleJobObserver observer(extension->id(), kResourcePath);
     content_verifier()->ClearCacheForTesting();
     StartContentVerifyJob(*extension, kResourcePath);
-    ContentHashReader::InitStatus hashes_status =
+    std::optional<ContentHashReaderInitStatus> hashes_status =
         observer.WaitForOnHashesReady();
-    EXPECT_EQ(ContentHashReader::InitStatus::HASHES_DAMAGED, hashes_status);
+    EXPECT_EQ(ContentHashReaderInitStatus::HASHES_DAMAGED, hashes_status);
   }
 
   {
@@ -621,9 +621,9 @@ TEST_F(ContentVerifyJobWithoutSignedHashesUnittest, ComputedHashesLoad) {
     TestContentVerifySingleJobObserver observer(extension->id(), kResourcePath);
     content_verifier()->ClearCacheForTesting();
     StartContentVerifyJob(*extension, kResourcePath);
-    ContentHashReader::InitStatus hashes_status =
+    std::optional<ContentHashReaderInitStatus> hashes_status =
         observer.WaitForOnHashesReady();
-    EXPECT_EQ(ContentHashReader::InitStatus::HASHES_MISSING, hashes_status);
+    EXPECT_EQ(ContentHashReaderInitStatus::HASHES_MISSING, hashes_status);
   }
 }
 

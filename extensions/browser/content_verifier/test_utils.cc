@@ -42,7 +42,7 @@ TestContentVerifySingleJobObserver::WaitForJobFinished() {
   return client_->WaitForJobFinished();
 }
 
-ContentHashReader::InitStatus
+std::optional<ContentHashReaderInitStatus>
 TestContentVerifySingleJobObserver::WaitForOnHashesReady() {
   return client_->WaitForOnHashesReady();
 }
@@ -79,25 +79,22 @@ void TestContentVerifySingleJobObserver::ObserverClient::JobFinished(
 void TestContentVerifySingleJobObserver::ObserverClient::OnHashesReady(
     const ExtensionId& extension_id,
     const base::FilePath& relative_path,
-    const ContentHashReader& hash_reader) {
-  if (content::BrowserThread::CurrentlyOn(creation_thread_))
-    OnHashesReadyOnCreationThread(extension_id, relative_path,
-                                  hash_reader.status());
-  else {
-    content::BrowserThread::GetTaskRunnerForThread(creation_thread_)
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(&TestContentVerifySingleJobObserver::ObserverClient::
-                               OnHashesReadyOnCreationThread,
-                           this, extension_id, relative_path,
-                           hash_reader.status()));
-  }
+    const base::expected<ContentHashData, ContentHashReaderInitStatus>&
+        hashes) {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&TestContentVerifySingleJobObserver::ObserverClient::
+                         OnHashesReadyOnCreationThread,
+                     this, extension_id, relative_path,
+                     hashes.has_value() ? std::nullopt
+                                        : std::make_optional(hashes.error())));
 }
 
 void TestContentVerifySingleJobObserver::ObserverClient::
-    OnHashesReadyOnCreationThread(const ExtensionId& extension_id,
-                                  const base::FilePath& relative_path,
-                                  ContentHashReader::InitStatus hashes_status) {
+    OnHashesReadyOnCreationThread(
+        const ExtensionId& extension_id,
+        const base::FilePath& relative_path,
+        std::optional<ContentHashReaderInitStatus> hashes_status) {
   if (extension_id != extension_id_ || relative_path != relative_path_)
     return;
   EXPECT_FALSE(seen_on_hashes_ready_);
@@ -114,7 +111,7 @@ TestContentVerifySingleJobObserver::ObserverClient::WaitForJobFinished() {
   return failure_reason_.value_or(ContentVerifyJob::FAILURE_REASON_MAX);
 }
 
-ContentHashReader::InitStatus
+std::optional<ContentHashReaderInitStatus>
 TestContentVerifySingleJobObserver::ObserverClient::WaitForOnHashesReady() {
   // Run() returns immediately if Quit() has already been called.
   on_hashes_ready_run_loop_.Run();
