@@ -12,6 +12,7 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -46,6 +47,7 @@ export class ContextualEntrypointButtonElement extends
       glifAnimationState: {type: String, reflect: true},
       uploadButtonDisabled: {type: Boolean},
       hasPopupFocus: {type: Boolean, reflect: true},
+      windowWidthBelowThreshold_: {type: Boolean},
     };
   }
 
@@ -55,15 +57,31 @@ export class ContextualEntrypointButtonElement extends
       GlifAnimationState.INELIGIBLE;
   accessor uploadButtonDisabled: boolean = false;
   accessor hasPopupFocus: boolean = false;
+  protected accessor windowWidthBelowThreshold_: boolean = false;
 
   private metricsSource_: string = loadTimeData.getString('composeboxSource');
   private usePecApi_: boolean =
       loadTimeData.valueExists('contextualMenuUsePecApi') ?
       loadTimeData.getBoolean('contextualMenuUsePecApi') :
       false;
+  private eventTracker_: EventTracker = new EventTracker();
 
   constructor() {
     super();
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.eventTracker_.add(
+        window.matchMedia('(width <= 264px)'), 'change',
+        (e: MediaQueryListEvent) => {
+          this.windowWidthBelowThreshold_ = e.matches;
+        });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker_.removeAll();
   }
 
   protected onEntrypointClick_(e: Event) {

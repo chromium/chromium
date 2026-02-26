@@ -134,7 +134,6 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       webuiOmniboxPopupSelectionControlEnabled_: {type: Boolean},
       inputState_: {type: Object},
       usePecApi_: {type: Boolean},
-      canShowContextEntrypointDescription_: {type: Boolean},
     };
   }
 
@@ -163,7 +162,6 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor inputState_: InputState|null = null;
   protected accessor usePecApi_: boolean =
       loadTimeData.getBoolean('contextualMenuUsePecApi');
-  protected accessor canShowContextEntrypointDescription_: boolean = true;
 
   private callbackRouter_: PageCallbackRouter;
   private eventTracker_ = new EventTracker();
@@ -236,11 +234,6 @@ export class OmniboxPopupAppElement extends I18nMixinLit
             e.preventDefault();
           });
     }
-    this.eventTracker_.add(
-        window.matchMedia('(width <= 264px)'), 'change',
-        (e: MediaQueryListEvent) => {
-          this.canShowContextEntrypointDescription_ = !e.matches;
-        });
   }
 
   override disconnectedCallback() {
@@ -590,7 +583,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected computeShowContextEntrypointDescription_(): boolean {
     const toolChipsVisible = this.isContentSharingEnabled_ &&
         (this.computeShowRecentTabChip_() || this.isLensSearchEligible_);
-    return this.canShowContextEntrypointDescription_ && !toolChipsVisible;
+    return !toolChipsVisible;
   }
 
   private stripUrl_(url: string|undefined): string {
