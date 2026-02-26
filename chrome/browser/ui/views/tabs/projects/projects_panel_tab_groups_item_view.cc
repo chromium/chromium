@@ -192,6 +192,31 @@ gfx::ImageSkia ProjectsPanelTabGroupsItemView::GetDragImage() {
       projects_panel::kListItemCornerRadius, image);
 }
 
+void ProjectsPanelTabGroupsItemView::PaintButtonContents(gfx::Canvas* canvas) {
+  // When this view is being dragged, we only need to paint a placeholder.
+  if (dragging_) {
+    cc::PaintFlags flags;
+    flags.setColor(
+        GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle));
+    flags.setStyle(cc::PaintFlags::kFill_Style);
+    flags.setAntiAlias(true);
+    canvas->DrawRoundRect(gfx::RectF(GetLocalBounds()),
+                          projects_panel::kListItemCornerRadius, flags);
+    return;
+  }
+  views::Button::PaintButtonContents(canvas);
+}
+
+void ProjectsPanelTabGroupsItemView::PaintChildren(
+    const views::PaintInfo& paint_info) {
+  // If this view is being dragged, a placeholder is drawn in its original
+  // position, so we skip painting its children.
+  if (dragging_) {
+    return;
+  }
+  views::Button::PaintChildren(paint_info);
+}
+
 void ProjectsPanelTabGroupsItemView::OnThemeChanged() {
   views::View::OnThemeChanged();
   ui::ColorId color_id = GetTabGroupContextMenuColorId(tab_group_color_id_);
@@ -237,7 +262,7 @@ void ProjectsPanelTabGroupsItemView::UpdateHoverState() {
                                                 views::Button::STATE_PRESSED));
 
   if (shared_icon_) {
-    shared_icon_->SetVisible(!show_more);
+    shared_icon_->SetVisible(!dragging_ && !show_more);
   }
   more_button_->SetVisible(show_more);
 
