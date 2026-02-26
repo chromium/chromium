@@ -19,7 +19,7 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public interface TabModelActionListener {
     /** An enum representing the type of dialog that was shown. */
-    @IntDef({DialogType.NONE, DialogType.SYNC, DialogType.COLLABORATION})
+    @IntDef({DialogType.NONE, DialogType.SYNC, DialogType.COLLABORATION, DialogType.ACTOR_TASK})
     @Retention(RetentionPolicy.SOURCE)
     @interface DialogType {
         /** No dialog was shown. */
@@ -30,6 +30,9 @@ public interface TabModelActionListener {
 
         /** A dialog about collaboration destruction was shown. */
         int COLLABORATION = 2;
+
+        /** A dialog about actor task destruction was shown. */
+        int ACTOR_TASK = 3;
     }
 
     /**

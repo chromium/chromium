@@ -3526,6 +3526,23 @@ should be able to be added at any place in this file.
   </token>
 </action>
 
+<action name="ActorTaskTabConfirmation.StopActorTask.Abort">
+  <owner>haileywang@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user aborts leaving a website that's actuating.
+  </description>
+</action>
+
+<action name="ActorTaskTabConfirmation.StopActorTask.Proceed">
+  <owner>haileywang@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user leaves a website that's actuating as part of an actor
+    task.
+  </description>
+</action>
+
 <action name="AddAddressManually_AddressSaved">
   <owner>sinhasourav@google.com</owner>
   <owner>bling-transactions@google.com</owner>

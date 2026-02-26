@@ -54,6 +54,8 @@ public class ActionConfirmationManager {
             TAB_GROUP_CONFIRMATION + "CollaborationOwnerRemoveLastTab.";
     private static final String COLLABORATION_MEMBER_REMOVE_LAST_TAB =
             TAB_GROUP_CONFIRMATION + "CollaborationMemberRemoveLastTab.";
+    private static final String STOP_ACTOR_TASK_USER_ACTION =
+            "ActorTaskTabConfirmation.StopActorTask.";
 
     private final Profile mProfile;
     private final Context mContext;
@@ -206,6 +208,34 @@ public class ActionConfirmationManager {
                 R.string.keep_tab_group_dialog_keep_action,
                 R.string.keep_tab_group_dialog_leave_action,
                 onResult);
+    }
+
+    /**
+     * Process closing an actor task actuating tab. The caller is responsible for deciding this.
+     *
+     * @param onResult The callback to receive the result of the confirmation.
+     */
+    public void processActorTaskDeletionAttempt(
+            Callback<@ActionConfirmationResult Integer> onResult) {
+        final Function<Resources, String> titleResolver =
+                (res) -> res.getString(R.string.stop_actor_task_dialog_title);
+        final Function<Resources, String> descriptionResolver =
+                (res) -> res.getString(R.string.stop_actor_task_dialog_description);
+
+        ConfirmationDialogHandler onDialogInteracted =
+                (dismissHandler, buttonClickResult, resultStopShowing) -> {
+                    handleDialogResult(buttonClickResult, STOP_ACTOR_TASK_USER_ACTION, onResult);
+                    return DialogDismissType.DISMISS_IMMEDIATELY;
+                };
+        ActionConfirmationDialog dialog =
+                new ActionConfirmationDialog(mContext, mModalDialogManager);
+        dialog.show(
+                titleResolver,
+                descriptionResolver,
+                R.string.leave_tab_group_menu_item,
+                R.string.cancel,
+                /* supportStopShowing= */ false,
+                onDialogInteracted);
     }
 
     private void processMaybeSyncAndPrefAction(

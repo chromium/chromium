@@ -292,6 +292,40 @@ public class ActionConfirmationManagerUnitTest {
     }
 
     @Test
+    public void testProcessActorTaskDeletionAttempt_Positive() {
+        ActionConfirmationManager actionConfirmationManager =
+                new ActionConfirmationManager(mProfile, mActivity, mModalDialogManager);
+        actionConfirmationManager.processActorTaskDeletionAttempt(mOnResult);
+        verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
+        Controller controller =
+                mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(mPropertyModelArgumentCaptor.getValue(), ButtonType.POSITIVE);
+        verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
+
+        assertTrue(
+                mActionTester
+                        .getActions()
+                        .contains("ActorTaskTabConfirmation.StopActorTask.Proceed"));
+    }
+
+    @Test
+    public void testProcessActorTaskDeletionAttempt_Negative() {
+        ActionConfirmationManager actionConfirmationManager =
+                new ActionConfirmationManager(mProfile, mActivity, mModalDialogManager);
+        actionConfirmationManager.processActorTaskDeletionAttempt(mOnResult);
+        verify(mModalDialogManager).showDialog(mPropertyModelArgumentCaptor.capture(), anyInt());
+        Controller controller =
+                mPropertyModelArgumentCaptor.getValue().get(ModalDialogProperties.CONTROLLER);
+        controller.onClick(mPropertyModelArgumentCaptor.getValue(), ButtonType.NEGATIVE);
+        verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_NEGATIVE);
+
+        assertTrue(
+                mActionTester
+                        .getActions()
+                        .contains("ActorTaskTabConfirmation.StopActorTask.Abort"));
+    }
+
+    @Test
     public void testProcessDeleteSharedGroupAttempt() {
         ActionConfirmationManager actionConfirmationManager =
                 new ActionConfirmationManager(mProfile, mActivity, mModalDialogManager);
