@@ -84,6 +84,7 @@ class TabSharingStatusMessageView : public views::View {
 
   // View:
   gfx::Size GetMinimumSize() const override;
+  void OnThemeChanged() override;
 
  private:
   void SetupMessage(MessageInfo info);

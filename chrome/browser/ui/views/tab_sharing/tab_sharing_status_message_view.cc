@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_status_message_view.h"
 
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/render_frame_host.h"
@@ -13,6 +14,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/metadata/view_factory.h"
@@ -260,6 +262,22 @@ TabSharingStatusMessageView::~TabSharingStatusMessageView() = default;
 
 gfx::Size TabSharingStatusMessageView::GetMinimumSize() const {
   return gfx::Size();
+}
+
+void TabSharingStatusMessageView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  const auto* cp = GetColorProvider();
+  const SkColor text_color = cp->GetColor(kColorInfoBarForeground);
+  const SkColor background_color = cp->GetColor(kColorInfoBarBackground);
+
+  for (views::View* child : children()) {
+    auto* label = views::AsViewClass<views::Label>(child);
+    if (label && !views::IsViewClass<views::Link>(child)) {
+      label->SetEnabledColor(text_color);
+      label->SetBackgroundColor(background_color);
+      label->SetAutoColorReadabilityEnabled(false);
+    }
+  }
 }
 
 void TabSharingStatusMessageView::SetupMessage(MessageInfo info) {
