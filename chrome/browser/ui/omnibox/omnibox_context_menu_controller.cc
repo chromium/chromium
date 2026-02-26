@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -137,6 +138,14 @@ OmniboxContextMenuController::OmniboxContextMenuController(
 OmniboxContextMenuController::~OmniboxContextMenuController() = default;
 
 void OmniboxContextMenuController::InitializeMenuItemInfo() {
+  for (omnibox::InputType input_type : input_state_.allowed_input_types) {
+    input_type_info_.insert(
+        {input_type,
+         {/*enabled=*/IsInputTypeEnabled(input_type),
+          /*menu_label=*/GetMenuLabelForInputType(input_type),
+          /*menu_icon=*/GetIconForInputType(input_type)}});
+  }
+
   for (omnibox::ToolMode tool : input_state_.allowed_tools) {
     tool_info_.insert({tool,
                        {/*enabled=*/IsToolEnabled(tool),
@@ -154,11 +163,19 @@ void OmniboxContextMenuController::InitializeMenuItemInfo() {
 
 void OmniboxContextMenuController::BuildMenu() {
   if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
-    if (IsInputTypeVisible(omnibox::InputType::INPUT_TYPE_BROWSER_TAB)) {
+    auto is_browser_tab =
+        [](const std::pair<omnibox::InputType, MenuItemInfo> p) {
+          return p.first == omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
+        };
+
+    auto browser_tab_it = std::find_if(input_type_info_.begin(),
+                                       input_type_info_.end(), is_browser_tab);
+    if (browser_tab_it != input_type_info_.end()) {
       AddRecentTabItems();
     }
-    if (IsInputTypeVisible(omnibox::InputType::INPUT_TYPE_LENS_IMAGE) ||
-        IsInputTypeVisible(omnibox::InputType::INPUT_TYPE_LENS_FILE)) {
+    auto non_browser_tab_it = std::find_if_not(
+        input_type_info_.begin(), input_type_info_.end(), is_browser_tab);
+    if (non_browser_tab_it != input_type_info_.end()) {
       AddSeparator();
       AddContextualInputItems();
     }
@@ -212,6 +229,8 @@ void OmniboxContextMenuController::AddRecentTabItems() {
     AddItemWithIcon(next_command_id_, tab.title,
                     favicon::GetDefaultFaviconModel());
     AddTabFavicon(next_command_id_, tab.url, tab.title);
+    input_type_for_command_id_[next_command_id_] =
+        omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
     next_command_id_ += 1;
   }
   // Remove header if no tabs to show.
@@ -228,37 +247,30 @@ void OmniboxContextMenuController::AddRecentTabItems() {
 }
 
 void OmniboxContextMenuController::AddContextualInputItems() {
-  auto add_image_icon =
-      ui::ImageModel::FromVectorIcon(kAddPhotoAlternateIcon, ui::kColorMenuIcon,
-                                     ui::SimpleMenuModel::kDefaultIconSize);
-  auto add_file_icon =
-      ui::ImageModel::FromVectorIcon(kAttachFileIcon, ui::kColorMenuIcon,
-                                     ui::SimpleMenuModel::kDefaultIconSize);
-
   if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
-    auto* add_image_config =
-        GetInputTypeConfig(omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
-    auto add_image_label =
-        add_image_config && add_image_config->has_menu_label() &&
-                !add_image_config->menu_label().empty()
-            ? base::UTF8ToUTF16(add_image_config->menu_label())
-            : l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_ADD_IMAGE);
-    AddItemWithIcon(IDC_OMNIBOX_CONTEXT_ADD_IMAGE, add_image_label,
-                    add_image_icon);
-
-    auto* add_file_config =
-        GetInputTypeConfig(omnibox::InputType::INPUT_TYPE_LENS_FILE);
-    auto add_file_label =
-        add_file_config && add_file_config->has_menu_label() &&
-                !add_file_config->menu_label().empty()
-            ? base::UTF8ToUTF16(add_file_config->menu_label())
-            : l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_ADD_FILE);
-    AddItemWithIcon(IDC_OMNIBOX_CONTEXT_ADD_FILE, add_file_label,
-                    add_file_icon);
+    next_command_id_ = min_tools_and_models_command_id_;
+    for (const auto input_type : input_state_.allowed_input_types) {
+      // BROWSER_TAB input type is handled by `AddRecentTabItems()`.
+      if (input_type == omnibox::InputType::INPUT_TYPE_BROWSER_TAB) {
+        continue;
+      }
+      auto& menu_item_info = input_type_info_[input_type];
+      AddItemWithIcon(next_command_id_, menu_item_info.menu_label,
+                      menu_item_info.menu_icon);
+      input_type_for_command_id_[next_command_id_] = input_type;
+      next_command_id_++;
+    }
+    min_tools_and_models_command_id_ = next_command_id_;
   } else {
+    auto add_image_icon = ui::ImageModel::FromVectorIcon(
+        kAddPhotoAlternateIcon, ui::kColorMenuIcon,
+        ui::SimpleMenuModel::kDefaultIconSize);
     AddItemWithStringIdAndIcon(IDC_OMNIBOX_CONTEXT_ADD_IMAGE,
                                IDS_NTP_COMPOSE_ADD_IMAGE, add_image_icon);
 
+    auto add_file_icon =
+        ui::ImageModel::FromVectorIcon(kAttachFileIcon, ui::kColorMenuIcon,
+                                       ui::SimpleMenuModel::kDefaultIconSize);
     AddItemWithStringIdAndIcon(IDC_OMNIBOX_CONTEXT_ADD_FILE,
                                IDS_NTP_COMPOSE_ADD_FILE, add_file_icon);
   }
@@ -531,6 +543,20 @@ bool OmniboxContextMenuController::IsContentSharingEnabled() const {
 OmniboxContextMenuController::ContextType
 OmniboxContextMenuController::CommandIdToEnum(int command_id) const {
   if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
+    if (auto it = input_type_for_command_id_.find(command_id);
+        it != input_type_for_command_id_.end()) {
+      switch (it->second) {
+        case omnibox::InputType::INPUT_TYPE_BROWSER_TAB:
+          return OmniboxContextMenuController::ContextType::kTab;
+        case omnibox::InputType::INPUT_TYPE_LENS_IMAGE:
+          return OmniboxContextMenuController::ContextType::kImage;
+        case omnibox::InputType::INPUT_TYPE_LENS_FILE:
+          return OmniboxContextMenuController::ContextType::kFile;
+        default:
+          return OmniboxContextMenuController::ContextType::kUnknown;
+      }
+    }
+
     if (auto it = tool_for_command_id_.find(command_id);
         it != tool_for_command_id_.end()) {
       switch (it->second) {
@@ -581,25 +607,6 @@ OmniboxContextMenuController::CommandIdToEnum(int command_id) const {
   }
 }
 
-omnibox::InputType OmniboxContextMenuController::GetInputTypeForCommandId(
-    int command_id) const {
-  // Command ID corresponds to "Most recent tabs" menu item.
-  if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
-      command_id < kMinOmniboxContextMenuRecentTabsCommandId +
-                       omnibox::kContextMenuMaxTabSuggestions.Get()) {
-    return omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
-  }
-
-  switch (command_id) {
-    case IDC_OMNIBOX_CONTEXT_ADD_IMAGE:
-      return omnibox::InputType::INPUT_TYPE_LENS_IMAGE;
-    case IDC_OMNIBOX_CONTEXT_ADD_FILE:
-      return omnibox::InputType::INPUT_TYPE_LENS_FILE;
-    default:
-      NOTREACHED();
-  }
-}
-
 const omnibox::InputTypeConfig*
 OmniboxContextMenuController::GetInputTypeConfig(
     omnibox::InputType input_type) const {
@@ -611,15 +618,6 @@ OmniboxContextMenuController::GetInputTypeConfig(
   return (it != input_state_.input_type_configs.end()) ? &(*it) : nullptr;
 }
 
-bool OmniboxContextMenuController::IsInputTypeVisible(
-    omnibox::InputType input_type) const {
-  return std::any_of(input_state_.allowed_input_types.begin(),
-                     input_state_.allowed_input_types.end(),
-                     [&](omnibox::InputType allowed_input_type) {
-                       return allowed_input_type == input_type;
-                     });
-}
-
 bool OmniboxContextMenuController::IsInputTypeEnabled(
     omnibox::InputType input_type) const {
   return std::none_of(input_state_.disabled_input_types.begin(),
@@ -627,6 +625,40 @@ bool OmniboxContextMenuController::IsInputTypeEnabled(
                       [&](omnibox::InputType disabled_input_type) {
                         return disabled_input_type == input_type;
                       });
+}
+
+std::u16string OmniboxContextMenuController::GetMenuLabelForInputType(
+    omnibox::InputType input_type) const {
+  auto* input_type_config = GetInputTypeConfig(input_type);
+  if (input_type_config && !input_type_config->menu_label().empty()) {
+    return base::UTF8ToUTF16(input_type_config->menu_label());
+  }
+
+  // If the server didn't provide a menu label, return a fallback value.
+  switch (input_type) {
+    case omnibox::InputType::INPUT_TYPE_LENS_IMAGE:
+      return l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_ADD_IMAGE);
+    case omnibox::InputType::INPUT_TYPE_LENS_FILE:
+      return l10n_util::GetStringUTF16(IDS_NTP_COMPOSE_ADD_FILE);
+    default:
+      return u"";
+  }
+}
+
+ui::ImageModel OmniboxContextMenuController::GetIconForInputType(
+    omnibox::InputType input_type) const {
+  switch (input_type) {
+    case omnibox::InputType::INPUT_TYPE_LENS_IMAGE:
+      return ui::ImageModel::FromVectorIcon(
+          kAddPhotoAlternateIcon, ui::kColorMenuIcon,
+          ui::SimpleMenuModel::kDefaultIconSize);
+    case omnibox::InputType::INPUT_TYPE_LENS_FILE:
+      return ui::ImageModel::FromVectorIcon(
+          kAttachFileIcon, ui::kColorMenuIcon,
+          ui::SimpleMenuModel::kDefaultIconSize);
+    default:
+      return ui::ImageModel();
+  }
 }
 
 const omnibox::ToolConfig* OmniboxContextMenuController::GetToolConfig(
@@ -811,6 +843,17 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
     }
 
     if (use_input_state_model) {
+      if (auto it = input_type_for_command_id_.find(id);
+          it != input_type_for_command_id_.end()) {
+        file_selector_->OpenFileUploadDialog(
+            web_contents_.get(),
+            /*is_image=*/it->second ==
+                omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
+            GetEditModel(), CreateImageEncodingOptions(),
+            /*was_ai_mode_open=*/is_aim_popup_open);
+        return;
+      }
+
       if (auto it = tool_for_command_id_.find(id);
           it != tool_for_command_id_.end()) {
         UpdateSearchboxContext(
@@ -902,7 +945,19 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
     if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
         command_id < kMinOmniboxContextMenuRecentTabsCommandId +
                          omnibox::kContextMenuMaxTabSuggestions.Get()) {
-      return IsInputTypeEnabled(GetInputTypeForCommandId(command_id));
+      auto it =
+          input_type_info_.find(omnibox::InputType::INPUT_TYPE_BROWSER_TAB);
+      return it != input_type_info_.end() && it->second.enabled;
+    }
+
+    if (auto it = input_type_for_command_id_.find(command_id);
+        it != input_type_for_command_id_.end()) {
+      bool input_type_enabled = input_type_info_.at(it->second).enabled;
+      if (input_type_enabled) {
+        base::UmaHistogramEnumeration(sliced_prefix,
+                                      CommandIdToEnum(command_id));
+      }
+      return input_type_enabled;
     }
 
     if (auto it = tool_for_command_id_.find(command_id);
@@ -925,22 +980,8 @@ bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
       return model_enabled;
     }
 
-    switch (command_id) {
-      case IDC_OMNIBOX_CONTEXT_ADD_IMAGE:
-      case IDC_OMNIBOX_CONTEXT_ADD_FILE: {
-        const bool input_type_enabled =
-            IsInputTypeEnabled(GetInputTypeForCommandId(command_id));
-        if (input_type_enabled) {
-          base::UmaHistogramEnumeration(sliced_prefix,
-                                        CommandIdToEnum(command_id));
-        }
-        return input_type_enabled;
-      }
-      default:
-        base::UmaHistogramEnumeration(sliced_prefix,
-                                      CommandIdToEnum(command_id));
-        return true;
-    }
+    base::UmaHistogramEnumeration(sliced_prefix, CommandIdToEnum(command_id));
+    return true;
   }
 
   auto* browser_window_interface =
@@ -1028,9 +1069,7 @@ bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
   if (command_id >= kMinOmniboxContextMenuRecentTabsCommandId &&
       command_id < kMinOmniboxContextMenuRecentTabsCommandId +
                        omnibox::kContextMenuMaxTabSuggestions.Get()) {
-    return base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)
-               ? IsInputTypeVisible(GetInputTypeForCommandId(command_id))
-               : true;
+    return true;
   }
 
   if (command_id == IDC_OMNIBOX_CONTEXT_ADD_IMAGE ||

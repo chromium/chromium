@@ -179,11 +179,11 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
       int command_id) const;
 
   /* Helpers for InputType input_state fields. */
-  omnibox::InputType GetInputTypeForCommandId(int command_id) const;
   const omnibox::InputTypeConfig* GetInputTypeConfig(
       omnibox::InputType input_type) const;
-  bool IsInputTypeVisible(omnibox::InputType input_type) const;
   bool IsInputTypeEnabled(omnibox::InputType input_type) const;
+  std::u16string GetMenuLabelForInputType(omnibox::InputType input_type) const;
+  ui::ImageModel GetIconForInputType(omnibox::InputType input_type) const;
 
   /* Helpers for ToolMode input_state fields. */
   const omnibox::ToolConfig* GetToolConfig(omnibox::ToolMode tool) const;
@@ -215,6 +215,9 @@ class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
   int min_tools_and_models_command_id_ = 0;
 
   omnibox::InputState input_state_;
+
+  std::map<omnibox::InputType, MenuItemInfo> input_type_info_;
+  std::map<int, omnibox::InputType> input_type_for_command_id_;
 
   std::map<omnibox::ToolMode, MenuItemInfo> tool_info_;
   std::map<int, omnibox::ToolMode> tool_for_command_id_;
