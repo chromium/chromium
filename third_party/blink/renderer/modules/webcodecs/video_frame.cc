@@ -1470,8 +1470,7 @@ scoped_refptr<Image> VideoFrame::GetSourceImageForCanvas(
       provider_cache.CreateProvider(*local_handle->frame());
 
   auto image =
-      CreateImageFromVideoFrame(local_handle->frame(), snapshot_provider,
-                                /*video_renderer=*/nullptr);
+      CreateImageFromVideoFrame(local_handle->frame(), snapshot_provider);
   if (!image) {
     *status = kInvalidSourceImageStatus;
     return nullptr;
@@ -1568,8 +1567,7 @@ ScriptPromise<ImageBitmap> VideoFrame::CreateImageBitmap(
       provider_cache.CreateProvider(*local_handle->frame());
 
   auto image =
-      CreateImageFromVideoFrame(local_handle->frame(), snapshot_provider,
-                                /*video_renderer=*/nullptr);
+      CreateImageFromVideoFrame(local_handle->frame(), snapshot_provider);
   if (!image) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
