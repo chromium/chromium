@@ -26,9 +26,9 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           role="listbox"
           .result="${this.zeroStateSuggestions_}"
           .maxSuggestions="${5}"
-          ?hidden="${!this.isZeroState}">
+          ?hidden="${!this.showSuggestions_}">
       </cr-composebox-dropdown>
-      ${this.showSuggestionsActivityLink_ ? html`
+      ${this.showSuggestionsActivityLink_ && this.showSuggestions_ ? html`
         <div id="suggestionActivity">
           <localized-link
             localized-string="${this.i18nAdvanced('suggestionActivityLink')}">
@@ -74,9 +74,9 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           role="listbox"
           .result="${this.zeroStateSuggestions_}"
           .maxSuggestions="${5}"
-          ?hidden="${!this.isZeroState}">
+          ?hidden="${!this.showSuggestions_}">
       </cr-composebox-dropdown>
-      ${this.showSuggestionsActivityLink_ ? html`
+      ${this.showSuggestionsActivityLink_ && this.showSuggestions_ ? html`
         <div id="suggestionActivity">
           <localized-link
             localized-string="${this.i18nAdvanced('suggestionActivityLink')}">
