@@ -407,61 +407,44 @@ class BookmarkToolbarMediator
     }
 
     private void updateSelectedMenuItemVisibility(List<BookmarkId> selectedBookmarks) {
-        boolean showEdit = selectedBookmarks.size() == 1;
-        boolean showOpenInNewTab = selectedBookmarks.size() > 0;
-        boolean showOpenInIncognito =
-                selectedBookmarks.size() > 0 && mIncognitoEnabledSupplier.getAsBoolean();
-        boolean showMove = selectedBookmarks.size() > 0;
-        boolean showCopyLink = selectedBookmarks.size() == 1;
-        boolean showMarkRead;
-        boolean showMarkUnread;
+        int numSelected = selectedBookmarks.size();
+        boolean hasFolder = false;
+        boolean hasPartnerBookmark = false;
+        boolean hasOnlyReadingListItems = true;
+        boolean hasSelection = numSelected > 0;
+        int numRead = 0;
 
-        // It does not make sense to open a folder in new tab or copy a folder link.
         for (BookmarkId bookmark : selectedBookmarks) {
             BookmarkItem item = mBookmarkModel.getBookmarkById(bookmark);
-            if (item != null && item.isFolder()) {
-                showOpenInNewTab = false;
-                showOpenInIncognito = false;
-                showCopyLink = false;
-                break;
-            }
-        }
+            if (item == null) continue;
 
-        boolean hasPartnerBoomarkSelected = false;
-        // Partner bookmarks can't move, so if the selection includes a partner bookmark,
-        // disable the move button.
-        for (BookmarkId bookmark : selectedBookmarks) {
-            if (bookmark.getType() == BookmarkType.PARTNER) {
-                hasPartnerBoomarkSelected = true;
-                showMove = false;
-                break;
-            }
-        }
-        if (hasPartnerBoomarkSelected) {
-            showMove = false;
-            showEdit = false;
-        }
-
-        // Compute whether all selected bookmarks are reading list items and add up the number
-        // of read items.
-        int numReadingListItems = 0;
-        int numRead = 0;
-        for (int i = 0; i < selectedBookmarks.size(); i++) {
-            BookmarkId bookmark = selectedBookmarks.get(i);
-            BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmark);
-            assumeNonNull(bookmarkItem);
+            if (item.isFolder()) hasFolder = true;
+            if (bookmark.getType() == BookmarkType.PARTNER) hasPartnerBookmark = true;
             if (bookmark.getType() == BookmarkType.READING_LIST) {
-                numReadingListItems++;
-                if (bookmarkItem.isRead()) numRead++;
+                if (item.isRead()) numRead++;
+            } else {
+                hasOnlyReadingListItems = false;
             }
         }
+
+        // Partner bookmarks can't move or be edited, so if the selection includes a partner
+        // bookmark, disable the move and edit buttons. Only one bookmark can be edited at a time,
+        // but any non-zero amount can be moved at a time.
+        boolean showEdit = !hasPartnerBookmark && numSelected == 1;
+        boolean showMove = !hasPartnerBookmark && numSelected > 0;
+
+        // It does not make sense to open a folder in new tab or copy a folder link, so do not show
+        // these options if any folder is part of the selection. Only one link can be copied at a
+        // time, but any amount can be opened; to open in incognito it must be enabled.
+        boolean showCopyLink = !hasFolder && numSelected == 1;
+        boolean showOpenInNewTab = !hasFolder && numSelected > 0;
+        boolean showOpenInIncognito =
+                !hasFolder && numSelected > 0 && mIncognitoEnabledSupplier.getAsBoolean();
 
         // Only show the "mark as" options when all selections are reading list items and
-        // have the same read state.
-        boolean onlyReadingListSelected =
-                selectedBookmarks.size() > 0 && numReadingListItems == selectedBookmarks.size();
-        showMarkRead = onlyReadingListSelected && numRead == 0;
-        showMarkUnread = onlyReadingListSelected && numRead == selectedBookmarks.size();
+        // have the same read state; 'Read' when all items are unread, and vice versa.
+        boolean showMarkRead = hasOnlyReadingListItems && hasSelection && numRead == 0;
+        boolean showMarkUnread = hasOnlyReadingListItems && hasSelection && numRead == numSelected;
 
         mModel.set(BookmarkToolbarProperties.SELECTION_MODE_SHOW_EDIT, showEdit);
         mModel.set(BookmarkToolbarProperties.SELECTION_MODE_SHOW_OPEN_IN_NEW_TAB, showOpenInNewTab);
