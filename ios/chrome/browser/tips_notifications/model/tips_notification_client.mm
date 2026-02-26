@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
@@ -342,7 +343,8 @@ void TipsNotificationClient::MaybeRequestNotification(
                             std::move(completion));
         tracker->Dismissed(feature_engagement::
                                kIPHiOSOneTimeDefaultBrowserNotificationFeature);
-        tracker->NotifyEvent("default_browser_promos_group_trigger");
+        tracker->NotifyEvent(
+            feature_engagement::events::kDefaultBrowserPromosGroupTrigger);
       }
     }
     one_time_type_ = std::nullopt;

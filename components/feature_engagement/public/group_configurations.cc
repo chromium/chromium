@@ -33,7 +33,7 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     config.valid = true;
     config.session_rate = Comparator(EQUAL, 0);
     // Default browser promos should be at least 14 days apart.
-    config.trigger = EventConfig("default_browser_promos_group_trigger",
+    config.trigger = EventConfig(events::kDefaultBrowserPromosGroupTrigger,
                                  Comparator(LESS_THAN, 1), 14, 365);
     // Default Browser promos shouldn't be shown if the Post Restore Default
     // Browser Promo has been shown in the past 7 days.
@@ -47,8 +47,8 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
         events::kChromeOpened, Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
 
     // Default Browser promos should be shown after 3 or more days since FRE.
-    config.event_configs.insert(
-        EventConfig("default_browser_fre_shown", Comparator(EQUAL, 0), 3, 365));
+    config.event_configs.insert(EventConfig(events::kIOSDefaultBrowserFREShown,
+                                            Comparator(EQUAL, 0), 3, 365));
     return config;
   }
 
@@ -79,6 +79,16 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     config.event_configs.insert(
         EventConfig("tailored_non_modal_default_browser_promos_group_trigger",
                     Comparator(LESS_THAN, 4), 180, 365));
+
+    // Non-modal Default Browser promos wait at least 1 day after FRE.
+    config.event_configs.insert(EventConfig(events::kIOSDefaultBrowserFREShown,
+                                            Comparator(EQUAL, 0), 1, 365));
+
+    // Non-modal Default Browser promos should wait at least 1 day after a
+    // fullscreen DB promo.
+    config.event_configs.insert(
+        EventConfig(events::kDefaultBrowserPromosGroupTrigger,
+                    Comparator(EQUAL, 0), 1, 365));
 
     return config;
   }

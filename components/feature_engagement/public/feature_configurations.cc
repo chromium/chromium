@@ -2446,10 +2446,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // Cooldowns from other default browser promos.
     config.event_configs.insert(EventConfig("default_browser_promo_shown",
                                             Comparator(EQUAL, 0), 14, 360));
-    config.event_configs.insert(EventConfig("default_browser_fre_shown",
+    config.event_configs.insert(EventConfig(events::kIOSDefaultBrowserFREShown,
                                             Comparator(EQUAL, 0), 21, 360));
-    config.event_configs.insert(EventConfig(
-        "default_browser_promos_group_trigger", Comparator(EQUAL, 0), 14, 360));
+    config.event_configs.insert(
+        EventConfig(events::kDefaultBrowserPromosGroupTrigger,
+                    Comparator(EQUAL, 0), 14, 360));
     config.event_configs.insert(
         EventConfig(feature_engagement::events::kChromeOpened,
                     Comparator(GREATER_THAN_OR_EQUAL, 7), 360, 360));

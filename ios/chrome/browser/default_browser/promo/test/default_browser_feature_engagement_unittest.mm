@@ -335,7 +335,8 @@ TEST_F(DefaultBrowserFeatureEngagementTest, DefaultBrowserGroupTest) {
   SatisfyChromeOpenCondition(tracker.get());
 
   // Mark one of the group promos as displayed.
-  tracker->NotifyEvent("default_browser_promos_group_trigger");
+  tracker->NotifyEvent(
+      feature_engagement::events::kDefaultBrowserPromosGroupTrigger);
 
   // The promo cannot be triggered because after one default browser promo we
   // need to wait 14 days.
@@ -461,7 +462,7 @@ TEST_F(DefaultBrowserFeatureEngagementTest,
   SatisfyChromeOpenCondition(tracker.get());
 
   // If user seen the FRE the blue dot promo shouldn't trigger.
-  tracker->NotifyEvent("default_browser_fre_shown");
+  tracker->NotifyEvent(feature_engagement::events::kIOSDefaultBrowserFREShown);
   EXPECT_FALSE(tracker->WouldTriggerHelpUI(
       feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature));
 
@@ -491,7 +492,8 @@ TEST_F(DefaultBrowserFeatureEngagementTest,
 
   // If user seen any of the fullscreen promos then the blue dot promo shouldn't
   // trigger.
-  tracker->NotifyEvent("default_browser_promos_group_trigger");
+  tracker->NotifyEvent(
+      feature_engagement::events::kDefaultBrowserPromosGroupTrigger);
   EXPECT_FALSE(tracker->WouldTriggerHelpUI(
       feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature));
 
@@ -504,4 +506,38 @@ TEST_F(DefaultBrowserFeatureEngagementTest,
   test_clock_.Advance(base::Days(10));
   EXPECT_TRUE(tracker->WouldTriggerHelpUI(
       feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature));
+}
+
+// Test that the Non-Modal default brower promos do not trigger if the FRE was
+// recent.
+TEST_F(DefaultBrowserFeatureEngagementTest, NonModalPromosDontShowAfterFRE) {
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+  tracker->NotifyEvent(feature_engagement::events::kIOSDefaultBrowserFREShown);
+
+  // Promo shouldn't trigger because FRE was shown recently.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoNonModalShareDefaultBrowserFeature));
+
+  // After 1 day, it should trigger as that is the definition of recent here.
+  test_clock_.Advance(base::Days(1));
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoNonModalShareDefaultBrowserFeature));
+}
+
+// Test that the Non-Modal default brower promos do not trigger if a fullscreen
+// default browser promo showed recently.
+TEST_F(DefaultBrowserFeatureEngagementTest,
+       NonModalPromosDontShowAfterFullscreenPromo) {
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+  tracker->NotifyEvent(
+      feature_engagement::events::kDefaultBrowserPromosGroupTrigger);
+
+  // Promo shouldn't trigger because a fullscreen promo was shown recently.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoNonModalShareDefaultBrowserFeature));
+
+  // After 1 day, it should trigger as that is the definition of recent here.
+  test_clock_.Advance(base::Days(1));
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSPromoNonModalShareDefaultBrowserFeature));
 }

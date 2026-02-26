@@ -12,6 +12,7 @@
 #import "base/test/scoped_mock_clock_override.h"
 #import "base/test/simple_test_clock.h"
 #import "base/threading/thread_restrictions.h"
+#import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -823,7 +824,7 @@ TEST_F(TipsNotificationClientTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kIOSOneTimeDefaultBrowserNotification);
   SetFalseChromeLikelyDefaultBrowser();
-  tracker_->NotifyEvent("default_browser_fre_shown");
+  tracker_->NotifyEvent(feature_engagement::events::kIOSDefaultBrowserFREShown);
   RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kCancel);
 
   StubGetPendingRequests(nil);
@@ -842,7 +843,7 @@ TEST_F(TipsNotificationClientTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kIOSOneTimeDefaultBrowserNotification);
   SetFalseChromeLikelyDefaultBrowser();
-  tracker_->NotifyEvent("default_browser_fre_shown");
+  tracker_->NotifyEvent(feature_engagement::events::kIOSDefaultBrowserFREShown);
   test_clock_.Advance(base::Days(8));
   RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kCancel);
 

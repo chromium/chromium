@@ -279,6 +279,9 @@ extern const char kMadeForIOSPromoTrigger[];
 // The stay safe default browser promo was triggered.
 extern const char kStaySafePromoTrigger[];
 
+// The default browser promos group was triggered.
+extern const char kDefaultBrowserPromosGroupTrigger[];
+
 // The tailored default browser promo group was triggered.
 extern const char kTailoredDefaultBrowserPromosGroupTrigger[];
 

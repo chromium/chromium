@@ -148,6 +148,8 @@ const char kGenericDefaultBrowserPromoTrigger[] =
 const char kAllTabsPromoTrigger[] = "all_tabs_promo_trigger";
 const char kMadeForIOSPromoTrigger[] = "made_for_ios_promo_trigger";
 const char kStaySafePromoTrigger[] = "stay_safe_promo_trigger";
+const char kDefaultBrowserPromosGroupTrigger[] =
+    "default_browser_promos_group_trigger";
 const char kTailoredDefaultBrowserPromosGroupTrigger[] =
     "tailored_default_browser_promos_group_trigger";
 const char kIOSContextualPanelSampleModelEntrypointUsed[] =
