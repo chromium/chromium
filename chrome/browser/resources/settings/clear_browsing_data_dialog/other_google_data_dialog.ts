@@ -157,8 +157,7 @@ export class SettingsOtherGoogleDataDialogElement extends
 
   private shouldShowGeminiAppsActivityLink_() {
     return isSignedIn(this.syncStatus_) &&
-        loadTimeData.getBoolean('showGlicSettings') &&
-        loadTimeData.getBoolean('enableBrowsingHistoryActorIntegrationM1');
+        loadTimeData.getBoolean('showGlicSettings');
   }
 }
 

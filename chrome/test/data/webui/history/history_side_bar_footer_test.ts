@@ -108,7 +108,6 @@ suite('GoogleAccountFooter', function() {
     loadTimeData.overrideValues({
       isManaged: false,
       isGlicEnabled: true,
-      enableBrowsingHistoryActorIntegrationM1: true,
     });
     await createApp();
 
@@ -132,7 +131,6 @@ suite('GoogleAccountFooter', function() {
     loadTimeData.overrideValues({
       isManaged: false,
       isGlicEnabled: true,
-      enableBrowsingHistoryActorIntegrationM1: true,
     });
     await createApp();
     await callOnHasOtherFormsChanged(true);
@@ -168,18 +166,6 @@ suite('GoogleAccountFooter', function() {
     loadTimeData.overrideValues({
       isManaged: false,
       isGlicEnabled: false,
-      enableBrowsingHistoryActorIntegrationM1: true,
-    });
-    await createApp();
-
-    assertFalse(isGoogleAccountFooterVisible());
-  });
-
-  test('Gemini Apps Activity hidden when feature flag disabled', async () => {
-    loadTimeData.overrideValues({
-      isManaged: false,
-      isGlicEnabled: true,
-      enableBrowsingHistoryActorIntegrationM1: false,
     });
     await createApp();
 

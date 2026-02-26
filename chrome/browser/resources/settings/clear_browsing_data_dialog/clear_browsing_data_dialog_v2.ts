@@ -378,9 +378,7 @@ export class SettingsClearBrowsingDataDialogV2Element extends
   }
 
   private computeOtherGoogleDataRowSubLabel_() {
-    if (loadTimeData.getBoolean('showGlicSettings') &&
-        loadTimeData.getBoolean('enableBrowsingHistoryActorIntegrationM1') &&
-        this.isSignedIn_()) {
+    if (loadTimeData.getBoolean('showGlicSettings') && this.isSignedIn_()) {
       return loadTimeData.getString('manageSearchGeminiPasswordsSubLabel');
     }
 

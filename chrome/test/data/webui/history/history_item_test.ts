@@ -195,21 +195,5 @@ suite('<history-item> integration test', function() {
         items[5]!.shadowRoot.querySelector<HTMLElement>('#bookmark-star')));
   });
 
-  // TODO(b/441040053): Clean up once kBrowsingHistoryActorIntegrationM1 is
-  // launched.
-  test('actor-initiated visit annotation disabled', async function() {
-    loadTimeData.overrideValues(
-        {enableBrowsingHistoryActorIntegrationM1: false});
 
-    const newResults = [...TEST_HISTORY_RESULTS];
-    // Actor initiated history visit.
-    newResults[0]!.isActorVisit = true;
-    element.addNewResults(newResults, false, true);
-    await microtasksFinished();
-
-    const items = element.shadowRoot.querySelectorAll('history-item');
-    assertEquals(TEST_HISTORY_RESULTS.length, items.length);
-    assertFalse(isVisible(
-        items[0]!.shadowRoot.querySelector<HTMLElement>('#actor-icon')));
-  });
 });

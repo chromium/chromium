@@ -229,8 +229,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
   }
 
   protected shouldShowActorTooltip_() {
-    return loadTimeData.getBoolean('enableBrowsingHistoryActorIntegrationM1') &&
-        this.item?.isActorVisit;
+    return this.item?.isActorVisit;
   }
 
   /**

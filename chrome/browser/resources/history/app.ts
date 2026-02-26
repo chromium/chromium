@@ -183,8 +183,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   accessor footerInfo: FooterInfo = {
     managed: loadTimeData.getBoolean('isManaged'),
     otherFormsOfHistory: false,
-    geminiAppsActivity: loadTimeData.getBoolean('isGlicEnabled') &&
-        loadTimeData.getBoolean('enableBrowsingHistoryActorIntegrationM1'),
+    geminiAppsActivity: loadTimeData.getBoolean('isGlicEnabled'),
   };
   protected accessor enableHistoryEmbeddings_: boolean =
       loadTimeData.getBoolean('enableHistoryEmbeddings');

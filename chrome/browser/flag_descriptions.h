@@ -271,11 +271,6 @@ inline constexpr char kBookmarksTreeViewName[] =
 inline constexpr char kBookmarksTreeViewDescription[] =
     "Show the bookmarks side panel in a tree view while in compact mode.";
 
-inline constexpr char kBrowsingHistoryActorIntegrationM1Name[] =
-    "Browsing History Actor Integration M1";
-inline constexpr char kBrowsingHistoryActorIntegrationM1Description[] =
-    "Enables the browsing history glic actor integration M1";
-
 inline constexpr char kBrowsingHistoryActorIntegrationM2Name[] =
     "Browsing History Actor Integration M2";
 inline constexpr char kBrowsingHistoryActorIntegrationM2Description[] =

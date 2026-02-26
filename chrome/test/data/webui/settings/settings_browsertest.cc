@@ -1265,8 +1265,7 @@ class SettingsClearBrowsingDataV2Test : public SettingsBrowserTest {
  protected:
   SettingsClearBrowsingDataV2Test() {
     scoped_feature_list_.InitWithFeatures(
-        {browsing_data::features::kDbdRevampDesktop,
-         history::kBrowsingHistoryActorIntegrationM1},
+        {browsing_data::features::kDbdRevampDesktop},
         /*disabled_features=*/{});
   }
 

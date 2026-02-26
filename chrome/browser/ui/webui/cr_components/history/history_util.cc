@@ -86,9 +86,6 @@ content::WebUIDataSource* HistoryUtil::PopulateCommonSourceForHistory(
   source->AddBoolean("isSignInAllowed",
                      prefs->GetBoolean(prefs::kSigninAllowed));
 
-  source->AddBoolean("enableBrowsingHistoryActorIntegrationM1",
-                     history::IsBrowsingHistoryActorIntegrationM1Enabled());
-
   source->AddInteger(
       "lastSelectedTab",
       prefs->GetInteger(history_clusters::prefs::kLastSelectedTab));

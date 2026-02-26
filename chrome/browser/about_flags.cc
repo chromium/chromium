@@ -12013,12 +12013,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {"browsing-history-actor-integration-M1",
-     flag_descriptions::kBrowsingHistoryActorIntegrationM1Name,
-     flag_descriptions::kBrowsingHistoryActorIntegrationM1Description,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(history::kBrowsingHistoryActorIntegrationM1)},
-
     {"browsing-history-actor-integration-M2",
      flag_descriptions::kBrowsingHistoryActorIntegrationM2Name,
      flag_descriptions::kBrowsingHistoryActorIntegrationM2Description,

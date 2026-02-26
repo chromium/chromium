@@ -761,21 +761,7 @@ suite('DeleteBrowsingDataDialog', function() {
         loadTimeData.getString('manageSearchGeminiPasswordsSubLabel'),
         dialog.$.manageOtherGoogleDataRow.subLabel);
 
-    // TODO(crbug.com/429984946): Remove once crbug.com/429984946 launched.
-    // Case 11: User is signed-in, has Google as DSE. Integration flag is off.
-    loadTimeData.overrideValues({
-      showGlicSettings: true,
-      enableBrowsingHistoryActorIntegrationM1: false,
-    });
-    await createDialog();
-    setSignedInAndDseState(SignedInState.SIGNED_IN, /*isGoogleDse=*/ true);
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('manageOtherGoogleDataLabel'),
-        dialog.$.manageOtherGoogleDataRow.label);
-    assertEquals(
-        loadTimeData.getString('manageOtherDataSubLabel'),
-        dialog.$.manageOtherGoogleDataRow.subLabel);
+
   });
 
   test('NavigationToAndFromOtherGoogleData', async function() {
