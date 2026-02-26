@@ -3115,9 +3115,16 @@ Chromium is unable to recover your settings.
         <message name="IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_FOOTER_TITLE" desc="The title for the footer of the iOS desktop password promo bubble suggesting to users that they can use their passwords on their iOS devices.">
           Use your passwords with Chromium on your phone
         </message>
-        <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR" desc="The text inside the iOS promo bubble button allowing the user to accept by getting the app via QR code.">
-          Get the Chromium app
-        </message>
+        <if expr="use_titlecase">
+          <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR" desc="The text inside the iOS promo bubble button allowing the user to accept by getting the app via QR code.">
+            Get the Chromium App
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_IOS_DESKTOP_PROMO_BUBBLE_BUTTON_ACCEPT_QR" desc="The text inside the iOS promo bubble button allowing the user to accept by getting the app via QR code.">
+            Get the Chromium app
+          </message>
+        </if>
         <message name="IDS_IOS_DESKTOP_PROMO_QR_CODE_ALT_TEXT" desc="The accessibility label for the QR code image in the iOS desktop promo bubbles.">
           QR code to download Chromium browser on mobile devices
         </message>
