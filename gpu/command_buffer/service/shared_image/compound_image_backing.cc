@@ -926,7 +926,7 @@ CompoundImageBacking::CompoundImageBacking(
 
   // Whenever CompoundImageBacking is created with a shm backing, mark it as
   // fully cleared.
-  SetClearedRect(gfx::Rect(size));
+  SetClearedRectInternal(gfx::Rect(size));
 
   // Create placeholder for GPU-backed element (streams = all except kMemory).
   ElementHolder gpu_element;
@@ -982,7 +982,7 @@ CompoundImageBacking::CompoundImageBacking(
 
   // |backing| may have a cleared rect set (e.g. from initial pixel data).
   // Propagate this to the CompoundImageBacking to keep them in sync.
-  ClearTrackingSharedImageBacking::SetClearedRect(backing->ClearedRect());
+  SetClearedRectInternal(backing->ClearedRect());
 
   // The backing is already created, so this is not a lazy initialization.
   element.backing = std::move(backing);
@@ -1089,7 +1089,7 @@ void CompoundImageBacking::NotifyEndAccess(SharedImageBacking* backing,
   if (mode == RepresentationAccessMode::kWrite) {
     auto cleared_rect = backing->ClearedRect();
     if (cleared_rect != ClearedRect()) {
-      ClearTrackingSharedImageBacking::SetClearedRect(cleared_rect);
+      SetClearedRectInternal(cleared_rect);
     }
   }
 }
@@ -1190,11 +1190,11 @@ void CompoundImageBacking::OnCopyToGpuMemoryBufferComplete(bool success) {
 gfx::Rect CompoundImageBacking::ClearedRect() const {
   // If we have a shm_backing, we always copy on access and mark entire backing
   // as cleared.
-  return ClearTrackingSharedImageBacking::ClearedRect();
+  return ClearedRectInternal();
 }
 
 void CompoundImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
-  ClearTrackingSharedImageBacking::SetClearedRect(cleared_rect);
+  SetClearedRectInternal(cleared_rect);
 
   // Propagate the cleared rect to all underlying backings. This is important
   // because SetClearedRect can be called on a CompoundImageBacking without a
