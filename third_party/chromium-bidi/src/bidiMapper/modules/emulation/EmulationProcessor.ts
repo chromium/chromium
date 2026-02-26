@@ -208,6 +208,43 @@ export class EmulationProcessor {
     return {};
   }
 
+  async setScrollbarTypeOverride(
+    params: Emulation.SetScrollbarTypeOverrideParameters,
+  ): Promise<EmptyResult> {
+    const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(
+      params.contexts,
+      params.userContexts,
+    );
+
+    for (const browsingContextId of params.contexts ?? []) {
+      this.#contextConfigStorage.updateBrowsingContextConfig(
+        browsingContextId,
+        {
+          scrollbarType: params.scrollbarType,
+        },
+      );
+    }
+    for (const userContextId of params.userContexts ?? []) {
+      this.#contextConfigStorage.updateUserContextConfig(userContextId, {
+        scrollbarType: params.scrollbarType,
+      });
+    }
+
+    await Promise.all(
+      browsingContexts.map(async (context) => {
+        // Actual value can be different from the one in params, e.g. in case of already
+        // existing more granular setting.
+        const config = this.#contextConfigStorage.getActiveConfig(
+          context.id,
+          context.userContext,
+        );
+
+        await context.setScrollbarTypeOverride(config.scrollbarType ?? null);
+      }),
+    );
+    return {};
+  }
+
   async setScreenOrientationOverride(
     params: Emulation.SetScreenOrientationOverrideParameters,
   ): Promise<EmptyResult> {

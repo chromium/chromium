@@ -597,12 +597,14 @@ export class CdpTarget {
     devicePixelRatio: number | null,
     screenOrientation: Emulation.ScreenOrientation | null,
     screenArea: Emulation.ScreenArea | null,
+    scrollbarType: 'classic' | 'overlay' | null = null,
   ) {
     if (
       viewport === null &&
       devicePixelRatio === null &&
       screenOrientation === null &&
-      screenArea === null
+      screenArea === null &&
+      scrollbarType === null
     ) {
       await this.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
       return;
@@ -618,6 +620,7 @@ export class CdpTarget {
         mobile: false,
         screenWidth: screenArea?.width,
         screenHeight: screenArea?.height,
+        scrollbarType: scrollbarType === 'overlay' ? 'overlay' : 'default',
       };
 
     await this.cdpClient.sendCommand(
@@ -658,6 +661,7 @@ export class CdpTarget {
           config.devicePixelRatio ?? null,
           config.screenOrientation ?? null,
           config.screenArea ?? null,
+          config.scrollbarType ?? null,
         ).catch(() => {
           // Ignore CDP errors, as the command is not supported by iframe targets. Generic
           // catch, as the error can vary between CdpClient implementations: Tab vs

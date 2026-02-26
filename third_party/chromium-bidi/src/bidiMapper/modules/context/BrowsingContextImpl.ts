@@ -1151,6 +1151,7 @@ export class BrowsingContextImpl {
       devicePixelRatio,
       screenOrientation,
       config.screenArea ?? null,
+      config.scrollbarType ?? null,
     );
   }
 
@@ -2002,6 +2003,22 @@ export class BrowsingContextImpl {
       this.#getAllRelatedCdpTargets().map(
         async (cdpTarget) => await cdpTarget.setExtraHeaders(cdpExtraHeaders),
       ),
+    );
+  }
+
+  async setScrollbarTypeOverride(
+    scrollbarType: 'classic' | 'overlay' | null,
+  ): Promise<void> {
+    const config = this.#configStorage.getActiveConfig(
+      this.id,
+      this.userContext,
+    );
+    await this.cdpTarget.setDeviceMetricsOverride(
+      config.viewport ?? null,
+      config.devicePixelRatio ?? null,
+      config.screenOrientation ?? null,
+      config.screenArea ?? null,
+      scrollbarType,
     );
   }
 }
