@@ -210,6 +210,8 @@ void BnplManager::OnSuggestionsShown(
     payments_autofill_client()
         .GetPaymentsDataManager()
         .SetAutofillHasSeenBnpl();
+    browser_autofill_manager_->GetCreditCardFormEventLogger()
+        .OnBnplSuggestionShown();
   }
 
   if (!update_suggestions_barrier_callback_.has_value()) {
