@@ -182,6 +182,11 @@ class ContextualSearchboxHandler
   void SetActiveModelMode(omnibox::ModelMode model) override;
   void ActivateMetricsFunnel(const std::string& funnel_name) override;
 
+  void OnInputStateChangedForTesting(
+      const contextual_search::InputState& state) {
+    OnInputStateChanged(state);
+  }
+
  protected:
   void ComputeAndOpenQueryUrl(
       const std::string& query_text,
