@@ -35,6 +35,9 @@ extern const char kV[];
 extern const char kVModule[];
 extern const char kWaitForDebugger[];
 
+// See flag_descriptions.cc for more details.
+inline constexpr char kEnableBenchmarking[] = "enable-benchmarking";
+
 #if BUILDFLAG(IS_WIN)
 extern const char kDisableHighResTimer[];
 extern const char kDisableUsbKeyboardDetect[];

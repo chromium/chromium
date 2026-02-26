@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/allocator/dispatcher/reentry_guard.h"
+#include "base/base_switches.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -48,7 +49,6 @@
 #include "components/metrics/call_stacks/call_stack_profile_builder.h"
 #include "components/sampling_profiler/process_type.h"
 #include "components/services/heap_profiling/public/cpp/merge_samples.h"
-#include "components/variations/variations_switches.h"
 #include "components/version_info/channel.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
@@ -151,7 +151,7 @@ std::pair<bool, std::optional<std::string>> DecideIfCollectionIsEnabled(
 
   // Never profile during benchmarking.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          variations::switches::kEnableBenchmarking)) {
+          ::switches::kEnableBenchmarking)) {
     return {false, std::nullopt};
   }
 

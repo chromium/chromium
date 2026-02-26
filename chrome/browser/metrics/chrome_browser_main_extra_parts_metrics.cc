@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/allocator/partition_alloc_support.h"
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
@@ -1192,8 +1193,7 @@ void ChromeBrowserMainExtraPartsMetrics::HandleEnableBenchmarkingCountdown(
   // The implicit assumption here is that chrome://flags are stored in
   // flags_ui::PrefServiceFlagsStorage and the multi-value switch has format
   // enable-benchmarking@<n>.
-  std::string prefix =
-      base::StrCat({variations::switches::kEnableBenchmarking, "@"});
+  std::string prefix = base::StrCat({::switches::kEnableBenchmarking, "@"});
   auto it = std::find_if(
       flags.begin(), flags.end(),
       [&prefix](std::string flag) { return base::StartsWith(flag, prefix); });

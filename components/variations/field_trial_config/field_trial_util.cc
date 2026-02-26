@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
@@ -19,11 +20,11 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/values.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/field_trial_config/fieldtrial_testing_config.h"
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_seed_processor.h"
-#include "components/variations/variations_switches.h"
 
 namespace variations {
 namespace {
@@ -161,7 +162,7 @@ void ChooseExperiment(
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
   std::string hardware_class = ClientFilterableState::GetHardwareClass();
   const bool is_benchmarking_enabled =
-      command_line.HasSwitch(switches::kEnableBenchmarking);
+      command_line.HasSwitch(::switches::kEnableBenchmarking);
   const FieldTrialTestingExperiment* chosen_experiment = nullptr;
   for (const FieldTrialTestingExperiment& experiment : study.experiments) {
     if (HasPlatform(experiment, platform)) {

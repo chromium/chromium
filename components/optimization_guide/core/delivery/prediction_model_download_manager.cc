@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/delivery/prediction_model_download_manager.h"
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
@@ -200,7 +201,7 @@ bool PredictionModelDownloadManager::ShouldFetchModels() const {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kDisableModelDownloadsForBenchmarking) ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          variations::switches::kEnableBenchmarking)) {
+          ::switches::kEnableBenchmarking)) {
     return false;
   }
   return (switches::ShouldSkipGoogleApiKeyConfigurationCheck() ||

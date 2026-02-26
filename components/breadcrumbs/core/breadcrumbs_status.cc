@@ -7,12 +7,12 @@
 #include <atomic>
 #include <optional>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/variations/variations_switches.h"
 #include "components/version_info/channel.h"
 
 namespace breadcrumbs {
@@ -103,7 +103,7 @@ bool IsEnabled(PrefService* prefs,
       if (!prefs || !prefs->FindPreference(kEnabledPref) ||
           !prefs->FindPreference(kEnabledTimePref) ||
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              variations::switches::kEnableBenchmarking)) {
+              switches::kEnableBenchmarking)) {
         breadcrumbs_enabled_mode = BreadcrumbsEnabledMode::kForceDisabled;
         return false;
       }

@@ -2966,8 +2966,8 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #endif
         switches::kAllowInsecureLocalhost,
         switches::kDisableJavaScriptHarmonyShipping,
-        variations::switches::kEnableBenchmarking,
         variations::switches::kEnableBenchmarkingApi,
+        switches::kEnableBenchmarking,
         switches::kEnableDistillabilityService,
         switches::kEnableNetBenchmarking,
         switches::kExtensionAiDataCollection,

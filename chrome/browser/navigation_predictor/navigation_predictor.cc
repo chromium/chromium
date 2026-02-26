@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/base_switches.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/hash/hash.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/variations/variations_switches.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/site_instance.h"
@@ -168,7 +168,7 @@ bool MaySendTraffic() {
   static const bool may_send_traffic = [] {
     // Use a fixed state for benchmarking.
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            variations::switches::kEnableBenchmarking)) {
+            ::switches::kEnableBenchmarking)) {
 #if BUILDFLAG(IS_ANDROID)
       return true;
 #else

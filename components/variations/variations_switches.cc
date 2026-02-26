@@ -20,10 +20,6 @@ const char kDisableVariationsSafeMode[] = "disable-variations-safe-mode";
 const char kDisableVariationsSeedFetchThrottling[] =
     "disable-variations-seed-fetch-throttling";
 
-// TODO(asvitkine): Consider removing or renaming this functionality.
-// See flag_descriptions.cc for more details.
-const char kEnableBenchmarking[] = "enable-benchmarking";
-
 // Enables the benchmarking JavaScript API.
 const char kEnableBenchmarkingApi[] = "enable-benchmarking-api";
 

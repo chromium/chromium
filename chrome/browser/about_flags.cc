@@ -458,9 +458,9 @@ const FeatureEntry::FeatureVariation kUnthrottleAsyncTouchMovesVariations[] = {
 const FeatureEntry::Choice kEnableBenchmarkingChoices[] = {
     {flag_descriptions::kEnableBenchmarkingChoiceDisabled, "", ""},
     {flag_descriptions::kEnableBenchmarkingChoiceDefaultFeatureStates,
-     variations::switches::kEnableBenchmarking, ""},
+     switches::kEnableBenchmarking, ""},
     {flag_descriptions::kEnableBenchmarkingChoiceMatchFieldTrialTestingConfig,
-     variations::switches::kEnableBenchmarking,
+     switches::kEnableBenchmarking,
      variations::switches::kEnableFieldTrialTestingConfig},
 };
 
@@ -4718,8 +4718,7 @@ const FeatureEntry kFeatureEntries[] = {
 // //tools/flags/generate_unexpire_flags.py.
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/unexpire_flags_gen.inc"
-    {variations::switches::kEnableBenchmarking,
-     flag_descriptions::kEnableBenchmarkingName,
+    {switches::kEnableBenchmarking, flag_descriptions::kEnableBenchmarkingName,
      flag_descriptions::kEnableBenchmarkingDescription, kOsAll,
      MULTI_VALUE_TYPE(kEnableBenchmarkingChoices)},
     {"ignore-gpu-blocklist", flag_descriptions::kIgnoreGpuBlocklistName,

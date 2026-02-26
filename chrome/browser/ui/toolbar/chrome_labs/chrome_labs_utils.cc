@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/base_switches.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
 #include "chrome/browser/about_flags.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/channel_info.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/variations/variations_switches.h"
 #include "components/webui/flags/feature_entry.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
 
@@ -144,7 +144,7 @@ bool IsChromeLabsEnabled() {
     return false;
   }
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          variations::switches::kEnableBenchmarking)) {
+          ::switches::kEnableBenchmarking)) {
     return true;
   }
   // Could be null in unit tests.

@@ -9,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
@@ -21,7 +22,6 @@
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_seed_processor.h"
-#include "components/variations/variations_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -765,7 +765,7 @@ TEST_F(
   // When both enable-benchmarking and 'disable_benchmarking' are set,
   // the trial should not be added.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableBenchmarking);
+      ::switches::kEnableBenchmarking);
   experiment_builder.disable_benchmarking = true;
 
   const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments[] = {
@@ -805,7 +805,7 @@ TEST_F(
   // If enable-benchmarking is set, and the experiment doesn't set
   // 'disable_benchmarking', the trial should be added.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableBenchmarking);
+      ::switches::kEnableBenchmarking);
   experiment_builder.disable_benchmarking = false;
 
   const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments[] = {

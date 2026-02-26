@@ -135,8 +135,7 @@ Study::CpuArchitecture GetCurrentCpuArchitecture() {
 bool ShouldUseFieldTrialTestingConfig(const base::CommandLine* command_line) {
   bool is_enable_switch_set =
       command_line->HasSwitch(switches::kEnableFieldTrialTestingConfig) ||
-      command_line->GetSwitchValueASCII(
-          variations::switches::kEnableBenchmarking) ==
+      command_line->GetSwitchValueASCII(::switches::kEnableBenchmarking) ==
           switches::kEnableFieldTrialTestingConfig;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return is_enable_switch_set;

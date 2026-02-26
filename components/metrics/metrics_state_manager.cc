@@ -188,7 +188,7 @@ bool ShouldEnableBenchmarking(bool force_benchmarking_mode) {
   // switches.
   return force_benchmarking_mode ||
          base::CommandLine::ForCurrentProcess()->HasSwitch(
-             variations::switches::kEnableBenchmarking);
+             ::switches::kEnableBenchmarking);
 }
 
 }  // namespace
