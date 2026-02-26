@@ -116,11 +116,7 @@ public class PopupCreator implements PopupIntentCreator {
                 popupIntentCreator.createPopupIntent(windowFeatures, tab.isIncognitoBranded());
 
         return getReparentingTask(tab)
-                .begin(
-                        ContextUtils.getApplicationContext(),
-                        intent,
-                        activityOptions.toBundle(),
-                        null);
+                .begin(tab.getContext(), intent, activityOptions.toBundle(), null);
     }
 
     /**

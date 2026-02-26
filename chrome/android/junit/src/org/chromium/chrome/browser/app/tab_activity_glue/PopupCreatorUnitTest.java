@@ -116,6 +116,7 @@ public class PopupCreatorUnitTest {
         doReturn(EXTERNAL_DISPLAY_LOCAL_BOUNDS).when(mExternalDisplay).getLocalBounds();
         doReturn(mContext).when(mExternalDisplay).getWindowContext();
 
+        doReturn(mActivity).when(mTab).getContext();
         doReturn(mWindow).when(mTab).getWindowAndroid();
         doReturn(mDisplay).when(mWindow).getDisplay();
         doReturn(mInsetObserver).when(mWindow).getInsetObserver();
@@ -651,5 +652,24 @@ public class PopupCreatorUnitTest {
                         () -> PopupCreator.tryStartActivity(mContext, intent, ao));
         Assert.assertEquals(e, thrown);
         verify(mContext).startActivity(intent, ao);
+    }
+
+    /**
+     * This ensures that the {@link android.app.Context#startActivity} call that starts a pop-up
+     * window is performed on an {@link android.app.Activity} object. See crbug.com/482253723 for
+     * more context.
+     */
+    @Test
+    public void testNewActivityHasCorrectSource() {
+        final WindowFeatures windowFeatures = new WindowFeatures(12, 34, 56, null);
+        PopupCreator.moveTabToNewPopup(mTab, windowFeatures);
+
+        ArgumentCaptor<Context> captor = ArgumentCaptor.forClass(Context.class);
+        verify(mReparentingTask).begin(captor.capture(), any(), any(), any());
+        final Context sentContext = captor.getValue();
+
+        Assert.assertTrue(
+                "The Context passed to ReparentingTask#begin should be an Activity",
+                sentContext instanceof Activity);
     }
 }
