@@ -3,7 +3,7 @@
 # typescript definitions.
 audio.webidl
 bluetooth.webidl
-bluetooth_private.idl
+bluetooth_private.webidl
 clipboard.webidl
 events.json
 extension_types.json

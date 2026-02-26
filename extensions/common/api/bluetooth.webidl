@@ -58,7 +58,7 @@ dictionary AdapterState {
 };
 
 // Information about the state of a known Bluetooth device. Note: this
-// dictionary is also used in bluetooth_private.idl
+// dictionary is also used in bluetooth_private.webidl
 dictionary Device {
   // The address of the device, in the format 'XX:XX:XX:XX:XX:XX'.
   required DOMString address;
