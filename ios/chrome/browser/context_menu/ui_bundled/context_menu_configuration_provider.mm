@@ -1123,9 +1123,10 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
   id<BWGCommands> handler =
       HandlerForProtocol(_browser->GetCommandDispatcher(), BWGCommands);
-  [handler
-      startGeminiFlowWithImageAttachment:image
-                              entryPoint:gemini::EntryPoint::ImageContextMenu];
+  GeminiStartupState* state = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::ImageContextMenu];
+  state.imageAttachment = image;
+  [handler startGeminiFlowWithStartupState:state];
 }
 
 @end

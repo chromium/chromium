@@ -249,8 +249,9 @@ TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentStartGeminiFlow) {
   // Ensure the WebState is visible so PageContextWrapper attempts a snapshot.
   web_state_->WasShown();
 
-  gemini_browser_agent_->StartGeminiFlow(base_view_controller, nil,
-                                         gemini::EntryPoint::Promo);
+  gemini_browser_agent_->StartGeminiFlow(
+      base_view_controller, [[GeminiStartupState alloc]
+                                initWithEntryPoint:gemini::EntryPoint::Promo]);
 
   // Wait for the delegate method to be called.
   ASSERT_TRUE(
@@ -273,7 +274,9 @@ TEST_F(GeminiBrowserAgentTest,
   ASSERT_TRUE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
 
   gemini_browser_agent_->PresentFloatyWithPendingContext(
-      base_view_controller, std::move(page_context), gemini::EntryPoint::Promo);
+      base_view_controller, std::move(page_context),
+      [[GeminiStartupState alloc]
+          initWithEntryPoint:gemini::EntryPoint::Promo]);
 
   // Assert the BWG tab helper was set as foregrounded.
   ASSERT_FALSE(bwg_tab_helper_->GetIsBwgSessionActiveInBackground());
@@ -390,8 +393,9 @@ TEST_F(GeminiBrowserAgentTest, TestPageContextGenerationTimeout) {
   OCMStub([mock_delegate canTakeSnapshotWithWebStateInfo:[OCMArg any]])
       .andReturn(YES);
 
-  gemini_browser_agent_->StartGeminiFlow(base_view_controller, nil,
-                                         gemini::EntryPoint::Promo);
+  gemini_browser_agent_->StartGeminiFlow(
+      base_view_controller, [[GeminiStartupState alloc]
+                                initWithEntryPoint:gemini::EntryPoint::Promo]);
 
   // At this point, the page is loading and we are waiting for context.
   // The timer should be running. Verify that JS has NOT been called yet.

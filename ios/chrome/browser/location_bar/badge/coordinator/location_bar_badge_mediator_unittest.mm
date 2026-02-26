@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
@@ -65,6 +66,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 NSString* const kTestAccessibilityLabel = @"testBadge";
@@ -370,8 +372,16 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiContextualChipTimestampUpdated) {
 TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipTapped) {
   id mock_bwg_command_handler = OCMProtocolMock(@protocol(BWGCommands));
   mediator_.BWGCommandHandler = mock_bwg_command_handler;
+
   OCMExpect([mock_bwg_command_handler
-      startGeminiFlowWithEntryPoint:gemini::EntryPoint::OmniboxChip]);
+      startGeminiFlowWithStartupState:[OCMArg checkWithBlock:^BOOL(
+                                                  GeminiStartupState* state) {
+        return state.entryPoint == gemini::EntryPoint::OmniboxChip &&
+               [state.prepopulatedPrompt
+                   isEqualToString:l10n_util::GetNSString(
+                                       IDS_IOS_ASK_GEMINI_CHIP_PREFILL_PROMPT)];
+      }]]);
+
   EXPECT_CALL(
       *tracker_,
       NotifyEvent(feature_engagement::events::kIOSGeminiContextualCueChipUsed));
@@ -380,10 +390,6 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipTapped) {
   config.badgeText = kTestAccessibilityLabel;
   [mediator_ badgeTapped:config];
   EXPECT_OCMOCK_VERIFY(mock_bwg_command_handler);
-
-  web::WebState* activeWebState = web_state_list_->GetActiveWebState();
-  BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(activeWebState);
-  ASSERT_TRUE(BWGTabHelper->GetContextualCueLabel().length != 0);
 }
 // Tests that the Gemini contextual cue chip is not shown if it was recently
 // displayed.

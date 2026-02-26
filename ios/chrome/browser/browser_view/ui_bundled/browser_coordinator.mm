@@ -3315,28 +3315,18 @@ const char kChromeAppStoreUrl[] =
 
 #pragma mark - BWGCommands
 
-- (void)startGeminiFlowWithEntryPoint:(gemini::EntryPoint)entryPoint {
-  [self startGeminiFlowWithImageAttachment:nil entryPoint:entryPoint];
-}
-
-- (void)startGeminiFlowWithImageAttachment:(UIImage*)image
-                                entryPoint:(gemini::EntryPoint)entryPoint {
-  if (IsGeminiRefactoredFREEnabled()) {
+- (void)startGeminiFlowWithStartupState:(GeminiStartupState*)startupState {
+  if (IsGeminiRefactoredFREEnabled() ||
+      startupState.entryPoint == gemini::EntryPoint::ImageContextMenu) {
     GeminiBrowserAgent::FromBrowser(self.browser)
-        ->StartGeminiFlow(self.viewController, image, entryPoint);
+        ->StartGeminiFlow(self.viewController, startupState);
     return;
   }
 
-  if (entryPoint == gemini::EntryPoint::ImageContextMenu) {
-    GeminiBrowserAgent::FromBrowser(self.browser)
-        ->StartGeminiFlow(self.viewController, image, entryPoint);
-    return;
-  }
-
-  _BWGCoordinator =
-      [[BWGCoordinator alloc] initWithBaseViewController:self.viewController
-                                                 browser:self.browser
-                                          fromEntryPoint:entryPoint];
+  _BWGCoordinator = [[BWGCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                  fromEntryPoint:startupState.entryPoint];
   [_BWGCoordinator start];
 }
 
@@ -3378,7 +3368,9 @@ const char kChromeAppStoreUrl[] =
 - (void)showBWGPromoIfPageIsEligible {
   BwgService* BWGService = BwgServiceFactory::GetForProfile(self.profile);
   if (BWGService->IsBwgAvailableForWebState(self.activeWebState)) {
-    [self startGeminiFlowWithEntryPoint:gemini::EntryPoint::Promo];
+    [self startGeminiFlowWithStartupState:
+              [[GeminiStartupState alloc]
+                  initWithEntryPoint:gemini::EntryPoint::Promo]];
   }
 }
 

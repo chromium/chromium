@@ -202,7 +202,8 @@
   partialPageContext->set_title(base::UTF16ToUTF8(activeWebState->GetTitle()));
 
   _geminiBrowserAgent->PresentFloatyWithPendingContext(
-      self.baseViewController, std::move(partialPageContext), _entryPoint);
+      self.baseViewController, std::move(partialPageContext),
+      [[GeminiStartupState alloc] initWithEntryPoint:_entryPoint]);
 
   base::UmaHistogramLongTimes100(
       _didPresentBWGFRE ? kStartupTimeWithFREHistogram

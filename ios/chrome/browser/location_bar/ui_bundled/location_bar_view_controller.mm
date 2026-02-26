@@ -1117,7 +1117,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   }
   if (IsDirectBWGEntryPoint()) {
     [self.geminiHandler
-        startGeminiFlowWithEntryPoint:gemini::EntryPoint::OmniboxChip];
+        startGeminiFlowWithStartupState:
+            [[GeminiStartupState alloc]
+                initWithEntryPoint:gemini::EntryPoint::OmniboxChip]];
   } else {
     RecordAIHubIconTapped();
     [self.pageActionMenuHandler showPageActionMenu];

@@ -72,8 +72,7 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Checks if the FRE needs to be shown and start the Gemini flow
   // accordingly.
   void StartGeminiFlow(UIViewController* base_view_controller,
-                       UIImage* image_attachment,
-                       gemini::EntryPoint entry_point);
+                       GeminiStartupState* startup_state);
 
   // Presents the floaty on a given view controller in a pending state
   // with a partial PageContext.
@@ -82,7 +81,7 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void PresentFloatyWithPendingContext(
       UIViewController* base_view_controller,
       std::unique_ptr<optimization_guide::proto::PageContext> page_context,
-      gemini::EntryPoint entry_point);
+      GeminiStartupState* startup_state);
 
   // Updates the page context for the floaty.
   // TODO(crbug.com/465535924): Deprecated, new callers should use
@@ -129,15 +128,13 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Starts the Gemini session (prepares context and shows overlay).
   void PresentFloaty(UIViewController* base_view_controller,
-                     UIImage* image_attachment,
-                     gemini::EntryPoint entry_point,
+                     GeminiStartupState* startup_state,
                      bool first_run_shown);
 
   // Presents the floaty on a given view controller in a pending state
   // with partial PageContext and optional image attachment.
   void PresentFloatyWithPendingContext(UIViewController* base_view_controller,
-                                       gemini::EntryPoint entry_point,
-                                       UIImage* image_attachment);
+                                       GeminiStartupState* startup_state);
 
   // Presents the floaty on a given view controller with page context,
   // given specific computation state and optional image attachment (can be
@@ -147,8 +144,7 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
       std::unique_ptr<optimization_guide::proto::PageContext>
           page_context_proto,
       ios::provider::GeminiPageContextComputationState computation_state,
-      gemini::EntryPoint entry_point,
-      UIImage* image_attachment = nil);
+      GeminiStartupState* startup_state);
 
   // Fetches the favicon for the page or a default favicon if not available.
   UIImage* FetchPageFavicon();
@@ -156,16 +152,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Adjusts the configuration around the Gemini page context based on user
   // prefs.
   void ApplyUserPrefsToPageContext(GeminiPageContext* gemini_page_context);
-
-  // Callback for when the page context is ready.
-  void OnPageContextReady(
-      UIViewController* base_view_controller,
-      UIImage* image_attachment,
-      base::TimeTicks start_time,
-      bool first_run_shown,
-      gemini::EntryPoint entry_point,
-      base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
-                     PageContextWrapperError> response);
 
   // Callback for when the page load takes too long, triggers best effort page
   // context generation.

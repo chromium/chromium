@@ -62,6 +62,7 @@ source_set("unit_tests") {
     "//components/feature_engagement/test:test_support",
     "//components/prefs",
     "//components/signin/public/identity_manager:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/contextual_panel/entrypoint/coordinator",
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/contextual_panel/sample/model",

@@ -247,8 +247,8 @@ void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
 }
 
 void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
-                                         UIImage* image_attachment,
-                                         gemini::EntryPoint entry_point) {
+                                         GeminiStartupState* startup_state) {
+  gemini::EntryPoint entry_point = startup_state.entryPoint;
   bool will_show_first_run = !HasCompletedFirstRun();
   RecordGeminiEntryPointClick(entry_point, will_show_first_run);
 
@@ -258,7 +258,7 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
                       BWGPromoConsentVariations::kSkipConsent;
 
   if (!will_show_first_run || skip_consent) {
-    PresentFloaty(base_view_controller, image_attachment, entry_point,
+    PresentFloaty(base_view_controller, startup_state,
                   /*was_first_run_shown=*/false);
     return;
   }
@@ -270,8 +270,7 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
       startGeminiFREWithCompletion:^(BOOL success) {
         if (success) {
           if (weak_ptr) {
-            weak_ptr->PresentFloaty(base_view_controller, image_attachment,
-                                    entry_point,
+            weak_ptr->PresentFloaty(base_view_controller, startup_state,
                                     /*first_run_shown=*/true);
           }
         }
@@ -379,8 +378,7 @@ void GeminiBrowserAgent::UpdateForTraitCollection(
 }
 
 void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
-                                       UIImage* image_attachment,
-                                       gemini::EntryPoint entry_point,
+                                       GeminiStartupState* startup_state,
                                        bool first_run_shown) {
   base::TimeTicks start_time = base::TimeTicks::Now();
 
@@ -401,8 +399,7 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
   base::WeakPtr<GeminiBrowserAgent> weak_ptr = weak_factory_.GetWeakPtr();
 
   // Present the overlay immediately without page context.
-  PresentFloatyWithPendingContext(base_view_controller, entry_point,
-                                  image_attachment);
+  PresentFloatyWithPendingContext(base_view_controller, startup_state);
 
   // Configure the callback to be executed once the page context is ready.
   base::RepeatingCallback<void(PageContextWrapperCallbackResponse)>
@@ -436,16 +433,16 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
 void GeminiBrowserAgent::PresentFloatyWithPendingContext(
     UIViewController* base_view_controller,
     std::unique_ptr<optimization_guide::proto::PageContext> page_context,
-    gemini::EntryPoint entry_point) {
+    GeminiStartupState* startup_state) {
   PresentFloatyWithState(
       base_view_controller, std::move(page_context),
-      ios::provider::GeminiPageContextComputationState::kPending, entry_point);
+      ios::provider::GeminiPageContextComputationState::kPending,
+      startup_state);
 }
 
 void GeminiBrowserAgent::PresentFloatyWithPendingContext(
     UIViewController* base_view_controller,
-    gemini::EntryPoint entry_point,
-    UIImage* image_attachment) {
+    GeminiStartupState* startup_state) {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   if (!active_web_state) {
@@ -460,8 +457,8 @@ void GeminiBrowserAgent::PresentFloatyWithPendingContext(
 
   PresentFloatyWithState(
       base_view_controller, std::move(partial_page_context),
-      ios::provider::GeminiPageContextComputationState::kPending, entry_point,
-      image_attachment);
+      ios::provider::GeminiPageContextComputationState::kPending,
+      startup_state);
 }
 
 void GeminiBrowserAgent::UpdateFloatyPageContext(
@@ -839,8 +836,10 @@ void GeminiBrowserAgent::PresentFloatyWithState(
     UIViewController* base_view_controller,
     std::unique_ptr<optimization_guide::proto::PageContext> page_context_proto,
     ios::provider::GeminiPageContextComputationState computation_state,
-    gemini::EntryPoint entry_point,
-    UIImage* image_attachment) {
+    GeminiStartupState* startup_state) {
+  gemini::EntryPoint entry_point = startup_state.entryPoint;
+  UIImage* image_attachment = startup_state.imageAttachment;
+  NSString* prepopulated_prompt = startup_state.prepopulatedPrompt;
   // If floaty is invoked, update the persisted floaty instead of restarting the
   // Gemini instance.
   if (IsGeminiCopresenceEnabled() && is_floaty_invoked_) {
@@ -884,7 +883,7 @@ void GeminiBrowserAgent::PresentFloatyWithState(
       gemini_tab_helper->IsLastInteractionUrlDifferent();
   config.shouldShowSuggestionChips =
       gemini_tab_helper->ShouldShowSuggestionChips();
-  config.contextualCueChipLabel = gemini_tab_helper->GetContextualCueLabel();
+  config.contextualCueChipLabel = prepopulated_prompt;
   config.entryPoint = entry_point;
   config.imageRemixIPHShouldShow =
       entry_point == gemini::EntryPoint::ImageRemixIPH;

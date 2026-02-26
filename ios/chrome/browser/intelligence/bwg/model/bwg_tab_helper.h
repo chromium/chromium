@@ -123,12 +123,6 @@ class BwgTabHelper : public web::WebStateObserver,
   // Sets a callback to be run when the page has finished loading.
   void SetPageLoadedCallback(base::RepeatingClosure callback);
 
-  // Getter `contextual_cue_label_`.
-  NSString* GetContextualCueLabel();
-
-  // Setter for `contextual_cue_label_`.
-  void SetContextualCueLabel(NSString* cue_label);
-
   // Returns the partial PageContext for the current WebState, including URL,
   // Title, and Favicon.
   GeminiPageContext* GetPartialPageContext();
@@ -281,9 +275,6 @@ class BwgTabHelper : public web::WebStateObserver,
 
   // Callback to be run when the page has finished loading.
   base::RepeatingClosure page_loaded_callback_;
-
-  // Contextual cue label generated for Gemini contextual cue metadata.
-  NSString* contextual_cue_label_;
 
   // List of observers.
   base::ObserverList<GeminiTabHelperObserver> observers_;

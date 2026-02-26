@@ -49,3 +49,15 @@ NSString* const kBwgSecondBoxLink2ActionNonManagedAccount =
     @"secondBoxLink2ActionNonManagedAccount";
 
 const int kGeminiContextualCueChipSlidingWindow = 2;
+
+@implementation GeminiStartupState
+
+- (instancetype)initWithEntryPoint:(gemini::EntryPoint)entryPoint {
+  self = [super init];
+  if (self) {
+    _entryPoint = entryPoint;
+  }
+  return self;
+}
+
+@end

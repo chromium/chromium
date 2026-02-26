@@ -14,6 +14,8 @@ enum class EntryPoint;
 enum class FloatyUpdateSource;
 }  // namespace gemini
 
+@class GeminiStartupState;
+
 namespace web {
 class WebState;
 }  // namespace web
@@ -21,12 +23,8 @@ class WebState;
 // Commands relating to the BWG flow.
 @protocol BWGCommands <NSObject>
 
-// Starts the Gemini flow with an entry point.
-- (void)startGeminiFlowWithEntryPoint:(gemini::EntryPoint)entryPoint;
-
-// Starts the Gemini flow with a provided image as attachment.
-- (void)startGeminiFlowWithImageAttachment:(UIImage*)image
-                                entryPoint:(gemini::EntryPoint)entryPoint;
+// Starts the Gemini flow with the given startup state.
+- (void)startGeminiFlowWithStartupState:(GeminiStartupState*)startupState;
 
 // Dismiss the Gemini flow with a completion block.
 - (void)dismissGeminiFlowWithCompletion:(ProceduralBlock)completion;

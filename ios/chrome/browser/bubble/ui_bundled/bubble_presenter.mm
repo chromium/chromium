@@ -917,7 +917,9 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
           base::RecordAction(
               base::UserMetricsAction("MobileGeminiImageRemixIPHTapped"));
           [BWGHandler
-              startGeminiFlowWithEntryPoint:gemini::EntryPoint::ImageRemixIPH];
+              startGeminiFlowWithStartupState:
+                  [[GeminiStartupState alloc]
+                      initWithEntryPoint:gemini::EntryPoint::ImageRemixIPH]];
         }
       }];
 

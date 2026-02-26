@@ -2603,7 +2603,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (void)startAskBWG {
   [self dismissMenu];
   [self.BWGHandler
-      startGeminiFlowWithEntryPoint:gemini::EntryPoint::OverflowMenu];
+      startGeminiFlowWithStartupState:
+          [[GeminiStartupState alloc]
+              initWithEntryPoint:gemini::EntryPoint::OverflowMenu]];
 }
 
 - (void)startCollapseToolbars {

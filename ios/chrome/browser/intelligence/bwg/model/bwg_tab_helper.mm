@@ -224,14 +224,6 @@ void BwgTabHelper::SetPageLoadedCallback(base::RepeatingClosure callback) {
   page_loaded_callback_ = std::move(callback);
 }
 
-NSString* BwgTabHelper::GetContextualCueLabel() {
-  return contextual_cue_label_;
-}
-
-void BwgTabHelper::SetContextualCueLabel(NSString* cue_label) {
-  contextual_cue_label_ = cue_label;
-}
-
 GeminiPageContext* BwgTabHelper::GetPartialPageContext() {
   GeminiPageContext* gemini_page_context = [[GeminiPageContext alloc] init];
   gemini_page_context.geminiPageContextComputationState =
@@ -359,7 +351,9 @@ void BwgTabHelper::WasShown(web::WebState* web_state) {
   if (is_bwg_session_active_in_background_) {
     if (!IsGeminiCopresenceEnabled()) {
       [bwg_commands_handler_
-          startGeminiFlowWithEntryPoint:gemini::EntryPoint::TabReopen];
+          startGeminiFlowWithStartupState:
+              [[GeminiStartupState alloc]
+                  initWithEntryPoint:gemini::EntryPoint::TabReopen]];
     }
     cached_snapshot_ = nil;
   }

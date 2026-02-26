@@ -319,18 +319,16 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   [self resetTimersAndUIStateAnimated:YES];
 
   switch (badgeConfig.badgeType) {
-    case LocationBarBadgeType::kGeminiContextualCueChip:
+    case LocationBarBadgeType::kGeminiContextualCueChip: {
+      NSString* prompt = nil;
       if (IsAskGeminiChipPrepopulateFloatyEnabled()) {
-        BwgTabHelper* BWGTabHelper =
-            BwgTabHelper::FromWebState(_activeWebState);
-        if (BWGTabHelper) {
-          BWGTabHelper->SetContextualCueLabel(
-              l10n_util::GetNSString(IDS_IOS_ASK_GEMINI_CHIP_PREFILL_PROMPT));
-        }
+        prompt = l10n_util::GetNSString(IDS_IOS_ASK_GEMINI_CHIP_PREFILL_PROMPT);
       }
 
-      [self.BWGCommandHandler
-          startGeminiFlowWithEntryPoint:gemini::EntryPoint::OmniboxChip];
+      GeminiStartupState* state = [[GeminiStartupState alloc]
+          initWithEntryPoint:gemini::EntryPoint::OmniboxChip];
+      state.prepopulatedPrompt = prompt;
+      [self.BWGCommandHandler startGeminiFlowWithStartupState:state];
       _tracker->NotifyEvent(
           feature_engagement::events::kIOSGeminiContextualCueChipUsed);
 
@@ -339,6 +337,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
         [self.consumer hideBadge];
       }
       break;
+    }
     case LocationBarBadgeType::kContextualPanelEntryPointSample:
     case LocationBarBadgeType::kPriceInsights:
     case LocationBarBadgeType::kReaderMode:

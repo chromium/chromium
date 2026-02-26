@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -154,18 +153,18 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   if (![self canPerformExplainWithGeminiInWebState:webState]) {
     return;
   }
-  BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
-  if (BWGTabHelper) {
-    // TODO(crbug.com/483004001): set the entry point to edit menu on the gemini
-    // configuration once the field is added.
-    BWGTabHelper->SetContextualCueLabel(
-        [NSString stringWithFormat:@"%@ : %@",
-                                   l10n_util::GetNSString(
-                                       IDS_IOS_EXPLAIN_GEMINI_PROMPT_PREFIX),
-                                   text]);
-  }
+
+  NSString* prepopulatedPrompt =
+      [NSString stringWithFormat:@"%@ : %@",
+                                 l10n_util::GetNSString(
+                                     IDS_IOS_EXPLAIN_GEMINI_PROMPT_PREFIX),
+                                 text];
+
   // TODO(crbug.com/483004001): Add metrics logging.
-  [self.BWGHandler startGeminiFlowWithEntryPoint:gemini::EntryPoint::EditMenu];
+  GeminiStartupState* startupState = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::EditMenu];
+  startupState.prepopulatedPrompt = prepopulatedPrompt;
+  [self.BWGHandler startGeminiFlowWithStartupState:startupState];
 }
 
 // Returns the action to trigger the search with feature. Calls `handler` on

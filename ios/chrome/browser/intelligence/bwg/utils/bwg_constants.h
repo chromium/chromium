@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UTILS_BWG_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 namespace gemini {
 
@@ -101,7 +102,25 @@ enum class GenAiDefaultSettingsPolicy {
   // Do not allow GenAI features.
   kNotAllowed = 2,
 };
+
 }  // namespace gemini
+
+// Set of parameters for starting a Gemini session.
+@interface GeminiStartupState : NSObject
+
+// The entry point that triggered the Gemini session.
+@property(nonatomic, assign) gemini::EntryPoint entryPoint;
+
+// An optional image to attach to the query.
+@property(nonatomic, strong) UIImage* imageAttachment;
+
+// An optional text prompt to prepopulate the input field.
+@property(nonatomic, copy) NSString* prepopulatedPrompt;
+
+// Initializes with the given entry point.
+- (instancetype)initWithEntryPoint:(gemini::EntryPoint)entryPoint;
+
+@end
 
 // BWG UI sheet detent identifier.
 extern NSString* const kBWGPromoConsentFullDetentIdentifier;
