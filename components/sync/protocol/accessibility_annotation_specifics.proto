@@ -40,8 +40,11 @@ message AccessibilityAnnotationSpecifics {
     // under which the order was placed.
     optional string account = 2;
 
-    // The date and time when the order was placed.
-    optional int64 order_date_unix_epoch_seconds = 3;
+    reserved 3;
+    reserved "order_date_unix_epoch_seconds";
+
+    // The date when the order was placed.
+    optional NaiveDate order_date = 8;
 
     // The name of the merchant.
     optional string merchant_name = 4;
@@ -76,8 +79,11 @@ message AccessibilityAnnotationSpecifics {
     // The domain (eTLD+1) of the courier or logistics service.
     optional string carrier_domain = 5;
 
+    reserved 6;
+    reserved "estimated_delivery_date_unix_epoch_seconds";
+
     // The date on which the shipment is estimated to be delivered.
-    optional int64 estimated_delivery_date_unix_epoch_seconds = 6;
+    optional NaiveDate estimated_delivery_date = 7;
   }
 
   // Represents a government-issued driver's license.
@@ -88,11 +94,16 @@ message AccessibilityAnnotationSpecifics {
     // The unique identifier number for the driver's license.
     optional string number = 2;
 
+    reserved 3;
+    reserved "expiration_date_unix_epoch_seconds";
+    reserved 4;
+    reserved "issue_date_unix_epoch_seconds";
+
     // The expiration date of the driver's license.
-    optional int64 expiration_date_unix_epoch_seconds = 3;
+    optional NaiveDate expiration_date = 6;
 
     // The issue date of the driver's license.
-    optional int64 issue_date_unix_epoch_seconds = 4;
+    optional NaiveDate issue_date = 7;
 
     // The state or province that issued the driver's license.
     optional string state = 5;
@@ -106,11 +117,16 @@ message AccessibilityAnnotationSpecifics {
     // The unique identifier number for the passport.
     optional string number = 2;
 
+    reserved 3;
+    reserved "expiration_date_unix_epoch_seconds";
+    reserved 4;
+    reserved "issue_date_unix_epoch_seconds";
+
     // The expiration date of the passport.
-    optional int64 expiration_date_unix_epoch_seconds = 3;
+    optional NaiveDate expiration_date = 6;
 
     // The issue date of the passport.
-    optional int64 issue_date_unix_epoch_seconds = 4;
+    optional NaiveDate issue_date = 7;
 
     // The country that issued the passport, normalized as a two-letter country
     // code (ISO 3166-1 alpha-2).
@@ -125,11 +141,16 @@ message AccessibilityAnnotationSpecifics {
     // The unique identifier number for the national ID.
     optional string number = 2;
 
+    reserved 3;
+    reserved "expiration_date_unix_epoch_seconds";
+    reserved 4;
+    reserved "issue_date_unix_epoch_seconds";
+
     // The expiration date of the ID.
-    optional int64 expiration_date_unix_epoch_seconds = 3;
+    optional NaiveDate expiration_date = 6;
 
     // The issue date of the ID.
-    optional int64 issue_date_unix_epoch_seconds = 4;
+    optional NaiveDate issue_date = 7;
 
     // The country that issued the ID, normalized as a two-letter country code
     // (ISO 3166-1 alpha-2).
@@ -191,5 +212,13 @@ message AccessibilityAnnotationSpecifics {
 
     // The name of the primary owner of the vehicle.
     optional string owner_name = 8;
+  }
+
+  // Represents a date without a time zone. This is useful for dates on physical
+  // documents, like an issue date of a passport.
+  message NaiveDate {
+    optional int32 day = 1;
+    optional int32 month = 2;
+    optional int32 year = 3;
   }
 }
