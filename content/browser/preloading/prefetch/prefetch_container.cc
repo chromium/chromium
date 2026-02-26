@@ -18,6 +18,7 @@
 #include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
+#include "content/browser/preloading/prefetch/assert_prefetch_container_observer.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
@@ -281,6 +282,8 @@ PrefetchContainer::PrefetchContainer(
       request().IsIsolatedNetworkContextRequired(GetURL())) {
     service_worker_state_ = PrefetchServiceWorkerState::kDisallowed;
   }
+
+  assert_observer_ = std::make_unique<AssertPrefetchContainerObserver>(*this);
 }
 
 PrefetchContainer::~PrefetchContainer() {
@@ -338,6 +341,10 @@ PrefetchContainer::~PrefetchContainer() {
   }
 
   TRACE_EVENT_END("loading", request_->preload_pipeline_info().GetTrack());
+
+  // Destroy `assert_observer_` before `WeakPtr`s are invalidated to allow it
+  // call `RemoveObserver()`.
+  assert_observer_.reset();
 }
 
 void PrefetchContainer::OnWillBeDestroyed() {

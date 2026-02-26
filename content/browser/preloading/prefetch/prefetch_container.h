@@ -47,6 +47,7 @@ class Origin;
 
 namespace content {
 
+class AssertPrefetchContainerObserver;
 class PrefetchIsolatedNetworkContext;
 class PrefetchKey;
 class PrefetchMatchResolverAction;
@@ -868,6 +869,8 @@ class CONTENT_EXPORT PrefetchContainer {
   std::optional<base::TimeTicks> time_prefetch_match_missed_;
 
   PrefetchContainerMetrics prefetch_container_metrics_;
+
+  std::unique_ptr<AssertPrefetchContainerObserver> assert_observer_;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };
