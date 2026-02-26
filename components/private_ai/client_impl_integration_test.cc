@@ -43,7 +43,7 @@ class IntegrationConnectionFactory : public ConnectionFactory {
   IntegrationConnectionFactory(
       FakeSecureChannelFactory::OnCreatedCallback on_secure_channel_created,
       FakeSecureChannelFactory::OnDestroyedCallback on_secure_channel_destroyed,
-      phosphor::TokenManager* token_manager,
+      FakeTokenManager* token_manager,
       PrivateAiLogger* logger)
       : on_secure_channel_created_(std::move(on_secure_channel_created)),
         on_secure_channel_destroyed_(std::move(on_secure_channel_destroyed)),
@@ -69,14 +69,14 @@ class IntegrationConnectionFactory : public ConnectionFactory {
     connection = std::make_unique<ConnectionTokenAttestation>(
         std::move(connection), token_manager_, logger_,
         std::move(split_on_disconnect.second));
-
+    token_manager_->WaitForPendingCallback();
     return connection;
   }
 
  private:
   FakeSecureChannelFactory::OnCreatedCallback on_secure_channel_created_;
   FakeSecureChannelFactory::OnDestroyedCallback on_secure_channel_destroyed_;
-  raw_ptr<phosphor::TokenManager> token_manager_;
+  raw_ptr<FakeTokenManager> token_manager_;
   raw_ptr<PrivateAiLogger> logger_;
 };
 

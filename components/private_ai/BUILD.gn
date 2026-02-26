@@ -112,6 +112,7 @@ source_set("testing") {
     ":private_ai",
     ":proto",
     "//base",
+    "//base/test:test_support",
     "//components/private_ai/phosphor",
     "//testing/gmock",
   ]
