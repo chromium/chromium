@@ -452,10 +452,10 @@ ScriptPromise<ProofreadResult> Proofreader::proofread(
   auto pending_remote = CreateModelExecutionResponder(
       script_state, composite_signal, task_runner_,
       AIMetrics::AISessionType::kProofreader,
-
       BindOnce(&Proofreader::OnProofreadComplete, WrapPersistent(this),
                WrapPersistent(resolver), WrapPersistent(script_state),
                WrapPersistent(composite_signal), input),
+      /*tool_call_callback=*/base::NullCallback(),
       /*overflow_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
       BindOnce(&Proofreader::OnProofreadError, WrapPersistent(this),
                WrapPersistent(resolver)),
@@ -608,6 +608,7 @@ void Proofreader::GetCorrectionTypes(
                WrapPersistent(resolver), WrapPersistent(script_state),
                WrapPersistent(signal), WrapPersistent(result), raw_corrections,
                input, correction_index),
+      /*tool_call_callback=*/base::NullCallback(),
       /*overflow_callback=*/
       base::DoNothingWithBoundArgs(WrapPersistent(this)),
       /*error_callback=*/

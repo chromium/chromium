@@ -62,6 +62,7 @@ class LanguageModelCreateClient
   Member<LanguageModelCreateOptions> options_;
   Member<CreateMonitor> monitor_;
   mojom::blink::AILanguageModelSamplingParamsPtr resolved_sampling_params_;
+  Vector<mojom::blink::AILanguageModelToolDeclarationPtr> converted_tools_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 

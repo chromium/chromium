@@ -23,7 +23,8 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
       blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
       base::flat_set<blink::mojom::AILanguageModelPromptType> input_types,
       std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
-      uint32_t initial_tokens_size);
+      uint32_t initial_tokens_size,
+      std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools = {});
   EchoAILanguageModel(const EchoAILanguageModel&) = delete;
   EchoAILanguageModel& operator=(const EchoAILanguageModel&) = delete;
 
@@ -53,6 +54,27 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
   std::optional<std::string> PromptsToText(
       const std::vector<blink::mojom::AILanguageModelPromptPtr>& prompts);
 
+  // Extract tool response text for echo behavior.
+  // Returns formatted string representation of tool success or error.
+  std::string ExtractToolResponseText(
+      const base::DictValue& tool_response_dict);
+
+  // Generate simple tool calls using argument hints from descriptions.
+  std::vector<blink::mojom::ToolCallPtr> GenerateSimpleToolCalls();
+
+  // Generate tool calls for a specific range of tools [start_index, end_index).
+  std::vector<blink::mojom::ToolCallPtr> GenerateToolCallsForRange(
+      size_t start_index,
+      size_t end_index);
+
+  // Extract JSON hint from tool description in format "Marker: {...}".
+  // Returns the parsed JSON dictionary if found and valid, nullopt otherwise.
+  std::optional<base::Value> ExtractJsonHint(const std::string& description,
+                                             const std::string& hint_marker);
+
+  // Extract argument hints from tool description in format "Args: {...}".
+  base::DictValue ExtractArgumentHints(const std::string& description);
+
   bool is_destroyed_ = false;
   uint64_t current_tokens_ = 0;
   blink::mojom::AILanguageModelSamplingParamsPtr sampling_params_;
@@ -66,6 +88,9 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
   bool did_echo_initial_prompts_ = false;
 
   std::vector<blink::mojom::AILanguageModelPromptPtr> prompt_history_;
+
+  // Tools available for this language model session.
+  std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools_;
 
   base::WeakPtrFactory<EchoAILanguageModel> weak_ptr_factory_{this};
 };

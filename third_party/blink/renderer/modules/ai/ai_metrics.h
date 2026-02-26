@@ -45,9 +45,7 @@ class AIMetrics {
     kSystem = 0,
     kUser = 1,
     kAssistant = 2,
-    kToolCall = 3,
-    kToolResponse = 4,
-    kMaxValue = kToolResponse,
+    kMaxValue = kAssistant,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:LanguageModelInputRole)
 

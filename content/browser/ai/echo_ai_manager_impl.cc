@@ -76,17 +76,53 @@ bool HasUnsupportedType(
   if (options) {
     if (options->expected_inputs.has_value()) {
       for (const auto& expected_input : options->expected_inputs.value()) {
-        has_unsupported_type |=
-            expected_input->type !=
-                blink::mojom::AILanguageModelPromptType::kText &&
-            !base::FeatureList::IsEnabled(
-                blink::features::kAIPromptAPIMultimodalInput);
+        // Allow kText always.
+        if (expected_input->type ==
+            blink::mojom::AILanguageModelPromptType::kText) {
+          continue;
+        }
+        // Reject kToolCall in expectedInputs - tool calls are model outputs,
+        // not inputs. Tool responses should be used to send results back.
+        // TODO(crbug.com/422803232): Maybe allow kToolCall expectedInputs.
+        if (expected_input->type ==
+            blink::mojom::AILanguageModelPromptType::kToolCall) {
+          has_unsupported_type = true;
+          break;
+        }
+        // Allow kToolResponse when tool use is enabled.
+        if (expected_input->type ==
+                blink::mojom::AILanguageModelPromptType::kToolResponse &&
+            base::FeatureList::IsEnabled(
+                blink::features::kAIPromptAPIToolUse)) {
+          continue;
+        }
+        // Allow other types (multimodal) when multimodal feature is enabled.
+        if (base::FeatureList::IsEnabled(
+                blink::features::kAIPromptAPIMultimodalInput)) {
+          continue;
+        }
+        // If we get here, the type is unsupported.
+        has_unsupported_type = true;
+        break;
       }
     }
     if (options->expected_outputs.has_value()) {
       for (const auto& expected_output : options->expected_outputs.value()) {
-        has_unsupported_type |= expected_output->type !=
-                                blink::mojom::AILanguageModelPromptType::kText;
+        // Allow kText always.
+        if (expected_output->type ==
+            blink::mojom::AILanguageModelPromptType::kText) {
+          continue;
+        }
+        // Allow kToolCall when tool use is enabled.
+        if (expected_output->type ==
+                blink::mojom::AILanguageModelPromptType::kToolCall &&
+            base::FeatureList::IsEnabled(
+                blink::features::kAIPromptAPIToolUse)) {
+          continue;
+        }
+        // All other output types are unsupported.
+        has_unsupported_type = true;
+        break;
       }
     }
   }
@@ -172,11 +208,18 @@ void EchoAIManagerImpl::CreateLanguageModel(
     }
   }
 
-  auto return_language_model_callback =
-      base::BindOnce(&EchoAIManagerImpl::ReturnAILanguageModelCreationResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote),
-                     std::move(options->sampling_params), enabled_input_types,
-                     std::move(options->initial_prompts), initial_size);
+  // Extract tools from options, defaulting to an empty vector.
+  std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools =
+      *(std::move(options->tools).or_else([] {
+        // Return an engaged optional holding a default-constructed vector.
+        return decltype(options->tools)(std::in_place);
+      }));
+
+  auto return_language_model_callback = base::BindOnce(
+      &EchoAIManagerImpl::ReturnAILanguageModelCreationResult,
+      weak_ptr_factory_.GetWeakPtr(), std::move(client_remote),
+      std::move(options->sampling_params), enabled_input_types,
+      std::move(options->initial_prompts), initial_size, std::move(tools));
 
   if (!IsModelDownloadedForCurrentReciever()) {
     // Simulate downloading the model; cache state for the current receiver.
@@ -374,7 +417,8 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
     blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
     base::flat_set<blink::mojom::AILanguageModelPromptType> enabled_input_types,
     std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts,
-    uint32_t initial_context_usage) {
+    uint32_t initial_context_usage,
+    std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools) {
   mojo::PendingRemote<blink::mojom::AILanguageModel> language_model;
   auto model_sampling_params =
       sampling_params
@@ -387,7 +431,7 @@ void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<EchoAILanguageModel>(
           model_sampling_params->Clone(), enabled_input_types,
-          std::move(initial_prompts), initial_context_usage),
+          std::move(initial_prompts), initial_context_usage, std::move(tools)),
       language_model.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(
       std::move(language_model),

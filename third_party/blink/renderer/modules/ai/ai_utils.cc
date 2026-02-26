@@ -7,12 +7,46 @@
 #include <algorithm>
 #include <iterator>
 
+#include "base/memory/raw_ptr.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_core_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_content.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_tool_call.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_tool_call_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_message_value.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ai/ai_features.h"
+#include "third_party/blink/renderer/modules/ai/language_model_tool_call.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
+
+bool ContainsNoneType(const base::Value& value) {
+  if (value.type() == base::Value::Type::NONE) {
+    return true;
+  }
+
+  if (value.is_dict()) {
+    for (const auto [key, val] : value.GetDict()) {
+      if (ContainsNoneType(val)) {
+        return true;
+      }
+    }
+  } else if (value.is_list()) {
+    for (const auto& item : value.GetList()) {
+      if (ContainsNoneType(item)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
 
 namespace {
 
@@ -331,6 +365,62 @@ RunOnDestruction::~RunOnDestruction() {
 
 void RunOnDestruction::Reset() {
   callback_.Reset();
+}
+
+HeapVector<Member<LanguageModelMessageContent>> ConvertMojoToolCallsToMessages(
+    ScriptState* script_state,
+    const Vector<mojom::blink::ToolCallPtr>& tool_calls,
+    ExceptionState& exception_state) {
+  HeapVector<Member<LanguageModelMessageContent>> messages;
+
+  // Must be called with active V8 context.
+  ScriptState::Scope scope(script_state);
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Context> context = script_state->GetContext();
+
+  std::unique_ptr<WebV8ValueConverter> converter =
+      Platform::Current()->CreateWebV8ValueConverter();
+
+  for (const auto& tc : tool_calls) {
+    v8::Local<v8::Value> arguments_v8 =
+        converter->ToV8Value(base::Value(tc->arguments.Clone()), context);
+    if (arguments_v8.IsEmpty()) {
+      exception_state.ThrowTypeError(
+          "Failed to convert tool call arguments to JavaScript value");
+      messages.clear();
+      return messages;
+    }
+
+    // Create init dictionary for the interface.
+    auto* tool_call_init = LanguageModelToolCallInit::Create();
+    tool_call_init->setCallID(tc->call_id);
+    tool_call_init->setName(tc->name);
+    ScriptObject arguments_object(isolate, arguments_v8);
+    tool_call_init->setArguments(arguments_object);
+
+    auto* tool_call =
+        LanguageModelToolCall::Create(tool_call_init, exception_state);
+    if (exception_state.HadException()) {
+      // Propagate exception to caller.
+      messages.clear();
+      return messages;
+    }
+
+    if (!tool_call) {
+      exception_state.ThrowTypeError("Failed to create tool call object");
+      messages.clear();
+      return messages;
+    }
+
+    auto* content = LanguageModelMessageContent::Create();
+    content->setType(V8LanguageModelMessageType(
+        V8LanguageModelMessageType::Enum::kToolCall));
+    content->setValue(
+        MakeGarbageCollected<V8LanguageModelMessageValue>(tool_call));
+    messages.push_back(content);
+  }
+
+  return messages;
 }
 
 }  // namespace blink

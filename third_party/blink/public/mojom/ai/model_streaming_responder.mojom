@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/values.mojom";
 import "third_party/blink/public/mojom/ai/ai_common.mojom";
 
 // The status of the ModelStreamingResponder response.
@@ -57,6 +58,16 @@ struct ModelExecutionContextInfo {
   uint64 current_tokens;
 };
 
+// Represents a tool call requested by the language model during execution.
+struct ToolCall {
+  // Unique identifier for this tool call within the session.
+  string call_id;
+  // The tool name to be invoked.
+  string name;
+  // Arguments as structured data fitting the tool's input schema.
+  mojo_base.mojom.DictionaryValue arguments;
+};
+
 // Provides methods for the model session to pass the information back to the
 // built-in AI interfaces (e.g. AILanguageModel, AISummarizer etc.) when they
 // request to feed inputs to the session.
@@ -87,6 +98,11 @@ interface ModelStreamingResponder {
 
   // Called when there is a new chunk of data available for streaming.
   OnStreaming(string text);
+
+  // Called when the model requests tool execution.
+  // Clients should validate and then execute or surface calls to JS API client.
+  // Model sessions typically expect a tool result or error input thereafter.
+  OnToolCalls(array<ToolCall> tool_calls);
 
   // Called when the context overflows when reserving the space for the newly
   // added items. It does not indicate a failure or guarantee the success.

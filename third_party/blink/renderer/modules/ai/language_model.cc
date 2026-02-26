@@ -21,8 +21,10 @@
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_content.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_tool_call.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_message_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_prompt.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_languagemodelmessagecontentsequence_string.h"
@@ -318,6 +320,10 @@ class AppendClient : public GarbageCollected<AppendClient>,
     NOTREACHED() << "Append() should not invoke `OnStreaming()`";
   }
 
+  void OnToolCalls(Vector<mojom::blink::ToolCallPtr> tool_calls) override {
+    NOTREACHED() << "Append() should not invoke `OnToolCalls()`";
+  }
+
   void OnContextOverflow() override {
     if (overflow_callback_) {
       overflow_callback_.Run();
@@ -586,10 +592,11 @@ void LanguageModel::ExecuteAvailability(
   }
 
   Vector<mojom::blink::AILanguageModelPromptPtr> initial_prompts;
+  Vector<mojom::blink::AILanguageModelToolDeclarationPtr> tools;
   ai_manager_remote->CanCreateLanguageModel(
       mojom::blink::AILanguageModelCreateOptions::New(
           std::move(resolved_sampling_params), std::move(initial_prompts),
-          std::move(expected_in), std::move(expected_out)),
+          std::move(expected_in), std::move(expected_out), std::move(tools)),
       std::move(callback));
 }
 
@@ -655,6 +662,7 @@ ScriptPromise<V8LanguageModelPromptResult> LanguageModel::prompt(
       AIMetrics::AISessionType::kLanguageModel,
       BindOnce(&LanguageModel::ResolvePromiseOnComplete, WrapPersistent(this),
                WrapPersistent(resolver)),
+      BindRepeating(&LanguageModel::HandleToolCalls, WrapPersistent(this)),
       BindRepeating(&LanguageModel::OnContextOverflow, WrapPersistent(this)),
       BindOnce(&RejectPromiseOnError<V8LanguageModelPromptResult>,
                WrapPersistent(resolver)),
@@ -944,8 +952,46 @@ void LanguageModel::ResolvePromiseOnComplete(
     ScriptPromiseResolver<V8LanguageModelPromptResult>* resolver,
     const String& response,
     mojom::blink::ModelExecutionContextInfoPtr context_info) {
-  resolver->Resolve(response);
+  // Return type is dynamic based on actual response content.
+  // Return sequence format when tool calls are present, string otherwise.
+  if (!pending_tool_calls_.empty()) {
+    // Tool calls present - return structured message format.
+    // If the model output both text and tool calls, include text first.
+    ScriptState* script_state = resolver->GetScriptState();
+    HeapVector<Member<LanguageModelMessageContent>> messages;
+
+    // Add text content first if present.
+    if (!response.empty()) {
+      auto* text_content = LanguageModelMessageContent::Create();
+      text_content->setType(
+          V8LanguageModelMessageType(V8LanguageModelMessageType::Enum::kText));
+      text_content->setValue(
+          MakeGarbageCollected<V8LanguageModelMessageValue>(response));
+      messages.push_back(text_content);
+    }
+
+    // Then add tool call contents.
+    ExceptionState exception_state(script_state->GetIsolate());
+    messages.AppendVector(ConvertMojoToolCallsToMessages(
+        script_state, pending_tool_calls_, exception_state));
+    pending_tool_calls_.clear();
+    if (exception_state.HadException()) {
+      resolver->Reject();
+      return;
+    }
+    resolver->Resolve(messages);
+  } else {
+    // No tool calls - return simple string format.
+    resolver->Resolve(response);
+  }
   OnResponseComplete(std::move(context_info));
+}
+
+void LanguageModel::HandleToolCalls(
+    Vector<mojom::blink::ToolCallPtr> tool_calls) {
+  for (auto& tool_call : tool_calls) {
+    pending_tool_calls_.push_back(std::move(tool_call));
+  }
 }
 
 void LanguageModel::OnResponseComplete(

@@ -268,6 +268,7 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
         script_state, composite_signal, task_runner_, metric_session_type_,
         BindOnce(&ResolvePromiseOnCompletion<IDLString>,
                  WrapPersistent(resolver)),
+        /*tool_call_callback=*/base::DoNothing(),
         base::DoNothingWithBoundArgs(WrapPersistent(this)),
         BindOnce(&RejectPromiseOnError<IDLString>, WrapPersistent(resolver)),
         BindOnce(&RejectPromiseOnAbort<IDLString>, WrapPersistent(resolver),
