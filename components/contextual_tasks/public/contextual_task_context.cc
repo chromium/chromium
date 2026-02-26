@@ -4,8 +4,12 @@
 
 #include "components/contextual_tasks/public/contextual_task_context.h"
 
+#include <memory>
+#include <set>
+
 #include "base/strings/utf_string_conversions.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/utils.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
 
@@ -114,6 +118,35 @@ const base::Uuid& ContextualTaskContext::GetTaskId() const {
 const std::vector<UrlAttachment>& ContextualTaskContext::GetUrlAttachments()
     const {
   return urls_;
+}
+
+std::vector<UrlAttachment> ContextualTaskContext::GetUniqueUrlAttachments()
+    const {
+  std::unique_ptr<url_deduplication::URLDeduplicationHelper>
+      deduplication_helper =
+          contextual_tasks::CreateURLDeduplicationHelperForContextualTask();
+  std::vector<UrlAttachment> unique_attachments;
+  std::set<visited_url_ranking::URLMergeKey> seen_keys;
+
+  for (const auto& attachment : urls_) {
+    visited_url_ranking::URLMergeKey merge_key;
+    if (attachment.GetURL().is_valid()) {
+      // Dedup based on URL.
+      merge_key = visited_url_ranking::ComputeURLMergeKey(
+          attachment.GetURL(), /*title=*/std::u16string(),
+          deduplication_helper.get());
+    } else {
+      // For invalid URLs, dedup based on the title.
+      merge_key = base::UTF16ToUTF8(attachment.GetTitle());
+    }
+
+    if (seen_keys.find(merge_key) == seen_keys.end()) {
+      seen_keys.insert(merge_key);
+      unique_attachments.push_back(attachment);
+    }
+  }
+
+  return unique_attachments;
 }
 
 std::vector<UrlAttachment>&

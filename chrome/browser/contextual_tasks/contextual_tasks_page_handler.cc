@@ -63,7 +63,7 @@ PopulateContextualResources(contextual_tasks::ContextualTaskContext* context) {
     return {};
   }
   std::vector<contextual_tasks::mojom::ContextInfoPtr> context_items;
-  for (const auto& attachment : context->GetUrlAttachments()) {
+  for (const auto& attachment : context->GetUniqueUrlAttachments()) {
     const GURL url = attachment.GetURL();
     const std::string title = base::UTF16ToUTF8(attachment.GetTitle());
 

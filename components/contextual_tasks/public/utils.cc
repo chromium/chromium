@@ -33,6 +33,12 @@ CreateURLDeduplicationHelperForContextualTask() {
   strategy.clear_ref = true;
   strategy.clear_port = true;
 
+  // The title if passed here will be appended to the merge key and will be used
+  // for dedup. If a caller doesn't want to include title for dedup, they should
+  // send empty string as the title param in
+  // `visited_url_ranking::ComputeURLMergeKey()`.
+  strategy.include_title = true;
+
   // Intentionally treat different paths and query params as distinct URLs.
   strategy.clear_path = false;
   strategy.clear_query = false;

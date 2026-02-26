@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -41,6 +42,12 @@ namespace contextual_tasks {
 
 using ::testing::_;
 using ::testing::Return;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
+
+MATCHER_P2(UrlAttachmentEq, url, title, "") {
+  return arg.GetURL() == url && base::UTF16ToUTF8(arg.GetTitle()) == title;
+}
 
 class MockAimEligibilityService : public AimEligibilityService {
  public:
@@ -962,6 +969,136 @@ TEST_F(ContextualTasksServiceImplTest, DetachUrlFromTask) {
   }
   std::vector<ContextualTask> tasks_after_detach = GetTasks();
   EXPECT_TRUE(tasks_after_detach[0].GetUrlResources().empty());
+  service_->RemoveObserver(&observer_);
+}
+
+TEST_F(ContextualTasksServiceImplTest,
+       SetUrlResourcesFromServer_Deduplication) {
+  service_->AddObserver(&observer_);
+
+  ContextualTask task = service_->CreateTask();
+  base::Uuid task_id = task.GetTaskId();
+
+  // Resources for Phase 1.
+  GURL url1("https://google.com");
+  UrlResource r1(url1, ResourceType::kWebpage);
+  r1.title = "Google";
+  r1.url_id = base::Uuid::GenerateRandomV4();
+
+  GURL url2("https://youtube.com");
+  UrlResource r2(url2, ResourceType::kWebpage);
+  r2.title = "YouTube";
+  r2.url_id = base::Uuid::GenerateRandomV4();
+
+  UrlResource r5(url1, ResourceType::kWebpage);
+  r5.title = "Google Search";
+  r5.url_id = base::Uuid::GenerateRandomV4();
+
+  GURL pdf_url("file:///tmp/a.pdf");
+  UrlResource r6(pdf_url, ResourceType::kPdf);
+  r6.title = "A.pdf";
+  r6.url_id = base::Uuid::GenerateRandomV4();
+
+  UrlResource r7(pdf_url, ResourceType::kPdf);
+  r7.title = "B.pdf";
+  r7.url_id = base::Uuid::GenerateRandomV4();
+
+  UrlResource r9(GURL(), ResourceType::kUnknown);
+  r9.title = "Empty 1";
+  r9.url_id = base::Uuid::GenerateRandomV4();
+
+  UrlResource r10(GURL(), ResourceType::kUnknown);
+  r10.title = "Empty 2";
+  r10.url_id = base::Uuid::GenerateRandomV4();
+
+  std::vector<UrlResource> initial_resources = {r1, r2, r5, r6, r7, r9, r10};
+
+  // Phase 1: Set initial unique resources
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer_,
+                OnTaskUpdated(testing::_,
+                              ContextualTasksService::TriggerSource::kLocal))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    service_->SetUrlResourcesFromServer(task_id, initial_resources);
+    run_loop.Run();
+  }
+
+  testing::Mock::VerifyAndClearExpectations(&observer_);
+
+  // Verify Phase 1 state.
+  std::optional<ContextualTask> result_task_p1 = GetTaskById(task_id);
+  ASSERT_TRUE(result_task_p1.has_value());
+  ASSERT_EQ(7u, result_task_p1->GetUrlResources().size());
+
+  EXPECT_CALL(*mock_decorator_,
+              DecorateContext(testing::_, testing::_, testing::_, testing::_))
+      .WillRepeatedly(
+          [](std::unique_ptr<ContextualTaskContext> context,
+             const std::set<ContextualTaskContextSource>& sources,
+             std::unique_ptr<ContextDecorationParams> params,
+             base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                 callback) {
+            // Mock decorator just passes the context through.
+            std::move(callback).Run(std::move(context));
+          });
+  std::unique_ptr<ContextualTaskContext> context_p1 =
+      GetContextForTask(task_id);
+  ASSERT_TRUE(context_p1.get());
+  EXPECT_EQ(context_p1->GetTaskId(), task_id);
+  ASSERT_EQ(7u, context_p1->GetUrlAttachments().size());
+  ASSERT_EQ(5u, context_p1->GetUniqueUrlAttachments().size());
+
+  // Resources for Phase 2 (including duplicates and different types of
+  // matches).
+  UrlResource r3(url1, ResourceType::kWebpage);
+  r3.url_id = r1.url_id;
+  r3.title = "Google";  // Exact Duplicate of r1
+
+  GURL url1_frag("https://google.com#frag");
+  UrlResource r4(url1_frag, ResourceType::kWebpage);
+  r4.title = "Google";  // Same Key as r1
+
+  UrlResource r8(pdf_url, ResourceType::kPdf);
+  r8.title = "A.pdf";  // Exact Duplicate of r6
+
+  UrlResource r11(GURL(), ResourceType::kUnknown);
+  r11.title = "Empty 1";  // Exact Duplicate of r9
+
+  // Create an updated version of r2.
+  UrlResource r2_updated(r2.url_id, url2);
+  r2_updated.title = "YouTube Updated";  // Same key as r2
+
+  std::vector<UrlResource> incoming_resources = {
+      r1, r2_updated, r3, r4, r5, r6, r7, r8, r9, r10, r11};
+
+  // Phase 2: Set resources again, including duplicates and updates.
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(observer_,
+                OnTaskUpdated(testing::_,
+                              ContextualTasksService::TriggerSource::kLocal))
+        .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+    service_->SetUrlResourcesFromServer(task_id, incoming_resources);
+    run_loop.Run();
+  }
+
+  // Verify final state.
+  std::unique_ptr<ContextualTaskContext> context_p2 =
+      GetContextForTask(task_id);
+  ASSERT_TRUE(context_p2.get());
+  EXPECT_EQ(context_p2->GetTaskId(), task_id);
+  ASSERT_EQ(11u, context_p2->GetUrlAttachments().size());
+  ASSERT_EQ(5u, context_p2->GetUniqueUrlAttachments().size());
+
+  auto final_urls = context_p2->GetUniqueUrlAttachments();
+  EXPECT_THAT(final_urls,
+              UnorderedElementsAre(UrlAttachmentEq(url1, "Google"),
+                                   UrlAttachmentEq(url2, "YouTube Updated"),
+                                   UrlAttachmentEq(pdf_url, "A.pdf"),
+                                   UrlAttachmentEq(GURL(), "Empty 1"),
+                                   UrlAttachmentEq(GURL(), "Empty 2")));
+
   service_->RemoveObserver(&observer_);
 }
 

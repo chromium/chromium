@@ -148,6 +148,10 @@ struct ContextualTaskContext {
   // Returns the URL attachments for the task.
   const std::vector<UrlAttachment>& GetUrlAttachments() const;
 
+  // Returns a deduplicated list of URL attachments for the task.
+  // Meant to be used for context library.
+  std::vector<UrlAttachment> GetUniqueUrlAttachments() const;
+
   // Returns a mutable version of the URL attachments for the task.
   std::vector<UrlAttachment>& GetMutableUrlAttachmentsForTesting();
 
