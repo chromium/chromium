@@ -54,6 +54,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/model/app_installed_by.h"
 #include "chrome/browser/web_applications/model/display_override.h"
+#include "chrome/browser/web_applications/model/migration_behavior.h"
+#include "chrome/browser/web_applications/model/pending_migration_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -681,18 +683,16 @@ std::vector<proto::WebAppMigrationSource> CreateRandomMigrationSources(
   return sources;
 }
 
-std::optional<proto::PendingMigrationInfo> CreateRandomPendingMigrationInfos(
+std::optional<PendingMigrationInfo> CreateRandomPendingMigrationInfos(
     RandomHelper& random) {
   if (!random.next_bool()) {
     return std::nullopt;
   }
-  proto::PendingMigrationInfo info;
-  info.set_manifest_id("https://example.com/manifest_id_" +
-                       base::NumberToString(random.next_uint()));
-  info.set_behavior(random.next_bool()
-                        ? proto::WEB_APP_MIGRATION_BEHAVIOR_FORCE
-                        : proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
-  return info;
+  uint32_t random_id = random.next_uint();
+  webapps::ManifestId manifest_id(GURL("https://example.com/manifest_id_" +
+                                       base::NumberToString(random_id)));
+  MigrationBehavior behavior = random.next_enum<MigrationBehavior>();
+  return PendingMigrationInfo(manifest_id, behavior);
 }
 
 }  // namespace

@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/web_applications/model/pending_migration_info.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -80,7 +81,7 @@ TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, SingleMigration) {
   ASSERT_TRUE(app_source->pending_migration_info().has_value());
   EXPECT_EQ(GenerateManifestIdFromStartUrlOnly(GURL(kTargetAppUrl)).spec(),
             app_source->pending_migration_info()->manifest_id());
-  EXPECT_EQ(proto::WEB_APP_MIGRATION_BEHAVIOR_FORCE,
+  EXPECT_EQ(MigrationBehavior::kForce,
             app_source->pending_migration_info()->behavior());
 }
 
@@ -93,9 +94,8 @@ TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, CleanupOldMigration) {
     ScopedRegistryUpdate update =
         provider()->sync_bridge_unsafe().BeginUpdate();
     WebApp* app_source = update->UpdateApp(app_id_source);
-    proto::PendingMigrationInfo info;
-    info.set_manifest_id("https://old-target.com/");
-    info.set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+    PendingMigrationInfo info(webapps::ManifestId(GURL(kTargetAppUrl)),
+                              MigrationBehavior::kSuggest);
     app_source->SetPendingMigrationInfo(info);
   }
 

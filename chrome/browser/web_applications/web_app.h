@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/model/app_installed_by.h"
 #include "chrome/browser/web_applications/model/display_override.h"
+#include "chrome/browser/web_applications/model/pending_migration_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -579,8 +580,7 @@ class WebApp {
       const {
     return validated_migration_sources_;
   }
-  const std::optional<proto::PendingMigrationInfo>& pending_migration_info()
-      const {
+  const std::optional<PendingMigrationInfo>& pending_migration_info() const {
     return pending_migration_info_;
   }
 
@@ -588,7 +588,7 @@ class WebApp {
       std::vector<proto::WebAppMigrationSource> sources);
   void SetValidatedMigrationSources(
       std::vector<proto::WebAppMigrationSource> sources);
-  void SetPendingMigrationInfo(std::optional<proto::PendingMigrationInfo> info);
+  void SetPendingMigrationInfo(std::optional<PendingMigrationInfo> info);
 
   void SetInstalledBy(InstalledByPassKey,
                       std::deque<AppInstalledBy> installed_by);
@@ -752,7 +752,7 @@ class WebApp {
 
   std::vector<proto::WebAppMigrationSource> unvalidated_migration_sources_;
   std::vector<proto::WebAppMigrationSource> validated_migration_sources_;
-  std::optional<proto::PendingMigrationInfo> pending_migration_info_;
+  std::optional<PendingMigrationInfo> pending_migration_info_;
   // LINT.ThenChange(//chrome/browser/web_applications/proto/web_app.proto)
 
   // New fields must be added to:

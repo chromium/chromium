@@ -928,7 +928,7 @@ void WebAppCommandScheduler::ScheduleInstallMigrateToApp(
 void WebAppCommandScheduler::ApplyManifestMigration(
     const webapps::AppId& source_app_id,
     const webapps::AppId& destination_app_id,
-    const proto::WebAppMigrationBehavior migration_behavior,
+    const MigrationBehavior migration_behavior,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
     ApplyManifestMigrationResultCallback callback,

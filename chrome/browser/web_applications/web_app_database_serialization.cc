@@ -1533,7 +1533,8 @@ std::unique_ptr<WebApp> ParseWebAppProto(
       DLOG(ERROR) << "WebApp proto PendingMigrationInfo parse error";
       return nullptr;
     }
-    web_app->SetPendingMigrationInfo(info_proto);
+    web_app->SetPendingMigrationInfo(
+        PendingMigrationInfo::ParseAndCreate(info_proto));
   }
 
   RecordProtoParseResult(ProtoParseResult::kSuccess);
@@ -2080,7 +2081,7 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
 
   if (web_app.pending_migration_info().has_value()) {
     *local_data->mutable_pending_migration_info() =
-        *web_app.pending_migration_info();
+        web_app.pending_migration_info()->ToProto();
   }
 
   return local_data;

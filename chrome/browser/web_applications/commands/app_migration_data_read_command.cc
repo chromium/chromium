@@ -13,7 +13,6 @@
 #include "chrome/browser/web_applications/icons/icon_masker.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
-#include "chrome/browser/web_applications/proto/web_app.to_value.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -63,7 +62,7 @@ void AppMigrationDataReadCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
 
   GetMutableDebugValue().Set(
       "pending_migration_info",
-      proto::ToValue(*old_web_app->pending_migration_info()));
+      old_web_app->pending_migration_info()->AsDebugValue());
 
   const auto barrier_closure = base::BarrierClosure(
       /*num_closures=*/update_.is_forced_migration ? 1 : 2,

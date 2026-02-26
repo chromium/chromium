@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/model/display_override.h"
+#include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/url_pattern_with_regex_matcher.h"
@@ -152,8 +153,7 @@ WebAppBrowserController::WebAppBrowserController(
 
   if (const WebApp* app = registrar().GetAppById(this->app_id())) {
     if (auto pending_migration_info = app->pending_migration_info()) {
-      if (pending_migration_info->behavior() ==
-          proto::WEB_APP_MIGRATION_BEHAVIOR_FORCE) {
+      if (pending_migration_info->behavior() == MigrationBehavior::kForce) {
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(&WebAppBrowserController::
@@ -940,11 +940,11 @@ void WebAppBrowserController::OnMigrationDialogResult(
               registrar().GetAppById(app_id())->pending_migration_info()) {
         webapps::AppId destination_app_id = GenerateAppIdFromManifestId(
             webapps::ManifestId(pending_migration_info->manifest_id()));
-        const proto::WebAppMigrationBehavior migration_behavior =
-            is_forced_migration ? proto::WebAppMigrationBehavior::
-                                      WEB_APP_MIGRATION_BEHAVIOR_FORCE
-                                : proto::WebAppMigrationBehavior::
-                                      WEB_APP_MIGRATION_BEHAVIOR_SUGGEST;
+
+        const MigrationBehavior migration_behavior =
+            is_forced_migration ? MigrationBehavior::kForce
+                                : MigrationBehavior::kSuggest;
+
         web_app_provider->scheduler().ApplyManifestMigration(
             app_id(), destination_app_id, migration_behavior,
             std::move(keep_alive), std::move(profile_keep_alive),

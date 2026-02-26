@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/scheduler/apply_manifest_migration_result.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
@@ -82,8 +83,8 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
   ApplyManifestMigrationResult RunMigrationAndGetResult(
       const webapps::AppId& from_app_id,
       const webapps::AppId& to_app_id,
-      const proto::WebAppMigrationBehavior migration_behavior =
-          proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST) {
+      const MigrationBehavior migration_behavior =
+          MigrationBehavior::kSuggest) {
     base::test::TestFuture<ApplyManifestMigrationResult> result_future;
     fake_provider().scheduler().ApplyManifestMigration(
         from_app_id, to_app_id, migration_behavior, /*keep_alive=*/nullptr,
@@ -366,8 +367,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
   // Note: The FakeWebAppUiManager has launches fail for unit tests, the launch
   // is tested in the browser test.
   ApplyManifestMigrationResult result = RunMigrationAndGetResult(
-      source_app_id, destination_app_id,
-      proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_FORCE);
+      source_app_id, destination_app_id, MigrationBehavior::kForce);
   ASSERT_EQ(ApplyManifestMigrationResult::
                 kAppMigrationAppliedSuccessfullyLaunchFailed,
             result);
@@ -458,8 +458,7 @@ TEST_F(ApplyManifestMigrationCommandTest,
   // Note: The FakeWebAppUiManager has launches fail for unit tests, the launch
   // is tested in the browser test.
   ApplyManifestMigrationResult result = RunMigrationAndGetResult(
-      source_app_id, destination_app_id,
-      proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_FORCE);
+      source_app_id, destination_app_id, MigrationBehavior::kForce);
   ASSERT_EQ(ApplyManifestMigrationResult::
                 kAppMigrationAppliedSuccessfullyLaunchFailed,
             result);

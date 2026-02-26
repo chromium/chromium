@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/jobs/uninstall/uninstall_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
@@ -80,7 +81,7 @@ base::Value SynchronizeOptionsAsDebugValue(
 ApplyManifestMigrationCommand::ApplyManifestMigrationCommand(
     const webapps::AppId& source_app_id,
     const webapps::AppId& destination_app_id,
-    const proto::WebAppMigrationBehavior migration_behavior,
+    MigrationBehavior migration_behavior,
     Profile* profile,
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
@@ -148,9 +149,7 @@ void ApplyManifestMigrationCommand::StartWithLock(
     return;
   }
 
-  bool is_forced_migration =
-      (migration_behavior_ ==
-       proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_FORCE);
+  bool is_forced_migration = (migration_behavior_ == MigrationBehavior::kForce);
 
   // Handle all the use-cases where the forced migration isn't necessary.
   if (!is_forced_migration) {

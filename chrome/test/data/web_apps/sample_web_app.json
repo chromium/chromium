@@ -260,7 +260,7 @@
    "note_taking_new_note_url": "https://example.com/scope1234/new_note1308772041",
    "parent_app_id": null,
    "pending_migration_info": {
-      "behavior": "WEB_APP_MIGRATION_BEHAVIOR_FORCE",
+      "behavior": "kForce",
       "manifest_id": "https://example.com/manifest_id_771601322"
    },
    "pending_update_info": {

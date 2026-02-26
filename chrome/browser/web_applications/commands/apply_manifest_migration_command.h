@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/jobs/gather_migration_source_info_job.h"
 #include "chrome/browser/web_applications/jobs/gather_migration_source_info_job_result.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "chrome/browser/web_applications/scheduler/apply_manifest_migration_result.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/browser/uninstall_result_code.h"
@@ -37,10 +38,6 @@ class RemoveInstallSourceJob;
 
 struct SynchronizeOsOptions;
 
-namespace proto {
-enum WebAppMigrationBehavior : int;
-}  // namespace proto
-
 // This command executes the core logic for a manifest migration in the
 // following order:
 // 1. Finalize the installation of the new application (|destination_app_id|),
@@ -54,7 +51,7 @@ class ApplyManifestMigrationCommand
   ApplyManifestMigrationCommand(
       const webapps::AppId& source_app_id,
       const webapps::AppId& destination_app_id,
-      const proto::WebAppMigrationBehavior migration_behavior,
+      MigrationBehavior migration_behavior,
       Profile* profile,
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
@@ -88,7 +85,7 @@ class ApplyManifestMigrationCommand
 
   const webapps::AppId source_app_id_;
   const webapps::AppId destination_app_id_;
-  const proto::WebAppMigrationBehavior migration_behavior_;
+  const MigrationBehavior migration_behavior_;
   const raw_ptr<Profile> profile_ = nullptr;
   // KeepAlive objects are needed to make sure that migration completes, even
   // when the browser windows have been closed.

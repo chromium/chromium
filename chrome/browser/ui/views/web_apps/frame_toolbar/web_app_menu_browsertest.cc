@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/model/display_override.h"
+#include "chrome/browser/web_applications/model/pending_migration_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -178,8 +179,9 @@ IN_PROC_BROWSER_TEST_F(WebAppMenuBrowserTest, InvokeUi_main_pending_update) {
 IN_PROC_BROWSER_TEST_F(WebAppMenuBrowserTest, InvokeUi_main_pending_migration) {
   {
     ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
-    proto::PendingMigrationInfo migration_info;
-    migration_info.set_manifest_id("https://new.app.com/");
+    PendingMigrationInfo migration_info(
+        webapps::ManifestId(GURL("https://new.app.com/")),
+        MigrationBehavior::kSuggest);
     update->UpdateApp(app_id())->SetPendingMigrationInfo(
         std::move(migration_info));
   }
