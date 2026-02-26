@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
@@ -97,6 +98,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/third_party/mozilla/url_parse.h"
+#include "url/url_canon.h"
 #include "url/url_util.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1232,6 +1234,17 @@ bool OmniboxEditModel::OnEscapeKeyPressed() {
     view_->RevertAll();
     view_->SelectAll(true);
   }
+
+  // On the "contextual tasks" page in particular, we need to (implicitly) blur
+  // the omnibox and focus the web contents, in order to ensure that the user
+  // doesn't accidentally copy an "about:blank" URL from the Omnibox.
+  if (controller_->client()->IsContextualTasksPage()) {
+    base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
+                                  OmniboxEscapeAction::kBlur);
+    controller_->client()->FocusWebContents();
+    return true;
+  }
+
   if (user_input_was_in_progress) {
     base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
                                   OmniboxEscapeAction::kClearUserInput);

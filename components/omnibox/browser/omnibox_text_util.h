@@ -37,7 +37,12 @@ std::u16string SanitizeTextForPaste(const std::u16string& text);
 
 // Adjusts the copied text before writing it to the clipboard. If the copied
 // text is a URL with the scheme elided, this method reattaches the scheme.
+//
 // Copied text that looks like a search query will not be modified.
+//
+// Copied text that looks like a "contextual tasks" URL will have
+// "origin-swapping" logic applied to it, in order to ensure that users copy a
+// valid, shareable URL.
 //
 // |sel_min| gives the minimum of the selection, e.g. min(sel_start, sel_end).
 // |text| is the currently selected text, and may be modified by this method.

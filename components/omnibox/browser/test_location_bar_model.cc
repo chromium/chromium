@@ -38,6 +38,14 @@ GURL TestLocationBarModel::GetURL() const {
   return url_;
 }
 
+bool TestLocationBarModel::IsContextualTasksPage() const {
+  return false;
+}
+
+GURL TestLocationBarModel::GetContextualTasksInnerFrameURL() const {
+  return GURL();
+}
+
 security_state::SecurityLevel TestLocationBarModel::GetSecurityLevel() const {
   return security_level_;
 }

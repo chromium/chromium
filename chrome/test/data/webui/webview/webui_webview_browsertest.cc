@@ -140,7 +140,11 @@ class TestWebUIController : public content::WebUIController {
     ref_contents->as_string() = contents;
     std::move(callback).Run(ref_contents);
   }
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
+
+WEB_UI_CONTROLLER_TYPE_IMPL(TestWebUIController)
 
 class TestWebUIConfig
     : public content::DefaultWebUIConfig<TestWebUIController> {
