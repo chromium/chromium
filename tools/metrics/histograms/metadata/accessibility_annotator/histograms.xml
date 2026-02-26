@@ -20,6 +20,85 @@ chromium-metrics-reviews@google.com.
 
 <histogram-configuration>
 
-<histograms/>
+<histograms>
+
+<variants name="AccessibilityAnnotator.ValueClassifierType">
+  <variant name="TitleKeyword" summary="The title keyword value classifier."/>
+  <variant name="Url" summary="The URL value classifier."/>
+</variants>
+
+<histogram name="AccessibilityAnnotator.FullAnnotationReached" enum="Boolean"
+    expires_after="2026-08-01">
+  <owner>qiaoli@google.com</owner>
+  <owner>akvuong@google.com</owner>
+  <owner>igoralsky@google.com</owner>
+  <summary>
+    Records whether a page would move onto full annotation in the
+    AccessibilityAnnotator pipeline. Recorded when a page has undergone
+    evaluation for annotation, which happens when a page is loaded and
+    sufficient data (content, language, sensitivity score) has been gathered and
+    all classifier checks have completed.
+  </summary>
+</histogram>
+
+<histogram name="AccessibilityAnnotator.LanguageCheck" enum="BooleanSuccess"
+    expires_after="2026-08-01">
+  <owner>qiaoli@google.com</owner>
+  <owner>akvuong@google.com</owner>
+  <owner>igoralsky@google.com</owner>
+  <summary>
+    Records whether the page language is a target language for the pipeline.
+    Recorded when a page is undergoing evaluation for annotation, which happens
+    when a page is loaded and sufficient data (content, language, sensitivity
+    score) has been gathered.
+  </summary>
+</histogram>
+
+<histogram name="AccessibilityAnnotator.SensitivityCheck" enum="BooleanSuccess"
+    expires_after="2026-08-01">
+  <owner>qiaoli@google.com</owner>
+  <owner>akvuong@google.com</owner>
+  <owner>igoralsky@google.com</owner>
+  <summary>
+    Records whether the page passed the sensitivity check. Recorded when a page
+    is undergoing evaluation for annotation, which happens when a page is loaded
+    and sufficient data (content, language, sensitivity score) has been
+    gathered.
+  </summary>
+</histogram>
+
+<histogram
+    name="AccessibilityAnnotator.{ValueClassifierType}ClassifierDuration"
+    units="ms" expires_after="2026-08-01">
+  <owner>qiaoli@google.com</owner>
+  <owner>akvuong@google.com</owner>
+  <owner>igoralsky@google.com</owner>
+  <summary>
+    The time taken to run the {ValueClassifierType} value classifier. Recorded
+    when a page is undergoing evaluation for annotation and runs through the
+    {ValueClassifierType} classifier, which happens when a page is loaded and
+    sufficient data (content, language, sensitivity score) has been gathered.
+  </summary>
+  <token key="ValueClassifierType"
+      variants="AccessibilityAnnotator.ValueClassifierType"/>
+</histogram>
+
+<histogram name="AccessibilityAnnotator.{ValueClassifierType}ClassifierResult"
+    enum="AccessibilityAnnotatorClassifierResult" expires_after="2026-08-01">
+  <owner>qiaoli@google.com</owner>
+  <owner>akvuong@google.com</owner>
+  <owner>igoralsky@google.com</owner>
+  <summary>
+    Records whether a page passed the {ValueClassifierType} value classifier
+    check, and what it is labeled as (if applicable). Recorded when a page is
+    undergoing evaluation for annotation and went through the
+    {ValueClassifierType} classifier, which happens when a page is loaded and
+    sufficient data (content, language, sensitivity score) has been gathered.
+  </summary>
+  <token key="ValueClassifierType"
+      variants="AccessibilityAnnotator.ValueClassifierType"/>
+</histogram>
+
+</histograms>
 
 </histogram-configuration>

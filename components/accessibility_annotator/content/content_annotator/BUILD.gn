@@ -28,6 +28,7 @@ source_set("content_annotator") {
     "//components/page_content_annotations/core",
     "//components/translate/core/common",
     "//components/url_matcher",
+    "//components/variations",
     "//content/public/browser",
     "//third_party/re2",
   ]
@@ -53,6 +54,7 @@ source_set("unit_tests") {
     "//components/page_content_annotations/core",
     "//components/page_content_annotations/core:test_support",
     "//components/translate/core/common",
+    "//components/variations",
     "//content/test:test_support",
     "//testing/gtest",
     "//url",

@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -23,11 +24,16 @@
 #include "components/translate/core/common/language_detection_details.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace accessibility_annotator {
+
+using ::testing::Field;
+using ::testing::Optional;
+using ::testing::Return;
 
 class ContentAnnotatorFeatureList {
  public:
@@ -129,29 +135,23 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
   raw_ptr<testing::StrictMock<MockContentClassifier>> mock_classifier_;
 };
 
-// TODO(crbug.com/463734845): Remove/replace these tests with meaningful tests
-// once the service has more public functionality that can be tested.
-TEST_F(ContentAnnotatorServiceTest, OnPageContentAnnotatedSucceeds) {
-  GURL url1("https://example.com/1");
+TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_ClassificationTriggered) {
+  GURL url("https://example.com/");
   base::Time base_time = base::Time::Now();
 
+  // 1. Send PageContentAnnotated
   auto result = page_content_annotations::PageContentAnnotationsResult::
       CreateContentVisibilityScoreResult(0.5f);
+  service_->OnPageContentAnnotated(
+      page_content_annotations::HistoryVisit(base_time, url), result);
 
-  ASSERT_NO_FATAL_FAILURE(service_->OnPageContentAnnotated(
-      page_content_annotations::HistoryVisit(base_time, url1), result));
-}
-
-TEST_F(ContentAnnotatorServiceTest, OnLanguageDeterminedSucceeds) {
-  GURL url1("https://example.com/1");
+  // 2. Send LanguageDetermined
   translate::LanguageDetectionDetails details;
-  details.url = url1;
+  details.url = url;
   details.adopted_language = "en";
+  service_->OnLanguageDetermined(details);
 
-  ASSERT_NO_FATAL_FAILURE(service_->OnLanguageDetermined(details));
-}
-
-TEST_F(ContentAnnotatorServiceTest, OnPageContentExtractedSucceeds) {
+  // 3. Send PageContentExtracted
   scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent>
       annotated_page_content = base::MakeRefCounted<
           page_content_annotations::RefCountedAnnotatedPageContent>();
@@ -159,9 +159,168 @@ TEST_F(ContentAnnotatorServiceTest, OnPageContentExtractedSucceeds) {
       "Test Title");
 
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents.get(),
+                                                             url);
 
-  ASSERT_NO_FATAL_FAILURE(service_->OnPageContentExtracted(
-      web_contents->GetPrimaryPage(), annotated_page_content));
+  // Expect Classify to be called when the final piece of data arrives.
+  EXPECT_CALL(*mock_classifier_, Classify(testing::_))
+      .WillOnce(Return(ContentClassificationResult()));
+
+  service_->OnPageContentExtracted(web_contents->GetPrimaryPage(),
+                                   annotated_page_content);
+}
+
+TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_TwoUrlsOnlyOneCompletes) {
+  GURL url1("https://example1.com/");
+  GURL url2("https://example2.com/");
+  base::Time base_time = base::Time::Now();
+  base::Time nav_time2 = base_time + base::Minutes(1);
+
+  scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent> apc2 =
+      base::MakeRefCounted<
+          page_content_annotations::RefCountedAnnotatedPageContent>();
+  apc2->data.mutable_main_frame_data()->set_title("Title 2");
+
+  // Expect Classify to be called only for URL 2 with correct data
+  EXPECT_CALL(*mock_classifier_,
+              Classify(testing::AllOf(
+                  Field(&ContentClassificationInput::url, url2),
+                  Field(&ContentClassificationInput::sensitivity_score,
+                        Optional(testing::FloatEq(0.7f))),
+                  Field(&ContentClassificationInput::navigation_timestamp,
+                        Optional(nav_time2)),
+                  Field(&ContentClassificationInput::adopted_language,
+                        Optional(std::string("fr"))),
+                  Field(&ContentClassificationInput::page_title,
+                        Optional(std::string("Title 2"))),
+                  Field(&ContentClassificationInput::annotated_page_content,
+                        testing::Eq(apc2)))))
+      .WillOnce(Return(ContentClassificationResult()));
+
+  // URL 1 shouldn't trigger classification because it's incomplete.
+  EXPECT_CALL(*mock_classifier_,
+              Classify(Field(&ContentClassificationInput::url, url1)))
+      .Times(0);
+
+  // 1. Send partial data for URL 1.
+  service_->OnPageContentAnnotated(
+      page_content_annotations::HistoryVisit(base_time, url1),
+      page_content_annotations::PageContentAnnotationsResult::
+          CreateContentVisibilityScoreResult(0.5f));
+
+  // 2. Send all data for URL 2.
+  service_->OnPageContentAnnotated(
+      page_content_annotations::HistoryVisit(nav_time2, url2),
+      page_content_annotations::PageContentAnnotationsResult::
+          CreateContentVisibilityScoreResult(0.3f));
+
+  translate::LanguageDetectionDetails details2;
+  details2.url = url2;
+  details2.adopted_language = "fr";
+  service_->OnLanguageDetermined(details2);
+
+  std::unique_ptr<content::WebContents> web_contents2 = CreateTestWebContents();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents2.get(), url2);
+
+  service_->OnPageContentExtracted(web_contents2->GetPrimaryPage(), apc2);
+}
+
+TEST_F(ContentAnnotatorServiceTest,
+       TestMaybeAnnotate_ClassificationNotTriggeredWhenIncomplete) {
+  GURL url("https://example.com/");
+  base::Time base_time = base::Time::Now();
+
+  // Expect Classify NOT to be called because PageContentExtracted is missing.
+  EXPECT_CALL(*mock_classifier_, Classify(testing::_)).Times(0);
+
+  // 1. Send PageContentAnnotated
+  auto result = page_content_annotations::PageContentAnnotationsResult::
+      CreateContentVisibilityScoreResult(0.5f);
+  service_->OnPageContentAnnotated(
+      page_content_annotations::HistoryVisit(base_time, url), result);
+
+  // 2. Send LanguageDetermined
+  translate::LanguageDetectionDetails details;
+  details.url = url;
+  details.adopted_language = "en";
+  service_->OnLanguageDetermined(details);
+}
+
+TEST_F(ContentAnnotatorServiceTest,
+       TestMaybeAnnotate_FullAnnotationReachedHistogram) {
+  GURL url("https://example.com/");
+  base::Time base_time = base::Time::Now();
+
+  // Helper to trigger classification
+  auto trigger_classification_fn =
+      [&](ContentClassificationResult mock_result) {
+        EXPECT_CALL(*mock_classifier_, Classify(testing::_))
+            .WillOnce(Return(mock_result));
+
+        service_->OnPageContentAnnotated(
+            page_content_annotations::HistoryVisit(base_time, url),
+            page_content_annotations::PageContentAnnotationsResult::
+                CreateContentVisibilityScoreResult(0.5f));
+
+        translate::LanguageDetectionDetails details;
+        details.url = url;
+        details.adopted_language = "en";
+        service_->OnLanguageDetermined(details);
+
+        scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent>
+            apc = base::MakeRefCounted<
+                page_content_annotations::RefCountedAnnotatedPageContent>();
+        apc->data.mutable_main_frame_data()->set_title("Title");
+        std::unique_ptr<content::WebContents> web_contents =
+            CreateTestWebContents();
+        content::NavigationSimulator::NavigateAndCommitFromBrowser(
+            web_contents.get(), url);
+        service_->OnPageContentExtracted(web_contents->GetPrimaryPage(), apc);
+      };
+
+  {
+    // Case 1: No results -> false
+    base::HistogramTester scoped_tester;
+    trigger_classification_fn(ContentClassificationResult());
+    scoped_tester.ExpectUniqueSample(
+        "AccessibilityAnnotator.FullAnnotationReached", false, 1);
+  }
+  {
+    // Case 2: Title keyword result has category -> true
+    base::HistogramTester scoped_tester;
+    ContentClassificationResult result_with_title;
+    result_with_title.title_keyword_result =
+        ContentClassificationResult::Result();
+    result_with_title.title_keyword_result->category = "test_category";
+    result_with_title.is_sensitive = false;
+    result_with_title.is_in_target_language = true;
+    trigger_classification_fn(result_with_title);
+    scoped_tester.ExpectUniqueSample(
+        "AccessibilityAnnotator.FullAnnotationReached", true, 1);
+  }
+  {
+    // Case 3: URL match result has category -> true
+    base::HistogramTester scoped_tester;
+    ContentClassificationResult result_with_url;
+    result_with_url.url_match_result = ContentClassificationResult::Result();
+    result_with_url.url_match_result->category = "test_category";
+    result_with_url.is_sensitive = false;
+    result_with_url.is_in_target_language = true;
+    trigger_classification_fn(result_with_url);
+    scoped_tester.ExpectUniqueSample(
+        "AccessibilityAnnotator.FullAnnotationReached", true, 1);
+  }
+  {
+    // Case 4: Result does not pass either classifier (no category) -> false
+    base::HistogramTester scoped_tester;
+    ContentClassificationResult result_no_match;
+    result_no_match.is_sensitive = false;
+    result_no_match.is_in_target_language = true;
+    trigger_classification_fn(result_no_match);
+    scoped_tester.ExpectUniqueSample(
+        "AccessibilityAnnotator.FullAnnotationReached", false, 1);
+  }
 }
 
 }  // namespace accessibility_annotator

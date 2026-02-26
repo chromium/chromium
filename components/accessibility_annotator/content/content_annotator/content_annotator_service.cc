@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_macros_local.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
@@ -25,6 +25,20 @@
 #include "content/public/browser/page.h"
 
 namespace accessibility_annotator {
+
+namespace {
+
+bool HasClassifierCategory(
+    const std::optional<ContentClassificationResult::Result>& result) {
+  return result.has_value() && result->category.has_value();
+}
+
+bool PassesSafetyChecks(const ContentClassificationResult& result) {
+  return !result.is_sensitive.value_or(true) &&
+         result.is_in_target_language.value_or(false);
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<ContentAnnotatorService> ContentAnnotatorService::Create(
@@ -128,12 +142,17 @@ void ContentAnnotatorService::MaybeAnnotate(CacheIterator it) {
   // needed.
   ContentClassificationResult result =
       content_classifier_->Classify(complete_data);
-  LOCAL_HISTOGRAM_BOOLEAN(
-      "AccessibilityAnnotator.ContentAnnotator.MaybeAnnotate."
-      "ContentClassificationResult",
-      result.title_keyword_result.has_value() ||
-          result.url_match_result.has_value());
-  // TODO(crbug.com/476434957): Process classification result.
+
+  // Annotation proceeds if safety checks pass and at least one value classifier
+  // finds relevant content.
+  bool reached_annotation =
+      (HasClassifierCategory(result.title_keyword_result) ||
+       HasClassifierCategory(result.url_match_result)) &&
+      PassesSafetyChecks(result);
+  base::UmaHistogramBoolean("AccessibilityAnnotator.FullAnnotationReached",
+                            reached_annotation);
+  // TODO(crbug.com/485675335): Process classification result with gateway flag
+  // to full annotation.
 }
 
 // TODO(crbug.com/482383206): Update to handle APC ingestion.

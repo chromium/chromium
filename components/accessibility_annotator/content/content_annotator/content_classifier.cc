@@ -4,12 +4,17 @@
 
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 
+#include <string_view>
+
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_classifier_rules_parser.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_rule_based_classifier.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_url_matcher_classifier.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/variations/hashing.h"
 
 namespace accessibility_annotator {
 
@@ -80,6 +85,25 @@ ContentClassifier& ContentClassifier::operator=(ContentClassifier&&) = default;
 // For testing.
 ContentClassifier::ContentClassifier() = default;
 
+// static
+std::string_view ContentClassifier::ClassifierResultStatusToString(
+    ClassifierResultStatus status) {
+  switch (status) {
+    case ClassifierResultStatus::kInconclusiveNoMatch:
+      return "InconclusiveNoMatch";
+    case ClassifierResultStatus::kDidNotRunMissingClassifier:
+      return "DidNotRun.MissingClassifier";
+    case ClassifierResultStatus::kDidNotRunEmptyPageTitle:
+      return "DidNotRun.EmptyPageTitle";
+    case ClassifierResultStatus::kDidNotRunInvalidUrl:
+      return "DidNotRun.InvalidUrl";
+    case ClassifierResultStatus::kDidNotRunMissingClassifierEmptyPageTitle:
+      return "DidNotRun.MissingClassifierEmptyPageTitle";
+    case ClassifierResultStatus::kDidNotRunMissingClassifierInvalidUrl:
+      return "DidNotRun.MissingClassifierInvalidUrl";
+  }
+}
+
 ContentClassificationResult ContentClassifier::Classify(
     const ContentClassificationInput& input) const {
   CHECK(input.adopted_language.has_value());
@@ -89,42 +113,81 @@ ContentClassificationResult ContentClassifier::Classify(
   ContentClassificationResult result;
 
   // 1. Check whether the page is in one of the target language(s).
-  if (!supported_languages_.contains(*input.adopted_language)) {
-    // If the page isn't in a supported language, do not proceed
-    // with further classification.
-    return result;
-  }
+  result.is_in_target_language =
+      supported_languages_.contains(*input.adopted_language);
+  base::UmaHistogramBoolean("AccessibilityAnnotator.LanguageCheck",
+                            result.is_in_target_language.value());
 
   // 2. Check whether the page is within the sensitivity threshold.
-  if (!(*input.sensitivity_score <
-        kContentAnnotatorSensitivityThreshold.Get())) {
-    // If the page is considered too sensitive, do not proceed with further
-    // classification.
-    return result;
-  }
+  result.is_sensitive =
+      *input.sensitivity_score < kContentAnnotatorSensitivityThreshold.Get();
+  base::UmaHistogramBoolean("AccessibilityAnnotator.SensitivityCheck",
+                            result.is_sensitive.value());
 
   // 3. Run value classifiers.
+  std::string title_classifier_result(ClassifierResultStatusToString(
+      ClassifierResultStatus::kDidNotRunMissingClassifierEmptyPageTitle));
   if (title_keyword_classifier_ && !input.page_title->empty()) {
+    base::ElapsedTimer timer;
     ContentClassificationResult::Result title_result;
     std::optional<std::string_view> category =
         title_keyword_classifier_->Classify(*input.page_title);
+    base::UmaHistogramTimes(
+        "AccessibilityAnnotator.TitleKeywordClassifierDuration",
+        timer.Elapsed());
     if (category) {
       title_result.category = std::string(*category);
-      // TODO(crbug.com/478246547): Log the category and value.
+      // TODO(crbug.com/478246547): Log the value to UKM.
     }
     result.title_keyword_result = title_result;
+    title_classifier_result =
+        result.title_keyword_result->category
+            ? *result.title_keyword_result->category
+            : std::string(ClassifierResultStatusToString(
+                  ClassifierResultStatus::kInconclusiveNoMatch));
+  } else if (!input.page_title->empty()) {
+    // Classifier missing, but page title is valid.
+    title_classifier_result = std::string(ClassifierResultStatusToString(
+        ClassifierResultStatus::kDidNotRunMissingClassifier));
+  } else if (title_keyword_classifier_) {
+    // Classifier present, but page title is empty.
+    title_classifier_result = std::string(ClassifierResultStatusToString(
+        ClassifierResultStatus::kDidNotRunEmptyPageTitle));
   }
+  base::UmaHistogramSparse(
+      "AccessibilityAnnotator.TitleKeywordClassifierResult",
+      variations::HashName(title_classifier_result));
 
+  std::string url_classifier_result(ClassifierResultStatusToString(
+      ClassifierResultStatus::kDidNotRunMissingClassifierInvalidUrl));
   if (url_match_classifier_ && input.url.is_valid()) {
+    base::ElapsedTimer timer;
     ContentClassificationResult::Result url_result;
     std::optional<std::string_view> category =
         url_match_classifier_->Classify(input.url);
+    base::UmaHistogramTimes("AccessibilityAnnotator.UrlClassifierDuration",
+                            timer.Elapsed());
     if (category) {
       url_result.category = std::string(*category);
-      // TODO(crbug.com/478246547): Log the category and value.
+      // TODO(crbug.com/478246547): Log the value to UKM.
     }
     result.url_match_result = url_result;
+    url_classifier_result =
+        result.url_match_result->category
+            ? *result.url_match_result->category
+            : std::string(ClassifierResultStatusToString(
+                  ClassifierResultStatus::kInconclusiveNoMatch));
+  } else if (input.url.is_valid()) {
+    // Classifier missing, but URL is valid.
+    url_classifier_result = std::string(ClassifierResultStatusToString(
+        ClassifierResultStatus::kDidNotRunMissingClassifier));
+  } else if (url_match_classifier_) {
+    // Classifier present, but URL is invalid.
+    url_classifier_result = std::string(ClassifierResultStatusToString(
+        ClassifierResultStatus::kDidNotRunInvalidUrl));
   }
+  base::UmaHistogramSparse("AccessibilityAnnotator.UrlClassifierResult",
+                           variations::HashName(url_classifier_result));
 
   return result;
 }
