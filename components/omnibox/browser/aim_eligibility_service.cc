@@ -152,7 +152,8 @@ const net::NetworkTrafficAnnotationTag kRequestTrafficAnnotation =
           type: NONE
         }
         data:
-          "No request body is sent; this is a GET request with no query params."
+          "The client's locale information (e.g. en-US) may be sent as a "
+          "query parameter or within a proto body in the request."
         destination: GOOGLE_OWNED_SERVICE
         internal {
           contacts { email: "chrome-desktop-search@google.com" }
