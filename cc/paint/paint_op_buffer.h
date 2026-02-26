@@ -250,7 +250,9 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
   // If the shrinking-to-fit allocates a new data buffer, this PaintOpBuffer
   // retains the original data buffer for future use.
   PaintRecord ReleaseAsRecord();
-  PaintRecord DeepCopyAsRecord();
+  PaintRecord DeepCopyAsRecord() const;
+
+  PaintOpBuffer& operator+=(const PaintOpBuffer& other);
 
   bool EqualsForTesting(const PaintOpBuffer& other) const;
 
