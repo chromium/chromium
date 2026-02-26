@@ -644,18 +644,18 @@ bool VP8VaapiVideoEncoderDelegate::SubmitFrameParameters(
   pic_param.pic_flags.bits.mb_no_coeff_skip = frame_header->mb_no_skip_coeff;
   if (frame_header->IsKeyframe())
     pic_param.pic_flags.bits.forced_lf_adjustment = true;
-
-  static_assert(std::extent<decltype(pic_param.loop_filter_level)>() ==
-                        std::extent<decltype(pic_param.ref_lf_delta)>() &&
-                    std::extent<decltype(pic_param.ref_lf_delta)>() ==
-                        std::extent<decltype(pic_param.mode_lf_delta)>() &&
-                    std::extent<decltype(pic_param.ref_lf_delta)>() ==
-                        std::extent<decltype(
-                            frame_header->loopfilter_hdr.ref_frame_delta)>() &&
-                    std::extent<decltype(pic_param.mode_lf_delta)>() ==
-                        std::extent<decltype(
-                            frame_header->loopfilter_hdr.mb_mode_delta)>(),
-                "Invalid loop filter array sizes");
+  static_assert(
+      std::extent<decltype(pic_param.loop_filter_level)>() ==
+              std::extent<decltype(pic_param.ref_lf_delta)>() &&
+          std::extent<decltype(pic_param.ref_lf_delta)>() ==
+              std::extent<decltype(pic_param.mode_lf_delta)>() &&
+          std::extent<decltype(pic_param.ref_lf_delta)>() ==
+              std::tuple_size_v<
+                  decltype(frame_header->loopfilter_hdr.ref_frame_delta)> &&
+          std::extent<decltype(pic_param.mode_lf_delta)>() ==
+              std::tuple_size_v<
+                  decltype(frame_header->loopfilter_hdr.mb_mode_delta)>,
+      "Invalid loop filter array sizes");
 
   for (size_t i = 0; i < std::size(pic_param.loop_filter_level); ++i) {
     UNSAFE_TODO(pic_param.loop_filter_level[i]) =

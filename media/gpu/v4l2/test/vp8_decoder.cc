@@ -12,6 +12,7 @@
 #include <linux/v4l2-controls.h>
 #include <linux/videodev2.h>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "media/base/video_types.h"
@@ -142,11 +143,12 @@ struct v4l2_vp8_entropy FillV4L2VP8EntropyHeader(
       std::size(decltype(v4l2_entr.mv_probs){}) == media::kNumMVContexts,
       "Invalid size of mv_probs");
 
-  media::SafeArrayMemcpy(v4l2_entr.coeff_probs, vp8_entropy_hdr.coeff_probs);
-  media::SafeArrayMemcpy(v4l2_entr.y_mode_probs, vp8_entropy_hdr.y_mode_probs);
-  media::SafeArrayMemcpy(v4l2_entr.uv_mode_probs,
-                         vp8_entropy_hdr.uv_mode_probs);
-  media::SafeArrayMemcpy(v4l2_entr.mv_probs, vp8_entropy_hdr.mv_probs);
+  base::as_writable_byte_span(v4l2_entr.coeff_probs)
+      .copy_from(base::as_byte_span(vp8_entropy_hdr.coeff_probs));
+  base::span(v4l2_entr.y_mode_probs).copy_from(vp8_entropy_hdr.y_mode_probs);
+  base::span(v4l2_entr.uv_mode_probs).copy_from(vp8_entropy_hdr.uv_mode_probs);
+  base::as_writable_byte_span(v4l2_entr.mv_probs)
+      .copy_from(base::as_byte_span(vp8_entropy_hdr.mv_probs));
   return v4l2_entr;
 }
 

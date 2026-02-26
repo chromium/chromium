@@ -81,11 +81,14 @@ void FillV4L2QuantizationHeader(const Vp8QuantizationHeader& vp8_quant_hdr,
 
 void FillV4L2Vp8EntropyHeader(const Vp8EntropyHeader& vp8_entropy_hdr,
                               struct v4l2_vp8_entropy* v4l2_entropy_hdr) {
-  SafeArrayMemcpy(v4l2_entropy_hdr->coeff_probs, vp8_entropy_hdr.coeff_probs);
-  SafeArrayMemcpy(v4l2_entropy_hdr->y_mode_probs, vp8_entropy_hdr.y_mode_probs);
-  SafeArrayMemcpy(v4l2_entropy_hdr->uv_mode_probs,
-                  vp8_entropy_hdr.uv_mode_probs);
-  SafeArrayMemcpy(v4l2_entropy_hdr->mv_probs, vp8_entropy_hdr.mv_probs);
+  base::as_writable_byte_span(v4l2_entropy_hdr->coeff_probs)
+      .copy_from(base::as_byte_span(vp8_entropy_hdr.coeff_probs));
+  base::span(v4l2_entropy_hdr->y_mode_probs)
+      .copy_from(vp8_entropy_hdr.y_mode_probs);
+  base::span(v4l2_entropy_hdr->uv_mode_probs)
+      .copy_from(vp8_entropy_hdr.uv_mode_probs);
+  base::as_writable_byte_span(v4l2_entropy_hdr->mv_probs)
+      .copy_from(base::as_byte_span(vp8_entropy_hdr.mv_probs));
 }
 
 }  // namespace

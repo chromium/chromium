@@ -17,19 +17,6 @@
 namespace media {
 namespace vaapi_test {
 
-namespace {
-
-template <typename To, typename From>
-void CheckedMemcpy(To& to, From& from) {
-  static_assert(std::is_array<To>::value, "First parameter must be an array");
-  static_assert(std::is_array<From>::value,
-                "Second parameter must be an array");
-  static_assert(sizeof(to) == sizeof(from), "arrays must be of same size");
-  UNSAFE_TODO(memcpy(&to, &from, sizeof(to)));
-}
-
-}  // namespace
-
 Vp8Decoder::Vp8Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        const VaapiDevice& va_device,
                        SharedVASurface::FetchPolicy fetch_policy)
@@ -112,7 +99,9 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
   }
 
   const Vp8EntropyHeader& entr_hdr = frame_hdr.entropy_hdr;
-  CheckedMemcpy(prob_buf.dct_coeff_probs, entr_hdr.coeff_probs);
+
+  base::as_writable_byte_span(prob_buf.dct_coeff_probs)
+      .copy_from(base::as_byte_span(entr_hdr.coeff_probs));
 
   pic_param.frame_width = frame_hdr.width;
   pic_param.frame_height = frame_hdr.height;
@@ -145,9 +134,8 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
   FHDR_TO_PP_PF(loop_filter_disable, lf_hdr.level == 0);
 #undef FHDR_TO_PP_PF
 
-  CheckedMemcpy(pic_param.mb_segment_tree_probs, sgmnt_hdr.segment_prob);
-
-  static_assert(std::extent<decltype(sgmnt_hdr.lf_update_value)>() ==
+  base::span(pic_param.mb_segment_tree_probs).copy_from(sgmnt_hdr.segment_prob);
+  static_assert(std::tuple_size_v<decltype(sgmnt_hdr.lf_update_value)> ==
                     std::extent<decltype(pic_param.loop_filter_level)>(),
                 "loop filter level arrays mismatch");
   for (size_t i = 0; i < std::size(sgmnt_hdr.lf_update_value); ++i) {
@@ -155,9 +143,9 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
     if (sgmnt_hdr.segmentation_enabled) {
       if (sgmnt_hdr.segment_feature_mode ==
           Vp8SegmentationHeader::FEATURE_MODE_ABSOLUTE) {
-        lf_level = UNSAFE_TODO(sgmnt_hdr.lf_update_value[i]);
+        lf_level = sgmnt_hdr.lf_update_value[i];
       } else {
-        lf_level += UNSAFE_TODO(sgmnt_hdr.lf_update_value[i]);
+        lf_level += sgmnt_hdr.lf_update_value[i];
       }
     }
 
@@ -165,20 +153,19 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
   }
 
   static_assert(
-      std::extent<decltype(lf_hdr.ref_frame_delta)>() ==
+      std::tuple_size_v<decltype(lf_hdr.ref_frame_delta)> ==
           std::extent<decltype(pic_param.loop_filter_deltas_ref_frame)>(),
       "loop filter deltas arrays size mismatch");
-  static_assert(std::extent<decltype(lf_hdr.mb_mode_delta)>() ==
+  static_assert(std::tuple_size_v<decltype(lf_hdr.mb_mode_delta)> ==
                     std::extent<decltype(pic_param.loop_filter_deltas_mode)>(),
                 "loop filter deltas arrays size mismatch");
-  static_assert(std::extent<decltype(lf_hdr.ref_frame_delta)>() ==
-                    std::extent<decltype(lf_hdr.mb_mode_delta)>(),
+  static_assert(std::tuple_size_v<decltype(lf_hdr.ref_frame_delta)> ==
+                    std::tuple_size_v<decltype(lf_hdr.mb_mode_delta)>,
                 "loop filter deltas arrays size mismatch");
   for (size_t i = 0; i < std::size(lf_hdr.ref_frame_delta); ++i) {
     UNSAFE_TODO(pic_param.loop_filter_deltas_ref_frame[i]) =
-        UNSAFE_TODO(lf_hdr.ref_frame_delta[i]);
-    UNSAFE_TODO(pic_param.loop_filter_deltas_mode[i]) =
-        UNSAFE_TODO(lf_hdr.mb_mode_delta[i]);
+        lf_hdr.ref_frame_delta[i];
+    UNSAFE_TODO(pic_param.loop_filter_deltas_mode[i]) = lf_hdr.mb_mode_delta[i];
   }
 
 #define FHDR_TO_PP(a) pic_param.a = frame_hdr.a
@@ -188,9 +175,10 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
   FHDR_TO_PP(prob_gf);
 #undef FHDR_TO_PP
 
-  CheckedMemcpy(pic_param.y_mode_probs, entr_hdr.y_mode_probs);
-  CheckedMemcpy(pic_param.uv_mode_probs, entr_hdr.uv_mode_probs);
-  CheckedMemcpy(pic_param.mv_probs, entr_hdr.mv_probs);
+  base::span(pic_param.y_mode_probs).copy_from(entr_hdr.y_mode_probs);
+  base::span(pic_param.uv_mode_probs).copy_from(entr_hdr.uv_mode_probs);
+  base::as_writable_byte_span(pic_param.mv_probs)
+      .copy_from(base::as_byte_span(entr_hdr.mv_probs));
 
   pic_param.bool_coder_ctx.range = frame_hdr.bool_dec_range;
   pic_param.bool_coder_ctx.value = frame_hdr.bool_dec_value;

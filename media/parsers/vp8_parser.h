@@ -34,9 +34,9 @@ struct Vp8SegmentationHeader {
   SegmentFeatureMode segment_feature_mode;
 
   std::array<int8_t, kMaxMBSegments> quantizer_update_value;
-  int8_t lf_update_value[kMaxMBSegments];
+  std::array<int8_t, kMaxMBSegments> lf_update_value;
   static const int kDefaultSegmentProb = 255;
-  uint8_t segment_prob[kNumMBFeatureTreeProbs];
+  std::array<uint8_t, kNumMBFeatureTreeProbs> segment_prob;
 };
 
 const size_t kNumBlockContexts = 4;
@@ -51,8 +51,8 @@ struct Vp8LoopFilterHeader {
   bool loop_filter_adj_enable;
   bool mode_ref_lf_delta_update;
 
-  int8_t ref_frame_delta[kNumBlockContexts];
-  int8_t mb_mode_delta[kNumBlockContexts];
+  std::array<int8_t, kNumBlockContexts> ref_frame_delta;
+  std::array<int8_t, kNumBlockContexts> mb_mode_delta;
 };
 
 // Member of Vp8FrameHeader and will be 0-initialized
@@ -80,13 +80,16 @@ const size_t kNumUVModeProbs = 3;
 // Member of Vp8FrameHeader and will be 0-initialized
 // in Vp8FrameHeader's constructor.
 struct Vp8EntropyHeader {
-  uint8_t coeff_probs[kNumBlockTypes][kNumCoeffBands][kNumPrevCoeffContexts]
-                     [kNumEntropyNodes];
+  std::array<std::array<std::array<std::array<uint8_t, kNumEntropyNodes>,
+                                   kNumPrevCoeffContexts>,
+                        kNumCoeffBands>,
+             kNumBlockTypes>
+      coeff_probs;
 
-  uint8_t y_mode_probs[kNumYModeProbs];
-  uint8_t uv_mode_probs[kNumUVModeProbs];
+  std::array<uint8_t, kNumYModeProbs> y_mode_probs;
+  std::array<uint8_t, kNumUVModeProbs> uv_mode_probs;
 
-  uint8_t mv_probs[kNumMVContexts][kNumMVProbs];
+  std::array<std::array<uint8_t, kNumMVProbs>, kNumMVContexts> mv_probs;
 };
 
 const size_t kMaxDCTPartitions = 8;
