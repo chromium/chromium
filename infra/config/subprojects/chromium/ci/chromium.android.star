@@ -2765,6 +2765,9 @@ ci.builder(
                     # https://crbug.com/1289764
                     "--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*",
                 ],
+                swarming = targets.swarming(
+                    shards = 12,
+                ),
             ),
             "cc_unittests": targets.mixin(
                 # https://crbug.com/1039860

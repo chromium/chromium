@@ -5,8 +5,8 @@
 # Configuration for an Android-14 (U, API 34) AVD on google_apis on x86_64
 
 emulator_package {
-  package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "v8yrLOpMlE0if7NxVuSlX0Etnq0k_FLX_hmYksbVSm0C"  # 36.1.9 (Stable)
+  package_name: "chromium/third_party/android_sdk/public/emulator/linux-amd64"
+  version: "QgDCxG9OzoQx04LpwnENgTz3gby5-Kyx6Rsv5yl91p4C"  # 36.4.9 (Stable)
 }
 
 system_image_package {
@@ -17,9 +17,9 @@ system_image_name: "system-images;android-34;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-34/google_apis/x86_64"
-  # Created in https://ci.chromium.org/ui/b/8705255753993406753
+  # Created in https://ci.chromium.org/ui/b/8689292876063261041
   # Patched gmscore version 25.07.33 in https://crrev.com/c/5735581
-  version: "4kpv_Pyct02q1bt6tS3BuG8ec6q1OwadQMdIUPo_H40C"
+  version: "TfDrwbIlj07Hc-0odvpYj7GhvhXyAEkY6uhOr34fjD4C"
 }
 avd_name: "android_34_google_apis_x64"
 
