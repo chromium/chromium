@@ -2402,6 +2402,21 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   EXPECT_TRUE(oauth2_service_delegate_->server_revokes_.empty());
 }
 
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       AddEmptyBindingKeyToService) {
+  testing::StrictMock<unexportable_keys::MockUnexportableKeyService>
+      mock_unexportable_key_service;
+  oauth2_service_delegate_ = CreateOAuth2ServiceDelegate(
+      signin::AccountConsistencyMethod::kDice,
+      std::make_unique<TokenBindingHelper>(mock_unexportable_key_service));
+
+  EXPECT_CALL(mock_unexportable_key_service, FromWrappedSigningKeySlowlyAsync)
+      .Times(0);
+
+  // Should not crash when passing an empty key or call anything on the mock.
+  oauth2_service_delegate_->AddBindingKeyToService({});
+}
+
 class MutableProfileOAuth2TokenServiceDelegateGarbageCollectionTest
     : public MutableProfileOAuth2TokenServiceDelegateTest,
       public testing::WithParamInterface<bool> {};

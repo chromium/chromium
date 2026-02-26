@@ -167,6 +167,7 @@ bool TokenBindingHelper::AreAllBindingKeysSame() const {
 
 void TokenBindingHelper::CopyBindingKeyFromAnotherTokenService(
     base::span<const uint8_t> wrapped_binding_key) {
+  CHECK(!wrapped_binding_key.empty());
   // This will force a load of the `wrapped_binding_key` into the
   // `unexportable_key_service_`. In stateful implementations like on macOS,
   // this will furthermore ensure that the key representation on disk will be

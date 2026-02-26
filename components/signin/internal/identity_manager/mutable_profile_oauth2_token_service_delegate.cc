@@ -488,7 +488,7 @@ void MutableProfileOAuth2TokenServiceDelegate::
 
 void MutableProfileOAuth2TokenServiceDelegate::AddBindingKeyToService(
     base::span<const uint8_t> wrapped_binding_key) {
-  if (token_binding_helper_) {
+  if (token_binding_helper_ && !wrapped_binding_key.empty()) {
     token_binding_helper_->CopyBindingKeyFromAnotherTokenService(
         wrapped_binding_key);
   }

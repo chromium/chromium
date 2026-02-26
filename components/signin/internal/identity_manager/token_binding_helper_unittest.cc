@@ -13,6 +13,7 @@
 
 #include "base/containers/to_vector.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -189,6 +190,10 @@ TEST_F(TokenBindingHelperAreAllBindingKeysSameTest, FalseIfDifferent) {
   helper().SetBindingKey(CoreAccountId::FromGaiaId(GaiaId("test_gaia_id3")),
                          GetWrappedKey(GenerateNewKey()));
   EXPECT_FALSE(helper().AreAllBindingKeysSame());
+}
+
+TEST_F(TokenBindingHelperTest, CopyBindingKeyFromAnotherTokenServiceEmpty) {
+  EXPECT_CHECK_DEATH(helper().CopyBindingKeyFromAnotherTokenService({}));
 }
 
 TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertion) {
