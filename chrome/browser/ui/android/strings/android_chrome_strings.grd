@@ -7514,6 +7514,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_POSITIVE_BUTTON_TEXT_LENS" desc="Button text for the Tips Promo bottom sheet to open Google Lens.">
         Open Google Lens
       </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_POSITIVE_BUTTON_TEXT_RECENT_TABS" desc="Button text for the Tips Promo bottom sheet to open the Recent Tabs page.">
+        View recent tabs
+      </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_POSITIVE_BUTTON_TEXT_TRY_NOW" desc="Button text for the Tips Promo bottom sheet to try out the feature now.">
         Try it now
       </message>
@@ -7561,6 +7564,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_SIGNIN_SIGNED_IN" desc="Title of the Sign in feature tip main page promo when the user is already signed in. [CHAR_LIMIT=32]">
         You\u2019re already signed in
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_RECENT_TABS" desc="Title of the Recent Tabs feature tip main page promo. [CHAR_LIMIT=32]">
+        Pick up where you left off
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_RECENT_TABS" desc="Description of the Recent Tabs feature tip main page promo.">
+        You can reopen tabs that you\u2019ve recently closed from wherever you use Chrome
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_FIRST_STEP_ESB" desc="Description of the Enhanced Safe Browsing feature tip first step detail page promo.">
         Open Chrome menu > Settings
@@ -7633,6 +7642,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_THIRD_STEP_CUSTOMIZE_MVT" desc="Description of the Customize MVT feature tip third step detail page promo.">
         Tap Pin this shortcut
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_FIRST_STEP_RECENT_TABS" desc="Description of the Recent tabs feature tip first step detail page promo.">
+        Open Chrome menu
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_SECOND_STEP_RECENT_TABS" desc="Description of the Recent Tabs feature tip second step detail page promo.">
+        Tap Recent tabs
+      </message>
+      <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_THIRD_STEP_RECENT_TABS" desc="Description of the Recent Tabs feature tip third step detail page promo.">
+        View recently opened tabs
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_QUICK_DELETE_SHORT" desc="Title of the Quick Delete feature tip detail page promo. [CHAR_LIMIT=32]">
         Quickly delete browsing data

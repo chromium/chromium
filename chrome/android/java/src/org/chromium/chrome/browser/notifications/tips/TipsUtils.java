@@ -71,6 +71,7 @@ public class TipsUtils {
             "android.tips.notifications.create_tab_group_shown";
     public static final String CUSTOMIZE_MVT_SHOWN =
             "android.tips.notifications.customize_mvt_shown";
+    public static final String RECENT_TABS_SHOWN = "android.tips.notifications.recent_tabs_shown";
 
     // LINT.ThenChange(//chrome/common/pref_names.h:TipsShownPrefs)
 
@@ -221,6 +222,21 @@ public class TipsUtils {
                 detailPageSteps.add(
                         context.getString(
                                 R.string.tips_promo_bottom_sheet_third_step_customize_mvt));
+                break;
+            case TipsNotificationsFeatureType.RECENT_TABS:
+                positiveButtonTextRes =
+                        R.string.tips_promo_bottom_sheet_positive_button_text_recent_tabs;
+                mainPageTitleRes = R.string.tips_promo_bottom_sheet_title_recent_tabs;
+                mainPageDescriptionRes = R.string.tips_promo_bottom_sheet_description_recent_tabs;
+                mainPageLogoViewRes = R.drawable.tips_promo_recent_tabs_logo;
+                detailPageTitleRes = R.string.tips_promo_bottom_sheet_title_recent_tabs;
+                detailPageSteps.add(
+                        context.getString(R.string.tips_promo_bottom_sheet_first_step_recent_tabs));
+                detailPageSteps.add(
+                        context.getString(
+                                R.string.tips_promo_bottom_sheet_second_step_recent_tabs));
+                detailPageSteps.add(
+                        context.getString(R.string.tips_promo_bottom_sheet_third_step_recent_tabs));
                 break;
             default:
                 assert false : "Invalid feature type: " + featureType;
@@ -400,6 +416,8 @@ public class TipsUtils {
         UserPrefs.get(profile).setBoolean(PASSWORD_AUTOFILL_SHOWN, false);
         UserPrefs.get(profile).setBoolean(SIGNIN_SHOWN, false);
         UserPrefs.get(profile).setBoolean(CREATE_TAB_GROUP_SHOWN, false);
+        UserPrefs.get(profile).setBoolean(CUSTOMIZE_MVT_SHOWN, false);
+        UserPrefs.get(profile).setBoolean(RECENT_TABS_SHOWN, false);
     }
 
     /**

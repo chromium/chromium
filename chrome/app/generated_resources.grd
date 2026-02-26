@@ -19984,6 +19984,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_TIPS_NOTIFICATIONS_CUSTOMIZE_MVT_SUBTITLE" desc="Subtitle for the customize MVT tip notification.">
       Tap and hold to pin your most visited websites for easy access next time
     </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_RECENT_TABS_TITLE" desc="Title for the recent tabs tip notification. [CHAR_LIMIT=32]">
+      Pick up where you left off
+    </message>
+    <message name="IDS_TIPS_NOTIFICATIONS_RECENT_TABS_SUBTITLE" desc="Subtitle for the recent tabs tip notification.">
+      You can reopen tabs that you've recently closed from wherever you use Chrome
+    </message>
 
     <!-- chrome://updater -->
     <if expr="is_linux or is_macosx or is_win">

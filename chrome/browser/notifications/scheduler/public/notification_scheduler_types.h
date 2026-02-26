@@ -58,7 +58,8 @@ enum class TipsNotificationsFeatureType {
   kSignin = 5,
   kCreateTabGroups = 6,
   kCustomizeMVT = 7,
-  kMaxValue = kCustomizeMVT
+  kRecentTabs = 8,
+  kMaxValue = kRecentTabs
 };
 
 // The type of user feedback from a displayed notification.

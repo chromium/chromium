@@ -2201,8 +2201,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(prefs::kAndroidTipNotificationShownSignin,
                                 false);
   registry->RegisterBooleanPref(
-      prefs::kAndroidTipNotificationShownCreateTabGroup, false);
+      prefs::kAndroidTipNotificationShownCreateTabGroups, false);
   registry->RegisterBooleanPref(prefs::kAndroidTipNotificationShownCustomizeMVT,
+                                false);
+  registry->RegisterBooleanPref(prefs::kAndroidTipNotificationShownRecentTabs,
                                 false);
 #endif  // BUILDFLAG(IS_ANDROID)
 

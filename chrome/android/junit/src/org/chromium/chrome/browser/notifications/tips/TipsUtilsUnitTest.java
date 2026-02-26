@@ -293,6 +293,38 @@ public class TipsUtilsUnitTest {
 
     @SmallTest
     @Test
+    public void testGetFeatureTipPromoDataForType_RecentTabs() {
+        FeatureTipPromoData promoData =
+                TipsUtils.getFeatureTipPromoDataForType(
+                        mActivity,
+                        TipsNotificationsFeatureType.RECENT_TABS,
+                        /* isUserSignedIn= */ false);
+        assertEquals(
+                mActivity.getString(
+                        R.string.tips_promo_bottom_sheet_positive_button_text_recent_tabs),
+                promoData.positiveButtonText);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_title_recent_tabs),
+                promoData.mainPageTitle);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_description_recent_tabs),
+                promoData.mainPageDescription);
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_first_step_recent_tabs),
+                promoData.detailPageSteps.get(0));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_second_step_recent_tabs),
+                promoData.detailPageSteps.get(1));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_third_step_recent_tabs),
+                promoData.detailPageSteps.get(2));
+        assertEquals(
+                mActivity.getString(R.string.tips_promo_bottom_sheet_title_recent_tabs),
+                promoData.detailPageTitle);
+    }
+
+    @SmallTest
+    @Test
     public void testGetDetailStepBackground_SingleStep() {
         assertEquals(
                 R.drawable.view_list_single_item_background,

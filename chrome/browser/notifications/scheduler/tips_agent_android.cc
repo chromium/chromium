@@ -207,7 +207,7 @@ static void JNI_TipsAgent_MaybeScheduleNotification(JNIEnv* env,
       segmentation_platform::processing::ProcessedValue(signin_tip_shown));
 
   bool create_tab_groups_tip_shown = pref_service->GetBoolean(
-      prefs::kAndroidTipNotificationShownCreateTabGroup);
+      prefs::kAndroidTipNotificationShownCreateTabGroups);
   input_context->metadata_args.emplace(
       segmentation_platform::kCreateTabGroupsTipShown,
       segmentation_platform::processing::ProcessedValue(

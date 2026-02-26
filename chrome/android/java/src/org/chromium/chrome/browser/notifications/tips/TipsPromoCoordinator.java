@@ -45,7 +45,9 @@ import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
+import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment.HighlightedOption;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
@@ -54,8 +56,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -111,6 +116,7 @@ public class TipsPromoCoordinator {
     private final BottomSheetController mBottomSheetController;
     private final QuickDeleteController mQuickDeleteController;
     private final BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
+    private final ChromeTabCreator mRegularTabCreator;
     private final WindowAndroid mWindowAndroid;
     private final boolean mIsIncognito;
     private final LayoutManager mLayoutManager;
@@ -130,6 +136,7 @@ public class TipsPromoCoordinator {
      * @param bottomSheetController The system {@link BottomSheetController}.
      * @param quickDeleteController The controller to for the quick delete dialog.
      * @param signinCoordinator The coordinator for the sign-in promo bottom sheet.
+     * @param regularTabCreator The {@link ChromeTabCreator} to open new tabs when necessary.
      * @param windowAndroid The current WindowAndroid.
      * @param isIncognito Whether the current context is incognito.
      * @param profile The current profile.
@@ -141,6 +148,7 @@ public class TipsPromoCoordinator {
             BottomSheetController bottomSheetController,
             QuickDeleteController quickDeleteController,
             BottomSheetSigninAndHistorySyncCoordinator signinCoordinator,
+            ChromeTabCreator regularTabCreator,
             WindowAndroid windowAndroid,
             boolean isIncognito,
             Profile profile,
@@ -150,6 +158,7 @@ public class TipsPromoCoordinator {
         mBottomSheetController = bottomSheetController;
         mQuickDeleteController = quickDeleteController;
         mSigninCoordinator = signinCoordinator;
+        mRegularTabCreator = regularTabCreator;
         mWindowAndroid = windowAndroid;
         mIsIncognito = isIncognito;
         mLayoutManager = layoutManager;
@@ -309,6 +318,13 @@ public class TipsPromoCoordinator {
             case TipsNotificationsFeatureType.CUSTOMIZE_MVT:
                 // No-op since there is no page to travel to.
                 break;
+            case TipsNotificationsFeatureType.RECENT_TABS:
+                LoadUrlParams params =
+                        new LoadUrlParams(
+                                UrlConstants.RECENT_TABS_URL, PageTransition.AUTO_BOOKMARK);
+                mRegularTabCreator.createNewTab(
+                        params, TabLaunchType.FROM_CHROME_UI, /* parent= */ null);
+                break;
             default:
                 assert false : "Invalid feature type: " + featureType;
         }
@@ -357,6 +373,9 @@ public class TipsPromoCoordinator {
             case TipsNotificationsFeatureType.CUSTOMIZE_MVT:
                 logoView.setImageResource(logoViewRes);
                 break;
+            case TipsNotificationsFeatureType.RECENT_TABS:
+                logoView.setImageResource(logoViewRes);
+                break;
             default:
                 assert false : "Invalid feature type: " + featureType;
         }
@@ -380,6 +399,8 @@ public class TipsPromoCoordinator {
                 return ".CreateTabGroups";
             case TipsNotificationsFeatureType.CUSTOMIZE_MVT:
                 return ".CustomizeMVT";
+            case TipsNotificationsFeatureType.RECENT_TABS:
+                return ".RecentTabs";
             default:
                 assert false : "Invalid feature type: " + featureType;
                 return "";

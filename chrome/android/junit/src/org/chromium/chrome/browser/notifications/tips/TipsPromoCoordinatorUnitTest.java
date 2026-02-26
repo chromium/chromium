@@ -50,6 +50,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -73,6 +75,7 @@ public class TipsPromoCoordinatorUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private QuickDeleteController mQuickDeleteController;
     @Mock private BottomSheetSigninAndHistorySyncCoordinator mSigninCoordinator;
+    @Mock private ChromeTabCreator mTabCreator;
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private LensController mLensController;
@@ -101,6 +104,7 @@ public class TipsPromoCoordinatorUnitTest {
                         mBottomSheetController,
                         mQuickDeleteController,
                         mSigninCoordinator,
+                        mTabCreator,
                         mWindowAndroid,
                         /* isIncognito= */ false,
                         mProfile,
@@ -528,6 +532,54 @@ public class TipsPromoCoordinatorUnitTest {
         histogramWatcher.assertExpected();
     }
 
+    @SmallTest
+    @Test
+    public void testShowBottomSheet_RecentTabs() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Notifications.Tips.FeatureTipPromo.EventType.RecentTabs",
+                                TipsPromoCoordinator.FeatureTipPromoEventType.SHOWN,
+                                TipsPromoCoordinator.FeatureTipPromoEventType.ACCEPTED,
+                                TipsPromoCoordinator.FeatureTipPromoEventType
+                                        .DETAIL_PAGE_BACK_BUTTON)
+                        .expectIntRecordTimes(
+                                "Notifications.Tips.FeatureTipPromo.EventType.RecentTabs",
+                                TipsPromoCoordinator.FeatureTipPromoEventType.DETAIL_PAGE_CLICKED,
+                                2)
+                        .build();
+
+        setUpTipsPromoCoordinator(TipsNotificationsFeatureType.RECENT_TABS);
+        mTipsPromoCoordinator.showBottomSheet();
+        assertNotNull(((ImageView) mView.findViewById(R.id.main_page_logo)).getDrawable());
+
+        assertEquals(
+                ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+
+        mView.findViewById(R.id.tips_promo_details_button).performClick();
+        assertEquals(
+                ScreenType.DETAIL_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+
+        mView.findViewById(R.id.details_page_back_button).performClick();
+        assertEquals(
+                ScreenType.MAIN_SCREEN, mPropertyModel.get(TipsPromoProperties.CURRENT_SCREEN));
+        mView.findViewById(R.id.tips_promo_details_button).performClick();
+
+        assertEquals(
+                3,
+                mPropertyModel
+                        .get(TipsPromoProperties.FEATURE_TIP_PROMO_DATA)
+                        .detailPageSteps
+                        .size());
+        verify(mBottomSheetController).requestShowContent(any(), eq(true));
+
+        mView.findViewById(R.id.tips_promo_settings_button).performClick();
+        verify(mBottomSheetController).hideContent(any(), eq(true));
+        verify(mTabCreator).createNewTab(any(), eq(TabLaunchType.FROM_CHROME_UI), eq(null));
+
+        histogramWatcher.assertExpected();
+    }
+
     @Test
     public void testSheetContent_handleBackPressDetailScreen() {
         HistogramWatcher histogramWatcher =
@@ -630,6 +682,7 @@ public class TipsPromoCoordinatorUnitTest {
                         mBottomSheetController,
                         mQuickDeleteController,
                         mSigninCoordinator,
+                        mTabCreator,
                         mWindowAndroid,
                         /* isIncognito= */ false,
                         mProfile,
