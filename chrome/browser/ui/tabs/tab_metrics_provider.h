@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_UI_TABS_TAB_METRICS_PROVIDER_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/metrics/metrics_provider.h"
 
 class ProfileManager;
@@ -22,7 +24,8 @@ enum class VerticalTabsState {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:VerticalTabsState)
 
 // TabMetricsProvider provides tab-related metrics.
-class TabMetricsProvider : public metrics::MetricsProvider {
+class TabMetricsProvider : public metrics::MetricsProvider,
+                           public ProfileManagerObserver {
  public:
   explicit TabMetricsProvider(ProfileManager* profile_manager);
 
@@ -38,7 +41,16 @@ class TabMetricsProvider : public metrics::MetricsProvider {
   void ProvideCurrentSessionData(
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
+
  private:
+  // Logs whether the tabstrip is in vertical or horizontal mode whenever a user
+  // education session starts.
+  void OnUserEducationSessionStart(Profile* profile);
+
+  std::vector<base::CallbackListSubscription> session_start_subscriptions_;
+
   const raw_ptr<ProfileManager> profile_manager_;
 };
 

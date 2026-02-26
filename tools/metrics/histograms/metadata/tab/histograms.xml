@@ -3869,6 +3869,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.VerticalTabs.EnabledAtSessionStart" enum="BooleanEnabled"
+    expires_after="2026-07-01">
+  <owner>charlesmeng@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Whether vertical tabs is enabled for a profile. Logged whenever a new user
+    education session starts for each profile in the browser.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.VerticalTabs.State" enum="VerticalTabsState"
     expires_after="2026-07-01">
   <owner>dpenning@chromium.org</owner>
