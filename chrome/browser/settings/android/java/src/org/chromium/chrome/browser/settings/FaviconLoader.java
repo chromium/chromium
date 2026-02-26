@@ -14,16 +14,11 @@ import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.url.GURL;
 
-/**
- * A helper class that groups a FaviconHelper with its corresponding Callback
- * to load favicons for settings views.
- *
- * This object is kept alive by being passed to the native
- * FaviconHelper.getLocalFaviconImageForURL. Its reference will be released after the callback
- * has been called.
- */
+/** A helper class to load favicons for settings views. */
 @NullMarked
-public class FaviconLoader {
+public final class FaviconLoader {
+    private FaviconLoader() {}
+
     /** Loads a favicon or creates a fallback icon. */
     public static void loadFavicon(
             Context context,

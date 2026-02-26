@@ -11,9 +11,11 @@ import org.chromium.components.browser_ui.settings.SettingsNavigation;
 
 /** Factory for {@link SettingsNavigation}. Can be used from chrome/browser modules. */
 @NullMarked
-public class SettingsNavigationFactory {
+public final class SettingsNavigationFactory {
     private static final SettingsNavigation sInstance = new SettingsNavigationImpl();
     private static @Nullable SettingsNavigation sInstanceForTesting;
+
+    private SettingsNavigationFactory() {}
 
     /** Create a {@link SettingsNavigation}. */
     public static SettingsNavigation createSettingsNavigation() {
