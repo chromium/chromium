@@ -133,9 +133,9 @@ void PowerMetricsReporter::OnLongIntervalEnd() {
 }
 
 void PowerMetricsReporter::OnMetricsSampled(
-    MonitoredProcessType type,
+    ProcessInfo::Key key,
     const ProcessMonitor::Metrics& metrics) {
-  RecordProcessHistograms(GetMetricSuffixFromProcessType(type), metrics);
+  RecordProcessHistograms(GetMetricSuffixFromProcessType(key.type), metrics);
 }
 
 void PowerMetricsReporter::OnAggregatedMetricsSampled(

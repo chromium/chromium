@@ -76,7 +76,7 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
   void OnLongIntervalEnd();
 
   // ProcessMonitor::Observer:
-  void OnMetricsSampled(MonitoredProcessType type,
+  void OnMetricsSampled(ProcessInfo::Key key,
                         const ProcessMonitor::Metrics& metrics) override;
   void OnAggregatedMetricsSampled(
       const ProcessMonitor::Metrics& aggregated_process_metrics) override;
