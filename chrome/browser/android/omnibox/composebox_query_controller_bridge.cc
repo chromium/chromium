@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/omnibox/composebox_query_controller_bridge.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/android/callback_android.h"
@@ -15,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/android/omnibox/tab_context_capture_request.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -207,16 +209,19 @@ ComposeboxQueryControllerBridge::AddTabContext(
     return {};
   }
 
-  base::UnguessableToken file_token = session_handle_->CreateContextToken();
   lens::TabContextualizationController* tab_contextualization_controller =
       lens::TabContextualizationController::From(tab);
   if (!tab_contextualization_controller) {
     return {};
   }
 
-  tab_contextualization_controller->GetPageContext(
+  base::UnguessableToken file_token = session_handle_->CreateContextToken();
+  // Leak this pointer it will delete itself when it's done.
+  TabContextCaptureRequest* tab_context_capture = new TabContextCaptureRequest(
+      tab_contextualization_controller, tab,
       base::BindOnce(&ComposeboxQueryControllerBridge::OnGetTabPageContext,
                      weak_ptr_factory_.GetWeakPtr(), env, file_token));
+  tab_context_capture->Start();
 
   return base::android::ConvertUTF8ToJavaString(env, file_token.ToString());
 }
@@ -351,7 +356,7 @@ void ComposeboxQueryControllerBridge::OnGetTabPageContext(
     JNIEnv* env,
     const base::UnguessableToken& context_token,
     std::unique_ptr<lens::ContextualInputData> page_content_data) {
-  if (!page_content_data->context_input.has_value() ||
+  if (!page_content_data || !page_content_data->context_input.has_value() ||
       page_content_data->context_input->size() <= 0) {
     OnFileUploadStatusChanged(
         context_token, lens::MimeType::kUnknown,

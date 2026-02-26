@@ -2725,6 +2725,8 @@ static_library("browser") {
       "android/omnibox/geolocation_header.h",
       "android/omnibox/omnibox_prerender.cc",
       "android/omnibox/omnibox_prerender.h",
+      "android/omnibox/tab_context_capture_request.cc",
+      "android/omnibox/tab_context_capture_request.h",
       "android/oom_intervention/near_oom_reduction_message_delegate.cc",
       "android/oom_intervention/near_oom_reduction_message_delegate.h",
       "android/oom_intervention/oom_intervention_config.cc",
