@@ -1823,6 +1823,18 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/html/media/media_fragment_uri_parser.cc',
+        ],
+        'allowed': [
+            'base::NoDestructor',
+            'base::StringToDouble',
+            'base::StringToInt',
+            're2::RE2',
+            're2::StringPiece',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/core/timing/background_tracing_helper.cc',
             'third_party/blink/renderer/core/timing/background_tracing_helper.h',
         ],

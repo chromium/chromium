@@ -36,8 +36,6 @@
 
 namespace blink {
 
-class KURL;
-
 class CORE_EXPORT MediaFragmentURIParser final {
   STACK_ALLOCATED();
 

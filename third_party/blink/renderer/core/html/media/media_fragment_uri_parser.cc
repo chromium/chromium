@@ -27,41 +27,17 @@
 
 #include <string_view>
 
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
+#include "base/check_op.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace blink {
 
 namespace {
 
 constexpr std::string_view kNptIdentifier = "npt:";
-
-static String CollectDigits(std::string_view input, size_t& position) {
-  StringBuilder digits;
-
-  // http://www.ietf.org/rfc/rfc2326.txt
-  // DIGIT ; any positive number
-  while (position < input.size() && IsASCIIDigit(input[position])) {
-    digits.Append(input[position++]);
-  }
-  return digits.ToString();
-}
-
-static String CollectFraction(std::string_view input, size_t& position) {
-  StringBuilder digits;
-
-  // http://www.ietf.org/rfc/rfc2326.txt
-  // [ "." *DIGIT ]
-  if (input[position] != '.')
-    return String();
-
-  digits.Append(input[position++]);
-  while (position < input.size() && IsASCIIDigit(input[position])) {
-    digits.Append(input[position++]);
-  }
-  return digits.ToString();
-}
 
 }  // namespace
 
@@ -181,7 +157,7 @@ void MediaFragmentURIParser::ParseTrackFragment() {
       continue;
     }
 
-    // The fragment value has already been escaped.
+    // The fragment value has already been URL-decoded.
     default_tracks_.emplace_back(String::FromUTF8(fragment.second));
   }
 }
@@ -200,11 +176,9 @@ void MediaFragmentURIParser::ParseTimeFragment() {
       continue;
 
     // http://www.w3.org/2008/WebVideo/Fragments/WD-media-fragments-spec/#npt-time
-    // Temporal clipping can be specified either as Normal Play Time (npt) RFC
-    // 2326, as SMPTE timecodes, SMPTE, or as real-world clock time (clock) RFC
-    // 2326. Begin and end times are always specified in the same format. The
-    // format is specified by name, followed by a colon (:), with npt: being the
-    // default.
+    // The spec allows Normal Play Time (npt), SMPTE timecodes, and real-world
+    // clock time (RFC 2326), with npt: as the default. This implementation
+    // only supports NPT.
 
     double start = std::numeric_limits<double>::quiet_NaN();
     double end = std::numeric_limits<double>::quiet_NaN();
@@ -213,7 +187,7 @@ void MediaFragmentURIParser::ParseTimeFragment() {
       end_time_ = end;
 
       // Although we have a valid fragment, don't return yet because when a
-      // fragment dimensions occurs multiple times, only the last occurrence of
+      // fragment dimension occurs multiple times, only the last occurrence of
       // that dimension is used:
       // http://www.w3.org/2008/WebVideo/Fragments/WD-media-fragments-spec/#error-uri-general
       // Multiple occurrences of the same dimension: only the last valid
@@ -226,156 +200,127 @@ void MediaFragmentURIParser::ParseTimeFragment() {
 bool MediaFragmentURIParser::ParseNPTFragment(std::string_view time_string,
                                               double& start_time,
                                               double& end_time) {
-  size_t offset = 0;
-  if (time_string.starts_with(kNptIdentifier)) {
-    offset += kNptIdentifier.size();
+  std::string_view s = time_string;
+  if (s.starts_with(kNptIdentifier)) {
+    s.remove_prefix(kNptIdentifier.size());
   }
-
-  if (offset == time_string.size()) {
+  if (s.empty()) {
     return false;
   }
 
   // http://www.w3.org/2008/WebVideo/Fragments/WD-media-fragments-spec/#naming-time
   // If a single number only is given, this corresponds to the begin time except
   // if it is preceded by a comma that would in this case indicate the end time.
-  if (time_string[offset] == ',') {
+  size_t offset = 0;
+  if (s[0] == ',') {
     start_time = 0;
-  } else {
-    if (!ParseNPTTime(time_string, offset, start_time)) {
-      return false;
-    }
+  } else if (!ParseNPTTime(s, offset, start_time)) {
+    return false;
   }
 
-  if (offset == time_string.size()) {
+  if (offset == s.size()) {
     return true;
   }
 
-  if (time_string[offset] != ',')
-    return false;
-  if (++offset == time_string.size()) {
-    return false;
-  }
-
-  if (!ParseNPTTime(time_string, offset, end_time)) {
+  // Invariant: s[offset] == ',' — ParseNPTTime stops at ',' or end (end
+  // returned above); the s[0]==',' path also leaves offset=0.
+  DCHECK_EQ(s[offset], ',');
+  if (++offset == s.size()) {
     return false;
   }
 
-  if (offset != time_string.size()) {
-    return false;
-  }
-
-  if (start_time >= end_time)
-    return false;
-
-  return true;
+  return ParseNPTTime(s, offset, end_time) && offset == s.size() &&
+         start_time < end_time;
 }
 
 bool MediaFragmentURIParser::ParseNPTTime(std::string_view time_string,
                                           size_t& offset,
                                           double& time) {
-  enum Mode { kMinutes, kHours };
-  Mode mode = kMinutes;
-
-  if (offset >= time_string.size() || !IsASCIIDigit(time_string[offset])) {
-    return false;
-  }
-
   // http://www.w3.org/2008/WebVideo/Fragments/WD-media-fragments-spec/#npttimedef
-  // Normal Play Time can either be specified as seconds, with an optional
-  // fractional part to indicate miliseconds, or as colon-separated hours,
-  // minutes and seconds (again with an optional fraction). Minutes and
-  // seconds must be specified as exactly two digits, hours and fractional
-  // seconds can be any number of digits. The hours, minutes and seconds
-  // specification for NPT is a convenience only, it does not signal frame
-  // accuracy. The specification of the "npt:" identifier is optional since
-  // NPT is the default time scheme. This specification builds on the RTSP
-  // specification of NPT RFC 2326.
+  // NPT (RFC 2326): plain seconds with optional fraction, or colon-separated
+  // HH:MM:SS / MM:SS with optional fraction. MM and SS are exactly two digits;
+  // HH can be any number of digits.
   //
   // ; defined in RFC 2326
   // npt-sec       = 1*DIGIT [ "." *DIGIT ]
   // npt-hhmmss    = npt-hh ":" npt-mm ":" npt-ss [ "." *DIGIT]
   // npt-mmss      = npt-mm ":" npt-ss [ "." *DIGIT]
-  // npt-hh        =   1*DIGIT     ; any positive number
+  // npt-hh        =   1*DIGIT     ; any non-negative integer
   // npt-mm        =   2DIGIT      ; 0-59
   // npt-ss        =   2DIGIT      ; 0-59
+  //
+  // The regex alternation tries HH:MM:SS first, then MM:SS, then
+  // seconds-only. The fractional seconds group (7) is factored out and applies
+  // to all formats:
+  //   1-3: HH, MM, SS  (HH:MM:SS format)
+  //   4-5: MM, SS      (MM:SS format)
+  //   6:   SS          (seconds-only format)
+  //   7:   frac        (optional fractional seconds)
+  static const base::NoDestructor<re2::RE2> kNPTTimeRegex(
+      R"((?:(\d+):(\d{2}):(\d{2})|(\d{2}):(\d{2})|(\d+))(\.\d*)?)");
 
-  String digits1 = CollectDigits(time_string, offset);
-  int value1 = StringToIntLoose(digits1).value_or(0);
-  if (offset >= time_string.size() || time_string[offset] == ',') {
-    time = value1;
-    return true;
-  }
-
-  double fraction = 0;
-  if (time_string[offset] == '.') {
-    if (offset == time_string.size()) {
-      return true;
-    }
-    String digits = CollectFraction(time_string, offset);
-    fraction = StringToDouble(digits).value_or(0);
-    time = value1 + fraction;
-    return true;
-  }
-
-  if (digits1.length() < 1) {
+  re2::StringPiece sp = time_string.substr(offset);
+  re2::StringPiece hh, hh_mm, hh_ss;
+  re2::StringPiece mm, mm_ss;
+  re2::StringPiece sec, frac;
+  if (!re2::RE2::Consume(&sp, *kNPTTimeRegex, &hh, &hh_mm, &hh_ss, &mm, &mm_ss,
+                         &sec, &frac)) {
     return false;
   }
 
-  // Collect the next sequence of 0-9 after ':'
-  if (offset >= time_string.size() || time_string[offset++] != ':') {
+  // The time must be followed by ',' (separating start from end) or end of
+  // string.
+  if (!sp.empty() && sp[0] != ',') {
     return false;
-  }
-  if (offset >= time_string.size() || !IsASCIIDigit(time_string[(offset)])) {
-    return false;
-  }
-  String digits2 = CollectDigits(time_string, offset);
-  int value2 = StringToIntLoose(digits2).value_or(0);
-  if (digits2.length() != 2)
-    return false;
-
-  // Detect whether this timestamp includes hours.
-  if (offset < time_string.size() && time_string[offset] == ':') {
-    mode = kHours;
-  }
-  if (mode == kMinutes) {
-    if (digits1.length() != 2) {
-      return false;
-    }
-    if (value1 > 59 || value2 > 59) {
-      return false;
-    }
   }
 
-  int value3;
-  if (mode == kHours ||
-      (offset < time_string.size() && time_string[offset] == ':')) {
-    if (offset >= time_string.size() || time_string[offset++] != ':') {
+  offset = time_string.size() - sp.size();
+
+  double frac_val = 0.0;
+  if (!frac.empty()) {
+    // For the \.\d* regex match, StringToDouble only fails for a bare '.',
+    // which strtod maps to 0.0 — the initial value — so no reset is needed.
+    base::StringToDouble(frac, &frac_val);
+  }
+
+  // \d{2} guarantees two ASCII digits → value in [0, 99], no overflow.
+  auto TwoDigitToInt = [](re2::StringPiece s) {
+    return (s[0] - '0') * 10 + (s[1] - '0');
+  };
+
+  if (!hh.empty()) {
+    // HH:MM:SS[.frac]: HH (\d+) uses StringToInt to reject out-of-range values;
+    // double arithmetic avoids signed int overflow UB. MM/SS (\d{2}): safe.
+    int hh_val;
+    if (!base::StringToInt(hh, &hh_val)) {
       return false;
     }
-    if (offset >= time_string.size() || !IsASCIIDigit(time_string[offset])) {
+    int mm_val = TwoDigitToInt(hh_mm);
+    int ss_val = TwoDigitToInt(hh_ss);
+    if (mm_val > 59 || ss_val > 59) {
       return false;
     }
-    String digits3 = CollectDigits(time_string, offset);
-    if (digits3.length() != 2)
-      return false;
-    value3 = StringToIntLoose(digits3).value_or(0);
-    if (value2 > 59 || value3 > 59) {
+    time = static_cast<double>(hh_val) * 3600.0 +
+           static_cast<double>(mm_val) * 60.0 + static_cast<double>(ss_val) +
+           frac_val;
+  } else if (!mm.empty()) {
+    // MM:SS[.frac] format. Both use \d{2} so conversion is always safe.
+    int mm_val = TwoDigitToInt(mm);
+    int ss_val = TwoDigitToInt(mm_ss);
+    if (mm_val > 59 || ss_val > 59) {
       return false;
     }
+    time = mm_val * 60 + ss_val + frac_val;
   } else {
-    value3 = value2;
-    value2 = value1;
-    value1 = 0;
+    // Seconds-only format. Values outside int range are rejected, instead of
+    // being silently coerced.
+    int sec_val;
+    if (!base::StringToInt(sec, &sec_val)) {
+      return false;
+    }
+    time = sec_val + frac_val;
   }
 
-  if (offset < time_string.size() && time_string[offset] == '.') {
-    fraction = StringToDouble(CollectFraction(time_string, offset)).value_or(0);
-  }
-
-  const int kSecondsPerHour = 3600;
-  const int kSecondsPerMinute = 60;
-  time = (value1 * kSecondsPerHour) + (value2 * kSecondsPerMinute) + value3 +
-         fraction;
   return true;
 }
 

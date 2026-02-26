@@ -14,4 +14,7 @@ specific_include_rules = {
     "html_media_element_test\.cc": [
         "+base/run_loop.h",
     ],
+    "media_fragment_uri_parser.cc": [
+        "+base/no_destructor.h",
+    ],
 }
