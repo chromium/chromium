@@ -99,6 +99,16 @@ public class ActorTask {
         return tabs;
     }
 
+    /**
+     * @param tabId The tab ID to check if the task is acting on.
+     * @return true if the task is acting on the given tab, false otherwise.
+     */
+    public boolean isActingOnTab(int tabId) {
+        // TODO(haileywang): This currently loops through all the tabs associated to the task. Look
+        // into having native update the latest tabId when the actuated tab changes.
+        return isUnderActorControl() && getTabs().contains(tabId);
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativeTask = 0;

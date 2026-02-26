@@ -9,7 +9,9 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedService.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/actor/ActorServiceTabUtils.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTask.java",
+    "java/src/org/chromium/chrome/browser/actor/ActorTaskId.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlCoordinator.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlMediator.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlProperties.java",

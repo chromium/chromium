@@ -4,14 +4,13 @@
 
 package org.chromium.chrome.browser.actor;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +29,7 @@ public class ActorKeyedService {
     /** Observer interface for ActorKeyedService events. */
     public interface Observer {
         /** Triggered when a task switches states (e.g., from ACTING to PAUSED). */
-        void onTaskStateChanged(int taskId, @ActorTaskState int newState);
+        void onTaskStateChanged(@ActorTaskId int taskId, @ActorTaskState int newState);
     }
 
     @CalledByNative
@@ -58,13 +57,13 @@ public class ActorKeyedService {
 
     /** Gets a specific task by its ID. */
     @Nullable
-    public ActorTask getTask(int taskId) {
+    public ActorTask getTask(@ActorTaskId int taskId) {
         if (mNativePtr == 0) return null;
         return ActorKeyedServiceJni.get().getTask(mNativePtr, taskId);
     }
 
     /** Allows the UI to stop a running task. */
-    public void stopTask(int taskId, @StoppedReason int stopReason) {
+    public void stopTask(@ActorTaskId int taskId, @StoppedReason int stopReason) {
         if (mNativePtr == 0) return;
         ActorKeyedServiceJni.get().stopTask(mNativePtr, taskId, stopReason);
     }
@@ -79,13 +78,28 @@ public class ActorKeyedService {
         mObservers.removeObserver(observer);
     }
 
+    /**
+     * @param tabId The tab ID to get a task on.
+     * @return the task ID that is currently acting on the given tab, or null if none.
+     */
+    public @Nullable @ActorTaskId Integer getActiveTaskIdOnTab(int tabId) {
+        if (mNativePtr == 0) return null;
+        List<ActorTask> tasks = getActiveTasks();
+        for (ActorTask task : tasks) {
+            if (task.isActingOnTab(tabId)) {
+                return task.getId();
+            }
+        }
+        return null;
+    }
+
     @CalledByNative
     private void clearNativePtr() {
         mNativePtr = 0;
     }
 
     @CalledByNative
-    private void onTaskStateChanged(int taskId, @ActorTaskState int newState) {
+    private void onTaskStateChanged(@ActorTaskId int taskId, @ActorTaskState int newState) {
         for (Observer obs : mObservers) {
             obs.onTaskStateChanged(taskId, newState);
         }
