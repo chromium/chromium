@@ -104,6 +104,32 @@ void VerifyProfileTest(const char* file_name,
   }
 }
 
+TEST_F(FFmpegCommonTest,
+       AVCodecContextToAudioDecoderConfig_HandleChannelMismatch) {
+  base::MemoryMappedFile file;
+  ASSERT_TRUE(file.Initialize(GetTestDataFilePath("4ch.wav")));
+  InMemoryUrlProtocol protocol(file.bytes(), false);
+  FFmpegGlue glue(&protocol);
+  ASSERT_TRUE(glue.OpenContext());
+
+  AVFormatContext* format_context = glue.format_context();
+  AVStream* stream = format_context->streams[0];
+
+  auto codec_context = AVStreamToAVCodecContext(stream);
+
+  // Purposely have an incorrect mask.
+  codec_context->ch_layout.u.mask = AV_CH_LAYOUT_MONO;
+
+  AudioDecoderConfig audio_config;
+  ASSERT_TRUE(AVCodecContextToAudioDecoderConfig(
+      codec_context.get(), EncryptionScheme::kUnencrypted, &audio_config));
+
+  EXPECT_EQ(AudioCodec::kPCM, audio_config.codec());
+  // We correctly guess QUAD instead of MONO.
+  EXPECT_EQ(CHANNEL_LAYOUT_QUAD, audio_config.channel_layout());
+  EXPECT_EQ(4, audio_config.channels());
+}
+
 TEST_F(FFmpegCommonTest, AVStreamToDecoderConfig) {
   // Open a file to get a real AVStreams from FFmpeg.
   base::MemoryMappedFile file;
