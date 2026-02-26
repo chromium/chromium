@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import <memory>
+#import <set>
 
 #import "base/memory/raw_ptr.h"
 #import "base/time/time.h"
@@ -226,6 +227,12 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
       gemini::FloatyUpdateSource source,
       bool is_presented);
 
+  // Returns true if the floaty is temporarily hidden.
+  bool IsFloatyTemporarilyHidden() const;
+
+  // Returns true if the floaty is only hidden by the keyboard.
+  bool IsOnlyHiddenByKeyboard() const;
+
   // The gateway for bridging internal protocols.
   __strong id<BWGGatewayProtocol> bwg_gateway_ = nullptr;
 
@@ -262,8 +269,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Whether the keyboard is currently visible.
   bool is_keyboard_visible_ = false;
 
-  // Whether the floaty is currently hidden due to the keyboard being visible.
-  bool is_hidden_by_keyboard_ = false;
+  // Set of sources currently hiding the floaty. If this set is not empty, the
+  // floaty is considered temporarily hidden.
+  std::set<gemini::FloatyUpdateSource> active_hiding_sources_;
 
   // Called when keyboard state changes.
   void OnKeyboardStateChanged(bool is_visible);
@@ -275,10 +283,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Whether the floaty is currently invoked.
   bool is_floaty_invoked_ = false;
-
-  // Whether the floaty is temporarily hidden. Used to hide the floaty without
-  // triggering logic related to ending floaty persistence.
-  bool is_floaty_temporarily_hidden_ = false;
 
   // Records when the floaty was last hidden. Prevents the floaty from
   // reappearing too soon, particularly after a

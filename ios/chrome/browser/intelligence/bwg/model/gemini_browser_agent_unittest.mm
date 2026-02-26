@@ -155,7 +155,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
 
   // Getter for `is_floaty_temporarily_hidden_`.
   bool IsFloatyTemporarilyHidden() {
-    return gemini_browser_agent_->is_floaty_temporarily_hidden_;
+    return !gemini_browser_agent_->active_hiding_sources_.empty();
   }
 
   // Getter for `last_shown_view_state_`.
@@ -168,10 +168,14 @@ class GeminiBrowserAgentTest : public PlatformTest {
     gemini_browser_agent_->is_floaty_invoked_ = is_invoked;
   }
 
-  // Setter for `is_floaty_temporarily_hidden_`.
-  void SetIsFloatyTemporarilyHidden(bool is_temporarily_hidden) {
-    gemini_browser_agent_->is_floaty_temporarily_hidden_ =
-        is_temporarily_hidden;
+  // Add a source to `active_hiding_sources_`.
+  void AddActiveHidingSource(gemini::FloatyUpdateSource source) {
+    gemini_browser_agent_->active_hiding_sources_.insert(source);
+  }
+
+  // Clear `active_hiding_sources_`.
+  void ClearActiveHidingSources() {
+    gemini_browser_agent_->active_hiding_sources_.clear();
   }
 
   // Setter for `floaty_hidden_timestamp_`.
@@ -474,10 +478,6 @@ TEST_F(GeminiBrowserAgentTest, TestShowFloatyIfInvokedWithWebNavigation) {
   gemini_browser_agent_->SetLastShownViewState(
       ios::provider::GeminiViewState::kExpanded);
 
-  // Set the hidden timestamp to represent a quick timestamp update such as when
-  // an old WebState is hidden followed quickly by a new WebState being shown.
-  SetFloatyHiddenTimestamp(base::TimeTicks::Now());
-
   gemini_browser_agent_->ShowFloatyIfInvoked(
       /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::WebNavigation);
 
@@ -510,12 +510,43 @@ TEST_F(GeminiBrowserAgentTest,
   EXPECT_EQ(ios::provider::GeminiViewState::kExpanded, GetLastShownViewState());
 }
 
+// Tests that the floaty remains hidden if the keyboard dismisses but a view
+// controller is still presenting.
+TEST_F(GeminiBrowserAgentTest,
+       TestFloatyRemainsHiddenWhenKeyboardDismissedIfViewPresent) {
+  SetIsFloatyInvoked(true);
+  gemini_browser_agent_->HideFloatyIfInvoked(
+      /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::ViewTransition);
+  gemini_browser_agent_->HideFloatyIfInvoked(
+      /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::Keyboard);
+  gemini_browser_agent_->SetLastShownViewState(
+      ios::provider::GeminiViewState::kExpanded);
+
+  // Emulate a user typing for some time.
+  SetFloatyHiddenTimestamp(base::TimeTicks::Now() - base::Seconds(5));
+
+  // Emulate keyboard dismissing.
+  gemini_browser_agent_->ShowFloatyIfInvoked(
+      /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::Keyboard);
+
+  // The floaty should still be considered temporarily hidden.
+  EXPECT_TRUE(IsFloatyTemporarilyHidden());
+
+  // Emulate view controller dismissing.
+  gemini_browser_agent_->ShowFloatyIfInvoked(
+      /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::ViewTransition);
+
+  // The floaty should now be shown.
+  EXPECT_FALSE(IsFloatyTemporarilyHidden());
+  EXPECT_EQ(ios::provider::GeminiViewState::kExpanded, GetLastShownViewState());
+}
+
 // Tests that the floaty is not dismissed when `DismissFloaty` is called to
 // clean up properties but a user has not interacted with floaty UI to properly
 // dismiss it.
 TEST_F(GeminiBrowserAgentTest, TestDismissFloatyWhenTemporarilyHidden) {
   SetIsFloatyInvoked(true);
-  SetIsFloatyTemporarilyHidden(true);
+  AddActiveHidingSource(gemini::FloatyUpdateSource::ViewTransition);
 
   gemini_browser_agent_->DismissFloaty();
 
@@ -528,7 +559,7 @@ TEST_F(GeminiBrowserAgentTest, TestDismissFloatyWhenTemporarilyHidden) {
 // floaty i.e. when the floaty is shown.
 TEST_F(GeminiBrowserAgentTest, TestDismissFloatyWhenFloatyIsShown) {
   SetIsFloatyInvoked(true);
-  SetIsFloatyTemporarilyHidden(false);
+  ClearActiveHidingSources();
   gemini_browser_agent_->DismissFloaty();
 
   EXPECT_FALSE(IsFloatyInvoked());
