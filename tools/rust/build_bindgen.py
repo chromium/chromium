@@ -188,18 +188,26 @@ def main():
         RmTree(build_dir)
 
     print(f'Building bindgen in {build_dir} ...')
+    cargo_shared_args = [
+        f'--manifest-path={BINDGEN_SRC_DIR}/Cargo.toml',
+        f'--target-dir={build_dir}',
+    ]
+    # We've run into incremental compilation bugs while building bindgen in
+    # https://crbug.com/488049150, so clean the build directory first. This
+    # doesn't take long compared to the rest of the build anyway.
+    RunCargo([
+        'clean',
+    ] + cargo_shared_args)
     static_feature = ",static" if ('windows' not in RustTargetTriple()) else ""
     cargo_args = [
         'build',
-        f'--manifest-path={BINDGEN_SRC_DIR}/Cargo.toml',
-        f'--target-dir={build_dir}',
         f'--target={RustTargetTriple()}',
         f'--no-default-features',
         f'--features=logging' + static_feature,
         '--release',
         '--bin',
         'bindgen',
-    ]
+    ] + cargo_shared_args
     RunCargo(cargo_args)
 
     install_dir = os.path.join(RUST_TOOLCHAIN_OUT_DIR)
@@ -227,7 +235,9 @@ def main():
                             follow_symlinks=False)
 
     if not args.skip_test:
-        test_args = ['test', '--lib', '--bins', '--tests', '--']
+        test_args = ['test', '--lib', '--bins', '--tests']
+        test_args += cargo_shared_args
+        test_args.append('--')
         for excluded in EXCLUDED_TESTS:
             test_args.append('--skip')
             test_args.append(excluded)
