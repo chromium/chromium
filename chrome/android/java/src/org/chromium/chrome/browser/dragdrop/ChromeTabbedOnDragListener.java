@@ -94,6 +94,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                 }
                 return true;
             case DragEvent.ACTION_DROP:
+                if (clipDescription == null) return false;
                 // This is to prevent tab switcher from receiving drops. We might support dropping
                 // into tab switcher in the future, but this should still be retained to prevent
                 // dropping happens on top of tab switcher toolbar.
@@ -112,8 +113,7 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                             isMultiTabDrop);
                     return false;
                 }
-                if (clipDescription == null) return false;
-                boolean res = false;
+                boolean res;
                 if (isTabGroupDrop) {
                     res = handleGroupDrop(dragEvent, isInDesktopWindow);
                 } else if (isMultiTabDrop) {

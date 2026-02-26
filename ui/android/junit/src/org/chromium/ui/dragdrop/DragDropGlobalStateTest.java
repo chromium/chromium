@@ -91,7 +91,7 @@ public final class DragDropGlobalStateTest {
             DragDropGlobalState.clear(newToken);
             return;
         }
-        Assert.fail("Clear with invalid token should throughs assertion error.");
+        Assert.fail("Clear with invalid token should through assertion error.");
     }
 
     @Test

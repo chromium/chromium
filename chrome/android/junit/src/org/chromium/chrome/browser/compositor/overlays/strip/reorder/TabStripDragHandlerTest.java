@@ -170,8 +170,8 @@ public class TabStripDragHandlerTest {
     private Tab mTabBeingDragged2;
     private Tab mGroupedTab1;
     private Tab mGroupedTab2;
-    private final ArrayList<Tab> mTabGroupBeingDragged = new ArrayList();
-    private final ArrayList<Tab> mTabsBeingDragged = new ArrayList();
+    private final ArrayList<Tab> mTabGroupBeingDragged = new ArrayList<>();
+    private final ArrayList<Tab> mTabsBeingDragged = new ArrayList<>();
     private TabGroupMetadata mTabGroupMetadata;
     private static final PointF DRAG_START_POINT = new PointF(250, 0);
     private static final float TAB_POSITION_X = 200f;
@@ -955,20 +955,20 @@ public class TabStripDragHandlerTest {
 
     /** Test for Tab Drag {@link #ONDRAG_TEST_CASES} - Scenario F */
     @Test
-    public void test_onDrag_exitIntoToolbarAndRenterStripAndDrop_source() {
-        doTestExitIntoSourceToolbarAndRenterStripAndDrop(/* isGroupDrag= */ false);
+    public void test_onDrag_exitIntoToolbarAndReenterStripAndDrop_source() {
+        doTestExitIntoSourceToolbarAndReenterStripAndDrop(/* isGroupDrag= */ false);
     }
 
     /** Test for Tab Group Drag {@link #ONDRAG_TEST_CASES} - Scenario F */
     @Test
-    public void test_onDrag_exitIntoToolbarAndRenterStripAndDrop_source_tabGroup() {
-        doTestExitIntoSourceToolbarAndRenterStripAndDrop(/* isGroupDrag= */ true);
+    public void test_onDrag_exitIntoToolbarAndReenterStripAndDrop_source_tabGroup() {
+        doTestExitIntoSourceToolbarAndReenterStripAndDrop(/* isGroupDrag= */ true);
     }
 
     /** Test for Multi-Tab Drag {@link #ONDRAG_TEST_CASES} - Scenario F */
     @Test
-    public void test_onDrag_exitIntoToolbarAndRenterStripAndDrop_source_multiTab() {
-        doTestExitIntoSourceToolbarAndRenterStripAndDrop_multiTab();
+    public void test_onDrag_exitIntoToolbarAndReenterStripAndDrop_source_multiTab() {
+        doTestExitIntoSourceToolbarAndReenterStripAndDrop_multiTab();
     }
 
     /** Test for Tab and Tab Group Drag{@link #ONDRAG_TEST_CASES} - Scenario G.1 */
@@ -1709,7 +1709,7 @@ public class TabStripDragHandlerTest {
         histogramExpectation.assertExpected();
     }
 
-    private void doTestExitIntoSourceToolbarAndRenterStripAndDrop(boolean isGroupDrag) {
+    private void doTestExitIntoSourceToolbarAndReenterStripAndDrop(boolean isGroupDrag) {
         String resultHistogram =
                 String.format(
                         "Android.DragDrop.%s.FromStrip.Result", isGroupDrag ? "TabGroup" : "Tab");
@@ -1756,7 +1756,7 @@ public class TabStripDragHandlerTest {
         histogramExpectation.assertExpected();
     }
 
-    private void doTestExitIntoSourceToolbarAndRenterStripAndDrop_multiTab() {
+    private void doTestExitIntoSourceToolbarAndReenterStripAndDrop_multiTab() {
         String resultHistogram = "Android.DragDrop.MultiTab.FromStrip.Result";
         String reorderHistogram = "Android.DragDrop.MultiTab.ReorderStripWithDragDrop";
         HistogramWatcher histogramExpectation =

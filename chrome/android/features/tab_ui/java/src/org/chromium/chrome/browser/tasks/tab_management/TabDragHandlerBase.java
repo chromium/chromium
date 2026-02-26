@@ -13,12 +13,10 @@ import android.view.DragEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
 
-import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -64,8 +62,6 @@ public abstract class TabDragHandlerBase
     protected final MultiInstanceManager mMultiInstanceManager;
     protected final DragAndDropDelegate mDragAndDropDelegate;
     protected final Supplier<Boolean> mIsAppInDesktopWindowSupplier;
-    protected @Nullable MonotonicObservableSupplier<Boolean> mFullSpaceModeSupplier;
-    protected @Nullable Callback<Boolean> mFullSpaceModeObserver;
     private @Nullable TabModelSelector mTabModelSelector;
     private @Nullable NullableObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;

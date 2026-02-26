@@ -292,53 +292,26 @@ public class TabStripDragHandler extends TabDragHandlerBase {
 
     @Override
     public boolean onDrag(View view, DragEvent dragEvent) {
-        boolean res = false;
         switch (dragEvent.getAction()) {
             case DragEvent.ACTION_DRAG_STARTED:
-                res = onDragStart(dragEvent.getX(), dragEvent.getClipDescription());
-                break;
+                return onDragStart(dragEvent.getX(), dragEvent.getClipDescription());
             case DragEvent.ACTION_DRAG_ENDED:
-                res = onDragEnd(dragEvent.getResult());
-                break;
+                return onDragEnd(dragEvent.getResult());
             case DragEvent.ACTION_DRAG_ENTERED:
                 // We'll trigger #onDragEnter when handling the following ACTION_DRAG_LOCATION so we
                 // have position data available (and can check if we've entered the tab strip).
-                res = false;
-                break;
+                return false;
             case DragEvent.ACTION_DRAG_EXITED:
-                if (mHoveringInStrip) res = onDragExit();
-                break;
+                // When leaving from the non-strip region (i.e. the toolbar region), the #onDragExit
+                // will already have been processed, so skip triggering it here.
+                if (mHoveringInStrip) return onDragExit();
+                return false;
             case DragEvent.ACTION_DRAG_LOCATION:
-                boolean isCurrYInTabStrip = didOccurInTabStrip(dragEvent.getY());
-                if (isCurrYInTabStrip) {
-                    if (!mHoveringInStrip) {
-                        // dragged onto strip from outside controls OR from toolbar.
-                        res = onDragEnter(dragEvent.getX());
-                    } else {
-                        // drag moved within strip.
-                        res = onDragLocation(dragEvent.getX(), dragEvent.getY());
-                    }
-                    mLastXDp = dragEvent.getX() * mPxToDp;
-                } else if (mHoveringInStrip) {
-                    // drag moved from within to outside strip.
-                    res = onDragExit();
-                }
-                break;
+                return onDragLocation(dragEvent.getX(), dragEvent.getY());
             case DragEvent.ACTION_DROP:
-                if (didOccurInTabStrip(dragEvent.getY())) {
-                    res = onDrop(dragEvent);
-                } else {
-                    DragDropMetricUtils.recordDragDropResult(
-                            DragDropResult.IGNORED_TOOLBAR,
-                            mIsAppInDesktopWindowSupplier.get(),
-                            isTabGroupDrop(),
-                            isMultiTabDrop());
-                    res = false;
-                }
-                if (res) DragDropGlobalState.notifyChromeHandledDrop(dragEvent);
-                break;
+                return onDrop(dragEvent);
         }
-        return res;
+        return false;
     }
 
     /** Cleans up internal state. */
@@ -397,7 +370,34 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         return true;
     }
 
+    /**
+     * The Android view we register this handler to is larger than the tab strip itself, so we need
+     * to fake enter/location/exit events based on the true position of the event.
+     *
+     * @param xPx The x-position in px.
+     * @param yPx The y-position in px.
+     * @return Whether or not the drag event was handled.
+     */
     private boolean onDragLocation(float xPx, float yPx) {
+        boolean res = false;
+        boolean isCurrYInTabStrip = didOccurInTabStrip(yPx);
+        if (isCurrYInTabStrip) {
+            if (!mHoveringInStrip) {
+                // dragged onto strip from outside controls OR from toolbar.
+                res = onDragEnter(xPx);
+            } else {
+                // drag moved within strip.
+                res = onDragLocationInStrip(xPx, yPx);
+            }
+            mLastXDp = xPx * mPxToDp;
+        } else if (mHoveringInStrip) {
+            // drag moved from within to outside strip.
+            res = onDragExit();
+        }
+        return res;
+    }
+
+    private boolean onDragLocationInStrip(float xPx, float yPx) {
         float xDp = xPx * mPxToDp;
         float yDp = yPx * mPxToDp;
         mStripLayoutHelperSupplier
@@ -406,7 +406,30 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         return true;
     }
 
+    /**
+     * The Android view we register this handler to is larger than the tab strip itself, so we need
+     * to check the drop location before processing it.
+     *
+     * @param dropEvent The {@link DragEvent} representing the drop event.
+     * @return Whether or not the drag event was handled.
+     */
     private boolean onDrop(DragEvent dropEvent) {
+        boolean res;
+        if (didOccurInTabStrip(dropEvent.getY())) {
+            res = onDropInStrip(dropEvent);
+        } else {
+            DragDropMetricUtils.recordDragDropResult(
+                    DragDropResult.IGNORED_TOOLBAR,
+                    mIsAppInDesktopWindowSupplier.get(),
+                    isTabGroupDrop(),
+                    isMultiTabDrop());
+            res = false;
+        }
+        if (res) DragDropGlobalState.notifyChromeHandledDrop(dropEvent);
+        return res;
+    }
+
+    private boolean onDropInStrip(DragEvent dropEvent) {
         StripLayoutHelper helper = mStripLayoutHelperSupplier.get();
         helper.stopReorderMode(false);
         if (isDragSource()) {
@@ -481,7 +504,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
         return true;
     }
 
-    // TODO(crbug.com/437417213): Handle pinned tab.
     private boolean handleMultiTabDrop(DragEvent dropEvent, StripLayoutHelper helper) {
         DragDropGlobalState globalState = getDragDropGlobalState(dropEvent);
         assertNonNull(globalState);
