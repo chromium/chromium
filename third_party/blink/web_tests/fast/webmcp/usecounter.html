@@ -1,13 +1,21 @@
 <!DOCTYPE html>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
-<form>
+<form id=f1>
     <input type="text" name="dummy">
+    <input type="submit" id=s1>
+</form>
+<form id=f2 toolautosubmit>
+    <input type="text" name="dummy">
+    <input type="submit" id=s2>
 </form>
 <script>
 // Use counter IDs from web_feature.mojom
 const kModelContextRegisterTool = 5791;
 const kModelContextRegisterDeclarativeTool = 5792;
+const kModelContextExecuteTool = 5799;
+const kModelContextExecuteDeclarativeTool = 5800;
+const kModelContextExecuteDeclarativeAutosubmit = 5801;
 
 test(() => {
     assert_false(internals.isUseCounted(document, kModelContextRegisterTool));
@@ -15,7 +23,7 @@ test(() => {
 
     navigator.modelContext.registerTool({
         execute: () => {},
-        name: "dummy",
+        name: "imperative",
         description: "dummy",
         inputSchema: { type: "object", properties: {} },
     });
@@ -25,9 +33,56 @@ test(() => {
     internals.clearUseCounter(document, kModelContextRegisterTool);
     internals.clearUseCounter(document, kModelContextRegisterDeclarativeTool);
 
-    document.querySelector("form").setAttribute("toolname", "dummy");
-    document.querySelector("form").setAttribute("tooldescription", "dummy");
+    const f1 = document.getElementById("f1");
+    f1.setAttribute("toolname", "declarative1");
+    f1.setAttribute("tooldescription", "dummy");
     assert_true(internals.isUseCounted(document, kModelContextRegisterDeclarativeTool));
     assert_false(internals.isUseCounted(document, kModelContextRegisterTool));
-});
+}, "Registration use counters");
+
+promise_test(async () => {
+    internals.clearUseCounter(document, kModelContextExecuteTool);
+    internals.clearUseCounter(document, kModelContextExecuteDeclarativeTool);
+    internals.clearUseCounter(document, kModelContextExecuteDeclarativeAutosubmit);
+
+    // We use invalid JSON to trigger an early return and avoid PauseExecution()
+    // which might crash in content_shell if ScriptToolHost is not available.
+    try {
+        await navigator.modelContextTesting.executeTool("imperative", "invalid json");
+    } catch (e) {}
+    assert_true(internals.isUseCounted(document, kModelContextExecuteTool),'imperative execution');
+    assert_false(internals.isUseCounted(document, kModelContextExecuteDeclarativeTool),'declarative execution');
+    assert_false(internals.isUseCounted(document, kModelContextExecuteDeclarativeAutosubmit),'declarative autosubmit execution');
+}, "Imperative execution use counter");
+
+promise_test(async () => {
+    internals.clearUseCounter(document, kModelContextExecuteTool);
+    internals.clearUseCounter(document, kModelContextExecuteDeclarativeTool);
+    internals.clearUseCounter(document, kModelContextExecuteDeclarativeAutosubmit);
+
+    try {
+        await navigator.modelContextTesting.executeTool("declarative1", "invalid json");
+    } catch (e) {}
+    assert_false(internals.isUseCounted(document, kModelContextExecuteTool),'imperative execution');
+    assert_true(internals.isUseCounted(document, kModelContextExecuteDeclarativeTool),'declarative execution');
+    assert_false(internals.isUseCounted(document, kModelContextExecuteDeclarativeAutosubmit),'declarative autosubmit execution');
+}, "Declarative execution use counter (no autosubmit)");
+
+promise_test(async () => {
+    internals.clearUseCounter(document, kModelContextExecuteTool);
+    internals.clearUseCounter(document, kModelContextExecuteDeclarativeTool);
+    internals.clearUseCounter(document, kModelContextExecuteDeclarativeAutosubmit);
+
+    const f2 = document.getElementById("f2");
+    f2.setAttribute("toolname", "declarative2");
+    f2.setAttribute("tooldescription", "dummy");
+
+    try {
+        await navigator.modelContextTesting.executeTool("declarative2", "invalid json");
+    } catch (e) {}
+    assert_false(internals.isUseCounted(document, kModelContextExecuteTool),'imperative execution');
+    assert_true(internals.isUseCounted(document, kModelContextExecuteDeclarativeTool),'declarative execution');
+    assert_true(internals.isUseCounted(document, kModelContextExecuteDeclarativeAutosubmit),'declarative autosubmit execution');
+}, "Declarative execution use counter (with autosubmit)");
+
 </script>

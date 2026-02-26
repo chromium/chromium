@@ -5113,8 +5113,11 @@ enum WebFeature {
   kV8WindowClient_Navigate_Method = 5796,
   kLanguageModel_OnQuotaOverflow = 5797,
   kLanguageModel_OnContextOverflow = 5798,
+  kModelContextExecuteTool = 5799,
+  kModelContextExecuteDeclarativeTool = 5800,
+  kModelContextExecuteDeclarativeAutosubmit = 5801,
 
-  // Add new features immediately above this line. Don't change assigned
+  // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
   // spaces or comments in this file. Comments belong next to the usage of
   // these constants in code.
