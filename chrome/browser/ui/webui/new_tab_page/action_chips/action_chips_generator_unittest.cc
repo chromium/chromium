@@ -55,7 +55,6 @@ using ::action_chips::ActionChipsRequestStatus;
 using ::action_chips::RemoteSuggestionsServiceSimple;
 using ::action_chips::mojom::ActionChip;
 using ::action_chips::mojom::ActionChipPtr;
-using ::action_chips::mojom::ChipType;
 using ::action_chips::mojom::IconType;
 using ::action_chips::mojom::SuggestTemplateInfo;
 using ::action_chips::mojom::TabInfo;
@@ -154,7 +153,7 @@ TabInfoPtr CreateTabInfo(const tabs::TabInterface* tab) {
 
 ActionChipPtr CreateStaticRecentTabChip(TabInfoPtr tab) {
   const std::string title = "Ask about previous tab";
-  return ActionChip::New(title, tab->title, "", ChipType::kRecentTab,
+  return ActionChip::New(title, tab->title, "",
                          SuggestTemplateInfo::New(IconType::kFavicon),
                          std::move(tab));
 }
@@ -164,7 +163,6 @@ const ActionChipPtr& GetStaticDeepSearchChip() {
       /*title=*/"Deep Search",
       /*subtitle=*/"Dive deep into something new",
       /*suggestion=*/"",
-      /*type=*/ChipType::kDeepSearch,
       SuggestTemplateInfo::New(IconType::kGlobeWithSearchLoop),
       /*tab=*/nullptr));
   return *kInstance;
@@ -174,18 +172,16 @@ const ActionChipPtr& GetStaticImageGenerationChip() {
   static const base::NoDestructor<ActionChipPtr> kInstance(ActionChip::New(
       /*title=*/"Create images",
       /*subtitle=*/"Add an image and reimagine it",
-      /*suggestion=*/"",
-      /*type=*/ChipType::kImage, SuggestTemplateInfo::New(IconType::kBanana),
+      /*suggestion=*/"", SuggestTemplateInfo::New(IconType::kBanana),
       /*tab=*/nullptr));
   return *kInstance;
 }
 
 ActionChipPtr CreateStaticDeepDiveChip(TabInfoPtr tab,
                                        std::string_view suggestion) {
-  return ActionChip::New(/*title=*/"", std::string(suggestion),
-                         std::string(suggestion), ChipType::kDeepDive,
-                         SuggestTemplateInfo::New(IconType::kSubArrowRight),
-                         std::move(tab));
+  return ActionChip::New(
+      /*title=*/"", std::string(suggestion), std::string(suggestion),
+      SuggestTemplateInfo::New(IconType::kSubArrowRight), std::move(tab));
 }
 
 // A container to store WebContents and its dependency.
@@ -572,11 +568,6 @@ TEST_P(ActionChipsGeneratorDeepDiveTest, GenerateChips) {
             std::move(callback).Run(SearchSuggestionParser::SuggestResults{
                 CreateSuggestion({.match_contents = "Test suggestion 1",
                                   .suggestion = u"Test suggestion 1"}),
-                CreateSuggestion(
-                    {.group_id =
-                         omnibox::GroupId::GROUP_PERSONALIZED_ZERO_SUGGEST,
-                     .match_contents = "Test suggestion 2",
-                     .suggestion = u"Test suggestion 2"}),
                 CreateSuggestion({.match_contents = "Test suggestion 3",
                                   .suggestion = u"Test suggestion 3"})});
             return nullptr;
@@ -813,15 +804,15 @@ TEST(ActionChipGeneratorTest, DeepDiveWithNewEndpoint) {
   TabInfoPtr tab_info = CreateTabInfo(&tab_fixture.mock_tab());
   ActionChipPtr chip0 = ActionChip::New(
       recent_tab_title, recent_tab_subtitle,
-      base::UTF16ToUTF8(recent_tab_suggestion), ChipType::kRecentTab,
+      base::UTF16ToUTF8(recent_tab_suggestion),
       SuggestTemplateInfo::New(IconType::kFavicon), tab_info->Clone());
   ActionChipPtr chip1 = ActionChip::New(
       deep_dive_title_1, deep_dive_subtitle_1,
-      base::UTF16ToUTF8(deep_dive_suggestion_1), ChipType::kDeepDive,
+      base::UTF16ToUTF8(deep_dive_suggestion_1),
       SuggestTemplateInfo::New(IconType::kSubArrowRight), tab_info->Clone());
   ActionChipPtr chip2 = ActionChip::New(
       deep_dive_title_2, deep_dive_subtitle_2,
-      base::UTF16ToUTF8(deep_dive_suggestion_2), ChipType::kDeepDive,
+      base::UTF16ToUTF8(deep_dive_suggestion_2),
       SuggestTemplateInfo::New(IconType::kSubArrowRight), tab_info->Clone());
 
   EXPECT_THAT(actual, ElementsAre(Eq(std::cref(chip0)), Eq(std::cref(chip1)),
@@ -900,15 +891,15 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpoint) {
   TabInfoPtr tab_info = CreateTabInfo(&tab_fixture.mock_tab());
   ActionChipPtr chip0 = ActionChip::New(
       recent_tab_title, recent_tab_subtitle,
-      base::UTF16ToUTF8(recent_tab_suggestion), ChipType::kRecentTab,
+      base::UTF16ToUTF8(recent_tab_suggestion),
       SuggestTemplateInfo::New(IconType::kFavicon), tab_info->Clone());
   ActionChipPtr chip1 = ActionChip::New(
       deep_search_title, deep_search_subtitle,
-      base::UTF16ToUTF8(deep_search_suggestion), ChipType::kDeepSearch,
+      base::UTF16ToUTF8(deep_search_suggestion),
       SuggestTemplateInfo::New(IconType::kGlobeWithSearchLoop), nullptr);
   ActionChipPtr chip2 =
       ActionChip::New(image_gen_title, image_gen_subtitle,
-                      base::UTF16ToUTF8(image_gen_suggestion), ChipType::kImage,
+                      base::UTF16ToUTF8(image_gen_suggestion),
                       SuggestTemplateInfo::New(IconType::kBanana), nullptr);
 
   EXPECT_THAT(actual, ElementsAre(Eq(std::cref(chip0)), Eq(std::cref(chip1)),
@@ -972,11 +963,10 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpointAndNoTab) {
 
   ActionChipPtr chip0 = ActionChip::New(
       deep_search_title, deep_search_subtitle, deep_search_suggestion,
-      ChipType::kDeepSearch,
       SuggestTemplateInfo::New(IconType::kGlobeWithSearchLoop), nullptr);
-  ActionChipPtr chip1 = ActionChip::New(
-      image_gen_title, image_gen_subtitle, image_gen_suggestion,
-      ChipType::kImage, SuggestTemplateInfo::New(IconType::kBanana), nullptr);
+  ActionChipPtr chip1 =
+      ActionChip::New(image_gen_title, image_gen_subtitle, image_gen_suggestion,
+                      SuggestTemplateInfo::New(IconType::kBanana), nullptr);
 
   std::vector<Matcher<const ActionChipPtr&>> expected;
   expected.push_back(Eq(std::cref(chip0)));
@@ -1094,11 +1084,10 @@ TEST(ActionChipGeneratorTest, NewEndpointOptOutReturnsEndpointChips) {
   // Expect endpoint chips.
   ActionChipPtr chip0 = ActionChip::New(
       deep_search_title, deep_search_subtitle, deep_search_suggestion,
-      ChipType::kDeepSearch,
       SuggestTemplateInfo::New(IconType::kGlobeWithSearchLoop), nullptr);
-  ActionChipPtr chip1 = ActionChip::New(
-      image_gen_title, image_gen_subtitle, image_gen_suggestion,
-      ChipType::kImage, SuggestTemplateInfo::New(IconType::kBanana), nullptr);
+  ActionChipPtr chip1 =
+      ActionChip::New(image_gen_title, image_gen_subtitle, image_gen_suggestion,
+                      SuggestTemplateInfo::New(IconType::kBanana), nullptr);
   EXPECT_THAT(actual, ElementsAre(Eq(std::cref(chip0)), Eq(std::cref(chip1))));
 }
 
@@ -1301,12 +1290,6 @@ TEST(ActionChipGeneratorTest, NewEndpointFiltersInvalidSuggestions) {
              .match_contents = "Valid Title",
              .annotation = "Valid Annotation"}));
 
-        // Invalid suggestion: No Group ID.
-        results.push_back(CreateSuggestion(
-            {.icon_type = omnibox::SuggestTemplateInfo::FAVICON,
-             .match_contents = "Title",
-             .annotation = "Annotation"}));
-
         // Invalid suggestion: SuggestType != TYPE_FUSEBOX_ACTION.
         SearchSuggestionParser::SuggestResult no_fusebox_result =
             CreateSuggestion(
@@ -1328,13 +1311,6 @@ TEST(ActionChipGeneratorTest, NewEndpointFiltersInvalidSuggestions) {
         no_template_info_result.set_suggestion_group_id(
             omnibox::GROUP_AI_MODE_DEEP_SEARCH_ACTION);
         results.push_back(std::move(no_template_info_result));
-
-        // Invalid suggestion: Unknown Group ID.
-        results.push_back(CreateSuggestion(
-            {.group_id = omnibox::GROUP_INVALID,
-             .icon_type = omnibox::SuggestTemplateInfo::GLOBE_WITH_SEARCH_LOOP,
-             .match_contents = "Title",
-             .annotation = "Annotation"}));
 
         // Invalid suggestion: Unspecified IconType.
         results.push_back(CreateSuggestion(
@@ -1362,10 +1338,8 @@ TEST(ActionChipGeneratorTest, NewEndpointFiltersInvalidSuggestions) {
   run_loop.Run();
 
   // Expect only the valid chip.
-  EXPECT_THAT(
-      actual,
-      ElementsAre(Pointee(AllOf(Field(&ActionChip::type, ChipType::kDeepSearch),
-                                Field(&ActionChip::title, "Valid Title")))));
+  EXPECT_THAT(actual,
+              ElementsAre(Pointee(Field(&ActionChip::title, "Valid Title"))));
 }
 
 TEST(ActionChipGeneratorTest, StaticChipsParamTakesPrecedenceOverNewEndpoint) {
@@ -1423,13 +1397,11 @@ TEST(ActionChipGeneratorTest,
   run_loop.Run();
 
   TabInfoPtr tab_info = CreateTabInfo(&tab_fixture.mock_tab());
-  ActionChipPtr expected_recent_tab_chip =
-      ActionChip::New(/*title=*/"Ask about previous tab",
-                      /*subtitle=*/"Some Title",
-                      /*suggestion=*/"",
-                      /*type=*/ChipType::kRecentTab,
-                      SuggestTemplateInfo::New(IconType::kFavicon),
-                      /*tab=*/tab_info->Clone());
+  ActionChipPtr expected_recent_tab_chip = ActionChip::New(
+      /*title=*/"Ask about previous tab",
+      /*subtitle=*/"Some Title",
+      /*suggestion=*/"", SuggestTemplateInfo::New(IconType::kFavicon),
+      /*tab=*/tab_info->Clone());
 
   EXPECT_THAT(actual,
               ElementsAre(Eq(std::cref(expected_recent_tab_chip)),

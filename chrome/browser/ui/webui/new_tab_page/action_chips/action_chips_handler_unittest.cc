@@ -53,7 +53,6 @@
 namespace {
 using ::action_chips::mojom::ActionChip;
 using ::action_chips::mojom::ActionChipPtr;
-using ::action_chips::mojom::ChipType;
 using ::action_chips::mojom::IconType;
 using ::action_chips::mojom::Page;
 using ::action_chips::mojom::SuggestTemplateInfo;
@@ -127,7 +126,6 @@ struct ActionChipFields {
   std::string title;
   std::string subtitle;
   std::string suggestion;
-  ChipType type = ChipType::kRecentTab;
   IconType icon_type = IconType::kIconTypeUnspecified;
   std::optional<TabInfoFields> tab;
 };
@@ -144,16 +142,15 @@ ActionChipPtr MakeActionChip(const ActionChipFields& fields) {
     tab = TabInfo::New(tab_fields.tab_id, tab_fields.title, tab_fields.url,
                        tab_fields.last_active_time);
   }
-  return ActionChip::New(
-      fields.title, fields.subtitle, fields.suggestion, fields.type,
-      SuggestTemplateInfo::New(fields.icon_type), std::move(tab));
+  return ActionChip::New(fields.title, fields.subtitle, fields.suggestion,
+                         SuggestTemplateInfo::New(fields.icon_type),
+                         std::move(tab));
 }
 
 ActionChipFields CreateStaticRecentTabChip(const TabInfoFields tab) {
   return {.title = tab.title,
           .subtitle = "Ask about this tab",
           .suggestion = "",
-          .type = ChipType::kRecentTab,
           .icon_type = IconType::kFavicon,
           .tab = std::move(tab)};
 }
@@ -162,7 +159,6 @@ ActionChipFields CreateStaticDeepSearchChip() {
   return {.title = "Research a topic",
           .subtitle = "Dive deep into something new",
           .suggestion = "",
-          .type = ChipType::kDeepSearch,
           .icon_type = IconType::kGlobeWithSearchLoop};
 }
 
@@ -170,7 +166,6 @@ ActionChipFields CreateStaticImageGenerationChip() {
   return {.title = "Create image",
           .subtitle = "Add an image and reimagine it",
           .suggestion = "",
-          .type = ChipType::kImage,
           .icon_type = IconType::kBanana};
 }
 
@@ -490,11 +485,9 @@ TEST_F(
   EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
       .WillOnce(base::test::RunOnceCallback<1>(MakeActionChipsVector(
           ActionChip::New("title1", "subtitle1", "suggention1",
-                          ChipType::kDeepSearch, SuggestTemplateInfo::New(),
-                          nullptr),
+                          SuggestTemplateInfo::New(), nullptr),
           ActionChip::New("title2", "subtitle2", "suggention2",
-                          ChipType::kDeepSearch, SuggestTemplateInfo::New(),
-                          nullptr))));
+                          SuggestTemplateInfo::New(), nullptr))));
 
   // Act
   handler().StartActionChipsRetrieval();

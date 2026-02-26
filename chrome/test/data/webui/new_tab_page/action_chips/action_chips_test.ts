@@ -4,7 +4,7 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {ActionChipsHandlerRemote, ChipType, IconType, PageCallbackRouter} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
+import {ActionChipsHandlerRemote, IconType, PageCallbackRouter} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import type {ActionChip, PageRemote, TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import {ActionChipsApiProxyImpl, ActionChipsRetrievalState} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
@@ -37,7 +37,6 @@ suite('NewTabPageActionChipsTest', () => {
     const defaultOptions: InitializeChipsOptions = {
       actionChips: [
         {
-          type: ChipType.kRecentTab,
           suggestTemplateInfo: {typeIcon: IconType.kFavicon},
           title: 'Example Tab',
           subtitle: 'Subtitle for recent tab',
@@ -50,7 +49,6 @@ suite('NewTabPageActionChipsTest', () => {
           },
         },
         {
-          type: ChipType.kImage,
           suggestTemplateInfo: {typeIcon: IconType.kBanana},
           title: 'Nano Banana',
           subtitle: 'Subtitle for image',
@@ -58,7 +56,6 @@ suite('NewTabPageActionChipsTest', () => {
           tab: null,
         },
         {
-          type: ChipType.kDeepSearch,
           suggestTemplateInfo: {typeIcon: IconType.kGlobeWithSearchLoop},
           title: 'Deep Search',
           subtitle: 'Subtitle for deep search',
@@ -122,7 +119,6 @@ suite('NewTabPageActionChipsTest', () => {
     await initializeChips({
       actionChips: [
         {
-          type: ChipType.kRecentTab,
           suggestTemplateInfo: {typeIcon: IconType.kFavicon},
           title: 'Example Tab',
           subtitle: 'Subtitle for recent tab',
@@ -156,7 +152,6 @@ suite('NewTabPageActionChipsTest', () => {
   test('recent tab chip renders favicon', async () => {
     await initializeChips({
       actionChips: [{
-        type: ChipType.kRecentTab,
         suggestTemplateInfo: {typeIcon: IconType.kFavicon},
         title: 'Example Tab',
         subtitle: 'Subtitle for recent tab',
@@ -177,7 +172,6 @@ suite('NewTabPageActionChipsTest', () => {
   test('deep dive chip renders correct format', async () => {
     await initializeChips({
       actionChips: [{
-        type: ChipType.kDeepDive,
         suggestTemplateInfo: {typeIcon: IconType.kSubArrowRight},
         title: 'Example Tab',
         subtitle: 'Subtitle for deep dive',
@@ -268,7 +262,6 @@ suite('NewTabPageActionChipsTest', () => {
       // Setup.
       await initializeChips({
         actionChips: [{
-          type: ChipType.kDeepDive,
           suggestTemplateInfo: {typeIcon: IconType.kSubArrowRight},
           title: 'Example Tab',
           subtitle: 'Subtitle for deep dive',
@@ -460,7 +453,6 @@ suite('NewTabPageActionChipsTest', () => {
           });
           await initializeChips({
             actionChips: [{
-              type: ChipType.kDeepSearch,
               suggestTemplateInfo: {typeIcon: IconType.kGlobeWithSearchLoop},
               title: 'Deep Search',
               subtitle: 'Subtitle for deep search',
@@ -485,7 +477,6 @@ suite('NewTabPageActionChipsTest', () => {
           });
           await initializeChips({
             actionChips: [{
-              type: ChipType.kDeepSearch,
               suggestTemplateInfo: {typeIcon: IconType.kGlobeWithSearchLoop},
               title: 'Deep Search',
               subtitle: '',
@@ -531,7 +522,6 @@ suite('NewTabPageActionChipsTest', () => {
           await initializeChips({
             actionChips: [
               {
-                type: ChipType.kImage,
                 suggestTemplateInfo: {typeIcon: IconType.kBanana},
                 title: 'Nano Banana',
                 subtitle: 'Subtitle for image',

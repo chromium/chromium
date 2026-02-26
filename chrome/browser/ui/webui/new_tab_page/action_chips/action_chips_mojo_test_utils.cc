@@ -31,7 +31,6 @@ void PrintTo(const ActionChip& chip, std::ostream* os) {
       << "  title: \"" << chip.title << "\",\n"
       << "  subtitle: \"" << chip.subtitle << "\",\n"
       << "  suggestion: \"" << chip.suggestion << "\",\n"
-      << "  type: " << chip.type << ",\n"
       << "  tab_info: ";
   if (chip.tab.is_null()) {
     *os << "nullptr";

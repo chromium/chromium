@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ActionChipsHandlerRemote, ChipType, IconType, PageCallbackRouter as ActionChipsPageCallbackRouter} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
+import {ActionChipsHandlerRemote, IconType, PageCallbackRouter as ActionChipsPageCallbackRouter} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import type {PageRemote as ActionChipsPageRemote, TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
 import type {CustomizeButtonsDocumentRemote} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
 import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, SidePanelOpenTrigger} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
@@ -2298,7 +2298,6 @@ suite('NewTabPageAppTest', () => {
             title: 'TabContext',
             subtitle: 'tab-subtitle',
             suggestion: 'tab-suggestion',
-            type: ChipType.kRecentTab,
             suggestTemplateInfo: {typeIcon: IconType.kFavicon},
             tab: fakeTab,
           },
@@ -2306,7 +2305,6 @@ suite('NewTabPageAppTest', () => {
             title: 'Nano Banana',
             subtitle: 'image-subtitle',
             suggestion: 'image-suggestion',
-            type: ChipType.kImage,
             suggestTemplateInfo: {typeIcon: IconType.kBanana},
             tab: null,
           },
@@ -2314,7 +2312,6 @@ suite('NewTabPageAppTest', () => {
             title: 'DeepSearch',
             subtitle: 'ds-subtitle',
             suggestion: 'ds-suggestion',
-            type: ChipType.kDeepSearch,
             suggestTemplateInfo: {typeIcon: IconType.kGlobeWithSearchLoop},
             tab: null,
           },
@@ -2472,7 +2469,6 @@ suite('NewTabPageAppTest', () => {
             title: 'Deep dive',
             subtitle: subtitle,
             suggestion: suggestion,
-            type: ChipType.kDeepDive,
             suggestTemplateInfo: {typeIcon: IconType.kSubArrowRight},
             tab: {
               tabId: 1,
