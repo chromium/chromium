@@ -765,16 +765,10 @@ INSTANTIATE_TEST_SUITE_P(,
 TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
        OnPaymentsDataLoaded_BuyNowPayLaterProviderAffirm) {
   base::test::ScopedFeatureList feature_list;
-
-  std::vector<base::test::FeatureRef> enabled_features = {
-      features::kAutofillEnableBuyNowPayLaterSyncing};
-
-  if (IsBlocklistFlagEnabled()) {
-    enabled_features.push_back(
-        features::kAutofillPreferBuyNowPayLaterBlocklists);
-  }
-
-  feature_list.InitWithFeatures(enabled_features, {});
+  feature_list.InitWithFeatureStates(
+      {{features::kAutofillEnableBuyNowPayLaterSyncing, true},
+       {features::kAutofillPreferBuyNowPayLaterBlocklists,
+        IsBlocklistFlagEnabled()}});
 
   payments_data_manager().AddBnplIssuer(
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAffirm));
@@ -792,16 +786,10 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
 TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
        OnPaymentsDataLoaded_BuyNowPayLaterProviderZip) {
   base::test::ScopedFeatureList feature_list;
-
-  std::vector<base::test::FeatureRef> enabled_features = {
-      features::kAutofillEnableBuyNowPayLaterSyncing};
-
-  if (IsBlocklistFlagEnabled()) {
-    enabled_features.push_back(
-        features::kAutofillPreferBuyNowPayLaterBlocklists);
-  }
-
-  feature_list.InitWithFeatures(enabled_features, {});
+  feature_list.InitWithFeatureStates(
+      {{features::kAutofillEnableBuyNowPayLaterSyncing, true},
+       {features::kAutofillPreferBuyNowPayLaterBlocklists,
+        IsBlocklistFlagEnabled()}});
 
   payments_data_manager().AddBnplIssuer(
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip));
@@ -819,16 +807,10 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
 TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
        OnPaymentsDataLoaded_BuyNowPayLaterProviderKlarna) {
   base::test::ScopedFeatureList feature_list;
-
-  std::vector<base::test::FeatureRef> enabled_features = {
-      features::kAutofillEnableBuyNowPayLaterSyncing};
-
-  if (IsBlocklistFlagEnabled()) {
-    enabled_features.push_back(
-        features::kAutofillPreferBuyNowPayLaterBlocklists);
-  }
-
-  feature_list.InitWithFeatures(enabled_features, {});
+  feature_list.InitWithFeatureStates(
+      {{features::kAutofillEnableBuyNowPayLaterSyncing, true},
+       {features::kAutofillPreferBuyNowPayLaterBlocklists,
+        IsBlocklistFlagEnabled()}});
 
   payments_data_manager().AddBnplIssuer(
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplKlarna));
@@ -845,16 +827,11 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
 TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_BuyNowPayLaterProviderAffirm) {
   base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureStates(
+      {{features::kAutofillEnableBuyNowPayLaterSyncing, true},
+       {features::kAutofillPreferBuyNowPayLaterBlocklists,
+        IsBlocklistFlagEnabled()}});
 
-  std::vector<base::test::FeatureRef> enabled_features = {
-      features::kAutofillEnableBuyNowPayLaterSyncing};
-
-  if (IsBlocklistFlagEnabled()) {
-    enabled_features.push_back(
-        features::kAutofillPreferBuyNowPayLaterBlocklists);
-  }
-
-  feature_list.InitWithFeatures(enabled_features, {});
   FormStructure form_structure{CreateTestCreditCardFormData(
       /*is_https=*/true, /*use_month_type=*/true)};
   test_api(form_structure)
@@ -874,16 +851,10 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
 TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_BuyNowPayLaterProviderZip) {
   base::test::ScopedFeatureList feature_list;
-
-  std::vector<base::test::FeatureRef> enabled_features = {
-      features::kAutofillEnableBuyNowPayLaterSyncing};
-
-  if (IsBlocklistFlagEnabled()) {
-    enabled_features.push_back(
-        features::kAutofillPreferBuyNowPayLaterBlocklists);
-  }
-
-  feature_list.InitWithFeatures(enabled_features, {});
+  feature_list.InitWithFeatureStates(
+      {{features::kAutofillEnableBuyNowPayLaterSyncing, true},
+       {features::kAutofillPreferBuyNowPayLaterBlocklists,
+        IsBlocklistFlagEnabled()}});
 
   FormStructure form_structure{CreateTestCreditCardFormData(
       /*is_https=*/true, /*use_month_type=*/true)};
@@ -905,16 +876,10 @@ TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
 TEST_P(BuyNowPayLaterAutofillOptimizationGuideDeciderTest,
        CreditCardFormFound_BuyNowPayLaterProviderKlarna) {
   base::test::ScopedFeatureList feature_list;
-
-  std::vector<base::test::FeatureRef> enabled_features = {
-      features::kAutofillEnableBuyNowPayLaterSyncing};
-
-  if (IsBlocklistFlagEnabled()) {
-    enabled_features.push_back(
-        features::kAutofillPreferBuyNowPayLaterBlocklists);
-  }
-
-  feature_list.InitWithFeatures(enabled_features, {});
+  feature_list.InitWithFeatureStates(
+      {{features::kAutofillEnableBuyNowPayLaterSyncing, true},
+       {features::kAutofillPreferBuyNowPayLaterBlocklists,
+        IsBlocklistFlagEnabled()}});
 
   FormStructure form_structure{CreateTestCreditCardFormData(
       /*is_https=*/true, /*use_month_type=*/true)};

@@ -3014,24 +3014,6 @@
             ]
         }
     ],
-    "AutofillPreferBuyNowPayLaterBlocklists": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillPreferBuyNowPayLaterBlocklists"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillReintroduceHybridPasskeyDropdownItem": [
         {
             "platforms": [
