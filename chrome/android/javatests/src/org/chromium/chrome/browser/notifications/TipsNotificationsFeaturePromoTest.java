@@ -269,6 +269,7 @@ public class TipsNotificationsFeaturePromoTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/488056270")
     public void testGoogleLensBottomSheetMainPageAccept() {
         @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.GOOGLE_LENS;
 
@@ -337,6 +338,7 @@ public class TipsNotificationsFeaturePromoTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/488056270")
     public void testBottomOmniboxBottomSheetMainPageAccept() {
         @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.BOTTOM_OMNIBOX;
 
