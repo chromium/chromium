@@ -31,7 +31,7 @@
     [CEReactions, Reflect] attribute DOMString hreflang;
     [RuntimeEnabled=HrefTranslate, CEReactions, Reflect] attribute DOMString hrefTranslate;
     [CEReactions, Reflect] attribute DOMString type;
-    [CEReactions, Reflect, ReflectOnly=("","no-referrer","origin","no-referrer-when-downgrade","origin-when-cross-origin","unsafe-url"), ReflectMissing="", ReflectInvalid=""] attribute DOMString referrerPolicy;
+    [CEReactions, Reflect, ReflectOnly=("","no-referrer","origin","no-referrer-when-downgrade","origin-when-cross-origin","unsafe-url","same-origin","strict-origin","strict-origin-when-cross-origin"), ReflectMissing="", ReflectInvalid=""] attribute DOMString referrerPolicy;
 
     [CEReactions, ImplementedAs=textContent] attribute DOMString text;
 

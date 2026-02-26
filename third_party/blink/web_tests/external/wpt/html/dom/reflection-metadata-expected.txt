@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 40 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] link.as: setAttribute() to "audio"
   assert_equals: IDL get expected "audio" but got ""
 [FAIL] link.as: setAttribute() to "AUDIO"
@@ -80,29 +80,5 @@ Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: IDL get expected "xslt" but got ""
 [FAIL] link.as: IDL set to "XSLT"
   assert_equals: IDL get expected "xslt" but got ""
-[FAIL] link.referrerPolicy: setAttribute() to "same-origin"
-  assert_equals: IDL get expected "same-origin" but got ""
-[FAIL] link.referrerPolicy: setAttribute() to "SAME-ORIGIN"
-  assert_equals: IDL get expected "same-origin" but got ""
-[FAIL] link.referrerPolicy: setAttribute() to "strict-origin"
-  assert_equals: IDL get expected "strict-origin" but got ""
-[FAIL] link.referrerPolicy: setAttribute() to "STRICT-ORIGIN"
-  assert_equals: IDL get expected "strict-origin" but got ""
-[FAIL] link.referrerPolicy: setAttribute() to "strict-origin-when-cross-origin"
-  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-[FAIL] link.referrerPolicy: setAttribute() to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN"
-  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-[FAIL] link.referrerPolicy: IDL set to "same-origin"
-  assert_equals: IDL get expected "same-origin" but got ""
-[FAIL] link.referrerPolicy: IDL set to "SAME-ORIGIN"
-  assert_equals: IDL get expected "same-origin" but got ""
-[FAIL] link.referrerPolicy: IDL set to "strict-origin"
-  assert_equals: IDL get expected "strict-origin" but got ""
-[FAIL] link.referrerPolicy: IDL set to "STRICT-ORIGIN"
-  assert_equals: IDL get expected "strict-origin" but got ""
-[FAIL] link.referrerPolicy: IDL set to "strict-origin-when-cross-origin"
-  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
-[FAIL] link.referrerPolicy: IDL set to "STRICT-ORIGIN-WHEN-CROSS-ORIGIN"
-  assert_equals: IDL get expected "strict-origin-when-cross-origin" but got ""
 Harness: the test ran to completion.
 
