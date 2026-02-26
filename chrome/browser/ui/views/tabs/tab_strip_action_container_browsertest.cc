@@ -584,11 +584,11 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-class TabStripActionContainerLegionBrowserTest
+class TabStripActionContainerPrivateAiBrowserTest
     : public TabStripActionContainerBrowserTest {
  public:
-  TabStripActionContainerLegionBrowserTest() {
-    legion_feature_list_.InitWithFeaturesAndParameters(
+  TabStripActionContainerPrivateAiBrowserTest() {
+    private_ai_feature_list_.InitWithFeaturesAndParameters(
         {{private_ai::kPrivateAi,
           {{private_ai::kPrivateAiApiKey.name, "test-api-key"}}},
          {contextual_cueing::kZeroStateSuggestionsUsePrivateAi, {}}},
@@ -596,18 +596,18 @@ class TabStripActionContainerLegionBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList legion_feature_list_;
+  base::test::ScopedFeatureList private_ai_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TabStripActionContainerLegionBrowserTest,
-                       EstablishesLegionConnectionOnGlicButtonHover) {
-  auto* legion_service = private_ai::PrivateAiServiceFactory::GetForProfile(
+IN_PROC_BROWSER_TEST_F(TabStripActionContainerPrivateAiBrowserTest,
+                       EstablishesPrivateAiConnectionOnGlicButtonHover) {
+  auto* private_ai_service = private_ai::PrivateAiServiceFactory::GetForProfile(
       browser()->GetProfile());
-  ASSERT_TRUE(legion_service);
+  ASSERT_TRUE(private_ai_service);
   auto mock_client =
       std::make_unique<testing::StrictMock<private_ai::MockPrivateAiClient>>();
   auto* mock_client_ptr = mock_client.get();
-  legion_service->SetClientForTesting(std::move(mock_client));
+  private_ai_service->SetClientForTesting(std::move(mock_client));
 
   EXPECT_CALL(*mock_client_ptr, EstablishConnection());
 

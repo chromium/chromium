@@ -85,7 +85,7 @@ constexpr int kLargeSpaceBetweenSeparatorRight = 8;
 constexpr int kLargeSpaceBetweenSeparatorLeft = 2;
 #endif  // !BUILDFLAG(IS_MAC)
 #if !BUILDFLAG(IS_ANDROID)
-void EstablishLegionConnection(Profile* profile) {
+void EstablishPrivateAiConnection(Profile* profile) {
   if (!profile) {
     return;
   }
@@ -472,7 +472,7 @@ void TabStripActionContainer::OnGlicButtonDismissed() {
 void TabStripActionContainer::OnGlicButtonHovered() {
   Profile* const profile = browser_window_interface_->GetProfile();
 #if !BUILDFLAG(IS_ANDROID)
-  EstablishLegionConnection(profile);
+  EstablishPrivateAiConnection(profile);
 #endif  // !BUILDFLAG(IS_ANDROID)
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
