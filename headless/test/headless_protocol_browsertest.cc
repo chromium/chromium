@@ -708,6 +708,11 @@ HEADLESS_PROTOCOL_TEST(RemoveScreenGetScreenDetails,
 
 HEADLESS_PROTOCOL_TEST(AddRemoveScreen, "shared/add-remove-screen.js")
 
+HEADLESS_PROTOCOL_TEST(SetPrimaryScreen, "shared/set-primary-screen.js")
+
+HEADLESS_PROTOCOL_TEST(SetPrimaryScreenScaled,
+                       "shared/set-primary-screen-scaled.js")
+
 HEADLESS_PROTOCOL_TEST(DispatchMouseEventScreenCoordinates,
                        "shared/dispatch-mouse-event-screen-coordinates.js")
 

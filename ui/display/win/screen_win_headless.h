@@ -126,6 +126,7 @@ class DISPLAY_EXPORT ScreenWinHeadless
   // display::HeadlessScreenManager::Delegate:
   int64_t AddDisplay(const Display& display) override;
   void RemoveDisplay(int64_t display_id) override;
+  void SetPrimaryDisplay(int64_t display_id) override;
 
   std::vector<internal::DisplayInfo> DisplayInfosFromScreenInfo(
       const std::vector<headless::HeadlessScreenInfo>& screen_infos);

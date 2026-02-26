@@ -21,7 +21,7 @@
             },
             {
                 "domain": "Emulation",
-                "include": ["getScreenInfos", "addScreen", "removeScreen" ],
+                "include": ["getScreenInfos", "addScreen", "removeScreen", "setPrimaryScreen" ],
                 "include_events": []
             },
             {

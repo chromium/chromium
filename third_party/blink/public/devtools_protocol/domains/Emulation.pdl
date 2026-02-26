@@ -617,3 +617,11 @@ domain Emulation
   experimental command removeScreen
     parameters
       ScreenId screenId
+
+  # Set primary screen. Only supported in headless mode.
+  # Note that this changes the coordinate system origin to the top-left
+  # of the new primary screen, updating the bounds and work areas
+  # of all existing screens accordingly.
+  experimental command setPrimaryScreen
+    parameters
+      ScreenId screenId

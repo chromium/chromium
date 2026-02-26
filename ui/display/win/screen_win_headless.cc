@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -417,6 +418,10 @@ void ScreenWinHeadless::RemoveDisplay(int64_t display_id) {
       GetExistingDisplayInfos(/*except_display_id=*/display_id);
 
   UpdateFromDisplayInfos(display_infos);
+}
+
+void ScreenWinHeadless::SetPrimaryDisplay(int64_t display_id) {
+  NOTIMPLEMENTED();
 }
 
 std::vector<internal::DisplayInfo>

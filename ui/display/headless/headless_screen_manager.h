@@ -16,6 +16,7 @@
 
 namespace display {
 class Display;
+class DisplayList;
 
 // Provides headless screen management functionality.
 class DISPLAY_EXPORT HeadlessScreenManager {
@@ -33,6 +34,7 @@ class DISPLAY_EXPORT HeadlessScreenManager {
 
     virtual int64_t AddDisplay(const Display& display) = 0;
     virtual void RemoveDisplay(int64_t display_id) = 0;
+    virtual void SetPrimaryDisplay(int64_t display_id) = 0;
   };
 
   // Returns HeadlessScreenManager singleton object; creates one if it does
@@ -51,6 +53,11 @@ class DISPLAY_EXPORT HeadlessScreenManager {
                                  const gfx::Insets& work_area_insets_pixels,
                                  float device_pixel_ratio);
 
+  // Sets primary display for the given display list. Will crash if specified
+  // display does not exist in the given display list.
+  static void SetPrimaryDisplay(display::DisplayList& display_list,
+                                int64_t display_id);
+
   // Sets the delegate. Will crash if delegate is already set.
   void SetDelegate(Delegate* delegate,
                    const base::Location& location = FROM_HERE);
@@ -60,6 +67,10 @@ class DISPLAY_EXPORT HeadlessScreenManager {
 
   // Removes the specified display.
   void RemoveDisplay(int64_t display_id);
+
+  // Sets primary display for the given display list. Will crash if specified
+  // display does not exist.
+  void SetPrimaryDisplay(int64_t display_id);
 
  private:
   friend class base::NoDestructor<HeadlessScreenManager>;

@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "components/headless/display_util/headless_display_util.h"
@@ -159,6 +160,10 @@ int64_t HeadlessScreen::AddDisplay(const display::Display& display) {
 void HeadlessScreen::RemoveDisplay(int64_t display_id) {
   display_list_.RemoveDisplay(display_id);
   display::RemoveInternalDisplayId(display_id);
+}
+
+void HeadlessScreen::SetPrimaryDisplay(int64_t display_id) {
+  NOTIMPLEMENTED();
 }
 
 const std::vector<display::Display>& HeadlessScreen::GetAllDisplays() const {

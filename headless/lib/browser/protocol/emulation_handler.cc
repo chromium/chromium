@@ -209,4 +209,21 @@ Response EmulationHandler::RemoveScreen(const String& screen_id) {
   return Response::Success();
 }
 
+Response EmulationHandler::SetPrimaryScreen(const String& screen_id) {
+  CHECK(display::Screen::Get()->IsHeadless());
+
+  int64_t display_id;
+  if (!base::StringToInt64(screen_id, &display_id)) {
+    return Response::InvalidParams("Invalid screen id: " + screen_id);
+  }
+
+  if (!GetDisplay(display_id)) {
+    return Response::InvalidParams("Unknown screen id: " + screen_id);
+  }
+
+  display::HeadlessScreenManager::Get()->SetPrimaryDisplay(display_id);
+
+  return Response::Success();
+}
+
 }  // namespace headless::protocol

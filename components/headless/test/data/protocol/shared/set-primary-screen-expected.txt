@@ -1,0 +1,99 @@
+Tests CDP Emulation.setPrimaryScreen() API.
+Screens before primary screen is changed: {
+    screenInfos : [
+        [0] : {
+            availHeight : 600
+            availLeft : 0
+            availTop : 0
+            availWidth : 800
+            colorDepth : 24
+            devicePixelRatio : 1
+            height : 600
+            id : <string>
+            isExtended : true
+            isInternal : false
+            isPrimary : true
+            label : 1st
+            left : 0
+            orientation : {
+                angle : 0
+                type : landscapePrimary
+            }
+            top : 0
+            width : 800
+        }
+        [1] : {
+            availHeight : 600
+            availLeft : 800
+            availTop : 600
+            availWidth : 800
+            colorDepth : 24
+            devicePixelRatio : 1
+            height : 600
+            id : <string>
+            isExtended : true
+            isInternal : false
+            isPrimary : false
+            label : 2nd
+            left : 800
+            orientation : {
+                angle : 0
+                type : landscapePrimary
+            }
+            top : 600
+            width : 800
+        }
+    ]
+}
+Emulation.setPrimaryScreen result: {
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+Screens after primary screen is changed: {
+    screenInfos : [
+        [0] : {
+            availHeight : 600
+            availLeft : -800
+            availTop : -600
+            availWidth : 800
+            colorDepth : 24
+            devicePixelRatio : 1
+            height : 600
+            id : <string>
+            isExtended : true
+            isInternal : false
+            isPrimary : false
+            label : 1st
+            left : -800
+            orientation : {
+                angle : 0
+                type : landscapePrimary
+            }
+            top : -600
+            width : 800
+        }
+        [1] : {
+            availHeight : 600
+            availLeft : 0
+            availTop : 0
+            availWidth : 800
+            colorDepth : 24
+            devicePixelRatio : 1
+            height : 600
+            id : <string>
+            isExtended : true
+            isInternal : false
+            isPrimary : true
+            label : 2nd
+            left : 0
+            orientation : {
+                angle : 0
+                type : landscapePrimary
+            }
+            top : 0
+            width : 800
+        }
+    ]
+}

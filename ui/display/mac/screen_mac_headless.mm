@@ -11,6 +11,7 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
+#include "base/notimplemented.h"
 #include "base/types/expected.h"
 #include "components/headless/screen_info/headless_screen_info.h"
 #include "ui/display/util/display_util.h"
@@ -134,6 +135,10 @@ int64_t ScreenMacHeadless::AddDisplay(const Display& display) {
 void ScreenMacHeadless::RemoveDisplay(int64_t display_id) {
   display_list().RemoveDisplay(display_id);
   display::RemoveInternalDisplayId(display_id);
+}
+
+void ScreenMacHeadless::SetPrimaryDisplay(int64_t display_id) {
+  NOTIMPLEMENTED();
 }
 
 }  // namespace display

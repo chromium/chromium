@@ -44,6 +44,8 @@ class EmulationHandler : public DomainHandler, public Emulation::Backend {
       override;
 
   Response RemoveScreen(const String& screen_id) override;
+
+  Response SetPrimaryScreen(const String& screen_id) override;
 };
 
 }  // namespace headless::protocol

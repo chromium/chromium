@@ -202,6 +202,10 @@ void HeadlessScreen::RemoveDisplay(int64_t display_id) {
   display::RemoveInternalDisplayId(display_id);
 }
 
+void HeadlessScreen::SetPrimaryDisplay(int64_t display_id) {
+  display::HeadlessScreenManager::SetPrimaryDisplay(display_list(), display_id);
+}
+
 display::Display HeadlessScreen::GetDisplayById(int64_t display_id) {
   auto it = display_list().FindDisplayById(display_id);
   if (it != display_list().displays().end()) {
