@@ -665,7 +665,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   friend class SimCompositor;
   friend class WebView;  // So WebView::Create can call our constructor
 
-  void AcceptLanguagesChanged();
   void ThemeChanged();
 
   // Update the target url locally and tell the browser that the target URL has

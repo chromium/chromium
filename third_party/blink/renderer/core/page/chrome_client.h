@@ -497,8 +497,6 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual void SetBrowserControlsShownRatio(float top_ratio,
                                             float bottom_ratio) {}
 
-  virtual String AcceptLanguages() = 0;
-
   enum class UIElementType {
     kAlertDialog = 0,
     kConfirmDialog = 1,

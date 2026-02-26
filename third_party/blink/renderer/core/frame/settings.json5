@@ -54,6 +54,12 @@
 
   data: [
     {
+      name: "acceptLanguages",
+      type: "String",
+      invalidate: ["AcceptLanguages"],
+    },
+
+    {
       name: "defaultTextEncodingName",
       type: "String",
     },

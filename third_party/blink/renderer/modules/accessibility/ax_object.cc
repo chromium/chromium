@@ -6963,7 +6963,7 @@ AtomicString AXObject::Language() const {
 
   // Use the first accept language preference if present.
   if (Page* page = document->GetPage()) {
-    const String languages = page->GetChromeClient().AcceptLanguages();
+    const String languages = page->GetSettings().GetAcceptLanguages();
     String first_language = languages.Substring(0, languages.find(","));
     if (!first_language.empty()) {
       return AtomicString(first_language.StripWhiteSpace());

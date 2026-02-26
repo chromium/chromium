@@ -31,7 +31,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
-#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/language.h"
@@ -111,11 +110,7 @@ String Navigator::GetAcceptLanguages() {
   if (!DomWindow())
     return DefaultLanguage();
 
-  return DomWindow()
-      ->GetFrame()
-      ->GetPage()
-      ->GetChromeClient()
-      .AcceptLanguages();
+  return DomWindow()->GetFrame()->GetPage()->GetSettings().GetAcceptLanguages();
 }
 
 void Navigator::Trace(Visitor* visitor) const {

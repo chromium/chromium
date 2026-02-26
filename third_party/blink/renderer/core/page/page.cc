@@ -1229,6 +1229,9 @@ void Page::SettingsChanged(ChangeType change_type) {
       ForcedColorsChanged();
       break;
     }
+    case ChangeType::kAcceptLanguages:
+      AcceptLanguagesChanged();
+      break;
   }
 }
 

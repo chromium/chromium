@@ -911,11 +911,6 @@ void ChromeClientImpl::AutoscrollEnd(LocalFrame* local_frame) {
     widget->AutoscrollEnd();
 }
 
-String ChromeClientImpl::AcceptLanguages() {
-  DCHECK(web_view_);
-  return String::FromUTF8(web_view_->GetRendererPreferences().accept_languages);
-}
-
 void ChromeClientImpl::AttachRootLayer(scoped_refptr<cc::Layer> root_layer,
                                        LocalFrame* local_frame) {
   DCHECK(local_frame->IsLocalRoot());

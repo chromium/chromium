@@ -196,6 +196,8 @@ void IsolatedSVGDocumentHost::CopySettingsFrom(
   settings.SetPreferredColorScheme(
       inherited_settings.GetPreferredColorScheme());
   settings.SetInForcedColors(inherited_settings.GetInForcedColors());
+
+  settings.SetAcceptLanguages(inherited_settings.GetAcceptLanguages());
 }
 
 LocalFrame* IsolatedSVGDocumentHost::GetFrame() {

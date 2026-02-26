@@ -20,8 +20,9 @@
 
 #include "third_party/blink/renderer/core/svg/svg_tests.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
-#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_static_string_list.h"
@@ -94,8 +95,8 @@ bool SVGTests::IsValid() const {
     String accept_languages = system_language_->ContextElement()
                                   ->GetDocument()
                                   .GetPage()
-                                  ->GetChromeClient()
-                                  .AcceptLanguages();
+                                  ->GetSettings()
+                                  .GetAcceptLanguages();
     Vector<StringView> languages =
         StringView(accept_languages).SplitSkippingEmpty(',');
     for (const auto& lang_tag : system_language_->Value()->Values()) {

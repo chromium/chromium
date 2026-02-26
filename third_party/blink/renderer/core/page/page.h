@@ -376,8 +376,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   void DidCommitLoad(LocalFrame*);
 
-  void AcceptLanguagesChanged();
-
   void Trace(Visitor*) const override;
 
   void DidInitializeCompositing(cc::AnimationHost&);
@@ -544,6 +542,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   // SettingsDelegate overrides.
   void SettingsChanged(SettingsDelegate::ChangeType) override;
+
+  void AcceptLanguagesChanged();
 
   void InvalidateColorScheme();
 

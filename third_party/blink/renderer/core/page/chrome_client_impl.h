@@ -230,7 +230,6 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                             const gfx::Rect& rect) override;
 
   // ChromeClient methods:
-  String AcceptLanguages() override;
   void SetCursorForPlugin(const ui::Cursor&, LocalFrame*) override;
   void SetDelegatedInkMetadata(
       LocalFrame* frame,

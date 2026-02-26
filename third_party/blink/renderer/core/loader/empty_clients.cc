@@ -96,10 +96,6 @@ void EmptyChromeClient::OpenFileChooser(LocalFrame*,
 void EmptyChromeClient::AttachRootLayer(scoped_refptr<cc::Layer>, LocalFrame*) {
 }
 
-String EmptyChromeClient::AcceptLanguages() {
-  return String();
-}
-
 bool EmptyChromeClient::StartDeferringCommits(LocalFrame& main_frame,
                                               base::TimeDelta timeout,
                                               cc::PaintHoldingReason reason) {
