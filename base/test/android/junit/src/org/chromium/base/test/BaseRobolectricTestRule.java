@@ -28,6 +28,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.lifetime.LifetimeAssert;
 import org.chromium.base.metrics.UmaRecorderHolder;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner.HelperTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -112,6 +113,7 @@ public class BaseRobolectricTestRule implements TestRule {
         }
 
         sPausedExecutor = new PausedExecutorService();
+        AsyncTask.takeOverAndroidThreadPool();
         PostTask.setPrenativeThreadPoolExecutorForTesting(sPausedExecutor);
         Handler mainLooperHandler = new Handler(Looper.getMainLooper());
         PostTask.setPrenativeThreadPoolDelayedExecutorForTesting(

@@ -18,47 +18,27 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowApplication;
 
-import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.concurrent.Executor;
 
 /** Unit tests for {@link org.chromium.webapk.lib.client.WebApkServiceConnectionManager}. */
-@RunWith(RobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
 public class WebApkServiceConnectionManagerTest {
-    private static class TestExecutor implements Executor {
-        private final ArrayDeque<Runnable> mPendingTasks = new ArrayDeque<>();
-
-        @Override
-        public void execute(Runnable command) {
-            mPendingTasks.add(command);
-        }
-
-        public void runPendingTasks() {
-            while (!mPendingTasks.isEmpty()) {
-                mPendingTasks.pop().run();
-            }
-        }
-    }
-
     private static final String WEBAPK_PACKAGE = "com.webapk.package";
 
     private static final String CATEGORY_WEBAPK_SERVICE_API = "android.intent.category.WEBAPK_API";
 
     private ShadowApplication mShadowApplication;
-    private final TestExecutor mTestExecutor = new TestExecutor();
     private WebApkServiceConnectionManager mConnectionManager;
 
     private static class TestCallback implements WebApkServiceConnectionManager.ConnectionCallback {
@@ -77,7 +57,6 @@ public class WebApkServiceConnectionManagerTest {
         mShadowApplication = Shadows.shadowOf(RuntimeEnvironment.application);
         mShadowApplication.setComponentNameAndServiceForBindService(
                 new ComponentName(WEBAPK_PACKAGE, ""), Mockito.mock(IBinder.class));
-        PostTask.setPrenativeThreadPoolExecutorForTesting(mTestExecutor);
         mConnectionManager =
                 new WebApkServiceConnectionManager(
                         TaskTraits.BEST_EFFORT_MAY_BLOCK,
@@ -88,7 +67,7 @@ public class WebApkServiceConnectionManagerTest {
     @After
     public void tearDown() {
         mConnectionManager.disconnectAll(RuntimeEnvironment.application);
-        mTestExecutor.runPendingTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 
     /**
@@ -101,9 +80,9 @@ public class WebApkServiceConnectionManagerTest {
         TestCallback callback2 = new TestCallback();
 
         mConnectionManager.connect(RuntimeEnvironment.application, WEBAPK_PACKAGE, callback1);
-        mTestExecutor.runPendingTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
         mConnectionManager.connect(RuntimeEnvironment.application, WEBAPK_PACKAGE, callback2);
-        mTestExecutor.runPendingTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Only one connection should have been created.
         Assert.assertEquals(WEBAPK_PACKAGE, getNextStartedServicePackage());
@@ -131,7 +110,9 @@ public class WebApkServiceConnectionManagerTest {
             // Establish pending connection created in {@link #bindService}.
             public void establishServiceConnection() {
                 if (mConnection != null) {
-                    mConnection.onServiceConnected(null, null);
+                    mConnection.onServiceConnected(
+                            new ComponentName(WEBAPK_PACKAGE, "random"),
+                            Mockito.mock(IBinder.class));
                 }
             }
 
@@ -158,10 +139,10 @@ public class WebApkServiceConnectionManagerTest {
 
         mConnectionManager.connect(asyncBindContext, WEBAPK_PACKAGE, callback1);
         mConnectionManager.connect(asyncBindContext, WEBAPK_PACKAGE, callback2);
-        mTestExecutor.runPendingTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         mConnectionManager.connect(asyncBindContext, WEBAPK_PACKAGE, callback3);
-        mTestExecutor.runPendingTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // The connection has not been established yet. None of the callbacks should have been
         // called.
@@ -244,14 +225,14 @@ public class WebApkServiceConnectionManagerTest {
 
             mConnectionManager.connect(recordingContext, WEBAPK_PACKAGE, callback1);
             if ((testCase & flagRunBackgroundTasksAfterConnect) != 0) {
-                mTestExecutor.runPendingTasks();
+                RobolectricUtil.runAllBackgroundAndUi();
             }
             mConnectionManager.disconnectAll(recordingContext);
             if ((testCase & flagRunBackgroundTasksAfterDisconnect) != 0) {
-                mTestExecutor.runPendingTasks();
+                RobolectricUtil.runAllBackgroundAndUi();
             }
             mConnectionManager.connect(recordingContext, WEBAPK_PACKAGE, callback2);
-            mTestExecutor.runPendingTasks();
+            RobolectricUtil.runAllBackgroundAndUi();
 
             Assert.assertArrayEquals(
                     new Boolean[] {true, false, true},
@@ -262,7 +243,7 @@ public class WebApkServiceConnectionManagerTest {
             Assert.assertNotNull(callback2.mService);
 
             mConnectionManager.disconnectAll(recordingContext);
-            mTestExecutor.runPendingTasks();
+            RobolectricUtil.runAllBackgroundAndUi();
         }
     }
 

@@ -30,17 +30,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowActivityManager;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowPackageManager;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
-import org.chromium.webapk.shell_apk.CustomAndroidOsShadowAsyncTask;
 import org.chromium.webapk.shell_apk.HostBrowserUtils.PackageNameAndComponentName;
 import org.chromium.webapk.shell_apk.LaunchHostBrowserSelector;
 import org.chromium.webapk.test.WebApkTestHelper;
@@ -48,11 +47,8 @@ import org.chromium.webapk.test.WebApkTestHelper;
 import java.util.Arrays;
 
 /** Tests for {@link SplashActivity}. */
-@RunWith(RobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {CustomAndroidOsShadowAsyncTask.class})
-@LooperMode(LooperMode.Mode.LEGACY)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public final class SplashActivityTest {
     public static final String BROWSER_PACKAGE_NAME = "com.google.android.apps.chrome";
 
@@ -113,11 +109,13 @@ public final class SplashActivityTest {
 
         // ActivityController#visible() attaches the activity to the window.
         splashActivityController.create(null).visible().resume();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertNotNull(mShadowApplication.getNextStartedActivity());
         assertFalse(splashActivityController.get().isFinishing());
 
         splashActivityController.get().onActivityResult(0, 0, null);
         splashActivityController.pause().resume();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertTrue(splashActivityController.get().isFinishing());
     }
 
@@ -136,6 +134,7 @@ public final class SplashActivityTest {
         splashActivityController.create(new Bundle()).visible();
         splashActivityController.get().onActivityResult(0, 0, null);
         splashActivityController.resume();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertNull(mShadowApplication.getNextStartedActivity());
         assertTrue(splashActivityController.get().isFinishing());
     }
@@ -156,10 +155,12 @@ public final class SplashActivityTest {
         splashActivityController.create(new Bundle()).visible();
         // Dialog shown, LaunchHostBrowserSelector callback called after Activity#onResume()
         splashActivityController.resume();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertNotNull(mLaunchHostBrowserSelectorCallback);
         mLaunchHostBrowserSelectorCallback.onBrowserSelected(
                 new PackageNameAndComponentName(BROWSER_PACKAGE_NAME), /* dialogShown= */ true);
         mLaunchHostBrowserSelectorCallback = null;
+        RobolectricUtil.runAllBackgroundAndUi();
         assertNotNull(mShadowApplication.getNextStartedActivity());
         assertFalse(splashActivityController.get().isFinishing());
     }
@@ -178,6 +179,7 @@ public final class SplashActivityTest {
         setAppTaskTopActivity(splashActivityController.get().getTaskId(), new Activity());
 
         splashActivityController.create(new Bundle()).visible().resume();
+        RobolectricUtil.runAllBackgroundAndUi();
         assertNull(mShadowApplication.getNextStartedActivity());
         assertFalse(splashActivityController.get().isFinishing());
     }
@@ -197,6 +199,7 @@ public final class SplashActivityTest {
         splashActivityController.newIntent(new Intent());
         splashActivityController.get().onActivityResult(0, 0, null);
         splashActivityController.resume();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertNotNull(mShadowApplication.getNextStartedActivity());
         assertFalse(splashActivityController.get().isFinishing());
@@ -216,6 +219,7 @@ public final class SplashActivityTest {
         splashActivityController.get().onActivityResult(0, 0, null);
         splashActivityController.newIntent(new Intent());
         splashActivityController.resume();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertNotNull(mShadowApplication.getNextStartedActivity());
         assertFalse(splashActivityController.get().isFinishing());

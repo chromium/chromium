@@ -32,19 +32,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowActivityManager;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowPackageManager;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.WebApkConstants;
-import org.chromium.webapk.shell_apk.CustomAndroidOsShadowAsyncTask;
 import org.chromium.webapk.shell_apk.HostBrowserUtils;
 import org.chromium.webapk.shell_apk.TestBrowserInstaller;
 import org.chromium.webapk.shell_apk.WebApkSharedPreferences;
@@ -56,11 +55,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /** Tests launching WebAPK. */
-@RunWith(RobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {CustomAndroidOsShadowAsyncTask.class})
-@LooperMode(LooperMode.Mode.LEGACY)
+@RunWith(BaseRobolectricTestRunner.class)
+@Config(manifest = Config.NONE)
 public final class LaunchTest {
     /** Values based on manifest specified in GN file. */
     private static final String BROWSER_PACKAGE_NAME = "com.google.android.apps.chrome";
@@ -173,7 +169,7 @@ public final class LaunchTest {
     /** Test that the host browser is launched as a result of a main launch intent. */
     @Test
     public void testMainIntent() {
-        registerWebApkWithDefaultHostBrowser(/* isArcChromeOs */ false);
+        registerWebApkWithDefaultHostBrowser(/* isArcChromeOs= */ false);
 
         Intent launchIntent = new Intent(Intent.ACTION_MAIN);
         launchIntent.setPackage(sWebApkPackageName);
@@ -805,6 +801,7 @@ public final class LaunchTest {
                 }
                 relaunchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mAppContext.startActivity(relaunchIntent);
+                RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
                 continue;
             }
 
@@ -832,6 +829,7 @@ public final class LaunchTest {
                 Robolectric.buildActivity(activityClass, intent);
         setAppTaskTopActivity(controller.get().getTaskId(), controller.get());
         controller.create().start().resume().visible();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }
 
     /** Installs browser with the given package name and version. */

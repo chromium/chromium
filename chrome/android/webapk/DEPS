@@ -2,6 +2,7 @@
 # in Chrome including //base.
 include_rules = [
   "-base",
+  "+base/test",
   "-chrome",
   "-content",
   "-testing",

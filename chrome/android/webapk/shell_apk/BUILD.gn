@@ -380,7 +380,6 @@ robolectric_binary("webapk_shell_apk_junit_tests") {
 robolectric_binary("webapk_shell_apk_h2o_junit_tests") {
   package_name = "org.chromium.test"
   sources = [
-    "junit/src/org/chromium/webapk/shell_apk/CustomAndroidOsShadowAsyncTask.java",
     "junit/src/org/chromium/webapk/shell_apk/TestBrowserInstaller.java",
     "junit/src/org/chromium/webapk/shell_apk/h2o/LaunchTest.java",
     "junit/src/org/chromium/webapk/shell_apk/h2o/SplashActivityTest.java",
@@ -390,6 +389,7 @@ robolectric_binary("webapk_shell_apk_h2o_junit_tests") {
     ":${h2o_junit_manifest_target_name}",
     ":h2o_j_unit_webapk_generated_webapk_java",
     ":h2o_j_unit_webapk_generated_webapk_with_service_java",
+    "//base:base_junit_test_support",
     "//chrome/android/webapk/libs/common:common_java",
     "//chrome/android/webapk/test:junit_test_support",
     "//components/webapk/android/libs/common:java",

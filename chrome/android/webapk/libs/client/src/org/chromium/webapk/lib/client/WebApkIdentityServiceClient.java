@@ -55,6 +55,10 @@ public class WebApkIdentityServiceClient {
     /** Manages connections between the browser application and WebAPK Identity services. */
     private final WebApkServiceConnectionManager mConnectionManager;
 
+    static void resetForTesting() {
+        sInstance = null;
+    }
+
     public static WebApkIdentityServiceClient getInstance(@TaskTraits int uiThreadTaskTraits) {
         if (sInstance == null) {
             sInstance = new WebApkIdentityServiceClient(uiThreadTaskTraits);
