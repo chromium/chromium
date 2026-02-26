@@ -59,4 +59,6 @@ const base::FeatureParam<AimServerEligibilityIncludeClientLocaleMode>
         AimServerEligibilityIncludeClientLocaleMode::kGetWithLocale,
         &kAimServerEligibilityIncludeClientLocaleModeOptions};
 
+BASE_FEATURE(kAimEligibilityServiceOauth, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace omnibox

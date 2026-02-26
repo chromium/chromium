@@ -121,6 +121,7 @@ constexpr char kSyncDeviceStatisticsMetricsName[] =
     "sync_device_statistics_metrics";
 constexpr char kLegionServiceName[] = "legion_service";
 constexpr char kWalletPassesName[] = "wallet_passes";
+constexpr char kAimEligibilityServiceName[] = "aim_eligibility_service";
 
 }  // namespace
 
@@ -546,6 +547,10 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
           /*name=*/kWalletPassesName,
           /*scopes=*/{GaiaConstants::kWalletPassesOAuth2Scope});
     }
+    case OAuthConsumerId::kAimEligibilityService:
+      return OAuthConsumer(
+          /*name=*/kAimEligibilityServiceName,
+          /*scopes=*/{GaiaConstants::kSearchResultsOAuth2Scope});
   }
 }
 

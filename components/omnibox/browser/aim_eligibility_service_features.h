@@ -60,6 +60,10 @@ enum class AimServerEligibilityIncludeClientLocaleMode {
 extern const base::FeatureParam<AimServerEligibilityIncludeClientLocaleMode>
     kAimServerEligibilityIncludeClientLocaleMode;
 
+// If enabled, the AimEligibilityService will omit cookies and fetch OAuth
+// tokens for server requests.
+BASE_DECLARE_FEATURE(kAimEligibilityServiceOauth);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AIM_ELIGIBILITY_SERVICE_FEATURES_H_
