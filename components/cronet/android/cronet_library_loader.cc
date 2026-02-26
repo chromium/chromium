@@ -362,9 +362,9 @@ static void JNI_CronetLibraryLoader_CronetInitOnInitThread(
   CHECK(!g_trace_net_log_capture_mode.has_value());
   g_trace_net_log_capture_mode = trace_net_log_capture_mode;
   // Note we do this on the init thread, as opposed to a user thread, because
-  // this eventually calls
-  // base::trace_event::TraceLog::AddAsyncEnabledStateObserver(), which
-  // schedules its callbacks on the sequenced task runner it was called from.
+  // this calls base::trace_event::TraceSessionObserverList::AddObserver(),
+  // which schedules its callbacks on the sequenced task runner it was called
+  // from.
   trace_net_log_observer->WatchForTraceStart(net::NetLog::Get());
 
   DCHECK(!g_network_change_notifier);

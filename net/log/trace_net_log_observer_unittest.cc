@@ -84,15 +84,15 @@ TraceEntryInfo GetTraceEntryInfoFromValue(const base::DictValue& value) {
 void EnableTraceLog(std::string_view category) {
   TraceLog::GetInstance()->SetEnabled(
       base::trace_event::TraceConfig(category, ""));
-  // AsyncEnabledStateObserver will receive enabled notification one message
-  // loop iteration later.
+  // TraceNetLogObserver will receive enabled notification one message loop
+  // iteration later.
   base::RunLoop().RunUntilIdle();
 }
 
 void DisableTraceLog() {
   TraceLog::GetInstance()->SetDisabled();
-  // AsyncEnabledStateObserver will receive disabled notification one message
-  // loop iteration later.
+  // TraceNetLogObserver will receive disabled notification one message loop
+  // iteration later.
   base::RunLoop().RunUntilIdle();
 }
 
