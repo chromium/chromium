@@ -23,6 +23,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ContextualSearchContextState">
+  <variant name="WithNonTabContext"
+      summary="recorded when a query is submitted with non-tab context"/>
+  <variant name="WithoutContext"
+      summary="recorded when a query is submitted without context"/>
+  <variant name="WithTabContext"
+      summary="recorded when a query is submitted with tab context"/>
+</variants>
+
 <variants name="ContextualSearchFileTypes">
   <variant name="Image"/>
   <variant name="Other"/>
@@ -721,6 +730,20 @@ chromium-metrics-reviews@google.com.
     Records every time the user deletes the auto-suggested tab context chip from
     the composebox. Always recorded as true.
   </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.UserAction.SubmitQuery.{ContextualSearchContextState}.{ContextualSearchSource}"
+    enum="Boolean" expires_after="2026-08-09">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when a query is submitted {ContextualSearchContextState} from
+    {ContextualSearchSource}. Always recorded as true.
+  </summary>
+  <token key="ContextualSearchContextState"
+      variants="ContextualSearchContextState"/>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 

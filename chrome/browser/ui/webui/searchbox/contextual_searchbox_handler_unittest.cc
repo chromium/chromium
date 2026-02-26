@@ -235,7 +235,7 @@ TEST_F(ContextualSearchboxHandlerTest, SessionStarted) {
   ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
 
   EXPECT_CALL(query_controller(), InitializeIfNeeded);
-  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged(testing::_))
       .WillOnce(testing::SaveArg<0>(&state_arg));
   handler().NotifySessionStarted();
   EXPECT_EQ(state_arg, SessionState::kSessionStarted);
@@ -520,11 +520,17 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
   auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
   ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
 
-  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged(testing::_))
       .Times(3)
       .WillRepeatedly([&](SessionState session_state) {
         session_states.push_back(session_state);
       });
+  EXPECT_CALL(*metrics_recorder_ptr,
+              NotifyQuerySubmitted(testing::_, testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          metrics_recorder_ptr,
+          &MockContextualSearchMetricsRecorder::NotifyQuerySubmittedBase));
 
   // Start the session.
   EXPECT_CALL(query_controller(), InitializeIfNeeded)
@@ -583,11 +589,17 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_DelayUpload) {
   auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
   ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
 
-  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged(testing::_))
       .Times(3)
       .WillRepeatedly([&](SessionState session_state) {
         session_states.push_back(session_state);
       });
+  EXPECT_CALL(*metrics_recorder_ptr,
+              NotifyQuerySubmitted(testing::_, testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          metrics_recorder_ptr,
+          &MockContextualSearchMetricsRecorder::NotifyQuerySubmittedBase));
 
   // Start the session.
   EXPECT_CALL(query_controller(), InitializeIfNeeded)
@@ -1149,7 +1161,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, TabContextAddedMetric) {
 
   auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
   ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
-  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged(testing::_))
       .WillRepeatedly(testing::Invoke(
           metrics_recorder_ptr,
           &MockContextualSearchMetricsRecorder::NotifySessionStateChangedBase));
@@ -1265,7 +1277,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
 
   auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
   ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
-  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged(testing::_))
       .WillRepeatedly(testing::Invoke(
           metrics_recorder_ptr,
           &MockContextualSearchMetricsRecorder::NotifySessionStateChangedBase));
@@ -1323,7 +1335,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest,
 
   auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
   ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
-  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged)
+  EXPECT_CALL(*metrics_recorder_ptr, NotifySessionStateChanged(testing::_))
       .WillRepeatedly(testing::Invoke(
           metrics_recorder_ptr,
           &MockContextualSearchMetricsRecorder::NotifySessionStateChangedBase));

@@ -178,6 +178,11 @@ class ContextualSearchSessionHandle {
       const SessionId& session_id,
       std::optional<lens::LensOverlayInvocationSource> invocation_source);
 
+  // Notifies the metrics recorder that a query has been submitted, providing
+  // information about the presence of tab and non-tab context.
+  void NotifyQuerySubmittedSessionState(
+      const std::vector<FileInfo>& file_infos);
+
   // The list of uploaded but not yet committed context tokens for this
   // particular instance of the session. This list is unique to this instance of
   // the session handle, meaning that it is unique per instance of the

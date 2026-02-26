@@ -13,6 +13,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -1757,6 +1758,8 @@ TEST_F(OmniboxEditModelPopupTest, AimPopupEnabled_ForcedNavigationDisabled) {
 }
 
 TEST_F(OmniboxEditModelPopupTest, AimPopupEnabled_ForcedNavigationEnabled) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(omnibox::kAiModeEntryPointAlwaysNavigates);
   controller()->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
@@ -1768,6 +1771,14 @@ TEST_F(OmniboxEditModelPopupTest, AimPopupEnabled_ForcedNavigationEnabled) {
 
   EXPECT_EQ(OmniboxPopupState::kNone,
             controller()->popup_state_manager()->popup_state());
+
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "ContextualSearch.UserAction.SubmitQuery.WithoutContext."
+                "Omnibox"),
+            1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.UserAction.SubmitQuery.WithoutContext.Omnibox", true,
+      1);
 
   testing::Mock::VerifyAndClearExpectations(client());
   EXPECT_CALL(*client(), IsAimPopupEnabled()).WillRepeatedly(Return(true));

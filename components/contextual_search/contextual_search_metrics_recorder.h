@@ -94,7 +94,15 @@ class ContextualSearchMetricsRecorder {
 
   // Should be called when there are session state changes to keep track of
   // session state metrics. Virtual for testing.
+  // TODO(crbug.com/458086158): Make this private and instead make
+  // NotifySessionStarted, NotifyQuerySubmitted, RecordSessionAbandonedMetrics,
+  // and a new NotifyNavigationOccurred method public so that the session state
+  // can be managed internally by the metrics recorder.
   virtual void NotifySessionStateChanged(SessionState session_state);
+
+  // Notifies the metrics recorder that a query was submitted.
+  virtual void NotifyQuerySubmitted(bool has_tab_context,
+                                    bool has_non_tab_context);
 
   // Activates a funnel for metrics logging.
   virtual void ActivateMetricsFunnel(const std::string& funnel_name);
@@ -151,9 +159,6 @@ class ContextualSearchMetricsRecorder {
   // Called when the session starts to correctly track session
   // durations.
   void NotifySessionStarted();
-  // Called when a query is submitted to correctly track the time from
-  // the session starting to query submission.
-  void NotifyQuerySubmitted();
   // Should only be called when a session has been abandoned.
   void RecordSessionAbandonedMetrics();
   // Should only be called if a query was submitted and navigation to the AIM
@@ -166,6 +171,7 @@ class ContextualSearchMetricsRecorder {
   void FinalizeSessionMetrics();
   // Resets all session metrics at the end of a session.
   void ResetSessionMetrics();
+
   ContextualSearchSource source_;
   std::string metrics_suffix_;
   std::unique_ptr<SessionMetrics> session_metrics_;

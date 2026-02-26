@@ -5,6 +5,7 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "components/lens/lens_overlay_mime_type.h"
@@ -113,6 +114,7 @@ class ContextualSearchMetricsRecorderTest : public testing::Test {
 
   ContextualSearchMetricsRecorder& metrics() { return *metrics_recorder_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
+  base::UserActionTester& user_action_tester() { return user_action_tester_; }
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
   void DestructMetricsRecorder() { metrics_recorder_.reset(); }
@@ -120,9 +122,71 @@ class ContextualSearchMetricsRecorderTest : public testing::Test {
  private:
   std::unique_ptr<ContextualSearchMetricsRecorder> metrics_recorder_;
   base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
+
+TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithoutContext) {
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
+                                 /*has_non_tab_context=*/false);
+
+  EXPECT_EQ(
+      user_action_tester().GetActionCount(
+          "ContextualSearch.UserAction.SubmitQuery.WithoutContext.Unknown"),
+      1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.UserAction.SubmitQuery.WithoutContext.Unknown", true,
+      1);
+}
+
+TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithTabContext) {
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().NotifyQuerySubmitted(/*has_tab_context=*/true,
+                                 /*has_non_tab_context=*/false);
+
+  EXPECT_EQ(
+      user_action_tester().GetActionCount(
+          "ContextualSearch.UserAction.SubmitQuery.WithTabContext.Unknown"),
+      1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.UserAction.SubmitQuery.WithTabContext.Unknown", true,
+      1);
+}
+
+TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithNonTabContext) {
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
+                                 /*has_non_tab_context=*/true);
+
+  EXPECT_EQ(user_action_tester().GetActionCount(
+                "ContextualSearch.UserAction.SubmitQuery.WithNonTabContext."
+                "Unknown"),
+            1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.UserAction.SubmitQuery.WithNonTabContext.Unknown", true,
+      1);
+}
+
+TEST_F(ContextualSearchMetricsRecorderTest, SubmitQueryWithBothContext) {
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  metrics().NotifyQuerySubmitted(/*has_tab_context=*/true,
+                                 /*has_non_tab_context=*/true);
+
+  // Tab context should take precedence.
+  EXPECT_EQ(
+      user_action_tester().GetActionCount(
+          "ContextualSearch.UserAction.SubmitQuery.WithTabContext.Unknown"),
+      1);
+  histogram_tester().ExpectUniqueSample(
+      "ContextualSearch.UserAction.SubmitQuery.WithTabContext.Unknown", true,
+      1);
+  EXPECT_EQ(user_action_tester().GetActionCount(
+                "ContextualSearch.UserAction.SubmitQuery.WithNonTabContext."
+                "Unknown"),
+            0);
+}
 
 TEST_F(ContextualSearchMetricsRecorderTest, SessionAbandoned) {
   // Setup user flow.
@@ -144,7 +208,8 @@ TEST_F(ContextualSearchMetricsRecorderTest, SessionCompleted) {
   // Setup user flow.
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   task_environment().FastForwardBy(base::Seconds(10));
-  metrics().NotifySessionStateChanged(SessionState::kQuerySubmitted);
+  metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
+                                 /*has_non_tab_context=*/false);
   metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);
 
   DestructMetricsRecorder();
@@ -166,14 +231,16 @@ TEST_F(ContextualSearchMetricsRecorderTest, MultiQuerySubmissionSession) {
   // Setup user flow.
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   task_environment().FastForwardBy(base::Seconds(30));
-  metrics().NotifySessionStateChanged(SessionState::kQuerySubmitted);
+  metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
+                                 /*has_non_tab_context=*/false);
   metrics().RecordQueryMetrics(/*text_length=*/100, /*file_count=*/1);
   metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);
 
   // Mimic the session remaining open when the AIM page is opened in another
   // tab/window. In this case more queries can be submitted.
   task_environment().FastForwardBy(base::Seconds(60));
-  metrics().NotifySessionStateChanged(SessionState::kQuerySubmitted);
+  metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
+                                 /*has_non_tab_context=*/false);
   metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);
 
   metrics().NotifySessionStateChanged(SessionState::kSessionAbandoned);
@@ -659,7 +726,8 @@ TEST_F(ContextualSearchMetricsRecorderTest, FunnelMetrics) {
                                       FileUploadErrorType::kServerError);
 
   // Simulate query submission.
-  metrics().NotifySessionStateChanged(SessionState::kQuerySubmitted);
+  metrics().NotifyQuerySubmitted(/*has_tab_context=*/false,
+                                 /*has_non_tab_context=*/false);
   metrics().RecordQueryMetrics(/*text_length=*/100, /*file_count=*/2);
   metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);
 

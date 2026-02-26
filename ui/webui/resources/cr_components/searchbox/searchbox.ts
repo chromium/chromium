@@ -1107,6 +1107,19 @@ export class SearchboxElement extends SearchboxElementBase implements
     // now a `ContextualSearchboxHandler`.
     this.pageHandler_.activateMetricsFunnel('AiModeButton');
     if (!this.composeboxEnabled || this.$.input.value.trim()) {
+      let source = 'Unknown';
+      if (loadTimeData.getBoolean('isLensSearchbox')) {
+        source = 'Lens';
+      } else if (loadTimeData.getBoolean('isTopChromeSearchbox')) {
+        source = 'Omnibox';
+      } else {
+        source = 'NewTabPage';
+      }
+      const metricName =
+          `ContextualSearch.UserAction.SubmitQuery.WithoutContext.${source}`;
+      chrome.metricsPrivate.recordUserAction(metricName);
+      chrome.metricsPrivate.recordBoolean(metricName, true);
+
       // Construct navigation url.
       const searchParams = new URLSearchParams();
       searchParams.append('sourceid', 'chrome');

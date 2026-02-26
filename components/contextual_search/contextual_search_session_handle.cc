@@ -290,8 +290,8 @@ void ContextualSearchSessionHandle::CreateSearchUrl(
     return;
   }
 
-  metrics_recorder->NotifySessionStateChanged(
-      contextual_search::SessionState::kQuerySubmitted);
+  auto uploaded_file_infos = GetUploadedContextFileInfos();
+  NotifyQuerySubmittedSessionState(uploaded_file_infos);
   std::string query_text = search_url_request_info->query_text;
   metrics_recorder->NotifySessionStateChanged(
       contextual_search::SessionState::kNavigationOccurred);
@@ -347,8 +347,8 @@ ContextualSearchSessionHandle::CreateClientToAimRequest(
       create_client_to_aim_request_info->file_tokens.end());
 
   if (auto* metrics_recorder = GetMetricsRecorder()) {
-    metrics_recorder->NotifySessionStateChanged(
-        contextual_search::SessionState::kQuerySubmitted);
+    auto uploaded_file_infos = GetSubmittedContextFileInfos();
+    NotifyQuerySubmittedSessionState(uploaded_file_infos);
     std::string query_text = create_client_to_aim_request_info->query_text;
     metrics_recorder->RecordQueryMetrics(
         query_text.size(),
@@ -408,6 +408,23 @@ bool ContextualSearchSessionHandle::IsTabInContext(SessionID session_id) const {
 base::WeakPtr<ContextualSearchSessionHandle>
 ContextualSearchSessionHandle::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void ContextualSearchSessionHandle::NotifyQuerySubmittedSessionState(
+    const std::vector<FileInfo>& file_infos) {
+  if (auto* metrics_recorder = GetMetricsRecorder()) {
+    bool has_tab_context = false;
+    bool has_non_tab_context = false;
+    for (const auto& file_info : file_infos) {
+      if (file_info.tab_url.has_value()) {
+        has_tab_context = true;
+      } else {
+        has_non_tab_context = true;
+      }
+    }
+    metrics_recorder->NotifyQuerySubmitted(has_tab_context,
+                                           has_non_tab_context);
+  }
 }
 
 }  // namespace contextual_search

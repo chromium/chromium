@@ -809,6 +809,12 @@ void OmniboxEditModel::OpenAiMode(bool via_keyboard, bool via_context_menu) {
     }
   }
 
+  // Queries from the AI mode button will never have context.
+  base::RecordAction(base::UserMetricsAction(
+      "ContextualSearch.UserAction.SubmitQuery.WithoutContext.Omnibox"));
+  base::UmaHistogramBoolean(
+      "ContextualSearch.UserAction.SubmitQuery.WithoutContext.Omnibox", true);
+
   GURL ai_mode_url =
       GetUrlForAim(controller_->client()->GetTemplateURLService(),
                    omnibox::DESKTOP_CHROME_OMNIBOX_KEYWORD_ENTRY_POINT,
