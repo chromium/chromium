@@ -1142,7 +1142,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DeviceTrust.EnrollmentStatus"
     enum="DTEnrollmentStatus" expires_after="2027-01-02">
   <owner>lmasopust@google.com</owner>
-  <owner>rodmartin@google.com</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
     Recorded when a device starts the device trust attestation flow with a
@@ -1318,7 +1317,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.DeviceTrust.Origin" enum="DTOrigin"
     expires_after="2027-01-02">
   <owner>lmasopust@google.com</owner>
-  <owner>rodmartin@google.com</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
     Recorded when a device starts the device trust attestation flow with a
@@ -3398,8 +3396,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.ResponseLatency"
-    units="ms" expires_after="2024-12-11">
-  <owner>rodmartin@google.com</owner>
+    units="ms" expires_after="2027-03-22">
+  <owner>andreydav@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
     Latency of a SecondaryGoogleAccountUsage policy fetch request. This measures
@@ -3407,15 +3405,15 @@ chromium-metrics-reviews@google.com.
     SecondaryGoogleAccountUsage from the Secure Connect API. This is recorded
     when a user account is added as a secondary account (in-session).
 
-    Warning: this histogram was expired from 2023-10-04 to 2023-12-11; data may
+    Warning: this histogram was expired from 2024-12-11 to 2026-02-05; data may
     be missing.
   </summary>
 </histogram>
 
 <histogram name="Enterprise.SecondaryGoogleAccountUsage.PolicyFetch.Status"
     enum="SecondaryGoogleAccountUsagePolicyFetchStatus"
-    expires_after="2026-03-22">
-  <owner>rodmartin@google.com</owner>
+    expires_after="2027-03-22">
+  <owner>andreydav@google.com</owner>
   <owner>chromeos-commercial-identity@google.com</owner>
   <summary>
     Tracks the result of
@@ -4084,7 +4082,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Enterprise.VerifiedAccess.SAML.DeviceTrustMatchesEndpoints"
     enum="Boolean" expires_after="2027-01-02">
   <owner>lmasopust@google.com</owner>
-  <owner>rodmartin@chromium.org</owner>
   <owner>cbe-device-trust-eng@google.com</owner>
   <summary>
     Recorded when building a response for a challenge from Verified Access
