@@ -24378,6 +24378,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(RestrictDuplicateNavsToOriginsBrowserTest,
                        DuplicateNavigationRendererInitiated) {
+  base::HistogramTester histogram_tester;
   GURL main_url(embedded_test_server()->GetURL(
       "/navigation_controller/page_with_links.html"));
   GURL link_url(embedded_test_server()->GetURL(
@@ -24408,6 +24409,7 @@ IN_PROC_BROWSER_TEST_P(RestrictDuplicateNavsToOriginsBrowserTest,
 
   // Wait for the first link click navigation to finish.
   EXPECT_TRUE(nav_manager.WaitForNavigationFinished());
+  FetchHistogramsFromChildProcesses();
 
   bool should_be_ignored =
       ignore_duplicate_navs() &&
@@ -24432,6 +24434,17 @@ IN_PROC_BROWSER_TEST_P(RestrictDuplicateNavsToOriginsBrowserTest,
     EXPECT_EQ(link_url, root->current_frame_host()->GetLastCommittedURL());
     EXPECT_NE(first_link_click_nav_id,
               root->current_frame_host()->navigation_id());
+  }
+  if (ignore_duplicate_navs() && restrict_duplicate_navs_to_origins()) {
+    // Record whether the navigation URL matches the target origin if the origin
+    // list is not empty.
+    histogram_tester.ExpectUniqueSample(
+        "Navigation.RendererInitiated.DuplicateNavOriginMatch",
+        navigate_to_target_origin(), 1);
+  } else {
+    // Otherwise, ensure that the histogram is not recorded.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.RendererInitiated.DuplicateNavOriginMatch", 0);
   }
 }
 

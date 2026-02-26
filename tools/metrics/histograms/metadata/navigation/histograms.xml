@@ -3626,6 +3626,20 @@ chromium-metrics-reviews@google.com.
   <token key="Initiator" variants="Initiator"/>
 </histogram>
 
+<histogram name="Navigation{Initiator}.DuplicateNavOriginMatch" enum="Boolean"
+    expires_after="2026-08-19">
+  <owner>annasato@google.com</owner>
+  <owner>rakina@google.com</owner>
+  <owner>chrome-navigation@google.com</owner>
+  <summary>
+    Records whether a duplicate navigation's URL matches the origins specified
+    in IgnoreDuplicateNavsOrigins parameter. This is recorded for both
+    browser-initiated and renderer-initiated navigations when the feature
+    kIgnoreDuplicateNavs is enabled and an origin list is provided.
+  </summary>
+  <token key="Initiator" variants="Initiator"/>
+</histogram>
+
 <histogram name="Navigation{Initiator}.DuplicateNavStartTimeDiff2" units="ms"
     expires_after="2026-08-16">
   <owner>rakina@chromium.org</owner>
