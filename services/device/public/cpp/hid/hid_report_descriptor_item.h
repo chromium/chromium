@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 
 namespace device {
 
@@ -126,34 +125,17 @@ class HidReportDescriptorItem {
                 "incorrect report info size");
 
  private:
-  HidReportDescriptorItem(base::span<const uint8_t> bytes,
-                          HidReportDescriptorItem* previous);
+  explicit HidReportDescriptorItem(base::span<const uint8_t> bytes);
 
  public:
   ~HidReportDescriptorItem() {}
 
   static std::unique_ptr<HidReportDescriptorItem> Create(
-      base::span<const uint8_t> bytes,
-      HidReportDescriptorItem* previous) {
+      base::span<const uint8_t> bytes) {
     return std::unique_ptr<HidReportDescriptorItem>(
-        new HidReportDescriptorItem(bytes, previous));
+        new HidReportDescriptorItem(bytes));
   }
 
-  // Previous element in report descriptor.
-  // Owned by descriptor instance.
-  HidReportDescriptorItem* previous() const { return previous_; }
-  // Next element in report descriptor.
-  // Owned by descriptor instance.
-  HidReportDescriptorItem* next() const { return next_; }
-  // Parent element in report descriptor.
-  // Owned by descriptor instance.
-  // Can be NULL.
-  HidReportDescriptorItem* parent() const { return parent_; }
-  // Level in Parent-Children relationship tree.
-  // 0 for top-level items (parent()==NULL).
-  // 1 if parent() is top-level.
-  // 2 if parent() has a top-level parent. Etc.
-  size_t GetDepth() const;
   Tag tag() const { return tag_; }
   // Returns true for a long item, false otherwise.
   bool IsLong() const;
@@ -168,9 +150,6 @@ class HidReportDescriptorItem {
  private:
   size_t GetHeaderSize() const;
 
-  raw_ptr<HidReportDescriptorItem, DanglingUntriaged> previous_;
-  raw_ptr<HidReportDescriptorItem, DanglingUntriaged> next_;
-  raw_ptr<HidReportDescriptorItem, DanglingUntriaged> parent_;
   Tag tag_;
   uint32_t shortData_;
   size_t payload_size_;

@@ -25,13 +25,8 @@ struct Header {
 }  // namespace
 
 HidReportDescriptorItem::HidReportDescriptorItem(
-    base::span<const uint8_t> bytes,
-    HidReportDescriptorItem* previous)
-    : previous_(previous),
-      next_(nullptr),
-      parent_(nullptr),
-      shortData_(0),
-      payload_size_(0) {
+    base::span<const uint8_t> bytes)
+    : shortData_(0), payload_size_(0) {
   const auto* header = reinterpret_cast<const Header*>(bytes.data());
   tag_ = static_cast<Tag>(header->tag << 2 | header->type);
 
@@ -47,37 +42,6 @@ HidReportDescriptorItem::HidReportDescriptorItem(
       UNSAFE_TODO(
           memcpy(&shortData_, bytes.data() + GetHeaderSize(), payload_size()));
   }
-
-  if (previous) {
-    DCHECK(!previous->next_);
-    previous->next_ = this;
-    switch (previous->tag()) {
-      case kTagCollection:
-        parent_ = previous;
-        break;
-      default:
-        break;
-    }
-    if (!parent_) {
-      switch (tag()) {
-        case kTagEndCollection:
-          if (previous->parent()) {
-            parent_ = previous->parent()->parent();
-          }
-          break;
-        default:
-          parent_ = previous->parent();
-          break;
-      }
-    }
-  }
-}
-
-size_t HidReportDescriptorItem::GetDepth() const {
-  HidReportDescriptorItem* parent_item = parent();
-  if (parent_item)
-    return parent_item->GetDepth() + 1;
-  return 0;
 }
 
 bool HidReportDescriptorItem::IsLong() const {
