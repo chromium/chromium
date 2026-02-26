@@ -8,14 +8,18 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <iterator>
 #include <set>
+#include <string>
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
@@ -4512,30 +4516,30 @@ bool CompareWebContentsOutputToReference(
     base::RunLoop run_loop;
     rwh->GetView()->CopyFromSurface(
         gfx::Rect(), gfx::Size(), base::TimeDelta(),
-        base::BindLambdaForTesting([&](const content::CopyFromSurfaceResult&
-                                           result) {
-          ASSERT_TRUE(result.has_value());
-          const SkBitmap& bitmap = result->bitmap;
-          base::ScopedAllowBlockingForTesting allow_blocking;
+        base::BindLambdaForTesting(
+            [&](const content::CopyFromSurfaceResult& result) {
+              ASSERT_TRUE(result.has_value());
+              const SkBitmap& bitmap = result->bitmap;
+              base::ScopedAllowBlockingForTesting allow_blocking;
 
-          SkBitmap clipped_bitmap;
-          bitmap.extractSubset(
-              &clipped_bitmap,
-              SkIRect::MakeWH(snapshot_size.width(), snapshot_size.height()));
+              SkBitmap clipped_bitmap;
+              bitmap.extractSubset(&clipped_bitmap,
+                                   SkIRect::MakeWH(snapshot_size.width(),
+                                                   snapshot_size.height()));
 
-          snapshot_matches =
-              cc::MatchesPNGFile(clipped_bitmap, expected_path, comparator);
+              snapshot_matches =
+                  cc::MatchesPNGFile(clipped_bitmap, expected_path, comparator);
 
-          // When rebaselining the pixel test, the test may fail. However, the
-          // reference file will still be overwritten.
-          if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-                  switches::kRebaselinePixelTests)) {
-            ASSERT_TRUE(cc::WritePNGFile(clipped_bitmap, expected_path,
-                                         /*discard_transparency=*/false));
-          }
+              // When rebaselining the pixel test, the test may fail. However,
+              // the reference file will still be overwritten.
+              if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+                      switches::kRebaselinePixelTests)) {
+                ASSERT_TRUE(cc::WritePNGFile(clipped_bitmap, expected_path,
+                                             /*discard_transparency=*/false));
+              }
 
-          run_loop.Quit();
-        }));
+              run_loop.Quit();
+            }));
     run_loop.Run();
   }
 
@@ -4611,60 +4615,65 @@ bool HistoryGoForward(WebContents* wc) {
 }
 
 CreateAndLoadWebContentsObserver::CreateAndLoadWebContentsObserver(
-    int num_expected_contents)
+    size_t num_expected_contents,
+    base::RepeatingCallback<bool(WebContents*)> filter)
     : creation_subscription_(
           RegisterWebContentsCreationCallback(base::BindRepeating(
               &CreateAndLoadWebContentsObserver::OnWebContentsCreated,
               base::Unretained(this)))),
-      num_expected_contents_(num_expected_contents) {
-  EXPECT_GE(num_expected_contents, 1);
-}
+      num_expected_contents_(num_expected_contents),
+      filter_(std::move(filter)) {}
 
 CreateAndLoadWebContentsObserver::~CreateAndLoadWebContentsObserver() = default;
 
+WebContents* CreateAndLoadWebContentsObserver::Wait() {
+  while (true) {
+    // Wait for any still-loading `WebContents` to load before checking whether
+    // they pass `filter_`. Don't use for-range loop as `load_stop_observers_`'s
+    // size may change during the `Wait()`s.
+    for (size_t i = 0; i < load_stop_observers_.size(); i++) {
+      load_stop_observers_[i]->Wait();
+    }
+    auto filtered_web_contents = GetFilteredWebContents();
+    // Check too many `WebContents` weren't created.
+    EXPECT_LE(filtered_web_contents.size(), num_expected_contents_)
+        << "Unexpected WebContents creation";
+    // If the expected number of `WebContents` were created; finish waiting.
+    if (filtered_web_contents.size() >= num_expected_contents_) {
+      return filtered_web_contents[0];
+    }
+    // If insufficient `WebContents` were created, wait for another to be
+    // created.
+    if (filtered_web_contents.size() < num_expected_contents_) {
+      base::RunLoop run_loop;
+      contents_creation_quit_closure_ = run_loop.QuitClosure();
+      run_loop.Run();
+    }
+  }
+}
+
 void CreateAndLoadWebContentsObserver::OnWebContentsCreated(
     WebContents* web_contents) {
-  ++num_new_contents_seen_;
-  if (num_new_contents_seen_ < num_expected_contents_) {
-    return;
-  }
-
-  // If there is already a WebContents, then this will fail the test later.
-  if (num_new_contents_seen_ > num_expected_contents_) {
-    ADD_FAILURE() << "Unexpected WebContents creation";
-    // If we're called before Wait(), then `contents_creation_quit_closure_`
-    // has not been set. If we're called after, then we'll clear this when
-    // we see the creation of the expected contents and it won't be set again.
-    EXPECT_FALSE(contents_creation_quit_closure_);
-    return;
-  }
-
-  web_contents_ = web_contents;
-  load_stop_observer_.emplace(web_contents_);
-
+  load_stop_observers_.push_back(
+      std::make_unique<LoadStopObserver>(web_contents));
+  // If `Wait()` is waiting for another `WebContents`, awaken it.
   if (contents_creation_quit_closure_) {
     std::move(contents_creation_quit_closure_).Run();
   }
 }
 
-WebContents* CreateAndLoadWebContentsObserver::Wait() {
-  // Wait for a new WebContents if we haven't gotten one yet.
-  if (!load_stop_observer_) {
-    base::RunLoop run_loop;
-    contents_creation_quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
+std::vector<WebContents*>
+CreateAndLoadWebContentsObserver::GetFilteredWebContents() {
+  std::vector<WebContents*> filtered_web_contents;
+  for (const auto& load_stop_observer : load_stop_observers_) {
+    WebContents* web_contents = load_stop_observer->web_contents();
+    // `web_contents()` will return null if the `WebContents` has been
+    // destroyed.
+    if (web_contents && filter_.Run(web_contents)) {
+      filtered_web_contents.push_back(web_contents);
+    }
   }
-
-  load_stop_observer_->Wait();
-
-  // Do this after waiting for load to complete, since only the specified number
-  // of WebContents should be created before Wait() returns. If an additional
-  // one is created while the expected contents is loading, then we still fail
-  // the test.
-  EXPECT_EQ(num_expected_contents_, num_new_contents_seen_);
-  creation_subscription_ = base::CallbackListSubscription();
-
-  return web_contents_;
+  return filtered_web_contents;
 }
 
 CookieChangeObserver::CookieChangeObserver(WebContents* web_contents,
