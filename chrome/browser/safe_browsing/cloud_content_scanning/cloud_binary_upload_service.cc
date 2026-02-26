@@ -555,13 +555,10 @@ void CloudBinaryUploadService::OnGetRequestData(
   // `access_token` is indeed set for the `upload_request`.
   upload_request->set_access_token(request->access_token());
 
-// TODO(b/428696481): Enable debug info on Clank
-#if !BUILDFLAG(IS_ANDROID)
   WebUIContentInfoSingleton::GetInstance()->AddToDeepScanRequests(
       request->per_profile_request(), request->access_token(),
       upload_request->GetUploadInfo(), url.spec(),
       request->content_analysis_request());
-#endif  //! BUILDFLAG(IS_ANDROID)
 
   // |request| might have been deleted by the call to Start() in tests, so don't
   // dereference it afterwards.
@@ -709,16 +706,12 @@ void CloudBinaryUploadService::FinishRequest(
 
   // We add the request here in case we never actually uploaded anything, so
   // it wasn't added in OnGetRequestData
-  //
-  // TODO(b/428696481): Enable debug info: on Clank
-#if !BUILDFLAG(IS_ANDROID)
   WebUIContentInfoSingleton::GetInstance()->AddToDeepScanRequests(
       request->per_profile_request(), request->access_token(), upload_info,
       request->GetUrlWithParams().spec(), request->content_analysis_request());
   WebUIContentInfoSingleton::GetInstance()->AddToDeepScanResponses(
       active_tokens_[request->id()],
       enterprise_connectors::ScanRequestUploadResultToString(result), response);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   request->FinishRequest(result, response);
 }

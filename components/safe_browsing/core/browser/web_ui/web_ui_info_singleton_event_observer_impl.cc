@@ -159,7 +159,7 @@ void WebUIInfoSingletonEventObserverImpl::NotifyReportingEventJsListener(
                                 web_ui::SerializeReportingEvent(event));
 }
 
-#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 void WebUIInfoSingletonEventObserverImpl::NotifyDeepScanJsListener(
     const std::string& token,
     const web_ui::DeepScanDebugData& deep_scan_data) {

@@ -138,7 +138,7 @@ class WebUIInfoSingletonEventObserver {
       const ::chrome::cros::reporting::proto::UploadEventsRequest& event,
       const base::DictValue& result) = 0;
 
-#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   // Called when any deep scans are updated while one or more WebUI
   // tabs are open.
   virtual void NotifyDeepScanJsListener(

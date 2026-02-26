@@ -28,7 +28,7 @@ class WebUIInfoSingletonEventObserver;
 
 namespace safe_browsing::web_ui {
 
-#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 struct DeepScanDebugData {
   DeepScanDebugData();
   DeepScanDebugData(const DeepScanDebugData&);
@@ -45,7 +45,9 @@ struct DeepScanDebugData {
   std::string response_status;
   std::optional<enterprise_connectors::ContentAnalysisResponse> response;
 };
+#endif  //  BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
 // Local override of a download TailoredVerdict.
 struct TailoredVerdictOverrideData {
   // Identifies the SafeBrowsingUIHandler it was set from, it is derived from
@@ -65,7 +67,8 @@ struct TailoredVerdictOverrideData {
   std::optional<ClientDownloadResponse::TailoredVerdict> override_value;
   SourceId source = 0u;
 };
-#endif
+#endif  //  BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
+        //  !BUILDFLAG(IS_ANDROID)
 
 // The struct to combine a PhishGuard request and the token associated
 // with it. The token is not part of the request proto because it is sent in the
@@ -165,7 +168,7 @@ base::DictValue SerializeUploadEventsRequest(
     const ::chrome::cros::reporting::proto::UploadEventsRequest&
         upload_events_request,
     const base::DictValue& result);
-#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 std::string SerializeContentAnalysisRequest(
     bool per_profile_request,
     const std::string& access_token_truncated,
@@ -176,8 +179,7 @@ std::string SerializeContentAnalysisResponse(
     const enterprise_connectors::ContentAnalysisResponse& response);
 base::DictValue SerializeDeepScanDebugData(const std::string& token,
                                            const DeepScanDebugData& data);
-#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
-        // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
 }  // namespace safe_browsing::web_ui
 

@@ -261,8 +261,6 @@ void RecordEnterpriseScan(
   const std::string result_info = base::StrCat(
       {"Skipped - ",
        enterprise_connectors::ScanRequestUploadResultToString(result)});
-// TODO(b/428696481): Enable debug info on Clank
-#if !BUILDFLAG(IS_ANDROID)
   safe_browsing::WebUIContentInfoSingleton::GetInstance()
       ->AddToDeepScanRequests(
           request->per_profile_request(), /*access_token*/ "",
@@ -272,7 +270,6 @@ void RecordEnterpriseScan(
       ->AddToDeepScanResponses(
           /*token=*/"", result_info,
           enterprise_connectors::ContentAnalysisResponse());
-#endif
 }
 
 }  // namespace

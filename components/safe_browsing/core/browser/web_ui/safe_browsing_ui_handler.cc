@@ -407,14 +407,13 @@ void SafeBrowsingUIHandler::GetLogMessages(const base::ListValue& args) {
 
 void SafeBrowsingUIHandler::GetDeepScans(const base::ListValue& args) {
   base::ListValue pings_sent;
-#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   for (const auto& token_and_data :
        web_ui_info_singleton()->deep_scan_requests()) {
     pings_sent.Append(SerializeDeepScanDebugData(token_and_data.first,
                                                  token_and_data.second));
   }
-#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) &&
-        // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
   DCHECK(!args.empty());
   const std::string& callback_id = args[0].GetString();
