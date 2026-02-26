@@ -217,6 +217,8 @@ void PrefetchResponseReader::BindAndStart(
 
   switch (load_state()) {
     case LoadState::kResponseReceived:
+    case LoadState::kCompleted:
+    case LoadState::kFailed:
       // In these cases, `ForwardResponse()` is expected to be called always
       // inside `RunEventQueue()` below, because `CreateRequestHandler()` was
       // called after response headers are received. Both the head and body
@@ -230,17 +232,6 @@ void PrefetchResponseReader::BindAndStart(
       // reach here.
       //
       // TODO(crbug.com/40064891): we might want to revisit this behavior.
-
-      // TODO(crbug.com/40072532): The code below is duplicated to investigate
-      // the `load_state()` value on CHECK failure. Remove the duplicated code.
-      CHECK(GetHead());
-      CHECK(forward_body_);
-      break;
-    case LoadState::kCompleted:
-      CHECK(GetHead());
-      CHECK(forward_body_);
-      break;
-    case LoadState::kFailed:
       CHECK(GetHead());
       CHECK(forward_body_);
       break;
