@@ -1860,6 +1860,11 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test, ManagedEnvironment) {
           "runMochaSuite('ManagedEnvironment')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test, SecureDnsBundling) {
+  RunTest("settings/security_page_v2_test.js",
+          "runMochaSuite('SecureDnsBundling')");
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 using SettingsSpellCheckPageTest = SettingsBrowserTest;
 

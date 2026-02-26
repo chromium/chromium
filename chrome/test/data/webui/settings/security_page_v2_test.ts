@@ -1105,3 +1105,138 @@ suite('ManagedEnvironment', function() {
     assertTrue(isVisible(page.$.javascriptGuardrailsRow));
   });
 });
+
+suite('SecureDnsBundling', function() {
+  let settingsPrefs: SettingsPrefsElement;
+  let page: SettingsSecurityPageV2Element;
+
+  setup(async function() {
+    loadTimeData.overrideValues({
+      enableBundledSecuritySettingsSecureDnsV2: true,
+    });
+    await setUpPage();
+  });
+
+  async function setUpPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    settingsPrefs = document.createElement('settings-prefs');
+    document.body.appendChild(settingsPrefs);
+    await CrSettingsPrefs.initialized;
+
+    page = document.createElement('settings-security-page-v2');
+    page.prefs = settingsPrefs.prefs;
+    document.body.appendChild(page);
+
+    page.setPrefValue(
+        'generated.security_settings_bundle',
+        SecuritySettingsBundleSetting.STANDARD);
+    page.setPrefValue('generated.safe_browsing', SafeBrowsingSetting.STANDARD);
+    page.setPrefValue(
+        'generated.javascript_optimizer', JavascriptOptimizerSetting.ALLOWED);
+    page.setPrefValue('dns_over_https.mode', SecureDnsMode.AUTOMATIC);
+    page.setPrefValue('dns_over_https.templates', '');
+    page.setPrefValue('dns_over_https.automatic_mode_fallback_to_doh', false);
+
+    return flushTasks();
+  }
+
+  test('ResetStandardBundleToDefaultsButtonVisibility', async function() {
+    assertFalse(
+        isVisible(page.$.resetStandardBundleToDefaultsButton),
+        'Initially hidden');
+
+    // Change the mode to something other than AUTOMATIC.
+    page.setPrefValue('dns_over_https.mode', SecureDnsMode.SECURE);
+    await flushTasks();
+    assertTrue(
+        isVisible(page.$.resetStandardBundleToDefaultsButton),
+        'Visible after mode change');
+
+    // Reset the mode to AUTOMATIC.
+    page.setPrefValue('dns_over_https.mode', SecureDnsMode.AUTOMATIC);
+    await flushTasks();
+    assertFalse(
+        isVisible(page.$.resetStandardBundleToDefaultsButton),
+        'Hidden after mode reset');
+
+    // Change the fallback setting.
+    page.setPrefValue('dns_over_https.automatic_mode_fallback_to_doh', true);
+    await flushTasks();
+    assertTrue(
+        isVisible(page.$.resetStandardBundleToDefaultsButton),
+        'Visible after fallback change');
+
+    // Reset the fallback setting to false.
+    page.setPrefValue('dns_over_https.automatic_mode_fallback_to_doh', false);
+    await flushTasks();
+    assertFalse(
+        isVisible(page.$.resetStandardBundleToDefaultsButton),
+        'Hidden after fallback reset');
+
+    // Change the templates.
+    page.setPrefValue('dns_over_https.templates', 'https://example.com');
+    await flushTasks();
+    assertTrue(
+        isVisible(page.$.resetStandardBundleToDefaultsButton),
+        'Visible after templates change');
+  });
+
+  test('ResetStandardToDefaultsClick', async function() {
+    page.setPrefValue('dns_over_https.mode', SecureDnsMode.SECURE);
+    page.setPrefValue('dns_over_https.templates', 'https://example.com');
+    page.setPrefValue('dns_over_https.automatic_mode_fallback_to_doh', false);
+    await flushTasks();
+    assertTrue(isVisible(page.$.resetStandardBundleToDefaultsButton));
+
+    page.$.resetStandardBundleToDefaultsButton.click();
+    await flushTasks();
+    assertEquals(
+        SecureDnsMode.AUTOMATIC, page.getPref('dns_over_https.mode').value);
+    assertEquals('', page.getPref('dns_over_https.templates').value);
+    assertFalse(
+        page.getPref('dns_over_https.automatic_mode_fallback_to_doh').value);
+    assertFalse(isVisible(page.$.resetStandardBundleToDefaultsButton));
+  });
+
+  test('ResetEnhancedToDefaultsClick', async function() {
+    page.$.securitySettingsBundleEnhanced.click();
+    await flushTasks();
+    page.setPrefValue('dns_over_https.mode', SecureDnsMode.OFF);
+    await flushTasks();
+    assertTrue(isVisible(page.$.resetEnhancedBundleToDefaultsButton));
+
+    page.$.resetEnhancedBundleToDefaultsButton.click();
+    await flushTasks();
+    assertEquals(
+        SecureDnsMode.AUTOMATIC, page.getPref('dns_over_https.mode').value);
+    assertEquals('', page.getPref('dns_over_https.templates').value);
+    assertTrue(
+        page.getPref('dns_over_https.automatic_mode_fallback_to_doh').value);
+    assertFalse(isVisible(page.$.resetEnhancedBundleToDefaultsButton));
+  });
+
+  test(
+      'ResetButtonVisibilityNotAffectedWhenSecureDnsNotBundled',
+      async function() {
+        loadTimeData.overrideValues({
+          enableBundledSecuritySettingsSecureDnsV2: false,
+        });
+        await setUpPage();
+
+        assertFalse(isVisible(page.$.resetStandardBundleToDefaultsButton));
+
+        // Effectively select FALLBACK mode.
+        page.setPrefValue(
+            'dns_over_https.automatic_mode_fallback_to_doh', true);
+        await flushTasks();
+        assertFalse(isVisible(page.$.resetStandardBundleToDefaultsButton));
+
+        // Effectively select SECURE mode.
+        page.setPrefValue('dns_over_https.mode', SecureDnsMode.SECURE);
+        page.setPrefValue(
+            'dns_over_https.automatic_mode_fallback_to_doh', false);
+        page.setPrefValue('dns_over_https.templates', 'https://example.com');
+        await flushTasks();
+        assertFalse(isVisible(page.$.resetStandardBundleToDefaultsButton));
+      });
+});

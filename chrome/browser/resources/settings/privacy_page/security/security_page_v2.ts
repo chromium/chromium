@@ -20,6 +20,7 @@ import './secure_dns_v2.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
+import {SecureDnsMode} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
@@ -224,6 +225,9 @@ export class SettingsSecurityPageV2Element extends
           'isResettingToDefaults_,' +
           'prefs.generated.security_settings_bundle.value,' +
           'prefs.generated.safe_browsing.*,' +
+          'prefs.dns_over_https.mode.*, ' +
+          'prefs.dns_over_https.templates.*, ' +
+          'prefs.dns_over_https.automatic_mode_fallback_to_doh.*,' +
           'prefs.generated.javascript_optimizer.*),',
       'updateRowsState_(' +
           'prefs.generated.https_first_mode_enabled.*,' +
@@ -516,6 +520,16 @@ export class SettingsSecurityPageV2Element extends
     this.setPrefValue(
         'generated.javascript_optimizer',
         this.getDefaultJsGuardrailsValue_(bundleSetting));
+    if (this.enableBundledSecuritySettingsSecureDnsV2_) {
+      this.setPrefValue(
+          'dns_over_https.mode', this.getDefaultSecureDnsModeValue_());
+      this.setPrefValue(
+          'dns_over_https.templates',
+          this.getDefaultSecureDnsTemplatesValue_());
+      this.setPrefValue(
+          'dns_over_https.automatic_mode_fallback_to_doh',
+          this.getDefaultSecureDnsFallbackValue_(bundleSetting));
+    }
     this.isResettingToDefaults_ = false;
   }
 
@@ -539,6 +553,31 @@ export class SettingsSecurityPageV2Element extends
             'securityStandardBundleJavascriptGuardrailsDefault');
   }
 
+  private getDefaultSecureDnsModeValue_() {
+    if (!this.enableBundledSecuritySettingsSecureDnsV2_) {
+      return null;
+    }
+
+    return SecureDnsMode.AUTOMATIC;
+  }
+
+  private getDefaultSecureDnsTemplatesValue_() {
+    if (!this.enableBundledSecuritySettingsSecureDnsV2_) {
+      return null;
+    }
+
+    return '';
+  }
+
+  private getDefaultSecureDnsFallbackValue_(
+      bundleSetting: SecuritySettingsBundleSetting) {
+    if (!this.enableBundledSecuritySettingsSecureDnsV2_) {
+      return null;
+    }
+
+    return (bundleSetting === SecuritySettingsBundleSetting.ENHANCED);
+  }
+
   private updateResetButtonVisibility_() {
     this.isResetStandardBundleToDefaultsButtonVisible_ = false;
     this.isResetEnhancedBundleToDefaultsButtonVisible_ = false;
@@ -556,6 +595,18 @@ export class SettingsSecurityPageV2Element extends
         defaultValue: this.getDefaultSafeBrowsingValue_(bundleSetting),
       },
       {
+        prefKey: 'dns_over_https.mode',
+        defaultValue: this.getDefaultSecureDnsModeValue_(),
+      },
+      {
+        prefKey: 'dns_over_https.templates',
+        defaultValue: this.getDefaultSecureDnsTemplatesValue_(),
+      },
+      {
+        prefKey: 'dns_over_https.automatic_mode_fallback_to_doh',
+        defaultValue: this.getDefaultSecureDnsFallbackValue_(bundleSetting),
+      },
+      {
         prefKey: 'generated.javascript_optimizer',
         defaultValue: this.getDefaultJsGuardrailsValue_(bundleSetting),
       },
@@ -563,7 +614,8 @@ export class SettingsSecurityPageV2Element extends
     // LINT.ThenChange(//chrome/browser/safe_browsing/safe_browsing_service.cc,//chrome/browser/safe_browsing/metrics/bundled_settings_metrics_provider.cc)
     for (const prefToCheck of prefsToCheck) {
       const pref = this.getPref(prefToCheck.prefKey);
-      if (pref.value !== prefToCheck.defaultValue &&
+      if (prefToCheck.defaultValue != null &&
+          pref.value !== prefToCheck.defaultValue &&
           pref.controlledBy == null) {
         if (bundleSetting === SecuritySettingsBundleSetting.ENHANCED) {
           this.isResetEnhancedBundleToDefaultsButtonVisible_ = true;
