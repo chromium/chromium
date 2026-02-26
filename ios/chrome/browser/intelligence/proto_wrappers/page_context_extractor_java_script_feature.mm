@@ -37,7 +37,7 @@ PageContextExtractorJavaScriptFeature::PageContextExtractorJavaScriptFeature()
           {web::JavaScriptFeature::FeatureScript::CreateWithFilename(
               kScriptName,
               web::JavaScriptFeature::FeatureScript::InjectionTime::
-                  kDocumentEnd,
+                  kDocumentStart,
               web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames,
               web::JavaScriptFeature::FeatureScript::ReinjectionBehavior::
                   kInjectOncePerWindow,
