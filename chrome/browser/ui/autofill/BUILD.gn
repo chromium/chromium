@@ -265,7 +265,7 @@ source_set("impl") {
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/promos:utils",
       "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/promos:utils",
+      "//chrome/browser/ui/desktop_to_mobile_promos:utils",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/user_education",

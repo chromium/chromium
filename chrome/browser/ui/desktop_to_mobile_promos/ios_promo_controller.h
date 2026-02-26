@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PROMOS_IOS_PROMO_CONTROLLER_H_
-#define CHROME_BROWSER_UI_PROMOS_IOS_PROMO_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_DESKTOP_TO_MOBILE_PROMOS_IOS_PROMO_CONTROLLER_H_
+#define CHROME_BROWSER_UI_DESKTOP_TO_MOBILE_PROMOS_IOS_PROMO_CONTROLLER_H_
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -50,4 +50,4 @@ class IOSPromoController {
   ui::ScopedUnownedUserData<IOSPromoController> scoped_unowned_user_data_;
 };
 
-#endif  // CHROME_BROWSER_UI_PROMOS_IOS_PROMO_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_DESKTOP_TO_MOBILE_PROMOS_IOS_PROMO_CONTROLLER_H_

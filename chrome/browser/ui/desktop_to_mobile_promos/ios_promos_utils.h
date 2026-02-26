@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_PROMOS_IOS_PROMOS_UTILS_H_
-#define CHROME_BROWSER_UI_PROMOS_IOS_PROMOS_UTILS_H_
+#ifndef CHROME_BROWSER_UI_DESKTOP_TO_MOBILE_PROMOS_IOS_PROMOS_UTILS_H_
+#define CHROME_BROWSER_UI_DESKTOP_TO_MOBILE_PROMOS_IOS_PROMOS_UTILS_H_
 
 #include "base/functional/callback_forward.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
@@ -43,4 +43,4 @@ bool IsUserActiveOnAndroid(Profile* profile);
 
 }  // namespace ios_promos_utils
 
-#endif  // CHROME_BROWSER_UI_PROMOS_IOS_PROMOS_UTILS_H_
+#endif  // CHROME_BROWSER_UI_DESKTOP_TO_MOBILE_PROMOS_IOS_PROMOS_UTILS_H_

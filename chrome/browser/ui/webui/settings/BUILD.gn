@@ -48,7 +48,7 @@ source_set("impl") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
-    "//chrome/browser/ui/promos:service",
+    "//chrome/browser/ui/desktop_to_mobile_promos:service",
     "//components/content_settings/core/browser",
     "//components/desktop_to_mobile_promos",
     "//components/permissions:permissions_common",

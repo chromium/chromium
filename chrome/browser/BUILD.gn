@@ -4197,6 +4197,8 @@ static_library("browser") {
       "//chrome/browser/ui/commerce",
       "//chrome/browser/ui/commerce:impl",
       "//chrome/browser/ui/content_settings:impl",
+      "//chrome/browser/ui/desktop_to_mobile_promos:impl",
+      "//chrome/browser/ui/desktop_to_mobile_promos:utils",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/global_media_controls",
       "//chrome/browser/ui/global_media_controls:impl",
@@ -4208,8 +4210,6 @@ static_library("browser") {
       "//chrome/browser/ui/page_action:icon_type",
       "//chrome/browser/ui/passwords/bubble_controllers:impl",
       "//chrome/browser/ui/performance_controls",
-      "//chrome/browser/ui/promos:impl",
-      "//chrome/browser/ui/promos:utils",
       "//chrome/browser/ui/qrcode_generator",
       "//chrome/browser/ui/read_anything",
       "//chrome/browser/ui/search",
@@ -4485,7 +4485,7 @@ static_library("browser") {
       "//chrome/browser/ui/tabs:tab_strip_impl",
       "//chrome/browser/ui/tabs/tab_strip_api:impl",
       "//chrome/browser/ui/bookmarks:impl",
-      "//chrome/browser/ui/promos:impl",
+      "//chrome/browser/ui/desktop_to_mobile_promos:impl",
 
       # TODO(crbug.com/437811373): Remove this circular dependency when
       # c/b/password_manager/password_store_utils.h gets componentized.
