@@ -839,6 +839,15 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
 
     bool is_file_upload_command = id == IDC_OMNIBOX_CONTEXT_ADD_IMAGE ||
                                   id == IDC_OMNIBOX_CONTEXT_ADD_FILE;
+    if (use_input_state_model) {
+      if (auto it = input_type_for_command_id_.find(id);
+          it != input_type_for_command_id_.end()) {
+        is_file_upload_command =
+            it->second == omnibox::InputType::INPUT_TYPE_LENS_IMAGE ||
+            it->second == omnibox::InputType::INPUT_TYPE_LENS_FILE;
+      }
+    }
+
     if (is_aim_popup_open && is_file_upload_command) {
       if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
         omnibox_popup_ui->popup_aim_handler()->SetPreserveContextOnClose(true);
