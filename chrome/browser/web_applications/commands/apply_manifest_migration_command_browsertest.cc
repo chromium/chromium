@@ -78,16 +78,8 @@ class ApplyManifestMigrationCommandBrowserTest : public WebAppBrowserTestBase {
   base::HistogramTester histogram_tester_;
 };
 
-// TODO(crbug.com/487848164): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_MigrateFromSuggestedLaunchSuccess \
-  DISABLED_MigrateFromSuggestedLaunchSuccess
-#else
-#define MAYBE_MigrateFromSuggestedLaunchSuccess \
-  MigrateFromSuggestedLaunchSuccess
-#endif
 IN_PROC_BROWSER_TEST_F(ApplyManifestMigrationCommandBrowserTest,
-                       MAYBE_MigrateFromSuggestedLaunchSuccess) {
+                       MigrateFromSuggestedLaunchSuccess) {
   Browser* app_browser = InstallWebAppFromPageGetBrowser(
       browser(), https_server()->GetURL(kMigrateFromInstallUrl));
 
@@ -95,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(ApplyManifestMigrationCommandBrowserTest,
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL(kMigrateToWithSuggestMigrationUrl)));
   test::WaitForLoadCompleteAndMaybeManifestSeen(
-      *app_browser->tab_strip_model()->GetActiveWebContents());
+      *browser()->tab_strip_model()->GetActiveWebContents());
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   // Approve the migration, waiting for the old browser to be closed and new one
