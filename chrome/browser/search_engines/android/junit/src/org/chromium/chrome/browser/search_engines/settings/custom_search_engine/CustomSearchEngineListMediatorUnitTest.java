@@ -133,13 +133,33 @@ public class CustomSearchEngineListMediatorUnitTest {
     }
 
     @Test
-    public void testMakeDefault() {
+    public void testEditClicked() {
+        String keyword = "keyword";
+        when(mTemplateUrl.getKeyword()).thenReturn(keyword);
+
+        mMediator.onMenuItemClicked(R.string.site_search_list_menu_edit, mTemplateUrl);
+
+        verify(mOnEditSearchEngine).onResult(mTemplateUrl);
+    }
+
+    @Test
+    public void testMakeDefaultClicked() {
         String keyword = "keyword";
         when(mTemplateUrl.getKeyword()).thenReturn(keyword);
 
         mMediator.onMenuItemClicked(R.string.site_search_list_menu_make_default, mTemplateUrl);
 
         verify(mTemplateUrlService).setSearchEngine(keyword);
+    }
+
+    @Test
+    public void testDeleteClicked() {
+        String keyword = "keyword";
+        when(mTemplateUrl.getKeyword()).thenReturn(keyword);
+
+        mMediator.onMenuItemClicked(R.string.site_search_list_menu_delete, mTemplateUrl);
+
+        verify(mTemplateUrlService).removeSearchEngine(keyword);
     }
 
     @Test

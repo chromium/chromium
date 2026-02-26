@@ -151,7 +151,7 @@ public class CustomSearchEngineListMediator
         } else if (R.string.site_search_list_menu_make_default == textId) {
             mTemplateUrlService.setSearchEngine(url.getKeyword());
         } else if (R.string.site_search_list_menu_delete == textId) {
-            // TODO: Implement Delete API
+            mTemplateUrlService.removeSearchEngine(url.getKeyword());
         }
     }
 }
