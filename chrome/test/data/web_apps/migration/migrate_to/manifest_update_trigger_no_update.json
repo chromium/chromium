@@ -1,0 +1,17 @@
+{
+  "name": "Migrate To Update Trigger No Update",
+  "icons": [
+    {
+      "src": "192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "id": "web_apps/migration/migrate_to/manifest_id",
+  "start_url": "update_trigger_no_update.html",
+  "display": "standalone",
+  "migrate_from": [{
+    "id": "/web_apps/migration/migrate_from/manifest_id",
+    "install_url": "/web_apps/migration/migrate_from/suggest.html"
+  }]
+}

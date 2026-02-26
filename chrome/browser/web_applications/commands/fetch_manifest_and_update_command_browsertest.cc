@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
@@ -71,71 +72,19 @@ class FetchManifestAndUpdateCommandMigrationTest
                                    {});
   }
 
-  void SetUp() override {
-    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
-        &FetchManifestAndUpdateCommandMigrationTest::HandleRequest,
-        base::Unretained(this)));
-    FetchManifestAndUpdateCommandTest::SetUp();
-  }
-
-  void SetRequestOverride(
-      base::RepeatingCallback<std::unique_ptr<net::test_server::HttpResponse>(
-          const net::test_server::HttpRequest& request)> handler) {
-    request_override_ = std::move(handler);
-  }
-
  private:
-  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
-      const net::test_server::HttpRequest& request) {
-    if (request_override_) {
-      return request_override_.Run(request);
-    }
-    return nullptr;
-  }
-
-  base::RepeatingCallback<std::unique_ptr<net::test_server::HttpResponse>(
-      const net::test_server::HttpRequest& request)>
-      request_override_;
   base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandMigrationTest,
                        CheckMigrateFromTriggersUpdate) {
-  webapps::AppId app_a_id = InstallWebAppFromPageAndCloseAppBrowser(
-      browser(), embedded_https_test_server().GetURL("/web_apps/basic.html"));
-  webapps::ManifestId app_a_manifest_id =
-      provider().registrar_unsafe().GetAppManifestId(app_a_id);
+  Browser* app_browser = InstallWebAppFromPageGetBrowser(
+      browser(), embedded_https_test_server().GetURL(
+                     "/web_apps/migration/migrate_from/suggest.html"));
+  webapps::AppId app_a_id = AppBrowserController::From(app_browser)->app_id();
 
-  Browser* app_browser = LaunchWebAppBrowser(app_a_id);
-
-  GURL app_b_manifest_url =
-      embedded_https_test_server().GetURL("/banners/manifest_b.json");
   GURL app_b_url = embedded_https_test_server().GetURL(
-      "/banners/manifest_test_page.html?manifest=manifest_b.json");
-
-  std::string manifest_b_content = R"(
-        {
-          "name": "App B",
-          "id": "/",
-          "start_url": "manifest_test_page.html",
-          "display": "standalone",
-          "migrate_from": [{ "id": "/web_apps/basic.html",
-                             "install_url": "/web_apps/basic.html" }]
-        }
-      )";
-
-  SetRequestOverride(base::BindLambdaForTesting(
-      [&](const net::test_server::HttpRequest& request)
-          -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.GetURL() == app_b_manifest_url) {
-          auto http_response =
-              std::make_unique<net::test_server::BasicHttpResponse>();
-          http_response->set_code(net::HTTP_OK);
-          http_response->set_content(manifest_b_content);
-          return http_response;
-        }
-        return nullptr;
-      }));
+      "/web_apps/migration/migrate_to/update_trigger_no_update.html");
 
   base::HistogramTester histogram_tester;
 
@@ -160,42 +109,13 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandMigrationTest,
 
 IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandMigrationTest,
                        CheckMigrateFromTriggersUpdate_WithUpdate) {
-  webapps::AppId app_a_id = InstallWebAppFromPageAndCloseAppBrowser(
-      browser(), embedded_https_test_server().GetURL("/web_apps/basic.html"));
-  webapps::ManifestId app_a_manifest_id =
-      provider().registrar_unsafe().GetAppManifestId(app_a_id);
+  Browser* app_browser = InstallWebAppFromPageGetBrowser(
+      browser(), embedded_https_test_server().GetURL(
+                     "/web_apps/migration/migrate_from/suggest.html"));
+  webapps::AppId app_a_id = AppBrowserController::From(app_browser)->app_id();
 
-  Browser* app_browser = LaunchWebAppBrowser(app_a_id);
-
-  GURL app_b_manifest_url =
-      embedded_https_test_server().GetURL("/banners/manifest_b.json");
   GURL app_b_url = embedded_https_test_server().GetURL(
-      "/banners/manifest_test_page.html?manifest=manifest_b.json");
-
-  std::string manifest_b_content = R"(
-        {
-          "name": "App B",
-          "id": "/",
-          "start_url": "manifest_test_page.html",
-          "display": "standalone",
-          "migrate_from": [{ "id": "/web_apps/basic.html",
-                             "install_url":
-                                 "/web_apps/get_manifest.html?basic_new_name.json" }]
-        }
-      )";
-
-  SetRequestOverride(base::BindLambdaForTesting(
-      [&](const net::test_server::HttpRequest& request)
-          -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.GetURL() == app_b_manifest_url) {
-          auto http_response =
-              std::make_unique<net::test_server::BasicHttpResponse>();
-          http_response->set_code(net::HTTP_OK);
-          http_response->set_content(manifest_b_content);
-          return http_response;
-        }
-        return nullptr;
-      }));
+      "/web_apps/migration/migrate_to/update_trigger_with_update.html");
 
   base::HistogramTester histogram_tester;
 
@@ -215,11 +135,11 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndUpdateCommandMigrationTest,
   histogram_tester.ExpectBucketCount("WebApp.FetchManifestAndUpdate.Result",
                                      FetchManifestAndUpdateResult::kSuccess, 1);
 
-  EXPECT_EQ("Basic web app",
+  EXPECT_EQ("Migrate From",
             provider().registrar_unsafe().GetAppShortName(app_a_id));
   const WebApp* app_a = provider().registrar_unsafe().GetAppById(app_a_id);
   ASSERT_TRUE(app_a->pending_update_info().has_value());
-  EXPECT_EQ(app_a->pending_update_info()->name(), "Basic web app 2");
+  EXPECT_EQ(app_a->pending_update_info()->name(), "Migrate From Updated Name");
 }
 
 }  // namespace web_app
