@@ -194,7 +194,15 @@ The embedder code for Android WebView lives in //android_webview. Details are
 
 ### Chromecast
 
-The embedder code for Chromecast lives in //chromecast.
+The embedder code for Chromecast lives in //chromecast. This code is used to
+build the *Cast Web Runtime*, also known as the "Cast Browser", which is used to
+display [web-based Google Cast apps](https://developers.google.com/cast/docs/web_receiver).
+
+The supported platforms are defined in the gn files in
+//chromecast/build/args/product. Each file corresponds to a single supported
+platform for the Cast Web Runtime.
+
+Details are [here](https://chromium.googlesource.com/chromium/src/chromecast/README.md).
 
 ### Cronet
 
