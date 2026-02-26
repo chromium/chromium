@@ -569,6 +569,17 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_core_core_pip_java") {
+    aar_path = "../androidx/cipd/libs/androidx_core_core_pip/core-pip.aar"
+    info_path = "../androidx/committed/libs/androidx_core_core_pip/androidx_core_core_pip.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":androidx_core_core_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_credentials_credentials_java") {
     aar_path =
         "../androidx/cipd/libs/androidx_credentials_credentials/credentials.aar"

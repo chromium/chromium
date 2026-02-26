@@ -53,6 +53,7 @@
     "committed/libs/androidx_core_core_animation",
     "committed/libs/androidx_core_core_animation_testing",
     "committed/libs/androidx_core_core_ktx",
+    "committed/libs/androidx_core_core_pip",
     "committed/libs/androidx_core_core_viewtree",
     "committed/libs/androidx_credentials_credentials",
     "committed/libs/androidx_credentials_credentials_play_services_auth",

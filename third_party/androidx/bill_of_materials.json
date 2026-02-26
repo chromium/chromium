@@ -375,6 +375,11 @@
         "version": "1.18.0-SNAPSHOT"
     },
     {
+        "name": "core-pip",
+        "group": "androidx.core",
+        "version": "1.0.0-SNAPSHOT"
+    },
+    {
         "name": "core-viewtree",
         "group": "androidx.core",
         "version": "1.1.0-SNAPSHOT"
