@@ -48,6 +48,7 @@ void FakeConnection::Send(proto::PrivateAiRequest request,
 }
 
 void FakeConnection::OnDestroy(ErrorCode error) {
+  on_disconnect_.Reset();
   auto callbacks = std::move(pending_requests_);
   for (auto& pending_request : callbacks) {
     std::move(pending_request.callback).Run(base::unexpected(error));

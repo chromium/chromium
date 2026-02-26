@@ -77,8 +77,10 @@ class ConnectionTokenAttestation : public Connection {
   void CallOnDisconnect(ErrorCode error_code);
 
   const std::unique_ptr<Connection> inner_connection_;
-  const raw_ptr<phosphor::TokenManager> token_manager_;
-  const raw_ptr<PrivateAiLogger> logger_;
+  raw_ptr<phosphor::TokenManager> token_manager_;
+  raw_ptr<PrivateAiLogger> logger_;
+
+  // Called to trigger a disconnect and destruction of the connection.
   base::OnceCallback<void(ErrorCode)> on_disconnect_;
 
   AttestationState attestation_state_ = AttestationState::kFetchingToken;

@@ -81,6 +81,8 @@ class ConnectionProxy : public Connection {
   raw_ptr<phosphor::TokenManager> token_manager_;
   raw_ptr<network::mojom::NetworkService> network_service_;
   InnerConnectionFactory inner_connection_factory_;
+
+  // Called to trigger a disconnect and destruction of the connection.
   base::OnceCallback<void(ErrorCode)> on_disconnect_;
 
   mojo::Remote<network::mojom::NetworkContext> proxied_context_;

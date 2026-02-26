@@ -38,7 +38,8 @@ class Connection {
                     OnRequestCallback callback) = 0;
 
   // Invoked when the connection is being destroyed. Implementations should
-  // resolve all pending requests with `error`.
+  // resolve all pending requests with `error`, call OnDestroy() on the inner
+  // connection, reset all un-owned pointers and invalidate weakptrs.
   virtual void OnDestroy(ErrorCode error) = 0;
 };
 

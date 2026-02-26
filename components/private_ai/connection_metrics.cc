@@ -38,6 +38,8 @@ void ConnectionMetrics::Send(proto::PrivateAiRequest request,
 
 void ConnectionMetrics::OnDestroy(ErrorCode error) {
   inner_connection_->OnDestroy(error);
+
+  weak_factory_.InvalidateWeakPtrsAndDoom();
 }
 
 void ConnectionMetrics::OnResponse(
