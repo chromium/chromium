@@ -12,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/net/variations_http_headers.h"
-#include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -188,10 +187,6 @@ class PrefetchContainerTest
       public ::testing::WithParamInterface<PrefetchRearchParam> {
  public:
   PrefetchContainerTest() : PrefetchContainerTestBase(GetParam()) {}
-
- private:
-  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
-      variations::VariationsIdsProvider::Mode::kIgnoreSignedInState};
 };
 
 class PrefetchContainerXClientDataHeaderTest
@@ -202,10 +197,6 @@ class PrefetchContainerXClientDataHeaderTest
  public:
   PrefetchContainerXClientDataHeaderTest()
       : PrefetchContainerTestBase(std::get<0>(GetParam())) {}
-
- private:
-  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
-      variations::VariationsIdsProvider::Mode::kIgnoreSignedInState};
 
  protected:
   bool IsIncognito() const { return std::get<1>(GetParam()); }

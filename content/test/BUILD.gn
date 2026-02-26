@@ -612,6 +612,7 @@ static_library("test_support") {
     "//components/startup_metric_utils",
     "//components/ukm:test_support",
     "//components/variations",
+    "//components/variations:test_support",
     "//components/viz/client",
     "//components/viz/host",
     "//components/web_package/test_support",

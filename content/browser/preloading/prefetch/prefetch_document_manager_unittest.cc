@@ -9,9 +9,7 @@
 #include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
 #include "content/public/test/navigation_simulator.h"
-#include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_frame_host.h"
-#include "content/test/test_web_contents.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,19 +24,15 @@ using testing::IsEmpty;
 using testing::IsNull;
 using testing::UnorderedElementsAreArray;
 
-class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
+class PrefetchDocumentManagerTest : public PrefetchingMetricsTestBase {
  public:
   void SetUp() override {
-    RenderViewHostTestHarness::SetUp();
+    PrefetchingMetricsTestBase::SetUp();
 
-    browser_context_ = std::make_unique<TestBrowserContext>();
-    web_contents_ = TestWebContents::Create(
-        browser_context_.get(),
-        SiteInstanceImpl::Create(browser_context_.get()));
-    web_contents_->NavigateAndCommit(GetSameOriginUrl("/"));
+    NavigateAndCommit(GetSameOriginUrl("/"));
 
     prefetch_service_ =
-        std::make_unique<TestPrefetchService>(browser_context_.get());
+        std::make_unique<TestPrefetchService>(browser_context());
     PrefetchDocumentManager::SetPrefetchServiceForTesting(
         prefetch_service_.get());
   }
@@ -51,14 +45,7 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
     // free.
     PrefetchDocumentManager::SetPrefetchServiceForTesting(nullptr);
     prefetch_service_.reset();
-
-    web_contents_.reset();
-    browser_context_.reset();
-    RenderViewHostTestHarness::TearDown();
-  }
-
-  RenderFrameHostImpl& GetPrimaryMainFrame() {
-    return web_contents_->GetPrimaryPage().GetMainDocument();
+    PrefetchingMetricsTestBase::TearDown();
   }
 
   GURL GetSameOriginUrl(const std::string& path) {
@@ -75,8 +62,7 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
 
   void NavigateMainframeRendererTo(const GURL& url) {
     std::unique_ptr<NavigationSimulator> simulator =
-        NavigationSimulator::CreateRendererInitiated(url,
-                                                     &GetPrimaryMainFrame());
+        NavigationSimulator::CreateRendererInitiated(url, main_rfh());
     simulator->SetTransition(ui::PAGE_TRANSITION_LINK);
     simulator->Start();
   }
@@ -94,8 +80,7 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
     // Process the candidates with the |PrefetchDocumentManager| for the current
     // document.
     auto* prefetch_document_manager =
-        PrefetchDocumentManager::GetOrCreateForCurrentDocument(
-            &GetPrimaryMainFrame());
+        PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
 
     // Create list of SpeculationCandidatePtrs.
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
@@ -122,13 +107,11 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
     MakeServableStreamingURLLoaderForTest(GetPrefetches()[0].get(),
                                           std::move(head), "empty");
 
-    auto& test_rfh = static_cast<TestRenderFrameHost&>(GetPrimaryMainFrame());
+    auto& test_rfh = static_cast<TestRenderFrameHost&>(*main_rfh());
     return test_rfh.GetConsoleMessages()[0];
   }
 
  private:
-  std::unique_ptr<TestBrowserContext> browser_context_;
-  std::unique_ptr<TestWebContents> web_contents_;
   std::unique_ptr<TestPrefetchService> prefetch_service_;
 };
 
@@ -136,8 +119,7 @@ TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
   // Process the candidates with the |PrefetchDocumentManager| for the current
   // document.
   auto* prefetch_document_manager =
-      PrefetchDocumentManager::GetOrCreateForCurrentDocument(
-          &GetPrimaryMainFrame());
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
   // Create list of SpeculationCandidatePtrs.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
   // Create candidate for private cross-origin prefetch. This candidate should
@@ -339,8 +321,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   // Process the candidates with the |PrefetchDocumentManager| for the current
   // document.
   auto* prefetch_document_manager =
-      PrefetchDocumentManager::GetOrCreateForCurrentDocument(
-          &GetPrimaryMainFrame());
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
   prefetch_document_manager->ProcessCandidates(candidates);
 
   // Check that the candidates that should be prefetched were sent to
@@ -429,8 +410,7 @@ TEST_F(PrefetchDocumentManagerTest, FencedFrameDoesNotStartPrefetch) {
   // Process the candidate with the |PrefetchDocumentManager| for the current
   // document.
   TestRenderFrameHost* fenced_frame_rfh =
-      static_cast<TestRenderFrameHost&>(GetPrimaryMainFrame())
-          .AppendFencedFrame();
+      static_cast<TestRenderFrameHost&>(*main_rfh()).AppendFencedFrame();
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(fenced_frame_rfh);
   prefetch_document_manager->ProcessCandidates(candidates);

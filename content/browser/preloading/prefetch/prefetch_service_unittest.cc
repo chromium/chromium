@@ -20,7 +20,6 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
-#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/mock_prefetch_service_delegate.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
@@ -1247,9 +1246,6 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
   std::map<GURL, mojo::ScopedDataPipeProducerHandle> producer_handle_for_gurl_;
 
   std::vector<PrefetchRequestHandler> request_handler_keep_alive_;
-
-  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
-      variations::VariationsIdsProvider::Mode::kIgnoreSignedInState};
 };
 
 class PrefetchServiceTest
@@ -8213,7 +8209,6 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_RunsTwoConcurrentPrefetches) {
 // - A prefetch is triggered with high priority.
 // - `PrefetchScheduler` starts the later one.
 TEST_P(PrefetchServiceTest, PrefetchScheduler_Prioritize) {
-
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{features::kPrefetchSchedulerTesting,

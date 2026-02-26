@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_renderer_host.h"
@@ -312,6 +313,13 @@ class PrefetchingMetricsTestBase : public RenderViewHostTestHarness {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>
       attempt_entry_builder_;
+
+  // Except for some tests related to variations header (using
+  // `variations::VariationsIdsProvider::GetInstance()`), this is just to
+  // prevent `PrefetchContainer`'s resource request creation from crashing due
+  // to lack of a `VariationsIdsProvider`.
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kIgnoreSignedInState};
 };
 
 // Helpers for parametrized tests for rearchitecturing/refactoring of the core
