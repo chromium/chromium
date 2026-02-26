@@ -221,14 +221,8 @@ void MetricsRenderFrameObserver::DidObserveSoftNavigation(
 void MetricsRenderFrameObserver::DidObserveSoftLargestContentfulPaint(
     const blink::LargestContentfulPaintDetailsForReporting& lcp) {
   if (page_timing_metrics_sender_) {
-    base::TimeDelta softnav_relative_start =
-        page_timing_metrics_sender_->GetSoftNavigationStartTime();
-
-    double softnav_start =
-        GetNavigationStart() + softnav_relative_start.InSecondsF();
-
     // The lcp object we pass to the sender is a mojom type that is relative
-    // to the soft navigation start time.
+    // to the (hard) navigation start time.
     mojom::LargestContentfulPaintTimingPtr relative_lcp =
         CreateLargestContentfulPaintTiming();
 
@@ -243,7 +237,7 @@ void MetricsRenderFrameObserver::DidObserveSoftLargestContentfulPaint(
       } else {
         relative_lcp->largest_image_paint =
             CreateTimeDeltaFromTimestampsInSeconds(lcp.image_paint_time,
-                                                   softnav_start);
+                                                   GetNavigationStart());
       }
       // Set largest image size.
       relative_lcp->largest_image_paint_size = lcp.image_paint_size;
@@ -269,7 +263,7 @@ void MetricsRenderFrameObserver::DidObserveSoftLargestContentfulPaint(
         relative_lcp->resource_load_timings->discovery_time =
             CreateTimeDeltaFromTimestampsInSeconds(
                 lcp.resource_load_timings.discovery_time.value().InSecondsF(),
-                softnav_start);
+                GetNavigationStart());
       }
 
       // Set largest image load start.
@@ -277,7 +271,7 @@ void MetricsRenderFrameObserver::DidObserveSoftLargestContentfulPaint(
         relative_lcp->resource_load_timings->load_start =
             CreateTimeDeltaFromTimestampsInSeconds(
                 lcp.resource_load_timings.load_start.value().InSecondsF(),
-                softnav_start);
+                GetNavigationStart());
       }
 
       // Set largest image load end.
@@ -285,7 +279,7 @@ void MetricsRenderFrameObserver::DidObserveSoftLargestContentfulPaint(
         relative_lcp->resource_load_timings->load_end =
             CreateTimeDeltaFromTimestampsInSeconds(
                 lcp.resource_load_timings.load_end.value().InSecondsF(),
-                softnav_start);
+                GetNavigationStart());
       }
     }
     if (lcp.text_paint_size > 0) {
@@ -294,7 +288,7 @@ void MetricsRenderFrameObserver::DidObserveSoftLargestContentfulPaint(
       DCHECK(lcp.text_paint_time);
 
       relative_lcp->largest_text_paint = CreateTimeDeltaFromTimestampsInSeconds(
-          lcp.text_paint_time, softnav_start);
+          lcp.text_paint_time, GetNavigationStart());
 
       relative_lcp->largest_text_paint_size = lcp.text_paint_size;
 

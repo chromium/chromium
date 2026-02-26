@@ -651,15 +651,21 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
   PAGE_LOAD_HISTOGRAM("PageLoad.SoftNavigation.StartTime",
                       soft_navigation_metrics.start_time);
 
+  // All loading performance timings within the soft LCP object are relative to
+  // the (hard) navigation start. Therefore, when we record the metric values
+  // for the soft navigation's LCP below, we need to subtract the soft
+  // navigation's start time (which is also relative to the (hard) navigation
+  // start) from these values.
   auto largest_contentful_paint = GetSoftNavigationLargestContentfulPaint();
 
   if (largest_contentful_paint.ContainsValidTime() &&
       WasStartedInForegroundOptionalEventInForeground(
           largest_contentful_paint.Time(), GetDelegate())) {
-    builder.SetPaintTiming_LargestContentfulPaint(
-        largest_contentful_paint.Time().value().InMilliseconds());
+    base::TimeDelta soft_lcp = (largest_contentful_paint.Time().value() -
+                                soft_navigation_metrics.start_time);
+    builder.SetPaintTiming_LargestContentfulPaint(soft_lcp.InMilliseconds());
     PAGE_LOAD_HISTOGRAM("PageLoad.SoftNavigation.LargestContentfulPaint",
-                        largest_contentful_paint.Time().value());
+                        soft_lcp);
 
     builder.SetPaintTiming_LargestContentfulPaintType(
         LargestContentfulPaintTypeToUKMFlags(largest_contentful_paint.Type()));
@@ -678,19 +684,23 @@ void UkmPageLoadMetricsObserver::RecordSoftNavigationMetrics(
 
       if (largest_contentful_paint.ImageDiscoveryTime().has_value()) {
         builder.SetPaintTiming_LargestContentfulPaintImageDiscoveryTime(
-            largest_contentful_paint.ImageDiscoveryTime()
-                .value()
+            (largest_contentful_paint.ImageDiscoveryTime().value() -
+             soft_navigation_metrics.start_time)
                 .InMilliseconds());
       }
 
       if (largest_contentful_paint.ImageLoadStart().has_value()) {
         builder.SetPaintTiming_LargestContentfulPaintImageLoadStart(
-            largest_contentful_paint.ImageLoadStart().value().InMilliseconds());
+            (largest_contentful_paint.ImageLoadStart().value() -
+             soft_navigation_metrics.start_time)
+                .InMilliseconds());
       }
 
       if (largest_contentful_paint.ImageLoadEnd().has_value()) {
         builder.SetPaintTiming_LargestContentfulPaintImageLoadEnd(
-            largest_contentful_paint.ImageLoadEnd().value().InMilliseconds());
+            (largest_contentful_paint.ImageLoadEnd().value() -
+             soft_navigation_metrics.start_time)
+                .InMilliseconds());
       }
     }
   }

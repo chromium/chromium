@@ -223,7 +223,8 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetricsAndSoftNavigations) {
   //
   auto soft_largest_contentful_paint = CreateLargestContentfulPaintTiming();
   base::TimeDelta soft_lcp = base::Milliseconds(120);
-  soft_largest_contentful_paint->largest_image_paint = soft_lcp;
+  soft_largest_contentful_paint->largest_image_paint =
+      soft_lcp + soft_navigation_metrics->start_time;
   soft_largest_contentful_paint->largest_image_paint_size = 2500;
 
   validator_.ExpectSoftNavigationMetrics(*soft_navigation_metrics);
