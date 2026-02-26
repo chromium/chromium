@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/promos/promos_utils.h"
+#include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"
 
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/promos/promos_pref_names.h"
+#include "chrome/browser/desktop_to_mobile_promos/promos_pref_names.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"

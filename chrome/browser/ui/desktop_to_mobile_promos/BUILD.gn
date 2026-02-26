@@ -7,7 +7,7 @@ source_set("utils") {
 
   deps = [
     "//base",
-    "//chrome/browser/promos:utils",
+    "//chrome/browser/desktop_to_mobile_promos:utils",
     "//components/desktop_to_mobile_promos",
   ]
 }
@@ -18,9 +18,9 @@ if (!is_android) {
 
     deps = [
       ":utils",
+      "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/feature_engagement",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/promos:utils",
       "//chrome/browser/segmentation_platform",
       "//chrome/browser/sync",
       "//chrome/browser/ui",
@@ -75,8 +75,8 @@ if (!is_android) {
       "//base",
       "//chrome/app:branded_strings",
       "//chrome/app:generated_resources",
+      "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/promos:utils",
       "//chrome/browser/sharing",
       "//chrome/browser/sync",
       "//chrome/browser/ui/browser_window",
@@ -102,7 +102,7 @@ if (!is_android) {
       ":service",
       ":utils",
       "//base/test:test_support",
-      "//chrome/browser/promos:utils",
+      "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/sharing",
       "//chrome/browser/sync",
       "//chrome/browser/ui/user_education",

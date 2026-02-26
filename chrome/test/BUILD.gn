@@ -2565,6 +2565,7 @@ if (!is_android) {
       "//chrome/browser/content_settings:content_settings_util",
       "//chrome/browser/custom_handlers",
       "//chrome/browser/data_saver",
+      "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/device_api:browser_tests",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
@@ -2647,7 +2648,6 @@ if (!is_android) {
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/profiling_host:profiling_browsertests",
-      "//chrome/browser/promos:utils",
       "//chrome/browser/reading_list",
       "//chrome/browser/reduce_accept_language:browser_tests",
       "//chrome/browser/regional_capabilities:browser_tests",
@@ -11017,10 +11017,11 @@ test("unit_tests") {
   }
 
   if (!is_android) {
-    sources += [ "../browser/promos/promos_utils_unittest.cc" ]
+    sources +=
+        [ "../browser/desktop_to_mobile_promos/promos_utils_unittest.cc" ]
 
     deps += [
-      "//chrome/browser/promos:utils",
+      "//chrome/browser/desktop_to_mobile_promos:utils",
       "//components/segmentation_platform/embedder/default_model",
     ]
   }
@@ -11680,6 +11681,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_tasks:interactive_ui_tests",
+      "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/feedback:feedback_impl",
@@ -11704,7 +11706,6 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/privacy_sandbox/notice:factory",
       "//chrome/browser/privacy_sandbox/notice:test_support",
       "//chrome/browser/profiles/keep_alive",
-      "//chrome/browser/promos:utils",
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/sessions",

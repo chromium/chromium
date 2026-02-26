@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/promos/promos_utils.h"
+#include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"
 
 #include <algorithm>
 #include <string>
@@ -14,8 +14,8 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/desktop_to_mobile_promos/promos_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/common/pref_names.h"
 #include "components/desktop_to_mobile_promos/pref_names.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"

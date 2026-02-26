@@ -262,6 +262,7 @@
 #include "components/webapps/browser/android/install_prompt_prefs.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/ui/actor_ui_state_manager_prefs.h"
+#include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"  // nogncheck crbug.com/1125897
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
 #include "chrome/browser/intranet_redirect_detector.h"
@@ -278,7 +279,6 @@
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_page_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/tab_groups/tab_groups_page_handler.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
-#include "chrome/browser/promos/promos_utils.h"  // nogncheck crbug.com/1125897
 #include "chrome/browser/screen_ai/pref_names.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/signin/signin_promo.h"

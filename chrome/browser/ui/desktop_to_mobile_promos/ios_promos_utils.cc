@@ -6,9 +6,9 @@
 
 #include "base/json/values_util.h"
 #include "base/time/time.h"
+#include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/promos/promos_utils.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/prefs/cross_device_pref_tracker/cross_device_pref_tracker_factory.h"
