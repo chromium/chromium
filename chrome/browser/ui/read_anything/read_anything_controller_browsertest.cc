@@ -1838,3 +1838,34 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return tab_strip_model->active_index() == 0; }));
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       GlueAttachedAndDetachedCorrectly) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  // Open Side Panel
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
+
+  // Wait for Side Panel to show
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  content::WebContents* side_panel_contents = GetSidePanelWebContents();
+  ASSERT_TRUE(side_panel_contents);
+
+  // Verify Glue is attached
+  EXPECT_TRUE(ReadAnythingControllerGlue::FromWebContents(side_panel_contents));
+  EXPECT_EQ(controller,
+            ReadAnythingControllerGlue::FromWebContents(side_panel_contents)
+                ->controller());
+
+  // Close the tab. This destroys ReadAnythingController.
+  // We expect no crashes here.
+  tab->Close();
+}

@@ -78,6 +78,9 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver,
   // TODO(https://crbug.com/347770670): remove this.
   void ResetForTabDiscard();
 
+  // Removes the ReadAnythingControllerGlue from the web contents.
+  void RemoveReadAnythingControllerGlue();
+
   void AddPageHandlerAsObserver(
       base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler);
   void RemovePageHandlerAsObserver(

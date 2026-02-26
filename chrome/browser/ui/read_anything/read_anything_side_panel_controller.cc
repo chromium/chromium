@@ -133,6 +133,13 @@ void ReadAnythingSidePanelController::ResetForTabDiscard() {
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
 }
 
+void ReadAnythingSidePanelController::RemoveReadAnythingControllerGlue() {
+  if (web_view_ && web_view_->contents_wrapper()) {
+    web_view_->contents_wrapper()->web_contents()->RemoveUserData(
+        ReadAnythingControllerGlue::UserDataKey());
+  }
+}
+
 void ReadAnythingSidePanelController::AddPageHandlerAsObserver(
     base::WeakPtr<ReadAnythingUntrustedPageHandler> page_handler) {
   AddObserver(page_handler.get());

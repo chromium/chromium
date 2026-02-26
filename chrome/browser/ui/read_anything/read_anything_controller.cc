@@ -146,6 +146,10 @@ ReadAnythingController::~ReadAnythingController() {
     ra_web_ui_observer_->web_contents()->RemoveUserData(
         ReadAnythingControllerGlue::UserDataKey());
   }
+
+  // If the Side Panel was showing, it might still hold the WebContents. Ensure
+  // the glue is removed from there too.
+  read_anything_side_panel_controller_->RemoveReadAnythingControllerGlue();
 }
 
 void ReadAnythingController::AddObserver(Observer* observer) {
