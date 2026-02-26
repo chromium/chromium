@@ -53,6 +53,9 @@ namespace base {
 //   flat_set(flat_set&&);
 //   flat_set(InputIterator first, InputIterator last,
 //            const Compare& compare = Compare());
+//   flat_set(std::from_range_t,
+//            Range&& range,
+//            const Compare& comp = Compare());
 //   flat_set(const container_type& items,
 //            const Compare& compare = Compare());
 //   flat_set(container_type&& items,
@@ -64,6 +67,10 @@ namespace base {
 //   flat_set(sorted_unique_t,
 //            InputIterator first, InputIterator last,
 //            const Compare& compare = Compare());
+//   flat_set(std::from_range_t,
+//            sorted_unique_t,
+//            Range&& range,
+//            const Compare& comp = Compare());
 //   flat_set(sorted_unique_t,
 //            const container_type& items,
 //            const Compare& compare = Compare());

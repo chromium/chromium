@@ -72,6 +72,9 @@ struct GetFirst {
 //   flat_map(flat_map&&);
 //   flat_map(InputIterator first, InputIterator last,
 //            const Compare& compare = Compare());
+//   flat_map(std::from_range_t,
+//            Range&& range,
+//            const Compare& comp = Compare());
 //   flat_map(const container_type& items,
 //            const Compare& compare = Compare());
 //   flat_map(container_type&& items,
@@ -83,6 +86,10 @@ struct GetFirst {
 //   flat_map(sorted_unique_t,
 //            InputIterator first, InputIterator last,
 //            const Compare& compare = Compare());
+//   flat_map(std::from_range_t,
+//            sorted_unique_t,
+//            Range&& range,
+//            const Compare& comp = Compare());
 //   flat_map(sorted_unique_t,
 //            const container_type& items,
 //            const Compare& compare = Compare());
