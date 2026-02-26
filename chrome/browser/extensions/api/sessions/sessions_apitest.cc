@@ -17,6 +17,7 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -183,6 +184,25 @@ syncer::ClientTagHash TagHashFromSpecifics(
       syncer::SESSIONS, sync_sessions::SessionStore::GetClientTag(specifics));
 }
 
+// Closes a browser window and waits for it to finish closing.
+void CloseWindowAndWait(BrowserWindowInterface* window) {
+  // Close the window and wait for OnBrowserClosed() notification.
+  BrowserClosedWaiter waiter(window);
+  window->GetWindow()->Close();
+  waiter.Wait();
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android we have to wait for the headless TabModelSelector to be created.
+  // This happens after OnBrowserClosed() and there's not a clean way to observe
+  // for the event, so sleep.
+  // TODO(crbug.com/486915945): Find a more elegant solution.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
+  run_loop.Run();
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 }  // namespace
 
 class ExtensionSessionsTest : public ExtensionBrowserTest {
@@ -335,15 +355,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetDevicesListEmpty) {
   EXPECT_TRUE(devices.empty());
 }
 
-// TODO(crbug.com/486915945): Flaky on desktop Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_RestoreMostRecentlyClosedWindow \
-  DISABLED_RestoreMostRecentlyClosedWindow
-#else
-#define MAYBE_RestoreMostRecentlyClosedWindow RestoreMostRecentlyClosedWindow
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest,
-                       MAYBE_RestoreMostRecentlyClosedWindow) {
+IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreMostRecentlyClosedWindow) {
   // Open a second window.
   BrowserWindowInterface* browser2 =
       CreateBrowserWindowWithType(BrowserWindowInterface::TYPE_NORMAL);
@@ -374,9 +386,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest,
   ASSERT_TRUE(NavigateToURL(contents1, GURL("chrome://credits/")));
 
   // Close the second window and wait for it to close.
-  BrowserClosedWaiter close_waiter(browser2);
-  browser2->GetWindow()->Close();
-  close_waiter.Wait();
+  CloseWindowAndWait(browser2);
 
   // Get ready for a browser to be created.
   BrowserCreatedWaiter browser_waiter;
@@ -443,13 +453,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest,
   EXPECT_FALSE(tab_list3->GetTab(1)->IsActivated());
 }
 
-// TODO(crbug.com/486915945): Flaky on desktop Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_RestoreWindowBySessionId DISABLED_RestoreWindowBySessionId
-#else
-#define MAYBE_RestoreWindowBySessionId RestoreWindowBySessionId
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, MAYBE_RestoreWindowBySessionId) {
+IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreWindowBySessionId) {
   // Open a second window.
   BrowserWindowInterface* browser2 =
       CreateBrowserWindowWithType(BrowserWindowInterface::TYPE_NORMAL);
@@ -470,9 +474,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, MAYBE_RestoreWindowBySessionId) {
   ASSERT_TRUE(NavigateToURL(contents0, GURL("chrome://version/")));
 
   // Close the second window and wait for it to close.
-  BrowserClosedWaiter close_waiter(browser2);
-  browser2->GetWindow()->Close();
-  close_waiter.Wait();
+  CloseWindowAndWait(browser2);
 
   // chrome.sessions.getRecentlyClosed() should return 1 entry.
   std::optional<base::Value> result = utils::RunFunctionAndReturnSingleResult(
@@ -579,13 +581,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreNonEditableTabstrip) {
 // Tests chrome.sessions.getRecentlyClosed() for windows. Opens a second browser
 // window with two tabs, closes it, then calls the extension API function and
 // verifies one window with two tabs was recently closed.
-// TODO(crbug.com/486915945): Flaky on desktop Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_GetRecentlyClosedWindow DISABLED_GetRecentlyClosedWindow
-#else
-#define MAYBE_GetRecentlyClosedWindow GetRecentlyClosedWindow
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, MAYBE_GetRecentlyClosedWindow) {
+IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedWindow) {
   // Open a second window.
   BrowserWindowInterface* browser2 =
       CreateBrowserWindowWithType(BrowserWindowInterface::TYPE_NORMAL);
@@ -616,12 +612,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, MAYBE_GetRecentlyClosedWindow) {
   ASSERT_TRUE(NavigateToURL(contents1, GURL("chrome://credits/")));
 
   // Close the second window and wait for it to close.
-  BrowserClosedWaiter waiter(browser2);
-  browser2->GetWindow()->Close();
-  waiter.Wait();
-
-  // Ensure posted tasks from window close have run.
-  base::RunLoop().RunUntilIdle();
+  CloseWindowAndWait(browser2);
 
   // NOTE: At this point persistent tab state may not yet be initialized on
   // Android. SessionsGetRecentlyClosedFunction copes with this by using a
@@ -740,16 +731,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, GetRecentlyClosedMaxResults) {
   }
 }
 
-// TODO(crbug.com/486915945): Flaky on desktop Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_GetRecentlyClosedMaxResultsWithWindow \
-  DISABLED_GetRecentlyClosedMaxResultsWithWindow
-#else
-#define MAYBE_GetRecentlyClosedMaxResultsWithWindow \
-  GetRecentlyClosedMaxResultsWithWindow
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest,
-                       MAYBE_GetRecentlyClosedMaxResultsWithWindow) {
+                       GetRecentlyClosedMaxResultsWithWindow) {
   // Start with an empty tab restore service.
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(GetProfile());
@@ -799,9 +782,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest,
   ASSERT_TRUE(NavigateToURL(contents0, GURL("chrome://version/")));
 
   // Close the second window and wait for it to close.
-  BrowserClosedWaiter close_waiter(browser2);
-  browser2->GetWindow()->Close();
-  close_waiter.Wait();
+  CloseWindowAndWait(browser2);
 
   {
     // Querying for all recently closed entries should return 2 results, a
