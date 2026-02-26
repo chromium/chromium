@@ -4194,9 +4194,11 @@ if (!is_android) {
       "//chrome/browser/apps/link_capturing:app_service_browser_tests",
       "//chrome/browser/autocomplete",
       "//chrome/browser/autocomplete:aim_eligibility_service",
+      "//chrome/browser/collaboration/messaging",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:impl",
       "//chrome/browser/contextual_tasks:browser_tests",
+      "//chrome/browser/data_sharing",
       "//chrome/browser/history",
       "//chrome/browser/infobars:test_support",
       "//chrome/browser/metrics",
@@ -6611,7 +6613,6 @@ test("unit_tests") {
     "../browser/chrome_content_browser_client_unittest.cc",
     "../browser/collaboration/collaboration_service_factory_unittest.cc",
     "../browser/collaboration/comments/comments_service_factory_unittest.cc",
-    "../browser/collaboration/messaging/messaging_backend_service_factory_unittest.cc",
     "../browser/command_updater_impl_unittest.cc",
     "../browser/component_updater/chrome_component_updater_configurator_unittest.cc",
     "../browser/component_updater/crl_set_component_installer_unittest.cc",
@@ -7113,6 +7114,7 @@ test("unit_tests") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/btm:unit_tests",
     "//chrome/browser/chooser_controller:unit_tests",
+    "//chrome/browser/collaboration/messaging:unit_tests",
     "//chrome/browser/commerce",
     "//chrome/browser/complex_tasks:unit_tests",
     "//chrome/browser/content_extraction",
@@ -7647,6 +7649,8 @@ test("unit_tests") {
   # serial_chooser_context_unittest.cc gets modularized.
   deps += [
     "//chrome/browser:flags",
+    "//chrome/browser/collaboration/messaging",
+    "//chrome/browser/data_sharing",
     "//chrome/browser/history",
     "//chrome/browser/serial",
     "//chrome/browser/ui/toolbar:test_support",
@@ -11895,6 +11899,7 @@ if (!is_android && !is_chromeos_device) {
     deps += [
       "//chrome/browser:flags",
       "//chrome/browser/custom_handlers",
+      "//chrome/browser/data_sharing",
       "//chrome/browser/history",
       "//chrome/browser/privacy_sandbox:test_support",
       "//chrome/browser/ui/location_bar",
@@ -12160,6 +12165,7 @@ if (!is_android && !is_chromeos_device) {
       deps += [
         "//chrome/app/vector_icons",
         "//chrome/browser/banners:test_support",
+        "//chrome/browser/collaboration/messaging",
         "//chrome/browser/commerce",
         "//chrome/browser/content_settings",
         "//chrome/browser/image_fetcher",

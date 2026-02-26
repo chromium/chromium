@@ -514,6 +514,7 @@ if (!is_android) {
       "//chrome/browser/actor",
       "//chrome/browser/actor/ui",
       "//chrome/browser/bookmarks",
+      "//chrome/browser/collaboration/messaging",
       "//chrome/browser/commerce",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/contextual_cueing",

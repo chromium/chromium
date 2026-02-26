@@ -458,3 +458,8 @@ if (is_android) {
     ]
   }
 }
+
+source_set("data_sharing") {
+  sources = [ "data_sharing_service_factory.h" ]
+  public_deps = [ "//chrome/browser/profiles:profile" ]
+}

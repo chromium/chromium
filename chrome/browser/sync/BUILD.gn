@@ -90,6 +90,7 @@ source_set("sync") {
     "//chrome/browser/accessibility_annotator",
     "//chrome/browser/bookmarks",
     "//chrome/browser/consent_auditor",
+    "//chrome/browser/data_sharing",
 
     # TODO(crbug.com/483063966) Investigate why putting contextual_tasks
     # dependency behind !is_android leads to failures on android-binary-size.

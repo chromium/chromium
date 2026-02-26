@@ -22,6 +22,7 @@ source_set("factories_impl") {
   deps = [
     ":factories",
     "//base",
+    "//chrome/browser/data_sharing",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",
