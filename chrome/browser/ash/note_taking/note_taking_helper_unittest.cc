@@ -272,7 +272,15 @@ class NoteTakingHelperTest : public BrowserWithTestWindowTest {
     // TODO(derat): Sigh, something in ArcAppTest appears to be re-enabling ARC.
     profile()->GetPrefs()->SetBoolean(arc::prefs::kArcEnabled,
                                       flags & ENABLE_PLAY_STORE);
+
     NoteTakingHelper::Initialize();
+
+    // NOTE: In production, NoteTakingHelper is created before a profile.
+    // These simulate observer calls of ProfileManagerObserver and
+    // ArcIntentHelperObserver.
+    NoteTakingHelper::Get()->OnProfileAdded(profile());
+    NoteTakingHelper::Get()->OnIntentFiltersUpdated(std::nullopt);
+
     NoteTakingHelper::Get()->set_launch_chrome_app_callback_for_test(
         base::BindRepeating(&NoteTakingHelperTest::LaunchChromeApp,
                             base::Unretained(this)));

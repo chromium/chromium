@@ -433,49 +433,10 @@ NoteTakingHelper::NoteTakingHelper()
   // Track profiles so we can observe their app registries.
   profile_manager_observation_.Observe(g_browser_process->profile_manager());
   play_store_enabled_ = false;
-  for (Profile* profile :
-       g_browser_process->profile_manager()->GetLoadedProfiles()) {
-    if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-            profile)) {
-      auto& cache = apps::AppServiceProxyFactory::GetForProfile(profile)
-                        ->AppRegistryCache();
-      if (app_registry_observations_.IsObservingSource(&cache)) {
-        base::debug::DumpWithoutCrashing();
-      } else {
-        app_registry_observations_.AddObservation(&cache);
-      }
-    }
-
-    // Check if the profile has already enabled Google Play Store.
-    // IsArcPlayStoreEnabledForProfile() can return true only for the primary
-    // profile.
-    play_store_enabled_ |= arc::IsArcPlayStoreEnabledForProfile(profile);
-
-    // ArcIntentHelperBridge will notify us about changes to the list of
-    // available Android apps.
-    auto* bridge = arc::ArcIntentHelperBridge::GetForBrowserContext(profile);
-    if (bridge) {
-      if (arc_intent_helper_observations_.IsObservingSource(bridge)) {
-        base::debug::DumpWithoutCrashing();
-      } else {
-        arc_intent_helper_observations_.AddObservation(bridge);
-      }
-    }
-  }
 
   // Watch for changes of Google Play Store enabled state.
   auto* session_manager = arc::ArcSessionManager::Get();
   session_manager->AddObserver(this);
-
-  // If the ARC intent helper is ready, get the Android apps. Otherwise,
-  // UpdateAndroidApps() will be called when ArcServiceManager calls
-  // OnIntentFiltersUpdated().
-  if (play_store_enabled_ && arc::ArcServiceManager::Get()
-                                 ->arc_bridge_service()
-                                 ->intent_helper()
-                                 ->IsConnected()) {
-    UpdateAndroidApps();
-  }
 }
 
 NoteTakingHelper::~NoteTakingHelper() {
