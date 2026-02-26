@@ -8509,6 +8509,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.WebMediaPlayerCompositor.10xHarmonicFrameRate"
+    units="Hz" expires_after="2026-10-15">
+  <owner>handellm@google.com</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    10x the harmonic frame rate of the video frames that were presented by the
+    compositor. This is computed as one over the weighted average of frame
+    durations where the weights are the durations themselves. This is a measure
+    of the effective frame rate of the video, penalizing hitches heavily. This
+    metric is only recorded for non-screencast video. Higher is better. The
+    metric is reported every 10 seconds provided frames have been presented.
+  </summary>
+</histogram>
+
 <histogram name="Media.WebMediaPlayerCompositor.ReasonToClearRenderBuffer"
     enum="ReasonToClearRenderBuffer" expires_after="2026-10-15">
   <owner>kron@chromium.org</owner>
@@ -8519,6 +8533,27 @@ chromium-metrics-reviews@google.com.
     render buffer is cleared. If multiple conditions apply, only the first
     matching enum is reported.
   </summary>
+</histogram>
+
+<histogram
+    name="Media.WebMediaPlayerCompositor.ReproductionJitter.{ContentType}.{Origin}"
+    units="ms" expires_after="2026-10-15">
+  <owner>handellm@google.com</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    A RMSE-like measure of the difference between the presented and captured
+    frame durations. This metric can handle both isochronous as well as variable
+    frame rate video. Lower is better. The metric is reported every 10 seconds
+    provided relevant frames have been presented.
+  </summary>
+  <token key="ContentType">
+    <variant name="Screencast"/>
+    <variant name="Unspecified"/>
+  </token>
+  <token key="Origin">
+    <variant name="Capture"/>
+    <variant name="Remote"/>
+  </token>
 </histogram>
 
 <histogram name="Media.WebrtcVideoPerfHistory.GetPerfInfoCodecProfile"

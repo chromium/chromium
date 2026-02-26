@@ -387,11 +387,12 @@ void VideoFrameSubmitter::OnBeginFrame(
     bool presentation_failure =
         feedback.flags & gfx::PresentationFeedback::kFailure;
 #endif
-    cc::FrameInfo::FrameFinalState final_state =
-        cc::FrameInfo::FrameFinalState::kNoUpdateDesired;
-    if (ignorable_submitted_frames_.contains(frame_token)) {
-      ignorable_submitted_frames_.erase(frame_token);
-    } else {
+
+    auto pending_frame = pending_frames_.find(frame_token);
+    const bool has_frame_token = pending_frame != pending_frames_.end();
+
+    auto final_state = cc::FrameInfo::FrameFinalState::kNoUpdateDesired;
+    if (!has_frame_token || !pending_frame->second.is_manual_source) {
       if (presentation_failure) {
         final_state = cc::FrameInfo::FrameFinalState::kDropped;
       } else {
@@ -435,16 +436,31 @@ void VideoFrameSubmitter::OnBeginFrame(
                   (1 - emea_smoothing_factor_for_average_delta);
         }
       }
-      if (pending_frames_.contains(frame_token)) {
-        frame_sorter_.AddFrameResult(pending_frames_[frame_token],
+      if (has_frame_token && pending_frame->second.was_decoded_with_end_time) {
+        frame_sorter_.AddFrameResult(pending_frame->second.begin_frame_args,
                                      CreateFrameInfo(final_state));
-        pending_frames_.erase(frame_token);
       }
     }
 
     TRACE_EVENT_END("media",
                     perfetto::NamedTrack("VideoFrameSubmitter", frame_token),
                     feedback.timestamp);
+    if (has_frame_token) {
+      if (pending_frame->second.capture_begin_time.has_value()) {
+        TRACE_EVENT_END(
+            "media",
+            perfetto::NamedTrack("VideoFrameSubmitter (capture)", frame_token),
+            feedback.timestamp);
+      }
+
+      if (!presentation_failure && video_frame_provider_) {
+        video_frame_provider_->OnFramePresented(
+            feedback.timestamp, pending_frame->second.capture_begin_time,
+            pending_frame->second.rtp_timestamp);
+      }
+
+      pending_frames_.erase(pending_frame);
+    }
   }
 
   base::TimeTicks deadline_min = args.frame_time + args.interval;
@@ -878,30 +894,37 @@ viz::CompositorFrame VideoFrameSubmitter::CreateCompositorFrame(
         .has_only_content_frame_interval_updates = true;
   }
 
-  if (video_frame && video_frame->metadata().decode_end_time.has_value()) {
-    base::TimeTicks value = *video_frame->metadata().decode_end_time;
-    TRACE_EVENT_BEGIN("media", "VideoFrameSubmitter",
-                      perfetto::NamedTrack("VideoFrameSubmitter", frame_token),
-                      value);
-    TRACE_EVENT_BEGIN("media", "Pre-submit buffering",
-                      perfetto::NamedTrack("VideoFrameSubmitter", frame_token),
-                      value);
-    TRACE_EVENT_END("media", /*Pre-submit buffering*/
-                    perfetto::NamedTrack("VideoFrameSubmitter", frame_token));
-
-    if (begin_frame_ack.frame_id.source_id ==
-        viz::BeginFrameArgs::kManualSourceId) {
-      ignorable_submitted_frames_.insert(frame_token);
-    } else {
-      pending_frames_[frame_token] = last_begin_frame_args_;
+  if (video_frame) {
+    pending_frames_.emplace(
+        frame_token,
+        PendingFrameInfo{
+            .capture_begin_time = video_frame->metadata().capture_begin_time,
+            .rtp_timestamp = video_frame->metadata().rtp_timestamp,
+            .begin_frame_args = last_begin_frame_args_,
+            .was_decoded_with_end_time =
+                video_frame->metadata().decode_end_time.has_value(),
+            .is_manual_source = begin_frame_ack.frame_id.source_id ==
+                                viz::BeginFrameArgs::kManualSourceId});
+    if (video_frame->metadata().capture_begin_time.has_value()) {
+      TRACE_EVENT_BEGIN(
+          "media", "VideoFrameSubmitter (capture)",
+          perfetto::NamedTrack("VideoFrameSubmitter (capture)", frame_token),
+          video_frame->metadata().capture_begin_time.value());
     }
+    if (video_frame->metadata().decode_end_time.has_value()) {
+      base::TimeTicks value = *video_frame->metadata().decode_end_time;
+      TRACE_EVENT_BEGIN(
+          "media", "VideoFrameSubmitter",
+          perfetto::NamedTrack("VideoFrameSubmitter", frame_token), value);
+      TRACE_EVENT_BEGIN(
+          "media", "Pre-submit buffering",
+          perfetto::NamedTrack("VideoFrameSubmitter", frame_token), value);
+      TRACE_EVENT_END("media", /*Pre-submit buffering*/
+                      perfetto::NamedTrack("VideoFrameSubmitter", frame_token));
 
-    RecordUmaPreSubmitBufferingDelay(is_media_stream_,
-                                     base::TimeTicks::Now() - value);
-  } else {
-    TRACE_EVENT_BEGIN("media", "VideoFrameSubmitter",
-                      perfetto::NamedTrack("VideoFrameSubmitter", frame_token),
-                      "empty video frame?", !video_frame);
+      RecordUmaPreSubmitBufferingDelay(is_media_stream_,
+                                       base::TimeTicks::Now() - value);
+    }
   }
 
   // We don't assume that the ack is marked as having damage.  However, we're

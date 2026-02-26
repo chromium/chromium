@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "cc/layers/surface_layer.h"
 #include "cc/layers/video_frame_provider.h"
 #include "media/base/media_util.h"
@@ -67,6 +68,8 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
     media::VideoTransformation video_transform = media::kNoTransformation;
   };
 
+  static constexpr base::TimeDelta kMetricsTimerInterval = base::Seconds(10);
+
   WebMediaPlayerMSCompositor(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       scoped_refptr<base::SequencedTaskRunner> video_task_runner,
@@ -112,6 +115,9 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   scoped_refptr<media::VideoFrame> GetCurrentFrame() override;
   void PutCurrentFrame() override;
   base::TimeDelta GetPreferredRenderInterval() override;
+  void OnFramePresented(base::TimeTicks display_time,
+                        std::optional<base::TimeTicks> capture_begin_time,
+                        std::optional<uint32_t> rtp_timestamp) override;
   void OnContextLost() override;
 
   void StartRendering();
@@ -144,6 +150,22 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
  private:
   friend class WebMediaPlayerMSTest;
 
+  // Struct used to keep track of the last known display times for all frames,
+  // frames with capture_begin_time set, and frames with rtp_timestamp set. Used
+  // for harmonic fps and jitter reproduction metric computations.
+  struct FrameTimestamps {
+    // The considered display time. Used for harmonic fps computation.
+    base::TimeTicks display_time;
+    // The display time for a frame that had capture_begin_time available.
+    base::TimeTicks capture_begin_time_display_time;
+    // The capture_begin_time associated with `capture_begin_time_display_time`.
+    std::optional<base::TimeTicks> capture_begin_time;
+    // The display time for a frame which had rtp_timestamp available.
+    base::TimeTicks rtp_timestamp_display_time;
+    // The rtp_timestamp associated with `rtp_timestamp_display_time`.
+    std::optional<uint32_t> rtp_timestamp;
+  };
+
   // Struct used to keep information about frames pending in
   // |rendering_frame_buffer_|.
   struct PendingFrameInfo {
@@ -151,6 +173,43 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
     base::TimeDelta timestamp;
     base::TimeTicks reference_time;
     bool is_copy;
+  };
+
+  // Helper class to estimate the harmonic framerate of a video stream. See
+  // definition at https://github.com/w3c/media-playback-quality/issues/25.
+  class HarmonicFramerateEstimator {
+   public:
+    // Adds a sample to the estimator.
+    void AddSample(base::TimeDelta frame_duration);
+    // Returns the harmonic framerate in Hz, or nullopt if no samples have been
+    // added since the last call.
+    std::optional<double> TakeHarmonicFramerate();
+
+   private:
+    // The sum of frame durations. Unit: seconds
+    double duration_sum_ = 0;
+    // The sum of squared frame durations. Unit: seconds^2
+    double duration_squared_sum_ = 0;
+  };
+
+  // Helper class to estimate the reproduction jitter working like a RMSE
+  // measure of the display duration errors of a video stream. See definition at
+  // https://github.com/w3c/media-playback-quality/issues/26.
+  class ReproductionJitterEstimator {
+   public:
+    // Adds a sample to the estimator.
+    void AddSample(base::TimeDelta display_duration,
+                   base::TimeDelta capture_duration);
+    // Returns the RMSE jitter in seconds, or nullopt if no samples have been
+    // added since the last call.
+    std::optional<double> TakeReproductionJitter();
+
+   private:
+    // The sum of squared errors. Unit: seconds^2
+    double sum_of_squared_errors_ = 0;
+    // The number of samples added since creation or the last
+    // TakeReproductionJitter() call.
+    size_t sample_count_ = 0;
   };
 
   // Ran on the |video_frame_compositor_task_runner_| to initialize
@@ -208,6 +267,9 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
 
   void SetMetadata();
 
+  void OnHasSeenScreencastContentType();
+  void MaybeEmitHarmonicFramerateAndReproductionJitter();
+
   // Used for DCHECKs to ensure method calls executed in the correct thread,
   // which is renderer main thread in this class.
   THREAD_CHECKER(thread_checker_);
@@ -264,6 +326,22 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   size_t total_frame_count_;
   size_t dropped_frame_count_;
 
+  // Used to compute harmonic FPS for UMA metrics.
+  HarmonicFramerateEstimator harmonic_framerate_estimator_;
+  // Used to compute reproduction jitter for capture UMA metrics.
+  ReproductionJitterEstimator capture_reproduction_jitter_estimator_;
+  // Used to compute reproduction jitter for remote UMA metrics.
+  ReproductionJitterEstimator remote_reproduction_jitter_estimator_;
+
+  // Used to compute presentation errors.
+  std::optional<FrameTimestamps> last_displayed_frame_timestamps_;
+  // True if the video track is a screenshare track. We don't compute harmonic
+  // FPS for these as they can contain variable-fps content and thus harmonic
+  // FPS is uninterpretable.
+  bool is_screencast_;
+  // Used for emitting data points for harmonic FPS and reproduction jitter.
+  base::RepeatingTimer metrics_timer_;
+
   bool current_frame_is_copy_ = false;
 
   // Used to complete video.requestAnimationFrame() calls. Reported up via
@@ -290,6 +368,7 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   std::optional<base::TimeTicks> current_frame_receive_time_;
   std::optional<uint32_t> last_presented_frame_rtp_timestamp_;
   std::optional<uint32_t> current_frame_rtp_timestamp_;
+  std::optional<base::TimeTicks> last_presented_frame_capture_time_;
   int frame_enqueued_since_last_vsync_ GUARDED_BY(current_frame_lock_) = 0;
 
   // Called when a new frame is enqueued, either in RenderWithoutAlgorithm() or

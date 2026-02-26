@@ -92,6 +92,13 @@ class PLATFORM_EXPORT VideoFrameSubmitter
  private:
   friend class VideoFrameSubmitterTest;
   class FrameSinkBundleProxy;
+  struct PendingFrameInfo {
+    std::optional<base::TimeTicks> capture_begin_time;
+    std::optional<uint32_t> rtp_timestamp;
+    viz::BeginFrameArgs begin_frame_args;
+    bool was_decoded_with_end_time = false;
+    bool is_manual_source = false;
+  };
 
   // Called during Initialize() and OnContextLost() after a new ContextGL is
   // requested.
@@ -235,18 +242,16 @@ class PLATFORM_EXPORT VideoFrameSubmitter
   // Instead they are a specialized variant of compositor-only frames, submitted
   // via a batch. So track the mapping of FrameToken to viz::BeginFrameArgs in
   // `pending_frames_`, and denote their completion directly to `frame_sorter_`.
-  base::flat_map<uint32_t, viz::BeginFrameArgs> pending_frames_;
+  //
+  // Contains metadata of all submitted video frames, including those that
+  // `pending_frames_` does not store (manual source video frames)
+  base::flat_map<uint32_t, PendingFrameInfo> pending_frames_;
   cc::FrameSequenceTrackerCollection frame_trackers_;
   cc::FrameSorter frame_sorter_;
 
   // The BeginFrameArgs passed to the most recent call of OnBeginFrame().
   // Required for FrameSequenceTrackerCollection::NotifySubmitFrame
   viz::BeginFrameArgs last_begin_frame_args_;
-
-  // The token of the frames that are submitted outside OnBeginFrame(). These
-  // frames should be ignored by the video tracker even if they are reported as
-  // presented.
-  base::flat_set<uint32_t> ignorable_submitted_frames_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

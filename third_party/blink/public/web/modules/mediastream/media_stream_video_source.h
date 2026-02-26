@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -230,6 +231,11 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // should be raised. This is intended to be used for frames coming from
   // content or camera capture.
   virtual bool AllowsVideoThreadTypeOverride() const { return false; }
+
+  // Set a callback to be called when the source has seen screencast content
+  // type. The callback may be called on any thread and destroyed on any thread.
+  virtual void SetHasSeenScreencastContentTypeCallback(
+      base::OnceClosure callback) {}
 
   // Notifies the source about that the number of encoded sinks have been
   // updated. Note: Can only be called if the number of encoded sinks have

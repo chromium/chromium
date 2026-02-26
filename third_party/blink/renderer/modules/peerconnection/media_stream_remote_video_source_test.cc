@@ -13,7 +13,9 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "media/base/video_frame.h"
@@ -583,6 +585,31 @@ TEST_F(MediaStreamRemoteVideoSourceTest, NoTimestampUsMeansNoReferenceTime) {
 
   EXPECT_FALSE(output_frame->metadata().reference_time.has_value());
 
+  track->RemoveSink(&sink);
+}
+
+TEST_F(MediaStreamRemoteVideoSourceTest, CallsContentTypeScreenshareCallback) {
+  std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
+  blink::MockMediaStreamVideoSink sink;
+  track->AddSink(&sink, sink.GetDeliverFrameCB(),
+                 MediaStreamVideoSink::IsSecure::kNo,
+                 MediaStreamVideoSink::UsesAlpha::kDefault);
+
+  base::RunLoop run_loop;
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::VideoFrame input_frame =
+      webrtc::VideoFrame::Builder().set_video_frame_buffer(buffer).build();
+  input_frame.set_content_type(webrtc::VideoContentType::SCREENSHARE);
+  base::MockOnceClosure mock_closure;
+  EXPECT_CALL(mock_closure, Run)
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  source()->SetHasSeenScreencastContentTypeCallback(mock_closure.Get());
+  source()->video_task_runner()->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        source()->SinkInterfaceForTesting()->OnFrame(input_frame);
+      }));
+  run_loop.Run();
   track->RemoveSink(&sink);
 }
 

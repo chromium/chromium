@@ -7,6 +7,8 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cmath>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -20,6 +22,7 @@
 #include "base/task/common/task_annotator.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
@@ -33,11 +36,12 @@
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/public/web/modules/mediastream/web_media_player_ms.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/libyuv/include/libyuv/video_common.h"
@@ -182,6 +186,29 @@ std::string UmaPrefix() {
 constexpr base::TimeDelta kMaximumVsyncDelayForLowLatencyRenderer =
     base::Milliseconds(50);
 
+const MediaStreamComponent* GetVideoComponent(
+    MediaStreamDescriptor* media_stream_descriptor) {
+  if (!media_stream_descriptor) {
+    return nullptr;
+  }
+  const auto& video_components = media_stream_descriptor->VideoComponents();
+  if (video_components.empty()) {
+    return nullptr;
+  }
+  return video_components[0].Get();
+}
+
+MediaStreamVideoTrack* GetVideoTrack(
+    MediaStreamDescriptor* media_stream_descriptor) {
+  return MediaStreamVideoTrack::From(
+      GetVideoComponent(media_stream_descriptor));
+}
+
+bool IsScreencastCapture(MediaStreamDescriptor* media_stream_descriptor) {
+  const auto* track = GetVideoTrack(media_stream_descriptor);
+  return track && track->is_screencast();
+}
+
 }  // anonymous namespace
 
 WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
@@ -201,6 +228,7 @@ WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
       last_render_length_(base::Seconds(1.0 / 60.0)),
       total_frame_count_(0),
       dropped_frame_count_(0),
+      is_screencast_(IsScreencastCapture(media_stream_descriptor)),
       stopped_(true),
       render_started_(!stopped_) {
   weak_this_ = weak_ptr_factory_.GetWeakPtr();
@@ -217,14 +245,10 @@ WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
             &WebMediaPlayerMSCompositor::SetIsSurfaceVisible, weak_this_)));
   }
 
-  HeapVector<Member<MediaStreamComponent>> video_components;
-  if (media_stream_descriptor)
-    video_components = media_stream_descriptor->VideoComponents();
+  auto* video_component = GetVideoComponent(media_stream_descriptor);
+  const bool is_remote_video = video_component && video_component->Remote();
 
-  const bool remote_video =
-      video_components.size() && video_components[0]->Remote();
-
-  if (remote_video && Platform::Current()->RTCSmoothnessAlgorithmEnabled()) {
+  if (is_remote_video && Platform::Current()->RTCSmoothnessAlgorithmEnabled()) {
     base::AutoLock auto_lock(current_frame_lock_);
     rendering_frame_buffer_ = std::make_unique<VideoRendererAlgorithmWrapper>(
         ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
@@ -238,7 +262,19 @@ WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
                               ? media_stream_descriptor->Id().Utf8()
                               : std::string();
   const uint32_t hash_value = base::Hash(stream_id);
-  serial_ = (hash_value << 1) | (remote_video ? 1 : 0);
+  serial_ = (hash_value << 1) | (is_remote_video ? 1 : 0);
+
+  // Setup screen cast detection callback in the video source. This only ever
+  // fires for MediaStreamRemoteVideoSource.
+  if (auto* track = GetVideoTrack(media_stream_descriptor)) {
+    if (auto* source = track->source()) {
+      source->SetHasSeenScreencastContentTypeCallback(base::BindPostTask(
+          video_frame_compositor_task_runner_,
+          ConvertToBaseOnceCallback(CrossThreadBindOnce(
+              &WebMediaPlayerMSCompositor::OnHasSeenScreencastContentType,
+              weak_this_))));
+    }
+  }
 }
 
 WebMediaPlayerMSCompositor::~WebMediaPlayerMSCompositor() {
@@ -246,6 +282,7 @@ WebMediaPlayerMSCompositor::~WebMediaPlayerMSCompositor() {
   if (video_frame_provider_client_) {
     video_frame_provider_client_->StopUsingProvider();
   }
+  MaybeEmitHarmonicFramerateAndReproductionJitter();
 }
 
 void WebMediaPlayerMSCompositor::InitializeSubmitter() {
@@ -511,6 +548,7 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
 bool WebMediaPlayerMSCompositor::UpdateCurrentFrame(
     base::TimeTicks deadline_min,
     base::TimeTicks deadline_max) {
+  TRACE_EVENT("media", "UpdateCurrentFrame");
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
 
   TRACE_EVENT_BEGIN2("media", "UpdateCurrentFrame", "Actual Render Begin",
@@ -599,6 +637,7 @@ void WebMediaPlayerMSCompositor::RecordFrameDisplayedStats(
 
 void WebMediaPlayerMSCompositor::PutCurrentFrame() {
   DVLOG(3) << __func__;
+  TRACE_EVENT("media", "PutCurrentFrame");
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   current_frame_rendered_ = true;
   RecordFrameDisplayedStats(base::TimeTicks::Now());
@@ -767,10 +806,163 @@ void WebMediaPlayerMSCompositor::RenderWithoutAlgorithmOnCompositor(
     video_frame_provider_client_->DidReceiveFrame();
 }
 
+void WebMediaPlayerMSCompositor::OnFramePresented(
+    base::TimeTicks display_time,
+    std::optional<base::TimeTicks> capture_begin_time,
+    std::optional<uint32_t> rtp_timestamp) {
+  DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
+  TRACE_EVENT("media", "OnFramePresented");
+
+  // The computations of sums below are defined on
+  // https://github.com/w3c/media-playback-quality/issues/25
+  // https://github.com/w3c/media-playback-quality/issues/26
+  //
+  // In addition, we want to avoid overindexing on large periods of inactivity,
+  // so we forget the last presented timestamps if newer frames come in with
+  // a large enough gap. The gap is designed to be larger than the largest
+  // expected remote frame duration.
+  //
+  // One thing to note is that even for normal isochronous video, occlusion can
+  // cause frame presentation callbacks to be omitted.
+
+  // 90 kHz is the standard RTP clock frequency for all current codecs in
+  // WebRTC.
+  constexpr size_t kRtpFrequencyKilohertz = 90;
+
+  // With zero-hertz screenshare, the maximum nominal gap between frames is 1
+  // second. We use 2 seconds to be safe.
+  constexpr base::TimeDelta kMaxGapToForget = base::Seconds(2);
+
+  if (last_displayed_frame_timestamps_.has_value()) {
+    base::TimeDelta displayed_diff =
+        display_time - last_displayed_frame_timestamps_->display_time;
+    if (displayed_diff >= kMaxGapToForget) {
+      last_displayed_frame_timestamps_ = std::nullopt;
+    } else {
+      DCHECK_GE(displayed_diff.InMilliseconds(), 0);
+      harmonic_framerate_estimator_.AddSample(displayed_diff);
+
+      if (capture_begin_time.has_value() &&
+          last_displayed_frame_timestamps_->capture_begin_time.has_value()) {
+        // Since the capture times are optional, we need to store the display
+        // time of the old frame containing the capture time. In theory, capture
+        // times could be coming and going in a stream of frames.
+        capture_reproduction_jitter_estimator_.AddSample(
+            display_time - last_displayed_frame_timestamps_
+                               ->capture_begin_time_display_time,
+            *capture_begin_time -
+                *last_displayed_frame_timestamps_->capture_begin_time);
+      }
+
+      if (rtp_timestamp.has_value() &&
+          last_displayed_frame_timestamps_->rtp_timestamp.has_value()) {
+        // Since the RTP timestamps are optional, we need to store the display
+        // time of the old frame containing the RTP timestamp. In theory, RTP
+        // timestamps could be coming and going in a stream of frames.
+        displayed_diff =
+            display_time -
+            last_displayed_frame_timestamps_->rtp_timestamp_display_time;
+        size_t rtp_diff =
+            *rtp_timestamp -
+            last_displayed_frame_timestamps_->rtp_timestamp.value();
+        base::TimeDelta rtp_capture_diff =
+            base::Microseconds(1000.0 * rtp_diff / kRtpFrequencyKilohertz);
+        remote_reproduction_jitter_estimator_.AddSample(displayed_diff,
+                                                        rtp_capture_diff);
+      }
+    }
+  }
+  if (!last_displayed_frame_timestamps_.has_value()) {
+    last_displayed_frame_timestamps_.emplace();
+  }
+  last_displayed_frame_timestamps_->display_time = display_time;
+  if (capture_begin_time.has_value()) {
+    last_displayed_frame_timestamps_->capture_begin_time = capture_begin_time;
+    last_displayed_frame_timestamps_->capture_begin_time_display_time =
+        display_time;
+  }
+  if (rtp_timestamp.has_value()) {
+    last_displayed_frame_timestamps_->rtp_timestamp = rtp_timestamp;
+    last_displayed_frame_timestamps_->rtp_timestamp_display_time = display_time;
+  }
+
+  if (!metrics_timer_.IsRunning()) {
+    metrics_timer_.Start(
+        FROM_HERE, kMetricsTimerInterval,
+        ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+            &WebMediaPlayerMSCompositor::
+                MaybeEmitHarmonicFramerateAndReproductionJitter,
+            weak_this_)));
+  }
+}
+
+void WebMediaPlayerMSCompositor::
+    MaybeEmitHarmonicFramerateAndReproductionJitter() {
+  DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
+  // Emit harmonic frame rate histogram. We omit this for screenshare since this
+  // is often variable frame rate which makes the harmonic frame rate metric
+  // meaningless.
+  std::optional<double> harmonic_fps =
+      harmonic_framerate_estimator_.TakeHarmonicFramerate();
+  if (harmonic_fps.has_value() && !is_screencast_) {
+    double harmonic_frame_rate_x10 = round(10 * harmonic_fps.value());
+    base::UmaHistogramCounts1000(
+        "Media.WebMediaPlayerCompositor.10xHarmonicFrameRate",
+        harmonic_frame_rate_x10);
+    TRACE_EVENT_INSTANT("media", "HarmonicFrameRate", "harmonic_frame_rate",
+                        harmonic_frame_rate_x10 / 10);
+  }
+
+  // Emit reproduction jitter histograms, categorized by content type
+  // (screencast vs. video) and timestamp source (RTP-based 'Remote' vs.
+  // capture-time-based 'Capture'). RTP-based jitter is preferred for remote
+  // frames as it avoids inaccuracies from estimating the remote capture time
+  // inside WebRTC.
+  std::optional<double> remote_reproduction_jitter =
+      remote_reproduction_jitter_estimator_.TakeReproductionJitter();
+  std::optional<double> capture_reproduction_jitter =
+      capture_reproduction_jitter_estimator_.TakeReproductionJitter();
+  if (remote_reproduction_jitter.has_value()) {
+    double remote_reproduction_jitter_ms =
+        round(1000 * remote_reproduction_jitter.value());
+    TRACE_EVENT_INSTANT(
+        "media", "ReproductionJitter", "remote_reproduction_jitter_ms",
+        remote_reproduction_jitter_ms, "is_screencast", is_screencast_);
+    if (is_screencast_) {
+      base::UmaHistogramCounts1000(
+          "Media.WebMediaPlayerCompositor.ReproductionJitter.Screencast.Remote",
+          remote_reproduction_jitter_ms);
+    } else {
+      base::UmaHistogramCounts1000(
+          "Media.WebMediaPlayerCompositor.ReproductionJitter.Unspecified."
+          "Remote",
+          remote_reproduction_jitter_ms);
+    }
+  } else if (capture_reproduction_jitter.has_value()) {
+    double capture_reproduction_jitter_ms =
+        round(1000 * capture_reproduction_jitter.value());
+    TRACE_EVENT_INSTANT(
+        "media", "ReproductionJitter", "capture_reproduction_jitter_ms",
+        capture_reproduction_jitter_ms, "is_screencast", is_screencast_);
+    if (is_screencast_) {
+      base::UmaHistogramCounts1000(
+          "Media.WebMediaPlayerCompositor.ReproductionJitter.Screencast."
+          "Capture",
+          capture_reproduction_jitter_ms);
+    } else {
+      base::UmaHistogramCounts1000(
+          "Media.WebMediaPlayerCompositor.ReproductionJitter.Unspecified."
+          "Capture",
+          capture_reproduction_jitter_ms);
+    }
+  }
+}
+
 void WebMediaPlayerMSCompositor::SetCurrentFrame(
     scoped_refptr<media::VideoFrame> frame,
     bool is_copy,
     std::optional<base::TimeTicks> expected_display_time) {
+  TRACE_EVENT("media", "SetCurrentFrame");
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   current_frame_lock_.AssertAcquired();
   TRACE_EVENT_INSTANT1("media", "WebMediaPlayerMSCompositor::SetCurrentFrame",
@@ -788,7 +980,6 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
       ++dropped_frame_count_;
     }
   }
-
   current_frame_rendered_ = false;
 
   // Compare current frame with |frame|. Initialize values as if there is no
@@ -1006,6 +1197,48 @@ WebMediaPlayerMSCompositor::GetLastPresentedFrameMetadata() {
   frame_metadata->metadata.MergeMetadataFrom(last_frame->metadata());
 
   return frame_metadata;
+}
+
+void WebMediaPlayerMSCompositor::OnHasSeenScreencastContentType() {
+  DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
+  is_screencast_ = true;
+}
+
+void WebMediaPlayerMSCompositor::HarmonicFramerateEstimator::AddSample(
+    base::TimeDelta frame_duration) {
+  double frame_duration_seconds = frame_duration.InSecondsF();
+  duration_sum_ += frame_duration_seconds;
+  duration_squared_sum_ += frame_duration_seconds * frame_duration_seconds;
+}
+
+std::optional<double> WebMediaPlayerMSCompositor::HarmonicFramerateEstimator::
+    TakeHarmonicFramerate() {
+  if (duration_squared_sum_ == 0) {
+    return std::nullopt;
+  }
+  double harmonic_framerate = duration_sum_ / duration_squared_sum_;
+  duration_sum_ = 0;
+  duration_squared_sum_ = 0;
+  return harmonic_framerate;
+}
+
+void WebMediaPlayerMSCompositor::ReproductionJitterEstimator::AddSample(
+    base::TimeDelta display_duration,
+    base::TimeDelta capture_duration) {
+  sample_count_ += 1;
+  double error = display_duration.InSecondsF() - capture_duration.InSecondsF();
+  sum_of_squared_errors_ += error * error;
+}
+
+std::optional<double> WebMediaPlayerMSCompositor::ReproductionJitterEstimator::
+    TakeReproductionJitter() {
+  if (sample_count_ == 0) {
+    return std::nullopt;
+  }
+  double jitter = std::sqrt(sum_of_squared_errors_ / sample_count_);
+  sum_of_squared_errors_ = 0;
+  sample_count_ = 0;
+  return jitter;
 }
 
 }  // namespace blink

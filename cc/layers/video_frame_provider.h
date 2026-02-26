@@ -93,6 +93,12 @@ class CC_EXPORT VideoFrameProvider {
   // frame missed its intended deadline.
   virtual void PutCurrentFrame() = 0;
 
+  // Called when feedback of a presented frame becomes known.
+  virtual void OnFramePresented(
+      base::TimeTicks display_time,
+      std::optional<base::TimeTicks> capture_begin_time,
+      std::optional<uint32_t> rtp_timestamp) {}
+
   // Returns the interval at which the provider expects to have new frames for
   // the client.
   virtual base::TimeDelta GetPreferredRenderInterval() = 0;
