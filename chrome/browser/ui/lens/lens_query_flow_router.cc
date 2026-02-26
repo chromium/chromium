@@ -372,6 +372,17 @@ void LensQueryFlowRouter::HandleInteractionResponse(
   }
 }
 
+void LensQueryFlowRouter::RemoveContextualSearchContextIfNecessary(
+    bool has_region_selection) {
+  if (ShouldRouteToContextualTasks() &&
+      overlay_tab_context_file_token_.has_value() && !has_region_selection) {
+    auto* session_handle = GetContextualSearchSessionHandle();
+    if (session_handle) {
+      session_handle->DeleteFile(overlay_tab_context_file_token_.value());
+    }
+  }
+}
+
 void LensQueryFlowRouter::OnFileUploadStatusChanged(
     const base::UnguessableToken& file_token,
     lens::MimeType mime_type,

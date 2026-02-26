@@ -854,6 +854,10 @@ void LensSearchController::CloseLensPart2(
   // Let the controllers know to cleanup.
   // TODO(crbug.com/404941800): Move logging to a shared location to not be
   // dependent on the overlay controller.
+  if (query_router_) {
+    query_router_->RemoveContextualSearchContextIfNecessary(
+        lens_overlay_controller_->HasRegionSelection());
+  }
   lens_overlay_controller_->CloseUI();
   lens_searchbox_controller_->CloseUI();
   lens_composebox_controller_->CloseUI();
