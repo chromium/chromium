@@ -31,6 +31,7 @@ if (use_clang_modules) {
       forward_variables_from(invoker, "*", [ "modulemap" ])
       use_libcxx_modules = false
       sources = [ invoker.modulemap ]
+      module_name = target_name
       if (!defined(public_deps)) {
         public_deps = []
       }
