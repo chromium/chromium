@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/skills/skills_dialog_launcher.h"
+#include "chrome/browser/skills/skills_update_observer.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -36,6 +38,9 @@ GlicSkillsManagerImpl::~GlicSkillsManagerImpl() = default;
 
 void GlicSkillsManagerImpl::UpdateSkillPreviews(
     std::optional<tabs::TabInterface*> updated_tab) {
+#if BUILDFLAG(IS_ANDROID)
+  return;
+#else
   if (!host_->IsReady()) {
     return;
   }
@@ -64,9 +69,13 @@ void GlicSkillsManagerImpl::UpdateSkillPreviews(
     skill_previews.push_back(skill->preview.Clone());
   }
   host_->NotifyContextualSkillsChanged(std::move(skill_previews));
+#endif
 }
 
 tabs::TabInterface* GlicSkillsManagerImpl::EnsureTabForSkills() {
+#if BUILDFLAG(IS_ANDROID)
+  return nullptr;
+#else
   const FocusedTabData& ftd = host_->sharing_manager().GetFocusedTabData();
   tabs::TabInterface* tab = ftd.focus() ? ftd.focus() : ftd.unfocused_tab();
 
@@ -90,12 +99,16 @@ tabs::TabInterface* GlicSkillsManagerImpl::EnsureTabForSkills() {
       displayer.browser(), GURL("chrome://newtab"), -1, true);
 
   return tabs::TabInterface::MaybeGetFromContents(contents);
+#endif
 }
 
 void GlicSkillsManagerImpl::LaunchSkillsDialog(
     Profile* profile,
     skills::Skill skill,
     base::OnceCallback<void(bool)> callback) {
+#if BUILDFLAG(IS_ANDROID)
+  return;
+#else
   tabs::TabInterface* target_tab = EnsureTabForSkills();
 
   if (!target_tab) {
@@ -105,6 +118,7 @@ void GlicSkillsManagerImpl::LaunchSkillsDialog(
   // Delegate the race-condition handling to the Skills launcher.
   skills::SkillsDialogLauncher::CreateForTab(target_tab, std::move(skill),
                                              std::move(callback));
+#endif
 }
 
 void GlicSkillsManagerImpl::ShowManageSkillsUi() {

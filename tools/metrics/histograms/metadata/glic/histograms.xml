@@ -211,6 +211,7 @@ chromium-metrics-reviews@google.com.
     <variant name="PauseActorTask"/>
     <variant name="PerformActions"/>
     <variant name="PinTabs"/>
+    <variant name="RecordSkillsWebClientEvent"/>
     <variant name="RefreshSignInCookies"/>
     <variant name="RegisterConversation"/>
     <variant name="ResizeWindow"/>
@@ -2010,6 +2011,47 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records when a tab is attempted to be pinned for sharing with Glic. Records
     true if the pinning was successful; records false otherwise.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Skills.Invoke.Funnel" enum="SkillsInvokeFunnel"
+    expires_after="2027-02-01">
+  <owner>michelleabreo@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records the progression of a user opening the skills menu and subsequently
+    invoking a skill. This is used to measure how often users who open the UI
+    actually proceed to execute a skill. Used to track overall engagement and
+    drop-off rates for the core invocation flow.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Skills.SkillBuilder.Event" enum="SkillBuilderEvent"
+    expires_after="2027-02-01">
+  <owner>michelleabreo@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records the progression of user actions and system events within the
+    AI-assisted Skill Builder flow. This metric is logged whenever the user
+    interacts with the builder's UI (e.g., clicking the proactive promo chip,
+    clicking 'Save as skill') or when the backend successfully completes a
+    generation step (e.g., generation of the skill prompt). This acts as a
+    high-level funnel to measure engagement and drop-off during the AI-driven
+    skill creation process.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Skills.WebClient.Event" enum="SkillsWebClientEvent"
+    expires_after="2027-02-01">
+  <owner>michelleabreo@google.com</owner>
+  <owner>skills-eng@google.com</owner>
+  <summary>
+    Records key events within the Skills section of the Glic WebClient. This is
+    logged immediately when a user interacts with the UI (such as invoking a
+    skill, clicking 'Add Skill', or opening the menu) or when a notable system
+    state transition occurs (such as Gemini successfully generating a prompt).
+    This serves as a top-level metric to measure user engagement, feature
+    distribution, and funnel progression directly within the Glic panel.
   </summary>
 </histogram>
 

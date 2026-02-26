@@ -10,6 +10,8 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/glic/glic_metrics.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "components/skills/public/skills_metrics.h"
 #include "components/split_tabs/split_tab_id.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
@@ -294,6 +296,47 @@ TEST_F(GlicInstanceMetricsTest,
   metrics_.RecordTabPinningStatusEvent(&mock_tab_, unpin_event);
   histogram_tester_.ExpectUniqueSample("Glic.Instance.TabUnpinTrigger",
                                        GlicUnpinTrigger::kContextMenu, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, RecordSkillsWebClientEvent_RoutesOpenedMenu) {
+  metrics_.RecordSkillsWebClientEvent(mojom::SkillsWebClientEvent::kOpenedMenu);
+
+  histogram_tester_.ExpectUniqueSample("Glic.Skills.WebClient.Event",
+                                       mojom::SkillsWebClientEvent::kOpenedMenu,
+                                       1);
+  histogram_tester_.ExpectUniqueSample("Glic.Skills.Invoke.Funnel",
+                                       SkillsInvokeFunnel::kOpenedMenu, 1);
+  // Ensure it didn't accidentally log an invocation action.
+  histogram_tester_.ExpectTotalCount("Skills.Invoke.Action", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       RecordSkillsWebClientEvent_RoutesFirstPartySkill) {
+  metrics_.RecordSkillsWebClientEvent(
+      mojom::SkillsWebClientEvent::kUsedFirstPartySkill);
+
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Skills.WebClient.Event",
+      mojom::SkillsWebClientEvent::kUsedFirstPartySkill, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Skills.Invoke.Action", skills::SkillsInvokeAction::kFirstParty, 1);
+  histogram_tester_.ExpectUniqueSample("Glic.Skills.Invoke.Funnel",
+                                       SkillsInvokeFunnel::kInvokedSkill, 1);
+}
+TEST_F(GlicInstanceMetricsTest,
+       RecordSkillsWebClientEvent_RoutesSkillBuilderPromo) {
+  metrics_.RecordSkillsWebClientEvent(
+      mojom::SkillsWebClientEvent::kSkillBuilderClickedPromoChip);
+
+  histogram_tester_.ExpectUniqueSample("Glic.Skills.SkillBuilder.Event",
+                                       SkillBuilderEvent::kClickedPromoChip, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, RecordSkillsWebClientEvent_IsNoOpWhenUnknown) {
+  metrics_.RecordSkillsWebClientEvent(mojom::SkillsWebClientEvent::kUnknown);
+
+  // No metrics should be emitted.
+  EXPECT_TRUE(histogram_tester_.GetTotalCountsForPrefix("Skills.").empty());
 }
 
 }  // namespace glic

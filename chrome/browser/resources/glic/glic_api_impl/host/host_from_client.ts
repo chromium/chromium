@@ -9,9 +9,9 @@ import {assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
-import type {ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, SkillSource as MojomSkillSource, TabDataHandlerInterface, TabDataMojoType, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
+import type {ActorTaskPauseReason as ActorTaskPauseReasonMojo, ActorTaskStopReason as ActorTaskStopReasonMojo, CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, SkillSource as MojomSkillSource, SkillsWebClientEvent as MojomSkillsWebClientEvent, TabDataHandlerInterface, TabDataMojoType, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
 import {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverReceiver, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, TabDataHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
-import type {ActorTaskPauseReason, ActorTaskStopReason, CancelActionsResult, CaptureRegionErrorReason, ConversationInfo, CreateSkillRequest, DraggableArea, FormFillingResponse, GetPinCandidatesOptions, Journal, MicrophoneStatus, OnResponseStoppedDetails, OpenSettingsOptions, PinTabsOptions, Screenshot, ScrollToParams, Skill, SkillSource, TabContextOptions, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {ActorTaskPauseReason, ActorTaskStopReason, CancelActionsResult, CaptureRegionErrorReason, ConversationInfo, CreateSkillRequest, DraggableArea, FormFillingResponse, GetPinCandidatesOptions, Journal, MicrophoneStatus, OnResponseStoppedDetails, OpenSettingsOptions, PinTabsOptions, Screenshot, ScrollToParams, Skill, SkillSource, SkillsWebClientEvent, TabContextOptions, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, CreateTaskErrorReason, PerformActionsErrorReason, ResponseStopCause, ScrollToErrorReason} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
 import {ResponseExtras} from '../post_message_transport.js';
@@ -432,6 +432,13 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
         },
       },
     };
+  }
+
+  glicBrowserRecordSkillsWebClientEvent(request: {
+    event: SkillsWebClientEvent,
+  }): void {
+    this.handler.recordSkillsWebClientEvent(
+        request.event as number as MojomSkillsWebClientEvent);
   }
 
   async glicBrowserCreateActorTab(request: {

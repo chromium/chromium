@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AdditionalContext, AnnotatedPageData, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, DraggableArea, FocusedTabData, FormFactor, FormFillingResponse, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, InvokeOptions, Journal, MicrophoneStatus, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+
+import type {AdditionalContext, AnnotatedPageData, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, DraggableArea, FocusedTabData, FormFactor, FormFillingResponse, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, InvokeOptions, Journal, MicrophoneStatus, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapability} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 
@@ -1308,6 +1309,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     }
     this.webClientMessageHandler.cacheSkillPrompt(result.skill);
     return result.skill;
+  }
+
+  recordSkillsWebClientEvent?(event: SkillsWebClientEvent): void {
+    this.sender.requestNoResponse(
+        'glicBrowserRecordSkillsWebClientEvent', {event});
   }
 
   getSkillPreviews?(): ObservableValue<SkillPreview[]> {

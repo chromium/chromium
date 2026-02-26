@@ -1472,6 +1472,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 #endif  //  !BUILDFLAG(IS_ANDROID)
   }
 
+  void RecordSkillsWebClientEvent(
+      glic::mojom::SkillsWebClientEvent action) override {
+    if (auto* instance_metrics = host().instance_metrics()) {
+      instance_metrics->RecordSkillsWebClientEvent(action);
+    }
+  }
+
   void CreateActorTab(int32_t task_id,
                       bool open_in_background,
                       std::optional<int32_t> initiator_tab_id,

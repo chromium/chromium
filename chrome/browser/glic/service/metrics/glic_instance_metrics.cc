@@ -28,6 +28,7 @@
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/skills/public/skills_metrics.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -938,6 +939,72 @@ void GlicInstanceMetrics::RecordResponseLatencyByAttachedTabCount(
 
 int GlicInstanceMetrics::GetPinnedTabCount() const {
   return pinned_tab_count_;
+}
+
+void GlicInstanceMetrics::RecordSkillsWebClientEvent(
+    mojom::SkillsWebClientEvent event) {
+  using enum mojom::SkillsWebClientEvent;
+
+  // Exclude the internal system and progression steps of the Skill Builder.
+  // Note: kSkillBuilderClickedPromoChip is intentionally not excluded here
+  // because it represents a direct user engagement click in the main UI,
+  // acting as the entry point into the funnel.
+  if (event != kSkillBuilderPromptGenerated &&
+      event != kSkillBuilderClickedSaveAsSkill) {
+    base::UmaHistogramEnumeration("Glic.Skills.WebClient.Event", event);
+  }
+
+  switch (event) {
+    case kOpenedMenu:
+      base::UmaHistogramEnumeration("Glic.Skills.Invoke.Funnel",
+                                    SkillsInvokeFunnel::kOpenedMenu);
+      break;
+    // --- Skill Invocation Metrics ---
+    case kUsedFirstPartySkill:
+      skills::RecordSkillsInvokeAction(skills::SkillsInvokeAction::kFirstParty);
+      base::UmaHistogramEnumeration("Glic.Skills.Invoke.Funnel",
+                                    SkillsInvokeFunnel::kInvokedSkill);
+      break;
+    case kUsedUserCreatedSkill:
+      skills::RecordSkillsInvokeAction(
+          skills::SkillsInvokeAction::kUserCreated);
+      base::UmaHistogramEnumeration("Glic.Skills.Invoke.Funnel",
+                                    SkillsInvokeFunnel::kInvokedSkill);
+      break;
+    case kUsedDerivedFirstPartySkill:
+      skills::RecordSkillsInvokeAction(
+          skills::SkillsInvokeAction::kDerivedFromFirstParty);
+      base::UmaHistogramEnumeration("Glic.Skills.Invoke.Funnel",
+                                    SkillsInvokeFunnel::kInvokedSkill);
+      break;
+    // --- Management Page Metrics ---
+    case kClickedManageFromMenu:
+      // TODO(crbug.com/483411707): Add routing for management page metrics.
+      break;
+    // --- Dialog Metrics ---
+    case kClickedAddFromMenu:
+    case kClickedSaveAsSkillHoverChip:
+    case kClickedAddOn1pSkill:
+    case kClickedEditFromMenu:
+      // TODO(crbug.com/483411707): Add routing for dialog metrics.
+      break;
+    // --- SkillBuilder Metrics ---
+    case kSkillBuilderClickedPromoChip:
+      base::UmaHistogramEnumeration("Glic.Skills.SkillBuilder.Event",
+                                    SkillBuilderEvent::kClickedPromoChip);
+      break;
+    case kSkillBuilderPromptGenerated:
+      base::UmaHistogramEnumeration("Glic.Skills.SkillBuilder.Event",
+                                    SkillBuilderEvent::kPromptGenerated);
+      break;
+    case kSkillBuilderClickedSaveAsSkill:
+      base::UmaHistogramEnumeration("Glic.Skills.SkillBuilder.Event",
+                                    SkillBuilderEvent::kClickedSaveAsSkill);
+      break;
+    // --- No-Ops ---
+    case mojom::SkillsWebClientEvent::kUnknown:
+      break;
+  }
 }
 
 }  // namespace glic

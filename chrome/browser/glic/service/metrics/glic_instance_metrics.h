@@ -113,6 +113,27 @@ enum class GlicInstanceEvent {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInstanceEvent)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SkillsInvokeFunnel)
+enum class SkillsInvokeFunnel {
+  kOpenedMenu = 0,
+  kInvokedSkill = 1,
+  kMaxValue = kInvokedSkill,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:SkillsInvokeFunnel)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SkillBuilderEvent)
+enum class SkillBuilderEvent {
+  kClickedPromoChip = 0,
+  kPromptGenerated = 1,
+  kClickedSaveAsSkill = 2,
+  kMaxValue = kClickedSaveAsSkill,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:SkillBuilderEvent)
+
 // Tracks and logs lifecycle events for a single GlicInstance.
 class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
  public:
@@ -250,6 +271,10 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void RecordTabPinningStatusEvent(tabs::TabInterface* tab,
                                    GlicPinningStatusEvent event);
 
+  // Routes skills WebUI actions from the frontend to their respective
+  // metrics funnels.
+  void RecordSkillsWebClientEvent(mojom::SkillsWebClientEvent action);
+
   int GetPinnedTabCount() const;
 
   bool is_active() const {
@@ -293,6 +318,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Records the response latency (from user input submitted to response stop)
   // by the number of attached tabs.
   void RecordResponseLatencyByAttachedTabCount(base::TimeDelta latency);
+
+  void RecordSkillsInvokeFunnelStep(SkillsInvokeFunnel invoke_funnel);
 
   base::flat_map<GlicInstanceEvent, int> event_counts_;
   EmbedderType current_ui_mode_ = EmbedderType::kUnknown;
