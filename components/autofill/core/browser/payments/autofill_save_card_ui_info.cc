@@ -326,7 +326,10 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
       if (is_chrome_branding_enabled) {
         save_card_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
         save_card_icon_description_text = l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
+            base::FeatureList::IsEnabled(
+                features::kAutofillEnableWalletBranding)
+                ? IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME
+                : IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
         save_card_prompt_title_id =
             IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY;
         description_text = l10n_util::GetStringUTF16(

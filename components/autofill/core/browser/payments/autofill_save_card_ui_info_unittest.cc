@@ -407,7 +407,7 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
   EXPECT_EQ(ui_info.logo_icon_description,
             is_chrome_branded()
                 ? l10n_util::GetStringUTF16(
-                      IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME)
+                      IDS_AUTOFILL_GOOGLE_WALLET_LOGO_ACCESSIBLE_NAME)
                 : u"");
   EXPECT_EQ(ui_info.title_text,
             l10n_util::GetStringUTF16(

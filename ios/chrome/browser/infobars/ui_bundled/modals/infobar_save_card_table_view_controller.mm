@@ -272,6 +272,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.supportsEditing = [prefs[kSupportsEditingPrefKey] boolValue];
   self.displayedTargetAccountEmail = prefs[kDisplayedTargetAccountEmailPrefKey];
   self.logoIcon = prefs[kLogoIconPrefKey];
+  self.logoIconDescription = prefs[kLogoIconDescriptionPrefKey];
   [self.tableView reloadData];
 
   [self updateSaveCardButtonState];
