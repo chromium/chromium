@@ -99,4 +99,19 @@ TEST_P(AeadTest, SealOpenTooShortKey) {
   EXPECT_FALSE(aead.Seal(plaintext, nonce, ad, &ciphertext));
 }
 
+TEST_P(AeadTest, OneShotRoundTrips) {
+  crypto::aead::Algorithm alg = GetParam();
+
+  constexpr auto plaintext = std::to_array<uint8_t>({0x01, 0x23, 0x45, 0x67});
+  constexpr auto ad = std::to_array<uint8_t>({0x89, 0xab, 0xcd, 0xef});
+  std::vector<uint8_t> key(crypto::aead::KeySizeFor(alg));
+  std::vector<uint8_t> nonce(crypto::aead::NonceSizeFor(alg));
+
+  const auto ciphertext = crypto::aead::Seal(alg, key, plaintext, nonce, ad);
+  const auto recovered = crypto::aead::Open(alg, key, ciphertext, nonce, ad);
+
+  ASSERT_TRUE(recovered);
+  EXPECT_EQ(base::as_byte_span(*recovered), base::as_byte_span(plaintext));
+}
+
 }  // namespace

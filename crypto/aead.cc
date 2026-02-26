@@ -35,6 +35,37 @@ const EVP_AEAD* AeadForAlgorithm(Aead::AeadAlgorithm algorithm) {
 
 }  // namespace
 
+namespace aead {
+
+size_t KeySizeFor(Algorithm algorithm) {
+  return EVP_AEAD_key_length(AeadForAlgorithm(algorithm));
+}
+
+size_t NonceSizeFor(Algorithm algorithm) {
+  return EVP_AEAD_nonce_length(AeadForAlgorithm(algorithm));
+}
+
+std::vector<uint8_t> Seal(Algorithm algorithm,
+                          base::span<const uint8_t> key,
+                          base::span<const uint8_t> plaintext,
+                          base::span<const uint8_t> nonce,
+                          base::span<const uint8_t> associated_data) {
+  Aead aead(algorithm, key);
+  return aead.Seal(plaintext, nonce, associated_data);
+}
+
+std::optional<std::vector<uint8_t>> Open(
+    Algorithm algorithm,
+    base::span<const uint8_t> key,
+    base::span<const uint8_t> ciphertext,
+    base::span<const uint8_t> nonce,
+    base::span<const uint8_t> associated_data) {
+  Aead aead(algorithm, key);
+  return aead.Open(ciphertext, nonce, associated_data);
+}
+
+}  // namespace aead
+
 Aead::Aead(AeadAlgorithm algorithm) : algorithm_(algorithm) {}
 
 Aead::Aead(AeadAlgorithm algorithm, base::span<const uint8_t> key)
@@ -149,11 +180,11 @@ bool Aead::Open(std::string_view ciphertext,
 }
 
 size_t Aead::KeyLength() const {
-  return EVP_AEAD_key_length(AeadForAlgorithm(algorithm_));
+  return aead::KeySizeFor(algorithm_);
 }
 
 size_t Aead::NonceLength() const {
-  return EVP_AEAD_nonce_length(AeadForAlgorithm(algorithm_));
+  return aead::NonceSizeFor(algorithm_);
 }
 
 std::optional<size_t> Aead::Seal(base::span<const uint8_t> plaintext,
