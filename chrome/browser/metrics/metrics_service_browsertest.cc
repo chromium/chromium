@@ -181,11 +181,12 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CloseRenderersNormally) {
 
 // Child crashes fail the process on ASan (see crbug.com/40383003,
 // crbug.com/40363314).
+// TODO(crbug.com/487848164): Flaky on Windows.
 // Note to sheriffs: Do not disable these tests if they starts to flake. If
 // either of these tests start to fail then changes likely need to be made
 // elsewhere in crash processing, metrics analysis, and dashboards. Please
 // consult Stability Team before disabling.
-#if defined(ADDRESS_SANITIZER)
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_WIN)
 #define MAYBE_CrashRenderers DISABLED_CrashRenderers
 #define MAYBE_CheckCrashRenderers DISABLED_CheckCrashRenderers
 #else
