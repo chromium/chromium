@@ -58,6 +58,10 @@ class VerticalTabDragHandler {
   virtual void HandleDraggedTabsOutOfGroup(const TabCollectionNode& node,
                                            DragPositionHint position_hint) = 0;
 
+  // Handles the case where tabs are dragged to the end of the tab strip, which
+  // is a special case because there is no node there to handle the drag.
+  virtual void HandleDraggedTabsAtEndOfTabStrip() = 0;
+
   // Returns the drag context for this handler.
   virtual TabDragContext* GetDragContext() = 0;
 
@@ -70,6 +74,9 @@ class VerticalTabDragHandler {
 
   // Returns true if there is an ongoing drag where a group is being moved.
   virtual bool IsDraggingGroups() const = 0;
+
+  // Returns true if the drag is currently at the end of the tab strip.
+  virtual bool IsDraggingAtEndOfTabStrip() const = 0;
 
   // For vertical tabs, `TabSlotView` doesn't represent the actual tab
   // view. This method converts `view` to its actual tab view, or nullptr
@@ -114,10 +121,12 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   void HandleDraggedTabsIntoNode(const TabCollectionNode& node) override;
   void HandleDraggedTabsOutOfGroup(const TabCollectionNode& node,
                                    DragPositionHint position_hint) override;
+  void HandleDraggedTabsAtEndOfTabStrip() override;
   TabDragContext* GetDragContext() override;
   bool IsViewDragging(const views::View& view) const override;
   bool IsDraggingPinnedTabs() const override;
   bool IsDraggingGroups() const override;
+  bool IsDraggingAtEndOfTabStrip() const override;
   views::View* ViewFromTabSlot(TabSlotView* view) const override;
   std::optional<gfx::Vector2d> GetOffsetFromSourceAtDragStart(
       views::View* view) const override;

@@ -78,10 +78,14 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   bool IsHandlingDrag() const;
 
   // Returns the bounds of the box containing all dragged views, adjusted to
-  // the point `point_in_container`. The returned bounds are not clamped to
-  // the container bounds.
+  // the point `point_in_container`. The returned bounds are not clamped to the
+  // container bounds.
   gfx::Rect GetDraggingViewsBoundsAtPoint(
       const gfx::Point& point_in_container) const;
+  // Returns the bounds of the box containing all dragged views, adjusted to the
+  // last drag point. The returned bounds are not clamped to the container
+  // bounds.
+  gfx::Rect GetDraggingViewsBounds() const;
 
  protected:
   struct DraggedViewVisualData {

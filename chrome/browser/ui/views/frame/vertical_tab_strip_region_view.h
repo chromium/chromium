@@ -168,6 +168,10 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
 
   bool IsFrameActive() const;
 
+  // Returns the bounds within which tabs can be dragged in the vertical tab
+  // strip.
+  gfx::Rect GetTabStripDraggableBounds() const;
+
   void RecordNewTabButtonPressed();
   void OnChildrenAdded();
 

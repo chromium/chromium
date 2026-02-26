@@ -396,6 +396,15 @@ gfx::Rect VerticalDraggedTabsContainer::GetDraggingViewsBoundsAtPoint(
   return bounding_box_for_point;
 }
 
+gfx::Rect VerticalDraggedTabsContainer::GetDraggingViewsBounds() const {
+  gfx::Rect box_for_point = dragging_views_bounds_;
+  box_for_point.Offset(
+      views::View::ConvertPointFromScreen(base::to_address(host_view_),
+                                          last_drag_point_in_screen_)
+          .OffsetFromOrigin());
+  return box_for_point;
+}
+
 gfx::Vector2d VerticalDraggedTabsContainer::GetDraggingViewPositionForBounds(
     const views::View* dragging_view,
     const gfx::Rect& dragging_views_bounding_box,

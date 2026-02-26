@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 
+#include "base/containers/adapters.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
@@ -109,6 +110,7 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
   views::ProposedLayout layouts;
   int width = 0;
   int height = 0;
+  int dragged_view_bottom = 0;
   bool is_collapsed = IsTabStripCollapsed();
 
   const int horizontal_padding = GetLayoutConstant(
@@ -150,7 +152,20 @@ views::ProposedLayout VerticalUnpinnedTabContainerView::CalculateProposedLayout(
   if (!children.empty()) {
     height -= kTabVerticalPadding;
   }
-  layouts.host_size = gfx::Size(width, height);
+
+  if (IsHandlingDrag()) {
+    dragged_view_bottom = GetDraggingViewsBounds().bottom();
+    if (size_bounds.height().is_bounded()) {
+      // When the host view has a bounded height, the dragged view's offset
+      // from its original position should not cause it to be laid out outside
+      // of the container's bounds. This ensures that the dragged view is at
+      // the bottom of the container we will not cause a scroll.
+      // dragged_view_bottom = GetDraggingViewsBounds().bottom();
+      dragged_view_bottom =
+          std::min(dragged_view_bottom, size_bounds.height().value());
+    }
+  }
+  layouts.host_size = gfx::Size(width, std::max(height, dragged_view_bottom));
   return layouts;
 }
 
@@ -269,6 +284,7 @@ void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(
   views::View* view_at_point =
       GetViewForDragBounds(target_layout, dragged_tab_bounds);
   const TabCollectionNode* node = nullptr;
+  VerticalTabDragHandler& drag_handler = GetDragHandler();
   if (auto* tab_view = views::AsViewClass<VerticalTabView>(view_at_point)) {
     node = tab_view->collection_node();
   } else if (auto* group_view =
@@ -277,7 +293,7 @@ void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(
     // if we are dragging groups, which are the only cases we handle here.
     if (group_view->IsCollapsed()) {
       node = group_view->collection_node();
-    } else if (GetDragHandler().IsDraggingGroups()) {
+    } else if (drag_handler.IsDraggingGroups()) {
       node = group_view->collection_node();
     }
   } else if (auto* split_tab_view =
@@ -285,11 +301,26 @@ void VerticalUnpinnedTabContainerView::HandleTabDragInContainer(
     node = split_tab_view->collection_node();
   }
   if (node) {
-    GetDragHandler().HandleDraggedTabsOverNode(*node, std::nullopt);
+    drag_handler.HandleDraggedTabsOverNode(*node, std::nullopt);
     // Synchronously force a layout here to update the target layout. Since all
     // the calculations are based off on target layout, we need to ensure it is
     // updated where there are model change.
     DeprecatedLayoutImmediately();
+  } else {
+    // Check if dragging past the end of the unpinned container to append to the
+    // end if it is in the incorrect index. This can happen if a tab is dragged
+    // into the tabstrip below the bottommost tab since tabs are inserted at the
+    // top by default.
+    if (dragged_tab_bounds.bottom() > target_layout.host_size.height()) {
+      drag_handler.HandleDraggedTabsAtEndOfTabStrip();
+    }
+    // If dragging at the end of the tab strip, but the dragged view is not at
+    // the bottom of the container, need to invalidate the layout so the
+    // unpinned container's size gets updated.
+    if (dragged_tab_bounds.bottom() != target_layout.host_size.height() &&
+        drag_handler.IsDraggingAtEndOfTabStrip()) {
+      InvalidateLayout();
+    }
   }
 }
 

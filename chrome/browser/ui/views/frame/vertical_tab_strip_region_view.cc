@@ -675,6 +675,19 @@ bool VerticalTabStripRegionView::IsFrameActive() const {
   return GetWidget() ? GetWidget()->ShouldPaintAsActive() : true;
 }
 
+gfx::Rect VerticalTabStripRegionView::GetTabStripDraggableBounds() const {
+  // Tabs should be draggable from the top of the tab strip to the bottom of the
+  // tab strip's max size, saving space for the bottom button container and
+  // padding.
+  gfx::Rect tab_strip_draggable_bounds = tab_strip_view_->GetBoundsInScreen();
+  tab_strip_draggable_bounds.set_height(
+      GetBoundsInScreen().bottom() -
+      bottom_button_container_->GetMinimumSize().height() -
+      flex_layout_->interior_margin().height() -
+      tab_strip_draggable_bounds.y());
+  return tab_strip_draggable_bounds;
+}
+
 void VerticalTabStripRegionView::RecordNewTabButtonPressed() {
   new_tab_button_pressed_start_time_ = base::TimeTicks::Now();
 
@@ -695,7 +708,8 @@ TabDragTarget* VerticalTabStripRegionView::GetTabDragTarget(
   if (!drag_handler_) {
     return nullptr;
   }
-  if (!tab_strip_view_->GetBoundsInScreen().Contains(point_in_screen)) {
+  gfx::Rect tab_strip_draggable_bounds = GetTabStripDraggableBounds();
+  if (!tab_strip_draggable_bounds.Contains(point_in_screen)) {
     return nullptr;
   }
 

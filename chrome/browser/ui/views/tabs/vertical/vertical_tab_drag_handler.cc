@@ -305,6 +305,7 @@ void VerticalTabDragHandlerImpl::HandleDraggedTabsIntoNode(
     const TabCollectionNode& node) {
   CHECK(drag_controller_);
   const auto& drag_session_data = drag_controller_->GetSessionData();
+
   // Do nothing if the group is not being changed and either one tab is being
   // dragged or all tabs in the strip are being dragged.
   if (node.type() != TabCollectionNode::Type::GROUP &&
@@ -393,6 +394,16 @@ void VerticalTabDragHandlerImpl::HandleDraggedTabsOutOfGroup(
 
   insertion_idx = std::clamp(insertion_idx, 0, tab_strip_model_->count() - 1);
   tab_strip_model_->MoveSelectedTabsTo(insertion_idx, std::nullopt);
+}
+
+void VerticalTabDragHandlerImpl::HandleDraggedTabsAtEndOfTabStrip() {
+  // If the tabs were dragging into the tab strip in an area where they did not
+  // overlap any nodes then update the model appropriately if the tabs are not
+  // already at the end.
+  if (!IsDraggingAtEndOfTabStrip()) {
+    tab_strip_model_->MoveSelectedTabsTo(tab_strip_model_->count() - 1,
+                                         std::nullopt);
+  }
 }
 
 void VerticalTabDragHandlerImpl::HandleTabDragOverTab(
@@ -502,6 +513,19 @@ bool VerticalTabDragHandlerImpl::IsDraggingGroups() const {
     return false;
   }
   return !drag_controller_->GetSessionData().dragging_groups.empty();
+}
+
+bool VerticalTabDragHandlerImpl::IsDraggingAtEndOfTabStrip() const {
+  if (!drag_controller_) {
+    return false;
+  }
+  const auto& drag_data = drag_controller_->GetSessionData().tab_drag_data_;
+  const auto* last_web_contents =
+      tab_strip_model_->GetWebContentsAt(tab_strip_model_->count() - 1);
+  return std::any_of(drag_data.cbegin(), drag_data.cend(),
+                     [last_web_contents](const auto& tab_data) {
+                       return tab_data.contents == last_web_contents;
+                     });
 }
 
 std::optional<tab_groups::TabGroupId>
