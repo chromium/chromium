@@ -1354,15 +1354,14 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
       gpu::SharedImageUsageSet shared_image_usage_flags =
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-      bool low_latency_supported = false;
-      if (use_gpu_raster && canvas()->LowLatencyEnabled()) {
-        low_latency_supported =
-            SharedGpuContext::LowLatencyUsageSupportedForCanvas2D();
-      }
-
+      // Determine whether this SharedImage can be configured for low-latency
+      // or placement in overlays.
+      bool low_latency_supported =
+          use_gpu_raster && canvas()->LowLatencyEnabled() &&
+          SharedGpuContext::LowLatencyUsageSupportedForCanvas2D();
       if (low_latency_supported) {
-        shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
         shared_image_usage_flags |=
+            gpu::SHARED_IMAGE_USAGE_SCANOUT |
             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
       } else if (SharedGpuContext::OverlaysSupportedForCanvas2D()) {
         shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
