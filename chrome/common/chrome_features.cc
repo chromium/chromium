@@ -975,7 +975,7 @@ const base::FeatureParam<bool> kGlicEntrypointVariationsHighlightNudge{
     &kGlicEntrypointVariations, "glic-entrypoint-variations-highlight-nudge",
     false};
 
-BASE_FEATURE(kGlicButtonAltLabel, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicButtonAltLabel, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kGlicButtonAltLabelVariant{
     &kGlicButtonAltLabel, "glic-button-alt-label-variant", 0};
 

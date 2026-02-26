@@ -320,5 +320,6 @@ TEST_F(TabStripActionContainerTest, MAYBE(GlicButtonHideNudgeOnTabChange)) {
 
   SimulateActiveTabChanged();
   ASSERT_FALSE(tab_strip_action_container_->GetIsShowingGlicNudge());
-  ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(), u"Gemini");
+  ASSERT_EQ(tab_strip_action_container_->GetGlicButton()->GetText(),
+            u"Ask Gemini");
 }
