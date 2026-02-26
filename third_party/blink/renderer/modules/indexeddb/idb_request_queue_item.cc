@@ -31,9 +31,11 @@ class IDBDatabaseGetAllResultSinkImpl
           receiver,
       IDBRequestQueueItem* owner,
       mojom::blink::IDBGetAllResultType get_all_result_type)
-      : receiver_(this, std::move(receiver)),
-        owner_(owner),
-        get_all_result_type_(get_all_result_type) {}
+      : owner_(owner), get_all_result_type_(get_all_result_type) {
+    if (receiver.is_valid()) {
+      receiver_.Bind(std::move(receiver));
+    }
+  }
 
   ~IDBDatabaseGetAllResultSinkImpl() override = default;
 
@@ -78,6 +80,13 @@ class IDBDatabaseGetAllResultSinkImpl
     owner_->response_type_ = GetResponseType();
     owner_->records_ = std::move(records_);
 
+    // `receiver_` being null indicates that the results were available
+    // synchronously.
+    if (!receiver_) {
+      owner_->MaybeCreateLoader();
+      return;
+    }
+
     if (owner_->MaybeCreateLoader()) {
       if (owner_->started_loading_) {
         // Try again now that the values exist.
@@ -121,7 +130,8 @@ class IDBDatabaseGetAllResultSinkImpl
     NOTREACHED();
   }
 
-  mojo::AssociatedReceiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver_;
+  mojo::AssociatedReceiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver_{
+      this};
   raw_ptr<IDBRequestQueueItem> owner_;
   mojom::blink::IDBGetAllResultType get_all_result_type_;
 
@@ -235,14 +245,19 @@ IDBRequestQueueItem::IDBRequestQueueItem(
 IDBRequestQueueItem::IDBRequestQueueItem(
     IDBRequest* request,
     mojom::blink::IDBGetAllResultType get_all_result_type,
+    Vector<mojom::blink::IDBRecordPtr> initial_records,
     mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
         receiver,
     base::OnceClosure on_result_ready)
     : request_(request), on_result_ready_(std::move(on_result_ready)) {
   DCHECK_EQ(request->queue_item_, nullptr);
   request_->queue_item_ = this;
+
+  bool has_more_results = receiver.is_valid();
   get_all_sink_ = std::make_unique<IDBDatabaseGetAllResultSinkImpl>(
       std::move(receiver), this, get_all_result_type);
+  get_all_sink_->ReceiveResults(std::move(initial_records),
+                                /*done=*/!has_more_results);
 }
 
 IDBRequestQueueItem::~IDBRequestQueueItem() {

@@ -477,12 +477,13 @@ void IDBRequest::OnClear(bool success) {
 
 void IDBRequest::OnGetAll(
     mojom::blink::IDBGetAllResultType result_type,
+    Vector<mojom::blink::IDBRecordPtr> initial_records,
     mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
         receiver) {
   probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_,
                               "success");
   transaction_->EnqueueResult(std::make_unique<IDBRequestQueueItem>(
-      this, result_type, std::move(receiver),
+      this, result_type, std::move(initial_records), std::move(receiver),
       BindOnce(&IDBTransaction::OnResultReady,
                WrapPersistent(transaction_.Get()))));
 }

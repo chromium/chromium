@@ -391,7 +391,9 @@ class IDBRequestTest : public testing::Test {
   }
 
   // Creates a new get all `IDBRequest` using `get_all_type` and
-  // `get_all_results`. Verifies the `IDBRequest` completes with
+  // `get_all_results`. The first element in `get_all_results` represents the
+  // synchronously available values; the others are used to simulate values
+  // passed through the sink. Verifies the `IDBRequest` completes with
   // `expected_results`.
   void TestGetAll(V8TestingScope& scope,
                   mojom::blink::IDBGetAllResultType get_all_type,
@@ -411,17 +413,29 @@ class IDBRequestTest : public testing::Test {
                            transaction_.Get(), IDBRequest::AsyncTraceState());
     mojo::AssociatedRemote<mojom::blink::IDBDatabaseGetAllResultSink>
         get_all_sink_remote;
-    request->OnGetAll(
-        get_all_type,
-        get_all_sink_remote.BindNewEndpointAndPassDedicatedReceiver());
 
-    // Stream batches of results to the request.
-    for (Vector<mojom::blink::IDBRecordPtr>& records : get_all_results) {
-      get_all_sink_remote->ReceiveResults(std::move(records),
-                                          /*done=*/false);
-    }
-    get_all_sink_remote->ReceiveResults(/*records=*/{}, /*done=*/true);
+    // Let the transaction transition to inactive. If we start firing results at
+    // it while still active, checks will fail.
     scope.PerformMicrotaskCheckpoint();
+
+    // Pass the first batch of results in OnGetAll.
+    Vector<mojom::blink::IDBRecordPtr> first_results;
+    if (!get_all_results.empty()) {
+      first_results = std::move(get_all_results[0]);
+    }
+    request->OnGetAll(
+        get_all_type, std::move(first_results),
+        get_all_results.size() <= 1
+            ? mojo::NullAssociatedReceiver()
+            : get_all_sink_remote.BindNewEndpointAndPassDedicatedReceiver());
+
+    // Stream remaining batches of results to the request.
+    for (wtf_size_t i = 1; i < get_all_results.size(); ++i) {
+      get_all_sink_remote->ReceiveResults(
+          std::move(get_all_results[i]),
+          /*done=*/get_all_results.size() == i + 1);
+    }
+
     platform_->RunUntilIdle();
 
     // Verify the request completes with the expected results.
@@ -934,6 +948,7 @@ TEST_F(IDBRequestTest, AbortGetAll) {
       get_all_sink_remote;
   request->OnGetAll(
       mojom::blink::IDBGetAllResultType::Values,
+      Vector<mojom::blink::IDBRecordPtr>(),
       get_all_sink_remote.BindNewEndpointAndPassDedicatedReceiver());
 
   // Abort the request and verify the results.
@@ -971,6 +986,7 @@ TEST_F(IDBRequestTest, AbortGetAllWhileReceivingValues) {
       get_all_sink_remote;
   request->OnGetAll(
       mojom::blink::IDBGetAllResultType::Values,
+      Vector<mojom::blink::IDBRecordPtr>(),
       get_all_sink_remote.BindNewEndpointAndPassDedicatedReceiver());
 
   // Stream a batch of results to the request.
@@ -1023,6 +1039,7 @@ TEST_F(IDBRequestTest, AbortGetAllWhileLoadingValues) {
       get_all_sink_remote;
   request->OnGetAll(
       mojom::blink::IDBGetAllResultType::Values,
+      Vector<mojom::blink::IDBRecordPtr>(),
       get_all_sink_remote.BindNewEndpointAndPassDedicatedReceiver());
 
   // Stream a batch of results to the request.  Include a blob value that

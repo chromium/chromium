@@ -421,7 +421,8 @@ void Connection::GetAll(int64_t transaction_id,
     mojo::AssociatedRemote<blink::mojom::IDBDatabaseGetAllResultSink>
         result_sink;
     auto receiver = result_sink.BindNewEndpointAndPassReceiver();
-    std::move(callback).Run(std::move(receiver));
+    std::move(callback).Run(std::vector<blink::mojom::IDBRecordPtr>(),
+                            std::move(receiver));
     result_sink->OnError(blink::mojom::IDBError::New(
         transaction.error().code(), transaction.error().message()));
     return;

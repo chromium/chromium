@@ -393,11 +393,12 @@ interface IDBDatabase {
   // Reads the results for a `getAllKeys()`, `getAll()` or `getAllRecords()`
   // request from either an `IDBObjectStore` or an `IDBIndex`. `index_id` must
   // be `IndexedDBIndexMetadata::kInvalidId` to read from an `IDBObjectStore`.
-  // To to return results, `GetAll()` streams an array of `IDBRecord` values in
-  // batches to the `IDBDatabaseGetAllResultSink` receiver until the request
-  // completes.  Each `IDBRecord` result contains necessary properties only.
-  // For example, the `IDBRecord` result for `getAllKeys()` contains
-  // `primary_key` only.
+  // Returns results in `records`. If all results fit in one response (under
+  // `kIDBGetAllChunkSize`), `receiver` will be null. Otherwise, `records`
+  // contains the first chunk and remaining results are streamed via the
+  // `IDBDatabaseGetAllResultSink` receiver. Each `IDBRecord` result contains
+  // necessary properties only. For example, the `IDBRecord` result for
+  // `getAllKeys()` contains `primary_key` only.
   GetAll(int64 transaction_id,
          int64 object_store_id,
          int64 index_id,
@@ -405,7 +406,8 @@ interface IDBDatabase {
          IDBGetAllResultType result_type,
          uint32 max_count,
          IDBCursorDirection direction)
-    => (pending_associated_receiver<IDBDatabaseGetAllResultSink> receiver);
+    => (array<IDBRecord> records,
+        pending_associated_receiver<IDBDatabaseGetAllResultSink>? receiver);
   OpenCursor(int64 transaction_id,
              int64 object_store_id,
              int64 index_id,

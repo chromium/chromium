@@ -617,31 +617,51 @@ Database::GetAllResultSinkWrapper::~GetAllResultSinkWrapper() {
     // TODO(crbug.com/347047640): remove this workaround when 347047640 is
     // fixed.
     if (!transaction_->connection()->is_shutting_down()) {
-      DatabaseError error(blink::mojom::IDBException::kIgnorableAbortError,
-                          "Backend aborted error");
-      Get()->OnError(
-          blink::mojom::IDBError::New(error.code(), error.message()));
+      SendError(blink::mojom::IDBError::New(
+          blink::mojom::IDBException::kIgnorableAbortError,
+          u"Backend aborted error"));
     }
   } else {
-    // Make sure `callback_` is invoked because the Mojo client is waiting for a
-    // response.
-    Get();
+    // Make sure `callback_` is invoked because the Mojo client is waiting for
+    // a response.
+    std::move(callback_).Run(std::vector<blink::mojom::IDBRecordPtr>(),
+                             mojo::NullAssociatedReceiver());
   }
 }
 
-mojo::AssociatedRemote<blink::mojom::IDBDatabaseGetAllResultSink>&
-Database::GetAllResultSinkWrapper::Get() {
-  if (!result_sink_) {
-    mojo::PendingAssociatedReceiver<blink::mojom::IDBDatabaseGetAllResultSink>
-        pending_receiver;
-    if (use_dedicated_receiver_for_testing_) {
-      pending_receiver = result_sink_.BindNewEndpointAndPassDedicatedReceiver();
-    } else {
-      pending_receiver = result_sink_.BindNewEndpointAndPassReceiver();
-    }
-    std::move(callback_).Run(std::move(pending_receiver));
+void Database::GetAllResultSinkWrapper::SetUpSink(
+    std::vector<blink::mojom::IDBRecordPtr> initial_records) {
+  mojo::PendingAssociatedReceiver<blink::mojom::IDBDatabaseGetAllResultSink>
+      pending_receiver;
+  if (use_dedicated_receiver_for_testing_) {
+    pending_receiver = result_sink_.BindNewEndpointAndPassDedicatedReceiver();
+  } else {
+    pending_receiver = result_sink_.BindNewEndpointAndPassReceiver();
   }
-  return result_sink_;
+  std::move(callback_).Run(std::move(initial_records),
+                           std::move(pending_receiver));
+}
+
+void Database::GetAllResultSinkWrapper::SendResults(
+    std::vector<blink::mojom::IDBRecordPtr> records,
+    bool done) {
+  if (result_sink_) {
+    result_sink_->ReceiveResults(std::move(records), done);
+  } else if (done) {
+    std::move(callback_).Run(std::move(records),
+                             mojo::NullAssociatedReceiver());
+  } else {
+    SetUpSink(std::move(records));
+  }
+}
+
+void Database::GetAllResultSinkWrapper::SendError(
+    blink::mojom::IDBErrorPtr error) {
+  if (!result_sink_) {
+    SetUpSink(/*initial_records=*/{});
+  }
+
+  result_sink_->OnError(std::move(error));
 }
 
 Status Database::GetAllOperation(
@@ -690,7 +710,7 @@ Status Database::GetAllOperation(
   if (!cursor.has_value()) {
     DLOG(ERROR) << "Unable to open cursor operation: "
                 << cursor.error().ToString();
-    result_sink->Get()->OnError(CreateIDBErrorPtr(
+    result_sink->SendError(CreateIDBErrorPtr(
         blink::mojom::IDBException::kUnknownError,
         "Corruption detected, unable to continue", transaction));
     return cursor.error();
@@ -698,14 +718,9 @@ Status Database::GetAllOperation(
 
   std::vector<blink::mojom::IDBRecordPtr> found_records;
 
-  auto send_records = [&](bool done) {
-    result_sink->Get()->ReceiveResults(std::move(found_records), done);
-    found_records.clear();
-  };
-
   // No records found.
   if (!*cursor) {
-    send_records(/*done=*/true);
+    result_sink->SendResults(std::move(found_records), /*done=*/true);
     return Status::OK();
   }
 
@@ -728,13 +743,20 @@ Status Database::GetAllOperation(
       "BigBuffer may use shared memory with LevelDB backing store");
 
   const size_t max_values_before_sending = blink::mojom::kIDBGetAllChunkSize;
+
   for (uint32_t i = 0; i < max_count; ++i) {
+    // Periodically stream records if we have too many.
+    if (found_records.size() >= max_values_before_sending) {
+      result_sink->SendResults(std::move(found_records), /*done=*/false);
+      found_records.clear();
+    }
+
     // Cursor creation performs the first seek, returning a nullptr cursor when
     // invalid.
     if (i != 0) {
       StatusOr<bool> cursor_valid = (*cursor)->Continue();
       if (!cursor_valid.has_value()) {
-        result_sink->Get()->OnError(
+        result_sink->SendError(
             CreateIDBErrorPtr(blink::mojom::IDBException::kUnknownError,
                               "Seek failure, unable to continue", transaction));
         return cursor_valid.error();
@@ -778,13 +800,9 @@ Status Database::GetAllOperation(
     }
 
     found_records.emplace_back(std::move(return_record));
-
-    // Periodically stream records if we have too many.
-    if (found_records.size() >= max_values_before_sending) {
-      send_records(/*done=*/false);
-    }
   }
-  send_records(/*done=*/true);
+
+  result_sink->SendResults(std::move(found_records), /*done=*/true);
   return Status::OK();
 }
 

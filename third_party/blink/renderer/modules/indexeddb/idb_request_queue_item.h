@@ -76,10 +76,13 @@ class MODULES_EXPORT IDBRequestQueueItem {
       std::unique_ptr<IDBKey> primary_key,
       std::unique_ptr<IDBValue>,
       base::OnceClosure on_result_ready);
-  // Asynchronous fetching of multiple results.
+  // Fetching of multiple results with optional streaming for large result sets.
+  // `initial_records` contains the first chunk (or all records if small).
+  // `receiver` is only valid when more records need to be streamed.
   IDBRequestQueueItem(
       IDBRequest*,
       mojom::blink::IDBGetAllResultType get_all_result_type,
+      Vector<mojom::blink::IDBRecordPtr> initial_records,
       mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
           receiver,
       base::OnceClosure on_result_ready);

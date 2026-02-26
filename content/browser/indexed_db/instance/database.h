@@ -228,17 +228,19 @@ class CONTENT_EXPORT Database {
   Status OpenInternal();
   const IndexedDBDataLossInfo& GetDataLossInfo() const;
 
-  // This class informs its result sink of an error if a `GetAllOperation` is
-  // deleted without being run. This functionality mimics that of
-  // AbortOnDestruct callbacks. `GetAll()` cannot easily be shoe-horned into the
-  // abort-on-destruct callback templating.
+  // This class manages sending GetAll results. It can send records directly
+  // via the callback (for small result sets) or create a sink for streaming
+  // larger result sets. If destroyed without completing, it reports an error.
   class CONTENT_EXPORT GetAllResultSinkWrapper {
    public:
     GetAllResultSinkWrapper(base::WeakPtr<Transaction> transaction,
                             blink::mojom::IDBDatabase::GetAllCallback callback);
     ~GetAllResultSinkWrapper();
 
-    mojo::AssociatedRemote<blink::mojom::IDBDatabaseGetAllResultSink>& Get();
+    void SendResults(std::vector<blink::mojom::IDBRecordPtr> records,
+                     bool done);
+
+    void SendError(blink::mojom::IDBErrorPtr error);
 
     // An override for unit tests to bind the associated receiver successfully
     // without a pre-existing endpoint entanglement.
@@ -247,6 +249,10 @@ class CONTENT_EXPORT Database {
     }
 
    private:
+    // Passes `initial_records` to the frontend and creates `result_sink_` for
+    // returning more records (or errors).
+    void SetUpSink(std::vector<blink::mojom::IDBRecordPtr> initial_records);
+
     base::WeakPtr<Transaction> transaction_;
     blink::mojom::IDBDatabase::GetAllCallback callback_;
     mojo::AssociatedRemote<blink::mojom::IDBDatabaseGetAllResultSink>

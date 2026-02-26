@@ -300,6 +300,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   void OnGet(mojom::blink::IDBDatabaseGetResultPtr result);
   void OnGetAll(
       mojom::blink::IDBGetAllResultType result_type,
+      Vector<mojom::blink::IDBRecordPtr> initial_records,
       mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
           receiver);
   void OnOpenCursor(mojom::blink::IDBDatabaseOpenCursorResultPtr result);
