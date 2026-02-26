@@ -109,13 +109,13 @@
     Your text and page content are sent to Google, but will not be used to improve AI.
     <ph name="BEGIN_LINK">&lt;a href="#" id="enterpriseLearnMore" role="button"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_COMPOSE_INPUT_MODE_POLISH" desc="The chip title used to select the Polish mode for a Help me write request.">
+  <message name="IDS_COMPOSE_INPUT_MODE_POLISH" desc="The chip title used to select the Polish mode for a Help me write request." meaning="Describing a way to modify text">
     Polish
   </message>
-  <message name="IDS_COMPOSE_INPUT_MODE_ELABORATE" desc="The chip title used to select the Elaborate mode for a Help me write request.">
+  <message name="IDS_COMPOSE_INPUT_MODE_ELABORATE" desc="The chip title used to select the Elaborate mode for a Help me write request." meaning="Describing a way to modify text">
     Elaborate
   </message>
-  <message name="IDS_COMPOSE_INPUT_MODE_FORMALIZE" desc="The chip title used to select the Formalize mode for a Help me write request.">
+  <message name="IDS_COMPOSE_INPUT_MODE_FORMALIZE" desc="The chip title used to select the Formalize mode for a Help me write request." meaning="Describing a way to modify text">
     Formalize
   </message>
   <message name="IDS_COMPOSE_SUBMIT_BUTTON" desc="The button to request Compose to generate text.">
