@@ -40,7 +40,7 @@ const base::FeatureParam<int> kMediumThreshold{
     "on_device_medium_threshold", 75};
 const base::FeatureParam<int> kHighThreshold{
     &optimization_guide::features::kOnDeviceModelPerformanceParams,
-    "on_device_high_threshold", 150};
+    "on_device_high_threshold", 200};
 const base::FeatureParam<int> kVeryHighThreshold{
     &optimization_guide::features::kOnDeviceModelPerformanceParams,
     "on_device_very_high_threshold", 500};
