@@ -88,6 +88,11 @@ chromium-metrics-reviews@google.com.
       summary="the navigation opened in an incognito mode"/>
 </variants>
 
+<variants name="InitiatorOfNavigation">
+  <variant name=".BrowserInitiated" summary="browser-initiated navigation"/>
+  <variant name=".RendererInitiated" summary="renderer-initiated navigation"/>
+</variants>
+
 <variants name="LoadedIdleVisibility">
   <variant name="" summary="all pages"/>
   <variant name=".Background"
@@ -1639,6 +1644,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="PageLoad.Clients.GoogleSearch.HadPriorPrewarmCommitStatus{InitiatorOfNavigation}"
+    enum="PriorPrewarmCommitStatus" expires_after="2026-06-28">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The status of whether the DSEPrewarm feature was ever triggered on the same
+    renderer process host. This is recorded once, when a Google search page is
+    committed for {InitiatorOfNavigation}.
+  </summary>
+  <token key="InitiatorOfNavigation" variants="InitiatorOfNavigation"/>
+</histogram>
+
 <histogram name="PageLoad.Clients.GoogleSearch.HttpNetworkSessionQuicEnabled"
     enum="Boolean" expires_after="2026-08-02">
   <owner>bashi@chromium.org</owner>
@@ -2168,15 +2186,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.Clients.GoogleSearch.Prerender.PrewarmNavigationStatus"
+    name="PageLoad.Clients.GoogleSearch.Prerender.PrewarmNavigationStatus{InitiatorOfNavigation}"
     enum="PrerenderPrewarmNavigationStatus" expires_after="2026-06-28">
   <owner>suzukikeita@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
     The status of whether the DSEPrewarm feature was triggered before the
     prerender host reuse happened. This is recorded once, when a prerendered
-    page is activated for Google search page loads.
+    page is activated for Google search page loads for {InitiatorOfNavigation}.
   </summary>
+  <token key="InitiatorOfNavigation" variants="InitiatorOfNavigation"/>
 </histogram>
 
 <histogram
@@ -2191,6 +2210,18 @@ chromium-metrics-reviews@google.com.
     this is only recorded for HTTP/2 and HTTP/3.
   </summary>
   <token key="ConnectionProtocolType" variants="ConnectionProtocolType"/>
+</histogram>
+
+<histogram
+    name="PageLoad.Clients.GoogleSearch.SiteInstanceProcessAssignment{InitiatorOfNavigation}"
+    enum="SiteInstanceProcessAssignment" expires_after="2026-06-28">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records how the main frame's SiteInstance was assigned a renderer process.
+    This is recorded once, when a Google search page is committed.
+  </summary>
+  <token key="InitiatorOfNavigation" variants="InitiatorOfNavigation"/>
 </histogram>
 
 <histogram name="PageLoad.Clients.GoogleSearch.WarmUpType" enum="GwsWarmUpType"

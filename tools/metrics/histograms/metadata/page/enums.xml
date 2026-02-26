@@ -399,6 +399,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h:PrerenderPrewarmNavigationStatus) -->
 
+<!-- LINT.IfChange(PriorPrewarmCommitStatus) -->
+
+<enum name="PriorPrewarmCommitStatus">
+  <int value="0" label="No prewarm triggered"/>
+  <int value="1" label="Prewarm triggered, not committed"/>
+  <int value="2" label="Prewarm triggered, committed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h:PriorPrewarmCommitStatus) -->
+
 <!-- LINT.IfChange(WebViewPageAttemptResult) -->
 
 <enum name="WebViewPageAttemptResult">

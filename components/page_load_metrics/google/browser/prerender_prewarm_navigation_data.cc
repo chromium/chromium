@@ -18,6 +18,21 @@ PrerenderPrewarmNavigationData* PrerenderPrewarmNavigationData::Get(
           PrerenderPrewarmNavigationData::kRenderProcessHostUserDataKey));
 }
 
+PrerenderPrewarmNavigationData::PriorPrewarmCommitStatus
+PrerenderPrewarmNavigationData::GetPriorPrewarmCommitStatus(
+    base::SupportsUserData* support_user_data) {
+  auto* prewarm_data = PrerenderPrewarmNavigationData::Get(support_user_data);
+  if (!prewarm_data) {
+    return PriorPrewarmCommitStatus::kNoPrerenderPrewarmNavigation;
+  }
+
+  return prewarm_data->prewarm_committed()
+             ? PriorPrewarmCommitStatus::
+                   kHasPrerenderPrewarmNavigationWithCommit
+             : PriorPrewarmCommitStatus::
+                   kHasPrerenderPrewarmNavigationWithoutCommit;
+}
+
 PrerenderPrewarmNavigationData::PrerenderPrewarmNavigationData(
     bool prewarm_committed)
     : prewarm_committed_(prewarm_committed) {}

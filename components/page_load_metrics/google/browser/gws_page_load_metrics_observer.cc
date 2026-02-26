@@ -168,6 +168,14 @@ const char kHistogramGWSActivationToFirstContentfulPaint[] =
 const char kHistogramGWSActivationToLargestContentfulPaint[] =
     HISTOGRAM_PREFIX "Prerender.ActivationToLargestContentfulPaint";
 
+const char kHistogramGWSHadPriorPrewarmCommitStatus[] =
+    HISTOGRAM_PREFIX "HadPriorPrewarmCommitStatus";
+const char kHistogramSiteInstanceProcessAssignment[] =
+    HISTOGRAM_PREFIX "SiteInstanceProcessAssignment";
+
+const char kHistogramBrowserInitiatedSuffix[] = ".BrowserInitiated";
+const char kHistogramRendererInitiatedSuffix[] = ".RendererInitiated";
+
 const char kHistogramGWSWarmUpType[] = HISTOGRAM_PREFIX "WarmUpType";
 
 const char kHistogramPrerenderSuffix[] = ".Prerender";
@@ -449,27 +457,40 @@ GWSPageLoadMetricsObserver::OnCommit(
     RecordPreCommitHistograms();
   }
 
-  // For now, we only want to record Browser Initiated cases so that we can
-  // determine the impact of the Prewarm-Prerender optimization.
-  if (!navigation_handle->IsRendererInitiated()) {
-    auto render_process_assignment = GetDelegate()
-                                         .GetWebContents()
-                                         ->GetPrimaryMainFrame()
-                                         ->GetSiteInstance()
-                                         ->GetLastProcessAssignmentOutcome();
-    if (auto* navigation_data =
-            page_load_metrics::PrerenderPrewarmNavigationData::Get(
-                GetDelegate()
-                    .GetWebContents()
-                    ->GetPrimaryMainFrame()
-                    ->GetProcess())) {
-      base::UmaHistogramEnumeration(
-          internal::kHistogramPrerenderPrewarmNavigationStatus,
-          navigation_data->GetNavigationStatus(
-              render_process_assignment ==
-              content::SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS));
-    }
+  auto render_process_assignment = GetDelegate()
+                                       .GetWebContents()
+                                       ->GetPrimaryMainFrame()
+                                       ->GetSiteInstance()
+                                       ->GetLastProcessAssignmentOutcome();
+  const auto* suffix = navigation_handle->IsRendererInitiated()
+                           ? internal::kHistogramRendererInitiatedSuffix
+                           : internal::kHistogramBrowserInitiatedSuffix;
+  // We determine the impact of the Prewarm-Prerender optimization.
+  if (auto* navigation_data =
+          page_load_metrics::PrerenderPrewarmNavigationData::Get(
+              GetDelegate()
+                  .GetWebContents()
+                  ->GetPrimaryMainFrame()
+                  ->GetProcess())) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {internal::kHistogramPrerenderPrewarmNavigationStatus, suffix}),
+        navigation_data->GetNavigationStatus(
+            render_process_assignment ==
+            content::SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS));
   }
+
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {internal::kHistogramGWSHadPriorPrewarmCommitStatus, suffix}),
+      page_load_metrics::PrerenderPrewarmNavigationData::
+          GetPriorPrewarmCommitStatus(GetDelegate()
+                                          .GetWebContents()
+                                          ->GetPrimaryMainFrame()
+                                          ->GetProcess()));
+  base::UmaHistogramEnumeration(
+      base::StrCat({internal::kHistogramSiteInstanceProcessAssignment, suffix}),
+      render_process_assignment);
 
   return CONTINUE_OBSERVING;
 }

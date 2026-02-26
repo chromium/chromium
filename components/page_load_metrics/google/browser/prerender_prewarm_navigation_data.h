@@ -27,6 +27,15 @@ class PrerenderPrewarmNavigationData : public base::SupportsUserData::Data {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PrerenderPrewarmNavigationStatus)
 
+  // LINT.IfChange(PriorPrewarmCommitStatus)
+  enum class PriorPrewarmCommitStatus {
+    kNoPrerenderPrewarmNavigation = 0,
+    kHasPrerenderPrewarmNavigationWithoutCommit = 1,
+    kHasPrerenderPrewarmNavigationWithCommit = 2,
+    kMaxValue = kHasPrerenderPrewarmNavigationWithCommit,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PriorPrewarmCommitStatus)
+
   static PrerenderPrewarmNavigationData* Get(
       base::SupportsUserData* support_user_data);
 
@@ -42,6 +51,9 @@ class PrerenderPrewarmNavigationData : public base::SupportsUserData::Data {
     }
     return PrerenderPrewarmNavigationData::Get(support_user_data);
   }
+
+  static PriorPrewarmCommitStatus GetPriorPrewarmCommitStatus(
+      base::SupportsUserData* support_user_data);
 
   PrerenderPrewarmNavigationData() = default;
   explicit PrerenderPrewarmNavigationData(bool prewarm_committed);
