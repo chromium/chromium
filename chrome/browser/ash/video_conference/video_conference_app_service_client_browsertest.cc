@@ -241,7 +241,7 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
 
   // Returns current VideoConferenceMediaState in the VideoConferenceManagerAsh
   VideoConferenceMediaState GetMediaStateInVideoConferenceManagerAsh() {
-    return ash::VideoConferenceManagerAsh::Get()->GetAggregatedState();
+    return VideoConferenceManagerAsh::Get()->GetAggregatedState();
   }
 
  protected:
@@ -657,11 +657,11 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
                        HandleDeviceUsedWhileDisabled) {
   // Notify disabling state of camera and microphone from
   // video_conference_manager_ash.
-  ash::VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+  VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
+      VideoConferenceMediaDevice::kCamera,
       /*enabled=*/false);
-  ash::VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
+  VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
+      VideoConferenceMediaDevice::kMicrophone,
       /*enabled=*/false);
 
   FakeVideoConferenceTrayController* fake_try_controller =
@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
   ASSERT_EQ(fake_try_controller->device_used_while_disabled_records().size(),
             1u);
   EXPECT_THAT(fake_try_controller->device_used_while_disabled_records().back(),
-              testing::Pair(crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+              testing::Pair(VideoConferenceMediaDevice::kCamera,
                             base::UTF8ToUTF16(std::string(kAppName1))));
 
   // Accessing microphone will trigger NotifyDeviceUsedWhileDisabled.
@@ -684,10 +684,9 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
                          /*is_capturing_microphone=*/true);
   ASSERT_EQ(fake_try_controller->device_used_while_disabled_records().size(),
             2u);
-  EXPECT_THAT(
-      fake_try_controller->device_used_while_disabled_records().back(),
-      testing::Pair(crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-                    base::UTF8ToUTF16(std::string(kAppName1))));
+  EXPECT_THAT(fake_try_controller->device_used_while_disabled_records().back(),
+              testing::Pair(VideoConferenceMediaDevice::kMicrophone,
+                            base::UTF8ToUTF16(std::string(kAppName1))));
 
   // Stopping microphone access should not trigger
   // NotifyDeviceUsedWhileDisabled.
@@ -704,11 +703,11 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceAppServiceClientTest,
 
   // Notify enabling state of camera and microphone from
   // video_conference_manager_ash.
-  ash::VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+  VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
+      VideoConferenceMediaDevice::kCamera,
       /*enabled=*/true);
-  ash::VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
+  VideoConferenceManagerAsh::Get()->SetSystemMediaDeviceStatus(
+      VideoConferenceMediaDevice::kMicrophone,
       /*enabled=*/true);
 
   // Accessing camera should not trigger NotifyDeviceUsedWhileDisabled because

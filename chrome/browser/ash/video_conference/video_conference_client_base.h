@@ -20,8 +20,7 @@ class VideoConferenceManagerAsh;
 // Base class for Video Conference Manager clients in Ash-chrome. This class
 // provides a common implementation for clients that interact with the
 // VideoConferenceManagerAsh.
-class VideoConferenceClientBase
-    : public crosapi::mojom::VideoConferenceManagerClient {
+class VideoConferenceClientBase : public VideoConferenceManagerClient {
  protected:
   explicit VideoConferenceClientBase(
       VideoConferenceManagerAsh* video_conference_manager_ash);
@@ -41,10 +40,10 @@ class VideoConferenceClientBase
     bool is_capturing_camera = false;
   };
 
-  // crosapi::mojom::VideoConferenceManagerClient:
+  // VideoConferenceManagerClient:
   void GetMediaApps(GetMediaAppsCallback callback) override;
   void SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice device,
+      VideoConferenceMediaDevice device,
       bool enabled,
       SetSystemMediaDeviceStatusCallback callback) override;
 
@@ -74,7 +73,7 @@ class VideoConferenceClientBase
   const base::UnguessableToken client_id_;
 
   // Current status_ aggregated from all apps in `id_to_app_state_`.
-  ash::VideoConferenceMediaUsageStatus status_;
+  VideoConferenceMediaUsageStatus status_;
 
   const raw_ref<VideoConferenceManagerAsh> video_conference_manager_ash_;
 };

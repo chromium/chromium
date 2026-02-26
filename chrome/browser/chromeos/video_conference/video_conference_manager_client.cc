@@ -232,7 +232,7 @@ void VideoConferenceManagerClientImpl::HandleMediaUsageUpdate() {
 }
 
 void VideoConferenceManagerClientImpl::HandleDeviceUsedWhileDisabled(
-    crosapi::mojom::VideoConferenceMediaDevice device,
+    ash::VideoConferenceMediaDevice device,
     const std::u16string& app_name) {
   video_conference_manager_ash_->NotifyDeviceUsedWhileDisabled(
       std::move(device), app_name, base::DoNothing());
@@ -291,10 +291,10 @@ void VideoConferenceManagerClientImpl::ReturnToApp(
 }
 
 void VideoConferenceManagerClientImpl::SetSystemMediaDeviceStatus(
-    crosapi::mojom::VideoConferenceMediaDevice device,
-    bool disabled,
+    ash::VideoConferenceMediaDevice device,
+    bool enabled,
     SetSystemMediaDeviceStatusCallback callback) {
-  media_listener_->SetSystemMediaDeviceStatus(std::move(device), disabled);
+  media_listener_->SetSystemMediaDeviceStatus(std::move(device), enabled);
   std::move(callback).Run(true);
 }
 

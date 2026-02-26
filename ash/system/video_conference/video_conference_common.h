@@ -104,6 +104,35 @@ struct ASH_EXPORT VideoConferenceMediaUsageStatus {
   bool operator==(const VideoConferenceMediaUsageStatus& other) const;
 };
 
+// Represents the media devices that can be captured by a video conferencing
+// app.
+enum class VideoConferenceMediaDevice {
+  kMicrophone,
+  kCamera,
+};
+
+// Client interface implemented by Ash and Chrome clients to interact with the
+// VideoConferenceManagerAsh.
+class ASH_EXPORT VideoConferenceManagerClient {
+ public:
+  // TODO(crbug.com/365741912, crbug.com/365902693): In a later CL, drop these
+  // callbacks and return the result directly.
+  using GetMediaAppsCallback = base::OnceCallback<void(
+      std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>)>;
+  using ReturnToAppCallback = base::OnceCallback<void(bool)>;
+  using SetSystemMediaDeviceStatusCallback = base::OnceCallback<void(bool)>;
+
+  virtual ~VideoConferenceManagerClient() = default;
+
+  virtual void GetMediaApps(GetMediaAppsCallback callback) = 0;
+  virtual void ReturnToApp(const base::UnguessableToken& id,
+                           ReturnToAppCallback callback) = 0;
+  virtual void SetSystemMediaDeviceStatus(
+      VideoConferenceMediaDevice device,
+      bool enabled,
+      SetSystemMediaDeviceStatusCallback callback) = 0;
+};
+
 // This class defines the public interfaces of VideoConferenceManagerAsh exposed
 // to VideoConferenceTrayController. Although these public functions look
 // identical to VideoConferenceManagerClient, we should not use
@@ -120,10 +149,9 @@ class VideoConferenceManagerBase {
   // Calls VideoConferenceManagerAsh to return to App identified by `id`.
   virtual void ReturnToApp(const base::UnguessableToken& id) = 0;
 
-  // Sets whether |device| is disabled at the system or hardware level.
-  virtual void SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice device,
-      bool disabled) = 0;
+  // Sets whether |device| is enabled at the system or hardware level.
+  virtual void SetSystemMediaDeviceStatus(VideoConferenceMediaDevice device,
+                                          bool enabled) = 0;
 
   // Called when CreateBackgroundImage button is clicked on.
   virtual void CreateBackgroundImage() = 0;

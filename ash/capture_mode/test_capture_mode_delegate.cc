@@ -212,7 +212,7 @@ bool TestCaptureModeDelegate::IsAudioCaptureDisabledByPolicy() const {
 }
 
 void TestCaptureModeDelegate::RegisterVideoConferenceManagerClient(
-    crosapi::mojom::VideoConferenceManagerClient* client,
+    VideoConferenceManagerClient* client,
     const base::UnguessableToken& client_id) {}
 
 void TestCaptureModeDelegate::UnregisterVideoConferenceManagerClient(
@@ -222,7 +222,7 @@ void TestCaptureModeDelegate::UpdateVideoConferenceManager(
     VideoConferenceMediaUsageStatus status) {}
 
 void TestCaptureModeDelegate::NotifyDeviceUsedWhileDisabled(
-    crosapi::mojom::VideoConferenceMediaDevice device) {}
+    VideoConferenceMediaDevice device) {}
 
 void TestCaptureModeDelegate::FinalizeSavedFile(
     base::OnceCallback<void(bool, const base::FilePath&)> callback,

@@ -139,14 +139,14 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   bool IsCameraDisabledByPolicy() const override;
   bool IsAudioCaptureDisabledByPolicy() const override;
   void RegisterVideoConferenceManagerClient(
-      crosapi::mojom::VideoConferenceManagerClient* client,
+      VideoConferenceManagerClient* client,
       const base::UnguessableToken& client_id) override;
   void UnregisterVideoConferenceManagerClient(
       const base::UnguessableToken& client_id) override;
   void UpdateVideoConferenceManager(
       VideoConferenceMediaUsageStatus status) override;
   void NotifyDeviceUsedWhileDisabled(
-      crosapi::mojom::VideoConferenceMediaDevice device) override;
+      VideoConferenceMediaDevice device) override;
   void FinalizeSavedFile(
       base::OnceCallback<void(bool, const base::FilePath&)> callback,
       const base::FilePath& path,

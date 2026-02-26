@@ -17,35 +17,32 @@ class UnguessableToken;
 
 namespace ash {
 
+// TODO(crbug.com/365741912, crbug.com/365902693): Remove this wrapper in a
+// later CL now that we use the C++ client interface directly.
+//
 // |VideoConferenceClientWrapper| adds a VideoConferenceMediaState member
 // variable for use by VideoConferenceManagerAsh.
 class VideoConferenceClientWrapper {
  public:
-  explicit VideoConferenceClientWrapper(
-      crosapi::mojom::VideoConferenceManagerClient* client);
+  explicit VideoConferenceClientWrapper(VideoConferenceManagerClient* client);
 
   ~VideoConferenceClientWrapper();
 
-  // API mirroring the one in `crosapi::mojom::VideoConferenceManagerClient`
   void GetMediaApps(
-      crosapi::mojom::VideoConferenceManagerClient::GetMediaAppsCallback
-          callback);
-  void ReturnToApp(
-      const base::UnguessableToken& id,
-      crosapi::mojom::VideoConferenceManagerClient::ReturnToAppCallback
-          callback);
+      VideoConferenceManagerClient::GetMediaAppsCallback callback);
+  void ReturnToApp(const base::UnguessableToken& id,
+                   VideoConferenceManagerClient::ReturnToAppCallback callback);
   void SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice device,
-      bool disabled,
-      crosapi::mojom::VideoConferenceManagerClient::
-          SetSystemMediaDeviceStatusCallback callback);
-
+      VideoConferenceMediaDevice device,
+      bool enabled,
+      VideoConferenceManagerClient::SetSystemMediaDeviceStatusCallback
+          callback);
 
   VideoConferenceMediaState& state();
 
  private:
   VideoConferenceMediaState state_;
-  raw_ptr<crosapi::mojom::VideoConferenceManagerClient> cpp_client_{nullptr};
+  raw_ptr<VideoConferenceManagerClient> cpp_client_{nullptr};
 };
 
 }  // namespace ash

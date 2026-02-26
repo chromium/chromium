@@ -663,7 +663,7 @@ bool ChromeCaptureModeDelegate::IsAudioCaptureDisabledByPolicy() const {
 }
 
 void ChromeCaptureModeDelegate::RegisterVideoConferenceManagerClient(
-    crosapi::mojom::VideoConferenceManagerClient* client,
+    ash::VideoConferenceManagerClient* client,
     const base::UnguessableToken& client_id) {
   video_conference_manager_ash_->RegisterCppClient(client, client_id);
 }
@@ -680,7 +680,7 @@ void ChromeCaptureModeDelegate::UpdateVideoConferenceManager(
 }
 
 void ChromeCaptureModeDelegate::NotifyDeviceUsedWhileDisabled(
-    crosapi::mojom::VideoConferenceMediaDevice device) {
+    ash::VideoConferenceMediaDevice device) {
   video_conference_manager_ash_->NotifyDeviceUsedWhileDisabled(
       device, l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE),
       base::DoNothing());

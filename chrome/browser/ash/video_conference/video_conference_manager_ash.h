@@ -46,22 +46,20 @@ class VideoConferenceManagerAsh : public VideoConferenceManagerBase {
   // VideoConferenceManagerBase overrides.
   void GetMediaApps(base::OnceCallback<void(MediaApps)>) override;
   void ReturnToApp(const base::UnguessableToken& id) override;
-  void SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice device,
-      bool enabled) override;
+  void SetSystemMediaDeviceStatus(VideoConferenceMediaDevice device,
+                                  bool enabled) override;
   void CreateBackgroundImage() override;
 
   // Registers an ash-browser client. Non-mojo clients need to manually call
   // |UnregisterClient|, e.g. inside their destructor.
-  void RegisterCppClient(crosapi::mojom::VideoConferenceManagerClient* client,
+  void RegisterCppClient(VideoConferenceManagerClient* client,
                          const base::UnguessableToken& client_id);
 
   void NotifyMediaUsageUpdate(VideoConferenceMediaUsageStatus status,
                               base::OnceCallback<void(bool)> callback);
-  void NotifyDeviceUsedWhileDisabled(
-      crosapi::mojom::VideoConferenceMediaDevice device,
-      const std::u16string& app_name,
-      base::OnceCallback<void(bool)> callback);
+  void NotifyDeviceUsedWhileDisabled(VideoConferenceMediaDevice device,
+                                     const std::u16string& app_name,
+                                     base::OnceCallback<void(bool)> callback);
   void NotifyClientUpdate(VideoConferenceClientUpdate update);
 
   // Removes entry corresponding to |client_id| from

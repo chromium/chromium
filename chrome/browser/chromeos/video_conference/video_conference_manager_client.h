@@ -33,7 +33,7 @@ struct VideoConferencePermissions;
 //    2. Allowing the manager to query the client and perform actions by
 //       implementing the VideoConferenceManagerClient crosapi interface.
 class VideoConferenceManagerClientImpl
-    : public crosapi::mojom::VideoConferenceManagerClient {
+    : public ash::VideoConferenceManagerClient {
  public:
   // The passed `video_conference_manager_ash` must outlive this instance.
   explicit VideoConferenceManagerClientImpl(
@@ -61,17 +61,16 @@ class VideoConferenceManagerClientImpl
 
   // Notifies VCManager of media device usage while the device is system
   // disabled.
-  void HandleDeviceUsedWhileDisabled(
-      crosapi::mojom::VideoConferenceMediaDevice device,
-      const std::u16string& app_name);
+  void HandleDeviceUsedWhileDisabled(ash::VideoConferenceMediaDevice device,
+                                     const std::u16string& app_name);
 
-  // crosapi::mojom::VideoConferenceManagerClient overrides
+  // ash::VideoConferenceManagerClient overrides
   void GetMediaApps(GetMediaAppsCallback callback) override;
   void ReturnToApp(const base::UnguessableToken& id,
                    ReturnToAppCallback callback) override;
   void SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice device,
-      bool disabled,
+      ash::VideoConferenceMediaDevice device,
+      bool enabled,
       SetSystemMediaDeviceStatusCallback callback) override;
 
  protected:

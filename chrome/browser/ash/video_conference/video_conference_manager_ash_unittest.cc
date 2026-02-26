@@ -31,8 +31,7 @@ class FakeVideoConferenceManagerAsh : public VideoConferenceManagerAsh {
   VideoConferenceMediaState state_;
 };
 
-class FakeVcManagerCppClient
-    : public crosapi::mojom::VideoConferenceManagerClient {
+class FakeVcManagerCppClient : public VideoConferenceManagerClient {
  public:
   explicit FakeVcManagerCppClient(FakeVideoConferenceManagerAsh& vc_manager)
       : id_(base::UnguessableToken::Create()), vc_manager_(vc_manager) {}
@@ -40,10 +39,9 @@ class FakeVcManagerCppClient
   FakeVcManagerCppClient& operator=(const FakeVcManagerCppClient&) = delete;
   ~FakeVcManagerCppClient() override { vc_manager_->UnregisterClient(id_); }
 
-  // crosapi::mojom::VideoConferenceManagerClient overrides
+  // VideoConferenceManagerClient overrides
   void GetMediaApps(
-      crosapi::mojom::VideoConferenceManagerClient::GetMediaAppsCallback
-          callback) override {
+      VideoConferenceManagerClient::GetMediaAppsCallback callback) override {
     std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> apps;
 
     for (auto& app : apps_) {
@@ -57,8 +55,8 @@ class FakeVcManagerCppClient
                    ReturnToAppCallback callback) override {}
 
   void SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice device,
-      bool disabled,
+      VideoConferenceMediaDevice device,
+      bool enabled,
       SetSystemMediaDeviceStatusCallback callback) override {}
 
   // Public for testing.

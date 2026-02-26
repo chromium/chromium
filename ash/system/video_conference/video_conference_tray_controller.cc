@@ -501,7 +501,7 @@ void VideoConferenceTrayController::OnCameraHWPrivacySwitchStateChanged(
 
   if (video_conference_manager_) {
     video_conference_manager_->SetSystemMediaDeviceStatus(
-        crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+        VideoConferenceMediaDevice::kCamera,
         /*enabled=*/!GetCameraMuted());
   }
 
@@ -528,7 +528,7 @@ void VideoConferenceTrayController::OnCameraSWPrivacySwitchStateChanged(
 
   if (video_conference_manager_) {
     video_conference_manager_->SetSystemMediaDeviceStatus(
-        crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+        VideoConferenceMediaDevice::kCamera,
         /*enabled=*/!GetCameraMuted());
   }
 
@@ -564,7 +564,7 @@ void VideoConferenceTrayController::OnInputMuteChanged(
 
   if (video_conference_manager_) {
     video_conference_manager_->SetSystemMediaDeviceStatus(
-        crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
+        VideoConferenceMediaDevice::kMicrophone,
         /*enabled=*/!mute_on);
   }
 
@@ -798,12 +798,8 @@ bool VideoConferenceTrayController::HasMicrophonePermission() const {
 }
 
 void VideoConferenceTrayController::HandleDeviceUsedWhileDisabled(
-    crosapi::mojom::VideoConferenceMediaDevice device,
+    VideoConferenceMediaDevice device,
     const std::u16string& app_name) {
-  if (device == crosapi::mojom::VideoConferenceMediaDevice::kUnusedDefault) {
-    return;
-  }
-
   UsedWhileDisabledNudgeType type = GetUsedWhileDisabledNudgeType(device);
 
   if (!use_while_disabled_signal_waiter_.IsRunning()) {
@@ -933,15 +929,13 @@ void VideoConferenceTrayController::DisplayUsedWhileDisabledNudge(
 
 VideoConferenceTrayController::UsedWhileDisabledNudgeType
 VideoConferenceTrayController::GetUsedWhileDisabledNudgeType(
-    crosapi::mojom::VideoConferenceMediaDevice device) {
-  DCHECK_NE(device, crosapi::mojom::VideoConferenceMediaDevice::kUnusedDefault);
-
+    VideoConferenceMediaDevice device) {
   VideoConferenceTrayController::UsedWhileDisabledNudgeType type;
   switch (device) {
-    case crosapi::mojom::VideoConferenceMediaDevice::kCamera:
+    case VideoConferenceMediaDevice::kCamera:
       type = VideoConferenceTrayController::UsedWhileDisabledNudgeType::kCamera;
       break;
-    case crosapi::mojom::VideoConferenceMediaDevice::kMicrophone:
+    case VideoConferenceMediaDevice::kMicrophone:
       type = VideoConferenceTrayController::UsedWhileDisabledNudgeType::
           kMicrophone;
       break;

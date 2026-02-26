@@ -72,26 +72,23 @@ void VideoConferenceClientBase::GetMediaApps(GetMediaAppsCallback callback) {
   std::move(callback).Run(std::move(apps));
 }
 void VideoConferenceClientBase::SetSystemMediaDeviceStatus(
-    crosapi::mojom::VideoConferenceMediaDevice device,
+    VideoConferenceMediaDevice device,
     bool enabled,
     SetSystemMediaDeviceStatusCallback callback) {
   switch (device) {
-    case crosapi::mojom::VideoConferenceMediaDevice::kCamera:
+    case VideoConferenceMediaDevice::kCamera:
       camera_system_enabled_ = enabled;
       std::move(callback).Run(true);
       return;
-    case crosapi::mojom::VideoConferenceMediaDevice::kMicrophone:
+    case VideoConferenceMediaDevice::kMicrophone:
       microphone_system_enabled_ = enabled;
       std::move(callback).Run(true);
-      return;
-    case crosapi::mojom::VideoConferenceMediaDevice::kUnusedDefault:
-      std::move(callback).Run(false);
       return;
   }
 }
 
 void VideoConferenceClientBase::HandleMediaUsageUpdate() {
-  ash::VideoConferenceMediaUsageStatus new_status(client_id_);
+  VideoConferenceMediaUsageStatus new_status(client_id_);
   new_status.state.has_media_app = !id_to_app_state_.empty();
 
   for (const auto& [app_id, app_state] : id_to_app_state_) {

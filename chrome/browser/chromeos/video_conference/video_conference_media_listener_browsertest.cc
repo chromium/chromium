@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest, RequestOnMute) {
   auto* vc_app2 = CreateVcWebAppInNewTab();
 
   vc_manager->SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice::kCamera, /*enabled=*/false);
+      ash::VideoConferenceMediaDevice::kCamera, /*enabled=*/false);
 
   // Initially should be zero.
   EXPECT_EQ(controller->device_used_while_disabled_records().size(), 0u);
@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest, RequestOnMute) {
   EXPECT_EQ(controller->device_used_while_disabled_records().size(), 1u);
 
   vc_manager->SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
+      ash::VideoConferenceMediaDevice::kMicrophone,
       /*enabled=*/false);
   auto stop_capture_callback2 =
       StartCapture(&vc_app2->GetWebContents(),

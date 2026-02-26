@@ -189,9 +189,8 @@ class ASH_EXPORT VideoConferenceTrayController
   void UpdateSidetoneSupportedState();
 
   // Handles device usage from a VC app while the device is system disabled.
-  virtual void HandleDeviceUsedWhileDisabled(
-      crosapi::mojom::VideoConferenceMediaDevice device,
-      const std::u16string& app_name);
+  virtual void HandleDeviceUsedWhileDisabled(VideoConferenceMediaDevice device,
+                                             const std::u16string& app_name);
 
   // media::CameraPrivacySwitchObserver:
   void OnCameraHWPrivacySwitchStateChanged(
@@ -262,7 +261,7 @@ class ASH_EXPORT VideoConferenceTrayController
                                      const std::u16string& app_name);
 
   UsedWhileDisabledNudgeType GetUsedWhileDisabledNudgeType(
-      crosapi::mojom::VideoConferenceMediaDevice device);
+      VideoConferenceMediaDevice device);
 
   // This keeps track the current VC media state. The state is being updated by
   // `UpdateWithMediaState()`, calling from `VideoConferenceManagerAsh`.

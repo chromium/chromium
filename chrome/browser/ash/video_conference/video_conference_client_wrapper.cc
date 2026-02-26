@@ -17,27 +17,24 @@ namespace ash {
 VideoConferenceClientWrapper::~VideoConferenceClientWrapper() = default;
 
 VideoConferenceClientWrapper::VideoConferenceClientWrapper(
-    crosapi::mojom::VideoConferenceManagerClient* client)
+    VideoConferenceManagerClient* client)
     : cpp_client_(client) {}
 
 void VideoConferenceClientWrapper::GetMediaApps(
-    crosapi::mojom::VideoConferenceManagerClient::GetMediaAppsCallback
-        callback) {
+    VideoConferenceManagerClient::GetMediaAppsCallback callback) {
   cpp_client_->GetMediaApps(std::move(callback));
 }
 
 void VideoConferenceClientWrapper::ReturnToApp(
     const base::UnguessableToken& id,
-    crosapi::mojom::VideoConferenceManagerClient::ReturnToAppCallback
-        callback) {
+    VideoConferenceManagerClient::ReturnToAppCallback callback) {
   cpp_client_->ReturnToApp(id, std::move(callback));
 }
 
 void VideoConferenceClientWrapper::SetSystemMediaDeviceStatus(
-    crosapi::mojom::VideoConferenceMediaDevice device,
+    VideoConferenceMediaDevice device,
     bool enabled,
-    crosapi::mojom::VideoConferenceManagerClient::
-        SetSystemMediaDeviceStatusCallback callback) {
+    VideoConferenceManagerClient::SetSystemMediaDeviceStatusCallback callback) {
   cpp_client_->SetSystemMediaDeviceStatus(device, enabled, std::move(callback));
 }
 

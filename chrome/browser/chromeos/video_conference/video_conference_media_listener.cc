@@ -21,7 +21,7 @@ VideoConferenceMediaListener::VideoConferenceMediaListener(
     base::RepeatingCallback<void()> media_usage_update_callback,
     base::RepeatingCallback<VideoConferenceWebApp*(content::WebContents*)>
         create_vc_web_app_callback,
-    base::RepeatingCallback<void(crosapi::mojom::VideoConferenceMediaDevice,
+    base::RepeatingCallback<void(ash::VideoConferenceMediaDevice,
                                  const std::u16string&)>
         device_used_while_disabled_callback)
     : media_usage_update_callback_(std::move(media_usage_update_callback)),
@@ -36,17 +36,15 @@ VideoConferenceMediaListener::VideoConferenceMediaListener(
 VideoConferenceMediaListener::~VideoConferenceMediaListener() = default;
 
 void VideoConferenceMediaListener::SetSystemMediaDeviceStatus(
-    crosapi::mojom::VideoConferenceMediaDevice device,
+    ash::VideoConferenceMediaDevice device,
     bool enabled) {
   switch (device) {
-    case crosapi::mojom::VideoConferenceMediaDevice::kCamera:
+    case ash::VideoConferenceMediaDevice::kCamera:
       camera_system_enabled_ = enabled;
       break;
-    case crosapi::mojom::VideoConferenceMediaDevice::kMicrophone:
+    case ash::VideoConferenceMediaDevice::kMicrophone:
       microphone_system_enabled_ = enabled;
       break;
-    case crosapi::mojom::VideoConferenceMediaDevice::kUnusedDefault:
-      return;
   }
 }
 
@@ -78,8 +76,7 @@ void VideoConferenceMediaListener::OnIsCapturingVideoChanged(
     if (!camera_system_enabled_ && !prev_is_capturing_video &&
         is_capturing_video) {
       device_used_while_disabled_callback_.Run(
-          crosapi::mojom::VideoConferenceMediaDevice::kCamera,
-          contents->GetTitle());
+          ash::VideoConferenceMediaDevice::kCamera, contents->GetTitle());
     }
   }
 }
@@ -113,8 +110,7 @@ void VideoConferenceMediaListener::OnIsCapturingAudioChanged(
     if (!microphone_system_enabled_ && !prev_is_capturing_audio &&
         is_capturing_audio) {
       device_used_while_disabled_callback_.Run(
-          crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
-          contents->GetTitle());
+          ash::VideoConferenceMediaDevice::kMicrophone, contents->GetTitle());
     }
   }
 }

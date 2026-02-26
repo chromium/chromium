@@ -1412,12 +1412,12 @@ void CaptureModeController::MaybeUpdateVcPanel() {
   // we need to notify the user through the video conference manager.
   if (is_camera_used && is_camera_muted_) {
     delegate_->NotifyDeviceUsedWhileDisabled(
-        crosapi::mojom::VideoConferenceMediaDevice::kCamera);
+        VideoConferenceMediaDevice::kCamera);
   }
 
   if (is_recording_audio && is_microphone_muted_) {
     delegate_->NotifyDeviceUsedWhileDisabled(
-        crosapi::mojom::VideoConferenceMediaDevice::kMicrophone);
+        VideoConferenceMediaDevice::kMicrophone);
   }
 }
 
@@ -1534,20 +1534,17 @@ void CaptureModeController::ReturnToApp(const base::UnguessableToken& token,
 }
 
 void CaptureModeController::SetSystemMediaDeviceStatus(
-    crosapi::mojom::VideoConferenceMediaDevice device,
+    VideoConferenceMediaDevice device,
     bool enabled,
     SetSystemMediaDeviceStatusCallback callback) {
   switch (device) {
-    case crosapi::mojom::VideoConferenceMediaDevice::kCamera:
+    case VideoConferenceMediaDevice::kCamera:
       is_camera_muted_ = !enabled;
       std::move(callback).Run(true);
       return;
-    case crosapi::mojom::VideoConferenceMediaDevice::kMicrophone:
+    case VideoConferenceMediaDevice::kMicrophone:
       is_microphone_muted_ = !enabled;
       std::move(callback).Run(true);
-      return;
-    case crosapi::mojom::VideoConferenceMediaDevice::kUnusedDefault:
-      std::move(callback).Run(false);
       return;
   }
 }

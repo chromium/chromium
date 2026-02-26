@@ -22,8 +22,7 @@
 namespace ash {
 namespace {
 
-class FakeVideoConferenceManagerClient
-    : public crosapi::mojom::VideoConferenceManagerClient {
+class FakeVideoConferenceManagerClient : public VideoConferenceManagerClient {
  public:
   FakeVideoConferenceManagerClient() = default;
   FakeVideoConferenceManagerClient(const FakeVideoConferenceManagerClient&) =
@@ -32,7 +31,7 @@ class FakeVideoConferenceManagerClient
       const FakeVideoConferenceManagerClient&) = delete;
   ~FakeVideoConferenceManagerClient() override = default;
 
-  // crosapi::mojom::VideoConferenceManagerClient overrides
+  // VideoConferenceManagerClient overrides
   void GetMediaApps(GetMediaAppsCallback callback) override {
     std::move(callback).Run(
         std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>());
@@ -42,19 +41,18 @@ class FakeVideoConferenceManagerClient
                    ReturnToAppCallback callback) override {}
 
   void SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice device,
-      bool disabled,
+      VideoConferenceMediaDevice device,
+      bool enabled,
       SetSystemMediaDeviceStatusCallback callback) override {}
 
   base::UnguessableToken id_{base::UnguessableToken::Create()};
 };
 
 // Calls all crosapi::mojom::VideoConference methods directly.
-void VerifyVideoConferenceManagerAsh(
-    FakeVideoConferenceManagerClient& client,
-    ash::VideoConferenceManagerAsh* vc_manager) {
+void VerifyVideoConferenceManagerAsh(FakeVideoConferenceManagerClient& client,
+                                     VideoConferenceManagerAsh* vc_manager) {
   base::test::TestFuture<bool> future1;
-  ash::VideoConferenceMediaUsageStatus status(client.id_);
+  VideoConferenceMediaUsageStatus status(client.id_);
   status.state.has_media_app = true;
   status.state.has_camera_permission = true;
   status.state.is_capturing_microphone = true;
@@ -64,9 +62,8 @@ void VerifyVideoConferenceManagerAsh(
   EXPECT_TRUE(future1.Take());
 
   base::test::TestFuture<bool> future2;
-  vc_manager->NotifyDeviceUsedWhileDisabled(
-      crosapi::mojom::VideoConferenceMediaDevice::kCamera, u"Test App",
-      future2.GetCallback());
+  vc_manager->NotifyDeviceUsedWhileDisabled(VideoConferenceMediaDevice::kCamera,
+                                            u"Test App", future2.GetCallback());
   EXPECT_TRUE(future2.Take());
 }
 
@@ -95,7 +92,7 @@ class VideoConferenceManagerAshBrowserTest : public InProcessBrowserTest {
 // Tests that VideoConferenceManagerAsh API calls do not crash when multiple Cpp
 // clients are registered and unregistered.
 IN_PROC_BROWSER_TEST_F(VideoConferenceManagerAshBrowserTest, Basics) {
-  auto* vc_manager = ash::VideoConferenceManagerAsh::Get();
+  auto* vc_manager = VideoConferenceManagerAsh::Get();
   {
     FakeVideoConferenceManagerClient cpp_client1;
     vc_manager->RegisterCppClient(&cpp_client1, cpp_client1.id_);

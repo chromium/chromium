@@ -42,7 +42,7 @@ VideoConferenceManagerAsh::VideoConferenceManagerAsh() {
   CHECK(!g_instance);
   g_instance = this;
 
-  if (ash::features::IsVideoConferenceEnabled()) {
+  if (features::IsVideoConferenceEnabled()) {
     GetTrayController()->Initialize(this);
   }
 }
@@ -53,7 +53,7 @@ VideoConferenceManagerAsh::~VideoConferenceManagerAsh() {
 }
 
 void VideoConferenceManagerAsh::RegisterCppClient(
-    crosapi::mojom::VideoConferenceManagerClient* client,
+    VideoConferenceManagerClient* client,
     const base::UnguessableToken& client_id) {
   client_id_to_wrapper_.try_emplace(client_id, client);
 }
@@ -105,7 +105,7 @@ void VideoConferenceManagerAsh::ReturnToApp(const base::UnguessableToken& id) {
 }
 
 void VideoConferenceManagerAsh::SetSystemMediaDeviceStatus(
-    crosapi::mojom::VideoConferenceMediaDevice device,
+    VideoConferenceMediaDevice device,
     bool enabled) {
   for (auto& [_, client_wrapper] : client_id_to_wrapper_) {
     client_wrapper.SetSystemMediaDeviceStatus(
@@ -122,10 +122,9 @@ void VideoConferenceManagerAsh::SetSystemMediaDeviceStatus(
 void VideoConferenceManagerAsh::CreateBackgroundImage() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
-  ash::SystemAppLaunchParams params;
+  SystemAppLaunchParams params;
   params.launch_source = apps::LaunchSource::kFromShelf;
-  ash::LaunchSystemWebAppAsync(profile, ash::SystemWebAppType::VC_BACKGROUND,
-                               params);
+  LaunchSystemWebAppAsync(profile, SystemWebAppType::VC_BACKGROUND, params);
 }
 
 void VideoConferenceManagerAsh::NotifyMediaUsageUpdate(
@@ -146,12 +145,12 @@ void VideoConferenceManagerAsh::NotifyMediaUsageUpdate(
 }
 
 void VideoConferenceManagerAsh::NotifyDeviceUsedWhileDisabled(
-    crosapi::mojom::VideoConferenceMediaDevice device,
+    VideoConferenceMediaDevice device,
     const std::u16string& app_name,
     base::OnceCallback<void(bool)> callback) {
   // TODO(crbug.com/40240249): Remove this conditional check once it becomes
   // possible to enable ash features in lacros browsertests.
-  if (ash::features::IsVideoConferenceEnabled()) {
+  if (features::IsVideoConferenceEnabled()) {
     GetTrayController()->HandleDeviceUsedWhileDisabled(std::move(device),
                                                        app_name);
   }
@@ -162,7 +161,7 @@ void VideoConferenceManagerAsh::NotifyClientUpdate(
     VideoConferenceClientUpdate update) {
   // TODO(crbug.com/40240249): Remove this conditional check once it becomes
   // possible to enable ash features in lacros browsertests.
-  if (ash::features::IsVideoConferenceEnabled()) {
+  if (features::IsVideoConferenceEnabled()) {
     GetTrayController()->HandleClientUpdate(std::move(update));
   }
 }
@@ -201,7 +200,7 @@ VideoConferenceMediaState VideoConferenceManagerAsh::GetAggregatedState() {
 void VideoConferenceManagerAsh::SendUpdatedState() {
   // TODO(crbug.com/40240249): Remove this conditional check once it becomes
   // possible to enable ash features in lacros browsertests.
-  if (ash::features::IsVideoConferenceEnabled()) {
+  if (features::IsVideoConferenceEnabled()) {
     GetTrayController()->UpdateWithMediaState(GetAggregatedState());
   }
 }

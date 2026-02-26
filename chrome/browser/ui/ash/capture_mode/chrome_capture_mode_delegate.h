@@ -115,14 +115,14 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   bool IsCameraDisabledByPolicy() const override;
   bool IsAudioCaptureDisabledByPolicy() const override;
   void RegisterVideoConferenceManagerClient(
-      crosapi::mojom::VideoConferenceManagerClient* client,
+      ash::VideoConferenceManagerClient* client,
       const base::UnguessableToken& client_id) override;
   void UnregisterVideoConferenceManagerClient(
       const base::UnguessableToken& client_id) override;
   void UpdateVideoConferenceManager(
       ash::VideoConferenceMediaUsageStatus status) override;
   void NotifyDeviceUsedWhileDisabled(
-      crosapi::mojom::VideoConferenceMediaDevice device) override;
+      ash::VideoConferenceMediaDevice device) override;
   void FinalizeSavedFile(
       base::OnceCallback<void(bool, const base::FilePath&)> callback,
       const base::FilePath& path,

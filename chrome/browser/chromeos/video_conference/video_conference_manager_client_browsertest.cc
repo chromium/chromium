@@ -249,25 +249,25 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceManagerClientTest,
   EXPECT_TRUE(client.microphone_system_enabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+      ash::VideoConferenceMediaDevice::kCamera,
       /*enabled=*/false);
   EXPECT_FALSE(client.camera_system_enabled());
   EXPECT_TRUE(client.microphone_system_enabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
+      ash::VideoConferenceMediaDevice::kMicrophone,
       /*enabled=*/false);
   EXPECT_FALSE(client.camera_system_enabled());
   EXPECT_FALSE(client.microphone_system_enabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice::kMicrophone,
+      ash::VideoConferenceMediaDevice::kMicrophone,
       /*enabled=*/true);
   EXPECT_FALSE(client.camera_system_enabled());
   EXPECT_TRUE(client.microphone_system_enabled());
 
   vc_manager->SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice::kCamera,
+      ash::VideoConferenceMediaDevice::kCamera,
       /*enabled=*/true);
   EXPECT_TRUE(client.camera_system_enabled());
   EXPECT_TRUE(client.microphone_system_enabled());

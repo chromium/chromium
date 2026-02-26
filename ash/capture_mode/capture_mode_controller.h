@@ -22,6 +22,7 @@
 #include "ash/scanner/scanner_session.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -88,7 +89,7 @@ class ASH_EXPORT CaptureModeController
       public recording::mojom::DriveFsQuotaDelegate,
       public SessionObserver,
       public chromeos::PowerManagerClient::Observer,
-      public crosapi::mojom::VideoConferenceManagerClient,
+      public VideoConferenceManagerClient,
       public ShellObserver {
  public:
   // Contains info about the folder used for saving the captured images and
@@ -438,12 +439,12 @@ class ASH_EXPORT CaptureModeController
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
 
-  // crosapi::mojom::VideoConferenceManagerClient:
+  // VideoConferenceManagerClient:
   void GetMediaApps(GetMediaAppsCallback callback) override;
   void ReturnToApp(const base::UnguessableToken& token,
                    ReturnToAppCallback callback) override;
   void SetSystemMediaDeviceStatus(
-      crosapi::mojom::VideoConferenceMediaDevice device,
+      VideoConferenceMediaDevice device,
       bool enabled,
       SetSystemMediaDeviceStatusCallback callback) override;
   // ShellObserver:

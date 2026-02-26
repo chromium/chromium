@@ -45,17 +45,15 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   void SetEffectsManager(VideoConferenceTrayEffectsManager* effects_manager);
   void GetMediaApps(base::OnceCallback<void(MediaApps)> ui_callback) override;
   void ReturnToApp(const base::UnguessableToken& id) override;
-  void HandleDeviceUsedWhileDisabled(
-      crosapi::mojom::VideoConferenceMediaDevice device,
-      const std::u16string& app_name) override;
+  void HandleDeviceUsedWhileDisabled(VideoConferenceMediaDevice device,
+                                     const std::u16string& app_name) override;
   void HandleClientUpdate(VideoConferenceClientUpdate update) override;
 
   // Adds or clears media app(s) in `media_apps_`.
   void AddMediaApp(crosapi::mojom::VideoConferenceMediaAppInfoPtr media_app);
   void ClearMediaApps();
 
-  const std::vector<
-      std::pair<crosapi::mojom::VideoConferenceMediaDevice, std::u16string>>&
+  const std::vector<std::pair<VideoConferenceMediaDevice, std::u16string>>&
   device_used_while_disabled_records() {
     return device_used_while_disabled_records_;
   }
@@ -78,8 +76,7 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   bool microphone_muted_ = false;
 
   // Records calls of the HandleDeviceUsedWhileDisabled for testing.
-  std::vector<
-      std::pair<crosapi::mojom::VideoConferenceMediaDevice, std::u16string>>
+  std::vector<std::pair<VideoConferenceMediaDevice, std::u16string>>
       device_used_while_disabled_records_;
 
   // A mapping from the media app's id to its launch state (whether the app is

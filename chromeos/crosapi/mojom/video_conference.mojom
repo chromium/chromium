@@ -9,14 +9,6 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/url.mojom";
 
-[Extensible]
-enum VideoConferenceMediaDevice {
-  // Required for marking enums extensible but should never occur.
-  [Default] kUnusedDefault,
-  kMicrophone,
-  kCamera,
-};
-
 // Note to keep this in sync with VideoConferenceAppType in enums.xml.
 [Extensible]
 enum VideoConferenceAppType {
@@ -71,18 +63,3 @@ struct VideoConferenceMediaAppInfo {
   VideoConferenceAppType app_type@7;
 };
 
-// Client interface implemented by browsers (ash or lacros).
-[Uuid="511e08b4-2151-4c93-b46c-ded5218304b0"]
-interface VideoConferenceManagerClient {
-  // Returns media apps running on this client.
-  GetMediaApps@0() => (array<VideoConferenceMediaAppInfo> apps);
-
-  // Opens and focuses media app corresponding to the |id|.
-  ReturnToApp@1(mojo_base.mojom.UnguessableToken id) => (bool success);
-
-  // Informs client of system device's enable status
-  SetSystemMediaDeviceStatus@2(VideoConferenceMediaDevice device,
-                               bool enabled) => (bool success);
-
-  // @3 is reserved.
-};
