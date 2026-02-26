@@ -141,6 +141,14 @@ public class EntityEditorModuleTest {
                                     PASSPORT_ISSUE_DATE_TYPE, /* value= */ "2026-02-15"))
                     .build();
 
+    private static final EntityInstance NEW_LOCAL_PASSPORT =
+            new EntityInstance.Builder(PASSPORT_TYPE)
+                    .setGUID("")
+                    .setRecordType(RecordType.LOCAL)
+                    .setModifiedDate(LocalDate.now(ZoneId.systemDefault()))
+                    .setUseCount(0)
+                    .build();
+
     private static final EntityInstance WALLET_PASSPORT =
             new EntityInstance.Builder(PASSPORT_TYPE)
                     .setGUID("guid")
@@ -193,11 +201,21 @@ public class EntityEditorModuleTest {
 
     @Test
     @SmallTest
-    public void testShowEditorDialog() {
+    public void testShowEditorDialogForNewEntity() {
+        when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
+        showEditorDialog(NEW_LOCAL_PASSPORT);
+        EditorDialogToolbar toolbar = mContainerView.findViewById(R.id.action_bar);
+        assertEquals(PASSPORT_TYPE.getAddEntityTypeString(), toolbar.getTitle());
+        assertTrue(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowEditorDialogForExistingEntity() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         showEditorDialog(LOCAL_PASSPORT);
         EditorDialogToolbar toolbar = mContainerView.findViewById(R.id.action_bar);
-        assertEquals(PASSPORT_TYPE.getAddEntityTypeString(), toolbar.getTitle());
+        assertEquals(PASSPORT_TYPE.getEditEntityTypeString(), toolbar.getTitle());
         assertTrue(mCoordinator.getEditorModelForTest().get(EntityEditorProperties.VISIBLE));
     }
 

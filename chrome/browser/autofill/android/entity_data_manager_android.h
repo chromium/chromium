@@ -65,6 +65,7 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
   void RemoveEntityInstance(JNIEnv* env, const std::string& guid);
 
   base::android::ScopedJavaLocalRef<jobject> GetEntityInstance(
+      JNIEnv* env,
       const std::string& guid);
 
   // Add or replace an `EntityInstance` depending on whether it already exists

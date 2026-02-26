@@ -89,7 +89,9 @@ import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
+import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
+import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
 import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.signin.base.AccountInfo;
@@ -103,6 +105,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -1078,6 +1081,43 @@ public class AutofillProfilesFragmentTest {
                     Criteria.checkThat(
                             "Entities category count should be 2", categoryCount, Matchers.is(2));
                 });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testAutofillAiEntities_opensEditorOnClick() throws Exception {
+        EntityInstanceWithLabels entity1 =
+                new EntityInstanceWithLabels(
+                        "guid1",
+                        /* entityInstanceLabel= */ "Vehicle",
+                        /* entityInstanceSubLabel= */ "Mercedez",
+                        /* storedInWallet= */ false);
+
+        when(sEntityDataManager.getEntitiesWithLabels()).thenReturn(Arrays.asList(entity1));
+
+        EntityInstance entityInstance =
+                new EntityInstance.Builder(TestUtils.getVehicleEntityType())
+                        .setGUID("guid1")
+                        .setRecordType(
+                                org.chromium.components.autofill.autofill_ai.RecordType.LOCAL)
+                        .setModifiedDate(LocalDate.of(2026, 2, 12))
+                        .setUseCount(0)
+                        .build();
+
+        when(sEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
+        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+
+        // Trigger a rebuild of the profile list to pick up the new mock entities.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+
+        Preference vehicleEntity =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> sSettingsActivityTestRule.getFragment().findPreference("guid1"));
+        ThreadUtils.runOnUiThreadBlocking(vehicleEntity::performClick);
+
+        onView(withText("Edit Vehicle")).check(matches(isDisplayed()));
     }
 
     private void checkPreferenceCount(int expectedPreferenceCount) {

@@ -85,8 +85,12 @@ class EntityEditorMediator {
     }
 
     private PropertyModel buildEditorModel() {
+        String editorTitle =
+                TextUtils.isEmpty(mEntityInstance.getGUID())
+                        ? mEntityInstance.getEntityType().getAddEntityTypeString()
+                        : mEntityInstance.getEntityType().getEditEntityTypeString();
         return new PropertyModel.Builder(EntityEditorProperties.ALL_KEYS)
-                .with(EDITOR_TITLE, mEntityInstance.getEntityType().getAddEntityTypeString())
+                .with(EDITOR_TITLE, editorTitle)
                 .with(DONE_RUNNABLE, this::onDone)
                 .with(CANCEL_RUNNABLE, this::onCancel)
                 .with(

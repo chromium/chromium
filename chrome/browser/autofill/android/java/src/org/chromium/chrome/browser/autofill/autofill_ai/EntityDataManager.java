@@ -14,6 +14,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.autofill_ai.AutofillAiOptInStatus;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
@@ -54,6 +55,17 @@ public class EntityDataManager implements Destroyable {
     public void removeEntityInstance(String guid) {
         ThreadUtils.assertOnUiThread();
         EntityDataManagerJni.get().removeEntityInstance(mNativeEntityDataManagerAndroid, guid);
+    }
+
+    /**
+     * Returns the entity instance represented by the given GUID.
+     *
+     * @param guid The GUID of the entity instance to return.
+     * @return The entity instance.
+     */
+    public @Nullable EntityInstance getEntityInstance(String guid) {
+        ThreadUtils.assertOnUiThread();
+        return EntityDataManagerJni.get().getEntityInstance(mNativeEntityDataManagerAndroid, guid);
     }
 
     /** Saves or update an entity. */
@@ -126,6 +138,9 @@ public class EntityDataManager implements Destroyable {
                 @JniType("autofill::AutofillAiOptInStatus") @AutofillAiOptInStatus int optInStatus);
 
         void removeEntityInstance(
+                long nativeEntityDataManagerAndroid, @JniType("std::string") String guid);
+
+        @Nullable EntityInstance getEntityInstance(
                 long nativeEntityDataManagerAndroid, @JniType("std::string") String guid);
 
         void addOrUpdateEntityInstance(long nativeEntityDataManagerAndroid, EntityInstance entity);

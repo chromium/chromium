@@ -432,6 +432,15 @@ static_library("payments_autofill_cc") {
   ]
 }
 
+android_library("autofill_ai_test_utils_java") {
+  testonly = true
+  sources = [ "java/src/org/chromium/components/autofill/autofill_ai/utils/TestUtils.java" ]
+  deps = [
+    ":main_autofill_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
 java_group("autofill_java") {
   deps = [
     ":main_autofill_java",

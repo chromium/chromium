@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory
 import org.chromium.chrome.browser.autofill.editors.address.AddressEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.address.AddressEditorCoordinator.Delegate;
 import org.chromium.chrome.browser.autofill.editors.address.EditorDialogView;
+import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator;
 import org.chromium.chrome.browser.autofill.editors.common.EditorObserverForTest;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.RecordType;
+import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.browser_ui.settings.CardWithButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -136,6 +138,20 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                     }
                 }
             };
+
+    private final EntityEditorCoordinator.Delegate mEntityEditorDelegate =
+            new EntityEditorCoordinator.Delegate() {
+                @Override
+                public void onDelete(EntityInstance entityInstance) {
+                    EntityDataManager entityDataManager =
+                            EntityDataManagerFactory.getForProfile(getProfile());
+                    if (entityDataManager == null) {
+                        return;
+                    }
+                    entityDataManager.removeEntityInstance(entityInstance.getGUID());
+                }
+            };
+
     private static @Nullable EditorObserverForTest sObserverForTest;
     static final String PREF_NEW_PROFILE = "new_profile";
     static final String MANAGE_PLUS_ADDRESSES = "manage_plus_addresses";
@@ -150,6 +166,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             "https://myaccount.google.com/personal-info?utm_source=chrome-settings&utm_medium=autofill";
 
     private @Nullable AddressEditorCoordinator mAddressEditor;
+    private @Nullable EntityEditorCoordinator mEntityEditor;
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
 
@@ -391,6 +408,21 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 pref.setTitle(entity.getEntityInstanceLabel());
                 pref.setSummary(entity.getEntityInstanceSubLabel());
                 pref.setKey(entity.getGuid());
+                pref.setOnPreferenceClickListener(
+                        preference -> {
+                            EntityInstance entityInstance =
+                                    entityDataManager.getEntityInstance(preference.getKey());
+                            if (entityInstance != null) {
+                                mEntityEditor =
+                                        new EntityEditorCoordinator(
+                                                getActivity(),
+                                                mEntityEditorDelegate,
+                                                getProfile(),
+                                                entityInstance);
+                                mEntityEditor.showEditorDialog();
+                            }
+                            return true;
+                        });
                 category.addPreference(pref);
             }
         }

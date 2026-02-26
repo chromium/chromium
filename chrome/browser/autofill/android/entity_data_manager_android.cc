@@ -4,6 +4,7 @@
 
 #include "chrome/browser/autofill/android/entity_data_manager_android.h"
 
+#include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/check_deref.h"
@@ -109,8 +110,8 @@ bool EntityDataManagerAndroid::SetAutofillAiOptInStatus(
 }
 
 jni_zero::ScopedJavaLocalRef<jobject>
-EntityDataManagerAndroid::GetEntityInstance(const std::string& guid) {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
+EntityDataManagerAndroid::GetEntityInstance(JNIEnv* env,
+                                            const std::string& guid) {
   base::optional_ref<const EntityInstance> entity =
       entity_data_manager_->GetEntityInstance(EntityInstance::EntityId(guid));
   if (!entity) {

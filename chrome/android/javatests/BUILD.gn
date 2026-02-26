@@ -234,6 +234,7 @@ android_library("chrome_test_java_helper") {
     "//chrome/test/android/test_trusted_web_activity:test_trusted_web_activity_java",
     "//components/android_autofill/browser:features_java",
     "//components/android_autofill/browser/test_support:java",
+    "//components/autofill/android:autofill_ai_test_utils_java",
     "//components/autofill/android:autofill_features_java",
     "//components/autofill/android:autofill_java",
     "//components/autofill/android:payments_interfaces_java",
