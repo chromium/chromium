@@ -19,7 +19,8 @@ const base::FilePath::CharType kDoomedPathName[] =
 
 StorageDirectory::StorageDirectory(const base::FilePath& profile_path)
     : web_storage_path_(profile_path.Append(kWebStorageDirectory)) {
-  DCHECK(!profile_path.empty()) << "Should not be called in incognito mode.";
+  CHECK(!profile_path.empty(), base::NotFatalUntil::M148)
+      << "Should not be called in incognito mode.";
 }
 
 StorageDirectory::~StorageDirectory() = default;
