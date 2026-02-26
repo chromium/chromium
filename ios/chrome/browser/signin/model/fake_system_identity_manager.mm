@@ -477,6 +477,14 @@ void FakeSystemIdentityManager::FetchCapabilities(
                      GetWeakPtr(), identity, names, std::move(callback)));
 }
 
+void FakeSystemIdentityManager::BuildExternalPrivacyContext(
+    id<SystemIdentity> identity,
+    UIViewController* view_controller,
+    BuildExternalPrivacyContextCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Do nothing.
+}
+
 bool FakeSystemIdentityManager::HandleMDMNotification(
     id<SystemIdentity> identity,
     NSArray<id<SystemIdentity>>* active_identities,

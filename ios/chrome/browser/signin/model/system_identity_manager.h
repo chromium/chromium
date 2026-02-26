@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -97,9 +98,14 @@ class SystemIdentityManager {
   // Callback invoked when the `FetchTokenAuthURL()` operation completes.
   using AuthenticatedURLCallback = base::OnceCallback<void(NSURL*, NSError*)>;
 
-  // Callback invoked when the `FetchCapabilitie()` operation completes.
+  // Callback invoked when the `FetchCapabilities()` operation completes.
   using FetchCapabilitiesCallback =
       base::OnceCallback<void(std::map<std::string, CapabilityResult>)>;
+
+  // Callback invoked when the `BuildExternalPrivacyContext()` operation
+  // completes.
+  using BuildExternalPrivacyContextCallback =
+      base::OnceCallback<void(NSError*)>;
 
   // Callback invoked when `HandleMDMNotification` completes. Is is invoked
   // with a boolean indicating whether the device is blocked or not.
@@ -227,6 +233,16 @@ class SystemIdentityManager {
   virtual void FetchCapabilities(id<SystemIdentity> identity,
                                  const std::vector<std::string>& names,
                                  FetchCapabilitiesCallback callback) = 0;
+
+  // Builds the external privacy context for `identity`.
+  // * `view_controller` is the view controller over which an iOS system UI may
+  //                     be presented to gather user consent.
+  // * `callback` is executed after the privacy context is built and any
+  //              associated system UI is dismissed.
+  virtual void BuildExternalPrivacyContext(
+      id<SystemIdentity> identity,
+      UIViewController* view_controller,
+      BuildExternalPrivacyContextCallback callback);
 
   // Asynchronously handles a potential MDM (Mobile Device Management) event.
   // The callback is invoked on the calling sequence when the operation
