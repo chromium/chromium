@@ -1,0 +1,15 @@
+[document web] sensitive
+++[section] sensitive
+++++[push button] name='Show Menu' sensitive details=[panel] details-from:popover-target
+++++[menu item] name='Orphan Disabled'
+++++[panel] sensitive details-for=[push button]
+++++++[menu item] name='Item 1' sensitive
+++++++[menu item] name='Item 2'
+++++++[panel] sensitive
+++++++++[check menu item] name='Checkbox 1' checkable checkable:true
+++++++++[check menu item] name='Checkbox 2' checked checkable checkable:true
+++++++++[check menu item] name='Checkbox 3' sensitive checkable checkable:true
+++++++[panel] sensitive
+++++++++[radio menu item] name='Radio 1' checkable checkable:true
+++++++++[radio menu item] name='Radio 2' checked checkable checkable:true
+++++++++[radio menu item] name='Radio 3' sensitive checkable checkable:true

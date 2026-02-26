@@ -1,0 +1,36 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++button name='Show Menu' detailsIds=group
+++++++++staticText name='Show Menu'
+++++++++++inlineTextBox name='Show Menu'
+++++++menuItem name='Orphan Disabled' restriction=disabled
+++++++++staticText name='Orphan Disabled'
+++++++++++inlineTextBox name='Orphan Disabled'
+++++++group ispopup=auto
+++++++++menuItem name='Item 1'
+++++++++++staticText name='Item 1'
+++++++++++++inlineTextBox name='Item 1'
+++++++++menuItem name='Item 2' restriction=disabled
+++++++++++staticText name='Item 2'
+++++++++++++inlineTextBox name='Item 2'
+++++++++group
+++++++++++menuItemCheckBox name='Checkbox 1' restriction=disabled checkedState=false
+++++++++++++staticText name='Checkbox 1'
+++++++++++++++inlineTextBox name='Checkbox 1'
+++++++++++menuItemCheckBox name='Checkbox 2' restriction=disabled checkedState=true
+++++++++++++staticText name='Checkbox 2'
+++++++++++++++inlineTextBox name='Checkbox 2'
+++++++++++menuItemCheckBox name='Checkbox 3' checkedState=false
+++++++++++++staticText name='Checkbox 3'
+++++++++++++++inlineTextBox name='Checkbox 3'
+++++++++group
+++++++++++menuItemRadio name='Radio 1' restriction=disabled checkedState=false
+++++++++++++staticText name='Radio 1'
+++++++++++++++inlineTextBox name='Radio 1'
+++++++++++menuItemRadio name='Radio 2' restriction=disabled checkedState=true
+++++++++++++staticText name='Radio 2'
+++++++++++++++inlineTextBox name='Radio 2'
+++++++++++menuItemRadio name='Radio 3' checkedState=false
+++++++++++++staticText name='Radio 3'
+++++++++++++++inlineTextBox name='Radio 3'

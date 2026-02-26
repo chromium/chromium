@@ -1,0 +1,27 @@
+<!--
+@BLINK-ALLOW:disabled
+@BLINK-ALLOW:role
+@AURALINUX-ALLOW:sensitive
+-->
+<!DOCTYPE html>
+<button id="button" popovertarget="menu">Show Menu</button>
+<menuitem disabled>Orphan Disabled</menuitem>
+<menulist id="menu" popover>
+  <menuitem>Item 1</menuitem>
+  <menuitem disabled>Item 2</menuitem>
+  <fieldset checkable="multiple">
+      <menuitem disabled>Checkbox 1</menuitem>
+      <menuitem disabled defaultchecked>Checkbox 2</menuitem>
+      <menuitem>Checkbox 3</menuitem>
+  </fieldset>
+  <fieldset checkable="single">
+      <menuitem disabled>Radio 1</menuitem>
+      <menuitem disabled defaultchecked>Radio 2</menuitem>
+      <menuitem>Radio 3</menuitem>
+  </fieldset>
+</menulist>
+<script>
+  window.addEventListener('load', () => {
+    button.click();
+  });
+</script>
