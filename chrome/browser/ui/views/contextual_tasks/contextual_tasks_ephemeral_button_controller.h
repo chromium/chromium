@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/uuid.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/sessions/core/session_id.h"

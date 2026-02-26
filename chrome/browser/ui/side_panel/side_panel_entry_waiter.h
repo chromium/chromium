@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_WAITER_H_
-#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_WAITER_H_
+#ifndef CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_WAITER_H_
+#define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_WAITER_H_
 
 #include <optional>
 
 #include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry.h"
 
 // This class uses the SidePanelContentProxy to wait for the SidePanelEntry's
 // content view to be ready to be shown.
@@ -47,4 +47,4 @@ class SidePanelEntryWaiter {
   base::CancelableOnceClosure loaded_callback_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_WAITER_H_
+#endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_WAITER_H_

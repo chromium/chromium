@@ -69,6 +69,8 @@ source_set("lens") {
     "//chrome/browser/ui/desktop_to_mobile_promos:service",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/side_panel",
+    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/views/frame:immersive_mode_controller",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/webui/cr_components/searchbox",

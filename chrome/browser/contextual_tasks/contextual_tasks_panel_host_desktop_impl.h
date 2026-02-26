@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_HOST_DESKTOP_IMPL_H_
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 
 class BrowserWindowInterface;
 class SidePanelUI;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_SCOPE_H_
-#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_SCOPE_H_
+#ifndef CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_SCOPE_H_
+#define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_SCOPE_H_
 
 #include <utility>
 
@@ -52,4 +52,4 @@ class SidePanelEntryScope {
   const ScopeType scope_type_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_SCOPE_H_
+#endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_SCOPE_H_

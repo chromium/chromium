@@ -6,7 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class SidePanelUtilTest : public testing::Test {

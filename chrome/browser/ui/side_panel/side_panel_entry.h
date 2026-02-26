@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_H_
-#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_H_
+#ifndef CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_H_
+#define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_H_
 
 #include <memory>
 #include <optional>
@@ -14,9 +14,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/class_property.h"
 #include "ui/base/models/image_model.h"
@@ -222,4 +222,4 @@ class SidePanelEntry final : public ui::PropertyHandler {
 extern const ui::ClassProperty<bool>* const
     kShouldShowTitleInSidePanelHeaderKey;
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_H_
+#endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_H_

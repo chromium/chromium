@@ -12,8 +12,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/browser/ui/webui_browser/bookmark_bar_page_handler.h"
@@ -53,7 +53,7 @@ namespace {
 
 std::string SidePanelEntryIdToTitle(SidePanelEntryId id) {
   // TODO(webium): Ideally, the titles should be added to SIDE_PANEL_ENTRY_IDS
-  // macros in chrome/browser/ui/views/side_panel/side_panel_entry_id.h, and
+  // macros in chrome/browser/ui/side_panel/side_panel_entry_id.h, and
   // then this conversion function would be written in that same file,
   // analogously to the other functions it contains. But it appears that some
   // of the entry  ids there are stale and no longer have a matching generated

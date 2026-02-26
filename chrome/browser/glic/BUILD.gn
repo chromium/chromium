@@ -415,6 +415,7 @@ source_set("impl") {
       "//chrome/browser/ui:browser_list",
       "//chrome/browser/ui:browser_tab_strip",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/user_education",

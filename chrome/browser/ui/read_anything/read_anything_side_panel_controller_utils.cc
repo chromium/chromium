@@ -6,9 +6,9 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 
 bool IsReadAnythingEntryShowing(BrowserWindowInterface* browser) {
   // The side panel is not immediately hidden, and IsSidePanelEntryShowing

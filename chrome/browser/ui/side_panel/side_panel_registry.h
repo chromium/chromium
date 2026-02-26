@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_REGISTRY_H_
-#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_REGISTRY_H_
+#ifndef CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_REGISTRY_H_
+#define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_REGISTRY_H_
 
 #include <memory>
 #include <variant>
 #include <vector>
 
 #include "base/supports_user_data.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_scope.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
@@ -93,4 +93,4 @@ class SidePanelRegistry final : public SidePanelEntryObserver,
   ui::ScopedUnownedUserData<SidePanelRegistry> scoped_unowned_user_data_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_REGISTRY_H_
+#endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_REGISTRY_H_

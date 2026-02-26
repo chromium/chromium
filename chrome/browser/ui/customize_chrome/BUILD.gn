@@ -9,7 +9,8 @@ source_set("customize_chrome") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/ui/views/side_panel:side_panel_enums",
     "//chrome/browser/ui/webui/side_panel/customize_chrome/",
   ]
+
+  deps = [ "//chrome/browser/ui/side_panel" ]
 }

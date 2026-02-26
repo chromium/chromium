@@ -7,8 +7,8 @@
 
 #include <optional>
 
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui_base.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui_base.h"
 
 class Browser;
 class WebUIBrowserWindow;

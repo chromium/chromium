@@ -554,6 +554,7 @@ if (!is_android) {
       "//chrome/browser/ui",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//components/autofill/content/browser:test_support",

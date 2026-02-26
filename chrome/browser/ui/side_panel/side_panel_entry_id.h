@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_ID_H_
-#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_ID_H_
+#ifndef CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_ID_H_
+#define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_ID_H_
 
 #include <optional>
 #include <string>
@@ -57,4 +57,4 @@ std::string_view SidePanelEntryIdToHistogramName(SidePanelEntryId id);
 std::optional<actions::ActionId> SidePanelEntryIdToActionId(
     SidePanelEntryId id);
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENTRY_ID_H_
+#endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_ID_H_

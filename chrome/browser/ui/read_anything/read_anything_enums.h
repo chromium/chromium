@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

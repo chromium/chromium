@@ -21,6 +21,7 @@ source_set("impl") {
   deps = [
     ":customize_buttons",
     "//chrome/browser/profiles",
+    "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/webui:webui_util",
     "//components/feature_engagement/public:feature_constants",
   ]

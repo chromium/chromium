@@ -1508,7 +1508,10 @@ source_set("platform_browser_tests") {
   ]
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/location_bar" ]
+    deps += [
+      "//chrome/browser/ui/location_bar",
+      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    ]
   }
 
   public_deps = [ "//components/browsing_data/content" ]
@@ -2727,6 +2730,7 @@ if (!is_android) {
       "//chrome/browser/ui/search:browser_tests",
       "//chrome/browser/ui/search_engines:browser_tests",
       "//chrome/browser/ui/send_tab_to_self:browser_tests",
+      "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/signin:browser_tests",
       "//chrome/browser/ui/startup:browser_tests",
@@ -2763,7 +2767,6 @@ if (!is_android) {
       "//chrome/browser/ui/views/page_action",
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/side_panel",
-      "//chrome/browser/ui/views/side_panel:side_panel_enums",
       "//chrome/browser/ui/views/tabs/vertical:browser_tests",
       "//chrome/browser/ui/views/toolbar:browser_tests",
       "//chrome/browser/ui/views/user_education",
@@ -8451,6 +8454,7 @@ test("unit_tests") {
       "../browser/ui/incognito_allowed_url_unittest.cc",
       "../browser/ui/intent_picker_tab_helper_unittest.cc",
       "../browser/ui/recently_audible_helper_unittest.cc",
+      "../browser/ui/side_panel/side_panel_entry_key_unittest.cc",
       "../browser/ui/url_identity_unittest.cc",
       "../browser/ui/views/accessibility/theme_tracking_non_accessible_image_view_unittest.cc",
       "../browser/ui/views/autofill/address_editor_view_unittest.cc",
@@ -8471,7 +8475,6 @@ test("unit_tests") {
       "../browser/ui/views/passwords/password_save_update_view_unittest.cc",
       "../browser/ui/views/passwords/post_save_compromised_bubble_view_unittest.cc",
       "../browser/ui/views/passwords/shared_passwords_notification_view_unittest.cc",
-      "../browser/ui/views/side_panel/side_panel_entry_key_unittest.cc",
       "../browser/ui/views/side_panel/side_panel_util_unittest.cc",
       "../browser/ui/views/tab_sharing/tab_sharing_infobar_unittest.cc",
       "../browser/ui/views/tab_sharing/tab_sharing_status_message_view_unittest.cc",
@@ -8626,6 +8629,7 @@ test("unit_tests") {
       "//chrome/browser/ui/safety_hub",
       "//chrome/browser/ui/search:test_support_ui",
       "//chrome/browser/ui/search:unit_tests",
+      "//chrome/browser/ui/side_panel",
       "//chrome/browser/ui/startup:startup_tab",
       "//chrome/browser/ui/sync",
       "//chrome/browser/ui/tab_sharing",

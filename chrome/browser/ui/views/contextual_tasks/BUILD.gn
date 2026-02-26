@@ -12,6 +12,7 @@ source_set("contextual_tasks") {
   ]
 
   public_deps = [
+    "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/views/page_action",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/views/toolbar",

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_H_
-#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_H_
+#ifndef CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_UI_H_
+#define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_UI_H_
 
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace content {
@@ -111,4 +111,4 @@ class SidePanelUI {
   virtual void SetNoDelaysForTesting(bool no_delays_for_testing) = 0;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_H_
+#endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_UI_H_

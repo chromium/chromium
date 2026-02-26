@@ -1546,6 +1546,7 @@ static_library("ui") {
       "//chrome/browser/ui/media_router",
       "//chrome/browser/ui/media_router:impl",
       "//chrome/browser/ui/permission_bubble",
+      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/signin:impl",
       "//chrome/browser/ui/startup:startup_tab",
@@ -1579,7 +1580,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/js_optimization",
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/new_tab_footer",
-      "//chrome/browser/ui/views/side_panel:side_panel_enums",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/views/toolbar:impl",
       "//chrome/browser/ui/views/zoom",
@@ -1859,6 +1859,9 @@ static_library("ui") {
       # TODO(crbug.com/438226511): Remove this circular dependency when c/b/ui/browser.h gets
       # componentized.
       "//chrome/browser/ui/web_applications:launch_utils",
+
+      #TODO(crbug.com/486967014): Remove once views dep is removed for side panel.
+      "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     ]
 
     if (is_win || is_chromeos) {

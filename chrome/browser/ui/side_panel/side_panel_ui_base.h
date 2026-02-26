@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_BASE_H_
-#define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_BASE_H_
+#ifndef CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_UI_BASE_H_
+#define CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_UI_BASE_H_
 
 #include <memory>
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 
 class Browser;
 class SidePanelEntry;
@@ -166,4 +166,4 @@ class SidePanelUIBase : public SidePanelUI {
   std::map<SidePanelEntry::PanelType, std::unique_ptr<PanelData>> panel_data_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_BASE_H_
+#endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_UI_BASE_H_

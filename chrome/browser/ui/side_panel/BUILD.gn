@@ -1,0 +1,65 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("side_panel") {
+  sources = [
+    "side_panel_entry_id.cc",
+    "side_panel_entry_id.h",
+    "side_panel_entry_key.cc",
+    "side_panel_entry_key.h",
+    "side_panel_entry_observer.h",
+    "side_panel_entry_scope.cc",
+    "side_panel_entry_scope.h",
+    "side_panel_enums.h",
+    "side_panel_prefs.cc",
+    "side_panel_prefs.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/gfx/geometry",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/tabs:tab_model",
+    "//components/pref_registry",
+    "//extensions/common:common_constants",
+  ]
+}
+
+source_set("side_panel_views_dependent") {
+  sources = [
+    "side_panel_action_callback.cc",
+    "side_panel_action_callback.h",
+    "side_panel_entry.cc",
+    "side_panel_entry.h",
+    "side_panel_entry_waiter.cc",
+    "side_panel_entry_waiter.h",
+    "side_panel_registry.cc",
+    "side_panel_registry.h",
+    "side_panel_ui.h",
+    "side_panel_ui_base.cc",
+    "side_panel_ui_base.h",
+  ]
+
+  deps = [
+    ":side_panel",
+    "//base",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/side_panel",
+    "//extensions/common:common_constants",
+    "//ui/base",
+    "//ui/views",
+  ]
+
+  allow_circular_includes_from =
+      [ "//chrome/browser/ui/views/side_panel:side_panel" ]
+}
