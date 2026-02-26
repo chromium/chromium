@@ -198,7 +198,10 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
   // endpoints.
   void CheckConnection(const IPEndPoint& expected_ip_endpoint,
                        const ServiceEndpoint& expected_service_endpoint) const {
-    EXPECT_EQ(connect_job_->GetServiceEndpoint(), expected_service_endpoint);
+    // This destroys the ServiceEndpoint held by the ConnectJob, but this is the
+    // only place it's used in these tests, so going so is fine.
+    EXPECT_EQ(connect_job_->PassServiceEndpoint(), expected_service_endpoint);
+
     ASSERT_TRUE(test_delegate_->socket());
     IPEndPoint actual_ip_endpoint;
     ASSERT_THAT(test_delegate_->socket()->GetPeerAddress(&actual_ip_endpoint),
@@ -831,7 +834,7 @@ TEST_F(TcpConnectJobTest, FirstAttemptedIPEndPoint) {
   struct ExpectedEndpoints {
     IPEndPoint ip_endpoint;
     // The index in the associated `service_endpoints` vector of the
-    // ServiceEndpoint that is expected to be returned by GetServiceEndpoint().
+    // ServiceEndpoint that is expected to be returned by PassServiceEndpoint().
     int service_endpoint_index;
   };
 
@@ -1600,6 +1603,31 @@ TEST_F(TcpConnectJobTest, ServiceEndpointOverride) {
       ASSERT_TRUE(client_socket_factory_.AllDataProvidersUsed());
     }
   }
+}
+
+// Check that the DNS request is destroyed on error, and thus can't call back
+// into the ConnectJob.
+TEST_F(TcpConnectJobTest, RequestDestroyedOnError) {
+  auto request = host_resolver_.AddFakeRequest();
+  request->add_endpoint(CreateServiceEndpoint({kIpV4Endpoint1}))
+      .CompleteStartAsynchronously(OK);
+  AddConnect(MockConnect(ASYNC, ERR_FAILED), kIpV4Endpoint1);
+  InitRunAndExpectError(
+      ERR_FAILED, /*expect_sync_result=*/false,
+      /*expected_connection_attempts=*/{{kIpV4Endpoint1, ERR_FAILED}});
+  EXPECT_FALSE(request);
+}
+
+// Check that the DNS request is destroyed on success, and thus can't call back
+// into the ConnectJob.
+TEST_F(TcpConnectJobTest, RequestDestroyedOnSuccess) {
+  const auto service_endpoint = CreateServiceEndpoint({kIpV4Endpoint1});
+  auto request = host_resolver_.AddFakeRequest();
+  request->add_endpoint(service_endpoint).CompleteStartAsynchronously(OK);
+  AddConnect(MockConnect(ASYNC, OK), kIpV4Endpoint1);
+  InitRunAndExpectSuccess(kIpV4Endpoint1, service_endpoint,
+                          /*expect_sync_result=*/false);
+  EXPECT_FALSE(request);
 }
 
 ////////////////////////////////////

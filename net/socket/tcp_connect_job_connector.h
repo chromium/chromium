@@ -60,9 +60,10 @@ class TcpConnectJob::Connector {
   // completed successfully.
   std::unique_ptr<StreamSocket> PassSocket();
 
-  // Returns the current address. May only be called by the parent TcpConnectJob
-  // once the connector has successfully completed.
-  const IPEndPoint& CurrentAddress() const;
+  // Returns the ServiceEndpoint that was ultimately used. May only be called
+  // once the Connector has completed successfully, and may only be called once,
+  // since it moves out the cached value.
+  ServiceEndpoint PassFinalServiceEndpoint();
 
   bool is_waiting_for_endpoint() const {
     return next_state_ == State::kWaitForIPEndPoint;
@@ -126,6 +127,7 @@ class TcpConnectJob::Connector {
   State next_state_ = State::kWaitForIPEndPoint;
 
   std::unique_ptr<StreamSocket> transport_socket_;
+  std::optional<ServiceEndpoint> final_service_endpoint_;
 };
 
 }  // namespace net

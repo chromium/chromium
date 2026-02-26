@@ -67,9 +67,10 @@ std::unique_ptr<StreamSocket> TcpConnectJob::Connector::PassSocket() {
   return std::move(transport_socket_);
 }
 
-const IPEndPoint& TcpConnectJob::Connector::CurrentAddress() const {
-  DCHECK(current_address_);
-  return *current_address_;
+ServiceEndpoint TcpConnectJob::Connector::PassFinalServiceEndpoint() {
+  DCHECK_EQ(next_state_, State::kDone);
+  DCHECK(final_service_endpoint_);
+  return std::move(final_service_endpoint_).value();
 }
 
 void TcpConnectJob::Connector::OnIOComplete(int result) {
@@ -198,18 +199,21 @@ int TcpConnectJob::Connector::DoVerifyIPEndPointUsable() {
     return ERR_IO_PENDING;
   }
 
-  // If the address is not usable, treat it as a failure, and let
-  // DoConnectAndVerifyComplete() handle the error.
-  //
-  // We could more proactively probe for this situation when we receive DNS
-  // results and notice they're now cypto ready, to avoid waiting for connect
-  // complete before checking again, and weren't before. Unclear if this case
-  // is common enough to be worth the more complicated state transitions,
-  // particularly in the WebSocket case.
-  if (!parent_->IsIPEndPointUsable(CurrentAddress())) {
+  // Search for the corresponding ServiceEndpoint. If not found, the address is
+  // not usable.
+  const ServiceEndpoint* service_endpoint =
+      parent_->FindServiceEndpoint(*current_address_);
+  if (!service_endpoint) {
+    // If the address is not usable, treat it as a failure of the current IP.
+    //
+    // We could more proactively probe for this situation when we receive DNS
+    // results and notice they're now cypto ready, to avoid waiting for connect
+    // complete before checking again, and weren't before. Unclear if this case
+    // is common enough to be worth the more complicated state transitions.
     return OnEndpointFailed(ERR_NAME_NOT_RESOLVED);
   }
 
+  final_service_endpoint_ = *service_endpoint;
   next_state_ = State::kDone;
   return OK;
 }
@@ -229,7 +233,7 @@ int TcpConnectJob::Connector::OnEndpointFailed(int error) {
   // less interesting than connection errors, though we don't actually know if
   // the older error is from a usable endpoint or not.
   if (error != ERR_NAME_NOT_RESOLVED) {
-    parent_->connection_attempts_.emplace_back(CurrentAddress(), error);
+    parent_->connection_attempts_.emplace_back(*current_address_, error);
   }
 
   // Drop the socket to release the endpoint lock, if there is one.

@@ -106,10 +106,11 @@ class NET_EXPORT_PRIVATE TcpConnectJob
       const override;
 
   // Callers should use this instead of GetHostResolverEndpointResult(). May
-  // only be called on success. Not a virtual ConnectJob method because no other
-  // implementations need it, and don't want to accidentally use a proxy's
-  // ServiceEndpoint at non-proxy ConnectJob layers.
-  ServiceEndpoint GetServiceEndpoint() const;
+  // only be called on success, and may only be called at most once. Not a
+  // virtual ConnectJob method because no other implementations need it, and
+  // don't want to accidentally use a proxy's ServiceEndpoint at non-proxy
+  // ConnectJob layers.
+  ServiceEndpoint PassServiceEndpoint();
 
   static base::TimeDelta ConnectionTimeout();
 
@@ -206,11 +207,6 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // considered usable, and has been received.
   const ServiceEndpoint* FindServiceEndpoint(
       const IPEndPoint& ip_endpoint) const;
-
-  // Convenience wrapper for FindServiceEndpoint().
-  bool IsIPEndPointUsable(const IPEndPoint& ip_endpoint) const {
-    return FindServiceEndpoint(ip_endpoint) != nullptr;
-  }
 
   // Updates `is_svcb_optional_`. Called whenever more ServiceEndpoints are
   // available.
@@ -316,8 +312,8 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // cleared, even if the connection is ultimately disabled.
   bool has_established_connection_ = false;
 
-  // IP that was used, in the case of success.
-  std::optional<IPEndPoint> final_address_;
+  // ServiceEndpoint that was used, in the case of success.
+  std::optional<ServiceEndpoint> final_service_endpoint_;
 
   // Whether this is complete or not. Mostly serves a safety valve for async
   // calls that can't be cancelled coming in late, and to double-check that the

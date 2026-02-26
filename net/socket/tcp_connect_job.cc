@@ -123,16 +123,9 @@ TcpConnectJob::GetHostResolverEndpointResult() const {
   NOTREACHED();
 }
 
-ServiceEndpoint TcpConnectJob::GetServiceEndpoint() const {
-  DCHECK(final_address_);
-  // TODO(https://crbug.com/484073410): This search has already been done. Could
-  // consider caching the result. If we cached a copy, we could also destroy the
-  // request on cancellation, though then we'd want to make this std::move() out
-  // the return value, to avoid the extra copy.
-  const ServiceEndpoint* service_endpoint =
-      FindServiceEndpoint(*final_address_);
-  DCHECK(service_endpoint);
-  return *service_endpoint;
+ServiceEndpoint TcpConnectJob::PassServiceEndpoint() {
+  CHECK(final_service_endpoint_);
+  return std::move(final_service_endpoint_).value();
 }
 
 base::TimeDelta TcpConnectJob::ConnectionTimeout() {
@@ -181,7 +174,9 @@ void TcpConnectJob::ChangePriorityInternal(RequestPriority priority) {
 
 int TcpConnectJob::DoServiceEndpointsUpdated(
     std::optional<int> dns_request_final_result) {
-  DCHECK(!is_done_);
+  // SetDone() destroys the DNS request on completion, preventing this from
+  // being reached once `is_done_` is set to true.
+  CHECK(!is_done_);
   DCHECK(!dns_request_complete_);
 
   // Reset progress through endpoint results, as new ones may have been inserted
@@ -252,20 +247,13 @@ int TcpConnectJob::DoServiceEndpointsUpdated(
 }
 
 void TcpConnectJob::TryAdvanceWaitingConnectorsAsync() {
-  // These `is_done_` checks my be be hit if the consumer doesn't delete `this`
-  // immediately on completion.
-  //
-  // TODO(https://crbug.com/484073410): Either test this, or figure out a better
-  // option..
-  if (is_done_) {
-    return;
-  }
-
   NotifyDelegateIfDone(DoTryAdvanceWaitingConnectors());
 }
 
 int TcpConnectJob::DoTryAdvanceWaitingConnectors() {
-  DCHECK(!is_done_);
+  // SetDone() should cancel all pending activity on completion, so this should
+  // not be reachable after completion.
+  CHECK(!is_done_);
   DCHECK(!primary_connector_->is_done() ||
          (ipv4_connector_ && !ipv4_connector_->is_done()));
 
@@ -290,7 +278,7 @@ int TcpConnectJob::DoTryAdvanceWaitingConnectors() {
   }
 
   // If we reach this point, There should still be work to do.
-  DCHECK(!is_done_);
+  CHECK(!is_done_);
   DCHECK(!primary_connector_->is_done() ||
          (ipv4_connector_ && !ipv4_connector_->is_done()));
 
@@ -328,23 +316,11 @@ int TcpConnectJob::DoConnectorComplete(int result, Connector& connector) {
 }
 
 void TcpConnectJob::OnServiceEndpointsUpdated() {
-  // These `is_done_` checks my be be hit if the consumer doesn't delete `this`
-  // immediately on completion.
-  if (is_done_) {
-    return;
-  }
-
   NotifyDelegateIfDone(
       DoServiceEndpointsUpdated(/*dns_request_final_result=*/std::nullopt));
 }
 
 void TcpConnectJob::OnServiceEndpointRequestFinished(int rv) {
-  // These `is_done_` checks my be be hit if the consumer doesn't delete `this`
-  // immediately on completion.
-  if (is_done_) {
-    return;
-  }
-
   NotifyDelegateIfDone(
       DoServiceEndpointsUpdated(/*dns_request_final_result=*/rv));
 }
@@ -357,7 +333,7 @@ void TcpConnectJob::OnConnectorComplete(int result, Connector& connector) {
 }
 
 void TcpConnectJob::OnSlow() {
-  DCHECK(!is_done_);
+  CHECK(!is_done_);
   DCHECK(!ipv4_connector_);
 
   // Make a second connector, so have separate IPv4 and IPv6 connectors. The
@@ -374,7 +350,7 @@ void TcpConnectJob::OnSlow() {
 TcpConnectJob::IPEndPointInfo TcpConnectJob::GetNextIPEndPoint(
     const Connector& connector) {
   const auto& service_endpoints = GetEndpointResults();
-  DCHECK(!is_done_);
+  CHECK(!is_done_);
   DCHECK(!connector.is_done());
 
   // Other job, if any, for checking its state, and advancing it if necessary.
@@ -524,16 +500,17 @@ void TcpConnectJob::UpdateSvcbOptional() {
 }
 
 int TcpConnectJob::SetDone(int result, Connector* connector) {
-  DCHECK(!is_done_);
-  DCHECK(!final_address_);
+  CHECK(!is_done_);
+  DCHECK(!final_service_endpoint_);
 
   if (result == OK) {
     DCHECK(EndpointsCryptoReady());
     DCHECK(connector);
-    DCHECK(IsIPEndPointUsable(connector->CurrentAddress()));
 
     SetSocket(connector->PassSocket(), GetDnsAliasResults());
-    final_address_ = connector->CurrentAddress();
+    final_service_endpoint_ = connector->PassFinalServiceEndpoint();
+    DCHECK(final_service_endpoint_);
+    DCHECK(IsEndpointResultUsable(*final_service_endpoint_));
   } else {
     // If there were no attempts, there were no usable addresses. Use `result`
     // in that case.
@@ -548,14 +525,18 @@ int TcpConnectJob::SetDone(int result, Connector* connector) {
     // `connection_attempts_`, conveniently, avoids that issue, since it's in
     // chronological order.
     result = connection_attempts_.back().result;
-
-    // On success, may still need the DNS result, but don't need it on failure.
-    dns_request_.reset();
   }
 
+  // Cancel all work, and any pending callbacks. Main methods all have
+  // `CHECK(!is_done_)` to catch if they are incorrectly run after completion,
+  // to help ensure this is comprehensive.
   slow_timer_.Stop();
   primary_connector_.reset();
   ipv4_connector_.reset();
+  dns_request_.reset();
+  // This will prevent any pending posted TryAdvanceWaitingConnectorsAsync tasks
+  // from running.
+  weak_ptr_factory_.InvalidateWeakPtrs();
   is_done_ = true;
 
   return result;
