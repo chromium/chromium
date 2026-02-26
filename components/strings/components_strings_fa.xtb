@@ -953,7 +953,7 @@
 <translation id="2496402116964818747">می‌توانید در <ph name="SETTINGS" /> انتخاب کنید از اثر انگشت شما برای تکمیل گذرواژه‌ها استفاده شود یا نه</translation>
 <translation id="2498091847651709837">اسکن کارت جدید</translation>
 <translation id="2501270939904835585">برچسب (ساتن)</translation>
-<translation id="2501278716633472235">بازگشت</translation>
+<translation id="2501278716633472235">برگشتن</translation>
 <translation id="250346157641628208">کاغذ (جوهرافشان)</translation>
 <translation id="2505063700931618106">اطلاعات کارت ذخیره شد</translation>
 <translation id="2505268675989099013">محافظت از حساب</translation>
@@ -3844,7 +3844,7 @@
 <translation id="7140922144008419614">دکمه «جستجوی زبانه‌ها»، برای جستجوی زبانه‌ها، فعال کنید</translation>
 <translation id="7143668445748322952">فایل‌های دوربین، بارگیری‌ها، و نماگرفت‌ها</translation>
 <translation id="7143682719845053166">PRC 32K</translation>
-<translation id="7144878232160441200">سعی مجدد</translation>
+<translation id="7144878232160441200">امتحان مجدد</translation>
 <translation id="7150146631451105528"><ph name="DATE" /></translation>
 <translation id="7152230779180489711">آخرین بازدید</translation>
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش دیگر}one{<ph name="PAYMENT_METHOD_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش دیگر}other{<ph name="PAYMENT_METHOD_PREVIEW" /> و <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> روش دیگر}}</translation>
