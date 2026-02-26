@@ -78,8 +78,16 @@ class ApplyManifestMigrationCommandBrowserTest : public WebAppBrowserTestBase {
   base::HistogramTester histogram_tester_;
 };
 
+// TODO(crbug.com/487848164): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_MigrateFromSuggestedLaunchSuccess \
+  DISABLED_MigrateFromSuggestedLaunchSuccess
+#else
+#define MAYBE_MigrateFromSuggestedLaunchSuccess \
+  MigrateFromSuggestedLaunchSuccess
+#endif
 IN_PROC_BROWSER_TEST_F(ApplyManifestMigrationCommandBrowserTest,
-                       MigrateFromSuggestedLaunchSuccess) {
+                       MAYBE_MigrateFromSuggestedLaunchSuccess) {
   Browser* app_browser = InstallWebAppFromPageGetBrowser(
       browser(), https_server()->GetURL(kMigrateFromInstallUrl));
 
