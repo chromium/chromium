@@ -200,14 +200,14 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
 
   std::unique_ptr<CanvasResourceProvider> provider;
   gfx::Size surface_size(host->width(), host->height());
-  const bool can_use_gpu =
+  const bool use_gpu_raster =
       SharedGpuContext::IsGpuCompositingEnabled() &&
       RuntimeEnabledFeatures::Accelerated2dCanvasEnabled() &&
       !(CreationAttributes().will_read_frequently ==
         CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
   const bool use_shared_image =
-      can_use_gpu || (host->HasPlaceholderCanvas() &&
-                      SharedGpuContext::IsGpuCompositingEnabled());
+      use_gpu_raster || (host->HasPlaceholderCanvas() &&
+                         SharedGpuContext::IsGpuCompositingEnabled());
   const bool use_scanout =
       use_shared_image && host->HasPlaceholderCanvas() &&
       SharedGpuContext::MaySupportImageChromium() &&
@@ -226,7 +226,7 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
     provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
         host->Size(), format, alpha_type, color_space,
         SharedGpuContext::ContextProviderWrapper(),
-        can_use_gpu ? RasterMode::kGPU : RasterMode::kCPU,
+        use_gpu_raster ? RasterMode::kGPU : RasterMode::kCPU,
         shared_image_usage_flags, host);
   } else if (host->HasPlaceholderCanvas()) {
     // using the software compositor
