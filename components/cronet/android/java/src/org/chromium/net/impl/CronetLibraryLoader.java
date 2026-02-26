@@ -79,9 +79,12 @@ public class CronetLibraryLoader {
      * that this will be dead code in Chromium but it will be used in AOSP.
      */
     public static void preload() {
-        preload(/* executeSelfTests= */ false);
+        preload(/* executeSelfTests= */ true);
     }
 
+    // TODO(b/485870943): This method is kept so we can quickly turn off the self-tests in AOSP
+    // without introducing divergence. It should be deleted once the default has been merged in
+    // both tot and stable tracks.
     /**
      * This method will be called by the Zygote pre-fork to preload the native code. Which means
      * that this will be dead code in Chromium but it will be used in AOSP.
