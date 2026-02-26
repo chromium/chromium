@@ -40,7 +40,7 @@ enum class PrefetchStreamingURLLoaderStatus {
   kHeadReceivedWaitingOnBody = 1,
 
   // The request redirected to a different target.
-  kRedirected_DEPRECATED = 2,
+  // DEPRECATED kRedirected = 2,
 
   // Both the head and body of the response were received successfully.
   kSuccessfulNotServed = 3,
@@ -50,7 +50,7 @@ enum class PrefetchStreamingURLLoaderStatus {
   // Failure reasons based on the head of the response, corresponding to
   // `PrefetchErrorOnResponseReceived`.
   kPrefetchWasDecoy = 6,
-  kFailedInvalidHead = 7,
+  // DEPRECATED kFailedInvalidHead = 7,
   kFailedInvalidHeaders = 8,
   kFailedNon2XX = 9,
   kFailedMIMENotSupported = 10,
@@ -62,7 +62,7 @@ enum class PrefetchStreamingURLLoaderStatus {
 
   // Statuses related to redirects.
   kFollowRedirect_DEPRECATED = 13,
-  kPauseRedirectForEligibilityCheck_DEPRECATED = 14,
+  // DEPRECATED kPauseRedirectForEligibilityCheck = 14,
   kFailedInvalidRedirect = 15,
   kStopSwitchInNetworkContextForRedirect = 16,
 
@@ -86,7 +86,7 @@ using PrefetchRequestHandler = base::OnceCallback<void(
 // failure reason.
 enum class PrefetchErrorOnResponseReceived {
   kPrefetchWasDecoy,
-  kFailedInvalidHead,
+  // DEPRECATED kFailedInvalidHead,
   kFailedInvalidHeaders,
   kFailedNon2XX,
   kFailedMIMENotSupported

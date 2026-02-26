@@ -472,7 +472,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
           /*on_receive_redirect=*/NotReachedTagForTests(),
           &on_head_received_loop,
           // This will cause the prefetch to be marked as not servable.
-          PrefetchErrorOnResponseReceived::kFailedInvalidHead);
+          PrefetchErrorOnResponseReceived::kFailedNon2XX);
 
   // Simulates a prefetch with a non-2XX response. This should be marked as not
   // servable.
@@ -495,7 +495,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
 
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus",
-      PrefetchStreamingURLLoaderStatus::kFailedInvalidHead, 1);
+      PrefetchStreamingURLLoaderStatus::kFailedNon2XX, 1);
 }
 
 TEST_P(PrefetchStreamingURLLoaderTest, FailedNetError_HeadReceived) {
@@ -1452,8 +1452,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, DoesNotTakeDevToolsObserver) {
           /*on_response_received=*/NotReachedTagForTests(),
           /*on_complete=*/NotReachedTagForTests(),
           /*on_receive_redirect=*/NotReachedTagForTests(),
-          /*on_head_received=*/NotReachedTagForTests(),
-          PrefetchErrorOnResponseReceived::kFailedInvalidHead);
+          /*on_head_received=*/NotReachedTagForTests());
 
   EXPECT_TRUE(request.trusted_params->devtools_observer.is_valid());
 }

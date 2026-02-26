@@ -231,6 +231,7 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   TRACE_EVENT("loading", "PrefetchStreamingURLLoader::OnReceiveResponse",
               flow_);
+  CHECK(head);
 
   // Cached metadata is not supported for prefetch.
   cached_metadata.reset();

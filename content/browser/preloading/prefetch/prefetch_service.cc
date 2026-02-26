@@ -1782,10 +1782,6 @@ PrefetchService::OnPrefetchResponseStarted(
     return PrefetchErrorOnResponseReceived::kPrefetchWasDecoy;
   }
 
-  if (!head) {
-    return PrefetchErrorOnResponseReceived::kFailedInvalidHead;
-  }
-
   if (prefetch_container && prefetch_container->IsCrossSiteContaminated()) {
     head->is_prefetch_with_cross_site_contamination = true;
   }

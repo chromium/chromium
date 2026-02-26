@@ -31,8 +31,6 @@ GetStatusForRecordingFromErrorOnResponseReceived(
   switch (status) {
     case PrefetchErrorOnResponseReceived::kPrefetchWasDecoy:
       return PrefetchStreamingURLLoaderStatus::kPrefetchWasDecoy;
-    case PrefetchErrorOnResponseReceived::kFailedInvalidHead:
-      return PrefetchStreamingURLLoaderStatus::kFailedInvalidHead;
     case PrefetchErrorOnResponseReceived::kFailedInvalidHeaders:
       return PrefetchStreamingURLLoaderStatus::kFailedInvalidHeaders;
     case PrefetchErrorOnResponseReceived::kFailedNon2XX:
