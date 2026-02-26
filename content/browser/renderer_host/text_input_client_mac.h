@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/synchronization/condition_variable.h"
@@ -28,6 +29,7 @@ class Range;
 
 namespace content {
 class RenderFrameHost;
+class RenderFrameHostImpl;
 class RenderWidgetHost;
 
 // This class does synchronous IPC calls to the renderer process in order to
@@ -145,6 +147,14 @@ class CONTENT_EXPORT TextInputClientMac {
 
   TextInputClientMac();
   ~TextInputClientMac();
+
+  // Implementations of the public sync methods that take a WeakPtr and a copy
+  // of the argument, because EnterNestedLoop could invalidate pointers and
+  // references.
+  uint32_t GetCharacterIndexAtPoint(base::WeakPtr<RenderFrameHostImpl> rfhi,
+                                    gfx::Point point);
+  gfx::Rect GetFirstRectForRange(base::WeakPtr<RenderFrameHostImpl> rfhi,
+                                 gfx::Range range);
 
   // The critical sections that the Condition guards are in Get*() methods.
   // These methods lock the internal condition for use before the asynchronous

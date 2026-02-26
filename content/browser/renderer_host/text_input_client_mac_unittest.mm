@@ -21,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -33,6 +34,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -83,9 +85,10 @@ using ResponseType = std::variant<uint32_t, gfx::Rect>;
 class FakeAsyncRequestDelegate final
     : public TextInputClientMac::AsyncRequestDelegate {
  public:
-  FakeAsyncRequestDelegate(FunctionToTest function_to_test,
-                           RenderWidgetHost* widget)
-      : function_to_test_(function_to_test), widget_(widget) {
+  using BeforeResponseCallback = base::OnceCallback<void(RenderFrameHost*)>;
+
+  explicit FakeAsyncRequestDelegate(FunctionToTest function_to_test)
+      : function_to_test_(function_to_test) {
     // Wait until `host_impl_` is created on the IO thread.
     base::test::TestFuture<std::unique_ptr<TextInputHostImpl>> host_future;
     GetIOThreadTaskRunner()->PostTaskAndReplyWithResult(
@@ -105,10 +108,18 @@ class FakeAsyncRequestDelegate final
   FakeAsyncRequestDelegate(const FakeAsyncRequestDelegate&) = delete;
   FakeAsyncRequestDelegate& operator=(const FakeAsyncRequestDelegate&) = delete;
 
-  void AddResponse(ResponseType response,
-                   base::TimeDelta delay = TestTimeouts::tiny_timeout()) {
+  FunctionToTest function_to_test() const { return function_to_test_; }
+
+  // Adds `response`, to be sent after `delay`, to the queue.
+  // `before_response_callback` will be called before the delay starts so that
+  // tests can add extra steps.
+  void AddResponse(
+      ResponseType response,
+      base::TimeDelta delay = TestTimeouts::tiny_timeout(),
+      BeforeResponseCallback before_response_callback = base::DoNothing()) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    responses_.emplace(std::move(response), delay);
+    responses_.emplace(std::move(response), delay,
+                       std::move(before_response_callback));
   }
 
   size_t NumResponses() const {
@@ -163,12 +174,11 @@ class FakeAsyncRequestDelegate final
                         const TextInputClientMac::RequestToken& request_token) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ASSERT_TRUE(rfh);
-    ASSERT_EQ(rfh->GetRenderWidgetHost(), widget_);
     if (responses_.empty()) {
       return;
     }
-    auto [response, delay] = responses_.front();
-    responses_.pop();
+    auto& [response, delay, before_response_callback] = responses_.front();
+    std::move(before_response_callback).Run(rfh);
 
     if (delay.is_zero()) {
       // Poke the response into TextInputClient, bypassing TextInputHostImpl
@@ -197,17 +207,17 @@ class FakeAsyncRequestDelegate final
                          request_token, std::move(response)),
           delay);
     }
+
+    responses_.pop();
   }
 
   const FunctionToTest function_to_test_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  raw_ptr<RenderWidgetHost> widget_ GUARDED_BY_CONTEXT(sequence_checker_);
-
   // Queue of responses to send, with delay.
-  base::queue<std::pair<ResponseType, base::TimeDelta>> responses_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::queue<std::tuple<ResponseType, base::TimeDelta, BeforeResponseCallback>>
+      responses_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The TextInputHostImpl object must be accessed on the IO thread, but the
   // pointer to it must be accessed on this sequence. It's not using
@@ -292,8 +302,7 @@ class TextInputClientMacTest
  protected:
   std::unique_ptr<TextInputClientMac::AsyncRequestDelegate> CreateDelegate()
       override {
-    return std::make_unique<FakeAsyncRequestDelegate>(function_to_test_,
-                                                      widget());
+    return std::make_unique<FakeAsyncRequestDelegate>(function_to_test_);
   }
 
   // Initializes a ResponseType value from an arbitrary integer.
@@ -425,7 +434,10 @@ TEST_P(TextInputClientMacTest, SyncGetter_NoFocus) {
 
 TEST_P(TextInputClientMacTest, SyncGetter_Basic) {
   const ResponseType kSuccessValue = CreateResponse(42);
-  request_delegate().AddResponse(kSuccessValue);
+  request_delegate().AddResponse(
+      kSuccessValue, TestTimeouts::tiny_timeout(),
+      base::BindLambdaForTesting(
+          [this](RenderFrameHost* rfh) { EXPECT_EQ(rfh, this->main_rfh()); }));
 
   FocusWebContentsOnMainFrame();
   EXPECT_EQ(TextInputClientGetSync(widget()), kSuccessValue);
@@ -462,6 +474,44 @@ TEST_P(TextInputClientMacTest, SyncGetter_Immediate) {
 
   FocusWebContentsOnMainFrame();
   EXPECT_EQ(TextInputClientGetSync(widget()), kSuccessValue);
+}
+
+// Tests that TextInputClient sends a request to the focused frame, even if it's
+// not the main frame.
+TEST_P(TextInputClientMacTest, SyncGetter_ChildFrame) {
+  const ResponseType kSuccessValue = CreateResponse(42);
+
+  RenderFrameHost* child_rfh =
+      RenderFrameHostTester::For(main_rfh())->AppendChild("child frame");
+  FocusWebContentsOnFrame(child_rfh);
+
+  request_delegate().AddResponse(
+      kSuccessValue, TestTimeouts::tiny_timeout(),
+      base::BindLambdaForTesting(
+          [child_rfh](RenderFrameHost* rfh) { EXPECT_EQ(child_rfh, rfh); }));
+
+  EXPECT_EQ(TextInputClientGetSync(widget()), kSuccessValue);
+}
+
+// Tests that TextInputClient can handle a frame being deleted by a nested
+// RunLoop while waiting for a reply.
+TEST_P(TextInputClientMacTest, SyncGetter_DeleteFrame) {
+  const ResponseType kSuccessValue = CreateResponse(42);
+
+  request_delegate().AddResponse(
+      kSuccessValue, TestTimeouts::tiny_timeout(),
+      base::BindLambdaForTesting([this](RenderFrameHost* rfh) {
+        EXPECT_EQ(WebContents::FromRenderFrameHost(rfh), this->web_contents());
+        this->DeleteContents();
+      }));
+  FocusWebContentsOnMainFrame();
+
+  // GetFirstRectForRange needs the frame to do coordinate translation.
+  EXPECT_EQ(TextInputClientGetSync(widget()),
+            request_delegate().function_to_test() ==
+                    FunctionToTest::kGetFirstRectForRange
+                ? NoFocusResponse()
+                : kSuccessValue);
 }
 
 // Tests that TextInputClient ignores replies that arrive after it times out.
