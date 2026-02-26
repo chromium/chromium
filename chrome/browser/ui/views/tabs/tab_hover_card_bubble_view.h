@@ -113,6 +113,9 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
+  // BubbleDialogDelegate:
+  void OnAnchorBoundsChanged() override;
+
   raw_ptr<FadeLabelView> title_label_ = nullptr;
   raw_ptr<FadeLabelView> domain_label_ = nullptr;
   raw_ptr<ThumbnailView> thumbnail_view_ = nullptr;
