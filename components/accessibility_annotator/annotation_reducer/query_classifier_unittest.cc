@@ -25,141 +25,136 @@ class QueryClassifierTest : public ::testing::Test {
 };
 
 TEST_F(QueryClassifierTest, EmptyQuery) {
-  EXPECT_EQ(classifier_->Classify(u""), AutofillDataType::kUnknown);
-  EXPECT_EQ(classifier_->Classify(u"  "), AutofillDataType::kUnknown);
+  EXPECT_EQ(classifier_->Classify(u""), QueryIntentType::kUnknown);
+  EXPECT_EQ(classifier_->Classify(u"  "), QueryIntentType::kUnknown);
 }
 
 TEST_F(QueryClassifierTest, QueryWithOnlyStopWords) {
-  EXPECT_EQ(classifier_->Classify(u"what is my"), AutofillDataType::kUnknown);
+  EXPECT_EQ(classifier_->Classify(u"what is my"), QueryIntentType::kUnknown);
   EXPECT_EQ(classifier_->Classify(u"show me the details please"),
-            AutofillDataType::kUnknown);
+            QueryIntentType::kUnknown);
 }
 
 TEST_F(QueryClassifierTest, AddressIntents) {
   EXPECT_EQ(classifier_->Classify(u"my zip code"),
-            AutofillDataType::kAddressZip);
+            QueryIntentType::kAddressZip);
   EXPECT_EQ(classifier_->Classify(u"What is the postal code?"),
-            AutofillDataType::kAddressZip);
+            QueryIntentType::kAddressZip);
   EXPECT_EQ(classifier_->Classify(u"show me the City"),
-            AutofillDataType::kAddressCity);
-  EXPECT_EQ(classifier_->Classify(u"town"), AutofillDataType::kAddressCity);
-  EXPECT_EQ(classifier_->Classify(u"state"), AutofillDataType::kAddressState);
+            QueryIntentType::kAddressCity);
+  EXPECT_EQ(classifier_->Classify(u"town"), QueryIntentType::kAddressCity);
+  EXPECT_EQ(classifier_->Classify(u"state"), QueryIntentType::kAddressState);
   EXPECT_EQ(classifier_->Classify(u"province please"),
-            AutofillDataType::kAddressState);
+            QueryIntentType::kAddressState);
   EXPECT_EQ(classifier_->Classify(u"country"),
-            AutofillDataType::kAddressCountry);
+            QueryIntentType::kAddressCountry);
   EXPECT_EQ(classifier_->Classify(u"street name"),
-            AutofillDataType::kAddressLine1);
-  EXPECT_EQ(classifier_->Classify(u"address line 1"),
-            AutofillDataType::kAddressLine1);
+            QueryIntentType::kAddressStreetAddress);
   EXPECT_EQ(classifier_->Classify(u"What is my address?"),
-            AutofillDataType::kAddress);
-  EXPECT_EQ(classifier_->Classify(u"home address"), AutofillDataType::kAddress);
+            QueryIntentType::kAddressFull);
+  EXPECT_EQ(classifier_->Classify(u"home address"),
+            QueryIntentType::kAddressFull);
 }
 
 TEST_F(QueryClassifierTest, ContactIntents) {
-  EXPECT_EQ(classifier_->Classify(u"my phone number"),
-            AutofillDataType::kPhone);
-  EXPECT_EQ(classifier_->Classify(u"mobile"), AutofillDataType::kPhone);
+  EXPECT_EQ(classifier_->Classify(u"my phone number"), QueryIntentType::kPhone);
+  EXPECT_EQ(classifier_->Classify(u"mobile"), QueryIntentType::kPhone);
   EXPECT_EQ(classifier_->Classify(u"what is my email"),
-            AutofillDataType::kEmail);
-  EXPECT_EQ(classifier_->Classify(u"e-mail address"), AutofillDataType::kEmail);
-  EXPECT_EQ(classifier_->Classify(u"name"), AutofillDataType::kName);
-  EXPECT_EQ(classifier_->Classify(u"what is my name"), AutofillDataType::kName);
+            QueryIntentType::kEmail);
+  EXPECT_EQ(classifier_->Classify(u"e-mail address"), QueryIntentType::kEmail);
+  EXPECT_EQ(classifier_->Classify(u"name"), QueryIntentType::kNameFull);
+  EXPECT_EQ(classifier_->Classify(u"what is my name"),
+            QueryIntentType::kNameFull);
 }
 
 TEST_F(QueryClassifierTest, PaymentIntents) {
-  EXPECT_EQ(classifier_->Classify(u"IBAN"), AutofillDataType::kIban);
+  EXPECT_EQ(classifier_->Classify(u"IBAN"), QueryIntentType::kIban);
   EXPECT_EQ(classifier_->Classify(u"my bank account number"),
-            AutofillDataType::kIban);
+            QueryIntentType::kIban);
 }
 
 TEST_F(QueryClassifierTest, EntityIntents) {
   EXPECT_EQ(classifier_->Classify(u"license plate"),
-            AutofillDataType::kVehiclePlate);
-  EXPECT_EQ(classifier_->Classify(u"VIN number"),
-            AutofillDataType::kVehicleVin);
-  EXPECT_EQ(classifier_->Classify(u"car details"), AutofillDataType::kVehicle);
-  EXPECT_EQ(classifier_->Classify(u"my vehicle"), AutofillDataType::kVehicle);
+            QueryIntentType::kVehiclePlateNumber);
+  EXPECT_EQ(classifier_->Classify(u"VIN number"), QueryIntentType::kVehicleVin);
+  EXPECT_EQ(classifier_->Classify(u"car details"), QueryIntentType::kVehicle);
+  EXPECT_EQ(classifier_->Classify(u"my vehicle"), QueryIntentType::kVehicle);
   EXPECT_EQ(classifier_->Classify(u"passport info"),
-            AutofillDataType::kPassport);
+            QueryIntentType::kPassportFull);
   EXPECT_EQ(classifier_->Classify(u"flight number"),
-            AutofillDataType::kFlightReservation);
+            QueryIntentType::kFlightReservationFull);
   EXPECT_EQ(classifier_->Classify(u"my reservation"),
-            AutofillDataType::kFlightReservation);
+            QueryIntentType::kFlightReservationFull);
   EXPECT_EQ(classifier_->Classify(u"national id"),
-            AutofillDataType::kNationalIdCard);
+            QueryIntentType::kNationalIdCardFull);
   EXPECT_EQ(classifier_->Classify(u"redress number"),
-            AutofillDataType::kRedressNumber);
+            QueryIntentType::kRedressNumberFull);
   EXPECT_EQ(classifier_->Classify(u"known traveler number"),
-            AutofillDataType::kKnownTravelerNumber);
+            QueryIntentType::kKnownTravelerNumberFull);
   EXPECT_EQ(classifier_->Classify(u"my KTN"),
-            AutofillDataType::kKnownTravelerNumber);
+            QueryIntentType::kKnownTravelerNumberFull);
   EXPECT_EQ(classifier_->Classify(u"driver's license"),
-            AutofillDataType::kDriversLicense);
+            QueryIntentType::kDriversLicenseFull);
   EXPECT_EQ(classifier_->Classify(u"driving license"),
-            AutofillDataType::kDriversLicense);
+            QueryIntentType::kDriversLicenseFull);
 }
 
 TEST_F(QueryClassifierTest, MixedWithStopWords) {
   EXPECT_EQ(classifier_->Classify(u"show me my zip code please"),
-            AutofillDataType::kAddressZip);
+            QueryIntentType::kAddressZip);
   EXPECT_EQ(classifier_->Classify(u"what is the car's VIN"),
-            AutofillDataType::kVehicleVin);
+            QueryIntentType::kVehicleVin);
   EXPECT_EQ(classifier_->Classify(u"get my flight details"),
-            AutofillDataType::kFlightReservation);
+            QueryIntentType::kFlightReservationFull);
 }
 
 TEST_F(QueryClassifierTest, CaseInsensitivity) {
   EXPECT_EQ(classifier_->Classify(u"MY ZIP CODE"),
-            AutofillDataType::kAddressZip);
+            QueryIntentType::kAddressZip);
   EXPECT_EQ(classifier_->Classify(u"My Zip Code"),
-            AutofillDataType::kAddressZip);
+            QueryIntentType::kAddressZip);
 }
 
 TEST_F(QueryClassifierTest, PunctuationHandling) {
-  EXPECT_EQ(classifier_->Classify(u"zip, code!"),
-            AutofillDataType::kAddressZip);
-  EXPECT_EQ(classifier_->Classify(u"city?"), AutofillDataType::kAddressCity);
+  EXPECT_EQ(classifier_->Classify(u"zip, code!"), QueryIntentType::kAddressZip);
+  EXPECT_EQ(classifier_->Classify(u"city?"), QueryIntentType::kAddressCity);
   EXPECT_EQ(classifier_->Classify(u"my email, please"),
-            AutofillDataType::kEmail);
+            QueryIntentType::kEmail);
 }
 
 TEST_F(QueryClassifierTest, NoKeywordMatch) {
   EXPECT_EQ(classifier_->Classify(u"how is the weather"),
-            AutofillDataType::kUnknown);
-  EXPECT_EQ(classifier_->Classify(u"set a timer"), AutofillDataType::kUnknown);
+            QueryIntentType::kUnknown);
+  EXPECT_EQ(classifier_->Classify(u"set a timer"), QueryIntentType::kUnknown);
 }
 
 TEST_F(QueryClassifierTest, SubstringNonMatch) {
-  EXPECT_EQ(classifier_->Classify(u"bank account"), AutofillDataType::kIban);
-  EXPECT_EQ(classifier_->Classify(u"cartoon"), AutofillDataType::kUnknown);
+  EXPECT_EQ(classifier_->Classify(u"bank account"), QueryIntentType::kIban);
+  EXPECT_EQ(classifier_->Classify(u"cartoon"), QueryIntentType::kUnknown);
 }
 
 TEST_F(QueryClassifierTest, MultiWordAddressIntents) {
   EXPECT_EQ(classifier_->Classify(u"my postal code"),
-            AutofillDataType::kAddressZip);
+            QueryIntentType::kAddressZip);
   EXPECT_EQ(classifier_->Classify(u"what is the home address"),
-            AutofillDataType::kAddress);
+            QueryIntentType::kAddressFull);
   EXPECT_EQ(classifier_->Classify(u"work address please"),
-            AutofillDataType::kAddress);
-  EXPECT_EQ(classifier_->Classify(u"address line 1"),
-            AutofillDataType::kAddressLine1);
+            QueryIntentType::kAddressFull);
 }
 
 TEST_F(QueryClassifierTest, MultiWordEntityIntents) {
   EXPECT_EQ(classifier_->Classify(u"show my license plate"),
-            AutofillDataType::kVehiclePlate);
+            QueryIntentType::kVehiclePlateNumber);
   EXPECT_EQ(classifier_->Classify(u"plate number"),
-            AutofillDataType::kVehiclePlate);
+            QueryIntentType::kVehiclePlateNumber);
   EXPECT_EQ(classifier_->Classify(u"flight reservation code"),
-            AutofillDataType::kFlightReservation);
+            QueryIntentType::kFlightReservationFull);
   EXPECT_EQ(classifier_->Classify(u"what is my national id"),
-            AutofillDataType::kNationalIdCard);
+            QueryIntentType::kNationalIdCardFull);
   EXPECT_EQ(classifier_->Classify(u"known traveler number"),
-            AutofillDataType::kKnownTravelerNumber);
+            QueryIntentType::kKnownTravelerNumberFull);
   EXPECT_EQ(classifier_->Classify(u"drivers license"),
-            AutofillDataType::kDriversLicense);
+            QueryIntentType::kDriversLicenseFull);
 }
 
 }  // namespace annotation_reducer

@@ -6,6 +6,7 @@ source_set("annotation_reducer") {
   sources = [
     "query_classifier.cc",
     "query_classifier.h",
+    "query_intent_type.h",
   ]
 
   public_deps = [ "//base" ]

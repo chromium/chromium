@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/accessibility_annotator/annotation_reducer/query_intent_type.h"
 
 namespace annotation_reducer {
 
@@ -23,7 +24,7 @@ namespace {
 
 // Check if the 'words' contains 'seq' as a sub-sequence.
 bool ContainsSequence(base::span<const std::u16string> words,
-                       base::span<const std::u16string> seq) {
+                      base::span<const std::u16string> seq) {
   if (seq.empty()) {
     return true;
   }
@@ -36,39 +37,39 @@ bool ContainsSequence(base::span<const std::u16string> words,
 QueryClassifier::QueryClassifier() = default;
 QueryClassifier::~QueryClassifier() = default;
 
-AutofillDataType QueryClassifier::Classify(
-    const std::u16string& query) {
+QueryIntentType QueryClassifier::Classify(const std::u16string& query) {
   // Hardcoded list of stop words.
   // TODO(crbug.com/485682510): Load stopwords from a single JSON.
   static constexpr auto kStopWords =
-      base::MakeFixedFlatSet<std::u16string_view>(
-          {u"i",       u"me",       u"my",         u"myself",     u"we",
-           u"our",     u"ours",     u"ourselves",  u"you",        u"your",
-           u"yours",   u"yourself", u"yourselves", u"he",         u"him",
-           u"his",     u"himself",  u"she",        u"her",        u"hers",
-           u"herself", u"it",       u"its",        u"itself",     u"they",
-           u"them",    u"their",    u"theirs",     u"themselves", u"what",
-           u"which",   u"who",      u"whom",       u"this",       u"that",
-           u"these",   u"those",    u"am",         u"is",         u"are",
-           u"was",     u"were",     u"be",         u"been",       u"being",
-           u"have",    u"has",      u"had",        u"having",     u"do",
-           u"does",    u"did",      u"doing",      u"a",          u"an",
-           u"the",     u"and",      u"but",        u"if",         u"or",
-           u"because", u"as",       u"until",      u"while",      u"of",
-           u"at",      u"by",       u"for",        u"with",       u"about",
-           u"against", u"between",  u"into",       u"through",    u"during",
-           u"before",  u"after",    u"above",      u"below",      u"to",
-           u"from",    u"up",       u"down",       u"in",         u"out",
-           u"on",      u"off",      u"over",       u"under",      u"again",
-           u"further", u"then",     u"once",       u"here",       u"there",
-           u"when",    u"where",    u"why",        u"how",        u"all",
-           u"any",     u"both",     u"each",       u"few",        u"more",
-           u"most",    u"other",    u"some",       u"such",       u"no",
-           u"nor",     u"not",      u"only",       u"own",        u"same",
-           u"so",      u"than",     u"too",        u"very",       u"s",
-           u"t",       u"can",      u"will",       u"just",       u"don",
-           u"should",  u"now",      u"show",       u"what's"      u"please",
-           u"tell",    u"get",      u"detail",     u"details",    u"whats",});
+      base::MakeFixedFlatSet<std::u16string_view>({
+          u"i",       u"me",       u"my",         u"myself",     u"we",
+          u"our",     u"ours",     u"ourselves",  u"you",        u"your",
+          u"yours",   u"yourself", u"yourselves", u"he",         u"him",
+          u"his",     u"himself",  u"she",        u"her",        u"hers",
+          u"herself", u"it",       u"its",        u"itself",     u"they",
+          u"them",    u"their",    u"theirs",     u"themselves", u"what",
+          u"which",   u"who",      u"whom",       u"this",       u"that",
+          u"these",   u"those",    u"am",         u"is",         u"are",
+          u"was",     u"were",     u"be",         u"been",       u"being",
+          u"have",    u"has",      u"had",        u"having",     u"do",
+          u"does",    u"did",      u"doing",      u"a",          u"an",
+          u"the",     u"and",      u"but",        u"if",         u"or",
+          u"because", u"as",       u"until",      u"while",      u"of",
+          u"at",      u"by",       u"for",        u"with",       u"about",
+          u"against", u"between",  u"into",       u"through",    u"during",
+          u"before",  u"after",    u"above",      u"below",      u"to",
+          u"from",    u"up",       u"down",       u"in",         u"out",
+          u"on",      u"off",      u"over",       u"under",      u"again",
+          u"further", u"then",     u"once",       u"here",       u"there",
+          u"when",    u"where",    u"why",        u"how",        u"all",
+          u"any",     u"both",     u"each",       u"few",        u"more",
+          u"most",    u"other",    u"some",       u"such",       u"no",
+          u"nor",     u"not",      u"only",       u"own",        u"same",
+          u"so",      u"than",     u"too",        u"very",       u"s",
+          u"t",       u"can",      u"will",       u"just",       u"don",
+          u"should",  u"now",      u"show",       u"what's",     u"please",
+          u"tell",    u"get",      u"detail",     u"details",    u"whats",
+      });
 
   std::u16string lower_query = base::ToLowerASCII(query);
   // Split by space and common punctuation that might not be part of words.
@@ -81,7 +82,7 @@ AutofillDataType QueryClassifier::Classify(
   });
 
   if (all_words.empty()) {
-    return AutofillDataType::kUnknown;
+    return QueryIntentType::kUnknown;
   }
 
   auto contains = [&](auto... keyword_phrases) {
@@ -94,65 +95,65 @@ AutofillDataType QueryClassifier::Classify(
   };
 
   if (contains(u"zip", u"zip-code", u"postal-code", u"postal")) {
-    return AutofillDataType::kAddressZip;
+    return QueryIntentType::kAddressZip;
   }
   if (contains(u"city", u"town")) {
-    return AutofillDataType::kAddressCity;
+    return QueryIntentType::kAddressCity;
   }
   if (contains(u"state", u"province")) {
-    return AutofillDataType::kAddressState;
+    return QueryIntentType::kAddressState;
   }
   if (contains(u"country")) {
-    return AutofillDataType::kAddressCountry;
+    return QueryIntentType::kAddressCountry;
   }
-  if (contains(u"street", u"address line1", u"address line 1")) {
-    return AutofillDataType::kAddressLine1;
+  if (contains(u"street")) {
+    return QueryIntentType::kAddressStreetAddress;
   }
   if (contains(u"phone", u"mobile", u"telephone")) {
-    return AutofillDataType::kPhone;
+    return QueryIntentType::kPhone;
   }
   if (contains(u"email", u"e-mail")) {
-    return AutofillDataType::kEmail;
+    return QueryIntentType::kEmail;
   }
   if (contains(u"name")) {
-    return AutofillDataType::kName;
+    return QueryIntentType::kNameFull;
   }
   if (contains(u"address", u"home", u"work", u"live")) {
-    return AutofillDataType::kAddress;
+    return QueryIntentType::kAddressFull;
   }
   if (contains(u"iban", u"bank account")) {
-    return AutofillDataType::kIban;
+    return QueryIntentType::kIban;
   }
   if (contains(u"license plate", u"plate number", u"plate")) {
-    return AutofillDataType::kVehiclePlate;
+    return QueryIntentType::kVehiclePlateNumber;
   }
   if (contains(u"vin")) {
-    return AutofillDataType::kVehicleVin;
+    return QueryIntentType::kVehicleVin;
   }
   if (contains(u"vehicle", u"car")) {
-    return AutofillDataType::kVehicle;
+    return QueryIntentType::kVehicle;
   }
   if (contains(u"passport")) {
-    return AutofillDataType::kPassport;
+    return QueryIntentType::kPassportFull;
   }
   if (contains(u"flight reservation", u"flight", u"reservation")) {
-    return AutofillDataType::kFlightReservation;
+    return QueryIntentType::kFlightReservationFull;
   }
   if (contains(u"national id", u"id card", u"id")) {
-    return AutofillDataType::kNationalIdCard;
+    return QueryIntentType::kNationalIdCardFull;
   }
   if (contains(u"redress number", u"redress")) {
-    return AutofillDataType::kRedressNumber;
+    return QueryIntentType::kRedressNumberFull;
   }
   if (contains(u"known traveler number", u"traveler number", u"ktn")) {
-    return AutofillDataType::kKnownTravelerNumber;
+    return QueryIntentType::kKnownTravelerNumberFull;
   }
   if (contains(u"drivers license", u"driver's license", u"driving license",
                u"license")) {
-    return AutofillDataType::kDriversLicense;
+    return QueryIntentType::kDriversLicenseFull;
   }
 
-  return AutofillDataType::kUnknown;
+  return QueryIntentType::kUnknown;
 }
 
 }  // namespace annotation_reducer

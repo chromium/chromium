@@ -8,33 +8,9 @@
 #include <string>
 #include <vector>
 
-namespace annotation_reducer {
+#include "components/accessibility_annotator/annotation_reducer/query_intent_type.h"
 
-enum class AutofillDataType {
-  kUnknown,
-  // Address
-  kAddress,
-  kAddressLine1,
-  kAddressCity,
-  kAddressState,
-  kAddressZip,
-  kAddressCountry,
-  kPhone,
-  kEmail,
-  kName,
-  // Payments
-  kIban,
-  // Autofill AI entity types
-  kVehicle,
-  kVehiclePlate,
-  kVehicleVin,
-  kPassport,
-  kDriversLicense,
-  kFlightReservation,
-  kNationalIdCard,
-  kRedressNumber,
-  kKnownTravelerNumber,
-};
+namespace annotation_reducer {
 
 class QueryClassifier {
  public:
@@ -43,7 +19,7 @@ class QueryClassifier {
   QueryClassifier& operator=(const QueryClassifier&) = delete;
   ~QueryClassifier();
 
-  AutofillDataType Classify(const std::u16string& query);
+  QueryIntentType Classify(const std::u16string& query);
 
  private:
   void InitializeStopWords();
