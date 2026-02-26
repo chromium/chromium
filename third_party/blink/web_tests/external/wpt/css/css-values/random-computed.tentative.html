@@ -98,7 +98,7 @@ const iterations = 5;
 // does not generate deterministic test failure output. Chrome relies on test
 // failure output to be deterministic and stable for failing test expectations.
 function test_random_equals(actual, expected, message = "Random values should be equal") {
-  assert_equals(actual, expected, message);
+  assert_true(actual == expected, message);
 }
 
 function test_random_computed_value(property, specified, computed, titleExtra, options = {}) {
