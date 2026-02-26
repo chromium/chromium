@@ -19,7 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
@@ -48,7 +47,6 @@
 #include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
-#include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -288,7 +286,6 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
 // TODO(crbug.com/427566601): Read and verify bitmaps from WebAppIconManager
 // once the APIs for that are added.
 TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifestTrustedIcons) {
-  base::test::ScopedFeatureList feature_list(features::kWebAppUsePrimaryIcon);
   auto manifest = CreateValidManifest();
 
   // Prepare all the data to be fetched or downloaded.

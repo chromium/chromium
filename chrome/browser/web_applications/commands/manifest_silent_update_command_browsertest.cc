@@ -78,9 +78,7 @@ SkBitmap GetBitmapForInstalledAppOnDisk(const webapps::AppId& app_id,
 class ManifestSilentUpdateCommandBrowserTest : public WebAppBrowserTestBase {
  public:
   ManifestSilentUpdateCommandBrowserTest() {
-    feature_list_.InitWithFeatures({features::kWebAppPredictableAppUpdating,
-                                    features::kWebAppUsePrimaryIcon},
-                                   {});
+    feature_list_.InitAndEnableFeature(features::kWebAppPredictableAppUpdating);
   }
   ~ManifestSilentUpdateCommandBrowserTest() override = default;
 

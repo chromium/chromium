@@ -84,7 +84,6 @@ class CreateShortcutConfirmationViewBrowserTest
 
   void SetUp() override {
     base::flat_map<base::test::FeatureRef, bool> features;
-    features.insert({features::kWebAppUsePrimaryIcon, true});
     switch (GetParam()) {
       case CreateShortcutViewParams::kTabStripEnabled:
         features.insert({blink::features::kDesktopPWAsTabStrip, true});

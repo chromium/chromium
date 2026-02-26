@@ -30,12 +30,7 @@ namespace {
 
 class WebAppScopeExtensionsTest : public WebAppTest {
  public:
-  WebAppScopeExtensionsTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kWebAppPredictableAppUpdating,
-                              features::kWebAppUsePrimaryIcon},
-        /*disabled_features=*/{});
-  }
+  WebAppScopeExtensionsTest() = default;
   ~WebAppScopeExtensionsTest() override = default;
 
   void SetUp() override {
@@ -90,7 +85,8 @@ class WebAppScopeExtensionsTest : public WebAppTest {
   WebAppRegistrar& registrar() { return fake_provider().registrar_unsafe(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kWebAppPredictableAppUpdating};
 };
 
 TEST_F(WebAppScopeExtensionsTest, TestScopeNotifiedOnReinstall) {

@@ -4,7 +4,6 @@
 
 #include "base/files/file_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -19,7 +18,6 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -142,7 +140,6 @@ class TrustedIconInstallUnitTest : public WebAppTest {
  private:
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
 
-  base::test::ScopedFeatureList feature_list_{features::kWebAppUsePrimaryIcon};
   const GURL app_url_{"https://www.foo.bar/web_apps/basic.html"};
   const GURL manifest_icon_url_{
       "https://www.foo.bar/web_apps/manifest_icon.png"};

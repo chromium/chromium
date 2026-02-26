@@ -959,8 +959,6 @@ class ManifestToWebAppInstallInfoTrustedIconTest
     return false;
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   }
-
-  base::test::ScopedFeatureList feature_list_{features::kWebAppUsePrimaryIcon};
 };
 
 TEST_F(ManifestToWebAppInstallInfoTrustedIconTest, ChooseLargestIconAny) {

@@ -32,7 +32,6 @@ namespace web_app {
 namespace {
 using Param = std::tuple<bool /*wait_8_days*/,
                          bool /*sync_broken_icons*/,
-                         bool /*trusted_icons_enabled*/,
                          bool /*predictable_app_updates_enabled*/,
                          SyncTest::SetupSyncMode>;
 }  // namespace
@@ -47,13 +46,10 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
         "_",
         std::get<1>(param.param) ? "SyncBrokenIcons" : "SyncNormalIcons",
         "_",
-        std::get<2>(param.param) ? "TrustedIconsEnabled"
-                                 : "TrustedIconsDisabled",
-        "_",
-        std::get<3>(param.param) ? "PredictableAppUpdatesEnabled"
+        std::get<2>(param.param) ? "PredictableAppUpdatesEnabled"
                                  : "PredictableAppUpdatesDisabled",
         "_",
-        testing::PrintToString(std::get<4>(param.param)),
+        testing::PrintToString(std::get<3>(param.param)),
     });
   }
 
@@ -65,12 +61,6 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
 
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-
-    if (trusted_icons_enabled()) {
-      enabled_features.push_back(features::kWebAppUsePrimaryIcon);
-    } else {
-      disabled_features.push_back(features::kWebAppUsePrimaryIcon);
     }
 
     if (predictable_app_updates_enabled()) {
@@ -86,9 +76,8 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
 
   bool wait_8_days() const { return std::get<0>(GetParam()); }
   bool sync_broken_icons() const { return std::get<1>(GetParam()); }
-  bool trusted_icons_enabled() const { return std::get<2>(GetParam()); }
   bool predictable_app_updates_enabled() const {
-    return std::get<3>(GetParam());
+    return std::get<2>(GetParam());
   }
 
   WebAppProvider& provider(int index) {
@@ -123,7 +112,7 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
   }
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
-    return std::get<4>(GetParam());
+    return std::get<3>(GetParam());
   }
 
   // Triggers a manifest update by launching the app or loading the update_url
@@ -136,7 +125,7 @@ class SingleClientWebAppsSyncGeneratedIconFixSyncTest
     // waiting for page load to the update command.
     provider(0).manifest_update_manager().SetLoadFinishedCallbackForTesting(
         future.GetCallback());
-    if (predictable_app_updates_enabled() && trusted_icons_enabled()) {
+    if (predictable_app_updates_enabled()) {
       Browser* app_browser =
           LaunchWebAppBrowserAndWait(GetProfile(/*index=*/0), app_id);
       CHECK(app_browser);
@@ -293,7 +282,6 @@ INSTANTIATE_TEST_SUITE_P(
     SingleClientWebAppsSyncGeneratedIconFixSyncTest,
     testing::Combine(/*wait_8_days=*/testing::Bool(),
                      /*sync_broken_icons=*/testing::Bool(),
-                     /*trusted_icons_enabled=*/testing::Bool(),
                      /*predictable_app_updates_enabled=*/testing::Bool(),
                      GetSyncTestModes()),
     SingleClientWebAppsSyncGeneratedIconFixSyncTest::ParamToString);

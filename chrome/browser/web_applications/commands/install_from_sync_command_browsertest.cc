@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
-#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "content/public/browser/navigation_handle.h"
@@ -47,11 +45,9 @@ namespace {
 
 constexpr int kIconSize = 96;
 
-class InstallFromSyncCommandTest : public base::test::WithFeatureOverride,
-                                   public WebAppBrowserTestBase {
+class InstallFromSyncCommandTest : public WebAppBrowserTestBase {
  public:
-  InstallFromSyncCommandTest()
-      : base::test::WithFeatureOverride{features::kWebAppUsePrimaryIcon} {}
+  InstallFromSyncCommandTest() = default;
   ~InstallFromSyncCommandTest() override = default;
 
   GURL GetManifestIcon() {
@@ -65,16 +61,11 @@ class InstallFromSyncCommandTest : public base::test::WithFeatureOverride,
   base::FilePath LoadImageFile() {
     base::FilePath path;
     base::PathService::Get(chrome::DIR_TEST_DATA, &path);
-    if (GetParam()) {
-      // This corresponds to the largest icon in
-      // chrome/test/data/banners/manifest.json, which will be used on ChromeOS
-      // always if trusted icons are enabled.
-      return path.AppendASCII("banners").Append(
-          FILE_PATH_LITERAL("image-512px.png"));
-    } else {
-      return path.AppendASCII("banners").Append(
-          FILE_PATH_LITERAL("launcher-icon-2x.png"));
-    }
+    // This corresponds to the largest icon in
+    // chrome/test/data/banners/manifest.json, which will be used on ChromeOS
+    // always since trusted icons are enabled.
+    return path.AppendASCII("banners").Append(
+        FILE_PATH_LITERAL("image-512px.png"));
   }
 
   // Get the primary icon for `app_id` of `size` from the disk.
@@ -106,7 +97,7 @@ class InstallFromSyncCommandTest : public base::test::WithFeatureOverride,
   }
 };
 
-IN_PROC_BROWSER_TEST_P(InstallFromSyncCommandTest, SimpleInstall) {
+IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
   GURL test_url = https_server()->GetURL(
       "/banners/"
       "manifest_test_page.html");
@@ -142,7 +133,7 @@ IN_PROC_BROWSER_TEST_P(InstallFromSyncCommandTest, SimpleInstall) {
                                          /*max_deviation=*/3));
 }
 
-IN_PROC_BROWSER_TEST_P(InstallFromSyncCommandTest, TwoInstalls) {
+IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
   GURL test_url = https_server()->GetURL(
       "/banners/"
       "manifest_test_page.html");
@@ -217,8 +208,6 @@ IN_PROC_BROWSER_TEST_P(InstallFromSyncCommandTest, TwoInstalls) {
                                    /*max_deviation=*/3));
   }
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(InstallFromSyncCommandTest);
 
 }  // namespace
 }  // namespace web_app

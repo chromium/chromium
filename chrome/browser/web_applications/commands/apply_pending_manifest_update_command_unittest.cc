@@ -21,7 +21,6 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/test/sk_gmock_support.h"
@@ -44,8 +43,6 @@ class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
   ~ApplyPendingManifestUpdateCommandTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        {features::kWebAppUsePrimaryIcon});
     WebAppTest::SetUp();
     FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile());
     provider->UseRealOsIntegrationManager();
@@ -159,7 +156,6 @@ class ApplyPendingManifestUpdateCommandTest : public WebAppTest {
         .has_value();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   const GURL kAppUrl = GURL("https://www.foo.bar/web_apps/basic.html");
 };

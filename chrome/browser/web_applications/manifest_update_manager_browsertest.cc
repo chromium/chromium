@@ -2307,8 +2307,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIsolatedWebAppBrowserTest,
   UpdateCheckResultAwaiter awaiter(
       url_info.origin().GetURL().Resolve("/index.html"));
   EXPECT_TRUE(OpenApp(url_info.app_id()));
-  if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon) &&
-      base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
+  if (base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
     // With the new update process, simply assert that no metrics are reported,
     // as the command will report result metrics if it is run.
     provider().command_manager().AwaitAllCommandsCompleteForTesting();
@@ -4850,7 +4849,6 @@ enum AppIdTestParam {
   kActionRemoveUnimportantIcon = 1 << 15,
   kActionSwitchFromLauncher = 1 << 16,
   kActionSwitchToLauncher = 1 << 17,
-  kWithFlagTrustedIconsEnabled = 1 << 18,
 };
 
 // TODO(crbug.com/403253129): Deprecate this test once predictable app updating
@@ -4868,12 +4866,6 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
     } else {
       disabled_features.push_back(features::kPwaUpdateDialogForIcon);
     }
-    if (IsTrustedIconsEnabled()) {
-      enabled_features.push_back(features::kWebAppUsePrimaryIcon);
-    } else {
-      disabled_features.push_back(features::kWebAppUsePrimaryIcon);
-    }
-
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -4956,11 +4948,6 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
     return std::get<0>(GetParam()) & AppIdTestParam::kActionSwitchToLauncher;
   }
 
-  bool IsTrustedIconsEnabled() const {
-    return std::get<2>(GetParam()) &
-           AppIdTestParam::kWithFlagTrustedIconsEnabled;
-  }
-
   // This function describes in which scenarios the test should expect the title
   // of an app to change. It should mirror exactly the expectations we have of
   // the implementation and be simple to read for easy verification.
@@ -5040,9 +5027,6 @@ class ManifestUpdateManagerBrowserTest_AppIdentityParameterized
       result += "None_";
     if (flags & AppIdTestParam::kWithFlagAppIdDialogForIcon)
       result += "WithAppIdDlgForIcon_";
-    if (flags & AppIdTestParam::kWithFlagTrustedIconsEnabled) {
-      result += "WithTrustedIconsEnabled_";
-    }
 
     return result;
   }
@@ -5422,7 +5406,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // If trusted icons are enabled, the largest icon will be chosen for all OSes,
   // which is 512.
-  if (IsTrustedIconsEnabled() && !manifest_icons_considered_trusted) {
+  if (!manifest_icons_considered_trusted) {
     ShortcutOsSizeColor expected_colors_post_trusted_icon_launch = {
         {{32, kAll}, SK_ColorBLUE},     {{48, kAll}, SK_ColorBLUE},
         {{64, kWin}, SK_ColorBLUE},     {{96, kWin}, SK_ColorBLUE},
@@ -5459,8 +5443,7 @@ INSTANTIATE_TEST_SUITE_P(
                         AppIdTestParam::kTypePolicyApp,
                         AppIdTestParam::kTypeWebApp),
         testing::Values(AppIdTestParam::kWithFlagNone,
-                        AppIdTestParam::kWithFlagAppIdDialogForIcon,
-                        AppIdTestParam::kWithFlagTrustedIconsEnabled)),
+                        AppIdTestParam::kWithFlagAppIdDialogForIcon)),
     ManifestUpdateManagerBrowserTest_AppIdentityParameterized::ParamToString);
 
 }  // namespace web_app

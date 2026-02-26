@@ -59,10 +59,7 @@ bool CheckAppSizesNotNull(WebAppProvider& provider,
 }
 }  // namespace
 
-class ComputeAppSizeCommandForWebAppBrowserTest : public WebAppBrowserTestBase {
- private:
-  base::test::ScopedFeatureList feature_list_{features::kWebAppUsePrimaryIcon};
-};
+using ComputeAppSizeCommandForWebAppBrowserTest = WebAppBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForWebAppBrowserTest,
                        RetrieveWebAppSize) {
@@ -107,11 +104,6 @@ class ComputeAppSizeCommandForIsolatedWebAppBrowserTest
 
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
   FakeIwaRuntimeDataProviderMixin data_provider_{&mixin_host_};
-
-#if !BUILDFLAG(IS_CHROMEOS)
- private:
-  base::test::ScopedFeatureList feature_list_{features::kWebAppUsePrimaryIcon};
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 IN_PROC_BROWSER_TEST_F(ComputeAppSizeCommandForIsolatedWebAppBrowserTest,

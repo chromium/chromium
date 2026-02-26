@@ -31,7 +31,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -68,17 +67,11 @@ class DisplayModeChangeWaiter : public WebAppRegistrarObserver {
 
 class TwoClientWebAppsSyncTest
     : public WebAppsSyncTestBase,
-      public testing::WithParamInterface<
-          std::tuple<bool, SyncTest::SetupSyncMode>> {
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   TwoClientWebAppsSyncTest() : WebAppsSyncTestBase(TWO_CLIENT) {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (UsePrimaryIcon()) {
-      enabled_features.push_back(features::kWebAppUsePrimaryIcon);
-    } else {
-      disabled_features.push_back(features::kWebAppUsePrimaryIcon);
-    }
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
     }
@@ -107,10 +100,8 @@ class TwoClientWebAppsSyncTest
   }
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
-    return std::get<1>(GetParam());
+    return GetParam();
   }
-
-  bool UsePrimaryIcon() const { return std::get<0>(GetParam()); }
 
   const WebAppRegistrar& GetRegistrar(Profile* profile) {
     return WebAppProvider::GetForTest(profile)->registrar_unsafe();
@@ -143,12 +134,9 @@ class TwoClientWebAppsSyncTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     TwoClientWebAppsSyncTest,
-    testing::Combine(testing::Bool(), GetSyncTestModes()),
-    [](const testing::TestParamInfo<std::tuple<bool, SyncTest::SetupSyncMode>>&
-           info) {
-      return (std::get<0>(info.param) ? "EnabledForWebAppUsePrimaryIcon_"
-                                      : "DisabledForWebAppUsePrimaryIcon_") +
-             testing::PrintToString(std::get<1>(info.param));
+    GetSyncTestModes(),
+    [](const testing::TestParamInfo<SyncTest::SetupSyncMode>& info) {
+      return testing::PrintToString(info.param);
     });
 
 IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, Basic) {
@@ -466,7 +454,7 @@ IN_PROC_BROWSER_TEST_P(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
   webapps::AppId synced_app_id = dest_install_observer.Wait();
   EXPECT_EQ(synced_app_id, app_id);
 
-  bool should_use_fallback = UsePrimaryIcon();
+  bool should_use_fallback = true;
   // ChromeOS always installs from the manifest, even when trusted icons are
   // enabled.
 #if BUILDFLAG(IS_CHROMEOS)
