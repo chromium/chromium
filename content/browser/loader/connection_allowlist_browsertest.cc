@@ -60,8 +60,10 @@ class ConnectionAllowlistTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpOnMainThread();
 
     host_resolver()->AddRule("*", "127.0.0.1");
-    SetupCrossSiteRedirector(embedded_test_server());
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    SetupCrossSiteRedirector(&embedded_https_test_server());
+    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
         &ConnectionAllowlistTest::ServeResponses, base::Unretained(this)));
   }
 
@@ -96,12 +98,12 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkPrefetch) {
       kSameOriginAllowlistedPage,
       ResponseEntry("<html><body>Hello</body></html>",
                     {{"Connection-Allowlist", "(response-origin)"}}));
-  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(embedded_https_test_server().Start());
 
   GURL main_url =
-      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage);
-  GURL allowed_url = embedded_test_server()->GetURL("a.test", "/allow.js");
-  GURL denied_url = embedded_test_server()->GetURL("b.test", "/deny.js");
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL allowed_url = embedded_https_test_server().GetURL("a.test", "/allow.js");
+  GURL denied_url = embedded_https_test_server().GetURL("b.test", "/deny.js");
 
   URLLoaderMonitor monitor;
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -133,12 +135,12 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkPrefetch) {
 }
 
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkHeaderPrefetch) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(embedded_https_test_server().Start());
 
   GURL main_url =
-      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage);
-  GURL allowed_url = embedded_test_server()->GetURL("a.test", "/allow.js");
-  GURL denied_url = embedded_test_server()->GetURL("b.test", "/deny.js");
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL allowed_url = embedded_https_test_server().GetURL("a.test", "/allow.js");
+  GURL denied_url = embedded_https_test_server().GetURL("b.test", "/deny.js");
 
   RegisterResponse(
       kSameOriginAllowlistedPage,
@@ -167,12 +169,12 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkPreload) {
       kSameOriginAllowlistedPage,
       ResponseEntry("<html><body>Hello</body></html>",
                     {{"Connection-Allowlist", "(response-origin)"}}));
-  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(embedded_https_test_server().Start());
 
   GURL main_url =
-      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage);
-  GURL allowed_url = embedded_test_server()->GetURL("a.test", "/allow.js");
-  GURL denied_url = embedded_test_server()->GetURL("b.test", "/deny.js");
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL allowed_url = embedded_https_test_server().GetURL("a.test", "/allow.js");
+  GURL denied_url = embedded_https_test_server().GetURL("b.test", "/deny.js");
 
   URLLoaderMonitor monitor;
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -206,12 +208,12 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkPreload) {
 }
 
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkHeaderPreload) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(embedded_https_test_server().Start());
 
   GURL main_url =
-      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage);
-  GURL allowed_url = embedded_test_server()->GetURL("a.test", "/allow.js");
-  GURL denied_url = embedded_test_server()->GetURL("b.test", "/deny.js");
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL allowed_url = embedded_https_test_server().GetURL("a.test", "/allow.js");
+  GURL denied_url = embedded_https_test_server().GetURL("b.test", "/deny.js");
 
   RegisterResponse(
       kSameOriginAllowlistedPage,
@@ -242,12 +244,12 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkModulePreload) {
       kSameOriginAllowlistedPage,
       ResponseEntry("<html><body>Hello</body></html>",
                     {{"Connection-Allowlist", "(response-origin)"}}));
-  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(embedded_https_test_server().Start());
 
   GURL main_url =
-      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage);
-  GURL allowed_url = embedded_test_server()->GetURL("a.test", "/allow.js");
-  GURL denied_url = embedded_test_server()->GetURL("b.test", "/deny.js");
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL allowed_url = embedded_https_test_server().GetURL("a.test", "/allow.js");
+  GURL denied_url = embedded_https_test_server().GetURL("b.test", "/deny.js");
 
   URLLoaderMonitor monitor;
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -279,12 +281,12 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkModulePreload) {
 }
 
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkHeaderModulepreload) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(embedded_https_test_server().Start());
 
   GURL main_url =
-      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage);
-  GURL allowed_url = embedded_test_server()->GetURL("a.test", "/allow.js");
-  GURL denied_url = embedded_test_server()->GetURL("b.test", "/deny.js");
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL allowed_url = embedded_https_test_server().GetURL("a.test", "/allow.js");
+  GURL denied_url = embedded_https_test_server().GetURL("b.test", "/deny.js");
 
   RegisterResponse(
       kSameOriginAllowlistedPage,
@@ -320,7 +322,7 @@ class AlwaysPreconnectContentBrowserClient
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
                        NavigationRequestPreconnectAllowed) {
   net::test_server::ConnectionTracker connection_tracker(
-      embedded_test_server());
+      &embedded_https_test_server());
   AlwaysPreconnectContentBrowserClient client;
 
   std::string_view title_page{"/title.html"};
@@ -336,18 +338,18 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
   // shutdown when the test finishes. Otherwise, a socket read may occur after
   // the connection tracker is destroyed, invoking a callback via a dangling
   // pointer and crashing the test.
-  auto server_handle = embedded_test_server()->StartAndReturnHandle();
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
   ASSERT_TRUE(server_handle);
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(),
-      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage)));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_https_test_server().GetURL(
+                                 "a.test", kSameOriginAllowlistedPage)));
 
   connection_tracker.ResetCounts();
   // Navigation to url allowed by connection allowlist succeeds.
   EXPECT_TRUE(NavigateToURLFromRenderer(
       shell()->web_contents(),
-      embedded_test_server()->GetURL("a.test", title_page)));
+      embedded_https_test_server().GetURL("a.test", title_page)));
 
   // Preconnect to the same url also succeeds.
   connection_tracker.WaitForAcceptedConnections(1u);
@@ -357,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
                        NavigationRequestPreconnectBlocked) {
   net::test_server::ConnectionTracker connection_tracker(
-      embedded_test_server());
+      &embedded_https_test_server());
   AlwaysPreconnectContentBrowserClient client;
 
   std::string_view title_page{"/title.html"};
@@ -373,18 +375,18 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
   // shutdown when the test finishes. Otherwise, a socket read may occur after
   // the connection tracker is destroyed, invoking a callback via a dangling
   // pointer and crashing the test.
-  auto server_handle = embedded_test_server()->StartAndReturnHandle();
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
   ASSERT_TRUE(server_handle);
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(),
-      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage)));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_https_test_server().GetURL(
+                                 "a.test", kSameOriginAllowlistedPage)));
 
   connection_tracker.ResetCounts();
   // Navigation to url blocked by connection allowlist fails.
   EXPECT_FALSE(NavigateToURLFromRenderer(
       shell()->web_contents(),
-      embedded_test_server()->GetURL("b.test", title_page)));
+      embedded_https_test_server().GetURL("b.test", title_page)));
 
   // Preconnect to the same url also gets blocked.
   EXPECT_EQ(connection_tracker.GetAcceptedSocketCount(), 0u);
@@ -393,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
                        IframeNavigationRequestPreconnectAllowed) {
   net::test_server::ConnectionTracker connection_tracker(
-      embedded_test_server());
+      &embedded_https_test_server());
   AlwaysPreconnectContentBrowserClient client;
 
   std::string_view title_page{"/title.html"};
@@ -421,12 +423,12 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
   // shutdown when the test finishes. Otherwise, a socket read may occur after
   // the connection tracker is destroyed, invoking a callback via a dangling
   // pointer and crashing the test.
-  auto server_handle = embedded_test_server()->StartAndReturnHandle();
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
   ASSERT_TRUE(server_handle);
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(),
-      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage)));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_https_test_server().GetURL(
+                                 "a.test", kSameOriginAllowlistedPage)));
 
   RenderFrameHost* child_frame =
       ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
@@ -450,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
 IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
                        IframeNavigationRequestPreconnectDenied) {
   net::test_server::ConnectionTracker connection_tracker(
-      embedded_test_server());
+      &embedded_https_test_server());
   AlwaysPreconnectContentBrowserClient client;
 
   std::string_view title_page{"/title.html"};
@@ -478,12 +480,12 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
   // shutdown when the test finishes. Otherwise, a socket read may occur after
   // the connection tracker is destroyed, invoking a callback via a dangling
   // pointer and crashing the test.
-  auto server_handle = embedded_test_server()->StartAndReturnHandle();
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
   ASSERT_TRUE(server_handle);
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(),
-      embedded_test_server()->GetURL("a.test", kSameOriginAllowlistedPage)));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_https_test_server().GetURL(
+                                 "a.test", kSameOriginAllowlistedPage)));
 
   RenderFrameHost* child_frame =
       ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
@@ -495,10 +497,10 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
   // fails. Note the iframe document has a connection allowlist that matches the
   // navigation url. However, it is the initiator connection allowlist that
   // should be enforced.
-  EXPECT_TRUE(
-      ExecJs(shell()->web_contents(),
-             JsReplace("document.getElementById('iframe').src = $1",
-                       embedded_test_server()->GetURL("b.test", title_page))));
+  EXPECT_TRUE(ExecJs(
+      shell()->web_contents(),
+      JsReplace("document.getElementById('iframe').src = $1",
+                embedded_https_test_server().GetURL("b.test", title_page))));
 
   // Preconnect to the same url also gets blocked.
   EXPECT_EQ(connection_tracker.GetAcceptedSocketCount(), 0u);
@@ -521,15 +523,15 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, LinkPreconnect) {
   // pointer and crashing the test.
   auto cross_origin_server_handle = cross_origin_server.StartAndReturnHandle();
   ASSERT_TRUE(cross_origin_server_handle);
-  auto server_handle = embedded_test_server()->StartAndReturnHandle();
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
   ASSERT_TRUE(server_handle);
 
   GURL allowed_url = cross_origin_server.GetURL("b.test", "/allow.js");
   GURL denied_url = cross_origin_server.GetURL("c.test", "/deny.js");
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(),
-      embedded_test_server()->GetURL("a.test", kCrossOriginAllowlistedPage)));
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_https_test_server().GetURL(
+                                 "a.test", kCrossOriginAllowlistedPage)));
 
   EXPECT_TRUE(
       ExecJs(shell()->web_contents(), JsReplace(R"(
