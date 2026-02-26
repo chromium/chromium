@@ -63,7 +63,7 @@ void MemoryMeasurementDelegateImpl::RequestMemorySummary(
   // The memory instrumentation service is not available in unit tests unless
   // explicitly created.
   if (!mem_instrumentation) {
-    std::move(callback).Run(CreateMemorySummaryMap());
+    std::move(callback).Run({});
     return;
   }
   // TODO(crbug.com/40926264): Pass a set of processes to measure instead of
@@ -79,10 +79,10 @@ void MemoryMeasurementDelegateImpl::OnMemorySummary(
     memory_instrumentation::mojom::RequestOutcome outcome,
     std::unique_ptr<GlobalMemoryDump> memory_dump) {
   if (outcome != memory_instrumentation::mojom::RequestOutcome::kSuccess) {
-    std::move(callback).Run(CreateMemorySummaryMap());
+    std::move(callback).Run({});
     return;
   }
-  MemorySummaryMap results = CreateMemorySummaryMap();
+  MemorySummaryMap results;
   CHECK(memory_dump);
   for (const auto& process_dump : memory_dump->process_dumps()) {
     ProcessNodeImpl* process_node =
@@ -142,12 +142,6 @@ MemoryMeasurementDelegate::GetDefaultFactory() {
   static base::NoDestructor<MemoryMeasurementDelegateFactoryImpl>
       default_factory;
   return default_factory.get();
-}
-
-// static
-MemoryMeasurementDelegate::MemorySummaryMap
-MemoryMeasurementDelegate::CreateMemorySummaryMap() {
-  return MemorySummaryMap(base::PassKey<MemoryMeasurementDelegate>{});
 }
 
 }  // namespace resource_attribution

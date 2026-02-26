@@ -4,6 +4,7 @@
 
 #include "services/webnn/ort/context_impl_ort.h"
 
+#include "base/feature_list.h"
 #include "services/webnn/ort/graph_impl_ort.h"
 #include "services/webnn/ort/ort_data_type.h"
 #include "services/webnn/ort/ort_status.h"

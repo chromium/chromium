@@ -67,7 +67,7 @@ SubprocessMetricsProvider::RefCountedAllocator::~RefCountedAllocator() =
     default;
 
 SubprocessMetricsProvider::SubprocessMetricsProvider()
-    : allocators_by_id_(PassKey()), task_runner_(CreateTaskRunner()) {
+    : task_runner_(CreateTaskRunner()) {
   base::StatisticsRecorder::RegisterHistogramProvider(
       weak_ptr_factory_.GetWeakPtr());
   content::BrowserChildProcessObserver::Add(this);

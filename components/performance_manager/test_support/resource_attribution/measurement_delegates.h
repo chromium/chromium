@@ -201,7 +201,7 @@ class FakeMemoryMeasurementDelegateFactory final
 
  private:
   // The MemorySummary results returned by delegates created by this factory.
-  MemoryMeasurementDelegate::MemorySummaryMap memory_summaries_{PassKey()};
+  MemoryMeasurementDelegate::MemorySummaryMap memory_summaries_;
 
   base::WeakPtrFactory<FakeMemoryMeasurementDelegateFactory> weak_factory_{
       this};
@@ -210,8 +210,6 @@ class FakeMemoryMeasurementDelegateFactory final
 // A MemoryMeasurementDelegate that returns fake results.
 class FakeMemoryMeasurementDelegate final : public MemoryMeasurementDelegate {
  public:
-  using PassKey = base::PassKey<FakeMemoryMeasurementDelegate>;
-
   // Only FakeMemoryMeasurementDelegateFactory can call the constructor.
   FakeMemoryMeasurementDelegate(
       base::PassKey<FakeMemoryMeasurementDelegateFactory>,

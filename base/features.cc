@@ -6,7 +6,6 @@
 
 #include <atomic>
 
-#include "base/containers/variant_map.h"
 #include "base/debug/stack_trace.h"
 #include "base/files/file_path.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
@@ -204,7 +203,6 @@ void Init() {
 
   debug::StackTrace::InitializeFeatures();
   FilePath::InitializeFeatures();
-  InitializeVariantMapFeatures();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   MessagePumpEpoll::InitializeFeatures();

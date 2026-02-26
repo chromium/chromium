@@ -9,11 +9,10 @@
 #include <optional>
 
 #include "base/byte_size.h"
-#include "base/containers/variant_map.h"
 #include "base/time/time.h"
-#include "base/types/pass_key.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace resource_attribution {
 
@@ -117,14 +116,7 @@ struct QueryResults {
 };
 
 // A map from a ResourceContext to all query results received for that context.
-// TODO(crbug.com/433462519): Replace this with a concrete map type after
-// using VariantMap to measure the performance of various impls.
-class QueryResultMap : public base::VariantMap<ResourceContext, QueryResults> {
- public:
-  QueryResultMap()
-      : base::VariantMap<ResourceContext, QueryResults>(
-            base::PassKey<QueryResultMap>{}) {}
-};
+using QueryResultMap = absl::flat_hash_map<ResourceContext, QueryResults>;
 
 }  // namespace resource_attribution
 

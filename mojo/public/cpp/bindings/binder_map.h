@@ -11,14 +11,13 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/containers/variant_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/types/pass_key.h"
 #include "build/chromecast_buildflags.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/lib/binder_map_internal.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace mojo {
 
@@ -44,8 +43,6 @@ namespace mojo {
 template <typename ContextType>
 class BinderMapWithContext {
  public:
-  using PassKey = base::PassKey<BinderMapWithContext>;
-
   using Traits = internal::BinderContextTraits<ContextType>;
   using SequenceTraits = internal::BinderContextTraits<void>;
   using ContextValueType = typename Traits::ValueType;
@@ -65,7 +62,7 @@ class BinderMapWithContext {
   using SequenceFuncType =
       typename SequenceTraits::template FuncType<Interface>;
 
-  BinderMapWithContext() : binders_(PassKey()) {}
+  BinderMapWithContext() = default;
 
   BinderMapWithContext(const BinderMapWithContext&) = default;
   BinderMapWithContext(BinderMapWithContext&&) = default;
@@ -232,8 +229,8 @@ class BinderMapWithContext {
     binders_.try_emplace(key, std::move(binder));
   }
 
-  base::VariantMap<std::string_view,
-                   internal::GenericCallbackBinderWithContext<ContextType>>
+  absl::flat_hash_map<std::string_view,
+                      internal::GenericCallbackBinderWithContext<ContextType>>
       binders_;
 
 #if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)

@@ -12,7 +12,6 @@
 #include <variant>
 
 #include "base/check_op.h"
-#include "base/containers/variant_map.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -27,7 +26,6 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/optional_util.h"
-#include "base/types/pass_key.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -42,6 +40,7 @@
 #include "components/performance_manager/resource_attribution/graph_change.h"
 #include "components/performance_manager/resource_attribution/worker_client_pages.h"
 #include "content/public/common/process_type.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -130,10 +129,7 @@ scoped_refptr<ScopedCPUTimeResult>& GetNodeResultPtr(const WorkerNode* node) {
 }  // namespace
 
 CPUMeasurementMonitor::CPUMeasurementMonitor()
-    : origin_results_(base::PassKey<CPUMeasurementMonitor>{}),
-      weak_origin_results_(base::PassKey<CPUMeasurementMonitor>{}),
-      dead_context_results_(base::PassKey<CPUMeasurementMonitor>{}),
-      delegate_factory_(CPUMeasurementDelegate::GetDefaultFactory()) {}
+    : delegate_factory_(CPUMeasurementDelegate::GetDefaultFactory()) {}
 
 CPUMeasurementMonitor::~CPUMeasurementMonitor() {
   if (graph_) {
@@ -294,11 +290,9 @@ QueryResultMap CPUMeasurementMonitor::UpdateAndGetCPUMeasurements(
       ++it;
     } else {
       SaveFinalMeasurement(std::move(result_ptr));
-      // VariantMap::erase returns void, and VariantMap::iterator doesn't
-      // implement post-increment.
-      auto erase_it = it;
-      ++it;
-      origin_results_.erase(erase_it);
+      // absl::flat_hash_map::erase() returns void, and suggests using
+      // post-increment instead.
+      origin_results_.erase(it++);
     }
   }
 
@@ -528,8 +522,7 @@ void CPUMeasurementMonitor::UpdateAllCPUMeasurements() {
 
   // Update CPU metrics, attributing the cumulative CPU of each process to its
   // frames and workers.
-  base::VariantMap<ResourceContext, CPUTimeResult> measurement_deltas(
-      base::PassKey<CPUMeasurementMonitor>{});
+  absl::flat_hash_map<ResourceContext, CPUTimeResult> measurement_deltas;
   for (const ProcessNode* process_node : graph_->GetAllProcessNodes()) {
     MeasureAndDistributeCPUUsage(process_node, NoGraphChange(),
                                  measurement_deltas);
@@ -554,8 +547,7 @@ void CPUMeasurementMonitor::UpdateCPUMeasurements(
 
   // Update CPU metrics, attributing the cumulative CPU of the process to its
   // frames and workers.
-  base::VariantMap<ResourceContext, CPUTimeResult> measurement_deltas(
-      base::PassKey<CPUMeasurementMonitor>{});
+  absl::flat_hash_map<ResourceContext, CPUTimeResult> measurement_deltas;
   MeasureAndDistributeCPUUsage(process_node, graph_change, measurement_deltas);
   ApplyMeasurementDeltas(measurement_deltas, graph_change);
 }
@@ -596,7 +588,8 @@ scoped_refptr<ScopedCPUTimeResult>& CPUMeasurementMonitor::GetResultPtr(
 }
 
 void CPUMeasurementMonitor::ApplyMeasurementDeltas(
-    const base::VariantMap<ResourceContext, CPUTimeResult>& measurement_deltas,
+    const absl::flat_hash_map<ResourceContext, CPUTimeResult>&
+        measurement_deltas,
     GraphChange graph_change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& [context, delta] : measurement_deltas) {
@@ -749,7 +742,7 @@ CPUMeasurementMonitor::GetLiveOriginInBrowsingInstanceContexts() {
 void CPUMeasurementMonitor::MeasureAndDistributeCPUUsage(
     const ProcessNode* process_node,
     GraphChange graph_change,
-    base::VariantMap<ResourceContext, CPUTimeResult>& measurement_deltas) {
+    absl::flat_hash_map<ResourceContext, CPUTimeResult>& measurement_deltas) {
   auto* node_impl = ProcessNodeImpl::FromNode(process_node);
   if (!CPUMeasurementData::Exists(node_impl)) {
     // In tests, FrameNodes can be added to mock processes that don't have a PID

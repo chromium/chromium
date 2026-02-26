@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/containers/variant_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,6 +21,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace base {
 class PersistentHistogramAllocator;
@@ -141,7 +141,7 @@ class SubprocessMetricsProvider
   // Does not have any form of ownership on the allocators. May be called on a
   // background thread.
   using AllocatorByIdMap =
-      base::VariantMap<int, scoped_refptr<RefCountedAllocator>>;
+      absl::flat_hash_map<int, scoped_refptr<RefCountedAllocator>>;
   static void MergeHistogramDeltasFromAllocators(AllocatorByIdMap* allocators);
 
   // Callback for when MergeHistogramDeltasFromAllocator() is called in a

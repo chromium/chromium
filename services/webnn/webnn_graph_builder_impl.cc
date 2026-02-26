@@ -9,6 +9,7 @@
 #include "base/check_is_test.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/stack_allocated.h"

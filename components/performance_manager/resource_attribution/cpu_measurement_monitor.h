@@ -8,7 +8,6 @@
 #include <optional>
 #include <set>
 
-#include "base/containers/variant_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -27,6 +26,7 @@
 #include "components/performance_manager/resource_attribution/graph_change.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
 #include "components/performance_manager/resource_attribution/query_params.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace resource_attribution {
 
@@ -170,7 +170,7 @@ class CPUMeasurementMonitor
   // `graph_change` is the event that triggered the measurement or NoGraphChange
   // if it wasn't triggered due to a graph change.
   void ApplyMeasurementDeltas(
-      const base::VariantMap<ResourceContext, CPUTimeResult>&
+      const absl::flat_hash_map<ResourceContext, CPUTimeResult>&
           measurement_deltas,
       GraphChange graph_change = NoGraphChange());
 
@@ -207,7 +207,7 @@ class CPUMeasurementMonitor
   static void MeasureAndDistributeCPUUsage(
       const ProcessNode* process_node,
       GraphChange graph_change,
-      base::VariantMap<ResourceContext, CPUTimeResult>& measurement_deltas);
+      absl::flat_hash_map<ResourceContext, CPUTimeResult>& measurement_deltas);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -216,14 +216,14 @@ class CPUMeasurementMonitor
   // `OriginInBrowsingInstanceContext` is considered live as long as it's in
   // this map. Results for other context types are held in NodeInlineData in
   // live PM nodes.
-  base::VariantMap<OriginInBrowsingInstanceContext,
-                   scoped_refptr<ScopedCPUTimeResult>>
+  absl::flat_hash_map<OriginInBrowsingInstanceContext,
+                      scoped_refptr<ScopedCPUTimeResult>>
       origin_results_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // A map of non-owning pointers to all `ScopedCPUTimeResult` instances
   // associated with `OriginInBrowsingInstanceContext`.
-  base::VariantMap<OriginInBrowsingInstanceContext,
-                   raw_ptr<ScopedCPUTimeResult>>
+  absl::flat_hash_map<OriginInBrowsingInstanceContext,
+                      raw_ptr<ScopedCPUTimeResult>>
       weak_origin_results_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // CPU time results for dead contexts retained by ScopedResourceUsageQuery.
@@ -262,8 +262,8 @@ class CPUMeasurementMonitor
     // measurements, even if the context was transiently dead.
     std::set<scoped_refptr<ScopedCPUTimeResult>> kept_alive;
   };
-  base::VariantMap<internal::QueryId, DeadContextResults> dead_context_results_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  absl::flat_hash_map<internal::QueryId, DeadContextResults>
+      dead_context_results_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Factory that creates CPUMeasurementDelegate objects for each ProcessNode
   // being measured.
