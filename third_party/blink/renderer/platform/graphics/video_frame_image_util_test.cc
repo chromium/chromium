@@ -120,14 +120,25 @@ class VideoFrameImageUtilTest
 
     auto info =
         CreateSnapshotProviderInfoForVideoFrame(*frame, dest_rect.size());
-    std::unique_ptr<CanvasSnapshotProvider> snapshot_provider =
-        CreateSnapshotProviderForVideo(info, raster_context_provider());
-    if (!snapshot_provider) {
-      DLOG(ERROR) << "Failed to create CanvasResourceProvider.";
-      return nullptr;
+    std::optional<CanvasSnapshotProvider::Info> sw_draw_info;
+    std::unique_ptr<CanvasNon2DResourceProviderSharedImage>
+        snapshot_provider_si;
+    if (ShouldCreateAcceleratedImages(raster_context_provider())) {
+      snapshot_provider_si = CanvasNon2DResourceProviderSharedImage::Create(
+          info.size, info.format, info.alpha_type, info.color_space,
+          SharedGpuContext::ContextProviderWrapper(),
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+      if (!snapshot_provider_si) {
+        DLOG(ERROR) << "Failed to create CanvasResourceProvider.";
+        return nullptr;
+      }
+    } else {
+      sw_draw_info = info;
     }
-    return CreateImageFromVideoFrame(std::move(frame), snapshot_provider.get(),
-                                     video_renderer, prefer_tagged_orientation);
+    return CreateImageFromVideoFrame(
+        std::move(frame), snapshot_provider_si.get(), std::move(sw_draw_info),
+        /*cached_sw_draw_surface=*/nullptr, video_renderer,
+        prefer_tagged_orientation);
   }
 
   scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
