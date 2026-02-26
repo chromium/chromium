@@ -130,8 +130,10 @@ template bool CORE_TEMPLATE_EXPORT IsAvoidBreakValue(const ConstraintSpace&,
 EBreakBetween CalculateBreakBetweenValue(LayoutInputNode child,
                                          const LayoutResult& layout_result,
                                          const BoxFragmentBuilder& builder) {
-  if (child.IsInline())
-    return EBreakBetween::kAuto;
+  if (child.IsInline()) {
+    // Inline children may carry propagated break values from block descendants.
+    return builder.JoinedBreakBetweenValue(layout_result.InitialBreakBefore());
+  }
 
   // Since it's not an inline node, if we have a fragment at all, it has to be a
   // box fragment.
