@@ -25,8 +25,8 @@ class TabStripModel;
 class VerticalTabLinkDropHandler;
 
 enum class DragPositionHint {
-  kTop,    // The drag is at the top of the drag target.
-  kBottom  // The drag is at the bottom of the drag target.
+  kBefore,  // The drag is before the drag target.
+  kAfter    // The drag is after the drag target.
 };
 
 // Interface for views to interact with drag handling.

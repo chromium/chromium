@@ -384,10 +384,10 @@ void VerticalTabGroupView::OnTabDragExited(const gfx::Point& point_in_screen) {
       views::View::ConvertPointFromScreen(this, point_in_screen));
   if (dragging_tabs_bounds.y() < 0) {
     GetDragHandler().HandleDraggedTabsOutOfGroup(*collection_node_,
-                                                 DragPositionHint::kTop);
+                                                 DragPositionHint::kBefore);
   } else if (dragging_tabs_bounds.bottom() > height()) {
     GetDragHandler().HandleDraggedTabsOutOfGroup(*collection_node_,
-                                                 DragPositionHint::kBottom);
+                                                 DragPositionHint::kAfter);
   }
   VerticalDraggedTabsContainer::OnTabDragExited(point_in_screen);
 }
@@ -405,8 +405,9 @@ VerticalTabGroupView::GetLinkDropIndex(const gfx::Point& loc_in_group) {
     const bool is_leading =
         loc_in_group.y() < group_header_->bounds().CenterPoint().y();
     return GetDragHandler().GetLinkDropIndexForNode(
-        *collection_node_,
-        is_leading ? std::make_optional(DragPositionHint::kTop) : std::nullopt);
+        *collection_node_, is_leading
+                               ? std::make_optional(DragPositionHint::kBefore)
+                               : std::nullopt);
   }
 
   for (const auto& child_node : collection_node_->children()) {
@@ -424,9 +425,9 @@ VerticalTabGroupView::GetLinkDropIndex(const gfx::Point& loc_in_group) {
     constexpr double kDragOverMargins = 0.2;
     std::optional<DragPositionHint> hint;
     if (loc_in_child.y() < view->height() * kDragOverMargins) {
-      hint = DragPositionHint::kTop;
+      hint = DragPositionHint::kBefore;
     } else if (loc_in_child.y() > view->height() * (1 - kDragOverMargins)) {
-      hint = DragPositionHint::kBottom;
+      hint = DragPositionHint::kAfter;
     } else if (child_node->type() == TabCollectionNode::Type::SPLIT) {
       // If landing in the middle of the split, let the split view decide which
       // tab to replace.
@@ -442,7 +443,7 @@ VerticalTabGroupView::GetLinkDropIndex(const gfx::Point& loc_in_group) {
 
   // Fallback to the end of the group.
   return GetDragHandler().GetLinkDropIndexForNode(*collection_node_,
-                                                  DragPositionHint::kBottom);
+                                                  DragPositionHint::kAfter);
 }
 
 void VerticalTabGroupView::InitHeaderDrag(const ui::MouseEvent& event) {
