@@ -13,5 +13,5 @@
 
 [RuntimeEnabled=OpaqueRange]
 interface mixin OpaqueRangeCreation {
-    [RaisesException, NewObject] OpaqueRange getValueRange(unsigned long start, unsigned long end);
+    [RaisesException, NewObject] OpaqueRange createValueRange(unsigned long start, unsigned long end);
 };

@@ -22,7 +22,7 @@ class TextControlElement;
 // reference encapsulated content within text-control elements (<input>,
 // <textarea>). Containers return null to avoid exposing internal DOM
 // structure. startOffset/endOffset are live UTF-16 code unit indices into the
-// element's value. Created via getValueRange(start, end) on elements that
+// element's value. Created via createValueRange(start, end) on elements that
 // support opaque ranges.
 class CORE_EXPORT OpaqueRange final : public AbstractRange {
   DEFINE_WRAPPERTYPEINFO();

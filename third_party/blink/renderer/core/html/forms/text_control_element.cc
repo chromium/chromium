@@ -1331,7 +1331,7 @@ void TextControlElement::UnregisterOpaqueRange(OpaqueRange* range) {
   }
 }
 
-OpaqueRange* TextControlElement::getValueRange(
+OpaqueRange* TextControlElement::createValueRange(
     unsigned start_offset,
     unsigned end_offset,
     ExceptionState& exception_state) {

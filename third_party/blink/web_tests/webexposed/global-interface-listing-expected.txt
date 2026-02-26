@@ -4570,7 +4570,7 @@ interface HTMLInputElement : HTMLElement
     getter willValidate
     method checkValidity
     method constructor
-    method getValueRange
+    method createValueRange
     method reportValidity
     method select
     method setCustomValidity
@@ -5313,7 +5313,7 @@ interface HTMLTextAreaElement : HTMLElement
     getter wrap
     method checkValidity
     method constructor
-    method getValueRange
+    method createValueRange
     method reportValidity
     method select
     method setCustomValidity

@@ -809,6 +809,7 @@ html element input
     property autocomplete
     property checkValidity
     property checked
+    property createValueRange
     property defaultChecked
     property defaultValue
     property dirName
@@ -820,7 +821,6 @@ html element input
     property formMethod
     property formNoValidate
     property formTarget
-    property getValueRange
     property height
     property incremental
     property indeterminate
@@ -1176,11 +1176,11 @@ html element textarea
     property autocomplete
     property checkValidity
     property cols
+    property createValueRange
     property defaultValue
     property dirName
     property disabled
     property form
-    property getValueRange
     property labels
     property maxLength
     property minLength

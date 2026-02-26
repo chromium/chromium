@@ -2223,9 +2223,10 @@ void HTMLInputElement::setRangeText(const String& replacement,
                                    exception_state);
 }
 
-OpaqueRange* HTMLInputElement::getValueRange(unsigned start_offset,
-                                             unsigned end_offset,
-                                             ExceptionState& exception_state) {
+OpaqueRange* HTMLInputElement::createValueRange(
+    unsigned start_offset,
+    unsigned end_offset,
+    ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::OpaqueRangeEnabled());
   if (!InputSupportsSelectionAPI()) {
     exception_state.ThrowDOMException(
@@ -2234,8 +2235,8 @@ OpaqueRange* HTMLInputElement::getValueRange(unsigned start_offset,
         "or password.");
     return nullptr;
   }
-  return TextControlElement::getValueRange(start_offset, end_offset,
-                                           exception_state);
+  return TextControlElement::createValueRange(start_offset, end_offset,
+                                              exception_state);
 }
 
 bool HTMLInputElement::SetupDateTimeChooserParameters(

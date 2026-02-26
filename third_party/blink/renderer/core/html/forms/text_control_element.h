@@ -201,9 +201,9 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
   // Creates and returns a new OpaqueRange for this element's value.
   // Throws if offsets are out of bounds.
-  virtual OpaqueRange* getValueRange(unsigned start_offset,
-                                     unsigned end_offset,
-                                     ExceptionState&);
+  virtual OpaqueRange* createValueRange(unsigned start_offset,
+                                        unsigned end_offset,
+                                        ExceptionState&);
 
   // Use the pre-edit baseline to compute and apply the edit once an observable
   // value mutation occurs, before 'input' listeners run.
