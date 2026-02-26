@@ -16,7 +16,6 @@ import androidx.preference.Preference;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -125,13 +124,12 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
-        mPageTitle.set(getString(R.string.autofill_options_title));
         setHasOptionsMenu(true);
         SettingsUtils.addPreferencesFromResource(this, R.xml.autofill_options_preferences);
     }
 
     @Override
-    public MonotonicObservableSupplier<String> getPageTitle() {
+    public SettableMonotonicObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 

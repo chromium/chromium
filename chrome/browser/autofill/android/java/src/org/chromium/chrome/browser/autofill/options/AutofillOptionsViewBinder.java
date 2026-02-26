@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProper
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_SETTING_ELIGIBLE;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_VISIBLE;
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.FRAGMENT_TITLE;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_AUTOFILL_AI_SETTING_TOGGLED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
@@ -36,7 +37,9 @@ class AutofillOptionsViewBinder {
      * @param key An {@link AutofillOptionsProperties} key.
      */
     public static void bind(PropertyModel model, AutofillOptionsFragment view, PropertyKey key) {
-        if (key == THIRD_PARTY_AUTOFILL_ENABLED) {
+        if (key == FRAGMENT_TITLE) {
+            view.getPageTitle().set(model.get(FRAGMENT_TITLE));
+        } else if (key == THIRD_PARTY_AUTOFILL_ENABLED) {
             @RadioButtonGroupThirdPartyPreference.ThirdPartyOption
             int currentOption =
                     model.get(THIRD_PARTY_AUTOFILL_ENABLED)

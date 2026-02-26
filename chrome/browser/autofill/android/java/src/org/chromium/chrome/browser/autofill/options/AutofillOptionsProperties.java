@@ -16,6 +16,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** Collection of properties that affect the autofill options settings screen. */
 @NullMarked
 class AutofillOptionsProperties {
+    static final ReadableObjectPropertyKey<String> FRAGMENT_TITLE =
+            new ReadableObjectPropertyKey<>("fragment_title");
     static final WritableBooleanPropertyKey THIRD_PARTY_AUTOFILL_ENABLED =
             new WritableBooleanPropertyKey("third_party_autofill_enabled");
     static final WritableBooleanPropertyKey THIRD_PARTY_TOGGLE_IS_READ_ONLY =
@@ -40,6 +42,7 @@ class AutofillOptionsProperties {
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
+                FRAGMENT_TITLE,
                 THIRD_PARTY_AUTOFILL_ENABLED,
                 THIRD_PARTY_TOGGLE_IS_READ_ONLY,
                 ON_THIRD_PARTY_TOGGLE_CHANGED,

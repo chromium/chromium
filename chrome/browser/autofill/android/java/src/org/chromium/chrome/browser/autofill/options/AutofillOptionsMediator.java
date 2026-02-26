@@ -5,6 +5,10 @@
 package org.chromium.chrome.browser.autofill.options;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.FRAGMENT_TITLE;
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED;
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_AUTOFILL_AI_SETTING_TOGGLED;
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_HINT;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
@@ -116,14 +120,18 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
     }
 
     @Initializer
-    void initialize(
-            PropertyModel model,
-            @AutofillOptionsReferrer int referrer,
-            Context context,
-            Activity activity) {
-        mModel = model;
+    void initialize(@AutofillOptionsReferrer int referrer, Context context, Activity activity) {
         mContext = context;
         mActivity = activity;
+        mModel =
+                new PropertyModel.Builder(AutofillOptionsProperties.ALL_KEYS)
+                        .with(FRAGMENT_TITLE, getFragmentTitle())
+                        .with(ON_THIRD_PARTY_TOGGLE_CHANGED, this::onThirdPartyToggleChanged)
+                        .with(ON_AUTOFILL_AI_SETTING_TOGGLED, this::onAutofillAiSettingToggled)
+                        .with(
+                                ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED,
+                                this::onAutofillAiReauthSettingToggled)
+                        .build();
         updateToggleStateFromPref();
         mModel.set(AutofillOptionsProperties.AUTOFILL_AI_VISIBLE, isAutofillAiVisible(referrer));
         mModel.set(
@@ -145,29 +153,39 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         return mModel != null;
     }
 
-    boolean isAutofillAiVisible(@AutofillOptionsReferrer int referrer) {
+    PropertyModel getModel() {
+        return mModel;
+    }
+
+    private String getFragmentTitle() {
+        return isAutofillAiEnabled()
+                ? mContext.getString(R.string.autofill_settings_title)
+                : mContext.getString(R.string.autofill_options_title);
+    }
+
+    private boolean isAutofillAiVisible(@AutofillOptionsReferrer int referrer) {
         // Autofill AI related preferences are not shown if the fragment is opened using a deep
         // link to show only the 3p Autofill services toggle.
         return referrer != AutofillOptionsReferrer.DEEP_LINK_TO_SETTINGS && isAutofillAiEnabled();
     }
 
-    boolean isAutofillAiEnabled() {
+    private boolean isAutofillAiEnabled() {
         // LINT.IfChange(AutofillEnabledCheckMediator)
         return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);
         // LINT.ThenChange(AutofillEnabledCheckFragment)
     }
 
-    boolean isEligibleToAutofillAi() {
+    private boolean isEligibleToAutofillAi() {
         @Nullable EntityDataManager manager = EntityDataManagerFactory.getForProfile(mProfile);
         return isAutofillAiEnabled() && manager != null && manager.isEligibleToAutofillAi();
     }
 
-    boolean isAutofillAiOn() {
+    private boolean isAutofillAiOn() {
         @Nullable EntityDataManager manager = EntityDataManagerFactory.getForProfile(mProfile);
         return isAutofillAiEnabled() && manager != null && manager.getAutofillAiOptInStatus();
     }
 
-    void onAutofillAiSettingToggled(boolean isOn) {
+    private void onAutofillAiSettingToggled(boolean isOn) {
         @AutofillAiOptInStatus
         int optInStatus = isOn ? AutofillAiOptInStatus.OPTED_IN : AutofillAiOptInStatus.OPTED_OUT;
         @Nullable EntityDataManager manager = EntityDataManagerFactory.getForProfile(mProfile);
@@ -177,11 +195,11 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         }
     }
 
-    boolean isAutofillAiReauthOn() {
+    private boolean isAutofillAiReauthOn() {
         return prefs().getBoolean(Pref.AUTOFILL_AI_REAUTH_BEFORE_VIEWING_SENSITIVE_DATA);
     }
 
-    void onAutofillAiReauthSettingToggled(boolean isOn) {
+    private void onAutofillAiReauthSettingToggled(boolean isOn) {
         if (isOn == isAutofillAiReauthOn()) {
             return;
         }
@@ -251,7 +269,7 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         mModel.set(THIRD_PARTY_TOGGLE_HINT, getHintSummary());
     }
 
-    void onThirdPartyToggleChanged(boolean optIntoThirdPartyFilling) {
+    private void onThirdPartyToggleChanged(boolean optIntoThirdPartyFilling) {
         if (mModel.get(THIRD_PARTY_AUTOFILL_ENABLED) == optIntoThirdPartyFilling) {
             return; // Ignore redundant event.
         }
