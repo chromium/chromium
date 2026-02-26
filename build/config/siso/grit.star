@@ -20,6 +20,17 @@ def __step_config(ctx, step_config):
             "remote_command": "python3",
             "platform_ref": "large",
         },
+        {
+            "name": "grit/components_strings",
+            # TODO(crbug.com/452240479): while we now support grit_strings
+            # actions we want to support all grit actions to run remotely and
+            # use command_prefix instead of action
+            "action": "__components_strings_components_strings__strings_grit.*",
+            "remote": config.get(ctx, "googlechrome"),
+            # Only runs on Linux workers.
+            "remote_command": "python3",
+            "platform_ref": "large",
+        },
     ])
     return step_config
 

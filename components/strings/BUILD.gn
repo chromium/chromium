@@ -43,6 +43,7 @@ grit_strings("components_strings") {
   if (is_android) {
     create_android_resources = true
   }
+  gritdeps = "../components_strings.grd.gritdeps"
 }
 
 if (is_android) {
