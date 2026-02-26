@@ -28,6 +28,10 @@ def get_shard_count(benchmark_name, bot_name):
       return num_shards
   return 1
 
+# For now we include all non-empty flags, except for these manually
+# known presets.
+KNOWN_PRESET_FLAGS = ("--js-flags=--turbolev-future",
+                      "--extra-browser-args=--force-renderer-accessibility")
 
 def main():
   output_dir = Path(__file__).resolve().parent
@@ -97,10 +101,20 @@ def main():
       if all(bot_data.get(column) == first_value for bot_data in bots_data):
         same_values_warnings[column] = first_value
 
-    for preconfigured_arg in ("abridged", "estimated_runtime", "flags"):
-      if preconfigured_arg in same_values_warnings:
-        del same_values_warnings[preconfigured_arg]
-        skip_same_value_columns.add(preconfigured_arg)
+    if 'flags' in same_values_warnings:
+      flag_value = same_values_warnings['flags']
+      if not flag_value or flag_value in KNOWN_PRESET_FLAGS:
+        del same_values_warnings['flags']
+        skip_same_value_columns.add('flags')
+
+    if 'abridged' in same_values_warnings and not same_values_warnings[
+        'abridged']:
+      del same_values_warnings['abridged']
+      skip_same_value_columns.add('abridged')
+
+    if 'estimated_runtime' in same_values_warnings:
+      del same_values_warnings['estimated_runtime']
+      skip_same_value_columns.add('estimated_runtime')
 
     if len(bots_data) > 1 and same_values_warnings:
       print(f"{benchmark}: Same values for all rows")

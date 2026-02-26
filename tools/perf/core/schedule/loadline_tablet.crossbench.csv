@@ -1,2 +1,2 @@
-bot,repeat,shard
-android-pixel-tangor-perf,1,1
+bot,repeat,shard,flags
+android-pixel-tangor-perf,1,1,--cool-down-threshold=moderate

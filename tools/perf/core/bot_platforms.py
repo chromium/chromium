@@ -13,7 +13,7 @@ import io
 import shlex
 
 
-from typing import Final, Iterable, Optional, Union
+from typing import Callable, Final, Iterable, Optional, Union
 
 import six.moves.urllib.parse  # pylint: disable=import-error
 
@@ -34,14 +34,10 @@ _CONTRIB_BENCHMARKS = frozenset(benchmark_finders.GetContribBenchmarks())
 _ALL_SCHEDULEABLE_BENCHMARKS = _OFFICIAL_BENCHMARKS | _CONTRIB_BENCHMARKS
 GTEST_STORY_NAME = '_gtest_'
 
-_USE_CSV_SCHEDULE_FILES: Final[bool] = False
 
 def _IsPlatformSupported(benchmark, platform: str) -> bool:
   supported = benchmark.GetSupportedPlatformNames(benchmark.SUPPORTED_PLATFORMS)
   return 'all' in supported or platform in supported
-
-
-ALL_PLATFORMS = set()
 
 
 class _PerfPlatform(object):
@@ -56,7 +52,6 @@ class _PerfPlatform(object):
                pinpoint_only: bool = False,
                executables: Optional[frozenset[ExecutableConfig]] = None,
                crossbench: Optional[frozenset[CrossbenchConfig]] = None):
-    ALL_PLATFORMS.add(self)
     benchmark_config_set = benchmark_configs.Frozenset()
     self._name = name
     self._description = description
@@ -71,7 +66,7 @@ class _PerfPlatform(object):
     assert num_shards
     self._num_shards = num_shards
     # pylint: disable=redefined-outer-name
-    self._benchmark_configs: frozenset[BenchmarkConfig] = frozenset([
+    self._benchmark_configs: frozenset[TelemetryConfig] = frozenset([
         b for b in benchmark_config_set
         if _IsPlatformSupported(b.benchmark, self._platform_os)
     ])
@@ -118,14 +113,14 @@ class _PerfPlatform(object):
     return self._platform_os
 
   @property
-  def benchmarks_to_run(self) -> frozenset[BenchmarkConfig]:
+  def benchmarks_to_run(self) -> frozenset[TelemetryConfig]:
     # TODO(crbug.com/40628256): Deprecate this in favor of benchmark_configs
     # as part of change to make sharding scripts accommodate abridged
     # benchmarks.
     return frozenset({b.benchmark for b in self._benchmark_configs})
 
   @property
-  def benchmark_configs(self) -> frozenset[BenchmarkConfig]:
+  def benchmark_configs(self) -> frozenset[TelemetryConfig]:
     return self._benchmark_configs
 
   @property
@@ -146,9 +141,15 @@ class _PerfPlatform(object):
 
 class BenchmarkConfig(object):
 
+  def __init__(self, name: str) -> None:
+    self.name: Final[str] = name
+
+
+class TelemetryConfig(BenchmarkConfig):
+
   def __init__(self,
                benchmark,
-               abridged: bool,
+               abridged: bool = False,
                pageset_repeat_override: Optional[int] = None):
     """A configuration for a benchmark that helps decide how to shard it.
 
@@ -159,16 +160,13 @@ class BenchmarkConfig(object):
       pageset_repeat_override: number of times to repeat the entire story set.
         can be None, which defaults to the benchmark default pageset_repeat.
     """
+    super().__init__(benchmark.Name())
     self.benchmark = benchmark
     self.abridged = abridged
     self._stories = None
     self._exhaustive_stories = None
     self.is_telemetry = True
     self.pageset_repeat_override = pageset_repeat_override
-
-  @property
-  def name(self) -> str:
-    return self.benchmark.Name()
 
   @property
   def repeat(self) -> int:
@@ -178,7 +176,7 @@ class BenchmarkConfig(object):
 
   @property
   def extra_flags(self):
-    return []
+    return ()
 
   @property
   def stories(self) -> list[str]:
@@ -208,7 +206,7 @@ class BenchmarkConfig(object):
     return self._exhaustive_stories
 
 
-class ExecutableConfig(object):
+class ExecutableConfig(BenchmarkConfig):
 
   def __init__(self,
                name: str,
@@ -216,10 +214,10 @@ class ExecutableConfig(object):
                flags: tuple[str, ...] = (),
                estimated_runtime: int = 60,
                extra_flags: tuple[str, ...] = ()):
-    self.name = name
+    super().__init__(name)
     self.path = path or name
-    self.flags = flags or []
-    self.extra_flags = extra_flags or []
+    self.flags = flags or ()
+    self.extra_flags = extra_flags or ()
     self.estimated_runtime = estimated_runtime
     self.abridged = False
     self.stories = [GTEST_STORY_NAME]
@@ -227,14 +225,14 @@ class ExecutableConfig(object):
     self.repeat = 1
 
 
-class CrossbenchConfig:
+class CrossbenchConfig(BenchmarkConfig):
   def __init__(self,
                name: str,
                crossbench_name: str,
                estimated_runtime: int = 60,
                stories=None,
                flags: tuple[str, ...] = ()):
-    self.name = name
+    super().__init__(name)
     self.crossbench_name = crossbench_name
     self.estimated_runtime = estimated_runtime
     self.stories = stories or ['default']
@@ -248,14 +246,14 @@ class CrossbenchConfig:
 
 class PerfSuite(object):
   def __init__(self, configs):
-    self._configs: dict[str, BenchmarkConfig] = dict()
+    self._configs: dict[str, TelemetryConfig] = dict()
     self.Add(configs)
 
-  def Frozenset(self) -> frozenset[BenchmarkConfig]:
+  def Frozenset(self) -> frozenset[TelemetryConfig]:
     return frozenset(self._configs.values())
 
   def Add(
-      self, configs: Union[Iterable[Union[str, BenchmarkConfig]], PerfSuite]
+      self, configs: Union[Iterable[Union[str, TelemetryConfig]], PerfSuite]
   ) -> PerfSuite:
     if isinstance(configs, PerfSuite):
       configs = configs.Frozenset()
@@ -292,7 +290,7 @@ def _TelemetryConfig(benchmark_name: str,
                      abridged: bool = False,
                      pageset_repeat: int | None = None):
   benchmark = _ALL_BENCHMARKS_BY_NAMES[benchmark_name]
-  return BenchmarkConfig(benchmark, abridged, pageset_repeat)
+  return TelemetryConfig(benchmark, abridged, pageset_repeat)
 
 
 _OFFICIAL_BENCHMARK_CONFIGS = PerfSuite(
@@ -306,17 +304,18 @@ _OFFICIAL_BENCHMARK_CONFIGS = _OFFICIAL_BENCHMARK_CONFIGS.Remove([
 OFFICIAL_BENCHMARK_NAMES = frozenset(
     b.name for b in _OFFICIAL_BENCHMARK_CONFIGS.Frozenset())
 
-_BENCHMARKS_CONFIG = {}
+BenchmarkConfigFactory = Callable[..., BenchmarkConfig]
+_BENCHMARKS_CONFIG_FACTORIES: dict[str, BenchmarkConfigFactory] = {}
 for b in _ALL_BENCHMARKS_BY_NAMES:
-  _BENCHMARKS_CONFIG[b] = _TelemetryConfig
+  _BENCHMARKS_CONFIG_FACTORIES[b] = _TelemetryConfig
 
 
 def _register(name):
 
   def _decorator(func):
-    if name in _BENCHMARKS_CONFIG:
+    if name in _BENCHMARKS_CONFIG_FACTORIES:
       raise ValueError('Duplicate benchmark config: %s' % name)
-    _BENCHMARKS_CONFIG[name] = func
+    _BENCHMARKS_CONFIG_FACTORIES[name] = func
     return func
 
   return _decorator
@@ -397,7 +396,7 @@ def _performance_browser_tests(estimated_runtime: int = 67):
 
 
 @_register('tracing_perftests')
-def _tracing_perftests(estimated_runtime: int = 50):
+def _tracing_perftests(estimated_runtime: int = 5):
   return ExecutableConfig('tracing_perftests',
                           estimated_runtime=estimated_runtime)
 
@@ -646,7 +645,7 @@ def _loadline2_phone_crossbench(estimated_runtime: int = 1000,
 
 # Webview:
 @_register('loading.crossbench')
-def _crossbench_loading(estimated_runtime: int = 60,
+def _crossbench_loading(estimated_runtime: int = 750,
                         flags: tuple[str, ...] = ()):
   return CrossbenchConfig('loading.crossbench',
                           'loading',
@@ -655,7 +654,7 @@ def _crossbench_loading(estimated_runtime: int = 60,
 
 
 @_register('embedder.crossbench')
-def _crossbench_embedder(estimated_runtime: int = 20,
+def _crossbench_embedder(estimated_runtime: int = 900,
                          flags: tuple[str, ...] = ()):
   return CrossbenchConfig('embedder.crossbench',
                           'embedder',
@@ -696,7 +695,9 @@ _COMMON_FUCHSIA_ARGS = ['-d', '--os-check=ignore']
 for board, path_parts in _IMAGE_PATHS.items():
   FUCHSIA_EXEC_ARGS[board] = _COMMON_FUCHSIA_ARGS
 
-if not _USE_CSV_SCHEDULE_FILES:
+
+def CreateLegacySchedule() -> set[_PerfPlatform]:
+  all_platforms: set[_PerfPlatform] = set()
   _CROSSBENCH_JETSTREAM_SPEEDOMETER = frozenset([
       _jetstream2_crossbench(),
       _speedometer3_crossbench(),
@@ -752,7 +753,6 @@ if not _USE_CSV_SCHEDULE_FILES:
   # pylint: disable=line-too-long
   _CROSSBENCH_WEBVIEW = frozenset([
       _crossbench_loading(
-          estimated_runtime=750,
           flags=(
               '--wpr=crossbench_android_loading_000.wprgo',
               '--probe=chrome_histograms:{"baseline":false,"metrics":'
@@ -764,7 +764,6 @@ if not _USE_CSV_SCHEDULE_FILES:
               '--stories=cnn',
           )),
       _crossbench_embedder(
-          estimated_runtime=900,
           flags=(
               '--wpr=crossbench_android_embedder_000.wprgo',
               '--skip-wpr-script-injection',
@@ -991,97 +990,113 @@ if not _USE_CSV_SCHEDULE_FILES:
   ])
 
   # Linux
-  _PerfPlatform('linux-perf', ('Ubuntu-22.04, Precision 3930 Rack, '
-                               'NVIDIA GeForce GTX 1660'),
-                _LINUX_GPU_BENCHMARK_CONFIGS,
-                7,
-                'linux',
-                executables=_LINUX_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_BENCHMARKS_ALL)
-  _PerfPlatform('linux-perf-pgo',
-                'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
-                _LINUX_BENCHMARK_CONFIGS,
-                26,
-                'linux',
-                executables=_LINUX_EXECUTABLE_CONFIGS,
-                pinpoint_only=True)
-  _PerfPlatform('linux-perf-rel',
-                'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
-                _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP,
-                2,
-                'linux',
-                executables=_LINUX_EXECUTABLE_CONFIGS)
-  _PerfPlatform('linux-r350-perf',
-                'Ubuntu-22.04, 16 core',
-                _LINUX_R350_BENCHMARK_CONFIGS,
-                30,
-                'linux',
-                executables=_LINUX_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_BENCHMARKS_ALL
-                | {_devtools_frontend_crossbench()})
-  _PerfPlatform('linux-falcon-rak-5070-perf',
-                'Linux Falcon RAK 5070',
-                _FALCON_BENCHMARK_CONFIGS,
-                1,
-                'linux',
-                executables=_FALCON_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+  new_platform = _PerfPlatform('linux-perf',
+                               ('Ubuntu-22.04, Precision 3930 Rack, '
+                                'NVIDIA GeForce GTX 1660'),
+                               _LINUX_GPU_BENCHMARK_CONFIGS,
+                               7,
+                               'linux',
+                               executables=_LINUX_EXECUTABLE_CONFIGS,
+                               crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('linux-perf-pgo',
+                               'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
+                               _LINUX_BENCHMARK_CONFIGS,
+                               26,
+                               'linux',
+                               executables=_LINUX_EXECUTABLE_CONFIGS,
+                               pinpoint_only=True)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('linux-perf-rel',
+                               'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
+                               _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP,
+                               2,
+                               'linux',
+                               executables=_LINUX_EXECUTABLE_CONFIGS)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('linux-r350-perf',
+                               'Ubuntu-22.04, 16 core',
+                               _LINUX_R350_BENCHMARK_CONFIGS,
+                               30,
+                               'linux',
+                               executables=_LINUX_EXECUTABLE_CONFIGS,
+                               crossbench=_CROSSBENCH_BENCHMARKS_ALL
+                               | {_devtools_frontend_crossbench()})
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('linux-falcon-rak-5070-perf',
+                               'Linux Falcon RAK 5070',
+                               _FALCON_BENCHMARK_CONFIGS,
+                               1,
+                               'linux',
+                               executables=_FALCON_EXECUTABLE_CONFIGS,
+                               crossbench=_CROSSBENCH_BENCHMARKS_ALL)
 
   # Mac
-  _PerfPlatform('mac-intel-perf',
-                'Mac Mini 8,1, Core i7 3.2 GHz',
-                _MAC_INTEL_BENCHMARK_CONFIGS,
-                24,
-                'mac',
-                executables=_MAC_INTEL_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_BENCHMARKS_ALL)
-  _PerfPlatform('mac-m1_mini_2020-perf',
-                'Mac M1 Mini 2020',
-                _MAC_M1_MINI_2020_BENCHMARK_CONFIGS,
-                28,
-                'mac',
-                executables=_MAC_M1_MINI_2020_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_BENCHMARKS_ALL
-                | {_devtools_frontend_crossbench()})
-  _PerfPlatform('mac-m1_mini_2020-perf-pgo',
-                'Mac M1 Mini 2020',
-                _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS,
-                7,
-                'mac',
-                crossbench=_CROSSBENCH_BENCHMARKS_ALL)
-  _PerfPlatform('mac-m1_mini_2020-no-brp-perf',
-                'Mac M1 Mini 2020 with BRP disabled',
-                _MAC_M1_MINI_2020_NO_BRP_BENCHMARK_CONFIGS, 20, 'mac')
-  _PerfPlatform('mac-m1-pro-perf',
-                'Mac M1 PRO 2020',
-                _MAC_M1_PRO_BENCHMARK_CONFIGS,
-                4,
-                'mac',
-                crossbench=_CROSSBENCH_BENCHMARKS_ALL)
-  _PerfPlatform('mac-m2-pro-perf',
-                'Mac M2 PRO Baremetal ARM',
-                _MAC_M2_PRO_BENCHMARK_CONFIGS,
-                20,
-                'mac',
-                crossbench=_CROSSBENCH_BENCHMARKS_ALL)
-  _PerfPlatform('mac-m3-pro-perf',
-                'Mac M3 PRO ARM',
-                _MAC_M3_PRO_BENCHMARK_CONFIGS,
-                4,
-                'mac',
-                crossbench=_CROSSBENCH_BENCHMARKS_ALL)
-  _PerfPlatform('mac-m4-mini-perf',
-                'Mac M4 mini ARM',
-                _MAC_M4_MINI_BENCHMARK_CONFIGS,
-                25,
-                'mac',
-                crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('mac-intel-perf',
+                               'Mac Mini 8,1, Core i7 3.2 GHz',
+                               _MAC_INTEL_BENCHMARK_CONFIGS,
+                               24,
+                               'mac',
+                               executables=_MAC_INTEL_EXECUTABLE_CONFIGS,
+                               crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('mac-m1_mini_2020-perf',
+                               'Mac M1 Mini 2020',
+                               _MAC_M1_MINI_2020_BENCHMARK_CONFIGS,
+                               28,
+                               'mac',
+                               executables=_MAC_M1_MINI_2020_EXECUTABLE_CONFIGS,
+                               crossbench=_CROSSBENCH_BENCHMARKS_ALL
+                               | {_devtools_frontend_crossbench()})
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('mac-m1_mini_2020-perf-pgo',
+                               'Mac M1 Mini 2020',
+                               _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS,
+                               7,
+                               'mac',
+                               crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('mac-m1_mini_2020-no-brp-perf',
+                               'Mac M1 Mini 2020 with BRP disabled',
+                               _MAC_M1_MINI_2020_NO_BRP_BENCHMARK_CONFIGS, 20,
+                               'mac')
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('mac-m1-pro-perf',
+                               'Mac M1 PRO 2020',
+                               _MAC_M1_PRO_BENCHMARK_CONFIGS,
+                               4,
+                               'mac',
+                               crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('mac-m2-pro-perf',
+                               'Mac M2 PRO Baremetal ARM',
+                               _MAC_M2_PRO_BENCHMARK_CONFIGS,
+                               20,
+                               'mac',
+                               crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('mac-m3-pro-perf',
+                               'Mac M3 PRO ARM',
+                               _MAC_M3_PRO_BENCHMARK_CONFIGS,
+                               4,
+                               'mac',
+                               crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('mac-m4-mini-perf',
+                               'Mac M4 mini ARM',
+                               _MAC_M4_MINI_BENCHMARK_CONFIGS,
+                               25,
+                               'mac',
+                               crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+  all_platforms.add(new_platform)
   # Win
-  _PerfPlatform(
+  new_platform = _PerfPlatform(
       'win-10_laptop_low_end-perf',
       'Low end windows 10 HP laptops. HD Graphics 5500, x86-64-i3-5005U, '
       'SSD, 4GB RAM.', _WIN_10_LOW_END_BENCHMARK_CONFIGS, 15, 'win')
-  _PerfPlatform(
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform(
       'win-10_laptop_low_end-perf-pgo',
       'Low end windows 10 HP laptops. HD Graphics 5500, x86-64-i3-5005U, '
       'SSD, 4GB RAM.',
@@ -1090,35 +1105,42 @@ if not _USE_CSV_SCHEDULE_FILES:
       40,
       'win',
       pinpoint_only=True)
-  _PerfPlatform('win-10-perf',
-                'Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, 16GB RAM,'
-                ' Intel Kaby Lake HD Graphics 630',
-                _WIN_10_BENCHMARK_CONFIGS,
-                18,
-                'win',
-                executables=_WIN_10_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_BENCHMARKS_ALL)
-  _PerfPlatform('win-10-perf-pgo',
-                'Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, 16GB RAM,'
-                ' Intel Kaby Lake HD Graphics 630',
-                _WIN_10_BENCHMARK_CONFIGS,
-                18,
-                'win',
-                executables=_WIN_10_EXECUTABLE_CONFIGS,
-                pinpoint_only=True)
-  _PerfPlatform('win-10_amd_laptop-perf',
-                'Windows 10 Laptop with AMD chipset.',
-                _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS,
-                3,
-                'win',
-                crossbench=_CROSSBENCH_JETSTREAM_SPEEDOMETER)
-  _PerfPlatform('win-10_amd_laptop-perf-pgo',
-                'Windows 10 Laptop with AMD chipset.',
-                _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS,
-                3,
-                'win',
-                pinpoint_only=True)
-  _PerfPlatform(
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform(
+      'win-10-perf',
+      'Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, 16GB RAM,'
+      ' Intel Kaby Lake HD Graphics 630',
+      _WIN_10_BENCHMARK_CONFIGS,
+      18,
+      'win',
+      executables=_WIN_10_EXECUTABLE_CONFIGS,
+      crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform(
+      'win-10-perf-pgo',
+      'Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, 16GB RAM,'
+      ' Intel Kaby Lake HD Graphics 630',
+      _WIN_10_BENCHMARK_CONFIGS,
+      18,
+      'win',
+      executables=_WIN_10_EXECUTABLE_CONFIGS,
+      pinpoint_only=True)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('win-10_amd_laptop-perf',
+                               'Windows 10 Laptop with AMD chipset.',
+                               _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS,
+                               3,
+                               'win',
+                               crossbench=_CROSSBENCH_JETSTREAM_SPEEDOMETER)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('win-10_amd_laptop-perf-pgo',
+                               'Windows 10 Laptop with AMD chipset.',
+                               _WIN_10_AMD_LAPTOP_BENCHMARK_CONFIGS,
+                               3,
+                               'win',
+                               pinpoint_only=True)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform(
       'win-11-perf',
       'Windows Dell PowerEdge R350',
       _WIN_11_BENCHMARK_CONFIGS,
@@ -1128,30 +1150,34 @@ if not _USE_CSV_SCHEDULE_FILES:
       crossbench=_CROSSBENCH_BENCHMARKS_ALL
       | {_speedometer3_a11y_crossbench(),
          _devtools_frontend_crossbench()})
-  _PerfPlatform('win-11-perf-pgo',
-                'Windows Dell PowerEdge R350',
-                _WIN_11_BENCHMARK_CONFIGS,
-                26,
-                'win',
-                executables=_WIN_11_EXECUTABLE_CONFIGS,
-                pinpoint_only=True)
-  _PerfPlatform('win-falcon-rak-5070-perf',
-                'Windows Falcon RAK 5070',
-                _FALCON_BENCHMARK_CONFIGS,
-                1,
-                'win',
-                executables=_FALCON_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_BENCHMARKS_ALL)
-  _PerfPlatform('win-arm64-snapdragon-elite-perf',
-                'Windows Dell Snapdragon Elite',
-                _OFFICIAL_BENCHMARK_CONFIGS,
-                28,
-                'win',
-                executables=_WIN_ARM64_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('win-11-perf-pgo',
+                               'Windows Dell PowerEdge R350',
+                               _WIN_11_BENCHMARK_CONFIGS,
+                               26,
+                               'win',
+                               executables=_WIN_11_EXECUTABLE_CONFIGS,
+                               pinpoint_only=True)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('win-falcon-rak-5070-perf',
+                               'Windows Falcon RAK 5070',
+                               _FALCON_BENCHMARK_CONFIGS,
+                               1,
+                               'win',
+                               executables=_FALCON_EXECUTABLE_CONFIGS,
+                               crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('win-arm64-snapdragon-elite-perf',
+                               'Windows Dell Snapdragon Elite',
+                               _OFFICIAL_BENCHMARK_CONFIGS,
+                               28,
+                               'win',
+                               executables=_WIN_ARM64_EXECUTABLE_CONFIGS,
+                               crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+  all_platforms.add(new_platform)
 
   # Android
-  _PerfPlatform(
+  new_platform = _PerfPlatform(
       name='android-brya-kano-i5-8gb-perf',
       description='Brya SKU kano_12th_Gen_IntelR_CoreTM_i5_1235U_8GB',
       # We have enough resources to run at least 7 shards, but currently only
@@ -1162,193 +1188,573 @@ if not _USE_CSV_SCHEDULE_FILES:
       platform_os='android',
       executables=_ANDROID_AL_BRYA_EXECUTABLE_CONFIGS,
       crossbench=_CROSSBENCH_ANDROID_AL)
-  _PerfPlatform(name='android-corsola-steelix-8gb-perf',
-                description='Corsola SKU steelix_MT8186_8GB',
-                num_shards=7,
-                benchmark_configs=_ANDROID_AL_BENCHMARK_CONFIGS,
-                platform_os='android',
-                executables=None,
-                crossbench=_CROSSBENCH_ANDROID_AL)
-  _PerfPlatform(name='android-nissa-uldren-8gb-perf',
-                description='Nissa SKU uldren_99C4LZ/Q1XT/6W_8GB',
-                num_shards=7,
-                benchmark_configs=_ANDROID_AL_BENCHMARK_CONFIGS,
-                platform_os='android',
-                executables=None,
-                crossbench=_CROSSBENCH_ANDROID_AL)
-  _PerfPlatform('android-pixel4-perf',
-                'Android R',
-                _ANDROID_PIXEL4_BENCHMARK_CONFIGS,
-                44,
-                'android',
-                executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS)
-  _PerfPlatform('android-pixel4-perf-pgo',
-                'Android R',
-                _ANDROID_PIXEL4_BENCHMARK_CONFIGS,
-                28,
-                'android',
-                executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
-                pinpoint_only=True)
-  _PerfPlatform('android-pixel4_webview-perf',
-                'Android R',
-                _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS,
-                23,
-                'android',
-                crossbench=_CROSSBENCH_WEBVIEW)
-  _PerfPlatform('android-pixel4_webview-perf-pgo',
-                'Android R',
-                _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS,
-                20,
-                'android',
-                crossbench=_CROSSBENCH_WEBVIEW)
-  _PerfPlatform('android-pixel6-perf',
-                'Android U',
-                _ANDROID_PIXEL6_BENCHMARK_CONFIGS,
-                14,
-                'android',
-                executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_ANDROID)
-  _PerfPlatform('android-pixel6-perf-pgo',
-                'Android U',
-                _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS,
-                8,
-                'android',
-                executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_ANDROID)
-  _PerfPlatform('android-pixel6-pro-perf',
-                'Android T',
-                _OFFICIAL_BENCHMARK_CONFIGS,
-                10,
-                'android',
-                executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS)
-  _PerfPlatform('android-pixel6-pro-perf-pgo',
-                'Android T',
-                _OFFICIAL_BENCHMARK_CONFIGS,
-                16,
-                'android',
-                executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
-                pinpoint_only=True)
-  _PerfPlatform('android-pixel-fold-perf',
-                'Android U',
-                _OFFICIAL_BENCHMARK_CONFIGS,
-                10,
-                'android',
-                executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS)
-  _PerfPlatform('android-pixel-tangor-perf',
-                'Android U',
-                _OFFICIAL_BENCHMARK_CONFIGS,
-                8,
-                'android',
-                executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_TANGOR)
-  _PerfPlatform('android-go-wembley-perf', 'Android U',
-                _ANDROID_GO_BENCHMARK_CONFIGS, 11, 'android')
-  _PerfPlatform('android-go-wembley_webview-perf', 'Android U',
-                _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS, 5, 'android')
-  _PerfPlatform('android-pixel9-perf',
-                'Android B',
-                _ANDROID_PIXEL9_BENCHMARK_CONFIGS,
-                4,
-                'android',
-                executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_PIXEL9)
-  _PerfPlatform('android-pixel9-pro-perf',
-                'Android B',
-                _ANDROID_PIXEL9_BENCHMARK_CONFIGS,
-                4,
-                'android',
-                executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_PIXEL9)
-  _PerfPlatform('android-pixel9-pro-xl-perf',
-                'Android B',
-                _ANDROID_PIXEL9_BENCHMARK_CONFIGS,
-                4,
-                'android',
-                executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_PIXEL9)
-  _PerfPlatform('android-pixel25-ultra-perf',
-                'Android B',
-                _ANDROID_PIXEL9_BENCHMARK_CONFIGS,
-                4,
-                'android',
-                executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_PIXEL9)
-  _PerfPlatform('android-pixel25-ultra-xl-perf',
-                'Android B',
-                _ANDROID_PIXEL9_BENCHMARK_CONFIGS,
-                3,
-                'android',
-                executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
-                crossbench=_CROSSBENCH_PIXEL9)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform(name='android-corsola-steelix-8gb-perf',
+                               description='Corsola SKU steelix_MT8186_8GB',
+                               num_shards=7,
+                               benchmark_configs=_ANDROID_AL_BENCHMARK_CONFIGS,
+                               platform_os='android',
+                               executables=None,
+                               crossbench=_CROSSBENCH_ANDROID_AL)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform(
+      name='android-nissa-uldren-8gb-perf',
+      description='Nissa SKU uldren_99C4LZ/Q1XT/6W_8GB',
+      num_shards=7,
+      benchmark_configs=_ANDROID_AL_BENCHMARK_CONFIGS,
+      platform_os='android',
+      executables=None,
+      crossbench=_CROSSBENCH_ANDROID_AL)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-pixel4-perf',
+                               'Android R',
+                               _ANDROID_PIXEL4_BENCHMARK_CONFIGS,
+                               44,
+                               'android',
+                               executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-pixel4-perf-pgo',
+                               'Android R',
+                               _ANDROID_PIXEL4_BENCHMARK_CONFIGS,
+                               28,
+                               'android',
+                               executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
+                               pinpoint_only=True)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-pixel4_webview-perf',
+                               'Android R',
+                               _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS,
+                               23,
+                               'android',
+                               crossbench=_CROSSBENCH_WEBVIEW)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-pixel4_webview-perf-pgo',
+                               'Android R',
+                               _ANDROID_PIXEL4_WEBVIEW_BENCHMARK_CONFIGS,
+                               20,
+                               'android',
+                               crossbench=_CROSSBENCH_WEBVIEW)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-pixel6-perf',
+                               'Android U',
+                               _ANDROID_PIXEL6_BENCHMARK_CONFIGS,
+                               14,
+                               'android',
+                               executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
+                               crossbench=_CROSSBENCH_ANDROID)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-pixel6-perf-pgo',
+                               'Android U',
+                               _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS,
+                               8,
+                               'android',
+                               executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
+                               crossbench=_CROSSBENCH_ANDROID)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-pixel6-pro-perf',
+                               'Android T',
+                               _OFFICIAL_BENCHMARK_CONFIGS,
+                               10,
+                               'android',
+                               executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-pixel6-pro-perf-pgo',
+                               'Android T',
+                               _OFFICIAL_BENCHMARK_CONFIGS,
+                               16,
+                               'android',
+                               executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
+                               pinpoint_only=True)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-pixel-fold-perf',
+                               'Android U',
+                               _OFFICIAL_BENCHMARK_CONFIGS,
+                               10,
+                               'android',
+                               executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-pixel-tangor-perf',
+                               'Android U',
+                               _OFFICIAL_BENCHMARK_CONFIGS,
+                               8,
+                               'android',
+                               executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
+                               crossbench=_CROSSBENCH_TANGOR)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-go-wembley-perf', 'Android U',
+                               _ANDROID_GO_BENCHMARK_CONFIGS, 11, 'android')
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-go-wembley_webview-perf', 'Android U',
+                               _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS, 5,
+                               'android')
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-pixel9-perf',
+                               'Android B',
+                               _ANDROID_PIXEL9_BENCHMARK_CONFIGS,
+                               4,
+                               'android',
+                               executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
+                               crossbench=_CROSSBENCH_PIXEL9)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-pixel9-pro-perf',
+                               'Android B',
+                               _ANDROID_PIXEL9_BENCHMARK_CONFIGS,
+                               4,
+                               'android',
+                               executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
+                               crossbench=_CROSSBENCH_PIXEL9)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-pixel9-pro-xl-perf',
+                               'Android B',
+                               _ANDROID_PIXEL9_BENCHMARK_CONFIGS,
+                               4,
+                               'android',
+                               executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
+                               crossbench=_CROSSBENCH_PIXEL9)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-pixel25-ultra-perf',
+                               'Android B',
+                               _ANDROID_PIXEL9_BENCHMARK_CONFIGS,
+                               4,
+                               'android',
+                               executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
+                               crossbench=_CROSSBENCH_PIXEL9)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('android-pixel25-ultra-xl-perf',
+                               'Android B',
+                               _ANDROID_PIXEL9_BENCHMARK_CONFIGS,
+                               3,
+                               'android',
+                               executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
+                               crossbench=_CROSSBENCH_PIXEL9)
   # Cros
-  _PerfPlatform('fuchsia-perf-nsn',
-                '',
-                _FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS,
-                1,
-                'fuchsia',
-                is_fyi=True)
-  _PerfPlatform('fuchsia-perf-shk',
-                '',
-                _FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS,
-                1,
-                'fuchsia',
-                is_fyi=True)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('fuchsia-perf-nsn',
+                               '',
+                               _FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS,
+                               1,
+                               'fuchsia',
+                               is_fyi=True)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('fuchsia-perf-shk',
+                               '',
+                               _FUCHSIA_PERF_SMARTDISPLAY_BENCHMARK_CONFIGS,
+                               1,
+                               'fuchsia',
+                               is_fyi=True)
 
   # FYI bots
-  _PerfPlatform('win-10_laptop_low_end-perf_HP-Candidate',
-                'HP 15-BS121NR Laptop Candidate',
-                _WIN_10_LOW_END_HP_CANDIDATE_BENCHMARK_CONFIGS,
-                1,
-                'win',
-                is_fyi=True)
-  _PerfPlatform('chromeos-kevin-perf-fyi',
-                '',
-                _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS,
-                4,
-                'chromeos',
-                is_fyi=True)
-  _PerfPlatform('linux-perf-fyi',
-                '',
-                _LINUX_PERF_FYI_BENCHMARK_CONFIGS,
-                1,
-                'linux',
-                crossbench=_CROSSBENCH_BENCHMARKS_ALL
-                | {_devtools_frontend_crossbench()},
-                is_fyi=True)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('win-10_laptop_low_end-perf_HP-Candidate',
+                               'HP 15-BS121NR Laptop Candidate',
+                               _WIN_10_LOW_END_HP_CANDIDATE_BENCHMARK_CONFIGS,
+                               1,
+                               'win',
+                               is_fyi=True)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('chromeos-kevin-perf-fyi',
+                               '',
+                               _CHROMEOS_KEVIN_FYI_BENCHMARK_CONFIGS,
+                               4,
+                               'chromeos',
+                               is_fyi=True)
+  all_platforms.add(new_platform)
+  new_platform = _PerfPlatform('linux-perf-fyi',
+                               '',
+                               _LINUX_PERF_FYI_BENCHMARK_CONFIGS,
+                               1,
+                               'linux',
+                               crossbench=_CROSSBENCH_BENCHMARKS_ALL
+                               | {_devtools_frontend_crossbench()},
+                               is_fyi=True)
+  all_platforms.add(new_platform)
+
+  # Silence unused variable warnings:
+  del _CROSSBENCH_MOTIONMARK_SPEEDOMETER
+  del _CROSSBENCH_ANDROID_AL_BRYA
+  del _WIN_ARM64_BENCHMARK_CONFIGS
+  return all_platforms
 
 
-def LoadAllScheduleFiles():
-  schedule_dir = pathlib.Path(__file__).parent / 'schedule'
-  configs = {}
+PLATFORM_INFO = {
+    'linux-perf': {
+        'description': ('Ubuntu-22.04, Precision 3930 Rack, '
+                        'NVIDIA GeForce GTX 1660'),
+        'num_shards':
+        7,
+        'platform_os':
+        'linux',
+        'is_fyi':
+        False
+    },
+    'linux-perf-pgo': {
+        'description': 'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
+        'num_shards': 26,
+        'platform_os': 'linux',
+        'is_fyi': False,
+        'pinpoint_only': True
+    },
+    'linux-perf-rel': {
+        'description': 'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
+        'num_shards': 2,
+        'platform_os': 'linux',
+        'is_fyi': False
+    },
+    'linux-r350-perf': {
+        'description': 'Ubuntu-22.04, 16 core',
+        'num_shards': 30,
+        'platform_os': 'linux',
+        'is_fyi': False
+    },
+    'linux-falcon-rak-5070-perf': {
+        'description': 'Linux Falcon RAK 5070',
+        'num_shards': 1,
+        'platform_os': 'linux',
+        'is_fyi': False
+    },
+    'mac-intel-perf': {
+        'description': 'Mac Mini 8,1, Core i7 3.2 GHz',
+        'num_shards': 24,
+        'platform_os': 'mac',
+        'is_fyi': False
+    },
+    'mac-m1_mini_2020-perf': {
+        'description': 'Mac M1 Mini 2020',
+        'num_shards': 28,
+        'platform_os': 'mac',
+        'is_fyi': False
+    },
+    'mac-m1_mini_2020-perf-pgo': {
+        'description': 'Mac M1 Mini 2020',
+        'num_shards': 7,
+        'platform_os': 'mac',
+        'is_fyi': False
+    },
+    'mac-m1_mini_2020-no-brp-perf': {
+        'description': 'Mac M1 Mini 2020 with BRP disabled',
+        'num_shards': 20,
+        'platform_os': 'mac',
+        'is_fyi': False
+    },
+    'mac-m1-pro-perf': {
+        'description': 'Mac M1 PRO 2020',
+        'num_shards': 4,
+        'platform_os': 'mac',
+        'is_fyi': False
+    },
+    'mac-m2-pro-perf': {
+        'description': 'Mac M2 PRO Baremetal ARM',
+        'num_shards': 20,
+        'platform_os': 'mac',
+        'is_fyi': False
+    },
+    'mac-m3-pro-perf': {
+        'description': 'Mac M3 PRO ARM',
+        'num_shards': 4,
+        'platform_os': 'mac',
+        'is_fyi': False
+    },
+    'mac-m4-mini-perf': {
+        'description': 'Mac M4 mini ARM',
+        'num_shards': 25,
+        'platform_os': 'mac',
+        'is_fyi': False
+    },
+    'win-10_laptop_low_end-perf': {
+        'description': ('Low end windows 10 HP laptops. HD Graphics 5500, '
+                        'x86-64-i3-5005U, SSD, 4GB RAM.'),
+        'num_shards':
+        15,
+        'platform_os':
+        'win',
+        'is_fyi':
+        False
+    },
+    'win-10_laptop_low_end-perf-pgo': {
+        'description': ('Low end windows 10 HP laptops. HD Graphics 5500, '
+                        'x86-64-i3-5005U, SSD, 4GB RAM.'),
+        'num_shards':
+        40,
+        'platform_os':
+        'win',
+        'is_fyi':
+        False,
+        'pinpoint_only':
+        True
+    },
+    'win-10-perf': {
+        'description': ('Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, '
+                        '16GB RAM, Intel Kaby Lake HD Graphics 630'),
+        'num_shards':
+        18,
+        'platform_os':
+        'win',
+        'is_fyi':
+        False
+    },
+    'win-10-perf-pgo': {
+        'description': ('Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, '
+                        '16GB RAM, Intel Kaby Lake HD Graphics 630'),
+        'num_shards':
+        18,
+        'platform_os':
+        'win',
+        'is_fyi':
+        False,
+        'pinpoint_only':
+        True
+    },
+    'win-10_amd_laptop-perf': {
+        'description': 'Windows 10 Laptop with AMD chipset.',
+        'num_shards': 3,
+        'platform_os': 'win',
+        'is_fyi': False
+    },
+    'win-10_amd_laptop-perf-pgo': {
+        'description': 'Windows 10 Laptop with AMD chipset.',
+        'num_shards': 3,
+        'platform_os': 'win',
+        'is_fyi': False,
+        'pinpoint_only': True
+    },
+    'win-11-perf': {
+        'description': 'Windows Dell PowerEdge R350',
+        'num_shards': 20,
+        'platform_os': 'win',
+        'is_fyi': False
+    },
+    'win-11-perf-pgo': {
+        'description': 'Windows Dell PowerEdge R350',
+        'num_shards': 26,
+        'platform_os': 'win',
+        'is_fyi': False,
+        'pinpoint_only': True
+    },
+    'win-falcon-rak-5070-perf': {
+        'description': 'Windows Falcon RAK 5070',
+        'num_shards': 1,
+        'platform_os': 'win',
+        'is_fyi': False
+    },
+    'win-arm64-snapdragon-elite-perf': {
+        'description': 'Windows Dell Snapdragon Elite',
+        'num_shards': 28,
+        'platform_os': 'win',
+        'is_fyi': False
+    },
+    'android-brya-kano-i5-8gb-perf': {
+        'description': 'Brya SKU kano_12th_Gen_IntelR_CoreTM_i5_1235U_8GB',
+        'num_shards': 4,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-corsola-steelix-8gb-perf': {
+        'description': 'Corsola SKU steelix_MT8186_8GB',
+        'num_shards': 7,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-nissa-uldren-8gb-perf': {
+        'description': 'Nissa SKU uldren_99C4LZ/Q1XT/6W_8GB',
+        'num_shards': 7,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-pixel4-perf': {
+        'description': 'Android R',
+        'num_shards': 44,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-pixel4-perf-pgo': {
+        'description': 'Android R',
+        'num_shards': 28,
+        'platform_os': 'android',
+        'is_fyi': False,
+        'pinpoint_only': True
+    },
+    'android-pixel4_webview-perf': {
+        'description': 'Android R',
+        'num_shards': 23,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-pixel4_webview-perf-pgo': {
+        'description': 'Android R',
+        'num_shards': 20,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-pixel6-perf': {
+        'description': 'Android U',
+        'num_shards': 14,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-pixel6-perf-pgo': {
+        'description': 'Android U',
+        'num_shards': 8,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-pixel6-pro-perf': {
+        'description': 'Android T',
+        'num_shards': 10,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-pixel6-pro-perf-pgo': {
+        'description': 'Android T',
+        'num_shards': 16,
+        'platform_os': 'android',
+        'is_fyi': False,
+        'pinpoint_only': True
+    },
+    'android-pixel-fold-perf': {
+        'description': 'Android U',
+        'num_shards': 10,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-pixel-tangor-perf': {
+        'description': 'Android U',
+        'num_shards': 8,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-go-wembley-perf': {
+        'description': 'Android U',
+        'num_shards': 11,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-go-wembley_webview-perf': {
+        'description': 'Android U',
+        'num_shards': 5,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-pixel9-perf': {
+        'description': 'Android B',
+        'num_shards': 4,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-pixel9-pro-perf': {
+        'description': 'Android B',
+        'num_shards': 4,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-pixel9-pro-xl-perf': {
+        'description': 'Android B',
+        'num_shards': 4,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-pixel25-ultra-perf': {
+        'description': 'Android B',
+        'num_shards': 4,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'android-pixel25-ultra-xl-perf': {
+        'description': 'Android B',
+        'num_shards': 3,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
+    'fuchsia-perf-nsn': {
+        'description': '',
+        'num_shards': 1,
+        'platform_os': 'fuchsia',
+        'is_fyi': True
+    },
+    'fuchsia-perf-shk': {
+        'description': '',
+        'num_shards': 1,
+        'platform_os': 'fuchsia',
+        'is_fyi': True
+    },
+    'win-10_laptop_low_end-perf_HP-Candidate': {
+        'description': 'HP 15-BS121NR Laptop Candidate',
+        'num_shards': 1,
+        'platform_os': 'win',
+        'is_fyi': True
+    },
+    'chromeos-kevin-perf-fyi': {
+        'description': '',
+        'num_shards': 4,
+        'platform_os': 'chromeos',
+        'is_fyi': True
+    },
+    'linux-perf-fyi': {
+        'description': '',
+        'num_shards': 1,
+        'platform_os': 'linux',
+        'is_fyi': True
+    },
+}
+
+
+def LoadAllScheduleFiles() -> set[_PerfPlatform]:
+  schedule_dir = pathlib.Path(__file__).resolve().parent / 'schedule'
+  assert schedule_dir.is_dir(), f'Missing schedule directory {schedule_dir}'
+  bot_to_csv_configs: dict[str, list[BenchmarkConfig]] = {}
   for file_path in schedule_dir.glob('*.csv'):
-    LoadScheduleFile(file_path, configs)
-  assert configs, 'No benchmark schedule configs generated'
-  return configs
+    LoadScheduleFile(file_path, bot_to_csv_configs)
+  assert bot_to_csv_configs, 'No benchmark schedule configs generated'
 
-# TODO(cbruni): use this to generate all perf configs.
-if _USE_CSV_SCHEDULE_FILES:
-  LoadAllScheduleFiles()
+  new_platforms = set()
+  for name, platform_info in PLATFORM_INFO.items():
+    csv_configs = bot_to_csv_configs.get(name, [])
 
-def LoadScheduleFile(file_path, configs):
+    benchmark_configs = [
+        c for c in csv_configs if isinstance(c, TelemetryConfig)
+    ]
+    executable_configs = frozenset(c for c in csv_configs
+                                   if isinstance(c, ExecutableConfig))
+    crossbench_configs = frozenset(c for c in csv_configs
+                                   if isinstance(c, CrossbenchConfig))
+
+    new_platform = _PerfPlatform(
+        name=name,
+        description=platform_info['description'],
+        benchmark_configs=PerfSuite(benchmark_configs),
+        num_shards=platform_info['num_shards'],
+        platform_os=platform_info['platform_os'],
+        is_fyi=platform_info.get('is_fyi', False),
+        run_reference_build=platform_info.get('run_reference_build', False),
+        pinpoint_only=platform_info.get('pinpoint_only', False),
+        executables=executable_configs,
+        crossbench=crossbench_configs)
+    new_platforms.add(new_platform)
+  return new_platforms
+
+
+def LoadScheduleFile(file_path: pathlib.Path,
+                     configs: dict[str, list[BenchmarkConfig]]):
   name = file_path.stem
-  factory = _BENCHMARKS_CONFIG[name]
+  factory = _BENCHMARKS_CONFIG_FACTORIES[name]
   is_telemetry = (factory == _TelemetryConfig)  # pylint: disable=comparison-with-callable)
   contents = file_path.read_text(encoding='utf-8')
   reader = csv.DictReader(io.StringIO(contents), restkey='*flag')
   fieldnames = reader.fieldnames
   assert fieldnames, 'Missing field names'
   has_flags = 'flags' in fieldnames
+  seen_bots: set[str] = set()
   for row in reader:
     if flags := ParseFlags(file_path, row, has_flags):
       row['flags'] = flags
     bot = row['bot']
-    assert bot not in configs, (
+    assert bot not in seen_bots, (
         f'Duplicate bot {bot!r} in schedule file {file_path}')
+    seen_bots.add(bot)
     config = _ParseScheduleConfigRow(row, name, factory, is_telemetry)
     configs.setdefault(bot, []).append(config)
 
 
-def ParseFlags(file_path, row, has_flags):
+def ParseFlags(file_path: pathlib.Path, row, has_flags: bool) -> str | None:
   if extraFlags := row.pop('*flag', None):
     assert has_flags, (
         f'Unexpected extra columns in {file_path}. Extra columns are only '
@@ -1358,7 +1764,8 @@ def ParseFlags(file_path, row, has_flags):
   return None
 
 
-def _ParseScheduleConfigRow(row, name, factory, is_telemetry):
+def _ParseScheduleConfigRow(row, name: str, factory: BenchmarkConfigFactory,
+                            is_telemetry: bool) -> BenchmarkConfig:
   repeat = int(row.get('repeat', 1))
   kwargs = {}
   for k, v in row.items():
@@ -1383,13 +1790,21 @@ def _ParseScheduleConfigValue(k, v):
     v = str(v)
     if v and v[0] == "'":
       raise ValueError(f'Unsupported single quote for flag escaping: {v!r}')
-    return shlex.split(v)
+    return tuple(shlex.split(v))
   if v.lower() == 'true':
     return True
   if v.lower() == 'false':
     return False
   return int(v)
 
+# TODO(cbruni): use this to generate all perf configs.
+_USE_CSV_SCHEDULE_FILES: Final[bool] = False
+
+ALL_PLATFORMS: set[_PerfPlatform] = set()
+if _USE_CSV_SCHEDULE_FILES:
+  ALL_PLATFORMS = LoadAllScheduleFiles()
+else:
+  ALL_PLATFORMS = CreateLegacySchedule()
 
 assert ALL_PLATFORMS, 'No PerfPlatform found'
 PLATFORMS_BY_NAME = {p.name: p for p in ALL_PLATFORMS}
