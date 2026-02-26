@@ -9634,3 +9634,6 @@ crbug.com/469578374 [ Win ] external/wpt/html/semantics/permission-element/geolo
 # Temporary entry before fixing headless_shell failure introduced by crrev.com/c/7596170
 crbug.com/486315292 external/wpt/geolocation/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
 crbug.com/486315292 external/wpt/geolocation/enabled-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
+
+# Temporary entry to land crrev.com/c/7612307
+crbug.com/484891675 http/tests/devtools/elements/styles/xsl-transformed.js [ Failure Pass ]

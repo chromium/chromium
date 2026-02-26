@@ -8,7 +8,7 @@ Tests that XSL-transformed documents in the main frame are rendered correctly in
       </head>
     - <body>
         - <div id="webkit-xml-viewer-source-xml">
-              xml-stylesheet
+              <?xml-stylesheet type="text/xsl" href="xsl-transformed.xsl"?>
             - <items>
                   <item>One</item>
                   <item>Two</item>
