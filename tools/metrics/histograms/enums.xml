@@ -17703,12 +17703,14 @@ from previous Chrome versions.
   <int value="1124100808"
       label="FilterWebsitesForSupervisedUsersOnDesktopAndIOS:enabled"/>
   <int value="1126061778" label="CaptureThumbnailOnLoadFinished:enabled"/>
+  <int value="1126825017" label="WebAppInstallDialog:enabled"/>
   <int value="1126956909" label="UseXpsForPrintingFromPdf:disabled"/>
   <int value="1127085005" label="TreatUnsafeDownloadsAsActive:enabled"/>
   <int value="1127183523" label="PassiveEventListenersDueToFling:enabled"/>
   <int value="1127402319" label="WebAssemblyCodeProtection:enabled"/>
   <int value="1127408853" label="AutofillAlwaysParsePlaceholders:disabled"/>
   <int value="1127427821" label="OmniboxEntitySuggestions:disabled"/>
+  <int value="1127578890" label="WebAppInstallDialog:disabled"/>
   <int value="1127954225" label="EnableDnsProxy:enabled"/>
   <int value="1128245405" label="DarkLightModeKMeansColor:disabled"/>
   <int value="1128840602" label="DisconnectWiFiOnEthernetConnected:disabled"/>
