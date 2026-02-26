@@ -58,10 +58,8 @@ std::map<std::string, std::string> ParseParams(std::string_view param_string) {
   constexpr int kMaxUriDecodeLen = 2048;
   std::map<std::string, std::string> params;
   while (url::ExtractQueryKeyValue(param_string, &query, &key, &value)) {
-    url::RawCanonOutputW<kMaxUriDecodeLen> output;
-    url::DecodeUrlEscapeSequences(value.AsViewOn(param_string),
-                                  url::DecodeUrlMode::kUtf8OrIsomorphic,
-                                  &output);
+    url::UrlEscapeDecoder<kMaxUriDecodeLen> output(
+        value.AsViewOn(param_string), url::DecodeUrlMode::kUtf8OrIsomorphic);
     params.insert({std::string(key.AsViewOn(param_string)),
                    base::UTF16ToUTF8(output.view())});
   }

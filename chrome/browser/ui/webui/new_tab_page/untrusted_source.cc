@@ -93,10 +93,8 @@ std::map<std::string, std::string> ExtractQueryParams(
   url::Component query(query_params);
   url::Component key, value;
   while (url::ExtractQueryKeyValue(query_params, &query, &key, &value)) {
-    url::RawCanonOutputW<kMaxUriDecodeLen> output;
-    url::DecodeUrlEscapeSequences(value.AsViewOn(query_params),
-                                  url::DecodeUrlMode::kUtf8OrIsomorphic,
-                                  &output);
+    url::UrlEscapeDecoder<kMaxUriDecodeLen> output(
+        value.AsViewOn(query_params), url::DecodeUrlMode::kUtf8OrIsomorphic);
     params.insert({std::string(key.AsViewOn(query_params)),
                    base::UTF16ToUTF8(output.view())});
   }
