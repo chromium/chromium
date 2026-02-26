@@ -73,6 +73,8 @@ constexpr char kVisualSearchInteractionQueryParameterKey[] = "vsint";
 constexpr char kAddedInputsQueryParameterKey[] = "aai";
 constexpr char kVisualInputTypeQueryParameter[] = "vit";
 constexpr char kAimMultiContextQueryParameter[] = "amc";
+constexpr char kLnsModeQueryParameterKey[] = "lns_mode";
+constexpr char kLnsModeQueryParameterValue[] = "cvst";
 
 // TODO(crbug.com/432348301): Move away from hardcoded entrypoint and lns
 // surface values.
@@ -501,6 +503,12 @@ void ComposeboxQueryController::CreateSearchUrl(
           last_active_lens_file, search_url_request_info->query_text,
           search_url_request_info->lens_overlay_selection_type,
           search_url_request_info->additional_params);
+
+      // Add the "cvst" lns mode param to the url.
+      if (is_aim_search) {
+        search_url_request_info->additional_params.insert(
+            {kLnsModeQueryParameterKey, kLnsModeQueryParameterValue});
+      }
 
       // Get the encoded visual search interaction log data.
       bool should_send_lns_surface =
