@@ -22,6 +22,7 @@
 #include "remoting/signaling/ftl_device_id_provider.h"
 #include "remoting/signaling/ftl_messaging_client.h"
 #include "remoting/signaling/ftl_registration_manager.h"
+#include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/signaling_address.h"
 #include "remoting/signaling/xmpp_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -49,6 +50,8 @@ class FtlSignalStrategy::Core {
   void RemoveListener(Listener* listener);
   bool SendMessage(const SignalingAddress& destination_address,
                    SignalingMessage&& message);
+  void OnMessageReceived(const SignalingAddress& sender_address,
+                         const SignalingMessage& message);
   bool IsSignInError() const;
 
  private:
@@ -59,8 +62,6 @@ class FtlSignalStrategy::Core {
   void StartReceivingMessages();
   void OnReceiveMessagesStreamStarted();
   void OnReceiveMessagesStreamClosed(const HttpStatus& status);
-  void OnMessageReceived(const SignalingAddress& sender_address,
-                         const SignalingMessage& message);
 
   void SendMessageImpl(const SignalingAddress& receiver,
                        SignalingMessage&& message,
@@ -195,12 +196,18 @@ bool FtlSignalStrategy::Core::SendMessage(
     return false;
   }
 
-  if (auto* stanza_ptr =
-          std::get_if<std::unique_ptr<jingle_xmpp::XmlElement>>(&message)) {
-    auto& stanza = *stanza_ptr;
+  std::unique_ptr<jingle_xmpp::XmlElement> stanza;
+  if (auto* jingle_message = std::get_if<JingleMessage>(&message)) {
     // Synthesizing the from attribute in the message.
-    stanza->SetAttr(kQNameFrom, local_address_.id());
+    jingle_message->from = local_address_;
 
+    stanza = JingleMessageToXml(*jingle_message);
+  } else if (auto* jingle_reply = std::get_if<JingleMessageReply>(&message)) {
+    jingle_reply->from = local_address_;
+
+    stanza = JingleMessageReplyToXml(*jingle_reply);
+  }
+  if (stanza) {
     std::string stanza_id = stanza->Attr(kQNameId);
 
     ftl::ChromotingMessage crd_message;
@@ -323,34 +330,50 @@ void FtlSignalStrategy::Core::OnMessageReceived(
     return;
   }
 
-  std::unique_ptr<jingle_xmpp::XmlElement> stanza =
-      SignalStrategy::GetXmlStanza(message);
-  if (stanza) {
-    // Validate the schema and FTL IDs.
-    if (stanza->Name() != kQNameIq) {
-      LOG(WARNING) << "Received unexpected non-IQ packet " << stanza->Str();
-      return;
-    }
-    if (SignalingAddress(stanza->Attr(kQNameFrom)) != sender_address) {
-      LOG(WARNING) << "Expected sender: " << sender_address.id()
-                   << ", but received: " << stanza->Attr(kQNameFrom);
-      return;
-    }
-    if (SignalingAddress(stanza->Attr(kQNameTo)) != local_address_) {
-      LOG(WARNING) << "Expected receiver: " << local_address_.id()
-                   << ", but received: " << stanza->Attr(kQNameTo);
-      return;
-    }
+  SignalingMessage message_to_dispatch = message;
 
-    HOST_LOG << "Received incoming stanza:\n"
-             << stanza->Str()
-             << "\n=========================================================";
-  } else {
-    HOST_LOG << "Received incoming message from " << sender_address.id();
+  const ftl::ChromotingMessage* ftl_message =
+      std::get_if<ftl::ChromotingMessage>(&message);
+  if (ftl_message && ftl_message->has_xmpp() &&
+      ftl_message->xmpp().has_stanza()) {
+    auto parsed_message =
+        SignalStrategy::ParseStanzaXml(ftl_message->xmpp().stanza());
+    if (parsed_message) {
+      // Validate the schema and FTL IDs.
+      SignalingAddress from;
+      SignalingAddress to;
+      if (const auto* jm = std::get_if<JingleMessage>(&*parsed_message)) {
+        from = jm->from;
+        to = jm->to;
+      } else if (const auto* jmr =
+                     std::get_if<JingleMessageReply>(&*parsed_message)) {
+        from = jmr->from;
+        to = jmr->to;
+      } else {
+        LOG(WARNING) << "Received unexpected non-IQ packet";
+        return;
+      }
+
+      if (from != sender_address) {
+        LOG(WARNING) << "Expected sender: " << sender_address.id()
+                     << ", but received: " << from.id();
+        return;
+      }
+      if (to != local_address_) {
+        LOG(WARNING) << "Expected receiver: " << local_address_.id()
+                     << ", but received: " << to.id();
+        return;
+      }
+      message_to_dispatch = std::move(*parsed_message);
+    } else {
+      // Parsing failed.
+      return;
+    }
   }
 
   for (auto& listener : listeners_) {
-    if (listener.OnSignalStrategyIncomingMessage(sender_address, message)) {
+    if (listener.OnSignalStrategyIncomingMessage(sender_address,
+                                                 message_to_dispatch)) {
       return;
     }
   }

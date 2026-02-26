@@ -34,6 +34,11 @@ bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
 
 // Converts between JingleMessageReply and its XML representation.
 std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
+    const JingleMessageReply& reply);
+std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
+    const JingleMessageReply& reply,
+    const JingleMessage& original_message);
+std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
     const JingleMessageReply& reply,
     const jingle_xmpp::XmlElement* request_stanza);
 bool JingleMessageReplyFromXml(const jingle_xmpp::XmlElement* stanza,

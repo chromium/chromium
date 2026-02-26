@@ -597,33 +597,26 @@ const jingle_xmpp::XmlElement* FindAuthenticatorMessage(
 }  // namespace
 
 std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
-    const JingleMessageReply& reply,
-    const jingle_xmpp::XmlElement* request_stanza) {
+    const JingleMessageReply& reply) {
   auto iq = std::make_unique<XmlElement>(kQNameIq, /*useDefaultNs=*/true);
-  iq->SetAttr(kQNameId, request_stanza->Attr(kQNameId));
-
-  SignalingAddress original_from =
-      SignalingAddress::Parse(request_stanza, SignalingAddress::FROM);
-  DCHECK(!original_from.empty());
+  iq->SetAttr(kQNameId, reply.message_id);
+  if (!reply.to.empty()) {
+    reply.to.SetInMessage(iq.get(), SignalingAddress::TO);
+  }
+  if (!reply.from.empty()) {
+    reply.from.SetInMessage(iq.get(), SignalingAddress::FROM);
+  }
 
   if (reply.type == JingleMessageReply::REPLY_RESULT) {
     iq->SetAttr(kQNameType, "result");
     iq->AddElement(new XmlElement(kQNameJingle,
                                   /*useDefaultNs=*/true));
-    original_from.SetInMessage(iq.get(), SignalingAddress::TO);
     return iq;
   }
 
   DCHECK_EQ(reply.type, JingleMessageReply::REPLY_ERROR);
 
   iq->SetAttr(kQNameType, "error");
-  original_from.SetInMessage(iq.get(), SignalingAddress::TO);
-
-  for (const XmlElement* child = request_stanza->FirstElement(); child;
-       child = child->NextElement()) {
-    iq->AddElement(new XmlElement(*child));
-  }
-
   auto error = std::make_unique<XmlElement>(QName(kJabberNamespace, "error"));
 
   std::string type_attr;
@@ -651,6 +644,10 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
       type_attr = "modify";
       name = QName(kJabberNamespace, "feature-not-implemented");
       break;
+    case JingleMessageReply::NONE:
+      type_attr = "cancel";
+      name = QName(kJabberNamespace, "undefined-condition");
+      break;
     default:
       NOTREACHED();
   }
@@ -661,8 +658,8 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
 
   error->SetAttr(QName(kEmptyNamespace, "type"), type_attr);
 
-  // If the error name is not in the standard namespace, we have
-  // to first add some error from that namespace.
+  // If the error name is not in the standard namespace, we have to first add
+  // some error from that namespace.
   if (name.Namespace() != kJabberNamespace) {
     error->AddElement(
         new XmlElement(QName(kJabberNamespace, "undefined-condition")));
@@ -670,8 +667,8 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
   error->AddElement(new XmlElement(name));
 
   if (!error_text.empty()) {
-    // It's okay to always use English here. This text is for
-    // debugging purposes only.
+    // It's okay to always use English here. This text is for debugging purposes
+    // only.
     auto text_elem =
         std::make_unique<XmlElement>(QName(kJabberNamespace, "text"));
     text_elem->SetAttr(QName(kXmlNamespace, "lang"), "en");
@@ -680,6 +677,84 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
   }
 
   iq->AddElement(error.release());
+  return iq;
+}
+
+std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
+    const JingleMessageReply& reply,
+    const JingleMessage& original_message) {
+  auto iq = std::make_unique<XmlElement>(kQNameIq, /*useDefaultNs=*/true);
+  iq->SetAttr(kQNameId, original_message.message_id);
+
+  if (!original_message.from.empty()) {
+    original_message.from.SetInMessage(iq.get(), SignalingAddress::TO);
+  }
+
+  if (reply.type == JingleMessageReply::REPLY_RESULT) {
+    iq->SetAttr(kQNameType, "result");
+    iq->AddElement(new XmlElement(kQNameJingle,
+                                  /*useDefaultNs=*/true));
+    return iq;
+  }
+
+  DCHECK_EQ(reply.type, JingleMessageReply::REPLY_ERROR);
+  iq->SetAttr(kQNameType, "error");
+
+  std::unique_ptr<XmlElement> original_xml =
+      JingleMessageToXml(original_message);
+  for (const XmlElement* child = original_xml->FirstElement(); child;
+       child = child->NextElement()) {
+    iq->AddElement(new XmlElement(*child));
+  }
+
+  JingleMessageReply temp_reply = reply;
+  temp_reply.to = SignalingAddress();
+  temp_reply.message_id = "";
+  std::unique_ptr<XmlElement> reply_xml = JingleMessageReplyToXml(temp_reply);
+  const XmlElement* error_tag =
+      reply_xml->FirstNamed(QName(kJabberNamespace, "error"));
+  DCHECK(error_tag);
+  iq->AddElement(new XmlElement(*error_tag));
+
+  return iq;
+}
+
+std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReplyToXml(
+    const JingleMessageReply& reply,
+    const jingle_xmpp::XmlElement* request_stanza) {
+  auto iq = std::make_unique<XmlElement>(kQNameIq, /*useDefaultNs=*/true);
+  iq->SetAttr(kQNameId, request_stanza->Attr(kQNameId));
+
+  SignalingAddress original_from =
+      SignalingAddress::Parse(request_stanza, SignalingAddress::FROM);
+  if (!original_from.empty()) {
+    original_from.SetInMessage(iq.get(), SignalingAddress::TO);
+  }
+
+  if (reply.type == JingleMessageReply::REPLY_RESULT) {
+    iq->SetAttr(kQNameType, "result");
+    iq->AddElement(new XmlElement(kQNameJingle,
+                                  /*useDefaultNs=*/true));
+    return iq;
+  }
+
+  DCHECK_EQ(reply.type, JingleMessageReply::REPLY_ERROR);
+  iq->SetAttr(kQNameType, "error");
+
+  for (const XmlElement* child = request_stanza->FirstElement(); child;
+       child = child->NextElement()) {
+    iq->AddElement(new XmlElement(*child));
+  }
+
+  JingleMessageReply temp_reply = reply;
+  temp_reply.to = SignalingAddress();
+  temp_reply.message_id = "";
+  std::unique_ptr<XmlElement> reply_xml = JingleMessageReplyToXml(temp_reply);
+  const XmlElement* error_tag =
+      reply_xml->FirstNamed(QName(kJabberNamespace, "error"));
+  DCHECK(error_tag);
+  iq->AddElement(new XmlElement(*error_tag));
+
   return iq;
 }
 
@@ -854,14 +929,21 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageToXml(
 bool JingleMessageFromXml(const jingle_xmpp::XmlElement* stanza,
                           JingleMessage* message,
                           std::string* error) {
-  if (!IsJingleMessage(stanza)) {
-    *error = "Not a jingle message";
+  if (stanza->Name() != kQNameIq) {
+    *error = "Not an IQ stanza";
+    return false;
+  }
+
+  std::string type = stanza->Attr(kQNameType);
+  if (type != "set") {
+    // This might be a result or error reply.
+    *error = "Not a Jingle set message (type=" + type + ")";
     return false;
   }
 
   const XmlElement* jingle_tag = stanza->FirstNamed(kQNameJingle);
   if (!jingle_tag) {
-    *error = "Not a jingle message";
+    *error = "jingle tag is missing";
     return false;
   }
 

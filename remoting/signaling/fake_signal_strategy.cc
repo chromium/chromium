@@ -13,6 +13,7 @@
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/signaling_id_util.h"
 #include "remoting/signaling/xmpp_constants.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
@@ -93,23 +94,22 @@ void FakeSignalStrategy::SimulateTwoStageConnect() {
   simulate_two_stage_connect_ = true;
 }
 
-void FakeSignalStrategy::OnIncomingMessage(
-    std::unique_ptr<jingle_xmpp::XmlElement> stanza) {
+void FakeSignalStrategy::OnIncomingMessage(SignalingMessage message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!simulate_reorder_) {
-    NotifyListeners(std::move(stanza));
+    NotifyListeners(std::move(message));
     return;
   }
 
   // Simulate IQ messages re-ordering by swapping the delivery order of
   // next pair of messages.
-  if (pending_stanza_) {
-    NotifyListeners(std::move(stanza));
-    NotifyListeners(std::move(pending_stanza_));
-    pending_stanza_.reset();
+  if (pending_message_) {
+    NotifyListeners(std::move(message));
+    NotifyListeners(std::move(*pending_message_));
+    pending_message_.reset();
   } else {
-    pending_stanza_ = std::move(stanza);
+    pending_message_ = std::move(message);
   }
 }
 
@@ -156,36 +156,26 @@ bool FakeSignalStrategy::SendMessage(
     SignalingMessage&& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (auto* stanza_ptr =
-          std::get_if<std::unique_ptr<jingle_xmpp::XmlElement>>(&message)) {
-    auto& stanza = *stanza_ptr;
-    address_.SetInMessage(stanza.get(), SignalingAddress::FROM);
-
-    if (peer_callback_.is_null()) {
-      return false;
-    }
-
-    if (send_delay_.is_zero()) {
-      peer_callback_.Run(std::move(stanza));
-    } else {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, base::BindOnce(peer_callback_, std::move(stanza)),
-          send_delay_);
-    }
-    return true;
+  if (auto* jingle_message = std::get_if<JingleMessage>(&message)) {
+    jingle_message->from = address_;
   }
 
-  const ftl::ChromotingMessage* ftl_message =
-      std::get_if<ftl::ChromotingMessage>(&message);
-  if (ftl_message && ftl_message->has_xmpp()) {
-    auto stanza = base::WrapUnique<jingle_xmpp::XmlElement>(
-        jingle_xmpp::XmlElement::ForStr(ftl_message->xmpp().stanza()));
-    return SendMessage(destination_address,
-                       SignalingMessage(std::move(stanza)));
+  if (auto* jingle_reply = std::get_if<JingleMessageReply>(&message)) {
+    jingle_reply->from = address_;
   }
 
-  NOTIMPLEMENTED();
-  return false;
+  if (peer_callback_.is_null()) {
+    return false;
+  }
+
+  if (send_delay_.is_zero()) {
+    peer_callback_.Run(std::move(message));
+  } else {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(peer_callback_, std::move(message)),
+        send_delay_);
+  }
+  return true;
 }
 
 std::string FakeSignalStrategy::GetNextId() {
@@ -201,34 +191,59 @@ bool FakeSignalStrategy::IsSignInError() const {
 void FakeSignalStrategy::DeliverMessageOnThread(
     scoped_refptr<base::SingleThreadTaskRunner> thread,
     base::WeakPtr<FakeSignalStrategy> target,
-    std::unique_ptr<jingle_xmpp::XmlElement> stanza) {
+    SignalingMessage message) {
   thread->PostTask(
       FROM_HERE, base::BindOnce(&FakeSignalStrategy::OnIncomingMessage, target,
-                                std::move(stanza)));
+                                std::move(message)));
 }
 
-void FakeSignalStrategy::NotifyListeners(
-    std::unique_ptr<jingle_xmpp::XmlElement> stanza) {
+void FakeSignalStrategy::NotifyListeners(SignalingMessage message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  jingle_xmpp::XmlElement* stanza_ptr = stanza.get();
-  received_messages_.push_back(std::move(stanza));
+  SignalingMessage message_to_dispatch = std::move(message);
+  SignalingAddress from;
+  SignalingAddress to;
 
-  SignalingAddress from =
-      SignalingAddress::Parse(stanza_ptr, SignalingAddress::FROM);
-  SignalingAddress to =
-      SignalingAddress::Parse(stanza_ptr, SignalingAddress::TO);
-  if (to != address_) {
+  std::optional<std::string> xml;
+  if (const auto* ftl =
+          std::get_if<ftl::ChromotingMessage>(&message_to_dispatch)) {
+    if (ftl->has_xmpp() && ftl->xmpp().has_stanza()) {
+      xml = ftl->xmpp().stanza();
+    }
+  } else if (const auto* corp = std::get_if<internal::PeerMessageStruct>(
+                 &message_to_dispatch)) {
+    if (const auto* iq =
+            std::get_if<internal::IqStanzaStruct>(&corp->payload)) {
+      xml = iq->xml;
+    }
+  }
+
+  if (xml) {
+    auto parsed_message = SignalStrategy::ParseStanzaXml(*xml);
+    if (parsed_message) {
+      message_to_dispatch = std::move(*parsed_message);
+    }
+  }
+
+  if (const auto* jm = std::get_if<JingleMessage>(&message_to_dispatch)) {
+    from = jm->from;
+    to = jm->to;
+  } else if (const auto* jmr =
+                 std::get_if<JingleMessageReply>(&message_to_dispatch)) {
+    from = jmr->from;
+    to = jmr->to;
+  }
+
+  if (!to.empty() && to != address_) {
     LOG(WARNING) << "Dropping stanza that is addressed to " << to.id()
-                 << ". Local address: " << address_.id()
-                 << ". Message content: " << stanza_ptr->Str();
+                 << ". Local address: " << address_.id();
     return;
   }
 
-  ftl::ChromotingMessage crd_message;
-  crd_message.mutable_xmpp()->set_stanza(stanza_ptr->Str());
+  received_messages_.push_back(message_to_dispatch);
+
   for (auto& listener : listeners_) {
-    if (listener.OnSignalStrategyIncomingMessage(from, crd_message)) {
+    if (listener.OnSignalStrategyIncomingMessage(from, message_to_dispatch)) {
       break;
     }
   }

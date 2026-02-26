@@ -21,6 +21,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/signaling/corp_messaging_client.h"
+#include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/signaling_address.h"
 #include "remoting/signaling/xmpp_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -164,16 +165,28 @@ bool CorpSignalStrategy::Core::SendMessage(
     return false;
   }
 
-  if (auto* stanza_ptr =
-          std::get_if<std::unique_ptr<jingle_xmpp::XmlElement>>(&message)) {
-    auto& stanza = *stanza_ptr;
+  // TODO: joedow - Use std::visit(absl::Overload(...), message->payload()).
+  std::unique_ptr<jingle_xmpp::XmlElement> stanza;
+  if (auto* jingle_message = std::get_if<JingleMessage>(&message)) {
     if (destination_address.empty()) {
       LOG(ERROR) << "Invalid destination address.";
       return false;
     }
 
-    stanza->SetAttr(kQNameFrom, GetLocalAddress().id());
+    jingle_message->from = GetLocalAddress();
 
+    stanza = JingleMessageToXml(*jingle_message);
+  } else if (auto* jingle_reply = std::get_if<JingleMessageReply>(&message)) {
+    if (destination_address.empty()) {
+      LOG(ERROR) << "Invalid destination address.";
+      return false;
+    }
+
+    jingle_reply->from = GetLocalAddress();
+
+    stanza = JingleMessageReplyToXml(*jingle_reply);
+  }
+  if (stanza) {
     internal::PeerMessageStruct peer_message;
     internal::IqStanzaStruct iq_stanza;
     iq_stanza.xml = stanza->Str();
@@ -234,22 +247,8 @@ void CorpSignalStrategy::Core::OnIncomingMessage(
     return;
   }
 
-  // TODO: joedow - Update CorpSignalStrategy to use JingleMessage.
-  auto stanza = base::WrapUnique<jingle_xmpp::XmlElement>(
-      jingle_xmpp::XmlElement::ForStr(iq_stanza_struct->xml));
-  if (!stanza) {
-    LOG(WARNING) << "Failed to parse XMPP: " << iq_stanza_struct->xml;
-    return;
-  }
-
-  HOST_LOG << "Received incoming stanza:\n"
-           << stanza->Str()
-           << "\n=========================================================";
-
-  SignalingAddress sender_address_from_iq =
-      SignalingAddress::Parse(stanza.get(), SignalingAddress::FROM);
-  if (sender_address_from_iq.empty()) {
-    LOG(WARNING) << "Received stanza with invalid sender.";
+  auto parsed_message = SignalStrategy::ParseStanzaXml(iq_stanza_struct->xml);
+  if (!parsed_message.has_value()) {
     return;
   }
 
@@ -267,7 +266,8 @@ void CorpSignalStrategy::Core::OnIncomingMessage(
   }
 
   for (auto& listener : listeners_) {
-    if (listener.OnSignalStrategyIncomingMessage(sender_address, message)) {
+    if (listener.OnSignalStrategyIncomingMessage(sender_address,
+                                                 *parsed_message)) {
       return;
     }
   }

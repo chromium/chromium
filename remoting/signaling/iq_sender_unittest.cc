@@ -66,11 +66,11 @@ class IqSenderTest : public testing::Test {
 
     EXPECT_CALL(signal_strategy_, SendMessage(SignalingAddress(kTo), _))
         .WillOnce([&](const SignalingAddress&, SignalingMessage&& message_arg) {
-          auto* sent_stanza_ptr =
-              std::get_if<std::unique_ptr<XmlElement>>(&message_arg);
-          EXPECT_TRUE(sent_stanza_ptr);
-          if (sent_stanza_ptr) {
-            XmlElement* sent_stanza = sent_stanza_ptr->get();
+          auto* sent_jingle_message = std::get_if<JingleMessage>(&message_arg);
+          EXPECT_TRUE(sent_jingle_message);
+          if (sent_jingle_message) {
+            std::unique_ptr<XmlElement> sent_stanza =
+                JingleMessageToXml(*sent_jingle_message);
             std::unique_ptr<XmlElement> expected_stanza =
                 JingleMessageToXml(message);
             EXPECT_EQ(expected_stanza->Str(), sent_stanza->Str());
@@ -91,15 +91,18 @@ class IqSenderTest : public testing::Test {
         new XmlElement(QName("test:namespace", "response-body"));
     response->AddElement(response_body);
 
-    ftl::ChromotingMessage message;
-    message.mutable_xmpp()->set_stanza(response->Str());
+    JingleMessageReply reply;
+    bool parse_result = JingleMessageReplyFromXml(response.get(), &reply);
+    DCHECK(parse_result);
+    reply.message_id = kStanzaId;
+    reply.from = SignalingAddress(from);
+
     bool result = sender_->OnSignalStrategyIncomingMessage(
-        SignalingAddress(from), SignalingMessage(message));
+        SignalingAddress(from), SignalingMessage(reply));
 
     if (response_out) {
       *response_out = std::move(response);
     }
-
     return result;
   }
 

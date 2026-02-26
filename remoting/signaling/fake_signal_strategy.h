@@ -5,7 +5,9 @@
 #ifndef REMOTING_SIGNALING_FAKE_SIGNAL_STRATEGY_H_
 #define REMOTING_SIGNALING_FAKE_SIGNAL_STRATEGY_H_
 
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -23,8 +25,7 @@ namespace remoting {
 
 class FakeSignalStrategy : public SignalStrategy {
  public:
-  using PeerCallback = base::RepeatingCallback<void(
-      std::unique_ptr<jingle_xmpp::XmlElement> message)>;
+  using PeerCallback = base::RepeatingCallback<void(SignalingMessage message)>;
 
   // Calls ConnectTo() to connect |peer1| and |peer2|. Both |peer1| and |peer2|
   // must belong to the current thread.
@@ -37,8 +38,7 @@ class FakeSignalStrategy : public SignalStrategy {
 
   ~FakeSignalStrategy() override;
 
-  const std::vector<std::unique_ptr<jingle_xmpp::XmlElement>>&
-  received_messages() {
+  const std::vector<SignalingMessage>& received_messages() {
     return received_messages_;
   }
 
@@ -64,8 +64,8 @@ class FakeSignalStrategy : public SignalStrategy {
   // to DISCONNECTED.
   void SimulateTwoStageConnect();
 
-  // Called by the |peer_|. Takes ownership of |stanza|.
-  void OnIncomingMessage(std::unique_ptr<jingle_xmpp::XmlElement> stanza);
+  // Called by the |peer_|.
+  void OnIncomingMessage(SignalingMessage message);
 
   void ProceedConnect();
 
@@ -86,9 +86,9 @@ class FakeSignalStrategy : public SignalStrategy {
   static void DeliverMessageOnThread(
       scoped_refptr<base::SingleThreadTaskRunner> thread,
       base::WeakPtr<FakeSignalStrategy> target,
-      std::unique_ptr<jingle_xmpp::XmlElement> stanza);
+      SignalingMessage message);
 
-  void NotifyListeners(std::unique_ptr<jingle_xmpp::XmlElement> stanza);
+  void NotifyListeners(SignalingMessage message);
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
 
@@ -106,10 +106,10 @@ class FakeSignalStrategy : public SignalStrategy {
 
   bool simulate_reorder_ = false;
   bool simulate_two_stage_connect_ = false;
-  std::unique_ptr<jingle_xmpp::XmlElement> pending_stanza_;
+  std::optional<SignalingMessage> pending_message_;
 
   // All received messages, includes thouse still in |pending_messages_|.
-  std::vector<std::unique_ptr<jingle_xmpp::XmlElement>> received_messages_;
+  std::vector<SignalingMessage> received_messages_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

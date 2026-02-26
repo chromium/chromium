@@ -19,6 +19,7 @@
 #include "remoting/base/protobuf_http_test_responder.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/proto/messaging_service.h"
+#include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/messaging_client.h"
 #include "remoting/signaling/signaling_address.h"
 #include "remoting/signaling/xmpp_constants.h"
@@ -49,9 +50,10 @@ std::unique_ptr<jingle_xmpp::XmlElement> CreateXmlStanza(
     const std::string& id) {
   static constexpr char kStanzaTemplate[] =
       "<iq xmlns=\"jabber:client\" type=\"set\">"
-      "<bind xmlns=\"urn:ietf:params:xml:ns:xmpp-bind\">"
-      "<resource>chromoting</resource>"
-      "</bind>"
+      "<jingle xmlns=\"urn:xmpp:jingle:1\" action=\"session-info\" "
+      "sid=\"sid123\">"
+      "<rem:test-info xmlns:rem=\"google:remoting\">TestMessage</rem:test-info>"
+      "</jingle>"
       "</iq>";
   auto stanza = base::WrapUnique<jingle_xmpp::XmlElement>(
       jingle_xmpp::XmlElement::ForStr(kStanzaTemplate));
@@ -116,9 +118,9 @@ class CorpSignalStrategyTest : public testing::Test,
     ON_CALL(*this, OnSignalStrategyIncomingMessage(_, _))
         .WillByDefault([&](const SignalingAddress& sender_address,
                            const SignalingMessage& message) {
-          auto stanza = SignalStrategy::GetXmlStanza(message);
-          if (stanza) {
-            received_messages_.push_back(std::move(stanza));
+          if (const auto* jingle_message =
+                  std::get_if<JingleMessage>(&message)) {
+            received_messages_.push_back(JingleMessageToXml(*jingle_message));
             return true;
           }
           return false;
@@ -253,30 +255,41 @@ TEST_F(CorpSignalStrategyTest, SendMessage_XmlElement_Success) {
       CreateXmlStanza(Direction::OUTGOING, signal_strategy_->GetNextId());
   std::string stanza_string = stanza->Str();
 
+  JingleMessage jingle_message;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromXml(stanza.get(), &jingle_message, &error));
+
   EXPECT_CALL(*messaging_client_, SendMessage(_, _, _))
-      .WillOnce([stanza_string](const SignalingAddress& address,
-                                SignalingMessage&& message,
-                                MessagingClient::DoneCallback on_done) {
+      .WillOnce([&](const SignalingAddress& address, SignalingMessage&& message,
+                    MessagingClient::DoneCallback on_done) {
         EXPECT_EQ("faux_messaging_token", address.id());
         auto* peer_message = std::get_if<internal::PeerMessageStruct>(&message);
         ASSERT_TRUE(peer_message);
         auto* iq_stanza =
             std::get_if<internal::IqStanzaStruct>(&peer_message->payload);
         ASSERT_TRUE(iq_stanza);
-        EXPECT_EQ(stanza_string, iq_stanza->xml);
+        EXPECT_THAT(iq_stanza->xml,
+                    testing::HasSubstr("to=\"fake_remote_user@domain.com\""));
+        EXPECT_THAT(iq_stanza->xml,
+                    testing::HasSubstr("from=\"fake_local_user@domain.com\""));
         std::move(on_done).Run(HttpStatus::OK());
       });
 
   signal_strategy_->SendMessage(SignalingAddress(kFakeRemoteCorpId),
-                                SignalingMessage(std::move(stanza)));
+                                SignalingMessage(std::move(jingle_message)));
 }
 
 TEST_F(CorpSignalStrategyTest, SendMessage_XmlElement_NotConnected) {
   auto stanza =
       CreateXmlStanza(Direction::OUTGOING, signal_strategy_->GetNextId());
-  EXPECT_FALSE(
-      signal_strategy_->SendMessage(SignalingAddress(kFakeRemoteCorpId),
-                                    SignalingMessage(std::move(stanza))));
+
+  JingleMessage jingle_message;
+  std::string error;
+  ASSERT_TRUE(JingleMessageFromXml(stanza.get(), &jingle_message, &error));
+
+  EXPECT_FALSE(signal_strategy_->SendMessage(
+      SignalingAddress(kFakeRemoteCorpId),
+      SignalingMessage(std::move(jingle_message))));
 }
 
 TEST_F(CorpSignalStrategyTest, ReceiveStanza_Success) {
@@ -303,7 +316,12 @@ TEST_F(CorpSignalStrategyTest, ReceiveStanza_Success) {
                                SignalingMessage(peer_message));
 
   ASSERT_EQ(1u, received_messages_.size());
-  ASSERT_EQ(stanza_string, received_messages_[0]->Str());
+  // The attribute order may change during XML conversion.
+  std::string received_stanza_string = received_messages_[0]->Str();
+  EXPECT_THAT(received_stanza_string,
+              testing::HasSubstr("to=\"fake_local_user@domain.com\""));
+  EXPECT_THAT(received_stanza_string,
+              testing::HasSubstr("from=\"fake_remote_user@domain.com\""));
 }
 
 TEST_F(CorpSignalStrategyTest, ReceiveStanza_MalformedXmpp) {

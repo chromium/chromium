@@ -63,6 +63,54 @@ JingleMessage::ActionType JingleMessage::ActionFromPayload(
 
 JingleMessage::JingleMessage() = default;
 
+JingleMessage::JingleMessage(const JingleMessage& other)
+    : message_id(other.message_id),
+      from(other.from),
+      to(other.to),
+      sid(other.sid),
+      initiator(other.initiator),
+      attachments(other.attachments),
+      reason(other.reason),
+      error_code(other.error_code),
+      error_details(other.error_details),
+      error_location(other.error_location),
+      action_(other.action_),
+      payload_(other.payload_) {
+  if (other.description) {
+    description = other.description->Clone();
+  }
+}
+
+JingleMessage& JingleMessage::operator=(const JingleMessage& other) {
+  if (this == &other) {
+    return *this;
+  }
+
+  message_id = other.message_id;
+  from = other.from;
+  to = other.to;
+  sid = other.sid;
+  initiator = other.initiator;
+  attachments = other.attachments;
+  reason = other.reason;
+  error_code = other.error_code;
+  error_details = other.error_details;
+  error_location = other.error_location;
+  action_ = other.action_;
+  payload_ = other.payload_;
+  if (other.description) {
+    description = other.description->Clone();
+  } else {
+    description.reset();
+  }
+
+  return *this;
+}
+
+JingleMessage::JingleMessage(JingleMessage&&) = default;
+
+JingleMessage& JingleMessage::operator=(JingleMessage&&) = default;
+
 JingleMessage::JingleMessage(const SignalingAddress& to,
                              Payload payload,
                              const std::string& sid)
@@ -86,6 +134,16 @@ JingleMessageReply::JingleMessageReply(ErrorType error)
 JingleMessageReply::JingleMessageReply(ErrorType error,
                                        const std::string& text_value)
     : type(REPLY_ERROR), error_type(error), text(text_value) {}
+
+JingleMessageReply::JingleMessageReply(const JingleMessageReply&) = default;
+
+JingleMessageReply& JingleMessageReply::operator=(const JingleMessageReply&) =
+    default;
+
+JingleMessageReply::JingleMessageReply(JingleMessageReply&&) = default;
+
+JingleMessageReply& JingleMessageReply::operator=(JingleMessageReply&&) =
+    default;
 
 JingleMessageReply::~JingleMessageReply() = default;
 

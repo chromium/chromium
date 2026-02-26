@@ -16,6 +16,14 @@ ContentDescription::ContentDescription(
     const JingleAuthentication& authentication)
     : candidate_config_(std::move(config)), authentication_(authentication) {}
 
+ContentDescription::ContentDescription(const ContentDescription& other)
+    : candidate_config_(other.candidate_config_->Clone()),
+      authentication_(other.authentication_) {}
+
 ContentDescription::~ContentDescription() = default;
+
+std::unique_ptr<ContentDescription> ContentDescription::Clone() const {
+  return std::make_unique<ContentDescription>(*this);
+}
 
 }  // namespace remoting

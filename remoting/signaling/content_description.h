@@ -20,10 +20,12 @@ class ContentDescription {
   ContentDescription(std::unique_ptr<CandidateSessionConfig> config,
                      const JingleAuthentication& authentication);
 
-  ContentDescription(const ContentDescription&) = delete;
+  ContentDescription(const ContentDescription&);
   ContentDescription& operator=(const ContentDescription&) = delete;
 
   ~ContentDescription();
+
+  std::unique_ptr<ContentDescription> Clone() const;
 
   const CandidateSessionConfig* config() const {
     return candidate_config_.get();

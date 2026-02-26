@@ -306,6 +306,10 @@ class JingleMessage {
                                SessionTerminate>;
 
   JingleMessage();
+  JingleMessage(const JingleMessage&);
+  JingleMessage& operator=(const JingleMessage&);
+  JingleMessage(JingleMessage&&);
+  JingleMessage& operator=(JingleMessage&&);
   JingleMessage(const SignalingAddress& to,
                 Payload payload_value,
                 const std::string& sid_value);
@@ -377,11 +381,19 @@ struct JingleMessageReply {
   JingleMessageReply();
   JingleMessageReply(ErrorType error);
   JingleMessageReply(ErrorType error, const std::string& text);
+  JingleMessageReply(const JingleMessageReply&);
+  JingleMessageReply& operator=(const JingleMessageReply&);
+  JingleMessageReply(JingleMessageReply&&);
+  JingleMessageReply& operator=(JingleMessageReply&&);
   ~JingleMessageReply();
 
   ReplyType type;
   ErrorType error_type;
   std::string text;
+
+  std::string message_id;
+  SignalingAddress from;
+  SignalingAddress to;
 };
 
 }  // namespace remoting

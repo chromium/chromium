@@ -398,12 +398,11 @@ TEST_F(JingleSessionTest, Connect) {
 
   // Verify that the client specified correct initiator value.
   ASSERT_GT(host_signal_strategy_->received_messages().size(), 0U);
-  JingleMessage message;
-  std::string error;
-  ASSERT_TRUE(JingleMessageFromXml(
-      host_signal_strategy_->received_messages().front().get(), &message,
-      &error));
-  ASSERT_EQ(client_signal_strategy_->GetLocalAddress().id(), message.initiator);
+  const auto* jingle_message = std::get_if<JingleMessage>(
+      &host_signal_strategy_->received_messages().front());
+  ASSERT_TRUE(jingle_message);
+  ASSERT_EQ(client_signal_strategy_->GetLocalAddress().id(),
+            jingle_message->initiator);
 }
 
 // Verify that we can connect two endpoints with multi-step authentication.
@@ -657,16 +656,16 @@ TEST_F(JingleSessionTest, CloseWithErrorDetailsAndLocation) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(host_signal_strategy_->received_messages().size(), 1U);
-  JingleMessage message;
-  std::string err;
-  ASSERT_TRUE(JingleMessageFromXml(
-      host_signal_strategy_->received_messages()[0].get(), &message, &err));
-  ASSERT_EQ(message.error_code, ErrorCode::HOST_OVERLOAD);
-  ASSERT_EQ(message.error_details, "fake_error_details");
+  const auto* jingle_message = std::get_if<JingleMessage>(
+      &host_signal_strategy_->received_messages().front());
+  ASSERT_TRUE(jingle_message);
+  ASSERT_EQ(jingle_message->error_code, ErrorCode::HOST_OVERLOAD);
+  ASSERT_EQ(jingle_message->error_details, "fake_error_details");
   // Make sure the error location captures the file name and the function name.
-  ASSERT_NE(message.error_location.find("jingle_session_unittest.cc"),
+  ASSERT_NE(jingle_message->error_location.find("jingle_session_unittest.cc"),
             std::string::npos);
-  ASSERT_NE(message.error_location.find("GetTestLocation"), std::string::npos);
+  ASSERT_NE(jingle_message->error_location.find("GetTestLocation"),
+            std::string::npos);
 }
 
 TEST_F(JingleSessionTest, AuthenticatorRejectedAfterAccepted) {
