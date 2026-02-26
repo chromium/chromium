@@ -112,6 +112,10 @@ void PopupSearchBarView::Focus() {
   input_->RequestFocus();
 }
 
+std::u16string PopupSearchBarView::GetText() const {
+  return input_ ? std::u16string(input_->GetText()) : std::u16string();
+}
+
 void PopupSearchBarView::SetInputTextForTesting(const std::u16string& text) {
   input_->SetText(text);
 }

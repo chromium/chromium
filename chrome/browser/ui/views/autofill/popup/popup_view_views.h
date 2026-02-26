@@ -90,6 +90,9 @@ class PopupViewViews : public PopupBaseView,
                                   PopupTitleView*,
                                   PopupWarningView*>;
 
+  // The maximum width of the popup.
+  static constexpr int kAutofillPopupMaxWidth = 456;
+
   // The time it takes for a selected cell to open a sub-popup if it has one.
   static constexpr base::TimeDelta kMouseOpenSubPopupDelay =
       base::Milliseconds(250);
@@ -234,6 +237,11 @@ class PopupViewViews : public PopupBaseView,
   // Reacts to key events under the assumption that the currently shown popup
   // contains Compose content.
   bool HandleKeyPressEventForCompose(
+      const input::NativeWebKeyboardEvent& event);
+
+  // Reacts to key events under the assumption that the currently shown popup
+  // contains @memory content.
+  bool HandleKeyPressEventForAtMemory(
       const input::NativeWebKeyboardEvent& event);
 
   // AutofillPopupView:

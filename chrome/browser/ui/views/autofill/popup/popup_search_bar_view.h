@@ -82,6 +82,9 @@ class PopupSearchBarView : public views::View,
   // Focuses on the input field.
   void Focus();
 
+  // Returns the current text in the input field.
+  std::u16string GetText() const;
+
   void SetInputTextForTesting(const std::u16string& text);
   gfx::Point GetClearButtonScreenCenterPointForTesting() const;
 
