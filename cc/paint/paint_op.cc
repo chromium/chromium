@@ -1972,8 +1972,7 @@ bool DrawPathOp::EqualsForTesting(const DrawPathOp& other) const {
 }
 
 bool DrawRecordOp::EqualsForTesting(const DrawRecordOp& other) const {
-  return placeholder_id == other.placeholder_id &&
-         record.EqualsForTesting(other.record);  // IN-TEST
+  return record.EqualsForTesting(other.record);  // IN-TEST
 }
 
 bool DrawRectOp::EqualsForTesting(const DrawRectOp& other) const {
@@ -2608,9 +2607,6 @@ DrawRecordOp::DrawRecordOp(PaintRecord record, bool local_ctm)
     : PaintOpBaseInternal(kType),
       record(std::move(record)),
       local_ctm(local_ctm) {}
-
-DrawRecordOp::DrawRecordOp(ElementId id)
-    : PaintOpBaseInternal(kType), placeholder_id(id) {}
 
 DrawRecordOp::~DrawRecordOp() = default;
 

@@ -147,8 +147,6 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   void drawPicture(PaintRecord record) override;
   void drawPicture(PaintRecord record, bool local_ctm) override;
 
-  void drawElementImagePlaceholder(ElementId placeholder_id);
-
   void Annotate(AnnotationType type,
                 const SkRect& rect,
                 sk_sp<SkData> data) override;
