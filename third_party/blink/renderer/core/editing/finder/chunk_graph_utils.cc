@@ -386,11 +386,11 @@ void CorpusChunk::Link(CorpusChunk* next_chunk) {
   next_list_.push_back(next_chunk);
 }
 
-const CorpusChunk* CorpusChunk::FindNext(const String& level) const {
+const CorpusChunk* CorpusChunk::FindNext(const StringView& level) const {
   if (next_list_.empty()) {
     return nullptr;
   }
-  const String base_level(kBaseLevel);
+  const StringView base_level(kBaseLevel);
   const CorpusChunk* annotation_next = nullptr;
   for (const auto& chunk : next_list_) {
     if (chunk->level_ == AnyLevel()) {
@@ -409,12 +409,12 @@ const CorpusChunk* CorpusChunk::FindNext(const String& level) const {
   if (next_list_.size() == 1 && next_list_[0]->level_ == base_level) {
     return next_list_[0];
   }
-  wtf_size_t delimiter_index = level.ReverseFind(kLevelDelimiter);
+  wtf_size_t delimiter_index = level.rfind(kLevelDelimiter);
   if (delimiter_index == kNotFound) {
     // No link for `level`. We should apply the base level link.
     return FindNext(base_level);
   }
-  return FindNext(level.Substring(0, delimiter_index));
+  return FindNext(level.substr(0, delimiter_index));
 }
 
 std::tuple<HeapVector<Member<CorpusChunk>>, Vector<String>, const Node*>

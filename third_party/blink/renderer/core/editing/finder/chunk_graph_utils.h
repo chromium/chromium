@@ -48,7 +48,7 @@ class CorpusChunk : public GarbageCollected<CorpusChunk> {
   void Link(CorpusChunk* next_chunk);
 
   const HeapVector<TextOrChar>& TextList() const { return text_list_; }
-  const CorpusChunk* FindNext(const String& level) const;
+  const CorpusChunk* FindNext(const StringView& level) const;
 
  private:
   HeapVector<TextOrChar> text_list_;
