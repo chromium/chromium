@@ -37,6 +37,9 @@ bool ShouldSerializeEvent(Event event_type) {
     // TODO(crbug.com/40672441): kFocus is only needed here for tests while
     // are migrating to ViewsAX.
     case Event::kFocus:
+    case Event::kWindowActivated:
+    case Event::kWindowDeactivated:
+    case Event::kWindowVisibilityChanged:
       return true;
     default:
       break;
@@ -90,9 +93,6 @@ bool ShouldSerializeEvent(Event event_type) {
     case Event::kTooltipClosed:
     case Event::kTooltipOpened:
     case Event::kValueChanged:
-    case Event::kWindowActivated:
-    case Event::kWindowDeactivated:
-    case Event::kWindowVisibilityChanged:
       return false;
     default:
       break;

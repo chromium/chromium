@@ -173,6 +173,12 @@ void DumpAccessibilityEventsViewsTestBase::SetUpOnMainThread() {
         ->OnActivationChanged(true);
   }
 #endif
+
+  // Flush any remaining async events generated during setup (e.g.
+  // OnActivationChanged() above queues kWindowActivated via WidgetAXManager
+  // when ViewsAX is enabled). Without this, StopRecordingAndCompare()'s
+  // RunUntilIdle() would flush stale setup events during recording.
+  base::RunLoop().RunUntilIdle();
 }
 
 void DumpAccessibilityEventsViewsTestBase::TearDown() {

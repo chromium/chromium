@@ -192,6 +192,21 @@ void BrowserAccessibilityManagerAuraLinux::FireSourceEvent(
     case ax::mojom::Event::kLoadStart:
       FireLoadingEvent(node, true);
       break;
+    case ax::mojom::Event::kWindowActivated:
+      ToBrowserAccessibilityAuraLinux(node)
+          ->GetNode()
+          ->HandleWindowActivatedEvent();
+      break;
+    case ax::mojom::Event::kWindowDeactivated:
+      ToBrowserAccessibilityAuraLinux(node)
+          ->GetNode()
+          ->HandleWindowDeactivatedEvent();
+      break;
+    case ax::mojom::Event::kWindowVisibilityChanged:
+      ToBrowserAccessibilityAuraLinux(node)
+          ->GetNode()
+          ->OnWindowVisibilityChanged();
+      break;
     default:
       break;
   }

@@ -185,6 +185,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
   void OnFocused();
   void OnWindowActivated();
   void OnWindowDeactivated();
+
+  // Event handlers called from NotifyAccessibilityEvent and
+  // BrowserAccessibilityManagerAuraLinux. These handle AT-SPI readiness checks.
+  void HandleWindowActivatedEvent();
+  void HandleWindowDeactivatedEvent();
   void OnMenuPopupStart();
   void OnMenuPopupEnd();
   void OnAllMenusEnded();

@@ -5304,6 +5304,7 @@ if (!is_android) {
         "../browser/ui/views/frame/browser_view_browsertest.cc",
         "../browser/ui/views/frame/browser_widget_browsertest.cc",
         "../browser/ui/views/frame/layout/browser_view_layout_delegate_impl_browsertest.cc",
+        "../browser/ui/views/frame/widget_accessibility_browsertest.cc",
         "../browser/ui/views/hung_renderer_view_browsertest.cc",
         "../browser/ui/views/importer/import_lock_dialog_view_browsertest.cc",
         "../browser/ui/views/javascript_tab_modal_dialog_view_views_browsertest.cc",
@@ -5454,6 +5455,7 @@ if (!is_android) {
         ]
       }
       deps += [
+        ":dump_accessibility_events_views_browsertest_base",
         ":test_support_ui",
         "//chrome/browser/commerce",
         "//chrome/browser/lens/core/mojom:mojo_bindings",
