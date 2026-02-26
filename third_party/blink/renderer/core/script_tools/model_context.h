@@ -90,6 +90,24 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   void PauseExecution();
   void DidFinishParsing();
 
+  class CORE_EXPORT ToolData : public GarbageCollected<ToolData> {
+   public:
+    const String& Name() const;
+    void Trace(Visitor* visitor) const;
+
+   private:
+    friend class ModelContext;
+
+    mojo::StructPtr<mojom::blink::ScriptTool> script_tool_;
+    // A JS-provided MCP tool:
+    Member<V8ToolFunction> v8_tool_function_;
+    // Used for declarative (form-based) MCP tools only:
+    Member<DeclarativeWebMCPTool> declarative_tool_;
+  };
+
+  // Returns registered tools, sorted by CodeUnitCompareLessThan().
+  HeapVector<Member<const ToolData>> ListTools() const;
+
   void Trace(Visitor*) const override;
 
  private:
@@ -104,17 +122,6 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   void ExecuteDeclarativeTool(DeclarativeWebMCPTool* tool,
                               const String& input_arguments,
                               ScriptToolExecutedCallback tool_executed_cb);
-
-  class ToolData : public GarbageCollected<ToolData> {
-   public:
-    void Trace(Visitor* visitor) const;
-
-    mojo::StructPtr<mojom::blink::ScriptTool> script_tool;
-    // A JS-provided MCP tool:
-    Member<V8ToolFunction> v8_tool_function;
-    // Used for declarative (form-based) MCP tools only:
-    Member<DeclarativeWebMCPTool> declarative_tool;
-  };
 
   bool RegisterTool(ScriptState* script_state,
                     ToolRegistrationParams* params,

@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -159,14 +160,8 @@ ModelContext::ModelContext(
 
 void ModelContext::ForEachScriptTool(
     base::FunctionRef<void(const mojom::blink::ScriptTool&)> func) const {
-  for (const auto& tool : tool_map_) {
-    auto tool_data = tool.value;
-    // Always update the input schema, since the DOM might have changed.
-    if (auto declarative_tool = tool_data->declarative_tool) {
-      tool_data->script_tool->input_schema =
-          declarative_tool->ComputeInputSchema();
-    }
-    func(*tool_data->script_tool);
+  for (const ToolData* tool_data : ListTools()) {
+    func(*tool_data->script_tool_);
   }
 }
 
@@ -196,11 +191,11 @@ void ModelContext::SetScriptToolDeclaration(
     WebDocument::ScriptToolDeclaration* tool_declaration) const {
   auto it = tool_map_.find(name);
   if (it != tool_map_.end()) {
-    tool_declaration->description = it->value->script_tool->description;
-    tool_declaration->input_schema = it->value->script_tool->input_schema;
-    if (it->value->script_tool->annotations) {
+    tool_declaration->description = it->value->script_tool_->description;
+    tool_declaration->input_schema = it->value->script_tool_->input_schema;
+    if (it->value->script_tool_->annotations) {
       tool_declaration->read_only =
-          it->value->script_tool->annotations->read_only;
+          it->value->script_tool_->annotations->read_only;
     }
   }
 }
@@ -241,15 +236,15 @@ std::optional<uint32_t> ModelContext::ExecuteTool(
   }
 
   std::optional<uint32_t> execution_id;
-  if (it->value->v8_tool_function) {
+  if (it->value->v8_tool_function_) {
     execution_id =
-        ExecuteV8Tool(it->value->v8_tool_function, name, input_arguments,
+        ExecuteV8Tool(it->value->v8_tool_function_, name, input_arguments,
                       signal, std::move(tool_executed_cb));
   } else {
     // TODO(479598776): Add support for tracking execution of
     // declarative tools, so that they can be cancelled.
     // TODO(481899636): Add signal support for declarative tools.
-    ExecuteDeclarativeTool(it->value->declarative_tool, input_arguments,
+    ExecuteDeclarativeTool(it->value->declarative_tool_, input_arguments,
                            std::move(tool_executed_cb));
   }
 
@@ -465,8 +460,8 @@ bool ModelContext::RegisterTool(ScriptState* script_state,
     script_tool->annotations->read_only = params->annotations()->readOnlyHint();
   }
 
-  tool_data->script_tool = std::move(script_tool);
-  tool_data->v8_tool_function = params->execute();
+  tool_data->script_tool_ = std::move(script_tool);
+  tool_data->v8_tool_function_ = params->execute();
 
   tool_map_.insert(params->name(), std::move(tool_data));
   OnToolsChanged();
@@ -482,8 +477,8 @@ void ModelContext::RegisterDeclarativeTool(String name,
   script_tool->name = name;
   script_tool->description = description;
   script_tool->input_schema = "{}";  // For now
-  tool_data->script_tool = std::move(script_tool);
-  tool_data->declarative_tool = tool;
+  tool_data->script_tool_ = std::move(script_tool);
+  tool_data->declarative_tool_ = tool;
 
   tool_map_.insert(name, std::move(tool_data));
   OnToolsChanged();
@@ -522,6 +517,32 @@ void ModelContext::PauseExecution() {
   script_tool_host_remote_->PauseExecution();
 }
 
+HeapVector<Member<const ModelContext::ToolData>> ModelContext::ListTools()
+    const {
+  HeapVector<Member<const ToolData>> tools;
+  tools.ReserveInitialCapacity(tool_map_.size());
+
+  for (const auto& entry : tool_map_) {
+    ToolData* tool_data = entry.value;
+    CHECK(tool_data);
+    // Always update the input schema of declarative tools,
+    // since the DOM might have changed.
+    if (DeclarativeWebMCPTool* declarative_tool =
+            tool_data->declarative_tool_) {
+      tool_data->script_tool_->input_schema =
+          declarative_tool->ComputeInputSchema();
+    }
+    tools.push_back(tool_data);
+  }
+
+  std::sort(tools.begin(), tools.end(),
+            [](const ToolData* a, const ToolData* b) {
+              return CodeUnitCompareLessThan(a->Name(), b->Name());
+            });
+
+  return tools;
+}
+
 void ModelContext::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(tool_map_);
@@ -529,9 +550,13 @@ void ModelContext::Trace(Visitor* visitor) const {
   visitor->Trace(script_tool_host_remote_);
 }
 
+const String& ModelContext::ToolData::Name() const {
+  return script_tool_->name;
+}
+
 void ModelContext::ToolData::Trace(Visitor* visitor) const {
-  visitor->Trace(v8_tool_function);
-  visitor->Trace(declarative_tool);
+  visitor->Trace(v8_tool_function_);
+  visitor->Trace(declarative_tool_);
 }
 
 }  // namespace blink

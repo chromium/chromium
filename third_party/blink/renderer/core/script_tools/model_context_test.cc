@@ -1097,4 +1097,41 @@ TEST_F(ModelContextTest, ForEachScriptToolGC) {
   EXPECT_FALSE(found);
 }
 
+TEST_F(ModelContextTest, ListTools) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(R"(<!DOCTYPE html>
+    <script>
+    navigator.modelContext.registerTool({
+      execute: () => "true",
+      name: "delete",
+      description: "Delete everything",
+    });
+    navigator.modelContext.registerTool({
+      execute: () => "true",
+      name: "squash",
+      description: "Squash history",
+    });
+    navigator.modelContext.registerTool({
+      execute: () => "true",
+      name: "append",
+      description: "Append something",
+    });
+    </script>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  HeapVector<Member<const ModelContext::ToolData>> tools =
+      model_context->ListTools();
+  ASSERT_EQ(3u, tools.size());
+
+  EXPECT_EQ("append", tools[0]->Name());
+  EXPECT_EQ("delete", tools[1]->Name());
+  EXPECT_EQ("squash", tools[2]->Name());
+}
+
 }  // namespace blink
