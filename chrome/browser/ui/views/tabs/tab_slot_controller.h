@@ -120,6 +120,9 @@ class TabSlotController {
 
   virtual void TabKeyboardFocusChangedTo(const tabs::TabInterface* tab) = 0;
 
+  // Returns the number of tabs in the tabstrip.
+  virtual int GetTabCount() const = 0;
+
   // Returns whether `tab` is the active tab. The active tab is the one whose
   // content is shown in the browser.
   virtual bool IsActiveTab(const TabSlotView* tab) const = 0;

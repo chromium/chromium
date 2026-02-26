@@ -1219,6 +1219,7 @@ void TabStrip::UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) {
 }
 
 void TabStrip::AddTabsAt(const std::vector<AddTabData>& tabs_datas) {
+  const int old_tab_count = GetTabCount();
   std::vector<TabContainer::TabInsertionParams> tabs_params;
 
   for (const auto& tab_data : tabs_datas) {
@@ -1252,6 +1253,12 @@ void TabStrip::AddTabsAt(const std::vector<AddTabData>& tabs_datas) {
     // As such, it is important that we complete the drag *after* adding the tab
     // so that the model and tabstrip are in sync.
     drag_context_->TabWasAdded();
+  }
+
+  if (base::FeatureList::IsEnabled(features::kDesktopGlowUp) &&
+      old_tab_count < TabStyle::kTabStripDeclutterMinTabs &&
+      GetTabCount() >= TabStyle::kTabStripDeclutterMinTabs) {
+    tab_container_->SchedulePaint();
   }
 
   // BrowserWindowInterface can be null during unit tests.
@@ -1302,6 +1309,7 @@ void TabStrip::RemoveTabAt(content::WebContents* contents,
   CHECK(drag_context_->CanRemoveTabIfDragging(contents))
       << "Attempted to remove a tab that could not be removed during drag.";
 
+  const int old_tab_count = GetTabCount();
   tab_container_->RemoveTab(model_index, was_active);
 
   UpdateHoverCard(nullptr, HoverCardUpdateType::kTabRemoved);
@@ -1310,6 +1318,12 @@ void TabStrip::RemoveTabAt(content::WebContents* contents,
 
   if (observer_) {
     observer_->OnTabRemoved(model_index);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kDesktopGlowUp) &&
+      old_tab_count >= TabStyle::kTabStripDeclutterMinTabs &&
+      GetTabCount() < TabStyle::kTabStripDeclutterMinTabs) {
+    tab_container_->SchedulePaint();
   }
 }
 
@@ -1564,14 +1578,6 @@ std::optional<int> TabStrip::GetModelIndexOf(const TabSlotView* view) const {
     return std::nullopt;
   }
   return viewmodel_index;
-}
-
-int TabStrip::GetTabCount() const {
-  if (!tab_container_) {
-    return 0;
-  }
-
-  return tab_container_->GetTabCount();
 }
 
 int TabStrip::GetModelCount() const {
@@ -1875,6 +1881,14 @@ void TabStrip::ShowContextMenuForTab(Tab* tab,
 
 void TabStrip::TabKeyboardFocusChangedTo(const tabs::TabInterface* tab) {
   controller_->TabKeyboardFocusChangedTo(tab);
+}
+
+int TabStrip::GetTabCount() const {
+  if (!tab_container_) {
+    return 0;
+  }
+
+  return tab_container_->GetTabCount();
 }
 
 bool TabStrip::IsActiveTab(const TabSlotView* tab) const {

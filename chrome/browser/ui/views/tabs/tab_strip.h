@@ -216,9 +216,6 @@ class TabStrip : public views::View,
   // TODO(tbergquist): This should return an optional<size_t>.
   std::optional<int> GetModelIndexOf(const TabSlotView* view) const;
 
-  // Gets the number of Tabs in the tab strip.
-  int GetTabCount() const;
-
   // Cover method for TabStripController::GetCount.
   int GetModelCount() const;
 
@@ -284,6 +281,7 @@ class TabStrip : public views::View,
                              const gfx::Point& p,
                              ui::mojom::MenuSourceType source_type) override;
   void TabKeyboardFocusChangedTo(const tabs::TabInterface* tab) override;
+  int GetTabCount() const override;
   bool IsActiveTab(const TabSlotView* tab) const override;
   bool IsTabSelected(const TabSlotView* tab) const override;
   bool IsFocusInTabs() const override;

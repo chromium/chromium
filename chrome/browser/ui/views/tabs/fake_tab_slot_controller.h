@@ -54,6 +54,7 @@ class FakeTabSlotController : public TabSlotController {
                              const gfx::Point& p,
                              ui::mojom::MenuSourceType source_type) override {}
   void TabKeyboardFocusChangedTo(const tabs::TabInterface* tab) override {}
+  int GetTabCount() const override;
   bool IsActiveTab(const TabSlotView* tab) const override;
   bool IsTabSelected(const TabSlotView* tab) const override;
   bool IsFocusInTabs() const override;
