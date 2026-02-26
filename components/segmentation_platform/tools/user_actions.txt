@@ -24,6 +24,7 @@ MobileMenuSettings
 MobileMenuShare
 MobileMenuTranslate
 MobileNTPMostVisited
+MobileNTPShown
 MobileNewTabOpened
 MobileNewTabShown
 MobileOmniboxLens
@@ -45,6 +46,7 @@ PasswordManager_Autofilled
 SafeBrowsing.Settings.EnhancedProtectionClicked
 SharingHubAndroid.SendTabToSelfSelected
 Suggestions.Content.Opened
+Suggestions.ContextMenu.PinItem
 TabGroup.Created.OpenInNewTab
 TasksSurface.FakeBox.Lens
 UserActionName

@@ -51,6 +51,8 @@ notifications::TipsNotificationsFeatureType GetFeatureType(
     return notifications::TipsNotificationsFeatureType::kSignin;
   } else if (label == segmentation_platform::kCreateTabGroups) {
     return notifications::TipsNotificationsFeatureType::kCreateTabGroups;
+  } else if (label == segmentation_platform::kCustomizeMVT) {
+    return notifications::TipsNotificationsFeatureType::kCustomizeMVT;
   } else {
     NOTREACHED();
   }
@@ -181,7 +183,7 @@ static void JNI_TipsAgent_MaybeScheduleNotification(JNIEnv* env,
       segmentation_platform::processing::ProcessedValue(
           bottom_omnibox_tip_shown));
 
-  // V2 Tips: Password Autofill, Signin
+  // V2 Tips: Password Autofill, Signin, Create Tab Groups, Customize MVT
 
   bool is_user_signed_in =
       IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
@@ -210,6 +212,13 @@ static void JNI_TipsAgent_MaybeScheduleNotification(JNIEnv* env,
       segmentation_platform::kCreateTabGroupsTipShown,
       segmentation_platform::processing::ProcessedValue(
           create_tab_groups_tip_shown));
+
+  bool customize_mvt_tip_shown =
+      pref_service->GetBoolean(prefs::kAndroidTipNotificationShownCustomizeMVT);
+  input_context->metadata_args.emplace(
+      segmentation_platform::kCustomizeMVTTipShown,
+      segmentation_platform::processing::ProcessedValue(
+          customize_mvt_tip_shown));
 
   segmentation_platform_service->GetClassificationResult(
       segmentation_platform::kTipsNotificationsRankerKey, prediction_options,
