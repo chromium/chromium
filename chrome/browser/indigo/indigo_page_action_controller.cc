@@ -8,6 +8,8 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/indigo/indigo_alpha_rpc.h"
 #include "chrome/browser/profiles/profile.h"
@@ -47,6 +49,8 @@ IndigoPageActionController* IndigoPageActionController::From(
 }
 
 void IndigoPageActionController::InvokeAction() {
+  base::RecordAction(base::UserMetricsAction("Indigo.PageAction.Click"));
+
   // TODO: b/482792874 - Analyze the page and act on it, instead of just opening
   // a tab based on a fixed input.
   content::WebContents* web_contents = tab().GetContents();
@@ -84,6 +88,8 @@ void IndigoPageActionController::UpdateEntryPointsState() {
 
   page_action_controller_->Show(kActionIndigo);
   page_action_controller_->ShowSuggestionChip(kActionIndigo);
+
+  base::RecordAction(base::UserMetricsAction("Indigo.PageAction.Show"));
 }
 
 }  // namespace indigo
