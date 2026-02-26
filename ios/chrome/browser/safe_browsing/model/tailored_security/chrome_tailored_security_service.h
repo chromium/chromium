@@ -37,12 +37,6 @@ class ChromeTailoredSecurityService : public TailoredSecurityService {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
 
  private:
-  // Called when the app has been backgrounded.
-  void AppDidEnterBackground();
-
-  // Called when the app has been foregrounded.
-  void AppWillEnterForeground();
-
   raw_ptr<ProfileIOS> profile_;
 
   // Observers for NSNotificationCenter notifications.

@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/chrome_tailored_security_service.h"
 
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
@@ -15,6 +18,20 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace safe_browsing {
+namespace {
+
+// Type of the block expected by NSNotificationCenter.
+using NotificationCenterBlock = void (^)(NSNotification*);
+
+// Returns a NotificationCenterBlock that ignores its arguments and
+// invokes closure.
+NotificationCenterBlock ClosureToNotificationCenterBlock(
+    base::RepeatingClosure closure) {
+  return base::CallbackToBlock(
+      base::IgnoreArgs<NSNotification*>(std::move(closure)));
+}
+
+}  // anonymous namespace
 
 ChromeTailoredSecurityService::ChromeTailoredSecurityService(
     ProfileIOS* profile,
@@ -24,27 +41,23 @@ ChromeTailoredSecurityService::ChromeTailoredSecurityService(
                               sync_service,
                               profile->GetPrefs()),
       profile_(profile) {
-  base::WeakPtr<ChromeTailoredSecurityService> weak_ptr =
-      weak_ptr_factory_.GetWeakPtr();
   application_backgrounding_observer_ = [[NSNotificationCenter defaultCenter]
       addObserverForName:UIApplicationDidEnterBackgroundNotification
                   object:nil
                    queue:nil
-              usingBlock:^(NSNotification*) {
-                if (weak_ptr.get()) {
-                  weak_ptr->AppDidEnterBackground();
-                }
-              }];
+              usingBlock:ClosureToNotificationCenterBlock(base::BindRepeating(
+                             &ChromeTailoredSecurityService::SetCanQuery,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             /*enter_foreground=*/false))];
 
   application_foregrounding_observer_ = [[NSNotificationCenter defaultCenter]
       addObserverForName:UIApplicationWillEnterForegroundNotification
                   object:nil
                    queue:nil
-              usingBlock:^(NSNotification*) {
-                if (weak_ptr.get()) {
-                  weak_ptr->AppWillEnterForeground();
-                }
-              }];
+              usingBlock:ClosureToNotificationCenterBlock(base::BindRepeating(
+                             &ChromeTailoredSecurityService::SetCanQuery,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             /*enter_foreground=*/true))];
 }
 
 ChromeTailoredSecurityService::~ChromeTailoredSecurityService() {
@@ -62,14 +75,6 @@ ChromeTailoredSecurityService::~ChromeTailoredSecurityService() {
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeTailoredSecurityService::GetURLLoaderFactory() {
   return profile_->GetSharedURLLoaderFactory();
-}
-
-void ChromeTailoredSecurityService::AppDidEnterBackground() {
-  this->SetCanQuery(false);
-}
-
-void ChromeTailoredSecurityService::AppWillEnterForeground() {
-  this->SetCanQuery(true);
 }
 
 }  // namespace safe_browsing
