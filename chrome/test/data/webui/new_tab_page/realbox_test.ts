@@ -8,13 +8,54 @@ import type {SearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
-import {ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {createInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+const SAMPLE_INPUT_STATE = createInputState({
+  allowedTools: [ToolMode.kDeepSearch, ToolMode.kImageGen],
+  toolConfigs: [
+    {
+      tool: ToolMode.kDeepSearch,
+      menuLabel: 'Deep Search',
+      disableActiveModelSelection: false,
+      chipLabel: '',
+      hintText: '',
+      aimUrlParams: [],
+    },
+    {
+      tool: ToolMode.kImageGen,
+      menuLabel: 'Generate Image',
+      disableActiveModelSelection: false,
+      chipLabel: '',
+      hintText: '',
+      aimUrlParams: [],
+    },
+  ],
+  allowedModels: [ModelMode.kGeminiRegular, ModelMode.kGeminiPro],
+  modelConfigs: [
+    {
+      model: ModelMode.kGeminiRegular,
+      menuLabel: 'Gemini Regular',
+      hintText: '',
+      aimUrlParams: [],
+    },
+    {
+      model: ModelMode.kGeminiPro,
+      menuLabel: 'Gemini Pro',
+      hintText: '',
+      aimUrlParams: [],
+    },
+  ],
+  allowedInputTypes:
+      [InputType.kLensImage, InputType.kLensFile, InputType.kBrowserTab],
+  maxTotalInputs: 10,
+});
 
 function createAndAppendRealbox(properties: Partial<SearchboxElement> = {}):
     SearchboxElement {
@@ -29,15 +70,23 @@ suite('NewTabPageRealboxTabsTest', () => {
   let realbox: SearchboxElement;
   let testProxy: TestSearchboxBrowserProxy;
 
-  setup(async () => {
+  suiteSetup(() => {
     loadTimeData.overrideValues({
-      ntpRealboxNextEnabled: true,
+      contextualMenuUsePecApi: true,
+      isLensSearchbox: false,
+      reportMetrics: true,
+      searchboxCyclingPlaceholders: false,
+      searchboxDefaultIcon: 'search.svg',
+      searchboxSeparator: ' - ',
+      searchboxVoiceSearch: true,
     });
+  });
 
+  setup(() => {
     testProxy = new TestSearchboxBrowserProxy();
     SearchboxBrowserProxy.setInstance(testProxy);
 
-    realbox = await createAndAppendRealbox(
+    realbox = createAndAppendRealbox(
         {ntpRealboxNextEnabled: true, searchboxLayoutMode: 'Compact'});
   });
 
@@ -102,19 +151,23 @@ suite('NewTabPageRealboxNextTest', () => {
   let testProxy: TestSearchboxBrowserProxy;
   let metrics: MetricsTracker;
 
-  setup(() => {
+  suiteSetup(() => {
     loadTimeData.overrideValues({
-      contextualMenuUsePecApi: false,
+      contextualMenuUsePecApi: true,
       isLensSearchbox: false,
+      reportMetrics: true,
       searchboxCyclingPlaceholders: false,
       searchboxDefaultIcon: 'search.svg',
       searchboxSeparator: ' - ',
       searchboxVoiceSearch: true,
-      reportMetrics: true,
     });
+  });
 
+  setup(async () => {
     // Set up Realbox's browser proxy.
     testProxy = new TestSearchboxBrowserProxy();
+    testProxy.handler.setResultFor(
+        'getInputState', Promise.resolve({state: SAMPLE_INPUT_STATE}));
     SearchboxBrowserProxy.setInstance(testProxy);
 
     // Set up MetricsReporter's browser proxy.
@@ -127,38 +180,16 @@ suite('NewTabPageRealboxNextTest', () => {
     BrowserProxyImpl.setInstance(testMetricsReporterProxy);
     MetricsReporterImpl.setInstanceForTest(new MetricsReporterImpl());
     metrics = fakeMetricsPrivate();
-
-    testProxy.handler.setResultFor('getInputState', {
-      state: {
-        allowedModels: [],
-        allowedTools: [],
-        allowedInputTypes: [],
-        activeModel: 0,
-        activeTool: 0,
-        disabledModels: [],
-        disabledTools: [],
-        disabledInputTypes: [],
-        inputTypeConfigs: [],
-        toolConfigs: [],
-        modelConfigs: [],
-        toolsSectionConfig: null,
-        modelSectionConfig: null,
-        hintText: '',
-        maxInstances: {},
-        maxTotalInputs: 0,
-      },
+    realbox = createAndAppendRealbox({
+      composeButtonEnabled: true,
+      composeboxEnabled: true,
+      ntpRealboxNextEnabled: true,
+      searchboxLayoutMode: 'Compact',
     });
-    realbox = createAndAppendRealbox();
+    await microtasksFinished();
   });
 
   test('adding context files opens composebox', async () => {
-    // Arrange.
-    realbox = await createAndAppendRealbox({
-      composeButtonEnabled: true,
-      composeboxEnabled: true,
-      searchboxLayoutMode: 'TallBottomContext',
-      ntpRealboxNextEnabled: true,
-    });
     const contextElement = realbox.shadowRoot.querySelector(
         'cr-composebox-contextual-entrypoint-and-menu');
     assertTrue(!!contextElement);
@@ -177,21 +208,12 @@ suite('NewTabPageRealboxNextTest', () => {
   });
 
   test('clicking deep search button opens composebox', async () => {
-    // Arrange.
-    loadTimeData.overrideValues({
-      composeboxShowDeepSearchButton: true,
-    });
-    realbox = await createAndAppendRealbox(
-        {ntpRealboxNextEnabled: true, searchboxLayoutMode: 'Compact'});
-    const contextElement = realbox.shadowRoot.querySelector(
+    const entrypointAndMenu = realbox.shadowRoot.querySelector(
         'cr-composebox-contextual-entrypoint-and-menu');
-    assertTrue(!!contextElement);
-    const contextMenuEntrypoint = contextElement.shadowRoot.querySelector(
-        'cr-composebox-context-menu-entrypoint');
-    assertTrue(!!contextMenuEntrypoint);
-
-    testProxy.handler.setResultFor(
-        'getRecentTabs', Promise.resolve({tabs: []}));
+    assertTrue(!!entrypointAndMenu, 'contextual-entrypoint-and-menu');
+    const contextMenuEntrypoint = entrypointAndMenu.shadowRoot.querySelector(
+        'cr-composebox-contextual-entrypoint-button');
+    assertTrue(!!contextMenuEntrypoint, 'contextual entrypoint button');
 
     // Act.
     const whenOpenComposeBox = eventToPromise('open-composebox', realbox);
@@ -199,15 +221,18 @@ suite('NewTabPageRealboxNextTest', () => {
     const entrypointButton =
         contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
             '#entrypoint');
-    assertTrue(entrypointButton !== null);
+    assertTrue(!!entrypointButton, 'Entrypoint button');
     entrypointButton.click();
     await microtasksFinished();
 
-    const deepSearchButton =
-        contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
-            '#deepSearch');
-    assertTrue(!!deepSearchButton);
+    const actionMenu = entrypointAndMenu.shadowRoot.querySelector(
+        'cr-composebox-contextual-action-menu');
+    assertTrue(!!actionMenu, 'Action menu');
+    const deepSearchButton = actionMenu.shadowRoot.querySelector<HTMLElement>(
+        `button[data-mode="${ToolMode.kDeepSearch}"]`);
+    assertTrue(!!deepSearchButton, 'Deep search button');
     deepSearchButton.click();
+    await microtasksFinished();
 
     // Assert.
     const event = await whenOpenComposeBox;
@@ -220,21 +245,12 @@ suite('NewTabPageRealboxNextTest', () => {
   });
 
   test('clicking create image button opens composebox', async () => {
-    // Arrange.
-    loadTimeData.overrideValues({
-      composeboxShowCreateImageButton: true,
-    });
-    realbox = await createAndAppendRealbox(
-        {ntpRealboxNextEnabled: true, searchboxLayoutMode: 'Compact'});
-    const contextElement = realbox.shadowRoot.querySelector(
+    const entrypointAndMenu = realbox.shadowRoot.querySelector(
         'cr-composebox-contextual-entrypoint-and-menu');
-    assertTrue(!!contextElement);
-    const contextMenuEntrypoint = contextElement.shadowRoot.querySelector(
-        'cr-composebox-context-menu-entrypoint');
-    assertTrue(!!contextMenuEntrypoint);
-
-    testProxy.handler.setResultFor(
-        'getRecentTabs', Promise.resolve({tabs: []}));
+    assertTrue(!!entrypointAndMenu, 'contextual-entrypoint-and-menu');
+    const contextMenuEntrypoint = entrypointAndMenu.shadowRoot.querySelector(
+        'cr-composebox-contextual-entrypoint-button');
+    assertTrue(!!contextMenuEntrypoint, 'contextual-entrypoint-button');
 
     // Act.
     const whenOpenComposeBox = eventToPromise('open-composebox', realbox);
@@ -242,15 +258,18 @@ suite('NewTabPageRealboxNextTest', () => {
     const entrypointButton =
         contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
             '#entrypoint');
-    assertTrue(entrypointButton !== null);
+    assertTrue(!!entrypointButton, 'Entrypoint button');
     entrypointButton.click();
     await microtasksFinished();
 
-    const createImageButton =
-        contextMenuEntrypoint.shadowRoot.querySelector<HTMLElement>(
-            '#createImage');
-    assertTrue(!!createImageButton);
+    const actionMenu = entrypointAndMenu.shadowRoot.querySelector(
+        'cr-composebox-contextual-action-menu');
+    assertTrue(!!actionMenu, 'Action menu');
+    const createImageButton = actionMenu.shadowRoot.querySelector<HTMLElement>(
+        `button[data-mode="${ToolMode.kImageGen}"]`);
+    assertTrue(!!createImageButton, 'Create images button');
     createImageButton.click();
+    await microtasksFinished();
 
     // Assert.
     const event = await whenOpenComposeBox;
@@ -269,7 +288,7 @@ suite('NewTabPageRealboxNextTest', () => {
           ntpRealboxNextEnabled: true,
         });
         const contextElement = realbox.shadowRoot.querySelector(
-            'cr-composebox-contextual-entrypoint-and-menu');
+            'contextual-entrypoint-and-carousel');
         assertTrue(!!contextElement);
         contextElement.dispatchEvent(
             new CustomEvent('context-menu-container-click'));

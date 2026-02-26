@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 /**
@@ -45,4 +46,27 @@ export function waitForAttributeChange(
       attributeFilter: [attributeName],
     });
   });
+}
+
+export function createInputState(overrides?: Partial<InputState>): InputState {
+  return Object.assign(
+      {
+        allowedTools: [],
+        disabledTools: [],
+        toolConfigs: [],
+        toolsSectionConfig: {header: ''},
+        allowedModels: [],
+        disabledModels: [],
+        activeModel: 0,
+        activeTool: 0,
+        hintText: '',
+        modelConfigs: [],
+        modelSectionConfig: {header: ''},
+        allowedInputTypes: [],
+        disabledInputTypes: [],
+        inputTypeConfigs: [],
+        maxInstances: {},
+        maxTotalInputs: 0,
+      },
+      overrides);
 }
