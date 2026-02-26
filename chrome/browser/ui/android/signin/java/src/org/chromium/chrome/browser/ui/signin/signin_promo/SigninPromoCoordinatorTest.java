@@ -1223,7 +1223,8 @@ public class SigninPromoCoordinatorTest {
             case SigninAccessPoint.RECENT_TABS ->
                     new RecentTabsSigninPromoDelegate(
                             activity, mProfile, mLauncher, mOnPromoStateChange);
-            default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
+            default -> throw new IllegalArgumentException(
+                    "Invalid sign-in promo access point: " + accessPoint);
         };
     }
 
@@ -1233,7 +1234,8 @@ public class SigninPromoCoordinatorTest {
             case SigninAccessPoint.HISTORY_PAGE -> "HistoryPage";
             case SigninAccessPoint.NTP_FEED_TOP_PROMO -> "NtpFeedTopPromo";
             case SigninAccessPoint.RECENT_TABS -> "RecentTabs";
-            default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
+            default -> throw new IllegalArgumentException(
+                    "Invalid sign-in promo access point: " + accessPoint);
         };
     }
 
@@ -1259,7 +1261,8 @@ public class SigninPromoCoordinatorTest {
                     .SigninPromoAccessPointId.NTP;
             case SigninAccessPoint.RECENT_TABS -> SigninPreferencesManager.SigninPromoAccessPointId
                     .RECENT_TABS;
-            default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
+            default -> throw new IllegalArgumentException(
+                    "Invalid sign-in promo access point: " + accessPoint);
         };
     }
 
@@ -1271,7 +1274,8 @@ public class SigninPromoCoordinatorTest {
                     .SIGNIN_PROMO_HISTORY_PAGE_DECLINED;
             case SigninAccessPoint.NTP_FEED_TOP_PROMO -> ChromePreferenceKeys
                     .SIGNIN_PROMO_NTP_PROMO_DISMISSED;
-            default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
+            default -> throw new IllegalArgumentException(
+                    "Invalid sign-in promo access point: " + accessPoint);
         };
     }
 
@@ -1284,7 +1288,8 @@ public class SigninPromoCoordinatorTest {
                     .createKey(SigninPreferencesManager.SigninPromoAccessPointId.HISTORY_PAGE);
             case SigninAccessPoint.NTP_FEED_TOP_PROMO -> ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT
                     .createKey(SigninPreferencesManager.SigninPromoAccessPointId.NTP);
-            default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
+            default -> throw new IllegalArgumentException(
+                    "Invalid sign-in promo access point: " + accessPoint);
         };
     }
 

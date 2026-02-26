@@ -223,7 +223,8 @@ public class SigninPromoCoordinator
             case SigninAccessPoint.NTP_FEED_TOP_PROMO ->
                     R.layout.sync_promo_view_content_suggestions;
             case SigninAccessPoint.RECENT_TABS -> R.layout.sync_promo_view_recent_tabs;
-            default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
+            default -> throw new IllegalArgumentException(
+                    "Invalid sign-in promo access point: " + accessPoint);
         };
     }
 }
