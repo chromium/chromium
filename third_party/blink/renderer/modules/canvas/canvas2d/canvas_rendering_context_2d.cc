@@ -1356,18 +1356,8 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
 
       bool low_latency_supported = false;
       if (use_gpu_raster && canvas()->LowLatencyEnabled()) {
-        // Optimize usage for low-latency if possible.
-        bool can_use_swapchain = SharedGpuContext::ContextProviderWrapper()
-                                     ->ContextProvider()
-                                     .SharedImageInterface()
-                                     ->GetCapabilities()
-                                     .shared_image_swap_chain;
         low_latency_supported =
-            can_use_swapchain ||
-            (SharedGpuContext::MaySupportImageChromium() &&
-             (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled() ||
-              base::FeatureList::IsEnabled(
-                  features::kLowLatencyCanvas2dImageChromium)));
+            SharedGpuContext::LowLatencyUsageSupportedForCanvas2D();
       }
 
       if (low_latency_supported) {

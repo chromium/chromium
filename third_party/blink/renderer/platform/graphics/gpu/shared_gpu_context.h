@@ -66,6 +66,10 @@ class PLATFORM_EXPORT SharedGpuContext {
   // Whether SharedImages used for canvas2D content may be placed into overlays.
   static bool OverlaysSupportedForCanvas2D();
 
+  // Whether SharedImages used for canvas2D content may be given usage optimized
+  // for low-latency (SCANOUT and CONCURRENT_READ_WRITE).
+  static bool LowLatencyUsageSupportedForCanvas2D();
+
   using ContextProviderFactory =
       base::RepeatingCallback<std::unique_ptr<WebGraphicsContext3DProvider>()>;
   static void SetContextProviderFactoryForTesting(ContextProviderFactory);

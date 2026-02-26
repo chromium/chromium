@@ -279,4 +279,18 @@ bool SharedGpuContext::OverlaysSupportedForCanvas2D() {
          RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
 }
 
+bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D() {
+  bool can_use_swapchain = ContextProviderWrapper()
+                               ->ContextProvider()
+                               .SharedImageInterface()
+                               ->GetCapabilities()
+                               .shared_image_swap_chain;
+
+  return can_use_swapchain ||
+         (MaySupportImageChromium() &&
+          (RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled() ||
+           base::FeatureList::IsEnabled(
+               features::kLowLatencyCanvas2dImageChromium)));
+}
+
 }  // namespace blink
