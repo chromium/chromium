@@ -868,7 +868,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.Footer.Click" enum="FooterElement"
     expires_after="2026-08-02">
-  <owner>temao@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>Logged when the Footer was clicked.</summary>
@@ -876,7 +875,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.Footer.ContextMenuClicked"
     enum="FooterContextMenuItem" expires_after="2026-01-23">
-  <owner>temao@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>Logged when item in footer's context menu is clicked.</summary>
@@ -884,7 +882,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.Footer.CustomizeChromeOpened"
     enum="FooterCustomizeChromeEntryPoint" expires_after="2026-08-02">
-  <owner>temao@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -2463,7 +2460,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.TabGroups.ClickTabGroupIndex" units="index"
     expires_after="2026-12-31">
-  <owner>temao@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
@@ -2474,7 +2470,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.TabGroups.CreateNewTabGroup{ExperimentalState}"
     units="count" expires_after="2026-12-31">
-  <owner>temao@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>

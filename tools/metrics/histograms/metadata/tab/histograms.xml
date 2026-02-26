@@ -530,7 +530,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tab.GroupingTransition2" enum="TabGroupingTransitionType"
     expires_after="2026-08-16">
-  <owner>temao@chromium.org</owner>
   <owner>dpenning@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -3138,7 +3137,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.TabSearch.BubbleWidgetInitializationTime" units="ms"
     expires_after="2026-09-09">
-  <owner>temao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
@@ -3153,7 +3151,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Tabs.TabSearch.ButtonPressedToNextFramePresented" units="ms"
     expires_after="2026-09-09">
-  <owner>temao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>

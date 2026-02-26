@@ -131,7 +131,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-07-22">
   <owner>kerenzhu@chromium.org</owner>
   <owner>dayeung@chromium.org</owner>
-  <owner>temao@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
@@ -141,7 +140,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bubble.{BubbleName}.CreateToPresentationTime" units="ms"
     expires_after="2026-07-22">
-  <owner>temao@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
   <owner>kerenzhu@chromium.org</owner>
   <owner>dayeung@chromium.org</owner>
@@ -156,7 +154,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bubble.{BubbleName}.CreateToVisibleTime" units="ms"
     expires_after="2026-07-22">
-  <owner>temao@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
   <owner>kerenzhu@chromium.org</owner>
   <owner>dayeung@chromium.org</owner>
@@ -174,7 +171,6 @@ chromium-metrics-reviews@google.com.
   <owner>yuhengh@chromium.org</owner>
   <owner>kerenzhu@chromium.org</owner>
   <owner>dayeung@chromium.org</owner>
-  <owner>temao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>Records the time a bubble is visible.</summary>
@@ -1042,7 +1038,6 @@ features through Chrome Labs. -->
 
 <histogram name="WebUICodeCache.FeatureEnabled" enum="Boolean"
     expires_after="2025-06-08">
-  <owner>temao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
     True if WebUICodeCache feature is enabled. This counts the number of times

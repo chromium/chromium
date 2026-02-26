@@ -24,7 +24,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chrome.AppMenu.MenuHostInitToNextFramePresented" units="ms"
     expires_after="2026-07-05">
-  <owner>temao@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
     Records time from when Widget::Show() is called to when the first frame is
@@ -370,7 +369,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chrome.WrenchMenu.MenuButtonPressedToMenuShown" units="ms"
     expires_after="2024-11-06">
-  <owner>temao@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
     Records the latency from when the app menu button is pressed to when the
@@ -384,7 +382,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Chrome.WrenchMenu.MenuHostInitToNextFramePresented" units="ms"
     expires_after="2024-11-06">
-  <owner>temao@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
     Records time from when the menu host initialization is started to when the

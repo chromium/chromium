@@ -7432,7 +7432,6 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="SiteIsolatedCodeCache.JS.WebUI.Behaviour"
     enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2025-07-01">
-  <owner>temao@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <summary>
     The behaviour of site isolated WebUI JS code cache recorded for each cache
