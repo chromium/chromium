@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] random() should be disallowed in @container style() query
+  assert_equals: expected "true" but got "false"
+[FAIL] random() in var() should be disallowed in @container style() query
+  assert_equals: expected "true" but got "false"
+Harness: the test ran to completion.
+

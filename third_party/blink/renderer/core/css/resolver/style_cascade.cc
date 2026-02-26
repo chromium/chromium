@@ -2566,7 +2566,9 @@ const CSSValue* StyleCascade::CoerceIntoNumericValueInternal(
       /* is_animation_tainted= */ data->IsAnimationTainted(),
       /* is_attr_tainted= */ data->IsAttrTainted());
 
-  if (!parsed_value) {
+  // TODO(crbug.com/475808971): We use this function only when evaluating
+  // style() query in @container or if(). We disallow random() there for now.
+  if (!parsed_value || parsed_value->HasRandomFunctions()) {
     return nullptr;
   }
 
