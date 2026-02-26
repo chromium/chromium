@@ -115,7 +115,6 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   using JavaBitmapCallback =
       base::OnceCallback<void(const base::android::JavaRef<jobject>&)>;
 
-  content::RenderWidgetHostView* GetRwhvForTab(TabAndroid* tab_android);
   ThumbnailCaptureTrackerPtr TrackCapture(thumbnail::TabId tab_id);
   void CleanupTrackers();
   void OnTrackingFinished(int tab_id,
