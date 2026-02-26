@@ -283,6 +283,35 @@ TEST_F(OnDeviceTranslationInstallerTest, InstallationChanged) {
   }
 }
 
+TEST_F(OnDeviceTranslationInstallerTest, RemoveObserverWorks) {
+  CreateFakeInstallation(install_dir_.GetPath());
+  CreateFakeLanguagePackInstallation(install_dir_.GetPath(),
+                                     {LanguagePackKey::kEn_Ja});
+  EXPECT_CALL(mock_ondemand_updater_, OnDemandUpdate(_, _, _))
+      .Times(2)
+      .WillOnce(base::test::RunOnceCallback<2>(update_client::Error::NONE))
+      .WillOnce(base::test::RunOnceCallback<2>(update_client::Error::NONE));
+
+  {
+    base::RunLoop run_loop;
+    OnDeviceTranslationInstaller::GetInstance()->Init(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  {
+    MockObserver mock_observer;
+    OnDeviceTranslationInstaller::GetInstance()->AddObserver(&mock_observer);
+    OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(&mock_observer);
+    FakeObserver observer;
+    OnDeviceTranslationInstaller::GetInstance()->AddObserver(&observer);
+    OnDeviceTranslationInstaller::GetInstance()->InstallLanguagePack(
+        LanguagePackKey::kEn_Ja);
+    observer.WaitForNotification(1);
+    // The mock must never be called as it was removed from the observer list.
+    EXPECT_CALL(mock_observer, OnLanguagePackInstalled).Times(0);
+  }
+}
+
 TEST_F(OnDeviceTranslationInstallerTest, InstallLanguagePack) {
   CreateFakeInstallation(install_dir_.GetPath());
   CreateFakeLanguagePackInstallation(install_dir_.GetPath(),

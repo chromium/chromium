@@ -86,6 +86,9 @@ class OnDeviceTranslationInstallerImpl::Notifier {
     }
   }
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
+  void RemoveObserver(Observer* observer) {
+    observers_.RemoveObserver(observer);
+  }
 
  private:
   PrefChangeRegistrar pref_registrar_;
@@ -186,6 +189,10 @@ void OnDeviceTranslationInstallerImpl::UnInstallLanguagePack(
 
 void OnDeviceTranslationInstallerImpl::AddObserver(Observer* observer) {
   notifier_->AddObserver(observer);
+}
+
+void OnDeviceTranslationInstallerImpl::RemoveObserver(Observer* observer) {
+  notifier_->RemoveObserver(observer);
 }
 
 }  // namespace on_device_translation

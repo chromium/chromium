@@ -35,6 +35,7 @@ class FakeOnDeviceTranslationInstaller : public OnDeviceTranslationInstaller {
   void InstallLanguagePackNow(LanguagePackKey language_pack);
   void UnInstallLanguagePack(LanguagePackKey language_pack) override;
   void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
 
  private:
   base::FilePath fake_install_dir_;

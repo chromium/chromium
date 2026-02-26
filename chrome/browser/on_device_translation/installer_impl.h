@@ -28,6 +28,7 @@ class OnDeviceTranslationInstallerImpl : public OnDeviceTranslationInstaller {
   void InstallLanguagePack(LanguagePackKey language_pack) override;
   void UnInstallLanguagePack(LanguagePackKey language_pack) override;
   void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
 
  private:
   // We hide away the logic to notify observers.

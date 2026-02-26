@@ -70,6 +70,8 @@ class OnDeviceTranslationInstaller {
 
   // Subscribes a new observer to be notified of events.
   virtual void AddObserver(Observer* observer) = 0;
+  // Unsubscribes an observer.
+  virtual void RemoveObserver(Observer* observer) = 0;
 };
 
 }  // namespace on_device_translation
