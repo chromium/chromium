@@ -29,7 +29,7 @@ class TestNetworkContextClient : public network::mojom::NetworkContextClient {
     ignore_last_upload_file_ = ignore_last_upload_file;
   }
 
-  void OnFileUploadRequested(int32_t process_id,
+  void OnFileUploadRequested(const OriginatingProcessId& process_id,
                              bool async,
                              const std::vector<base::FilePath>& file_paths,
                              const GURL& destination_url,

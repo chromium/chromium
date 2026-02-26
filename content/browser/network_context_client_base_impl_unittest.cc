@@ -19,6 +19,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/network_context_client_base.h"
 #include "content/public/common/child_process_id.h"
+#include "content/public/common/child_process_id_util.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "net/base/net_errors.h"
@@ -43,10 +44,8 @@ struct UploadResponse {
   std::vector<base::File> opened_files;
 };
 
-void GrantAccess(const base::FilePath& file, int process_id) {
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  ChildProcessSecurityPolicy::GetInstance()->GrantReadFile(
-      ChildProcessId::FromUnsafeValue(process_id), file);
+void GrantAccess(const base::FilePath& file, ChildProcessId process_id) {
+  ChildProcessSecurityPolicy::GetInstance()->GrantReadFile(process_id, file);
 }
 
 void CreateFile(const base::FilePath& path, std::string_view content) {
@@ -61,8 +60,7 @@ void ValidateFileContents(base::File& file, std::string_view expected_content) {
   EXPECT_EQ(base::as_string_view(content), expected_content);
 }
 
-const int kBrowserProcessId = 0;
-const int kRendererProcessId = 1;
+const ChildProcessId kRendererProcessId{1};
 const char kFileContent1[] = "test file content one";
 const char kFileContent2[] = "test file content two";
 
@@ -91,9 +89,9 @@ class NetworkContextClientBaseTest : public testing::Test {
 
 TEST_F(NetworkContextClientBaseTest, UploadNoFiles) {
   UploadResponse response;
-  client_.OnFileUploadRequested(kRendererProcessId, true, {},
-                                /*destination_url=*/GURL(),
-                                std::move(response.callback));
+  client_.OnFileUploadRequested(
+      ToOriginatingProcessId(kRendererProcessId), true, {},
+      /*destination_url=*/GURL(), std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::OK, response.error_code);
   EXPECT_EQ(0U, response.opened_files.size());
@@ -105,9 +103,9 @@ TEST_F(NetworkContextClientBaseTest, UploadOneValidAsyncFile) {
   GrantAccess(path, kRendererProcessId);
 
   UploadResponse response;
-  client_.OnFileUploadRequested(kRendererProcessId, true, {path},
-                                /*destination_url=*/GURL(),
-                                std::move(response.callback));
+  client_.OnFileUploadRequested(
+      ToOriginatingProcessId(kRendererProcessId), true, {path},
+      /*destination_url=*/GURL(), std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::OK, response.error_code);
   ASSERT_EQ(1U, response.opened_files.size());
@@ -120,9 +118,9 @@ TEST_F(NetworkContextClientBaseTest, UploadOneValidFile) {
   GrantAccess(path, kRendererProcessId);
 
   UploadResponse response;
-  client_.OnFileUploadRequested(kRendererProcessId, false, {path},
-                                /*destination_url=*/GURL(),
-                                std::move(response.callback));
+  client_.OnFileUploadRequested(
+      ToOriginatingProcessId(kRendererProcessId), false, {path},
+      /*destination_url=*/GURL(), std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::OK, response.error_code);
   ASSERT_EQ(1U, response.opened_files.size());
@@ -148,9 +146,9 @@ TEST_F(NetworkContextClientBaseTest,
   GrantAccess(content_path, kRendererProcessId);
 
   UploadResponse response;
-  client_.OnFileUploadRequested(kRendererProcessId, false, {content_path},
-                                /*destination_url=*/GURL(),
-                                std::move(response.callback));
+  client_.OnFileUploadRequested(
+      ToOriginatingProcessId(kRendererProcessId), false, {content_path},
+      /*destination_url=*/GURL(), std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::OK, response.error_code);
   ASSERT_EQ(1U, response.opened_files.size());
@@ -170,9 +168,9 @@ TEST_F(NetworkContextClientBaseTest, UploadTwoValidFiles) {
   GrantAccess(path2, kRendererProcessId);
 
   UploadResponse response;
-  client_.OnFileUploadRequested(kRendererProcessId, false, {path1, path2},
-                                /*destination_url=*/GURL(),
-                                std::move(response.callback));
+  client_.OnFileUploadRequested(
+      ToOriginatingProcessId(kRendererProcessId), false, {path1, path2},
+      /*destination_url=*/GURL(), std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::OK, response.error_code);
   ASSERT_EQ(2U, response.opened_files.size());
@@ -185,9 +183,9 @@ TEST_F(NetworkContextClientBaseTest, UploadOneUnauthorizedFile) {
   CreateFile(path, kFileContent1);
 
   UploadResponse response;
-  client_.OnFileUploadRequested(kRendererProcessId, false, {path},
-                                /*destination_url=*/GURL(),
-                                std::move(response.callback));
+  client_.OnFileUploadRequested(
+      ToOriginatingProcessId(kRendererProcessId), false, {path},
+      /*destination_url=*/GURL(), std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::ERR_ACCESS_DENIED, response.error_code);
   EXPECT_EQ(0U, response.opened_files.size());
@@ -201,9 +199,9 @@ TEST_F(NetworkContextClientBaseTest, UploadOneValidFileAndOneUnauthorized) {
   GrantAccess(path1, kRendererProcessId);
 
   UploadResponse response;
-  client_.OnFileUploadRequested(kRendererProcessId, false, {path1, path2},
-                                /*destination_url=*/GURL(),
-                                std::move(response.callback));
+  client_.OnFileUploadRequested(
+      ToOriginatingProcessId(kRendererProcessId), false, {path1, path2},
+      /*destination_url=*/GURL(), std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::ERR_ACCESS_DENIED, response.error_code);
   EXPECT_EQ(0U, response.opened_files.size());
@@ -217,9 +215,9 @@ TEST_F(NetworkContextClientBaseTest, UploadOneValidFileAndOneNotFound) {
   GrantAccess(path2, kRendererProcessId);
 
   UploadResponse response;
-  client_.OnFileUploadRequested(kRendererProcessId, false, {path1, path2},
-                                /*destination_url=*/GURL(),
-                                std::move(response.callback));
+  client_.OnFileUploadRequested(
+      ToOriginatingProcessId(kRendererProcessId), false, {path1, path2},
+      /*destination_url=*/GURL(), std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::ERR_FILE_NOT_FOUND, response.error_code);
   EXPECT_EQ(0U, response.opened_files.size());
@@ -231,9 +229,9 @@ TEST_F(NetworkContextClientBaseTest, UploadFromBrowserProcess) {
   // No grant necessary for browser process.
 
   UploadResponse response;
-  client_.OnFileUploadRequested(kBrowserProcessId, false, {path},
-                                /*destination_url=*/GURL(),
-                                std::move(response.callback));
+  client_.OnFileUploadRequested(
+      network::OriginatingProcessId::browser(), false, {path},
+      /*destination_url=*/GURL(), std::move(response.callback));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(net::OK, response.error_code);
   ASSERT_EQ(1U, response.opened_files.size());

@@ -53,6 +53,13 @@ int32_t OriginatingProcessId::GetUnsafeValue() const {
                       : renderer_process_id().GetUnsafeValue();
 }
 
+// static
+OriginatingProcessId OriginatingProcessId::FromUnsafeValue(int32_t process_id) {
+  return process_id == kBrowserProcessId
+             ? OriginatingProcessId::browser()
+             : OriginatingProcessId::renderer(RendererProcessId(process_id));
+}
+
 void WriteIntoTracedValue(perfetto::TracedValue context,
                           const OriginatingProcessId& process) {
   // Implement in the legacy form of browser processes having a value of 0.

@@ -12,7 +12,7 @@ namespace content {
 // Helper method that NetworkContext::OnFileUploadRequested need to use for
 // their implementation.
 void NetworkContextOnFileUploadRequested(
-    int32_t process_id,
+    network::OriginatingProcessId process_id,
     bool async,
     const std::vector<base::FilePath>& file_paths,
     const GURL& destination_url,

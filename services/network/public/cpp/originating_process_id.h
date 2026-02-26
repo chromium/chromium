@@ -43,6 +43,9 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE) OriginatingProcessId {
   // TODO(crbug.com/379869738) Remove GetUnsafeValue.
   int32_t GetUnsafeValue() const;
 
+  // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+  static OriginatingProcessId FromUnsafeValue(int32_t process_id);
+
   explicit operator bool() const { return !is_null(); }
 
   friend auto operator<=>(const OriginatingProcessId&,

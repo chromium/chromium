@@ -319,7 +319,7 @@ class CONTENT_EXPORT StoragePartitionImpl
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver) override;
 
   // network::mojom::NetworkContextClient interface.
-  void OnFileUploadRequested(int32_t process_id,
+  void OnFileUploadRequested(const network::OriginatingProcessId& process_id,
                              bool async,
                              const std::vector<base::FilePath>& file_paths,
                              const GURL& destination_url,

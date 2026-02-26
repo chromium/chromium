@@ -13,7 +13,7 @@ PrefetchNetworkContextClient::PrefetchNetworkContextClient() = default;
 PrefetchNetworkContextClient::~PrefetchNetworkContextClient() = default;
 
 void PrefetchNetworkContextClient::OnFileUploadRequested(
-    int32_t process_id,
+    const network::OriginatingProcessId& process_id,
     bool async,
     const std::vector<base::FilePath>& file_paths,
     const GURL& destination_url,

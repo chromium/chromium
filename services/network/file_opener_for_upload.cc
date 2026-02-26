@@ -87,8 +87,10 @@ void FileOpenerForUpload::StartOpeningNextBatch() {
       paths_.begin() + opened_files_.size(),
       paths_.begin() + opened_files_.size() + num_files_to_request);
 
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   network_context_client_->OnFileUploadRequested(
-      process_id_, /*async=*/true, batch_paths, url_.get(),
+      OriginatingProcessId::FromUnsafeValue(process_id_), /*async=*/true,
+      batch_paths, url_.get(),
       base::BindOnce(&FileOpenerForUpload::OnFilesForUploadOpened,
                      weak_ptr_factory_.GetWeakPtr(), num_files_to_request));
 }

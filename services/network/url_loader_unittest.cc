@@ -3260,7 +3260,7 @@ TEST_F(URLLoaderTest, UploadFileWithoutNetworkServiceClient) {
 
 class CallbackSavingNetworkContextClient : public TestNetworkContextClient {
  public:
-  void OnFileUploadRequested(int32_t process_id,
+  void OnFileUploadRequested(const OriginatingProcessId& process_id,
                              bool async,
                              const std::vector<base::FilePath>& file_paths,
                              const GURL& destination_url,
