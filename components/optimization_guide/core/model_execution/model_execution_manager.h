@@ -39,7 +39,7 @@ class ModelExecutionManager final {
     virtual ~Delegate() = default;
 
     // Used to provide alternative fetcher implementations.
-    virtual std::unique_ptr<ModelExecutionFetcher> CreateLegionFetcher() = 0;
+    virtual std::unique_ptr<ModelExecutionFetcher> CreatePrivateAiFetcher() = 0;
   };
 
   ModelExecutionManager(

@@ -25,7 +25,7 @@ namespace {
 using ModelExecutionError =
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
-private_ai::proto::FeatureName ToLegionFeatureName(
+private_ai::proto::FeatureName ToPrivateAiFeatureName(
     ModelBasedCapabilityKey feature) {
   switch (feature) {
     case ModelBasedCapabilityKey::kZeroStateSuggestions:
@@ -58,9 +58,9 @@ OptimizationGuideModelExecutionError ToModelExecutionError(
 }  // namespace
 
 PrivateAiModelExecutionFetcher::PrivateAiModelExecutionFetcher(
-    private_ai::Client* legion_client)
-    : legion_client_(legion_client) {
-  CHECK(legion_client);
+    private_ai::Client* private_ai_client)
+    : private_ai_client_(private_ai_client) {
+  CHECK(private_ai_client);
 }
 
 PrivateAiModelExecutionFetcher::~PrivateAiModelExecutionFetcher() = default;
@@ -71,10 +71,10 @@ void PrivateAiModelExecutionFetcher::ExecuteModel(
     const google::protobuf::MessageLite& request_metadata,
     std::optional<base::TimeDelta> timeout,
     ModelExecuteResponseCallback callback) {
-  auto legion_feature_name = ToLegionFeatureName(feature);
+  auto private_ai_feature_name = ToPrivateAiFeatureName(feature);
 
   private_ai::proto::PaicMessage paic_message;
-  paic_message.set_feature_name(legion_feature_name);
+  paic_message.set_feature_name(private_ai_feature_name);
   *paic_message.mutable_execute_request_ext() =
       ToExecuteRequest(feature, request_metadata);
 
@@ -83,8 +83,8 @@ void PrivateAiModelExecutionFetcher::ExecuteModel(
     options.timeout = *timeout;
   }
 
-  legion_client_->SendPaicRequest(
-      legion_feature_name, paic_message,
+  private_ai_client_->SendPaicRequest(
+      private_ai_feature_name, paic_message,
       base::BindOnce(
           [](ModelBasedCapabilityKey feature,
              ModelExecuteResponseCallback callback,

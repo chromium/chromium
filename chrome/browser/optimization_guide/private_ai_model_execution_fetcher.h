@@ -21,7 +21,8 @@ namespace optimization_guide {
 
 class PrivateAiModelExecutionFetcher : public ModelExecutionFetcher {
  public:
-  explicit PrivateAiModelExecutionFetcher(private_ai::Client* legion_client);
+  explicit PrivateAiModelExecutionFetcher(
+      private_ai::Client* private_ai_client);
   ~PrivateAiModelExecutionFetcher() override;
 
   PrivateAiModelExecutionFetcher(const PrivateAiModelExecutionFetcher&) =
@@ -37,9 +38,9 @@ class PrivateAiModelExecutionFetcher : public ModelExecutionFetcher {
                     ModelExecuteResponseCallback callback) override;
 
  private:
-  // Unowned pointer to the legion client. The owner of this object needs
+  // Unowned pointer to the PrivateAI client. The owner of this object needs
   // to ensure that all fetchers are destroyed before the client.
-  raw_ptr<private_ai::Client> legion_client_;
+  raw_ptr<private_ai::Client> private_ai_client_;
 
   base::WeakPtrFactory<PrivateAiModelExecutionFetcher> weak_ptr_factory_{this};
 };

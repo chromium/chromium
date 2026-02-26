@@ -155,7 +155,7 @@ class FetcherDelegate : public ModelExecutionManager::Delegate {
   }
 
   std::unique_ptr<optimization_guide::ModelExecutionFetcher>
-  CreateLegionFetcher() override {
+  CreatePrivateAiFetcher() override {
     private_ai::PrivateAiService* private_ai_service =
         private_ai::PrivateAiServiceFactory::GetForProfile(
             Profile::FromBrowserContext(browser_context_));
