@@ -973,8 +973,11 @@ public class ChildProcessConnection {
         @ServiceNames int serviceName;
         String className = mFallbackServiceName.getClassName();
         if (mServiceName.getClassName().startsWith(NATIVE_SANDBOXED_SERVICE)) {
-            JavaExceptionReporter.reportException(
-                    new Throwable("Fallback from NativeOnlySandboxedProcessService"));
+            ThreadUtils.postOnUiThread(
+                    () ->
+                            JavaExceptionReporter.reportException(
+                                    new Throwable(
+                                            "Fallback from NativeOnlySandboxedProcessService")));
         }
         // Don't use the exact match because service names have a number as a suffix.
         if (className.startsWith(SANDBOXED_SERVICE)) {
