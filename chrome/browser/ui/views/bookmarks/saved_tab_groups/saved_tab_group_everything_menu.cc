@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -350,26 +349,16 @@ void STGEverythingMenu::ExecuteCommand(int command_id, int event_flags) {
 
     base::RecordAction(base::UserMetricsAction(
         "TabGroups_SavedTabGroups_OpenedFromEverythingMenu_2"));
-    TabGroupSyncService* tab_group_service =
+    TabGroupMenuAction action{TabGroupMenuAction::Type::OPEN_IN_BROWSER,
+                              group_id};
+    SavedTabGroupUtils::PerformTabGroupMenuAction(
+        action,
+        menu_context_ == MenuContext::kAppMenu
+            ? TabGroupMenuContext::APP_MENU
+            : TabGroupMenuContext::SAVED_TAB_GROUP_EVERYTHING_MENU,
+        browser_,
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-            browser_->profile());
-
-    bool will_open_shared_group = false;
-    if (std::optional<tab_groups::SavedTabGroup> saved_group =
-            tab_group_service->GetGroup(group_id)) {
-      will_open_shared_group = !saved_group->local_group_id().has_value() &&
-                               saved_group->is_shared_tab_group();
-    }
-
-    tab_group_service->OpenTabGroup(
-        group_id, std::make_unique<TabGroupActionContextDesktop>(
-                      browser_, OpeningSource::kOpenedFromRevisitUi));
-
-    if (will_open_shared_group) {
-      saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
-          saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::
-              kOpenedFromEverythingMenu);
-    }
+            browser_->profile()));
   }
 }
 

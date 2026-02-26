@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_drag_data.h"
@@ -544,10 +544,10 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::Uuid& id,
 
       base::RecordAction(
           base::UserMetricsAction("TabGroups_SavedTabGroups_Opened"));
-      tab_group_service_->OpenTabGroup(
-          group->saved_guid(), std::make_unique<TabGroupActionContextDesktop>(
-                                   browser_->GetBrowserForMigrationOnly(),
-                                   OpeningSource::kOpenedFromRevisitUi));
+      tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
+          browser_->GetBrowserForMigrationOnly(), group->saved_guid(),
+          OpeningSource::kOpenedFromRevisitUi);
+
       if (will_open_shared_group) {
         saved_tab_groups::metrics::RecordSharedTabGroupRecallType(
             saved_tab_groups::metrics::SharedTabGroupRecallTypeDesktop::

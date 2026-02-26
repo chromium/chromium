@@ -7,9 +7,11 @@
 #include <vector>
 
 #include "base/no_destructor.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -208,6 +210,31 @@ TEST_F(ProjectsPanelControllerTest, MoveTabGroupCallsService) {
       .Times(1);
 
   controller->MoveTabGroup(uuid, 2);
+}
+
+TEST_F(ProjectsPanelControllerTest, OpenTabGroupAutofocus) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTabGroupsFocusing,
+      {{"tab_groups_focusing_default_to_focused", "true"}});
+
+  auto controller = GetInitializedController();
+  const base::Uuid uuid =
+      base::Uuid::ParseLowercase("00000000-0000-0000-0000-000000000001");
+  auto local_group_id = tab_groups::TabGroupId::GenerateNew();
+
+  EXPECT_CALL(mock_tab_group_sync_service_,
+              OpenTabGroup(testing::Eq(uuid), testing::_))
+      .WillOnce(testing::Return(local_group_id));
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_interface;
+
+  // Verify that the browser's TabStripModel is accessed.
+  // The code should check for nullptr, so returning nullptr is fine here.
+  EXPECT_CALL(mock_browser_window_interface, GetTabStripModel())
+      .WillOnce(testing::Return(nullptr));
+
+  controller->OpenTabGroup(uuid, &mock_browser_window_interface);
 }
 
 class ProjectsPanelControllerObserverTest : public ProjectsPanelControllerTest {

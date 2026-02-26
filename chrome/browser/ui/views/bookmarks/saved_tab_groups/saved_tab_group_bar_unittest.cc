@@ -41,6 +41,9 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_utils.h"
 
@@ -58,12 +61,15 @@ const tab_groups::TabGroupColorId kNewColor = tab_groups::TabGroupColorId::kRed;
 
 class SavedTabGroupBarUnitTest : public TestWithBrowserView {
  public:
-  SavedTabGroupBarUnitTest() {
-    // TODO (crbug.com/406068322) the Messaging Service currently interferes
-    // with this test harness, it needs to be cleaned up.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{data_sharing::features::kDataSharingFeature},
-        {collaboration::features::kCollaborationMessaging});
+  SavedTabGroupBarUnitTest() : SavedTabGroupBarUnitTest(true) {}
+  explicit SavedTabGroupBarUnitTest(bool init_features) {
+    if (init_features) {
+      // TODO (crbug.com/406068322) the Messaging Service currently interferes
+      // with this test harness, it needs to be cleaned up.
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{data_sharing::features::kDataSharingFeature},
+          {collaboration::features::kCollaborationMessaging});
+    }
   }
 
   SavedTabGroupBar* saved_tab_group_bar() { return saved_tab_group_bar_.get(); }
@@ -207,7 +213,7 @@ class SavedTabGroupBarUnitTest : public TestWithBrowserView {
                                 &new_visual_data);
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<SavedTabGroupBar> saved_tab_group_bar_;
 
@@ -581,6 +587,51 @@ TEST_F(SavedTabGroupBarUnitTest, GroupLoadFromModelInOrder) {
             views::AsViewClass<SavedTabGroupButton>(children[1])->guid());
   EXPECT_EQ(uuid1,
             views::AsViewClass<SavedTabGroupButton>(children[2])->guid());
+}
+class SavedTabGroupBarAutofocusTest : public SavedTabGroupBarUnitTest {
+ public:
+  SavedTabGroupBarAutofocusTest() : SavedTabGroupBarUnitTest(false) {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kTabGroupsFocusing,
+          {{"tab_groups_focusing_default_to_focused", "true"}}},
+         {data_sharing::features::kDataSharingFeature, {}}},
+        {collaboration::features::kCollaborationMessaging});
+  }
+};
+
+TEST_F(SavedTabGroupBarAutofocusTest, OnTabGroupButtonPressedAutofocus) {
+  // Add a group.
+  tab_groups::TabGroupId local_id = CreateNewGroupInBrowser();
+  base::Uuid sync_id = EnforceGroupSaved(
+      SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(local_id));
+  Wait();
+
+  SavedTabGroupButton* button = nullptr;
+  for (SavedTabGroupButton* b :
+       saved_tab_group_bar()->GetSavedTabGroupButtons()) {
+    if (b->guid() == sync_id) {
+      button = b;
+      break;
+    }
+  }
+  ASSERT_TRUE(button);
+
+  // Focus should be empty initially.
+  EXPECT_FALSE(browser()->tab_strip_model()->GetFocusedGroup().has_value());
+
+  // Press the button.
+  // Open the tab group.
+  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
+                       ui::EF_LEFT_MOUSE_BUTTON);
+  saved_tab_group_bar()->OnTabGroupButtonPressed(sync_id, event);
+  Wait();
+
+  // Verify the group is focused.
+  std::optional<tab_groups::TabGroupId> focused_group =
+      browser()->tab_strip_model()->GetFocusedGroup();
+  ASSERT_TRUE(focused_group.has_value());
+  EXPECT_EQ(focused_group.value(), local_id);
 }
 
 }  // namespace tab_groups

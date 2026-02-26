@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/data_sharing/collaboration_controller_delegate_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
@@ -453,6 +454,44 @@ void SavedTabGroupUtils::ToggleGroupPinState(
 }
 
 // static
+std::optional<tab_groups::LocalTabGroupID>
+SavedTabGroupUtils::OpenSavedTabGroup(BrowserWindowInterface* browser,
+                                      const base::Uuid& saved_group_guid,
+                                      OpeningSource opening_source,
+                                      TabGroupSyncService* tab_group_service) {
+  if (!tab_group_service) {
+    if (!browser) {
+      return std::nullopt;
+    }
+    tab_group_service =
+        TabGroupSyncServiceFactory::GetForProfile(browser->GetProfile());
+    if (!tab_group_service) {
+      return std::nullopt;
+    }
+  }
+
+  Browser* browser_ptr =
+      browser ? browser->GetBrowserForMigrationOnly() : nullptr;
+
+  std::optional<LocalTabGroupID> opened_group_id =
+      tab_group_service->OpenTabGroup(
+          saved_group_guid, std::make_unique<TabGroupActionContextDesktop>(
+                                browser_ptr, opening_source));
+
+  if (opened_group_id.has_value() &&
+      base::FeatureList::IsEnabled(features::kTabGroupsFocusing) &&
+      features::kTabGroupsFocusingDefaultToFocused.Get()) {
+    if (browser) {
+      if (auto* model = browser->GetTabStripModel()) {
+        model->SetFocusedGroup(opened_group_id.value());
+      }
+    }
+  }
+
+  return opened_group_id;
+}
+
+// static
 SavedTabGroupTab SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
     content::WebContents* contents,
     base::Uuid saved_tab_group_id) {
@@ -836,9 +875,7 @@ void SavedTabGroupUtils::PerformTabGroupMenuAction(
                                  saved_group->is_shared_tab_group();
       }
 
-      tab_group_service->OpenTabGroup(
-          uuid, std::make_unique<TabGroupActionContextDesktop>(
-                    browser, OpeningSource::kOpenedFromRevisitUi));
+      OpenSavedTabGroup(browser, uuid, OpeningSource::kOpenedFromRevisitUi);
 
       if (will_open_shared_group) {
         RecordOpenSharedGroupMetrics(context);

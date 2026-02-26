@@ -119,6 +119,9 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // groups opens the group into the tab strip.
   void ShowEverythingMenu();
 
+  // The callback that the button calls when clicked by a user.
+  void OnTabGroupButtonPressed(const base::Uuid& id, const ui::Event& event);
+
  private:
   // Adds the saved group denoted by `guid` as a button in the
   // `SavedTabGroupBar` if the `guid` exists in `saved_tab_group_model_`.
@@ -158,8 +161,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Returns the index of the group.
   std::optional<size_t> GetIndexOfGroup(const base::Uuid& guid) const;
 
-  // The callback that the button calls when clicked by a user.
-  void OnTabGroupButtonPressed(const base::Uuid& id, const ui::Event& event);
 
   // Creates the overflow button that houses saved tab groups that are not
   // visible in the SavedTabGroupBar.

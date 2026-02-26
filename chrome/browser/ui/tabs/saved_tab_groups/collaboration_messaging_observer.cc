@@ -9,13 +9,11 @@
 #include "base/uuid.h"
 #include "chrome/browser/collaboration/collaboration_service_factory.h"
 #include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
-#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
 #include "chrome/browser/ui/tabs/tab_group_features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -300,15 +298,10 @@ void CollaborationMessagingObserver::ManageSharingForCurrentInstantMessage(
     if (!sync_tab_group_id.has_value()) {
       return;
     }
-    auto* tab_group_service =
-        TabGroupSyncServiceFactory::GetForProfile(profile_);
-    CHECK(tab_group_service);
     std::optional<LocalTabGroupID> opened_group_id =
-        tab_group_service->OpenTabGroup(
-            sync_tab_group_id.value(),
-            std::make_unique<TabGroupActionContextDesktop>(
-                current_browser_window_interface->GetBrowserForMigrationOnly(),
-                OpeningSource::kOpenedFromToastAction));
+        tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
+            current_browser_window_interface->GetBrowserForMigrationOnly(),
+            sync_tab_group_id.value(), OpeningSource::kOpenedFromToastAction);
     if (!opened_group_id) {
       return;
     }

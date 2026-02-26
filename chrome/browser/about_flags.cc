@@ -2286,9 +2286,16 @@ const FeatureEntry::FeatureVariation kNumSrpZpsRelatedSearches[] = {
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kTabGroupsFocusingPinnedTabs[] = {
     {"tab_groups_focusing_pinned_tabs", "true"}};
+const FeatureEntry::FeatureParam kTabGroupsFocusingDefaultToFocusedOnly[] = {
+    {"tab_groups_focusing_default_to_focused", "true"}};
+const FeatureEntry::FeatureParam kTabGroupsFocusingAll[] = {
+    {"tab_groups_focusing_pinned_tabs", "true"},
+    {"tab_groups_focusing_default_to_focused", "true"}};
 
 const FeatureEntry::FeatureVariation kTabGroupsFocusingVariations[] = {
     {" - show pinned tabs", kTabGroupsFocusingPinnedTabs},
+    {" - autofocus opened groups only", kTabGroupsFocusingDefaultToFocusedOnly},
+    {" - autofocus and show pinned tabs", kTabGroupsFocusingAll},
 };
 #endif
 

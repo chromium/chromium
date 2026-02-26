@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/incognito_allowed_url.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -437,10 +436,9 @@ void DoOpen(Browser* browser,
 
       // Open existing group and replace existing tabs with the new ones.
       std::optional<tab_groups::TabGroupId> existing_group_id =
-          tab_group_sync_service->OpenTabGroup(
-              connected_group_id.value(),
-              std::make_unique<tab_groups::TabGroupActionContextDesktop>(
-                  browser, tab_groups::OpeningSource::kConnectOnGroupShare));
+          tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
+              browser, connected_group_id.value(),
+              tab_groups::OpeningSource::kConnectOnGroupShare);
 
       if (!existing_group_id.has_value()) {
         return;
@@ -454,6 +452,7 @@ void DoOpen(Browser* browser,
         existing_tabs_in_group.push_back(model->GetWebContentsAt(index));
       }
       model->AddToExistingGroup(tab_indices, existing_group_id.value());
+
       for (content::WebContents* existing_tab : existing_tabs_in_group) {
         model->CloseWebContentsAt(model->GetIndexOfWebContents(existing_tab),
                                   TabCloseTypes::CLOSE_NONE);

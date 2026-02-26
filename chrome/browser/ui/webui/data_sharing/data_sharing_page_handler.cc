@@ -11,7 +11,8 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -105,6 +106,15 @@ void DataSharingPageHandler::GetTabGroupPreview(
 }
 
 void DataSharingPageHandler::OpenTabGroup(const std::string& group_id) {
+  Browser* browser =
+      chrome::FindBrowserWithTab(webui_controller_->web_ui()->GetWebContents());
+  if (!browser) {
+    return;
+  }
+
+  tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
+      browser, base::Uuid::ParseLowercase(group_id),
+      tab_groups::OpeningSource::kUnknown);
 }
 
 void DataSharingPageHandler::AboutToUnShareTabGroup(

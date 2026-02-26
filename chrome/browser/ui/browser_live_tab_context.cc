@@ -32,11 +32,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -323,10 +321,9 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
       }
     } else {
       // Open the group in this browser if it is closed.
-      group_id = tab_group_service->OpenTabGroup(
-          saved_group_id.value(),
-          std::make_unique<tab_groups::TabGroupActionContextDesktop>(
-              browser, tab_groups::OpeningSource::kOpenedFromTabRestore));
+      group_id = tab_groups::SavedTabGroupUtils::OpenSavedTabGroup(
+          browser, saved_group_id.value(),
+          tab_groups::OpeningSource::kOpenedFromTabRestore);
     }
 
     if (is_restoring_group_or_window) {

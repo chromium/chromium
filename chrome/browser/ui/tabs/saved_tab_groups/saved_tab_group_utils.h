@@ -23,6 +23,7 @@
 #include "url/gurl.h"
 
 class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -74,6 +75,14 @@ class SavedTabGroupUtils {
   // it's pinned.
   static void ToggleGroupPinState(Browser* browser,
                                   const base::Uuid& saved_group_guid);
+
+  // Opens a saved tab group and optionally focuses it if the appropriate
+  // feature is enabled.
+  static std::optional<tab_groups::LocalTabGroupID> OpenSavedTabGroup(
+      BrowserWindowInterface* browser,
+      const base::Uuid& saved_group_guid,
+      OpeningSource opening_source,
+      TabGroupSyncService* tab_group_service = nullptr);
 
   // Helper method to show the deletion dialog, if its needed. It either
   // runs the callback if the dialog is not shown or it shows the dialog
