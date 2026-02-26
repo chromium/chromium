@@ -342,8 +342,21 @@ class TRIVIAL_ABI scoped_refptr {
     return lhs.ptr_ <=> rhs.get();
   }
 
+  // This operator is an optimization to avoid implicitly constructing a
+  // scoped_refptr<U> when comparing scoped_refptr against raw pointer. If the
+  // implicit conversion is ever removed this operator can also be removed.
+  template <typename U>
+  friend auto operator<=>(const scoped_refptr<T>& lhs, const U* rhs) {
+    return lhs.ptr_ <=> rhs;
+  }
+
   friend auto operator<=>(const scoped_refptr<T>& lhs, std::nullptr_t null) {
     return lhs.ptr_ <=> static_cast<T*>(nullptr);
+  }
+
+  template <typename H>
+  friend H AbslHashValue(H h, const scoped_refptr<T>& p) {
+    return H::combine(std::move(h), p.ptr_);
   }
 
  protected:

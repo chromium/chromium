@@ -305,12 +305,33 @@ TEST(RefCountedUnitTest, ConvertibleEquality) {
   scoped_refptr<SelfAssign> p2;
 
   EXPECT_NE(p1, p2);
+  EXPECT_NE(p1.get(), p2);
+  EXPECT_NE(p1, p2.get());
   EXPECT_NE(p2, p1);
+  EXPECT_NE(p2.get(), p1);
+  EXPECT_NE(p2, p1.get());
 
   p2 = p1;
 
   EXPECT_EQ(p1, p2);
+  EXPECT_EQ(p1.get(), p2);
+  EXPECT_EQ(p1, p2.get());
   EXPECT_EQ(p2, p1);
+  EXPECT_EQ(p2.get(), p1);
+  EXPECT_EQ(p2, p1.get());
+}
+
+TEST(RefCountedUnitTest, ConvertibleOrdering) {
+  scoped_refptr<Derived> p1(new Derived);
+  scoped_refptr<SelfAssign> p2;
+
+  EXPECT_LT(p2, p1);
+  EXPECT_LT(p2.get(), p1);
+  EXPECT_LT(p2, p1.get());
+
+  EXPECT_GT(p1, p2);
+  EXPECT_GT(p1.get(), p2);
+  EXPECT_GT(p1, p2.get());
 }
 
 TEST(RefCountedUnitTest, MoveAssignment1) {
