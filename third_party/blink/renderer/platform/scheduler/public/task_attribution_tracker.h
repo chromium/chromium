@@ -153,7 +153,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   //
   // Note: This returns std::nullopt if a v8::Context was entered before calling
   // this, so care must be taken about ordering.
-  virtual std::optional<TaskScope> SetCurrentTaskStateIfTopLevel(
+  [[nodiscard]] virtual std::optional<TaskScope> SetCurrentTaskStateIfTopLevel(
       TaskAttributionInfo* task_state,
       TaskScopeType type) = 0;
 
@@ -164,8 +164,9 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // This should only be used for prioritized tasks associated with web
   // scheduling APIs (scheduler.postTask() and requestIdleCallback()), and this
   // is not allowed to be called with JavaScript on the stack.
-  virtual TaskScope SetCurrentTaskState(WebSchedulingTaskState* task_state,
-                                        TaskScopeType type) = 0;
+  [[nodiscard]] virtual TaskScope SetCurrentTaskState(
+      WebSchedulingTaskState* task_state,
+      TaskScopeType type) = 0;
 
   // Initiates propagation of the given `SoftNavigationContext`, which will be
   // propagated to (promise) continuations and through async APIs participating
@@ -174,9 +175,11 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   //
   // This is used to set an individual `TaskAttributionInfo` variable, forking
   // the existing `CurrentTaskState()` if necessary.
-  virtual TaskScope SetTaskStateVariable(SoftNavigationContext*) = 0;
+  [[nodiscard]] virtual TaskScope SetTaskStateVariable(
+      SoftNavigationContext*) = 0;
   // Similarly, initiates propagation of the given `ResourceTimingContext`.
-  virtual TaskScope SetTaskStateVariable(ResourceTimingContext*) = 0;
+  [[nodiscard]] virtual TaskScope SetTaskStateVariable(
+      ResourceTimingContext*) = 0;
 
   // Get the `TaskAttributionInfo` for the currently running task.
   virtual TaskAttributionInfo* CurrentTaskState() const = 0;

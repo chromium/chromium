@@ -290,9 +290,8 @@ SoftNavigationHeuristics::GetSoftNavigationContextForCurrentTask() const {
 
 void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     const String& url,
-    base::UnguessableToken same_document_metrics_token,
-    SoftNavigationContext* context) {
-  context = EnsureContextForCurrentWindow(context);
+    base::UnguessableToken same_document_metrics_token) {
+  SoftNavigationContext* context = GetSoftNavigationContextForCurrentTask();
   if (!context && !context_for_current_url_) {
     // If we don't have a context for this task, and we haven't had a context
     // for a recent URL change, then this URL change is not a soft-navigation.

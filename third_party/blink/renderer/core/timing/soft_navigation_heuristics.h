@@ -105,10 +105,15 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   void Shutdown();
 
+  // Called by the navigation stack when a same-document navigation has been
+  // committed and the URL has changed. Can be called from a synchronous
+  // navigation, e.g. pushState(), or an async navigation, e.g. a history.back()
+  // continuation. In either case, the appropriate TaskAttribution task state
+  // will be set before this is called.
   void SameDocumentNavigationCommitted(
       const String& url,
-      base::UnguessableToken same_document_metrics_token,
-      SoftNavigationContext*);
+      base::UnguessableToken same_document_metrics_token);
+
   bool ModifiedDOM(Node* node);
   uint64_t SoftNavigationCount() { return soft_navigation_count_; }
 

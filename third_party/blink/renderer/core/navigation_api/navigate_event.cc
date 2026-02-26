@@ -493,8 +493,7 @@ void NavigateEvent::CommitNow(ScriptState* script_state) {
       state_object, ToWebFrameLoadType(navigation_type_), fire_popstate,
       dispatch_params_->should_skip_screenshot,
       dispatch_params_->is_browser_initiated,
-      dispatch_params_->is_synchronously_committed_same_document,
-      dispatch_params_->soft_navigation_heuristics_task_id);
+      dispatch_params_->is_synchronously_committed_same_document);
 
   React(script_state);
 }

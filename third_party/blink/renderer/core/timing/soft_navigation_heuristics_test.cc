@@ -172,15 +172,12 @@ TEST_F(SoftNavigationHeuristicsTest, EventAfterSoftNavDetection) {
   auto* tracker = scheduler::TaskAttributionTracker::From(GetIsolate());
   ASSERT_TRUE(tracker);
 
-  auto* context = tracker->CurrentTaskState()->GetSoftNavigationContext();
-  ASSERT_TRUE(context);
   heuristics->ModifiedDOM(CreateNodeForTest());
 
   // Simulate default action link navigation after the click event.
   heuristics->SameDocumentNavigationCommitted(
       "foo",
-      /*same_document_metrics_token=*/base::UnguessableToken::Create(),
-      context);
+      /*same_document_metrics_token=*/base::UnguessableToken::Create());
   {
     auto* inner_event =
         CreateEvent(SoftNavigationHeuristics::EventScope::Type::kNavigate);
@@ -253,8 +250,7 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
     EXPECT_FALSE(context->SatisfiesSoftNavNonPaintCriteria());
     heuristics->SameDocumentNavigationCommitted(
         "foo.html",
-        /*same_document_metrics_token=*/base::UnguessableToken::Create(),
-        context);
+        /*same_document_metrics_token=*/base::UnguessableToken::Create());
     heuristics->ModifiedDOM(node1);
     EXPECT_FALSE(context->SatisfiesSoftNavNonPaintCriteria());
     // UrlChangeTime and TimeOrigin are equal, while ProcessingEnd is
@@ -291,8 +287,7 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
     EXPECT_EQ(tracker->CurrentTaskState()->GetSoftNavigationContext(), context);
     heuristics->SameDocumentNavigationCommitted(
         "bar.html",
-        /*same_document_metrics_token=*/base::UnguessableToken::Create(),
-        context);
+        /*same_document_metrics_token=*/base::UnguessableToken::Create());
     heuristics->ModifiedDOM(node2);
   }
 
@@ -350,11 +345,6 @@ TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigation) {
   }
   ASSERT_TRUE(navigation_task_id);
 
-  // Simulate committing the same-document navigation asynchronously.
-  task_state = tracker->CommitSameDocumentNavigation(*navigation_task_id);
-  ASSERT_TRUE(task_state);
-  EXPECT_EQ(task_state->GetSoftNavigationContext(), context);
-
   EXPECT_FALSE(context->HasUrl());
   // Earlier, the EventScope instance for the input event was destroyed,
   // which meant that the processing finished and the time origin
@@ -364,17 +354,26 @@ TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigation) {
   EXPECT_FALSE(context->TimeOrigin().is_null());
   EXPECT_TRUE(context->UrlChangeTime().is_null());
   EXPECT_EQ(context->TimeOrigin(), context->ProcessingEnd());
-  heuristics->SameDocumentNavigationCommitted(
-      "foo.html",
-      /*same_document_metrics_token=*/base::UnguessableToken::Create(),
-      context);
-  EXPECT_TRUE(context->HasUrl());
-  // UrlChangeTime is after ProcessingEnd and TimeOrigin, which are equal.
-  EXPECT_FALSE(context->UrlChangeTime().is_null());
-  EXPECT_FALSE(context->TimeOrigin().is_null());
-  EXPECT_FALSE(context->ProcessingEnd().is_null());
-  EXPECT_EQ(context->TimeOrigin(), context->ProcessingEnd());
-  EXPECT_GT(context->UrlChangeTime(), context->TimeOrigin());
+
+  // Simulate committing the same-document navigation asynchronously.
+  {
+    task_state = tracker->CommitSameDocumentNavigation(*navigation_task_id);
+    ASSERT_TRUE(task_state);
+    EXPECT_EQ(task_state->GetSoftNavigationContext(), context);
+    std::optional<scheduler::TaskAttributionTracker::TaskScope> task_scope(
+        tracker->SetCurrentTaskStateIfTopLevel(task_state,
+                                               TaskScopeType::kPopState));
+    heuristics->SameDocumentNavigationCommitted(
+        "foo.html",
+        /*same_document_metrics_token=*/base::UnguessableToken::Create());
+    EXPECT_TRUE(context->HasUrl());
+    // UrlChangeTime is after ProcessingEnd and TimeOrigin, which are equal.
+    EXPECT_FALSE(context->UrlChangeTime().is_null());
+    EXPECT_FALSE(context->TimeOrigin().is_null());
+    EXPECT_FALSE(context->ProcessingEnd().is_null());
+    EXPECT_EQ(context->TimeOrigin(), context->ProcessingEnd());
+    EXPECT_GT(context->UrlChangeTime(), context->TimeOrigin());
+  }
 }
 
 TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigationNoContext) {
@@ -395,8 +394,7 @@ TEST_F(SoftNavigationHeuristicsTest, AsyncSameDocumentNavigationNoContext) {
   // `SoftNavigationContext`. This shouldn't crash.
   heuristics->SameDocumentNavigationCommitted(
       "foo.html",
-      /*same_document_metrics_token=*/base::UnguessableToken::Create(),
-      /*context=*/nullptr);
+      /*same_document_metrics_token=*/base::UnguessableToken::Create());
 }
 
 TEST_F(SoftNavigationHeuristicsTest, MaybeCreateEventScopeForInputEvent) {
