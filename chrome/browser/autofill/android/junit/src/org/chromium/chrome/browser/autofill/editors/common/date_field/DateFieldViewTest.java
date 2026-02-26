@@ -63,9 +63,14 @@ public class DateFieldViewTest {
     public void testEmptyInitialValue() {
         mDateFieldView = new DateFieldView(mActivity, /* value= */ "");
         assertEquals(
-                "Month", mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
-        assertEquals("Day", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
-        assertEquals("Year", mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
+                mActivity.getString(R.string.autofill_ai_entity_editor_date_field_month_label),
+                mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
+        assertEquals(
+                mActivity.getString(R.string.autofill_ai_entity_editor_date_field_day_label),
+                mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
+        assertEquals(
+                mActivity.getString(R.string.autofill_ai_entity_editor_date_field_year_label),
+                mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
     }
 
     @Test
@@ -102,7 +107,9 @@ public class DateFieldViewTest {
         mDateFieldView.setValue("1810-12-12");
         assertEquals("Dec", mDateFieldView.getMonthPickerForTest().getDropdown().getSelectedItem());
         assertEquals("12", mDateFieldView.getDayPickerForTest().getDropdown().getSelectedItem());
-        assertEquals("Year", mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
+        assertEquals(
+                mActivity.getString(R.string.autofill_ai_entity_editor_date_field_year_label),
+                mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItem());
         // Make sure the hint is selected by checking the the selected item position is 0.
         assertEquals(
                 0, mDateFieldView.getYearPickerForTest().getDropdown().getSelectedItemPosition());

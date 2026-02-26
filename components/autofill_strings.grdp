@@ -1275,6 +1275,15 @@
     <message name="IDS_AUTOFILL_AI_WALLET_ENTITY_EDITOR_SOURCE_NOTICE" desc="The footer message in the editor dialog informing the user that their data will be stored in the Google Wallet." formatter_data="android_java">
       Your info gets saved to Google Wallet for <ph name="ACCOUNT">$1<ex>elisa.beckett@gmail.com</ex></ph>. You can use it across Google services to fill forms faster.
     </message>
+    <message name="IDS_AUTOFILL_AI_ENTITY_EDITOR_DATE_FIELD_MONTH_LABEL" desc="The default value in the date field month picker in the editor dialog." formatter_data="android_java">
+      Month
+    </message>
+    <message name="IDS_AUTOFILL_AI_ENTITY_EDITOR_DATE_FIELD_DAY_LABEL" desc="The default value in the date field day picker in the editor dialog." formatter_data="android_java">
+      Day
+    </message>
+    <message name="IDS_AUTOFILL_AI_ENTITY_EDITOR_DATE_FIELD_YEAR_LABEL" desc="The default value in the date field year picker in the editor dialog." formatter_data="android_java">
+      Year
+    </message>
   </if>
 
   <!-- FFR Dialog -->

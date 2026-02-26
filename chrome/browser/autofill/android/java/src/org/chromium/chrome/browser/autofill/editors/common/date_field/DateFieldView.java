@@ -60,7 +60,10 @@ public class DateFieldView extends LinearLayout implements FieldView {
         PropertyModel monthModel =
                 new PropertyModel.Builder(DropdownFieldProperties.DROPDOWN_ALL_KEYS)
                         .with(DROPDOWN_KEY_VALUE_LIST, getMonthDropdownValues())
-                        .with(DROPDOWN_HINT, "Month")
+                        .with(
+                                DROPDOWN_HINT,
+                                context.getString(
+                                        R.string.autofill_ai_entity_editor_date_field_month_label))
                         .with(IS_REQUIRED, false)
                         .with(LABEL, "")
                         .with(VALUE, monthValue)
@@ -69,7 +72,10 @@ public class DateFieldView extends LinearLayout implements FieldView {
         PropertyModel dayModel =
                 new PropertyModel.Builder(DropdownFieldProperties.DROPDOWN_ALL_KEYS)
                         .with(DROPDOWN_KEY_VALUE_LIST, getDayDropdownValues())
-                        .with(DROPDOWN_HINT, "Day")
+                        .with(
+                                DROPDOWN_HINT,
+                                context.getString(
+                                        R.string.autofill_ai_entity_editor_date_field_day_label))
                         .with(IS_REQUIRED, false)
                         .with(LABEL, "")
                         .with(VALUE, dayValue)
@@ -79,7 +85,8 @@ public class DateFieldView extends LinearLayout implements FieldView {
         // [X - 90; X + 15] range where X is the current year. The entity attribute's date value can
         // exceed this range. In this case, the year value is used as a hint.
         String yearValue = "";
-        String yearHint = "Year";
+        String yearHint =
+                context.getString(R.string.autofill_ai_entity_editor_date_field_year_label);
         if (date != null) {
             if (yearWithinLimits(date.getYear())) {
                 yearValue = String.valueOf(date.getYear());
