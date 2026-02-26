@@ -25518,6 +25518,8 @@ Called by update_net_error_codes.py.-->
   <int value="23"
       label="Opened Customize Chrome from the New Tab Page automatically"/>
   <int value="24" label="Opened from Read Anything omnibox chip"/>
+  <int value="25"
+      label="Opened from Immersive Reading Mode toggle presentation button"/>
 </enum>
 
 <enum name="SignedExchangeLoadResult">
