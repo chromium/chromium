@@ -471,22 +471,14 @@ void HangWatcher::InitializeOnMainThread(ProcessType process_type,
   // Retrieve thread-specific config for hang watching.
   if (process_type == HangWatcher::ProcessType::kBrowserProcess) {
     // Crashes are set to always emit. Override any feature flags.
-    if (emit_crashes) {
-      g_io_thread_log_level.store(
-          static_cast<LoggingLevel>(LoggingLevel::kUmaAndCrash),
-          std::memory_order_relaxed);
-      g_main_thread_log_level.store(
-          static_cast<LoggingLevel>(LoggingLevel::kUmaAndCrash),
-          std::memory_order_relaxed);
-    } else {
-      g_io_thread_log_level.store(
-          static_cast<LoggingLevel>(kIOThreadLogLevel.Get()),
-          std::memory_order_relaxed);
-      g_main_thread_log_level.store(
-          static_cast<LoggingLevel>(kUIThreadLogLevel.Get()),
-          std::memory_order_relaxed);
-    }
-
+    g_io_thread_log_level.store(
+        emit_crashes ? LoggingLevel::kUmaAndCrash
+                     : static_cast<LoggingLevel>(kIOThreadLogLevel.Get()),
+        std::memory_order_relaxed);
+    g_main_thread_log_level.store(
+        emit_crashes ? LoggingLevel::kUmaAndCrash
+                     : static_cast<LoggingLevel>(kUIThreadLogLevel.Get()),
+        std::memory_order_relaxed);
     g_threadpool_log_level.store(
         static_cast<LoggingLevel>(kThreadPoolLogLevel.Get()),
         std::memory_order_relaxed);
