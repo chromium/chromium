@@ -755,7 +755,7 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1504253885059472207">Épingler la vue fractionnée</translation>
 <translation id="1504551620756424144">Les dossiers partagés sont disponibles sous Windows dans <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">d'exporter les mots de passe</translation>
-<translation id="1505654899813338756">Vous pouvez regrouper des onglets pour rassembler des pages similaires et les enregistrer sur vos différents appareils</translation>
+<translation id="1505654899813338756">Regroupez les onglets pour rassembler des pages similaires et les enregistrer sur vos différents appareils</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
 <translation id="1506187449813838456">Lire un ton plus haut</translation>
 <translation id="1507170440449692343">L'accès à votre caméra est bloqué pour cette page</translation>
@@ -9808,7 +9808,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="7697109152153663933">Cliquez sur "Mots de passe et saisie automatique"</translation>
 <translation id="769824636077131955">Impossible de vérifier si ce document est sûr, car il est trop volumineux. Vous ne pouvez pas imprimer de documents de plus de 50 Mo.</translation>
 <translation id="7698507637739331665">Certains éléments sont bloqués</translation>
-<translation id="7700176975240938448">Ouvrez facilement Gemini avec <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
+<translation id="7700176975240938448">Ouvrez-le facilement avec <ph name="FOCUS_TOGGLE_HOTKEY" /></translation>
 <translation id="7700516433658473670">Imprimantes et scanners</translation>
 <translation id="7700873336634517379">Non, continuer à utiliser ce profil pour l'école</translation>
 <translation id="7701040980221191251">Désactivé</translation>

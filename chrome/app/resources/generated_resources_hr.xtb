@@ -669,7 +669,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="144518587530125858">Nije uspjelo učitavanje putanje "<ph name="IMAGE_PATH" />" za temu.</translation>
 <translation id="1445330076053050041">Odaberite radnju za tipku <ph name="KEY_NAME" /></translation>
 <translation id="1447531650545977377">Uključite &amp;sinkronizaciju...</translation>
-<translation id="1447895950459090752">Zadržavanje lebdeće kartice pregleda</translation>
+<translation id="1447895950459090752">Lebdeća kartica pregleda</translation>
 <translation id="1448264954024227422">Ovaj račun možete koristiti s Android aplikacijama. Ako želite dodati račun za nekog drugog, umjesto toga <ph name="LINK_BEGIN" />dodajte novu osobu<ph name="LINK_END" /> na svoj <ph name="DEVICE_TYPE" />.
 
 Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. Dopuštenjima za Android aplikacije možete upravljati u <ph name="APPS_LINK_BEGIN" />postavkama aplikacija<ph name="APPS_LINK_END" />.</translation>
@@ -4502,7 +4502,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3995138139523574647">USB-C uređaj (stražnji desni priključak)</translation>
 <translation id="3995963973192100066">Reproduciraj animaciju</translation>
 <translation id="399788104667917863">Prikvači na alatnu traku</translation>
-<translation id="3998780825367526465">Prikaži slike pregleda kartice</translation>
+<translation id="3998780825367526465">Prikaži slike na pregledu kartice</translation>
 <translation id="3998976413398910035">Upravljajte pisačima</translation>
 <translation id="4000360130639414007">Nećete moći upotrebljavati Android aplikacije i Trgovinu Google Play</translation>
 <translation id="4001540981461989979">Isticanje pokazivača miša prilikom kretanja</translation>

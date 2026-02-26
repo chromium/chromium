@@ -20,7 +20,7 @@
 <translation id="10614374240317010">Nunca guardadas</translation>
 <translation id="1062138828266376352">O PIN não foi alterado. Verifique a ligação à Internet e tente novamente</translation>
 <translation id="1063070031224282617">Escolha onde guardar "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
-<translation id="1063300264396686489">Abra automaticamente grupos de separadores de outros dispositivos</translation>
+<translation id="1063300264396686489">Abrir automaticamente grupos de separadores de outros dispositivos</translation>
 <translation id="1072476005125066234">Críticas com base nos seus interesses</translation>
 <translation id="1072679792409426431">Desativado pelo seu administrador</translation>
 <translation id="1074827084851510304">Está prestes a eliminar {password_count} palavras-passe e a lista de sites e apps para os quais optou por nunca guardar o início de sessão. As contas que criou para sites e apps não são eliminadas.</translation>
