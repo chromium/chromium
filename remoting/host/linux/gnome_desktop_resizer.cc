@@ -162,6 +162,19 @@ void GnomeDesktopResizer::SetResolution(const ScreenResolution& resolution,
                                         webrtc::ScreenId screen_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (block_and_queue_display_changes_) {
+    pending_requests_.push_back(
+        base::BindOnce(&GnomeDesktopResizer::DoSetResolution,
+                       weak_ptr_factory_.GetWeakPtr(), resolution, screen_id));
+  } else {
+    DoSetResolution(resolution, screen_id);
+  }
+}
+
+void GnomeDesktopResizer::DoSetResolution(const ScreenResolution& resolution,
+                                          webrtc::ScreenId screen_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Sometimes the client will send multiple SetResolution requests. The display
   // layout will become horizontal start-aligned after
   // SetResolutionAndPosition(), so we only set the preferred layout if it
@@ -182,6 +195,22 @@ void GnomeDesktopResizer::RestoreResolution(const ScreenResolution& original,
 }
 
 void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (block_and_queue_display_changes_) {
+    // We can clear the pending requests since all the previous
+    // SetResolution/SetVideoLayout calls will become irrelevant.
+    pending_requests_.clear();
+    pending_requests_.push_back(
+        base::BindOnce(&GnomeDesktopResizer::DoSetVideoLayout,
+                       weak_ptr_factory_.GetWeakPtr(), layout));
+  } else {
+    DoSetVideoLayout(layout);
+  }
+}
+
+void GnomeDesktopResizer::DoSetVideoLayout(
+    const protocol::VideoLayout& layout) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!stream_manager_) {
@@ -307,6 +336,20 @@ void GnomeDesktopResizer::SetVideoLayout(const protocol::VideoLayout& layout) {
 
 base::WeakPtr<GnomeDesktopResizer> GnomeDesktopResizer::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void GnomeDesktopResizer::BlockAndQueueDisplayChanges() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  block_and_queue_display_changes_ = true;
+}
+
+void GnomeDesktopResizer::UnblockAndFlushDisplayChanges() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  block_and_queue_display_changes_ = false;
+  for (auto& request : pending_requests_) {
+    std::move(request).Run();
+  }
+  pending_requests_.clear();
 }
 
 void GnomeDesktopResizer::SetResolutionAndPosition(

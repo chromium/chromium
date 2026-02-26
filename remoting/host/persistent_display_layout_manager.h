@@ -41,17 +41,15 @@ class PersistentDisplayLayoutManager {
   // Reads and applies any previously stored display layouts, from
   // `display_layout_file_path`, then starts monitoring display layout changes
   // and writing them back to `display_layout_file_path`.
-  // If no file exists at `display_layout_file_path`, or it fails to be read,
-  // `default_layout` will be applied.
-  void Start(std::unique_ptr<protocol::VideoLayout> default_layout);
+  // No-op if no file exists at `display_layout_file_path`, or it fails to be
+  // read.
+  void Start();
 
  private:
   void OnDisplayLayoutFileLoaded(
-      std::unique_ptr<protocol::VideoLayout> default_layout,
       base::FileErrorOr<std::string> load_file_result);
   void OnDisplayInfoReceived();
   void ApplyDisplayLayout(
-      std::unique_ptr<protocol::VideoLayout> default_layout,
       const base::FileErrorOr<std::string>& load_file_result);
   void WriteDisplayLayout();
 

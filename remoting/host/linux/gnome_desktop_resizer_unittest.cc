@@ -460,4 +460,63 @@ TEST_F(GnomeDesktopResizerTest, SetVideoLayout_ReusesRemovedMonitors) {
   ASSERT_EQ(display_config_.monitors, expected_monitors);
 }
 
+TEST_F(GnomeDesktopResizerTest, BlockAndQueueDisplayChanges_SetResolution) {
+  resizer_.BlockAndQueueDisplayChanges();
+  resizer_.SetResolution({{150, 150}, GetDpiForScale(1.5)}, kMeta0ScreenId);
+
+  // New resolution is not immediately applied.
+  ASSERT_NE(GetTestResolutionForStream(kMeta0ScreenId),
+            TestDesktopSize(150, 150));
+
+  resizer_.UnblockAndFlushDisplayChanges();
+
+  // New resolution is applied now.
+  ASSERT_EQ(GetTestResolutionForStream(kMeta0ScreenId),
+            TestDesktopSize(150, 150));
+
+  // Monitor DPI changes are covered by tests above.
+}
+
+TEST_F(GnomeDesktopResizerTest, BlockAndQueueDisplayChanges_SetVideoLayout) {
+  resizer_.BlockAndQueueDisplayChanges();
+  // Note: unlike GnomeDisplayConfig, width and height in VideoTrackLayout are
+  // in logical pixels (DIPs) instead of physical screen pixels.
+  protocol::VideoLayout layout;
+  layout.set_pixel_type(
+      protocol::VideoLayout::PixelType::VideoLayout_PixelType_LOGICAL);
+  protocol::VideoTrackLayout* meta_0 = layout.add_video_track();
+  meta_0->set_screen_id(kMeta0ScreenId);
+  meta_0->set_position_x(0);
+  meta_0->set_position_y(0);
+  meta_0->set_width(300);
+  meta_0->set_height(300);
+  meta_0->set_x_dpi(GetDpiNumberForScale(1.5));
+  meta_0->set_y_dpi(GetDpiNumberForScale(1.5));
+  protocol::VideoTrackLayout* meta_1 = layout.add_video_track();
+  meta_1->set_screen_id(kMeta1ScreenId);
+  meta_1->set_position_x(100);
+  meta_1->set_position_y(300);
+  meta_1->set_width(200);
+  meta_1->set_height(200);
+  meta_1->set_x_dpi(GetDpiNumberForScale(2.0));
+  meta_1->set_y_dpi(GetDpiNumberForScale(2.0));
+  resizer_.SetVideoLayout(layout);
+
+  // New resolutions are not immediately applied.
+  ASSERT_NE(GetTestResolutionForStream(kMeta0ScreenId),
+            TestDesktopSize(450, 450));
+  ASSERT_NE(GetTestResolutionForStream(kMeta1ScreenId),
+            TestDesktopSize(400, 400));
+
+  resizer_.UnblockAndFlushDisplayChanges();
+
+  // New resolutions are applied now.
+  ASSERT_EQ(GetTestResolutionForStream(kMeta0ScreenId),
+            TestDesktopSize(450, 450));
+  ASSERT_EQ(GetTestResolutionForStream(kMeta1ScreenId),
+            TestDesktopSize(400, 400));
+
+  // Monitor DPI changes are covered by tests above.
+}
+
 }  // namespace remoting

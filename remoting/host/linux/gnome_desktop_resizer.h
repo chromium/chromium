@@ -49,6 +49,17 @@ class GnomeDesktopResizer : public DesktopResizer {
                          webrtc::ScreenId screen_id) override;
   void SetVideoLayout(const protocol::VideoLayout& layout) override;
 
+  // Blocks and queue up display changes, which will be executed when
+  // UnblockAndFlushDisplayChanges() is called. This is to work around a bug in
+  // GNOME where changing display settings right after the GNOME session has
+  // started may make the GNOME session unusable.
+  // See: https://gitlab.gnome.org/GNOME/mutter/-/issues/4642
+  void BlockAndQueueDisplayChanges();
+
+  // Unblocks and applies all display changes queued up after
+  // BlockAndQueueDisplayChanges() was called.
+  void UnblockAndFlushDisplayChanges();
+
   base::WeakPtr<GnomeDesktopResizer> GetWeakPtr();
 
  private:
@@ -78,6 +89,10 @@ class GnomeDesktopResizer : public DesktopResizer {
       base::WeakPtr<GnomeDisplayConfigMonitor> display_config_monitor,
       base::RepeatingCallback<void(const GnomeDisplayConfig&)>
           apply_monitors_config);
+
+  void DoSetResolution(const ScreenResolution& resolution,
+                       webrtc::ScreenId screen_id);
+  void DoSetVideoLayout(const protocol::VideoLayout& layout);
 
   void SetResolutionAndPosition(const ScreenResolution& resolution,
                                 std::optional<webrtc::DesktopVector> position,
@@ -173,6 +188,11 @@ class GnomeDesktopResizer : public DesktopResizer {
   // Flag to allow disabling the ignore-fractional-scale behavior for testing.
   // See comments in DoApplyPreferredMonitorsConfig().
   bool ignore_fractional_scales_in_multimon_ = true;
+
+  bool block_and_queue_display_changes_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      false;
+  std::vector<base::OnceClosure> pending_requests_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
