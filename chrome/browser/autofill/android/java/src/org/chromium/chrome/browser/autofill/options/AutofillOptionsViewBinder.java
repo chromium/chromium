@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.autofill.options;
 
-import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_ENABLED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_REAUTH_SETTING_ON;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_SETTING_ELIGIBLE;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON;
+import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.AUTOFILL_AI_VISIBLE;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_AUTOFILL_AI_SETTING_TOGGLED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
@@ -85,16 +85,16 @@ class AutofillOptionsViewBinder {
                                         .onResult((boolean) newValue);
                                 return true;
                             });
-        } else if (key == AUTOFILL_AI_ENABLED) {
-            boolean enabled = model.get(AUTOFILL_AI_ENABLED);
+        } else if (key == AUTOFILL_AI_VISIBLE) {
+            boolean visible = model.get(AUTOFILL_AI_VISIBLE);
 
             Preference aiCategory = view.getAutofillAiCategory();
             if (aiCategory != null) {
-                aiCategory.setVisible(enabled);
+                aiCategory.setVisible(visible);
             }
             Preference serviceProviderTitlePreference = view.getAutofillServiceProviderCategory();
             if (serviceProviderTitlePreference != null) {
-                serviceProviderTitlePreference.setVisible(enabled);
+                serviceProviderTitlePreference.setVisible(visible);
             }
         } else {
             assert false : "Unhandled property: " + key;

@@ -125,7 +125,7 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         mContext = context;
         mActivity = activity;
         updateToggleStateFromPref();
-        mModel.set(AutofillOptionsProperties.AUTOFILL_AI_ENABLED, isAutofillAiEnabled());
+        mModel.set(AutofillOptionsProperties.AUTOFILL_AI_VISIBLE, isAutofillAiVisible(referrer));
         mModel.set(
                 AutofillOptionsProperties.AUTOFILL_AI_SETTING_ELIGIBLE, isEligibleToAutofillAi());
         mModel.set(AutofillOptionsProperties.AUTOFILL_AI_SETTING_ON, isAutofillAiOn());
@@ -145,8 +145,12 @@ class AutofillOptionsMediator implements ModalDialogProperties.Controller {
         return mModel != null;
     }
 
-    // TODO(crbug.com/467563819): Hide everything related to Autofill AI if the page is accessed via
-    // deep-link.
+    boolean isAutofillAiVisible(@AutofillOptionsReferrer int referrer) {
+        // Autofill AI related preferences are not shown if the fragment is opened using a deep
+        // link to show only the 3p Autofill services toggle.
+        return referrer != AutofillOptionsReferrer.DEEP_LINK_TO_SETTINGS && isAutofillAiEnabled();
+    }
+
     boolean isAutofillAiEnabled() {
         // LINT.IfChange(AutofillEnabledCheckMediator)
         return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);

@@ -584,6 +584,29 @@ public class AutofillOptionsTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    public void testAutofillAiToggleHiddenWhenDeepLinkOpened() {
+        mScenario =
+                FragmentScenario.launchInContainer(
+                        AutofillOptionsFragment.class,
+                        AutofillOptionsFragment.createRequiredArgs(
+                                AutofillOptionsReferrer.DEEP_LINK_TO_SETTINGS),
+                        R.style.Theme_BrowserUI_DayNight);
+        mScenario.onFragment(
+                fragment -> {
+                    mFragment =
+                            (AutofillOptionsFragment)
+                                    fragment; // Valid until scenario is recreated.
+                    mFragment.setProfile(mProfile);
+                });
+        new AutofillOptionsCoordinator(mFragment, this::assertModalNotUsed, Assert::fail)
+                .initializeNow();
+        assertFalse(mFragment.getAutofillAiCategory().isVisible());
+        assertFalse(mFragment.getAutofillServiceProviderCategory().isVisible());
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAutofillAiReauthToggleInitialValue() {
         doReturn(true)

@@ -35,8 +35,8 @@ class AutofillOptionsProperties {
     static final ReadableObjectPropertyKey<Callback<Boolean>>
             ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED =
                     new ReadableObjectPropertyKey<>("on_autofill_ai_reauth_setting_toggled");
-    static final WritableBooleanPropertyKey AUTOFILL_AI_ENABLED =
-            new WritableBooleanPropertyKey("autofill_ai_enabled");
+    static final WritableBooleanPropertyKey AUTOFILL_AI_VISIBLE =
+            new WritableBooleanPropertyKey("autofill_ai_visible");
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -49,7 +49,7 @@ class AutofillOptionsProperties {
                 ON_AUTOFILL_AI_SETTING_TOGGLED,
                 AUTOFILL_AI_REAUTH_SETTING_ON,
                 ON_AUTOFILL_AI_REAUTH_SETTING_TOGGLED,
-                AUTOFILL_AI_ENABLED,
+                AUTOFILL_AI_VISIBLE,
             };
 
     /**
