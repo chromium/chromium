@@ -818,9 +818,17 @@ void CatapAudioInputStreamSource::OnCatapSample(
   TRACE_EVENT1("audio", "CatapAudioInputStreamSource::OnCatapSample",
                "capture_time", capture_time);
 
-  float* data = (float*)input_buffer->mData;
-  int frames = input_buffer->mDataByteSize /
-               (input_buffer->mNumberChannels * sizeof(Float32));
+  const auto& data_byte_size = input_buffer->mDataByteSize;
+  CHECK_EQ(data_byte_size % sizeof(float), 0u);
+
+  // SAFETY: This comes from a struct provided by the OS and the number of
+  // frames is calculated based on the information provided in the struct.
+  // We've also made sure that the size is a multiple of `sizeof(float)` above.
+  base::span<float> data =
+      UNSAFE_BUFFERS(base::span(reinterpret_cast<float*>(input_buffer->mData),
+                                data_byte_size / sizeof(float)));
+  CHECK_EQ(data.size() % input_buffer->mNumberChannels, 0u);
+  const int frames = data.size() / input_buffer->mNumberChannels;
 
   // The number of channels may change when a bluetooth device is captured and
   // the bluetooth profile is switched between A2DP and HFP. The sample rate
@@ -856,21 +864,19 @@ void CatapAudioInputStreamSource::OnCatapSample(
 
   if (config_.catap_channels == 1) {
     // If the captured signal is mono, we may need to upmix it. This loop copies
-    // the single mono channel to all output channels. For example, if
-    // outputting to stereo, both left and right channels will get the same mono
-    // data.
-
-    // SAFETY: This comes from a struct provided by the OS and the number of
-    // frames is calculated based on the information provided in the struct.
-    base::span UNSAFE_BUFFERS(mono_data(data, (size_t)frames));
+    // a reference to the single mono channel to all output channels. For
+    // example, if outputting to stereo, both left and right channels will get
+    // the same mono data.
     audio_bus_->set_frames(frames);
     for (int i = 0; i < config_.output_channels; ++i) {
-      audio_bus_->SetChannelData(i, mono_data);
+      audio_bus_->SetChannelData(i, data);
     }
   } else {
+    // If not mono, we only support stereo.
+    CHECK_EQ(config_.catap_channels, 2);
     // The captured signal is already stereo, so we can de-interleave it
     // directly into the audio bus.
-    audio_bus_->FromInterleaved<Float32SampleTypeTraits>(data, frames);
+    audio_bus_->FromInterleaved<Float32SampleTypeTraits>(data);
   }
   sink_->OnData(audio_bus_.get(), capture_time, kMaxVolume,
                 glitch_helper_.ConsumeGlitchInfo());
