@@ -160,12 +160,6 @@
       startDispatchingToTarget:self
                    forProtocol:@protocol(FakeboxFocuser)];
 
-  if (IsChromeNextIaEnabled()) {
-    [browser->GetCommandDispatcher()
-        startDispatchingToTarget:self
-                     forProtocol:@protocol(PageActionMenuEntryPointCommands)];
-  }
-
   if (IsBestOfAppGuidedTourEnabled()) {
     [self.browser->GetCommandDispatcher()
         startDispatchingToTarget:self
@@ -219,7 +213,11 @@
     [self.browser->GetCommandDispatcher()
         startDispatchingToTarget:self
                      forProtocol:@protocol(LocationBarBadgeCommands)];
-
+    if (IsPageActionMenuEnabled()) {
+      [browser->GetCommandDispatcher()
+          startDispatchingToTarget:self
+                       forProtocol:@protocol(PageActionMenuEntryPointCommands)];
+    }
     self.started = YES;
     return;
   }
@@ -881,8 +879,11 @@
 
 - (void)toggleEntryPointHighlight:(BOOL)highlight {
   CHECK(IsChromeNextIaEnabled());
-  // TODO(crbug.com/483994483): implement this.
-  NOTREACHED();
+  CHECK(IsPageActionMenuEnabled());
+  [_topLocationBarCoordinator
+      togglePageActionMenuEntryPointHighlight:highlight];
+  [_bottomLocationBarCoordinator
+      togglePageActionMenuEntryPointHighlight:highlight];
 }
 
 #pragma mark - ToolbarCommands

@@ -78,6 +78,9 @@
 // Sets command dispatcher for page action menu entry point.
 - (void)setPageActionMenuEntryPointDispatcher;
 
+// Highlights or un-highlights the entry point for page action menu.
+- (void)togglePageActionMenuEntryPointHighlight:(BOOL)highlight;
+
 // Creates a visual copy of the location bar steady view.
 - (UIView*)locationBarSteadyViewVisualCopy;
 

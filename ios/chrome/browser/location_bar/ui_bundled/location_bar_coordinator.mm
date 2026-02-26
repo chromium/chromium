@@ -523,6 +523,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 }
 
 - (void)setPageActionMenuEntryPointDispatcher {
+  CHECK(!IsChromeNextIaEnabled());
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self.viewController
                                    .pageActionMenuEntryPointHandler
@@ -717,6 +718,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 - (void)markDisplayedBadgeAsUnread:(BOOL)read {
   CHECK(IsChromeNextIaEnabled());
   [self.locationBarBadgeCoordinator markDisplayedBadgeAsUnread:read];
+}
+
+- (void)togglePageActionMenuEntryPointHighlight:(BOOL)highlight {
+  [self.viewController.pageActionMenuEntryPointHandler
+      toggleEntryPointHighlight:highlight];
 }
 
 #pragma mark - ContextualPanelEntrypointCommands
