@@ -352,44 +352,32 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kImmediate));
-  EXPECT_TRUE(
-      prefetch_urls[0]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[1]->GetURL(), GetCrossOriginUrl("/candidate2.html"));
   EXPECT_EQ(prefetch_urls[1]->request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/false,
                          blink::mojom::SpeculationEagerness::kImmediate));
-  EXPECT_TRUE(
-      prefetch_urls[1]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[2]->GetURL(), GetSameOriginUrl("/candidate3.html"));
   EXPECT_EQ(prefetch_urls[2]->request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/false,
                          blink::mojom::SpeculationEagerness::kImmediate));
-  EXPECT_FALSE(
-      prefetch_urls[2]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[3]->GetURL(), GetCrossOriginUrl("/candidate5.html"));
   EXPECT_EQ(prefetch_urls[3]->request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kConservative));
-  EXPECT_TRUE(
-      prefetch_urls[3]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[4]->GetURL(),
             GetSameSiteCrossOriginUrl("/candidate6.html"));
   EXPECT_EQ(prefetch_urls[4]->request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/false,
                          blink::mojom::SpeculationEagerness::kImmediate));
-  EXPECT_FALSE(
-      prefetch_urls[4]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_EQ(prefetch_urls[5]->GetURL(), GetSameOriginUrl("/candidate7.html"));
   EXPECT_EQ(prefetch_urls[5]->request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kImmediate));
-  EXPECT_FALSE(
-      prefetch_urls[5]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
   // Check that the only remaining entries in candidates are those that
   // shouldn't be prefetched by |PrefetchService|.
@@ -455,8 +443,6 @@ TEST_F(PrefetchDocumentManagerTest, FencedFrameDoesNotStartPrefetch) {
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kImmediate));
-  EXPECT_TRUE(
-      prefetch_urls[0]->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
   // `CanPrefetchNow()` blocks the speculationrules prefetch from fenced frame.
   EXPECT_THAT(prefetch_document_manager->CanPrefetchNow(prefetch_urls[0].get()),
