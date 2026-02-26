@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
@@ -65,12 +66,14 @@ void OpenWindow(const GURL& url,
 
 // Navigates the client specified by `rfh_id` to `url`. `callback` is called
 // with the client information on completion.
-void NavigateClient(const GURL& url,
-                    const GURL& script_url,
-                    const blink::StorageKey& key,
-                    const GlobalRenderFrameHostId& rfh_id,
-                    const base::WeakPtr<ServiceWorkerContextCore>& context,
-                    NavigationCallback callback);
+void NavigateClient(
+    const GURL& url,
+    const GURL& script_url,
+    const blink::StorageKey& key,
+    const GlobalRenderFrameHostId& rfh_id,
+    const network::mojom::ClientSecurityStatePtr worker_client_security_state,
+    const base::WeakPtr<ServiceWorkerContextCore>& context,
+    NavigationCallback callback);
 
 // Gets the client specified by |service_worker_client|. |callback| is called
 // with the client information on completion.

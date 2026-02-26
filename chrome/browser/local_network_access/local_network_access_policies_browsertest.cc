@@ -30,7 +30,7 @@ constexpr char kSharedWorkerHtmlPath[] =
     "/local_network_access/fetch-from-shared-worker-as-public-address.html";
 
 constexpr char kServiceWorkerHtmlPath[] =
-    "/local_network_access/fetch-from-service-worker-as-public-address.html";
+    "/local_network_access/request-from-service-worker-as-public-address.html";
 
 class LocalNetworkAccessPoliciesBrowserTest
     : public LocalNetworkAccessBrowserTestBase {};

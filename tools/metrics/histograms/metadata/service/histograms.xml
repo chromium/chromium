@@ -2096,6 +2096,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.WindowClientNavigationIPAddressSpaceMismatch"
+    enum="Boolean" expires_after="2026-09-22">
+  <owner>hchao@chromium.org</owner>
+  <owner>cthomp@chromium.org</owner>
+  <owner>chrome-secure-web-and-net@google.com</owner>
+  <summary>
+    How many times a service worker navigates a WindowClient, and the IP address
+    space of the WindowClient's current page does not match the IP address space
+    of the Service Worker. A value of 'true' indicates that the IP address
+    spaces did not match.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.WorkaroundForCrBug1342408Applied" units="cases"
     expires_after="2025-10-26">
   <owner>yyanagisawa@google.com</owner>

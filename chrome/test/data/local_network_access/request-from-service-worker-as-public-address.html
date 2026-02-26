@@ -1,0 +1,30 @@
+<script>
+async function setup() {
+  await navigator.serviceWorker.register('request-from-service-worker-as-public-address.js');
+  await navigator.serviceWorker.ready;
+  return 'ready';
+}
+
+function service_worker_request(url, method) {
+  return new Promise(async resolve => {
+    const registration = await navigator.serviceWorker.ready;
+    const channel = new MessageChannel();
+    channel.port1.onmessage = e => { resolve(e.data); };
+    registration.active.postMessage({url, method}, [channel.port2]);
+  });
+}
+
+function fetch_from_service_worker(url) {
+  return service_worker_request(url, 'fetch');
+}
+
+const searchParams = new URLSearchParams(window.location.search);
+
+if (searchParams.has('url')) {
+  const method = searchParams.has('method') ? searchParams.get('method') : 'fetch';
+  setup();
+  console.log(searchParams.get('url'));
+  console.log(method);
+  service_worker_request(searchParams.get('url'), method);
+}
+</script>
