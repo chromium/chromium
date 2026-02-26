@@ -381,7 +381,7 @@ std::u16string BackToOpenerController::GetFormattedOpenerTitle(
   }
   opener_title = ui::EscapeMenuLabelAmpersands(opener_title);
 
-  // Format as "Close and return to \"[opener title]\""
+  // Format as "Close and go back to \"[tab title]\""
   const int kMaxBackForwardMenuWidth = 700;
   std::u16string formatted_text = l10n_util::GetStringFUTF16(
       IDS_HISTORY_CLOSE_AND_RETURN_TO_PREFIX, opener_title);
