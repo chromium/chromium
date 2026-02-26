@@ -207,13 +207,13 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini, but the user's data is not used to improve the model">
     Shares the current tab with Gemini, even as you switch tabs. Your data is not used to improve generative AI models.
    </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE" desc="Name of the enable current default tab access setting.">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE" desc="Name of the enable current default tab access setting." formatter_data="android_java">
     Share current tab by default
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini by default for new conversations.">
     The current tab is shared with Gemini when you start a new chat. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more about AI and privacy<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini by default, but the user's data is not used to improve the model.">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_TOGGLE_SUBLABEL_DATA_PROTECTED" desc="Sublabel describing that this setting will enable sharing the current tab's content with Gemini by default, but the user's data is not used to improve the model." formatter_data = "android_java">
     The current tab is shared with Gemini when you start a new chat. Your data is not used to improve generative AI models. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Learn more about AI and privacy<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_ACTIVITY_BUTTON" desc="Name of the Gemini Apps Activity link out." formatter_data="android_java">
@@ -243,16 +243,16 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_TAB_ACCESS_CONSIDER_1_LEARN_MORE_LABEL" desc="Label for the 'Learn more' link in the 'things to consider' section.">
     Learn more
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_1" desc="First point in the 'when on' column of the 'default tab access' expands">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_1" desc="First point in the 'when on' column of the 'default tab access' expands" formatter_data="android_java">
     You can easily ask Gemini questions about the tabs you’re sharing as you browse.
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_2" desc="Part of the description of the 'Share current tab by default' setting. It informs the user about what information is going to be shared with Gemini.">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_2" desc="Part of the description of the 'Share current tab by default' setting. It informs the user about what information is going to be shared with Gemini." formatter_data="android_java">
     Tabs opened from a chat or a shared tab are also shared with Gemini. In Live mode, only the current tab is shared by default.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_WHEN_ON_2_NO_LIVE" desc="Part of the description of the 'Share current tab by default' setting. It informs the user about what information is going to be shared with Gemini. This version is used when Live mode is not available for the user.">
     Tabs opened from a chat or a shared tab are also shared with Gemini.
   </message>
-  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_1" desc="First point in 'things to consider' column of the 'default tab access' expands">
+  <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_1" desc="First point in 'things to consider' column of the 'default tab access' expands" formatter_data="android_java">
     When tabs are shared, their page contents, media and URLs are sent to Google.
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_DEFAULT_TAB_ACCESS_CONSIDER_2" desc="Second point in 'things to consider' column of the 'default tab access' expands">
@@ -270,7 +270,6 @@
   <message name="IDS_SETTINGS_GLIC_INSTRUCTIONS_BUTTON_SUBLABEL" desc="Description for the Gemini instructions linkout.">
     Customize how Gemini responds to you
   </message>
-
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_WHEN_ON_1" desc="First point in 'when on' column of the 'let Gemini browse for you' expands">
     Gemini can help you book appointments, create shopping carts, or do other tasks you give it.
   </message>

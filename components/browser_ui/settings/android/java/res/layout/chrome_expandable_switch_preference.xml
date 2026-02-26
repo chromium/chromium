@@ -4,7 +4,6 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<!-- TODO(crbug.com/485347702): Clean up the nested structure. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -17,16 +16,22 @@ found in the LICENSE file.
     android:paddingTop="@dimen/card_with_button_pref_horizontal_padding"
     android:paddingBottom="@dimen/card_with_button_pref_horizontal_padding"
     android:orientation="vertical">
-    <RelativeLayout
-        android:id="@+id/expandable_switch_main_row"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <RelativeLayout
-            android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@android:id/icon"
+            android:layout_width="@dimen/pref_icon_frame_min_width"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_toStartOf="@id/expandable_switch_widget_frame"
-            android:layout_centerVertical="true">
+            android:scaleType="center"
+            android:visibility="gone" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
             <TextView
                 android:id="@android:id/title"
                 android:layout_width="wrap_content"
@@ -36,36 +41,25 @@ found in the LICENSE file.
                 android:id="@android:id/summary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@android:id/title"
-                android:layout_alignStart="@android:id/title"
                 android:layout_marginTop="@dimen/pref_summary_margin_top"
                 style="@style/PreferenceSummary" />
-        </RelativeLayout>
-        <LinearLayout
-            android:id="@+id/expandable_switch_widget_frame"
+        </LinearLayout>
+        <org.chromium.ui.widget.CheckableImageView
+            android:id="@+id/expandable_switch_expand_icon"
+            android:layout_width="@dimen/pref_checkable_image_size"
+            android:layout_height="@dimen/pref_checkable_image_size"
+            android:scaleType="center"
+            android:layout_marginEnd="@dimen/card_with_button_pref_icon_margin_right"
+            android:background="?android:attr/selectableItemBackgroundBorderless"/>
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@android:id/switch_widget"
+            style="@style/Widget.BrowserUI.Switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:gravity="end|center_vertical"
-            android:orientation="horizontal">
-            <org.chromium.ui.widget.CheckableImageView
-                android:id="@+id/expandable_switch_expand_icon"
-                android:layout_width="@dimen/pref_checkable_image_size"
-                android:layout_height="@dimen/pref_checkable_image_size"
-                android:scaleType="center"
-                android:layout_marginEnd="@dimen/card_with_button_pref_icon_margin_right"
-                android:background="?android:attr/selectableItemBackgroundBorderless"/>
-            <com.google.android.material.materialswitch.MaterialSwitch
-                android:id="@android:id/switch_widget"
-                style="@style/Widget.BrowserUI.Switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:focusable="true"
-                android:clickable="true"
-                android:background="@null"/>
-        </LinearLayout>
-    </RelativeLayout>
+            android:focusable="true"
+            android:clickable="true"
+            android:background="@null"/>
+    </LinearLayout>
     <ViewStub
         android:id="@+id/expandable_switch_expanded_area_stub"
         android:inflatedId="@+id/expandable_switch_expanded_area"

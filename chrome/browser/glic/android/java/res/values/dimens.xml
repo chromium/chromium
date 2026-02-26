@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <!-- Glic expanded content dimensions -->
+    <dimen name="glic_expanded_header_top_margin">20dp</dimen>
+    <dimen name="glic_expanded_header_bottom_margin">8dp</dimen>
+    <dimen name="glic_expanded_row_top_margin">16dp</dimen>
+    <dimen name="glic_expanded_row_icon_size">20dp</dimen>
+    <dimen name="glic_expanded_row_icon_margin_end">12dp</dimen>
+    <dimen name="glic_expanded_container_padding_bottom">16dp</dimen>
+    <dimen name="glic_expanded_content_line_height">20sp</dimen>
+</resources>

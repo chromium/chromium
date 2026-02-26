@@ -13,7 +13,11 @@ generate_jni("jni_headers") {
 }
 
 android_resources("java_resources") {
-  sources = [ "java/res/xml/glic_settings.xml" ]
+  sources = [
+    "java/res/layout/glic_default_tab_access.xml",
+    "java/res/values/dimens.xml",
+    "java/res/xml/glic_settings.xml",
+  ]
   deps = [
     "//chrome/app:java_strings_grd",
     "//components/browser_ui/settings/android:java_resources",
@@ -42,6 +46,7 @@ android_library("java") {
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/user_education:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/feature_engagement/public:public_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",

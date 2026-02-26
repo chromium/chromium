@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/glic_expanded_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/glic_expanded_container_padding_bottom">
+
+    <!-- Header: When on -->
+    <TextView
+        android:id="@+id/when_on_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/glic_expanded_header_top_margin"
+        android:layout_marginBottom="@dimen/glic_expanded_header_bottom_margin"
+        android:lineHeight="@dimen/glic_expanded_content_line_height"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+        android:text="@string/settings_heading_when_on" />
+
+    <!-- Row 1: Text analysis -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/glic_expanded_row_top_margin"
+        android:gravity="top"
+        android:orientation="horizontal">
+
+        <org.chromium.ui.widget.ChromeImageView
+            android:layout_width="@dimen/glic_expanded_row_icon_size"
+            android:layout_height="@dimen/glic_expanded_row_icon_size"
+            android:layout_marginEnd="@dimen/glic_expanded_row_icon_margin_end"
+            android:src="@drawable/ic_text_analysis_24dp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:lineHeight="@dimen/glic_expanded_content_line_height"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:text="@string/settings_glic_permissions_default_tab_access_when_on_1" />
+    </LinearLayout>
+
+    <!-- Row 2: Tab group -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/glic_expanded_row_top_margin"
+        android:gravity="top"
+        android:orientation="horizontal">
+
+        <org.chromium.ui.widget.ChromeImageView
+            android:layout_width="@dimen/glic_expanded_row_icon_size"
+            android:layout_height="@dimen/glic_expanded_row_icon_size"
+            android:layout_marginEnd="@dimen/glic_expanded_row_icon_margin_end"
+            android:src="@drawable/ic_tab_group_24dp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:lineHeight="@dimen/glic_expanded_content_line_height"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:text="@string/settings_glic_permissions_default_tab_access_when_on_2" />
+    </LinearLayout>
+
+    <!-- Header: Things to consider -->
+    <TextView
+        android:id="@+id/consider_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/glic_expanded_header_top_margin"
+        android:layout_marginBottom="@dimen/glic_expanded_header_bottom_margin"
+        android:lineHeight="@dimen/glic_expanded_content_line_height"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+        android:text="@string/settings_heading_consider" />
+
+    <!-- Row 3: Screensaver/Auto -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/glic_expanded_row_top_margin"
+        android:gravity="top"
+        android:orientation="horizontal">
+
+        <org.chromium.ui.widget.ChromeImageView
+            android:layout_width="@dimen/glic_expanded_row_icon_size"
+            android:layout_height="@dimen/glic_expanded_row_icon_size"
+            android:layout_marginEnd="@dimen/glic_expanded_row_icon_margin_end"
+            android:src="@drawable/ic_screensaver_auto_24dp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:lineHeight="@dimen/glic_expanded_content_line_height"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:text="@string/settings_glic_permissions_default_tab_access_consider_1" />
+    </LinearLayout>
+
+</LinearLayout>
