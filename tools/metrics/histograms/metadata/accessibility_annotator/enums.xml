@@ -47,6 +47,22 @@ chromium-metrics-reviews@google.com.
   <int value="1670867358" label="Category9"/>
 </enum>
 
+<!-- LINT.IfChange(ContentAnnotatorDependentInformationTypes) -->
+
+<enum name="ContentAnnotatorDependentInformationTypes">
+  <summary>
+    The possible types of dependent information that might be missing from a
+    page that is undergoing evaluation for annotation.
+  </summary>
+  <int value="0" label="SensitivityScoreMissing"/>
+  <int value="1" label="NavigationTimestampMissing"/>
+  <int value="2" label="AdoptedLanguageMissing"/>
+  <int value="3" label="PageTitleMissing"/>
+  <int value="4" label="AnnotatedPageContentMissing"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/accessibility_annotator/content/content_annotator/content_classifier_types.h:ContentAnnotatorMissingDependentInformation) -->
+
 </enums>
 
 </histogram-configuration>

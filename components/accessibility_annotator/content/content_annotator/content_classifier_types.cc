@@ -4,6 +4,8 @@
 
 #include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 
+#include "base/metrics/histogram_functions.h"
+
 namespace accessibility_annotator {
 
 ContentClassificationInput::ContentClassificationInput(GURL url) : url(url) {}
@@ -17,13 +19,43 @@ ContentClassificationInput& ContentClassificationInput::operator=(
     ContentClassificationInput&&) = default;
 ContentClassificationInput::~ContentClassificationInput() = default;
 
+// LINT.IfChange(ContentClassificationInputIsComplete)
 bool ContentClassificationInput::IsComplete() const {
-  // LINT.IfChange(ContentClassificationInputIsComplete)
   return sensitivity_score.has_value() && navigation_timestamp.has_value() &&
          adopted_language.has_value() && page_title.has_value() &&
          annotated_page_content;
-  // LINT.ThenChange()
 }
+
+void ContentClassificationInput::LogMissingFields() const {
+  if (!sensitivity_score.has_value()) {
+    base::UmaHistogramEnumeration(
+        "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing",
+        ContentAnnotatorMissingDependentInformation::kSensitivityScoreMissing);
+  }
+  if (!navigation_timestamp.has_value()) {
+    base::UmaHistogramEnumeration(
+        "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing",
+        ContentAnnotatorMissingDependentInformation::
+            kNavigationTimestampMissing);
+  }
+  if (!adopted_language.has_value()) {
+    base::UmaHistogramEnumeration(
+        "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing",
+        ContentAnnotatorMissingDependentInformation::kAdoptedLanguageMissing);
+  }
+  if (!page_title.has_value()) {
+    base::UmaHistogramEnumeration(
+        "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing",
+        ContentAnnotatorMissingDependentInformation::kPageTitleMissing);
+  }
+  if (!annotated_page_content) {
+    base::UmaHistogramEnumeration(
+        "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing",
+        ContentAnnotatorMissingDependentInformation::
+            kAnnotatedPageContentMissing);
+  }
+}
+// LINT.ThenChange()
 
 ContentClassificationResult::ContentClassificationResult() = default;
 ContentClassificationResult::ContentClassificationResult(

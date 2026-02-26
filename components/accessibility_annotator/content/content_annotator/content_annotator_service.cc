@@ -129,6 +129,13 @@ ContentAnnotatorService::GetOrCreateJoinEntry(const GURL& url) {
   if (it != join_entries_.end()) {
     return it;
   }
+
+  // Check if the cache is full.
+  // The least recently used entry will be evicted when adding a new entry.
+  if (join_entries_.size() >= join_entries_.max_size()) {
+    join_entries_.rbegin()->second.LogMissingFields();
+  }
+
   return join_entries_.Put(url, ContentClassificationInput(url));
 }
 

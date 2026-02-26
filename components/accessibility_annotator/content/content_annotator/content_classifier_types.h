@@ -16,6 +16,19 @@
 
 namespace accessibility_annotator {
 
+// The possible types of dependent information that might be missing from a
+// page that is undergoing evaluation for annotation. Used for logging.
+// LINT.IfChange(ContentAnnotatorMissingDependentInformation)
+enum class ContentAnnotatorMissingDependentInformation {
+  kSensitivityScoreMissing = 0,
+  kNavigationTimestampMissing = 1,
+  kAdoptedLanguageMissing = 2,
+  kPageTitleMissing = 3,
+  kAnnotatedPageContentMissing = 4,
+  kMaxValue = kAnnotatedPageContentMissing,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility_annotator/enums.xml:ContentAnnotatorDependentInformationTypes)
+
 // The input to the content classifier, containing all data that might be used
 // for classification.
 struct ContentClassificationInput {
@@ -39,6 +52,9 @@ struct ContentClassificationInput {
 
   // Returns true if all fields are populated.
   bool IsComplete() const;
+
+  // Logs all missing fields to the missing dependencies UMA histogram.
+  void LogMissingFields() const;
 };
 
 // The result of a content classification, containing the output of one or more

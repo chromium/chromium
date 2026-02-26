@@ -39,7 +39,7 @@ class ContentAnnotatorFeatureList {
  public:
   ContentAnnotatorFeatureList() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        kContentAnnotator, {{"kContentAnnotatorMaxPendingUrls", "2"}});
+        kContentAnnotator, {{kContentAnnotatorMaxPendingUrls.name, "2"}});
   }
 
  private:
@@ -321,6 +321,60 @@ TEST_F(ContentAnnotatorServiceTest,
     scoped_tester.ExpectUniqueSample(
         "AccessibilityAnnotator.FullAnnotationReached", false, 1);
   }
+}
+
+TEST_F(ContentAnnotatorServiceTest,
+       GetOrCreateJoinEntry_CacheOverflowLogsMissingFields) {
+  base::HistogramTester histogram_tester;
+  GURL url1("https://example1.com/");
+  GURL url2("https://example2.com/");
+  GURL url3("https://example3.com/");
+  base::Time base_time = base::Time::Now();
+  base::Time nav_time2 = base_time + base::Minutes(1);
+
+  // 1. Add URL1
+  translate::LanguageDetectionDetails details;
+  details.url = url1;
+  details.adopted_language = "en";
+  service_->OnLanguageDetermined(details);
+
+  // 2. Add URL2
+  translate::LanguageDetectionDetails details2;
+  details2.url = url2;
+  details2.adopted_language = "en";
+  service_->OnLanguageDetermined(details2);
+  // Doesn't trigger overflow as URL2 is already in the cache.
+  service_->OnPageContentAnnotated(
+      page_content_annotations::HistoryVisit(base_time, url2),
+      page_content_annotations::PageContentAnnotationsResult::
+          CreateContentVisibilityScoreResult(0.5f));
+
+  // 3. Add URL3. This should trigger the overflow check for URL1 (the LRU).
+  service_->OnPageContentAnnotated(
+      page_content_annotations::HistoryVisit(nav_time2, url3),
+      page_content_annotations::PageContentAnnotationsResult::
+          CreateContentVisibilityScoreResult(0.5f));
+
+  // URL1 is missing everything except adopted_language.
+  histogram_tester.ExpectBucketCount(
+      "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing",
+      ContentAnnotatorMissingDependentInformation::kSensitivityScoreMissing, 1);
+  histogram_tester.ExpectBucketCount(
+      "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing",
+      ContentAnnotatorMissingDependentInformation::kNavigationTimestampMissing,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing",
+      ContentAnnotatorMissingDependentInformation::kAdoptedLanguageMissing, 0);
+  histogram_tester.ExpectBucketCount(
+      "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing",
+      ContentAnnotatorMissingDependentInformation::kPageTitleMissing, 1);
+  histogram_tester.ExpectBucketCount(
+      "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing",
+      ContentAnnotatorMissingDependentInformation::kAnnotatedPageContentMissing,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing", 4);
 }
 
 }  // namespace accessibility_annotator

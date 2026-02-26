@@ -27,6 +27,18 @@ chromium-metrics-reviews@google.com.
   <variant name="Url" summary="The URL value classifier."/>
 </variants>
 
+<histogram
+    name="AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing"
+    enum="ContentAnnotatorDependentInformationTypes" expires_after="2026-08-01">
+  <owner>qiaoli@google.com</owner>
+  <owner>akvuong@google.com</owner>
+  <owner>igoralsky@google.com</owner>
+  <summary>
+    Records when a page is missing the dependent information required to
+    annotate it. This is ONLY recorded when there is missing information.
+  </summary>
+</histogram>
+
 <histogram name="AccessibilityAnnotator.FullAnnotationReached" enum="Boolean"
     expires_after="2026-08-01">
   <owner>qiaoli@google.com</owner>
