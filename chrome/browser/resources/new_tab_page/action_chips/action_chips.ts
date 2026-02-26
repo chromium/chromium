@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import type {ContextualUpload, TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
+import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
 import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -168,63 +168,25 @@ export class ActionChipsElement extends CrLitElement {
     }
   }
 
-  protected onCreateImageClick_(chip: ActionChip) {
-    recordClick(chip.suggestTemplateInfo.typeIcon);
-    this.onActionChipClick_(chip.suggestion, [], ToolMode.kImageGen);
-  }
-
-  protected onDeepDiveClick_(chip: ActionChip) {
-    recordClick(chip.suggestTemplateInfo.typeIcon);
-    const tab = chip.tab!;
-    const deepDiveTabInfo: TabUpload = {
-      tabId: tab.tabId,
-      url: tab.url,
-      title: tab.title,
-      delayUpload: this.delayTabUploads_,
-      origin: TabUploadOrigin.ACTION_CHIP,
-    };
-    this.onActionChipClick_(
-        chip.suggestion, [deepDiveTabInfo], ToolMode.kUnspecified);
-  }
-
-  protected onDeepSearchClick_(chip: ActionChip) {
-    recordClick(chip.suggestTemplateInfo.typeIcon);
-    this.onActionChipClick_(chip.suggestion, [], ToolMode.kDeepSearch);
-  }
-
-  protected onTabContextClick_(chip: ActionChip) {
-    recordClick(chip.suggestTemplateInfo.typeIcon);
-    const tab = chip.tab!;
-    const recentTabInfo: TabUpload = {
-      tabId: tab.tabId,
-      url: tab.url,
-      title: tab.title,
-      delayUpload: this.delayTabUploads_,
-      origin: TabUploadOrigin.ACTION_CHIP,
-    };
-    this.onActionChipClick_(
-        chip.suggestion, [recentTabInfo], ToolMode.kUnspecified);
-  }
-
   protected handleClick_(e: Event): void {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const chip = this.actionChips_[index]!;
     switch (chip.suggestTemplateInfo.typeIcon) {
       case IconType.kBanana:
         this.handler.activateMetricsFunnel('CreateImageChip');
-        this.onCreateImageClick_(chip);
+        this.onActionChipClick_(chip, ToolMode.kImageGen);
         break;
       case IconType.kGlobeWithSearchLoop:
         this.handler.activateMetricsFunnel('DeepSearchChip');
-        this.onDeepSearchClick_(chip);
+        this.onActionChipClick_(chip, ToolMode.kDeepSearch);
         break;
       case IconType.kFavicon:
         this.handler.activateMetricsFunnel('RecentTabChip');
-        this.onTabContextClick_(chip);
+        this.onActionChipClick_(chip, ToolMode.kUnspecified);
         break;
       case IconType.kSubArrowRight:
         this.handler.activateMetricsFunnel('DeepDiveChip');
-        this.onDeepDiveClick_(chip);
+        this.onActionChipClick_(chip, ToolMode.kUnspecified);
         break;
       default:
         // Do nothing yet...
@@ -253,9 +215,23 @@ export class ActionChipsElement extends CrLitElement {
     return chip.tab ? this.getFaviconUrl_(chip.tab.url) : '';
   }
 
-  private onActionChipClick_(
-      query: string, contextFiles: ContextualUpload[], mode: ToolMode) {
-    this.fire('action-chip-click', {searchboxText: query, contextFiles, mode});
+  private onActionChipClick_(chip: ActionChip, mode: ToolMode) {
+    recordClick(chip.suggestTemplateInfo.typeIcon);
+    const contextFiles: TabUpload[] = [];
+    const tab = chip.tab;
+    if (tab) {
+      const tabInfo: TabUpload = {
+        tabId: tab.tabId,
+        url: tab.url,
+        title: tab.title,
+        delayUpload: this.delayTabUploads_,
+        origin: TabUploadOrigin.ACTION_CHIP,
+      };
+      contextFiles.push(tabInfo);
+    }
+    this.fire(
+        'action-chip-click',
+        {searchboxText: chip.suggestion, contextFiles, mode});
   }
 
   protected recentTabChipTitle_(chip: ActionChip) {
