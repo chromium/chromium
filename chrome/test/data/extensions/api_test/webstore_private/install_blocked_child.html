@@ -10,7 +10,7 @@ runTests([
   function installBlockedChild() {
     var manifest = getManifest();
     var expectedError =
-        "Parent has blocked extension/app installation"
+        "Your parent didn't approve this extension"
     chrome.webstorePrivate.beginInstallWithManifest3(
         {id: appId, manifest: manifest},
         callbackFail(expectedError, function(result) {

@@ -112,6 +112,13 @@ class WebstorePrivateBeginInstallWithManifest3Function
 
   void RequestExtensionApproval(content::WebContents* web_contents);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Called when the parent access flow on Android desktop completes to show the
+  // browser parent approval permission dialog.
+  void OnParentAuthenticationDone(content::WebContents* web_contents,
+                                  SupervisedExtensionApprovalResult result);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // Handles the result of the extension approval flow.
   void OnExtensionApprovalDone(SupervisedExtensionApprovalResult result);
 

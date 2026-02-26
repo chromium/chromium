@@ -637,15 +637,75 @@ void WebstorePrivateBeginInstallWithManifest3Function::RequestExtensionApproval(
           ->Get(profile_)
           ->GetSupervisedUserExtensionsDelegate();
   CHECK(supervised_user_extensions_delegate);
+
+#if !BUILDFLAG(IS_ANDROID)
   auto extension_approval_callback =
       base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
                          OnExtensionApprovalDone,
                      this);
+#else
+  auto extension_approval_callback =
+      base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
+                         OnParentAuthenticationDone,
+                     this, web_contents);
+#endif
+
   supervised_user_extensions_delegate->RequestToAddExtensionOrShowError(
       *dummy_extension_, web_contents,
       gfx::ImageSkia::CreateFrom1xBitmap(icon_),
       std::move(extension_approval_callback));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void WebstorePrivateBeginInstallWithManifest3Function::
+    OnParentAuthenticationDone(content::WebContents* web_contents,
+                               SupervisedExtensionApprovalResult result) {
+  if (!web_contents) {
+    // The browser window has gone away.
+    Respond(BuildResponse(api::webstore_private::Result::kUserCancelled,
+                          kWebstoreUserCancelledError));
+    // Matches the AddRef in Run().
+    Release();
+    return;
+  }
+
+  if (result != SupervisedExtensionApprovalResult::kApproved) {
+    OnExtensionApprovalDone(result);
+    return;
+  }
+
+  auto dialog_callback = base::BindOnce(
+      [](base::OnceCallback<void(SupervisedExtensionApprovalResult)> callback,
+         ExtensionInstallPrompt::DoneCallbackPayload payload) {
+        switch (payload.result) {
+          case ExtensionInstallPrompt::Result::ACCEPTED:
+            std::move(callback).Run(
+                SupervisedExtensionApprovalResult::kApproved);
+            break;
+          case ExtensionInstallPrompt::Result::USER_CANCELED:
+          case ExtensionInstallPrompt::Result::ABORTED:
+            std::move(callback).Run(
+                SupervisedExtensionApprovalResult::kBlocked);
+            break;
+          case ExtensionInstallPrompt::Result::
+              ACCEPTED_WITH_WITHHELD_PERMISSIONS:
+            // Parent approval dialog doesn't support
+            // `ACCEPTED_WITH_WITHHELD_PERMISSIONS` result.
+            NOTREACHED();
+        }
+      },
+      base::BindOnce(&WebstorePrivateBeginInstallWithManifest3Function::
+                         OnExtensionApprovalDone,
+                     this));
+
+  install_prompt_ = std::make_unique<ExtensionInstallPrompt>(web_contents);
+  install_prompt_->ShowDialog(
+      std::move(dialog_callback), dummy_extension_.get(), &icon_,
+      std::make_unique<ExtensionInstallPrompt::Prompt>(
+          ExtensionInstallPrompt::EXTENSION_PARENT_APPROVAL_PROMPT),
+      ExtensionInstallPrompt::GetDefaultShowDialogCallback());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void WebstorePrivateBeginInstallWithManifest3Function::OnExtensionApprovalDone(
     SupervisedExtensionApprovalResult result) {
@@ -709,6 +769,14 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 
 void WebstorePrivateBeginInstallWithManifest3Function::
     OnExtensionApprovalBlocked() {
+  if (test_delegate) {
+    test_delegate->OnExtensionInstallFailure(
+        dummy_extension_->id(),
+        l10n_util::GetStringUTF8(
+            IDS_EXTENSIONS_SUPERVISED_USER_PARENTAL_PERMISSION_FAILURE),
+        WebstoreInstaller::FailureReason::FAILURE_REASON_CANCELLED);
+  }
+
   Respond(BuildResponse(api::webstore_private::Result::kBlockedForChildAccount,
                         l10n_util::GetStringUTF8(
                             IDS_EXTENSIONS_SUPERVISED_USER_BLOCKED_BY_PARENT)));
@@ -836,6 +904,14 @@ void WebstorePrivateBeginInstallWithManifest3Function::
 
 void WebstorePrivateBeginInstallWithManifest3Function::
     OnRequestParentApprovalPromptCancelled() {
+  if (test_delegate) {
+    test_delegate->OnExtensionInstallFailure(
+        dummy_extension_->id(),
+        l10n_util::GetStringUTF8(
+            IDS_EXTENSIONS_SUPERVISED_USER_PARENTAL_PERMISSION_FAILURE),
+        WebstoreInstaller::FailureReason::FAILURE_REASON_CANCELLED);
+  }
+
   Respond(BuildResponse(api::webstore_private::Result::kUserCancelled,
                         kWebstoreUserCancelledError));
   // Matches the AddRef in Run().

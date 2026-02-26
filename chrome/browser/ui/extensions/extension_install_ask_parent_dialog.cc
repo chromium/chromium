@@ -11,6 +11,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -22,6 +23,21 @@ void ShowExtensionInstallAskParentDialog(content::WebContents* web_contents,
                                          base::OnceClosure cancel_callback,
                                          base::OnceClosure approve_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Tests can auto confirm the dialog.
+  switch (ScopedTestDialogAutoConfirm::GetAutoConfirmValue()) {
+    case ScopedTestDialogAutoConfirm::NONE:
+      break;
+    case ScopedTestDialogAutoConfirm::ACCEPT:
+    case ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION:
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(approve_callback));
+      return;
+    case ScopedTestDialogAutoConfirm::CANCEL:
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, std::move(cancel_callback));
+      return;
+  }
 
   auto split_cancel_callback =
       base::SplitOnceCallback(std::move(cancel_callback));

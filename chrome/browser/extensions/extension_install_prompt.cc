@@ -169,6 +169,9 @@ std::u16string ExtensionInstallPrompt::Prompt::GetDialogTitle() const {
     case EXTENSION_PENDING_REQUEST_PROMPT:
       id = IDS_EXTENSION_PENDING_REQUEST_PROMPT_TITLE;
       break;
+    case EXTENSION_PARENT_APPROVAL_PROMPT:
+      id = IDS_EXTENSION_PARENT_APPROVAL_PROMPT_TITLE;
+      break;
     case UNSET_PROMPT_TYPE:
     case NUM_PROMPT_TYPES:
       NOTREACHED();
@@ -235,6 +238,9 @@ std::u16string ExtensionInstallPrompt::Prompt::GetAcceptButtonLabel() const {
     case EXTENSION_PENDING_REQUEST_PROMPT:
       // Pending request prompt doesn't have accept button.
       break;
+    case EXTENSION_PARENT_APPROVAL_PROMPT:
+      id = IDS_PARENT_PERMISSION_PROMPT_APPROVE_BUTTON;
+      break;
     case UNSET_PROMPT_TYPE:
     case NUM_PROMPT_TYPES:
       NOTREACHED();
@@ -262,6 +268,9 @@ std::u16string ExtensionInstallPrompt::Prompt::GetAbortButtonLabel() const {
     case EXTENSION_PENDING_REQUEST_PROMPT:
       id = IDS_CLOSE;
       break;
+    case EXTENSION_PARENT_APPROVAL_PROMPT:
+      id = IDS_PARENT_PERMISSION_PROMPT_CANCEL_BUTTON;
+      break;
     case UNSET_PROMPT_TYPE:
     case NUM_PROMPT_TYPES:
       NOTREACHED();
@@ -288,6 +297,9 @@ std::u16string ExtensionInstallPrompt::Prompt::GetPermissionsHeading() const {
       break;
     case REPAIR_PROMPT:
       id = IDS_EXTENSION_PROMPT_CAN_ACCESS;
+      break;
+    case EXTENSION_PARENT_APPROVAL_PROMPT:
+      id = IDS_EXTENSION_PROMPT_REQUESTS_PERMISSIONS;
       break;
     case UNSET_PROMPT_TYPE:
     case NUM_PROMPT_TYPES:

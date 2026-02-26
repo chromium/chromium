@@ -72,7 +72,9 @@ class ExtensionInstallPrompt : public extensions::ExtensionInstallPromptClient {
     // WEBSTORE_WIDGET_PROMPT_DEPRECATED = 12,
     EXTENSION_REQUEST_PROMPT = 13,
     EXTENSION_PENDING_REQUEST_PROMPT = 14,
-    NUM_PROMPT_TYPES = 15,
+    // Prompt for parent to approve extension installation for supervised users.
+    EXTENSION_PARENT_APPROVAL_PROMPT = 15,
+    NUM_PROMPT_TYPES = 16,
     // WAIT! Are you adding a new prompt type? Does it *install an extension*?
     // If not, please create a new dialog, rather than adding more functionality
     // to this class - it's already too full.
