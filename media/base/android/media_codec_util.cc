@@ -64,7 +64,7 @@ static CodecProfileLevel MediaCodecProfileLevelToChromiumProfileLevel(
 
 static bool IsDecoderSupportedByDevice(std::string_view android_mime_type) {
   if (android_mime_type == kVp8MimeType) {
-    std::string hardware = base::SysInfo::GetAndroidBuildID();
+    std::string hardware = base::SysInfo::GetAndroidHardware();
     // MediaTek decoders do not work properly on vp8 until Android T. See
     // http://crbug.com/446974 and http://crbug.com/597836.
     if (hardware.starts_with("mt") &&
