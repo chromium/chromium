@@ -366,6 +366,9 @@ public class PageZoomUtils {
      * @return int The index of the next closest zoom factor
      */
     public static int getNextIndex(boolean decrease, double currentZoomFactor) {
+        // Round to match the precision of AVAILABLE_ZOOM_FACTORS to avoid precision issues.
+        currentZoomFactor = MathUtils.roundTwoDecimalPlaces(currentZoomFactor);
+
         // BinarySearch will return the index of the first value equal to the given value.
         // Otherwise it will return (-(insertion point) - 1).
         // If a negative value is returned, then add one and negate to get the insertion point.
