@@ -32,6 +32,7 @@ interface DropdownMenuOption {
   name: string;
   value: number|string;
   hidden?: boolean;
+  searchHint?: string;
 }
 
 export type DropdownMenuOptionList = DropdownMenuOption[];

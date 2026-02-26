@@ -27,7 +27,8 @@
     aria-label$="[[label]]" part="select"
     disabled="[[shouldDisableMenu_(disabled, menuOptions.*, pref.*)]]">
   <template is="dom-repeat" items="[[menuOptions]]">
-    <option value="[[item.value]]" hidden="[[item.hidden]]">
+    <option value="[[item.value]]" hidden="[[item.hidden]]"
+        search-hint$="[[item.searchHint]]">
       [[item.name]]
     </option>
   </template>

@@ -28,6 +28,12 @@ export interface SearchResult {
 const SKIP_SEARCH_CSS_ATTRIBUTE: string = 'no-search';
 
 /**
+ * A CSS attribute containing an alternate search hint to be used during
+ * searching.
+ */
+const SEARCH_HINT_CSS_ATTRIBUTE: string = 'search-hint';
+
+/**
  * List of elements types that should not be searched at all.
  * The only DOM-MODULE node is in <body> which is not searched, therefore
  * DOM-MODULE is not needed in this set.
@@ -89,12 +95,19 @@ function findAndHighlightMatches(request: SearchRequest, root: Node): number {
     }
 
     if (node.nodeType === Node.TEXT_NODE) {
-      const textContent = node.nodeValue;
-      if (textContent!.trim().length === 0) {
+      let textContent = node.nodeValue!;
+
+      if (node.parentElement &&
+          node.parentElement.hasAttribute(SEARCH_HINT_CSS_ATTRIBUTE)) {
+        textContent +=
+            node.parentElement.getAttribute(SEARCH_HINT_CSS_ATTRIBUTE);
+      }
+
+      if (textContent.trim().length === 0) {
         return;
       }
 
-      const strippedText = stripDiacritics(textContent!);
+      const strippedText = stripDiacritics(textContent);
       const ranges = [];
       for (let match; match = request.regExp!.exec(strippedText);) {
         ranges.push({start: match.index, length: match[0].length});

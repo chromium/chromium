@@ -94,6 +94,20 @@ suite('SearchSettingsTest', function() {
         });
   });
 
+  test('<select> highlighting with search-hint', async function() {
+    document.body.innerHTML = getTrustedStaticHtml`<settings-section>
+           <select>
+             <option>Foo</option>
+             <option search-hint="Bar">Baz</option>
+           </select>
+         </settings-section>`;
+
+    const section = document.querySelector('settings-section')!;
+
+    await searchManager.search('bar', section);
+    assertEquals(1, document.querySelectorAll('.search-bubble').length);
+  });
+
   test('ignored elements are ignored', async function() {
     const text = 'hello';
     document.body.innerHTML =
