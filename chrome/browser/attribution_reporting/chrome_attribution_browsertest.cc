@@ -14,9 +14,8 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -73,11 +72,11 @@ class ChromeAttributionBrowserTest : public MixinBasedInProcessBrowserTest {
 
   content::WebContents* RegisterSourceWithNavigation() {
     content::WebContentsAddedObserver window_observer;
-    EXPECT_TRUE(ui_test_utils::NavigateToURL(
-        browser(),
+    EXPECT_TRUE(content::NavigateToURL(
+        chrome_test_utils::GetActiveWebContents(this),
         server_.GetURL("a.test", "/page_with_impression_creator.html")));
     content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
+        chrome_test_utils::GetActiveWebContents(this);
 
     GURL register_url =
         server_.GetURL("c.test", "/register_source_headers.html");
@@ -155,7 +154,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
                        AttestedSiteCanReceiveAttributionReport) {
-  PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
+  PrivacySandboxSettingsFactory::GetForProfile(
+      chrome_test_utils::GetProfile(this))
       ->SetAllPrivacySandboxAllowedForTesting();
 
   privacy_sandbox::PrivacySandboxAttestationsMap map;
@@ -183,7 +183,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
                        UnattestedSiteCannotReceiveAttributionReport) {
-  PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
+  PrivacySandboxSettingsFactory::GetForProfile(
+      chrome_test_utils::GetProfile(this))
       ->SetAllPrivacySandboxAllowedForTesting();
 
   // We add an empty attestation for the reporting origin. If feature
@@ -223,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
   base::HistogramTester histogram_tester;
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      chrome_test_utils::GetActiveWebContents(this);
   page_load_metrics::PageLoadMetricsTestWaiter waiter(web_contents);
   waiter.AddWebFeatureExpectation(
       blink::mojom::WebFeature::kAttributionReportingAPIAll);
@@ -244,15 +245,15 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest, XhrUseCounterRecorded) {
   base::HistogramTester histogram_tester;
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      chrome_test_utils::GetActiveWebContents(this);
   page_load_metrics::PageLoadMetricsTestWaiter waiter(web_contents);
   waiter.AddWebFeatureExpectation(
       blink::mojom::WebFeature::kAttributionReportingXhr);
 
   ASSERT_TRUE(server_.Start());
 
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  EXPECT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this),
       server_.GetURL("a.test", "/page_with_conversion_redirect.html")));
 
   GURL register_source_url =
@@ -293,15 +294,15 @@ IN_PROC_BROWSER_TEST_P(ChromeAttributionTriggerUseCounterBrowserTest,
   base::HistogramTester histogram_tester;
 
   content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      chrome_test_utils::GetActiveWebContents(this);
   page_load_metrics::PageLoadMetricsTestWaiter waiter(web_contents);
   waiter.AddWebFeatureExpectation(
       blink::mojom::WebFeature::kAttributionReportingAPIAll);
 
   ASSERT_TRUE(server_.Start());
 
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  EXPECT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this),
       server_.GetURL("a.test", "/page_with_conversion_redirect.html")));
 
   RegisterTrigger(web_contents);
