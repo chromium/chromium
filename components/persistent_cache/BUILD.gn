@@ -99,6 +99,7 @@ source_set("unit_tests") {
       "persistent_cache_collection_unittest.cc",
       "persistent_cache_unittest.cc",
       "sqlite/backend_storage_delegate_unittest.cc",
+      "sqlite/sqlite_backend_impl_unittest.cc",
     ]
   }
 

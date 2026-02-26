@@ -46,6 +46,12 @@ struct COMPONENT_EXPORT(PERSISTENT_CACHE) PendingBackend {
   FRIEND_TEST_ALL_PREFIXES(PersistentCacheReadOnlyMojomTraitsTest, Do);
   FRIEND_TEST_ALL_PREFIXES(PersistentCacheReadWriteMojomTraitsTest, Do);
   FRIEND_TEST_ALL_PREFIXES(PersistentCacheTest, RecoveryFromTransientError);
+  FRIEND_TEST_ALL_PREFIXES(SQLiteBackendImplTest,
+                           ReopeningFilesWithSameUserVersionWorks);
+  FRIEND_TEST_ALL_PREFIXES(SQLiteBackendImplTest,
+                           VersionMismatchLeadsToFailedInitializeWhenReadOnly);
+  FRIEND_TEST_ALL_PREFIXES(SQLiteBackendImplTest,
+                           VersionMismatchDropsTablesWithReadWriteConnection);
 
   explicit PendingBackend(sqlite_vfs::PendingFileSet pending_file_set);
 

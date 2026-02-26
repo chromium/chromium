@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PERSISTENT_CACHE_SQLITE_SQLITE_BACKEND_IMPL_H_
 #define COMPONENTS_PERSISTENT_CACHE_SQLITE_SQLITE_BACKEND_IMPL_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 
@@ -27,6 +29,11 @@ enum class Client;
 
 class COMPONENT_EXPORT(PERSISTENT_CACHE) SqliteBackendImpl : public Backend {
  public:
+  // This value is to be incremented when the database schema used by this class
+  // evolves in a non-backwards compatible way. When this number changes all
+  // existing databases will be cleared on the first call to `Bind()`.
+  static constexpr int kCurrentUserVersion = 1;
+
   static std::unique_ptr<Backend> Bind(PendingBackend pending_backend,
                                        Client client);
 
