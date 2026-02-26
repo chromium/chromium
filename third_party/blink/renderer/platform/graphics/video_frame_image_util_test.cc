@@ -210,10 +210,11 @@ TEST_P(VideoFrameImageUtilTest, CreateImageFromVideoFrameSoftwareFrame) {
 
 TEST_P(VideoFrameImageUtilTest,
        CreateImageFromVideoFrameMappableSharedImageFrame) {
-  auto cpu_frame = CreateTestFrame(
-      kTestSize, gfx::Rect(kTestSize), kTestSize,
-      media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
-      media::PIXEL_FORMAT_NV12, base::TimeDelta(), test_sii_.get());
+  auto cpu_frame =
+      CreateTestFrame(kTestSize, gfx::Rect(kTestSize), kTestSize,
+                      media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
+                      media::PIXEL_FORMAT_NV12, base::TimeDelta(),
+                      test_sii_.get(), gfx::ColorSpace::CreateREC709());
   auto image = DoCreateImageFromVideoFrame(cpu_frame);
   EXPECT_EQ(image->IsTextureBacked(), expect_accelerated_images());
 }

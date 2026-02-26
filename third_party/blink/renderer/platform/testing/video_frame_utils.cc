@@ -60,7 +60,7 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
       auto frame = media::VideoFrame::WrapMappableSharedImage(
           std::move(shared_image), test_sii->GenVerifiedSyncToken(),
           base::NullCallback(), visible_rect, natural_size, timestamp);
-
+      frame->set_color_space(color_space);
       return frame;
     }
     case media::VideoFrame::STORAGE_OPAQUE: {

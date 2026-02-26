@@ -412,7 +412,7 @@ class VideoTrackRecorderTest : public VideoTrackRecorderTestBase {
             ? media::VideoFrame::STORAGE_OWNED_MEMORY
             : media::VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
         media::VideoPixelFormat::PIXEL_FORMAT_NV12, base::TimeDelta(),
-        test_sii_.get());
+        test_sii_.get(), gfx::ColorSpace::CreateREC709());
     scoped_refptr<media::VideoFrame> video_frame2 = video_frame;
     if (frame_type == TestFrameType::kNv12MappableSharedImage) {
       video_frame2 = media::ConvertToMemoryMappedFrame(video_frame);
