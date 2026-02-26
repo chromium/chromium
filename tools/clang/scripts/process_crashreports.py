@@ -13,6 +13,7 @@ import datetime
 import getpass
 import glob
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -26,6 +27,63 @@ CRASHREPORTS_DIR = os.path.abspath(
     os.path.join(THIS_DIR, '..', '..', '..', 'out', 'clang-crashreports'))
 GSUTIL = os.path.join(
     THIS_DIR, '..', '..', '..', 'third_party', 'depot_tools', 'gsutil.py')
+SISO_BINARY = os.path.join(THIS_DIR, '..', '..', '..', 'third_party',
+                           'depot_tools', 'siso')
+
+
+def FetchRbeCrashReports():
+  """Look for crash reports in Siso logs and download them from CAS."""
+  # Look in the out/ directory for siso_output files.
+  out_dir = os.path.dirname(CRASHREPORTS_DIR)
+  logs = glob.glob(os.path.join(out_dir, '*', 'siso_output'))
+
+  if not logs:
+    return
+
+  if len(logs) > 1:
+    logs.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+    print("Found multiple siso_output files. Using the latest one: %s" %
+          logs[0])
+
+  log = logs[0]
+  print('processing %s... ' % log, end='', flush=True)
+  commands = []
+  # Siso logs auxiliary outputs in the format: path <tab> digest <tab> command
+  pattern = re.compile(r'out/clang-crashreports/.*?\t[0-9a-fA-F]+/\d+\t(.*)')
+
+  try:
+    with open(log, 'r') as f:
+      for line in f:
+        match = pattern.search(line)
+        if match:
+          commands.append(match.group(1))
+  except (IOError, OSError) as e:
+    print('cannot read %s: %s' % (log, e))
+    return
+
+  if not commands:
+    return
+
+  if not os.path.exists(CRASHREPORTS_DIR):
+    os.makedirs(CRASHREPORTS_DIR)
+
+  for cmd in commands:
+    print('running %s... ' % cmd, end='', flush=True)
+    try:
+      # The command string is like: siso fetch -reapi_instance=... ...
+      # We want to run it with the correctly resolved SISO_BINARY.
+      # The log says "siso", but we need to use the absolute path to siso.
+      args = cmd.split(' ')
+      if args[0] == 'siso':
+        args[0] = SISO_BINARY
+      else:
+        sys.stderr.write('Expected siso command, got %s\n' % args[0])
+        continue
+
+      subprocess.check_call(args)
+      print('done')
+    except subprocess.CalledProcessError:
+      print('failed')
 
 
 def ProcessCrashreport(base, source):
@@ -100,6 +158,12 @@ def main():
                       help='Source of the crash -- usually a bot name. '
                            'Leave empty to use your username.')
   args = parser.parse_args()
+
+  # If the crash happened on RBE, the crash report is on the RBE worker.
+  # Siso logs the digest of the crash report in siso_output.
+  # We need to fetch it to the local machine to process and upload it.
+  FetchRbeCrashReports()
+
   # When clang notices that it crashes, it tries to write a .sh file containing
   # the command used to invoke clang, a source file containing the whole
   # input source code with an extension matching the input file (.c, .cpp, ...),
