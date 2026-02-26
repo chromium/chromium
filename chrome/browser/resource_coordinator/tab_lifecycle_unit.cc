@@ -315,6 +315,9 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
   DCHECK_EQ(GetLoadingState(), LifecycleUnitLoadingState::UNLOADED);
 
   web_contents()->NotifyWasDiscarded();
+  tab_strip_model_->UpdateWebContentsStateAt(
+      tab_strip_model_->GetIndexOfWebContents(web_contents()),
+      TabChangeType::kAll);
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::

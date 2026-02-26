@@ -686,11 +686,7 @@ void BrowserTabStripController::OnTabStripModelChanged(
                              model_->GetTabAtIndex(move->to_index)));
       break;
     }
-    case TabStripModelChange::kReplaced: {
-      auto* replace = change.GetReplace();
-      SetTabDataAt(replace->index);
-      break;
-    }
+    case TabStripModelChange::kReplaced:
     case TabStripModelChange::kSelectionOnly:
       break;
   }

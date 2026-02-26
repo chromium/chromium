@@ -339,8 +339,10 @@ void TabLifecycleUnitSource::OnTabChangedAt(tabs::TabInterface* tab,
     return;
   }
 
-  auto* audible_helper = RecentlyAudibleHelper::FromWebContents(contents);
-  lifecycle_unit->SetRecentlyAudible(audible_helper->WasRecentlyAudible());
+  if (auto* const audible_helper =
+          RecentlyAudibleHelper::FromWebContents(contents)) {
+    lifecycle_unit->SetRecentlyAudible(audible_helper->WasRecentlyAudible());
+  }
 }
 
 void TabLifecycleUnitSource::OnBrowserClosed(BrowserWindowInterface* browser) {
