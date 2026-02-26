@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerV
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -54,6 +55,7 @@ import org.chromium.ui.insets.InsetObserver;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Supplier;
 
 /** Class responsible for managing the position (top, bottom) of the browsing mode toolbar. */
 @NullMarked
@@ -131,6 +133,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final NonNullObservableSupplier<Integer> mControlContainerHeightSupplier;
     private final TopInsetProvider mTopInsetProvider;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
+    private final Supplier<@Nullable Tab> mActiveTabSupplier;
     private final Handler mHandler;
     @LayerVisibility private int mLayerVisibility;
     private int mControlContainerHeight;
@@ -212,6 +215,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             Context context,
             SettableNonNullObservableSupplier<Integer> controlsPosition,
             MonotonicObservableSupplier<Profile> profileSupplier,
+            Supplier<@Nullable Tab> activeTabSupplier,
             NonNullObservableSupplier<Integer> keyboardHeightSupplier,
             WindowAndroid windowAndroid) {
         mBrowserControlsSizer = browserControlsSizer;
@@ -236,6 +240,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mWindowAndroid = windowAndroid;
         mCurrentPosition.set(mBrowserControlsSizer.getControlsPosition());
         mProfileSupplier = profileSupplier;
+        mActiveTabSupplier = activeTabSupplier;
 
         mIsFirstPositionChange = true;
         mHairlineHeight =
@@ -815,10 +820,21 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
      *     always bigger than 0.
      * @param consumeTopInset Determines if the toolbar should utilize this top inset, extending
      *     across the full height of both the status bar and itself.
+     * @param layoutType The current active layout type from {@link LayoutType}.
      * @return Whether the layout is changed.
      */
     @VisibleForTesting
-    boolean onToEdgeChange(int systemTopInset, boolean consumeTopInset) {
+    boolean onToEdgeChange(
+            int systemTopInset, boolean consumeTopInset, @LayoutType int layoutType) {
+        Tab tab = mActiveTabSupplier.get();
+        if (tab == null
+                // When swipe the toolbar inside NTP, currentTab == null. So the
+                // EdgeToEdgeLayoutCoordinator will add the top padding.
+                // We need to notify the observer of ToolbarPositionController to remove the top
+                // padding.
+                && layoutType != LayoutType.TOOLBAR_SWIPE) {
+            return false;
+        }
         // Exits early if the top padding doesn't need adjusting.
         if (NtpCustomizationUtils.shouldSkipTopInsetsChange(
                 mTopInset, systemTopInset, consumeTopInset)) {
@@ -864,7 +880,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         // When the toolbar is at bottom, it shouldn't add any top inset. Calling
         // onToEdgeChange() immediately to remove the top padding of Toolbar if exists.
         boolean isLayoutChanged =
-                onToEdgeChange(/* systemTopInset= */ 0, /* consumeTopInset= */ false);
+                onToEdgeChange(
+                        /* systemTopInset= */ 0, /* consumeTopInset= */ false, LayoutType.BROWSING);
         // During toolbar swiping, it is possible that the toolbar's layout has been forced to
         // update before its position is moved to the bottom. In this case, skips calling
         // doSynchronousLayoutAndCapture() again.

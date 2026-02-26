@@ -26,6 +26,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
@@ -379,7 +380,7 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         mOmniboxAlignmentSupplier.set(omniboxAlignment);
     }
 
-    void onToEdgeChange(int systemTopInset, boolean consumeTopInset) {
+    void onToEdgeChange(int systemTopInset, boolean consumeTopInset, @LayoutType int layoutType) {
         // When the toolbar is at the bottom, the omnibox suggestions container displays above the
         // toolbar, starting from the top of the screen. In edge-to-edge mode, we need to add top
         // padding to prevent content from entering the status bar area.

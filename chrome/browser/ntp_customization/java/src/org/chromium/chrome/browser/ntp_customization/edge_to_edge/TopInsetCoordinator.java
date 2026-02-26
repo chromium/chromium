@@ -179,16 +179,6 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
         // We shouldn't use mTrackingTab, which can be set to null in removeObservers(), and it
         // won't be updated if mTabSupplierObserver is removed.
         Tab currentTab = mTabSupplier.get();
-        if (currentTab == null
-                // When swipe the toolbar inside NTP, currentTab == null. So the
-                // EdgeToEdgeLayoutCoordinator will add the top padding.
-                // We need to notify the observer of ToolbarPositionController to remove the top
-                // padding.
-                && (mLayoutStateProvider == null
-                        || mLayoutStateProvider.getActiveLayoutType()
-                                != LayoutType.TOOLBAR_SWIPE)) {
-            return windowInsetsCompat;
-        }
 
         mSystemInsets = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.systemBars());
 
@@ -297,7 +287,12 @@ public class TopInsetCoordinator implements InsetObserver.WindowInsetsConsumer, 
 
     private void notifyObservers() {
         for (var observer : mObservers) {
-            observer.onToEdgeChange(mSystemInsets.top, mConsumeTopInset);
+            observer.onToEdgeChange(
+                    mSystemInsets.top,
+                    mConsumeTopInset,
+                    mLayoutStateProvider != null
+                            ? mLayoutStateProvider.getActiveLayoutType()
+                            : LayoutType.NONE);
         }
     }
 

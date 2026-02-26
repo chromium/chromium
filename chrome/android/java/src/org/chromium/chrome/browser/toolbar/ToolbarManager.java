@@ -1870,6 +1870,7 @@ public class ToolbarManager
                         mActivity,
                         mToolbarPositionSupplier,
                         (MonotonicObservableSupplier<Profile>) mProfileSupplier,
+                        mActivityTabProvider,
                         assertNonNull(mWindowAndroid.getInsetObserver())
                                 .getSupplierForKeyboardInset(),
                         mWindowAndroid);

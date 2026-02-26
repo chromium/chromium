@@ -34,6 +34,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
@@ -508,23 +509,28 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
 
         // With controls at top, paddingTop should remain 0.
         mControlsPosition = ControlsPosition.TOP;
-        mImpl.onToEdgeChange(/* systemTopInset= */ 100, /* consumeTopInset= */ true);
+        mImpl.onToEdgeChange(
+                /* systemTopInset= */ 100, /* consumeTopInset= */ true, LayoutType.BROWSING);
         assertEquals(0, mImpl.getCurrentAlignment().paddingTop);
 
         // With controls at bottom and consumeTopInset=true, paddingTop should match systemTopInset.
         mControlsPosition = ControlsPosition.BOTTOM;
-        mImpl.onToEdgeChange(/* systemTopInset= */ 100, /* consumeTopInset= */ true);
+        mImpl.onToEdgeChange(
+                /* systemTopInset= */ 100, /* consumeTopInset= */ true, LayoutType.BROWSING);
         assertEquals(100, mImpl.getCurrentAlignment().paddingTop);
 
         // With consumeTopInset=false, paddingTop should reset to 0.
-        mImpl.onToEdgeChange(/* systemTopInset= */ 100, /* consumeTopInset= */ false);
+        mImpl.onToEdgeChange(
+                /* systemTopInset= */ 100, /* consumeTopInset= */ false, LayoutType.BROWSING);
         assertEquals(0, mImpl.getCurrentAlignment().paddingTop);
 
         // paddingTop should update from non-zero to zero when systemTopInset changes.
-        mImpl.onToEdgeChange(/* systemTopInset= */ 50, /* consumeTopInset= */ true);
+        mImpl.onToEdgeChange(
+                /* systemTopInset= */ 50, /* consumeTopInset= */ true, LayoutType.BROWSING);
         assertEquals(50, mImpl.getCurrentAlignment().paddingTop);
 
-        mImpl.onToEdgeChange(/* systemTopInset= */ 0, /* consumeTopInset= */ true);
+        mImpl.onToEdgeChange(
+                /* systemTopInset= */ 0, /* consumeTopInset= */ true, LayoutType.BROWSING);
         assertEquals(0, mImpl.getCurrentAlignment().paddingTop);
     }
 

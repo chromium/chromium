@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
@@ -144,7 +145,7 @@ public class TopInsetCoordinatorUnitTest {
         assertNotEquals(mWindowInsetsCompat, result);
         assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.systemBars()));
         assertEquals(Insets.NONE, result.getInsets(WindowInsetsCompat.Type.displayCutout()));
-        verify(mObserver).onToEdgeChange(eq(TOP_PADDING), eq(true));
+        verify(mObserver).onToEdgeChange(eq(TOP_PADDING), eq(true), anyInt());
     }
 
     @Test
@@ -158,7 +159,7 @@ public class TopInsetCoordinatorUnitTest {
 
         // Verify that the top inset is not consumed for non-NTP tab.
         assertEquals(mWindowInsetsCompat, result);
-        verify(mObserver).onToEdgeChange(eq(TOP_PADDING), eq(false));
+        verify(mObserver).onToEdgeChange(eq(TOP_PADDING), eq(false), anyInt());
     }
 
     @Test
@@ -173,34 +174,7 @@ public class TopInsetCoordinatorUnitTest {
         mTopInsetCoordinator.onApplyWindowInsets(mView, mWindowInsetsCompat);
 
         // Verify that notifyObservers() is called because it's a toolbar swipe.
-        verify(mObserver).onToEdgeChange(eq(TOP_PADDING), eq(false));
-    }
-
-    @Test
-    public void testOnApplyWindowInsets_NullTab_ReturnEarly() {
-        mLayoutStateProviderSupplier.set(mLayoutStateProvider);
-        setBackgroundType(NtpBackgroundType.DEFAULT, NtpBackgroundType.CHROME_COLOR);
-
-        when(mLayoutStateProvider.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
-        mTabSupplier.set(null);
-        clearInvocations(mObserver);
-
-        mTopInsetCoordinator.onApplyWindowInsets(mView, mWindowInsetsCompat);
-
-        // Verify that notifyObservers() is NOT called.
-        verify(mObserver, never()).onToEdgeChange(any(Integer.class), any(Boolean.class));
-    }
-
-    @Test
-    public void testOnApplyWindowInsets_NullTab_NullLayoutStateProvider_ReturnEarly() {
-        // mLayoutStateProviderSupplier is not set, so mLayoutStateProvider is null in coordinator.
-        mTabSupplier.set(null);
-        clearInvocations(mObserver);
-
-        mTopInsetCoordinator.onApplyWindowInsets(mView, mWindowInsetsCompat);
-
-        // Verify that notifyObservers() is NOT called.
-        verify(mObserver, never()).onToEdgeChange(any(Integer.class), any(Boolean.class));
+        verify(mObserver).onToEdgeChange(eq(TOP_PADDING), eq(false), anyInt());
     }
 
     @Test

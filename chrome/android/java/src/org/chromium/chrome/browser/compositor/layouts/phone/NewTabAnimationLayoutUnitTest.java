@@ -199,7 +199,7 @@ public class NewTabAnimationLayoutUnitTest {
                             TopInsetProvider.Observer observer =
                                     (TopInsetProvider.Observer) invocation.getArgument(0);
                             // Trigger the callback immediately with systemTopInset=100
-                            observer.onToEdgeChange(100, true);
+                            observer.onToEdgeChange(100, true, LayoutType.BROWSING);
                             return null;
                         })
                 .when(mTopInsetProvider)

@@ -64,6 +64,7 @@ import org.chromium.chrome.browser.feed.FeedSurfaceProvider.RestoringState;
 import org.chromium.chrome.browser.feed.FeedSwipeRefreshLayout;
 import org.chromium.chrome.browser.feed.NtpFeedSurfaceLifecycleManager;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -920,8 +921,9 @@ public class NewTabPage
      * @param systemTopInset The system's top inset, i.e., the height of the Status bar. While
      *     usually greater than zero, it can be zero in split-screen mode.
      * @param consumeTopInset Whether the parent layout will consume the top inset.
+     * @param layoutType The current active layout type from {@link LayoutType}.
      */
-    void onToEdgeChange(int systemTopInset, boolean consumeTopInset) {
+    void onToEdgeChange(int systemTopInset, boolean consumeTopInset, @LayoutType int layoutType) {
         // When consumeTopInset is false, it is possible: 1) the next Tab isn't NTP and 2) the next
         // Tab is NTP while NTP should show regular toolbar. NewTabPageLayout should only be
         // adjusted based on supportsEdgeToEdgeOnTop(), not the parent view's decision.

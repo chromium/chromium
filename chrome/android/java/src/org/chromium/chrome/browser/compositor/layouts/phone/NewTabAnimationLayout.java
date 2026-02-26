@@ -885,8 +885,10 @@ public class NewTabAnimationLayout extends Layout {
      *
      * @param systemTopInset The top inset from the system in pixels.
      * @param consumeTopInset Whether the top inset should be consumed.
+     * @param layoutType The current active layout type from {@link LayoutType}.
      */
-    private void onToEdgeChange(int systemTopInset, boolean consumeTopInset) {
+    private void onToEdgeChange(
+            int systemTopInset, boolean consumeTopInset, @LayoutType int layoutType) {
         mTopInsetProviderAvailable = true;
         mSystemTopInset = systemTopInset;
     }
