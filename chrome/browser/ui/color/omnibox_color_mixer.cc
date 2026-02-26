@@ -155,8 +155,7 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
   // sys/on-error once the dark theme color is fixed.
   mixer[kColorOmniboxComposeboxFileThumbnailOverlayIcon] = {ui::kColorSysWhite};
 
-  mixer[kColorOmniboxComposeboxForegroundDisabled] = {
-      ui::kColorSysStateDisabled};
+  mixer[kColorOmniboxForegroundDisabled] = {ui::kColorSysStateDisabled};
   mixer[kColorOmniboxComposeboxPrimaryAction] = {ui::kColorSysPrimary};
   mixer[kColorOmniboxComposeboxSubmitButtonBackground] = {
       kColorOmniboxComposeboxPrimaryAction};
@@ -460,7 +459,6 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
       kColorOmniboxResultsBackground, gfx::kGoogleGrey700, gfx::kGoogleGrey200);
   mixer[kColorOmniboxComposeboxFaviconBackground] = {
       kColorOmniboxComposeboxChipBackground};
-  mixer[kColorOmniboxComposeboxForegroundDisabled] = {kColorOmniboxTextDimmed};
   mixer[kColorOmniboxComposeboxPrimaryAction] = ui::SelectBasedOnDarkInput(
       kColorOmniboxResultsBackground, gfx::kGoogleBlue200, gfx::kGoogleBlue600);
   mixer[kColorOmniboxComposeboxSubmitButtonBackground] = {
