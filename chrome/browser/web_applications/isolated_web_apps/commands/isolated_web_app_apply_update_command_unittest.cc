@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -99,6 +100,8 @@ blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
   return manifest;
 }
 
+}  // namespace
+
 class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
  protected:
   void SetUp() override {
@@ -145,13 +148,26 @@ class IsolatedWebAppApplyUpdateCommandTest : public WebAppTest {
     base::WriteFile(installed_path, "");
   }
 
-  IsolatedWebAppApplyUpdateCommandResult ApplyPendingUpdate() {
+  template <typename T = IsolatedWebAppApplyUpdateCommand>
+  IsolatedWebAppApplyUpdateCommandResult ApplyUpdate() {
     base::test::TestFuture<IsolatedWebAppApplyUpdateCommandResult> future;
-    fake_provider().scheduler().ApplyPendingIsolatedWebAppUpdate(
-        url_info_, /*optional_keep_alive=*/nullptr,
-        /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
+    auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+        url_info_, fake_web_contents_manager().CreateDataRetriever());
 
+    fake_provider().command_manager().ScheduleCommand(std::make_unique<T>(
+        url_info_,
+        IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
+            *profile()),
+        /*optional_keep_alive=*/nullptr,
+        /*optional_profile_keep_alive=*/nullptr, future.GetCallback(),
+        std::move(command_helper)));
     return future.Take();
+  }
+
+  void CallOnFinalized(IsolatedWebAppApplyUpdateCommand& command,
+                       const webapps::AppId& app_id,
+                       webapps::InstallResultCode update_result_code) {
+    command.OnFinalizedForTesting(app_id, update_result_code);
   }
 
   FakeWebContentsManager& fake_web_contents_manager() {
@@ -238,7 +254,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, Succeeds) {
       url_info_.origin().GetURL().Resolve(kIconPath));
   icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
 
-  EXPECT_THAT(ApplyPendingUpdate(), HasValue());
+  EXPECT_THAT(ApplyUpdate(), HasValue());
 
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());
@@ -255,7 +271,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest,
   test::AwaitStartWebAppProviderAndSubsystems(profile());
   fake_provider().Shutdown();
 
-  auto result = ApplyPendingUpdate();
+  auto result = ApplyUpdate();
   EXPECT_THAT(result,
               ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
                             HasSubstr("shutting down"))));
@@ -266,7 +282,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIwaIsNotInstalled) {
   ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   CreateDefaultPageState();
 
-  auto result = ApplyPendingUpdate();
+  auto result = ApplyUpdate();
   EXPECT_THAT(result, ErrorIs(_));
 
   const WebApp* web_app =
@@ -282,7 +298,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstalledAppIsNotIsolated) {
   ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   CreateDefaultPageState();
 
-  auto result = ApplyPendingUpdate();
+  auto result = ApplyUpdate();
   EXPECT_THAT(result, ErrorIs(_));
 
   const WebApp* web_app =
@@ -297,7 +313,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest,
   InstallIwa(/*pending_update_info=*/std::nullopt);
   CreateDefaultPageState();
 
-  auto result = ApplyPendingUpdate();
+  auto result = ApplyUpdate();
   EXPECT_THAT(result,
               ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
                             HasSubstr("does not have a pending update"))));
@@ -311,7 +327,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfAppNotTrusted) {
   CreateDefaultPageState();
   SetTrustedWebBundleIdsForTesting({});
 
-  auto result = ApplyPendingUpdate();
+  auto result = ApplyUpdate();
   EXPECT_THAT(result, ErrorIs(_));
   ExpectAppNotUpdatedAndDataCleared();
 }
@@ -324,7 +340,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfUrlLoadingFails) {
   page_state.url_load_result =
       webapps::WebAppUrlLoaderResult::kFailedErrorPageLoaded;
 
-  auto result = ApplyPendingUpdate();
+  auto result = ApplyUpdate();
   EXPECT_THAT(result,
               ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
                             HasSubstr("FailedErrorPageLoaded"))));
@@ -340,7 +356,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallabilityCheckFails) {
   page_state.error_code =
       webapps::InstallableStatusCode::MANIFEST_MISSING_NAME_OR_SHORT_NAME;
 
-  auto result = ApplyPendingUpdate();
+  auto result = ApplyUpdate();
   EXPECT_THAT(
       result,
       ErrorIs(Field(
@@ -358,7 +374,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfManifestIsInvalid) {
   page_state.manifest_before_default_processing->scope =
       GURL("https://example.com/foo/");
 
-  auto result = ApplyPendingUpdate();
+  auto result = ApplyUpdate();
   EXPECT_THAT(result,
               ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
                             HasSubstr("Scope should resolve to the origin"))));
@@ -371,7 +387,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIconDownloadFails) {
   ASSERT_NO_FATAL_FAILURE(WriteUpdateBundleToDisk());
   CreateDefaultPageState();
 
-  auto result = ApplyPendingUpdate();
+  auto result = ApplyUpdate();
   EXPECT_THAT(result,
               ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
                             HasSubstr("Error during icon downloading"))));
@@ -379,23 +395,6 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfIconDownloadFails) {
 }
 
 TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallFinalizerFails) {
-  class FailingUpdateFinalizer : public WebAppInstallFinalizer {
-   public:
-    explicit FailingUpdateFinalizer(webapps::AppId app_id)
-        : WebAppInstallFinalizer(nullptr), app_id_(std::move(app_id)) {}
-
-    void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
-                        InstallFinalizedCallback callback) override {
-      std::move(callback).Run(app_id_,
-                              webapps::InstallResultCode::kNotInstallable);
-    }
-
-   private:
-    webapps::AppId app_id_;
-  };
-
-  fake_provider().SetInstallFinalizer(
-      std::make_unique<FailingUpdateFinalizer>(url_info_.app_id()));
   test::AwaitStartWebAppProviderAndSubsystems(profile());
 
   InstallIwa(update_info());
@@ -406,12 +405,32 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, FailsIfInstallFinalizerFails) {
       url_info_.origin().GetURL().Resolve(kIconPath));
   icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
 
-  auto result = ApplyPendingUpdate();
+  base::test::TestFuture<IsolatedWebAppApplyUpdateCommandResult> future;
+  auto command_helper = std::make_unique<IsolatedWebAppInstallCommandHelper>(
+      url_info_, fake_web_contents_manager().CreateDataRetriever());
+
+  auto command = std::make_unique<IsolatedWebAppApplyUpdateCommand>(
+      url_info_,
+      IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
+          *profile()),
+      /*optional_keep_alive=*/nullptr,
+      /*optional_profile_keep_alive=*/nullptr, future.GetCallback(),
+      std::move(command_helper));
+
+  auto* command_ptr = command.get();
+  fake_provider().command_manager().ScheduleCommand(std::move(command));
+
+  ASSERT_TRUE(base::test::RunUntil([&]() { return command_ptr->IsStarted(); }));
+
+  // Manually trigger a failure on the command's OnFinalized.
+  CallOnFinalized(*command_ptr, url_info_.app_id(),
+                  webapps::InstallResultCode::kNotInstallable);
+
+  auto result = future.Take();
   EXPECT_THAT(result,
               ErrorIs(Field(&IsolatedWebAppApplyUpdateCommandError::message,
                             HasSubstr("Error during finalization"))));
   ExpectAppNotUpdatedAndDataCleared();
 }
 
-}  // namespace
 }  // namespace web_app

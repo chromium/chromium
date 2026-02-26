@@ -196,7 +196,9 @@ void FetchManifestAndUpdateCommand::OnAppLockAcquired(
   options.use_manifest_icons_as_trusted = force_trusted_silent_update_;
 
   manifest_update_job_ = ManifestUpdateJob::CreateAndStart(
-      app_lock_.get(), &app_lock_->shared_web_contents(),
+      *Profile::FromBrowserContext(
+          app_lock_->shared_web_contents().GetBrowserContext()),
+      app_lock_.get(), app_lock_.get(), &app_lock_->shared_web_contents(),
       GetMutableDebugValue().EnsureDict("manifest_update_job"),
       std::move(manifest), data_retriever_.get(), &app_lock_->clock(),
       base::BindOnce(&FetchManifestAndUpdateCommand::OnUpdateJobCompleted,

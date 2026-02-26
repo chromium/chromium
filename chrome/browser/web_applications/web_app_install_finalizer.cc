@@ -135,8 +135,16 @@ void WebAppInstallFinalizer::OnInstallUpdateJobFinished(
 void WebAppInstallFinalizer::FinalizeUpdate(
     const WebAppInstallInfo& web_app_info,
     InstallFinalizedCallback callback) {
+  FinalizeUpdate(nullptr, web_app_info, std::move(callback));
+}
+
+void WebAppInstallFinalizer::FinalizeUpdate(
+    WithAppResources* lock,
+    const WebAppInstallInfo& web_app_info,
+    InstallFinalizedCallback callback) {
   std::unique_ptr<FinalizeUpdateJob> web_app_install_update_job =
-      std::make_unique<FinalizeUpdateJob>(*provider_, std::move(web_app_info));
+      std::make_unique<FinalizeUpdateJob>(nullptr, lock, *provider_,
+                                          web_app_info);
   FinalizeUpdateJob* job_ptr = web_app_install_update_job.get();
   install_update_jobs_.insert(std::move(web_app_install_update_job));
   job_ptr->Start(
