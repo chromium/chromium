@@ -76,8 +76,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.LooperMode;
-import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
@@ -86,6 +84,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -180,7 +179,6 @@ import java.util.stream.IntStream;
         manifest = Config.NONE,
         qualifiers = "sw600dp",
         shadows = {ShadowAppCompatResources.class})
-@LooperMode(Mode.LEGACY)
 @DisableFeatures({
     ChromeFeatureList.DATA_SHARING,
     ChromeFeatureList.TAB_STRIP_CLOSE_REFACTOR_ANDROID,
@@ -2812,11 +2810,12 @@ public class StripLayoutHelperTest {
                 0.1f);
 
         // Act: Call on close tab button handler.
+        Tab closingTab = mModel.getTabAt(2);
         mStripLayoutHelper.handleCloseButtonClick(
                 tabs[2], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Act: Fake the tab closure and end the animation, so the tab is removed from the model.
-        Tab closingTab = mModel.getTabAt(2);
         mStripLayoutHelper.finishAnimations();
         mStripLayoutHelper.tabClosed(closingTab);
 
@@ -3894,6 +3893,7 @@ public class StripLayoutHelperTest {
 
         // Act
         mStripLayoutHelper.handleCloseButtonClick(tabs[selectedTabIndex], motionEventButtonState);
+        RobolectricUtil.runAllBackgroundAndUi();
         mStripLayoutHelper.finishAnimations(); // end the closing animation
 
         // Assert
@@ -3933,12 +3933,12 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Act: Call on close tab button handler.
+        Tab closingTab = mModel.getTabAt(closingIndex);
         mStripLayoutHelper.handleCloseButtonClick(
                 tabs[closingIndex], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Act: Finish the close animations.
-        Tab closingTab = mModel.getTabAt(closingIndex);
-        mStripLayoutHelper.getRunningAnimatorForTesting().end();
         mStripLayoutHelper.tabClosed(closingTab);
 
         // Assert: Tab is closed.
@@ -6201,11 +6201,12 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.updateLayout(TIMESTAMP);
 
         // Act: Call on close tab button handler.
+        Tab closingTab = mModel.getTabAt(9);
         mStripLayoutHelper.handleCloseButtonClick(
                 tabs[9], MotionEventUtils.MOTION_EVENT_BUTTON_NONE);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Act: Fake the tab closure and end the animation, so the tab is removed from the model.
-        Tab closingTab = mModel.getTabAt(9);
         mStripLayoutHelper.finishAnimations();
         mStripLayoutHelper.tabClosed(closingTab);
 

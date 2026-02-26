@@ -53,12 +53,14 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
-import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
@@ -97,7 +99,6 @@ import java.util.stream.Collectors;
         shadows = {
             ChromeBackupAgentTest.BackupManagerShadow.class,
         })
-@LooperMode(LooperMode.Mode.INSTRUMENTATION_TEST)
 public class ChromeBackupAgentTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public TemporaryFolder mTempDir = new TemporaryFolder();
@@ -765,7 +766,7 @@ public class ChromeBackupAgentTest {
                 ParcelFileDescriptor.open(
                         mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
             // Triggers a restore.
-            mAgent.onRestore(backupData, 0, newState);
+            onRestore(backupData, 0, newState);
         }
 
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
@@ -802,7 +803,7 @@ public class ChromeBackupAgentTest {
                 ParcelFileDescriptor.open(
                         mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
             // Do a restore.
-            mAgent.onRestore(backupData, 0, newState);
+            onRestore(backupData, 0, newState);
         }
 
         // Verify that the restore is not done since no valid account can be signed-in.
@@ -836,7 +837,7 @@ public class ChromeBackupAgentTest {
                 ParcelFileDescriptor.open(
                         mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
             // Do a restore.
-            mAgent.onRestore(backupData, 0, newState);
+            onRestore(backupData, 0, newState);
         }
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         assertFalse(prefs.contains(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE));
@@ -861,7 +862,7 @@ public class ChromeBackupAgentTest {
                 ParcelFileDescriptor.open(
                         mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
             // Do a restore.
-            mAgent.onRestore(backupData, 0, newState);
+            onRestore(backupData, 0, newState);
         }
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         assertTrue(prefs.contains(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE));
@@ -889,7 +890,7 @@ public class ChromeBackupAgentTest {
         try (ParcelFileDescriptor newState =
                 ParcelFileDescriptor.open(
                         mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
-            mAgent.onRestore(backupData, 0, newState);
+            onRestore(backupData, 0, newState);
         }
 
         assertEquals(
@@ -985,7 +986,7 @@ public class ChromeBackupAgentTest {
         try (ParcelFileDescriptor newState =
                 ParcelFileDescriptor.open(
                         mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
-            mAgent.onRestore(backupData, 0, newState);
+            onRestore(backupData, 0, newState);
         }
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         assertTrue(prefs.getBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false));
@@ -1061,5 +1062,19 @@ public class ChromeBackupAgentTest {
         // Verify that the account is not recorded to trigger the sign-in & sync flow later.
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         assertFalse(prefs.contains(ChromePreferenceKeys.BACKUP_FLOW_SIGNIN_ACCOUNT_NAME));
+    }
+
+    private void onRestore(
+            BackupDataInput data, int appVersionCode, ParcelFileDescriptor newState) {
+        PostTask.postTask(
+                TaskTraits.USER_BLOCKING,
+                () -> {
+                    try {
+                        mAgent.onRestore(data, appVersionCode, newState);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        RobolectricUtil.runAllBackgroundAndUiAllowBlocking();
     }
 }
