@@ -283,11 +283,8 @@ AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
     }
   }
 
-  media::ChannelLayout channel_layout =
-      config.numberOfChannels() > 8
-          // GuesschannelLayout() doesn't know how to guess above 8 channels.
-          ? media::CHANNEL_LAYOUT_DISCRETE
-          : media::GuessChannelLayout(config.numberOfChannels());
+  media::ChannelLayoutConfig channel_layout =
+      media::ChannelLayoutConfig::Guess(config.numberOfChannels());
 
   auto encryption_scheme = media::EncryptionScheme::kUnencrypted;
   if (config.hasEncryptionScheme()) {
@@ -313,11 +310,10 @@ AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
     format = PcmCodecToSampleFormat(config.codec());
   }
 
-  media_config.Initialize(
-      audio_type->codec, format,
-      {channel_layout, static_cast<int>(config.numberOfChannels())},
-      config.sampleRate(), extra_data, encryption_scheme,
-      /*seek_preroll=*/base::TimeDelta(), /*codec_delay=*/0);
+  media_config.Initialize(audio_type->codec, format, channel_layout,
+                          config.sampleRate(), extra_data, encryption_scheme,
+                          /*seek_preroll=*/base::TimeDelta(),
+                          /*codec_delay=*/0);
   if (!media_config.IsValidConfig()) {
     *js_error_message = "Unsupported config.";
     return std::nullopt;
