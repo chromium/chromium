@@ -90,6 +90,13 @@ found in the LICENSE file.
             android:visibility="gone" />
 
         <ViewStub
+            android:id="@+id/signin_button_stub"
+            android:layout="@layout/signin_button_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <ViewStub
             android:id="@+id/incognito_indicator_stub"
             android:inflatedId="@+id/incognito_indicator"
             android:layout="@layout/incognito_indicator"
