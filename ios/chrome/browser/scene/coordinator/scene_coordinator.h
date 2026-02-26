@@ -64,9 +64,7 @@ enum class WarningType;
                        SettingsCommands,
                        SettingsNavigationControllerDelegate>
 
-- (instancetype)initWithSceneCommandsEndpoint:
-                    (id<SceneCommands>)sceneCommandsEndpoint
-                                    tabOpener:(id<TabOpening>)tabOpener
+- (instancetype)initWithTabOpener:(id<TabOpening>)tabOpener
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

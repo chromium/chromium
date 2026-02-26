@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_coordinator.h"
@@ -70,8 +71,7 @@ void OpenNewTab() {
                     withURLLoadParams:params];
       return;
     }
-    id<SceneCommands, BrowserCommands> handler =
-        chrome_test_util::HandlerForActiveBrowser();
+    id<SceneCommands> handler = chrome_test_util::HandlerForActiveBrowser();
     [handler openURLInNewTab:command];
   }
 }
@@ -98,8 +98,7 @@ void OpenNewIncognitoTab() {
                                                       withURLLoadParams:params];
       return;
     }
-    id<SceneCommands, BrowserCommands> handler =
-        chrome_test_util::HandlerForActiveBrowser();
+    id<SceneCommands> handler = chrome_test_util::HandlerForActiveBrowser();
     [handler openURLInNewTab:command];
   }
 }

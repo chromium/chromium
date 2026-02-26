@@ -946,9 +946,7 @@ bool IsSigninForcedByPolicy() {
   SceneState* sceneState = self.sceneState;
   ProfileIOS* profile = self.profile;
 
-  _mainCoordinator =
-      [[SceneCoordinator alloc] initWithSceneCommandsEndpoint:self
-                                                    tabOpener:self];
+  _mainCoordinator = [[SceneCoordinator alloc] initWithTabOpener:self];
   _mainCoordinator.UIHandler = self;
   _mainCoordinator.tabGridDelegate = self;
   _mainCoordinator.sceneURLLoadingService = _sceneURLLoadingService.get();
@@ -956,7 +954,7 @@ bool IsSigninForcedByPolicy() {
   self.browserLifecycleManager =
       [[BrowserLifecycleManager alloc] initWithProfile:profile
                                             sceneState:sceneState
-                                   applicationEndpoint:self
+                                         sceneEndpoint:_mainCoordinator
                                       settingsEndpoint:_mainCoordinator];
 
   // Create and start the BVC.
@@ -1203,7 +1201,7 @@ bool IsSigninForcedByPolicy() {
 
 // Returns YES if the fullscreen sign-in promo should be presented.
 - (BOOL)shouldPresentFullscreenSigninPromo {
-  if (![self isTabAvailableToPresentViewController]) {
+  if (![self.mainCoordinator isTabAvailableToPresentViewController]) {
     return NO;
   }
   if (!signin::ShouldPresentUserSigninUpgrade(self.profile,
@@ -1240,7 +1238,9 @@ bool IsSigninForcedByPolicy() {
   }
   self.sceneState.profileState.appState.fullscreenSigninPromoPresentedOnce =
       YES;
-  [self showFullscreenSigninPromoWithCompletion:nil];
+  id<SceneCommands> sceneHandler = HandlerForProtocol(
+      self.mainInterface.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler showFullscreenSigninPromoWithCompletion:nil];
 }
 
 - (BOOL)canHandleIntents {
@@ -1455,7 +1455,7 @@ bool IsSigninForcedByPolicy() {
   [_sceneState
       addAgent:[[IncognitoReauthSceneAgent alloc]
                    initWithReauthModule:[[ReauthenticationModule alloc] init]
-                           sceneHandler:self]];
+                           sceneHandler:_mainCoordinator]];
   [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
   [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
   [_sceneState addAgent:[[LayoutGuideSceneAgent alloc] init]];
@@ -1464,174 +1464,6 @@ bool IsSigninForcedByPolicy() {
   if (IsEnableNewStartupFlowEnabled()) {
     [_sceneState addAgent:[[TaskUpdaterSceneAgent alloc] init]];
   }
-}
-
-#pragma mark - SceneCommands
-
-- (void)showFullscreenSigninPromoWithCompletion:
-    (SigninCoordinatorCompletionCallback)dismissalCompletion {
-  [self.mainCoordinator
-      showFullscreenSigninPromoWithCompletion:dismissalCompletion];
-}
-
-- (void)dismissModalDialogsWithCompletion:(ProceduralBlock)completion {
-  [self.mainCoordinator dismissModalDialogsWithCompletion:completion];
-}
-
-- (void)dismissModalsAndShowPasswordCheckupPageForReferrer:
-    (password_manager::PasswordCheckReferrer)referrer {
-  [self.mainCoordinator
-      dismissModalsAndShowPasswordCheckupPageForReferrer:referrer];
-}
-
-- (void)
-    showPasswordIssuesWithWarningType:(password_manager::WarningType)warningType
-                             referrer:(password_manager::PasswordCheckReferrer)
-                                          referrer {
-  [self.mainCoordinator showPasswordIssuesWithWarningType:warningType
-                                                 referrer:referrer];
-}
-
-- (void)showSafeBrowsingSettingsFromViewController:
-    (UIViewController*)baseViewController {
-  [self.mainCoordinator
-      showSafeBrowsingSettingsFromViewController:baseViewController];
-}
-
-- (void)showHistory {
-  [self.mainCoordinator showHistory];
-}
-
-- (void)closePresentedViewsAndOpenURL:(OpenNewTabCommand*)command {
-  [self.mainCoordinator closePresentedViewsAndOpenURL:command];
-}
-
-- (void)closePresentedViews {
-  [self.mainCoordinator closePresentedViews];
-}
-
-- (void)prepareTabSwitcher {
-  [self.mainCoordinator prepareTabSwitcher];
-}
-
-- (void)displayTabGridInMode:(TabGridOpeningMode)mode {
-  [self.mainCoordinator displayTabGridInMode:mode];
-}
-
-- (void)showPrivacySettingsFromViewController:
-    (UIViewController*)baseViewController {
-  [self.mainCoordinator
-      showPrivacySettingsFromViewController:baseViewController];
-}
-
-- (void)showReportAnIssueFromViewController:
-            (UIViewController*)baseViewController
-                                     sender:(UserFeedbackSender)sender {
-  [self.mainCoordinator showReportAnIssueFromViewController:baseViewController
-                                                     sender:sender];
-}
-
-- (void)
-    showReportAnIssueFromViewController:(UIViewController*)baseViewController
-                                 sender:(UserFeedbackSender)sender
-                    specificProductData:(NSDictionary<NSString*, NSString*>*)
-                                            specificProductData {
-  [self.mainCoordinator
-      showReportAnIssueFromViewController:baseViewController
-                                   sender:sender
-                      specificProductData:specificProductData];
-}
-
-- (void)openURLInNewTab:(OpenNewTabCommand*)command {
-  [self.mainCoordinator openURLInNewTab:command];
-}
-
-// TODO(crbug.com/41352590) : Do not pass `baseViewController` through
-// dispatcher.
-- (void)showSignin:(ShowSigninCommand*)command
-    baseViewController:(UIViewController*)baseViewController {
-  [self.mainCoordinator showSignin:command
-                baseViewController:baseViewController];
-}
-
-- (void)showAccountMenuFromWebWithURL:(const GURL&)url {
-  [self.mainCoordinator showAccountMenuFromWebWithURL:url];
-}
-
-- (void)showWebSigninPromoFromViewController:
-            (UIViewController*)baseViewController
-                                         URL:(const GURL&)URL {
-  [self.mainCoordinator showWebSigninPromoFromViewController:baseViewController
-                                                         URL:URL];
-}
-
-- (void)showSigninAccountNotificationFromViewController:
-    (UIViewController*)baseViewController {
-  [self.mainCoordinator
-      showSigninAccountNotificationFromViewController:baseViewController];
-}
-
-- (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
-  [self.mainCoordinator setIncognitoContentVisible:incognitoContentVisible];
-}
-
-- (void)stopAllVoiceSearch {
-  [self.mainCoordinator stopAllVoiceSearch];
-}
-
-- (void)maybeShowSettingsFromViewController {
-  [self.mainCoordinator maybeShowSettingsFromViewController];
-}
-
-- (void)showSettingsFromViewController:(UIViewController*)baseViewController {
-  [self.mainCoordinator showSettingsFromViewController:baseViewController];
-}
-
-- (void)showSettingsFromViewController:(UIViewController*)baseViewController
-              hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot {
-  [self.mainCoordinator
-      showSettingsFromViewController:baseViewController
-            hasDefaultBrowserBlueDot:hasDefaultBrowserBlueDot];
-}
-
-- (void)showPriceTrackingNotificationsSettings {
-  [self.mainCoordinator showPriceTrackingNotificationsSettings];
-}
-
-- (void)openNewWindowWithActivity:(NSUserActivity*)userActivity {
-  [self.mainCoordinator openNewWindowWithActivity:userActivity];
-}
-
-- (void)prepareToPresentModalWithSnackbarDismissal:(BOOL)dismissSnackbars
-                                        completion:(ProceduralBlock)completion {
-  [self.mainCoordinator
-      prepareToPresentModalWithSnackbarDismissal:dismissSnackbars
-                                      completion:completion];
-}
-
-// Returns YES if the current Tab is available to present a view controller.
-- (BOOL)isTabAvailableToPresentViewController {
-  return [self.mainCoordinator isTabAvailableToPresentViewController];
-}
-
-- (void)openAIMenu {
-  [self.mainCoordinator openAIMenu];
-}
-
-- (void)showAssistant {
-  [self.mainCoordinator showAssistant];
-}
-
-- (void)displaySafariDataImportFromEntryPoint:
-            (SafariDataImportEntryPoint)entryPoint
-                                withUIHandler:
-                                    (id<SafariDataImportUIHandler>)UIHandler {
-  [self.mainCoordinator displaySafariDataImportFromEntryPoint:entryPoint
-                                                withUIHandler:UIHandler];
-}
-
-- (void)showAppStorePage {
-  [self.mainCoordinator showAppStorePage];
 }
 
 #pragma mark - TabGridCoordinatorDelegate
@@ -1777,10 +1609,13 @@ bool IsSigninForcedByPolicy() {
         [weakSelf showDefaultBrowserSettingsWithSourceForUMA:
                       DefaultBrowserSettingsPageSource::kExternalIntent];
       };
-    case VIEW_HISTORY:
+    case VIEW_HISTORY: {
+      __weak id<SceneCommands> weakSceneHandler = HandlerForProtocol(
+          self.currentInterface.browser->GetCommandDispatcher(), SceneCommands);
       return ^{
-        [weakSelf showHistory];
+        [weakSceneHandler showHistory];
       };
+    }
     case OPEN_PAYMENT_METHODS:
       return ^{
         [weakSelf openPaymentMethods];
@@ -1803,11 +1638,15 @@ bool IsSigninForcedByPolicy() {
         [weakSettingsHandler showPasswordSearchPage];
       };
     }
-    case MANAGE_SETTINGS:
+    case MANAGE_SETTINGS: {
+      __weak id<SceneCommands> weakSceneHandler = HandlerForProtocol(
+          self.currentInterface.browser->GetCommandDispatcher(), SceneCommands);
       return ^{
-        [weakSelf showSettingsFromViewController:weakSelf.currentInterface
-                                                     .viewController];
+        [weakSceneHandler
+            showSettingsFromViewController:weakSelf.currentInterface
+                                               .viewController];
       };
+    }
     case OPEN_LATEST_TAB:
       return ^{
         [weakSelf openLatestTab];

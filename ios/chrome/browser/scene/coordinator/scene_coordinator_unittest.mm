@@ -83,14 +83,8 @@ class SceneCoordinatorTest : public PlatformTest {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_loader_factory_));
 
-    scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
-    [browser_->GetCommandDispatcher()
-        startDispatchingToTarget:scene_handler_
-                     forProtocol:@protocol(SceneCommands)];
-
     coordinator_ = [[SceneCoordinator alloc]
-        initWithSceneCommandsEndpoint:scene_handler_
-                            tabOpener:OCMProtocolMock(@protocol(TabOpening))];
+        initWithTabOpener:OCMProtocolMock(@protocol(TabOpening))];
 
     id mock_interface = OCMProtocolMock(@protocol(BrowserProviderInterface));
     id mock_main_provider = OCMProtocolMock(@protocol(BrowserProvider));
@@ -129,7 +123,6 @@ class SceneCoordinatorTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   raw_ptr<Browser> inactive_browser_;
   std::unique_ptr<Browser> incognito_browser_;
-  id<SceneCommands> scene_handler_;
   SceneCoordinator* coordinator_;
   SceneState* scene_state_;
   ProfileState* profile_state_;

@@ -26,12 +26,12 @@ class ProfileIOS;
 //
 // `sceneState` is the scene state that will be associated with any Browsers
 // created.
-// `applicationEndpoint`, `settingsEndpoint, and `browsingDataEndpoint` are the
+// `sceneEndpoint`, `settingsEndpoint, and `browsingDataEndpoint` are the
 // objects that methods in the respective command protocols should be
 // dispatched to.
 - (instancetype)initWithProfile:(ProfileIOS*)profile
                      sceneState:(SceneState*)sceneState
-            applicationEndpoint:(id<SceneCommands>)applicationEndpoint
+                  sceneEndpoint:(id<SceneCommands>)sceneEndpoint
                settingsEndpoint:(id<SettingsCommands>)settingsEndpoint
     NS_DESIGNATED_INITIALIZER;
 

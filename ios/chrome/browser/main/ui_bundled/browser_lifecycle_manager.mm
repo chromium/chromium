@@ -39,7 +39,7 @@
   raw_ptr<ProfileIOS> _profile;
 
   __weak SceneState* _sceneState;
-  __weak id<SceneCommands> _applicationEndpoint;
+  __weak id<SceneCommands> _sceneEndpoint;
   __weak id<SettingsCommands> _settingsEndpoint;
 
   std::unique_ptr<Browser> _mainBrowser;
@@ -53,12 +53,12 @@
 
 - (instancetype)initWithProfile:(ProfileIOS*)profile
                      sceneState:(SceneState*)sceneState
-            applicationEndpoint:(id<SceneCommands>)applicationEndpoint
+                  sceneEndpoint:(id<SceneCommands>)sceneEndpoint
                settingsEndpoint:(id<SettingsCommands>)settingsEndpoint {
   if ((self = [super init])) {
     _profile = profile;
     _sceneState = sceneState;
-    _applicationEndpoint = applicationEndpoint;
+    _sceneEndpoint = sceneEndpoint;
     _settingsEndpoint = settingsEndpoint;
 
     // Create all browsers.
@@ -273,7 +273,7 @@
   [dispatcher startDispatchingToTarget:reauthAgent
                            forProtocol:@protocol(IncognitoReauthCommands)];
 
-  [dispatcher startDispatchingToTarget:_applicationEndpoint
+  [dispatcher startDispatchingToTarget:_sceneEndpoint
                            forProtocol:@protocol(SceneCommands)];
   [dispatcher startDispatchingToTarget:_settingsEndpoint
                            forProtocol:@protocol(SettingsCommands)];

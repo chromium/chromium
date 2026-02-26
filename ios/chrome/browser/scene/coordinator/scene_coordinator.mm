@@ -156,7 +156,6 @@ void OnListFamilyMembersResponse(
 @end
 
 @implementation SceneCoordinator {
-  id<SceneCommands> _sceneCommandsEndpoint;
   id<TabOpening> _tabOpener;
   base::WeakPtr<Browser> _inactiveBrowser;
   base::WeakPtr<Browser> _regularBrowser;
@@ -205,11 +204,8 @@ void OnListFamilyMembersResponse(
   SettingsNavigationController* _settingsNavigationController;
 }
 
-- (instancetype)initWithSceneCommandsEndpoint:
-                    (id<SceneCommands>)sceneCommandsEndpoint
-                                    tabOpener:(id<TabOpening>)tabOpener {
+- (instancetype)initWithTabOpener:(id<TabOpening>)tabOpener {
   if ((self = [super init])) {
-    _sceneCommandsEndpoint = sceneCommandsEndpoint;
     _tabOpener = tabOpener;
   }
   return self;
@@ -230,7 +226,7 @@ void OnListFamilyMembersResponse(
   CHECK(_incognitoBrowser);
 
   _tabGridCoordinator = [[TabGridCoordinator alloc]
-      initWithSceneCommandsEndpoint:_sceneCommandsEndpoint
+      initWithSceneCommandsEndpoint:self
                      regularBrowser:_regularBrowser.get()
                     inactiveBrowser:_inactiveBrowser.get()
                    incognitoBrowser:_incognitoBrowser];
@@ -993,7 +989,7 @@ void OnListFamilyMembersResponse(
 - (void)showSavedPasswordsSettingsFromViewController:
     (UIViewController*)baseViewController {
   __weak SceneCoordinator* weakSelf = self;
-  [_sceneCommandsEndpoint dismissModalDialogsWithCompletion:^{
+  [self dismissModalDialogsWithCompletion:^{
     [weakSelf showSavedPasswordsSettingsAfterModalDismissFromViewController:
                   baseViewController];
   }];
@@ -1635,15 +1631,10 @@ void OnListFamilyMembersResponse(
   // Cancel any list family member requests in progress.
   _familyMembersFetcher.reset();
 
-  Browser* browser = _regularBrowser.get();
-
-  id<SceneCommands> handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
-
   UserFeedbackConfiguration* configuration =
       [[UserFeedbackConfiguration alloc] init];
   configuration.data = data;
-  configuration.sceneHandler = handler;
+  configuration.sceneHandler = self;
   configuration.singleSignOnService =
       GetApplicationContext()->GetSingleSignOnService();
 

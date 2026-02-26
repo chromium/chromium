@@ -155,10 +155,10 @@ class SceneControllerTest : public PlatformTest {
     [scene_state_ addAgent:reauth_agent];
 
     scene_controller_.browserLifecycleManager = [[BrowserLifecycleManager alloc]
-            initWithProfile:profile_.get()
-                 sceneState:scene_state_
-        applicationEndpoint:mock_scene_handler_
-           settingsEndpoint:mock_settings_handler_];
+         initWithProfile:profile_.get()
+              sceneState:scene_state_
+           sceneEndpoint:mock_scene_handler_
+        settingsEndpoint:mock_settings_handler_];
     [scene_controller_
             .browserLifecycleManager createMainCoordinatorAndInterface];
 

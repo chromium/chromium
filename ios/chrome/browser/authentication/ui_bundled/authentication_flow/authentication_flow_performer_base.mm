@@ -50,6 +50,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -161,8 +162,9 @@ void MaybeShowHistorySyncScreenAfterProfileSwitch(
     view_controller = view_controller.presentedViewController;
   }
 
-  [browser->GetSceneState().controller showSignin:command
-                               baseViewController:view_controller];
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler showSignin:command baseViewController:view_controller];
 }
 
 void CompletePostSignInActionsContinuationImpl(

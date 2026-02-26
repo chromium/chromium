@@ -30,9 +30,12 @@
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
@@ -185,19 +188,21 @@
             accessPoint:signin_metrics::AccessPoint::kResigninInfobar];
   UIViewController* baseViewController =
       chrome_test_util::GetActiveViewController();
-  SceneController* sceneController =
-      chrome_test_util::GetForegroundActiveSceneController();
-  [sceneController showSignin:command baseViewController:baseViewController];
+  id<SceneCommands> sceneHandler = HandlerForProtocol(
+      chrome_test_util::GetMainBrowser()->GetCommandDispatcher(),
+      SceneCommands);
+  [sceneHandler showSignin:command baseViewController:baseViewController];
 }
 
 + (void)triggerConsistencyPromoSigninDialogWithURL:(NSURL*)url {
   const GURL gURL = net::GURLWithNSURL(url);
   UIViewController* baseViewController =
       chrome_test_util::GetActiveViewController();
-  SceneController* sceneController =
-      chrome_test_util::GetForegroundActiveSceneController();
-  [sceneController showWebSigninPromoFromViewController:baseViewController
-                                                    URL:gURL];
+  id<SceneCommands> sceneHandler = HandlerForProtocol(
+      chrome_test_util::GetMainBrowser()->GetCommandDispatcher(),
+      SceneCommands);
+  [sceneHandler showWebSigninPromoFromViewController:baseViewController
+                                                 URL:gURL];
 }
 
 + (void)presentSignInAccountsViewControllerIfNecessary {

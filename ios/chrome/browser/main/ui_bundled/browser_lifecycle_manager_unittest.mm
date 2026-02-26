@@ -162,7 +162,7 @@ TEST_F(BrowserLifecycleManagerTest, TestInitNilObserver) {
     BrowserLifecycleManager* wrangler =
         [[BrowserLifecycleManager alloc] initWithProfile:profile()
                                               sceneState:scene_state()
-                                     applicationEndpoint:mock_scene_handler
+                                           sceneEndpoint:mock_scene_handler
                                         settingsEndpoint:mock_settings_handler];
     [wrangler createMainCoordinatorAndInterface];
 
@@ -202,7 +202,7 @@ TEST_F(BrowserLifecycleManagerTest, TestBrowserList) {
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()
                                             sceneState:scene_state()
-                                   applicationEndpoint:mock_scene_handler
+                                         sceneEndpoint:mock_scene_handler
                                       settingsEndpoint:mock_settings_handler];
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile());
@@ -275,7 +275,7 @@ TEST_F(BrowserLifecycleManagerTest, TestInactiveInterface) {
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()
                                             sceneState:scene_state()
-                                   applicationEndpoint:mock_scene_handler
+                                         sceneEndpoint:mock_scene_handler
                                       settingsEndpoint:mock_settings_handler];
 
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile());
@@ -307,7 +307,7 @@ TEST_F(BrowserLifecycleManagerTest, TestSessionRestorationLogic) {
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()
                                             sceneState:scene_state()
-                                   applicationEndpoint:mock_scene_handler
+                                         sceneEndpoint:mock_scene_handler
                                       settingsEndpoint:mock_settings_handler];
 
   // Create the coordinator and interface. This is required to get access
