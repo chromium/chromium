@@ -289,9 +289,10 @@ MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
   }
 
   // If we have inline size containment ignore all children.
-  auto grid_sizing_tree = node.ShouldApplyInlineSizeContainment()
-                              ? BuildGridSizingTreeIgnoringChildren(*this)
-                              : BuildGridSizingTree(*this);
+  auto grid_sizing_tree =
+      node.ShouldApplyInlineSizeContainment()
+          ? BuildGridSizingTreeIgnoringChildren<GridLayoutAlgorithm>(*this)
+          : BuildGridSizingTree<GridLayoutAlgorithm>(*this);
 
   bool depends_on_block_constraints = false;
   auto ComputeTotalColumnSize =
@@ -407,9 +408,10 @@ GridLayoutSubtree GridLayoutAlgorithm::ComputeGridGeometry(
     return *layout_subtree;
   }
 
-  auto grid_sizing_tree = node.ChildLayoutBlockedByDisplayLock()
-                              ? BuildGridSizingTreeIgnoringChildren(*this)
-                              : BuildGridSizingTree(*this, oof_children);
+  auto grid_sizing_tree =
+      node.ChildLayoutBlockedByDisplayLock()
+          ? BuildGridSizingTreeIgnoringChildren<GridLayoutAlgorithm>(*this)
+          : BuildGridSizingTree<GridLayoutAlgorithm>(*this, oof_children);
 
   InitializeTrackSizes(&grid_sizing_tree);
 
@@ -512,7 +514,8 @@ LayoutUnit GridLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren()
   if (override_intrinsic_block_size != kIndefiniteSize)
     return BorderScrollbarPadding().BlockSum() + override_intrinsic_block_size;
 
-  auto grid_sizing_tree = BuildGridSizingTreeIgnoringChildren(*this);
+  auto grid_sizing_tree =
+      BuildGridSizingTreeIgnoringChildren<GridLayoutAlgorithm>(*this);
 
   InitializeTrackSizes(&grid_sizing_tree, kForRows);
   CompleteTrackSizingAlgorithm(kForRows, SizingConstraint::kLayout,

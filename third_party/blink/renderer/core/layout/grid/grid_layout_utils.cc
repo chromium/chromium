@@ -664,7 +664,8 @@ GridArea SubgriddedAreaInParent(const SubgriddedItemData& opt_subgrid_data) {
 
 }  // namespace
 
-void BuildGridSizingSubtree(const GridLayoutAlgorithm& algorithm,
+template <typename LayoutAlgorithmType>
+void BuildGridSizingSubtree(const LayoutAlgorithmType& algorithm,
                             GridSizingTree* sizing_tree,
                             HeapVector<Member<LayoutBox>>* opt_oof_children,
                             const SubgriddedItemData& opt_subgrid_data,
@@ -792,7 +793,8 @@ void BuildGridSizingSubtree(const GridLayoutAlgorithm& algorithm,
     const GridLayoutAlgorithm subgrid_algorithm(
         {grid_item.node, fragment_geometry, space});
 
-    BuildGridSizingSubtree(
+    // TODO(almaher): Use the grid lanes algorithm if the subgrid requires it.
+    BuildGridSizingSubtree<GridLayoutAlgorithm>(
         subgrid_algorithm, sizing_tree, /*opt_oof_children=*/nullptr,
         SubgriddedItemData(grid_item, layout_data, writing_mode),
         &line_resolver, must_invalidate_placement_cache);
@@ -820,28 +822,49 @@ void BuildGridSizingSubtree(const GridLayoutAlgorithm& algorithm,
                                  std::move(layout_data));
 }
 
+// TODO(almaher): Need to add an instance for GridLanesLayoutAlgorithm.
+template void BuildGridSizingSubtree(const GridLayoutAlgorithm&,
+                                     GridSizingTree*,
+                                     HeapVector<Member<LayoutBox>>*,
+                                     const SubgriddedItemData&,
+                                     const GridLineResolver*,
+                                     bool,
+                                     bool);
+
+template <typename LayoutAlgorithmType>
 GridSizingTree BuildGridSizingTree(
-    const GridLayoutAlgorithm& algorithm,
+    const LayoutAlgorithmType& algorithm,
     HeapVector<Member<LayoutBox>>* opt_oof_children) {
   DCHECK(!algorithm.GetConstraintSpace().GetGridLayoutSubtree());
 
   GridSizingTree sizing_tree;
-  BuildGridSizingSubtree(algorithm, &sizing_tree, opt_oof_children);
+  BuildGridSizingSubtree<LayoutAlgorithmType>(algorithm, &sizing_tree,
+                                              opt_oof_children);
   return sizing_tree;
 }
 
+// TODO(almaher): Need to add an instance for GridLanesLayoutAlgorithm.
+template CORE_EXPORT GridSizingTree
+BuildGridSizingTree(const GridLayoutAlgorithm&, HeapVector<Member<LayoutBox>>*);
+
+template <typename LayoutAlgorithmType>
 GridSizingTree BuildGridSizingTreeIgnoringChildren(
-    const GridLayoutAlgorithm& algorithm) {
+    const LayoutAlgorithmType& algorithm) {
   DCHECK(!algorithm.GetConstraintSpace().GetGridLayoutSubtree());
 
   GridSizingTree sizing_tree;
-  BuildGridSizingSubtree(algorithm, &sizing_tree, /*opt_oof_children=*/nullptr,
-                         /*opt_subgrid_data=*/kNoSubgriddedItemData,
-                         /*opt_parent_line_resolver=*/nullptr,
-                         /*must_invalidate_placement_cache=*/false,
-                         /*must_ignore_children=*/true);
+  BuildGridSizingSubtree<LayoutAlgorithmType>(
+      algorithm, &sizing_tree, /*opt_oof_children=*/nullptr,
+      /*opt_subgrid_data=*/kNoSubgriddedItemData,
+      /*opt_parent_line_resolver=*/nullptr,
+      /*must_invalidate_placement_cache=*/false,
+      /*must_ignore_children=*/true);
   return sizing_tree;
 }
+
+// TODO(almaher): Need to add an instance for GridLanesLayoutAlgorithm.
+template GridSizingTree BuildGridSizingTreeIgnoringChildren(
+    const GridLayoutAlgorithm&);
 
 FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
     const GridItemData& subgrid_data,

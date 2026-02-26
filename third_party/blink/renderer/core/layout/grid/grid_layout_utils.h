@@ -173,11 +173,9 @@ LayoutUnit ComputeBaselineOffset(
 
 // Aggregate all direct out of flow children from the grid container associated
 // with `algorithm` to `opt_oof_children`, unless it's not provided.
-//
-// TODO(almaher): Make these methods take a template type for the layout
-// algorithm to allow this to work with grid-lanes, as well.
+template <typename LayoutAlgorithmType>
 void BuildGridSizingSubtree(
-    const GridLayoutAlgorithm& algorithm,
+    const LayoutAlgorithmType& algorithm,
     GridSizingTree* sizing_tree,
     HeapVector<Member<LayoutBox>>* opt_oof_children,
     const SubgriddedItemData& opt_subgrid_data = kNoSubgriddedItemData,
@@ -185,11 +183,14 @@ void BuildGridSizingSubtree(
     bool must_invalidate_placement_cache = false,
     bool must_ignore_children = false);
 
-CORE_EXPORT GridSizingTree
-BuildGridSizingTree(const GridLayoutAlgorithm& algorithm,
-                    HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr);
+template <typename LayoutAlgorithmType>
+GridSizingTree BuildGridSizingTree(
+    const LayoutAlgorithmType& algorithm,
+    HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr);
+
+template <typename LayoutAlgorithmType>
 GridSizingTree BuildGridSizingTreeIgnoringChildren(
-    const GridLayoutAlgorithm& algorithm);
+    const LayoutAlgorithmType& algorithm);
 
 // Calculate the initial fragment geometry for a subgrid item.
 FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
@@ -199,9 +200,9 @@ FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(
 
 // Helper which iterates over the sizing tree, and instantiates a subgrid
 // algorithm to invoke the callback with.
-template <typename CallbackFunc>
+template <typename LayoutAlgorithmType, typename CallbackFunc>
 void ForEachSubgrid(const GridSizingSubtree& sizing_subtree,
-                    const GridLayoutAlgorithm& algorithm,
+                    const LayoutAlgorithmType& algorithm,
                     const CallbackFunc& callback_func,
                     bool should_compute_min_max_sizes = true) {
   // Exit early if this subtree doesn't have nested subgrids.
@@ -224,6 +225,8 @@ void ForEachSubgrid(const GridSizingSubtree& sizing_subtree,
         should_compute_min_max_sizes ? next_subgrid_subtree
                                      : kNoGridSizingSubtree);
 
+    // TODO(almaher): This should use GridLanesLayoutAlgorithm when the subgrid
+    // is a grid-lanes container.
     const GridLayoutAlgorithm subgrid_algorithm(
         {grid_item.node, fragment_geometry, space});
 
