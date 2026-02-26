@@ -128,7 +128,8 @@ void WebContentsModalDialogManager::BlockWebContentsInteraction(bool blocked) {
   }
 
   if (blocked) {
-    scoped_ignore_input_events_ = contents->IgnoreInputEvents(std::nullopt);
+    scoped_ignore_input_events_ = contents->IgnoreInputEvents(
+        std::nullopt, /*should_ignore_a11y_input=*/true);
   } else {
     scoped_ignore_input_events_.reset();
   }
