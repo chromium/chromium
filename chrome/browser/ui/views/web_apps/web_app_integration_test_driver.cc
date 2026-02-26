@@ -1044,12 +1044,6 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
   in_tear_down_ = true;
   LOG(INFO) << "TearDownOnMainThread: Start.";
 
-  // Print debug information if there was a failure.
-  if (testing::Test::HasFailure()) {
-    base::TimeDelta log_time = base::TimeTicks::Now() - start_time_;
-    test::LogDebugInfoToConsole(GetAllProfiles(), log_time);
-  }
-
 #if BUILDFLAG(IS_CHROMEOS)
   if (delegate_->IsSyncTest()) {
     SyncTurnOff();
@@ -1106,6 +1100,12 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
   override_registration_.reset();
 
   LOG(INFO) << "TearDownOnMainThread: Complete.";
+
+  // Print debug information if there was a failure.
+  if (testing::Test::HasFailure()) {
+    base::TimeDelta log_time = base::TimeTicks::Now() - start_time_;
+    test::LogDebugInfoToConsole(GetAllProfiles(), log_time);
+  }
 }
 
 void WebAppIntegrationTestDriver::OnWidgetShown(views::Widget* widget) {
@@ -1172,21 +1172,7 @@ void WebAppIntegrationTestDriver::HandleAppIdentityUpdateDialogResponse(
       views::test::AcceptDialog(uninstall_dialog_widget);
       uninstall_destroyed.Wait();
     } break;
-    case UpdateDialogResponse::kCancelDialogAndCancelUninstall: {
-      auto uninstall_dialog_view =
-          std::make_unique<views::NamedWidgetShownWaiter>(
-              views::test::AnyWidgetTestPasskey{},
-              "WebAppUninstallDialogDelegateView");
-      views::test::CancelDialog(manifest_update_widget);
-      views::Widget* uninstall_dialog_widget = uninstall_dialog_widget =
-          uninstall_dialog_view->WaitIfNeededAndGet();
-      ASSERT_NE(uninstall_dialog_widget, nullptr);
-      views::test::WidgetDestroyedWaiter uninstall_destroyed(
-          uninstall_dialog_widget);
-      views::test::CancelDialog(uninstall_dialog_widget);
-      uninstall_destroyed.Wait();
-    } break;
-    case UpdateDialogResponse::kIgnoreDialog: {
+    case UpdateDialogResponse::kIgnoreDialog:
       views::test::WidgetDestroyedWaiter destroyed_waiter(
           manifest_update_widget);
       views::ElementTrackerViews* tracker_views =
@@ -1200,13 +1186,6 @@ void WebAppIntegrationTestDriver::HandleAppIdentityUpdateDialogResponse(
       ASSERT_NE(nullptr, button);
       views::test::ButtonTestApi(button).NotifyClick(ui::test::TestEvent());
       destroyed_waiter.Wait();
-    } break;
-    case UpdateDialogResponse::kCloseDialog: {
-      views::test::WidgetDestroyedWaiter destroyed_waiter(
-          manifest_update_widget);
-      manifest_update_widget->Close();
-      destroyed_waiter.Wait();
-    } break;
   }
   // Wait for the pending update to be applied, or the uninstall command to
   // finish running.
@@ -2473,14 +2452,10 @@ void WebAppIntegrationTestDriver::ManifestUpdateAddMigrateTo(Site app,
     return;
   }
 
-  webapps::AppId app_id = GetAppIdBySiteMode(app);
   GURL url =
       GetUrlForSite(app, GetMigrateToConfiguration(to).manifest_url_param);
-  ForceUpdateManifestContents(
-      app, url,
-      /*wait_for_pending_updates_to_arrive=*/
-      provider()->registrar_unsafe().AppMatches(
-          app_id, WebAppFilter::IsAppValidMigrationSource()));
+  ForceUpdateManifestContents(app, url,
+                              /*wait_for_pending_updates_to_arrive=*/true);
 
   AfterStateChangeAction();
 }
@@ -3816,12 +3791,12 @@ void WebAppIntegrationTestDriver::CheckPwaWindowCreatedImpl(Profile* profile,
   int after_state_app_window_count = 0;
   webapps::AppId app_id = GetAppIdBySiteMode(site);
   for (const auto& browser_pair : before_action_profile->browsers) {
-    if (browser_pair.second.app_id == app_id) {
+    if (AppBrowserController::IsForWebApp(browser_pair.first, app_id)) {
       before_state_app_window_count++;
     }
   }
   for (const auto& browser_pair : after_action_profile->browsers) {
-    if (browser_pair.second.app_id == app_id) {
+    if (AppBrowserController::IsForWebApp(browser_pair.first, app_id)) {
       after_state_app_window_count++;
     }
   }
