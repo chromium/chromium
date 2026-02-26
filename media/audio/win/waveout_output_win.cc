@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/audio/win/waveout_output_win.h"
 
 #include <atomic>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -77,7 +73,7 @@ inline size_t PCMWaveOutAudioOutputStream::BufferSize() const {
 inline WAVEHDR* PCMWaveOutAudioOutputStream::GetBuffer(int n) const {
   DCHECK_GE(n, 0);
   DCHECK_LT(n, num_buffers_);
-  return reinterpret_cast<WAVEHDR*>(&buffers_[n * BufferSize()]);
+  return reinterpret_cast<WAVEHDR*>(&UNSAFE_TODO(buffers_[n * BufferSize()]));
 }
 
 constexpr SampleFormat kSampleFormat = kSampleFormatS16;
@@ -112,7 +108,7 @@ PCMWaveOutAudioOutputStream::PCMWaveOutAudioOutputStream(
   if (params.channels() > kMaxChannelsToMask) {
     format_.dwChannelMask = kChannelsToMask[kMaxChannelsToMask];
   } else {
-    format_.dwChannelMask = kChannelsToMask[params.channels()];
+    format_.dwChannelMask = UNSAFE_TODO(kChannelsToMask[params.channels()]);
   }
   format_.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
   format_.Samples.wValidBitsPerSample = format_.Format.wBitsPerSample;
@@ -159,7 +155,8 @@ void PCMWaveOutAudioOutputStream::SetupBuffers() {
   buffers_ = std::make_unique<char[]>(BufferSize() * num_buffers_);
   for (int ix = 0; ix != num_buffers_; ++ix) {
     WAVEHDR* buffer = GetBuffer(ix);
-    buffer->lpData = reinterpret_cast<char*>(buffer) + sizeof(WAVEHDR);
+    buffer->lpData =
+        UNSAFE_TODO(reinterpret_cast<char*>(buffer) + sizeof(WAVEHDR));
     buffer->dwBufferLength = buffer_size_;
     buffer->dwBytesRecorded = 0;
     buffer->dwFlags = WHDR_DONE;

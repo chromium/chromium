@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 #include "media/audio/apple/audio_low_latency_input.h"
 
 #include <CoreServices/CoreServices.h>
@@ -19,6 +15,7 @@
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_mach_port.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -90,7 +87,7 @@ static std::string FourCharFormatCodeToString(UInt32 code) {
   char code_string[5];
   // Converts a 32-bit integer from the host’s native byte order to big-endian.
   UInt32 code_id = CFSwapInt32HostToBig(code);
-  bcopy(&code_id, code_string, 4);
+  UNSAFE_TODO(bcopy(&code_id, code_string, 4));
   code_string[4] = '\0';
   return std::string(code_string);
 }
@@ -1319,9 +1316,9 @@ void AUAudioInputStream::UpmixMonoToStereoInPlace(AudioBuffer* audio_buffer,
     int in_offset = (bytes_per_sample * i);
     int out_offset = (channels * bytes_per_sample * i);
     for (int b = 0; b < bytes_per_sample; ++b) {
-      const char byte = byte_ptr[in_offset + b];
-      byte_ptr[out_offset + b] = byte;
-      byte_ptr[out_offset + bytes_per_sample + b] = byte;
+      const char byte = UNSAFE_TODO(byte_ptr[in_offset + b]);
+      UNSAFE_TODO(byte_ptr[out_offset + b]) = byte;
+      UNSAFE_TODO(byte_ptr[out_offset + bytes_per_sample + b]) = byte;
     }
   }
 }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/audio/mac/audio_manager_mac.h"
 
 #include <algorithm>
@@ -20,6 +15,7 @@
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
@@ -303,7 +299,7 @@ static bool GetDeviceTotalChannelCount(AudioDeviceID device,
   // If the number is 1, the buffer is noninterleaved.
   *channels = 0;
   for (UInt32 i = 0; i < buffer_list->mNumberBuffers; ++i) {
-    *channels += buffer_list->mBuffers[i].mNumberChannels;
+    *channels += UNSAFE_TODO(buffer_list->mBuffers[i]).mNumberChannels;
   }
 
   DVLOG(1) << __FUNCTION__
@@ -427,7 +423,7 @@ static bool GetOutputDeviceChannelsAndLayout(AudioUnit audio_unit,
   std::vector<Channels> channels_to_match;
   for (UInt32 i = 0; i < device_layout->mNumberChannelDescriptions; i++) {
     AudioChannelLabel label =
-        device_layout->mChannelDescriptions[i].mChannelLabel;
+        UNSAFE_TODO(device_layout->mChannelDescriptions[i]).mChannelLabel;
     if (label == kAudioChannelLabel_Unknown) {
       continue;
     }

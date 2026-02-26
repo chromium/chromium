@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/audio/apple/audio_auhal.h"
 
 #include <CoreServices/CoreServices.h>
@@ -18,6 +13,7 @@
 #include <utility>
 
 #include "base/apple/osstatus_logging.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -52,7 +48,8 @@ void WrapBufferList(AudioBufferList* buffer_list, AudioBus* bus, int frames) {
   // Copy pointers from AudioBufferList.
   for (int i = 0; i < channels; ++i) {
     // The byte data size should always be a multiple of sizeof(float).
-    const size_t data_size_in_bytes = buffer_list->mBuffers[i].mDataByteSize;
+    const size_t data_size_in_bytes =
+        UNSAFE_TODO(buffer_list->mBuffers[i]).mDataByteSize;
     CHECK_EQ(data_size_in_bytes % sizeof(float), 0U);
 
     // SAFETY: We don't have much choice here... We have to trust that the
@@ -116,7 +113,7 @@ void MaybeMapRearSurroundChannelToSurroundChannel(
   bool maybe_need_mapping = false;
   for (UInt32 i = 0; i < audio_layout->mNumberChannelDescriptions; i++) {
     AudioChannelLabel label =
-        audio_layout->mChannelDescriptions[i].mChannelLabel;
+        UNSAFE_TODO(audio_layout->mChannelDescriptions[i]).mChannelLabel;
     // If audio already has Ls or Rs channel, skip.
     if (label == kAudioChannelLabel_LeftSurround ||
         label == kAudioChannelLabel_RightSurround) {
@@ -144,7 +141,7 @@ void MaybeMapRearSurroundChannelToSurroundChannel(
   // Rls or Rrs channel do not exist.
   for (UInt32 i = 0; i < device_layout->mNumberChannelDescriptions; ++i) {
     AudioChannelLabel label =
-        device_layout->mChannelDescriptions[i].mChannelLabel;
+        UNSAFE_TODO(device_layout->mChannelDescriptions[i]).mChannelLabel;
     if (label == kAudioChannelLabel_RearSurroundLeft ||
         label == kAudioChannelLabel_RearSurroundRight) {
       return;
@@ -154,12 +151,12 @@ void MaybeMapRearSurroundChannelToSurroundChannel(
   // Map Rls to Ls, Rrs to Rs.
   for (UInt32 i = 0; i < audio_layout->mNumberChannelDescriptions; i++) {
     AudioChannelLabel label =
-        audio_layout->mChannelDescriptions[i].mChannelLabel;
+        UNSAFE_TODO(audio_layout->mChannelDescriptions[i]).mChannelLabel;
     if (label == kAudioChannelLabel_RearSurroundLeft) {
-      audio_layout->mChannelDescriptions[i].mChannelLabel =
+      UNSAFE_TODO(audio_layout->mChannelDescriptions[i]).mChannelLabel =
           kAudioChannelLabel_LeftSurround;
     } else if (label == kAudioChannelLabel_RearSurroundRight) {
-      audio_layout->mChannelDescriptions[i].mChannelLabel =
+      UNSAFE_TODO(audio_layout->mChannelDescriptions[i]).mChannelLabel =
           kAudioChannelLabel_RightSurround;
     }
   }
