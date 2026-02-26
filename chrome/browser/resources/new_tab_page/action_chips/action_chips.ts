@@ -240,7 +240,7 @@ export class ActionChipsElement extends CrLitElement {
     }
     const url = new URL(chip.tab.url);
     const domain = url.hostname.replace(/^www\./, '');
-    return `${chip.subtitle} - ${domain}`;
+    return `${chip.suggestTemplateInfo.secondaryText?.text ?? ''} - ${domain}`;
   }
 
   protected isDeepDiveChip_(chip: ActionChip) {
@@ -257,13 +257,9 @@ export class ActionChipsElement extends CrLitElement {
   }
 
   protected getChipSubtitle_(chip: ActionChip): string {
-    const subtitle = (this.showSimplifiedUI_ &&
-                      (chip.suggestTemplateInfo.typeIcon === IconType.kBanana ||
-                       chip.suggestTemplateInfo.typeIcon ===
-                           IconType.kGlobeWithSearchLoop) &&
-                      chip.suggestion) ?
+    const subtitle = (this.showSimplifiedUI_ && chip.suggestion) ?
         chip.suggestion :
-        chip.subtitle;
+        (chip.suggestTemplateInfo.secondaryText?.text ?? '');
     const prefix = (subtitle && this.showDashSimplifiedUI_(chip)) ? ' - ' : '';
     return `${prefix}${subtitle}`;
   }

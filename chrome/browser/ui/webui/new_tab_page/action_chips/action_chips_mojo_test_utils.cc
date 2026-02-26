@@ -74,8 +74,6 @@ void PrintTo(const SuggestTemplateInfoPtr& info, std::ostream* os) {
 
 void PrintTo(const ActionChip& chip, std::ostream* os) {
   *os << "ActionChip{\n"
-      << "  title: \"" << chip.title << "\",\n"
-      << "  subtitle: \"" << chip.subtitle << "\",\n"
       << "  suggestion: \"" << chip.suggestion << "\",\n"
       << "  suggest_template_info: ";
   PrintTo(chip.suggest_template_info, os);
@@ -97,4 +95,11 @@ void PrintTo(const ActionChipPtr& chip, std::ostream* os) {
     PrintTo(*chip, os);
   }
 }
+
+FormattedStringPtr CreateFormattedString(
+    const std::string& text,
+    const std::optional<std::string>& a11y_text) {
+  return FormattedString::New(text, a11y_text);
+}
+
 }  // namespace action_chips::mojom
