@@ -93,7 +93,6 @@ export class PersonalizationRouterElement extends PolymerElement {
     return {
       path_: {
         type: String,
-        observer: 'onPathChanged_',
       },
 
       query_: {
@@ -111,6 +110,10 @@ export class PersonalizationRouterElement extends PolymerElement {
         },
       },
     };
+  }
+
+  static get observers() {
+    return ['onPathOrQueryParamsChanged_(path_, queryParams_)'];
   }
 
   private path_: string;
@@ -218,7 +221,8 @@ export class PersonalizationRouterElement extends PolymerElement {
    * When entering a wrong path or navigating to Ambient/AmbientAlbums
    * subpages, but the ambient mode is not allowed, reset path to root.
    */
-  private onPathChanged_(path: string|null) {
+  private onPathOrQueryParamsChanged_(
+      path: string|null, queryParams: QueryParams) {
     // Navigates to the top of the subpage.
     window.scrollTo(0, 0);
 
@@ -243,13 +247,17 @@ export class PersonalizationRouterElement extends PolymerElement {
         document.title = loadTimeData.getString('screensaverLabel');
         break;
       case Paths.AMBIENT_ALBUMS: {
-        assert(!!this.queryParams_.topicSource);
-        const topicSource = parseInt(this.queryParams_.topicSource!, 10);
+        if (!queryParams.hasOwnProperty('topicSource')) {
+          // `path` may have updated before `queryParams`. Wait for this
+          // function to be called again once `queryParams` updates.
+          console.warn('Topic source missing from query params');
+          break;
+        }
+        const topicSource = parseInt(queryParams.topicSource!, 10);
         if (!isNaN(topicSource) && topicSource in TopicSource) {
           logAmbientAlbumsPathUMA(topicSource as TopicSource);
         }
-        if (this.queryParams_.topicSource ===
-            TopicSource.kGooglePhotos.toString()) {
+        if (queryParams.topicSource === TopicSource.kGooglePhotos.toString()) {
           document.title =
               loadTimeData.getString('ambientModeTopicSourceGooglePhotos');
         } else {
