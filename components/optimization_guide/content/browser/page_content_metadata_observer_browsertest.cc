@@ -5,6 +5,7 @@
 #include "components/optimization_guide/content/browser/page_content_metadata_observer.h"
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/content/browser/mock_media_transcript_provider.h"
@@ -16,6 +17,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -394,8 +396,22 @@ IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
   observer_.reset();
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
-                       MediaTranscriptionObserved) {
+class PageContentMetadataObserverBrowserWithMediaTranscriptionTest
+    : public PageContentMetadataObserverBrowserTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {media::kMediaTrasncriptsFlagInPageMetadata}, {});
+    PageContentMetadataObserverBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentMetadataObserverBrowserWithMediaTranscriptionTest,
+    MediaTranscriptionObserved) {
   ASSERT_TRUE(LoadPage(https_server()->GetURL("/simple.html")));
 
   auto mock_provider = std::make_unique<MockMediaTranscriptProvider>();
@@ -422,8 +438,9 @@ IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
   observer_.reset();
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
-                       MediaTranscriptionObservedPerFrame) {
+IN_PROC_BROWSER_TEST_F(
+    PageContentMetadataObserverBrowserWithMediaTranscriptionTest,
+    MediaTranscriptionObservedPerFrame) {
   ASSERT_TRUE(LoadPage(https_server()->GetURL("a.com", "/iframe.html")));
 
   auto mock_provider = std::make_unique<MockMediaTranscriptProvider>();
@@ -459,8 +476,9 @@ IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
   observer_.reset();
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
-                       MediaTranscriptionNotObservedIfNotRequested) {
+IN_PROC_BROWSER_TEST_F(
+    PageContentMetadataObserverBrowserWithMediaTranscriptionTest,
+    MediaTranscriptionNotObservedIfNotRequested) {
   ASSERT_TRUE(LoadPage(https_server()->GetURL("/simple.html")));
 
   auto mock_provider = std::make_unique<MockMediaTranscriptProvider>();
@@ -477,8 +495,9 @@ IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
   observer_.reset();
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
-                       MediaTranscriptionRemovedOnPrimaryPageChanged) {
+IN_PROC_BROWSER_TEST_F(
+    PageContentMetadataObserverBrowserWithMediaTranscriptionTest,
+    MediaTranscriptionRemovedOnPrimaryPageChanged) {
   ASSERT_TRUE(LoadPage(https_server()->GetURL("a.com", "/simple.html")));
 
   auto mock_provider = std::make_unique<MockMediaTranscriptProvider>();
@@ -504,8 +523,9 @@ IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
   observer_.reset();
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
-                       MediaTranscriptionRemovedOnSubframeNavigation) {
+IN_PROC_BROWSER_TEST_F(
+    PageContentMetadataObserverBrowserWithMediaTranscriptionTest,
+    MediaTranscriptionRemovedOnSubframeNavigation) {
   ASSERT_TRUE(LoadPage(https_server()->GetURL("a.com", "/iframe.html")));
 
   auto mock_provider = std::make_unique<MockMediaTranscriptProvider>();
@@ -542,8 +562,9 @@ IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
   observer_.reset();
 }
 
-IN_PROC_BROWSER_TEST_F(PageContentMetadataObserverBrowserTest,
-                       MediaTranscriptionRemovedOnRenderFrameDeleted) {
+IN_PROC_BROWSER_TEST_F(
+    PageContentMetadataObserverBrowserWithMediaTranscriptionTest,
+    MediaTranscriptionRemovedOnRenderFrameDeleted) {
   ASSERT_TRUE(LoadPage(https_server()->GetURL("a.com", "/iframe.html")));
 
   auto mock_provider = std::make_unique<MockMediaTranscriptProvider>();

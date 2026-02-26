@@ -40,16 +40,18 @@ class MediaTranscriptObserver
   // Called when transcription begins for the frame.
   void OnTranscriptionBegin(content::RenderFrameHost* rfh);
 
+  void AddOwner(base::WeakPtr<PageContentMetadataObserver> owner);
+
   DOCUMENT_USER_DATA_KEY_DECL();
 
  protected:
-  MediaTranscriptObserver(content::RenderFrameHost* rfh,
-                          base::WeakPtr<PageContentMetadataObserver> owner);
+  explicit MediaTranscriptObserver(content::RenderFrameHost* rfh);
 
  private:
   friend class content::DocumentUserData<MediaTranscriptObserver>;
 
-  base::WeakPtr<PageContentMetadataObserver> owner_;
+  // Needs a list of owners to be able to support multiple instances of GiC.
+  std::list<base::WeakPtr<PageContentMetadataObserver>> owners_;
 };
 
 // A class that is responsible for observing metadata for all frames in a
@@ -121,6 +123,11 @@ class PageContentMetadataObserver : public content::WebContentsObserver {
     std::unique_ptr<FrameMetaTagsObserver> observer;
     blink::mojom::FrameMetadataPtr metadata;
   };
+
+  bool UpdateMediaTranscriptsFlag(
+      FrameData& curr_frame_metadata,
+      content::RenderFrameHost* render_frame_host,
+      std::vector<blink::mojom::MetaTagPtr>& meta_tags);
 
   const std::vector<std::string> names_;
 

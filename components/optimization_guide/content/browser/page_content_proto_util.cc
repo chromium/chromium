@@ -862,6 +862,7 @@ void ConvertFrameData(
       meta_tag->name = kHasMediaTranscripts;
       meta_tag->content = "true";
       metadata.frame_metadata.back()->meta_tags.push_back(std::move(meta_tag));
+      metadata.frame_metadata.back()->has_media_transcripts = true;
     }
   }
   for (const auto& tool : mojom_frame_data.script_tools) {
