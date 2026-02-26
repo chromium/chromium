@@ -106,7 +106,7 @@ enum class NotificationCatalogName {
   kEasyUnlockChromebookAdded = 87,
   kEasyUnlockPairingChange = 88,
   kEasyUnlockPairingChangeApplied = 89,
-  kEasyUnlockSmartLockSignInRemoved = 90,
+  // [Deprecated] kEasyUnlockSmartLockSignInRemoved = 90,
   kSystemProxy = 91,
   kDlpPolicy = 92,
   kPacketCapture = 93,

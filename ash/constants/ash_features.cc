@@ -1819,11 +1819,6 @@ BASE_FEATURE(kSendDeviceInfoToDemoServer, base::FEATURE_ENABLED_BY_DEFAULT);
 // Uses experimental component version for smart dim.
 BASE_FEATURE(kSmartDimExperimentalComponent, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Deprecates Sign in with Smart Lock feature. Hides Smart Lock at the sign in
-// screen, removes the Smart Lock subpage in settings, and shows a one-time
-// notification for users who previously had this feature enabled.
-BASE_FEATURE(kSmartLockSignInRemoved, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Replaces uses of `SystemNudge` with the new `AnchoredNudge` component.
 BASE_FEATURE(kSystemNudgeMigration, base::FEATURE_ENABLED_BY_DEFAULT);
 
