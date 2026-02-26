@@ -28,6 +28,8 @@ const char kHistogram3[] = "Test3";
 const char kHistogram4[] = "Test4";
 const char kHistogram5[] = "Test5";
 const char kHistogram6[] = "Test6";
+const char kHistogram7[] = "Test7";
+const char kHistogram8[] = "Test8";
 
 TEST(HistogramTesterTest, Scope) {
   // Record a histogram before the creation of the recorder.
@@ -381,22 +383,22 @@ TEST(HistogramTesterTest, PumaTestUniqueSample) {
   HistogramTester tester;
 
   // Emit '2' three times.
-  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram2, 2, 5);
-  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram2, 2, 5);
-  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram2, 2, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram7, 2, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram7, 2, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram7, 2, 5);
 
-  tester.ExpectUniqueSample(kHistogram2, 2, 3);
-  tester.ExpectUniqueTimeSample(kHistogram2, base::Milliseconds(2), 3);
+  tester.ExpectUniqueSample(kHistogram7, 2, 3);
+  tester.ExpectUniqueTimeSample(kHistogram7, base::Milliseconds(2), 3);
 }
 
 TEST(HistogramTesterTest, PumaTestGetAllSamples) {
   HistogramTester tester;
-  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram5, 2, 5);
-  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram5, 3, 5);
-  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram5, 3, 5);
-  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram5, 5, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram8, 2, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram8, 3, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram8, 3, 5);
+  base::PumaHistogramExactLinear(base::PumaType::kRc, kHistogram8, 5, 5);
 
-  EXPECT_THAT(tester.GetAllSamples(kHistogram5),
+  EXPECT_THAT(tester.GetAllSamples(kHistogram8),
               ElementsAre(Bucket(2, 1), Bucket(3, 2), Bucket(5, 1)));
 }
 
