@@ -93,7 +93,8 @@ void ActiveTaskContextProviderImpl::SetContextualTasksPanelController(
     if (tab_list_interface) {
       tab_list_interface->AddTabListInterfaceObserver(this);
       // Observe the active tab's WebContents on startup.
-      OnActiveTabChanged(tab_list_interface->GetActiveTab());
+      OnActiveTabChanged(*tab_list_interface,
+                         tab_list_interface->GetActiveTab());
     }
   }
 }
@@ -115,6 +116,7 @@ void ActiveTaskContextProviderImpl::RemoveObserver(
 }
 
 void ActiveTaskContextProviderImpl::OnActiveTabChanged(
+    TabListInterface& tab_list,
     tabs::TabInterface* active_tab) {
   // Start observing the new active tab's WebContents.
   Observe(active_tab ? active_tab->GetContents() : nullptr);

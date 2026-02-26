@@ -487,7 +487,8 @@ ContextualTasksSidePanelCoordinator::GetWebContentsCacheItemForWebContents(
   return nullptr;
 }
 
-void ContextualTasksSidePanelCoordinator::OnTabAdded(tabs::TabInterface* tab,
+void ContextualTasksSidePanelCoordinator::OnTabAdded(TabListInterface& tab_list,
+                                                     tabs::TabInterface* tab,
                                                      int index) {
   content::WebContents* content = tab->GetContents();
   // If the new tab is already associated with a task, do nothing.
@@ -498,8 +499,7 @@ void ContextualTasksSidePanelCoordinator::OnTabAdded(tabs::TabInterface* tab,
 
   // If the new tab has an opener and it's associated to a task, associate
   // the new tab to the same task.
-  TabListInterface* tab_list = TabListInterface::From(browser_window_);
-  tabs::TabInterface* opener = tab_list->GetOpenerForTab(tab->GetHandle());
+  tabs::TabInterface* opener = tab_list.GetOpenerForTab(tab->GetHandle());
   if (!opener) {
     return;
   }
@@ -520,6 +520,7 @@ void ContextualTasksSidePanelCoordinator::OnTabAdded(tabs::TabInterface* tab,
 }
 
 void ContextualTasksSidePanelCoordinator::OnTabRemoved(
+    TabListInterface& tab_list,
     tabs::TabInterface* tab,
     TabRemovedReason removed_reason) {
   // Do not disassociate the tab from the task if insert into side panel or
@@ -636,6 +637,7 @@ bool ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
 }
 
 void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
+    TabListInterface& tab_list,
     tabs::TabInterface* tab) {
   // crbug.com/477278769: Do not open side panel if glic side panel is already
   // open on tab changed.

@@ -50,7 +50,9 @@ class NavigationCounter : public content::WebContentsObserver {
 
 class TabAdditionObserver : public TabListInterfaceObserver {
  public:
-  void OnTabAdded(tabs::TabInterface* tab, int index) override {
+  void OnTabAdded(TabListInterface& tab_list,
+                  tabs::TabInterface* tab,
+                  int index) override {
     counter_ = std::make_unique<NavigationCounter>(tab->GetContents());
   }
 

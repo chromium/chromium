@@ -227,7 +227,7 @@ void TabsEventRouter::TrackTabList(TabListInterface& tab_list) {
   // Bootstrap: monitor all pre-existing tabs in the tab list.
   std::vector<tabs::TabInterface*> tabs = tab_list.GetAllTabs();
   for (size_t i = 0u; i < tabs.size(); ++i) {
-    OnTabAdded(tabs[i], i);
+    OnTabAdded(tab_list, tabs[i], i);
   }
   // TODO(https://crbug.com/473593117): Do we also need to fire selection
   // changed events? It looks like the non-Android BrowserTabStripTracker does.
@@ -336,7 +336,9 @@ void TabsEventRouter::DispatchEvent(
   event_router->BroadcastEvent(std::move(event));
 }
 
-void TabsEventRouter::OnTabAdded(tabs::TabInterface* tab, int index) {
+void TabsEventRouter::OnTabAdded(TabListInterface& tab_list,
+                                 tabs::TabInterface* tab,
+                                 int index) {
   content::WebContents* contents = tab->GetContents();
   CHECK(contents);
 
@@ -375,7 +377,8 @@ void TabsEventRouter::OnTabAdded(tabs::TabInterface* tab, int index) {
   DispatchTabCreatedEvent(contents, tab->IsActivated());
 }
 
-void TabsEventRouter::OnActiveTabChanged(tabs::TabInterface* tab) {
+void TabsEventRouter::OnActiveTabChanged(TabListInterface& tab_list,
+                                         tabs::TabInterface* tab) {
   content::WebContents* tab_contents = tab->GetContents();
   CHECK(tab_contents);
 
@@ -409,7 +412,8 @@ void TabsEventRouter::OnActiveTabChanged(tabs::TabInterface* tab) {
       std::move(on_activated_args), EventRouter::UserGestureState::kUnknown);
 }
 
-void TabsEventRouter::OnTabMoved(tabs::TabInterface* tab,
+void TabsEventRouter::OnTabMoved(TabListInterface& tab_list,
+                                 tabs::TabInterface* tab,
                                  int from_index,
                                  int to_index) {
   CHECK(tab);

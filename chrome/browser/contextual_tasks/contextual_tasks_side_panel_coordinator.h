@@ -144,9 +144,13 @@ class ContextualTasksSidePanelCoordinator
   void SetSidePanelIdNotToOverrideForTesting(SidePanelEntry::Id side_panel_id);
 
   // TabListInterfaceObserver overrides:
-  void OnTabAdded(tabs::TabInterface* tab, int index) override;
-  void OnActiveTabChanged(tabs::TabInterface* tab) override;
-  void OnTabRemoved(tabs::TabInterface* tab,
+  void OnTabAdded(TabListInterface& tab_list,
+                  tabs::TabInterface* tab,
+                  int index) override;
+  void OnActiveTabChanged(TabListInterface& tab_list,
+                          tabs::TabInterface* tab) override;
+  void OnTabRemoved(TabListInterface& tab_list,
+                    tabs::TabInterface* tab,
                     TabRemovedReason removed_reason) override;
 
  private:

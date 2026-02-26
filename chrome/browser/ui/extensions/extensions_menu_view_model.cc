@@ -1250,7 +1250,8 @@ void ExtensionsMenuViewModel::OnToolbarPinnedActionsChanged() {
   }
 }
 
-void ExtensionsMenuViewModel::OnActiveTabChanged(tabs::TabInterface* tab) {
+void ExtensionsMenuViewModel::OnActiveTabChanged(TabListInterface& tab_list,
+                                                 tabs::TabInterface* tab) {
   if (!tab_list_interface_observation_.IsObserving()) {
     return;
   }

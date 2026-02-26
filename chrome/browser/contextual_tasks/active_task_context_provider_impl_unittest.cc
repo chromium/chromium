@@ -309,7 +309,7 @@ TEST_F(ActiveTaskContextProviderImplTest, ActiveTabChanged) {
 
   // Simulate active tab change.
   for (auto& observer : tab_list_observers_) {
-    observer.OnActiveTabChanged(tab1);
+    observer.OnActiveTabChanged(*tab_list_, tab1);
   }
 }
 
@@ -323,7 +323,7 @@ TEST_F(ActiveTaskContextProviderImplTest, PrimaryPageChanged) {
   EXPECT_CALL(observer_, OnContextTabsChanged(_)).Times(1);
 
   for (auto& observer : tab_list_observers_) {
-    observer.OnActiveTabChanged(tab);
+    observer.OnActiveTabChanged(*tab_list_, tab);
   }
 
   // Simulate primary page change on the active tab.

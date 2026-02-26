@@ -567,7 +567,7 @@ void TabListBridge::OnTabStripModelChanged(
         // inserted the tab, we know it should exist.
         tabs::TabInterface* tab = web_contents_and_index.tab.get();
         for (auto& observer : observers_) {
-          observer.OnTabAdded(tab, web_contents_and_index.index);
+          observer.OnTabAdded(*this, tab, web_contents_and_index.index);
         }
       }
       break;
@@ -577,13 +577,13 @@ void TabListBridge::OnTabStripModelChanged(
         tabs::TabInterface* tab = removed_tab.tab.get();
         TabRemovedReason reason = removed_tab.remove_reason;
         for (auto& observer : observers_) {
-          observer.OnTabRemoved(tab, reason);
+          observer.OnTabRemoved(*this, tab, reason);
         }
       }
       break;
     case TabStripModelChange::kMoved:
       for (auto& observer : observers_) {
-        observer.OnTabMoved(change.GetMove()->tab.get(),
+        observer.OnTabMoved(*this, change.GetMove()->tab.get(),
                             change.GetMove()->from_index,
                             change.GetMove()->to_index);
       }
@@ -597,7 +597,7 @@ void TabListBridge::OnTabStripModelChanged(
     tabs::TabInterface* tab = tab_strip_->GetActiveTab();
     if (tab) {
       for (auto& observer : observers_) {
-        observer.OnActiveTabChanged(tab);
+        observer.OnActiveTabChanged(*this, tab);
       }
     }
   }

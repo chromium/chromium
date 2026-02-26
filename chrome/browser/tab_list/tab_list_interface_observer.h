@@ -27,22 +27,27 @@ class TabListInterfaceObserver : public base::CheckedObserver {
   // on Android platforms, such as if a tab that was closed is re-introduced
   // (see also tabClosureUndone() here:
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelObserver.java;drc=e2bb611334ebe2b1cbe519ff183f5178896b8c55;l=140).
-  virtual void OnTabAdded(tabs::TabInterface* tab, int index) {}
+  virtual void OnTabAdded(TabListInterface& tab_list,
+                          tabs::TabInterface* tab,
+                          int index) {}
 
   // Called when the active tab changed. `tab` is the new active tab and is
   // never null.
-  virtual void OnActiveTabChanged(tabs::TabInterface* tab) {}
+  virtual void OnActiveTabChanged(TabListInterface& tab_list,
+                                  tabs::TabInterface* tab) {}
 
   // Called when a tab is removed from the tab list. This may be the result of
   // detaching the tab for reparenting, or for the tab being closed. `tab` is
   // the removed tab and may be null after this call.  `removed_reason`
   // indicates the reason for the tab removal.
-  virtual void OnTabRemoved(tabs::TabInterface* tab,
+  virtual void OnTabRemoved(TabListInterface& tab_list,
+                            tabs::TabInterface* tab,
                             TabRemovedReason removed_reason) {}
 
   // Called when a tab is moved within the tab list from `from_index` to
   // `to_index`.
-  virtual void OnTabMoved(tabs::TabInterface* tab,
+  virtual void OnTabMoved(TabListInterface& tab_list,
+                          tabs::TabInterface* tab,
                           int from_index,
                           int to_index) {}
 

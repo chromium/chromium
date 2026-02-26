@@ -47,7 +47,7 @@ void TabModelObserverJniBridge::DidSelectTab(JNIEnv* env,
     observer.DidSelectTab(tab, static_cast<TabModel::TabSelectionType>(type));
   }
   for (auto& observer : interface_observers_) {
-    observer.OnActiveTabChanged(tab);
+    observer.OnActiveTabChanged(*tab_model_, tab);
   }
 }
 
@@ -65,7 +65,7 @@ void TabModelObserverJniBridge::DidRemoveTabForClosure(JNIEnv* env,
     observer.DidRemoveTabForClosure(tab);
   }
   for (auto& observer : interface_observers_) {
-    observer.OnTabRemoved(tab, TabRemovedReason::kDeleted);
+    observer.OnTabRemoved(*tab_model_, tab, TabRemovedReason::kDeleted);
   }
 }
 
@@ -107,7 +107,7 @@ void TabModelObserverJniBridge::DidAddTab(JNIEnv* env,
 
   int index = tab_model_->GetIndexOfTab(tab->GetHandle());
   for (auto& observer : interface_observers_) {
-    observer.OnTabAdded(tab, index);
+    observer.OnTabAdded(*tab_model_, tab, index);
   }
 }
 
@@ -120,7 +120,7 @@ void TabModelObserverJniBridge::DidMoveTab(JNIEnv* env,
     observer.DidMoveTab(tab, new_index, cur_index);
   }
   for (auto& observer : interface_observers_) {
-    observer.OnTabMoved(tab, cur_index, new_index);
+    observer.OnTabMoved(*tab_model_, tab, cur_index, new_index);
   }
 }
 
@@ -140,7 +140,8 @@ void TabModelObserverJniBridge::TabClosureUndone(JNIEnv* env, TabAndroid* tab) {
     observer.TabClosureUndone(tab);
   }
   for (auto& observer : interface_observers_) {
-    observer.OnTabAdded(tab, tab_model_->GetIndexOfTab(tab->GetHandle()));
+    observer.OnTabAdded(*tab_model_, tab,
+                        tab_model_->GetIndexOfTab(tab->GetHandle()));
   }
 }
 
@@ -152,7 +153,8 @@ void TabModelObserverJniBridge::OnTabCloseUndone(
   }
   for (auto& observer : interface_observers_) {
     for (TabAndroid* tab : tabs) {
-      observer.OnTabAdded(tab, tab_model_->GetIndexOfTab(tab->GetHandle()));
+      observer.OnTabAdded(*tab_model_, tab,
+                          tab_model_->GetIndexOfTab(tab->GetHandle()));
     }
   }
 }
@@ -186,7 +188,8 @@ void TabModelObserverJniBridge::TabRemoved(JNIEnv* env, TabAndroid* tab) {
     observer.TabRemoved(tab);
   }
   for (auto& observer : interface_observers_) {
-    observer.OnTabRemoved(tab, TabRemovedReason::kInsertedIntoOtherTabStrip);
+    observer.OnTabRemoved(*tab_model_, tab,
+                          TabRemovedReason::kInsertedIntoOtherTabStrip);
   }
 }
 

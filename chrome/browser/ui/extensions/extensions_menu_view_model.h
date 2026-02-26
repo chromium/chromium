@@ -358,7 +358,8 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
   // Sometimes, menu can stay open when tab changes (e.g keyboard shortcuts) or
   // due to the extension (e.g extension switching the active tab). Thus, we
   // listen for active tab changes to properly update the menu content.
-  void OnActiveTabChanged(tabs::TabInterface* tab) override;
+  void OnActiveTabChanged(TabListInterface& tab_list,
+                          tabs::TabInterface* tab) override;
   void OnTabListDestroyed(TabListInterface& tab_list) override;
 
   // content::WebContentsObserver:

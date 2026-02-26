@@ -323,8 +323,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarViewModelBrowserTest,
   EXPECT_CALL(mock_observer(), OnActiveWebContentsChanged())
       .Times(testing::AtLeast(1));
 
-  toolbar_model()->OnActiveTabChanged(
-      TabListInterface::From(browser_window_interface())->GetActiveTab());
+  TabListInterface* tab_list =
+      TabListInterface::From(browser_window_interface());
+  toolbar_model()->OnActiveTabChanged(*tab_list, tab_list->GetActiveTab());
 }
 
 // Tests that GetRequestAccessButtonParams returns empty when there are no

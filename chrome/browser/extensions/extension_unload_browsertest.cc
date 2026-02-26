@@ -62,13 +62,17 @@ class TestTabListObserver : public TabListInterfaceObserver {
 
  private:
   // TabListInterfaceObserver:
-  void OnTabAdded(tabs::TabInterface* tab, int index) override {
+  void OnTabAdded(TabListInterface& tab_list,
+                  tabs::TabInterface* tab,
+                  int index) override {
     if (tab_list_->GetTabCount() == desired_count_) {
       run_loop_.Quit();
     }
   }
 
-  void OnTabRemoved(tabs::TabInterface* tab, TabRemovedReason reason) override {
+  void OnTabRemoved(TabListInterface& tab_list,
+                    tabs::TabInterface* tab,
+                    TabRemovedReason reason) override {
     if (tab_list_->GetTabCount() == desired_count_) {
       run_loop_.Quit();
     }

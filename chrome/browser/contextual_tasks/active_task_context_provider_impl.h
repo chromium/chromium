@@ -62,7 +62,8 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
 
  private:
   // TabListInterfaceObserver overrides:
-  void OnActiveTabChanged(tabs::TabInterface* tab) override;
+  void OnActiveTabChanged(TabListInterface& tab_list,
+                          tabs::TabInterface* tab) override;
 
   // Callback for when GetContextForTask() completes.
   void OnGetContextForTask(int callback_id,

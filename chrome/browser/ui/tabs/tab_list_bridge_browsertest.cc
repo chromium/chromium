@@ -81,15 +81,19 @@ class FakeObserver : public TabListInterfaceObserver {
   }
 
   // TabListInterfaceObserver:
-  void OnTabAdded(tabs::TabInterface* tab, int index) override {
+  void OnTabAdded(TabListInterface& tab_list,
+                  tabs::TabInterface* tab,
+                  int index) override {
     events_.emplace_back(Event::Type::TAB_ADDED, tab);
   }
 
-  void OnActiveTabChanged(tabs::TabInterface* tab) override {
+  void OnActiveTabChanged(TabListInterface& tab_list,
+                          tabs::TabInterface* tab) override {
     events_.emplace_back(Event::Type::ACTIVE_TAB_CHANGED, tab);
   }
 
-  void OnTabRemoved(tabs::TabInterface* tab,
+  void OnTabRemoved(TabListInterface& tab_list,
+                    tabs::TabInterface* tab,
                     TabRemovedReason removed_reason) override {
     Event event(Event::Type::TAB_REMOVED, tab);
 
@@ -98,7 +102,8 @@ class FakeObserver : public TabListInterfaceObserver {
     events_.push_back(std::move(event));
   }
 
-  void OnTabMoved(tabs::TabInterface* tab,
+  void OnTabMoved(TabListInterface& tab_list,
+                  tabs::TabInterface* tab,
                   int from_index,
                   int to_index) override {
     Event event(Event::Type::TAB_MOVED, tab);

@@ -182,7 +182,8 @@ class ExtensionsToolbarViewModel
   void DidFinishNavigation(content::NavigationHandle* handle) override;
 
   // TabListInterfaceObserver:
-  void OnActiveTabChanged(tabs::TabInterface* tab) override;
+  void OnActiveTabChanged(TabListInterface& tab_list,
+                          tabs::TabInterface* tab) override;
   void OnTabListDestroyed(TabListInterface& tab_list) override;
 
   // extensions::PermissionsManager::Observer:

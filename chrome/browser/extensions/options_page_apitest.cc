@@ -44,7 +44,9 @@ class TabAddedWaiter : public TabListInterfaceObserver {
   }
 
   // TabListInterfaceObserver:
-  void OnTabAdded(tabs::TabInterface* tab, int index) override {
+  void OnTabAdded(TabListInterface& tab_list,
+                  tabs::TabInterface* tab,
+                  int index) override {
     tab_added_ = true;
     if (run_loop_.running()) {
       run_loop_.Quit();

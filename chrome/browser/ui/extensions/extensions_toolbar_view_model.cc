@@ -304,7 +304,8 @@ void ExtensionsToolbarViewModel::DidFinishNavigation(
   }
 }
 
-void ExtensionsToolbarViewModel::OnActiveTabChanged(tabs::TabInterface* tab) {
+void ExtensionsToolbarViewModel::OnActiveTabChanged(TabListInterface& tab_list,
+                                                    tabs::TabInterface* tab) {
   content::WebContents* contents = tab->GetContents();
   WebContentsObserver::Observe(contents);
   for (Observer& obs : observers_) {
