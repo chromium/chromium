@@ -203,6 +203,14 @@ class WhatsNewRegistry {
   // Resets all stored data for manual testing.
   void ResetData() const;
 
+  // Get the version of the page that should be requested.
+  std::optional<int32_t> version_override() const { return version_override_; }
+
+  // Sets an override to use instead of the current browser version.
+  // This is used from the internals page to allow easier validation
+  // of staging pages.
+  void set_version_override(int32_t version) { version_override_ = version; }
+
   const WhatsNewStorageService* storage_service() const {
     return storage_service_.get();
   }
@@ -222,6 +230,7 @@ class WhatsNewRegistry {
   std::unique_ptr<WhatsNewStorageService> storage_service_;
   std::map<std::string, WhatsNewModule> modules_;
   std::map<std::string, WhatsNewEdition> editions_;
+  std::optional<int32_t> version_override_;
 };
 
 }  // namespace whats_new

@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_version.h"
+#include "components/user_education/webui/whats_new_registry.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
@@ -47,34 +48,39 @@ const char kChromeWhatsNewRefreshStagingURL[] =
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
 
-GURL AddVersionParameter(const GURL& base_url) {
-  return net::AppendQueryParameter(base_url, "version",
-                                   base::NumberToString(CHROME_VERSION_MAJOR));
+GURL AddVersionParameter(const WhatsNewRegistry& whats_new_registry,
+                         const GURL& base_url) {
+  return net::AppendQueryParameter(
+      base_url, "version",
+      base::NumberToString(whats_new_registry.version_override().value_or(
+          CHROME_VERSION_MAJOR)));
 }
 
-GURL GetServerLegacyURL(bool is_staging) {
+GURL GetServerLegacyURL(const WhatsNewRegistry& whats_new_registry,
+                        bool is_staging) {
   const GURL base_url =
       is_staging ? GURL(kChromeWhatsNewStagingURL) : GURL(kChromeWhatsNewURL);
-  return AddVersionParameter(base_url);
+  return AddVersionParameter(whats_new_registry, base_url);
 }
 
-GURL GetServerRefreshURL(bool is_staging) {
+GURL GetServerRefreshURL(const WhatsNewRegistry& whats_new_registry,
+                         bool is_staging) {
   const GURL base_url = is_staging ? GURL(kChromeWhatsNewRefreshStagingURL)
                                    : GURL(kChromeWhatsNewRefreshURL);
-  return AddVersionParameter(base_url);
+  return AddVersionParameter(whats_new_registry, base_url);
 }
 
-GURL GetServerURL(bool is_staging) {
+GURL GetServerURL(const WhatsNewRegistry& whats_new_registry, bool is_staging) {
   const bool use_staging = is_staging || UseStagingOverrideEnabled();
 
   return base::FeatureList::IsEnabled(features::kWhatsNewDesktopRefresh)
-             ? GetServerRefreshURL(use_staging)
-             : GetServerLegacyURL(use_staging);
+             ? GetServerRefreshURL(whats_new_registry, use_staging)
+             : GetServerLegacyURL(whats_new_registry, use_staging);
 }
 
 GURL GetServerURLForRender(const WhatsNewRegistry& whats_new_registry,
                            bool is_staging) {
-  GURL url = GetServerURL(is_staging);
+  GURL url = GetServerURL(whats_new_registry, is_staging);
   const auto active_features = whats_new_registry.GetActiveFeatureNames();
   if (!active_features.empty()) {
     url = net::AppendQueryParameter(url, "enabled",
@@ -112,7 +118,9 @@ class WhatsNewFetcher {
             base::BindRepeating(&WhatsNewFetcher::OnBrowserDidBecomeInactive,
                                 base::Unretained(this)));
 
-    GURL server_url = GetServerURL();
+    const WhatsNewRegistry* whats_new_registry =
+        g_browser_process->GetFeatures()->whats_new_registry();
+    GURL server_url = GetServerURL(*whats_new_registry);
     startup_url_ = GetWebUIStartupURL();
 
     if (IsRemoteContentDisabled()) {

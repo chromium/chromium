@@ -923,6 +923,13 @@ void UserEducationInternalsPageHandlerImpl::LaunchWhatsNewStaging() {
 #endif
 }
 
+void UserEducationInternalsPageHandlerImpl::UpdateWhatsNewVersionOverride(
+    int32_t version) {
+  auto* const registry = GetWhatsNewRegistry();
+  CHECK(registry);
+  registry->set_version_override(version);
+}
+
 void UserEducationInternalsPageHandlerImpl::GetNtpPromos(
     GetNtpPromosCallback callback) {
   std::vector<FeaturePromoDemoPageInfoPtr> promos;

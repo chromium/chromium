@@ -29,7 +29,8 @@ enum class LoadEvent {
 
 // Gets the server side URL for the What's New page for the current version
 // of Chrome.
-GURL GetServerURL(bool is_staging = false);
+GURL GetServerURL(const whats_new::WhatsNewRegistry& whats_new_registry,
+                  bool is_staging = false);
 
 // Gets the server side URL for the What's New page including all
 // query parameters necessary to render the page.

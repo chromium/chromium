@@ -138,7 +138,36 @@ export function getHtml(this: UserEducationInternalsElement) {
         <h2>What's New</h2>
         <if expr="is_chromeos == False">
           <div class="whats-new-section">
-            <cr-button @click="${this.launchWhatsNewStaging_}">
+            <h3>Version Override</h3>
+            <p>
+              Providing a version override here will be used on the What's New
+              page until reset by quitting the browser.
+            </p>
+            <cr-input
+              id="whatsNewVersionOverride"
+              label="What's New Version Override (current: ${
+                  this.whatsNewVersionToRequest_})"
+              type="number"
+              min="${this.currentChromeVersion_ - 10}"
+              max="${this.currentChromeVersion_ + 10}"
+              error-message="Number must be within 10 of the current Chrome version (${
+                  this.currentChromeVersion_})"
+              .value="${this.whatsNewVersionToRequest_}">
+              <cr-button slot="suffix"
+                  @click="${this.setWhatsNewVersionOverride_}">
+                Set
+              </cr-button>
+            </cr-input>
+            <div class="note">
+              <p>
+                Note that this will not reflect the experimental features of a
+                different version or allow testing browser commands that do not
+                exist in this version.
+              </p>
+            </div>
+            <h3>Staging Environment</h3>
+            <cr-button id="launch-whats-new-staging"
+                @click="${this.launchWhatsNewStaging_}">
               Launch staging
             </cr-button>
             <div class="note">
@@ -154,6 +183,7 @@ export function getHtml(this: UserEducationInternalsElement) {
                 environment for the duration of the browser session.
               </p>
             </div>
+            <h3>Debug Info</h3>
             <p>
               To view debug information for What's New, open the page and run
               <span class="inline-code">
@@ -161,6 +191,7 @@ export function getHtml(this: UserEducationInternalsElement) {
               </span>
               in the javascript console.
             </p>
+            <h3>Browser Commands</h3>
             <p>
               To test a browser command for What's New, open the page and run
               <span class="inline-code">

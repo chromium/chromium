@@ -57,6 +57,7 @@ class UserEducationInternalsPageHandlerImpl
   void GetWhatsNewEditions(GetWhatsNewEditionsCallback callback) override;
   void ClearWhatsNewData(ClearWhatsNewDataCallback callback) override;
   void LaunchWhatsNewStaging() override;
+  void UpdateWhatsNewVersionOverride(int32_t version) override;
   void GetNtpPromos(GetNtpPromosCallback callback) override;
   void ClearNtpPromoData(const std::string& id,
                          ClearNtpPromoDataCallback callback) override;

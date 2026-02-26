@@ -305,4 +305,15 @@ TEST_F(WhatsNewRegistryTest, ResetStorageService) {
   whats_new_registry_->ResetData();
 }
 
+TEST_F(WhatsNewRegistryTest, VersionOverride) {
+  auto mock_storage_service = std::make_unique<MockWhatsNewStorageService>();
+  RegisterModules(std::move(mock_storage_service));
+
+  EXPECT_EQ(std::nullopt, whats_new_registry_->version_override());
+
+  int32_t value = 100;
+  whats_new_registry_->set_version_override(value);
+  EXPECT_EQ(value, whats_new_registry_->version_override());
+}
+
 }  // namespace user_education

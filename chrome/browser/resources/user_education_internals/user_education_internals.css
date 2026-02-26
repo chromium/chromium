@@ -197,3 +197,11 @@ user-education-whats-new-internals-card {
   font-weight: normal;
   font-family: monospace;
 }
+
+#whatsNewVersionOverride {
+  padding-inline: var(--cr-section-padding);
+}
+
+#launch-whats-new-staging {
+  margin-inline: var(--cr-section-padding);
+}

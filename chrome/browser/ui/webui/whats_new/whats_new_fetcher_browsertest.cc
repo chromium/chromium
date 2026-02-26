@@ -100,7 +100,8 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest, GetServerURL) {
       base::StringPrintf("https://www.google.com/chrome/whats-new/?version=%d",
                          CHROME_VERSION_MAJOR);
 
-  EXPECT_EQ(expected, whats_new::GetServerURL().possibly_invalid_spec());
+  EXPECT_EQ(expected,
+            whats_new::GetServerURL(*GetRegistry()).possibly_invalid_spec());
 }
 
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
