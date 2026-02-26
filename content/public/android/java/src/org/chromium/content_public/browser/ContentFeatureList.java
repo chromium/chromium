@@ -72,8 +72,6 @@ public class ContentFeatureList {
 
     public static final String HIDE_PASTE_POPUP_ON_GSB = "HidePastePopupOnGSB";
 
-    public static final String JAVALESS_RENDERERS = "JavalessRenderers";
-
     public static final String INPUT_ON_VIZ = "InputOnViz";
 
     public static final String ONE_TIME_PERMISSION = "OneTimePermission";
@@ -161,10 +159,6 @@ public class ContentFeatureList {
     // Skip the timeout when removing the VISIBLE and STRONG binding for the spare renderer.
     public static final MutableBooleanParamWithSafeDefault sSpareRendererRemoveBindingNoTimeout =
             sSpareRendererProcessPriority.newBooleanParam("remove-binding-no-timeout", false);
-
-    public static final MutableFlagWithSafeDefault sJavalessRenderers =
-            new MutableFlagWithSafeDefault(
-                    ContentFeatureMap.getInstance(), JAVALESS_RENDERERS, false);
 
     public static final MutableFlagWithSafeDefault sAndroidDesktopZoomScaling =
             new MutableFlagWithSafeDefault(

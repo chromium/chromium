@@ -920,6 +920,10 @@ const char kRendererWaitForJavaDebugger[] = "renderer-wait-for-java-debugger";
 
 // Disables debug crash dumps for OOPR.
 const char kDisableOoprDebugCrashDump[] = "disable-oopr-debug-crash-dump";
+
+// Enables/disables javaless renderers based on value given.
+// "enabled" or "disabled" are valid values.
+const char kJavalessRenderers[] = "javaless-renderers";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enable the aggressive flushing of DOM Storage to minimize data loss.

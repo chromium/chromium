@@ -250,6 +250,7 @@ CONTENT_EXPORT extern const char kEnableLongpressDragSelection[];
 CONTENT_EXPORT extern const char kForceOnlineConnectionStateForIndicator[];
 CONTENT_EXPORT extern const char kRemoteDebuggingSocketName[];
 CONTENT_EXPORT extern const char kRendererWaitForJavaDebugger[];
+CONTENT_EXPORT extern const char kJavalessRenderers[];
 #endif
 
 #if BUILDFLAG(IS_IOS)

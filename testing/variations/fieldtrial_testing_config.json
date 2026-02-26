@@ -15365,7 +15365,7 @@
             ]
         }
     ],
-    "JavalessRenderers": [
+    "JavalessRendererExperimentOn": [
         {
             "platforms": [
                 "android"
@@ -15373,8 +15373,11 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "JavalessRendererEnable": "true"
+                    },
                     "enable_features": [
-                        "JavalessRenderers"
+                        "JavalessRendererExperimentOn"
                     ]
                 }
             ]

@@ -360,11 +360,6 @@ BASE_FEATURE(kDrawCutoutEdgeToEdge, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables canvas 2d methods BeginLayer and EndLayer.
 BASE_FEATURE(kEnableCanvas2DLayers, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables javaless renderers.
-BASE_FEATURE(kEnableJavalessRenderers,
-             "JavalessRenderers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables service workers on chrome-untrusted:// urls.
 BASE_FEATURE(kEnableServiceWorkersForChromeUntrusted,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -568,6 +563,11 @@ BASE_FEATURE(kIsolateFencedFrames, base::FEATURE_DISABLED_BY_DEFAULT);
 // kIsolateOriginsFieldTrialParamName.
 BASE_FEATURE(kIsolateOrigins, base::FEATURE_DISABLED_BY_DEFAULT);
 const char kIsolateOriginsFieldTrialParamName[] = "OriginsList";
+
+#if BUILDFLAG(IS_ANDROID)
+// Enables the ability to specification a renderer that does not use Java.
+BASE_FEATURE(kJavalessRendererExperimentOn, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 // When enabled, creation of the BrowserInterfaceBroker on RenderFrameHostImpls
 // becomes lazy. i.e. the BrowserInterfaceBroker is constructed only when it is

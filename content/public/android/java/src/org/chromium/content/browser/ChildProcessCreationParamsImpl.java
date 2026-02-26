@@ -12,7 +12,7 @@ import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.JavalessRenderersFeatureList;
 
 /** Implementation of the interface {@link ChildProcessCreationParams}. */
 @NullMarked
@@ -105,7 +105,7 @@ public class ChildProcessCreationParamsImpl {
                     // Incremental install disables isolated processes, which are required for
                     // javaless renderers.
                     && !BuildConfig.IS_INCREMENTAL_INSTALL
-                    && ContentFeatureList.sJavalessRenderers.isEnabled()) {
+                    && JavalessRenderersFeatureList.isEnabled()) {
                 return NATIVE_SANDBOXED_SERVICES_NAME;
             }
         }
