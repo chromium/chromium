@@ -94,6 +94,8 @@ class ProjectsPanelTabGroupsView : public views::View,
     return create_new_tab_group_button_;
   }
 
+  static void disable_animations_for_testing();
+
  private:
   // Determines where the drop will occur.
   struct DropLocation {

@@ -80,6 +80,9 @@ class ProjectsPanelNewTabGroupButton : public views::LabelButton {
 BEGIN_METADATA(ProjectsPanelNewTabGroupButton)
 END_METADATA
 
+// Whether animations should be disabled.
+static bool disable_animations_for_testing_ = false;
+
 }  // namespace
 
 ProjectsPanelTabGroupsView::ProjectsPanelTabGroupsView(
@@ -134,6 +137,9 @@ void ProjectsPanelTabGroupsView::SetTabGroups(
           AddChildView(std::make_unique<ProjectsPanelTabGroupsItemView>(
               group, tab_group_button_callback_, more_button_callback_));
       item->set_drag_controller(this);
+      if (disable_animations_for_testing_) {
+        item->disable_animations_for_testing();  // IN-TEST
+      }
       item_views_.push_back(item);
     }
   }
@@ -292,6 +298,11 @@ bool ProjectsPanelTabGroupsView::CanStartDragForView(views::View* sender,
 std::optional<gfx::Rect>
 ProjectsPanelTabGroupsView::GetDropIndicatorBoundsForTesting() const {
   return GetDropIndicatorBounds();
+}
+
+// static
+void ProjectsPanelTabGroupsView::disable_animations_for_testing() {
+  disable_animations_for_testing_ = true;
 }
 
 void ProjectsPanelTabGroupsView::CalculateDropLocation(

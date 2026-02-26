@@ -168,6 +168,9 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
               &ProjectsPanelView::OnCreateNewTabGroupButtonPressed,
               base::Unretained(this))));
   SetScrollViewProperties(*tab_groups_scroll_view);
+  if (disable_animations_for_testing_) {
+    tab_groups_view_->disable_animations_for_testing();  // IN-TEST
+  }
 
   if (tab_groups::IsThreadsInProjectsPanelEnabled()) {
     auto* threads_list_title =

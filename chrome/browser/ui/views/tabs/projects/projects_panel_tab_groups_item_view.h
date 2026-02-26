@@ -57,6 +57,7 @@ class ProjectsPanelTabGroupsItemView : public views::Button {
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnDragDone() override;
+  void AnimationProgressed(const gfx::Animation* animation) override;
 
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
@@ -69,6 +70,8 @@ class ProjectsPanelTabGroupsItemView : public views::Button {
     return *tab_group_vector_icon_;
   }
 
+  static void disable_animations_for_testing();
+
  private:
   void OnMoreButtonPressed();
   void OnMoreButtonStateChanged();
@@ -80,6 +83,8 @@ class ProjectsPanelTabGroupsItemView : public views::Button {
 
   // Whether this item is currently being dragged.
   bool dragging_ = false;
+
+  gfx::SlideAnimation button_fade_animation_{this};
 
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::ImageView> tab_group_icon_ = nullptr;
