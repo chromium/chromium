@@ -1923,6 +1923,7 @@ TEST_F(FormDataImporterTest,
 // ExtractCreditCard tests.
 
 // Tests that a valid credit card is extracted.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractCreditCard_Valid) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
@@ -1943,6 +1944,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_Valid) {
 }
 
 // Tests that an invalid credit card number is not extracted.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractCreditCard_InvalidCardNumber) {
   FormData form = CreateFullCreditCardForm("Jim Johansen", "1000000000000000",
                                            "02", "2999");
@@ -1964,6 +1966,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_InvalidCardNumber) {
 // for credit card numbers.
 // Using FormFieldData::user_input enables showing the save-card prompt for
 // sites which use JavaScript to set the credit-card <input> to '***'.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractCreditCard_PreferUserInputForCreditCardNumber) {
   FormData form = CreateFullCreditCardForm("Jim Johansen", "4111111111111111",
@@ -1997,6 +2000,7 @@ TEST_F(FormDataImporterTest,
 
 // Tests that a credit card with an empty expiration can be extracted due to the
 // expiration date fix flow.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractCreditCard_InvalidExpiryDate_EditableExpirationExpOn) {
   FormData form =
@@ -2014,6 +2018,7 @@ TEST_F(FormDataImporterTest,
 
 // Tests that an expired credit card can be extracted due to the expiration date
 // fix flow.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractCreditCard_ExpiredExpiryDate_EditableExpirationExpOn) {
   FormData form = CreateFullCreditCardForm("Smalls Biggie",
@@ -2031,6 +2036,7 @@ TEST_F(FormDataImporterTest,
 
 // Tests that a valid credit card is extracted when the option text for month
 // select can't be parsed but its value can.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractCreditCard_MonthSelectInvalidText) {
   // Add a single valid credit card form with an invalid option value.
   FormData form = CreateFullCreditCardForm(
@@ -2062,6 +2068,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MonthSelectInvalidText) {
               UnorderedElementsCompareEqual(expected));
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractCreditCard_TwoValidCards) {
   // Start with a single valid credit card form.
   std::unique_ptr<FormStructure> form_structure1 =
@@ -2101,6 +2108,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_TwoValidCards) {
 }
 
 // This form has the expiration year as one field with MM/YY.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractCreditCard_Month2DigitYearCombination) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
@@ -2117,6 +2125,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_Month2DigitYearCombination) {
 }
 
 // This form has the expiration year as one field with MM/YYYY.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractCreditCard_Month4DigitYearCombination) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
@@ -2133,6 +2142,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_Month4DigitYearCombination) {
 }
 
 // This form has the expiration year as one field with M/YYYY.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractCreditCard_1DigitMonth4DigitYear) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
@@ -2149,6 +2159,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_1DigitMonth4DigitYear) {
 }
 
 // This form has the expiration year as a 2-digit field.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractCreditCard_2DigitYear) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
@@ -2169,6 +2180,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_2DigitYear) {
 
 // Tests that a credit card is extracted when the card matches a masked server
 // card.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractCreditCard_DuplicateServerCards_ExtractMaskedCard) {
   // Add a masked server card.
@@ -2194,6 +2206,7 @@ TEST_F(FormDataImporterTest,
               CreditCard::RecordType::kMaskedServerCard);
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractCreditCard_SameCreditCardWithConflict) {
   // Start with a single valid credit card form.
   FormData form1 = CreateFullCreditCardForm(
@@ -2235,6 +2248,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_SameCreditCardWithConflict) {
   EXPECT_THAT(*results2[0], ComparesEqual(expected2));
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractCreditCard_ShouldReturnLocalCard) {
   // Start with a single valid credit card form.
   FormData form1 = CreateFullCreditCardForm(
@@ -2280,6 +2294,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_ShouldReturnLocalCard) {
   EXPECT_THAT(*results2[0], ComparesEqual(expected2));
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractCreditCard_ShouldReturnLocalCard_WithExtractedCvc) {
   // Start with a single valid credit card form.
@@ -2325,6 +2340,7 @@ TEST_F(FormDataImporterTest,
   EXPECT_EQ(extracted_credit_card2->cvc(), u"123");
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractCreditCard_EmptyCardWithConflict) {
   // Start with a single valid credit card form.
   FormData form1 = CreateFullCreditCardForm(
@@ -2364,6 +2380,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_EmptyCardWithConflict) {
   EXPECT_THAT(*results2[0], ComparesEqual(expected2));
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
   // Start with a single valid credit card form.
   FormData form1 = CreateFullCreditCardForm(
@@ -2421,6 +2438,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInNew) {
   EXPECT_THAT(*results3[0], ComparesEqual(expected3));
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInOld) {
   // Start with a single valid credit card stored via the preferences.
   // Note the empty name.
@@ -2459,6 +2477,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MissingInfoInOld) {
 
 // We allow the user to store a credit card number with separators via the UI.
 // We should not try to re-aggregate the same card with the separators stripped.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractCreditCard_SameCardWithSeparators) {
   // Start with a single valid credit card stored via the preferences.
   // Note the separators in the credit card number.
@@ -2492,6 +2511,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_SameCardWithSeparators) {
 
 // Ensure that if a verified credit card already exists, aggregated credit cards
 // cannot modify it in any way.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractCreditCard_ExistingVerifiedCardWithConflict) {
   // Start with a verified credit card.
@@ -2525,6 +2545,7 @@ TEST_F(FormDataImporterTest,
 // Tests that if Save and Fill suggestion was clicked on before the form
 // extraction, no payments post-checkout flows are offered. But we should still
 // log the "submitted card state" metrics correctly.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractCreditCard_SaveAndFillOccurred) {
   FormData form = CreateFullCreditCardForm("Jim Johansen", "4111111111111111",
                                            "02", "2999");
@@ -2549,6 +2570,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_SaveAndFillOccurred) {
 // Ensures that
 // `FormDataImporterTest::credit_card_import_type_` is set and
 // reset correctly.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractFormData_SecondImportResetsCreditCardRecordType) {
   // Start with a single valid credit card stored via the preferences.
@@ -2637,6 +2659,7 @@ TEST_F(FormDataImporterTest,
 // Ensures that
 // `FormDataImporterTest::credit_card_import_type_` is set
 // correctly.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractFormData_ExtractCreditCardRecordType_NewCard) {
   // Simulate a form submission with a new credit card.
@@ -2658,6 +2681,7 @@ TEST_F(FormDataImporterTest,
 }
 
 // Ensures that `credit_card_import_type_` is set correctly.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractFormData_ExtractCreditCardRecordType_LocalCard) {
   // Start with a single valid credit card stored via the preferences.
@@ -2693,6 +2717,7 @@ TEST_F(FormDataImporterTest,
 // Ensures that
 // `FormDataImporterTest::credit_card_import_type_` is set
 // correctly.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractFormData_ExtractCreditCardRecordType_MaskedServerCard) {
   // Add a masked server card.
@@ -2723,6 +2748,7 @@ TEST_F(FormDataImporterTest,
 // Ensures that `FormDataImporterTest::credit_card_import_type_` and
 // `record_type` denote that a duplicate card was extracted, and it is a server
 // card when the flag is on.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(
     FormDataImporterTest,
     ExtractFormData_ExtractCreditCardRecordType_DuplicateLocalAndMaskedServerCard) {
@@ -2756,6 +2782,7 @@ TEST_F(
 // Ensures that
 // `FormDataImporterTest::credit_card_import_type_` is set
 // correctly.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractFormData_ExtractCreditCardRecordType_NoCard_InvalidCardNumber) {
   // Simulate a form submission using a credit card with an invalid card number.
@@ -2779,6 +2806,7 @@ TEST_F(FormDataImporterTest,
 // Ensures that
 // `FormDataImporterTest::credit_card_import_type_` is set
 // correctly.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractFormData_ExtractCreditCardRecordType_NoCard_VirtualCard) {
   // Simulate a form submission using a credit card that is known as a virtual
@@ -2804,6 +2832,7 @@ TEST_F(FormDataImporterTest,
 // Ensures that
 // `FormDataImporterTest::credit_card_import_type_` is set
 // correctly.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(
     FormDataImporterTest,
     ExtractFormData_ExtractCreditCardRecordType_NewCard_ExpiredCard_WithExpDateFixFlow) {
@@ -2828,6 +2857,7 @@ TEST_F(
 // Ensures that
 // `FormDataImporterTest::credit_card_import_type_` is set
 // correctly.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractFormData_ExtractCreditCardRecordType_NoCard_NoCardOnForm) {
   // Simulate a form submission with no credit card on form.
@@ -2867,6 +2897,7 @@ TEST_F(FormDataImporterTest,
 }
 
 // Ensures that `cvc` is set when a server card is found.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractFormData_ExtractCreditCardRecordType_ServerCardWithCvc) {
   // Add a valid server card.
@@ -2894,6 +2925,7 @@ TEST_F(FormDataImporterTest,
 
 // Ensures that `credit_card_import_type_` is set as kNewCard when there is a
 // masked server card with the same last four but different expiration date.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(
     FormDataImporterTest,
     ExtractFormData_ExtractCreditCardRecordType_MaskedServerCardWithSameLastFour) {
@@ -2934,6 +2966,7 @@ TEST_F(
 //    server card.
 // 2. The extracted credit card's expiration date is not the same as any of the
 //    the masked server cards.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(
     FormDataImporterTest,
     ExtractFormData_ExtractCreditCardRecordType_TwoMaskedServerCardWithSameLastFour) {
@@ -3068,6 +3101,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_TwoAddressesOneCreditCard) {
 }
 
 #if !BUILDFLAG(IS_IOS)
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_NoIban) {
   // Simulate a form submission with no IBAN.
   FormData form;
@@ -3081,6 +3115,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_NoIban) {
   ASSERT_FALSE(extracted_data.extracted_iban);
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractFormData_SubmittingIbanFormUpdatesPref) {
   // The pref should always start disabled.
   ASSERT_FALSE(payments_data_manager().IsAutofillHasSeenIbanPrefEnabled());
@@ -3096,6 +3131,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_SubmittingIbanFormUpdatesPref) {
   EXPECT_TRUE(payments_data_manager().IsAutofillHasSeenIbanPrefEnabled());
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractFormData_SubmittingCreditCardFormDoesNotUpdateIbanPref) {
   ASSERT_FALSE(payments_data_manager().IsAutofillHasSeenIbanPrefEnabled());
@@ -3110,6 +3146,7 @@ TEST_F(FormDataImporterTest,
   EXPECT_FALSE(payments_data_manager().IsAutofillHasSeenIbanPrefEnabled());
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractFormData_ImportIbanRecordType_IbanAutofill_NewInvalidIban) {
   // Simulate a form submission with a new IBAN.
@@ -3126,6 +3163,7 @@ TEST_F(FormDataImporterTest,
   ASSERT_FALSE(extracted_data.extracted_iban);
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractFormData_ImportIbanRecordType_IbanAutofill_NewIban) {
   // Simulate a form submission with a new IBAN.
@@ -3137,6 +3175,7 @@ TEST_F(FormDataImporterTest,
   EXPECT_TRUE(extracted_data.extracted_iban);
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
   Iban iban;
   iban.set_value(std::u16string(test::kIbanValue16));
@@ -3243,6 +3282,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_AddressCreditCardDisabled) {
   ASSERT_EQ(0U, results_cards.size());
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, DuplicateMaskedServerCard) {
   CreditCard server_card1(CreditCard::RecordType::kMaskedServerCard, "a123");
   test::SetCreditCardInfo(&server_card1, "John Dillinger", "1881" /* Visa */,
@@ -3279,6 +3319,7 @@ TEST_F(FormDataImporterTest, DuplicateMaskedServerCard) {
 
 // Tests that a credit card form that is hidden after receiving input still
 // imports the card.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ExtractFormData_HiddenCreditCardFormAfterEntered) {
   FormData form;
   form.set_url(GURL("https://www.foo.com"));
@@ -3317,6 +3358,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_HiddenCreditCardFormAfterEntered) {
 
 // Ensure that we don't offer to save if we already have same card stored as a
 // server card and user submitted an invalid expiration date month.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_EmptyExpirationMonth) {
   CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "c789");
@@ -3349,6 +3391,7 @@ TEST_F(FormDataImporterTest,
 
 // Ensure that we don't offer to save if we already have same card stored as a
 // server card and user submitted an invalid expiration date year.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_EmptyExpirationYear) {
   CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "c789");
@@ -3381,6 +3424,7 @@ TEST_F(FormDataImporterTest,
 
 // Ensure that we still offer to save if we have different cards stored as a
 // server card and user submitted an invalid expiration date year.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(
     FormDataImporterTest,
     Metrics_SubmittedDifferentServerCardExpirationStatus_EmptyExpirationYear) {
@@ -3412,6 +3456,7 @@ TEST_F(
   ASSERT_TRUE(extracted_data.extracted_credit_card);
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_MaskedServerCardMatch) {
   CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "a123");
@@ -3447,6 +3492,7 @@ TEST_F(FormDataImporterTest,
       AutofillMetrics::MASKED_SERVER_CARD_EXPIRATION_DATE_MATCHED, 1);
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        Metrics_SubmittedServerCardExpirationStatus_MaskedServerCardMismatch) {
   CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "a123");
@@ -3667,6 +3713,7 @@ TEST_F(FormDataImporterTest, FormAssociator) {
 }
 
 #if !BUILDFLAG(IS_IOS)
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ProcessIbanImportCandidate_ShouldOfferLocalSave_NewIban) {
   Iban extracted_iban = test::GetLocalIban();
@@ -3676,6 +3723,7 @@ TEST_F(FormDataImporterTest,
                   .ProcessIbanImportCandidate(extracted_iban));
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractFormData_ProcessIbanImportCandidate_NoIban) {
   // Simulate a form submission with an empty Iban.
@@ -3687,6 +3735,7 @@ TEST_F(FormDataImporterTest,
       /*payment_methods_autofill_enabled=*/true));
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(
     FormDataImporterTest,
     ExtractFormData_ProcessIbanImportCandidate_PaymentMethodsSettingDisabled) {
@@ -3699,6 +3748,7 @@ TEST_F(
       /*payment_methods_autofill_enabled=*/false));
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractFormData_ProcessIbanImportCandidate_NewIban) {
   // Simulate a form submission with a new IBAN.
@@ -3710,6 +3760,7 @@ TEST_F(FormDataImporterTest,
       /*payment_methods_autofill_enabled=*/true));
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractFormData_ProcessIbanImportCandidate_LocalIban) {
   Iban iban;
@@ -3727,6 +3778,7 @@ TEST_F(FormDataImporterTest,
       /*payment_methods_autofill_enabled=*/true));
 }
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ExtractFormData_ProcessIbanImportCandidate_MaxStrikes) {
   IbanSaveStrikeDatabase iban_save_strike_database =
@@ -3747,6 +3799,7 @@ TEST_F(FormDataImporterTest,
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_EmptyCreditCard) {
   std::optional<CreditCard> extracted_credit_card;
   std::unique_ptr<FormStructure> form_structure =
@@ -3769,6 +3822,7 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_EmptyCreditCard) {
 }
 
 #if !BUILDFLAG(IS_IOS)
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
   CreditCard extracted_credit_card = test::GetMaskedServerCard();
   extracted_credit_card.SetNetworkForMaskedCard(kAmericanExpressCard);
@@ -3818,6 +3872,7 @@ TEST_F(FormDataImporterTest, ProcessExtractedCreditCard_VirtualCardEligible) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 // Test that in the case where the MandatoryReauthManager denotes we should not
 // offer re-auth opt-in, we do not start the opt-in flow.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ProcessExtractedCreditCard_MandatoryReauthNotOffered) {
   CreditCard extracted_credit_card = test::GetVirtualCard();
@@ -3843,6 +3898,7 @@ TEST_F(FormDataImporterTest,
 // Test that in the case where the MandatoryReauthManager denotes re-auth opt-in
 // should be offered, but the card is a new card (presumed updated by the user
 // after filling), re-auth opt-in is not offered.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ProcessExtractedCreditCard_MandatoryReauthNotOffered_NewCard) {
   std::unique_ptr<FormStructure> form_structure =
@@ -3868,6 +3924,7 @@ TEST_F(FormDataImporterTest,
 // `kAutofillPrioritizeSaveCardOverMandatoryReauth` is disabled. Verifies that
 // when the conditions for offering mandatory re-auth are met, the re-auth
 // bubble is offered immediately and the save card flow is not attempted.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ProcessExtractedCreditCard_PrioritizeSaveCard_FlagOff) {
   base::test::ScopedFeatureList feature_list;
@@ -3905,6 +3962,7 @@ TEST_F(FormDataImporterTest,
 // Test that when `kAutofillPrioritizeSaveCardOverMandatoryReauth` is enabled,
 // the save card bubble is prioritized. If that bubble is shown, the mandatory
 // re-auth bubble is not offered.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(
     FormDataImporterTest,
     ProcessExtractedCreditCard_PrioritizeSaveCard_SaveSucceedsMandatoryReauthNotOffered) {
@@ -3937,6 +3995,7 @@ TEST_F(
 // Test that when `kAutofillPrioritizeSaveCardOverMandatoryReauth` is enabled,
 // offering the save card bubble is prioritized. If it fails, we offer the
 // mandatory re-auth bubble as a fallback.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(
     FormDataImporterTest,
     ProcessExtractedCreditCard_PrioritizeSaveCard_SaveCardFailsMandatoryReauthOffered) {
@@ -3968,6 +4027,7 @@ TEST_F(
 
 // Test that in the case where the MandatoryReauthManager denotes we should
 // offer re-auth opt-in, we start the opt-in in IBAN processing flow.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthOffered) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(CreateTestIbanFormData());
@@ -3992,6 +4052,7 @@ TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthOffered) {
 
 // Test that in the case where the MandatoryReauthManager denotes we should not
 // offer re-auth opt-in, we do not start the opt-in in IBAN processing flow.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthNotOffered) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(CreateTestIbanFormData());
@@ -4013,6 +4074,7 @@ TEST_F(FormDataImporterTest, ProcessExtractedIban_MandatoryReauthNotOffered) {
 
 // Test that ProceedWithSavingIfApplicable gets called for server cards with the
 // correct pre-requisites set.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ProcessExtractedCreditCard_ProceedWithSavingIfApplicable_Server) {
   CreditCard card = test::WithCvc(test::GetCreditCard(), u"123");
@@ -4031,6 +4093,7 @@ TEST_F(FormDataImporterTest,
 
 // Test that ProceedWithSavingIfApplicable gets called for local cards with the
 // correct pre-requisites set.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest,
        ProcessExtractedCreditCard_ProceedWithSavingIfApplicable_Local) {
   CreditCard card = test::WithCvc(test::GetCreditCard(), u"123");
@@ -4228,6 +4291,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Test that save card functionality is skipped for tab modal popup only when
 // kAutofillSkipSaveCardForTabModalPopup is enabled; otherwise, the card saving
 // functionality is started.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_P(SkipSaveCardInFormDataImporterTest,
        ImportAndProcessFormData_TabModalPopup) {
   std::unique_ptr<FormStructure> form_structure =
@@ -4247,6 +4311,7 @@ TEST_P(SkipSaveCardInFormDataImporterTest,
 }
 
 // Test that save card functionality is initiated for non tab modal popups.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_P(SkipSaveCardInFormDataImporterTest,
        ImportAndProcessFormData_StartSaveCardFlow) {
   std::unique_ptr<FormStructure> form_structure =
@@ -4265,6 +4330,7 @@ TEST_P(SkipSaveCardInFormDataImporterTest,
 }
 
 // Test case for credit card extraction.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 class FormDataImporterTest_ExtractCreditCardFromForm
     : public FormDataImporterTest {
  public:
@@ -4295,6 +4361,7 @@ class FormDataImporterTest_ExtractCreditCardFromForm
 // For example, the user-edited "Donald Trump" has higher priority than the
 // autofilled "Joe Biden", which has still higher priority than default-value
 // "Joe Average".
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
        IgnoreInconsistentValuesFromDifferentPriorityClasses) {
   PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Average",
@@ -4326,6 +4393,7 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
 // Tests that equivalent values of different types do not prevent import:
 // - first name + last names = full name;
 // - month + year = expiration date.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest_ExtractCreditCardFromForm, MergeDerivedValues) {
   PushField(FieldType::CREDIT_CARD_NAME_FIRST, u"Donald", Mode::kUserEdited);
   PushField(FieldType::CREDIT_CARD_NAME_LAST, u"Trump", Mode::kUserEdited);
@@ -4352,6 +4420,7 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm, MergeDerivedValues) {
 
 // Tests detection of inconsistent values (first names "Audrey" and "Katherine")
 // in the same priority class (user-edited fields).
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
        BlockImportForInconsistentValues) {
   PushField(FieldType::CREDIT_CARD_NAME_FIRST, u"Katherine", Mode::kUserEdited);
@@ -4369,6 +4438,7 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
 
 // Tests that even editing only a first name (without editing the last name) is
 // is reflected in the import candidate.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest_ExtractCreditCardFromForm, PartialFirstLastNames) {
   PushField(FieldType::CREDIT_CARD_NAME_FIRST, u"Katherine", Mode::kAutofilled);
   PushField(FieldType::CREDIT_CARD_NAME_FIRST, u"Audrey", Mode::kUserEdited);
@@ -4416,6 +4486,7 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
 
 // Tests that card extraction works when there are both split credit card
 // fields and full credit card fields and the card numbers match.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
        SplitCardAndFullCardFieldsMatch) {
   PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Biden", Mode::kAutofilled);
@@ -4438,6 +4509,7 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
 // Tests that split credit card number extraction is blocked when there are both
 // split credit card fields and full credit card fields and the numbers do not
 // match.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
        SplitCardAndFullCardFieldsDoNotMatch) {
   PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Biden", Mode::kAutofilled);
@@ -4457,6 +4529,7 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
 
 // Tests that split credit card number extraction extracts the last value if any
 // of the field is invalid or missing.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
        ExtractsLastFieldIfHasInvalidOrMIssingFields) {
   PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Biden", Mode::kAutofilled);
@@ -4474,6 +4547,7 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
 
 // Tests that user edited fields take priority and autofilled fields are ignored
 // when in conflict.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
        IgnoreDuplicatedFieldsFromDifferentPriorityClasses) {
   PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Biden", Mode::kAutofilled);
@@ -4493,6 +4567,7 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
 }
 
 // Tests split credit card number fields in a lower priority class are ignored.
+// TODO(crbug.com/481379161): Move this to PaymentsFDITest.
 TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
        IgnoreFieldsFromLowerPriorityClass) {
   PushField(FieldType::CREDIT_CARD_NAME_FULL, u"Joe Biden", Mode::kAutofilled);
