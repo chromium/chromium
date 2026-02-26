@@ -18,6 +18,7 @@ import "url_param.proto";
 
 // Configuration for a tool mode.
 // Next ID: 10
+// LINT.IfChange(ToolConfig)
 message ToolConfig {
   // The tool mode.
   ToolMode tool = 1;
@@ -41,3 +42,4 @@ message ToolConfig {
   // The icon for the tool.
   optional Icon icon = 9;
 }
+// LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ToolConfig)
