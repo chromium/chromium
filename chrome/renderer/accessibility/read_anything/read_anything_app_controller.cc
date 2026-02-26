@@ -573,7 +573,7 @@ bool ReadAnythingAppController::IsUpdateProcessingPaused() const {
 }
 
 void ReadAnythingAppController::ProcessPendingUpdatesIfAllowed() {
-  if (IsUpdateProcessingPaused()) {
+  if (IsUpdateProcessingPaused() || !model_.ContainsActiveTree()) {
     return;
   }
 
@@ -2851,10 +2851,10 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
     model_.set_next_distillation_method(
         ReadAnythingAppModel::DistillationMethod::kScreen2x);
 
-    // Only update distillation required if we have an active tree, otherwise
-    // wait for event to distill.
+    // Only attempt distillation if we have an active tree, otherwise only
+    // update the model and wait for event to distill.
+    model_.set_requires_distillation(true);
     if (model_.ContainsActiveTree()) {
-      model_.set_requires_distillation(true);
       DistillNewTree();
     }
     return;

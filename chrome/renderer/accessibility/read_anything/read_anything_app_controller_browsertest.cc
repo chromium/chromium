@@ -3214,6 +3214,35 @@ TEST_F(ReadAnythingAppControllerTest,
                                   base::Seconds(1));
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       ProcessPendingUpdatesIfAllowed_ExitsIfNoTree) {
+  // Destroy existing tree created in Setup().
+  controller().OnAXTreeDestroyed(tree_id_);
+  ASSERT_FALSE(model().ContainsActiveTree());
+
+  model().set_reset_draw_timer(true);
+  model().set_requires_distillation(false);
+
+  controller().ProcessPendingUpdatesIfAllowed();
+
+  // Value for reset_draw_timer didn't change because of early return.
+  EXPECT_TRUE(model().reset_draw_timer());
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       ProcessPendingUpdatesIfAllowed_ExecutesIfTree) {
+  // There's already an Active tree from Setup() so we don't need to create it.
+  ASSERT_TRUE(model().ContainsActiveTree());
+
+  model().set_reset_draw_timer(true);
+  model().set_requires_distillation(false);
+
+  controller().ProcessPendingUpdatesIfAllowed();
+
+  // Value for reset_draw_timer changed because updates were processed.
+  EXPECT_FALSE(model().reset_draw_timer());
+}
+
 class ReadAnythingAppControllerImmersiveTest
     : public ReadAnythingAppControllerTest {
  public:
@@ -4955,6 +4984,35 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
 
   EXPECT_EQ(model().current_content_distillation_method(),
             ReadAnythingAppModel::DistillationMethod::kReadability);
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       UpdateContent_EmptyContentNoTree_SkipsDistillationAttempt) {
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  // Destroy existing tree created in Setup().
+  controller().OnAXTreeDestroyed(tree_id_);
+
+  ASSERT_FALSE(model().ContainsActiveTree());
+
+  EXPECT_CALL(*distiller_, Distill).Times(0);
+  controller().UpdateContent("", "");
+
+  EXPECT_TRUE(model().requires_distillation());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       UpdateContent_EmptyContentWithTree_DoesDistillationAttempt) {
+  Mock::VerifyAndClearExpectations(distiller_);
+
+  // There's already an Active tree from Setup() so we don't need to create it.
+  ASSERT_TRUE(model().ContainsActiveTree());
+
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+
+  controller().UpdateContent("", "");
+
+  EXPECT_FALSE(model().requires_distillation());
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
