@@ -9,7 +9,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {EventListElement} from 'chrome://updater/event_list/event_list.js';
 import type {EventListItemElement} from 'chrome://updater/event_list/event_list_item.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {microtasksFinished, whenCheck} from 'chrome://webui-test/test_util.js';
 
 suite('EventListElement', () => {
   let element: EventListElement;
@@ -103,8 +103,10 @@ suite('EventListElement', () => {
     element.messages = messages;
     await microtasksFinished();
 
-    assertTrue(
-        !!element.shadowRoot.querySelector('.events-with-parse-errors-label'));
+    return whenCheck(
+        element,
+        () => element.shadowRoot.querySelector(
+                  '.events-with-parse-errors-label') !== null);
   });
 
   test('handles events without dates', async () => {
@@ -122,8 +124,10 @@ suite('EventListElement', () => {
     element.messages = messages;
     await microtasksFinished();
 
-    assertTrue(
-        !!element.shadowRoot.querySelector('.events-without-dates-label'));
+    return whenCheck(
+        element,
+        () => element.shadowRoot.querySelector(
+                  '.events-without-dates-label') !== null);
   });
 
   test('filters events', async () => {
