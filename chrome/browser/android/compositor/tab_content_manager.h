@@ -73,12 +73,12 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
                         int primary_tab_id);
 
   void CaptureThumbnail(JNIEnv* env,
-                        TabAndroid* tab,
+                        TabAndroid* tab_android,
                         float thumbnail_scale,
                         bool return_bitmap,
                         const base::android::JavaRef<jobject>& j_callback);
   void CacheTabWithBitmap(JNIEnv* env,
-                          TabAndroid* tab,
+                          TabAndroid* tab_android,
                           const base::android::JavaRef<jobject>& bitmap,
                           float thumbnail_scale);
   void InvalidateIfChanged(JNIEnv* env, int32_t tab_id, const GURL& url);
@@ -115,6 +115,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   using JavaBitmapCallback =
       base::OnceCallback<void(const base::android::JavaRef<jobject>&)>;
 
+  content::RenderWidgetHostView* GetRwhvForTab(TabAndroid* tab_android);
   ThumbnailCaptureTrackerPtr TrackCapture(thumbnail::TabId tab_id);
   void CleanupTrackers();
   void OnTrackingFinished(int tab_id,
