@@ -50,14 +50,11 @@ TEST(OmniboxUtilTest, CreateAnswerResult) {
 
   const auto result =
       CreateAnswerResult(match, nullptr, u"query", AutocompleteInput());
-  EXPECT_EQ(result->type, crosapi::mojom::SearchResultType::kOmniboxResult);
   EXPECT_EQ(result->relevance, 1248);
   ASSERT_TRUE(result->destination_url.has_value());
   EXPECT_EQ(result->destination_url.value(), GURL("http://www.example.com/"));
-  EXPECT_EQ(result->is_omnibox_search,
-            crosapi::mojom::SearchResult::OptionalBool::kTrue);
-  EXPECT_EQ(result->is_answer,
-            crosapi::mojom::SearchResult::OptionalBool::kTrue);
+  EXPECT_TRUE(result->is_omnibox_search);
+  EXPECT_TRUE(result->is_answer);
 
   ASSERT_TRUE(result->contents.has_value());
   EXPECT_EQ(result->contents.value(), u"contents");
@@ -86,14 +83,11 @@ TEST(OmniboxUtilTest, CreateResult) {
 
   const auto result =
       CreateResult(match, nullptr, nullptr, nullptr, AutocompleteInput());
-  EXPECT_EQ(result->type, crosapi::mojom::SearchResultType::kOmniboxResult);
   EXPECT_EQ(result->relevance, 300);
   ASSERT_TRUE(result->destination_url.has_value());
   EXPECT_EQ(result->destination_url.value(), GURL("http://www.example.com/"));
-  EXPECT_EQ(result->is_omnibox_search,
-            crosapi::mojom::SearchResult::OptionalBool::kTrue);
-  EXPECT_EQ(result->is_answer,
-            crosapi::mojom::SearchResult::OptionalBool::kFalse);
+  EXPECT_TRUE(result->is_omnibox_search);
+  EXPECT_FALSE(result->is_answer);
   EXPECT_EQ(result->omnibox_type,
             crosapi::mojom::SearchResult::OmniboxType::kSearch);
   ASSERT_TRUE(result->image_url.has_value());
@@ -147,15 +141,12 @@ TEST(OmniboxUtilTest, CreateWeatherResult) {
   const auto result =
       CreateAnswerResult(match, nullptr, u"query", AutocompleteInput());
 
-  EXPECT_EQ(result->type, crosapi::mojom::SearchResultType::kOmniboxResult);
   EXPECT_EQ(result->relevance, 1200);
   ASSERT_TRUE(result->destination_url.has_value());
   EXPECT_EQ(result->destination_url.value(),
             GURL("https://www.example.com.au/weather"));
-  EXPECT_EQ(result->is_omnibox_search,
-            crosapi::mojom::SearchResult::OptionalBool::kTrue);
-  EXPECT_EQ(result->is_answer,
-            crosapi::mojom::SearchResult::OptionalBool::kTrue);
+  EXPECT_TRUE(result->is_omnibox_search);
+  EXPECT_TRUE(result->is_answer);
 
   ASSERT_TRUE(result->contents.has_value());
   EXPECT_EQ(result->contents.value(), u"Weather in Perth");
@@ -202,10 +193,8 @@ TEST(OmniboxUtilTest, CreateCalculatorResult) {
     ASSERT_TRUE(result->destination_url.has_value());
     EXPECT_EQ(result->destination_url.value(),
               GURL("https://www.example.com.au/calc?q=1+2"));
-    EXPECT_EQ(result->is_omnibox_search,
-              crosapi::mojom::SearchResult::OptionalBool::kTrue);
-    EXPECT_EQ(result->is_answer,
-              crosapi::mojom::SearchResult::OptionalBool::kTrue);
+    EXPECT_TRUE(result->is_omnibox_search);
+    EXPECT_TRUE(result->is_answer);
     EXPECT_EQ(result->answer_type,
               crosapi::mojom::SearchResult::AnswerType::kCalculator);
     ASSERT_TRUE(result->contents.has_value());

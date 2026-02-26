@@ -185,7 +185,6 @@ SearchResultPtr CreateBaseResult(const AutocompleteMatch& match,
     controller->SetMatchDestinationURL(&match_copy);
   }
 
-  result->type = crosapi::mojom::SearchResultType::kOmniboxResult;
   result->relevance = match_copy.relevance;
   result->destination_url = match_copy.destination_url;
 
@@ -204,9 +203,7 @@ SearchResultPtr CreateBaseResult(const AutocompleteMatch& match,
     result->page_transition = SearchResult::PageTransition::kTyped;
   }
 
-  result->is_omnibox_search = AutocompleteMatch::IsSearchType(match_copy.type)
-                                  ? SearchResult::OptionalBool::kTrue
-                                  : SearchResult::OptionalBool::kFalse;
+  result->is_omnibox_search = AutocompleteMatch::IsSearchType(match_copy.type);
   return result;
 }
 
@@ -285,7 +282,7 @@ SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
                                    const AutocompleteInput& input) {
   SearchResultPtr result = CreateBaseResult(match, controller, input);
 
-  result->is_answer = SearchResult::OptionalBool::kTrue;
+  result->is_answer = true;
 
   // Special case: calculator results (are the only answer results to) have no
   // explicit answer data.
@@ -351,7 +348,7 @@ SearchResultPtr CreateResult(const AutocompleteMatch& match,
   SearchResultPtr result = CreateBaseResult(match, controller, input);
 
   result->metrics_type = MatchTypeToMetricsType(match.type);
-  result->is_answer = SearchResult::OptionalBool::kFalse;
+  result->is_answer = false;
   result->contents = match.contents;
   result->contents_type = ClassesToType(match.contents_class);
   result->description = match.description;

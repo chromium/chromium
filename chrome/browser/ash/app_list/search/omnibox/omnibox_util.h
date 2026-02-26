@@ -99,11 +99,6 @@ crosapi::mojom::SearchResultPtr CreateResult(
     bookmarks::BookmarkModel* bookmark_model,
     const AutocompleteInput& input);
 
-// Convenience function to compare crosapi bools.
-inline bool OptionalBoolIsTrue(crosapi::mojom::SearchResult::OptionalBool b) {
-  return b == crosapi::mojom::SearchResult::OptionalBool::kTrue;
-}
-
 }  // namespace app_list
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_OMNIBOX_OMNIBOX_UTIL_H_

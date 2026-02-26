@@ -110,7 +110,7 @@ OmniboxResult::OmniboxResult(Profile* profile,
   // title is set.
   UpdateRelevance();
 
-  if (OptionalBoolIsTrue(search_result_->is_omnibox_search)) {
+  if (search_result_->is_omnibox_search) {
     InitializeButtonActions({ash::SearchResultActionType::kRemove});
   }
 
@@ -265,7 +265,7 @@ void OmniboxResult::UpdateTitleAndDetails() {
           IDS_APP_LIST_QUERY_SEARCH_ACCESSIBILITY_NAME, accessible_name,
           GetDefaultSearchEngineName(
               TemplateURLServiceFactory::GetForProfile(profile_))));
-    } else if (OptionalBoolIsTrue(search_result_->is_omnibox_search)) {
+    } else if (search_result_->is_omnibox_search) {
       // For non-rich-entity results, put the search engine into the details
       // field. Tags are not used since this does not change with the query.
       SetDetails(l10n_util::GetStringFUTF16(
@@ -286,8 +286,7 @@ void OmniboxResult::UpdateTitleAndDetails() {
 }
 
 bool OmniboxResult::IsUrlResultWithDescription() const {
-  return !(OptionalBoolIsTrue(search_result_->is_omnibox_search) ||
-           description_.empty());
+  return !(search_result_->is_omnibox_search || description_.empty());
 }
 
 bool OmniboxResult::IsRichEntity() const {

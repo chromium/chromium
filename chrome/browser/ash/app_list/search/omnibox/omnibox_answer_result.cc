@@ -60,8 +60,6 @@ const gfx::VectorIcon& AnswerTypeToVectorIcon(
       return omnibox::kAnswerSunriseIcon;
     case CrosApiSearchResult::AnswerType::kTranslation:
       return omnibox::kAnswerTranslationIcon;
-    case CrosApiSearchResult::AnswerType::kWhenIs:
-      return omnibox::kAnswerWhenIsIcon;
     default:
       return omnibox::kAnswerDefaultIcon;
   }

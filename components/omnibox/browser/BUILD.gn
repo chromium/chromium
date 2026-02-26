@@ -39,7 +39,6 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "answer_sunrise_chrome_refresh.icon",
     "answer_translation.icon",
     "answer_translation_chrome_refresh.icon",
-    "answer_when_is.icon",
     "bookmark.icon",
     "bookmark_chrome_refresh.icon",
     "calculator.icon",

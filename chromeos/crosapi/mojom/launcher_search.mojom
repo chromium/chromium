@@ -8,21 +8,11 @@ import "mojo/public/mojom/base/string16.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
-// Enum represents the result type.
-[Extensible]
-enum SearchResultType {
-  [Default] kUnknown = 0,
-  // This represents the results come from Omnibox's AutocompleteController
-  // of the browser.
-  kOmniboxResult = 1,
-};
-
 // Struct represents search result.
 // Next min ID: 22
 // Next min version: 6
 struct SearchResult {
-  // Type of the result. Used to distinguish between different types of result.
-  SearchResultType type@0;
+  bool DEPRECATED0@0;
   // Relevance of the result. Used for scoring/ranking.
   double relevance@1;
   // Destination URL of the result. Used for opening the result.
@@ -37,20 +27,16 @@ struct SearchResult {
   // The following fields represent additional information about search
   // results. These are optional and will be filled depending on the result.
 
-  // Whether the result is an omnibox search result or not. Used for
-  // kOmniboxResult type results.
-  OptionalBool is_omnibox_search@3;
-  // Whether the result is an answer result or not. Used for kOmniboxResult
-  // type results.
-  OptionalBool is_answer@4;
-  // The Omnibox search result type as required for metrics logging. Used for
-  // kOmniboxResult type results. This defaults to kUnset.
+  // Whether the result is an omnibox search result or not.
+  bool is_omnibox_search@3;
+  // Whether the result is an answer result or not.
+  bool is_answer@4;
+  // The Omnibox search result type as required for metrics logging. This
+  // defaults to kUnset.
   [MinVersion=5] MetricsType metrics_type@20;
-  // The Omnibox subtype of the result, used for kOmniboxResult type results.
-  // This defaults to kUnset.
+  // The Omnibox subtype of the result. This defaults to kUnset.
   OmniboxType omnibox_type@5;
-  // The Omnibox answer subtype of the result, used for Omnibox answer results.
-  // This defaults to kUnset.
+  // The Omnibox answer subtype of the result. This defaults to kUnset.
   AnswerType answer_type@6;
 
   // The page transition type of this result. Used for opening a result.
@@ -87,20 +73,9 @@ struct SearchResult {
   // Text type of the additional description, if any.
   TextType additional_description_type@13;
 
-  [Extensible]
-  enum OptionalBool {
-    kUnset,
-    kFalse,
-    kTrue,
-  };
-
   // Enum representing the Omnibox result subtype.
-  [Extensible]
   enum OmniboxType {
-    [Default] kUnset = 0,
-    kRichImageDeprecated = 1,
-    kFaviconDeprecated = 2,
-    kCalculatorDeprecated = 7,
+    kUnset = 0,
     kBookmark = 3,  // A special kind of domain type.
     kDomain = 4,
     kSearch = 5,
@@ -126,9 +101,8 @@ struct SearchResult {
   };
 
   // Enum representing the Omnibox answer subtype.
-  [Extensible]
   enum AnswerType {
-    [Default] kUnset = 0,
+    kUnset = 0,
     kDefaultAnswer = 1,
     kWeather = 2,
     kCurrency = 3,
@@ -136,7 +110,6 @@ struct SearchResult {
     kFinance = 5,
     kSunrise = 6,
     kTranslation = 7,
-    kWhenIs = 8,
     [MinVersion=4] kCalculator = 9,
   };
 
@@ -150,9 +123,7 @@ struct SearchResult {
   };
 
   // Enum representing the page transition types.
-  [Extensible]
   enum PageTransition {
-    [Default] kUnset = 0,
     kTyped = 1,
     kGenerated = 2,
   };

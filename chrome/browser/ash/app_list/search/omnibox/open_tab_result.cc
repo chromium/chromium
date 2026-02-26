@@ -32,7 +32,6 @@ namespace {
 
 using ::ash::string_matching::TokenizedString;
 using ::ash::string_matching::TokenizedStringMatch;
-using CrosApiSearchResult = ::crosapi::mojom::SearchResult;
 
 constexpr char kOpenTabScheme[] = "opentab://";
 
