@@ -34,12 +34,8 @@
 
 namespace blink {
 
+class LayoutSVGText;
 struct PaintInfo;
-
-using TrackedLayoutBoxLinkedHashSet = GCedHeapLinkedHashSet<Member<LayoutBox>>;
-using TrackedDescendantsMap =
-    GCedHeapHashMap<WeakMember<const LayoutBlock>,
-                    Member<TrackedLayoutBoxLinkedHashSet>>;
 
 // LayoutBlock is the class that is used by any LayoutObject
 // that is a containing block.
@@ -146,8 +142,8 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   void RemovePositionedObjects(LayoutObject*);
 
-  void AddSvgTextDescendant(LayoutBox& svg_text);
-  void RemoveSvgTextDescendant(LayoutBox& svg_text);
+  void AddSvgTextDescendant(LayoutSVGText& svg_text);
+  void RemoveSvgTextDescendant(LayoutSVGText& svg_text);
 
   LayoutUnit TextIndentOffset() const;
 
@@ -247,10 +243,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   PhysicalRect LocalCaretRect(int caret_offset,
                               CaretShape caret_shape) const final;
   bool IsInlineBoxWrapperActuallyChild() const;
-
-  // End helper functions and structs used by layoutBlockChildren.
-
-  void RemoveFromGlobalMaps();
 
  protected:
   PositionWithAffinity PositionForPointIfOutsideAtomicInlineLevel(

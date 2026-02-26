@@ -125,16 +125,16 @@ bool LayoutView::HitTest(const HitTestLocation& location,
   if (HasSVGTextDescendants()) {
     // This is necessary because SVG <text> might have obsolete geometry after
     // scale-only changes.  See crbug.com/1296089#c16
-    auto it = svg_text_descendants_->find(this);
-    if (it != svg_text_descendants_->end()) {
-      for (LayoutBox* box : *it->value) {
-        auto* svg_text = To<LayoutSVGText>(box);
+    auto it = svg_text_descendants_.find(this);
+    if (it != svg_text_descendants_.end()) {
+      for (LayoutSVGText* svg_text : *it->value) {
         if (svg_text->NeedsTextMetricsUpdate()) {
           svg_text->SetNeedsLayout(layout_invalidation_reason::kStyleChange);
         }
       }
     }
   }
+
   // We have to recursively update layout/style here because otherwise, when the
   // hit test recurses into a child document, it could trigger a layout on the
   // parent document, which can destroy PaintLayer that are higher up in the
@@ -379,13 +379,6 @@ LogicalSize LayoutView::InitialContainingBlockSize() const {
   NOT_DESTROYED();
   return LogicalSize(LayoutUnit(ViewLogicalWidthForBoxSizing()),
                      LayoutUnit(ViewLogicalHeightForBoxSizing()));
-}
-
-TrackedDescendantsMap& LayoutView::SvgTextDescendantsMap() {
-  NOT_DESTROYED();
-  if (!svg_text_descendants_)
-    svg_text_descendants_ = MakeGarbageCollected<TrackedDescendantsMap>();
-  return *svg_text_descendants_;
 }
 
 void LayoutView::RegisterVariableLengthTransformResult(

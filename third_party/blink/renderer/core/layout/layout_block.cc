@@ -90,14 +90,6 @@ void LayoutBlock::Trace(Visitor* visitor) const {
   LayoutBox::Trace(visitor);
 }
 
-void LayoutBlock::RemoveFromGlobalMaps() {
-  NOT_DESTROYED();
-  if (HasSVGTextDescendants()) {
-    View()->SvgTextDescendantsMap().erase(this);
-    SetHasSVGTextDescendants(false);
-  }
-}
-
 void LayoutBlock::WillBeDestroyed() {
   NOT_DESTROYED();
 
@@ -108,8 +100,6 @@ void LayoutBlock::WillBeDestroyed() {
 
   if (TextAutosizer* text_autosizer = GetDocument().GetTextAutosizer())
     text_autosizer->Destroy(this);
-
-  RemoveFromGlobalMaps();
 
   LayoutBox::WillBeDestroyed();
 }
@@ -381,28 +371,26 @@ void LayoutBlock::RemovePositionedObjects(LayoutObject* stay_within) {
   }
 }
 
-void LayoutBlock::AddSvgTextDescendant(LayoutBox& svg_text) {
+void LayoutBlock::AddSvgTextDescendant(LayoutSVGText& svg_text) {
   NOT_DESTROYED();
-  DCHECK(IsA<LayoutSVGText>(svg_text));
   auto result = View()->SvgTextDescendantsMap().insert(this, nullptr);
   if (result.is_new_entry) {
     result.stored_value->value =
-        MakeGarbageCollected<TrackedLayoutBoxLinkedHashSet>();
+        MakeGarbageCollected<GCedHeapHashSet<Member<LayoutSVGText>>>();
   }
   result.stored_value->value->insert(&svg_text);
   SetHasSVGTextDescendants(true);
 }
 
-void LayoutBlock::RemoveSvgTextDescendant(LayoutBox& svg_text) {
+void LayoutBlock::RemoveSvgTextDescendant(LayoutSVGText& svg_text) {
   NOT_DESTROYED();
-  DCHECK(IsA<LayoutSVGText>(svg_text));
-  TrackedDescendantsMap& map = View()->SvgTextDescendantsMap();
+  auto& map = View()->SvgTextDescendantsMap();
   auto it = map.find(this);
   if (it == map.end())
     return;
-  TrackedLayoutBoxLinkedHashSet* descendants = &*it->value;
-  descendants->erase(&svg_text);
-  if (descendants->empty()) {
+  GCedHeapHashSet<Member<LayoutSVGText>>& descendants = *it->value;
+  descendants.erase(&svg_text);
+  if (descendants.empty()) {
     map.erase(this);
     SetHasSVGTextDescendants(false);
   }
