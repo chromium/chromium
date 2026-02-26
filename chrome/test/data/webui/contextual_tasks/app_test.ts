@@ -834,4 +834,73 @@ suite('ContextualTasksAppTest', function() {
     assertTrue(
         clipPath.includes('polygon'), 'clip-path should contain polygon');
   });
+
+  test('sets isFrameLoading to false when content load finishes', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    // Remove the thread frame to prevent unwanted loadstart events.
+    const threadFrame = appElement.shadowRoot.querySelector('#threadFrame');
+    assertTrue(!!threadFrame);
+    appElement.shadowRoot.removeChild(threadFrame);
+    await microtasksFinished();
+
+    const event = new Event('loadstart');
+    Object.assign(event, {url: 'http://example.com', isTopLevel: true});
+    appElement.onThreadFrameLoadStartForTesting(
+        event as chrome.webviewTag.LoadStartEvent);
+
+    // Verify isFrameLoading is true.
+    // Casting to any to access private property.
+    assertTrue(
+        appElement.getIsFrameLoadingForTesting(),
+        'isFrameLoading should be true');
+
+    // Simulate content load.
+    appElement.onThreadFrameContentLoadForTesting();
+    await microtasksFinished();
+
+    // Verify isFrameLoading is false.
+    assertFalse(
+        appElement.getIsFrameLoadingForTesting(),
+        'isFrameLoading should be false');
+  });
+
+  test('sets isFrameLoading to false when load aborts', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+      // Remove the thread frame to prevent unwanted loadstart events.
+    const threadFrame = appElement.shadowRoot.querySelector('#threadFrame');
+    assertTrue(!!threadFrame);
+    appElement.shadowRoot.removeChild(threadFrame);
+    await microtasksFinished();
+
+    const event = new Event('loadstart');
+    Object.assign(event, {url: 'http://example.com', isTopLevel: true});
+    appElement.onThreadFrameLoadStartForTesting(
+        event as chrome.webviewTag.LoadStartEvent);
+
+    // Verify isFrameLoading is true.
+    assertTrue(
+        appElement.getIsFrameLoadingForTesting(),
+        'isFrameLoading should be true');
+
+    // Simulate load abort.
+    appElement.onThreadFrameLoadAbortForTesting();
+    await microtasksFinished();
+
+    // Verify isFrameLoading is false.
+    assertFalse(
+        appElement.getIsFrameLoadingForTesting(),
+        'isFrameLoading should be false');
+  });
 });

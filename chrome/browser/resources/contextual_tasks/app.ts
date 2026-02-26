@@ -506,11 +506,13 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   private onThreadFrameContentLoad() {
+    this.isFrameLoading = false;
     this.setIsGhostLoaderVisible(false);
     this.updateBasicModeAfterNavigation();
   }
 
   private onThreadFrameLoadAbort() {
+    this.isFrameLoading = false;
     this.setIsGhostLoaderVisible(false);
     this.updateBasicModeAfterNavigation();
   }
@@ -762,6 +764,22 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   onBeforeRequestForTesting(details: OnBeforeRequestDetails) {
     return this.onBeforeRequest(details);
+  }
+
+  getIsFrameLoadingForTesting() {
+    return this.isFrameLoading;
+  }
+
+  onThreadFrameLoadStartForTesting(event: chrome.webviewTag.LoadStartEvent) {
+    this.onThreadFrameLoadStart(event);
+  }
+
+  onThreadFrameContentLoadForTesting() {
+    this.onThreadFrameContentLoad();
+  }
+
+  onThreadFrameLoadAbortForTesting() {
+    this.onThreadFrameLoadAbort();
   }
 }
 
