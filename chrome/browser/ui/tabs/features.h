@@ -14,6 +14,11 @@ namespace tabs {
 
 BASE_DECLARE_FEATURE(kTabGroupHome);
 
+// Whether the throbber should be shown for a restored tab after it becomes
+// visible, instead of when it's active in the tab strip (this signal is known
+// to be broken crbug.com/413080225#comment8).
+BASE_DECLARE_FEATURE(kSessionRestoreShowThrobberOnVisible);
+
 // This feature will be used for the LE rollout of Vertical Tabs. It will have
 // an earlier min version than kVerticalTabsLaunch.
 BASE_DECLARE_FEATURE(kVerticalTabs);

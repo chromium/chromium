@@ -18,6 +18,7 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
@@ -43,12 +44,6 @@
 #endif
 
 namespace {
-
-// Whether the throbber should be shown for a restored tab after it becomes
-// visible, instead of when it's active in the tab strip (this signal is known
-// to be broken crbug.com/413080225#comment8).
-BASE_FEATURE(kSessionRestoreShowThrobberOnVisible,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsNTP(const GURL& url) {
   return url.SchemeIs(content::kChromeUIScheme) &&
@@ -222,16 +217,14 @@ bool TabUIHelper::ShouldHideThrobber() const {
   // We want to hide a background tab's throbber during page load if it is
   // created by session restore. A restored tab's favicon is already fetched
   // by |SessionRestoreDelegate|.
-  if (created_by_session_restore_ && !was_active_at_least_once_) {
-    return true;
-  }
-
-  return false;
+  return created_by_session_restore_ && !was_active_at_least_once_;
 }
 
 void TabUIHelper::SetWasActiveAtLeastOnce() {
-  if (!base::FeatureList::IsEnabled(kSessionRestoreShowThrobberOnVisible)) {
-    was_active_at_least_once_ = true;
+  const bool was_hiding_throbber = ShouldHideThrobber();
+  was_active_at_least_once_ = true;
+  if (was_hiding_throbber != ShouldHideThrobber()) {
+    tab_ui_change_callbacks_.Notify();
   }
 }
 
@@ -286,9 +279,10 @@ void TabUIHelper::DidStopLoading() {
 }
 
 void TabUIHelper::OnVisibilityChanged(content::Visibility visiblity) {
-  if (base::FeatureList::IsEnabled(kSessionRestoreShowThrobberOnVisible) &&
+  if (base::FeatureList::IsEnabled(
+          tabs::kSessionRestoreShowThrobberOnVisible) &&
       visiblity == content::Visibility::VISIBLE) {
-    was_active_at_least_once_ = true;
+    SetWasActiveAtLeastOnce();
   }
 }
 

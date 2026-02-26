@@ -93,6 +93,24 @@ IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, DiscardUiChangeIsNotified) {
   EXPECT_TRUE(tab_ui_helper->GetDiscardedMemorySavings().has_value());
 }
 
+IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, NotifyWhenTabVisibilityChanges) {
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GetURL(), WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* const background_tab = tab_strip_model->GetTabAtIndex(1);
+  TabUIHelper* const background_tab_ui_helper =
+      TabUIHelper::From(background_tab);
+  ASSERT_FALSE(background_tab->IsActivated());
+  EXPECT_FALSE(
+      background_tab_ui_helper->was_active_at_least_once_for_testing());
+
+  tab_strip_model->SelectTabAt(1);
+  EXPECT_TRUE(background_tab->IsActivated());
+  EXPECT_TRUE(background_tab_ui_helper->was_active_at_least_once_for_testing());
+}
+
 IN_PROC_BROWSER_TEST_F(TabUIHelperBrowserTest, SettingAttentionIsNotified) {
   tabs::TabInterface* const tab_interface =
       browser()->tab_strip_model()->GetActiveTab();

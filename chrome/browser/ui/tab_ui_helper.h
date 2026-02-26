@@ -101,6 +101,10 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
   // Returns the amount of bytes saved from discarding the tab.
   std::optional<base::ByteSize> GetDiscardedMemorySavings();
 
+  bool was_active_at_least_once_for_testing() const {
+    return was_active_at_least_once_;
+  }
+
  private:
   void OnTabPinnedStatusChange(tabs::TabInterface* tab_interface,
                                bool new_pinned_state);

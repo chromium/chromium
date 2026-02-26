@@ -11,6 +11,9 @@ namespace tabs {
 
 BASE_FEATURE(kTabGroupHome, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSessionRestoreShowThrobberOnVisible,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kVerticalTabs, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kVerticalTabsLaunch, base::FEATURE_DISABLED_BY_DEFAULT);
