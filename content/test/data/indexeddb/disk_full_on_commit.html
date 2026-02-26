@@ -21,7 +21,7 @@ function prepareDatabase() {
 
 function startNewTransaction() {
   tx = db.transaction('store', 'readwrite');
-  tx.objectStore('store').put('value', 'key');
+  tx.objectStore('store').put('valueThatTriggersFailure', 'key');
   tx.oncomplete = unexpectedCompleteCallback;
   tx.onabort = function() {
     shouldBeEqualToString("tx.error.name", "QuotaExceededError");
