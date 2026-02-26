@@ -2172,16 +2172,17 @@ void DocumentLoader::DidInstallNewDocument(Document* document) {
   if (!dns_prefetch_control.empty())
     document->ParseDNSPrefetchControlHeader(dns_prefetch_control);
 
-  String header_content_language =
+  const AtomicString& header_content_language =
       response_.HttpHeaderField(http_names::kContentLanguage);
   if (!header_content_language.empty()) {
-    wtf_size_t comma_index = header_content_language.find(',');
-    // kNotFound == -1 == don't truncate
-    header_content_language.Truncate(comma_index);
-    header_content_language =
-        header_content_language.StripWhiteSpace(IsHTMLSpace<UChar>);
-    if (!header_content_language.empty())
-      document->SetContentLanguage(AtomicString(header_content_language));
+    const wtf_size_t comma_index = header_content_language.find(',');
+    StringView first_content_language(header_content_language);
+    // If `comma_index` is kNotFound (== ~0u), the string won't be truncated.
+    first_content_language = first_content_language.substr(0, comma_index)
+                                 .StripWhiteSpace(IsHTMLSpace<UChar>);
+    if (!first_content_language.empty()) {
+      document->SetContentLanguage(first_content_language.ToAtomicString());
+    }
   }
 
   for (const auto& message : document_policy_parsing_messages_) {
