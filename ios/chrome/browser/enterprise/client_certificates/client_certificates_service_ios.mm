@@ -129,9 +129,7 @@ ClientCertificatesServiceIOSImpl::ClientCertificatesServiceIOSImpl(
       profile_certificate_provisioning_service_(
           profile_certificate_provisioning_service),
       browser_certificate_provisioning_service_(
-          browser_certificate_provisioning_service) {
-  // Relaxed CHECK to allow nullptr for now as requested for the factory.
-}
+          browser_certificate_provisioning_service) {}
 
 ClientCertificatesServiceIOSImpl::~ClientCertificatesServiceIOSImpl() = default;
 
