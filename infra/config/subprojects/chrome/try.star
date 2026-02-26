@@ -472,11 +472,11 @@ chrome_internal_verifier(
     #       We definitely want to have autoroll bots here because we have no
     #       Perf tests on those sub repos, and we want to catch the regressions
     #       during rollout.
-    # setting to 0 on migrating the builder from win-10 to win-11.
-    # owner_whitelist = ["googlers", "project-chromium-robot-committers"],
-    # tryjob = try_.job(
-    #     experiment_percentage = 100,
-    # ),
+    # setting to 50 on new builder for win-11.
+    owner_whitelist = ["googlers", "project-chromium-robot-committers"],
+    tryjob = try_.job(
+        experiment_percentage = 50,
+    ),
 )
 
 chrome_internal_verifier(
