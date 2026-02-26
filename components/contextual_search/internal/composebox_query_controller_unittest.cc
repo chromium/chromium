@@ -71,6 +71,7 @@ constexpr char kLocale[] = "en-US";
 constexpr char kRegion[] = "US";
 constexpr char kTimeZone[] = "America/Los_Angeles";
 constexpr char kRequestIdParameterKey[] = "vsrid";
+constexpr char kAimMultiContextQueryParameter[] = "amc";
 constexpr char kVisualSearchInteractionDataParameterKey[] = "vsint";
 constexpr char kAddedInputsParameterKey[] = "aai";
 constexpr char kLnsSurfaceParameterKey[] = "lns_surface";
@@ -1816,6 +1817,12 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_FALSE(vsrid_value.empty());
   EXPECT_EQ(lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
             DecodeRequestIdFromVsrid(vsrid_value).media_type());
+
+  // Check that the amc is present and set to 1.
+  std::string amc_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kAimMultiContextQueryParameter, &amc_value));
+  EXPECT_EQ(amc_value, "1");
 }
 
 TEST_F(ComposeboxQueryControllerTest,
@@ -2296,6 +2303,12 @@ TEST_F(ComposeboxQueryControllerTest,
   std::string cud_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(
       aim_url, kClientUploadDurationQueryParameter, &cud_value));
+
+  // Check that the amc parameter is set to 1.
+  std::string amc_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kAimMultiContextQueryParameter, &amc_value));
+  EXPECT_EQ(amc_value, "1");
 }
 
 TEST_F(ComposeboxQueryControllerTest, QuerySubmitted) {
@@ -2404,6 +2417,12 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
   EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kSearchModeQueryParameterKey,
                                          &udm_value));
   EXPECT_EQ(udm_value, kAimUdmQueryParameterValue);
+
+  // Check that the amc parameter is set to 1.
+  std::string amc_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kAimMultiContextQueryParameter, &amc_value));
+  EXPECT_EQ(amc_value, "1");
 }
 
 TEST_F(ComposeboxQueryControllerTest, CreateClientToAimRequestWithUploadedPdf) {
@@ -2874,6 +2893,12 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedImage) {
   std::string vit_value;
   EXPECT_FALSE(net::GetValueForKeyInQuery(
       aim_url, kVisualInputTypeQueryParameter, &vit_value));
+
+  // Check that the amc parameter is set to 1.
+  std::string amc_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kAimMultiContextQueryParameter, &amc_value));
+  EXPECT_EQ(amc_value, "1");
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
@@ -3351,6 +3376,12 @@ TEST_F(ComposeboxQueryControllerTest,
               EqualsProto(*first_file_request_id));
   EXPECT_THAT(contextual_inputs.inputs(1).request_id(),
               EqualsProto(*second_file_request_id));
+
+  // Check that the amc parameter is set to 1.
+  std::string amc_value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(
+      aim_url, kAimMultiContextQueryParameter, &amc_value));
+  EXPECT_EQ(amc_value, "1");
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadFileResponseSetsResponseBodies) {
@@ -3910,7 +3941,7 @@ TEST_F(ComposeboxQueryControllerTest,
 #endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(ComposeboxQueryControllerTest,
-       CreateSearchUrl_StandardSearch_DoesNotIncludeAddedInputs) {
+       CreateSearchUrl_StandardSearch_DoesNotIncludeAaiOrAmc) {
   // Act: Start the session.
   controller().InitializeIfNeeded();
   WaitForClusterInfo();
@@ -3939,6 +3970,11 @@ TEST_F(ComposeboxQueryControllerTest,
   std::string added_inputs_param;
   EXPECT_FALSE(net::GetValueForKeyInQuery(search_url, kAddedInputsParameterKey,
                                           &added_inputs_param));
+
+  // Check that the amc parameter NOT present.
+  std::string amc_value;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
+      search_url, kAimMultiContextQueryParameter, &amc_value));
 }
 
 TEST_F(ComposeboxQueryControllerTest,
