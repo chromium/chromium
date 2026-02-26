@@ -134,7 +134,11 @@ public class SessionDataHolder {
         return mActiveSessionHandler;
     }
 
-    private @Nullable SessionHandler getActiveHandlerForIntent(Intent intent) {
+    /**
+     * Returns the active session handler if it is associated with the session in the given intent,
+     * null otherwise.
+     */
+    public @Nullable SessionHandler getActiveHandlerForIntent(Intent intent) {
         return getActiveHandler(SessionHolder.getSessionHolderFromIntent(intent));
     }
 

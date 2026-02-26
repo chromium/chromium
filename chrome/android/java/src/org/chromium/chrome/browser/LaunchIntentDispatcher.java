@@ -20,6 +20,7 @@ import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.TrustedWebUtils;
 import androidx.core.os.BuildCompat;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
@@ -29,6 +30,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
+import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
 import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
@@ -246,8 +248,15 @@ public class LaunchIntentDispatcher {
             // The old way of delivering intents relies on calling the activity directly via a
             // static reference. It doesn't allow using CLEAR_TOP, and also doesn't work when an
             // intent brings the task to foreground. The condition above is a temporary safety net.
-            boolean handled = SessionDataHolder.getInstance().handleIntent(mIntent);
-            if (handled) return true;
+            SessionHandler handler =
+                    SessionDataHolder.getInstance().getActiveHandlerForIntent(mIntent);
+            if (handler != null && handler.handleIntent(mIntent)) {
+                // Bring the task to the foreground.
+                // This is necessary because LaunchIntentDispatcher bypasses startActivity (which
+                // usually handles foregrounding) when it delegates to this handler.
+                ApiCompatibilityUtils.moveTaskToFront(mActivity, handler.getTaskId(), 0);
+                return true;
+            }
         }
 
         // Should not be set by external apps, remove if present.

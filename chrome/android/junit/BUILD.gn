@@ -424,6 +424,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/ExampleRobolectricTest.java",
       "src/org/chromium/chrome/browser/HomeSurfaceTrackerUnitTest.java",
       "src/org/chromium/chrome/browser/IntentHandlerRobolectricTest.java",
+      "src/org/chromium/chrome/browser/LaunchIntentDispatcherTest.java",
       "src/org/chromium/chrome/browser/OmahaServiceStartDelayerTest.java",
       "src/org/chromium/chrome/browser/RecentlyClosedEntriesManagerTrackerImplUnitTest.java",
       "src/org/chromium/chrome/browser/RecentlyClosedEntriesManagerUnitTest.java",
