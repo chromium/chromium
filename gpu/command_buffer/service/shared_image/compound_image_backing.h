@@ -426,7 +426,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   // thread-safe.
   base::WeakPtr<SharedImageFactory> shared_image_factory_;
 
-  uint32_t latest_content_id_ = 1;
+  uint32_t latest_content_id_ GUARDED_BY(lock_) = 1;
 
   // Holds all of the "element" backings that make up this compound backing. For
   // each there is a backing, set of streams and tracking for latest content.
@@ -438,7 +438,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking
   // As of now, CompoundImageBacking only has 2 backings,i.e., 1 shm and 1 gpu
   // backing. In future, it will evolve into a dynamic CompoundImageBacking
   // where it can have any number of gpu backings and at most 1 cpu backing.
-  std::vector<ElementHolder> elements_;
+  std::vector<ElementHolder> elements_ GUARDED_BY(lock_);
 
   base::OnceCallback<void(bool)> pending_copy_to_gmb_callback_;
   scoped_refptr<SharedImageCopyManager> copy_manager_;

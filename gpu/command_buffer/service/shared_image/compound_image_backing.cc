@@ -1006,6 +1006,7 @@ CompoundImageBacking::~CompoundImageBacking() {
 void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
                                              RepresentationAccessMode mode,
                                              SharedImageAccessStream stream) {
+  AutoLock auto_lock(this);
   ElementHolder* access_element = GetElement(backing);
   if (!access_element) {
     LOG(ERROR) << "Backing (" << backing->GetName()
@@ -1035,11 +1036,17 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
     if (copy_succeeded) {
       updated_backing = true;
 
-      // Propagate the clear rect from the source backing.
+      // Propagate the clear rect from the source backing to the destination
+      // backing as well as all the other child backings and
+      // CompoundImageBacking.
       const gfx::Rect src_cleared_rect =
           latest_content_element->GetBacking()->ClearedRect();
-      access_element->GetBacking()->SetClearedRect(src_cleared_rect);
-      SetClearedRect(src_cleared_rect);
+      SetClearedRectInternal(src_cleared_rect);
+      for (auto& element : elements_) {
+        if (element.backing) {
+          element.backing->SetClearedRect(src_cleared_rect);
+        }
+      }
     } else {
       LOG(ERROR) << "Failed to copy from "
                  << latest_content_element->GetBacking()->GetName() << " to "
@@ -1082,6 +1089,7 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
 
 void CompoundImageBacking::NotifyEndAccess(SharedImageBacking* backing,
                                            RepresentationAccessMode mode) {
+  AutoLock auto_lock(this);
   CHECK(backing);
 
   // If the last access was a write and an underlying backing was accessed,
@@ -1096,6 +1104,7 @@ void CompoundImageBacking::NotifyEndAccess(SharedImageBacking* backing,
 
 void CompoundImageBacking::OnContextLost() {
   ClearTrackingSharedImageBacking::OnContextLost();
+  AutoLock auto_lock(this);
   for (const auto& element : elements_) {
     if (element.backing) {
       element.backing->OnContextLost();
@@ -1118,6 +1127,7 @@ void CompoundImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   // created only at initialization time. Hence it is guaranteed to be at
   // elements_[0].
   // 3. |elements_| always contains at least one element.
+  AutoLock auto_lock(this);
   CHECK(!elements_.empty());
   auto& element = elements_[0];
   CHECK(element.backing);
@@ -1130,6 +1140,7 @@ void CompoundImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 }
 
 bool CompoundImageBacking::CopyToGpuMemoryBuffer() {
+  AutoLock auto_lock(this);
   auto& shm_element = GetShmElement();
 
   if (HasLatestContent(shm_element)) {
@@ -1150,6 +1161,7 @@ bool CompoundImageBacking::CopyToGpuMemoryBuffer() {
 
 void CompoundImageBacking::CopyToGpuMemoryBufferAsync(
     base::OnceCallback<void(bool)> callback) {
+  AutoLock auto_lock(this);
   auto& shm_element = GetShmElement();
 
   if (HasLatestContent(shm_element)) {
@@ -1180,6 +1192,7 @@ void CompoundImageBacking::CopyToGpuMemoryBufferAsync(
 }
 
 void CompoundImageBacking::OnCopyToGpuMemoryBufferComplete(bool success) {
+  AutoLock auto_lock(this);
   if (success) {
     auto& shm_element = GetShmElement();
     shm_element.content_id_ = latest_content_id_;
@@ -1194,6 +1207,7 @@ gfx::Rect CompoundImageBacking::ClearedRect() const {
 }
 
 void CompoundImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
+  AutoLock auto_lock(this);
   SetClearedRectInternal(cleared_rect);
 
   // Propagate the cleared rect to all underlying backings. This is important
@@ -1210,6 +1224,7 @@ void CompoundImageBacking::SetClearedRect(const gfx::Rect& cleared_rect) {
 }
 
 void CompoundImageBacking::MarkForDestruction() {
+  AutoLock auto_lock(this);
   for (const auto& element : elements_) {
     if (element.backing) {
       element.backing->MarkForDestruction();
@@ -1226,6 +1241,7 @@ gfx::GpuMemoryBufferHandle CompoundImageBacking::GetGpuMemoryBufferHandle() {
   // created only at initialization time and never allocated dynamically during
   // runtime. Hence it is guaranteed to be at elements_[0].
   // 2. |elements_| always contains at least one element.
+  AutoLock auto_lock(this);
   CHECK(!elements_.empty());
   auto& element = elements_[0];
   CHECK(element.backing);
@@ -1236,6 +1252,7 @@ scoped_refptr<gfx::NativePixmap> CompoundImageBacking::GetNativePixmap() {
   // The purpose of this function is to get NativePixmap for overlay testing,
   // so it needs be the same NativePixmap that we would later get from the
   // ProduceOverlay representation. Hence using Overlay stream backing here.
+  AutoLock auto_lock(this);
   for (const auto& element : elements_) {
     if (element.access_streams.Has(SharedImageAccessStream::kOverlay) &&
         element.backing) {
@@ -1490,6 +1507,7 @@ base::trace_event::MemoryAllocatorDump* CompoundImageBacking::OnMemoryDump(
     uint64_t client_tracing_id) {
   // Create dump but don't add scalar size. The size will be inferred from the
   // sizes of the sub-backings.
+  AutoLock auto_lock(this);
   base::trace_event::MemoryAllocatorDump* dump =
       pmd->CreateAllocatorDump(dump_name);
 
@@ -1541,6 +1559,7 @@ base::trace_event::MemoryAllocatorDump* CompoundImageBacking::OnMemoryDump(
 }
 
 const std::vector<SkPixmap>& CompoundImageBacking::GetSharedMemoryPixmaps() {
+  AutoLock auto_lock(this);
   auto* shm_backing = GetShmElement().GetBacking();
   DCHECK(shm_backing);
 
@@ -1585,6 +1604,7 @@ CompoundImageBacking::GetElementWithLatestContent() {
 SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
     SharedImageAccessStream stream,
     const AccessParams& params) {
+  AutoLock auto_lock(this);
   ElementHolder* best_match = nullptr;
   ElementHolder* any_match = nullptr;
 
@@ -1702,7 +1722,6 @@ void CompoundImageBacking::CreateBackingFromBackingFactory(
       estimated_size += element.backing->GetEstimatedSize();
   }
 
-  AutoLock auto_lock(this);
   UpdateEstimatedSize(estimated_size);
 }
 
@@ -1715,6 +1734,7 @@ void CompoundImageBacking::OnAddSecondaryReference() {
   // SharedImage can outlive original factory ref and so potentially
   // SharedimageFactory. We should create all backings now as we might not have
   // access to corresponding SharedImageBackingFactories later.
+  AutoLock auto_lock(this);
   for (auto& element : elements_) {
     element.CreateBackingIfNecessary();
   }
