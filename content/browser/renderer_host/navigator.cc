@@ -888,6 +888,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
     DuplicateNavsCookieStatus cookie_status;
     if (!ongoing_navigation_request->HasCookieChangeListener()) {
       cookie_status = DuplicateNavsCookieStatus::kNoListener;
+      is_duplicate_navigation = true;
     } else if (ongoing_navigation_request->DidCookiesChangeAfterStart(
                    /*exclude_http_only=*/false)) {
       cookie_status = DuplicateNavsCookieStatus::kCookiesChanged;
