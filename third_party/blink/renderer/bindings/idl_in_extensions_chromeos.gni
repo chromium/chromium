@@ -6,5 +6,6 @@
 # components for production.
 static_idl_files_in_extensions_chromeos = [
   "//third_party/blink/renderer/extensions/chromeos/chromeos.idl",
+  "//third_party/blink/renderer/extensions/chromeos/isolated_web_app/isolated_web_app.idl",
   "//third_party/blink/renderer/extensions/chromeos/kiosk/cros_kiosk.idl",
 ]

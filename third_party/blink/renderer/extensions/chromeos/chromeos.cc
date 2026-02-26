@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/extensions/chromeos/chromeos.h"
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/extensions/chromeos/isolated_web_app/isolated_web_app.h"
 #include "third_party/blink/renderer/extensions/chromeos/kiosk/cros_kiosk.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -12,6 +13,10 @@
 namespace blink {
 
 ChromeOS::ChromeOS() = default;
+
+IsolatedWebApp* ChromeOS::isolatedWebApp(ExecutionContext* execution_context) {
+  return &IsolatedWebApp::From(*execution_context);
+}
 
 CrosKiosk* ChromeOS::kiosk(ExecutionContext* execution_context) {
   return &CrosKiosk::From(*execution_context);

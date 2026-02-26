@@ -1,0 +1,20 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/ash/isolated_web_app",
+]
+
+specific_include_rules = {
+  "blink_extensions_browsertest\.cc": [
+    "+chrome/browser/profiles/profile.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+    "+chrome/browser/ui/web_applications/test",
+    "+chrome/browser/web_applications/isolated_web_apps",
+    "+chrome/browser/web_applications/isolated_web_apps/test",
+    "+chrome/test/base",
+  ],
+}

@@ -302,6 +302,7 @@ group("browser_tests") {
     "//chrome/browser/ash/guest_os:browser_tests",
     "//chrome/browser/ash/input_device_settings:browser_tests",
     "//chrome/browser/ash/input_method:browser_tests",
+    "//chrome/browser/ash/isolated_web_app:browser_tests",
     "//chrome/browser/ash/kcer:browser_tests",
     "//chrome/browser/ash/kerberos:browser_tests",
     "//chrome/browser/ash/locale:browser_tests",
