@@ -40,6 +40,8 @@
 ../../web_tests/external/wpt/fonts/ahem-extra/AHEM_sans-serif.TTF
 ../../web_tests/external/wpt/fonts/ahem-extra/AHEM_serif.TTF
 ../../web_tests/external/wpt/fonts/ahem-visible-zwnj.otf
+../../web_tests/external/wpt/fonts/baseline-diagnostic/BaselineDiagnostic.ttf
+../../web_tests/external/wpt/fonts/baseline-diagnostic/BaselineDiagnosticAlphabeticZero.ttf
 ../../web_tests/external/wpt/fonts/fail.woff
 ../../web_tests/external/wpt/fonts/hasubi-mono/HasubiMono-Regular.woff2
 ../../web_tests/external/wpt/fonts/math/axisheight5000-verticalarrow14000.woff
