@@ -771,7 +771,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     updateCount();
   }
 
-  protected onAdd_() {
+  protected onAddClick_() {
     this.dialogIsReadonly_ = false;
     this.dialogSource_ = TileSource.CUSTOM_LINKS;
     this.dialogTitle_ = loadTimeData.getString('addLinkTitle');
@@ -782,7 +782,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     this.$.dialog.showModal();
   }
 
-  protected onAddShortcutKeyDown_(e: KeyboardEvent) {
+  protected onAddShortcutKeydown_(e: KeyboardEvent) {
     if (hasKeyModifiers(e)) {
       return;
     }
@@ -803,7 +803,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
   }
 
-  protected onShowMoreKeyDown_(e: KeyboardEvent) {
+  protected onShowMoreKeydown_(e: KeyboardEvent) {
     if (hasKeyModifiers(e)) {
       return;
     }
@@ -814,7 +814,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
   }
 
-  protected onShowLessKeyDown_(e: KeyboardEvent) {
+  protected onShowLessKeydown_(e: KeyboardEvent) {
     if (hasKeyModifiers(e)) {
       return;
     }
@@ -829,7 +829,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
   }
 
-  protected onDialogCancel_() {
+  protected onDialogCancelClick_() {
     this.actionMenuTargetIndex_ = -1;
     this.$.dialog.cancel();
   }
@@ -850,12 +850,12 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
   }
 
-  protected onDialogTileUrlChange_(e: Event) {
+  protected onDialogTileUrlValueChanged_(e: Event) {
     this.dialogTileUrl_ = (e.target as HTMLInputElement).value;
     this.dialogTileUrlInvalid_ = false;
   }
 
-  protected onDialogTileNameChange_(e: Event) {
+  protected onDialogTileNameValueChanged_(e: Event) {
     this.dialogTileTitle_ = (e.target as HTMLInputElement).value;
   }
 
@@ -872,7 +872,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
   }
 
-  protected onDragStart_(e: DragEvent) {
+  protected onDragstart_(e: DragEvent) {
     const item = this.tiles_[this.getCurrentTargetIndex_(e)]!;
     assert(item);
     if (!this.customLinksEnabled_ &&
@@ -920,7 +920,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }, {once: true});
   }
 
-  protected onViewOrEdit_() {
+  protected onViewOrEditClick_() {
     this.$.actionMenu.close();
     const tile = this.tiles_[this.actionMenuTargetIndex_]!;
     const isReadonly = !tile.allowUserEdit;
@@ -942,13 +942,13 @@ export class MostVisitedElement extends MostVisitedElementBase {
     this.pageHandler_.restoreMostVisitedDefaults(this.toastSource_);
   }
 
-  protected async onRemove_() {
+  protected async onRemoveClick_() {
     this.$.actionMenu.close();
     await this.tileRemove_(this.actionMenuTargetIndex_);
     this.actionMenuTargetIndex_ = -1;
   }
 
-  protected async onSave_() {
+  protected async onSaveClick_() {
     if (this.dialogIsReadonly_) {
       this.$.dialog.close();
       return;
@@ -1013,7 +1013,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
         item, index, e.button || 0, e.altKey, e.ctrlKey, e.metaKey, e.shiftKey);
   }
 
-  protected onTileKeyDown_(e: KeyboardEvent) {
+  protected onTileKeydown_(e: KeyboardEvent) {
     if (hasKeyModifiers(e)) {
       return;
     }
@@ -1039,7 +1039,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
   }
 
-  protected onTileHover_(e: Event) {
+  protected onTileMouseenter_(e: Event) {
     if (e.defaultPrevented) {
       // Ignore previously handled events.
       return;
@@ -1065,7 +1065,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
   }
 
-  protected onTileMouseDown_(e: Event) {
+  protected onTileMousedown_(e: Event) {
     if (e.defaultPrevented) {
       // Ignore previously handled events.
       return;
@@ -1083,7 +1083,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     }
   }
 
-  protected onTileExit_(e: Event) {
+  protected onTileMouseleave_(e: Event) {
     if (e.defaultPrevented) {
       // Ignore previously handled events.
       return;
@@ -1111,7 +1111,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     return true;
   }
 
-  protected onTouchStart_(e: TouchEvent) {
+  protected onTouchstart_(e: TouchEvent) {
     if (this.reordering_) {
       return;
     }

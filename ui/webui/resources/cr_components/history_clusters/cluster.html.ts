@@ -33,7 +33,7 @@ export function getHtml(this: ClusterElement) {
       ?hidden="${this.hideRelatedSearches_()}"
       role="list" aria-label="${this.i18n('relatedSearchesHeader')}"
       @related-search-clicked="${this.onRelatedSearchClicked_}"
-      @pointerdown="${this.clearSelection_}"
+      @pointerdown="${this.onHorizontalCarouselPointerdown_}"
       ?in-side-panel="${this.inSidePanel}">
     ${this.relatedSearches_.map((item, index) => html`<search-query
         .searchQuery="${item}" .index="${index}" role="listitem">

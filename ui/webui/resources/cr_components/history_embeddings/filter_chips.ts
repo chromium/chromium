@@ -117,7 +117,7 @@ export class HistoryEmbeddingsFilterChipsElement extends
     return this.selectedSuggestion === suggestion;
   }
 
-  protected onShowByGroupSelectMenuChanged_() {
+  protected onShowByGroupSelectMenuChange_() {
     this.showResultsByGroup = this.$.showByGroupSelectMenu.value === 'true';
   }
 

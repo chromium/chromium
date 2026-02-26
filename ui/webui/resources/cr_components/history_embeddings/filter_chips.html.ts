@@ -12,7 +12,7 @@ export function getHtml(this: FilterChipsElement) {
 <select id="showByGroupSelectMenu" class="md-select"
     aria-label="${this.i18n('historyEmbeddingsShowByLabel')}"
     .value="${this.showResultsByGroup}"
-    @change="${this.onShowByGroupSelectMenuChanged_}"
+    @change="${this.onShowByGroupSelectMenuChange_}"
     ?hidden="${!this.enableShowResultsByGroupOption}">
   <option value="false">
     ${this.i18n('historyEmbeddingsShowByDate')}

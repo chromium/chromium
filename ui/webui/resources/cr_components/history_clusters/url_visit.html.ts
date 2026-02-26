@@ -8,8 +8,8 @@ import type {UrlVisitElement} from './url_visit.js';
 
 export function getHtml(this: UrlVisitElement) {
   return html`
-<div id="header" @click="${this.onClick_}" @auxclick="${this.onClick_}"
-    @keydown="${this.onKeydown_}" @contextmenu="${this.onContextMenu_}">
+<div id="header" @click="${this.onClick_}" @auxclick="${this.onAuxclick_}"
+    @keydown="${this.onKeydown_}" @contextmenu="${this.onContextmenu_}">
   <a id="link-container" href="${this.visit?.normalizedUrl || nothing}">
     <page-favicon id="icon" .url="${this.visit?.normalizedUrl}"
         .isKnownToSync="${this.visit?.isKnownToSync || false}">

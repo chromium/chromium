@@ -76,7 +76,7 @@ export function getHtml(this: ThemeColorPickerElement) {
 </cr-theme-hue-slider-dialog>
 
 ${this.showManagedDialog_ ? html`
-  <managed-dialog @close="${this.onManagedDialogClosed_}"
+  <managed-dialog @close="${this.onManagedDialogClose_}"
       title="${this.i18n('managedColorsTitle')}"
       body="${this.i18n('managedColorsBody')}">
   </managed-dialog>

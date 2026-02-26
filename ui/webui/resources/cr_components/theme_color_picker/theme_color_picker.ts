@@ -275,7 +275,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
         (await this.handler_.getChromeColors(this.theme_.isDarkMode)).colors;
   }
 
-  protected onManagedDialogClosed_() {
+  protected onManagedDialogClose_() {
     this.showManagedDialog_ = false;
   }
 

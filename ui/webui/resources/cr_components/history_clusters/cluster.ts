@@ -196,7 +196,7 @@ export class ClusterElement extends ClusterElementBase {
 
   /* Clears selection on non alt mouse clicks. Need to wait for browser to
    *  update the DOM fully. */
-  protected clearSelection_(event: MouseEvent) {
+  protected onHorizontalCarouselPointerdown_(event: MouseEvent) {
     this.onBrowserIdle_().then(() => {
       if (window.getSelection() && !event.altKey) {
         window.getSelection()?.empty();

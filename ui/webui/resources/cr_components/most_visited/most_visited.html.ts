@@ -16,10 +16,11 @@ export function getHtml(this: MostVisitedElement) {
   ${this.tiles_.map((item, index) => html`
     <div class="tile" ?query-tile="${item.isQueryTile}"
       ?hidden="${this.isHidden_(index)}"
-      title="${item.title}" @dragstart="${this.onDragStart_}"
-      @touchstart="${this.onTouchStart_}" @click="${this.onTileClick_}"
-      @mouseenter="${this.onTileHover_}" @mouseleave="${this.onTileExit_}"
-      @mousedown="${this.onTileMouseDown_}" @keydown="${this.onTileKeyDown_}"
+      title="${item.title}" @dragstart="${this.onDragstart_}"
+      @touchstart="${this.onTouchstart_}" @click="${this.onTileClick_}"
+      @mouseenter="${this.onTileMouseenter_}"
+      @mouseleave="${this.onTileMouseleave_}"
+      @mousedown="${this.onTileMousedown_}" @keydown="${this.onTileKeydown_}"
       draggable="true" data-index="${index}">
       <a href="${item.url}" aria-label="${item.title}"
           draggable="false">
@@ -52,8 +53,8 @@ export function getHtml(this: MostVisitedElement) {
       </div>
     </div>
   `)}
-  <cr-button id="addShortcut" tabindex="0" @click="${this.onAdd_}"
-      ?hidden="${!this.showAdd_}" @keydown="${this.onAddShortcutKeyDown_}"
+  <cr-button id="addShortcut" tabindex="0" @click="${this.onAddClick_}"
+      ?hidden="${!this.showAdd_}" @keydown="${this.onAddShortcutKeydown_}"
       aria-label="${this.i18n('addLinkTitle')}"
       title="${this.i18n('addLinkTitle')}" noink>
     <div class="tile-icon tile-icon-container">
@@ -65,7 +66,7 @@ export function getHtml(this: MostVisitedElement) {
   </cr-button>
   <div>
     <cr-button id="showMore" tabindex="0" @click="${this.onShowMoreClick_}"
-        ?hidden="${!this.showShowMore_}" @keydown="${this.onShowMoreKeyDown_}"
+        ?hidden="${!this.showShowMore_}" @keydown="${this.onShowMoreKeydown_}"
         aria-label="${this.i18n('showMore')}"
         title="${this.i18n('showMore')}" noink>
       <div class="tile-icon tile-icon-container">
@@ -76,7 +77,7 @@ export function getHtml(this: MostVisitedElement) {
       </div>
     </cr-button>
     <cr-button id="showLess" tabindex="0" @click="${this.onShowLessClick_}"
-        ?hidden="${!this.showShowLess_}" @keydown="${this.onShowLessKeyDown_}"
+        ?hidden="${!this.showShowLess_}" @keydown="${this.onShowLessKeydown_}"
         aria-label="${this.i18n('showLess')}"
         title="${this.i18n('showLess')}" noink>
       <div class="tile-icon tile-icon-container">
@@ -101,24 +102,24 @@ export function getHtml(this: MostVisitedElement) {
           .value="${this.dialogTileTitle_}"
           ?readonly="${this.dialogIsReadonly_}"
           spellcheck="false" autofocus
-          @value-changed="${this.onDialogTileNameChange_}">
+          @value-changed="${this.onDialogTileNameValueChanged_}">
       </cr-input>
       <cr-input id="dialogInputUrl" label="${this.i18n('urlField')}"
           .value="${this.dialogTileUrl_}"
           ?invalid="${this.dialogTileUrlInvalid_}"
           .errorMessage="${this.dialogTileUrlError_}" spellcheck="false"
           type="url" @blur="${this.onDialogTileUrlBlur_}"
-          @value-changed="${this.onDialogTileUrlChange_}"
+          @value-changed="${this.onDialogTileUrlValueChanged_}"
           ?readonly="${this.dialogIsReadonly_ ||
             this.isFromEnterpriseShortcut_(this.dialogSource_)}">
       </cr-input>
     </div>
     <div slot="button-container">
-      <cr-button class="cancel-button" @click="${this.onDialogCancel_}"
+      <cr-button class="cancel-button" @click="${this.onDialogCancelClick_}"
           ?hidden="${this.dialogIsReadonly_}">
         ${this.i18n('linkCancel')}
       </cr-button>
-      <cr-button class="action-button" @click="${this.onSave_}"
+      <cr-button class="action-button" @click="${this.onSaveClick_}"
           ?disabled="${this.dialogSaveDisabled_}">
         ${this.i18n('linkDone')}
       </cr-button>
@@ -126,11 +127,11 @@ export function getHtml(this: MostVisitedElement) {
   </cr-dialog>
   <cr-action-menu id="actionMenu">
     <button id="actionMenuViewOrEdit" class="dropdown-item"
-        @click="${this.onViewOrEdit_}">
+        @click="${this.onViewOrEditClick_}">
       ${this.actionMenuViewOrEditTitle_}
     </button>
     <button id="actionMenuRemove" class="dropdown-item"
-        @click="${this.onRemove_}"
+        @click="${this.onRemoveClick_}"
         ?disabled="${this.actionMenuRemoveDisabled_}">
       ${this.i18n('linkRemove')}
     </button>

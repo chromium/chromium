@@ -121,9 +121,13 @@ export class UrlVisitElement extends ClusterMenuElementBase {
   // Event handlers
   //============================================================================
 
-  private onAuxClick_() {
+  private fireVisitClickedEvent_() {
     // Notify the parent <history-cluster> element of this event.
     this.fire('visit-clicked', this.visit);
+  }
+
+  protected onAuxclick_(event: MouseEvent) {
+    this.onClick_(event);
   }
 
   protected onClick_(event: MouseEvent) {
@@ -135,12 +139,12 @@ export class UrlVisitElement extends ClusterMenuElementBase {
     event.preventDefault();  // Prevent default browser action (navigation).
 
     // To record metrics.
-    this.onAuxClick_();
+    this.fireVisitClickedEvent_();
 
     this.openUrl_(event);
   }
 
-  protected onContextMenu_(event: MouseEvent) {
+  protected onContextmenu_(event: MouseEvent) {
     // Because WebUI has a Blink-provided context menu that's suitable, and
     // Side Panel always UIs always have a custom context menu.
     if (!loadTimeData.getBoolean('inSidePanel') || !this.visit) {
@@ -158,7 +162,7 @@ export class UrlVisitElement extends ClusterMenuElementBase {
     }
 
     // To record metrics.
-    this.onAuxClick_();
+    this.fireVisitClickedEvent_();
 
     this.openUrl_(e);
   }

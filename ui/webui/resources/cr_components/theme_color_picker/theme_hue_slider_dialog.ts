@@ -125,7 +125,19 @@ export class ThemeHueSliderDialogElement extends
     this.hide();
   }
 
-  protected updateSelectedHueValue_() {
+  protected onSliderKeyup_() {
+    this.updateSelectedHueValue_();
+  }
+
+  protected onSliderPointerup_() {
+    this.updateSelectedHueValue_();
+  }
+
+  protected onHideClick_() {
+    this.hide();
+  }
+
+  private updateSelectedHueValue_() {
     this.selectedHue = this.$.slider.value;
     this.fire('selected-hue-changed', {selectedHue: this.selectedHue});
   }

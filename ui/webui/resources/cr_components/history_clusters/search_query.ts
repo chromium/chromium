@@ -68,7 +68,7 @@ export class SearchQueryElement extends SearchQueryElementBase {
     this.addEventListener('pointercancel', this.onPointerCancel_.bind(this));
   }
 
-  protected onAuxClick_() {
+  protected onAuxclick_() {
     MetricsProxyImpl.getInstance().recordRelatedSearchAction(
         RelatedSearchAction.kClicked, this.index);
 
@@ -80,7 +80,7 @@ export class SearchQueryElement extends SearchQueryElementBase {
     event.preventDefault();  // Prevent default browser action (navigation).
 
     // To record metrics.
-    this.onAuxClick_();
+    this.onAuxclick_();
 
     this.openUrl_(event);
   }
@@ -97,7 +97,7 @@ export class SearchQueryElement extends SearchQueryElementBase {
     this.getRipple().uiDownAction();
 
     // To record metrics.
-    this.onAuxClick_();
+    this.onAuxclick_();
 
     this.openUrl_(e);
 

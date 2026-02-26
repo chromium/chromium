@@ -287,7 +287,11 @@ export class HelpBubbleElement extends CrLitElement {
     return isWindows;
   }
 
-  protected dismiss_() {
+  protected onCloseButtonClick_() {
+    this.dismiss_();
+  }
+
+  private dismiss_() {
     assert(this.nativeId, 'Dismiss: expected help bubble to have a native id.');
     this.fire(HELP_BUBBLE_DISMISSED_EVENT, {
       nativeId: this.nativeId,
@@ -299,7 +303,7 @@ export class HelpBubbleElement extends CrLitElement {
    * Handles ESC keypress (dismiss bubble) and prevents it from propagating up
    * to parent elements.
    */
-  protected onKeyDown_(e: KeyboardEvent) {
+  protected onKeydown_(e: KeyboardEvent) {
     if (e.key === 'Escape') {
       e.stopPropagation();
       this.dismiss_();
@@ -310,7 +314,7 @@ export class HelpBubbleElement extends CrLitElement {
    * Prevent event propagation. Attach to any event that should not bubble up
    * out of the help bubble.
    */
-  protected blockPropagation_(e: Event) {
+  protected onHelpBubbleClick_(e: Event) {
     e.stopPropagation();
   }
 
