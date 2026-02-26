@@ -1234,7 +1234,7 @@
         Ask Gemini
       </message>
       <message name="IDS_IOS_BWG_CONSENT_FIRST_BOX_TITLE" desc="First box title text for the Gemini Consent page for managed accounts.">
-          Your page content is shared for more relevant answers
+          Get more relevant answers by sharing your tabs
       </message>
       <message name="IDS_IOS_BWG_CONSENT_FOOTNOTE_MANAGED_LINK">
           Your privacy &amp; Gemini.
@@ -1252,7 +1252,7 @@
           <ph name="GOOGLE_TERMS">$1<ex>Google Terms</ex></ph> and the <ph name="GEMINI_APPS_PRIVACY">$2<ex>Gemini Apps Privacy Notice</ex></ph> apply. Gemini can make mistakes, so double-check it.
       </message>
       <message name="IDS_IOS_BWG_CONSENT_MANAGED_FIRST_BOX_BODY" desc="First box body text for the Gemini Consent page for managed accounts.">
-          When you use this feature, page content and URLs are sent to Google but won't be used to improve generative AI models. You can turn this off in settings anytime.
+          By default, your current tab is shared when you start a new chat. When tabs are shared, their contents and URLs are sent to Google but won’t be used to improve generative AI models. You can change this setting anytime.
       </message>
       <message name="IDS_IOS_BWG_CONSENT_MANAGED_SECOND_BOX_BODY" desc="Second box body text for the Gemini Consent page for managed accounts.">
           Neither your conversations with Gemini nor your <ph name="GOOGLE_WORKSPACE_DATA">$1<ex>Google Workspace data</ex></ph> will be reviewed by human reviewers or used to improve generative AI models.
@@ -1264,7 +1264,7 @@
           Your organization's data is private and secure
       </message>
       <message name="IDS_IOS_BWG_CONSENT_NON_MANAGED_FIRST_BOX_BODY" desc="First box body text for the Gemini Consent page for non managed accounts.">
-          When you use this feature, page content and URLs are sent to Google. You can turn this off in settings anytime.
+          By default, your current tab is shared when you start a new chat. When tabs are shared, their contents and URLs are sent to Google. You can change this setting anytime.
       </message>
       <message name="IDS_IOS_BWG_CONSENT_NON_MANAGED_SECOND_BOX_BODY" desc="Second box body text for the Gemini Consent page for non managed accounts.">
           Chats are reviewed and used to improve Google AI. <ph name="LEARN_ABOUT_CHOICES">$1<ex>Learn about your choices.</ex></ph> <ph name="INFO_ABOUT_LOCATION">$2<ex>Info about your location</ex></ph> is also stored with your activity.
@@ -1306,10 +1306,10 @@
           No thanks
       </message>
       <message name="IDS_IOS_BWG_PAGE_CONTENT_SHARING_ALERT_MESSAGE" desc="The body/message of the alert asking a user to turn on Page Content sharing with Gemini so they can get more relevant results. This asks them if they would like to share the contents of webpages with Gemini.">
-          Share page content with Gemini to get more relevant answers
+          Share current tab content with Gemini to get more relevant answers
       </message>
       <message name="IDS_IOS_BWG_PAGE_CONTENT_SHARING_ALERT_TITLE" desc="The title of the alert asking a user to turn on Page Content sharing.">
-          Turn on page content sharing
+          Turn on tab sharing
       </message>
       <message name="IDS_IOS_BWG_PROMO_FIRST_BOX_BODY" desc="First box body text for the Gemini Promo page.">
           Get relevant answers based on the content of the page you're on
@@ -1351,10 +1351,10 @@
         Precise location
       </message>
       <message name="IDS_IOS_BWG_SETTINGS_PAGE_CONTENT_FOOTER_TEXT" desc="The footer text of page content sharing row in BWG settings page.">
-        Share page content with Gemini to get more relevant answers. When you share a page with Gemini, the page’s full content and URL are sent to Google. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+        The current tab is shared with Gemini when you start a new chat. When you share a tab with Gemini, their contents and URL are sent to Google. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_BWG_SETTINGS_PAGE_CONTENT_SHARING_TITLE" desc="The title text of page content sharing row in BWG settings page.">
-        Page content sharing
+        Share current tab
       </message>
       <message name="IDS_IOS_CALL_OMNIBOX_ACTION" desc="Call suggestion action button [iOS only]">
         Call
