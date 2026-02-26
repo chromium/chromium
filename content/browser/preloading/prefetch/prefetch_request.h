@@ -261,6 +261,9 @@ class CONTENT_EXPORT PrefetchRequest final {
   bool IsCrossSiteRequest(const url::Origin& origin) const;
   bool IsCrossOriginRequest(const url::Origin& origin) const;
 
+  // Whether or not an isolated network context is required to prefetch `url`.
+  bool IsIsolatedNetworkContextRequired(const GURL& url) const;
+
  private:
   // The type of this prefetch. This controls some specific details about how
   // the prefetch is handled, including whether an isolated network context or

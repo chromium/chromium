@@ -250,4 +250,8 @@ bool PrefetchRequest::IsCrossOriginRequest(const url::Origin& origin) const {
          !referring_origin().value().IsSameOriginWith(origin);
 }
 
+bool PrefetchRequest::IsIsolatedNetworkContextRequired(const GURL& url) const {
+  return IsCrossSiteRequest(url::Origin::Create(url));
+}
+
 }  // namespace content

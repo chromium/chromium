@@ -45,7 +45,6 @@ class CONTENT_EXPORT PrefetchSingleRedirectHop final {
  public:
   PrefetchSingleRedirectHop(PrefetchContainer& prefetch_container,
                             const GURL& url,
-                            bool is_isolated_network_context_required,
                             perfetto::Flow flow);
   ~PrefetchSingleRedirectHop();
 

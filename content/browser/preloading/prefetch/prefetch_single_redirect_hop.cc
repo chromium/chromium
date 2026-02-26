@@ -58,11 +58,10 @@ void RecordPrefetchProxyPrefetchMainframeCookiesToCopy(
 PrefetchSingleRedirectHop::PrefetchSingleRedirectHop(
     PrefetchContainer& prefetch_container,
     const GURL& url,
-    bool is_isolated_network_context_required,
     perfetto::Flow flow)
     : url_(url),
       is_isolated_network_context_required_(
-          is_isolated_network_context_required),
+          prefetch_container.request().IsIsolatedNetworkContextRequired(url_)),
       response_reader_(base::MakeRefCounted<PrefetchResponseReader>(
           base::BindOnce(&PrefetchContainer::OnDeterminedHead,
                          prefetch_container.GetWeakPtr()),

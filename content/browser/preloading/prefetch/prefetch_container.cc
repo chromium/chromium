@@ -261,24 +261,24 @@ std::unique_ptr<PrefetchContainer> PrefetchContainer::CreateForTesting(
 
 PrefetchContainer::PrefetchContainer(
     base::PassKey<PrefetchContainer>,
-    std::unique_ptr<const PrefetchRequest> request)
-    : request_(std::move(request)),
+    std::unique_ptr<const PrefetchRequest> prefetch_request)
+    : request_(std::move(prefetch_request)),
       container_id_for_testing_(base::UnguessableToken::Create().ToString()) {
   CHECK(request_);
 
-  TRACE_EVENT_END("loading", request_->preload_pipeline_info().GetTrack());
+  TRACE_EVENT_END("loading", request().preload_pipeline_info().GetTrack());
   TRACE_EVENT_BEGIN("loading", "PrefetchContainer::LoadState::kNotStarted",
-                    request_->preload_pipeline_info().GetTrack());
+                    request().preload_pipeline_info().GetTrack());
 
   is_likely_ahead_of_prerender_ =
-      CalculateIsLikelyAheadOfPrerender(request_->preload_pipeline_info());
+      CalculateIsLikelyAheadOfPrerender(request().preload_pipeline_info());
 
   AddRedirectHop(GetURL());
 
   // Disallow prefetching ServiceWorker-controlled responses for isolated
   // network contexts.
-  if (!features::IsPrefetchServiceWorkerEnabled(request_->browser_context()) ||
-      IsIsolatedNetworkContextRequiredForCurrentPrefetch()) {
+  if (!features::IsPrefetchServiceWorkerEnabled(request().browser_context()) ||
+      request().IsIsolatedNetworkContextRequired(GetURL())) {
     service_worker_state_ = PrefetchServiceWorkerState::kDisallowed;
   }
 }
@@ -896,8 +896,7 @@ void PrefetchContainer::UpdateResourceRequest(
 
 void PrefetchContainer::AddRedirectHop(const GURL& url) {
   redirect_chain_.push_back(std::make_unique<PrefetchSingleRedirectHop>(
-      *this, url, request().IsCrossSiteRequest(url::Origin::Create(url)),
-      request().preload_pipeline_info().GetFlow()));
+      *this, url, request().preload_pipeline_info().GetFlow()));
 }
 
 void PrefetchContainer::MarkCrossSiteContaminated() {
