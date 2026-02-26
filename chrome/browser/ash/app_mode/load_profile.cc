@@ -18,7 +18,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/syslog_logging.h"
@@ -40,6 +39,7 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace ash::kiosk {
 
@@ -395,14 +395,19 @@ void ProfileLoader::LoginAsKioskAccount() {
 
 void ProfileLoader::DidLoginAsKioskAccount(PerformSigninResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (result.has_value()) {
-    return PrepareProfile(result.value());
-  } else if (auto* error = std::get_if<PerformSigninError>(&result.error())) {
-    return ReturnError(SigninErrorToKioskLaunchError(*error));
-  } else if (auto* auth_failure = std::get_if<AuthFailure>(&result.error())) {
-    return ReturnError(LoginFailureToKioskLaunchError(*auth_failure));
+  if (!result.has_value()) {
+    ReturnError(std::visit(absl::Overload{
+                               [](PerformSigninError& error) {
+                                 return SigninErrorToKioskLaunchError(error);
+                               },
+                               [](AuthFailure& error) {
+                                 return LoginFailureToKioskLaunchError(error);
+                               },
+                           },
+                           result.error()));
+  } else {
+    PrepareProfile(result.value());
   }
-  NOTREACHED();
 }
 
 void ProfileLoader::PrepareProfile(const UserContext& user_context) {
