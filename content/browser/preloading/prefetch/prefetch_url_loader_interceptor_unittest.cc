@@ -490,9 +490,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
                              blink::mojom::SpeculationEagerness::kImmediate));
 
   prefetch_container->SimulatePrefetchEligibleForTest();
-  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
-                                        network::mojom::URLResponseHead::New(),
-                                        "test body");
+  MakeServableStreamingURLLoaderForTest(
+      prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
+      "test body");
   prefetch_container->SimulatePrefetchCompletedForTest();
 
   // Simulate the cookie copy process starting and finishing before
@@ -544,9 +544,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
                              blink::mojom::SpeculationEagerness::kImmediate));
 
   prefetch_container->SimulatePrefetchEligibleForTest();
-  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
-                                        network::mojom::URLResponseHead::New(),
-                                        "test body");
+  MakeServableStreamingURLLoaderForTest(
+      prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
+      "test body");
   prefetch_container->SimulatePrefetchCompletedForTest();
 
   // Simulate the cookie copy process starting, but not finishing until after
@@ -609,9 +609,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
                              blink::mojom::SpeculationEagerness::kImmediate));
 
   prefetch_container->SimulatePrefetchEligibleForTest();
-  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
-                                        network::mojom::URLResponseHead::New(),
-                                        "test body");
+  MakeServableStreamingURLLoaderForTest(
+      prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
+      "test body");
   prefetch_container->SimulatePrefetchCompletedForTest();
 
   GetPrefetchService()->TakePrefetchOriginProber(
@@ -660,9 +660,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       url::Origin::Create(kTestUrl));
 
   prefetch_container->SimulatePrefetchEligibleForTest();
-  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
-                                        network::mojom::URLResponseHead::New(),
-                                        "test body");
+  MakeServableStreamingURLLoaderForTest(
+      prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
+      "test body");
   prefetch_container->SimulatePrefetchCompletedForTest();
 
   GetPrefetchService()->TakePrefetchOriginProber(
@@ -743,7 +743,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       ->SimulatePrefetchEligibleForTest();
   MakeServableStreamingURLLoaderForTest(
       prefetch_container_speculation_rules_diff_url.get(),
-      network::mojom::URLResponseHead::New(), "test body");
+      SuccessfulPrefetchResponseHeadForTesting(), "test body");
   prefetch_container_speculation_rules_diff_url
       ->SimulatePrefetchCompletedForTest();
 
@@ -760,7 +760,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       ->SimulatePrefetchEligibleForTest();
   MakeServableStreamingURLLoaderForTest(
       prefetch_container_speculation_rules_diff_token.get(),
-      network::mojom::URLResponseHead::New(), "test body");
+      SuccessfulPrefetchResponseHeadForTesting(), "test body");
   prefetch_container_speculation_rules_diff_token
       ->SimulatePrefetchCompletedForTest();
 
@@ -771,9 +771,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
                    /*use_prefetch_proxy=*/false),
       url::Origin::Create(kTestUrl));
   prefetch_container_embedder->SimulatePrefetchEligibleForTest();
-  MakeServableStreamingURLLoaderForTest(prefetch_container_embedder.get(),
-                                        network::mojom::URLResponseHead::New(),
-                                        "test body");
+  MakeServableStreamingURLLoaderForTest(
+      prefetch_container_embedder.get(),
+      SuccessfulPrefetchResponseHeadForTesting(), "test body");
   prefetch_container_embedder->SimulatePrefetchCompletedForTest();
 
   GetPrefetchService()->TakePrefetchOriginProber(
@@ -837,9 +837,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
                              blink::mojom::SpeculationEagerness::kImmediate));
 
   prefetch_container->SimulatePrefetchEligibleForTest();
-  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
-                                        network::mojom::URLResponseHead::New(),
-                                        "test body");
+  MakeServableStreamingURLLoaderForTest(
+      prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
+      "test body");
   prefetch_container->SimulatePrefetchCompletedForTest();
 
   // Advance time enough so that the response is considered stale.
@@ -878,9 +878,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   prefetch_container->RegisterCookieListenerForTesting();
 
   prefetch_container->SimulatePrefetchEligibleForTest();
-  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
-                                        network::mojom::URLResponseHead::New(),
-                                        "test body");
+  MakeServableStreamingURLLoaderForTest(
+      prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
+      "test body");
   prefetch_container->SimulatePrefetchCompletedForTest();
 
   // Since the cookies associated with |kTestUrl| have changed, the prefetch can
@@ -950,9 +950,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
                              blink::mojom::SpeculationEagerness::kImmediate));
 
   prefetch_container->SimulatePrefetchEligibleForTest();
-  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
-                                        network::mojom::URLResponseHead::New(),
-                                        "test body");
+  MakeServableStreamingURLLoaderForTest(
+      prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
+      "test body");
   prefetch_container->SimulatePrefetchCompletedForTest();
 
   SimulateCookieCopyProcess(*prefetch_container);
@@ -988,9 +988,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
                              blink::mojom::SpeculationEagerness::kImmediate));
 
   prefetch_container->SimulatePrefetchEligibleForTest();
-  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
-                                        network::mojom::URLResponseHead::New(),
-                                        "test body");
+  MakeServableStreamingURLLoaderForTest(
+      prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
+      "test body");
   prefetch_container->SimulatePrefetchCompletedForTest();
 
   SimulateCookieCopyProcess(*prefetch_container);
@@ -1060,7 +1060,7 @@ TEST_P(PrefetchURLLoaderInterceptorBecomeNotServableTest, DISABLE_ASAN(Basic)) {
     CHECK_EQ(MOJO_RESULT_OK,
              producer_handle->WriteAllData(base::as_byte_span(content)));
     pending_request.client->OnReceiveResponse(
-        network::mojom::URLResponseHead::New(), std::move(consumer_handle),
+        SuccessfulPrefetchResponseHeadForTesting(), std::move(consumer_handle),
         std::nullopt);
   }
 
@@ -1412,7 +1412,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
     CHECK_EQ(MOJO_RESULT_OK,
              producer_handle->WriteAllData(base::as_byte_span(content)));
     pending_request.client->OnReceiveResponse(
-        network::mojom::URLResponseHead::New(), std::move(consumer_handle),
+        SuccessfulPrefetchResponseHeadForTesting(), std::move(consumer_handle),
         std::nullopt);
   }
 
@@ -1481,7 +1481,7 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
     CHECK_EQ(MOJO_RESULT_OK,
              producer_handle->WriteAllData(base::as_byte_span(content)));
     pending_request.client->OnReceiveResponse(
-        network::mojom::URLResponseHead::New(), std::move(consumer_handle),
+        SuccessfulPrefetchResponseHeadForTesting(), std::move(consumer_handle),
         std::nullopt);
   }
 

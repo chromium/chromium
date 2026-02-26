@@ -470,9 +470,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedInvalidHead) {
           &on_response_received_loop,
           /*on_complete=*/NotReachedTagForTests(),
           /*on_receive_redirect=*/NotReachedTagForTests(),
-          &on_head_received_loop,
-          // This will cause the prefetch to be marked as not servable.
-          PrefetchErrorOnResponseReceived::kFailedNon2XX);
+          &on_head_received_loop);
 
   // Simulates a prefetch with a non-2XX response. This should be marked as not
   // servable.

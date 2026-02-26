@@ -30,6 +30,8 @@ class RunLoop;
 
 namespace content {
 
+network::mojom::URLResponseHeadPtr SuccessfulPrefetchResponseHeadForTesting();
+
 using OnPrefetchCompleteTestFuture =
     base::test::TestFuture<network::URLLoaderCompletionStatus>;
 using OnPrefetchReceiveRedirectTestFuture =

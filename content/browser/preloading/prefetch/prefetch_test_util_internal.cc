@@ -140,7 +140,9 @@ base::WeakPtr<PrefetchStreamingURLLoader> CreateStreamingURLLoaderForTests(
       [](NotReachedTagForTestsOr<base::RunLoop*> on_response_received,
          std::optional<PrefetchErrorOnResponseReceived>
              error_on_response_received,
-         network::mojom::URLResponseHead* head) {
+         base::WeakPtr<PrefetchContainer> prefetch_container,
+         network::mojom::URLResponseHead* head)
+          -> std::optional<PrefetchErrorOnResponseReceived> {
         if (std::holds_alternative<NotReachedTagForTests>(
                 on_response_received)) {
           NOTREACHED();
@@ -148,9 +150,31 @@ base::WeakPtr<PrefetchStreamingURLLoader> CreateStreamingURLLoaderForTests(
         if (auto run_loop = std::get<0>(on_response_received)) {
           run_loop->Quit();
         }
-        return error_on_response_received;
+        if (error_on_response_received) {
+          return error_on_response_received;
+        }
+        // Perform the checks in `PrefetchService::OnPrefetchResponseStarted()`,
+        // to align the tests with non-test code as much as possible. Notable
+        // difference is that when `prefetch_container` is nullptr, it's a test
+        // without creating `PrefetchContainer` (rather than `PrefetchContainer`
+        // is gone), and thus perform the rest of checks instead of
+        // early-returning.
+        if (prefetch_container && prefetch_container->IsDecoy()) {
+          return PrefetchErrorOnResponseReceived::kPrefetchWasDecoy;
+        }
+        if (!head->headers) {
+          return PrefetchErrorOnResponseReceived::kFailedInvalidHeaders;
+        }
+        int response_code = head->headers->response_code();
+        if (response_code < 200 || response_code >= 300) {
+          return PrefetchErrorOnResponseReceived::kFailedNon2XX;
+        }
+        if (PrefetchServiceHTMLOnly() && head->mime_type != "text/html") {
+          return PrefetchErrorOnResponseReceived::kFailedMIMENotSupported;
+        }
+        return std::nullopt;
       },
-      on_response_received, error_on_response_received);
+      on_response_received, error_on_response_received, prefetch_container);
 
   auto on_receive_redirect_callback = base::BindRepeating(
       [](NotReachedTagForTestsOr<OnPrefetchReceiveRedirectTestFuture*>
@@ -189,6 +213,16 @@ base::WeakPtr<PrefetchStreamingURLLoader> CreateStreamingURLLoaderForTests(
   }
 
   return streaming_loader;
+}
+
+network::mojom::URLResponseHeadPtr SuccessfulPrefetchResponseHeadForTesting() {
+  network::mojom::URLResponseHeadPtr head =
+      network::mojom::URLResponseHead::New();
+  head->headers =
+      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
+          .Build();
+  head->mime_type = "text/html";
+  return head;
 }
 
 void MakeServableStreamingURLLoaderForTest(
@@ -289,8 +323,9 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
                          network::mojom::URLResponseHead::New());
 
   test_url_loader_factory.AddResponse(
-      original_url, network::mojom::URLResponseHead::New(), "test body", status,
-      std::move(redirects), network::TestURLLoaderFactory::kResponseDefault);
+      original_url, SuccessfulPrefetchResponseHeadForTesting(), "test body",
+      status, std::move(redirects),
+      network::TestURLLoaderFactory::kResponseDefault);
   auto [redirect_info, redirect_head] = on_receive_redirect.Take();
 
   prefetch_container->AddRedirectHop(redirect_info.new_url);
@@ -384,8 +419,8 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
 
   network::URLLoaderCompletionStatus status(net::OK);
   test_url_loader_factory.AddResponse(
-      redirect_url, network::mojom::URLResponseHead::New(), "test body", status,
-      network::TestURLLoaderFactory::Redirects(),
+      redirect_url, SuccessfulPrefetchResponseHeadForTesting(), "test body",
+      status, network::TestURLLoaderFactory::Redirects(),
       network::TestURLLoaderFactory::kResponseDefault);
 
   on_response_received_loop.Run();

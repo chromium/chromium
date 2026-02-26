@@ -113,7 +113,7 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
     prefetch_document_manager->ProcessCandidates(candidates);
     // Now call TakePrefetchedResponse
     network::mojom::URLResponseHeadPtr head =
-        network::mojom::URLResponseHead::New();
+        SuccessfulPrefetchResponseHeadForTesting();
     head->parsed_headers = network::mojom::ParsedHeaders::New();
     head->parsed_headers->no_vary_search_with_parse_error =
         network::mojom::NoVarySearchWithParseError::NewParseError(parse_error);

@@ -396,9 +396,9 @@ TEST_P(PrefetchContainerTest, Servable) {
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
 
   prefetch_container->SimulatePrefetchEligibleForTest();
-  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
-                                        network::mojom::URLResponseHead::New(),
-                                        "test body");
+  MakeServableStreamingURLLoaderForTest(
+      prefetch_container.get(), SuccessfulPrefetchResponseHeadForTesting(),
+      "test body");
 
   task_environment()->FastForwardBy(PrefetchCacheableDuration() -
                                     base::Seconds(10));
@@ -674,7 +674,7 @@ TEST_P(PrefetchContainerTest, PrefetchProxyPrefetchedResourceUkm) {
       base::TimeTicks() + base::Milliseconds(200);
 
   network::mojom::URLResponseHeadPtr head =
-      network::mojom::URLResponseHead::New();
+      SuccessfulPrefetchResponseHeadForTesting();
   head->load_timing.request_start = base::TimeTicks();
 
   MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
@@ -1459,7 +1459,7 @@ TEST_P(PrefetchContainerTest, CancelAndClearStreamingLoader) {
   CHECK_EQ(mojo::CreateDataPipe(1024, producer_handle, consumer_handle),
            MOJO_RESULT_OK);
   pending_request.client->OnReceiveResponse(
-      network::mojom::URLResponseHead::New(), std::move(consumer_handle),
+      SuccessfulPrefetchResponseHeadForTesting(), std::move(consumer_handle),
       std::nullopt);
   task_environment()->RunUntilIdle();
 
@@ -1624,7 +1624,7 @@ TEST_P(PrefetchContainerLifetimeTest, Lifetime) {
   EXPECT_FALSE(prefetch_container->GetNonRedirectHead());
 
   pending_request.client->OnReceiveResponse(
-      network::mojom::URLResponseHead::New(), std::move(consumer_handle),
+      SuccessfulPrefetchResponseHeadForTesting(), std::move(consumer_handle),
       std::nullopt);
   task_environment()->RunUntilIdle();
 
