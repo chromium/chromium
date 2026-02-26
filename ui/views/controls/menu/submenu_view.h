@@ -199,6 +199,8 @@ class VIEWS_EXPORT SubmenuView : public View,
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   void ChildPreferredSizeChanged(View* child) override;
+  void ViewHierarchyChanged(
+      const ViewHierarchyChangedDetails& details) override;
 
  private:
   friend class MenuControllerTest;

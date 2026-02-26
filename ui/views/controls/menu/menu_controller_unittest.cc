@@ -433,6 +433,22 @@ class MenuControllerTest : public ViewsTestBase,
   void SetDropMenuItem(MenuItemView* target,
                        MenuDelegate::DropPosition position);
 
+  // Returns the current drop target from the MenuController.
+  MenuItemView* GetDropTarget() const {
+    return static_cast<MenuItemView*>(
+        menu_controller_->drop_target_tracker_.view());
+  }
+
+  // Returns the current drop item from a SubmenuView.
+  static MenuItemView* GetSubmenuDropItem(SubmenuView* submenu) {
+    return submenu->drop_item_;
+  }
+
+  // Wrapper to access private UpdateEmptyMenusAndMetrics.
+  static void UpdateEmptyMenusAndMetrics(MenuItemView* item) {
+    item->UpdateEmptyMenusAndMetrics();
+  }
+
   void SetComboboxType(MenuController::ComboboxType combobox_type);
 
   template <typename T>
@@ -3916,6 +3932,38 @@ TEST_F(MenuControllerTest, ActiveDescendantChangedEventOnHotButton) {
   SetHotTrackedButton(nullptr);
   EXPECT_GT(ax_counter.GetCount(ax::mojom::Event::kActiveDescendantChanged),
             count_before_clear);
+}
+
+// Regression test for crbug.com/487373990. Verifies that drop target pointers
+// are cleared when the target MenuItemView is destroyed.
+TEST_F(MenuControllerTest, DropTargetClearedWhenEmptyMenuItemDestroyed) {
+  MenuItemView* const submenu_item = menu_item()->AppendSubMenu(10, u"Submenu");
+
+  // Populate the empty submenu with an EmptyMenuMenuItem placeholder.
+  UpdateEmptyMenusAndMetrics(submenu_item);
+  SubmenuView* const submenu = submenu_item->GetSubmenu();
+
+  // GetMenuItems() filters out EmptyMenuMenuItems, so find it directly.
+  MenuItemView* empty_item = nullptr;
+  for (View* child : submenu->children()) {
+    if (IsViewClass<EmptyMenuMenuItem>(child)) {
+      empty_item = AsViewClass<MenuItemView>(child);
+      break;
+    }
+  }
+  ASSERT_NE(empty_item, nullptr);
+
+  SetDropMenuItem(empty_item, MenuDelegate::DropPosition::kOn);
+  EXPECT_EQ(GetDropTarget(), empty_item);
+  EXPECT_EQ(GetSubmenuDropItem(submenu), empty_item);
+
+  // Adding a real item and re-running UpdateEmptyMenusAndMetrics destroys the
+  // EmptyMenuMenuItem. The drop target references must be cleared.
+  submenu_item->AppendMenuItem(11, u"Real Item");
+  UpdateEmptyMenusAndMetrics(submenu_item);
+
+  EXPECT_EQ(GetDropTarget(), nullptr);
+  EXPECT_EQ(GetSubmenuDropItem(submenu), nullptr);
 }
 
 }  // namespace views

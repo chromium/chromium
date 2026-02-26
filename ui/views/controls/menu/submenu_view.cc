@@ -191,6 +191,14 @@ void SubmenuView::ChildPreferredSizeChanged(View* child) {
   }
 }
 
+void SubmenuView::ViewHierarchyChanged(
+    const ViewHierarchyChangedDetails& details) {
+  if (!details.is_add && details.child == drop_item_) {
+    drop_item_ = nullptr;
+    drop_position_ = MenuDelegate::DropPosition::kNone;
+  }
+}
+
 void SubmenuView::Layout(PassKey) {
   // We're in a ScrollView, and need to set our width/height ourselves.
   if (!parent()) {

@@ -32,6 +32,7 @@
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_delegate.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget_observer.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -737,8 +738,8 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // side.
   base::OneShotTimer cancel_all_timer_;
 
-  // Drop target.
-  raw_ptr<MenuItemView> drop_target_ = nullptr;
+  // Drop target. ViewTracker auto-clears if the view is destroyed mid-drag.
+  ViewTracker drop_target_tracker_;
   MenuDelegate::DropPosition drop_position_ =
       MenuDelegate::DropPosition::kUnknow;
 

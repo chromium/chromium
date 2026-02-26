@@ -1327,7 +1327,7 @@ int MenuController::OnDragUpdated(SubmenuView* source,
 void MenuController::OnDragExited(SubmenuView* source) {
   StartCancelAllTimer();
 
-  if (drop_target_) {
+  if (drop_target_tracker_.view()) {
     StopShowTimer();
     SetDropMenuItem(nullptr, MenuDelegate::DropPosition::kNone);
   }
@@ -1336,17 +1336,18 @@ void MenuController::OnDragExited(SubmenuView* source) {
 views::View::DropCallback MenuController::GetDropCallback(
     SubmenuView* source,
     const ui::DropTargetEvent& event) {
-  DCHECK(drop_target_);
+  MenuItemView* drop_target =
+      static_cast<MenuItemView*>(drop_target_tracker_.view());
+  DCHECK(drop_target);
 
   MenuItemView* item = state_.item;
   DCHECK(item);
 
   // If over an empty menu item, drop occurs on the parent.
-  if (IsViewClass<EmptyMenuMenuItem>(drop_target_)) {
-    drop_target_ = drop_target_->GetParentMenuItem();
+  if (IsViewClass<EmptyMenuMenuItem>(drop_target)) {
+    drop_target = drop_target->GetParentMenuItem();
+    drop_target_tracker_.SetView(drop_target);
   }
-
-  MenuItemView* drop_target = drop_target_;
   MenuDelegate::DropPosition drop_position = drop_position_;
 
   if (for_drop_) {
@@ -2041,7 +2042,6 @@ MenuController::MenuController(bool for_drop,
                                internal::MenuControllerDelegate* delegate)
     : for_drop_(for_drop),
       result_(nullptr),
-      drop_target_(nullptr),
       active_mouse_view_tracker_(std::make_unique<ViewTracker>()),
       delegate_(delegate),
       alert_animation_(this) {
@@ -3429,19 +3429,21 @@ void MenuController::RepostEventAndCancel(SubmenuView* source,
 
 void MenuController::SetDropMenuItem(MenuItemView* new_target,
                                      MenuDelegate::DropPosition new_position) {
-  if (new_target == drop_target_ && new_position == drop_position_) {
+  MenuItemView* drop_target =
+      static_cast<MenuItemView*>(drop_target_tracker_.view());
+  if (new_target == drop_target && new_position == drop_position_) {
     return;
   }
 
-  if (drop_target_) {
-    drop_target_->GetParentMenuItem()->GetSubmenu()->SetDropMenuItem(
+  if (drop_target) {
+    drop_target->GetParentMenuItem()->GetSubmenu()->SetDropMenuItem(
         nullptr, MenuDelegate::DropPosition::kNone);
   }
-  drop_target_ = new_target;
+  drop_target_tracker_.SetView(new_target);
   drop_position_ = new_position;
-  if (drop_target_) {
-    drop_target_->GetParentMenuItem()->GetSubmenu()->SetDropMenuItem(
-        drop_target_, drop_position_);
+  if (new_target) {
+    new_target->GetParentMenuItem()->GetSubmenu()->SetDropMenuItem(
+        new_target, drop_position_);
   }
 }
 
