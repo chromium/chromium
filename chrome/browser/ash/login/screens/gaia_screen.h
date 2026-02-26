@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
@@ -24,6 +25,10 @@
 #include "components/account_id/account_id.h"
 
 class PrefService;
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace policy {
 struct AccountStatus;
@@ -58,9 +63,12 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
   // `local_state` must be non-null and must outlive `this`.
-  GaiaScreen(PrefService* local_state,
-             base::WeakPtr<TView> view,
-             const ScreenExitCallback& exit_callback);
+  // `shared_url_loader_factory` must be non-null.
+  GaiaScreen(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      base::WeakPtr<TView> view,
+      const ScreenExitCallback& exit_callback);
 
   GaiaScreen(const GaiaScreen&) = delete;
   GaiaScreen& operator=(const GaiaScreen&) = delete;
@@ -114,6 +122,8 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
                                 bool force_default_gaia_page = false);
 
   const raw_ref<PrefService> local_state_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   // Whether the QuickStart entry point visibility has already been determined.
   // This flag prevents duplicate histogram entries.

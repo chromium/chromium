@@ -836,7 +836,8 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<GaiaScreen>(
-      &local_state_.get(), oobe_ui->GetView<GaiaScreenHandler>()->AsWeakPtr(),
+      &local_state_.get(), shared_url_loader_factory_,
+      oobe_ui->GetView<GaiaScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnGaiaScreenExit,
                           weak_factory_.GetWeakPtr())));
 

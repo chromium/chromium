@@ -94,11 +94,14 @@ std::string GaiaScreen::GetResultString(Result result) {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
-GaiaScreen::GaiaScreen(PrefService* local_state,
-                       base::WeakPtr<TView> view,
-                       const ScreenExitCallback& exit_callback)
+GaiaScreen::GaiaScreen(
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    base::WeakPtr<TView> view,
+    const ScreenExitCallback& exit_callback)
     : BaseScreen(GaiaView::kScreenId, OobeScreenPriority::DEFAULT),
       local_state_(CHECK_DEREF(local_state)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       auth_factor_editor_(UserDataAuthClient::Get()),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
@@ -398,6 +401,7 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
 
 void GaiaScreen::FetchGaiaReauthToken(const AccountId& account) {
   gaia_reauth_token_fetcher_ = std::make_unique<GaiaReauthTokenFetcher>(
+      shared_url_loader_factory_,
       base::BindOnce(&GaiaScreen::OnGaiaReauthTokenFetched,
                      weak_ptr_factory_.GetWeakPtr(), account));
   gaia_reauth_token_fetcher_->Fetch();

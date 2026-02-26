@@ -10,9 +10,14 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace ash {
 
@@ -23,7 +28,10 @@ class GaiaReauthTokenFetcher {
  public:
   using FetchCompleteCallback = base::OnceCallback<void(const std::string&)>;
 
-  explicit GaiaReauthTokenFetcher(FetchCompleteCallback callback);
+  // `shared_url_loader_factory` must be non-null.
+  GaiaReauthTokenFetcher(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      FetchCompleteCallback callback);
 
   GaiaReauthTokenFetcher(const GaiaReauthTokenFetcher&) = delete;
   GaiaReauthTokenFetcher& operator=(const GaiaReauthTokenFetcher&) = delete;
@@ -37,6 +45,9 @@ class GaiaReauthTokenFetcher {
  private:
   // Handles responses from the SimpleURLLoader.
   void OnSimpleLoaderComplete(std::optional<std::string> response_body);
+
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   // Called at the end of Fetch().
   FetchCompleteCallback callback_;

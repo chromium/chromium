@@ -8,13 +8,13 @@
 #include <string>
 
 #include "ash/constants/ash_switches.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/ash/components/login/auth/recovery/service_constants.h"
 #include "google_apis/credentials_mode.h"
@@ -43,8 +43,12 @@ GURL GetFetchReauthTokenUrl() {
 
 }  // namespace
 
-GaiaReauthTokenFetcher::GaiaReauthTokenFetcher(FetchCompleteCallback callback)
-    : callback_(std::move(callback)) {
+GaiaReauthTokenFetcher::GaiaReauthTokenFetcher(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    FetchCompleteCallback callback)
+    : shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      callback_(std::move(callback)) {
+  CHECK(shared_url_loader_factory_);
   DCHECK(callback_);
 }
 
@@ -96,8 +100,7 @@ void GaiaReauthTokenFetcher::Fetch() {
   simple_url_loader_->SetAllowHttpErrorResults(true);
   simple_url_loader_->SetTimeoutDuration(kWaitTimeout);
   simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      g_browser_process->system_network_context_manager()
-          ->GetURLLoaderFactory(),
+      shared_url_loader_factory_.get(),
       base::BindOnce(&GaiaReauthTokenFetcher::OnSimpleLoaderComplete,
                      weak_ptr_factory_.GetWeakPtr()));
   fetch_timer_ = std::make_unique<base::ElapsedTimer>();
