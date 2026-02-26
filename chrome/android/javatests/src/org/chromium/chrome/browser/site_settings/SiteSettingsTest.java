@@ -61,6 +61,7 @@ import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -2993,6 +2994,15 @@ public class SiteSettingsTest {
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     @EnableFeatures("DefaultPassthroughCommandDecoder")
     public void testAddingJavascriptOptimizerExceptionsBlockedIfNotEnoughRam() {
+        /* This test relies on site isolation memory thresholds being enabled. Skip if that
+         * feature is disable.
+         */
+        if (!ChromeFeatureList.isEnabled("SiteIsolationEnableMemoryThresholdAndroid")) {
+            Assume.assumeTrue(
+                    "Skipping test because SiteIsolationEnableMemoryThresholdAndroid is disabled.",
+                    false);
+        }
+
         final SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(
                         SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER);

@@ -66,6 +66,20 @@ const char kStrictSiteIsolationMemoryThresholdParamName[] =
     "strict_site_isolation_threshold_mb";
 const char kPartialSiteIsolationMemoryThresholdParamName[] =
     "partial_site_isolation_threshold_mb";
+
+// Controls whether to enable the memory threshold for site isolation on
+// Android. This flag was disabled on Android Desktop to ensure site isolation
+// is always active regardless of memory thresholds.
+//
+// This flag differs from kSiteIsolationMemoryThresholdsAndroid in that
+// kSiteIsolationMemoryThresholdsAndroid typically defines the memory
+// threshold values in field trials. In contrast,
+// kSiteIsolationEnableMemoryThresholdAndroid flag, if DISABLED, it bypasses all
+// memory threshold checks, including any thresholds that might be set by
+// kSiteIsolationMemoryThresholdsAndroid or default values.
+BASE_FEATURE(kSiteIsolationEnableMemoryThresholdAndroid,
+             "SiteIsolationEnableMemoryThresholdAndroid",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // In order to have broader support for JavaScript optimizer exceptions, we'll

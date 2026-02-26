@@ -117,6 +117,7 @@ static_library("flags_android_impl") {
     "//components/sensitive_content:features",
     "//components/shared_highlighting/core/common",
     "//components/signin/public/base",
+    "//components/site_isolation",
     "//components/subresource_filter/core/browser",
     "//components/supervised_user/core/common:features",
     "//components/sync/base:features",

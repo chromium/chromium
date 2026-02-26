@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -23,6 +24,7 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/persistent_histograms.h"
+#include "components/site_isolation/features.h"
 #include "components/variations/feature_overrides.h"
 #include "components/version_info/version_info.h"
 #include "third_party/blink/public/common/features.h"
@@ -226,6 +228,14 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // TODO(crbug.com/453856709): Remove when we determine how to ensure
   // SitePerProcess is enabled for all necessary or eligible Android devices.
   feature_overrides.EnableFeature(::features::kSitePerProcess);
+
+  // By setting the kSiteIsolationEnableMemoryThresholdAndroid feature, we make
+  // sure that site isolation (enabled by kSitePerProcess above) is not disabled
+  // due to memory thresholds.
+  // TODO(crbug.com/454695278): Find a different way to disable the site
+  // isolation memory thresholds on Android desktop.
+  feature_overrides.DisableFeature(
+      site_isolation::features::kSiteIsolationEnableMemoryThresholdAndroid);
 
   // Enable all tabs to have WebContents at all times for desktop platforms.
   // TODO(crbug.com/448420873): Remove once we enable this feature for all form

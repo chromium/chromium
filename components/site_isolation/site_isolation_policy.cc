@@ -37,6 +37,13 @@ struct IsolationDisableDecisions {
 
 bool ShouldDisableSiteIsolationDueToMemorySlow(
     content::SiteIsolationMode site_isolation_mode) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          features::kSiteIsolationEnableMemoryThresholdAndroid)) {
+    // If kSiteIsolationEnableMemoryThresholdAndroid is disabled, site isolation
+    // should be enabled regardless of memory constraints.
+    return false;
+  }
   // The memory threshold behavior differs for desktop and Android:
   // - Android uses a 1900MB default threshold for partial site isolation modes
   //   and a 3200MB default threshold for strict site isolation. See docs in
@@ -46,7 +53,6 @@ bool ShouldDisableSiteIsolationDueToMemorySlow(
   //   partial and strict site isolation thresholds can be overridden via
   //   params defined in a kSiteIsolationMemoryThresholds field trial.
   // - Desktop does not enforce a default memory threshold.
-#if BUILDFLAG(IS_ANDROID)
   int default_memory_threshold_mb;
   if (site_isolation_mode == content::SiteIsolationMode::kStrictSiteIsolation) {
     default_memory_threshold_mb = 3200;
