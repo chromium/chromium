@@ -7021,9 +7021,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "ContextualTasksEntryPoint": "toolbar-revisit"
-                    },
                     "enable_features": [
                         "ContextualTasks",
                         "HappinessTrackingSurveysForDesktopNextPanel"
