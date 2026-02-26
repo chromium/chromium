@@ -6,6 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_annotations_dict.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_function.h"
@@ -16,6 +17,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -462,6 +464,8 @@ bool ModelContext::RegisterTool(ScriptState* script_state,
 
   tool_data->script_tool_ = std::move(script_tool);
   tool_data->v8_tool_function_ = params->execute();
+  tool_data->source_location_ =
+      CaptureSourceLocation(ExecutionContext::From(script_state));
 
   tool_map_.insert(params->name(), std::move(tool_data));
   OnToolsChanged();
@@ -554,9 +558,14 @@ const String& ModelContext::ToolData::Name() const {
   return script_tool_->name;
 }
 
+SourceLocation* ModelContext::ToolData::GetSourceLocation() const {
+  return source_location_;
+}
+
 void ModelContext::ToolData::Trace(Visitor* visitor) const {
   visitor->Trace(v8_tool_function_);
   visitor->Trace(declarative_tool_);
+  visitor->Trace(source_location_);
 }
 
 }  // namespace blink

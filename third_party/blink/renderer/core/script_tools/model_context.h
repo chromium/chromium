@@ -24,6 +24,7 @@
 namespace blink {
 
 class AbortSignal;
+class SourceLocation;
 
 class DeclarativeWebMCPTool : public GarbageCollectedMixin {
  public:
@@ -93,6 +94,11 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   class CORE_EXPORT ToolData : public GarbageCollected<ToolData> {
    public:
     const String& Name() const;
+
+    // If this is a JS-provided tool, returns the source location
+    // of the call to registerTool(). Otherwise, returns nullptr.
+    SourceLocation* GetSourceLocation() const;
+
     void Trace(Visitor* visitor) const;
 
    private:
@@ -103,6 +109,8 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
     Member<V8ToolFunction> v8_tool_function_;
     // Used for declarative (form-based) MCP tools only:
     Member<DeclarativeWebMCPTool> declarative_tool_;
+    // For JS-provided MCP tools, the location of the registerTool() call.
+    Member<SourceLocation> source_location_;
   };
 
   // Returns registered tools, sorted by CodeUnitCompareLessThan().

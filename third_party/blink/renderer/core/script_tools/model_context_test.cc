@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -1132,6 +1133,42 @@ TEST_F(ModelContextTest, ListTools) {
   EXPECT_EQ("append", tools[0]->Name());
   EXPECT_EQ("delete", tools[1]->Name());
   EXPECT_EQ("squash", tools[2]->Name());
+}
+
+TEST_F(ModelContextTest, SourceLocation) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(R"(<!DOCTYPE html>
+    <script>
+    navigator.modelContext.registerTool({
+      execute: () => "true",
+      name: "append",
+      description: "Append something",
+    });
+    navigator.modelContext.registerTool({
+      execute: () => "true",
+      name: "delete",
+      description: "Delete everything",
+    });
+    </script>
+  )");
+
+  auto* model_context =
+      ModelContextSupplement::modelContext(*Window().navigator());
+  ASSERT_TRUE(model_context);
+
+  HeapVector<Member<const ModelContext::ToolData>> tools =
+      model_context->ListTools();
+  ASSERT_EQ(2u, tools.size());
+
+  EXPECT_EQ("append", tools[0]->Name());
+  ASSERT_TRUE(tools[0]->GetSourceLocation());
+  EXPECT_EQ(3u, tools[0]->GetSourceLocation()->LineNumber());
+
+  EXPECT_EQ("delete", tools[1]->Name());
+  ASSERT_TRUE(tools[1]->GetSourceLocation());
+  EXPECT_EQ(8u, tools[1]->GetSourceLocation()->LineNumber());
 }
 
 }  // namespace blink
