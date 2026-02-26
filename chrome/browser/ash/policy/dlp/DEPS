@@ -46,4 +46,7 @@ specific_include_rules = {
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/tabs",
   ],
+  "dlp_content_manager_ash_unittest\\.cc": [
+    "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
+  ]
 }

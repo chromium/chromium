@@ -16,6 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
@@ -227,6 +228,7 @@ class DlpContentManagerAshTest : public testing::Test {
       test_reporting_ = ::reporting::ReportingClient::TestEnvironment::
           CreateWithStorageModule(
               base::MakeRefCounted<::reporting::test::TestStorageModule>());
+  ash::BrowserControllerImpl browser_controller_;
   DlpContentManagerTestHelper helper_;
   base::HistogramTester histogram_tester_;
   std::vector<DlpPolicyEvent> events_;

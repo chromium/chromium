@@ -14,37 +14,41 @@ include_rules = [
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
   "+chrome/browser/apps/platform_apps",
+  "+chrome/browser/ash/browser_delegate/browser_controller.h",
+  "+chrome/browser/ash/browser_delegate/browser_delegate.h",
   "+chrome/browser/ash/policy/dlp",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/download",
   "+chrome/browser/enterprise/data_controls",
-  "+chrome/browser/extensions/extension_browsertest.h",
   "+chrome/browser/favicon",
   "+chrome/browser/file_system_access",
   "+chrome/browser/notifications",
   "+chrome/browser/policy",
   "+chrome/browser/printing",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser_commands.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
   "+chrome/browser/ui/browser_window/public/browser_collection_observer.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_navigator.h",
-  "+chrome/browser/ui/browser_window.h",
-  "+chrome/browser/ui/tabs/tab_activity_simulator.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
   "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
   "+chrome/browser/ui/views/frame/browser_view.h",
   "+chrome/common",
   "+chrome/grit",
-  "+chrome/test",
 ]
 
 specific_include_rules = {
+  ".*_(browser|ui|unit)test\\.cc": [
+    "+chrome/browser/extensions/extension_browsertest.h",
+    "+chrome/browser/ui/browser_commands.h",
+    "+chrome/browser/ui/browser_navigator.h",
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/tabs/tab_activity_simulator.h",
+    "+chrome/test",
+  ],
   "dlp_content_tab_helper_browsertest\\.cc": [
     "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h",
-  ]
+  ],
 }

@@ -11,12 +11,15 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_observer.h"
@@ -25,9 +28,8 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
 #include "content/public/browser/browser_thread.h"
@@ -524,8 +526,11 @@ DlpContentManager::DlpContentManager() {
         browser_window_interface->GetTabStripModel()->AddObserver(this);
         return true;
       });
-  browser_collection_observation_.Observe(
-      GlobalBrowserCollection::GetInstance());
+  if (auto* browser_controller = ash::BrowserController::GetInstance()) {
+    browser_controller_observation_.Observe(browser_controller);
+  } else {
+    CHECK_IS_TEST();
+  }
 }
 
 DlpContentManager::~DlpContentManager() = default;
@@ -600,9 +605,11 @@ void DlpContentManager::OnWebContentsDestroyed(
   RemoveFromConfidential(web_contents);
 }
 
-void DlpContentManager::OnBrowserCreated(BrowserWindowInterface* browser) {
-  // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
-  browser->GetTabStripModel()->AddObserver(this);
+void DlpContentManager::OnBrowserCreated(ash::BrowserDelegate* browser) {
+  // DlpContentManager is a singleton that outlives any browser instance. When a
+  // browser gets destroyed, its tab strip model gets destroyed too, so there's
+  // no need to unregister the observer.
+  browser->GetBrowser().GetTabStripModel()->AddObserver(this);
 }
 
 void DlpContentManager::OnTabStripModelChanged(
