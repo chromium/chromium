@@ -16,7 +16,11 @@
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#import "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #import "components/autofill/core/browser/data_quality/addresses/profile_requirement_utils.h"
+#import "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
@@ -41,6 +45,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/autofill/cells/autofill_address_profile_record_type.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/cells/autofill_profile_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/enhanced_autofill_table_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/ui/autofill_ai_entity_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller+toolbar_add.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -73,6 +78,21 @@
 
 namespace {
 
+// Entity types go into the "Identity docs" section of Settings.
+// This set must be mutually exclusive with kTravel.
+static constexpr autofill::DenseSet<autofill::EntityTypeName> kIdentityDocs = {
+    autofill::EntityTypeName::kDriversLicense,
+    autofill::EntityTypeName::kNationalIdCard,
+    autofill::EntityTypeName::kPassport};
+
+// Entity types go into the "Travel" section of Settings.
+// This set must be mutually exclusive with kIdentityDocs.
+static constexpr autofill::DenseSet<autofill::EntityTypeName> kTravel = {
+    autofill::EntityTypeName::kFlightReservation,
+    autofill::EntityTypeName::kKnownTravelerNumber,
+    autofill::EntityTypeName::kRedressNumber,
+    autofill::EntityTypeName::kVehicle};
+
 // Plus Address Section header height.
 const CGFloat kPlusAddressSectionHeaderHeight = 24;
 
@@ -80,13 +100,18 @@ const CGFloat kPlusAddressSectionHeaderHeight = 24;
 constexpr std::string_view kWalletUrlString =
     "https://wallet.google.com/wallet/settings/managepassesdata";
 
+// Point size for AI entity icons.
+const CGFloat kEntityIconPointSize = 20;
+
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSwitches = kSectionIdentifierEnumZero,
   SectionIdentifierProfiles,
   SectionIdentifierPlusAddress,
   SectionIdentifierEnhancedAutofill,
   SectionIdentifierVerificationSwitch,
-  SectionIdentifierWalletPromo
+  SectionIdentifierWalletPromo,
+  SectionIdentifierIdentityDocs,
+  SectionIdentifierTravel
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -101,7 +126,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeVerificationSwitch,
   ItemTypeVerificationFooter,
   ItemTypeWalletPromoInfo,
-  ItemTypeWalletPromoButton
+  ItemTypeWalletPromoButton,
+  ItemTypeIdentityDoc,
+  ItemTypeIdentityDocHeader,
+  ItemTypeTravel,
+  ItemTypeTravelHeader
 };
 
 // Returns the fallback detail text for a local profile when its detail text is
@@ -276,9 +305,109 @@ NSString* GetFallbackDetailTextForLocalProfile(
         toSectionWithIdentifier:SectionIdentifierEnhancedAutofill];
 
     [self populateVerificationAndWalletSections];
+    [self populateEntitySections];
   }
 
   [self populateProfileSection];
+}
+
+- (void)populateEntitySections {
+  if (!_entityDataManager) {
+    return;
+  }
+
+  base::span<const autofill::EntityInstance> instances =
+      _entityDataManager->GetEntityInstances();
+
+  if (instances.empty()) {
+    return;
+  }
+
+  std::vector<const autofill::EntityInstance*> identityDocs;
+  std::vector<const autofill::EntityInstance*> travelDocs;
+
+  for (const autofill::EntityInstance& instance : instances) {
+    if (kIdentityDocs.contains(instance.type().name())) {
+      identityDocs.push_back(&instance);
+    } else if (kTravel.contains(instance.type().name())) {
+      travelDocs.push_back(&instance);
+    }
+  }
+
+  TableViewModel* model = self.tableViewModel;
+  const std::string& locale =
+      GetApplicationContext()->GetApplicationLocaleStorage()->Get();
+  if (!identityDocs.empty()) {
+    [model addSectionWithIdentifier:SectionIdentifierIdentityDocs];
+    [model setHeader:[self identityDocsSectionHeader]
+        forSectionWithIdentifier:SectionIdentifierIdentityDocs];
+
+    std::vector<autofill::EntityLabel> labels = autofill::GetLabelsForEntities(
+        identityDocs, /*attribute_types_to_ignore=*/{},
+        /*only_disambiguating_types=*/true, /*obfuscate_sensitive_types=*/true,
+        locale);
+
+    for (size_t i = 0; i < identityDocs.size(); ++i) {
+      [model addItem:[self itemForEntityInstance:*identityDocs[i]
+                                       withLabel:labels[i]
+                                            type:ItemTypeIdentityDoc]
+          toSectionWithIdentifier:SectionIdentifierIdentityDocs];
+    }
+  }
+
+  if (!travelDocs.empty()) {
+    [model addSectionWithIdentifier:SectionIdentifierTravel];
+    [model setHeader:[self travelSectionHeader]
+        forSectionWithIdentifier:SectionIdentifierTravel];
+
+    std::vector<autofill::EntityLabel> labels = autofill::GetLabelsForEntities(
+        travelDocs, /*attribute_types_to_ignore=*/{},
+        /*only_disambiguating_types=*/true, /*obfuscate_sensitive_types=*/true,
+        locale);
+
+    for (size_t i = 0; i < travelDocs.size(); ++i) {
+      [model addItem:[self itemForEntityInstance:*travelDocs[i]
+                                       withLabel:labels[i]
+                                            type:ItemTypeTravel]
+          toSectionWithIdentifier:SectionIdentifierTravel];
+    }
+  }
+}
+
+- (TableViewItem*)itemForEntityInstance:
+                      (const autofill::EntityInstance&)instance
+                              withLabel:(const autofill::EntityLabel&)label
+                                   type:(ItemType)type {
+  AutofillAiEntityItem* item = [[AutofillAiEntityItem alloc] initWithType:type];
+  item.name = base::SysUTF16ToNSString(
+      base::JoinString(label, autofill::kLabelSeparator));
+  item.typeDescription =
+      base::SysUTF16ToNSString(instance.type().GetNameForI18n());
+  item.guid = instance.guid();
+
+  if (instance.record_type() ==
+      autofill::EntityInstance::RecordType::kServerWallet) {
+    item.isServerWalletItem = YES;
+    // TODO(crbug.com/480934103): handled in upcoming CLs
+  }
+
+  item.icon = DefaultSymbolTemplateWithPointSize(kPersonCropCircleSymbol,
+                                                 kEntityIconPointSize);
+  return item;
+}
+
+- (TableViewHeaderFooterItem*)identityDocsSectionHeader {
+  TableViewTextHeaderFooterItem* header = [[TableViewTextHeaderFooterItem alloc]
+      initWithType:ItemTypeIdentityDocHeader];
+  header.text = l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_IDENTITY_DOCS_TITLE);
+  return header;
+}
+
+- (TableViewHeaderFooterItem*)travelSectionHeader {
+  TableViewTextHeaderFooterItem* header =
+      [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeTravelHeader];
+  header.text = l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_TRAVEL_TITLE);
+  return header;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -643,6 +772,26 @@ NSString* GetFallbackDetailTextForLocalProfile(
 
 #pragma mark - UITableViewDelegate
 
+- (UITableViewCellEditingStyle)tableView:(UITableView*)tableView
+           editingStyleForRowAtIndexPath:(NSIndexPath*)indexPath {
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  if ([item isKindOfClass:[AutofillAiEntityItem class]]) {
+    // TODO(crbug.com/480934103): disable bulk edit for now
+    return UITableViewCellEditingStyleNone;
+  }
+  return UITableViewCellEditingStyleDelete;
+}
+
+- (BOOL)tableView:(UITableView*)tableView
+    shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath*)indexPath {
+  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  if ([item isKindOfClass:[AutofillAiEntityItem class]]) {
+    // TODO(crbug.com/480934103): disable bulk edit for now
+    return NO;
+  }
+  return YES;
+}
+
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
   NSInteger sectionIdentifier =
@@ -728,6 +877,14 @@ NSString* GetFallbackDetailTextForLocalProfile(
     return;
   }
 
+  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
+          ItemTypeIdentityDoc ||
+      [self.tableViewModel itemTypeForIndexPath:indexPath] == ItemTypeTravel) {
+    // TODO(crbug.com/480934103): handled in upcoming CLs
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    return;
+  }
+
   if (![self isItemTypeForIndexPathAddress:indexPath]) {
     return;
   }
@@ -795,6 +952,19 @@ NSString* GetFallbackDetailTextForLocalProfile(
   }
 
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+  if ([item isKindOfClass:[AutofillAiEntityItem class]]) {
+    if (tableView.isEditing) {
+      // TODO(crbug.com/480934103): disable bulk edit for now
+      return NO;
+    }
+    AutofillAiEntityItem* aiItem =
+        base::apple::ObjCCastStrict<AutofillAiEntityItem>(item);
+    if (aiItem.isServerWalletItem) {
+      return NO;
+    }
+    return YES;
+  }
+
   return [item isKindOfClass:[AutofillProfileItem class]];
 }
 
@@ -908,7 +1078,11 @@ NSString* GetFallbackDetailTextForLocalProfile(
 #pragma mark - IOSAutofillEntityDataManagerObserver
 
 - (void)onEntityInstancesChanged {
-  // TODO(crbug.com/480934103): Update UI.
+  if (_deletionInProgress) {
+    return;
+  }
+
+  [self reloadData];
 }
 
 #pragma mark - PersonalDataManagerObserver
@@ -995,6 +1169,7 @@ NSString* GetFallbackDetailTextForLocalProfile(
 }
 
 #pragma mark - Private
+
 - (void)dismissDeletionSheet {
   [_deletionSheetCoordinator stop];
   _deletionSheetCoordinator = nil;
@@ -1020,10 +1195,19 @@ NSString* GetFallbackDetailTextForLocalProfile(
 
   _deletionInProgress = YES;
   for (NSIndexPath* indexPath in indexPaths) {
-    AutofillProfileItem* item =
-        base::apple::ObjCCastStrict<AutofillProfileItem>(
-            [self.tableViewModel itemAtIndexPath:indexPath]);
-    _personalDataManager->address_data_manager().RemoveProfile([item GUID]);
+    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+    if ([item isKindOfClass:[AutofillProfileItem class]]) {
+      AutofillProfileItem* profileItem =
+          base::apple::ObjCCastStrict<AutofillProfileItem>(item);
+      _personalDataManager->address_data_manager().RemoveProfile(
+          [profileItem GUID]);
+    } else if ([item isKindOfClass:[AutofillAiEntityItem class]]) {
+      AutofillAiEntityItem* aiItem =
+          base::apple::ObjCCastStrict<AutofillAiEntityItem>(item);
+      if (_entityDataManager) {
+        _entityDataManager->RemoveEntityInstance(aiItem.guid);
+      }
+    }
   }
 
   [self.tableView
@@ -1099,27 +1283,32 @@ NSString* GetFallbackDetailTextForLocalProfile(
     if (![self isItemTypeForIndexPathAddress:indexPath]) {
       continue;
     }
-    profileCount++;
-    AutofillProfileItem* item =
-        base::apple::ObjCCastStrict<AutofillProfileItem>(
-            [self.tableViewModel itemAtIndexPath:indexPath]);
 
-    switch (item.autofillProfileRecordType) {
-      case AutofillLocalProfile:
-        hasLocalProfile = YES;
-        break;
-      case AutofillAccountProfile:
-        hasAccountProfile = YES;
-        break;
-      case AutofillAccountHomeProfile:
-        hasHomeProfile = YES;
-        break;
-      case AutofillAccountWorkProfile:
-        hasWorkProfile = YES;
-        break;
-      case AutofillAccountNameEmailProfile:
-        hasNameEmailProfile = YES;
-        break;
+    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+    if ([item isKindOfClass:[AutofillProfileItem class]]) {
+      profileCount++;
+      AutofillProfileItem* profileItem =
+          base::apple::ObjCCastStrict<AutofillProfileItem>(item);
+
+      switch (profileItem.autofillProfileRecordType) {
+        case AutofillLocalProfile:
+          hasLocalProfile = YES;
+          break;
+        case AutofillAccountProfile:
+          hasAccountProfile = YES;
+          break;
+        case AutofillAccountHomeProfile:
+          hasHomeProfile = YES;
+          break;
+        case AutofillAccountWorkProfile:
+          hasWorkProfile = YES;
+          break;
+        case AutofillAccountNameEmailProfile:
+          hasNameEmailProfile = YES;
+          break;
+      }
+    } else if ([item isKindOfClass:[AutofillAiEntityItem class]]) {
+      // TODO(crbug.com/480934103): will be handled once the messages are ready.
     }
   }
 
@@ -1185,6 +1374,10 @@ NSString* GetFallbackDetailTextForLocalProfile(
                   // TODO(crbug.com/41277594) Generalize removing empty sections
                   [weakSelf removeSectionIfEmptyForSectionWithIdentifier:
                                 SectionIdentifierProfiles];
+                  [weakSelf removeSectionIfEmptyForSectionWithIdentifier:
+                                SectionIdentifierIdentityDocs];
+                  [weakSelf removeSectionIfEmptyForSectionWithIdentifier:
+                                SectionIdentifierTravel];
                   [weakSelf dismissDeletionSheet];
                 }
                  style:UIAlertActionStyleDestructive];
