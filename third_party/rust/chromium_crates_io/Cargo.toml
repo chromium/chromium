@@ -145,11 +145,11 @@ version = "2"
 features = ["full"]
 
 [dependencies.temporal_capi]
-version = "0.1.2"
+version = "0.2"
 features = ["zoneinfo64"]
 
 [dependencies.temporal_rs]
-version = "0.1.2"
+version = "0.2"
 default-features = false
 # This is necessary to enable a spec-compliance quirk
 features = ["float64_representable_durations"]
