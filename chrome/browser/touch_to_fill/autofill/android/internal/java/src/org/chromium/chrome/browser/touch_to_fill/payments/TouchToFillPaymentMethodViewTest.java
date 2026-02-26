@@ -43,10 +43,6 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.DESCRIPTION_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_BACK_BUTTON_ENABLED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties.BNPL_ON_BACK_BUTTON_CLICKED;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.APPLY_LINK_DEACTIVATED_STYLE;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.HIDE_OPTIONS_LINK_TEXT;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.ON_LINK_CLICK_CALLBACK;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.TERMS_TEXT_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.IS_ENABLED;
@@ -81,7 +77,6 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_ISSUER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_HEADER;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_TERMS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.BNPL_TOS_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ItemType.ERROR_DESCRIPTION;
@@ -161,7 +156,6 @@ import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionIn
 import org.chromium.chrome.browser.touch_to_fill.common.TouchToFillResourceProvider;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.AllLoyaltyCardsItemProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressHeaderProperties;
-import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplTosHeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ButtonProperties;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.ErrorDescriptionProperties;
@@ -2020,23 +2014,18 @@ public class TouchToFillPaymentMethodViewTest {
 
     @Test
     @MediumTest
-    public void testBnplSelectionProgressTermsLinkDisabled() {
+    public void testBnplProgressTermsLinkDisabled() {
         Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(
-                                    new ListItem(
-                                            BNPL_SELECTION_PROGRESS_TERMS,
-                                            createBnplSelectionProgressTermsModel(
-                                                    /* termsTextId= */ R.string
-                                                            .autofill_bnpl_issuer_bottom_sheet_terms_label,
-                                                    /* hideOptionsLinkText= */ getString(
-                                                            R.string
-                                                                    .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option),
-                                                    /* onLinkClickCallback= */ actionCallback,
-                                                    /* isLinkEnabled= */ false)));
+                                    TouchToFillPaymentMethodMediator
+                                            .buildTermsForBnplSelectionProgress(
+                                                    mActivityTestRule.getActivity(),
+                                                    /* isInProgress= */ true,
+                                                    actionCallback));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -2045,42 +2034,33 @@ public class TouchToFillPaymentMethodViewTest {
                 mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_terms_label);
         assertThat(
                 termsLabel.getText().toString(),
-                is(getString(R.string.autofill_bnpl_issuer_bottom_sheet_terms_label)));
-
-        TextView openPaymentSettingsLabel =
-                mTouchToFillPaymentMethodView
-                        .getContentView()
-                        .findViewById(R.id.bnpl_open_payment_settings_label);
-        assertThat(
-                openPaymentSettingsLabel.getText().toString(),
-                is("To hide pay later options, go to payment settings"));
-        SpannableString spannableString = (SpannableString) openPaymentSettingsLabel.getText();
+                is(
+                        "Payment plans are subject to eligibility."
+                                + '\n'
+                                + "To hide pay later options, go to payment settings"));
+        assertNotNull(termsLabel.getMovementMethod());
+        SpannableString spannableString = (SpannableString) termsLabel.getText();
         ClickableSpan[] spans =
                 spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
-        assertThat(spans.length, is(1));
-        spans[0].onClick(openPaymentSettingsLabel);
+        assertEquals("There should be exactly one clickable span", 1, spans.length);
+        spans[0].onClick(termsLabel);
         verify(actionCallback, never()).run();
     }
 
     @Test
     @MediumTest
-    public void testBnplSelectionProgressTermsLinkEnabled() {
+    public void testBnplSelectionTermsLinkEnabled() {
         Runnable actionCallback = mock(Runnable.class);
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(
-                                    new ListItem(
-                                            BNPL_SELECTION_PROGRESS_TERMS,
-                                            createBnplSelectionProgressTermsModel(
-                                                    /* termsTextId= */ R.string
-                                                            .autofill_bnpl_issuer_bottom_sheet_terms_label,
-                                                    /* hideOptionsLinkText= */ getString(
-                                                            R.string
-                                                                    .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option),
-                                                    /* onLinkClickCallback= */ actionCallback,
-                                                    /* isLinkEnabled= */ true)));
+                                    TouchToFillPaymentMethodMediator
+                                            .buildTermsForBnplSelectionProgress(
+                                                    mActivityTestRule.getActivity(),
+                                                    /* isInProgress= */ false,
+                                                    actionCallback));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -2089,20 +2069,16 @@ public class TouchToFillPaymentMethodViewTest {
                 mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_terms_label);
         assertThat(
                 termsLabel.getText().toString(),
-                is(getString(R.string.autofill_bnpl_issuer_bottom_sheet_terms_label)));
-
-        TextView openPaymentSettingsLabel =
-                mTouchToFillPaymentMethodView
-                        .getContentView()
-                        .findViewById(R.id.bnpl_open_payment_settings_label);
-        assertThat(
-                openPaymentSettingsLabel.getText().toString(),
-                is("To hide pay later options, go to payment settings"));
-        SpannableString spannableString = (SpannableString) openPaymentSettingsLabel.getText();
+                is(
+                        "Payment plans are subject to eligibility."
+                                + '\n'
+                                + "To hide pay later options, go to payment settings"));
+        assertNotNull(termsLabel.getMovementMethod());
+        SpannableString spannableString = (SpannableString) termsLabel.getText();
         ClickableSpan[] spans =
                 spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
-        assertThat(spans.length, is(1));
-        spans[0].onClick(openPaymentSettingsLabel);
+        assertEquals("There should be exactly one clickable span", 1, spans.length);
+        spans[0].onClick(termsLabel);
         waitForEvent(actionCallback).run();
     }
 
@@ -2330,19 +2306,6 @@ public class TouchToFillPaymentMethodViewTest {
         return new PropertyModel.Builder(BnplSelectionProgressHeaderProperties.ALL_KEYS)
                 .with(BNPL_BACK_BUTTON_ENABLED, backButtonEnabled)
                 .with(BNPL_ON_BACK_BUTTON_CLICKED, actionCallback)
-                .build();
-    }
-
-    private static PropertyModel createBnplSelectionProgressTermsModel(
-            @StringRes int termsTextId,
-            String hideOptionsLinkText,
-            Runnable onLinkClickCallback,
-            boolean isLinkEnabled) {
-        return new PropertyModel.Builder(BnplSelectionProgressTermsProperties.ALL_KEYS)
-                .with(TERMS_TEXT_ID, termsTextId)
-                .with(HIDE_OPTIONS_LINK_TEXT, hideOptionsLinkText)
-                .with(ON_LINK_CLICK_CALLBACK, (view) -> onLinkClickCallback.run())
-                .with(APPLY_LINK_DEACTIVATED_STYLE, !isLinkEnabled)
                 .build();
     }
 

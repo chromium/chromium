@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -70,10 +71,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ON_ISSUER_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.BNPL_TOS_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerTosTextItemProperties.DESCRIPTION_TEXT;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.APPLY_LINK_DEACTIVATED_STYLE;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.HIDE_OPTIONS_LINK_TEXT;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.ON_LINK_CLICK_CALLBACK;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.TERMS_TEXT_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.TERMS_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.IS_ENABLED;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.ON_BNPL_CLICK_ACTION;
@@ -143,9 +141,12 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.text.SpannableString;
+import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
+import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
@@ -931,14 +932,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertThat(
                 bnplSelectionProgressTerms.type,
                 is(TouchToFillPaymentMethodProperties.ItemType.BNPL_SELECTION_PROGRESS_TERMS));
-        assertBnplSelectionProgressTermsModelHasExpectedValues(
-                sheetItems,
-                /* expectedTermsTextId= */ R.string.autofill_bnpl_issuer_bottom_sheet_terms_label,
-                /* expectedHideOptionsLinkText= */ ContextUtils.getApplicationContext()
-                        .getString(
-                                R.string
-                                        .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option),
-                /* expectedEnabled= */ false);
+
+        assertBnplSelectionProgressTermsModelHasExpectedTerms(sheetItems, /* isInProgress= */ true);
     }
 
     @Test
@@ -1190,14 +1185,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_KLARNA_LINKED);
         assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_ZIP_LINKED);
 
-        assertBnplSelectionProgressTermsModelHasExpectedValues(
-                itemList,
-                /* expectedTermsTextId= */ R.string.autofill_bnpl_issuer_bottom_sheet_terms_label,
-                /* expectedHideOptionsLinkText= */ ContextUtils.getApplicationContext()
-                        .getString(
-                                R.string
-                                        .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option),
-                /* expectedEnabled= */ true);
+        assertBnplSelectionProgressTermsModelHasExpectedTerms(itemList, /* isInProgress= */ false);
     }
 
     @Test
@@ -1231,14 +1219,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_KLARNA_UNLINKED);
         assertBnplIssuerContextModelMatches(itemList, BNPL_ISSUER_CONTEXT_ZIP_UNLINKED);
 
-        assertBnplSelectionProgressTermsModelHasExpectedValues(
-                itemList,
-                /* expectedTermsTextId= */ R.string.autofill_bnpl_issuer_bottom_sheet_terms_label,
-                /* expectedHideOptionsLinkText= */ ContextUtils.getApplicationContext()
-                        .getString(
-                                R.string
-                                        .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option),
-                /* expectedEnabled= */ true);
+        assertBnplSelectionProgressTermsModelHasExpectedTerms(itemList, /* isInProgress= */ false);
     }
 
     @Test
@@ -1275,14 +1256,7 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         assertBnplIssuerContextModelMatches(
                 itemList, BNPL_ISSUER_CONTEXT_INELIGIBLE_CHECKOUT_AMOUNT_TOO_HIGH);
 
-        assertBnplSelectionProgressTermsModelHasExpectedValues(
-                itemList,
-                /* expectedTermsTextId= */ R.string.autofill_bnpl_issuer_bottom_sheet_terms_label,
-                /* expectedHideOptionsLinkText= */ ContextUtils.getApplicationContext()
-                        .getString(
-                                R.string
-                                        .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option),
-                /* expectedEnabled= */ true);
+        assertBnplSelectionProgressTermsModelHasExpectedTerms(itemList, /* isInProgress= */ false);
     }
 
     @Test
@@ -1316,9 +1290,17 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         Optional<PropertyModel> termsModel = getBnplSelectionProgressTermsModel(sheetItems);
         assertTrue(termsModel.isPresent());
 
-        termsModel.get().get(ON_LINK_CLICK_CALLBACK).onResult(null);
+        SpannableString spannableTerms = (SpannableString) termsModel.get().get(TERMS_TEXT);
+        ClickableSpan[] spans =
+                spannableTerms.getSpans(0, spannableTerms.length(), ClickableSpan.class);
+        assertEquals(
+                "There should be exactly one clickable span for the settings link",
+                1,
+                spans.length);
 
-        verify(mDelegateMock).showPaymentMethodSettings();
+        spans[0].onClick(new TextViewWithClickableSpans(mActivity));
+
+        verify(mDelegateMock, times(1)).showPaymentMethodSettings();
     }
 
     @Test
@@ -1593,9 +1575,17 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         Optional<PropertyModel> termsModel = getBnplSelectionProgressTermsModel(sheetItems);
         assertTrue(termsModel.isPresent());
 
-        termsModel.get().get(ON_LINK_CLICK_CALLBACK).onResult(null);
+        SpannableString spannableTerms = (SpannableString) termsModel.get().get(TERMS_TEXT);
+        ClickableSpan[] spans =
+                spannableTerms.getSpans(0, spannableTerms.length(), ClickableSpan.class);
+        assertEquals(
+                "There should be exactly one clickable span for the settings link",
+                1,
+                spans.length);
 
-        verify(mDelegateMock).showPaymentMethodSettings();
+        spans[0].onClick(new TextViewWithClickableSpans(mActivity));
+
+        verify(mDelegateMock, times(1)).showPaymentMethodSettings();
         assertEquals(
                 1,
                 mActionTester.getActionCount(
@@ -3233,17 +3223,46 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
                 .map(item -> item.model);
     }
 
-    private static void assertBnplSelectionProgressTermsModelHasExpectedValues(
-            ModelList itemList,
-            @StringRes int expectedTermsTextId,
-            String expectedHideOptionsLinkText,
-            boolean expectedEnabled) {
+    private void assertBnplSelectionProgressTermsModelHasExpectedTerms(
+            ModelList itemList, boolean isInProgress) {
         Optional<PropertyModel> termsModel = getBnplSelectionProgressTermsModel(itemList);
         assertTrue(termsModel.isPresent());
-        assertThat(termsModel.get().get(TERMS_TEXT_ID), is(expectedTermsTextId));
-        assertThat(termsModel.get().get(HIDE_OPTIONS_LINK_TEXT), is(expectedHideOptionsLinkText));
-        assertThat(termsModel.get().get(APPLY_LINK_DEACTIVATED_STYLE), is(!expectedEnabled));
-        assertNotNull(termsModel.get().get(ON_LINK_CLICK_CALLBACK));
+
+        // Verify the expecteed terms text.
+        CharSequence termsText = termsModel.get().get(TERMS_TEXT);
+        assertThat(
+                termsText.toString(),
+                is(
+                        "Payment plans are subject to eligibility."
+                                + '\n'
+                                + "To hide pay later options, go to payment settings"));
+
+        // Verify the expecteed terms is SpannableString type.
+        assertTrue("Terms text should be a SpannableString", termsText instanceof SpannableString);
+        SpannableString spannable = (SpannableString) termsText;
+        ClickableSpan[] spans = spannable.getSpans(0, spannable.length(), ClickableSpan.class);
+        assertEquals("There should be exactly one clickable span", 1, spans.length);
+        ClickableSpan span = spans[0];
+
+        // Verify the ClickableSpan "payment settings" is grayed out or not.
+        TextPaint paint = new TextPaint();
+        span.updateDrawState(paint);
+        float alpha = Color.alpha(paint.getColor()) / 255f;
+        if (isInProgress) {
+            assertEquals(
+                    "Link should be grayed out (38% opacity) in progress screen",
+                    0.38f, alpha, 0.01f);
+        } else {
+            assertEquals("Link should be fully opaque on the selection screen", 1.0f, alpha, 0.01f);
+        }
+
+        // Verify the ClickableSpan is clickable or not.
+        span.onClick(new View(mActivity));
+        if (isInProgress) {
+            verify(mDelegateMock, never()).showPaymentMethodSettings();
+        } else {
+            verify(mDelegateMock, times(1)).showPaymentMethodSettings();
+        }
     }
 
     private static Optional<PropertyModel> getTermsLabelModel(ModelList items) {

@@ -13,10 +13,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ISSUER_SELECTION_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.NON_TRANSFORMING_BNPL_ISSUER_CONTEXT_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplIssuerContextProperties.ON_ISSUER_CLICK_ACTION;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.APPLY_LINK_DEACTIVATED_STYLE;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.HIDE_OPTIONS_LINK_TEXT;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.ON_LINK_CLICK_CALLBACK;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.TERMS_TEXT_ID;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSelectionProgressTermsProperties.TERMS_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ICON_ID;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.BNPL_ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.BnplSuggestionProperties.IS_ENABLED;
@@ -94,10 +91,14 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties.LEGAL_MESSAGE_LINES;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TosFooterProperties.LINK_OPENER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodViewBinder.GRAYED_OUT_OPACITY_ALPHA;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
+import android.text.TextPaint;
+import android.text.style.ClickableSpan;
+import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
@@ -154,6 +155,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.util.AttrUtils;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -811,7 +813,9 @@ class TouchToFillPaymentMethodMediator {
                         createProgressIconModel(
                                 R.string
                                         .autofill_pending_dialog_loading_accessibility_description)));
-        progressScreenModel.add(buildTermsForBnplSelectionProgress(/* isInProgress= */ true));
+        progressScreenModel.add(
+                buildTermsForBnplSelectionProgress(
+                        mContext, /* isInProgress= */ true, this::showPaymentMethodSettings));
 
         mModel.set(SHEET_ITEMS, progressScreenModel);
         mModel.set(
@@ -856,7 +860,9 @@ class TouchToFillPaymentMethodMediator {
             sheetItems.add(new ListItem(BNPL_ISSUER, createBnplIssuerContextModel(issuerContext)));
         }
 
-        sheetItems.add(buildTermsForBnplSelectionProgress(/* isInProgress= */ false));
+        sheetItems.add(
+                buildTermsForBnplSelectionProgress(
+                        mContext, /* isInProgress= */ false, this::showPaymentMethodSettings));
 
         mModel.set(
                 SHEET_CONTENT_DESCRIPTION_ID,
@@ -1518,18 +1524,48 @@ class TouchToFillPaymentMethodMediator {
                         .build());
     }
 
-    private ListItem buildTermsForBnplSelectionProgress(boolean isInProgress) {
+    @VisibleForTesting
+    static ListItem buildTermsForBnplSelectionProgress(
+            Context context, boolean isInProgress, Runnable onLinkClickCallback) {
+        ClickableSpan linkSpan;
+        if (isInProgress) {
+            linkSpan =
+                    new ClickableSpan() {
+                        @Override
+                        public void onClick(View widget) {
+                            // This is intentionally left empty as there are no click events
+                            // when disabled.
+                        }
+
+                        @Override
+                        public void updateDrawState(TextPaint textPaint) {
+                            // Resolves the standard link color, just like ChromeClickableSpan does.
+                            int defaultColor =
+                                    context.getColor(R.color.default_text_color_link_baseline);
+                            int linkColor =
+                                    AttrUtils.resolveColor(
+                                            context.getTheme(),
+                                            R.attr.globalClickableSpanColor,
+                                            defaultColor);
+                            // Create the new color for the disabled link with 38% opacity.
+                            int alpha = (int) (255 * GRAYED_OUT_OPACITY_ALPHA);
+                            int lowOpacityColor = (linkColor & 0x00FFFFFF) | (alpha << 24);
+                            textPaint.setColor(lowOpacityColor);
+                            textPaint.setUnderlineText(true);
+                        }
+                    };
+        } else {
+            linkSpan = new ChromeClickableSpan(context, (view) -> onLinkClickCallback.run());
+        }
+
+        CharSequence finalTerms =
+                SpanApplier.applySpans(
+                        context.getString(R.string.autofill_bnpl_issuer_bottom_sheet_terms_label),
+                        new SpanApplier.SpanInfo("<link>", "</link>", linkSpan));
         return new ListItem(
                 BNPL_SELECTION_PROGRESS_TERMS,
                 new PropertyModel.Builder(BnplSelectionProgressTermsProperties.ALL_KEYS)
-                        .with(TERMS_TEXT_ID, R.string.autofill_bnpl_issuer_bottom_sheet_terms_label)
-                        .with(
-                                HIDE_OPTIONS_LINK_TEXT,
-                                mContext.getString(
-                                        R.string
-                                                .autofill_card_bnpl_select_provider_bottom_sheet_footnote_hide_option))
-                        .with(ON_LINK_CLICK_CALLBACK, (view) -> showPaymentMethodSettings())
-                        .with(APPLY_LINK_DEACTIVATED_STYLE, isInProgress)
+                        .with(TERMS_TEXT, finalTerms)
                         .build());
     }
 
