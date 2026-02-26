@@ -101,6 +101,9 @@ void ConfigurationPolicyHandlerList::PrepareForDisplaying(
 
 bool ConfigurationPolicyHandlerList::IsBlockedDesktopAndroidPolicy(
     const std::string& policy_name) const {
+// TODO(b/478012386): We shouldn't use IS_DESKTOP_ANDROID long-term. The feature
+// flag needs to be removed as soon as we feel comfortable about all exist
+// Android
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
    if (!base::FeatureList::IsEnabled(features::kDesktopAndroidPolicy)) {
     return false;
