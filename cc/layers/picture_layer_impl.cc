@@ -333,6 +333,9 @@ bool PictureLayerImpl::AppendQuadForTile(
     const std::optional<gfx::Rect>& scaled_cull_rect,
     float max_contents_scale,
     AppendQuadsCustomSharedData* custom_data) {
+  // By contract, this data will have been populated via a call to
+  // WillAppendQuads().
+  CHECK(custom_data);
   auto* shared_data =
       static_cast<AppendQuadsCustomSharedDataImpl*>(custom_data);
 
