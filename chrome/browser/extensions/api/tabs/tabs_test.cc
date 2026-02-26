@@ -1799,8 +1799,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithInvalidId) {
   EXPECT_TRUE(base::MatchPattern(error, ExtensionTabUtil::kTabNotFoundError));
 }
 
+// TODO(crbug.com/487907630): Flaky on macos
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DiscardWithoutId DISABLED_DiscardWithoutId
+#else
+#define MAYBE_DiscardWithoutId DiscardWithoutId
+#endif
 // Tests chrome.tabs.discard().
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardWithoutId) {
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_DiscardWithoutId) {
   // Create an additional tab.
   GetTabListInterface()->OpenTab(GURL(url::kAboutBlankURL), -1);
   content::WebContents* web_contents =
