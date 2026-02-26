@@ -86,14 +86,20 @@ class TabContentManager::TabReadbackRequest {
                        weak_factory_.GetWeakPtr());
 
     auto* rwhv = GetRwhv(web_contents);
-    if (!rwhv || !rwhv->IsSurfaceAvailableForCopy()) {
+    if (!rwhv) {
       std::move(result_callback).Run(viz::CopyOutputBitmapWithMetadata());
       return;
     }
 
+    // Cannot increment capturer count for rwhv that is null.
+    decrementor_ =
+        web_contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
+                                             /*stay_awake=*/false,
+                                             /*is_activity=*/false);
+
     gfx::Size view_size_in_pixels =
         rwhv->GetNativeView()->GetPhysicalBackingSize();
-    if (view_size_in_pixels.IsEmpty()) {
+    if (!rwhv->IsSurfaceAvailableForCopy() || view_size_in_pixels.IsEmpty()) {
       std::move(result_callback).Run(viz::CopyOutputBitmapWithMetadata());
       return;
     }
@@ -112,6 +118,7 @@ class TabContentManager::TabReadbackRequest {
 
   void OnFinishGetTabThumbnailBitmap(
       const content::CopyFromSurfaceResult& result) {
+    decrementor_.RunAndReset();
     if (!result.has_value() || drop_after_readback_) {
       std::move(end_callback_).Run(0.f, SkBitmap());
       return;
@@ -128,6 +135,7 @@ class TabContentManager::TabReadbackRequest {
   const float thumbnail_scale_;
   TabReadbackCallback end_callback_;
   bool drop_after_readback_{false};
+  base::ScopedClosureRunner decrementor_;
 
   base::WeakPtrFactory<TabReadbackRequest> weak_factory_{this};
 };
@@ -263,6 +271,7 @@ void TabContentManager::CaptureThumbnail(
 
   content::WebContents* web_contents = tab_android->GetContents();
   if (has_pending_readback || !web_contents ||
+      web_contents->IsBeingDestroyed() ||
       !thumbnail_cache_.CheckAndUpdateThumbnailMetaData(
           tab_id, tab_android->GetURL(), /*force_update=*/false)) {
     if (j_callback) {
