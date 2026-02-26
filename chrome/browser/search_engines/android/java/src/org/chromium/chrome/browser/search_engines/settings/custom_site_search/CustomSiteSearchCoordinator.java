@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchViewBinder;
@@ -37,7 +38,10 @@ public class CustomSiteSearchCoordinator {
                 new CustomSiteSearchMediator(
                         context, mModelList, profile, this::openAddSearchEngineDialog);
         mAddSearchEngineDialogCoordinator =
-                new AddSearchEngineDialogCoordinator(context, modalDialogManager);
+                new AddSearchEngineDialogCoordinator(
+                        context,
+                        modalDialogManager,
+                        TemplateUrlServiceFactory.getForProfile(profile));
 
         mPropertyModel =
                 new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)

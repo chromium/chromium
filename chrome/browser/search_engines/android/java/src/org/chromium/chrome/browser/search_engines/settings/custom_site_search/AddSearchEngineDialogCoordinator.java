@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.search_engines.settings.custom_site_search;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.search_engines.R;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -19,23 +21,35 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class AddSearchEngineDialogCoordinator {
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
+    private final TemplateUrlService mTemplateUrlService;
     @Nullable private PropertyModel mDialogModel;
 
     public AddSearchEngineDialogCoordinator(
-            Context context, ModalDialogManager modalDialogManager) {
+            Context context,
+            ModalDialogManager modalDialogManager,
+            TemplateUrlService templateUrlService) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
+        mTemplateUrlService = templateUrlService;
     }
 
     public void show() {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View view = inflater.inflate(R.layout.site_search_dialog, null);
+        EditText nameInput = view.findViewById(R.id.name_input);
+        EditText shortcutInput = view.findViewById(R.id.shortcut_input);
+        EditText urlInput = view.findViewById(R.id.url_input);
 
         ModalDialogProperties.Controller controller =
                 new ModalDialogProperties.Controller() {
                     @Override
                     public void onClick(PropertyModel model, int buttonType) {
                         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
+                            String name = nameInput.getText().toString();
+                            String keyword = shortcutInput.getText().toString();
+                            String url = urlInput.getText().toString();
+                            // TODO: handle user input validation after C++ logic is ported
+                            mTemplateUrlService.addSearchEngine(name, keyword, url);
                             mModalDialogManager.dismissDialog(
                                     model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                         } else {
