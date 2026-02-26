@@ -239,7 +239,6 @@ public class AutofillAiSaveUpdateEntityPrompt {
                                 new ChromeClickableSpan(
                                         mContext,
                                         view -> {
-                                            // TODO: crbug.com/460410690 - Record user actions.
                                             mController.openManagePasses();
                                         })));
         sourceNoticeView.setText(sourceNoticeWithLink, TextView.BufferType.SPANNABLE);
