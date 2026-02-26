@@ -39,7 +39,7 @@ enum AcMatchClassificationStyle {
 const ENTITY_MATCH_TYPE: string = 'search-suggest-entity';
 
 // Represents the initial selection when a match is created or reset.
-const defaultSelection: OmniboxPopupSelection = {
+export const kDefaultSelection: OmniboxPopupSelection = {
   line: -1,
   state: SelectionLineState.kNormal,
   actionIndex: 0,
@@ -187,7 +187,7 @@ export class SearchboxMatchElement extends CrLitElement {
   accessor isEntitySuggestion: boolean = false;
   accessor isRichSuggestion: boolean = false;
   accessor match: AutocompleteMatch = createAutocompleteMatch();
-  accessor selection: OmniboxPopupSelection = defaultSelection;
+  accessor selection: OmniboxPopupSelection = kDefaultSelection;
   accessor matchIndex: number = -1;
   accessor sideType: SideType = SideType.kDefaultPrimary;
   accessor showThumbnail: boolean = false;
@@ -232,7 +232,7 @@ export class SearchboxMatchElement extends CrLitElement {
       this.removeButtonAriaLabel_ = this.computeRemoveButtonAriaLabel_();
       this.separatorText_ = this.computeSeparatorText_();
       this.tailSuggestPrefix_ = this.computeTailSuggestPrefix_();
-      this.selection = defaultSelection;
+      this.selection = kDefaultSelection;
     }
 
     const changedPrivateProperties =

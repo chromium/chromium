@@ -44,6 +44,10 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   void ProvideButtonFocusHint(size_t line) override;
   void OnDragCanceled() override;
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override;
+  void StepSelection(OmniboxPopupSelection::Direction direction,
+                     OmniboxPopupSelection::Step step) override;
+  void OpenCurrentSelection(WindowOpenDisposition disposition) override;
+  bool IsSelectionPopupControlled() const override;
 
   // OmniboxEditModel::Observer:
   void OnSelectionChanged(OmniboxPopupSelection old_selection,

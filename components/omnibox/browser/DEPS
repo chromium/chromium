@@ -70,6 +70,7 @@ include_rules = [
   "+third_party/tflite_support",
   "+ui/android/java",
   "+ui/base",
+  "+ui/base/mojom",
   "+ui/gfx",
   "+url",
 ]

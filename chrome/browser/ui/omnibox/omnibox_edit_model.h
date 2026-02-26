@@ -286,7 +286,7 @@ class OmniboxEditModel {
 
   // A simplified version of `OpenSelection()` that opens the model's current
   // selection.
-  void OpenSelectionForTesting(
+  void OpenCurrentSelection(
       base::TimeTicks timestamp = base::TimeTicks(),
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
       bool via_keyboard = false);
@@ -490,9 +490,11 @@ class OmniboxEditModel {
   // as well as updating the textfield with the new temporary text.
   // |reset_to_default| restores the original inline autocompletion.
   // |force_update_ui| updates the UI even if the selection has not changed.
+  // |cancel_autocomplete| cancels autocomplete query to avoid match changes.
   void SetPopupSelection(OmniboxPopupSelection new_selection,
                          bool reset_to_default = false,
-                         bool force_update_ui = false);
+                         bool force_update_ui = false,
+                         bool cancel_autocomplete = true);
 
   // Returns true if popup selection is on the initial line, which is usually
   // the default match (except in the no-default-match case).

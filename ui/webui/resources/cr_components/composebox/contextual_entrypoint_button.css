@@ -233,6 +233,10 @@ cr-button#entrypoint {
   z-index: 5;
 }
 
+:host([has-popup-focus]) #entrypoint {
+  box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
+}
+
 :host(:not([glif-animation-state='ineligible'])) #entrypoint {
   --cr-hover-background-color: transparent;
   animation: hover-background-delay 0ms 1850ms linear forwards;

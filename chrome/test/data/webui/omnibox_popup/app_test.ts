@@ -10,7 +10,9 @@ import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'c
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {SelectionDirection, SelectionLineState, SelectionStep} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {WindowOpenDisposition} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -283,5 +285,78 @@ suite('AppTest', function() {
           'cr-composebox-contextual-entrypoint-button');
       assertFalse(isVisible(contextualEntrypoint));
     });
+  });
+});
+
+suite('AppTestSelectionControl', () => {
+  let localApp: OmniboxPopupAppElement;
+  let testProxy: TestSearchboxBrowserProxy;
+
+  setup(() => {
+    // Use setup instead of suiteSetup to ensure a clean state for each test.
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      webuiOmniboxPopupSelectionControlEnabled: true,
+    });
+    testProxy = new TestSearchboxBrowserProxy();
+    SearchboxBrowserProxy.setInstance(testProxy);
+
+    localApp = document.createElement('omnibox-popup-app');
+    document.body.appendChild(localApp);
+    testProxy.initVisibilityPrefs();
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          matches: [
+            createSearchMatchForTesting({contents: 'a'}),
+            createSearchMatchForTesting(
+                {contents: 'b', supportsDeletion: true}),
+            createSearchMatchForTesting({contents: 'c'}),
+          ],
+        }));
+    return microtasksFinished();
+  });
+
+  test('StepSelection', async () => {
+    // Starts as if omnibox just focused, with default selection (none) so
+    // first step is onto first line.
+    testProxy.page.stepSelection(
+        SelectionDirection.kForward, SelectionStep.kWholeLine);
+    testProxy.page.stepSelection(
+        SelectionDirection.kForward, SelectionStep.kStateOrLine);
+    testProxy.page.stepSelection(
+        SelectionDirection.kForward, SelectionStep.kWholeLine);
+    testProxy.page.stepSelection(
+        SelectionDirection.kBackward, SelectionStep.kStateOrLine);
+    testProxy.page.openCurrentSelection(WindowOpenDisposition.CURRENT_TAB);
+    const [selection, disposition] =
+        await testProxy.handler.whenCalled('openPopupSelection');
+    assertEquals(WindowOpenDisposition.CURRENT_TAB, disposition);
+    assertDeepEquals(
+        {
+          line: 1,
+          state: SelectionLineState.kFocusedButtonRemoveSuggestion,
+          actionIndex: 0,
+        },
+        selection);
+  });
+
+  test('OpenCurrentSelection', async () => {
+    testProxy.page.stepSelection(
+        SelectionDirection.kForward, SelectionStep.kAllLines);
+    testProxy.page.stepSelection(
+        SelectionDirection.kBackward, SelectionStep.kWholeLine);
+    testProxy.page.stepSelection(
+        SelectionDirection.kBackward, SelectionStep.kWholeLine);
+    testProxy.page.openCurrentSelection(WindowOpenDisposition.CURRENT_TAB);
+    const [selection, disposition] =
+        await testProxy.handler.whenCalled('openPopupSelection');
+    assertEquals(WindowOpenDisposition.CURRENT_TAB, disposition);
+    assertDeepEquals(
+        {
+          line: 0,
+          state: SelectionLineState.kNormal,
+          actionIndex: 0,
+        },
+        selection);
   });
 });

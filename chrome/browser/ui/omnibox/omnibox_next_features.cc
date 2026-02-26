@@ -65,6 +65,9 @@ BASE_FEATURE(kWebUIOmniboxPopupDebug, DISABLED);
 // Enables side-by-side comparison omnibox suggestions in WebUI and Views.
 const base::FeatureParam<bool> kWebUIOmniboxPopupDebugSxSParam{
     &kWebUIOmniboxPopupDebug, "SxS", false};
+// If enabled, the WebUIOmniboxPopup controls its own selection state instead of
+// following that of the OmniboxEditModel.
+BASE_FEATURE(kWebUIOmniboxPopupSelectionControl, DISABLED);
 
 // Decodes a proto object from its serialized Base64 string representation.
 // Returns true if decoding and parsing succeed, false otherwise.

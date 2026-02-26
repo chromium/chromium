@@ -91,6 +91,10 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
                              bool ctrl_key,
                              bool meta_key,
                              bool shift_key) override;
+  void SetPopupSelection(
+      searchbox::mojom::OmniboxPopupSelectionPtr selection) override;
+  void OpenPopupSelection(searchbox::mojom::OmniboxPopupSelectionPtr selection,
+                          WindowOpenDisposition disposition) override;
   void OnNavigationLikely(
       uint8_t line,
       const GURL& url,

@@ -517,6 +517,10 @@ std::u16string_view OmniboxPopupViewViews::GetAccessibleButtonTextForResult(
   return static_cast<const views::LabelButton*>(button)->GetText();
 }
 
+bool OmniboxPopupViewViews::IsSelectionPopupControlled() const {
+  return false;
+}
+
 bool OmniboxPopupViewViews::OnMouseDragged(const ui::MouseEvent& event) {
   const size_t index = GetIndexForPoint(event.location());
 

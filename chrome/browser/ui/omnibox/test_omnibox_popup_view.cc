@@ -7,3 +7,7 @@
 bool TestOmniboxPopupView::IsOpen() const {
   return false;
 }
+
+bool TestOmniboxPopupView::IsSelectionPopupControlled() const {
+  return false;
+}

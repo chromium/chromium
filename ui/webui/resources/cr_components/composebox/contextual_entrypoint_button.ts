@@ -43,6 +43,7 @@ export class ContextualEntrypointButtonElement extends
       showContextMenuDescription: {type: Boolean},
       glifAnimationState: {type: String, reflect: true},
       uploadButtonDisabled: {type: Boolean},
+      hasPopupFocus: {type: Boolean, reflect: true},
     };
   }
 
@@ -50,6 +51,7 @@ export class ContextualEntrypointButtonElement extends
   accessor glifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
   accessor uploadButtonDisabled: boolean = false;
+  accessor hasPopupFocus: boolean = false;
 
   private metricsSource_: string = loadTimeData.getString('composeboxSource');
 
