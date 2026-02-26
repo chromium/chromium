@@ -22,6 +22,25 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<!-- LINT.IfChange(BookmarksFileType) -->
+
+<variants name="BookmarksFileType">
+  <variant name="Account" summary="JSON file containing account bookmarks."/>
+  <variant name="LocalOrSyncable"
+      summary="JSON file containing local-or-syncable bookmarks."/>
+</variants>
+
+<!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.h:BookmarksFileType) -->
+
+<!-- LINT.IfChange(EncryptionType) -->
+
+<variants name="EncryptionType">
+  <variant name="ClearText" summary="Clear text, no encryption."/>
+  <variant name="Encrypted" summary="Encryption is used."/>
+</variants>
+
+<!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.h:EncryptionType) -->
+
 <histogram name="BookmarkManager.CommandExecuted" enum="BookmarkManagerCommand"
     expires_after="never">
 <!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
@@ -340,6 +359,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Bookmarks.BookmarksFileLoadResult.{BookmarksFileType}.{EncryptionType}"
+    enum="BookmarksFileLoadResult" expires_after="2027-02-24">
+  <owner>plcoirier@google.com</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records the result of the load of the {EncryptionType} file of the
+    {BookmarksFileType} bookmarks when loading them from disk at startup.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.Clone.NumCloned" units="bookmarks"
     expires_after="2026-01-15">
   <owner>wylieb@google.com</owner>
@@ -408,11 +438,6 @@ chromium-metrics-reviews@google.com.
     the browser recorded this using a histogram without the &quot;2&quot; suffix
     in the name, before such original histogram expired.
   </summary>
-  <token key="BookmarksFileType">
-    <variant name="Account" summary="JSON file containing account bookmarks."/>
-    <variant name="LocalOrSyncable"
-        summary="JSON file containing local-or-syncable bookmarks."/>
-  </token>
 </histogram>
 
 <histogram name="Bookmarks.LaunchLocation" enum="BookmarkLaunchLocation"

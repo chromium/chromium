@@ -10,11 +10,13 @@
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_load_details.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace bookmarks {
@@ -30,6 +32,8 @@ constexpr char kUserFolderTopLevelCountMetricName[] =
     "Bookmarks.UserFolder.OnProfileLoad.TopLevelCount";
 constexpr char kUserFolderBookmarkBarTopLevelItemsMetricName[] =
     "Bookmarks.UserFolder.OnProfileLoad.BookmarkBarTopLevelItems";
+constexpr char kBookmarksFileLoadResultMetricName[] =
+    "Bookmarks.BookmarksFileLoadResult";
 
 const base::FilePath& GetTestDataDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
@@ -108,6 +112,168 @@ TEST(ModelLoaderTest, LoadEmptyModelFromInexistentFile) {
   histogram_tester.ExpectBucketCount(
       kUserFolderBookmarkBarTopLevelItemsMetricName,
       /*sample=*/0, /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".ClearText"}),
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".ClearText"}),
+      /*sample=*/metrics::BookmarksFileLoadResult::kFileMissing,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kBookmarksFileLoadResultMetricName, ".Account", ".ClearText"}),
+      /*expected_count=*/0);
+}
+
+TEST(ModelLoaderTest, LoadEmptyModelFromInvalidJson) {
+  base::HistogramTester histogram_tester;
+  base::test::TaskEnvironment task_environment;
+  const base::FilePath test_file =
+      GetTestDataDir().AppendASCII("bookmarks/model_invalid_json.json");
+  ASSERT_TRUE(base::PathExists(test_file));
+
+  base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
+  scoped_refptr<ModelLoader> loader = ModelLoader::Create(
+      /*local_or_syncable_file_path=*/test_file,
+      /*account_file_path=*/base::FilePath(),
+      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      details_future.GetCallback());
+
+  const std::unique_ptr<BookmarkLoadDetails>& details = details_future.Get();
+
+  ASSERT_NE(nullptr, details);
+  ASSERT_NE(nullptr, details->bb_node());
+  ASSERT_NE(nullptr, details->other_folder_node());
+  ASSERT_NE(nullptr, details->mobile_folder_node());
+
+  EXPECT_FALSE(details->required_recovery());
+  EXPECT_FALSE(details->ids_reassigned());
+  EXPECT_EQ(4, details->max_id());
+
+  EXPECT_EQ(0u, details->bb_node()->children().size());
+  EXPECT_EQ(0u, details->other_folder_node()->children().size());
+  EXPECT_EQ(0u, details->mobile_folder_node()->children().size());
+
+  EXPECT_EQ("", details->local_or_syncable_sync_metadata_str());
+
+  // Permanent node ID's are subject to change, but expectations are listed
+  // below for the purpose of documenting the current behavior.
+  EXPECT_EQ(1u, details->bb_node()->id());
+  EXPECT_EQ(2u, details->other_folder_node()->id());
+  EXPECT_EQ(3u, details->mobile_folder_node()->id());
+
+  histogram_tester.ExpectTotalCount(kLocalOrSyncableIdsReassignedMetricName,
+                                    /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(kAccountIdsReassignedMetricName,
+                                    /*expected_count=*/0);
+
+  histogram_tester.ExpectTotalCount(kUserFolderCountMetricName,
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kUserFolderCountMetricName,
+                                     /*sample=*/0, /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(kUserFolderTopLevelCountMetricName,
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kUserFolderTopLevelCountMetricName,
+                                     /*sample=*/0, /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      kUserFolderBookmarkBarTopLevelItemsMetricName,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kUserFolderBookmarkBarTopLevelItemsMetricName,
+      /*sample=*/0, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".ClearText"}),
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".ClearText"}),
+      /*sample=*/
+      metrics::BookmarksFileLoadResult::kJSONParsingFailed,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kBookmarksFileLoadResultMetricName, ".Account", ".ClearText"}),
+      /*expected_count=*/0);
+}
+
+TEST(ModelLoaderTest, LoadEmptyFromImproperlyEncodedJSON) {
+  base::HistogramTester histogram_tester;
+  base::test::TaskEnvironment task_environment;
+  const base::FilePath test_file =
+      GetTestDataDir().AppendASCII("bookmarks/model_without_version.json");
+  ASSERT_TRUE(base::PathExists(test_file));
+
+  base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
+  scoped_refptr<ModelLoader> loader = ModelLoader::Create(
+      /*local_or_syncable_file_path=*/test_file,
+      /*account_file_path=*/base::FilePath(),
+      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      details_future.GetCallback());
+
+  const std::unique_ptr<BookmarkLoadDetails>& details = details_future.Get();
+
+  ASSERT_NE(nullptr, details);
+  ASSERT_NE(nullptr, details->bb_node());
+  ASSERT_NE(nullptr, details->other_folder_node());
+  ASSERT_NE(nullptr, details->mobile_folder_node());
+
+  EXPECT_FALSE(details->required_recovery());
+  EXPECT_FALSE(details->ids_reassigned());
+  EXPECT_EQ(4, details->max_id());
+
+  EXPECT_EQ(0u, details->bb_node()->children().size());
+  EXPECT_EQ(0u, details->other_folder_node()->children().size());
+  EXPECT_EQ(0u, details->mobile_folder_node()->children().size());
+
+  EXPECT_EQ("", details->local_or_syncable_sync_metadata_str());
+
+  // Permanent node ID's are subject to change, but expectations are listed
+  // below for the purpose of documenting the current behavior.
+  EXPECT_EQ(1u, details->bb_node()->id());
+  EXPECT_EQ(2u, details->other_folder_node()->id());
+  EXPECT_EQ(3u, details->mobile_folder_node()->id());
+
+  histogram_tester.ExpectTotalCount(kLocalOrSyncableIdsReassignedMetricName,
+                                    /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(kAccountIdsReassignedMetricName,
+                                    /*expected_count=*/0);
+
+  histogram_tester.ExpectTotalCount(kUserFolderCountMetricName,
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kUserFolderCountMetricName,
+                                     /*sample=*/0, /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(kUserFolderTopLevelCountMetricName,
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kUserFolderTopLevelCountMetricName,
+                                     /*sample=*/0, /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      kUserFolderBookmarkBarTopLevelItemsMetricName,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kUserFolderBookmarkBarTopLevelItemsMetricName,
+      /*sample=*/0, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".ClearText"}),
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".ClearText"}),
+      /*sample=*/
+      metrics::BookmarksFileLoadResult::kBookmarkCodecDecodingFailed,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kBookmarksFileLoadResultMetricName, ".Account", ".ClearText"}),
+      /*expected_count=*/0);
 }
 
 TEST(ModelLoaderTest, LoadNonEmptyModel) {
@@ -173,6 +339,20 @@ TEST(ModelLoaderTest, LoadNonEmptyModel) {
   histogram_tester.ExpectBucketCount(
       kUserFolderBookmarkBarTopLevelItemsMetricName,
       /*sample=*/1, /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".ClearText"}),
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".ClearText"}),
+      /*sample=*/metrics::BookmarksFileLoadResult::kSuccess,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kBookmarksFileLoadResultMetricName, ".Account", ".ClearText"}),
+      /*expected_count=*/0);
 }
 
 TEST(ModelLoaderTest, LoadNonEmptyModelFromOneFileWithInternalIdCollisions) {
@@ -228,6 +408,20 @@ TEST(ModelLoaderTest, LoadNonEmptyModelFromOneFileWithInternalIdCollisions) {
                                       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(kAccountIdsReassignedMetricName,
                                     /*expected_count=*/0);
+
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".ClearText"}),
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".ClearText"}),
+      /*sample=*/metrics::BookmarksFileLoadResult::kSuccess,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kBookmarksFileLoadResultMetricName, ".Account", ".ClearText"}),
+      /*expected_count=*/0);
 }
 
 TEST(ModelLoaderTest, LoadTwoFilesWithNonCollidingIds) {
@@ -313,6 +507,25 @@ TEST(ModelLoaderTest, LoadTwoFilesWithNonCollidingIds) {
   histogram_tester.ExpectBucketCount(
       kUserFolderBookmarkBarTopLevelItemsMetricName,
       /*sample=*/1, /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".ClearText"}),
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".ClearText"}),
+      /*sample=*/metrics::BookmarksFileLoadResult::kSuccess,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kBookmarksFileLoadResultMetricName, ".Account", ".ClearText"}),
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat(
+          {kBookmarksFileLoadResultMetricName, ".Account", ".ClearText"}),
+      /*sample=*/metrics::BookmarksFileLoadResult::kSuccess,
+      /*expected_count=*/1);
 }
 
 TEST(ModelLoaderTest, LoadTwoFilesWithCollidingIdsAcross) {
@@ -666,6 +879,25 @@ TEST(ModelLoaderTest, LoadTwoFilesWhereTheLocalOrSyncableFileDoesNotExist) {
   histogram_tester.ExpectUniqueSample(kAccountIdsReassignedMetricName,
                                       /*sample=*/false,
                                       /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".ClearText"}),
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".ClearText"}),
+      /*sample=*/metrics::BookmarksFileLoadResult::kFileMissing,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kBookmarksFileLoadResultMetricName, ".Account", ".ClearText"}),
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat(
+          {kBookmarksFileLoadResultMetricName, ".Account", ".ClearText"}),
+      /*sample=*/metrics::BookmarksFileLoadResult::kSuccess,
+      /*expected_count=*/1);
 }
 
 TEST(ModelLoaderTest, LoadModelWithNestedUserFolders) {

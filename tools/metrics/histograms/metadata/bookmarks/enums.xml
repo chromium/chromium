@@ -174,6 +174,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.h:BookmarksExistInStorageType) -->
 
+<!-- LINT.IfChange(BookmarksFileLoadResult) -->
+
+<enum name="BookmarksFileLoadResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="File Missing"/>
+  <int value="2" label="Content Loading Failed"/>
+  <int value="3" label="Decryption Failed"/>
+  <int value="4" label="JSON Parsing Failed"/>
+  <int value="5" label="Bookmark Codec Decoding Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.h:BookmarksFileLoadResult) -->
+
 <enum name="BookmarksSidePanelSearchCTREvent">
   <int value="0" label="Shown"/>
   <int value="1" label="Searched"/>

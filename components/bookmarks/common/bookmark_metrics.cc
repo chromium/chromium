@@ -49,6 +49,17 @@ std::string_view GetStorageFileSuffixForMetrics(
   NOTREACHED();
 }
 
+std::string_view GetEncryptionTypeSuffixForMetrics(
+    EncryptionTypeForUma encryption_type) {
+  switch (encryption_type) {
+    case EncryptionTypeForUma::kClearText:
+      return ".ClearText";
+    case EncryptionTypeForUma::kEncrypted:
+      return ".Encrypted";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 void RecordUrlBookmarkAdded(BookmarkFolderTypeForUMA parent,
@@ -217,6 +228,16 @@ void RecordBookmarksExistInStorageType(
                     bookmark_bar_only ? "UnderBookmarksBar"
                                       : "ConsideringAllBookmarks"}),
       storage_type);
+}
+
+void RecordBookmarksFileLoadResult(StorageFileForUma storage_file,
+                                   EncryptionTypeForUma encryption_type,
+                                   BookmarksFileLoadResult result) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Bookmarks.BookmarksFileLoadResult",
+                    GetStorageFileSuffixForMetrics(storage_file),
+                    GetEncryptionTypeSuffixForMetrics(encryption_type)}),
+      result);
 }
 
 }  // namespace bookmarks::metrics

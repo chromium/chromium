@@ -28,11 +28,20 @@ namespace bookmarks {
 namespace {
 
 // Loads and deserializes a JSON file determined by `file_path` and returns it
-// in the form of a dictionary, or nullopt if something fails.
-std::optional<base::DictValue> LoadFileToDict(const base::FilePath& file_path) {
+// in the form of a dictionary, or an error code if something fails.
+// No kSuccess result is returned in case of success, it is implied by having a
+// DictValue returned.
+// This function does not decode the bookmarks data, so
+// kBookmarkCodecDecodingFailed is not a possible return value.
+base::expected<base::DictValue, metrics::BookmarksFileLoadResult>
+LoadFileToDict(const base::FilePath& file_path) {
+  if (!base::PathExists(file_path)) {
+    return base::unexpected(metrics::BookmarksFileLoadResult::kFileMissing);
+  }
   std::string json_string;
   if (!base::ReadFileToString(file_path, &json_string)) {
-    return std::nullopt;
+    return base::unexpected(
+        metrics::BookmarksFileLoadResult::kContentLoadingFailed);
   }
 
   // Titles may end up containing invalid utf and we shouldn't throw away
@@ -44,10 +53,11 @@ std::optional<base::DictValue> LoadFileToDict(const base::FilePath& file_path) {
       /*error_code=*/nullptr, /*error_message=*/nullptr);
   if (!root || !root->is_dict()) {
     // The bookmark file exists but was not deserialized properly.
-    return std::nullopt;
+    return base::unexpected(
+        metrics::BookmarksFileLoadResult::kJSONParsingFailed);
   }
 
-  return std::make_optional(std::move(*root).TakeDict());
+  return std::move(*root).TakeDict();
 }
 
 std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
@@ -79,14 +89,18 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
         BookmarkPermanentNode::CreateMobileBookmarks(0,
                                                      /*is_account_node=*/true);
 
-    std::optional<base::DictValue> root_dict =
-        LoadFileToDict(account_file_path);
+    base::expected<base::DictValue, metrics::BookmarksFileLoadResult>
+        root_dict = LoadFileToDict(account_file_path);
     BookmarkCodec codec;
-    if (root_dict.has_value() &&
-        codec.Decode(*root_dict, /*already_assigned_ids=*/{},
-                     account_bb_node.get(), account_other_folder_node.get(),
-                     account_mobile_folder_node.get(), &max_node_id,
-                     &sync_metadata_str)) {
+    if (!root_dict.has_value()) {
+      metrics::RecordBookmarksFileLoadResult(
+          metrics::StorageFileForUma::kAccount,
+          metrics::EncryptionTypeForUma::kClearText, root_dict.error());
+    } else if (codec.Decode(*root_dict, /*already_assigned_ids=*/{},
+                            account_bb_node.get(),
+                            account_other_folder_node.get(),
+                            account_mobile_folder_node.get(), &max_node_id,
+                            &sync_metadata_str)) {
       ids_assigned_to_account_nodes = codec.release_assigned_ids();
 
       // A successful decoding must have set proper IDs.
@@ -109,11 +123,19 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
       // account bookmarks.
       metrics::RecordIdsReassignedOnProfileLoad(
           metrics::StorageFileForUma::kAccount, codec.ids_reassigned());
+      metrics::RecordBookmarksFileLoadResult(
+          metrics::StorageFileForUma::kAccount,
+          metrics::EncryptionTypeForUma::kClearText,
+          metrics::BookmarksFileLoadResult::kSuccess);
     } else {
       // In the failure case, it is still possible that sync metadata was
       // decoded, which includes legit scenarios like sync metadata indicating
       // that there were too many bookmarks in sync, server-side.
       details->set_account_sync_metadata_str(std::move(sync_metadata_str));
+      metrics::RecordBookmarksFileLoadResult(
+          metrics::StorageFileForUma::kAccount,
+          metrics::EncryptionTypeForUma::kClearText,
+          metrics::BookmarksFileLoadResult::kBookmarkCodecDecodingFailed);
     }
   }
 
@@ -121,14 +143,18 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
   {
     std::string sync_metadata_str;
     int64_t max_node_id = 0;
-    std::optional<base::DictValue> root_dict =
-        LoadFileToDict(local_or_syncable_file_path);
+    base::expected<base::DictValue, metrics::BookmarksFileLoadResult>
+        root_dict = LoadFileToDict(local_or_syncable_file_path);
     BookmarkCodec codec;
-    if (root_dict.has_value() &&
-        codec.Decode(*root_dict, std::move(ids_assigned_to_account_nodes),
-                     details->bb_node(), details->other_folder_node(),
-                     details->mobile_folder_node(), &max_node_id,
-                     &sync_metadata_str)) {
+    if (!root_dict.has_value()) {
+      metrics::RecordBookmarksFileLoadResult(
+          metrics::StorageFileForUma::kLocalOrSyncable,
+          metrics::EncryptionTypeForUma::kClearText, root_dict.error());
+    } else if (codec.Decode(*root_dict,
+                            std::move(ids_assigned_to_account_nodes),
+                            details->bb_node(), details->other_folder_node(),
+                            details->mobile_folder_node(), &max_node_id,
+                            &sync_metadata_str)) {
       details->set_local_or_syncable_sync_metadata_str(
           std::move(sync_metadata_str));
       details->set_max_id(std::max(max_node_id, details->max_id()));
@@ -143,6 +169,15 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
       // local-or-syncable bookmarks.
       metrics::RecordIdsReassignedOnProfileLoad(
           metrics::StorageFileForUma::kLocalOrSyncable, codec.ids_reassigned());
+      metrics::RecordBookmarksFileLoadResult(
+          metrics::StorageFileForUma::kLocalOrSyncable,
+          metrics::EncryptionTypeForUma::kClearText,
+          metrics::BookmarksFileLoadResult::kSuccess);
+    } else {
+      metrics::RecordBookmarksFileLoadResult(
+          metrics::StorageFileForUma::kLocalOrSyncable,
+          metrics::EncryptionTypeForUma::kClearText,
+          metrics::BookmarksFileLoadResult::kBookmarkCodecDecodingFailed);
     }
   }
 
