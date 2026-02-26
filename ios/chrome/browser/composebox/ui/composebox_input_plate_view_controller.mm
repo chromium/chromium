@@ -1575,16 +1575,15 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
     [canvasAction setState:UIMenuElementStateOn];
   }
 
-  // TODO(crbug.com/481280186): Replace icon once defined.
-  UIAction* deepSearchAction = [UIAction
-      actionWithTitle:l10n_util::GetNSString(
-                          IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ACTION)
-                image:DefaultSymbolWithPointSize(kFindInPageActionSymbol,
-                                                 kSymbolActionPointSize)
-           identifier:nil
-              handler:^(UIAction* action) {
-                [weakSelf handleDeepSearchTappedFromToolMenu];
-              }];
+  UIAction* deepSearchAction =
+      [UIAction actionWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ACTION)
+                          image:CustomSymbolWithPointSize(
+                                    kDeepSearchSymbol, kSymbolActionPointSize)
+                     identifier:nil
+                        handler:^(UIAction* action) {
+                          [weakSelf handleDeepSearchTappedFromToolMenu];
+                        }];
   UIMenuElementAttributes deepSearchAttributes = 0;
   if (_deepSearchActionsHidden) {
     deepSearchAttributes |= UIMenuElementAttributesHidden;
@@ -2014,12 +2013,11 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       forControlEvents:UIControlEventTouchUpInside];
   button.layer.borderWidth = 0;
 
-  // TODO(crbug.com/481280186): Replace icon once defined.
   UIButtonConfiguration* config =
       [self modeIndicatorButtonConfigWithTitle:
                 l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_DEEP_SEARCH_ACTION)
-                                         image:DefaultSymbolWithPointSize(
-                                                   kFindInPageActionSymbol,
+                                         image:CustomSymbolWithPointSize(
+                                                   kDeepSearchSymbol,
                                                    kAIMButtonSymbolPointSize)];
   NSDirectionalEdgeInsets insets = kModeIndicatorButtonInsets;
   insets.trailing = kModeIndicatorButtonInsets.trailing + kXButtonWidthInButton;

@@ -34,6 +34,8 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/custom_platter_filled_top_and_arrow_up_iphone.symbolset/custom.platter.filled.top.and.arrow.up.iphone.cr.svg",
     "Assets.xcassets/dangerous_omnibox.symbolset/Contents.json",
     "Assets.xcassets/dangerous_omnibox.symbolset/dangerous.omnibox.cr.svg",
+    "Assets.xcassets/deep_search.symbolset/Contents.json",
+    "Assets.xcassets/deep_search.symbolset/deep.search.cr.svg",
     "Assets.xcassets/dino.symbolset/Contents.json",
     "Assets.xcassets/dino.symbolset/dino.cr.svg",
     "Assets.xcassets/document_badge_spark.symbolset/Contents.json",
