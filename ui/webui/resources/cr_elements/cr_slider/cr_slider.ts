@@ -393,7 +393,7 @@ export class CrSliderElement extends CrSliderElementBase {
     });
   }
 
-  protected onTransitionEnd_() {
+  protected onTransitionend_() {
     this.transiting_ = false;
   }
 

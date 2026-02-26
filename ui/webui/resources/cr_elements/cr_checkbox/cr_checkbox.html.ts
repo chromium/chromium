@@ -9,7 +9,7 @@ import type {CrCheckboxElement} from './cr_checkbox.js';
 export function getHtml(this: CrCheckboxElement) {
   return html`
 <div id="checkbox" tabindex="${this.tabIndex}" role="checkbox"
-    @keydown="${this.onKeyDown_}" @keyup="${this.onKeyUp_}"
+    @keydown="${this.onKeydown_}" @keyup="${this.onKeyup_}"
     aria-disabled="${this.getAriaDisabled_()}"
     aria-checked="${this.getAriaChecked_()}"
     aria-label="${this.ariaLabelOverride || nothing}"

@@ -17,7 +17,7 @@ export function getHtml(this: CrToolbarSearchFieldElement) {
     <cr-icon-button id="icon" iron-icon="${this.iconOverride || 'cr:search'}"
         title="${this.label}" tabindex="${this.getIconTabIndex_()}"
         aria-hidden="${this.getIconAriaHidden_()}" suppress-rtl-flip
-        @click="${this.onSearchIconClicked_}" ?disabled="${this.disabled}">
+        @click="${this.onSearchIconClick_}" ?disabled="${this.disabled}">
   </cr-icon-button>
   <div id="searchTerm">
     <label id="prompt" for="searchInput" aria-hidden="true">
@@ -29,7 +29,7 @@ export function getHtml(this: CrToolbarSearchFieldElement) {
         autocapitalize="off"
         autocomplete="off"
         type="search"
-        @beforeinput="${this.onSearchTermNativeBeforeInput}"
+        @beforeinput="${this.onSearchTermNativeBeforeinput}"
         @input="${this.onSearchTermNativeInput}"
         @search="${this.onSearchTermSearch}"
         @keydown="${this.onSearchTermKeydown_}"
@@ -41,7 +41,7 @@ export function getHtml(this: CrToolbarSearchFieldElement) {
   </div>
   ${this.hasSearchText ? html`
     <cr-icon-button id="clearSearch" iron-icon="cr:cancel"
-        title="${this.clearLabel}" @click="${this.clearSearch_}"
+        title="${this.clearLabel}" @click="${this.onClearSearchClick_}"
         ?disabled="${this.disabled}"></cr-icon-button>` : ''}
 </div>`;
   // clang-format on

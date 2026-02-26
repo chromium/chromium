@@ -8,7 +8,7 @@ import type {CrGridElement} from './cr_grid.js';
 
 export function getHtml(this: CrGridElement) {
   return html`
-<div id="grid" @keydown="${this.onKeyDown_}">
+<div id="grid" @keydown="${this.onKeydown_}">
   <slot id="items"></slot>
 </div>`;
 }

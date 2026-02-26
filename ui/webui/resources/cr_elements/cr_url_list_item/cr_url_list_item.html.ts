@@ -50,7 +50,7 @@ export function getHtml(this: CrUrlListItemElement) {
       </div>
     </slot>
   </div>
-  <slot id="content" name="content" @slotchange="${this.onContentSlotChange_}">
+  <slot id="content" name="content" @slotchange="${this.onContentSlotchange_}">
   </slot>
   <div id="metadata" class="metadata">
     <span class="title">${this.title}</span>
@@ -63,7 +63,7 @@ export function getHtml(this: CrUrlListItemElement) {
       </div>
       <div id="badgesContainer" class="badges">
         <slot id="badges" name="badges"
-            @slotchange="${this.onBadgesSlotChange_}">
+            @slotchange="${this.onBadgesSlotchange_}">
         </slot>
       </div>
     </div>

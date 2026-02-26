@@ -199,6 +199,10 @@ export class CrDialogElement extends CrLitElement {
     this.fire('cr-dialog-open');
   }
 
+  protected onCloseClick_() {
+    this.cancel();
+  }
+
   cancel() {
     this.fire('cancel');
     this.$.dialog.close();

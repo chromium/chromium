@@ -25,7 +25,8 @@ export function getHtml(this: CrDialogElement) {
         <cr-icon-button id="close" class="icon-clear"
             aria-label="${this.closeText || nothing}"
             title="${this.closeText || nothing}"
-            @click="${this.cancel}" @keypress="${this.onCloseKeypress_}">
+            @click="${this.onCloseClick_}"
+            @keypress="${this.onCloseKeypress_}">
         </cr-icon-button>
        ` : ''}
     </div>

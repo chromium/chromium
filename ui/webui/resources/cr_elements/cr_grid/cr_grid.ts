@@ -66,7 +66,7 @@ export class CrGridElement extends CrLitElement {
     return parent;
   }
 
-  protected onKeyDown_(e: KeyboardEvent) {
+  protected onKeydown_(e: KeyboardEvent) {
     if (['Enter', ' '].includes(e.key)) {
       e.preventDefault();
       e.stopPropagation();

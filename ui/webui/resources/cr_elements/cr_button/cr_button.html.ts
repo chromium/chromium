@@ -10,11 +10,11 @@ export function getHtml(this: CrButtonElement) {
   return html`
 <div id="background"></div>
 <slot id="prefixIcon" name="prefix-icon"
-    @slotchange="${this.onPrefixIconSlotChanged_}">
+    @slotchange="${this.onPrefixIconSlotchange_}">
 </slot>
 <span id="content"><slot></slot></span>
 <slot id="suffixIcon" name="suffix-icon"
-    @slotchange="${this.onSuffixIconSlotChanged_}">
+    @slotchange="${this.onSuffixIconSlotchange_}">
 </slot>
 <div id="hoverBackground" part="hoverBackground"></div>`;
 }

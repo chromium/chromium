@@ -105,7 +105,7 @@ export class CrToolbarSearchFieldElement extends
     this.focus_();
   }
 
-  protected onSearchTermNativeBeforeInput(e: InputEvent) {
+  protected onSearchTermNativeBeforeinput(e: InputEvent) {
     this.fire('search-term-native-before-input', {e});
   }
 
@@ -131,7 +131,7 @@ export class CrToolbarSearchFieldElement extends
     return this.spinnerActive && this.showingSearch;
   }
 
-  protected onSearchIconClicked_() {
+  protected onSearchIconClick_() {
     this.fire('search-icon-clicked');
   }
 
@@ -168,7 +168,7 @@ export class CrToolbarSearchFieldElement extends
     }
   }
 
-  protected clearSearch_() {
+  protected onClearSearchClick_() {
     this.setValue('');
     this.focus_();
     this.spinnerActive = false;

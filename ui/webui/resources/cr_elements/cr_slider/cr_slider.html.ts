@@ -15,7 +15,7 @@ export function getHtml(this: CrSliderElement) {
       <div class="${this.getMarkerClass_(index)}"></div>
     `)}
   </div>
-  <div id="knobAndLabel" @transitionend="${this.onTransitionEnd_}">
+  <div id="knobAndLabel" @transitionend="${this.onTransitionend_}">
     <div id="knob" part="knob"></div>
     <div id="label" part="label">${this.label_}</div>
   </div>

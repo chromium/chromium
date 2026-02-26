@@ -146,11 +146,11 @@ export class CrButtonElement extends CrButtonElementBase {
     }
   }
 
-  protected onPrefixIconSlotChanged_() {
+  protected onPrefixIconSlotchange_() {
     this.hasPrefixIcon_ = this.$.prefixIcon.assignedElements().length > 0;
   }
 
-  protected onSuffixIconSlotChanged_() {
+  protected onSuffixIconSlotchange_() {
     this.hasSuffixIcon_ = this.$.suffixIcon.assignedElements().length > 0;
   }
 

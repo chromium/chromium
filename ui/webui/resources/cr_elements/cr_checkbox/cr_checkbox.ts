@@ -170,7 +170,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     this.fire('change', this.checked);
   }
 
-  protected onKeyDown_(e: KeyboardEvent) {
+  protected onKeydown_(e: KeyboardEvent) {
     if (e.key !== ' ' && e.key !== 'Enter') {
       return;
     }
@@ -186,7 +186,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     }
   }
 
-  protected onKeyUp_(e: KeyboardEvent) {
+  protected onKeyup_(e: KeyboardEvent) {
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       e.stopPropagation();
