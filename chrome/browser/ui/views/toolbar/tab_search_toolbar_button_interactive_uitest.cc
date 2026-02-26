@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
+#include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button_menu_model.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -42,11 +43,8 @@ class TabSearchToolbarButtonTest : public InteractiveBrowserTest {
  public:
   auto CheckElementCount(ui::ElementIdentifier id, size_t expected_count) {
     return Check([id, expected_count, this]() {
-      return views::ElementTrackerViews::GetInstance()
-                 ->GetAllMatchingViews(
-                     id, BrowserView::GetBrowserViewForBrowser(browser())
-                             ->GetElementContext())
-                 .size() == expected_count;
+      return BrowserElements::From(browser())->GetAllElements(id).size() ==
+             expected_count;
     });
   }
 
@@ -158,20 +156,27 @@ IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonGlicDisabledTest,
 }
 
 class TabSearchToolbarButtonComboEnabledTest
-    : public TabSearchToolbarButtonTest {
+    : public VerticalTabsInteractiveTestMixin<TabSearchToolbarButtonTest>,
+      public testing::WithParamInterface<bool> {
  public:
-  TabSearchToolbarButtonComboEnabledTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {tabs::kHorizontalTabStripComboButton, features::kGlic},
-        {tabs::kVerticalTabs});
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    return {{tabs::kVerticalTabs, {}},
+            {tabs::kHorizontalTabStripComboButton, {}},
+            {features::kGlic, {}}};
   }
-  ~TabSearchToolbarButtonComboEnabledTest() override = default;
+
+  void SetUpOnMainThread() override {
+    TabSearchToolbarButtonTest::SetUpOnMainThread();
+  }
 
   auto EnsureTabSearchVisible() {
     return Steps(Do([this]() {
                    browser()->profile()->GetPrefs()->SetBoolean(
                        prefs::kTabSearchPinnedToTabstrip, true);
                  }),
+                 If([this]() { return this->GetParam(); },
+                    Then(EnterVerticalTabsMode())),
                  WaitForShow(kTabSearchButtonElementId));
   }
 
@@ -180,8 +185,8 @@ class TabSearchToolbarButtonComboEnabledTest
 };
 
 // This test verifies that the TabSearch button is NOT in the toolbar when
-// the horizontal tab strip combo button is enabled.
-IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonComboEnabledTest,
+// the tab strip combo button is enabled.
+IN_PROC_BROWSER_TEST_P(TabSearchToolbarButtonComboEnabledTest,
                        ButtonNotInToolbar) {
   RunTestSequence(EnsureTabSearchVisible(),
                   CheckElementCount(kTabSearchButtonElementId, 1),
@@ -194,9 +199,8 @@ IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonComboEnabledTest,
 }
 
 // This test verifies that the TabSearch button is NOT in the toolbar when
-// the horizontal tab strip combo button is enabled, even if it is pinned in the
-// model.
-IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonComboEnabledTest,
+// the tab strip combo button is enabled, even if it is pinned in the model.
+IN_PROC_BROWSER_TEST_P(TabSearchToolbarButtonComboEnabledTest,
                        ButtonNotInToolbarEvenIfPinned) {
   // Pin the tab search button in the model.
   PinnedToolbarActionsModel::Get(browser()->profile())
@@ -211,5 +215,9 @@ IN_PROC_BROWSER_TEST_F(TabSearchToolbarButtonComboEnabledTest,
                     return !views::IsViewClass<PinnedActionToolbarButton>(view);
                   }));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabSearchToolbarButtonComboEnabledTest,
+                         testing::Bool());
 
 }  // namespace
