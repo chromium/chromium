@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/ui/webui/webui_toolbar/split_tabs_utils.h"
+#include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "components/prefs/pref_member.h"
 #include "ui/base/models/menu_model.h"

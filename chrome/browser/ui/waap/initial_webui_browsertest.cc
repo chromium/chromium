@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher_impl.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/common/webui_url_utils.h"
@@ -20,6 +23,68 @@
 
 namespace waap {
 
+namespace {
+
+// Initializes a web ui controller after navigation. Note that this is probably
+// an indication that these tests require too much insight into the state of
+// inner implementation details, or there is some deficiency in the testing
+// framework. Perhaps these tests should be promoted to ui tests.
+class WebUIControllerInitalizer : protected content::WebContentsObserver {
+ public:
+  ~WebUIControllerInitalizer() override = default;
+
+  virtual void Init(content::WebUIController* web_ui_controller) = 0;
+  void Watch(content::WebContents* web_contents) {
+    content::WebContentsObserver::Observe(web_contents);
+  }
+
+ protected:
+  void DidFinishNavigation(content::NavigationHandle* handle) override {
+    auto* controller = handle->GetWebContents()->GetWebUI()->GetController();
+    Init(controller);
+    content::WebContentsObserver::Observe(nullptr);
+  }
+};
+
+class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
+ public:
+  ToolbarDependencyProvider() = default;
+  ~ToolbarDependencyProvider() = default;
+
+  // This might blow up in the future. We are implicitly assuming that the
+  // delegate isn't going to be used in this test.
+  browser_controls_api::BrowserControlsService::Delegate* GetDelegate()
+      override {
+    return nullptr;
+  }
+
+  std::unique_ptr<browser_controls_api::NavigationControlsStateFetcher>
+  GetNavigationControlsStateFetcher() override {
+    return std::make_unique<
+        browser_controls_api::NavigationControlsStateFetcherImpl>(
+        base::BindLambdaForTesting([]() {
+          return browser_controls_api::mojom::NavigationControlsState::New(
+              browser_controls_api::mojom::ReloadControlState::New(),
+              browser_controls_api::mojom::SplitTabsControlState::New(),
+              browser_controls_api::mojom::LayoutConstants::New());
+        }));
+  }
+};
+
+class WebUIToolbarInitializer : public WebUIControllerInitalizer {
+ public:
+  WebUIToolbarInitializer() = default;
+  ~WebUIToolbarInitializer() override = default;
+
+  void Init(content::WebUIController* controller) override {
+    auto* toolbar_controller = controller->GetAs<WebUIToolbarUI>();
+    toolbar_controller->Init(&injector_);
+  }
+
+ private:
+  ToolbarDependencyProvider injector_;
+};
+
 class InitialWebUINavigationBrowserTest : public InProcessBrowserTest {
  public:
   InitialWebUINavigationBrowserTest() {
@@ -34,7 +99,8 @@ class InitialWebUINavigationBrowserTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<content::WebContents> CreateAndNavigateWebContents(
-      const GURL& url) {
+      const GURL& url,
+      WebUIControllerInitalizer* initializer) {
     // Create a new WebContents, since initial WebUI navigations are only
     // allowed to happen as the first navigation in a new WebContents.
     content::BrowserContext* browser_context = browser()
@@ -46,6 +112,9 @@ class InitialWebUINavigationBrowserTest : public InProcessBrowserTest {
         content::SiteInstance::CreateForURL(browser_context, url));
     std::unique_ptr<content::WebContents> new_web_contents(
         content::WebContents::Create(new_contents_params));
+    if (initializer) {
+      initializer->Watch(new_web_contents.get());
+    }
     webui::SetBrowserWindowInterface(new_web_contents.get(), browser());
 
     // Navigate to `url`.
@@ -53,8 +122,9 @@ class InitialWebUINavigationBrowserTest : public InProcessBrowserTest {
         new_web_contents->GetController();
     content::TestNavigationObserver navigation_observer(url);
     navigation_observer.WatchExistingWebContents();
-    controller.LoadURLWithParams(
+    auto handle = controller.LoadURLWithParams(
         content::NavigationController::LoadURLParams(url));
+
     navigation_observer.Wait();
 
     // Ensure the navigation successfully commits.
@@ -77,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   EXPECT_TRUE(IsTopChromeWebUIURL(url));
   EXPECT_FALSE(IsForInitialWebUI(url));
   std::unique_ptr<content::WebContents> non_initial_webui_web_contents =
-      CreateAndNavigateWebContents(url);
+      CreateAndNavigateWebContents(url, nullptr);
   // Ensure that the process doesn't have the initial WebUI flag set.
   EXPECT_FALSE(non_initial_webui_web_contents->GetPrimaryMainFrame()
                    ->GetProcess()
@@ -87,8 +157,9 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   GURL url2(chrome::kChromeUIWebUIToolbarURL);
   EXPECT_TRUE(IsTopChromeWebUIURL(url2));
   EXPECT_TRUE(IsForInitialWebUI(url2));
+  WebUIToolbarInitializer initializer;
   std::unique_ptr<content::WebContents> initial_webui_web_contents =
-      CreateAndNavigateWebContents(url2);
+      CreateAndNavigateWebContents(url2, &initializer);
   // Ensure that the process has the initial WebUI flag set.
   EXPECT_TRUE(initial_webui_web_contents->GetPrimaryMainFrame()
                   ->GetProcess()
@@ -102,8 +173,9 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   GURL url(chrome::kChromeUIWebUIToolbarURL);
   EXPECT_TRUE(IsTopChromeWebUIURL(url));
   EXPECT_TRUE(IsForInitialWebUI(url));
+  WebUIToolbarInitializer initializer;
   std::unique_ptr<content::WebContents> initial_webui_web_contents =
-      CreateAndNavigateWebContents(url);
+      CreateAndNavigateWebContents(url, &initializer);
 
   // Ensure that the process has the initial WebUI flag set.
   EXPECT_TRUE(initial_webui_web_contents->GetPrimaryMainFrame()
@@ -115,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   EXPECT_TRUE(IsTopChromeWebUIURL(url2));
   EXPECT_FALSE(IsForInitialWebUI(url2));
   std::unique_ptr<content::WebContents> non_initial_webui_web_contents =
-      CreateAndNavigateWebContents(url2);
+      CreateAndNavigateWebContents(url2, nullptr);
 
   // Ensure that the process doesn't have the initial WebUI flag set.
   EXPECT_FALSE(non_initial_webui_web_contents->GetPrimaryMainFrame()
@@ -128,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
 
   // 3) Navigate to initial WebUI again in a new WebContents.
   std::unique_ptr<content::WebContents> initial_webui_web_contents2 =
-      CreateAndNavigateWebContents(url);
+      CreateAndNavigateWebContents(url, &initializer);
 
   // Initial WebUI should share process with the other initial WebUI
   // WebContents, but not the non-initial WebUI topchrome one.
@@ -143,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   EXPECT_TRUE(IsTopChromeWebUIURL(url3));
   EXPECT_FALSE(IsForInitialWebUI(url3));
   std::unique_ptr<content::WebContents> non_initial_webui_web_contents2 =
-      CreateAndNavigateWebContents(url3);
+      CreateAndNavigateWebContents(url3, nullptr);
 
   // Non-initial topchrome WebUI should share process with the other initial
   // WebUI WebContents, but not the initial WebUI topchrome one.
@@ -157,5 +229,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
       non_initial_webui_web_contents2->GetPrimaryMainFrame()->GetProcess(),
       initial_webui_web_contents2->GetPrimaryMainFrame()->GetProcess());
 }
+
+}  // namespace
 
 }  // namespace waap

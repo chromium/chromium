@@ -25,8 +25,9 @@
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter_impl.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
-#include "chrome/browser/ui/webui/webui_toolbar/split_tabs_utils.h"
+#include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -113,15 +114,30 @@ bool WebUIToolbarConfig::IsWebUIEnabled(
 void WebUIToolbarUI::BindInterface(
     mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
         receiver) {
-  auto* web_contents = web_ui()->GetWebContents();
+  CHECK(dependency_provider_)
+      << "Dependency provider is not set, make sure to call Init() first";
+
   auto* command_updater = GetCommandUpdater();
-  if (!command_updater) {
+  auto is_probably_shutting_down = command_updater == nullptr;
+  if (is_probably_shutting_down) {
+    LOG(WARNING) << "Attempting a connection when the browser is probably "
+                    "shutting down. Aborting Bind.";
     return;
   }
 
-  browser_controls_service_ = std::make_unique<BrowserControlsService>(
-      std::move(receiver), web_contents, command_updater,
-      webui::GetBrowserWindowInterface(web_contents), delegate_);
+  auto* web_contents = web_ui()->GetWebContents();
+  MetricsReporterService* metrics_service =
+      MetricsReporterService::GetFromWebContents(web_contents);
+  CHECK(metrics_service) << "Metrics service missing from web contents";
+
+  browser_controls_service_ =
+      std::make_unique<browser_controls_api::BrowserControlsService>(
+          std::move(receiver),
+          std::make_unique<browser_controls_api::BrowserControlsAdapterImpl>(
+              webui::GetBrowserWindowInterface(web_contents), command_updater),
+          dependency_provider_->GetNavigationControlsStateFetcher(),
+          metrics_service->metrics_reporter(),
+          dependency_provider_->GetDelegate());
 }
 
 void WebUIToolbarUI::BindInterface(
@@ -147,23 +163,20 @@ void WebUIToolbarUI::OnNavigationControlsStateChanged(
   }
 }
 
-void WebUIToolbarUI::SetDelegate(
-    BrowserControlsService::BrowserControlsServiceDelegate* delegate) {
-  delegate_ = delegate;
-  if (browser_controls_service_) {
-    browser_controls_service_->SetDelegate(delegate);
-  }
+void WebUIToolbarUI::Init(DependencyProvider* dependency_provider) {
+  CHECK(!browser_controls_service_)
+      << "Out of order initialization, the browser control service has already "
+         "been instantiated.";
+
+  dependency_provider_ = dependency_provider;
 }
 
-BrowserControlsService* WebUIToolbarUI::browser_controls_service_for_testing() {
+browser_controls_api::BrowserControlsService*
+WebUIToolbarUI::browser_controls_service_for_testing() {
   return browser_controls_service_.get();
 }
 
 CommandUpdater* WebUIToolbarUI::GetCommandUpdater() const {
-  if (command_updater_for_testing_) {
-    return command_updater_for_testing_;  // IN-TEST
-  }
-
   BrowserWindowInterface* browser_interface =
       webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
   if (!browser_interface) {
@@ -194,11 +207,6 @@ void WebUIToolbarUI::AddFontVariables(std::string_view prefix,
   source->AddInteger(base::StrCat({prefix, "Size"}), font.GetFontSize());
   source->AddInteger(base::StrCat({prefix, "Weight"}),
                      static_cast<int>(font.GetFontWeight()));
-}
-
-void WebUIToolbarUI::SetCommandUpdaterForTesting(
-    CommandUpdater* command_updater) {
-  command_updater_for_testing_ = command_updater;
 }
 
 void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(

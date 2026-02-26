@@ -34,7 +34,7 @@
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -266,14 +266,28 @@ void WebUIToolbarWebView::OnPageInitialized() {
   InitialWebUIManager::From(browser_)->OnWebUIToolbarLoaded();
 }
 
+ReloadControl* WebUIToolbarWebView::GetReloadControl() {
+  return &reload_control_;
+}
+
+browser_controls_api::BrowserControlsService::Delegate*
+WebUIToolbarWebView::GetDelegate() {
+  return this;
+}
+
+std::unique_ptr<browser_controls_api::NavigationControlsStateFetcher>
+WebUIToolbarWebView::GetNavigationControlsStateFetcher() {
+  return std::make_unique<
+      browser_controls_api::NavigationControlsStateFetcherImpl>(
+      base::BindRepeating(&WebUIToolbarWebView::GetNavigationControlsState,
+                          base::Unretained(this)));
+}
+
 browser_controls_api::mojom::NavigationControlsStatePtr
 WebUIToolbarWebView::GetNavigationControlsState() {
   return last_queued_state_.Clone();
 }
 
-ReloadControl* WebUIToolbarWebView::GetReloadControl() {
-  return &reload_control_;
-}
 
 void WebUIToolbarWebView::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -292,9 +306,9 @@ void WebUIToolbarWebView::DidFinishNavigation(
       !navigation_handle->HasCommitted()) {
     return;
   }
-  if (auto* ui = GetWebUIToolbarUI()) {
-    ui->SetDelegate(this);
-  }
+  auto* ui = GetWebUIToolbarUI();
+  CHECK(ui) << "Could not find the web ui for the toolbar";
+  ui->Init(this);
 }
 
 void WebUIToolbarWebView::DidFirstVisuallyNonEmptyPaint() {

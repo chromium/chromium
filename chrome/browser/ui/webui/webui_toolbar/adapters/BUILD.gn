@@ -1,0 +1,34 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("adapters") {
+  sources = [
+    "browser_controls_adapter.h",
+    "navigation_controls_state_fetcher.h",
+  ]
+  deps = [
+    "//chrome/browser/ui/webui/webui_toolbar/utils",
+    "//components/browser_apis/browser_controls:mojom",
+    "//components/browser_apis/browser_controls:mojom_data_model",
+    "//ui/base:types",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "browser_controls_adapter_impl.cc",
+    "browser_controls_adapter_impl.h",
+    "navigation_controls_state_fetcher_impl.cc",
+    "navigation_controls_state_fetcher_impl.h",
+  ]
+  deps = [
+    ":adapters",
+    "//chrome/app:command_ids",
+    "//chrome/browser:primitives",
+    "//chrome/browser/ui/interaction",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/webui/webui_toolbar/utils",
+    "//components/browser_apis/browser_controls:mojom_data_model",
+  ]
+}

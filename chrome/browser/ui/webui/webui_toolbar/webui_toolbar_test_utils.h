@@ -46,10 +46,10 @@ class MockReloadButtonPage
 };
 
 class MockWebWebUIToolbarDelegate
-    : public BrowserControlsService::BrowserControlsServiceDelegate {
+    : public browser_controls_api::BrowserControlsService::Delegate {
  public:
   MockWebWebUIToolbarDelegate();
-  ~MockWebWebUIToolbarDelegate();
+  ~MockWebWebUIToolbarDelegate() override;
 
   MOCK_METHOD(void,
               HandleContextMenu,
@@ -59,10 +59,6 @@ class MockWebWebUIToolbarDelegate
               (override));
   MOCK_METHOD(void, OnPageInitialized, (), (override));
   MOCK_METHOD(void, PermitLaunchUrl, (), (override));
-  MOCK_METHOD(browser_controls_api::mojom::NavigationControlsStatePtr,
-              GetNavigationControlsState,
-              (),
-              (override));
 };
 
 // Helper to create a valid NavigationControlsState with initialized fields.

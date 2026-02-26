@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -19,69 +21,55 @@
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
-class BrowserWindowInterface;
-class CommandUpdater;
 class MetricsReporter;
 
-namespace content {
-class WebContents;
-}  // namespace content
+namespace browser_controls_api {
 
 class BrowserControlsService
     : public browser_controls_api::mojom::BrowserControlsService {
  public:
-  class BrowserControlsServiceDelegate {
+  class Delegate {
    public:
+    virtual ~Delegate() = default;
+
     virtual void HandleContextMenu(
         browser_controls_api::mojom::ContextMenuType menu_type,
         gfx::Point viewport_coordinate_css_pixels,
         ui::mojom::MenuSourceType source) = 0;
     virtual void OnPageInitialized() = 0;
     virtual void PermitLaunchUrl() = 0;
-    virtual browser_controls_api::mojom::NavigationControlsStatePtr
-    GetNavigationControlsState() = 0;
   };
 
   BrowserControlsService(
-      mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
-          service,
-      content::WebContents* web_contents,
-      CommandUpdater* command_updater,
-      BrowserWindowInterface* browser,
-      BrowserControlsServiceDelegate* delegate);
+      mojo::PendingReceiver<mojom::BrowserControlsService> service,
+      std::unique_ptr<BrowserControlsAdapter> browser_adapter,
+      std::unique_ptr<NavigationControlsStateFetcher> state_fetcher,
+      MetricsReporter* metrics_reporter,
+      Delegate* delegate);
 
   BrowserControlsService(const BrowserControlsService&) = delete;
   BrowserControlsService& operator=(const BrowserControlsService&) = delete;
 
   ~BrowserControlsService() override;
 
-  void SetDelegate(BrowserControlsServiceDelegate* delegate);
+  void SetDelegate(Delegate* delegate);
 
   // browser_controls_api::mojom::BrowserControlsService:
   void Bind(BindCallback callback) override;
   void ReloadFromClick(
       bool bypass_cache,
-      const std::vector<browser_controls_api::mojom::ClickDispositionFlag>&
-          click_flags) override;
+      const std::vector<mojom::ClickDispositionFlag>& click_flags) override;
   void StopLoad() override;
-  void ShowContextMenu(browser_controls_api::mojom::ContextMenuType menu_type,
+  void ShowContextMenu(mojom::ContextMenuType menu_type,
                        const gfx::Point& viewport_coordinate_css_pixels,
                        ui::mojom::MenuSourceType source) override;
   void OnPageInitialized() override;
   void SplitActiveTab() override;
 
   void OnNavigationControlsStateChanged(
-      browser_controls_api::mojom::NavigationControlsStatePtr state);
+      const browser_controls_api::mojom::NavigationControlsStatePtr& state);
 
  private:
-  // Returns the MetricsReporter associated with `web_contents_` or nullptr.
-  //
-  // This method fetches the reporter from the MetricsReporterService associated
-  // with `web_contents_` each time it is called. This is necessary because the
-  // MetricsReporterService lifetime is tied to `web_contents_`, which can be
-  // destroyed earlier than this BrowserControlsService.
-  MetricsReporter* GetMetricsReporter();
-
   // Callback for `MetricsReporter::Measure()`. Records the resulting
   // base::TimeDelta to the given UMA histogram and clears the start mark.
   void OnMeasureResultAndClearMark(const std::string& histogram_name,
@@ -92,15 +80,17 @@ class BrowserControlsService
   mojo::RemoteSet<browser_controls_api::mojom::BrowserControlsObserver>
       observers_;
 
-  // Not owned.
-  const raw_ptr<content::WebContents> web_contents_;
-  const raw_ptr<CommandUpdater> command_updater_;
-  const raw_ptr<BrowserWindowInterface> browser_;
+  std::unique_ptr<BrowserControlsAdapter> browser_adapter_;
+  std::unique_ptr<NavigationControlsStateFetcher> state_fetcher_;
 
-  raw_ptr<BrowserControlsServiceDelegate> delegate_;
+  // Not owned.
+  raw_ptr<MetricsReporter> metrics_reporter_;
+  raw_ptr<Delegate> delegate_;
 
   // Must be the last member.
   base::WeakPtrFactory<BrowserControlsService> weak_ptr_factory_{this};
 };
+
+}  // namespace browser_controls_api
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_BROWSER_CONTROLS_SERVICE_H_

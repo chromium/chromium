@@ -12,37 +12,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/command_updater.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/split_tab_menu_model.h"
-#include "chrome/browser/ui/tabs/split_tab_metrics.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
-#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
-#include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "chrome/browser/ui/webui/webui_toolbar/split_tabs_utils.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/grit/generated_resources.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter.h"
+#include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
-#include "components/prefs/pref_service.h"
 #include "content/public/browser/context_menu_params.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_delegate.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/window_open_disposition_utils.h"
-#include "ui/events/event_constants.h"
-#include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/view.h"
-#include "ui/views/widget/widget.h"
 
 namespace {
 // Measurement marks.
@@ -87,41 +62,28 @@ int ToUIEventFlags(
 
 }  // namespace
 
+namespace browser_controls_api {
+
 BrowserControlsService::BrowserControlsService(
-    mojo::PendingReceiver<browser_controls_api::mojom::BrowserControlsService>
-        service,
-    content::WebContents* web_contents,
-    CommandUpdater* command_updater,
-    BrowserWindowInterface* browser,
-    BrowserControlsServiceDelegate* delegate)
+    mojo::PendingReceiver<mojom::BrowserControlsService> service,
+    std::unique_ptr<BrowserControlsAdapter> browser_adapter,
+    std::unique_ptr<NavigationControlsStateFetcher> state_fetcher,
+    MetricsReporter* metrics_reporter,
+    BrowserControlsService::Delegate* delegate)
     : service_(this, std::move(service)),
-      web_contents_(web_contents),
-      command_updater_(command_updater),
-      browser_(browser),
+      browser_adapter_(std::move(browser_adapter)),
+      state_fetcher_(std::move(state_fetcher)),
+      metrics_reporter_(metrics_reporter),
       delegate_(delegate) {
-  CHECK(web_contents_);
-  CHECK(command_updater_);
+  CHECK(browser_adapter_);
+  CHECK(metrics_reporter);
 }
 
 BrowserControlsService::~BrowserControlsService() = default;
 
-MetricsReporter* BrowserControlsService::GetMetricsReporter() {
-  MetricsReporterService* service =
-      MetricsReporterService::GetFromWebContents(web_contents_);
-  return service ? service->metrics_reporter() : nullptr;
-}
-
 void BrowserControlsService::Bind(BindCallback callback) {
   auto result = browser_controls_api::mojom::InitialState::New();
-  if (delegate_) {
-    result->state = delegate_->GetNavigationControlsState();
-  } else {
-    // This is only used by one unit-test.  Potentially consider removing.
-    result->state = browser_controls_api::mojom::NavigationControlsState::New(
-        browser_controls_api::mojom::ReloadControlState::New(),
-        browser_controls_api::mojom::SplitTabsControlState::New(),
-        browser_controls_api::mojom::LayoutConstants::New());
-  }
+  result->state = state_fetcher_->GetNavigationControlsState();
 
   mojo::Remote<browser_controls_api::mojom::BrowserControlsObserver> observer;
   result->update_stream = observer.BindNewPipeAndPassReceiver();
@@ -146,20 +108,13 @@ void BrowserControlsService::ReloadFromClick(
     delegate_->PermitLaunchUrl();
   }
 
-  command_updater_->ExecuteCommandWithDisposition(
-      bypass_cache ? IDC_RELOAD_BYPASSING_CACHE : IDC_RELOAD,
-      ui::DispositionFromEventFlags(ToUIEventFlags(click_flags)));
+  browser_adapter_->Reload(
+      bypass_cache, ui::DispositionFromEventFlags(ToUIEventFlags(click_flags)));
 
   // Gets the current time immediately after executing the command.
   const base::TimeTicks now = base::TimeTicks::Now();
-
-  auto* metrics_reporter = GetMetricsReporter();
-  if (!metrics_reporter) {
-    return;
-  }
-
   // MouseRelease
-  metrics_reporter->Measure(
+  metrics_reporter_->Measure(
       kInputMouseReleaseStartMark, now,
       base::BindOnce(&BrowserControlsService::OnMeasureResultAndClearMark,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -169,18 +124,12 @@ void BrowserControlsService::ReloadFromClick(
 }
 
 void BrowserControlsService::StopLoad() {
-  command_updater_->ExecuteCommandWithDisposition(
-      IDC_STOP, WindowOpenDisposition::CURRENT_TAB);
+  browser_adapter_->Stop();
+
   // Gets the current time immediately after executing the command.
   const base::TimeTicks now = base::TimeTicks::Now();
-
-  auto* metrics_reporter = GetMetricsReporter();
-  if (!metrics_reporter) {
-    return;
-  }
-
   // MouseRelease
-  metrics_reporter->Measure(
+  metrics_reporter_->Measure(
       kInputMouseReleaseStartMark, now,
       base::BindOnce(&BrowserControlsService::OnMeasureResultAndClearMark,
                      weak_ptr_factory_.GetWeakPtr(),
@@ -206,13 +155,11 @@ void BrowserControlsService::OnPageInitialized() {
 }
 
 void BrowserControlsService::OnNavigationControlsStateChanged(
-    browser_controls_api::mojom::NavigationControlsStatePtr state) {
-  if (auto* metrics_reporter = GetMetricsReporter()) {
-    auto* mark = state->reload_control_state->is_navigation_loading
-                     ? kChangeVisibleModeToLoadingStartMark
-                     : kChangeVisibleModeToNotLoadingStartMark;
-    metrics_reporter->Mark(mark);
-  }
+    const browser_controls_api::mojom::NavigationControlsStatePtr& state) {
+  auto* mark = state->reload_control_state->is_navigation_loading
+                   ? kChangeVisibleModeToLoadingStartMark
+                   : kChangeVisibleModeToNotLoadingStartMark;
+  metrics_reporter_->Mark(mark);
 
   for (auto& observer : observers_) {
     observer->OnNavigationControlsStateChanged(state.Clone());
@@ -222,12 +169,10 @@ void BrowserControlsService::OnNavigationControlsStateChanged(
 void BrowserControlsService::SplitActiveTab() {
   // We only reach here if the frontend decided we need to CREATE a split.
   // We don't need to check IsActiveTabInSplit() or handle the menu here.
-  chrome::NewSplitTab(browser_,
-                      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  browser_adapter_->CreateNewSplitTab();
 }
 
-void BrowserControlsService::SetDelegate(
-    BrowserControlsServiceDelegate* delegate) {
+void BrowserControlsService::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
@@ -237,7 +182,7 @@ void BrowserControlsService::OnMeasureResultAndClearMark(
     base::TimeDelta duration) {
   base::UmaHistogramCustomTimes(histogram_name, duration, base::Milliseconds(1),
                                 base::Minutes(3), 100);
-  if (auto* metrics_reporter = GetMetricsReporter()) {
-    metrics_reporter->ClearMark(start_mark);
-  }
+  metrics_reporter_->ClearMark(start_mark);
 }
+
+}  // namespace browser_controls_api

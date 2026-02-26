@@ -11,7 +11,9 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/views/toolbar/webui_reload_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_split_tabs_control.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -31,7 +33,8 @@ class WebView;
 class WebUIToolbarWebView
     : public views::View,
       public content::WebContentsObserver,
-      public BrowserControlsService::BrowserControlsServiceDelegate {
+      public browser_controls_api::BrowserControlsService::Delegate,
+      public WebUIToolbarUI::DependencyProvider {
   METADATA_HEADER(WebUIToolbarWebView, views::View)
 
  public:
@@ -48,14 +51,18 @@ class WebUIToolbarWebView
   // May be nullptr.
   WebUILocationBar* GetLocationBar() { return location_bar_.get(); }
 
+  // WebUIToolbarUI::DependencyProvider:
+  browser_controls_api::BrowserControlsService::Delegate* GetDelegate()
+      override;
+  std::unique_ptr<browser_controls_api::NavigationControlsStateFetcher>
+  GetNavigationControlsStateFetcher() override;
+
   // BrowserControlsService::BrowserControlsServiceDelegate:
   void HandleContextMenu(browser_controls_api::mojom::ContextMenuType menu_type,
                          gfx::Point viewport_coordinate_css_pixels,
                          ui::mojom::MenuSourceType source) override;
   void OnPageInitialized() override;
   void PermitLaunchUrl() override;
-  browser_controls_api::mojom::NavigationControlsStatePtr
-  GetNavigationControlsState() override;
 
   // views::View:
   void AddedToWidget() override;
@@ -85,6 +92,9 @@ class WebUIToolbarWebView
                            CheckSplitTabsButtonSourceType);
   friend WebUIReloadControl;
   friend WebUISplitTabsControl;
+
+  browser_controls_api::mojom::NavigationControlsStatePtr
+  GetNavigationControlsState();
 
   // Reloads the WebUI toolbar to recover from crashes or unresponsiveness.
   void RecoverFromRendererCrashOrUnresponsiveness();

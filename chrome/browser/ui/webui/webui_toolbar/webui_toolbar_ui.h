@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_config.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom-forward.h"
 #include "components/browser_apis/browser_controls/browser_controls_api_data_model.mojom.h"
@@ -27,9 +28,24 @@ class WebUIDataSource;
 namespace gfx {
 class FontList;
 }  // namespace gfx
+   //
+class CommandUpdater;
 
+// The webui controller for the webui toolbar. This class has a two part
+// initialization. The controller is not ready to use until after
+// Init() is called.
 class WebUIToolbarUI : public TopChromeWebUIController {
  public:
+  // Provides dependencies to this controller during init.
+  class DependencyProvider {
+   public:
+    virtual browser_controls_api::BrowserControlsService::Delegate*
+    GetDelegate() = 0;
+    virtual std::unique_ptr<
+        browser_controls_api::NavigationControlsStateFetcher>
+    GetNavigationControlsStateFetcher() = 0;
+  };
+
   explicit WebUIToolbarUI(content::WebUI* web_ui);
   WebUIToolbarUI(const WebUIToolbarUI&) = delete;
   WebUIToolbarUI& operator=(const WebUIToolbarUI&) = delete;
@@ -48,10 +64,11 @@ class WebUIToolbarUI : public TopChromeWebUIController {
   void OnNavigationControlsStateChanged(
       browser_controls_api::mojom::NavigationControlsStatePtr state);
 
-  void SetDelegate(
-      BrowserControlsService::BrowserControlsServiceDelegate* delegate);
+  // The |depdency_provider| is expected to outlive this class.
+  void Init(DependencyProvider* dependency_provider);
 
-  BrowserControlsService* browser_controls_service_for_testing();
+  browser_controls_api::BrowserControlsService*
+  browser_controls_service_for_testing();
 
   // TopChromeWebUIController:
   // The controller uses `requesting_origin` to:
@@ -78,10 +95,6 @@ class WebUIToolbarUI : public TopChromeWebUIController {
                                const gfx::FontList& font,
                                content::WebUIDataSource* source);
 
-  // For testing:
-  // Sets a custom CommandUpdater for testing purposes.
-  void SetCommandUpdaterForTesting(CommandUpdater* command_updater);
-
  private:
   CommandUpdater* GetCommandUpdater() const;
 
@@ -90,14 +103,11 @@ class WebUIToolbarUI : public TopChromeWebUIController {
   // UIs.
   const std::vector<ui::ElementIdentifier> GetKnownElementIdentifiers() const;
 
-  std::unique_ptr<BrowserControlsService> browser_controls_service_;
+  std::unique_ptr<browser_controls_api::BrowserControlsService>
+      browser_controls_service_;
   std::unique_ptr<ui::TrackedElementHandler> tracked_element_handler_;
 
-  raw_ptr<BrowserControlsService::BrowserControlsServiceDelegate> delegate_ =
-      nullptr;
-
-  // Initialized only in tests by SetCommandUpdaterForTesting().
-  raw_ptr<CommandUpdater> command_updater_for_testing_ = nullptr;
+  raw_ptr<DependencyProvider> dependency_provider_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

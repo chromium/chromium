@@ -1,0 +1,19 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("testing") {
+  testonly = true
+  sources = [
+    "toy_browser.cc",
+    "toy_browser.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/app:command_ids",
+    "//chrome/browser/ui/webui/webui_toolbar/adapters",
+    "//chrome/browser/ui/webui/webui_toolbar/utils",
+    "//components/browser_apis/browser_controls:mojom_data_model",
+    "//ui/base:types",
+  ]
+}

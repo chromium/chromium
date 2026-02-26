@@ -2791,6 +2791,8 @@ if (!is_android) {
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:test_support",
       "//chrome/browser/ui/webui/watermark",
+      "//chrome/browser/ui/webui/webui_toolbar:browser_tests",
+      "//chrome/browser/ui/webui/webui_toolbar/adapters:impl",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/usb:browser_tests",
       "//chrome/browser/wake_lock:browser_tests",
