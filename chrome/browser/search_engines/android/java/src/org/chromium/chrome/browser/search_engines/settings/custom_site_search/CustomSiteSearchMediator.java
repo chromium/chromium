@@ -40,17 +40,20 @@ public class CustomSiteSearchMediator implements TemplateUrlService.TemplateUrlS
     private final Map<GURL, Bitmap> mIconCache = new HashMap<GURL, Bitmap>();
     private final List<ListItem> mHiddenItems = new ArrayList<>();
     private boolean mIsExpanded;
+    private final Runnable mOnAddSearchEngine;
 
     boolean isExpandedForTesting() {
         return mIsExpanded;
     }
 
-    public CustomSiteSearchMediator(Context context, ModelList modelList, Profile profile) {
+    public CustomSiteSearchMediator(
+            Context context, ModelList modelList, Profile profile, Runnable onAddSearchEngine) {
         mContext = context;
         mModelList = modelList;
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mLargeIconBridge = new LargeIconBridge(profile);
         mFaviconSize = context.getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
+        mOnAddSearchEngine = onAddSearchEngine;
 
         mTemplateUrlService.addObserver(this);
         mTemplateUrlService.runWhenLoaded(this::refreshList);
@@ -109,9 +112,10 @@ public class CustomSiteSearchMediator implements TemplateUrlService.TemplateUrlS
     }
 
     private void setUpAddButton() {
-        // TODO: Handle add button click
         PropertyModel addButtonModel =
-                new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS).build();
+                new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)
+                        .with(SiteSearchProperties.ON_CLICK, v -> mOnAddSearchEngine.run())
+                        .build();
         mModelList.add(new ListItem(SiteSearchProperties.ViewType.ADD, addButtonModel));
     }
 

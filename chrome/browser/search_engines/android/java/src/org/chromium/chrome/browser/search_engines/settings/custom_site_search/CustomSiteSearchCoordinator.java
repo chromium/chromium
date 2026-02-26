@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.settings.common.SearchEngineListPreference;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchViewBinder;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -23,12 +24,20 @@ public class CustomSiteSearchCoordinator {
     private final CustomSiteSearchMediator mMediator;
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
+    private final AddSearchEngineDialogCoordinator mAddSearchEngineDialogCoordinator;
 
     public CustomSiteSearchCoordinator(
-            Context context, Profile profile, SearchEngineListPreference pref) {
+            Context context,
+            Profile profile,
+            SearchEngineListPreference pref,
+            ModalDialogManager modalDialogManager) {
         mModelList = new ModelList();
         mAdapter = new CustomSiteSearchAdapter(context, mModelList);
-        mMediator = new CustomSiteSearchMediator(context, mModelList, profile);
+        mMediator =
+                new CustomSiteSearchMediator(
+                        context, mModelList, profile, this::openAddSearchEngineDialog);
+        mAddSearchEngineDialogCoordinator =
+                new AddSearchEngineDialogCoordinator(context, modalDialogManager);
 
         mPropertyModel =
                 new PropertyModel.Builder(SiteSearchProperties.ALL_KEYS)
@@ -41,9 +50,14 @@ public class CustomSiteSearchCoordinator {
     }
 
     public void destroy() {
+        mAddSearchEngineDialogCoordinator.dismiss();
         mPropertyModel.set(SiteSearchProperties.ADAPTER, null);
         mPropertyModelChangeProcessor.destroy();
         mAdapter.destroy();
         mMediator.destroy();
+    }
+
+    private void openAddSearchEngineDialog() {
+        mAddSearchEngineDialogCoordinator.show();
     }
 }

@@ -48,6 +48,7 @@ public class CustomSiteSearchMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
+    @Mock private Runnable mOnAddSearchEngine;
 
     private Context mContext;
     private CustomSiteSearchMediator mMediator;
@@ -91,7 +92,8 @@ public class CustomSiteSearchMediatorUnitTest {
     @Test
     public void testSiteSearchList_underMaxRows() {
         setUpTemplateUrlService(/* searchEngineCount= */ 3);
-        mMediator = new CustomSiteSearchMediator(mContext, mModelList, mProfile);
+        mMediator =
+                new CustomSiteSearchMediator(mContext, mModelList, mProfile, mOnAddSearchEngine);
 
         verifyCollapsedModelListView(/* searchEngineCount= */ 3);
     }
@@ -99,7 +101,8 @@ public class CustomSiteSearchMediatorUnitTest {
     @Test
     public void testSiteSearchList_exactMaxRows() {
         setUpTemplateUrlService(/* searchEngineCount= */ 5);
-        mMediator = new CustomSiteSearchMediator(mContext, mModelList, mProfile);
+        mMediator =
+                new CustomSiteSearchMediator(mContext, mModelList, mProfile, mOnAddSearchEngine);
 
         verifyCollapsedModelListView(/* searchEngineCount= */ 5);
     }
@@ -107,7 +110,8 @@ public class CustomSiteSearchMediatorUnitTest {
     @Test
     public void testSiteSearchList_overMaxRows() {
         setUpTemplateUrlService(/* searchEngineCount= */ 7);
-        mMediator = new CustomSiteSearchMediator(mContext, mModelList, mProfile);
+        mMediator =
+                new CustomSiteSearchMediator(mContext, mModelList, mProfile, mOnAddSearchEngine);
 
         verifyCollapsedModelListView(/* searchEngineCount= */ 7);
 
@@ -137,7 +141,8 @@ public class CustomSiteSearchMediatorUnitTest {
     @Test
     public void testSiteSearchList_templateUrlServiceChanged() {
         setUpTemplateUrlService(7);
-        mMediator = new CustomSiteSearchMediator(mContext, mModelList, mProfile);
+        mMediator =
+                new CustomSiteSearchMediator(mContext, mModelList, mProfile, mOnAddSearchEngine);
 
         verifyCollapsedModelListView(/* searchEngineCount= */ 7);
 

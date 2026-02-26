@@ -524,13 +524,15 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_SITE_SEARCH_ADDITIONAL_SITES_BUTTON_LABEL" desc="Label for the 'Additional sites' button.">
         Additional sites
       </message>
-      <message name="IDS_SITE_SEARCH_DIALOG_TITLE_EDIT" desc="Title for the Edit Site Search dialog.">
-        Edit site search
-      </message>
       <message name="IDS_SITE_SEARCH_INACTIVE_SHORTCUTS_HEADER" desc="Header for 'Inactive Shortcuts' section">
         Inactive shortcuts
       </message>
-
+      <message name="IDS_SITE_SEARCH_DIALOG_TITLE_ADD" desc="Title for the Add Site Search dialog.">
+        Add site search
+      </message>
+      <message name="IDS_SITE_SEARCH_DIALOG_TITLE_EDIT" desc="Title for the Edit Site Search dialog.">
+        Edit site search
+      </message>
       <message name="IDS_SITE_SEARCH_DIALOG_HINT_NAME" desc="Hint for the name field in the Edit Site Search dialog.">
         Name
       </message>
@@ -539,6 +541,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
       <message name="IDS_SITE_SEARCH_DIALOG_HINT_URL" desc="Hint for the URL field in the Edit Site Search dialog.">
         URL with <ph name="QUERY">%s</ph> in place of query
+      </message>
+      <message name="IDS_SITE_SEARCH_DIALOG_ADD" desc="Button label to add the changes in the Add Site Search dialog.">
+        Add
       </message>
       <message name="IDS_SITE_SEARCH_DIALOG_SAVE" desc="Button label to save the changes in the Edit Site Search dialog.">
         Save

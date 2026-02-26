@@ -68,7 +68,10 @@ public class SiteSearchSettings extends ChromeBaseSettingsFragment {
             if (mSiteSearchCoordinator == null) {
                 mSiteSearchCoordinator =
                         new CustomSiteSearchCoordinator(
-                                getContext(), getProfile(), customSiteSearchPref);
+                                getContext(),
+                                getProfile(),
+                                customSiteSearchPref,
+                                ((ModalDialogManagerHolder) getActivity()).getModalDialogManager());
             }
         }
 

@@ -1,65 +1,41 @@
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-package org.chromium.chrome.browser.search_engines.settings.custom_search_engine;
+package org.chromium.chrome.browser.search_engines.settings.custom_site_search;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.search_engines.R;
-import org.chromium.components.search_engines.TemplateUrl;
-import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @NullMarked
-public class EditSearchEngineDialogCoordinator {
+public class AddSearchEngineDialogCoordinator {
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
-    private final TemplateUrlService mTemplateUrlService;
     @Nullable private PropertyModel mDialogModel;
 
-    public EditSearchEngineDialogCoordinator(
-            Context context,
-            ModalDialogManager modalDialogManager,
-            TemplateUrlService templateUrlService) {
+    public AddSearchEngineDialogCoordinator(
+            Context context, ModalDialogManager modalDialogManager) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
-        mTemplateUrlService = templateUrlService;
     }
 
-    public void show(TemplateUrl templateUrl) {
+    public void show() {
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View view = inflater.inflate(R.layout.site_search_dialog, null);
-        EditText nameInput = view.findViewById(R.id.name_input);
-        EditText shortcutInput = view.findViewById(R.id.shortcut_input);
-        EditText urlInput = view.findViewById(R.id.url_input);
-
-        nameInput.setText(templateUrl.getShortName());
-        shortcutInput.setText(templateUrl.getKeyword());
-        urlInput.setText(templateUrl.getURL());
-
-        if (templateUrl.getPrepopulatedId() > 0) {
-            urlInput.setEnabled(false);
-        }
 
         ModalDialogProperties.Controller controller =
                 new ModalDialogProperties.Controller() {
                     @Override
                     public void onClick(PropertyModel model, int buttonType) {
                         if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-                            String keyword = templateUrl.getKeyword();
-                            String name = nameInput.getText().toString();
-                            String newKeyword = shortcutInput.getText().toString();
-                            String url = urlInput.getText().toString();
-                            // TODO: handle user input validation
-                            mTemplateUrlService.editSearchEngine(keyword, name, newKeyword, url);
                             mModalDialogManager.dismissDialog(
                                     model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                         } else {
@@ -74,8 +50,8 @@ public class EditSearchEngineDialogCoordinator {
                     }
                 };
 
-        String dialogTitle = mContext.getString(R.string.site_search_dialog_title_edit);
-        String saveText = mContext.getString(R.string.site_search_dialog_save);
+        String dialogTitle = mContext.getString(R.string.site_search_dialog_title_add);
+        String saveText = mContext.getString(R.string.site_search_dialog_add);
         String cancelText = mContext.getString(R.string.site_search_dialog_cancel);
 
         mDialogModel =
