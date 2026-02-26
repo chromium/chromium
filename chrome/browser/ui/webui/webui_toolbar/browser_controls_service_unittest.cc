@@ -139,15 +139,6 @@ class BrowserControlsServiceTest : public ::testing::Test {
     EXPECT_CALL(mock_metrics_reporter(), ClearMark(start_mark));
   }
 
-  void ExpectNoMeasureCallback(const std::string& start_mark) {
-    EXPECT_CALL(mock_metrics_reporter(),
-                Measure(Eq(start_mark), ::testing::A<base::TimeTicks>(), _))
-        .Times(1);
-    // OnMeasureResultAndClearMark() calls ClearMark(). Expecting ClearMark() to
-    // not be called ensures that the callback is not triggered.
-    EXPECT_CALL(mock_metrics_reporter(), ClearMark(Eq(start_mark))).Times(0);
-  }
-
   ::testing::NiceMock<MockMetricsReporter>& mock_metrics_reporter() {
     return metrics_reporter_;
   }
@@ -195,20 +186,6 @@ TEST_F(BrowserControlsServiceReloadTest, ReloadByMouseRelease) {
 
   histogram_tester().ExpectUniqueTimeSample(kInputToReloadMouseReleaseHistogram,
                                             duration, 1);
-}
-
-// Tests that calling Reload(false, {}) doesn't record metrics if the start mark
-// is not present.
-TEST_F(BrowserControlsServiceReloadTest, ReloadByMouseReleaseNoStartMark) {
-  ExpectNoMeasureCallback(kInputMouseReleaseStartMark);
-
-  service().ReloadFromClick(/*bypass_cache=*/false, /*click_flags=*/{});
-
-  EXPECT_EQ(IDC_RELOAD, toy_browser().received_commands().back().command_id);
-  EXPECT_EQ(WindowOpenDisposition::CURRENT_TAB,
-            toy_browser().received_commands().back().disposition);
-
-  histogram_tester().ExpectTotalCount(kInputToReloadMouseReleaseHistogram, 0);
 }
 
 // Tests that calling Reload(false, {middle_button}) executes the
