@@ -327,8 +327,10 @@ void PageLoadMetricsTestWaiter::OnSoftNavigationMetricsUpdated(
         new_soft_navigation_metrics) {
   soft_navigation_count_updated_ = true;
   // Increment soft navigation count.
-  if (new_soft_navigation_metrics.count > current_soft_navigation_count_) {
-    current_soft_navigation_count_ = new_soft_navigation_metrics.count;
+  if (new_soft_navigation_metrics.soft_navigation_offset >
+      current_soft_navigation_count_) {
+    current_soft_navigation_count_ =
+        new_soft_navigation_metrics.soft_navigation_offset;
   }
 }
 

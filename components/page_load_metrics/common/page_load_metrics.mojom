@@ -631,12 +631,25 @@ struct BackForwardCacheTiming {
 // The metrics are to be added in a SoftNavigation Event which is parallel to
 // a PageLoad event.
 struct SoftNavigationMetrics {
-  // The number of soft navigations that occur during a page load.
-  uint64 count;
+  // A unique number assigned to this soft navigation from the start of the
+  // page load, 1, 2, 3, ... n. For the last soft navigation, it is synonymous
+  // with a count of the soft navigations for the page load.
+  uint64 soft_navigation_offset;
 
   // The start time of a soft navigation. It is the time the user initializes
-  // the soft navigation. It is relative to navigation start.
+  // the soft navigation. It is relative to navigation start, and is the time
+  // origin for calculating the loading performance of the soft navigation,
+  // e.g. LCP.
   mojo_base.mojom.TimeDelta start_time;
+
+  // The timestamp that we use for slicing the performance timeline;
+  // specifically, for layout shifts (LayoutShift) and interactions
+  // (EventTiming) in a PageLoadMetrics.UpdateTiming call, we distinguish
+  // measurements belonging before or after this soft navigation by comparing
+  // with this timestamp. This is only a Chrome-internal mechanism and never
+  // recorded to UKM. Note: For our web exposed (experimental) API,
+  // PerformanceEntry.navigationId serves the same purpose.
+  mojo_base.mojom.TimeTicks soft_navigation_slicing_time;
 
   // Identifies the same document navigation for the initial URL change.
   // This allows us to map to the UKM Source ID in the browser side,

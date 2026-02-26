@@ -124,8 +124,9 @@ void PageTimingMetricsSender::DidObserveNewFeatureUsage(
 
 void PageTimingMetricsSender::DidObserveSoftNavigation(
     blink::SoftNavigationMetricsForReporting new_metrics) {
-  CHECK(new_metrics.count);
-  CHECK_GT(new_metrics.count, soft_navigation_metrics_->count);
+  CHECK(new_metrics.soft_navigation_offset);
+  CHECK_GT(new_metrics.soft_navigation_offset,
+           soft_navigation_metrics_->soft_navigation_offset);
 
   // The start_time is a TimeDelta, and its resolution is in microseconds.
   // Note that it may not be monotonically increasing, see:
@@ -136,11 +137,14 @@ void PageTimingMetricsSender::DidObserveSoftNavigation(
   CHECK(new_metrics.same_document_metrics_token !=
         soft_navigation_metrics_->same_document_metrics_token);
 
-  // Now that we've checked the invariants, start with a fresh Mojoms
+  // Now that we've checked the invariants, start with fresh Mojoms
   // for soft navs and the soft LCP.
   soft_navigation_metrics_ = mojom::SoftNavigationMetrics::New();
-  soft_navigation_metrics_->count = new_metrics.count;
+  soft_navigation_metrics_->soft_navigation_offset =
+      new_metrics.soft_navigation_offset;
   soft_navigation_metrics_->start_time = new_metrics.start_time;
+  soft_navigation_metrics_->soft_navigation_slicing_time =
+      new_metrics.soft_navigation_slicing_time;
   soft_navigation_metrics_->same_document_metrics_token =
       new_metrics.same_document_metrics_token;
   soft_largest_contentful_paint_ = CreateLargestContentfulPaintTiming();

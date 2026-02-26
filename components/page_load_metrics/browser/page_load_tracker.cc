@@ -1116,7 +1116,8 @@ void PageLoadTracker::OnSubframeMetadataChanged(
 
 void PageLoadTracker::OnSoftNavigationChanged(
     const mojom::SoftNavigationMetrics& new_soft_navigation_metrics) {
-  if (new_soft_navigation_metrics.count <= soft_navigation_metrics_->count) {
+  if (new_soft_navigation_metrics.soft_navigation_offset <=
+      soft_navigation_metrics_->soft_navigation_offset) {
     return;
   }
   // Notify the observers - including and in particular, this will notify

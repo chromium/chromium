@@ -412,7 +412,13 @@ void SoftNavigationHeuristics::MaybeCommitNavigationOrEmitSoftNavigationEntry(
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   CHECK(performance);
   performance->IncrementNavigationId();
-  context->SetNavigationId(performance->NavigationId());
+  context->Commit(/*navigation_id=*/performance->NavigationId(),
+                  /*soft_navigation_offset=*/++soft_navigation_count_,
+                  /*soft_navigation_slicing_time=*/base::TimeTicks::Now());
+  // For metrics reporting, FCP presentation feedback will is in a separate
+  // record, when the ICP is reported. Therefore, we can send this immediately,
+  // which helps with slicing CLS and INP based on soft_navigation_slicing_time.
+  ReportSoftNavigationToMetrics(context);
 
   // Postpone emitting the entry if we're still waiting for FCP presentation
   // feedback.
@@ -427,12 +433,6 @@ void SoftNavigationHeuristics::EmitSoftNavigationEntry(
     SoftNavigationContext* context) {
   context->EmitSoftNavigation();
 
-  // Since this is used for metrics reporting and sent as part of the
-  // SoftNavigationMetrics record, we must increment it before calling
-  // ReportSoftNavigationToMetrics.
-  soft_navigation_count_++;
-
-  ReportSoftNavigationToMetrics(context);
   // Emitting the entry unblocks reporting the current ICP to metrics, so update
   // metrics now.
   UpdateSoftLcpMetricsForContext(context);
@@ -535,9 +535,10 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
 
   if (LocalFrameClient* frame_client = frame->Client()) {
     blink::SoftNavigationMetricsForReporting metrics = {
-        .count = soft_navigation_count_,
+        .soft_navigation_offset = context->SoftNavigationOffset(),
         .start_time = loader->GetTiming().MonotonicTimeToPseudoWallTime(
             context->TimeOrigin()),
+        .soft_navigation_slicing_time = context->SoftNavigationSlicingTime(),
         .same_document_metrics_token = context->SameDocumentMetricsToken(),
     };
     // This notifies UKM about this soft navigation.
