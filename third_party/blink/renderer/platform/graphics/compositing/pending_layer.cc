@@ -854,4 +854,9 @@ SkColor4f PendingLayer::ComputeBackgroundColor() const {
   return background_color;
 }
 
+bool PendingLayer::HasVideo() const {
+  return Chunks().size() == 1 && FirstPaintChunk().size() == 1 &&
+         FirstDisplayItem().GetType() == DisplayItem::kForeignLayerVideo;
+}
+
 }  // namespace blink

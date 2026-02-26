@@ -1337,12 +1337,14 @@ void PropertyTreeManager::PopulateCcEffectNode(
 
 void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
     const cc::LayerList& layers,
-    const HashSet<int>& layers_having_text) {
+    const HashSet<int>& layers_having_text,
+    const HashSet<int>& layers_having_video) {
   // This vector is indexed by effect node id. The value is the number of
   // layers and sub-render-surfaces controlled by this effect.
   wtf_size_t tree_size = base::checked_cast<wtf_size_t>(effect_tree_.size());
   Vector<int> effect_layer_counts(tree_size);
   Vector<bool> has_text(tree_size);
+  Vector<bool> has_video(tree_size);
   Vector<bool> has_child_surface(tree_size);
   // Initialize the vector to count directly controlled layers.
   for (const auto& layer : layers) {
@@ -1350,6 +1352,8 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
       effect_layer_counts[layer->effect_tree_index()]++;
       has_text[layer->effect_tree_index()] |=
           layers_having_text.Contains(layer->id());
+      has_video[layer->effect_tree_index()] |=
+          layers_having_video.Contains(layer->id());
     }
   }
 
@@ -1361,7 +1365,7 @@ void PropertyTreeManager::UpdateConditionalRenderSurfaceReasons(
 
     if (effect->render_surface_reason == cc::RenderSurfaceReason::kNone &&
         effect->needs_effect_for_2d_scale_transform &&
-        effect_layer_counts[id] >= 2 && !has_text[id]) {
+        effect_layer_counts[id] >= 2 && !has_text[id] && !has_video[id]) {
       effect->render_surface_reason =
           cc::RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants;
     }

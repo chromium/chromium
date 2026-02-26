@@ -1058,6 +1058,7 @@ void PaintArtifactCompositor::Update(
 
   cc::LayerSelection layer_selection;
   HashSet<int> layers_having_text;
+  HashSet<int> layers_having_video;
   for (auto& pending_layer : pending_layers_) {
     pending_layer.UpdateCompositedLayer(
         old_pending_layer_matcher.Find(pending_layer), layer_selection,
@@ -1107,6 +1108,9 @@ void PaintArtifactCompositor::Update(
     if (pending_layer.HasText()) {
       layers_having_text.insert(layer.id());
     }
+    if (pending_layer.HasVideo()) {
+      layers_having_video.insert(layer.id());
+    }
 
     layer.set_property_tree_sequence_number(
         root_layer_->property_tree_sequence_number());
@@ -1140,7 +1144,7 @@ void PaintArtifactCompositor::Update(
 
   auto layers = layer_list_builder.Finalize();
   property_tree_manager.UpdateConditionalRenderSurfaceReasons(
-      layers, layers_having_text);
+      layers, layers_having_text, layers_having_video);
   root_layer_->SetChildLayerList(std::move(layers));
 
   // In rare cases, we can have painted anchored elements with unpainted

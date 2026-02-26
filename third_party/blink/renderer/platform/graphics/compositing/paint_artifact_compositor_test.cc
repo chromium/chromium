@@ -5350,5 +5350,66 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_FALSE(LayerAt(1)->IsSolidColorLayerForTesting());
 }
 
+TEST_P(PaintArtifactCompositorTest,
+       VideoForeignLayerPrevent2DScaleTransformWithCompositedDescendants) {
+  // Setup effect with `needs_effect_for_2d_scale_transform`.
+  EffectPaintPropertyNode::State state;
+  state.local_transform_space = e0().LocalTransformSpace();
+  state.needs_effect_for_2d_scale_transform = true;
+  state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
+      NewUniqueObjectId(), CompositorElementIdNamespace::kPrimary);
+  auto* effect = EffectPaintPropertyNode::Create(e0(), std::move(state));
+
+  auto* transform1 = CreateTransform(t0(), gfx::Transform(), gfx::Point3F(),
+                                     CompositingReason::kWillChangeTransform);
+  auto* transform2 = CreateTransform(t0(), gfx::Transform(), gfx::Point3F(),
+                                     CompositingReason::kWillChangeTransform);
+
+  auto create_paint_artifact = [&](bool with_video) {
+    TestPaintArtifact artifact;
+    artifact.Chunk(*transform1, c0(), *effect)
+        .RectDrawing(gfx::Rect(0, 0, 1, 1), Color::kWhite);
+    artifact.Chunk(*transform2, c0(), *effect)
+        .RectDrawing(gfx::Rect(0, 0, 1, 1), Color::kWhite);
+
+    if (with_video) {
+      auto layer = cc::Layer::Create();
+      layer->SetIsDrawable(true);
+      artifact
+          .ForeignLayerChunk(std::move(layer), gfx::Point(),
+                             DisplayItem::kForeignLayerVideo)
+          .Properties(*transform2, c0(), *effect);
+    }
+    return artifact;
+  };
+
+  Update(create_paint_artifact(/*with_video=*/false).Build());
+
+  // Expect to have two layers that were embedded in the render surface for
+  // `needs_effect_for_2d_scale_transform`.
+  ASSERT_EQ(2u, LayerCount());
+  for (auto& layer : RootLayer()->children()) {
+    EXPECT_EQ(
+        GetPropertyTrees()
+            .effect_tree()
+            .Node(layer->effect_tree_index())
+            ->render_surface_reason,
+        cc::RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants);
+  }
+
+  Update(create_paint_artifact(/*with_video=*/true).Build());
+
+  // Expect to have two layers + video, and no RenderSurface because we want to
+  // keep video inside root.
+  ASSERT_EQ(3u, LayerCount());
+  for (auto& layer : RootLayer()->children()) {
+    EXPECT_EQ(GetPropertyTrees()
+                  .effect_tree()
+                  .Node(layer->effect_tree_index())
+                  ->render_surface_reason,
+              cc::RenderSurfaceReason::kNone);
+  }
+}
+
 }  // namespace
 }  // namespace blink

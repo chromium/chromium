@@ -67,14 +67,14 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(const gfx::Rect& bounds,
 
 TestPaintArtifact& TestPaintArtifact::ForeignLayerChunk(
     scoped_refptr<cc::Layer> layer,
-    const gfx::Point& origin) {
+    const gfx::Point& origin,
+    DisplayItem::Type type) {
   DEFINE_STATIC_DISPLAY_ITEM_CLIENT(client, "ForeignLayer");
   Chunk().Bounds(gfx::Rect(origin, layer->bounds()));
   paint_artifact_->GetDisplayItemList()
       .AllocateAndConstruct<ForeignLayerDisplayItem>(
-          client->Id(), DisplayItem::kForeignLayerFirst, std::move(layer),
-          origin, RasterEffectOutset::kNone,
-          client->GetPaintInvalidationReason());
+          client->Id(), type, std::move(layer), origin,
+          RasterEffectOutset::kNone, client->GetPaintInvalidationReason());
   paint_artifact_->RecordDebugInfo(client->Id(), client->DebugName(),
                                    client->OwnerNodeId(false));
   DidAddDisplayItem();

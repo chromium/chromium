@@ -90,8 +90,10 @@ class TestPaintArtifact {
   // automatically created client.
   TestPaintArtifact& RectDrawing(const gfx::Rect& bounds, Color color);
 
-  TestPaintArtifact& ForeignLayerChunk(scoped_refptr<cc::Layer> layer,
-                                       const gfx::Point& origin);
+  TestPaintArtifact& ForeignLayerChunk(
+      scoped_refptr<cc::Layer> layer,
+      const gfx::Point& origin,
+      DisplayItem::Type type = DisplayItem::kForeignLayerFirst);
 
   // Add display item with the specified client in the chunk.
   TestPaintArtifact& RectDrawing(const DisplayItemClient&,

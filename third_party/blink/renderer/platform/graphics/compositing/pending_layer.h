@@ -70,6 +70,8 @@ class PLATFORM_EXPORT PendingLayer {
   }
   bool HasText() const { return has_text_; }
 
+  bool HasVideo() const;
+
   void SetCompositingTypeToOverlap() {
     DCHECK_EQ(compositing_type_, kOther);
     compositing_type_ = kOverlap;
