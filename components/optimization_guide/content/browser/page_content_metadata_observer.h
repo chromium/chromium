@@ -11,6 +11,9 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "components/optimization_guide/content/browser/media_transcript_provider.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -26,6 +29,28 @@ class WebContents;
 }  // namespace content
 
 namespace optimization_guide {
+
+class PageContentMetadataObserver;
+
+class MediaTranscriptObserver
+    : public content::DocumentUserData<MediaTranscriptObserver> {
+ public:
+  ~MediaTranscriptObserver() override;
+
+  // Called when transcription begins for the frame.
+  void OnTranscriptionBegin(content::RenderFrameHost* rfh);
+
+  DOCUMENT_USER_DATA_KEY_DECL();
+
+ protected:
+  MediaTranscriptObserver(content::RenderFrameHost* rfh,
+                          base::WeakPtr<PageContentMetadataObserver> owner);
+
+ private:
+  friend class content::DocumentUserData<MediaTranscriptObserver>;
+
+  base::WeakPtr<PageContentMetadataObserver> owner_;
+};
 
 // A class that is responsible for observing metadata for all frames in a
 // WebContents. For each remote frame, it will register a MetaTagsObserver to
@@ -50,6 +75,10 @@ class PageContentMetadataObserver : public content::WebContentsObserver {
   // Delivers the current metadata to the callback.  Clients may use this to
   // prompt sending the most recent metadata.
   void DispatchMetadata();
+
+  // Called when transcription begins for a frame.
+  // Marked virtual for testing.
+  virtual void OnTranscriptionBegin(content::RenderFrameHost* rfh);
 
  private:
   // content::WebContentsObserver:
@@ -98,6 +127,8 @@ class PageContentMetadataObserver : public content::WebContentsObserver {
   base::flat_map<content::RenderFrameHost*, FrameData> frame_data_;
 
   OnPageMetadataChangedCallback callback_;
+
+  base::WeakPtrFactory<PageContentMetadataObserver> weak_ptr_factory_{this};
 };
 
 }  // namespace optimization_guide

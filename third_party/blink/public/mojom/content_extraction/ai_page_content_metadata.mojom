@@ -16,6 +16,7 @@ struct MetaTag {
 struct FrameMetadata {
   url.mojom.Url url;
   array<MetaTag> meta_tags;
+  bool has_media_transcripts;
 };
 
 // Metadata about the page content. Includes metadata for each local frame

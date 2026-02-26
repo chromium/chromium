@@ -25,6 +25,8 @@ class WebContents;
 
 namespace optimization_guide {
 
+inline constexpr char kHasMediaTranscripts[] = "has_media_transcripts";
+
 namespace features {
 BASE_DECLARE_FEATURE(kAnnotatedPageContentWithAutofillAnnotations);
 BASE_DECLARE_FEATURE(kAnnotatedPageContentAutofillCreditCardRedactions);

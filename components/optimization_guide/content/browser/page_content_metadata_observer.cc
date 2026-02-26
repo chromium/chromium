@@ -4,6 +4,9 @@
 
 #include "components/optimization_guide/content/browser/page_content_metadata_observer.h"
 
+#include <algorithm>
+
+#include "components/optimization_guide/content/browser/media_transcript_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
@@ -17,6 +20,29 @@
 #include "third_party/blink/public/mojom/opengraph/metadata.mojom.h"
 
 namespace optimization_guide {
+
+DOCUMENT_USER_DATA_KEY_IMPL(MediaTranscriptObserver);
+
+MediaTranscriptObserver::MediaTranscriptObserver(
+    content::RenderFrameHost* rfh,
+    base::WeakPtr<PageContentMetadataObserver> owner)
+    : content::DocumentUserData<MediaTranscriptObserver>(rfh),
+      owner_(std::move(owner)) {
+  auto* provider = MediaTranscriptProvider::GetFor(
+      content::WebContents::FromRenderFrameHost(rfh));
+  if (provider && !provider->GetTranscriptsForFrame(rfh).empty()) {
+    OnTranscriptionBegin(rfh);
+  }
+}
+
+MediaTranscriptObserver::~MediaTranscriptObserver() = default;
+
+void MediaTranscriptObserver::OnTranscriptionBegin(
+    content::RenderFrameHost* rfh) {
+  if (owner_) {
+    owner_->OnTranscriptionBegin(rfh);
+  }
+}
 
 PageContentMetadataObserver::PageContentMetadataObserver(
     content::WebContents* web_contents,
@@ -59,6 +85,11 @@ void PageContentMetadataObserver::RenderFrameCreated(
       render_frame_host,
       std::make_unique<FrameMetaTagsObserver>(this, render_frame_host,
                                               std::move(observer_receiver)));
+
+  if (std::ranges::contains(names_, kHasMediaTranscripts)) {
+    MediaTranscriptObserver::CreateForCurrentDocument(
+        render_frame_host, weak_ptr_factory_.GetWeakPtr());
+  }
 }
 
 void PageContentMetadataObserver::RenderFrameDeleted(
@@ -137,6 +168,27 @@ void PageContentMetadataObserver::UpdateFrameObservers() {
           RenderFrameCreated(rfh);
         }
       });
+}
+
+void PageContentMetadataObserver::OnTranscriptionBegin(
+    content::RenderFrameHost* rfh) {
+  auto it = frame_data_.find(rfh);
+  if (it == frame_data_.end()) {
+    return;
+  }
+
+  if (it->second.metadata) {
+    it->second.metadata->has_media_transcripts = true;
+  } else {
+    auto frame_metadata = blink::mojom::FrameMetadata::New();
+    frame_metadata->url = GetURLForFrameMetadata(rfh->GetLastCommittedURL(),
+                                                 rfh->GetLastCommittedOrigin());
+    if (!frame_metadata->url.is_empty()) {
+      frame_metadata->has_media_transcripts = true;
+      it->second.metadata = std::move(frame_metadata);
+    }
+  }
+  DispatchMetadata();
 }
 
 void PageContentMetadataObserver::DispatchMetadata() {
