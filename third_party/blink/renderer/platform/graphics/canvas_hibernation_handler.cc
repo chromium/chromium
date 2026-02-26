@@ -487,8 +487,8 @@ void CanvasHibernationHandler::InitiateHibernationIfNecessary() {
     // potentially blocking rendering for an extended-ish period of time. To
     // mitigate that, make the delay random.
     constexpr int max_delay_in_ms = kMaxHibernationDelay.InMilliseconds();
-    base::TimeDelta delay =
-        base::Milliseconds(base::RandInt(max_delay_in_ms / 2, max_delay_in_ms));
+    base::TimeDelta delay = base::Milliseconds(
+        base::RandIntInclusive(max_delay_in_ms / 2, max_delay_in_ms));
 
     base::PostDelayedMemoryReductionTask(
         GetMainThreadTaskRunner(), FROM_HERE,

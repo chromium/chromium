@@ -13,8 +13,8 @@ namespace blink {
 
 void PerformanceTimelineEntryIdGenerator::ResetId() {
   current_value_.id =
-      base::RandInt(PerformanceTimelineEntryIdInfo::kMinId,
-                    PerformanceTimelineEntryIdInfo::kMaxIdForReset);
+      base::RandIntInclusive(PerformanceTimelineEntryIdInfo::kMinId,
+                             PerformanceTimelineEntryIdInfo::kMaxIdForReset);
 }
 
 PerformanceTimelineEntryIdInfo

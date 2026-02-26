@@ -344,7 +344,7 @@ _CONFIG = [
             'base::RandBytesAsString',
             'base::RandDouble',
             'base::RandGenerator',
-            'base::RandInt',
+            'base::RandIntInclusive',
             'base::RandUint64',
 
             # Feature list checking.
