@@ -205,6 +205,18 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
       RuntimeEnabledFeatures::Accelerated2dCanvasEnabled() &&
       !(CreationAttributes().will_read_frequently ==
         CanvasContextCreationAttributesCore::WillReadFrequently::kTrue);
+
+  // TODO(crbug.com/479561824): The computation of whether it's possible to use
+  // a SharedImage provider with software raster here is not correct.
+  // Using a SharedImage provider with software raster and GPU compositing
+  // requires that the SharedImage can be mapped into software for raster and
+  // read out into GPU memory for display. This is true if native mappable
+  // buffers are supported (e.g., IOSurface), but is not generically true on all
+  // platforms. CanvasRenderingContext2D handles this by using a SharedImage
+  // provider with SW raster/GPU compositing *only if* native mappable buffers
+  // are provided. However, in that case the fallback usage of a bitmap provider
+  // is still able to display to the screen, which is not the case here. We need
+  // to determine a proper fix for this use case.
   const bool use_shared_image =
       use_gpu_raster || (host->HasPlaceholderCanvas() &&
                          SharedGpuContext::IsGpuCompositingEnabled());
