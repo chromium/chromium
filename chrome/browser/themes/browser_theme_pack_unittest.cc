@@ -886,7 +886,7 @@ TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxAllValues) {
   ui::ColorMixer& mixer = provider.AddMixer();
   mixer[kColorToolbar] = {SK_ColorRED};
   mixer[kColorOmniboxText] = {SK_ColorGREEN};
-  mixer[kColorToolbarBackgroundSubtleEmphasis] = {SK_ColorBLUE};
+  mixer[kColorOmniboxResultsBackground] = {SK_ColorBLUE};
   std::string color_json = R"({ "toolbar": [0, 20, 40],
                                 "omnibox_text": [60, 80, 100],
                                 "omnibox_background": [120, 140, 160] })";
@@ -895,7 +895,7 @@ TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxAllValues) {
   EXPECT_EQ(SkColorSetRGB(0, 20, 40), provider.GetColor(kColorToolbar));
   EXPECT_EQ(SkColorSetRGB(60, 80, 100), provider.GetColor(kColorOmniboxText));
   EXPECT_EQ(SkColorSetRGB(120, 140, 160),
-            provider.GetColor(kColorToolbarBackgroundSubtleEmphasis));
+            provider.GetColor(kColorOmniboxResultsBackground));
 }
 
 // TODO(erg): This test should actually test more of the built resources from
