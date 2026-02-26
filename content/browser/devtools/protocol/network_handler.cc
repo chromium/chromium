@@ -15,6 +15,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
@@ -312,39 +313,49 @@ class CookieRetrieverNetworkService
 namespace {
 std::vector<net::CanonicalCookie> FilterCookies(
     const std::vector<net::CanonicalCookie>& cookies,
-    const std::string& name,
-    const std::string& normalized_domain,
-    const std::string& path,
-    std::unique_ptr<Network::CookiePartitionKey> partition_key) {
+    const std::optional<std::string>& name,
+    const std::optional<std::string>& normalized_domain,
+    const std::optional<std::string>& path,
+    const Network::CookiePartitionKey* partition_key,
+    bool filter_by_partition_key) {
   std::vector<net::CanonicalCookie> result;
 
   for (const auto& cookie : cookies) {
-    if (cookie.Name() != name)
+    if (name.has_value() && cookie.Name() != name.value()) {
       continue;
-    if (cookie.Domain() != normalized_domain)
+    }
+    if (normalized_domain.has_value() &&
+        cookie.Domain() != normalized_domain.value()) {
       continue;
-    if (!path.empty() && cookie.Path() != path)
-      continue;
-
-    if (!!cookie.PartitionKey() != !!partition_key) {
+    }
+    if (path.has_value() && !path.value().empty() &&
+        cookie.Path() != path.value()) {
       continue;
     }
 
-    if (cookie.PartitionKey().has_value()) {
-      base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
-                     std::string>
-          serialized_result =
-              net::CookiePartitionKey::Serialize(cookie.PartitionKey());
-
-      if (!serialized_result.has_value() ||
-          (serialized_result->TopLevelSite() !=
-           partition_key->GetTopLevelSite())) {
+    if (filter_by_partition_key) {
+      if (!!cookie.PartitionKey() != !!partition_key) {
         continue;
       }
 
-      if (serialized_result->has_cross_site_ancestor() !=
-           partition_key->GetHasCrossSiteAncestor()) {
-        continue;
+      if (cookie.PartitionKey().has_value()) {
+        base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                       std::string>
+            serialized_result =
+                net::CookiePartitionKey::Serialize(cookie.PartitionKey());
+
+        if (!serialized_result.has_value() ||
+            (serialized_result->TopLevelSite() !=
+             const_cast<Network::CookiePartitionKey*>(partition_key)
+                 ->GetTopLevelSite())) {
+          continue;
+        }
+
+        if (serialized_result->has_cross_site_ancestor() !=
+            const_cast<Network::CookiePartitionKey*>(partition_key)
+                ->GetHasCrossSiteAncestor()) {
+          continue;
+        }
       }
     }
 
@@ -354,20 +365,26 @@ std::vector<net::CanonicalCookie> FilterCookies(
   return result;
 }
 
-void DeleteFilteredCookies(
-    network::mojom::CookieManager* cookie_manager,
-    const std::string& name,
-    const std::string& normalized_domain,
-    const std::string& path,
-    std::unique_ptr<Network::CookiePartitionKey> partition_key,
-    std::unique_ptr<DeleteCookiesCallback> callback,
-    const std::vector<net::CanonicalCookie>& cookies) {
-  std::vector<net::CanonicalCookie> filtered_list = FilterCookies(
-      cookies, name, normalized_domain, path, std::move(partition_key));
+void DeleteFilteredCookies(network::mojom::CookieManager* cookie_manager,
+                           const std::optional<std::string>& name,
+                           const std::optional<std::string>& normalized_domain,
+                           const std::optional<std::string>& path,
+                           const Network::CookiePartitionKey* partition_key,
+                           bool filter_by_partition_key,
+                           DevToolsAgentHostClient& client,
+                           bool is_webui,
+                           base::OnceClosure success_callback,
+                           const std::vector<net::CanonicalCookie>& cookies) {
+  std::vector<net::CanonicalCookie> filtered_list =
+      FilterCookies(cookies, name, normalized_domain, path, partition_key,
+                    filter_by_partition_key);
 
-  base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      filtered_list.size(),
-      base::BindOnce(&DeleteCookiesCallback::sendSuccess, std::move(callback)));
+  std::erase_if(filtered_list, [&](const net::CanonicalCookie& cookie) {
+    return !NetworkHandler::CanAccessCookie(client, is_webui, cookie);
+  });
+
+  base::RepeatingClosure barrier_closure =
+      base::BarrierClosure(filtered_list.size(), std::move(success_callback));
 
   for (auto& cookie : filtered_list) {
     cookie_manager->DeleteCanonicalCookie(
@@ -402,20 +419,19 @@ std::variant<int, Response> GetCookieSourcePort(int source_port) {
 }  // namespace
 
 std::variant<std::unique_ptr<net::CanonicalCookie>, Response>
-MakeCookieFromProtocolValues(
-    const std::string& name,
-    const std::string& value,
-    const std::string& url_spec,
-    const std::string& domain,
-    const std::string& path,
-    bool secure,
-    bool http_only,
-    const std::string& same_site,
-    double expires,
-    const std::string& priority,
-    const std::optional<std::string>& source_scheme,
-    const std::optional<int>& source_port,
-    std::unique_ptr<Network::CookiePartitionKey>& partition_key) {
+MakeCookieFromProtocolValues(const std::string& name,
+                             const std::string& value,
+                             const std::string& url_spec,
+                             const std::string& domain,
+                             const std::string& path,
+                             bool secure,
+                             bool http_only,
+                             const std::string& same_site,
+                             double expires,
+                             const std::string& priority,
+                             const std::optional<std::string>& source_scheme,
+                             const std::optional<int>& source_port,
+                             const Network::CookiePartitionKey* partition_key) {
   std::string normalized_domain = domain;
 
   if (url_spec.empty() && domain.empty()) {
@@ -472,12 +488,16 @@ MakeCookieFromProtocolValues(
     cp = net::CookiePriority::COOKIE_PRIORITY_LOW;
 
   std::optional<net::CookiePartitionKey> cookie_partition_key;
-  if (partition_key && !partition_key->GetTopLevelSite().empty()) {
+  if (partition_key && !const_cast<Network::CookiePartitionKey*>(partition_key)
+                            ->GetTopLevelSite()
+                            .empty()) {
     base::expected<net::CookiePartitionKey, std::string>
         deserialized_partition_key =
             net::CookiePartitionKey::FromUntrustedInput(
-                partition_key->GetTopLevelSite(),
-                partition_key->GetHasCrossSiteAncestor());
+                const_cast<Network::CookiePartitionKey*>(partition_key)
+                    ->GetTopLevelSite(),
+                const_cast<Network::CookiePartitionKey*>(partition_key)
+                    ->GetHasCrossSiteAncestor());
     if (!deserialized_partition_key.has_value()) {
       return Response::InvalidParams(
           "Deserializing cookie partition key failed");
@@ -2383,11 +2403,38 @@ void NetworkHandler::ClearBrowserCookies(
     return;
   }
 
-  storage_partition_->GetCookieManagerForBrowserProcess()->DeleteCookies(
-      network::mojom::CookieDeletionFilter::New(),
-      base::BindOnce([](std::unique_ptr<ClearBrowserCookiesCallback> callback,
-                        uint32_t) { callback->sendSuccess(); },
+  NetworkHandler::ClearCookies(
+      storage_partition_, CHECK_DEREF(client_.get()), host_ && host_->web_ui(),
+      base::BindOnce(&ClearBrowserCookiesCallback::sendSuccess,
                      std::move(callback)));
+}
+
+// static
+void NetworkHandler::ClearCookies(StoragePartition* storage_partition,
+                                  DevToolsAgentHostClient& client,
+                                  bool is_webui,
+                                  base::OnceClosure callback) {
+  auto* cookie_manager = storage_partition->GetCookieManagerForBrowserProcess();
+  cookie_manager->GetAllCookies(
+      base::BindOnce(&DeleteFilteredCookies, base::Unretained(cookie_manager),
+                     /*name=*/std::nullopt, /*normalized_domain=*/std::nullopt,
+                     /*path=*/std::nullopt, /*partition_key=*/nullptr,
+                     /*filter_by_partition_key=*/false, std::ref(client),
+                     is_webui, std::move(callback)));
+}
+
+// static
+bool NetworkHandler::CanAccessCookie(DevToolsAgentHostClient& client,
+                                     bool is_webui,
+                                     const net::CanonicalCookie& cookie) {
+  return client.MayAttachToURL(GURL(base::StrCat({url::kHttpsScheme,
+                                                  url::kStandardSchemeSeparator,
+                                                  cookie.DomainWithoutDot()})),
+                               is_webui) &&
+         client.MayAttachToURL(
+             GURL(base::StrCat({url::kHttpScheme, url::kStandardSchemeSeparator,
+                                cookie.DomainWithoutDot()})),
+             is_webui);
 }
 
 void NetworkHandler::GetCookies(std::unique_ptr<Array<String>> protocol_urls,
@@ -2426,14 +2473,8 @@ void NetworkHandler::GotAllCookies(
   bool is_webui = host_ && host_->web_ui();
   std::vector<net::CanonicalCookie> filtered_cookies;
   for (const auto& cookie : cookies) {
-    if (client_->MayAttachToURL(
-            GURL(base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator,
-                               cookie.DomainWithoutDot()})),
-            is_webui) &&
-        client_->MayAttachToURL(
-            GURL(base::StrCat({url::kHttpScheme, url::kStandardSchemeSeparator,
-                               cookie.DomainWithoutDot()})),
-            is_webui)) {
+    if (NetworkHandler::CanAccessCookie(CHECK_DEREF(client_.get()), is_webui,
+                                        cookie)) {
       filtered_cookies.emplace_back(std::move(cookie));
     }
   }
@@ -2464,7 +2505,7 @@ void NetworkHandler::SetCookie(
       name, value, url.value_or(""), domain.value_or(""), path.value_or(""),
       secure.value_or(false), http_only.value_or(false), same_site.value_or(""),
       expires.value_or(-1), priority.value_or(""), source_scheme, source_port,
-      partition_key);
+      partition_key.get());
 
   if (std::holds_alternative<Response>(cookie_or_error)) {
     callback->sendFailure(std::get<Response>(std::move(cookie_or_error)));
@@ -2473,6 +2514,12 @@ void NetworkHandler::SetCookie(
   std::unique_ptr<net::CanonicalCookie> cookie =
       std::get<std::unique_ptr<net::CanonicalCookie>>(
           std::move(cookie_or_error));
+
+  if (!NetworkHandler::CanAccessCookie(CHECK_DEREF(client_.get()),
+                                       host_ && host_->web_ui(), *cookie)) {
+    callback->sendFailure(Response::ServerError("Permission denied"));
+    return;
+  }
 
   net::CookieOptions options;
   // Permit it to set a SameSite cookie if it wants to.
@@ -2491,6 +2538,8 @@ void NetworkHandler::SetCookie(
 void NetworkHandler::SetCookies(
     StoragePartition* storage_partition,
     std::unique_ptr<protocol::Array<Network::CookieParam>> cookies,
+    DevToolsAgentHostClient& client,
+    bool is_webui,
     base::OnceCallback<void(bool)> callback) {
   std::vector<std::unique_ptr<net::CanonicalCookie>> net_cookies;
   for (const std::unique_ptr<Network::CookieParam>& cookie : *cookies) {
@@ -2523,15 +2572,20 @@ void NetworkHandler::SetCookies(
         cookie->GetDomain(""), cookie->GetPath(""), cookie->GetSecure(false),
         cookie->GetHttpOnly(false), cookie->GetSameSite(""),
         cookie->GetExpires(-1), cookie->GetPriority(""), source_scheme,
-        source_port, partition_key);
+        source_port, partition_key.get());
     if (std::holds_alternative<Response>(net_cookie_or_error)) {
       // TODO: Investiage whether we can report the error as a protocol error
       // (this might be a breaking CDP change).
       std::move(callback).Run(false);
       return;
     }
-    net_cookies.push_back(std::get<std::unique_ptr<net::CanonicalCookie>>(
-        std::move(net_cookie_or_error)));
+    auto net_cookie = std::get<std::unique_ptr<net::CanonicalCookie>>(
+        std::move(net_cookie_or_error));
+    if (!NetworkHandler::CanAccessCookie(client, is_webui, *net_cookie)) {
+      std::move(callback).Run(false);
+      return;
+    }
+    net_cookies.push_back(std::move(net_cookie));
   }
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
@@ -2560,9 +2614,11 @@ void NetworkHandler::SetCookies(
     callback->sendFailure(Response::InternalError());
     return;
   }
+  CHECK(host_);
 
   NetworkHandler::SetCookies(
-      storage_partition_, std::move(cookies),
+      storage_partition_, std::move(cookies), CHECK_DEREF(client_.get()),
+      host_->web_ui(),
       base::BindOnce(
           [](std::unique_ptr<SetCookiesCallback> callback, bool success) {
             if (success) {
@@ -2605,10 +2661,14 @@ void NetworkHandler::DeleteCookies(
   auto* cookie_manager =
       storage_partition_->GetCookieManagerForBrowserProcess();
 
-  cookie_manager->GetAllCookies(
-      base::BindOnce(&DeleteFilteredCookies, base::Unretained(cookie_manager),
-                     name, normalized_domain, path.value_or(""),
-                     std::move(partition_key), std::move(callback)));
+  cookie_manager->GetAllCookies(base::BindOnce(
+      &DeleteFilteredCookies, base::Unretained(cookie_manager), name,
+      normalized_domain, path.value_or(""),
+      base::Owned(partition_key.release()),
+      /*filter_by_partition_key=*/true, std::ref(CHECK_DEREF(client_.get())),
+      host_ && host_->web_ui(),
+      base::BindOnce(&DeleteCookiesCallback::sendSuccess,
+                     std::move(callback))));
 }
 
 Response NetworkHandler::SetExtraHTTPHeaders(

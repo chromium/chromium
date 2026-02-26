@@ -2764,6 +2764,76 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
   EXPECT_EQ(2u, found);
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CookiePermissions) {
+  SetNotAttachableHosts({"b.test"});
+  content::SetupCrossSiteRedirector(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  std::string cookies_to_set = "/set-cookie?foo=bar";
+  GURL url = embedded_test_server()->GetURL("b.test", cookies_to_set);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  url = embedded_test_server()->GetURL("a.test", cookies_to_set);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  Attach();
+
+  // Try to set a cookie on b.test via protocol.
+  base::DictValue set_params;
+  set_params.Set("name", "proto_cookie");
+  set_params.Set("value", "proto_val");
+  set_params.Set("domain", "b.test");
+  set_params.Set("path", "/");
+  SendCommandSync("Network.setCookie", std::move(set_params));
+  EXPECT_THAT(
+      error()->FindInt("code"),
+      testing::Optional(static_cast<int>(crdtp::DispatchCode::SERVER_ERROR)));
+  EXPECT_EQ(*error()->FindString("message"), "Permission denied");
+
+  // Try to set cookies on b.test via protocol.
+  base::DictValue set_cookies_params;
+  base::ListValue cookies_list;
+  base::DictValue cookie;
+  cookie.Set("name", "proto_cookie_2");
+  cookie.Set("value", "val");
+  cookie.Set("domain", "b.test");
+  cookie.Set("path", "/");
+  cookies_list.Append(std::move(cookie));
+  set_cookies_params.Set("cookies", std::move(cookies_list));
+  SendCommandSync("Network.setCookies", std::move(set_cookies_params));
+  EXPECT_THAT(
+      error()->FindInt("code"),
+      testing::Optional(static_cast<int>(crdtp::DispatchCode::INVALID_PARAMS)));
+  EXPECT_EQ(*error()->FindString("message"), "Invalid cookie fields");
+
+  // Try to delete cookie on b.test via protocol.
+  base::DictValue del_params;
+  del_params.Set("name", "foo");
+  del_params.Set("domain", "b.test");
+  SendCommandSync("Network.deleteCookies", std::move(del_params));
+  EXPECT_FALSE(error());
+
+  // Try to clear browser cookies.
+  SendCommandSync("Network.clearBrowserCookies");
+  EXPECT_FALSE(error());
+
+  // Verify a.test cookie is gone.
+  const base::ListValue* cookies =
+      SendCommandSync("Network.getAllCookies")->FindList("cookies");
+  ASSERT_TRUE(cookies);
+  EXPECT_EQ(0u, cookies->size());
+
+  Detach();
+
+  // Verify b.test cookie is still there.
+  GURL url_b_echo =
+      embedded_test_server()->GetURL("b.test", "/echoheader?Cookie");
+  EXPECT_TRUE(NavigateToURL(shell(), url_b_echo));
+  std::string content =
+      EvalJs(shell()->web_contents(), "document.body.innerText")
+          .ExtractString();
+  EXPECT_THAT(content, testing::HasSubstr("foo=bar"));
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        ReturnsCookiesOnlyForAttachableUrls) {
   SetNotAttachableHosts({"b.test"});

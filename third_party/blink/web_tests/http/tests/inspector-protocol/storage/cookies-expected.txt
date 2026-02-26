@@ -22,7 +22,7 @@ Running test: testInvalidContext
 {
     error : {
         code : -32602
-        message : Failed to find browser context for id invalid
+        message : browserContextId is only allowed for Browser target
     }
     id : <number>
     sessionId : <string>
