@@ -193,8 +193,9 @@ bool NumberInputType::GetSizeWithDecoration(int default_size,
 
   const String step_string =
       GetElement().FastGetAttribute(html_names::kStepAttr);
-  if (EqualIgnoringASCIICase(step_string, "any"))
+  if (EqualIgnoringAsciiCase(step_string, "any")) {
     return false;
+  }
 
   const Decimal minimum = ParseToDecimalForNumberType(
       GetElement().FastGetAttribute(html_names::kMinAttr));

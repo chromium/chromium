@@ -1221,11 +1221,12 @@ String TextControlElement::DirectionForFormData() const {
       continue;
     }
 
-    if (EqualIgnoringASCIICase(dir_attribute_value, "rtl") ||
-        EqualIgnoringASCIICase(dir_attribute_value, "ltr"))
+    if (EqualIgnoringAsciiCase(dir_attribute_value, "rtl") ||
+        EqualIgnoringAsciiCase(dir_attribute_value, "ltr")) {
       return dir_attribute_value;
+    }
 
-    if (EqualIgnoringASCIICase(dir_attribute_value, "auto")) {
+    if (EqualIgnoringAsciiCase(dir_attribute_value, "auto")) {
       return element->CachedDirectionality() == TextDirection::kRtl ? "rtl"
                                                                     : "ltr";
     }

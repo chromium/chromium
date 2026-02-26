@@ -107,7 +107,7 @@ Decimal StepRange::ParseStep(AnyStepHandling any_step_handling,
   if (step_string.empty())
     return step_description.DefaultValue();
 
-  if (EqualIgnoringASCIICase(step_string, "any")) {
+  if (EqualIgnoringAsciiCase(step_string, "any")) {
     switch (any_step_handling) {
       case kRejectAny:
         return Decimal::Nan();

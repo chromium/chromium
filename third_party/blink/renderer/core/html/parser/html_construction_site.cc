@@ -766,15 +766,15 @@ void HTMLConstructionSite::SetCompatibilityModeFromDoctype(
           "-//W3C//DTD HTML Experimental 970421//") ||
       public_id.StartsWithIgnoringAsciiCase("-//W3C//DTD W3 HTML//") ||
       public_id.StartsWithIgnoringAsciiCase("-//W3O//DTD W3 HTML 3.0//") ||
-      EqualIgnoringASCIICase(public_id,
+      EqualIgnoringAsciiCase(public_id,
                              "-//W3O//DTD W3 HTML Strict 3.0//EN//") ||
       public_id.StartsWithIgnoringAsciiCase(
           "-//WebTechs//DTD Mozilla HTML 2.0//") ||
       public_id.StartsWithIgnoringAsciiCase(
           "-//WebTechs//DTD Mozilla HTML//") ||
-      EqualIgnoringASCIICase(public_id, "-/W3C/DTD HTML 4.0 Transitional/EN") ||
-      EqualIgnoringASCIICase(public_id, "HTML") ||
-      EqualIgnoringASCIICase(
+      EqualIgnoringAsciiCase(public_id, "-/W3C/DTD HTML 4.0 Transitional/EN") ||
+      EqualIgnoringAsciiCase(public_id, "HTML") ||
+      EqualIgnoringAsciiCase(
           system_id,
           "http://www.ibm.com/data/dtd/v11/ibmxhtml1-transitional.dtd") ||
       (system_id.empty() && public_id.StartsWithIgnoringAsciiCase(

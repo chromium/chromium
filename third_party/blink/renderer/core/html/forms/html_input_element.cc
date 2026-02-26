@@ -490,7 +490,7 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
 
   const AtomicString& dir = FastGetAttribute(html_names::kDirAttr);
   if ((!dir && (old_type->IsTelephoneInputType() || IsTelephone())) ||
-      (EqualIgnoringASCIICase(dir, "auto") &&
+      (EqualIgnoringAsciiCase(dir, "auto") &&
        (old_type->IsAutoDirectionalityFormAssociated() ||
         IsAutoDirectionalityFormAssociated()))) {
     const AtomicString& value_dir = AtomicString(DirectionForFormData());
@@ -852,7 +852,7 @@ void HTMLInputElement::ParseAttribute(
     AddToRadioButtonGroup();
     TextControlElement::ParseAttribute(params);
   } else if (name == html_names::kAutocompleteAttr) {
-    if (EqualIgnoringASCIICase(value, keywords::kOff)) {
+    if (EqualIgnoringAsciiCase(value, keywords::kOff)) {
       autocomplete_ = kOff;
     } else {
       if (value.empty())

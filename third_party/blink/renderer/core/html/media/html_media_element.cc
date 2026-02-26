@@ -2939,12 +2939,12 @@ bool HTMLMediaElement::HasMediaSources() const {
 
 WebMediaPlayer::Preload HTMLMediaElement::PreloadType() const {
   const AtomicString& preload = FastGetAttribute(html_names::kPreloadAttr);
-  if (EqualIgnoringASCIICase(preload, "none")) {
+  if (EqualIgnoringAsciiCase(preload, "none")) {
     UseCounter::Count(GetDocument(), WebFeature::kHTMLMediaElementPreloadNone);
     return WebMediaPlayer::kPreloadNone;
   }
 
-  if (EqualIgnoringASCIICase(preload, "metadata")) {
+  if (EqualIgnoringAsciiCase(preload, "metadata")) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kHTMLMediaElementPreloadMetadata);
     return WebMediaPlayer::kPreloadMetaData;
@@ -2959,8 +2959,8 @@ WebMediaPlayer::Preload HTMLMediaElement::PreloadType() const {
 
   // Per HTML spec, "The empty string ... maps to the Automatic state."
   // https://html.spec.whatwg.org/C/#attr-media-preload
-  if (EqualIgnoringASCIICase(preload, "auto") ||
-      EqualIgnoringASCIICase(preload, "")) {
+  if (EqualIgnoringAsciiCase(preload, "auto") ||
+      EqualIgnoringAsciiCase(preload, "")) {
     UseCounter::Count(GetDocument(), WebFeature::kHTMLMediaElementPreloadAuto);
     return WebMediaPlayer::kPreloadAuto;
   }
@@ -4603,8 +4603,9 @@ WebMediaPlayer::CorsMode HTMLMediaElement::CorsMode() const {
       FastGetAttribute(html_names::kCrossoriginAttr);
   if (cross_origin_mode.IsNull())
     return WebMediaPlayer::kCorsModeUnspecified;
-  if (EqualIgnoringASCIICase(cross_origin_mode, "use-credentials"))
+  if (EqualIgnoringAsciiCase(cross_origin_mode, "use-credentials")) {
     return WebMediaPlayer::kCorsModeUseCredentials;
+  }
   return WebMediaPlayer::kCorsModeAnonymous;
 }
 

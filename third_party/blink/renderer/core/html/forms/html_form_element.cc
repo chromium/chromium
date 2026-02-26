@@ -1386,7 +1386,7 @@ bool HTMLFormElement::HasNamedElements(const AtomicString& name) {
 }
 
 bool HTMLFormElement::ShouldAutocomplete() const {
-  return !EqualIgnoringASCIICase(
+  return !EqualIgnoringAsciiCase(
       FastGetAttribute(html_names::kAutocompleteAttr), "off");
 }
 

@@ -817,7 +817,7 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
           token->GetAttributeItem(html_names::kTypeAttr);
       bool disable_frameset =
           !type_attribute ||
-          !EqualIgnoringASCIICase(type_attribute->Value(), "hidden");
+          !EqualIgnoringAsciiCase(type_attribute->Value(), "hidden");
 
       tree_.ReconstructTheActiveFormattingElements();
       tree_.InsertSelfClosingHTMLElementDestroyingToken(token);
@@ -1253,7 +1253,7 @@ void HTMLTreeBuilder::ProcessStartTagForInTable(AtomicHTMLToken* token) {
       Attribute* type_attribute =
           token->GetAttributeItem(html_names::kTypeAttr);
       if (type_attribute &&
-          EqualIgnoringASCIICase(type_attribute->Value(), "hidden")) {
+          EqualIgnoringAsciiCase(type_attribute->Value(), "hidden")) {
         ParseError(token);
         tree_.InsertSelfClosingHTMLElementDestroyingToken(token);
         return;

@@ -209,7 +209,7 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
   // FIXME: We can't use stepUp() for the step value "any". So, we increase
   // or decrease the value by 1/100 of the value range. Is it reasonable?
   const Decimal step =
-      EqualIgnoringASCIICase(
+      EqualIgnoringAsciiCase(
           GetElement().FastGetAttribute(html_names::kStepAttr), "any")
           ? (step_range.Maximum() - step_range.Minimum()) / 100
           : step_range.Step();

@@ -67,11 +67,11 @@ bool ToBoolean(const JSONValue& value, bool& out) {
   }
   String s;
   if (value.AsString(&s)) {
-    if (EqualIgnoringASCIICase(s, "true") || s == "1") {
+    if (EqualIgnoringAsciiCase(s, "true") || s == "1") {
       out = true;
       return true;
     }
-    if (EqualIgnoringASCIICase(s, "false") || s == "0") {
+    if (EqualIgnoringAsciiCase(s, "false") || s == "0") {
       out = false;
       return true;
     }

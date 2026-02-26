@@ -402,8 +402,9 @@ TextEncoding EncodingFromMetaAttributes(const HTMLAttributeList& attributes) {
     const AtomicString& attribute_value = AtomicString(html_attribute.second);
 
     if (ThreadSafeMatch(attribute_name, html_names::kHttpEquivAttr)) {
-      if (EqualIgnoringASCIICase(attribute_value, "content-type"))
+      if (EqualIgnoringAsciiCase(attribute_value, "content-type")) {
         got_pragma = true;
+      }
     } else if (ThreadSafeMatch(attribute_name, html_names::kCharsetAttr)) {
       has_charset = true;
       charset = attribute_value;

@@ -553,7 +553,7 @@ class TokenPreloadScanner::StartTagScanner {
       SetUrlToLoad(attribute_value, kDisallowURLReplacement);
     } else if (Match(attribute_name, html_names::kTypeAttr)) {
       input_is_image_ =
-          EqualIgnoringASCIICase(attribute_value, input_type_names::kImage);
+          EqualIgnoringAsciiCase(attribute_value, input_type_names::kImage);
     }
   }
 
@@ -929,13 +929,13 @@ void TokenPreloadScanner::HandleMetaNameAttribute(
     return;
 
   String content_attribute_value(content_attribute->Value());
-  if (EqualIgnoringASCIICase(name_attribute_value, "viewport")) {
+  if (EqualIgnoringAsciiCase(name_attribute_value, "viewport")) {
     HandleMetaViewport(content_attribute_value, document_parameters_.get(),
                        EnsureMediaValues(), viewport);
     return;
   }
 
-  if (EqualIgnoringASCIICase(name_attribute_value, "referrer")) {
+  if (EqualIgnoringAsciiCase(name_attribute_value, "referrer")) {
     HandleMetaReferrer(content_attribute_value, document_parameters_.get(),
                        &css_scanner_);
   }
@@ -1008,8 +1008,8 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
         if (shadowrootmode_attribute) {
           String shadowrootmode_value(shadowrootmode_attribute->Value());
           is_declarative_shadow_root =
-              EqualIgnoringASCIICase(shadowrootmode_value, "open") ||
-              EqualIgnoringASCIICase(shadowrootmode_value, "closed");
+              EqualIgnoringAsciiCase(shadowrootmode_value, "open") ||
+              EqualIgnoringAsciiCase(shadowrootmode_value, "closed");
         }
         // If this is a declarative shadow root <template shadowrootmode>
         // element *and* we're not already inside a non-DSD <template> element,
@@ -1051,10 +1051,10 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
             token.GetAttributeItem(html_names::kHttpEquivAttr);
         if (equiv_attribute) {
           String equiv_attribute_value(equiv_attribute->Value());
-          if (EqualIgnoringASCIICase(equiv_attribute_value,
+          if (EqualIgnoringAsciiCase(equiv_attribute_value,
                                      "content-security-policy")) {
             ++(*csp_meta_tag_count);
-          } else if (EqualIgnoringASCIICase(equiv_attribute_value,
+          } else if (EqualIgnoringAsciiCase(equiv_attribute_value,
                                             http_names::kAcceptCH)) {
             const HTMLToken::Attribute* content_attribute =
                 token.GetAttributeItem(html_names::kContentAttr);
@@ -1065,7 +1065,7 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
                               .is_doc_preloader =
                                   scanner_type_ == ScannerType::kMainDocument});
             }
-          } else if (EqualIgnoringASCIICase(equiv_attribute_value,
+          } else if (EqualIgnoringAsciiCase(equiv_attribute_value,
                                             http_names::kDelegateCH)) {
             const HTMLToken::Attribute* content_attribute =
                 token.GetAttributeItem(html_names::kContentAttr);

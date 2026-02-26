@@ -221,8 +221,9 @@ inline void CSSPreloadScanner::Tokenize(UChar c,
 }
 
 bool CSSPreloadScanner::HasFinishedRuleValue() const {
-  if (!EqualIgnoringASCIICase(rule_, "import"))
+  if (!EqualIgnoringAsciiCase(rule_, "import")) {
     return true;
+  }
   if (rule_value_.length() < 2 || rule_value_[rule_value_.length() - 2] == '\\')
     return false;
   // String
@@ -287,19 +288,20 @@ bool CSSPreloadScanner::CanPreloadImportRule() const {
   if (!maybe_layer_value_.length())
     return true;
   // Import into an anonymous layer
-  if (EqualIgnoringASCIICase(maybe_layer_value_, "layer"))
+  if (EqualIgnoringAsciiCase(maybe_layer_value_, "layer")) {
     return true;
+  }
   // Import into a named layer
   if (maybe_layer_value_.length() >= 8) {
     StringView view(maybe_layer_value_);
-    return EqualIgnoringASCIICase(StringView(view, 0, 6), "layer(") &&
+    return EqualIgnoringAsciiCase(StringView(view, 0, 6), "layer(") &&
            view[view.length() - 1] == ')';
   }
   return false;
 }
 
 void CSSPreloadScanner::EmitRule(const SegmentedString& source) {
-  if (EqualIgnoringASCIICase(rule_, "import")) {
+  if (EqualIgnoringAsciiCase(rule_, "import")) {
     if (CanPreloadImportRule()) {
       String url = ParseCSSStringOrURL(rule_value_.ToString());
       auto request = PreloadRequest::CreateIfNeeded(
@@ -320,8 +322,8 @@ void CSSPreloadScanner::EmitRule(const SegmentedString& source) {
       }
     }
     state_ = kInitial;
-  } else if (EqualIgnoringASCIICase(rule_, "charset") ||
-             EqualIgnoringASCIICase(rule_, "layer")) {
+  } else if (EqualIgnoringAsciiCase(rule_, "charset") ||
+             EqualIgnoringAsciiCase(rule_, "layer")) {
     state_ = kInitial;
   } else {
     state_ = kDoneParsingImportRules;

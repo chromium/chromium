@@ -256,14 +256,15 @@ void HTMLTextAreaElement::ParseAttribute(
     // deprecated.  The soft/hard /off values are a recommendation for HTML 4
     // extension by IE and NS 4.
     WrapMethod wrap;
-    if (EqualIgnoringASCIICase(value, "physical") ||
-        EqualIgnoringASCIICase(value, "hard") ||
-        EqualIgnoringASCIICase(value, "on"))
+    if (EqualIgnoringAsciiCase(value, "physical") ||
+        EqualIgnoringAsciiCase(value, "hard") ||
+        EqualIgnoringAsciiCase(value, "on")) {
       wrap = kHardWrap;
-    else if (EqualIgnoringASCIICase(value, "off"))
+    } else if (EqualIgnoringAsciiCase(value, "off")) {
       wrap = kNoWrap;
-    else
+    } else {
       wrap = kSoftWrap;
+    }
     if (wrap != wrap_) {
       wrap_ = wrap;
       if (LayoutObject* layout_object = GetLayoutObject()) {

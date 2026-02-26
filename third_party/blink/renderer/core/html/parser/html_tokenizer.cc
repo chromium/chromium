@@ -1126,8 +1126,8 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
           token_.GetProcessingInstructionTarget();
       auto is_reserved = [&]() {
         const String target_as_string = target.AsString();
-        return EqualIgnoringASCIICase(target_as_string, "xml") ||
-               EqualIgnoringASCIICase(target_as_string, "xml-stylesheet");
+        return EqualIgnoringAsciiCase(target_as_string, "xml") ||
+               EqualIgnoringAsciiCase(target_as_string, "xml-stylesheet");
       };
       if (cc == kEndOfFileMarker) {
         ParseError();

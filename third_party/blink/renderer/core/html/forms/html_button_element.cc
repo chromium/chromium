@@ -115,13 +115,13 @@ bool HTMLButtonElement::IsPresentationAttribute(
 // static
 std::optional<HTMLButtonElement::Type> HTMLButtonElement::TypeFromString(
     const AtomicString& string) {
-  if (EqualIgnoringASCIICase(string, keywords::kReset)) {
+  if (EqualIgnoringAsciiCase(string, keywords::kReset)) {
     return kReset;
   }
-  if (EqualIgnoringASCIICase(string, keywords::kButton)) {
+  if (EqualIgnoringAsciiCase(string, keywords::kButton)) {
     return kButton;
   }
-  if (EqualIgnoringASCIICase(string, keywords::kSubmit)) {
+  if (EqualIgnoringAsciiCase(string, keywords::kSubmit)) {
     return kSubmit;
   }
   return std::nullopt;
@@ -203,7 +203,7 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
       bool has_command_attr = FastHasAttribute(html_names::kCommandforAttr) ||
                               FastHasAttribute(html_names::kCommandAttr);
       if (has_command_attr && type_ == kButton &&
-          !EqualIgnoringASCIICase(FastGetAttribute(html_names::kTypeAttr),
+          !EqualIgnoringAsciiCase(FastGetAttribute(html_names::kTypeAttr),
                                   keywords::kButton)) {
         AddConsoleMessage(mojom::blink::ConsoleMessageSource::kOther,
                           mojom::blink::ConsoleMessageLevel::kWarning,
@@ -215,7 +215,7 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
       }
       if (type_ == kSubmit) {
         if (has_command_attr &&
-            EqualIgnoringASCIICase(FastGetAttribute(html_names::kTypeAttr),
+            EqualIgnoringAsciiCase(FastGetAttribute(html_names::kTypeAttr),
                                    keywords::kSubmit)) {
           AddConsoleMessage(
               mojom::blink::ConsoleMessageSource::kOther,

@@ -76,7 +76,7 @@ void HTMLFieldSetElement::ParseAttribute(
     // attribute is removed.
     if (new_value.empty()) {
       UpdateMenuItemCheckableExclusivity(/*checked_menu_item=*/nullptr);
-    } else if (EqualIgnoringASCIICase(new_value, keywords::kSingle) &&
+    } else if (EqualIgnoringAsciiCase(new_value, keywords::kSingle) &&
                !old_value.empty()) {
       HTMLMenuItemElement* first_checked_menu_item = nullptr;
       for (HTMLMenuItemElement& menu_item :
@@ -238,7 +238,7 @@ void HTMLFieldSetElement::UpdateMenuItemCheckableExclusivity(
     HTMLMenuItemElement* checked_menu_item) {
   // If `checked_menu_item` is null, then uncheck *all* child menuitems.
   DCHECK(!checked_menu_item || checked_menu_item->checked());
-  DCHECK(!EqualIgnoringASCIICase(FastGetAttribute(html_names::kCheckableAttr),
+  DCHECK(!EqualIgnoringAsciiCase(FastGetAttribute(html_names::kCheckableAttr),
                                  keywords::kMultiple));
 
   for (HTMLMenuItemElement& menu_item :

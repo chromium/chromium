@@ -42,10 +42,11 @@ void TextInputType::CountUsage() {
     CountUsageIfVisible(WebFeature::kInputTypeTextMaxLength);
   const AtomicString& type =
       GetElement().FastGetAttribute(html_names::kTypeAttr);
-  if (EqualIgnoringASCIICase(type, input_type_names::kDatetime))
+  if (EqualIgnoringAsciiCase(type, input_type_names::kDatetime)) {
     CountUsageIfVisible(WebFeature::kInputTypeDateTimeFallback);
-  else if (EqualIgnoringASCIICase(type, input_type_names::kWeek))
+  } else if (EqualIgnoringAsciiCase(type, input_type_names::kWeek)) {
     CountUsageIfVisible(WebFeature::kInputTypeWeekFallback);
+  }
 }
 
 bool TextInputType::SupportsInputModeAttribute() const {

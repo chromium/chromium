@@ -330,7 +330,7 @@ bool HTMLFormControlElementWithState::ShouldSaveAndRestoreFormControlState()
   if (Form() && !Form()->ShouldAutocomplete()) {
     return false;
   }
-  if (EqualIgnoringASCIICase(FastGetAttribute(html_names::kAutocompleteAttr),
+  if (EqualIgnoringAsciiCase(FastGetAttribute(html_names::kAutocompleteAttr),
                              "off")) {
     return false;
   }
