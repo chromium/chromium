@@ -46,6 +46,7 @@
 #include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/blocking_url_protocol.h"
 #include "media/media_buildflags.h"
+#include "third_party/ffmpeg/libavutil/rational.h"
 
 // FFmpeg forward declarations.
 struct AVFormatContext;
@@ -127,6 +128,7 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
 
   AVStream* av_stream() const { return stream_; }
 
+  const AVRational& stream_time_base() const { return stream_time_base_; }
   base::TimeDelta stream_start_time() const { return stream_start_time_; }
 
  private:
@@ -154,6 +156,7 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   raw_ptr<FFmpegDemuxer> demuxer_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<AVStream> stream_;
+  AVRational stream_time_base_{0, 1};
   base::TimeDelta stream_start_time_ = kNoTimestamp;
   std::optional<base::TimeDelta> initial_start_padding_;
   std::unique_ptr<AudioDecoderConfig> audio_config_;

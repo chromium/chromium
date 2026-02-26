@@ -270,12 +270,13 @@ FFmpegDemuxerStream::FFmpegDemuxerStream(
     : demuxer_(demuxer),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       stream_(stream),
+      stream_time_base_(stream->time_base),
       stream_start_time_(
-          ConvertStreamTimestamp(stream->time_base, stream->start_time)),
+          ConvertStreamTimestamp(stream_time_base_, stream->start_time)),
       audio_config_(audio_config.release()),
       video_config_(video_config.release()),
       media_log_(media_log),
-      duration_(ConvertStreamTimestamp(stream->time_base, stream->duration)),
+      duration_(ConvertStreamTimestamp(stream_time_base_, stream->duration)),
       last_packet_pos_(AV_NOPTS_VALUE),
       last_packet_dts_(AV_NOPTS_VALUE) {
   DCHECK(demuxer_);
@@ -446,9 +447,9 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
                                              nullptr)) {
       LIMITED_MEDIA_LOG(INFO, media_log_, num_discarded_packet_warnings_, 5)
           << "Discarding invalid MP3 packet, ts: "
-          << ConvertStreamTimestamp(stream_->time_base, packet->pts)
+          << ConvertStreamTimestamp(stream_time_base_, packet->pts)
           << ", duration: "
-          << ConvertStreamTimestamp(stream_->time_base, packet->duration);
+          << ConvertStreamTimestamp(stream_time_base_, packet->duration);
       return;
     }
   }
@@ -480,12 +481,12 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   // pipeline will then use the timestamps to estimate duration. Incorrect
   // duration information can lead to stuttering effects during seeking. See
   // https://crbug.com/397343886.
-  auto d = ConvertStreamTimestamp(stream_->time_base, packet->duration);
+  auto d = ConvertStreamTimestamp(stream_time_base_, packet->duration);
   buffer->set_duration(d <= base::Milliseconds(1) ? kNoTimestamp : d);
 
   // Note: If pts is kNoFFmpegTimestamp, stream_timestamp will be kNoTimestamp.
   const base::TimeDelta stream_timestamp =
-      ConvertStreamTimestamp(stream_->time_base, packet->pts);
+      ConvertStreamTimestamp(stream_time_base_, packet->pts);
 
   if (stream_timestamp == kNoTimestamp ||
       stream_timestamp == kInfiniteDuration) {
@@ -1079,9 +1080,9 @@ void FFmpegDemuxer::SeekInternal(base::TimeDelta time,
 
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&AVSeekFrame, glue_->format_context(),
-                     seeking_stream->index,
-                     ConvertToTimeBase(seeking_stream->time_base, seek_time)),
+      base::BindOnce(
+          &AVSeekFrame, glue_->format_context(), seeking_stream->index,
+          ConvertToTimeBase(demux_stream->stream_time_base(), seek_time)),
       std::move(seek_cb));
 }
 
