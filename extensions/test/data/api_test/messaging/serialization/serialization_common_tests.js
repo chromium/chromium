@@ -50,6 +50,30 @@ function containerAssertEq(expected, actual) {
           JSON.stringify(expected)}, Actual: ${JSON.stringify(actual)}`);
 }
 
+function assertArrayBufferEq(expected, actual) {
+  chrome.test.assertTrue(actual instanceof ArrayBuffer, 'Expected ArrayBuffer');
+  chrome.test.assertEq(
+      expected.byteLength, actual.byteLength, 'Byte length mismatch');
+  const view1 = new Uint8Array(expected);
+  const view2 = new Uint8Array(actual);
+  for (let i = 0; i < view1.length; i++) {
+    if (view1[i] !== view2[i]) {
+      chrome.test.fail(`ArrayBuffer content mismatch at index ${i}`);
+    }
+  }
+}
+
+function assertTypedArrayEq(expected, actual) {
+  chrome.test.assertEq(expected.constructor.name, actual.constructor.name);
+  chrome.test.assertEq(expected.length, actual.length);
+  for (let i = 0; i < expected.length; i++) {
+    if (expected[i] !== actual[i]) {
+      chrome.test.fail(
+          `${expected.constructor.name} content mismatch at index ${i}`);
+    }
+  }
+}
+
 // Returns a common set of tests for message serialization to/from V8.
 export function getMessageSerializationTestCases(
     apiToTest, structuredCloneFeatureEnabled, tabId = -1) {
@@ -57,7 +81,8 @@ export function getMessageSerializationTestCases(
   // depends on the background context.
   const testTabsAPI = apiToTest === 'tabs';
   const messagingAPI = testTabsAPI ? chrome.tabs : chrome.runtime;
-  // Test the correct API depending on the API specified.
+  // Test the correct API depending on the API specified. The receiving end
+  // (background or content script) will echo the message back.
   const sendMessage = (message) => {
     return testTabsAPI ? messagingAPI.sendMessage(tabId, message) :
                          messagingAPI.sendMessage(message);
@@ -72,6 +97,9 @@ export function getMessageSerializationTestCases(
   const objectTypeTestCases = structuredCloneFeatureEnabled ?
       testCases.structureCloneObjectType :
       testCases.jsonObjectType;
+  const errorTypeTestCases = structuredCloneFeatureEnabled ?
+      testCases.structureCloneErrorType :
+      testCases.jsonErrorType;
   const unserializableErrorTestCases = structuredCloneFeatureEnabled ?
       testCases.structureCloneUnserializableError :
       testCases.jsonUnserializableError;
@@ -101,13 +129,21 @@ export function getMessageSerializationTestCases(
     },
 
     /**
-     * Tests to/from v8 message serialization for a few test cases that require
-     * special equality logic to do assertions. It's expected that the message
-     * sent should match (by value) what we get back for serialization to
-     * succeed.
+     * Tests to/from v8 message serialization for a sampling of various
+     * objects that are structured clone, but not JSON serializable. These
+     * objects also need manual verification since chrome.test.assertEq cannot
+     * compare them accurately.
+     *
+     * Note: Some types are not available in all contexts (e.g. Service
+     * Workers).
+     * - `FileList`: Requires `DataTransfer` to construct, which is not
+     * available in Service Workers. We skip this test if `DataTransfer` is
+     * undefined.
      */
-    async function structuredCloneEdgeCaseSerialization() {
+    async function structuredCloneExpandedSerialization() {
       if (!structuredCloneFeatureEnabled) {
+        // JSON serialization cannot handle these types well so we don't run
+        // these tests for it.
         chrome.test.succeed();
         return;
       }
@@ -115,25 +151,198 @@ export function getMessageSerializationTestCases(
       // Test `NaN`.
       let nanMessagePromise = sendMessage(NaN);
       let nanResponse = await nanMessagePromise;
-      if (!Number.isNaN(nanResponse)) {
-        chrome.test.fail(`Equality check failed. Expected: NaN, Actual: ${
-            JSON.stringify(nanResponse)}`);
+      chrome.test.assertTrue(
+          Number.isNaN(nanResponse),
+          `Equality check failed. Expected: NaN, Actual: ${
+              JSON.stringify(nanResponse)}`);
+
+      // RegExp.
+      const regex = new RegExp('abc', 'i');
+      const regexResponse = await sendMessage(regex);
+      chrome.test.assertTrue(
+          regexResponse instanceof RegExp, 'Expected RegExp');
+      chrome.test.assertEq(regex.source, regexResponse.source);
+      chrome.test.assertEq(regex.flags, regexResponse.flags);
+
+      // ArrayBuffer (using Uint8Array is just a convenience to get an
+      // ArrayBuffer).
+      const buffer = new Uint8Array([1, 2, 3]).buffer;
+      const bufferResponse = await sendMessage(buffer);
+      assertArrayBufferEq(buffer, bufferResponse);
+
+      // TypedArrays.
+      const typedArray = new Int32Array([10, 20, -30]);
+      const typedArrayResponse = await sendMessage(typedArray);
+      assertTypedArrayEq(typedArray, typedArrayResponse);
+      const bigInt64Array = new BigInt64Array([1n, 2n, -3n]);
+      const bigInt64ArrayResponse = await sendMessage(bigInt64Array);
+      assertTypedArrayEq(bigInt64Array, bigInt64ArrayResponse);
+
+      // DataView.
+      const dataViewBuffer = new ArrayBuffer(4);
+      const dataView = new DataView(dataViewBuffer);
+      // Write a 32-bit int using explicitly little-endian to prevent any
+      // potential test flakiness.
+      dataView.setInt32(0, 123456789, /*littleEndian=*/ true);
+      const dataViewResponse = await sendMessage(dataView);
+      chrome.test.assertTrue(
+          dataViewResponse instanceof DataView, 'Expected DataView');
+      chrome.test.assertEq(
+          dataView.byteLength, dataViewResponse.byteLength,
+          'DataView byteLength mismatch');
+      chrome.test.assertEq(
+          123456789, dataViewResponse.getInt32(0, /*littleEndian=*/ true),
+          'DataView content mismatch');
+
+      // Error-types
+      const error = new Error('test error');
+      const errorResponse = await sendMessage(error);
+      chrome.test.assertTrue(errorResponse instanceof Error, 'Expected Error');
+      chrome.test.assertEq(error.message, errorResponse.message);
+      chrome.test.assertEq(error.name, errorResponse.name);
+      const typeError = new TypeError('test type error');
+      const typeErrorResponse = await sendMessage(typeError);
+      chrome.test.assertTrue(
+          typeErrorResponse instanceof TypeError, 'Expected TypeError');
+      chrome.test.assertEq(typeError.message, typeErrorResponse.message);
+      chrome.test.assertEq(typeError.name, typeErrorResponse.name);
+
+      // DOMException.
+      const domException =
+          new DOMException('test dom exception', 'NotSupportedError');
+      const domExceptionResponse = await sendMessage(domException);
+      chrome.test.assertTrue(
+          domExceptionResponse instanceof DOMException,
+          'Expected DOMException');
+      chrome.test.assertEq(domException.message, domExceptionResponse.message);
+      chrome.test.assertEq(domException.name, domExceptionResponse.name);
+
+      // File.
+      const file = new File(
+          ['content'], 'test.txt',
+          {type: 'text/plain', lastModified: 1234567890});
+      const fileResponse = await sendMessage(file);
+      chrome.test.assertTrue(fileResponse instanceof File, 'Expected File');
+      chrome.test.assertEq(file.name, fileResponse.name);
+      chrome.test.assertEq(file.type, fileResponse.type);
+      chrome.test.assertEq(file.size, fileResponse.size);
+      chrome.test.assertEq(file.lastModified, fileResponse.lastModified);
+      chrome.test.assertEq(await file.text(), await fileResponse.text());
+
+      // FileList.
+      if (typeof DataTransfer !== 'undefined') {
+        const dt = new DataTransfer();
+        const f1 = new File(['a'], 'a.txt', {type: 'text/plain'});
+        const f2 = new File(['b'], 'b.txt', {type: 'text/plain'});
+        dt.items.add(f1);
+        dt.items.add(f2);
+        const fileList = dt.files;
+        const fileListResponse = await sendMessage(fileList);
+        chrome.test.assertTrue(
+            fileListResponse instanceof FileList, 'Expected FileList');
+        chrome.test.assertEq(dt.files.length, fileListResponse.length);
+        chrome.test.assertEq('a.txt', fileListResponse[0].name);
+        chrome.test.assertEq('b.txt', fileListResponse[1].name);
+      } else {
+        console.log(
+            '[INFO] Skipping FileList test: DataTransfer not defined in ' +
+            'workers');
       }
 
-      // Test `Blob`.
-      let blobMessage = new Blob(['hello!'], {type: 'text/plain'});
-      let blobResponse = await sendMessage(blobMessage);
-
-      // We can't `use chrome.test.assertEq` for Blobs since they are
-      // effectively pointers so we check the content instead.
+      // ImageData.
+      const imageData =
+          new ImageData(new Uint8ClampedArray([255, 0, 0, 255]), 1, 1);
+      const imageDataResponse = await sendMessage(imageData);
       chrome.test.assertTrue(
-          blobResponse instanceof Blob, 'Response should be a Blob');
-      chrome.test.assertEq(
-          blobMessage.arrayBuffer(), blobResponse.arrayBuffer(), 'Test: Blob');
-      let text = await blobResponse.text();
-      chrome.test.assertEq('hello!', text, 'Blob content mismatch');
-      chrome.test.assertEq(
-          'text/plain', blobResponse.type, 'Blob type mismatch');
+          imageDataResponse instanceof ImageData, 'Expected ImageData');
+      chrome.test.assertEq(imageData.width, imageDataResponse.width);
+      chrome.test.assertEq(imageData.height, imageDataResponse.height);
+      assertTypedArrayEq(imageData.data, imageDataResponse.data);
+
+      // DOMPoint.
+      const point = new DOMPoint(1, 2, 3, 4);
+      const pointResponse = await sendMessage(point);
+      chrome.test.assertTrue(
+          pointResponse instanceof DOMPoint, 'Expected DOMPoint');
+      chrome.test.assertEq(point.x, pointResponse.x);
+      chrome.test.assertEq(point.y, pointResponse.y);
+      chrome.test.assertEq(point.z, pointResponse.z);
+      chrome.test.assertEq(point.w, pointResponse.w);
+
+      // DOMRect.
+      const rect = new DOMRect(10, 20, 30, 40);
+      const rectResponse = await sendMessage(rect);
+      chrome.test.assertTrue(
+          rectResponse instanceof DOMRect, 'Expected DOMRect');
+      chrome.test.assertEq(rect.x, rectResponse.x);
+      chrome.test.assertEq(rect.y, rectResponse.y);
+      chrome.test.assertEq(rect.width, rectResponse.width);
+      chrome.test.assertEq(rect.height, rectResponse.height);
+
+      // DOMMatrix.
+      const matrix = new DOMMatrix([1, 2, 3, 4, 5, 6]);
+      const matrixResponse = await sendMessage(matrix);
+      chrome.test.assertTrue(
+          matrixResponse instanceof DOMMatrix, 'Expected DOMMatrix');
+      chrome.test.assertEq(matrix.a, matrixResponse.a);
+      chrome.test.assertEq(matrix.b, matrixResponse.b);
+      chrome.test.assertEq(matrix.c, matrixResponse.c);
+      chrome.test.assertEq(matrix.d, matrixResponse.d);
+      chrome.test.assertEq(matrix.e, matrixResponse.e);
+      chrome.test.assertEq(matrix.f, matrixResponse.f);
+
+      // ImageBitmap.
+      const ibImageData = new ImageData(1, 1);
+      const imageBitmap = await createImageBitmap(ibImageData);
+      const imageBitmapResponse = await sendMessage(imageBitmap);
+      chrome.test.assertTrue(
+          imageBitmapResponse instanceof ImageBitmap, 'Expected ImageBitmap');
+      chrome.test.assertEq(imageBitmap.width, imageBitmapResponse.width);
+      chrome.test.assertEq(imageBitmap.height, imageBitmapResponse.height);
+
+      chrome.test.succeed();
+    },
+
+    /**
+     * Tests to/from v8 message serialization for Blob scenarios.
+     */
+    async function structuredCloneBlobs() {
+      if (!structuredCloneFeatureEnabled) {
+        // JSON serialization cannot handle Blobs well so we don't run
+        // these tests for it.
+        chrome.test.succeed();
+        return;
+      }
+
+      // Plain text `Blob`
+      let plainBlobMesssage = new Blob(['hello!'], {type: 'text/plain'});
+      let plainBlobResponse = await sendMessage(plainBlobMesssage);
+      chrome.test.assertTrue(plainBlobResponse instanceof Blob);
+      const plainBlobResponseBuffer = await plainBlobResponse.arrayBuffer();
+      assertArrayBufferEq(
+          await plainBlobMesssage.arrayBuffer(), plainBlobResponseBuffer);
+
+      // Blob from TypedArray
+      const typedBlobData = new Uint8Array([1, 2, 3]);
+      const typedBlobMessage = new Blob([typedBlobData]);
+      const typedBlobResponse = await sendMessage(typedBlobMessage);
+      chrome.test.assertTrue(typedBlobResponse instanceof Blob);
+      const typedBlobResponseBuffer = await typedBlobResponse.arrayBuffer();
+      assertArrayBufferEq(typedBlobData.buffer, typedBlobResponseBuffer);
+
+      // Nested Blob
+      const nestedBlob = {foo: new Blob(['bar'])};
+      const nestedBlobResponse = await sendMessage(nestedBlob);
+      chrome.test.assertTrue(nestedBlobResponse.foo instanceof Blob);
+      chrome.test.assertEq('bar', await nestedBlobResponse.foo.text());
+
+      // Array of Blobs
+      const arrayBlobsMessage = [new Blob(['a']), new Blob(['b'])];
+      const arrayBlobResponse = await sendMessage(arrayBlobsMessage);
+      chrome.test.assertTrue(Array.isArray(arrayBlobResponse));
+      chrome.test.assertEq('a', await arrayBlobResponse[0].text());
+      chrome.test.assertEq('b', await arrayBlobResponse[1].text());
+
       chrome.test.succeed();
     },
 
@@ -155,6 +364,38 @@ export function getMessageSerializationTestCases(
 
       chrome.test.assertEq(
           objectTypeTestCases.length, testsSucceeded,
+          'Didn\'t run the expected number of tests.');
+      chrome.test.succeed();
+    },
+
+
+    // Tests to/from v8 message serialization for `Error`-types.
+    async function ErrorMessageSerialization() {
+      let testsSucceeded = 0;
+      for (const test of errorTypeTestCases) {
+        let messagePromise = sendMessage(test.message);
+        let response = await messagePromise;
+
+        // `chrome.test.assertEq()` doesn't deeply compare `Error` objects.
+        if (structuredCloneFeatureEnabled) {
+          chrome.test.assertTrue(
+              response instanceof Error,
+              `Test ${test.name}: Expected Error, got ${typeof response}`);
+          chrome.test.assertEq(
+              test.expected.name, response.name,
+              `Test ${test.name}: Error name mismatch`);
+          chrome.test.assertEq(
+              test.expected.message, response.message,
+              `Test ${test.name}: Error message mismatch`);
+        } else {
+          chrome.test.assertEq(response, test.expected);
+        }
+
+        testsSucceeded++;
+      }
+
+      chrome.test.assertEq(
+          errorTypeTestCases.length, testsSucceeded,
           'Didn\'t run the expected number of tests.');
       chrome.test.succeed();
     },

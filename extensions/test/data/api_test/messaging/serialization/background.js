@@ -6,13 +6,13 @@ import {getMessageSerializationTestCases} from '/serialization_common_tests.js';
 
 // The handlers are for the content script tests that run.
 
-// Return the message for the test to validate.
+// Echo the message back to the sender for the test to validate.
 function onMessageListener(message, unusedSender, sendResponse) {
   sendResponse(message);
 }
 chrome.runtime.onMessage.addListener(onMessageListener);
 
-// Return the message for the test to validate.
+// Echo the message back to the sender for the test to validate.
 chrome.runtime.onConnect.addListener(function(port) {
   port.onMessage.addListener(function(message) {
     port.postMessage(message);

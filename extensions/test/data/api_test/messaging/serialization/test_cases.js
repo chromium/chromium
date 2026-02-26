@@ -2,35 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Automatically populates 'expected' with the 'message' value if the 'expected'
+// property is omitted from the test case object. This deduplicates test cases
+// where the message is expected to serialize identically and helps identify
+// when a different value is expected than the original.
+const fillDuplicateExpected = t =>
+    ({...t, expected: 'expected' in t ? t.expected : t.message});
+
 // Test basic serializable message types.
 export const commonTestCases = [
   // Test basic serializable message types.
   {
     name: 'null',
     message: null,
-    expected: null,
   },
   {
     name: 'boolean',
     message: true,
-    expected: true,
   },
   {
     name: 'number',
     message: 123,
-    expected: 123,
   },
   {
     name: 'string',
     message: 'hello',
-    expected: 'hello',
   },
   {
     name: 'object',
     message: {a: 1, b: 'c'},
-    expected: {a: 1, b: 'c'},
   },
-];
+].map(fillDuplicateExpected);
 
 export const json = [
   ...commonTestCases,
@@ -100,55 +102,51 @@ export const json = [
     message: new Blob(['hello!'], {type: 'text/plain'}),
     expected: {},
   },
-];
+  {
+    name: 'Set',
+    message: new Set([1, 'a', null]),
+    expected: {},
+  },
+].map(fillDuplicateExpected);
 
 export const structuredClone = [
   ...commonTestCases,
   {
     name: 'BigInt',
     message: 123n,
-    expected: 123n,
   },
   {
     name: 'undefined',
     message: undefined,
-    expected: undefined,
   },
   {
     name: 'Infinity',
     message: Infinity,
-    expected: Infinity,
   },
   {
     name: '-Infinity',
     message: -Infinity,
-    expected: -Infinity,
   },
   {
     name: 'object with undefined property',
     message: {a: 1, b: undefined},
-    expected: {a: 1, b: undefined},
   },
   {
     name: 'object with BigInt',
     message: {a: 123n},
-    expected: {a: 123n},
   },
   {
     name: 'Date',
     message: new Date('2025-01-01T12:00:00Z'),
-    expected: new Date('2025-01-01T12:00:00Z'),
   },
-];
-
+].map(fillDuplicateExpected);
 
 const commonContainerTestCases = [
   {
     name: 'array',
     message: [1, 'a', null],
-    expected: [1, 'a', null],
   },
-];
+].map(fillDuplicateExpected);
 
 export const jsonObjectType = [
   ...commonContainerTestCases,
@@ -162,22 +160,74 @@ export const jsonObjectType = [
     message: [1, () => {}, 2],
     expected: [1, null, 2],
   },
+].map(fillDuplicateExpected);
 
-];
+export const jsonErrorType = [
+  {
+    name: 'Error',
+    message: new Error('test error'),
+    expected: {},
+  },
+  {
+    name: 'TypeError',
+    message: new TypeError('test type error'),
+    expected: {},
+  },
+  {
+    name: 'RangeError',
+    message: new RangeError('test range error'),
+    expected: {},
+  },
+  {
+    name: 'SyntaxError',
+    message: new SyntaxError('test syntax error'),
+    expected: {},
+  },
+  {
+    name: 'ReferenceError',
+    message: new ReferenceError('test reference error'),
+    expected: {},
+  },
+].map(fillDuplicateExpected);
 
 export const structureCloneObjectType = [
   ...commonContainerTestCases,
   {
     name: 'array with undefined',
     message: [1, undefined, 2],
-    expected: [1, undefined, 2],
   },
   {
-    name: 'map',
+    name: 'Map',
     message: new Map([['a', 1], ['b', 2]]),
-    expected: new Map([['a', 1], ['b', 2]]),
   },
-];
+  {
+    name: 'Set',
+    message: new Set([1, 'a', null]),
+  },
+].map(fillDuplicateExpected);
+
+export const structureCloneErrorType = [
+  {
+    name: 'Error',
+    message: new Error('test error'),
+  },
+  {
+    name: 'TypeError',
+    message: new TypeError('test type error'),
+  },
+  {
+    name: 'RangeError',
+    message: new RangeError('test range error'),
+  },
+  {
+    name: 'SyntaxError',
+    message: new SyntaxError('test syntax error'),
+  },
+  {
+    name: 'ReferenceError',
+    message: new ReferenceError('test reference error'),
+  },
+].map(fillDuplicateExpected);
 
 const commonUnserializableErrorTestCases = [
   {
