@@ -654,6 +654,14 @@ bool PictureInPictureWindowManager::IsPictureInPictureDisabled() const {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+#if BUILDFLAG(IS_MAC)
+void PictureInPictureWindowManager::OnAnyBrowserEnteredFullscreen() {
+  if (picture_in_picture_window_) {
+    picture_in_picture_window_->OnAnyBrowserEnteredFullscreen();
+  }
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 void PictureInPictureWindowManager::DocumentWebContentsDestroyed() {
   // Document PiP window controller also observes the parent and child web
   // contents, so we only need to forget the controller here when user closes

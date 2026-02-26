@@ -1002,6 +1002,12 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // support workspaces).
   bool IsVisibleOnAllWorkspaces() const;
 
+#if BUILDFLAG(IS_MAC)
+  // Moves the widget into an active fullscreen space. Used to ensure that
+  // picture-in-picture windows can display on top of fullscreen.
+  void MoveToActiveFullscreenSpace();
+#endif  // BUILDFLAG(IS_MAC)
+
   // Maximizes/minimizes/restores the window.
   void Maximize();
   void Minimize();

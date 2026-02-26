@@ -1250,6 +1250,12 @@ void PictureInPictureBrowserFrameView::SetForcedTucking(bool tuck) {
   }
 }
 
+#if BUILDFLAG(IS_MAC)
+void PictureInPictureBrowserFrameView::OnAnyBrowserEnteredFullscreen() {
+  GetWidget()->MoveToActiveFullscreenSpace();
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 void PictureInPictureBrowserFrameView::EnforceTucking() {
   // The `tucker_` will have been created if there's any tucking to be enforced.
   if (!tucker_) {

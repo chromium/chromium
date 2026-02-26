@@ -213,6 +213,10 @@ interface NativeWidgetNSWindow {
   // on all spaces.
   SetVisibleOnAllSpaces(bool always_visible);
 
+  // Moves the window into an active fullscreen space. Used to ensure that
+  // picture-in-picture windows can display on top of fullscreen.
+  MoveToActiveFullscreenSpace();
+
   // Initiate a transition to fullscreen on the specified display.  If
   // `target_display_id` is invalid, then fullscreen should be entered on the
   // current display.

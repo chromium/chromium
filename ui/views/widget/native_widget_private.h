@@ -218,6 +218,9 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
 #endif
   virtual void SetVisibleOnAllWorkspaces(bool always_visible) = 0;
   virtual bool IsVisibleOnAllWorkspaces() const = 0;
+#if BUILDFLAG(IS_MAC)
+  virtual void MoveToActiveFullscreenSpace() = 0;
+#endif  // BUILDFLAG(IS_MAC)
   virtual void Maximize() = 0;
   virtual void Minimize() = 0;
   virtual bool IsMaximized() const = 0;

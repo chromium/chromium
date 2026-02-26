@@ -114,6 +114,9 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
               (bool always_visible),
               (override));
   MOCK_METHOD(bool, IsVisibleOnAllWorkspaces, (), (const override));
+#if BUILDFLAG(IS_MAC)
+  MOCK_METHOD(void, MoveToActiveFullscreenSpace, (), (override));
+#endif  // BUILDFLAG(IS_MAC)
   MOCK_METHOD(void, Maximize, (), (override));
   MOCK_METHOD(void, Minimize, (), (override));
   MOCK_METHOD(bool, IsMaximized, (), (const override));

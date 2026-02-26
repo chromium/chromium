@@ -1034,6 +1034,13 @@ bool NativeWidgetNSWindowBridge::HasWindowRestorationData() {
   return !pending_restoration_data_.empty();
 }
 
+void NativeWidgetNSWindowBridge::RestoreCollectionBehavior() {
+  if (collection_behavior_to_restore_.has_value() && window_) {
+    window_.collectionBehavior = *collection_behavior_to_restore_;
+    collection_behavior_to_restore_.reset();
+  }
+}
+
 bool NativeWidgetNSWindowBridge::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   // https://crbug.com/876493
   CHECK(!HasCapture());
@@ -1661,6 +1668,33 @@ NSWindow* NativeWidgetNSWindowBridge::GetWindow() const {
 void NativeWidgetNSWindowBridge::SetVisibleOnAllSpaces(bool always_visible) {
   gfx::SetNSWindowVisibleOnAllWorkspaces(window_, always_visible);
   CheckAndNotifyAllWorkspacesStateChanged();
+}
+
+void NativeWidgetNSWindowBridge::MoveToActiveFullscreenSpace() {
+  // If we're still waiting for a previous collection behavior to be restored,
+  // then restore it now before temporarily changing it again.
+  RestoreCollectionBehavior();
+
+  // Temporarily change the collection behavior to move the window into the
+  // fullscreen space and then move it into the space.
+  // `NSWindowCollectionBehaviorMoveToActiveSpace` is incompatible with
+  // `NSWindowCollectionBehaviorCanJoinAllSpaces`, so we also disable that if
+  // necessary.
+  NSWindowCollectionBehavior initial_behavior = window_.collectionBehavior;
+  collection_behavior_to_restore_ = initial_behavior;
+  NSWindowCollectionBehavior temporary_behavior = initial_behavior;
+  temporary_behavior |= NSWindowCollectionBehaviorMoveToActiveSpace;
+  temporary_behavior &= ~NSWindowCollectionBehaviorCanJoinAllSpaces;
+  window_.collectionBehavior = temporary_behavior;
+  [window_ orderFrontRegardless];
+
+  // We can't synchronously restore the collection behavior or else the OS will
+  // treat the behavior as `initial_behavior` when performing the
+  // `orderFrontRegardless` call, so here we asynchronously restore it.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&NativeWidgetNSWindowBridge::RestoreCollectionBehavior,
+                     factory_.GetWeakPtr()));
 }
 
 void NativeWidgetNSWindowBridge::SetZoomed(bool zoomed) {

@@ -1139,6 +1139,14 @@ bool Widget::IsVisibleOnAllWorkspaces() const {
   return native_widget_ ? native_widget_->IsVisibleOnAllWorkspaces() : false;
 }
 
+#if BUILDFLAG(IS_MAC)
+void Widget::MoveToActiveFullscreenSpace() {
+  if (native_widget_) {
+    native_widget_->MoveToActiveFullscreenSpace();
+  }
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 void Widget::Maximize() {
   if (native_widget_) {
     native_widget_->Maximize();

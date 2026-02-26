@@ -966,6 +966,12 @@ void VideoOverlayWindowViews::SetForcedTucking(bool tuck) {
   }
 }
 
+#if BUILDFLAG(IS_MAC)
+void VideoOverlayWindowViews::OnAnyBrowserEnteredFullscreen() {
+  MoveToActiveFullscreenSpace();
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 void VideoOverlayWindowViews::OnAutoPipSettingOverlayViewHidden() {
   // If there is an existing overlay view, remove it now.
   RemoveOverlayViewIfExists();

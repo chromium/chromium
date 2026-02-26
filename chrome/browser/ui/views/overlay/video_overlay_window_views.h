@@ -134,6 +134,9 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
 
   // PictureInPictureWindow:
   void SetForcedTucking(bool tuck) override;
+#if BUILDFLAG(IS_MAC)
+  void OnAnyBrowserEnteredFullscreen() override;
+#endif  // BUILDFLAG(IS_MAC)
 
   // AutoPipSettingOverlayView::Delegate:
   void OnAutoPipSettingOverlayViewHidden() override;

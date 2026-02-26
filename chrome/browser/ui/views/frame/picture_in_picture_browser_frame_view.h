@@ -123,6 +123,9 @@ class PictureInPictureBrowserFrameView : public BrowserFrameView,
 
   // PictureInPictureWindow:
   void SetForcedTucking(bool tuck) override;
+#if BUILDFLAG(IS_MAC)
+  void OnAnyBrowserEnteredFullscreen() override;
+#endif  // BUILDFLAG(IS_MAC)
 
   // gfx::AnimationDelegate:
   void AnimationEnded(const gfx::Animation* animation) override;

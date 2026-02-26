@@ -188,6 +188,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   void SetActivationIndependence(bool independence) override;
   void SetVisibleOnAllWorkspaces(bool always_visible) override;
   bool IsVisibleOnAllWorkspaces() const override;
+  void MoveToActiveFullscreenSpace() override;
   void Maximize() override;
   void Minimize() override;
   bool IsMaximized() const override;

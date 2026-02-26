@@ -251,6 +251,13 @@ class PictureInPictureWindowManager {
   // ScopedDisallowPictureInPicture object existing).
   bool IsPictureInPictureDisabled() const;
 
+#if BUILDFLAG(IS_MAC)
+  // Called when any browser window has entered fullscreen. This gives the
+  // picture-in-picture window a chance to ensure that it is displayed on top of
+  // the fullscreen window.
+  void OnAnyBrowserEnteredFullscreen();
+#endif  // BUILDFLAG(IS_MAC)
+
   void set_window_controller_for_testing(
       content::PictureInPictureWindowController* controller) {
     pip_window_controller_ = controller;

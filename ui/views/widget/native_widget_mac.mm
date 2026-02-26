@@ -830,6 +830,13 @@ bool NativeWidgetMac::IsVisibleOnAllWorkspaces() const {
   return ns_window_host_ ? ns_window_host_->IsVisibleOnAllWorkspaces() : false;
 }
 
+void NativeWidgetMac::MoveToActiveFullscreenSpace() {
+  if (!GetNSWindowMojo()) {
+    return;
+  }
+  GetNSWindowMojo()->MoveToActiveFullscreenSpace();
+}
+
 void NativeWidgetMac::Maximize() {
   if (!GetNSWindowMojo()) {
     return;

@@ -84,6 +84,9 @@ class MockPictureInPictureWindow : public PictureInPictureWindow {
 
   // PictureInPictureWindow:
   void SetForcedTucking(bool tuck) override { is_tucking_ = tuck; }
+#if BUILDFLAG(IS_MAC)
+  void OnAnyBrowserEnteredFullscreen() override {}
+#endif  // BUILDFLAG(IS_MAC)
 
  private:
   bool is_tucking_ = false;

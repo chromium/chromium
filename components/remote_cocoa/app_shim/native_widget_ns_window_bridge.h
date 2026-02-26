@@ -279,6 +279,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void SetTransitionsToAnimate(
       remote_cocoa::mojom::VisibilityTransition transitions) override;
   void SetVisibleOnAllSpaces(bool always_visible) override;
+  void MoveToActiveFullscreenSpace() override;
   void SetZoomed(bool zoomed) override;
   void EnterFullscreen(int64_t target_display_id) override;
   void ExitFullscreen() override;
@@ -396,6 +397,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // Returns true if window restoration data exists from session restore.
   bool HasWindowRestorationData();
 
+  // Restores the initial collection behavior after temporarily changing it in
+  // `MoveToActiveFullscreenSpace()`.
+  void RestoreCollectionBehavior();
+
   // CocoaMouseCaptureDelegate:
   bool PostCapturedEvent(NSEvent* event) override;
   void OnMouseCaptureLost() override;
@@ -496,6 +501,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // ImmersiveFullscreenRevealUnlock() calls so locks can persist across
   // immersive_mode_controller_ resets.
   int immersive_fullscreen_reveal_lock_count_ = 0;
+
+  // Tracks the initial collection behavior to restore to when we temporarily
+  // change it to move to the active fullscreen space.
+  std::optional<NSWindowCollectionBehavior> collection_behavior_to_restore_;
 
   base::OnceCallback<void(NativeWidgetMacNSWindow*)> window_set_callback_;
 
