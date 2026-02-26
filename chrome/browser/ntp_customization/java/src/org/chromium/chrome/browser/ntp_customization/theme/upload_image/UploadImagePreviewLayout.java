@@ -31,8 +31,9 @@ import org.chromium.chrome.browser.ntp_customization.R;
 public class UploadImagePreviewLayout extends ConstraintLayout {
     private static final int GOOGLE_LOGO_TINT_COLOR = Color.WHITE;
     private ImageView mLogoView;
-    private @Nullable View mSearchBoxView;
     private Guideline mGuidelineTop;
+    private View mCancelButton;
+    private @Nullable View mSearchBoxView;
 
     public UploadImagePreviewLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -44,6 +45,7 @@ public class UploadImagePreviewLayout extends ConstraintLayout {
         mLogoView = findViewById(R.id.default_search_engine_logo);
         mGuidelineTop = findViewById(R.id.guideline_top);
         mSearchBoxView = findViewById(R.id.search_box_container);
+        mCancelButton = findViewById(R.id.cancel_button);
 
         View searchBox = findViewById(R.id.search_box);
         Drawable background = searchBox.getBackground();
@@ -100,6 +102,18 @@ public class UploadImagePreviewLayout extends ConstraintLayout {
      */
     void setSideAndBottomInsets(Rect insets) {
         setPadding(insets.left, getPaddingTop(), insets.right, insets.bottom);
+    }
+
+    void setButtonBottomMargin(int bottomMargin) {
+        if (mCancelButton == null) return;
+
+        ViewGroup.LayoutParams params = mCancelButton.getLayoutParams();
+        if (params instanceof MarginLayoutParams marginParams) {
+            if (marginParams.bottomMargin != bottomMargin) {
+                marginParams.bottomMargin = bottomMargin;
+                mCancelButton.setLayoutParams(marginParams);
+            }
+        }
     }
 
     void setSearchBoxWidth(int widthPx) {

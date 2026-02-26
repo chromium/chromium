@@ -82,6 +82,9 @@ public class NtpThemeProperty {
     public static final PropertyModel.WritableIntPropertyKey SEARCH_BOX_TOP_MARGIN =
             new PropertyModel.WritableIntPropertyKey();
 
+    // The bottom margin of the buttons in pixels.
+    public static final PropertyModel.WritableIntPropertyKey BUTTON_BOTTOM_MARGIN =
+            new PropertyModel.WritableIntPropertyKey();
     public static final PropertyKey[] THEME_KEYS =
             new PropertyKey[] {
                 LEARN_MORE_BUTTON_CLICK_LISTENER,
@@ -103,6 +106,7 @@ public class NtpThemeProperty {
                 SIDE_AND_BOTTOM_INSETS,
                 SEARCH_BOX_WIDTH,
                 SEARCH_BOX_HEIGHT,
-                SEARCH_BOX_TOP_MARGIN
+                SEARCH_BOX_TOP_MARGIN,
+                BUTTON_BOTTOM_MARGIN
             };
 }

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp_customization.theme.upload_image;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.doesDefaultSearchEngineHaveLogo;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.getSearchBoxTwoSideMargin;
+import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.BUTTON_BOTTOM_MARGIN;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LOGO_BITMAP;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LOGO_PARAMS;
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.LOGO_VISIBILITY;
@@ -62,6 +63,7 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
     private final boolean mShouldShowLogoAndSearchBox;
     private final Activity mActivity;
     private final UiConfig mUiConfig;
+    private final int mButtonBottomMargin;
     private View.@Nullable OnLayoutChangeListener mLayoutChangeListener;
     private @Nullable UploadImagePreviewLayout mPreviewLayout;
     private @Nullable CropImageView mCropImageView;
@@ -109,6 +111,10 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
         mCropImageView = mPreviewLayout.findViewById(R.id.preview_image);
         mToolBarHeight =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+        mButtonBottomMargin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.ntp_customization_back_button_margin_start);
 
         mUiConfig = new UiConfig(mPreviewLayout);
         mShouldShowLogoAndSearchBox =
@@ -191,6 +197,13 @@ public class UploadImagePreviewCoordinator implements InsetObserver.WindowInsets
                 new Rect(combinedInsets.left, 0, combinedInsets.right, bottomInsetForPadding);
         mPreviewPropertyModel.set(NtpThemeProperty.SIDE_AND_BOTTOM_INSETS, sideAndBottomInsets);
 
+        if (!hasTappableNavBar) {
+            // Since bottom padding is 0, the layout extends to the very bottom edge of the screen.
+            // Elevates the buttons by adding the navigation bar height to their base margin,
+            // preventing the gesture handle from overlapping the buttons.
+            mPreviewPropertyModel.set(
+                    BUTTON_BOTTOM_MARGIN, mButtonBottomMargin + combinedInsets.bottom);
+        }
         // Consumes the insets since the root view already adjusted their paddings.
         return new WindowInsetsCompat.Builder(windowInsetsCompat)
                 .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.NONE)
