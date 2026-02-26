@@ -28901,6 +28901,26 @@ should be able to be added at any place in this file.
   <description>User opened the interests dialog.</description>
 </action>
 
+<action name="MobileNTP.SetupList.Click">
+  <owner>agazal@google.com</owner>
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <description>
+    Android: The user clicked on an active item within the Setup List feature on
+    the NTP or Start Surface.
+  </description>
+</action>
+
+<action name="MobileNTP.SetupList.Impression">
+  <owner>agazal@google.com</owner>
+  <owner>hanxi@chromium.org</owner>
+  <owner>xinyiji@chromium.org</owner>
+  <description>
+    Android: Any part of the Setup List feature (Single-Cell, Two-Cell, or
+    Celebration) was rendered on the NTP or Start Surface.
+  </description>
+</action>
+
 <action name="MobileNTP.Snippets.Click">
   <obsolete>Deprecated as of 8/2016</obsolete>
   <owner>knn@chromium.org</owner>

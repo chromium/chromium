@@ -145,6 +145,9 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
                             mModuleDelegate.onModuleClicked(mModuleType);
                             SetupListModuleUtils.setModuleCompleted(
                                     mItem1Type, /* silent= */ false);
+
+                            SetupListModuleUtils.recordSetupListClick();
+                            SetupListModuleUtils.recordSetupListItemClick(mItem1Type);
                         },
                         mCallbackController,
                         mActionDelegate,
@@ -174,6 +177,9 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
                             mModuleDelegate.onModuleClicked(mModuleType);
                             SetupListModuleUtils.setModuleCompleted(
                                     mItem2Type, /* silent= */ false);
+
+                            SetupListModuleUtils.recordSetupListClick();
+                            SetupListModuleUtils.recordSetupListItemClick(mItem2Type);
                         },
                         mCallbackController,
                         mActionDelegate,
@@ -284,6 +290,12 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
         if (mItem2Provider != null) {
             mItem2Provider.onViewCreated();
         }
+
+        SetupListModuleUtils.recordSetupListImpression();
+        SetupListModuleUtils.recordSetupListItemImpression(
+                mItem1Type, SetupListModuleUtils.isModuleCompleted(mItem1Type));
+        SetupListModuleUtils.recordSetupListItemImpression(
+                mItem2Type, SetupListModuleUtils.isModuleCompleted(mItem2Type));
     }
 
     /** Sets the map used to obtain {@EducationalTipCardProvider} based on a {@ModuleType} */
@@ -297,6 +309,9 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
                             () -> {
                                 mModuleDelegate.onModuleClicked(mModuleType);
                                 SetupListModuleUtils.setModuleCompleted(type, /* silent= */ false);
+
+                                SetupListModuleUtils.recordSetupListClick();
+                                SetupListModuleUtils.recordSetupListItemClick(type);
                             },
                             mCallbackController,
                             mActionDelegate,

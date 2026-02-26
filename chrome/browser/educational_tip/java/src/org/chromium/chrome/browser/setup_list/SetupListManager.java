@@ -486,6 +486,8 @@ public class SetupListManager
             mModulesAwaitingCompletionAnimation.add(moduleType);
         }
         reconcileState();
+
+        SetupListModuleUtils.recordSetupListItemCompletion(moduleType);
     }
 
     /**

@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.setup_list;
 
 import android.widget.ImageView;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -29,6 +33,9 @@ import java.util.Set;
 /** Utilities for setup list modules. */
 @NullMarked
 public class SetupListModuleUtils {
+    @VisibleForTesting
+    public static final String HISTOGRAM_SETUP_LIST_PREFIX = "MagicStack.Clank.SetupList.";
+
     @Nullable private static List<Integer> sRankedModuleTypesForTesting;
 
     /**
@@ -189,5 +196,52 @@ public class SetupListModuleUtils {
                             imageView.animate().alpha(1f).setDuration(duration).start();
                         })
                 .start();
+    }
+
+    /** Records a feature-level impression for the Setup List. */
+    public static void recordSetupListImpression() {
+        RecordUserAction.record("MobileNTP.SetupList.Impression");
+    }
+
+    /** Records a feature-level click for the Setup List. */
+    public static void recordSetupListClick() {
+        RecordUserAction.record("MobileNTP.SetupList.Click");
+    }
+
+    /**
+     * Records an impression for a specific Setup List item.
+     *
+     * @param moduleType The type of Setup List item.
+     * @param isCompleted Whether the item is in the completed state.
+     */
+    public static void recordSetupListItemImpression(
+            @ModuleType int moduleType, boolean isCompleted) {
+        String name =
+                HISTOGRAM_SETUP_LIST_PREFIX
+                        + "ItemImpression."
+                        + (isCompleted ? "Completed" : "Active");
+        RecordHistogram.recordEnumeratedHistogram(name, moduleType, ModuleType.NUM_ENTRIES);
+    }
+
+    /**
+     * Records a click for a specific Setup List item.
+     *
+     * @param moduleType The type of Setup List item.
+     */
+    public static void recordSetupListItemClick(@ModuleType int moduleType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_SETUP_LIST_PREFIX + "ItemClick.Active",
+                moduleType,
+                ModuleType.NUM_ENTRIES);
+    }
+
+    /**
+     * Records the completion of a specific Setup List task.
+     *
+     * @param moduleType The type of Setup List task.
+     */
+    public static void recordSetupListItemCompletion(@ModuleType int moduleType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_SETUP_LIST_PREFIX + "ItemCompletion", moduleType, ModuleType.NUM_ENTRIES);
     }
 }

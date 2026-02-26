@@ -52,6 +52,11 @@ chromium-metrics-reviews@google.com.
   <variant name="Scrolled"/>
 </variants>
 
+<variants name="SetupListItemState">
+  <variant name="Active" summary="incomplete and interactable"/>
+  <variant name="Completed" summary="already finished and disabled"/>
+</variants>
+
 <variants name="ToggleState">
   <variant name="TurnOffModule"/>
   <variant name="TurnOnModule"/>
@@ -291,6 +296,37 @@ chromium-metrics-reviews@google.com.
     when the magic stack is customizable, Android-only.
   </summary>
   <token key="ToggleState" variants="ToggleState"/>
+</histogram>
+
+<histogram name="MagicStack.Clank.SetupList.ItemClick.Active" enum="ModuleType"
+    expires_after="2026-05-26">
+  <owner>agazal@google.com</owner>
+  <owner>clank-start-surface@google.com</owner>
+  <summary>
+    Records a click for a specific Setup List item that is in the 'Active'
+    state.
+  </summary>
+</histogram>
+
+<histogram name="MagicStack.Clank.SetupList.ItemCompletion" enum="ModuleType"
+    expires_after="2026-05-26">
+  <owner>agazal@google.com</owner>
+  <owner>clank-start-surface@google.com</owner>
+  <summary>
+    Records when a specific Setup List task is marked as completed. Logged
+    exactly once per task completion.
+  </summary>
+</histogram>
+
+<histogram name="MagicStack.Clank.SetupList.ItemImpression.{State}"
+    enum="ModuleType" expires_after="2026-05-26">
+  <owner>agazal@google.com</owner>
+  <owner>clank-start-surface@google.com</owner>
+  <summary>
+    Records an impression for a specific Setup List item that is in the {State}
+    state. Logged when the module is rendered.
+  </summary>
+  <token key="State" variants="SetupListItemState"/>
 </histogram>
 
 <histogram name="MagicStack.Clank.SingleTab.SeeMoreLinkClicked" enum="Boolean"

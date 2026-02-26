@@ -129,23 +129,28 @@ public class EducationalTipModuleMediator {
             // exclusion with other surfaces (banners on Messages/Settings pages).
             if (SetupListModuleUtils.isSetupListModule(getModuleType())) {
                 notifyDefaultBrowserPromoVisible();
-                return;
-            }
-
-            if (mTracker.isInitialized()) {
-                boolean shouldDisplay =
-                        mTracker.shouldTriggerHelpUi(
-                                FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK);
-                if (shouldDisplay) {
-                    notifyDefaultBrowserPromoVisible();
-                }
             } else {
-                notifyDefaultBrowserPromoVisible();
-                mTracker.addOnInitializedCallback(
-                        (T) ->
-                                mTracker.shouldTriggerHelpUi(
-                                        FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK));
+                if (mTracker.isInitialized()) {
+                    boolean shouldDisplay =
+                            mTracker.shouldTriggerHelpUi(
+                                    FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK);
+                    if (shouldDisplay) {
+                        notifyDefaultBrowserPromoVisible();
+                    }
+                } else {
+                    notifyDefaultBrowserPromoVisible();
+                    mTracker.addOnInitializedCallback(
+                            (T) ->
+                                    mTracker.shouldTriggerHelpUi(
+                                            FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK));
+                }
             }
+        }
+
+        if (SetupListModuleUtils.isSetupListModule(mModuleType)) {
+            SetupListModuleUtils.recordSetupListImpression();
+            SetupListModuleUtils.recordSetupListItemImpression(
+                    mModuleType, SetupListModuleUtils.isModuleCompleted(mModuleType));
         }
     }
 
@@ -221,6 +226,9 @@ public class EducationalTipModuleMediator {
         if (SetupListModuleUtils.isSetupListModule(mModuleType)) {
             // Considered complete if the user clicks on the promo
             SetupListModuleUtils.setModuleCompleted(mModuleType, /* silent= */ false);
+
+            SetupListModuleUtils.recordSetupListClick();
+            SetupListModuleUtils.recordSetupListItemClick(mModuleType);
         }
     }
 
