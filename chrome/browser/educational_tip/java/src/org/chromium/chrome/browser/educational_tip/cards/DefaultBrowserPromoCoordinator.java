@@ -63,6 +63,11 @@ public class DefaultBrowserPromoCoordinator
 
     @Override
     public String getCardButtonText() {
+        if (SetupListModuleUtils.isSetupListModule(ModuleType.DEFAULT_BROWSER_PROMO)) {
+            return mActionDelegate
+                    .getContext()
+                    .getString(R.string.setup_list_default_browser_promo_button);
+        }
         return mActionDelegate.getContext().getString(R.string.educational_tip_module_button);
     }
 
@@ -76,10 +81,14 @@ public class DefaultBrowserPromoCoordinator
 
     @Override
     public void onCardClicked() {
-        // TODO(crbug.com/469425754): Display role manager setting if available. The bottom sheet
-        // will be used as a fallback
-        SetupListModuleUtils.setModuleCompleted(
-                ModuleType.DEFAULT_BROWSER_PROMO, /* silent= */ false);
+        if (SetupListModuleUtils.isSetupListModule(ModuleType.DEFAULT_BROWSER_PROMO)) {
+            SetupListModuleUtils.setModuleCompleted(
+                    ModuleType.DEFAULT_BROWSER_PROMO, /* silent= */ false);
+            if (mActionDelegate.maybeShowDefaultBrowserPromoWithRoleManager()) {
+                mOnModuleClickedCallback.run();
+                return;
+            }
+        }
         Context context = mActionDelegate.getContext();
         View defaultBrowserBottomSheetView =
                 LayoutInflater.from(context)

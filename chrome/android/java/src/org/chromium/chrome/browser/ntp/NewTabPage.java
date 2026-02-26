@@ -619,10 +619,8 @@ public class NewTabPage
                         // Showing the NTP is only meaningful when the page has been loaded already.
                         if (mIsLoaded) {
                             recordNtpShown();
-                            if (mHomeModulesCoordinator != null) {
-                                mHomeModulesCoordinator.updateModules();
-                            }
                         }
+                        maybeUpdateMagicStack();
                         mNewTabPageLayout.onSwitchToForeground();
                     }
 
@@ -641,7 +639,9 @@ public class NewTabPage
         mLifecycleObserver =
                 new PauseResumeWithNativeObserver() {
                     @Override
-                    public void onResumeWithNative() {}
+                    public void onResumeWithNative() {
+                        maybeUpdateMagicStack();
+                    }
 
                     @Override
                     public void onPauseWithNative() {
@@ -1164,6 +1164,12 @@ public class NewTabPage
         mLastShownTimeNs = System.nanoTime();
         RecordUserAction.record("MobileNTPShown");
         SuggestionsMetrics.recordSurfaceVisible();
+    }
+
+    private void maybeUpdateMagicStack() {
+        if (mIsLoaded && mHomeModulesCoordinator != null) {
+            mHomeModulesCoordinator.updateModules();
+        }
     }
 
     /** Records UMA for the NTP being hidden and the time spent on it. */

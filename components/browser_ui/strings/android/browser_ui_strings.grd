@@ -1267,6 +1267,9 @@
       <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_DESCRIPTION" desc="Description of the default browser section in the educational tip module on NTP.">
         You can use Chrome any time you tap links in messages, documents and other apps
       </message>
+      <message name="IDS_SETUP_LIST_DEFAULT_BROWSER_PROMO_BUTTON" desc="Text on the clickable button for the default browser promo in the setup list that invites users to set Chrome as their default browser.">
+        Set default
+      </message>
       <message name="IDS_EDUCATIONAL_TIP_TAB_GROUP_TITLE" desc="Title of the tab group promo in the educational tip module on NTP.">
         Tidy up with tab groups
       </message>

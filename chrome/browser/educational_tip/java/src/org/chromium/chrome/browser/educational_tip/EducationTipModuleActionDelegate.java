@@ -88,4 +88,11 @@ public interface EducationTipModuleActionDelegate {
 
     /** Creates a configuration for the sign-in page. */
     BottomSheetSigninAndHistorySyncConfig createSigninBottomSheetConfig();
+
+    /**
+     * Launch the Role Manager for the Setup list default browser promo if eligible.
+     *
+     * @return True if the Role Manager was shown.
+     */
+    boolean maybeShowDefaultBrowserPromoWithRoleManager();
 }
