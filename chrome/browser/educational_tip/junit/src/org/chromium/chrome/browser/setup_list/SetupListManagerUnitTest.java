@@ -46,6 +46,7 @@ import org.chromium.components.regional_capabilities.RegionalProgram;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
@@ -590,5 +591,28 @@ public class SetupListManagerUnitTest {
         assertTrue(rankedModules.contains(ModuleType.ADDRESS_BAR_PLACEMENT_PROMO));
         assertTrue(rankedModules.contains(ModuleType.SAVE_PASSWORDS_PROMO));
         assertTrue(rankedModules.contains(ModuleType.PASSWORD_CHECKUP_PROMO));
+    }
+
+    @Test
+    @SmallTest
+    public void testOnPrimaryAccountChanged_CompletesSignIn() {
+        // 1. Setup: User is signed out.
+        when(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(false);
+
+        SetupListManager.setInstanceForTesting(new SetupListManager());
+        SetupListManager manager = SetupListManager.getInstance();
+        manager.maybePrimeCompletionStatus(mProfile);
+
+        assertFalse(manager.isModuleCompleted(ModuleType.SIGN_IN_PROMO));
+
+        // 2. Act: Trigger a sign-in event.
+        PrimaryAccountChangeEvent event =
+                new PrimaryAccountChangeEvent(
+                        PrimaryAccountChangeEvent.Type.SET, ConsentLevel.SIGNIN);
+        manager.onPrimaryAccountChanged(event);
+
+        // 3. Assert: Sign-In should be completed and awaiting animation.
+        assertTrue(manager.isModuleCompleted(ModuleType.SIGN_IN_PROMO));
+        assertTrue(manager.isModuleAwaitingCompletionAnimation(ModuleType.SIGN_IN_PROMO));
     }
 }

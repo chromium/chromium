@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.sync.SyncService;
 
 import java.lang.annotation.Retention;
@@ -47,7 +48,8 @@ import java.util.concurrent.TimeUnit;
  * also maintains the dynamic ranking of modules, moving completed items to the end.
  */
 @NullMarked
-public class SetupListManager implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class SetupListManager
+        implements SharedPreferences.OnSharedPreferenceChangeListener, IdentityManager.Observer {
     // TODO(crbug.com/469425754): Re-arrange the class in a more meaningful manner.
     /** Defines the mutually exclusive UI layouts for the Setup List. */
     @IntDef({
@@ -108,6 +110,7 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
     private Set<String> mCompletedKeys = new HashSet<>();
     private @Nullable Profile mProfile;
     private final Set<Integer> mModulesAwaitingCompletionAnimation = new HashSet<>();
+    private boolean mHasRegisteredIdentityObserver;
 
     /** The current UI layout phase of the Setup List. */
     private @SetupListActiveLayout int mActiveLayout = SetupListActiveLayout.SINGLE_CELL;
@@ -197,6 +200,18 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
         mActiveLayout = SetupListActiveLayout.INACTIVE;
         mRankedModules.clear();
         mModuleRankMap.clear();
+        unregisterObservers();
+    }
+
+    private void unregisterObservers() {
+        if (mHasRegisteredIdentityObserver && mProfile != null) {
+            IdentityManager identityManager =
+                    IdentityServicesProvider.get().getIdentityManager(mProfile);
+            if (identityManager != null) {
+                identityManager.removeObserver(this);
+            }
+            mHasRegisteredIdentityObserver = false;
+        }
     }
 
     private ModulePartition partitionModules() {
@@ -401,7 +416,16 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
 
         Integer moduleType = mKeyToModuleMap.get(key);
         if (moduleType != null) {
-            SetupListModuleUtils.setModuleCompleted(moduleType, /* silent= */ true);
+            setModuleCompleted(moduleType, /* silent= */ true);
+        }
+    }
+
+    @Override
+    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+        @PrimaryAccountChangeEvent.Type
+        int eventType = eventDetails.getEventTypeFor(ConsentLevel.SIGNIN);
+        if (eventType == PrimaryAccountChangeEvent.Type.SET) {
+            setModuleCompleted(ModuleType.SIGN_IN_PROMO, /* silent= */ false);
         }
     }
 
@@ -417,7 +441,20 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
             return;
         }
 
-        mProfile = profile;
+        if (mProfile != profile) {
+            unregisterObservers();
+            mProfile = profile;
+        }
+
+        if (!mHasRegisteredIdentityObserver) {
+            IdentityManager identityManager =
+                    IdentityServicesProvider.get().getIdentityManager(mProfile);
+            if (identityManager != null) {
+                identityManager.addObserver(this);
+                mHasRegisteredIdentityObserver = true;
+            }
+        }
+
         for (int moduleType : BASE_SETUP_LIST_ORDER) {
             if (!isModuleCompleted(moduleType)
                     && SetupListModuleUtils.checkIsTaskCompletedInSystem(moduleType, profile)) {
@@ -436,13 +473,14 @@ public class SetupListManager implements SharedPreferences.OnSharedPreferenceCha
      *     immediately without animation.
      */
     public void setModuleCompleted(@ModuleType int moduleType, boolean silent) {
+        if (isModuleCompleted(moduleType)) return;
         String individualPrefKey = SetupListModuleUtils.getCompletionKeyForModule(moduleType);
         if (individualPrefKey == null) return;
 
         if (mCompletedKeys.contains(individualPrefKey)) return;
 
-        ChromeSharedPreferences.getInstance().writeBoolean(individualPrefKey, true);
         mCompletedKeys.add(individualPrefKey);
+        ChromeSharedPreferences.getInstance().writeBoolean(individualPrefKey, true);
 
         if (!silent) {
             mModulesAwaitingCompletionAnimation.add(moduleType);
