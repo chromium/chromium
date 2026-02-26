@@ -19,6 +19,7 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgraphics_shared_image_interface_provider_impl.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -272,5 +273,10 @@ bool SharedGpuContext::MaySupportImageChromium() {
   return ::features::IsAndroidSurfaceControlEnabled();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+bool SharedGpuContext::OverlaysSupportedForCanvas2D() {
+  return MaySupportImageChromium() &&
+         RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
+}
 
 }  // namespace blink

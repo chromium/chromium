@@ -63,6 +63,9 @@ class PLATFORM_EXPORT SharedGpuContext {
   static bool MaySupportImageChromium() { return true; }
 #endif
 
+  // Whether SharedImages used for canvas2D content may be placed into overlays.
+  static bool OverlaysSupportedForCanvas2D();
+
   using ContextProviderFactory =
       base::RepeatingCallback<std::unique_ptr<WebGraphicsContext3DProvider>()>;
   static void SetContextProviderFactoryForTesting(ContextProviderFactory);

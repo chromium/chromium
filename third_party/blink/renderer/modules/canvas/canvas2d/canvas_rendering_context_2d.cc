@@ -1374,14 +1374,8 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
         shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
         shared_image_usage_flags |=
             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-      } else {
-        // Add support for use as an overlay if possible.
-        bool overlays_supported =
-            SharedGpuContext::MaySupportImageChromium() &&
-            RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
-        if (overlays_supported) {
-          shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-        }
+      } else if (SharedGpuContext::OverlaysSupportedForCanvas2D()) {
+        shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
       }
 
       provider = Canvas2DResourceProviderSharedImage::CreateWithClear(

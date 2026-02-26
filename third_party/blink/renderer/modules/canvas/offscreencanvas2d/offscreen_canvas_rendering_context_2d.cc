@@ -224,14 +224,10 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
   const viz::SharedImageFormat format = GetSharedImageFormat();
   const gfx::ColorSpace color_space = GetColorSpace();
   if (use_shared_image) {
-    const bool use_scanout =
-        host->HasPlaceholderCanvas() &&
-        SharedGpuContext::MaySupportImageChromium() &&
-        RuntimeEnabledFeatures::Canvas2dImageChromiumEnabled();
-
     gpu::SharedImageUsageSet shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-    if (use_scanout) {
+    if (host->HasPlaceholderCanvas() &&
+        SharedGpuContext::OverlaysSupportedForCanvas2D()) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
 
