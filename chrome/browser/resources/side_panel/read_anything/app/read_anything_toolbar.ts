@@ -284,6 +284,17 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (changedProperties.has('presentationState') &&
         (this.isReadingModeInSidePanel() || this.isReadingModeInactive())) {
       this.$.toolbarContainer.tabIndex = 0;
+      const currentFocusedElement =
+          this.$.toolbarContainer.querySelector<HTMLElement>('[tabindex="0"]');
+      if (!currentFocusedElement) {
+        const tabIndexElementId =
+            this.isReadAloudPlayable ? '#play-pause' : '#rate';
+        const element = this.$.toolbarContainer.querySelector<HTMLElement>(
+            tabIndexElementId);
+        if (element) {
+          element.tabIndex = 0;
+        }
+      }
     }
   }
 
