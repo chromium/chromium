@@ -215,11 +215,14 @@ class BASE_EXPORT File {
   bool ReadAtCurrentPosAndCheck(span<uint8_t> data);
 
   // Reads the given number of bytes (or until EOF is reached) starting with the
-  // given offset. Returns the number of bytes read, or `std::nullopt` on error.
-  // Note that this function makes a best effort to read all data on all
-  // platforms, so it is not intended for stream oriented files but instead for
-  // cases when the normal expectation is that actually `data.size()` bytes are
-  // read unless there is an error.
+  // given offset. Returns the number of bytes read, or -1 on error. Note that
+  // this function makes a best effort to read all data on all platforms, so it
+  // is not intended for stream oriented files but instead for cases when the
+  // normal expectation is that actually |size| bytes are read unless there is
+  // an error.
+  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
+  // least `size` valid bytes.
+  UNSAFE_BUFFER_USAGE int Read(int64_t offset, char* data, int size);
   std::optional<size_t> Read(int64_t offset, base::span<uint8_t> data);
 
   // Same as above but without seek.
@@ -243,11 +246,15 @@ class BASE_EXPORT File {
   bool WriteAndCheck(int64_t offset, span<const uint8_t> data);
   bool WriteAtCurrentPosAndCheck(span<const uint8_t> data);
 
-  // Writes the given buffer into the file at the given offset, overwriting any
-  // data that was previously there. Returns the number of bytes written, or
-  // `std::nullopt` on error. Note that this function makes a best effort to
-  // write all data on all platforms. Ignores the offset and writes to the end
-  // of the file if the file was opened with FLAG_APPEND.
+  // Writes the given buffer into the file at the given offset, overwritting any
+  // data that was previously there. Returns the number of bytes written, or -1
+  // on error. Note that this function makes a best effort to write all data on
+  // all platforms. |data| can be nullptr when |size| is 0.
+  // Ignores the offset and writes to the end of the file if the file was opened
+  // with FLAG_APPEND.
+  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
+  // least `size` valid bytes.
+  UNSAFE_BUFFER_USAGE int Write(int64_t offset, const char* data, int size);
   std::optional<size_t> Write(int64_t offset, base::span<const uint8_t> data);
 
   // Same as above but without seek.
@@ -419,26 +426,6 @@ class BASE_EXPORT File {
 
  private:
   friend class FileTracing::ScopedTrace;
-
-  // Reads the given number of bytes (or until EOF is reached) starting with the
-  // given offset. Returns the number of bytes read, or -1 on error. Note that
-  // this function makes a best effort to read all data on all platforms, so it
-  // is not intended for stream oriented files but instead for cases when the
-  // normal expectation is that actually |size| bytes are read unless there is
-  // an error.
-  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
-  // least `size` valid bytes.
-  UNSAFE_BUFFER_USAGE int Read(int64_t offset, char* data, int size);
-
-  // Writes the given buffer into the file at the given offset, overwriting any
-  // data that was previously there. Returns the number of bytes written, or -1
-  // on error. Note that this function makes a best effort to write all data on
-  // all platforms. |data| can be nullptr when |size| is 0.
-  // Ignores the offset and writes to the end of the file if the file was opened
-  // with FLAG_APPEND.
-  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
-  // least `size` valid bytes.
-  UNSAFE_BUFFER_USAGE int Write(int64_t offset, const char* data, int size);
 
   // Creates or opens the given file. Only called if |path| has no
   // traversal ('..') components.
