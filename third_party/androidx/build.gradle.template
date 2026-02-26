@@ -68,6 +68,7 @@ dependencies {
     compileLatest 'androidx.credentials:credentials:+'
     compileLatest 'androidx.credentials:credentials-play-services-auth:+'
     compileLatest 'androidx.core:core-animation:+'
+    compileLatest 'androidx.core:core-pip:+'
     compileLatest 'androidx.customview:customview:+'
     compileLatest 'androidx.datastore:datastore-android:+'
     compileLatest 'androidx.datastore:datastore-core:+'
